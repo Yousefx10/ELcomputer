@@ -7,8 +7,8 @@
             <CardsHeroCard/>
     </section>
 
-    <section class="container mx-auto">
-        
+    <section class="container mx-auto pb-200">
+
     </section>
 
 </template>
