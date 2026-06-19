@@ -3,7 +3,14 @@
         <p class="text-center text-blue-500">index Content</p>
     </div>
 
-    <CardsHeroCard/>
+    <section>
+            <CardsHeroCard/>
+    </section>
+
+    <section class="container mx-auto">
+        
+    </section>
+
 </template>
 
 <script setup>

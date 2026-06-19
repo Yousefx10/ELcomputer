@@ -3,7 +3,7 @@
     <LayoutTopBar/>
     <LayoutNavBar/>
 
-    <main class="container mx-auto">
+    <main class="">
         <slot />
     </main>
 
