@@ -8,7 +8,7 @@
     </section>
 
     <section class="container mx-auto pb-200">
-
+        <CardsOfferCard class="mt-10 w-[250px]"/>
     </section>
 
 </template>
