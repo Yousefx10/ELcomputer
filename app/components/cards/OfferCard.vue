@@ -1,5 +1,5 @@
 <template>
-    <div class="relative border rounded-2xl min-w[250px] h-[300px] overflow-hidden">
+    <div class="relative border rounded-2xl w-[250px] h-[300px] overflow-hidden">
         <img    class="object-cover w-full h-full"
                 src="https://placehold.co/250x300" alt=""/>
 
