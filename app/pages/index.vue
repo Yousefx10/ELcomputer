@@ -12,13 +12,20 @@
         <OfferSlider/>
     </section>
 
+
+
     <section class="container mx-auto pb-200">
         <!-- Site Content -->
+        <section>
+            <TopCategories class="my-5"/>
+        </section>
+        
     </section>
 
 </template>
 
 <script setup>
+import TopCategories from '~/components/cards/TopCategories.vue';
 import OfferSlider from '~/components/layout/OfferSlider.vue';
 
 
