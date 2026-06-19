@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-red-200">
+  <div class="bg-red-200 min-h-screen">
     <LayoutTopBar/>
     <LayoutNavBar/>
 
-    <main>
+    <main class="container mx-auto">
         <slot />
     </main>
 
