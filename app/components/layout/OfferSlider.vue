@@ -1,7 +1,7 @@
 <template>
     <div>
         <section class="bg-black py-8">
-            <div class="flex justify-evenly gap-2 overflow-x-auto px-6">
+            <div class="flex justify-between gap-2 overflow-x-auto  container mx-auto">
                 <OfferCard
                     v-for="offer in offers"
                     :key="offer.id"
