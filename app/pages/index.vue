@@ -21,7 +21,7 @@
         </section>
         
         <section>
-            <HomeProductSection/>
+            <HomeProductSection title="Big Title Here" description="Long Description There"/>
         </section>
     </section>
 

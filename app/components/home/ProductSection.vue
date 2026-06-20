@@ -1,8 +1,8 @@
 <template>
     <p class="text-6xl font-bold">
-        Big Title Here
+        {{title}}
     </p>
-    <span>Small Description There</span>
+    <span>{{description}}</span>
     <div class="flex gap-2 mt-5">
         <CardsProductCard/>
         <CardsProductCard/>
@@ -12,7 +12,10 @@
 </template>
 
 <script setup>
-
+defineProps({
+    title:'',
+    description:''
+})
 </script>
 
 <style>
