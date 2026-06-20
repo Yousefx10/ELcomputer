@@ -1,13 +1,15 @@
 <template>
-    <p class="text-6xl font-bold">
+    <div class="my-3">
+        <p class="text-6xl font-bold">
         {{title}}
-    </p>
-    <span>{{description}}</span>
-    <div class="flex gap-2 mt-5">
-        <CardsProductCard/>
-        <CardsProductCard/>
-        <CardsProductCard/>
-        <CardsProductCard/>
+        </p>
+        <span>{{description}}</span>
+        <div class="flex gap-2 my-5">
+            <CardsProductCard/>
+            <CardsProductCard/>
+            <CardsProductCard/>
+            <CardsProductCard/>
+        </div>
     </div>
 </template>
 

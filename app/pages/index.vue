@@ -23,6 +23,14 @@
         <section>
             <HomeProductSection title="Big Title Here" description="Long Description There"/>
         </section>
+
+        <section>
+            <HomeProductSection title="Top Seller" description="Long Description There"/>
+        </section>
+
+        <section>
+            <CardsBanner/>
+        </section>
     </section>
 
 </template>
