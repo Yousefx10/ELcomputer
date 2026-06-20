@@ -1,6 +1,6 @@
 <template>
     <div class="my-3">
-        <p class="text-6xl font-bold">
+        <p class="text-6xl font-bold uppercase">
         {{title}}
         </p>
         <span>{{description}}</span>

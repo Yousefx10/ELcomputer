@@ -31,6 +31,14 @@
         <section>
             <CardsBanner/>
         </section>
+
+        <section>
+            <HomeProductSection title="Keyboard" description="Long Description There"/>
+        </section>
+
+        <section>
+            <HomeProductSection title="Mouse" description="Long Description There"/>
+        </section>
     </section>
 
 </template>
