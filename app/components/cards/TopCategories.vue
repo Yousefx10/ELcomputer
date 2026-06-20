@@ -4,7 +4,7 @@
 
         <section class="flex gap-5">
             <!-- writting extra for loop to repeat same data 5 times, temporary only -->
-            <div            class="flex flex-col items-center " 
+            <div            class="flex flex-col items-center mx-auto" 
                             v-for="offer in offers" :key="offer.id">
 
                 <div        class="rounded-[50px] overflow-hidden">

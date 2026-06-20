@@ -20,6 +20,9 @@
             <TopCategories class="my-5"/>
         </section>
         
+        <section>
+            <HomeProductSection/>
+        </section>
     </section>
 
 </template>
