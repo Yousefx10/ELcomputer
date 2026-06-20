@@ -15,35 +15,50 @@
 
 
     <section class="container mx-auto pb-200">
-        <!-- Site Content -->
+    <!-- Site Content [START]-->
+
+        <!-- Top Categories Card -->
         <section>
             <TopCategories class="my-5"/>
         </section>
-        
+
+        <!-- Product Section -->
         <section>
             <HomeProductSection title="Big Title Here" description="Long Description There"/>
         </section>
 
+        <!-- Product Section -->
         <section>
             <HomeProductSection title="Top Seller" description="Long Description There"/>
         </section>
 
+        <!-- Image Banner -->
         <section>
             <CardsBanner/>
         </section>
 
+        <!-- Product Section -->
         <section>
             <HomeProductSection title="Keyboard" description="Long Description There"/>
         </section>
 
+        <!-- Product Section -->
         <section>
             <HomeProductSection title="Mouse" description="Long Description There"/>
         </section>
+
+        <!-- Featured Brands Section -->
+        <section>
+            <FeaturedBrands title="Featured Brands" description="Shop by your favorite brand"/>
+        </section>
+
+    <!-- Site Content [END]-->
     </section>
 
 </template>
 
 <script setup>
+import FeaturedBrands from '~/components/cards/FeaturedBrands.vue';
 import TopCategories from '~/components/cards/TopCategories.vue';
 import OfferSlider from '~/components/layout/OfferSlider.vue';
 
