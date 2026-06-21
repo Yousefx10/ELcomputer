@@ -14,7 +14,7 @@
 
 
 
-    <section class="container mx-auto pb-200">
+    <section class="container mx-auto pb-20">
     <!-- Site Content [START]-->
 
         <!-- Top Categories Card -->
