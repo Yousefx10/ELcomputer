@@ -1,0 +1,191 @@
+Personal Notes...
+
+
+basic repeated Supabase pattern
+################################
+const supabase = useSupabaseClient()
+
+const { data, error } = await supabase
+  .from('table_name')
+  .select('*')
+################################
+
+
+
+READ data from Supabase
+################################
+const products = ref([])
+
+const getProducts = async () => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  products.value = data
+}
+################################
+
+
+
+CREATE / store data in Supabase
+################################
+const addProduct = async () => {
+  const { error } = await supabase
+    .from('products')
+    .insert({
+      title: 'Gaming Mouse',
+      price: 500,
+      old_price: 1000,
+      category: 'Mouse'
+    })
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  await getProducts()
+}
+################################
+
+
+
+
+UPDATE data
+################################
+const updateProduct = async (id) => {
+  const { error } = await supabase
+    .from('products')
+    .update({
+      title: 'New Product Name',
+      price: 750
+    })
+    .eq('id', id)
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  await getProducts()
+}
+################################
+
+
+DELETE data
+################################
+const deleteProduct = async (id) => {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  await getProducts()
+}
+################################
+
+
+
+Use useAsyncData() when you want Nuxt to load data in a more Nuxt-style way, especially for pages and SEO.
+################################
+const { data: products } = await useAsyncData('products', async () => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+
+  if (error) throw error
+
+  return data
+})
+################################
+
+
+@@@@@@ reusable logic to memorize
+
+For any table:
+################################
+const supabase = useSupabaseClient()
+################################
+
+
+Read:
+################################
+await supabase.from('table').select('*')
+################################
+
+
+Create:
+################################
+await supabase.from('table').insert({ column: value })
+################################
+
+
+Update:
+################################
+await supabase.from('table').update({ column: newValue }).eq('id', id)
+################################
+
+
+Delete:
+################################
+await supabase.from('table').delete().eq('id', id)
+################################
+
+
+Error check:
+################################
+if (error) {
+  console.log(error.message)
+  return
+}
+################################
+
+
+Refresh after change:
+################################
+await getProducts()
+################################
+
+
+
+defineProps
+################################
+<script setup>
+defineProps({
+  product: {
+    type: Object,
+    required: true
+  }
+})
+</script>
+
+
+
+
+<ProductCard :product="product" />
+################################
+
+
+
+
+
+
+################################
+
+################################
+
+
+
+################################
+
+################################
