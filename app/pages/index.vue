@@ -52,6 +52,45 @@
             <FeaturedBrands title="Featured Brands" description="Shop by your favorite brand"/>
         </section>
 
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Headset" description="Long Description There"/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Microphone" description="Long Description There"/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Mouse pad" description="Long Description There"/>
+        </section>
+
+        <!-- Image Banner -->
+        <section>
+            <CardsBanner/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Accessories" description="Long Description There"/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Hot sale" description="Long Description There"/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Top Rated" description="Long Description There"/>
+        </section>
+
+        <!-- Product Section -->
+        <section>
+            <HomeProductSection title="Recommended" description="Long Description There"/>
+        </section>
     <!-- Site Content [END]-->
     </section>
 
