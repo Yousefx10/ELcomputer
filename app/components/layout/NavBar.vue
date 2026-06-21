@@ -10,9 +10,9 @@
                 <li><NuxtLink to="">Return Policy</NuxtLink></li>
                 <li><NuxtLink to="">Request Refund</NuxtLink></li>
                 <li><NuxtLink to="">Tool Kit</NuxtLink></li>
-                <li>Search</li>
-                <li>Account</li>
-                <li>Refund</li>
+                <li><input type="search" name="" id="" class="border rounded-full"></li>
+                <li><Icon name="lucide:user" size="24"/></li>
+                <li><Icon name="lucide:shopping-cart" size="24"/></li>
             </ul>
         </nav>
     </header>

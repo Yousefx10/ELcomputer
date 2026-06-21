@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  modules: ['@nuxtjs/supabase'],
+  modules: ['@nuxtjs/supabase','@nuxt/icon'],
 
   supabase: {
     types: false, //disable for now TS types

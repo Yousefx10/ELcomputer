@@ -12,8 +12,8 @@
                     <p>Purchase your fav gear</p>
                 </div>
 
-                <button class="rounded-full bg-blue-600 p-6 font-bold">
-                    Shop Now ->
+                <button class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 p-6 font-bold">
+                    Shop Now <Icon name="lucide:arrow-right" size="20"/>
                 </button>
             </div>
 
