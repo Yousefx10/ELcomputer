@@ -1,5 +1,7 @@
 <template>
     <header class="bg-black text-white">
+
+        <!-- Default Desktop NavBar -->
         <nav class="container mx-auto flex items-center justify-between px-4 py-6">
             <div>
                 <NuxtLink to="/">Elcomputer</NuxtLink>
@@ -13,13 +15,19 @@
                 </li>
 
                 <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
-                <li><Icon name="lucide:user" size="24"/></li>
+                <li>
+                    <NuxtLink to="login">
+                        <Icon name="lucide:user" size="24"/>
+                    </NuxtLink>
+                </li>
                 <li><Icon name="lucide:shopping-cart" size="24"/></li>
             </ul>
             <button class="lg:hidden text-white" @click="isMenuOpen=!isMenuOpen">
                 <Icon name="lucide:menu" size="28"/>
             </button>
         </nav>
+
+        <!-- Mobile NavBar -->
         <div v-if="isMenuOpen" class="lg:hidden px-6 pb-6 flex justify-center">
             <ul class="grid grid-cols-2 gap-4 ">
 
@@ -30,10 +38,18 @@
                 </li>
 
                 <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
-                <li><Icon name="lucide:user" size="24"/></li>
+                
+                <li>
+                    <NuxtLink to="login">
+                        <Icon name="lucide:user" size="24"/>
+                    </NuxtLink>
+                </li>
+
                 <li><Icon name="lucide:shopping-cart" size="24"/></li>
             </ul>
         </div>
+
+
     </header>
 </template>
 
