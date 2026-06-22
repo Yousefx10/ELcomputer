@@ -5,10 +5,11 @@
         </p>
         <span>{{description}}</span>
         <div class="flex gap-2 my-5">
-            <CardsProductCard/>
-            <CardsProductCard/>
-            <CardsProductCard/>
-            <CardsProductCard/>
+            <CardsProductCard
+                v-for="product in products"
+                :key="product.id"
+                :product="product"
+            />
         </div>
     </div>
 </template>
@@ -17,6 +18,7 @@
 defineProps({
     title:String,
     description:String,
+    products:Array
 })
 </script>
 

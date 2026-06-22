@@ -39,12 +39,12 @@
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Keyboard" description="Long Description There"/>
+            <HomeProductSection title="Keyboard" description="Long Description There" :products="keyboardProducts"/>
         </section>
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Mouse" description="Long Description There"/>
+            <HomeProductSection title="Mouse" description="Long Description There" :products="mouseProducts"/>
         </section>
 
         <!-- Featured Brands Section -->
@@ -54,7 +54,7 @@
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Headset" description="Long Description There"/>
+            <HomeProductSection title="Headset" description="Long Description There" :products="headsetProducts"/>
         </section>
 
         <!-- Product Section -->
@@ -101,6 +101,38 @@ import FeaturedBrands from '~/components/cards/FeaturedBrands.vue';
 import TopCategories from '~/components/cards/TopCategories.vue';
 import OfferSlider from '~/components/layout/OfferSlider.vue';
 
+
+
+
+
+
+// fetch data from DB to be displayed
+const supabase = useSupabaseClient()
+
+const { data: products } = await useAsyncData('products',async() => {
+    const { data , error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at',{ascending:false})
+
+    if(error)
+        throw error
+
+    return data
+})
+
+
+const keyboardProducts = computed(() => {
+    return products .value?.filter(product=>product.category === 'keyboard') || []
+})
+
+const mouseProducts = computed(() => {
+    return products .value?.filter(product=>product.category === 'mouse') || []
+})
+
+const headsetProducts = computed(() => {
+    return products .value?.filter(product=>product.category === 'headset') || []
+})
 
 </script>
 
