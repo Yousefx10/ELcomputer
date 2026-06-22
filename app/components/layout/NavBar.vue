@@ -22,16 +22,16 @@
                 </li>
                 <li><Icon name="lucide:shopping-cart" size="24"/></li>
             </ul>
-            <button class="lg:hidden text-white" @click="isMenuOpen=!isMenuOpen">
+            <button class="lg:hidden text-white cursor-pointer" @click="isMenuOpen=!isMenuOpen">
                 <Icon name="lucide:menu" size="28"/>
             </button>
         </nav>
 
         <!-- Mobile NavBar -->
         <div v-if="isMenuOpen" class="lg:hidden px-6 pb-6 flex justify-center">
-            <ul class="grid grid-cols-2 gap-4 ">
+            <ul class="grid grid-cols-2 gap-4">
 
-                <li v-for="link in NavLinks" :key="link.label">
+                <li v-for="link in NavLinks" :key="link.label" @click="isMenuOpen=false">
                     <NuxtLink :to="link.to">
                     {{ link.label }}
                     </NuxtLink>
@@ -39,13 +39,13 @@
 
                 <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
                 
-                <li>
+                <li @click="isMenuOpen=false">
                     <NuxtLink to="login">
                         <Icon name="lucide:user" size="24"/>
                     </NuxtLink>
                 </li>
 
-                <li><Icon name="lucide:shopping-cart" size="24"/></li>
+                <li @click="isMenuOpen=false"><Icon name="lucide:shopping-cart" size="24"/></li>
             </ul>
         </div>
 
