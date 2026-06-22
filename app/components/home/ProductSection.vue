@@ -18,7 +18,10 @@
 defineProps({
     title:String,
     description:String,
-    products:Array
+    products:{
+        type:Array,
+        default:() => []
+    }
 })
 </script>
 

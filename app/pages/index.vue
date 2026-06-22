@@ -39,12 +39,12 @@
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Keyboard" description="Long Description There" :products="keyboardProducts"/>
+            <HomeProductSection title="Keyboard" description="Long Description There" :products="keyboardProducts || []"/>
         </section>
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Mouse" description="Long Description There" :products="mouseProducts"/>
+            <HomeProductSection title="Mouse" description="Long Description There" :products="mouseProducts || []"/>
         </section>
 
         <!-- Featured Brands Section -->
@@ -54,7 +54,7 @@
 
         <!-- Product Section -->
         <section>
-            <HomeProductSection title="Headset" description="Long Description There" :products="headsetProducts"/>
+            <HomeProductSection title="Headset" description="Long Description There" :products="headsetProducts || []"/>
         </section>
 
         <!-- Product Section -->
@@ -104,8 +104,36 @@ import OfferSlider from '~/components/layout/OfferSlider.vue';
 
 
 
+const supabase = useSupabaseClient()
+
+const getProductsByCategory = async (category) =>{
+    const {data , error} = await supabase
+    .from('products')
+    .select('*')
+    .eq('category',category)
+    .order('created_at', {ascending: false})
+    .limit(4)
+
+    if(error) throw error
+
+    return data
+}
 
 
+const {data:keyboardProducts} = await useAsyncData('keyboard-products',() =>{
+    return getProductsByCategory('keyboard')
+})
+
+const {data:mouseProducts} = await useAsyncData('mouse-products',() =>{
+    return getProductsByCategory('mouse')
+})
+
+const {data:headsetProducts} = await useAsyncData('headset-products',() =>{
+    return getProductsByCategory('headset')
+})
+
+
+/*
 // fetch data from DB to be displayed
 const supabase = useSupabaseClient()
 
@@ -133,7 +161,7 @@ const mouseProducts = computed(() => {
 const headsetProducts = computed(() => {
     return products .value?.filter(product=>product.category === 'headset') || []
 })
-
+*/
 </script>
 
 <style>
