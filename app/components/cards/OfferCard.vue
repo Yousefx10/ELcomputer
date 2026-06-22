@@ -1,7 +1,7 @@
 <template>
-    <div class="relative border rounded-2xl w-[250px] h-[300px] overflow-hidden">
+    <div class="relative border rounded-2xl w-[200px] h-[300px] overflow-hidden">
         <img    class="object-cover w-full h-full"
-                src="https://placehold.co/250x300" alt=""/>
+                src="https://placehold.co/200x300" alt=""/>
 
                 <div class="absolute inset-0 bg-black/20">
                     Detailed Text

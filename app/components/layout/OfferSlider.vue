@@ -1,13 +1,15 @@
 <template>
     <div>
         <section class="bg-black py-8">
-            <div class="flex justify-between gap-2 overflow-x-auto  container mx-auto">
-                <OfferCard
-                    v-for="offer in offers"
-                    :key="offer.id"
-                    :image="offer.image"
-                    :title="offer.title"
-                />
+            <div 
+            class="flex gap-3 px-4 overflow-x-auto container mx-auto justify-center">
+                <div v-for=" offer in offers" class="shrink-0 basis-[35%] md:basis-[21%] lg:basis-[15%]">
+                    <OfferCard
+                        :key="offer.id"
+                        :image="offer.image"
+                        :title="offer.title"
+                    />
+                </div>
             </div>
         </section>
     </div>
