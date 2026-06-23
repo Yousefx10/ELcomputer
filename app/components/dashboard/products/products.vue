@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="p-6">
         <h2 class="text-center font-bold text-4xl my-5">
             Watch All products
         </h2>
@@ -24,17 +24,18 @@
                     {{product.category}}
                 </p>
 
-                <div>
+                <div class="mt-3">
                     <span class="font-bold text-blue-600">
                         {{product.price}} EGP
                     </span>
 
-                    <span v-if="product.oldPrice" class="ml-2 text-sm text-gray-400 line-through">
-                        {{product.oldPrice}} EGP
+                    <span   v-if="product.old_price" 
+                            class="ml-2 text-sm text-gray-400 line-through">
+                        {{product.old_price}} EGP
                     </span>
                 </div>
 
-                <div>
+                <div class="mb-2 text-center">
                     <button class="mt-4 rounded-lg bg-black px-3 py-2 text-sm text-white">
                         Edit Product
                     </button>
