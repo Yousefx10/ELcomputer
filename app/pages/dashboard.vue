@@ -60,7 +60,9 @@
         </button>
       </form>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <DashboardProducts/>
+
+      <!-- <div class="grid gap-4 md:grid-cols-3">
         <div
           v-for="product in products"
           :key="product.id"
@@ -95,13 +97,13 @@
             Delete
           </button>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script setup>
-const supabase = useSupabaseClient()
+// const supabase = useSupabaseClient()
 const user =  useSupabaseUser()
 
 watchEffect(()=>{
@@ -123,70 +125,71 @@ const errorMessage = ref('')
 
 
 
- const getProducts = async()=>{
-    const {data,error} = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at',{ascending:false})
+//  const getProducts = async()=>{
+//     const {data,error} = await supabase
+//     .from('products')
+//     .select('*')
+//     .order('created_at',{ascending:false})
 
-    if(error){
-        errorMessage.value=error.message
-        return
-    }
+//     if(error){
+//         errorMessage.value=error.message
+//         return
+//     }
 
-    products.value=data
- }
+//     products.value=data
+//  }
 
 
 
- const addProduct = async() =>{
-    loading.value=true
-    errorMessage.value=''
+//  const addProduct = async() =>{
+//     loading.value=true
+//     errorMessage.value=''
 
-    const {error} = await supabase.from('products').insert({
-        title: title.value,
-        price: Number(price.value),
-        old_price: oldPrice.value ? Number(oldPrice.value) : null,
-        category: category.value,
-        image_url: imageUrl.value
-    })
+//     const {error} = await supabase.from('products').insert({
+//         title: title.value,
+//         price: Number(price.value),
+//         old_price: oldPrice.value ? Number(oldPrice.value) : null,
+//         category: category.value,
+//         image_url: imageUrl.value
+//     })
 
-        loading.value=false
+//         loading.value=false
 
-    if(error){
-        errorMessage.value=error.message
-        return
-    }
+//     if(error){
+//         errorMessage.value=error.message
+//         return
+//     }
 
-    title.value = ''
-    price.value = ''
-    oldPrice.value = ''
-    category.value = ''
-    imageUrl.value = ''
+//     title.value = ''
+//     price.value = ''
+//     oldPrice.value = ''
+//     category.value = ''
+//     imageUrl.value = ''
 
-    await getProducts()
- }
- const deleteProduct = async (id) =>{
-    const {error} = await supabase
-    .from('products')
-    .delete()
-    .eq('id',id)
+//     await getProducts()
+//  }
 
-    if(error){
-        errorMessage.value = error.message
-    }
+//  const deleteProduct = async (id) =>{
+//     const {error} = await supabase
+//     .from('products')
+//     .delete()
+//     .eq('id',id)
 
-    await getProducts()
- }
+//     if(error){
+//         errorMessage.value = error.message
+//     }
+
+//     await getProducts()
+//  }
 
  const logout = async () =>{
     await supabase.auth.signOut()
     await navigateTo('/login')
  }
 
- onMounted(() =>{
-    getProducts()
- })
+//  onMounted(() =>{
+//     getProducts()
+//  })
 
 </script>
 
