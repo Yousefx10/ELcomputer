@@ -67,6 +67,14 @@
 </template>
 
 <script setup>
+
+definePageMeta({
+  layout:'default'
+})
+
+
+
+
 // const supabase = useSupabaseClient()
 const user =  useSupabaseUser()
 

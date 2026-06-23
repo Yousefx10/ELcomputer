@@ -1,4 +1,5 @@
 <template>
+    <!-- Component To View Products -->
     <div class="p-6">
         <h2 class="text-center font-bold text-4xl my-5">
             Watch All products
