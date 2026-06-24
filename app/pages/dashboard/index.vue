@@ -1,16 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-6">
     <div class="mx-auto max-w-5xl">
-      <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-3xl font-bold">Dashboard</h1>
 
-        <button
-          @click="logout"
-          class="rounded-lg bg-black px-4 py-2 text-white"
-        >
-          Logout
-        </button>
-      </div>
 
       <form
         @submit.prevent="addProduct"
@@ -69,7 +60,7 @@
 <script setup>
 
 definePageMeta({
-  layout:'default'
+  layout:'dashboard'
 })
 
 
