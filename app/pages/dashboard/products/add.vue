@@ -57,6 +57,11 @@
 
 <script setup>
 
+definePageMeta({
+  layout:'dashboard'
+})
+
+
 const supabase = useSupabaseClient()
 
 const title = ref('')
