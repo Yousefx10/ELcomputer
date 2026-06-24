@@ -48,8 +48,7 @@
             </main>
 
 
-            <DashboardSideBar
-                class="sticky top-5 w-64 h-64 mt-5 p-4 bg-gray-700 text-white"/>
+            <DashboardSideBar :links="links" />
         </div>
 
 
@@ -66,6 +65,7 @@ definePageMeta({
   layout:'dashboard'
 })
 
+const links = dashboardProductsLinks
 
 const supabase = useSupabaseClient()
 
