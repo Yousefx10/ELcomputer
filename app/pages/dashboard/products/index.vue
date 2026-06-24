@@ -42,15 +42,17 @@
                     </button>
                 </div>
             </div>
-
-
-
         </div>
-
     </div>
 </template>
 
 <script setup>
+
+definePageMeta({
+  layout:'dashboard'
+})
+
+
 const supabase = useSupabaseClient()
 
 

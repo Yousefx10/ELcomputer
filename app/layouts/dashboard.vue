@@ -2,7 +2,6 @@
   <div class="min-h-screen">
     <!-- 
     <LayoutTopBar/>
-    <LayoutNavBar/>
      -->
 
     <div class="mb-6 flex items-center justify-between">
@@ -15,6 +14,8 @@
         </button>
     </div>
 
+     <LayoutDashboardNavBar/>
+     
     <main class="">
         <slot />
     </main>
