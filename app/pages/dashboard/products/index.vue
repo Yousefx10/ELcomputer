@@ -48,7 +48,8 @@
             </main>
 
 
-            <DashboardSideBar class="w-64 h-64 mt-5 p-4 bg-gray-700 text-white"/>
+            <DashboardSideBar
+                class="sticky top-5 w-64 h-64 mt-5 p-4 bg-gray-700 text-white"/>
         </div>
 
 
