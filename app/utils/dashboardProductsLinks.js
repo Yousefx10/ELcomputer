@@ -4,6 +4,6 @@
 export const dashboardProductsLinks = [
   {
     label: 'Add Product',
-    to: '/products/add'
+    to: '/dashboard/products/add'
   },
 ]

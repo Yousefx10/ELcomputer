@@ -1,7 +1,7 @@
 <template>
     <aside class="text-center sticky top-5 w-64 h-64 mt-5 p-4 bg-gray-700 text-white">
         
-        <NuxtLink   to="products/add" 
+        <NuxtLink
                     class="w-full bg-white block text-black my-5"
                     v-for="link in links"
                     :key="link.key"

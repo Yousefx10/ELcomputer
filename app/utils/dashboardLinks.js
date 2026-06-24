@@ -12,10 +12,10 @@ export const dashboardLinks = [
   },
   {
     label: 'AddProduct',
-    to: '/dashboard/add'
+    to: '/dashboard/products/add'
   },
-  {
-    label: 'Edit Product',
-    to: '/dashboard/edit'
-  }
+  // {
+  //   label: 'Edit Product',
+  //   to: '/dashboard/edit'
+  // }
 ]

@@ -16,7 +16,7 @@
 
                 <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
                 <li>
-                    <NuxtLink to="login">
+                    <NuxtLink to="/login">
                         <Icon name="lucide:user" size="24"/>
                     </NuxtLink>
                 </li>
@@ -40,7 +40,7 @@
                 <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
                 
                 <li @click="isMenuOpen=false">
-                    <NuxtLink to="login">
+                    <NuxtLink to="/login">
                         <Icon name="lucide:user" size="24"/>
                     </NuxtLink>
                 </li>
