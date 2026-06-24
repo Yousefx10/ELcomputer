@@ -1,57 +1,66 @@
 <template>
     <div>
-        <div class="mx-auto max-w-5xl">
-            <form
-                @submit.prevent="addProduct"
-                class="mb-8 grid gap-3 rounded-2xl bg-white p-5 shadow md:grid-cols-2">
+        <h2 class="text-center font-bold text-4xl my-5">
+            Add New Product
+        </h2>
+        <div class="flex">
+            <main class="flex-1">
+                <div class="mx-auto max-w-5xl">
+                    <form
+                    @submit.prevent="addProduct"
+                    class="mb-8 grid gap-3 rounded-2xl bg-white p-5 shadow md:grid-cols-2">
 
-                <input
-                v-model="title"
-                placeholder="Product title"
-                class="rounded-lg border p-3"
-                />
+                    <input
+                    v-model="title"
+                    placeholder="Product title"
+                    class="rounded-lg border p-3"
+                    />
 
-                <input
-                v-model="category"
-                placeholder="Category"
-                class="rounded-lg border p-3"
-                />
+                    <input
+                    v-model="category"
+                    placeholder="Category"
+                    class="rounded-lg border p-3"
+                    />
 
-                <input
-                v-model="price"
-                type="number"
-                placeholder="Price"
-                class="rounded-lg border p-3"
-                />
+                    <input
+                    v-model="price"
+                    type="number"
+                    placeholder="Price"
+                    class="rounded-lg border p-3"
+                    />
 
-                <input
-                v-model="oldPrice"
-                type="number"
-                placeholder="Old price"
-                class="rounded-lg border p-3"
-                />
+                    <input
+                    v-model="oldPrice"
+                    type="number"
+                    placeholder="Old price"
+                    class="rounded-lg border p-3"
+                    />
 
-                <input
-                v-model="imageUrl"
-                placeholder="Image URL"
-                class="rounded-lg border p-3 md:col-span-2"
-                />
+                    <input
+                    v-model="imageUrl"
+                    placeholder="Image URL"
+                    class="rounded-lg border p-3 md:col-span-2"
+                    />
 
-                <p v-if="errorMessage" class="text-red-600 md:col-span-2">
-                {{ errorMessage }}
-                </p>
+                    <p v-if="errorMessage" class="text-red-600 md:col-span-2">
+                    {{ errorMessage }}
+                    </p>
 
-                <button
-                type="submit"
-                class="rounded-lg bg-blue-600 p-3 font-bold text-white md:col-span-2"
-                >
-                {{ loading ? 'Adding...' : 'Add Product' }}
-                </button>
-            </form>
+                    <button
+                    type="submit"
+                    class="rounded-lg bg-blue-600 p-3 font-bold text-white md:col-span-2"
+                    >
+                    {{ loading ? 'Adding...' : 'Add Product' }}
+                    </button>
+                    </form>
+                </div>
+            </main>
 
-      <DashboardProducts/>
+            <section>
+                <DashboardSideBar :links="links"/>
+            </section>
+        </div>
 
-    </div>
     </div>
 </template>
 
@@ -61,6 +70,7 @@ definePageMeta({
   layout:'dashboard'
 })
 
+const links = [{}]
 
 const supabase = useSupabaseClient()
 

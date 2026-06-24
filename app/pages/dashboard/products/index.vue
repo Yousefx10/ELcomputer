@@ -5,7 +5,7 @@
             Watch All products
         </h2>
 
-        <div class="flex justify-between">
+        <div class="flex">
             <main class="flex-1 p-4">
                 <!-- Products -->
                 <div class="grid gap-4 md:grid-cols-3">
