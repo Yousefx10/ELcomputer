@@ -1,15 +1,38 @@
 <template>
-    <div class="my-3">
-        <p class="text-6xl font-bold uppercase">
+    <div class="my-10 px-4 md:px-10 select-none">
+        <h2 class="text-4xl md:text-7xl font-black tracking-tight uppercase">
         {{title}}
-        </p>
-        <span>{{description}}</span>
-        <div class="flex gap-2 my-5">
-            <CardsProductCard
+        </h2>
+        <p class="mt-2 text-base md:text-lg text-gray-700">{{description}}</p>
+        <div class="relative mt-6">
+
+
+            <button
+            class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
+            @click="scrollLeft"
+            >
+            ‹
+            </button>
+
+            <div    ref="slider" 
+                    class="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 no-scrollbar">
+
+                <CardsProductCard
                 v-for="product in products"
                 :key="product.id"
                 :product="product"
-            />
+                class="snap-start"
+                />
+            </div>
+
+
+
+            <button
+            class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
+            @click="scrollRight"
+            >
+            ›
+            </button>
         </div>
     </div>
 </template>
@@ -23,8 +46,32 @@ defineProps({
         default:() => []
     }
 })
+
+
+
+const slider =ref(null)
+const scrollLeft = () => {
+  slider.value?.scrollBy({
+    left: -320,
+    behavior: 'smooth'
+  })
+}
+
+const scrollRight = () => {
+  slider.value?.scrollBy({
+    left: 320,
+    behavior: 'smooth'
+  })
+}
 </script>
 
-<style>
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 </style>
