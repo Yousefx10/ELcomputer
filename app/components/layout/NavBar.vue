@@ -37,7 +37,7 @@
                     </NuxtLink>
                 </li>
 
-                <li><input type="search" class="w-56 border rounded-full px-4 py-1"></li>
+                <li class="col-span-2"><input type="search" placeholder="Search..." class="w-56 border rounded-full px-4 py-1"></li>
                 
                 <li @click="isMenuOpen=false">
                     <NuxtLink to="/login">
