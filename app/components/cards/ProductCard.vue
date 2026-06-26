@@ -38,7 +38,7 @@
         </span>
       </div>
 
-      <button class="bg-blue-600 rounded-2xl h-[56px] w-[56px] font-bold text-white text-2xl">
+      <button class="cursor-pointer hover:bg-blue-500 bg-blue-600 rounded-2xl h-[56px] w-[56px] font-bold text-white text-2xl">
         +
       </button>
     </div>

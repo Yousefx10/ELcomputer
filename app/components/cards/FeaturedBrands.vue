@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div class="my-5">
-            <p class="text-6xl font-bold uppercase">
+        <div class="my-10 px-4 md:px-10 select-none">
+            <h2 class="text-4xl md:text-6xl tracking-tight font-black uppercase">
             {{title}}
-            </p>
-            <span>{{description}}</span>
+            </h2>
+            <p class="mt-2 text-base md:text-lg text-gray-700">{{description}}</p>
         </div>
 
         <div class="overflow-hidden">

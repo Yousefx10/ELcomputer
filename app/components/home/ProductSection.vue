@@ -8,7 +8,7 @@
 
 
             <button
-            class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
+            class="cursor-pointer flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
             @click="scrollLeft"
             >
             ‹
@@ -28,7 +28,7 @@
 
 
             <button
-            class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
+            class="cursor-pointer flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-14 w-14 items-center justify-center rounded-full bg-gray-700/80 text-white shadow-lg"
             @click="scrollRight"
             >
             ›
