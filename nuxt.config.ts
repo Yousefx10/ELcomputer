@@ -10,11 +10,16 @@ export default defineNuxtConfig({
     redirect:false //disable for now login redirect
   },
 
+    sourcemap: false,
+
   css:['./app/assets/css/main.css'],
   vite:{
     plugins:[
       tailwindcss(),
     ],
+    build: {
+      sourcemap: false
+    }
   }
 
 })
