@@ -7,7 +7,7 @@
                 <img class="mx-auto"
                 src="https://placehold.co/300x100"/>
 
-                <div class="font-bold text-4xl">
+                <div class="font-bold text-2xl md:text-4xl">
                     <p>What are you waiting for?</p>
                     <p>Purchase your fav gear</p>
                 </div>
@@ -18,7 +18,7 @@
             </div>
 
             <div 
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 text-center md:text-start gap-10 mt-15 text-2xl border-t py-5">
+                class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 text-center md:text-start gap-10 mt-15 text-2xl border-t py-5">
                 <div>
                     <h3 class="mb-6 font-bold">Shop</h3>
                     <ul class="space-y-4 text-gray-400">
