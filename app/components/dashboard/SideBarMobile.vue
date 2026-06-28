@@ -1,8 +1,8 @@
 <template>
     <!-- Mobile View -->
-    <aside class="md:hidden">
+    <aside class="md:hidden bg-gray-700 text-white flex justify-center gap-5 p-2">
         <NuxtLink
-                    class="w-full bg-red-200 block text-black my-5"
+                    class="border p-2 rounded-2xl"
                     v-for="link in links"
                     :key="link.key"
                     :to="link.to">

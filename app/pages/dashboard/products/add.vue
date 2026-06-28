@@ -3,6 +3,9 @@
         <h2 class="text-center font-bold text-4xl my-5">
             Add New Product
         </h2>
+        <section>
+            <SideBarMobile :links="links"/>
+        </section>
         <div class="flex">
             <main class="flex-1">
                 <div class="mx-auto max-w-5xl">
@@ -65,12 +68,14 @@
 </template>
 
 <script setup>
+import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
+
 
 definePageMeta({
   layout:'dashboard'
 })
 
-const links = [{}]
+const links = dashboardProductsLinks
 
 const supabase = useSupabaseClient()
 

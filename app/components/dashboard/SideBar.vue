@@ -1,5 +1,5 @@
 <template>
-    <aside class="hidden md:block text-center sticky top-5 w-64 h-64 mt-5 p-4 bg-gray-700 text-white">
+    <aside class="hidden md:block text-center sticky top-5 w-54 h-64 mt-5 p-4 bg-gray-700 text-white">
         
         <NuxtLink
                     class="w-full bg-white block text-black my-5"

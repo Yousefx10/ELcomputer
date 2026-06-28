@@ -4,10 +4,12 @@
         <h2 class="text-center font-bold text-4xl my-5">
             Watch All products
         </h2>
+        
+        <SideBarMobile  :links="links"/>
 
         <div class="flex">
             <main class="flex-1 p-4">
-                <SideBarMobile  :links="links"/>
+                
                 <!-- Products -->
                 <div class="grid gap-4 md:grid-cols-3">
                     <div
