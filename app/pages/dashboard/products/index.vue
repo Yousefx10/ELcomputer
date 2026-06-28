@@ -43,7 +43,7 @@
 
                         <div class="mb-2 text-center">
                             <button class="mt-4 rounded-lg bg-black px-3 py-2 text-sm text-white">
-                                <NuxtLink to="/dashboard/products/edit">
+                                <NuxtLink to="`/dashboard/products/${product.slug}`">
                                     Edit Product
                                 </NuxtLink>
                             </button>
