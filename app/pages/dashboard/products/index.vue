@@ -4,7 +4,7 @@
         <h2 class="text-center font-bold text-4xl my-5">
             Watch All products
         </h2>
-        
+
         <SideBarMobile  :links="links"/>
 
         <div class="flex">
@@ -43,7 +43,9 @@
 
                         <div class="mb-2 text-center">
                             <button class="mt-4 rounded-lg bg-black px-3 py-2 text-sm text-white">
-                                Edit Product
+                                <NuxtLink to="/dashboard/products/edit">
+                                    Edit Product
+                                </NuxtLink>
                             </button>
                         </div>
                     </div>
