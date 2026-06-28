@@ -1,14 +1,13 @@
 <template>
-    <aside class="hidden md:block text-center sticky top-5 w-64 h-64 mt-5 p-4 bg-gray-700 text-white">
-        
+    <!-- Mobile View -->
+    <aside class="md:hidden">
         <NuxtLink
-                    class="w-full bg-white block text-black my-5"
+                    class="w-full bg-red-200 block text-black my-5"
                     v-for="link in links"
                     :key="link.key"
                     :to="link.to">
                     {{ link.label }}
         </NuxtLink>
-
     </aside>
 </template>
 

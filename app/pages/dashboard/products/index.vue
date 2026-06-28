@@ -7,6 +7,7 @@
 
         <div class="flex">
             <main class="flex-1 p-4">
+                <SideBarMobile  :links="links"/>
                 <!-- Products -->
                 <div class="grid gap-4 md:grid-cols-3">
                     <div
@@ -48,7 +49,7 @@
             </main>
 
 
-            <DashboardSideBar :links="links" />
+            <DashboardSideBar :links="links"/>
         </div>
 
 
@@ -60,6 +61,8 @@
 </template>
 
 <script setup>
+import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
+
 
 definePageMeta({
   layout:'dashboard'

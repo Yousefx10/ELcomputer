@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="max-w-full">
         <p class="text-center font-bold text-4xl pb-5">TOP CATEGORIES</p>
 
         <section class="flex gap-4">

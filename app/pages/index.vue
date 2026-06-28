@@ -19,7 +19,7 @@
 
         <!-- Top Categories Card -->
         <section>
-            <TopCategories class="my-5"/>
+            <TopCategories class="my-5 mx-1"/>
         </section>
 
         <!-- Product Section -->
