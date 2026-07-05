@@ -10,12 +10,25 @@
       Error: {{ error.message }}
     </div>
 
-    <div v-else-if="product">
-      <p>Title: {{ product.title }}</p>
-      <p>Price: {{ product.price }}</p>
-      <p>Old Price: {{ product.old_price }}</p>
-      <p>Image URL: {{ product.image_url }}</p>
-      <p>Category: {{ product.category }}</p>
+    <div v-else-if="product" class="">
+
+      <form @submit.prevent="updateProduct">
+        <input v-model="title" type="text" >
+        <input v-model="price" type="number" >
+        <input v-model="oldPrice" type="number" >
+        <input v-model="imageUrl" type="text" >
+        <input v-model="category" type="text" >
+
+        <button
+          type="submit"
+          class="border p-5 rounded-2xl my-10">
+          SAVE CHANGES
+        </button>
+
+      </form>
+
+
+
     </div>
 
     <div v-else>
@@ -34,6 +47,14 @@ const supabase = useSupabaseClient()
 const route = useRoute()
 const id = route.params.id
 
+// Form fields
+const title = ref('')
+const price = ref('')
+const oldPrice = ref('')
+const imageUrl = ref('')
+const category = ref('')
+
+// Fetch selected product
 const { data: product, pending, error } = await useAsyncData(`edit-product-${id}`, async () => {
   const { data, error } = await supabase
     .from('products')
@@ -45,8 +66,54 @@ const { data: product, pending, error } = await useAsyncData(`edit-product-${id}
 
   return data
 })
+
+// Put fetched product data into form fields
+watchEffect(() => {
+  if (product.value) {
+    title.value = product.value.title
+    price.value = product.value.price
+    oldPrice.value = product.value.old_price
+    imageUrl.value = product.value.image_url
+    category.value = product.value.category
+  }
+})
+
+// Update product
+const updateProduct = async () => {
+  const { error } = await supabase
+    .from('products')
+    .update({
+      title: title.value,
+      price: Number(price.value),
+      old_price: oldPrice.value ? Number(oldPrice.value) : null,
+      image_url: imageUrl.value,
+      category: category.value
+    })
+    .eq('id', id)
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  await navigateTo('/dashboard/products')
+}
 </script>
 
 <style scoped>
+
+/*
+  Better LATER to use Tailwindcss @Apply
+*/
+
+input{
+    /* 1px thick, solid line, light gray color */
+    border: 1px solid #ccc;
+    
+    /* Keeps the ugly browser focus outline hidden */
+    outline: none;
+
+    display: block;
+}
 
 </style>
