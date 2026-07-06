@@ -1,0 +1,30 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.nuxt": true,
+    "**/.output": true,
+    "**/dist": true,
+    "**/.gitignore": true,
+    "**/.vscode": true,
+    "**/tsconfig.json": true,
+    "**/package-lock.json": true,
+    "**/package.json": true,
+    "**/nuxt.config.ts": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.nuxt": true,
+    "**/.output": true,
+    "**/dist": true,
+    "**/.gitignore": true,
+    "**/.vscode": true,
+
+
+
+
+    "**/tsconfig.json":true,
+    "**/package-lock.json":true,
+    "**/package.json":true,
+    "**/nuxt.config.ts":true,
+  }
+}
