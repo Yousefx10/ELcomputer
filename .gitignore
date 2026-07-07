@@ -22,3 +22,5 @@ logs
 .env
 .env.*
 !.env.example
+#So The Toggle button don't be watched
+.vscode/settings.json
