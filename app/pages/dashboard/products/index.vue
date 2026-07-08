@@ -53,7 +53,7 @@
             </main>
 
 
-            <DashboardSideBar :links="links"/>
+            <!-- <DashboardSideBar :links="links"/> -->
         </div>
 
 
