@@ -6,4 +6,8 @@ export const dashboardProductsLinks = [
     label: 'Add Product',
     to: '/dashboard/products/add'
   },
+    {
+    label: 'Categories',
+    to: '/dashboard/products/categories'
+  },
 ]
