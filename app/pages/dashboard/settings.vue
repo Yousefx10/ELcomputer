@@ -12,207 +12,259 @@
         {{ pageError }}
       </div>
 
-      <form
-        @submit.prevent="saveSiteSettings"
-        class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
-      >
-        <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">General</h3>
-          <p class="text-sm text-gray-500">
-            Main site details and shared landing page content
-          </p>
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Site Name</label>
-          <input
-            v-model="siteSettings.site_name"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+      <form @submit.prevent="saveSiteSettings" class="space-y-4">
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
+            @click="toggleSection('generalSettings')"
+            class="flex w-full items-center justify-between p-6 text-left"
           >
-        </div>
+            <div>
+              <h3 class="text-2xl font-bold">General Settings</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Main site details, logo, hero toggle, and top bar timing
+              </p>
+            </div>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Site Logo URL</label>
-          <input
-            v-model="siteSettings.site_logo_url"
-            type="text"
-            placeholder="https://example.com/logo.png"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.generalSettings ? 'rotate-180' : ''"
+            />
+          </button>
 
-        <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
-          <div>
-            <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
-            <p class="text-sm text-gray-500">
-              Turn the main home hero banner section on or off
-            </p>
+          <div v-if="openSections.generalSettings" class="border-t p-6">
+            <div class="grid gap-5 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Site Name</label>
+                <input
+                  v-model="siteSettings.site_name"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Site Logo URL</label>
+                <input
+                  v-model="siteSettings.site_logo_url"
+                  type="text"
+                  placeholder="https://example.com/logo.png"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
+                <div>
+                  <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
+                  <p class="text-sm text-gray-500">
+                    Turn the main home hero banner section on or off
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
+                    {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
+                  </span>
+
+                  <button
+                    type="button"
+                    :aria-pressed="siteSettings.hero_enabled"
+                    @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
+                    class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                    :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                  >
+                    <span
+                      class="inline-block h-5 w-5 rounded-full bg-white transition"
+                      :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
+                <input
+                  v-model="siteSettings.top_bar_rotation_seconds"
+                  type="number"
+                  min="1"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
-              {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
-            </span>
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
+            @click="toggleSection('bannerAds')"
+            class="flex w-full items-center justify-between p-6 text-left"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Banner Ads</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Control the two banner ads shown on the home page
+              </p>
+            </div>
 
-            <button
-              type="button"
-              :aria-pressed="siteSettings.hero_enabled"
-              @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
-              class="relative inline-flex h-7 w-14 items-center rounded-full transition"
-              :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
-            >
-              <span
-                class="inline-block h-5 w-5 rounded-full bg-white transition"
-                :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
-              />
-            </button>
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.bannerAds ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div v-if="openSections.bannerAds" class="border-t p-6">
+            <div class="grid gap-5 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Image URL</label>
+                <input
+                  v-model="siteSettings.banner_ad_1_image_url"
+                  type="text"
+                  placeholder="https://example.com/banner-1.jpg"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
+                <input
+                  v-model="siteSettings.banner_ad_1_link_url"
+                  type="text"
+                  placeholder="/products/example-product"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Image URL</label>
+                <input
+                  v-model="siteSettings.banner_ad_2_image_url"
+                  type="text"
+                  placeholder="https://example.com/banner-2.jpg"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
+                <input
+                  v-model="siteSettings.banner_ad_2_link_url"
+                  type="text"
+                  placeholder="/products/example-product"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
-          <input
-            v-model="siteSettings.top_bar_rotation_seconds"
-            type="number"
-            min="1"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
+            @click="toggleSection('footerSettings')"
+            class="flex w-full items-center justify-between p-6 text-left"
           >
-        </div>
+            <div>
+              <h3 class="text-2xl font-bold">Footer Settings</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Footer call-to-action, contact details, and copyright text
+              </p>
+            </div>
 
-        <div></div>
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.footerSettings ? 'rotate-180' : ''"
+            />
+          </button>
 
-        <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Banner Ads</h3>
-          <p class="text-sm text-gray-500">
-            These are the two banner ads shown on the home page
+          <div v-if="openSections.footerSettings" class="border-t p-6">
+            <div class="grid gap-5 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
+                <input
+                  v-model="siteSettings.footer_cta_title"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
+                <input
+                  v-model="siteSettings.footer_cta_subtitle"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
+                <input
+                  v-model="siteSettings.footer_cta_button_label"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
+                <input
+                  v-model="siteSettings.footer_cta_button_url"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
+                <input
+                  v-model="siteSettings.footer_email"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
+                <input
+                  v-model="siteSettings.footer_phone"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
+                <input
+                  v-model="siteSettings.footer_address"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
+                <input
+                  v-model="siteSettings.copyright_text"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="rounded-2xl bg-white p-6 shadow">
+          <p v-if="settingsError" class="mb-4 text-sm text-red-600">
+            {{ settingsError }}
           </p>
-        </div>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Image URL</label>
-          <input
-            v-model="siteSettings.banner_ad_1_image_url"
-            type="text"
-            placeholder="https://example.com/banner-1.jpg"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
-          <input
-            v-model="siteSettings.banner_ad_1_link_url"
-            type="text"
-            placeholder="/products/example-product"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Image URL</label>
-          <input
-            v-model="siteSettings.banner_ad_2_image_url"
-            type="text"
-            placeholder="https://example.com/banner-2.jpg"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
-          <input
-            v-model="siteSettings.banner_ad_2_link_url"
-            type="text"
-            placeholder="/products/example-product"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Footer</h3>
-          <p class="text-sm text-gray-500">
-            Footer call-to-action and contact information
-          </p>
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
-          <input
-            v-model="siteSettings.footer_cta_title"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
-          <input
-            v-model="siteSettings.footer_cta_subtitle"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
-          <input
-            v-model="siteSettings.footer_cta_button_label"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
-          <input
-            v-model="siteSettings.footer_cta_button_url"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
-          <input
-            v-model="siteSettings.footer_email"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
-          <input
-            v-model="siteSettings.footer_phone"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
-          <input
-            v-model="siteSettings.footer_address"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
-          <input
-            v-model="siteSettings.copyright_text"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-        </div>
-
-        <p v-if="settingsError" class="md:col-span-2 text-sm text-red-600">
-          {{ settingsError }}
-        </p>
-
-        <div class="md:col-span-2">
           <button
             type="submit"
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
@@ -222,370 +274,434 @@
         </div>
       </form>
 
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-4">
-          <h3 class="text-2xl font-bold">Hero Banners</h3>
-          <p class="text-sm text-gray-500">
-            Add multiple hero banners. They rotate automatically on the home page.
-          </p>
-        </div>
+      <section class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          @click="toggleSection('heroBanners')"
+          class="flex w-full items-center justify-between p-6 text-left"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Hero Banners</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Add multiple hero banners. They rotate automatically on the home page.
+            </p>
+          </div>
 
-        <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
-          <input
-            v-model="newHeroImageUrl"
-            type="text"
-            placeholder="Image URL"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
+          <Icon
+            name="lucide:chevron-down"
+            size="20"
+            class="transition"
+            :class="openSections.heroBanners ? 'rotate-180' : ''"
+          />
+        </button>
 
-          <input
-            v-model="newHeroLinkUrl"
-            type="text"
-            placeholder="Link URL"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <button
-            type="button"
-            @click="addHeroBanner"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-          >
-            {{ heroLoading ? 'Saving...' : 'Add Banner' }}
-          </button>
-        </div>
-
-        <p v-if="heroError" class="mb-4 text-sm text-red-600">
-          {{ heroError }}
-        </p>
-
-        <div v-if="heroBanners.length" class="space-y-3">
-          <div
-            v-for="banner in heroBanners"
-            :key="banner.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,2fr)_auto]"
-          >
-            <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
-              <img
-                v-if="banner.image_url"
-                :src="banner.image_url"
-                alt="Hero banner"
-                class="h-full w-full object-cover"
-              >
-            </div>
-
+        <div v-if="openSections.heroBanners" class="border-t p-6">
+          <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
             <input
-              v-model="banner.image_url"
+              v-model="newHeroImageUrl"
               type="text"
+              placeholder="Image URL"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
-            <div class="space-y-3">
-              <input
-                v-model="banner.link_url"
-                type="text"
-                placeholder="Link URL"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-
-              <label class="flex items-center gap-2 text-sm text-gray-600">
-                <input v-model="banner.is_enabled" type="checkbox">
-                Enabled
-              </label>
-            </div>
-
-            <div class="flex gap-2 self-start">
-              <button
-                type="button"
-                :disabled="!isHeroBannerDirty(banner) || heroLoading"
-                @click="saveHeroBanner(banner)"
-                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                :class="isHeroBannerDirty(banner) && !heroLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                Save
-              </button>
-
-              <button
-                type="button"
-                @click="deleteHeroBanner(banner.id)"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <p v-else class="text-sm text-gray-500">
-          No hero banners added yet.
-        </p>
-      </section>
-
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-4">
-          <h3 class="text-2xl font-bold">Top Bar Texts</h3>
-          <p class="text-sm text-gray-500">
-            These are the rotating texts shown in the blue bar above the navbar.
-          </p>
-        </div>
-
-        <div class="mb-5 grid gap-3 md:grid-cols-[2fr_auto]">
-          <input
-            v-model="newTopBarText"
-            type="text"
-            placeholder="Top bar text"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <button
-            type="button"
-            @click="addTopBarMessage"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-          >
-            {{ topBarLoading ? 'Saving...' : 'Add Text' }}
-          </button>
-        </div>
-
-        <p v-if="topBarError" class="mb-4 text-sm text-red-600">
-          {{ topBarError }}
-        </p>
-
-        <div v-if="topBarMessages.length" class="space-y-3">
-          <div
-            v-for="message in topBarMessages"
-            :key="message.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_auto]"
-          >
-            <div class="space-y-3">
-              <input
-                v-model="message.text"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-
-              <label class="flex items-center gap-2 text-sm text-gray-600">
-                <input v-model="message.is_enabled" type="checkbox">
-                Enabled
-              </label>
-            </div>
-
-            <div class="flex gap-2 self-start">
-              <button
-                type="button"
-                :disabled="!isTopBarMessageDirty(message) || topBarLoading"
-                @click="saveTopBarMessage(message)"
-                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                :class="isTopBarMessageDirty(message) && !topBarLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                Save
-              </button>
-
-              <button
-                type="button"
-                @click="deleteTopBarMessage(message.id)"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <p v-else class="text-sm text-gray-500">
-          No top bar texts added yet.
-        </p>
-      </section>
-
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-4">
-          <h3 class="text-2xl font-bold">Header Navigation Links</h3>
-          <p class="text-sm text-gray-500">
-            Manage the public navbar links shown on the landing page.
-          </p>
-        </div>
-
-        <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_auto]">
-          <input
-            v-model="newHeaderLabel"
-            type="text"
-            placeholder="Label"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <input
-            v-model="newHeaderUrl"
-            type="text"
-            placeholder="/"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <button
-            type="button"
-            @click="addHeaderLink"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-          >
-            {{ linkLoading ? 'Saving...' : 'Add Link' }}
-          </button>
-        </div>
-
-        <p v-if="linkError" class="mb-4 text-sm text-red-600">
-          {{ linkError }}
-        </p>
-
-        <div v-if="headerLinks.length" class="space-y-3">
-          <div
-            v-for="link in headerLinks"
-            :key="link.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
-          >
             <input
-              v-model="link.label"
+              v-model="newHeroLinkUrl"
               type="text"
+              placeholder="Link URL"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
-            <div class="space-y-3">
+            <button
+              type="button"
+              @click="addHeroBanner"
+              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            >
+              {{ heroLoading ? 'Saving...' : 'Add Banner' }}
+            </button>
+          </div>
+
+          <p v-if="heroError" class="mb-4 text-sm text-red-600">
+            {{ heroError }}
+          </p>
+
+          <div v-if="heroBanners.length" class="space-y-3">
+            <div
+              v-for="banner in heroBanners"
+              :key="banner.id"
+              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,2fr)_auto]"
+            >
+              <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
+                <img
+                  v-if="banner.image_url"
+                  :src="banner.image_url"
+                  alt="Hero banner"
+                  class="h-full w-full object-cover"
+                >
+              </div>
+
               <input
-                v-model="link.url"
+                v-model="banner.image_url"
                 type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
               >
 
-              <label class="flex items-center gap-2 text-sm text-gray-600">
-                <input v-model="link.is_enabled" type="checkbox">
-                Enabled
-              </label>
-            </div>
+              <div class="space-y-3">
+                <input
+                  v-model="banner.link_url"
+                  type="text"
+                  placeholder="Link URL"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
 
-            <div class="flex gap-2 self-start">
-              <button
-                type="button"
-                :disabled="!isSiteLinkDirty(link) || linkLoading"
-                @click="saveSiteLink(link)"
-                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                :class="isSiteLinkDirty(link) && !linkLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                Save
-              </button>
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                  <input v-model="banner.is_enabled" type="checkbox">
+                  Enabled
+                </label>
+              </div>
 
-              <button
-                type="button"
-                @click="deleteSiteLink(link.id)"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
+              <div class="flex gap-2 self-start">
+                <button
+                  type="button"
+                  :disabled="!isHeroBannerDirty(banner) || heroLoading"
+                  @click="saveHeroBanner(banner)"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isHeroBannerDirty(banner) && !heroLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  @click="deleteHeroBanner(banner.id)"
+                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <p v-else class="text-sm text-gray-500">
-          No header links added yet.
-        </p>
-      </section>
-
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-4">
-          <h3 class="text-2xl font-bold">Footer Links and Details</h3>
-          <p class="text-sm text-gray-500">
-            Group footer items by section. Leave the URL empty if the item should be plain text only.
+          <p v-else class="text-sm text-gray-500">
+            No hero banners added yet.
           </p>
         </div>
+      </section>
 
+      <section class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          @click="toggleSection('topBarTexts')"
+          class="flex w-full items-center justify-between p-6 text-left"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Top Bar Texts</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              These are the rotating texts shown in the blue bar above the navbar.
+            </p>
+          </div>
+
+          <Icon
+            name="lucide:chevron-down"
+            size="20"
+            class="transition"
+            :class="openSections.topBarTexts ? 'rotate-180' : ''"
+          />
+        </button>
+
+        <div v-if="openSections.topBarTexts" class="border-t p-6">
+          <div class="mb-5 grid gap-3 md:grid-cols-[2fr_auto]">
+            <input
+              v-model="newTopBarText"
+              type="text"
+              placeholder="Top bar text"
+              class="rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+
+            <button
+              type="button"
+              @click="addTopBarMessage"
+              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            >
+              {{ topBarLoading ? 'Saving...' : 'Add Text' }}
+            </button>
+          </div>
+
+          <p v-if="topBarError" class="mb-4 text-sm text-red-600">
+            {{ topBarError }}
+          </p>
+
+          <div v-if="topBarMessages.length" class="space-y-3">
+            <div
+              v-for="message in topBarMessages"
+              :key="message.id"
+              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_auto]"
+            >
+              <div class="space-y-3">
+                <input
+                  v-model="message.text"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                  <input v-model="message.is_enabled" type="checkbox">
+                  Enabled
+                </label>
+              </div>
+
+              <div class="flex gap-2 self-start">
+                <button
+                  type="button"
+                  :disabled="!isTopBarMessageDirty(message) || topBarLoading"
+                  @click="saveTopBarMessage(message)"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isTopBarMessageDirty(message) && !topBarLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  @click="deleteTopBarMessage(message.id)"
+                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p v-else class="text-sm text-gray-500">
+            No top bar texts added yet.
+          </p>
+        </div>
+      </section>
+
+      <section class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          @click="toggleSection('headerLinks')"
+          class="flex w-full items-center justify-between p-6 text-left"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Header Navigation Links</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Manage the public navbar links shown on the landing page.
+            </p>
+          </div>
+
+          <Icon
+            name="lucide:chevron-down"
+            size="20"
+            class="transition"
+            :class="openSections.headerLinks ? 'rotate-180' : ''"
+          />
+        </button>
+
+        <div v-if="openSections.headerLinks" class="border-t p-6">
+          <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_auto]">
+            <input
+              v-model="newHeaderLabel"
+              type="text"
+              placeholder="Label"
+              class="rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+
+            <input
+              v-model="newHeaderUrl"
+              type="text"
+              placeholder="/"
+              class="rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+
+            <button
+              type="button"
+              @click="addHeaderLink"
+              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            >
+              {{ linkLoading ? 'Saving...' : 'Add Link' }}
+            </button>
+          </div>
+
+          <p v-if="linkError" class="mb-4 text-sm text-red-600">
+            {{ linkError }}
+          </p>
+
+          <div v-if="headerLinks.length" class="space-y-3">
+            <div
+              v-for="link in headerLinks"
+              :key="link.id"
+              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
+            >
+              <input
+                v-model="link.label"
+                type="text"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+
+              <div class="space-y-3">
+                <input
+                  v-model="link.url"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                  <input v-model="link.is_enabled" type="checkbox">
+                  Enabled
+                </label>
+              </div>
+
+              <div class="flex gap-2 self-start">
+                <button
+                  type="button"
+                  :disabled="!isSiteLinkDirty(link) || linkLoading"
+                  @click="saveSiteLink(link)"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isSiteLinkDirty(link) && !linkLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  @click="deleteSiteLink(link.id)"
+                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p v-else class="text-sm text-gray-500">
+            No header links added yet.
+          </p>
+        </div>
+      </section>
+
+      <section class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          @click="toggleSection('footerLinks')"
+          class="flex w-full items-center justify-between p-6 text-left"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Footer Links and Details</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Group footer items by section. Leave the URL empty if the item should be plain text only.
+            </p>
+          </div>
+
+          <Icon
+            name="lucide:chevron-down"
+            size="20"
+            class="transition"
+            :class="openSections.footerLinks ? 'rotate-180' : ''"
+          />
+        </button>
+
+        <div v-if="openSections.footerLinks" class="border-t p-6">
         <div class="mb-5 grid gap-3 md:grid-cols-[1fr_1fr_2fr_auto]">
           <input
             v-model="newFooterSectionTitle"
             type="text"
             placeholder="Section title"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <input
-            v-model="newFooterLabel"
-            type="text"
-            placeholder="Label"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <input
-            v-model="newFooterUrl"
-            type="text"
-            placeholder="URL or leave empty"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          >
-
-          <button
-            type="button"
-            @click="addFooterLink"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-          >
-            {{ linkLoading ? 'Saving...' : 'Add Item' }}
-          </button>
-        </div>
-
-        <div v-if="footerLinks.length" class="space-y-3">
-          <div
-            v-for="link in footerLinks"
-            :key="link.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_1fr_2fr_auto]"
-          >
-            <input
-              v-model="link.section_title"
-              type="text"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
             <input
-              v-model="link.label"
+              v-model="newFooterLabel"
               type="text"
+              placeholder="Label"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
-            <div class="space-y-3">
+            <input
+              v-model="newFooterUrl"
+              type="text"
+              placeholder="URL or leave empty"
+              class="rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+
+            <button
+              type="button"
+              @click="addFooterLink"
+              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            >
+              {{ linkLoading ? 'Saving...' : 'Add Item' }}
+            </button>
+          </div>
+
+          <p v-if="linkError" class="mb-4 text-sm text-red-600">
+            {{ linkError }}
+          </p>
+
+          <div v-if="footerLinks.length" class="space-y-3">
+            <div
+              v-for="link in footerLinks"
+              :key="link.id"
+              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_1fr_2fr_auto]"
+            >
               <input
-                v-model="link.url"
+                v-model="link.section_title"
                 type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
               >
 
-              <label class="flex items-center gap-2 text-sm text-gray-600">
-                <input v-model="link.is_enabled" type="checkbox">
-                Enabled
-              </label>
-            </div>
-
-            <div class="flex gap-2 self-start">
-              <button
-                type="button"
-                :disabled="!isSiteLinkDirty(link) || linkLoading"
-                @click="saveSiteLink(link)"
-                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                :class="isSiteLinkDirty(link) && !linkLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
+              <input
+                v-model="link.label"
+                type="text"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                Save
-              </button>
 
-              <button
-                type="button"
-                @click="deleteSiteLink(link.id)"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
+              <div class="space-y-3">
+                <input
+                  v-model="link.url"
+                  type="text"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                  <input v-model="link.is_enabled" type="checkbox">
+                  Enabled
+                </label>
+              </div>
+
+              <div class="flex gap-2 self-start">
+                <button
+                  type="button"
+                  :disabled="!isSiteLinkDirty(link) || linkLoading"
+                  @click="saveSiteLink(link)"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isSiteLinkDirty(link) && !linkLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  @click="deleteSiteLink(link.id)"
+                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <p v-else class="text-sm text-gray-500">
-          No footer items added yet.
-        </p>
+          <p v-else class="text-sm text-gray-500">
+            No footer items added yet.
+          </p>
+        </div>
       </section>
     </div>
   </div>
@@ -642,6 +758,19 @@ const newHeaderUrl = ref('')
 const newFooterSectionTitle = ref('')
 const newFooterLabel = ref('')
 const newFooterUrl = ref('')
+const openSections = reactive({
+  generalSettings: true,
+  bannerAds: false,
+  footerSettings: false,
+  heroBanners: false,
+  topBarTexts: false,
+  headerLinks: false,
+  footerLinks: false
+})
+
+const toggleSection = (sectionName) => {
+  openSections[sectionName] = !openSections[sectionName]
+}
 
 const headerLinks = computed(() => {
   return siteLinks.value.filter((link) => link.location === 'header')

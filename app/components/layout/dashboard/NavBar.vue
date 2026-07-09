@@ -9,9 +9,10 @@
         >
           <NuxtLink
             :to="link.to"
-            class="block rounded-lg px-4 py-3 text-center hover:bg-black hover:text-white md:w-full md:rounded-none"
+            class="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-center hover:bg-black hover:text-white md:w-full md:rounded-none"
           >
-            {{ link.label }}
+            <Icon :name="link.icon" size="18" />
+            <span>{{ link.label }}</span>
           </NuxtLink>
         </li>
       </ul>
@@ -23,23 +24,28 @@
 const links = [
   {
     label: 'Home',
-    to: '/dashboard'
+    to: '/dashboard',
+    icon: 'lucide:house'
   },
   {
     label: 'Products',
-    to: '/dashboard/products'
+    to: '/dashboard/products',
+    icon: 'lucide:package'
   },
   {
     label: 'Categories',
-    to: '/dashboard/products/categories'
+    to: '/dashboard/products/categories',
+    icon: 'lucide:layout-grid'
   },
   {
     label: 'Brands',
-    to: '/dashboard/products/brands'
+    to: '/dashboard/products/brands',
+    icon: 'lucide:tag'
   },
   {
     label: 'Settings',
-    to: '/dashboard/settings'
+    to: '/dashboard/settings',
+    icon: 'lucide:settings'
   }
 ]
 </script>

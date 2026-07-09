@@ -1,20 +1,22 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-6">
     <div class="mx-auto max-w-7xl">
-      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 class="text-4xl font-bold text-gray-900">Products</h2>
-          <p class="mt-2 text-sm text-gray-500">
-            Manage your store products from one place
-          </p>
-        </div>
+      <div class="mb-6 rounded-2xl bg-white p-6 shadow">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 class="text-4xl font-bold text-gray-900">Products</h2>
+            <p class="mt-2 text-sm text-gray-500">
+              Manage your store products from one place
+            </p>
+          </div>
 
-        <NuxtLink
-          to="/dashboard/products/add"
-          class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-        >
-          Add New Product
-        </NuxtLink>
+          <NuxtLink
+            to="/dashboard/products/add"
+            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+          >
+            Add New Product
+          </NuxtLink>
+        </div>
       </div>
 
       <section class="mb-6">

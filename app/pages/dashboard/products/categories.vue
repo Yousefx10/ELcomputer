@@ -1,14 +1,17 @@
 <template>
-  <div class="p-6">
-    <h2 class="my-5 text-center text-4xl font-bold">
-      Categories
-    </h2>
-
-    <section class="mb-6">
-      <SideBarMobile :links="links" />
-    </section>
-
+  <div class="min-h-screen bg-gray-100 p-6">
     <div class="mx-auto max-w-4xl">
+      <div class="mb-6 rounded-2xl bg-white p-6 shadow">
+        <h2 class="text-4xl font-bold">Categories</h2>
+        <p class="mt-2 text-sm text-gray-500">
+          Display, add, edit, and delete product categories
+        </p>
+      </div>
+
+      <section class="mb-6">
+        <SideBarMobile :links="links" />
+      </section>
+
       <form
         @submit.prevent="saveCategory"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
