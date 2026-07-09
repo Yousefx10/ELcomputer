@@ -661,16 +661,11 @@
               :key="link.id"
               class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
             >
-              <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                  <p class="font-semibold text-gray-900">
-                    {{ link.label }}
-                  </p>
-                </div>
-
+              <div>
                 <input
                   v-model="link.label"
                   type="text"
+                  placeholder="Link label"
                   class="rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
