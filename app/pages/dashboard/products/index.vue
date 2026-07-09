@@ -27,7 +27,7 @@
                         </h2>
 
                         <p class="text-sm text-gray-500">
-                            {{product.category}}
+                            {{product.category.name}}
                         </p>
 
                         <div class="mt-3">
@@ -92,7 +92,11 @@ const getProducts = async()=>{
 
     const {data,error} = await supabase
     .from('products')
-    .select('*')
+    .select(`
+            *,
+            category:categories(
+            id,name,slug)
+            `)
     .order('created_at',{ascending:false})
 
     if(error){
