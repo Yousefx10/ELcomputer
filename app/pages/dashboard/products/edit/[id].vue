@@ -25,6 +25,13 @@
           SAVE CHANGES
         </button>
 
+        <button
+          type="button"
+          @click="deleteProduct"
+          class="border p-5 rounded-2xl my-10 text-red-600">
+          DELETE PRODUCT
+        </button>
+
       </form>
 
 
@@ -89,6 +96,28 @@ const updateProduct = async () => {
       image_url: imageUrl.value,
       category: category.value
     })
+    .eq('id', id)
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  await navigateTo('/dashboard/products')
+}
+
+
+
+const deleteProduct = async () => {
+  const confirmDelete = confirm('Are you sure you want to delete this product?')
+
+  if (!confirmDelete) {
+    return
+  }
+
+  const { error } = await supabase
+    .from('products')
+    .delete()
     .eq('id', id)
 
   if (error) {
