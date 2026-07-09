@@ -19,27 +19,10 @@
         </div>
       </div>
 
-      <div class="mb-6 grid gap-4 md:grid-cols-3">
+      <div class="mb-6 grid gap-4 md:grid-cols-1">
         <div class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
           <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalProducts }}</p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Latest Status</p>
-          <p class="mt-2 text-lg font-semibold text-gray-900">
-            {{ loading ? 'Loading products...' : 'Products loaded' }}
-          </p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Quick Action</p>
-          <NuxtLink
-            to="/dashboard/products/categories"
-            class="mt-2 inline-block font-semibold text-blue-600 hover:text-blue-700"
-          >
-            Manage categories
-          </NuxtLink>
         </div>
       </div>
 

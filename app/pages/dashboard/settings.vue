@@ -12,6 +12,15 @@
         {{ pageError }}
       </div>
 
+      <div class="max-w-sm">
+        <div class="rounded-2xl bg-white p-5 shadow">
+          <h3 class="text-lg font-bold">Users</h3>
+          <p class="mt-2 text-sm text-gray-500">
+            Placeholder for future user management controls.
+          </p>
+        </div>
+      </div>
+
       <div class="space-y-4">
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button

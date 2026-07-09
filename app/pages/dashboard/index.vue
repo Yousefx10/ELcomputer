@@ -8,48 +8,6 @@
         </p>
       </div>
 
-      <div class="mb-6 grid gap-4 md:grid-cols-4">
-        <NuxtLink
-          to="/dashboard/products"
-          class="rounded-2xl bg-white p-5 shadow hover:bg-gray-50"
-        >
-          <h3 class="text-lg font-bold">View Products</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Browse and edit all products
-          </p>
-        </NuxtLink>
-
-        <NuxtLink
-          to="/dashboard/products/add"
-          class="rounded-2xl bg-white p-5 shadow hover:bg-gray-50"
-        >
-          <h3 class="text-lg font-bold">Add Product</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Create a new product record
-          </p>
-        </NuxtLink>
-
-        <NuxtLink
-          to="/dashboard/products/categories"
-          class="rounded-2xl bg-white p-5 shadow hover:bg-gray-50"
-        >
-          <h3 class="text-lg font-bold">Manage Categories</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Add, edit, and remove categories
-          </p>
-        </NuxtLink>
-
-        <NuxtLink
-          to="/dashboard/settings"
-          class="rounded-2xl bg-white p-5 shadow hover:bg-gray-50"
-        >
-          <h3 class="text-lg font-bold">Site Settings</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Control banners, links, footer, and top bar text
-          </p>
-        </NuxtLink>
-      </div>
-
       <div class="mb-6 grid gap-4 md:grid-cols-2">
         <div class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
