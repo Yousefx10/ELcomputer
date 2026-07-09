@@ -19,16 +19,16 @@ export const defaultHeaderLinkDefinitions = [
     key: 'return-policy',
     label: 'Return Policy',
     url: '/return-policy',
-    description: 'Default header link. You can disable it.',
-    isUrlEditable: true,
+    description: 'Leads to the return policy page.',
+    isUrlEditable: false,
     type: 'link'
   },
   {
     key: 'request-refund',
     label: 'Request Refund',
     url: '/request-refund',
-    description: 'Default header link. You can disable it.',
-    isUrlEditable: true,
+    description: 'Leads to the request refund page.',
+    isUrlEditable: false,
     type: 'link'
   }
 ]

@@ -622,7 +622,9 @@
             <div
               v-for="link in headerLinks"
               :key="link.id"
-              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
+              :class="link.is_default
+                ? 'flex flex-col gap-3 rounded-xl border p-4 md:flex-row md:items-center md:justify-between'
+                : 'grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]'"
             >
               <div class="space-y-2">
                 <div class="flex items-center gap-2">
@@ -650,21 +652,12 @@
                 </p>
               </div>
 
-              <div class="space-y-3">
+              <div v-if="!link.is_default" class="space-y-3">
                 <input
-                  v-if="!link.is_default || link.is_url_editable"
                   v-model="link.url"
                   type="text"
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                  :placeholder="link.is_default ? 'URL' : ''"
                 >
-
-                <div
-                  v-else
-                  class="rounded-lg border bg-gray-50 px-3 py-3 text-sm text-gray-500"
-                >
-                  {{ link.default_key === 'home' ? 'Leads to the home page.' : 'Shows a dropdown with all categories.' }}
-                </div>
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                   <input v-model="link.is_enabled" type="checkbox">
@@ -672,7 +665,29 @@
                 </label>
               </div>
 
-              <div class="flex gap-2 self-start">
+              <div
+                v-else
+                class="flex items-center gap-3 md:self-start"
+              >
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                  <input v-model="link.is_enabled" type="checkbox">
+                  Enabled
+                </label>
+
+                <button
+                  type="button"
+                  :disabled="!isSiteLinkDirty(link) || linkLoading"
+                  @click="saveSiteLink(link)"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isSiteLinkDirty(link) && !linkLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  Save
+                </button>
+              </div>
+
+              <div v-if="!link.is_default" class="flex gap-2 self-start">
                 <button
                   type="button"
                   :disabled="!isSiteLinkDirty(link) || linkLoading"
@@ -686,7 +701,6 @@
                 </button>
 
                 <button
-                  v-if="!link.is_default"
                   type="button"
                   @click="deleteSiteLink(link.id)"
                   class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
@@ -954,7 +968,6 @@
 
 <script setup>
 import {
-  buildOrderedHeaderLinks,
   defaultHeaderLinkDefinitions,
   getDefaultHeaderLinkDefinition,
   isDefaultHeaderLink
@@ -1077,11 +1090,55 @@ const toggleSection = (sectionName) => {
   openSections[sectionName] = !openSections[sectionName]
 }
 
+const sortHeaderLinksByPosition = (firstLink, secondLink) => {
+  const firstSortOrder = Number(firstLink?.sort_order ?? 0)
+  const secondSortOrder = Number(secondLink?.sort_order ?? 0)
+
+  if (firstSortOrder !== secondSortOrder) {
+    return firstSortOrder - secondSortOrder
+  }
+
+  return String(firstLink?.created_at || '').localeCompare(String(secondLink?.created_at || ''))
+}
+
+const decorateHeaderLink = (link) => {
+  const defaultHeaderLinkDefinition = getDefaultHeaderLinkDefinition(link)
+
+  if (defaultHeaderLinkDefinition) {
+    return Object.assign(link, {
+      is_default: true,
+      default_key: defaultHeaderLinkDefinition.key,
+      default_description: defaultHeaderLinkDefinition.description,
+      is_url_editable: false,
+      link_type: defaultHeaderLinkDefinition.type
+    })
+  }
+
+  return Object.assign(link, {
+    is_default: false,
+    default_key: null,
+    default_description: '',
+    is_url_editable: true,
+    link_type: 'link'
+  })
+}
+
 const headerLinks = computed(() => {
-  return buildOrderedHeaderLinks(siteLinks.value).map((link) => ({
-    ...link,
-    ...mapSiteLink(link)
-  }))
+  const existingHeaderLinks = siteLinks.value
+    .filter((link) => link.location === 'header')
+    .map(decorateHeaderLink)
+
+  const defaultHeaderLinks = defaultHeaderLinkDefinitions
+    .map((definition) => {
+      return existingHeaderLinks.find((link) => link.default_key === definition.key)
+    })
+    .filter(Boolean)
+
+  const customLinks = existingHeaderLinks
+    .filter((link) => !link.is_default)
+    .sort(sortHeaderLinksByPosition)
+
+  return [...defaultHeaderLinks, ...customLinks]
 })
 
 const customHeaderLinks = computed(() => {
