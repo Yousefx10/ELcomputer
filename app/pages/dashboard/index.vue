@@ -111,19 +111,12 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
 
 const totalProducts = ref(0)
 const totalCategories = ref(0)
 const recentProducts = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
-
-watchEffect(() => {
-  if (user.value === null) {
-    navigateTo('/login')
-  }
-})
 
 const getDashboardData = async () => {
   loading.value = true

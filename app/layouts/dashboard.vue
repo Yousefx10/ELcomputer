@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <div class="mx-auto max-w-6xl px-6 pt-6">
+    <div v-if="authChecked" class="mx-auto max-w-6xl px-6 pt-6">
       <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
         <NuxtLink to="/dashboard" class="text-lg font-bold text-gray-900">
           ELcomputer Admin
@@ -22,16 +22,34 @@
         <slot />
       </main>
     </div>
+
+    <div v-else class="mx-auto max-w-6xl px-6 pt-6">
+      <div class="rounded-2xl bg-white p-6 text-center text-gray-500 shadow">
+        Loading dashboard...
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 const supabase = useSupabaseClient()
+const authChecked = ref(false)
 
 const logout = async () => {
   await supabase.auth.signOut()
   await navigateTo('/login')
 }
+
+onMounted(async () => {
+  const { data } = await supabase.auth.getSession()
+
+  if (!data.session) {
+    await navigateTo('/login')
+    return
+  }
+
+  authChecked.value = true
+})
 </script>
 
 <style>

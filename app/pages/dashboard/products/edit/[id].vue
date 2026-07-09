@@ -334,7 +334,7 @@
             <button
               type="button"
               @click="saveProductImage(image)"
-              class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
+              class="self-start rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
             >
               Save
             </button>
@@ -342,7 +342,7 @@
             <button
               type="button"
               @click="deleteProductImage(image.id)"
-              class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+              class="self-start rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
             >
               Delete
             </button>
@@ -424,7 +424,7 @@
             <button
               type="button"
               @click="saveProductSpecification(specification)"
-              class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
+              class="self-start rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
             >
               Save
             </button>
@@ -432,7 +432,7 @@
             <button
               type="button"
               @click="deleteProductSpecification(specification.id)"
-              class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+              class="self-start rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
             >
               Delete
             </button>
