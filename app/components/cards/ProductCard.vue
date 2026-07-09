@@ -6,12 +6,12 @@
     <div class="relative overflow-hidden rounded-xl border border-gray-100 bg-gradient-to-b from-gray-50 to-white p-3">
       <span
         v-if="hasDiscount"
-        class="absolute left-3 top-3 rounded-full bg-black px-2.5 py-1 text-[11px] font-semibold text-white"
+        class="absolute left-3 top-3 z-20 rounded-full bg-black px-2.5 py-1 text-[11px] font-semibold text-white"
       >
         Sale
       </span>
 
-      <div class="flex aspect-[4/3] items-center justify-center rounded-lg bg-white">
+      <div class="relative z-0 flex aspect-[4/3] items-center justify-center rounded-lg bg-white">
         <img
           v-if="product.image_url"
           class="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-105"
