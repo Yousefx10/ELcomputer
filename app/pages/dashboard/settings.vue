@@ -619,40 +619,63 @@
           </p>
 
           <div v-if="headerLinks.length" class="space-y-3">
+            <div v-if="defaultHeaderLinks.length" class="grid grid-cols-2 gap-3">
+              <div
+                v-for="link in defaultHeaderLinks"
+                :key="link.id"
+                class="rounded-xl border p-4"
+              >
+                <div class="mb-3 flex items-center gap-2">
+                  <p class="font-semibold text-gray-900">
+                    {{ link.label }}
+                  </p>
+
+                  <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
+                    Default
+                  </span>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <label class="flex items-center gap-2 text-sm text-gray-600">
+                    <input v-model="link.is_enabled" type="checkbox">
+                    Enabled
+                  </label>
+
+                  <button
+                    type="button"
+                    :disabled="!isSiteLinkDirty(link) || linkLoading"
+                    @click="saveSiteLink(link)"
+                    class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                    :class="isSiteLinkDirty(link) && !linkLoading
+                      ? 'bg-blue-600 hover:bg-blue-700'
+                      : 'cursor-not-allowed bg-gray-300'"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div
-              v-for="link in headerLinks"
+              v-for="link in customHeaderLinks"
               :key="link.id"
-              :class="link.is_default
-                ? 'flex flex-col gap-3 rounded-xl border p-4 md:flex-row md:items-center md:justify-between'
-                : 'grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]'"
+              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
             >
               <div class="space-y-2">
                 <div class="flex items-center gap-2">
                   <p class="font-semibold text-gray-900">
                     {{ link.label }}
                   </p>
-
-                  <span
-                    v-if="link.is_default"
-                    class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600"
-                  >
-                    Default
-                  </span>
                 </div>
 
                 <input
-                  v-if="!link.is_default"
                   v-model="link.label"
                   type="text"
                   class="rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
-
-                <p v-else class="text-sm text-gray-500">
-                  {{ link.default_description }}
-                </p>
               </div>
 
-              <div v-if="!link.is_default" class="space-y-3">
+              <div class="space-y-3">
                 <input
                   v-model="link.url"
                   type="text"
@@ -665,29 +688,7 @@
                 </label>
               </div>
 
-              <div
-                v-else
-                class="flex items-center gap-3 md:self-start"
-              >
-                <label class="flex items-center gap-2 text-sm text-gray-600">
-                  <input v-model="link.is_enabled" type="checkbox">
-                  Enabled
-                </label>
-
-                <button
-                  type="button"
-                  :disabled="!isSiteLinkDirty(link) || linkLoading"
-                  @click="saveSiteLink(link)"
-                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                  :class="isSiteLinkDirty(link) && !linkLoading
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-300'"
-                >
-                  Save
-                </button>
-              </div>
-
-              <div v-if="!link.is_default" class="flex gap-2 self-start">
+              <div class="flex gap-2 self-start">
                 <button
                   type="button"
                   :disabled="!isSiteLinkDirty(link) || linkLoading"
@@ -1139,6 +1140,10 @@ const headerLinks = computed(() => {
     .sort(sortHeaderLinksByPosition)
 
   return [...defaultHeaderLinks, ...customLinks]
+})
+
+const defaultHeaderLinks = computed(() => {
+  return headerLinks.value.filter((link) => link.is_default)
 })
 
 const customHeaderLinks = computed(() => {
