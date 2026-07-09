@@ -18,8 +18,34 @@
 
       <ul class="hidden items-center gap-4 whitespace-nowrap lg:flex">
         <li v-for="link in headerLinks" :key="link.id">
+          <div
+            v-if="isShopCategoryLink(link)"
+            class="group relative"
+          >
+            <button type="button" class="flex items-center gap-1">
+              <span>{{ link.label }}</span>
+              <Icon name="lucide:chevron-down" size="16" />
+            </button>
+
+            <div class="absolute left-0 top-full z-20 hidden min-w-56 rounded-xl bg-white p-3 text-black shadow-lg group-hover:block">
+              <p v-if="!headerCategories.length" class="text-sm text-gray-500">
+                No categories yet.
+              </p>
+
+              <ul v-else class="space-y-2">
+                <li
+                  v-for="category in headerCategories"
+                  :key="category.id"
+                  class="text-sm text-gray-700"
+                >
+                  {{ category.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <a
-            v-if="isExternalUrl(link.url)"
+            v-else-if="isExternalUrl(link.url)"
             :href="link.url"
             target="_blank"
             rel="noreferrer"
@@ -59,18 +85,42 @@
         <li
           v-for="link in headerLinks"
           :key="link.id"
-          @click="isMenuOpen = false"
+          :class="isShopCategoryLink(link) ? 'col-span-2' : ''"
         >
+          <details
+            v-if="isShopCategoryLink(link)"
+            class="rounded-xl bg-white/10 p-3"
+          >
+            <summary class="flex cursor-pointer items-center justify-between">
+              <span>{{ link.label }}</span>
+              <Icon name="lucide:chevron-down" size="16" />
+            </summary>
+
+            <p v-if="!headerCategories.length" class="mt-3 text-sm text-gray-200">
+              No categories yet.
+            </p>
+
+            <ul v-else class="mt-3 space-y-2 text-sm text-gray-200">
+              <li
+                v-for="category in headerCategories"
+                :key="category.id"
+              >
+                {{ category.name }}
+              </li>
+            </ul>
+          </details>
+
           <a
-            v-if="isExternalUrl(link.url)"
+            v-else-if="isExternalUrl(link.url)"
             :href="link.url"
             target="_blank"
             rel="noreferrer"
+            @click="isMenuOpen = false"
           >
             {{ link.label }}
           </a>
 
-          <NuxtLink v-else :to="link.url || '/'">
+          <NuxtLink v-else :to="link.url || '/'" @click="isMenuOpen = false">
             {{ link.label }}
           </NuxtLink>
         </li>
@@ -96,15 +146,36 @@
 </template>
 
 <script setup>
+import { defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
+
+const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
+const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name, slug')
+    .order('name')
+
+  if (error) {
+    return []
+  }
+
+  return data || []
+})
 
 const isMenuOpen = ref(false)
 
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
 const headerLinks = computed(() => siteContent.value?.headerLinks || [])
+const headerCategories = computed(() => categoriesData.value || [])
+const shopCategoryLinkKey = defaultHeaderLinkDefinitions.find((link) => link.key === 'shop-category')?.key
 
 const isExternalUrl = (value) => {
   return typeof value === 'string' && /^https?:\/\//i.test(value)
+}
+
+const isShopCategoryLink = (link) => {
+  return link?.default_key === shopCategoryLinkKey || link?.label === 'Shop Category'
 }
 </script>

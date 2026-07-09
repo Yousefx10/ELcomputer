@@ -610,6 +610,10 @@
             </button>
           </div>
 
+          <p class="mb-4 text-sm text-gray-500">
+            Default links stay at the top and cannot be removed. Any new links appear after them.
+          </p>
+
           <p v-if="linkError" class="mb-4 text-sm text-red-600">
             {{ linkError }}
           </p>
@@ -620,18 +624,47 @@
               :key="link.id"
               class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_auto]"
             >
-              <input
-                v-model="link.label"
-                type="text"
-                class="rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <p class="font-semibold text-gray-900">
+                    {{ link.label }}
+                  </p>
+
+                  <span
+                    v-if="link.is_default"
+                    class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600"
+                  >
+                    Default
+                  </span>
+                </div>
+
+                <input
+                  v-if="!link.is_default"
+                  v-model="link.label"
+                  type="text"
+                  class="rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+
+                <p v-else class="text-sm text-gray-500">
+                  {{ link.default_description }}
+                </p>
+              </div>
 
               <div class="space-y-3">
                 <input
+                  v-if="!link.is_default || link.is_url_editable"
                   v-model="link.url"
                   type="text"
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  :placeholder="link.is_default ? 'URL' : ''"
                 >
+
+                <div
+                  v-else
+                  class="rounded-lg border bg-gray-50 px-3 py-3 text-sm text-gray-500"
+                >
+                  {{ link.default_key === 'home' ? 'Leads to the home page.' : 'Shows a dropdown with all categories.' }}
+                </div>
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                   <input v-model="link.is_enabled" type="checkbox">
@@ -653,6 +686,7 @@
                 </button>
 
                 <button
+                  v-if="!link.is_default"
                   type="button"
                   @click="deleteSiteLink(link.id)"
                   class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
@@ -919,6 +953,13 @@
 </template>
 
 <script setup>
+import {
+  buildOrderedHeaderLinks,
+  defaultHeaderLinkDefinitions,
+  getDefaultHeaderLinkDefinition,
+  isDefaultHeaderLink
+} from '~/utils/siteLinks'
+
 definePageMeta({
   layout: 'dashboard'
 })
@@ -1037,7 +1078,14 @@ const toggleSection = (sectionName) => {
 }
 
 const headerLinks = computed(() => {
-  return siteLinks.value.filter((link) => link.location === 'header')
+  return buildOrderedHeaderLinks(siteLinks.value).map((link) => ({
+    ...link,
+    ...mapSiteLink(link)
+  }))
+})
+
+const customHeaderLinks = computed(() => {
+  return headerLinks.value.filter((link) => !isDefaultHeaderLink(link))
 })
 
 const footerLinks = computed(() => {
@@ -1228,7 +1276,52 @@ const getSiteLinks = async () => {
     return
   }
 
-  siteLinks.value = (data || []).map(mapSiteLink)
+  let siteLinksData = data || []
+  const existingHeaderLinks = siteLinksData.filter((link) => link.location === 'header')
+  const missingDefaultHeaderLinks = defaultHeaderLinkDefinitions.filter((definition) => {
+    return !existingHeaderLinks.some((link) => {
+      return getDefaultHeaderLinkDefinition(link)?.key === definition.key
+    })
+  })
+
+  if (missingDefaultHeaderLinks.length) {
+    const { error: insertError } = await supabase
+      .from('site_links')
+      .insert(missingDefaultHeaderLinks.map((definition, index) => ({
+        location: 'header',
+        section_title: null,
+        label: definition.label,
+        url: definition.url,
+        sort_order: index,
+        is_enabled: true
+      })))
+
+    if (insertError) {
+      if (!handleTableError(insertError)) {
+        linkError.value = insertError.message
+      }
+      return
+    }
+
+    const { data: refreshedData, error: refreshedError } = await supabase
+      .from('site_links')
+      .select('*')
+      .order('location')
+      .order('section_title')
+      .order('sort_order')
+      .order('created_at')
+
+    if (refreshedError) {
+      if (!handleTableError(refreshedError)) {
+        linkError.value = refreshedError.message
+      }
+      return
+    }
+
+    siteLinksData = refreshedData || []
+  }
+
+  siteLinks.value = siteLinksData.map(mapSiteLink)
 }
 
 const saveSiteSettings = async (sectionName) => {
@@ -1493,7 +1586,7 @@ const addHeaderLink = async () => {
       location: 'header',
       label: newHeaderLabel.value.trim(),
       url: newHeaderUrl.value.trim(),
-      sort_order: headerLinks.value.length
+      sort_order: defaultHeaderLinkDefinitions.length + customHeaderLinks.value.length
     })
 
   linkLoading.value = false
@@ -1549,13 +1642,18 @@ const addFooterLink = async () => {
 
 const saveSiteLink = async (link) => {
   linkError.value = ''
+  const defaultHeaderLinkDefinition = getDefaultHeaderLinkDefinition(link)
 
   if (!link.label.trim()) {
     linkError.value = 'Link label is required'
     return
   }
 
-  if (link.location === 'header' && !link.url.trim()) {
+  if (
+    link.location === 'header' &&
+    !defaultHeaderLinkDefinition &&
+    !link.url.trim()
+  ) {
     linkError.value = 'Header link URL is required'
     return
   }
@@ -1567,14 +1665,26 @@ const saveSiteLink = async (link) => {
 
   linkLoading.value = true
 
+  const payload = {
+    section_title: link.location === 'footer' ? link.section_title.trim() : null,
+    label: link.label.trim(),
+    url: link.url.trim() || null,
+    is_enabled: link.is_enabled
+  }
+
+  if (defaultHeaderLinkDefinition) {
+    payload.label = defaultHeaderLinkDefinition.label
+
+    if (defaultHeaderLinkDefinition.isUrlEditable) {
+      payload.url = link.url.trim() || defaultHeaderLinkDefinition.url || null
+    } else {
+      payload.url = defaultHeaderLinkDefinition.url
+    }
+  }
+
   const { error } = await supabase
     .from('site_links')
-    .update({
-      section_title: link.location === 'footer' ? link.section_title.trim() : null,
-      label: link.label.trim(),
-      url: link.url.trim() || null,
-      is_enabled: link.is_enabled
-    })
+    .update(payload)
     .eq('id', link.id)
 
   linkLoading.value = false
@@ -1592,6 +1702,12 @@ const saveSiteLink = async (link) => {
 
 const deleteSiteLink = async (linkId) => {
   linkError.value = ''
+  const selectedLink = siteLinks.value.find((link) => link.id === linkId)
+
+  if (selectedLink && isDefaultHeaderLink(selectedLink)) {
+    linkError.value = 'Default header links cannot be removed.'
+    return
+  }
 
   if (!confirm('Delete this link item?')) {
     return

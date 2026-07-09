@@ -1,3 +1,5 @@
+import { buildOrderedHeaderLinks, defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
+
 const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
@@ -39,11 +41,15 @@ const defaultTopBarMessages = [
 ]
 
 const defaultSiteLinks = [
-  { id: 'header-home', location: 'header', section_title: null, label: 'Home', url: '/', is_enabled: true },
-  { id: 'header-shop-category', location: 'header', section_title: null, label: 'Shop Category', url: '/', is_enabled: true },
-  { id: 'header-return-policy', location: 'header', section_title: null, label: 'Return Policy', url: '/', is_enabled: true },
-  { id: 'header-request-refund', location: 'header', section_title: null, label: 'Request Refund', url: '/', is_enabled: true },
-  { id: 'header-tool-kit', location: 'header', section_title: null, label: 'Tool Kit', url: '/', is_enabled: true },
+  ...defaultHeaderLinkDefinitions.map((definition, index) => ({
+    id: `default-header-${definition.key}`,
+    location: 'header',
+    section_title: null,
+    label: definition.label,
+    url: definition.url,
+    sort_order: index,
+    is_enabled: true
+  })),
   { id: 'footer-shop-browse', location: 'footer', section_title: 'Shop', label: 'Browse', url: '/', is_enabled: true },
   { id: 'footer-shop-keyboards', location: 'footer', section_title: 'Shop', label: 'Keyboards', url: '/', is_enabled: true },
   { id: 'footer-shop-mice', location: 'footer', section_title: 'Shop', label: 'Mice', url: '/', is_enabled: true },
@@ -103,11 +109,14 @@ export const useSiteContent = () => {
       ? defaultSiteLinks
       : (siteLinksResult.data?.length ? siteLinksResult.data : defaultSiteLinks)
 
+    const orderedHeaderLinks = buildOrderedHeaderLinks(siteLinks)
+      .filter((link) => link.is_enabled ?? true)
+
     return {
       settings,
       heroBanners: heroBanners.filter((banner) => banner.is_enabled ?? true),
       topBarMessages: topBarMessages.filter((message) => message.is_enabled ?? true),
-      headerLinks: siteLinks.filter((link) => link.location === 'header' && (link.is_enabled ?? true)),
+      headerLinks: orderedHeaderLinks,
       footerLinks: siteLinks.filter((link) => link.location === 'footer' && (link.is_enabled ?? true))
     }
   })
