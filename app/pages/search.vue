@@ -39,31 +39,35 @@
                 <span>{{ formatCurrency(filters.maxPrice) }}</span>
               </div>
 
-              <div class="relative mt-5 h-6">
-                <div class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-gray-200" />
+              <div
+                ref="priceSliderTrack"
+                class="relative mt-5 h-10 touch-none"
+                @pointerdown.prevent="onPriceSliderPointerDown"
+              >
+                <div class="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-gray-200" />
 
                 <div
-                  class="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-black"
+                  class="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-black"
                   :style="priceRangeTrackStyle"
                 />
 
-                <input
-                  :value="filters.minPrice"
-                  type="range"
-                  :min="sliderMin"
-                  :max="sliderMax"
-                  class="price-range-slider absolute inset-0 z-20 h-6 w-full"
-                  @input="updateMinPrice($event)"
-                >
+                <button
+                  type="button"
+                  aria-label="Minimum price"
+                  class="price-slider-thumb absolute top-1/2 z-20 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-black shadow-sm"
+                  :class="draggingPriceThumb === 'min' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
+                  :style="minThumbStyle"
+                  @pointerdown.stop.prevent="startPriceThumbDrag('min', $event)"
+                />
 
-                <input
-                  :value="filters.maxPrice"
-                  type="range"
-                  :min="sliderMin"
-                  :max="sliderMax"
-                  class="price-range-slider absolute inset-0 z-10 h-6 w-full"
-                  @input="updateMaxPrice($event)"
-                >
+                <button
+                  type="button"
+                  aria-label="Maximum price"
+                  class="price-slider-thumb absolute top-1/2 z-30 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-black shadow-sm"
+                  :class="draggingPriceThumb === 'max' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
+                  :style="maxThumbStyle"
+                  @pointerdown.stop.prevent="startPriceThumbDrag('max', $event)"
+                />
               </div>
 
               <div class="mt-4 grid gap-3 sm:grid-cols-2">
@@ -76,7 +80,8 @@
                     :value="filters.minPrice"
                     type="number"
                     :min="sliderMin"
-                    :max="filters.maxPrice"
+                    :max="maxAllowedMinPrice"
+                    :step="priceStep"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                     @input="updateMinPrice($event)"
                   >
@@ -90,8 +95,9 @@
                   <input
                     :value="filters.maxPrice"
                     type="number"
-                    :min="filters.minPrice"
+                    :min="minAllowedMaxPrice"
                     :max="sliderMax"
+                    :step="priceStep"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                     @input="updateMaxPrice($event)"
                   >
@@ -313,6 +319,13 @@ const filters = reactive({
   sortBy: defaultSort
 })
 
+const PRICE_THUMB_SIZE_PX = 20
+
+const priceSliderTrack = ref(null)
+const priceSliderTrackWidth = ref(0)
+const draggingPriceThumb = ref('')
+let priceSliderResizeObserver = null
+
 const normalizeTextValue = (value = '') => {
   return String(value).trim()
 }
@@ -332,6 +345,14 @@ const normalizePositiveNumber = (value, fallback = 0) => {
   }
 
   return parsedValue
+}
+
+const getMinimumPriceGap = (bounds) => {
+  if (Number(bounds.max) <= Number(bounds.min)) {
+    return 0
+  }
+
+  return Number.isInteger(bounds.min) && Number.isInteger(bounds.max) ? 1 : 0.01
 }
 
 const normalizePageValue = (value) => {
@@ -405,8 +426,10 @@ const getRelevanceScore = (product, searchTerm) => {
 }
 
 const normalizePriceRange = (minPrice, maxPrice, bounds) => {
-  const normalizedMin = Math.max(bounds.min, Math.min(normalizePositiveNumber(minPrice, bounds.min), bounds.max))
-  const normalizedMax = Math.min(bounds.max, Math.max(normalizePositiveNumber(maxPrice, bounds.max), normalizedMin))
+  const minimumGap = getMinimumPriceGap(bounds)
+  const maxMinValue = Math.max(bounds.min, bounds.max - minimumGap)
+  const normalizedMin = Math.max(bounds.min, Math.min(normalizePositiveNumber(minPrice, bounds.min), maxMinValue))
+  const normalizedMax = Math.min(bounds.max, Math.max(normalizePositiveNumber(maxPrice, bounds.max), normalizedMin + minimumGap))
 
   return {
     minPrice: normalizedMin,
@@ -691,7 +714,38 @@ const totalPages = computed(() => searchPageData.value?.totalPages || 1)
 const currentPage = computed(() => searchPageData.value?.queryState?.currentPage || 1)
 const sliderMin = computed(() => priceBounds.value.min)
 const sliderMax = computed(() => Math.max(priceBounds.value.max, priceBounds.value.min))
+const priceStep = computed(() => getMinimumPriceGap({
+  min: sliderMin.value,
+  max: sliderMax.value
+}) || 1)
 const priceRangeSpan = computed(() => Math.max(sliderMax.value - sliderMin.value, 1))
+const minimumPriceGap = computed(() => getMinimumPriceGap({
+  min: sliderMin.value,
+  max: sliderMax.value
+}))
+const minimumVisualPriceGap = computed(() => {
+  if (!priceSliderTrackWidth.value || sliderMax.value <= sliderMin.value) {
+    return 0
+  }
+
+  const gapFromThumbSize = (PRICE_THUMB_SIZE_PX / priceSliderTrackWidth.value) * priceRangeSpan.value
+  const steppedGap = Math.ceil(gapFromThumbSize / priceStep.value) * priceStep.value
+
+  if (priceStep.value >= 1) {
+    return Math.round(steppedGap)
+  }
+
+  return Number(steppedGap.toFixed(2))
+})
+const enforcedPriceGap = computed(() => {
+  return Math.max(minimumPriceGap.value, minimumVisualPriceGap.value)
+})
+const maxAllowedMinPrice = computed(() => {
+  return Math.max(sliderMin.value, filters.maxPrice - enforcedPriceGap.value)
+})
+const minAllowedMaxPrice = computed(() => {
+  return Math.min(sliderMax.value, filters.minPrice + enforcedPriceGap.value)
+})
 const minThumbPercent = computed(() => {
   return ((filters.minPrice - sliderMin.value) / priceRangeSpan.value) * 100
 })
@@ -701,6 +755,12 @@ const maxThumbPercent = computed(() => {
 const priceRangeTrackStyle = computed(() => ({
   left: `${minThumbPercent.value}%`,
   right: `${100 - maxThumbPercent.value}%`
+}))
+const minThumbStyle = computed(() => ({
+  left: `${minThumbPercent.value}%`
+}))
+const maxThumbStyle = computed(() => ({
+  left: `${maxThumbPercent.value}%`
 }))
 
 const currentCategory = computed(() => {
@@ -839,17 +899,147 @@ const getEventValue = (eventOrValue) => {
   return eventOrValue?.target?.value ?? ''
 }
 
+const updatePriceSliderTrackWidth = () => {
+  priceSliderTrackWidth.value = priceSliderTrack.value?.getBoundingClientRect().width || 0
+}
+
+const normalizePriceStepValue = (value) => {
+  const baseValue = sliderMin.value
+  const stepValue = priceStep.value
+
+  if (!stepValue) {
+    return value
+  }
+
+  const roundedValue = baseValue + (Math.round((value - baseValue) / stepValue) * stepValue)
+
+  if (stepValue >= 1) {
+    return Math.round(roundedValue)
+  }
+
+  return Number(roundedValue.toFixed(2))
+}
+
+const clampMinPriceValue = (value) => {
+  return Math.min(
+    Math.max(normalizePriceStepValue(value), sliderMin.value),
+    maxAllowedMinPrice.value
+  )
+}
+
+const clampMaxPriceValue = (value) => {
+  return Math.max(
+    Math.min(normalizePriceStepValue(value), sliderMax.value),
+    minAllowedMaxPrice.value
+  )
+}
+
+const getPriceFromPointerPosition = (clientX) => {
+  const trackElement = priceSliderTrack.value
+
+  if (!trackElement) {
+    return filters.minPrice
+  }
+
+  const trackRect = trackElement.getBoundingClientRect()
+
+  if (!trackRect.width) {
+    return filters.minPrice
+  }
+
+  const pointerPercent = Math.min(Math.max((clientX - trackRect.left) / trackRect.width, 0), 1)
+  return sliderMin.value + (pointerPercent * (sliderMax.value - sliderMin.value))
+}
+
+const updatePriceThumbFromPointer = (thumb, clientX) => {
+  const pointerValue = getPriceFromPointerPosition(clientX)
+
+  if (thumb === 'min') {
+    filters.minPrice = clampMinPriceValue(pointerValue)
+    return
+  }
+
+  filters.maxPrice = clampMaxPriceValue(pointerValue)
+}
+
+const removePriceDragListeners = () => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.removeEventListener('pointermove', handlePriceThumbPointerMove)
+  window.removeEventListener('pointerup', stopPriceThumbDrag)
+}
+
+function handlePriceThumbPointerMove(event) {
+  if (!draggingPriceThumb.value) {
+    return
+  }
+
+  updatePriceThumbFromPointer(draggingPriceThumb.value, event.clientX)
+}
+
+function stopPriceThumbDrag() {
+  draggingPriceThumb.value = ''
+  removePriceDragListeners()
+}
+
+const startPriceThumbDrag = (thumb, event) => {
+  if (sliderMin.value === sliderMax.value) {
+    return
+  }
+
+  removePriceDragListeners()
+  draggingPriceThumb.value = thumb
+  updatePriceThumbFromPointer(thumb, event.clientX)
+
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.addEventListener('pointermove', handlePriceThumbPointerMove)
+  window.addEventListener('pointerup', stopPriceThumbDrag)
+}
+
+const onPriceSliderPointerDown = (event) => {
+  if (sliderMin.value === sliderMax.value) {
+    return
+  }
+
+  const pointerValue = getPriceFromPointerPosition(event.clientX)
+  const distanceToMin = Math.abs(pointerValue - filters.minPrice)
+  const distanceToMax = Math.abs(pointerValue - filters.maxPrice)
+  const closestThumb = distanceToMin <= distanceToMax ? 'min' : 'max'
+
+  startPriceThumbDrag(closestThumb, event)
+}
+
+const syncVisiblePriceGap = () => {
+  const nextMinPrice = clampMinPriceValue(filters.minPrice)
+
+  if (nextMinPrice !== filters.minPrice) {
+    filters.minPrice = nextMinPrice
+  }
+
+  const minimumAllowedMax = filters.minPrice + enforcedPriceGap.value
+  const nextMaxPrice = clampMaxPriceValue(
+    Math.max(filters.maxPrice, minimumAllowedMax)
+  )
+
+  if (nextMaxPrice !== filters.maxPrice) {
+    filters.maxPrice = nextMaxPrice
+  }
+}
+
 const updateMinPrice = (eventOrValue) => {
-  filters.minPrice = Math.min(
-    normalizePositiveNumber(getEventValue(eventOrValue), sliderMin.value),
-    filters.maxPrice
+  filters.minPrice = clampMinPriceValue(
+    normalizePositiveNumber(getEventValue(eventOrValue), sliderMin.value)
   )
 }
 
 const updateMaxPrice = (eventOrValue) => {
-  filters.maxPrice = Math.max(
-    normalizePositiveNumber(getEventValue(eventOrValue), sliderMax.value),
-    filters.minPrice
+  filters.maxPrice = clampMaxPriceValue(
+    normalizePositiveNumber(getEventValue(eventOrValue), sliderMax.value)
   )
 }
 
@@ -893,45 +1083,31 @@ const formatCurrency = (value) => {
 useHead(() => ({
   title: pageTitle.value
 }))
+
+onMounted(() => {
+  updatePriceSliderTrackWidth()
+
+  if (typeof ResizeObserver !== 'undefined' && priceSliderTrack.value) {
+    priceSliderResizeObserver = new ResizeObserver(() => {
+      updatePriceSliderTrackWidth()
+    })
+
+    priceSliderResizeObserver.observe(priceSliderTrack.value)
+  }
+})
+
+watch([enforcedPriceGap, sliderMin, sliderMax], () => {
+  syncVisiblePriceGap()
+}, { immediate: true })
+
+onBeforeUnmount(() => {
+  removePriceDragListeners()
+  priceSliderResizeObserver?.disconnect()
+})
 </script>
 
 <style scoped>
-.price-range-slider {
-  appearance: none;
-  background: transparent;
-  pointer-events: none;
-}
-
-.price-range-slider::-webkit-slider-runnable-track {
-  height: 4px;
-  background: transparent;
-}
-
-.price-range-slider::-moz-range-track {
-  height: 4px;
-  background: transparent;
-}
-
-.price-range-slider::-webkit-slider-thumb {
-  appearance: none;
-  pointer-events: auto;
-  height: 18px;
-  width: 18px;
-  border-radius: 9999px;
-  border: 2px solid #ffffff;
-  background: #111827;
-  box-shadow: 0 0 0 1px #111827;
-  cursor: pointer;
-}
-
-.price-range-slider::-moz-range-thumb {
-  pointer-events: auto;
-  height: 18px;
-  width: 18px;
-  border: 2px solid #ffffff;
-  border-radius: 9999px;
-  background: #111827;
-  box-shadow: 0 0 0 1px #111827;
-  cursor: pointer;
+.price-slider-thumb {
+  touch-action: none;
 }
 </style>
