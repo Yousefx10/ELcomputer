@@ -12,7 +12,7 @@
         {{ pageError }}
       </div>
 
-      <form @submit.prevent="saveSiteSettings" class="space-y-4">
+      <div class="space-y-4">
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
@@ -93,6 +93,36 @@
                 >
               </div>
             </div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'generalSettings' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'generalSettings' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('generalSettings') || settingsLoading"
+                @click="saveSiteSettings('generalSettings')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('generalSettings') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'generalSettings' ? 'Saving...' : 'Save General Settings' }}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -158,6 +188,36 @@
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'bannerAds' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'bannerAds' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('bannerAds') || settingsLoading"
+                @click="saveSiteSettings('bannerAds')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('bannerAds') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'bannerAds' ? 'Saving...' : 'Save Banner Ads' }}
+              </button>
             </div>
           </div>
         </section>
@@ -257,22 +317,40 @@
                 >
               </div>
 
-              <p v-if="settingsError" class="md:col-span-2 text-sm text-red-600">
-                {{ settingsError }}
-              </p>
+            </div>
 
-              <div class="md:col-span-2">
-                <button
-                  type="submit"
-                  class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'footerSettings' && settingsError"
+                  class="text-sm text-red-600"
                 >
-                  {{ settingsLoading ? 'Saving...' : 'Save Settings' }}
-                </button>
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'footerSettings' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
               </div>
+
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('footerSettings') || settingsLoading"
+                @click="saveSiteSettings('footerSettings')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('footerSettings') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'footerSettings' ? 'Saving...' : 'Save Footer Settings' }}
+              </button>
             </div>
           </div>
         </section>
-      </form>
+      </div>
 
       <section class="overflow-hidden rounded-2xl bg-white shadow">
         <button
@@ -716,7 +794,7 @@ const supabase = useSupabaseClient()
 
 const pageError = ref('')
 
-const siteSettings = reactive({
+const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
   site_logo_url: '',
@@ -734,6 +812,10 @@ const siteSettings = reactive({
   footer_phone: '01505121684',
   footer_address: 'address address',
   copyright_text: '© 2026 All rights reserved by ELCOMPUTER'
+}
+
+const siteSettings = reactive({
+  ...defaultSiteSettings
 })
 
 const heroBanners = ref([])
@@ -741,11 +823,15 @@ const topBarMessages = ref([])
 const siteLinks = ref([])
 
 const settingsLoading = ref(false)
+const settingsLoadingSection = ref('')
 const heroLoading = ref(false)
 const topBarLoading = ref(false)
 const linkLoading = ref(false)
 
 const settingsError = ref('')
+const settingsErrorSection = ref('')
+const settingsSuccess = ref('')
+const settingsSuccessSection = ref('')
 const heroError = ref('')
 const topBarError = ref('')
 const linkError = ref('')
@@ -767,6 +853,39 @@ const openSections = reactive({
   headerLinks: false,
   footerLinks: false
 })
+
+const siteSettingsSectionFields = {
+  generalSettings: [
+    'site_name',
+    'site_logo_url',
+    'hero_enabled',
+    'top_bar_rotation_seconds'
+  ],
+  bannerAds: [
+    'banner_ad_1_image_url',
+    'banner_ad_1_link_url',
+    'banner_ad_2_image_url',
+    'banner_ad_2_link_url'
+  ],
+  footerSettings: [
+    'footer_cta_title',
+    'footer_cta_subtitle',
+    'footer_cta_button_label',
+    'footer_cta_button_url',
+    'footer_email',
+    'footer_phone',
+    'footer_address',
+    'copyright_text'
+  ]
+}
+
+const siteSettingsSectionLabels = {
+  generalSettings: 'General settings',
+  bannerAds: 'Banner ads',
+  footerSettings: 'Footer settings'
+}
+
+const siteSettingsSnapshot = ref({})
 
 const toggleSection = (sectionName) => {
   openSections[sectionName] = !openSections[sectionName]
@@ -818,6 +937,58 @@ const mapSiteLink = (link) => ({
   original_is_enabled: link.is_enabled ?? true
 })
 
+const normalizeSiteSettings = (source = {}) => ({
+  site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
+  site_logo_url: String(source.site_logo_url || '').trim(),
+  hero_enabled: source.hero_enabled ?? true,
+  top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
+  banner_ad_1_image_url: String(source.banner_ad_1_image_url || '').trim(),
+  banner_ad_1_link_url: String(source.banner_ad_1_link_url || '').trim(),
+  banner_ad_2_image_url: String(source.banner_ad_2_image_url || '').trim(),
+  banner_ad_2_link_url: String(source.banner_ad_2_link_url || '').trim(),
+  footer_cta_title: String(source.footer_cta_title || '').trim(),
+  footer_cta_subtitle: String(source.footer_cta_subtitle || '').trim(),
+  footer_cta_button_label: String(source.footer_cta_button_label || '').trim(),
+  footer_cta_button_url: String(source.footer_cta_button_url || '').trim(),
+  footer_email: String(source.footer_email || '').trim(),
+  footer_phone: String(source.footer_phone || '').trim(),
+  footer_address: String(source.footer_address || '').trim(),
+  copyright_text: String(source.copyright_text || '').trim()
+})
+
+siteSettingsSnapshot.value = normalizeSiteSettings(defaultSiteSettings)
+
+const syncSiteSettingsSnapshot = () => {
+  siteSettingsSnapshot.value = normalizeSiteSettings(siteSettings)
+}
+
+const isSettingsSectionDirty = (sectionName) => {
+  const normalizedSettings = normalizeSiteSettings(siteSettings)
+
+  return siteSettingsSectionFields[sectionName].some((field) => {
+    return normalizedSettings[field] !== siteSettingsSnapshot.value[field]
+  })
+}
+
+const buildSiteSettingsPayload = (sectionName) => {
+  const normalizedSettings = normalizeSiteSettings(siteSettings)
+  const payload = {
+    key: 'default',
+    updated_at: new Date().toISOString()
+  }
+
+  siteSettingsSectionFields[sectionName].forEach((field) => {
+    if (field === 'site_name' || field === 'hero_enabled' || field === 'top_bar_rotation_seconds') {
+      payload[field] = normalizedSettings[field]
+      return
+    }
+
+    payload[field] = normalizedSettings[field] || null
+  })
+
+  return payload
+}
+
 const getSiteSettings = async () => {
   settingsError.value = ''
 
@@ -836,24 +1007,14 @@ const getSiteSettings = async () => {
 
   Object.assign(siteSettings, {
     key: 'default',
-    site_name: 'ELcomputer',
-    site_logo_url: '',
-    hero_enabled: true,
-    top_bar_rotation_seconds: 3,
-    banner_ad_1_image_url: '',
-    banner_ad_1_link_url: '',
-    banner_ad_2_image_url: '',
-    banner_ad_2_link_url: '',
-    footer_cta_title: 'What are you waiting for?',
-    footer_cta_subtitle: 'Purchase your fav gear',
-    footer_cta_button_label: 'Shop Now',
-    footer_cta_button_url: '/',
-    footer_email: 'info@elcomputer.net',
-    footer_phone: '01505121684',
-    footer_address: 'address address',
-    copyright_text: '© 2026 All rights reserved by ELCOMPUTER',
-    ...(data || {})
+    ...defaultSiteSettings,
+    ...normalizeSiteSettings({
+      ...defaultSiteSettings,
+      ...(data || {})
+    })
   })
+
+  syncSiteSettingsSnapshot()
 }
 
 const getHeroBanners = async () => {
@@ -915,46 +1076,51 @@ const getSiteLinks = async () => {
   siteLinks.value = (data || []).map(mapSiteLink)
 }
 
-const saveSiteSettings = async () => {
+const saveSiteSettings = async (sectionName) => {
+  const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
+
   settingsError.value = ''
+  settingsErrorSection.value = ''
+  settingsSuccess.value = ''
+  settingsSuccessSection.value = ''
   settingsLoading.value = true
+  settingsLoadingSection.value = sectionName
 
   const { error } = await supabase
     .from('site_settings')
-    .upsert({
-      key: 'default',
-      site_name: siteSettings.site_name.trim() || 'ELcomputer',
-      site_logo_url: siteSettings.site_logo_url.trim() || null,
-      hero_enabled: siteSettings.hero_enabled,
-      top_bar_rotation_seconds: Math.max(1, Number(siteSettings.top_bar_rotation_seconds) || 3),
-      banner_ad_1_image_url: siteSettings.banner_ad_1_image_url.trim() || null,
-      banner_ad_1_link_url: siteSettings.banner_ad_1_link_url.trim() || null,
-      banner_ad_2_image_url: siteSettings.banner_ad_2_image_url.trim() || null,
-      banner_ad_2_link_url: siteSettings.banner_ad_2_link_url.trim() || null,
-      footer_cta_title: siteSettings.footer_cta_title.trim() || null,
-      footer_cta_subtitle: siteSettings.footer_cta_subtitle.trim() || null,
-      footer_cta_button_label: siteSettings.footer_cta_button_label.trim() || null,
-      footer_cta_button_url: siteSettings.footer_cta_button_url.trim() || null,
-      footer_email: siteSettings.footer_email.trim() || null,
-      footer_phone: siteSettings.footer_phone.trim() || null,
-      footer_address: siteSettings.footer_address.trim() || null,
-      copyright_text: siteSettings.copyright_text.trim() || null,
-      updated_at: new Date().toISOString()
-    }, {
+    .upsert(buildSiteSettingsPayload(sectionName), {
       onConflict: 'key'
     })
 
   settingsLoading.value = false
+  settingsLoadingSection.value = ''
 
   if (error) {
     if (!handleTableError(error)) {
       settingsError.value = error.message
+      settingsErrorSection.value = sectionName
     }
     return
   }
 
   await getSiteSettings()
+
+  Object.keys(siteSettingsSectionFields).forEach((otherSectionName) => {
+    if (otherSectionName === sectionName) {
+      return
+    }
+
+    siteSettingsSectionFields[otherSectionName].forEach((field) => {
+      if (normalizedSettingsBeforeSave[field] !== siteSettingsSnapshot.value[field]) {
+        siteSettings[field] = normalizedSettingsBeforeSave[field]
+      }
+    })
+  })
+
   await refreshNuxtData('site-content')
+
+  settingsSuccess.value = `${siteSettingsSectionLabels[sectionName]} saved successfully.`
+  settingsSuccessSection.value = sectionName
 }
 
 const isHeroBannerDirty = (banner) => {
