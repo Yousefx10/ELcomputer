@@ -201,13 +201,11 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       .from('product_images')
       .select('*')
       .eq('product_id', productData.id)
-      .order('sort_order')
       .order('created_at'),
     supabase
       .from('product_specifications')
       .select('*')
       .eq('product_id', productData.id)
-      .order('sort_order')
       .order('created_at')
   ])
 

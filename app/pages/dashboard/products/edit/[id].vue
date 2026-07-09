@@ -262,7 +262,7 @@
           </p>
         </div>
 
-        <div class="mb-5 grid gap-3 md:grid-cols-[2fr_1fr_120px_140px]">
+        <div class="mb-5 grid gap-3 md:grid-cols-[2fr_1fr_auto]">
           <input
             v-model="newImageUrl"
             type="text"
@@ -274,13 +274,6 @@
             v-model="newImageAlt"
             type="text"
             placeholder="Alt text"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-
-          <input
-            v-model="newImageSortOrder"
-            type="number"
-            placeholder="Sort"
             class="rounded-lg border p-3 outline-none focus:border-blue-500"
           />
 
@@ -301,7 +294,7 @@
           <div
             v-for="image in productImages"
             :key="image.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_2fr_1fr_120px_140px_140px]"
+            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,1fr)_auto]"
           >
             <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
               <img
@@ -325,27 +318,27 @@
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             />
 
-            <input
-              v-model="image.sort_order"
-              type="number"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
+            <div class="flex gap-2 self-start">
+              <button
+                type="button"
+                @click="saveProductImage(image)"
+                :disabled="!isProductImageDirty(image) || galleryLoading"
+                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                :class="isProductImageDirty(image) && !galleryLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                Save
+              </button>
 
-            <button
-              type="button"
-              @click="saveProductImage(image)"
-              class="self-start rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Save
-            </button>
-
-            <button
-              type="button"
-              @click="deleteProductImage(image.id)"
-              class="self-start rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-            >
-              Delete
-            </button>
+              <button
+                type="button"
+                @click="deleteProductImage(image.id)"
+                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 
@@ -362,7 +355,7 @@
           </p>
         </div>
 
-        <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_120px_140px]">
+        <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_auto]">
           <input
             v-model="newSpecLabel"
             type="text"
@@ -374,13 +367,6 @@
             v-model="newSpecValue"
             type="text"
             placeholder="Value"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-
-          <input
-            v-model="newSpecSortOrder"
-            type="number"
-            placeholder="Sort"
             class="rounded-lg border p-3 outline-none focus:border-blue-500"
           />
 
@@ -401,7 +387,7 @@
           <div
             v-for="specification in productSpecifications"
             :key="specification.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_2fr_120px_140px_140px]"
+            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
           >
             <input
               v-model="specification.label"
@@ -415,27 +401,27 @@
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             />
 
-            <input
-              v-model="specification.sort_order"
-              type="number"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
+            <div class="flex gap-2 self-start">
+              <button
+                type="button"
+                @click="saveProductSpecification(specification)"
+                :disabled="!isProductSpecificationDirty(specification) || specLoading"
+                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                :class="isProductSpecificationDirty(specification) && !specLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                Save
+              </button>
 
-            <button
-              type="button"
-              @click="saveProductSpecification(specification)"
-              class="self-start rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Save
-            </button>
-
-            <button
-              type="button"
-              @click="deleteProductSpecification(specification.id)"
-              class="self-start rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-            >
-              Delete
-            </button>
+              <button
+                type="button"
+                @click="deleteProductSpecification(specification.id)"
+                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 
@@ -486,10 +472,8 @@ const productSpecifications = ref([])
 
 const newImageUrl = ref('')
 const newImageAlt = ref('')
-const newImageSortOrder = ref(0)
 const newSpecLabel = ref('')
 const newSpecValue = ref('')
-const newSpecSortOrder = ref(0)
 
 const saving = ref(false)
 const deleting = ref(false)
@@ -561,7 +545,6 @@ const getProductImages = async () => {
     .from('product_images')
     .select('*')
     .eq('product_id', id)
-    .order('sort_order')
     .order('created_at')
 
   if (error) {
@@ -569,7 +552,11 @@ const getProductImages = async () => {
     return
   }
 
-  productImages.value = data || []
+  productImages.value = (data || []).map((image) => ({
+    ...image,
+    original_image_url: image.image_url || '',
+    original_alt_text: image.alt_text || ''
+  }))
 }
 
 const getProductSpecifications = async () => {
@@ -577,7 +564,6 @@ const getProductSpecifications = async () => {
     .from('product_specifications')
     .select('*')
     .eq('product_id', id)
-    .order('sort_order')
     .order('created_at')
 
   if (error) {
@@ -585,7 +571,11 @@ const getProductSpecifications = async () => {
     return
   }
 
-  productSpecifications.value = data || []
+  productSpecifications.value = (data || []).map((specification) => ({
+    ...specification,
+    original_label: specification.label || '',
+    original_value: specification.value || ''
+  }))
 }
 
 await Promise.all([
@@ -687,8 +677,7 @@ const addProductImage = async () => {
     .insert({
       product_id: id,
       image_url: newImageUrl.value.trim(),
-      alt_text: newImageAlt.value.trim() || null,
-      sort_order: Number(newImageSortOrder.value) || 0
+      alt_text: newImageAlt.value.trim() || null
     })
 
   galleryLoading.value = false
@@ -700,8 +689,12 @@ const addProductImage = async () => {
 
   newImageUrl.value = ''
   newImageAlt.value = ''
-  newImageSortOrder.value = 0
   await getProductImages()
+}
+
+const isProductImageDirty = (image) => {
+  return image.image_url !== image.original_image_url ||
+    (image.alt_text || '') !== image.original_alt_text
 }
 
 const saveProductImage = async (image) => {
@@ -712,14 +705,17 @@ const saveProductImage = async (image) => {
     return
   }
 
+  if (!isProductImageDirty(image)) {
+    return
+  }
+
   galleryLoading.value = true
 
   const { error } = await supabase
     .from('product_images')
     .update({
       image_url: image.image_url.trim(),
-      alt_text: image.alt_text?.trim() || null,
-      sort_order: Number(image.sort_order) || 0
+      alt_text: image.alt_text?.trim() || null
     })
     .eq('id', image.id)
 
@@ -773,8 +769,7 @@ const addProductSpecification = async () => {
     .insert({
       product_id: id,
       label: newSpecLabel.value.trim(),
-      value: newSpecValue.value.trim(),
-      sort_order: Number(newSpecSortOrder.value) || 0
+      value: newSpecValue.value.trim()
     })
 
   specLoading.value = false
@@ -786,8 +781,12 @@ const addProductSpecification = async () => {
 
   newSpecLabel.value = ''
   newSpecValue.value = ''
-  newSpecSortOrder.value = 0
   await getProductSpecifications()
+}
+
+const isProductSpecificationDirty = (specification) => {
+  return specification.label !== specification.original_label ||
+    specification.value !== specification.original_value
 }
 
 const saveProductSpecification = async (specification) => {
@@ -798,14 +797,17 @@ const saveProductSpecification = async (specification) => {
     return
   }
 
+  if (!isProductSpecificationDirty(specification)) {
+    return
+  }
+
   specLoading.value = true
 
   const { error } = await supabase
     .from('product_specifications')
     .update({
       label: specification.label.trim(),
-      value: specification.value.trim(),
-      sort_order: Number(specification.sort_order) || 0
+      value: specification.value.trim()
     })
     .eq('id', specification.id)
 
