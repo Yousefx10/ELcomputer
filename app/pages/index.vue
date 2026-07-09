@@ -32,16 +32,6 @@
       />
     </section>
 
-    <section v-if="bannerAds.length" class="grid gap-6 md:grid-cols-2">
-      <CardsBanner
-        v-for="banner in bannerAds"
-        :key="banner.id"
-        :image-url="banner.imageUrl"
-        :link-url="banner.linkUrl"
-        :alt-text="banner.altText"
-      />
-    </section>
-
     <section v-if="featuredBrands.length">
       <FeaturedBrands
         title="Featured Brands"
@@ -54,6 +44,13 @@
       v-for="category in categorySections"
       :key="category.id"
     >
+      <CardsBanner
+        v-if="getBannerBeforeCategory(category)"
+        :image-url="getBannerBeforeCategory(category).imageUrl"
+        :link-url="getBannerBeforeCategory(category).linkUrl"
+        :alt-text="getBannerBeforeCategory(category).altText"
+      />
+
       <HomeProductSection
         :title="category.name"
         description="Browse products from this category"
@@ -70,6 +67,26 @@ import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
+
+const categoryBannerTargets = {
+  bannerAd1: ['keyboard', 'keyboards'],
+  bannerAd2: ['accessory', 'accessories']
+}
+
+const normalizeCategoryValue = (value = '') => {
+  return String(value).trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
+}
+
+const categoryMatchesAny = (category, targetValues = []) => {
+  const categoryValues = [
+    normalizeCategoryValue(category?.slug),
+    normalizeCategoryValue(category?.name)
+  ]
+
+  return targetValues.some((targetValue) => {
+    return categoryValues.includes(normalizeCategoryValue(targetValue))
+  })
+}
 
 const { data: homeData, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
@@ -143,12 +160,21 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
   const featuredProducts = products.filter((product) => product.is_featured)
   const topSellerProducts = products.filter((product) => product.is_top_seller)
   const usedBrandIds = new Set(products.map((product) => product.brand?.id).filter(Boolean))
+  const preferredCategories = [
+    categoriesWithProducts.find((category) => categoryMatchesAny(category, categoryBannerTargets.bannerAd1)),
+    categoriesWithProducts.find((category) => categoryMatchesAny(category, categoryBannerTargets.bannerAd2))
+  ].filter(Boolean).filter((category, index, list) => {
+    return category && list.findIndex((item) => item.id === category.id) === index
+  })
+  const remainingCategories = categoriesWithProducts.filter((category) => {
+    return !preferredCategories.some((preferredCategory) => preferredCategory.id === category.id)
+  })
 
   return {
     featuredProducts: (featuredProducts.length ? featuredProducts : products).slice(0, 8),
     topSellerProducts: (topSellerProducts.length ? topSellerProducts : products).slice(0, 8),
     topCategories: categoriesWithProducts.slice(0, 6),
-    categorySections: categoriesWithProducts.slice(0, 3),
+    categorySections: [...preferredCategories, ...remainingCategories].slice(0, 3),
     featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
   }
 })
@@ -161,21 +187,35 @@ const featuredBrands = computed(() => homeData.value?.featuredBrands || [])
 const bannerAds = computed(() => {
   const settings = siteContent.value?.settings || {}
 
-  return [
-    {
-      id: 'banner-ad-1',
-      imageUrl: settings.banner_ad_1_image_url || '',
-      linkUrl: settings.banner_ad_1_link_url || '',
-      altText: 'Banner Ad 1'
-    },
-    {
-      id: 'banner-ad-2',
-      imageUrl: settings.banner_ad_2_image_url || '',
-      linkUrl: settings.banner_ad_2_link_url || '',
-      altText: 'Banner Ad 2'
-    }
-  ].filter((banner) => banner.imageUrl)
+  return {
+    bannerAd1: settings.banner_ad_1_enabled && settings.banner_ad_1_image_url
+      ? {
+          imageUrl: settings.banner_ad_1_image_url,
+          linkUrl: settings.banner_ad_1_link_url || '',
+          altText: 'Banner Ad 1'
+        }
+      : null,
+    bannerAd2: settings.banner_ad_2_enabled && settings.banner_ad_2_image_url
+      ? {
+          imageUrl: settings.banner_ad_2_image_url,
+          linkUrl: settings.banner_ad_2_link_url || '',
+          altText: 'Banner Ad 2'
+        }
+      : null
+  }
 })
+
+const getBannerBeforeCategory = (category) => {
+  if (categoryMatchesAny(category, categoryBannerTargets.bannerAd1)) {
+    return bannerAds.value.bannerAd1
+  }
+
+  if (categoryMatchesAny(category, categoryBannerTargets.bannerAd2)) {
+    return bannerAds.value.bannerAd2
+  }
+
+  return null
+}
 </script>
 
 <style>

@@ -97,9 +97,12 @@ create table public.site_settings (
   site_name text not null default 'ELcomputer'::text,
   site_logo_url text null,
   hero_enabled boolean not null default true,
+  hero_rotation_seconds integer not null default 5,
   top_bar_rotation_seconds integer not null default 3,
+  banner_ad_1_enabled boolean not null default true,
   banner_ad_1_image_url text null,
   banner_ad_1_link_url text null,
+  banner_ad_2_enabled boolean not null default true,
   banner_ad_2_image_url text null,
   banner_ad_2_link_url text null,
   footer_cta_title text null default 'What are you waiting for?'::text,
@@ -114,6 +117,7 @@ create table public.site_settings (
   updated_at timestamp with time zone null default now(),
   constraint site_settings_pkey primary key (id),
   constraint site_settings_key_key unique (key),
+  constraint site_settings_hero_rotation_seconds_check check ((hero_rotation_seconds >= 1)),
   constraint site_settings_top_bar_rotation_seconds_check check ((top_bar_rotation_seconds >= 1))
 ) TABLESPACE pg_default;
 

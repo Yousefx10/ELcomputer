@@ -1,14 +1,16 @@
 <template>
-  <div v-if="currentBanner" class="relative">
+  <div v-if="currentBanner" class="relative overflow-hidden bg-gray-100">
     <a
       :href="currentBanner.link_url || '#'"
       class="block"
     >
-      <img
-        class="w-full object-cover"
-        alt="Hero Banner"
-        :src="currentBanner.image_url"
-      >
+      <div class="h-[220px] sm:h-[280px] md:h-[360px] lg:h-[420px]">
+        <img
+          class="h-full w-full object-cover"
+          alt="Hero Banner"
+          :src="currentBanner.image_url"
+        >
+      </div>
     </a>
 
     <div v-if="heroBanners.length > 1" class="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-4">
@@ -38,6 +40,10 @@ const heroBanners = computed(() => {
   return siteContent.value?.heroBanners || []
 })
 
+const rotationSeconds = computed(() => {
+  return Math.max(1, Number(siteContent.value?.settings?.hero_rotation_seconds || 5))
+})
+
 const currentBanner = computed(() => {
   return heroBanners.value[currentBannerIndex.value] || null
 })
@@ -53,10 +59,10 @@ const restartHeroInterval = () => {
 
   heroInterval = setInterval(() => {
     currentBannerIndex.value = (currentBannerIndex.value + 1) % heroBanners.value.length
-  }, 5000)
+  }, rotationSeconds.value * 1000)
 }
 
-watch(heroBanners, () => {
+watch([heroBanners, rotationSeconds], () => {
   currentBannerIndex.value = 0
   restartHeroInterval()
 })

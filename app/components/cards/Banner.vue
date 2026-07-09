@@ -1,7 +1,9 @@
 <template>
-  <div v-if="imageUrl" class="my-15">
-    <a :href="linkUrl || '#'">
-      <img class="mx-auto rounded-3xl object-cover" :src="imageUrl" :alt="altText">
+  <div v-if="imageUrl" class="my-10">
+    <a :href="linkUrl || '#'" class="block overflow-hidden rounded-3xl bg-gray-100">
+      <div class="h-[180px] md:h-[220px]">
+        <img class="h-full w-full object-cover" :src="imageUrl" :alt="altText">
+      </div>
     </a>
   </div>
 </template>

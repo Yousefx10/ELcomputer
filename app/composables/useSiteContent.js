@@ -3,9 +3,12 @@ const defaultSiteSettings = {
   site_name: 'ELcomputer',
   site_logo_url: '',
   hero_enabled: true,
+  hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
+  banner_ad_1_enabled: true,
   banner_ad_1_image_url: '',
   banner_ad_1_link_url: '',
+  banner_ad_2_enabled: true,
   banner_ad_2_image_url: '',
   banner_ad_2_link_url: '',
   footer_cta_title: 'What are you waiting for?',
@@ -21,7 +24,7 @@ const defaultSiteSettings = {
 const defaultHeroBanners = [
   {
     id: 'default-hero-banner',
-    image_url: 'https://placehold.co/1000x250',
+    image_url: 'https://placehold.co/1400x520',
     link_url: null,
     is_enabled: true
   }

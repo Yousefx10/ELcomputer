@@ -22,7 +22,7 @@
             <div>
               <h3 class="text-2xl font-bold">General Settings</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Main site details, logo, hero toggle, and top bar timing
+                Main site details and logo
               </p>
             </div>
 
@@ -51,44 +51,6 @@
                   v-model="siteSettings.site_logo_url"
                   type="text"
                   placeholder="https://example.com/logo.png"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
-                <div>
-                  <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
-                  <p class="text-sm text-gray-500">
-                    Turn the main home hero banner section on or off
-                  </p>
-                </div>
-
-                <div class="flex items-center gap-3">
-                  <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
-                    {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
-                  </span>
-
-                  <button
-                    type="button"
-                    :aria-pressed="siteSettings.hero_enabled"
-                    @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
-                    class="relative inline-flex h-7 w-14 items-center rounded-full transition"
-                    :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
-                  >
-                    <span
-                      class="inline-block h-5 w-5 rounded-full bg-white transition"
-                      :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
-                <input
-                  v-model="siteSettings.top_bar_rotation_seconds"
-                  type="number"
-                  min="1"
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
@@ -135,7 +97,7 @@
             <div>
               <h3 class="text-2xl font-bold">Banner Ads</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Control the two banner ads shown on the home page
+                Control the two banner ads shown above the keyboard and accessories sections
               </p>
             </div>
 
@@ -149,44 +111,104 @@
 
           <div v-if="openSections.bannerAds" class="border-t p-6">
             <div class="grid gap-5 md:grid-cols-2">
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Image URL</label>
-                <input
-                  v-model="siteSettings.banner_ad_1_image_url"
-                  type="text"
-                  placeholder="https://example.com/banner-1.jpg"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
+              <div class="space-y-4 rounded-2xl border bg-gray-50 p-4">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-700">Banner Ad 1</p>
+                    <p class="text-sm text-gray-500">
+                      Shows above the keyboard section
+                    </p>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold" :class="siteSettings.banner_ad_1_enabled ? 'text-green-600' : 'text-gray-500'">
+                      {{ siteSettings.banner_ad_1_enabled ? 'ON' : 'OFF' }}
+                    </span>
+
+                    <button
+                      type="button"
+                      :aria-pressed="siteSettings.banner_ad_1_enabled"
+                      @click="siteSettings.banner_ad_1_enabled = !siteSettings.banner_ad_1_enabled"
+                      class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                      :class="siteSettings.banner_ad_1_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                    >
+                      <span
+                        class="inline-block h-5 w-5 rounded-full bg-white transition"
+                        :class="siteSettings.banner_ad_1_enabled ? 'translate-x-8' : 'translate-x-1'"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Image URL</label>
+                  <input
+                    v-model="siteSettings.banner_ad_1_image_url"
+                    type="text"
+                    placeholder="https://example.com/banner-1.jpg"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
+                  <input
+                    v-model="siteSettings.banner_ad_1_link_url"
+                    type="text"
+                    placeholder="/products/example-product"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
               </div>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
-                <input
-                  v-model="siteSettings.banner_ad_1_link_url"
-                  type="text"
-                  placeholder="/products/example-product"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
+              <div class="space-y-4 rounded-2xl border bg-gray-50 p-4">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-700">Banner Ad 2</p>
+                    <p class="text-sm text-gray-500">
+                      Shows above the accessories section
+                    </p>
+                  </div>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Image URL</label>
-                <input
-                  v-model="siteSettings.banner_ad_2_image_url"
-                  type="text"
-                  placeholder="https://example.com/banner-2.jpg"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold" :class="siteSettings.banner_ad_2_enabled ? 'text-green-600' : 'text-gray-500'">
+                      {{ siteSettings.banner_ad_2_enabled ? 'ON' : 'OFF' }}
+                    </span>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
-                <input
-                  v-model="siteSettings.banner_ad_2_link_url"
-                  type="text"
-                  placeholder="/products/example-product"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
+                    <button
+                      type="button"
+                      :aria-pressed="siteSettings.banner_ad_2_enabled"
+                      @click="siteSettings.banner_ad_2_enabled = !siteSettings.banner_ad_2_enabled"
+                      class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                      :class="siteSettings.banner_ad_2_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                    >
+                      <span
+                        class="inline-block h-5 w-5 rounded-full bg-white transition"
+                        :class="siteSettings.banner_ad_2_enabled ? 'translate-x-8' : 'translate-x-1'"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Image URL</label>
+                  <input
+                    v-model="siteSettings.banner_ad_2_image_url"
+                    type="text"
+                    placeholder="https://example.com/banner-2.jpg"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
+                  <input
+                    v-model="siteSettings.banner_ad_2_link_url"
+                    type="text"
+                    placeholder="/products/example-product"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
               </div>
             </div>
 
@@ -358,12 +380,12 @@
           @click="toggleSection('heroBanners')"
           class="flex w-full items-center justify-between p-6 text-left"
         >
-          <div>
-            <h3 class="text-2xl font-bold">Hero Banners</h3>
-            <p class="mt-1 text-sm text-gray-500">
-              Add multiple hero banners. They rotate automatically on the home page.
-            </p>
-          </div>
+            <div>
+              <h3 class="text-2xl font-bold">Hero Banners</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Control the main hero slider and add multiple hero banners for the home page.
+              </p>
+            </div>
 
           <Icon
             name="lucide:chevron-down"
@@ -374,6 +396,76 @@
         </button>
 
         <div v-if="openSections.heroBanners" class="border-t p-6">
+          <div class="mb-5 grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
+            <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
+              <div>
+                <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
+                <p class="text-sm text-gray-500">
+                  Turn the main home hero banner section on or off
+                </p>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
+                  {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
+                </span>
+
+                <button
+                  type="button"
+                  :aria-pressed="siteSettings.hero_enabled"
+                  @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
+                  class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                  :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                >
+                  <span
+                    class="inline-block h-5 w-5 rounded-full bg-white transition"
+                    :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Hero Rotation Seconds</label>
+              <input
+                v-model="siteSettings.hero_rotation_seconds"
+                type="number"
+                min="1"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+          </div>
+
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1">
+              <p
+                v-if="settingsErrorSection === 'heroSettings' && settingsError"
+                class="text-sm text-red-600"
+              >
+                {{ settingsError }}
+              </p>
+
+              <p
+                v-if="settingsSuccessSection === 'heroSettings' && settingsSuccess"
+                class="text-sm text-green-600"
+              >
+                {{ settingsSuccess }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              :disabled="!isSettingsSectionDirty('heroSettings') || settingsLoading"
+              @click="saveSiteSettings('heroSettings')"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="isSettingsSectionDirty('heroSettings') && !settingsLoading
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'cursor-not-allowed bg-gray-300'"
+            >
+              {{ settingsLoadingSection === 'heroSettings' ? 'Saving...' : 'Save Hero Settings' }}
+            </button>
+          </div>
+
           <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
             <input
               v-model="newHeroImageUrl"
@@ -473,12 +565,12 @@
           @click="toggleSection('topBarTexts')"
           class="flex w-full items-center justify-between p-6 text-left"
         >
-          <div>
-            <h3 class="text-2xl font-bold">Top Bar Texts</h3>
-            <p class="mt-1 text-sm text-gray-500">
-              These are the rotating texts shown in the blue bar above the navbar.
-            </p>
-          </div>
+            <div>
+              <h3 class="text-2xl font-bold">Top Bar Texts</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                These are the rotating texts shown in the blue bar above the navbar.
+              </p>
+            </div>
 
           <Icon
             name="lucide:chevron-down"
@@ -489,6 +581,48 @@
         </button>
 
         <div v-if="openSections.topBarTexts" class="border-t p-6">
+          <div class="mb-5 grid gap-5 md:grid-cols-[220px_auto]">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
+              <input
+                v-model="siteSettings.top_bar_rotation_seconds"
+                type="number"
+                min="1"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div class="flex items-end justify-start md:justify-end">
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('topBarSettings') || settingsLoading"
+                @click="saveSiteSettings('topBarSettings')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('topBarSettings') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'topBarSettings' ? 'Saving...' : 'Save Top Bar Timing' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-5 space-y-1">
+            <p
+              v-if="settingsErrorSection === 'topBarSettings' && settingsError"
+              class="text-sm text-red-600"
+            >
+              {{ settingsError }}
+            </p>
+
+            <p
+              v-if="settingsSuccessSection === 'topBarSettings' && settingsSuccess"
+              class="text-sm text-green-600"
+            >
+              {{ settingsSuccess }}
+            </p>
+          </div>
+
           <div class="mb-5 grid gap-3 md:grid-cols-[2fr_auto]">
             <input
               v-model="newTopBarText"
@@ -799,9 +933,12 @@ const defaultSiteSettings = {
   site_name: 'ELcomputer',
   site_logo_url: '',
   hero_enabled: true,
+  hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
+  banner_ad_1_enabled: true,
   banner_ad_1_image_url: '',
   banner_ad_1_link_url: '',
+  banner_ad_2_enabled: true,
   banner_ad_2_image_url: '',
   banner_ad_2_link_url: '',
   footer_cta_title: 'What are you waiting for?',
@@ -857,13 +994,20 @@ const openSections = reactive({
 const siteSettingsSectionFields = {
   generalSettings: [
     'site_name',
-    'site_logo_url',
+    'site_logo_url'
+  ],
+  heroSettings: [
     'hero_enabled',
+    'hero_rotation_seconds'
+  ],
+  topBarSettings: [
     'top_bar_rotation_seconds'
   ],
   bannerAds: [
+    'banner_ad_1_enabled',
     'banner_ad_1_image_url',
     'banner_ad_1_link_url',
+    'banner_ad_2_enabled',
     'banner_ad_2_image_url',
     'banner_ad_2_link_url'
   ],
@@ -881,6 +1025,8 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
+  heroSettings: 'Hero settings',
+  topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
   footerSettings: 'Footer settings'
 }
@@ -941,9 +1087,12 @@ const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
   hero_enabled: source.hero_enabled ?? true,
+  hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
+  banner_ad_1_enabled: source.banner_ad_1_enabled ?? true,
   banner_ad_1_image_url: String(source.banner_ad_1_image_url || '').trim(),
   banner_ad_1_link_url: String(source.banner_ad_1_link_url || '').trim(),
+  banner_ad_2_enabled: source.banner_ad_2_enabled ?? true,
   banner_ad_2_image_url: String(source.banner_ad_2_image_url || '').trim(),
   banner_ad_2_link_url: String(source.banner_ad_2_link_url || '').trim(),
   footer_cta_title: String(source.footer_cta_title || '').trim(),
@@ -978,7 +1127,14 @@ const buildSiteSettingsPayload = (sectionName) => {
   }
 
   siteSettingsSectionFields[sectionName].forEach((field) => {
-    if (field === 'site_name' || field === 'hero_enabled' || field === 'top_bar_rotation_seconds') {
+    if ([
+      'site_name',
+      'hero_enabled',
+      'hero_rotation_seconds',
+      'top_bar_rotation_seconds',
+      'banner_ad_1_enabled',
+      'banner_ad_2_enabled'
+    ].includes(field)) {
       payload[field] = normalizedSettings[field]
       return
     }
