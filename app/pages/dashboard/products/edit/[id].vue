@@ -17,7 +17,16 @@
         <input v-model="price" type="number" >
         <input v-model="oldPrice" type="number" >
         <input v-model="imageUrl" type="text" >
-        <input v-model="category" type="text" >
+        <select v-model="categoryId" class="border p-3 rounded-xl">
+          <option disabled value="">Select Category</option>
+
+          <option
+            v-for="category in categories"
+            :key="category.id"
+            :value="category.id">
+            {{ category.name }}
+          </option>
+        </select>
 
         <button
           type="submit"
@@ -59,7 +68,9 @@ const title = ref('')
 const price = ref('')
 const oldPrice = ref('')
 const imageUrl = ref('')
-const category = ref('')
+
+const categories = ref([])
+const categoryId = ref('')
 
 // Fetch selected product
 const { data: product, pending, error } = await useAsyncData(`edit-product-${id}`, async () => {
@@ -74,6 +85,25 @@ const { data: product, pending, error } = await useAsyncData(`edit-product-${id}
   return data
 })
 
+
+const getCategoriesLIST = async () => {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name')
+    .order('name')
+
+  if (error) {
+    console.log(error.message)
+    return
+  }
+
+  categories.value = data
+}
+
+await getCategoriesLIST()
+
+
+
 // Put fetched product data into form fields
 watchEffect(() => {
   if (product.value) {
@@ -81,7 +111,7 @@ watchEffect(() => {
     price.value = product.value.price
     oldPrice.value = product.value.old_price
     imageUrl.value = product.value.image_url
-    category.value = product.value.category
+    categoryId.value = product.value.category_id || ''
   }
 })
 
@@ -94,7 +124,7 @@ const updateProduct = async () => {
       price: Number(price.value),
       old_price: oldPrice.value ? Number(oldPrice.value) : null,
       image_url: imageUrl.value,
-      category: category.value
+      category_id: categoryId.value
     })
     .eq('id', id)
 
