@@ -51,15 +51,46 @@
         {{ errorMessage }}
       </div>
 
+      <div class="mb-6 rounded-2xl bg-white p-5 shadow">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <label for="product-search" class="mb-2 block text-sm font-semibold text-gray-700">
+              Search Products
+            </label>
+            <input
+              id="product-search"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search by product title"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <button
+            v-if="searchQuery"
+            type="button"
+            @click="clearSearch"
+            class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
       <div v-if="loading" class="rounded-2xl bg-white p-8 text-center shadow">
         Loading products...
       </div>
 
       <div v-else-if="!products.length" class="rounded-2xl bg-white p-8 text-center shadow">
-        <h3 class="text-2xl font-bold text-gray-900">No products yet</h3>
-        <p class="mt-2 text-gray-500">Start by adding your first product.</p>
+        <h3 class="text-2xl font-bold text-gray-900">
+          {{ hasActiveSearch ? 'No matching products' : 'No products yet' }}
+        </h3>
+        <p class="mt-2 text-gray-500">
+          {{ hasActiveSearch ? 'Try a different search term.' : 'Start by adding your first product.' }}
+        </p>
 
         <NuxtLink
+          v-if="!hasActiveSearch"
           to="/dashboard/products/add"
           class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
         >
@@ -70,7 +101,7 @@
       <div v-else>
         <div class="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 shadow">
           <p class="text-sm text-gray-500">
-            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalProducts }} products
+            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalProducts }} {{ hasActiveSearch ? 'matching products' : 'products' }}
           </p>
 
           <p class="text-sm font-medium text-gray-600">
@@ -181,6 +212,11 @@ const errorMessage = ref('')
 const currentPage = ref(1)
 const pageSize = 9
 const totalProducts = ref(0)
+const searchQuery = ref('')
+let searchTimeoutId = null
+
+const trimmedSearchQuery = computed(() => searchQuery.value.trim())
+const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalProducts.value / pageSize))
@@ -206,7 +242,7 @@ const getProductsList = async (page = currentPage.value) => {
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from('products')
     .select(`
       *,
@@ -216,6 +252,12 @@ const getProductsList = async (page = currentPage.value) => {
         slug
       )
     `, { count: 'exact' })
+
+  if (trimmedSearchQuery.value) {
+    query = query.ilike('title', `%${trimmedSearchQuery.value}%`)
+  }
+
+  const { data, error, count } = await query
     .order('created_at', { ascending: false })
     .range(from, to)
 
@@ -252,6 +294,26 @@ const goToNextPage = async () => {
 
   await getProductsList(currentPage.value + 1)
 }
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+watch(searchQuery, () => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+
+  searchTimeoutId = setTimeout(() => {
+    getProductsList(1)
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+})
 
 await getProductsList()
 </script>

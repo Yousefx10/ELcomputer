@@ -74,8 +74,32 @@
           <h3 class="text-2xl font-bold">All Brands</h3>
 
           <p class="text-sm text-gray-500">
-            {{ totalBrands }} total
+            {{ totalBrands }} {{ hasActiveSearch ? 'matching' : 'total' }}
           </p>
+        </div>
+
+        <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <label for="brand-search" class="mb-2 block text-sm font-semibold text-gray-700">
+              Search Brands
+            </label>
+            <input
+              id="brand-search"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search by brand name"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <button
+            v-if="searchQuery"
+            type="button"
+            @click="clearSearch"
+            class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+          >
+            Clear
+          </button>
         </div>
 
         <p v-if="loading" class="text-gray-500">
@@ -83,13 +107,13 @@
         </p>
 
         <p v-else-if="!brands.length" class="text-gray-500">
-          No brands found yet.
+          {{ hasActiveSearch ? 'No matching brands found.' : 'No brands found yet.' }}
         </p>
 
         <div v-else>
           <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
             <p class="text-sm text-gray-500">
-              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalBrands }} brands
+              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalBrands }} {{ hasActiveSearch ? 'matching brands' : 'brands' }}
             </p>
 
             <p class="text-sm font-medium text-gray-600">
@@ -188,6 +212,11 @@ const editingId = ref(null)
 const currentPage = ref(1)
 const pageSize = 10
 const totalBrands = ref(0)
+const searchQuery = ref('')
+let searchTimeoutId = null
+
+const trimmedSearchQuery = computed(() => searchQuery.value.trim())
+const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalBrands.value / pageSize))
@@ -230,9 +259,15 @@ const getBrandsList = async (page = currentPage.value) => {
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from('brands')
     .select('*', { count: 'exact' })
+
+  if (trimmedSearchQuery.value) {
+    query = query.ilike('name', `%${trimmedSearchQuery.value}%`)
+  }
+
+  const { data, error, count } = await query
     .order('name')
     .range(from, to)
 
@@ -354,6 +389,26 @@ const goToNextPage = async () => {
 
   await getBrandsList(currentPage.value + 1)
 }
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+watch(searchQuery, () => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+
+  searchTimeoutId = setTimeout(() => {
+    getBrandsList(1)
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+})
 
 await getBrandsList()
 </script>

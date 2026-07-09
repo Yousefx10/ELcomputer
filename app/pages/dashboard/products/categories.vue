@@ -56,8 +56,32 @@
           <h3 class="text-2xl font-bold">All Categories</h3>
 
           <p class="text-sm text-gray-500">
-            {{ totalCategories }} total
+            {{ totalCategories }} {{ hasActiveSearch ? 'matching' : 'total' }}
           </p>
+        </div>
+
+        <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <label for="category-search" class="mb-2 block text-sm font-semibold text-gray-700">
+              Search Categories
+            </label>
+            <input
+              id="category-search"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search by category name"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <button
+            v-if="searchQuery"
+            type="button"
+            @click="clearSearch"
+            class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+          >
+            Clear
+          </button>
         </div>
 
         <p v-if="loading" class="text-gray-500">
@@ -65,13 +89,13 @@
         </p>
 
         <p v-else-if="!categories.length" class="text-gray-500">
-          No categories found yet.
+          {{ hasActiveSearch ? 'No matching categories found.' : 'No categories found yet.' }}
         </p>
 
         <div v-else>
           <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
             <p class="text-sm text-gray-500">
-              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCategories }} categories
+              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCategories }} {{ hasActiveSearch ? 'matching categories' : 'categories' }}
             </p>
 
             <p class="text-sm font-medium text-gray-600">
@@ -156,6 +180,11 @@ const editingId = ref(null)
 const currentPage = ref(1)
 const pageSize = 10
 const totalCategories = ref(0)
+const searchQuery = ref('')
+let searchTimeoutId = null
+
+const trimmedSearchQuery = computed(() => searchQuery.value.trim())
+const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalCategories.value / pageSize))
@@ -197,9 +226,15 @@ const getCategoriesList = async (page = currentPage.value) => {
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from('categories')
     .select('*', { count: 'exact' })
+
+  if (trimmedSearchQuery.value) {
+    query = query.ilike('name', `%${trimmedSearchQuery.value}%`)
+  }
+
+  const { data, error, count } = await query
     .order('name')
     .range(from, to)
 
@@ -319,6 +354,26 @@ const goToNextPage = async () => {
 
   await getCategoriesList(currentPage.value + 1)
 }
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+watch(searchQuery, () => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+
+  searchTimeoutId = setTimeout(() => {
+    getCategoriesList(1)
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  if (searchTimeoutId) {
+    clearTimeout(searchTimeoutId)
+  }
+})
 
 await getCategoriesList()
 </script>
