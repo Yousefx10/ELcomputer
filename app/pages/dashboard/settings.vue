@@ -256,22 +256,22 @@
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
+
+              <p v-if="settingsError" class="md:col-span-2 text-sm text-red-600">
+                {{ settingsError }}
+              </p>
+
+              <div class="md:col-span-2">
+                <button
+                  type="submit"
+                  class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+                >
+                  {{ settingsLoading ? 'Saving...' : 'Save Settings' }}
+                </button>
+              </div>
             </div>
           </div>
         </section>
-
-        <div class="rounded-2xl bg-white p-6 shadow">
-          <p v-if="settingsError" class="mb-4 text-sm text-red-600">
-            {{ settingsError }}
-          </p>
-
-          <button
-            type="submit"
-            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-          >
-            {{ settingsLoading ? 'Saving...' : 'Save Settings' }}
-          </button>
-        </div>
       </form>
 
       <section class="overflow-hidden rounded-2xl bg-white shadow">
