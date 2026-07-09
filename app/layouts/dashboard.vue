@@ -1,37 +1,37 @@
 <template>
-  <div class="min-h-screen">
-    <!-- 
-    <LayoutTopBar/>
-     -->
-
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-3xl font-bold">Dashboard</h1>
+  <div class="min-h-screen bg-gray-100">
+    <div class="mx-auto max-w-6xl px-6 pt-6">
+      <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
+        <NuxtLink to="/dashboard" class="text-lg font-bold text-gray-900">
+          ELcomputer Admin
+        </NuxtLink>
 
         <button
-            @click="logout"
-            class="rounded-lg bg-black px-4 py-2 text-white">
-        Logout
+          @click="logout"
+          class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+        >
+          Logout
         </button>
-    </div>
+      </header>
 
-     <LayoutDashboardNavBar/>
-     
-    <main class="">
+      <div class="mb-6 rounded-2xl bg-white shadow">
+        <LayoutDashboardNavBar />
+      </div>
+
+      <main>
         <slot />
-    </main>
-
-
-    <!-- <LayoutFooter/> -->
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-/*
-definePageMeta({
-  layout: 'default'
-})
-*/
+const supabase = useSupabaseClient()
 
+const logout = async () => {
+  await supabase.auth.signOut()
+  await navigateTo('/login')
+}
 </script>
 
 <style>
