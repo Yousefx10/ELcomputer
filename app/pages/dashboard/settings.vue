@@ -603,10 +603,14 @@
 
             <button
               type="button"
+              :disabled="addingHeaderLink"
               @click="addHeaderLink"
-              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+              class="rounded-lg px-4 py-3 font-medium text-white"
+              :class="addingHeaderLink
+                ? 'cursor-not-allowed bg-gray-400'
+                : 'bg-black hover:bg-gray-800'"
             >
-              {{ linkLoading ? 'Saving...' : 'Add Link' }}
+              {{ addingHeaderLink ? 'Saving...' : 'Add Link' }}
             </button>
           </div>
 
@@ -643,14 +647,14 @@
 
                   <button
                     type="button"
-                    :disabled="!isSiteLinkDirty(link) || linkLoading"
+                    :disabled="!isSiteLinkDirty(link) || isSiteLinkBusy(link.id)"
                     @click="saveSiteLink(link)"
                     class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                    :class="isSiteLinkDirty(link) && !linkLoading
+                    :class="isSiteLinkDirty(link) && !isSiteLinkBusy(link.id)
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : 'cursor-not-allowed bg-gray-300'"
                   >
-                    Save
+                    {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
                   </button>
                 </div>
               </div>
@@ -686,22 +690,26 @@
               <div class="flex gap-2 self-start">
                 <button
                   type="button"
-                  :disabled="!isSiteLinkDirty(link) || linkLoading"
+                  :disabled="!isSiteLinkDirty(link) || isSiteLinkBusy(link.id)"
                   @click="saveSiteLink(link)"
                   class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                  :class="isSiteLinkDirty(link) && !linkLoading
+                  :class="isSiteLinkDirty(link) && !isSiteLinkBusy(link.id)
                     ? 'bg-blue-600 hover:bg-blue-700'
                     : 'cursor-not-allowed bg-gray-300'"
                 >
-                  Save
+                  {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
                 </button>
 
                 <button
                   type="button"
+                  :disabled="isSiteLinkBusy(link.id)"
                   @click="deleteSiteLink(link.id)"
-                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isSiteLinkDeleting(link.id)
+                    ? 'cursor-not-allowed bg-red-400'
+                    : 'bg-red-600 hover:bg-red-700'"
                 >
-                  Delete
+                  {{ isSiteLinkDeleting(link.id) ? 'Deleting...' : 'Delete' }}
                 </button>
               </div>
             </div>
@@ -887,10 +895,14 @@
 
             <button
               type="button"
+              :disabled="addingFooterLink"
               @click="addFooterLink"
-              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+              class="rounded-lg px-4 py-3 font-medium text-white"
+              :class="addingFooterLink
+                ? 'cursor-not-allowed bg-gray-400'
+                : 'bg-black hover:bg-gray-800'"
             >
-              {{ linkLoading ? 'Saving...' : 'Add Item' }}
+              {{ addingFooterLink ? 'Saving...' : 'Add Item' }}
             </button>
           </div>
 
@@ -932,22 +944,26 @@
               <div class="flex gap-2 self-start">
                 <button
                   type="button"
-                  :disabled="!isSiteLinkDirty(link) || linkLoading"
+                  :disabled="!isSiteLinkDirty(link) || isSiteLinkBusy(link.id)"
                   @click="saveSiteLink(link)"
                   class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                  :class="isSiteLinkDirty(link) && !linkLoading
+                  :class="isSiteLinkDirty(link) && !isSiteLinkBusy(link.id)
                     ? 'bg-blue-600 hover:bg-blue-700'
                     : 'cursor-not-allowed bg-gray-300'"
                 >
-                  Save
+                  {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
                 </button>
 
                 <button
                   type="button"
+                  :disabled="isSiteLinkBusy(link.id)"
                   @click="deleteSiteLink(link.id)"
-                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                  :class="isSiteLinkDeleting(link.id)
+                    ? 'cursor-not-allowed bg-red-400'
+                    : 'bg-red-600 hover:bg-red-700'"
                 >
-                  Delete
+                  {{ isSiteLinkDeleting(link.id) ? 'Deleting...' : 'Delete' }}
                 </button>
               </div>
             </div>
@@ -1012,7 +1028,10 @@ const settingsLoading = ref(false)
 const settingsLoadingSection = ref('')
 const heroLoading = ref(false)
 const topBarLoading = ref(false)
-const linkLoading = ref(false)
+const addingHeaderLink = ref(false)
+const addingFooterLink = ref(false)
+const savingSiteLinkId = ref('')
+const deletingSiteLinkId = ref('')
 
 const settingsError = ref('')
 const settingsErrorSection = ref('')
@@ -1627,6 +1646,18 @@ const isSiteLinkDirty = (link) => {
     (link.is_enabled ?? true) !== link.original_is_enabled
 }
 
+const isSiteLinkSaving = (linkId) => {
+  return savingSiteLinkId.value === linkId
+}
+
+const isSiteLinkDeleting = (linkId) => {
+  return deletingSiteLinkId.value === linkId
+}
+
+const isSiteLinkBusy = (linkId) => {
+  return isSiteLinkSaving(linkId) || isSiteLinkDeleting(linkId)
+}
+
 const addHeaderLink = async () => {
   linkError.value = ''
 
@@ -1635,7 +1666,7 @@ const addHeaderLink = async () => {
     return
   }
 
-  linkLoading.value = true
+  addingHeaderLink.value = true
 
   const { error } = await supabase
     .from('site_links')
@@ -1646,7 +1677,7 @@ const addHeaderLink = async () => {
       sort_order: defaultHeaderLinkDefinitions.length + customHeaderLinks.value.length
     })
 
-  linkLoading.value = false
+  addingHeaderLink.value = false
 
   if (error) {
     if (!handleTableError(error)) {
@@ -1669,7 +1700,7 @@ const addFooterLink = async () => {
     return
   }
 
-  linkLoading.value = true
+  addingFooterLink.value = true
 
   const { error } = await supabase
     .from('site_links')
@@ -1681,7 +1712,7 @@ const addFooterLink = async () => {
       sort_order: footerLinks.value.length
     })
 
-  linkLoading.value = false
+  addingFooterLink.value = false
 
   if (error) {
     if (!handleTableError(error)) {
@@ -1720,7 +1751,7 @@ const saveSiteLink = async (link) => {
     return
   }
 
-  linkLoading.value = true
+  savingSiteLinkId.value = link.id
 
   const payload = {
     section_title: link.location === 'footer' ? link.section_title.trim() : null,
@@ -1744,7 +1775,7 @@ const saveSiteLink = async (link) => {
     .update(payload)
     .eq('id', link.id)
 
-  linkLoading.value = false
+  savingSiteLinkId.value = ''
 
   if (error) {
     if (!handleTableError(error)) {
@@ -1770,14 +1801,14 @@ const deleteSiteLink = async (linkId) => {
     return
   }
 
-  linkLoading.value = true
+  deletingSiteLinkId.value = linkId
 
   const { error } = await supabase
     .from('site_links')
     .delete()
     .eq('id', linkId)
 
-  linkLoading.value = false
+  deletingSiteLinkId.value = ''
 
   if (error) {
     if (!handleTableError(error)) {
