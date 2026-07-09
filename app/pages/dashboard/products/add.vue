@@ -1,153 +1,385 @@
 <template>
-    <div>
-        <h2 class="text-center font-bold text-4xl my-5">
-            Add New Product
-        </h2>
-        <section>
-            <SideBarMobile :links="links"/>
-        </section>
-        <div class="flex">
-            <main class="flex-1">
-                <div class="mx-auto max-w-5xl">
-                    <form
-                    @submit.prevent="addProduct"
-                    class="mb-8 grid gap-3 rounded-2xl bg-white p-5 shadow md:grid-cols-2">
+  <div class="min-h-screen bg-gray-100 p-6">
+    <h2 class="my-5 text-center text-4xl font-bold">
+      Add New Product
+    </h2>
 
-                    <input
-                    v-model="title"
-                    placeholder="Product title"
-                    class="rounded-lg border p-3"
-                    />
+    <section class="mb-6">
+      <SideBarMobile :links="links" />
+    </section>
 
-                    <select v-model="categoryId" class="w-full border p-3 rounded-xl">
-                        <option disabled value="">Select Category</option>
+    <div class="mx-auto max-w-6xl">
+      <form
+        @submit.prevent="addProduct"
+        class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
+      >
+        <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Store Visibility</p>
+            <p class="text-sm text-gray-500">
+              Choose whether this product should appear on the store after saving
+            </p>
+          </div>
 
-                        <option
-                        v-for="category in categories"
-                        :key="category.id"
-                        :value="category.id"
-                        >
-                        {{ category.name }}
-                        </option>
-                    </select>
-                    
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold" :class="isPublished ? 'text-green-600' : 'text-gray-500'">
+              {{ isPublished ? 'ON' : 'OFF' }}
+            </span>
 
-                    <input
-                    v-model="price"
-                    type="number"
-                    placeholder="Price"
-                    class="rounded-lg border p-3"
-                    />
-
-                    <input
-                    v-model="oldPrice"
-                    type="number"
-                    placeholder="Old price"
-                    class="rounded-lg border p-3"
-                    />
-
-                    <input
-                    v-model="imageUrl"
-                    placeholder="Image URL"
-                    class="rounded-lg border p-3 md:col-span-2"
-                    />
-
-                    <p v-if="errorMessage" class="text-red-600 md:col-span-2">
-                    {{ errorMessage }}
-                    </p>
-
-                    <button
-                    type="submit"
-                    class="rounded-lg bg-blue-600 p-3 font-bold text-white md:col-span-2"
-                    >
-                    {{ loading ? 'Adding...' : 'Add Product' }}
-                    </button>
-                    </form>
-                </div>
-            </main>
-
+            <button
+              type="button"
+              :aria-pressed="isPublished"
+              @click="isPublished = !isPublished"
+              class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+              :class="isPublished ? 'bg-green-600' : 'bg-gray-300'"
+            >
+              <span
+                class="inline-block h-5 w-5 rounded-full bg-white transition"
+                :class="isPublished ? 'translate-x-8' : 'translate-x-1'"
+              />
+            </button>
+          </div>
         </div>
 
+        <div class="md:col-span-2">
+          <h3 class="text-2xl font-bold">Product Details</h3>
+          <p class="text-sm text-gray-500">
+            After saving, you will continue in the edit page to add extra images and specifications
+          </p>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+          <input
+            v-model="title"
+            type="text"
+            placeholder="Product title"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Slug</label>
+
+          <div class="flex gap-2">
+            <input
+              v-model="slug"
+              type="text"
+              placeholder="product-slug"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            />
+
+            <button
+              type="button"
+              @click="useTitleSlug"
+              class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            >
+              Generate
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Category</label>
+          <select
+            v-model="categoryId"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          >
+            <option value="">No Category</option>
+
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+            >
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Brand</label>
+          <select
+            v-model="brandId"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          >
+            <option value="">No Brand</option>
+
+            <option
+              v-for="brand in brands"
+              :key="brand.id"
+              :value="brand.id"
+            >
+              {{ brand.name }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Price</label>
+          <input
+            v-model="price"
+            type="number"
+            min="0"
+            placeholder="Price"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Old Price</label>
+          <input
+            v-model="oldPrice"
+            type="number"
+            min="0"
+            placeholder="Old price"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Stock Quantity</label>
+          <input
+            v-model="stockQuantity"
+            type="number"
+            min="0"
+            placeholder="0"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">SKU</label>
+          <input
+            v-model="sku"
+            type="text"
+            placeholder="Optional SKU"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Name</label>
+          <input
+            v-model="colorName"
+            type="text"
+            placeholder="Black"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Hex</label>
+          <input
+            v-model="colorHex"
+            type="text"
+            placeholder="#000000"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Main Image URL</label>
+          <input
+            v-model="imageUrl"
+            type="text"
+            placeholder="https://example.com/image.jpg"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Short Description</label>
+          <textarea
+            v-model="description"
+            rows="4"
+            placeholder="Short product description"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Long Description</label>
+          <textarea
+            v-model="longDescription"
+            rows="7"
+            placeholder="Long product description"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div class="md:col-span-2 rounded-2xl border border-dashed bg-gray-50 p-4">
+          <p class="mb-3 text-sm font-semibold text-gray-700">Main Image Preview</p>
+
+          <div class="flex min-h-[260px] items-center justify-center overflow-hidden rounded-xl bg-white p-4">
+            <img
+              v-if="imageUrl"
+              :src="imageUrl"
+              :alt="title || 'Product image'"
+              class="max-h-64 w-full object-contain"
+            />
+
+            <p v-else class="text-gray-400">
+              Add an image URL to preview the product image
+            </p>
+          </div>
+        </div>
+
+        <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
+          {{ actionError }}
+        </p>
+
+        <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
+          <button
+            type="submit"
+            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+          >
+            {{ saving ? 'Creating...' : 'Create Product' }}
+          </button>
+
+          <NuxtLink
+            to="/dashboard/products"
+            class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
+          >
+            Back
+          </NuxtLink>
+        </div>
+      </form>
     </div>
+  </div>
 </template>
 
 <script setup>
 import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
 
-
 definePageMeta({
-  layout:'dashboard'
+  layout: 'dashboard'
 })
 
 const links = dashboardProductsLinks
-
 const supabase = useSupabaseClient()
 
 const title = ref('')
+const slug = ref('')
+const description = ref('')
+const longDescription = ref('')
 const price = ref('')
 const oldPrice = ref('')
 const imageUrl = ref('')
-// const products = ref([]) //not been used, until now
-const loading = ref(false)
-const errorMessage = ref('')
+const categoryId = ref('')
+const brandId = ref('')
+const sku = ref('')
+const stockQuantity = ref(0)
+const colorName = ref('')
+const colorHex = ref('')
+const isPublished = ref(true)
 
 const categories = ref([])
-const categoryId = ref('')
+const brands = ref([])
 
+const saving = ref(false)
+const actionError = ref('')
 
- const addProduct = async() =>{
+const makeSlug = (value) => {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+}
 
-    loading.value=true
-    errorMessage.value=''
+const useTitleSlug = () => {
+  slug.value = makeSlug(title.value)
+}
 
-    const {error} = await supabase.from('products').insert({
-        title: title.value,
-        price: Number(price.value),
-        old_price: oldPrice.value ? Number(oldPrice.value) : null,
-        image_url: imageUrl.value,
-        category_id: categoryId.value
-    })
-
-        loading.value=false
-
-    if(error){
-        errorMessage.value = error.message
-        return
-    }
-
-    title.value = ''
-    price.value = ''
-    oldPrice.value = ''
-    categoryId.value='',
-    imageUrl.value = ''
-
-    await navigateTo('/dashboard/products')
-
- }
-
-
-
- 
-const getCategoriesLIST = async () => {
+const getCategoriesList = async () => {
   const { data, error } = await supabase
     .from('categories')
     .select('id, name')
     .order('name')
 
   if (error) {
-    alert(error.message)
+    actionError.value = error.message
     return
   }
 
-  categories.value = data
+  categories.value = data || []
 }
 
-await getCategoriesLIST()
+const getBrandsList = async () => {
+  const { data, error } = await supabase
+    .from('brands')
+    .select('id, name')
+    .order('name')
 
+  if (error) {
+    actionError.value = error.message
+    return
+  }
 
+  brands.value = data || []
+}
 
+const addProduct = async () => {
+  actionError.value = ''
+
+  const normalizedSlug = makeSlug(slug.value || title.value)
+
+  if (!title.value.trim()) {
+    actionError.value = 'Title is required'
+    return
+  }
+
+  if (!normalizedSlug) {
+    actionError.value = 'Slug is required'
+    return
+  }
+
+  if (price.value === '' || price.value === null) {
+    actionError.value = 'Price is required'
+    return
+  }
+
+  if (Number(stockQuantity.value) < 0) {
+    actionError.value = 'Stock quantity cannot be negative'
+    return
+  }
+
+  saving.value = true
+
+  const { data, error } = await supabase
+    .from('products')
+    .insert({
+      title: title.value.trim(),
+      slug: normalizedSlug,
+      description: description.value.trim() || null,
+      long_description: longDescription.value.trim() || null,
+      price: Number(price.value),
+      old_price: oldPrice.value ? Number(oldPrice.value) : null,
+      image_url: imageUrl.value.trim() || null,
+      category_id: categoryId.value || null,
+      brand_id: brandId.value || null,
+      sku: sku.value.trim() || null,
+      stock_quantity: Number(stockQuantity.value) || 0,
+      color_name: colorName.value.trim() || null,
+      color_hex: colorHex.value.trim() || null,
+      is_published: isPublished.value
+    })
+    .select('id')
+    .single()
+
+  saving.value = false
+
+  if (error) {
+    actionError.value = error.message
+    return
+  }
+
+  await navigateTo(`/dashboard/products/edit/${data.id}`)
+}
+
+await Promise.all([
+  getCategoriesList(),
+  getBrandsList()
+])
 </script>
-
-<style>
-
-</style>

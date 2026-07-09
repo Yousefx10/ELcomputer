@@ -37,14 +37,14 @@ const authChecked = ref(false)
 
 const logout = async () => {
   await supabase.auth.signOut()
-  await navigateTo('/login')
+  await navigateTo('/dashboard/login')
 }
 
 onMounted(async () => {
   const { data } = await supabase.auth.getSession()
 
   if (!data.session) {
-    await navigateTo('/login')
+    await navigateTo('/dashboard/login')
     return
   }
 

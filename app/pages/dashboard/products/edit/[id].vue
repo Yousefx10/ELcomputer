@@ -28,6 +28,34 @@
         @submit.prevent="updateProduct"
         class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
       >
+        <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Store Visibility</p>
+            <p class="text-sm text-gray-500">
+              Control whether this product is visible on the public store
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold" :class="isPublished ? 'text-green-600' : 'text-gray-500'">
+              {{ isPublished ? 'ON' : 'OFF' }}
+            </span>
+
+            <button
+              type="button"
+              :aria-pressed="isPublished"
+              @click="isPublished = !isPublished"
+              class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+              :class="isPublished ? 'bg-green-600' : 'bg-gray-300'"
+            >
+              <span
+                class="inline-block h-5 w-5 rounded-full bg-white transition"
+                :class="isPublished ? 'translate-x-8' : 'translate-x-1'"
+              />
+            </button>
+          </div>
+        </div>
+
         <div class="md:col-span-2">
           <h3 class="text-2xl font-bold">Product Details</h3>
           <p class="text-sm text-gray-500">
@@ -193,19 +221,6 @@
             placeholder="Long product description"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
-        </div>
-
-        <div class="md:col-span-2 flex items-center gap-3">
-          <input
-            id="is-published"
-            v-model="isPublished"
-            type="checkbox"
-            class="h-4 w-4"
-          />
-
-          <label for="is-published" class="text-sm font-semibold text-gray-700">
-            Product is published and visible on the store
-          </label>
         </div>
 
         <div class="md:col-span-2 rounded-2xl border border-dashed bg-gray-50 p-4">

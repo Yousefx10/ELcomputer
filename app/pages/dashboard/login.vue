@@ -22,7 +22,7 @@ const login = async () => {
     return
   }
 
-  await navigateTo('/')
+  await navigateTo('/dashboard')
 }
 </script>
 
@@ -32,10 +32,10 @@ const login = async () => {
       @submit.prevent="login"
       class="w-full max-w-sm rounded-2xl bg-white p-6 shadow"
     >
-      <h1 class="mb-2 text-2xl font-bold">Customer Login</h1>
+      <h1 class="mb-2 text-2xl font-bold">Admin Login</h1>
 
       <p class="mb-6 text-sm text-gray-500">
-        Sign in to continue shopping and access your account later.
+        Sign in to manage products, categories, brands, and dashboard content.
       </p>
 
       <input
@@ -64,9 +64,9 @@ const login = async () => {
       </button>
 
       <p class="mt-4 text-center text-sm text-gray-500">
-        Admin?
-        <NuxtLink to="/dashboard/login" class="font-semibold text-blue-600 hover:text-blue-700">
-          Go to dashboard login
+        Shopper?
+        <NuxtLink to="/login" class="font-semibold text-blue-600 hover:text-blue-700">
+          Go to customer login
         </NuxtLink>
       </p>
     </form>
