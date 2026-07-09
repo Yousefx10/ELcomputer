@@ -216,6 +216,10 @@ const getBannerBeforeCategory = (category) => {
 
   return null
 }
+
+useHead(() => ({
+  title: siteContent.value?.settings?.landing_page_title || siteContent.value?.settings?.site_name || 'ELcomputer'
+}))
 </script>
 
 <style>

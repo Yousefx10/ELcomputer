@@ -54,6 +54,26 @@
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Background Color</label>
+                <input
+                  v-model="siteSettings.site_background_color"
+                  type="text"
+                  placeholder="#f3f4f6"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Landing Page Title</label>
+                <input
+                  v-model="siteSettings.landing_page_title"
+                  type="text"
+                  placeholder="ELcomputer"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
             </div>
 
             <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -997,6 +1017,8 @@ const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
   site_logo_url: '',
+  site_background_color: '#f3f4f6',
+  landing_page_title: 'ELcomputer',
   hero_enabled: true,
   hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
@@ -1062,7 +1084,9 @@ const openSections = reactive({
 const siteSettingsSectionFields = {
   generalSettings: [
     'site_name',
-    'site_logo_url'
+    'site_logo_url',
+    'site_background_color',
+    'landing_page_title'
   ],
   heroSettings: [
     'hero_enabled',
@@ -1209,6 +1233,8 @@ const mapSiteLink = (link) => ({
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
+  site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
+  landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
   hero_enabled: source.hero_enabled ?? true,
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
@@ -1252,6 +1278,8 @@ const buildSiteSettingsPayload = (sectionName) => {
   siteSettingsSectionFields[sectionName].forEach((field) => {
     if ([
       'site_name',
+      'site_background_color',
+      'landing_page_title',
       'hero_enabled',
       'hero_rotation_seconds',
       'top_bar_rotation_seconds',

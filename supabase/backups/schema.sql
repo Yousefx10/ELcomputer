@@ -109,6 +109,8 @@ create table public.site_settings (
   key text not null default 'default'::text,
   site_name text not null default 'ELcomputer'::text,
   site_logo_url text null,
+  site_background_color text null default '#f3f4f6'::text,
+  landing_page_title text null default 'ELcomputer'::text,
   hero_enabled boolean not null default true,
   hero_rotation_seconds integer not null default 5,
   top_bar_rotation_seconds integer not null default 3,

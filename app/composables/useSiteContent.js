@@ -4,6 +4,8 @@ const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
   site_logo_url: '',
+  site_background_color: '#f3f4f6',
+  landing_page_title: 'ELcomputer',
   hero_enabled: true,
   hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
