@@ -39,23 +39,32 @@
                 <span>{{ formatCurrency(filters.maxPrice) }}</span>
               </div>
 
-              <input
-                :value="filters.minPrice"
-                type="range"
-                :min="sliderMin"
-                :max="filters.maxPrice"
-                class="w-full"
-                @input="updateMinPrice($event)"
-              >
+              <div class="relative mt-5 h-6">
+                <div class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-gray-200" />
 
-              <input
-                :value="filters.maxPrice"
-                type="range"
-                :min="filters.minPrice"
-                :max="sliderMax"
-                class="mt-3 w-full"
-                @input="updateMaxPrice($event)"
-              >
+                <div
+                  class="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-black"
+                  :style="priceRangeTrackStyle"
+                />
+
+                <input
+                  :value="filters.minPrice"
+                  type="range"
+                  :min="sliderMin"
+                  :max="sliderMax"
+                  class="price-range-slider absolute inset-0 z-20 h-6 w-full"
+                  @input="updateMinPrice($event)"
+                >
+
+                <input
+                  :value="filters.maxPrice"
+                  type="range"
+                  :min="sliderMin"
+                  :max="sliderMax"
+                  class="price-range-slider absolute inset-0 z-10 h-6 w-full"
+                  @input="updateMaxPrice($event)"
+                >
+              </div>
 
               <div class="mt-4 grid gap-3 sm:grid-cols-2">
                 <div>
@@ -682,6 +691,17 @@ const totalPages = computed(() => searchPageData.value?.totalPages || 1)
 const currentPage = computed(() => searchPageData.value?.queryState?.currentPage || 1)
 const sliderMin = computed(() => priceBounds.value.min)
 const sliderMax = computed(() => Math.max(priceBounds.value.max, priceBounds.value.min))
+const priceRangeSpan = computed(() => Math.max(sliderMax.value - sliderMin.value, 1))
+const minThumbPercent = computed(() => {
+  return ((filters.minPrice - sliderMin.value) / priceRangeSpan.value) * 100
+})
+const maxThumbPercent = computed(() => {
+  return ((filters.maxPrice - sliderMin.value) / priceRangeSpan.value) * 100
+})
+const priceRangeTrackStyle = computed(() => ({
+  left: `${minThumbPercent.value}%`,
+  right: `${100 - maxThumbPercent.value}%`
+}))
 
 const currentCategory = computed(() => {
   return categories.value.find((category) => category.slug === filters.category) || null
@@ -874,3 +894,44 @@ useHead(() => ({
   title: pageTitle.value
 }))
 </script>
+
+<style scoped>
+.price-range-slider {
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.price-range-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.price-range-slider::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.price-range-slider::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  border: 2px solid #ffffff;
+  background: #111827;
+  box-shadow: 0 0 0 1px #111827;
+  cursor: pointer;
+}
+
+.price-range-slider::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  background: #111827;
+  box-shadow: 0 0 0 1px #111827;
+  cursor: pointer;
+}
+</style>

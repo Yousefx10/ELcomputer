@@ -64,12 +64,20 @@
 
         <li>
           <form @submit.prevent="submitDesktopSearch">
-            <input
-              v-model="desktopSearchQuery"
-              type="search"
-              placeholder="Search products"
-              class="w-56 rounded-full border px-4 py-1 text-black"
-            >
+            <div class="relative">
+              <Icon
+                name="lucide:search"
+                size="16"
+                class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
+              />
+
+              <input
+                v-model="desktopSearchQuery"
+                type="search"
+                placeholder="Search products"
+                class="w-56 rounded-full border border-white/70 bg-white/10 py-2 pl-11 pr-4 text-sm text-white placeholder:text-gray-300 outline-none transition focus:border-white focus:bg-white/15"
+              >
+            </div>
           </form>
         </li>
 
@@ -146,12 +154,20 @@
 
         <li class="col-span-2">
           <form @submit.prevent="submitMobileSearch">
-            <input
-              v-model="mobileSearchQuery"
-              type="search"
-              placeholder="Search products"
-              class="w-56 rounded-full border px-4 py-1 text-black"
-            >
+            <div class="relative mx-auto w-full max-w-xs">
+              <Icon
+                name="lucide:search"
+                size="16"
+                class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
+              />
+
+              <input
+                v-model="mobileSearchQuery"
+                type="search"
+                placeholder="Search products"
+                class="w-full rounded-full border border-white/70 bg-white/10 py-2 pl-11 pr-4 text-sm text-white placeholder:text-gray-300 outline-none transition focus:border-white focus:bg-white/15"
+              >
+            </div>
           </form>
         </li>
 
