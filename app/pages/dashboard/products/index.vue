@@ -19,10 +19,6 @@
         </div>
       </div>
 
-      <section class="mb-6">
-        <SideBarMobile :links="links" />
-      </section>
-
       <div class="mb-6 grid gap-4 md:grid-cols-3">
         <div class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
@@ -197,13 +193,10 @@
 </template>
 
 <script setup>
-import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
-
 definePageMeta({
   layout: 'dashboard'
 })
 
-const links = dashboardProductsLinks
 const supabase = useSupabaseClient()
 
 const products = ref([])

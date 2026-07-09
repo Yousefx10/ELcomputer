@@ -8,10 +8,6 @@
       Product ID: {{ id }}
     </p>
 
-    <section class="mb-6">
-      <SideBarMobile :links="links" />
-    </section>
-
     <div v-if="pending" class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
       Loading product...
     </div>
@@ -453,13 +449,10 @@
 </template>
 
 <script setup>
-import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
-
 definePageMeta({
   layout: 'dashboard'
 })
 
-const links = dashboardProductsLinks
 const supabase = useSupabaseClient()
 
 const route = useRoute()

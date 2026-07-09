@@ -8,10 +8,6 @@
         </p>
       </div>
 
-      <section class="mb-6">
-        <SideBarMobile :links="links" />
-      </section>
-
       <form
         @submit.prevent="saveBrand"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
@@ -193,13 +189,10 @@
 </template>
 
 <script setup>
-import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
-
 definePageMeta({
   layout: 'dashboard'
 })
 
-const links = dashboardProductsLinks
 const supabase = useSupabaseClient()
 
 const brands = ref([])

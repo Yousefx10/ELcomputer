@@ -91,6 +91,325 @@
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
+            @click="toggleSection('topBarTexts')"
+            class="flex w-full items-center justify-between p-6 text-left"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Top Bar Texts</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                These are the rotating texts shown in the blue bar above the navbar.
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.topBarTexts ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div v-if="openSections.topBarTexts" class="border-t p-6">
+            <div class="mb-5 grid gap-5 md:grid-cols-[220px_auto]">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
+                <input
+                  v-model="siteSettings.top_bar_rotation_seconds"
+                  type="number"
+                  min="1"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div class="flex items-end justify-start md:justify-end">
+                <button
+                  type="button"
+                  :disabled="!isSettingsSectionDirty('topBarSettings') || settingsLoading"
+                  @click="saveSiteSettings('topBarSettings')"
+                  class="rounded-lg px-5 py-3 font-bold text-white"
+                  :class="isSettingsSectionDirty('topBarSettings') && !settingsLoading
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  {{ settingsLoadingSection === 'topBarSettings' ? 'Saving...' : 'Save Top Bar Timing' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-5 space-y-1">
+              <p
+                v-if="settingsErrorSection === 'topBarSettings' && settingsError"
+                class="text-sm text-red-600"
+              >
+                {{ settingsError }}
+              </p>
+
+              <p
+                v-if="settingsSuccessSection === 'topBarSettings' && settingsSuccess"
+                class="text-sm text-green-600"
+              >
+                {{ settingsSuccess }}
+              </p>
+            </div>
+
+            <div class="mb-5 grid gap-3 md:grid-cols-[2fr_auto]">
+              <input
+                v-model="newTopBarText"
+                type="text"
+                placeholder="Top bar text"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+
+              <button
+                type="button"
+                @click="addTopBarMessage"
+                class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+              >
+                {{ topBarLoading ? 'Saving...' : 'Add Text' }}
+              </button>
+            </div>
+
+            <p v-if="topBarError" class="mb-4 text-sm text-red-600">
+              {{ topBarError }}
+            </p>
+
+            <div v-if="topBarMessages.length" class="space-y-3">
+              <div
+                v-for="message in topBarMessages"
+                :key="message.id"
+                class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_auto]"
+              >
+                <div class="space-y-3">
+                  <input
+                    v-model="message.text"
+                    type="text"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+
+                  <label class="flex items-center gap-2 text-sm text-gray-600">
+                    <input v-model="message.is_enabled" type="checkbox">
+                    Enabled
+                  </label>
+                </div>
+
+                <div class="flex gap-2 self-start">
+                  <button
+                    type="button"
+                    :disabled="!isTopBarMessageDirty(message) || topBarLoading"
+                    @click="saveTopBarMessage(message)"
+                    class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                    :class="isTopBarMessageDirty(message) && !topBarLoading
+                      ? 'bg-blue-600 hover:bg-blue-700'
+                      : 'cursor-not-allowed bg-gray-300'"
+                  >
+                    Save
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="deleteTopBarMessage(message.id)"
+                    class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-gray-500">
+              No top bar texts added yet.
+            </p>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
+            @click="toggleSection('heroBanners')"
+            class="flex w-full items-center justify-between p-6 text-left"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Hero Banners</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Control the main hero slider and add multiple hero banners for the home page.
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.heroBanners ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div v-if="openSections.heroBanners" class="border-t p-6">
+            <div class="mb-5 grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
+              <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
+                <div>
+                  <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
+                  <p class="text-sm text-gray-500">
+                    Turn the main home hero banner section on or off
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
+                    {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
+                  </span>
+
+                  <button
+                    type="button"
+                    :aria-pressed="siteSettings.hero_enabled"
+                    @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
+                    class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                    :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                  >
+                    <span
+                      class="inline-block h-5 w-5 rounded-full bg-white transition"
+                      :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Hero Rotation Seconds</label>
+                <input
+                  v-model="siteSettings.hero_rotation_seconds"
+                  type="number"
+                  min="1"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+            </div>
+
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'heroSettings' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'heroSettings' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('heroSettings') || settingsLoading"
+                @click="saveSiteSettings('heroSettings')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('heroSettings') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'heroSettings' ? 'Saving...' : 'Save Hero Settings' }}
+              </button>
+            </div>
+
+            <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
+              <input
+                v-model="newHeroImageUrl"
+                type="text"
+                placeholder="Image URL"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+
+              <input
+                v-model="newHeroLinkUrl"
+                type="text"
+                placeholder="Link URL"
+                class="rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+
+              <button
+                type="button"
+                @click="addHeroBanner"
+                class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+              >
+                {{ heroLoading ? 'Saving...' : 'Add Banner' }}
+              </button>
+            </div>
+
+            <p v-if="heroError" class="mb-4 text-sm text-red-600">
+              {{ heroError }}
+            </p>
+
+            <div v-if="heroBanners.length" class="space-y-3">
+              <div
+                v-for="banner in heroBanners"
+                :key="banner.id"
+                class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,2fr)_auto]"
+              >
+                <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
+                  <img
+                    v-if="banner.image_url"
+                    :src="banner.image_url"
+                    alt="Hero banner"
+                    class="h-full w-full object-cover"
+                  >
+                </div>
+
+                <input
+                  v-model="banner.image_url"
+                  type="text"
+                  class="rounded-lg border p-3 outline-none focus:border-blue-500"
+                >
+
+                <div class="space-y-3">
+                  <input
+                    v-model="banner.link_url"
+                    type="text"
+                    placeholder="Link URL"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+
+                  <label class="flex items-center gap-2 text-sm text-gray-600">
+                    <input v-model="banner.is_enabled" type="checkbox">
+                    Enabled
+                  </label>
+                </div>
+
+                <div class="flex gap-2 self-start">
+                  <button
+                    type="button"
+                    :disabled="!isHeroBannerDirty(banner) || heroLoading"
+                    @click="saveHeroBanner(banner)"
+                    class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                    :class="isHeroBannerDirty(banner) && !heroLoading
+                      ? 'bg-blue-600 hover:bg-blue-700'
+                      : 'cursor-not-allowed bg-gray-300'"
+                  >
+                    Save
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="deleteHeroBanner(banner.id)"
+                    class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-gray-500">
+              No hero banners added yet.
+            </p>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
             @click="toggleSection('bannerAds')"
             class="flex w-full items-center justify-between p-6 text-left"
           >
@@ -243,455 +562,7 @@
             </div>
           </div>
         </section>
-
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
-            type="button"
-            @click="toggleSection('footerSettings')"
-            class="flex w-full items-center justify-between p-6 text-left"
-          >
-            <div>
-              <h3 class="text-2xl font-bold">Footer Settings</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Footer call-to-action, contact details, and copyright text
-              </p>
-            </div>
-
-            <Icon
-              name="lucide:chevron-down"
-              size="20"
-              class="transition"
-              :class="openSections.footerSettings ? 'rotate-180' : ''"
-            />
-          </button>
-
-          <div v-if="openSections.footerSettings" class="border-t p-6">
-            <div class="grid gap-5 md:grid-cols-2">
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
-                <input
-                  v-model="siteSettings.footer_cta_title"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
-                <input
-                  v-model="siteSettings.footer_cta_subtitle"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
-                <input
-                  v-model="siteSettings.footer_cta_button_label"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
-                <input
-                  v-model="siteSettings.footer_cta_button_url"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
-                <input
-                  v-model="siteSettings.footer_email"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
-                <input
-                  v-model="siteSettings.footer_phone"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div class="md:col-span-2">
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
-                <input
-                  v-model="siteSettings.footer_address"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <div class="md:col-span-2">
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
-                <input
-                  v-model="siteSettings.copyright_text"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-            </div>
-
-            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1">
-                <p
-                  v-if="settingsErrorSection === 'footerSettings' && settingsError"
-                  class="text-sm text-red-600"
-                >
-                  {{ settingsError }}
-                </p>
-
-                <p
-                  v-if="settingsSuccessSection === 'footerSettings' && settingsSuccess"
-                  class="text-sm text-green-600"
-                >
-                  {{ settingsSuccess }}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                :disabled="!isSettingsSectionDirty('footerSettings') || settingsLoading"
-                @click="saveSiteSettings('footerSettings')"
-                class="rounded-lg px-5 py-3 font-bold text-white"
-                :class="isSettingsSectionDirty('footerSettings') && !settingsLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                {{ settingsLoadingSection === 'footerSettings' ? 'Saving...' : 'Save Footer Settings' }}
-              </button>
-            </div>
-          </div>
-        </section>
       </div>
-
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
-        <button
-          type="button"
-          @click="toggleSection('heroBanners')"
-          class="flex w-full items-center justify-between p-6 text-left"
-        >
-            <div>
-              <h3 class="text-2xl font-bold">Hero Banners</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Control the main hero slider and add multiple hero banners for the home page.
-              </p>
-            </div>
-
-          <Icon
-            name="lucide:chevron-down"
-            size="20"
-            class="transition"
-            :class="openSections.heroBanners ? 'rotate-180' : ''"
-          />
-        </button>
-
-        <div v-if="openSections.heroBanners" class="border-t p-6">
-          <div class="mb-5 grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
-            <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
-              <div>
-                <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
-                <p class="text-sm text-gray-500">
-                  Turn the main home hero banner section on or off
-                </p>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
-                  {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
-                </span>
-
-                <button
-                  type="button"
-                  :aria-pressed="siteSettings.hero_enabled"
-                  @click="siteSettings.hero_enabled = !siteSettings.hero_enabled"
-                  class="relative inline-flex h-7 w-14 items-center rounded-full transition"
-                  :class="siteSettings.hero_enabled ? 'bg-green-600' : 'bg-gray-300'"
-                >
-                  <span
-                    class="inline-block h-5 w-5 rounded-full bg-white transition"
-                    :class="siteSettings.hero_enabled ? 'translate-x-8' : 'translate-x-1'"
-                  />
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Hero Rotation Seconds</label>
-              <input
-                v-model="siteSettings.hero_rotation_seconds"
-                type="number"
-                min="1"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-            </div>
-          </div>
-
-          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div class="space-y-1">
-              <p
-                v-if="settingsErrorSection === 'heroSettings' && settingsError"
-                class="text-sm text-red-600"
-              >
-                {{ settingsError }}
-              </p>
-
-              <p
-                v-if="settingsSuccessSection === 'heroSettings' && settingsSuccess"
-                class="text-sm text-green-600"
-              >
-                {{ settingsSuccess }}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              :disabled="!isSettingsSectionDirty('heroSettings') || settingsLoading"
-              @click="saveSiteSettings('heroSettings')"
-              class="rounded-lg px-5 py-3 font-bold text-white"
-              :class="isSettingsSectionDirty('heroSettings') && !settingsLoading
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'cursor-not-allowed bg-gray-300'"
-            >
-              {{ settingsLoadingSection === 'heroSettings' ? 'Saving...' : 'Save Hero Settings' }}
-            </button>
-          </div>
-
-          <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
-            <input
-              v-model="newHeroImageUrl"
-              type="text"
-              placeholder="Image URL"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <input
-              v-model="newHeroLinkUrl"
-              type="text"
-              placeholder="Link URL"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <button
-              type="button"
-              @click="addHeroBanner"
-              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-            >
-              {{ heroLoading ? 'Saving...' : 'Add Banner' }}
-            </button>
-          </div>
-
-          <p v-if="heroError" class="mb-4 text-sm text-red-600">
-            {{ heroError }}
-          </p>
-
-          <div v-if="heroBanners.length" class="space-y-3">
-            <div
-              v-for="banner in heroBanners"
-              :key="banner.id"
-              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,2fr)_auto]"
-            >
-              <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
-                <img
-                  v-if="banner.image_url"
-                  :src="banner.image_url"
-                  alt="Hero banner"
-                  class="h-full w-full object-cover"
-                >
-              </div>
-
-              <input
-                v-model="banner.image_url"
-                type="text"
-                class="rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-
-              <div class="space-y-3">
-                <input
-                  v-model="banner.link_url"
-                  type="text"
-                  placeholder="Link URL"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-
-                <label class="flex items-center gap-2 text-sm text-gray-600">
-                  <input v-model="banner.is_enabled" type="checkbox">
-                  Enabled
-                </label>
-              </div>
-
-              <div class="flex gap-2 self-start">
-                <button
-                  type="button"
-                  :disabled="!isHeroBannerDirty(banner) || heroLoading"
-                  @click="saveHeroBanner(banner)"
-                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                  :class="isHeroBannerDirty(banner) && !heroLoading
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-300'"
-                >
-                  Save
-                </button>
-
-                <button
-                  type="button"
-                  @click="deleteHeroBanner(banner.id)"
-                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <p v-else class="text-sm text-gray-500">
-            No hero banners added yet.
-          </p>
-        </div>
-      </section>
-
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
-        <button
-          type="button"
-          @click="toggleSection('topBarTexts')"
-          class="flex w-full items-center justify-between p-6 text-left"
-        >
-            <div>
-              <h3 class="text-2xl font-bold">Top Bar Texts</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                These are the rotating texts shown in the blue bar above the navbar.
-              </p>
-            </div>
-
-          <Icon
-            name="lucide:chevron-down"
-            size="20"
-            class="transition"
-            :class="openSections.topBarTexts ? 'rotate-180' : ''"
-          />
-        </button>
-
-        <div v-if="openSections.topBarTexts" class="border-t p-6">
-          <div class="mb-5 grid gap-5 md:grid-cols-[220px_auto]">
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
-              <input
-                v-model="siteSettings.top_bar_rotation_seconds"
-                type="number"
-                min="1"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-            </div>
-
-            <div class="flex items-end justify-start md:justify-end">
-              <button
-                type="button"
-                :disabled="!isSettingsSectionDirty('topBarSettings') || settingsLoading"
-                @click="saveSiteSettings('topBarSettings')"
-                class="rounded-lg px-5 py-3 font-bold text-white"
-                :class="isSettingsSectionDirty('topBarSettings') && !settingsLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                {{ settingsLoadingSection === 'topBarSettings' ? 'Saving...' : 'Save Top Bar Timing' }}
-              </button>
-            </div>
-          </div>
-
-          <div class="mb-5 space-y-1">
-            <p
-              v-if="settingsErrorSection === 'topBarSettings' && settingsError"
-              class="text-sm text-red-600"
-            >
-              {{ settingsError }}
-            </p>
-
-            <p
-              v-if="settingsSuccessSection === 'topBarSettings' && settingsSuccess"
-              class="text-sm text-green-600"
-            >
-              {{ settingsSuccess }}
-            </p>
-          </div>
-
-          <div class="mb-5 grid gap-3 md:grid-cols-[2fr_auto]">
-            <input
-              v-model="newTopBarText"
-              type="text"
-              placeholder="Top bar text"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <button
-              type="button"
-              @click="addTopBarMessage"
-              class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-            >
-              {{ topBarLoading ? 'Saving...' : 'Add Text' }}
-            </button>
-          </div>
-
-          <p v-if="topBarError" class="mb-4 text-sm text-red-600">
-            {{ topBarError }}
-          </p>
-
-          <div v-if="topBarMessages.length" class="space-y-3">
-            <div
-              v-for="message in topBarMessages"
-              :key="message.id"
-              class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_auto]"
-            >
-              <div class="space-y-3">
-                <input
-                  v-model="message.text"
-                  type="text"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-
-                <label class="flex items-center gap-2 text-sm text-gray-600">
-                  <input v-model="message.is_enabled" type="checkbox">
-                  Enabled
-                </label>
-              </div>
-
-              <div class="flex gap-2 self-start">
-                <button
-                  type="button"
-                  :disabled="!isTopBarMessageDirty(message) || topBarLoading"
-                  @click="saveTopBarMessage(message)"
-                  class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                  :class="isTopBarMessageDirty(message) && !topBarLoading
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-300'"
-                >
-                  Save
-                </button>
-
-                <button
-                  type="button"
-                  @click="deleteTopBarMessage(message.id)"
-                  class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <p v-else class="text-sm text-gray-500">
-            No top bar texts added yet.
-          </p>
-        </div>
-      </section>
 
       <section class="overflow-hidden rounded-2xl bg-white shadow">
         <button
@@ -795,6 +666,134 @@
           <p v-else class="text-sm text-gray-500">
             No header links added yet.
           </p>
+        </div>
+      </section>
+
+      <section class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          @click="toggleSection('footerSettings')"
+          class="flex w-full items-center justify-between p-6 text-left"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Footer Settings</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Footer call-to-action, contact details, and copyright text
+            </p>
+          </div>
+
+          <Icon
+            name="lucide:chevron-down"
+            size="20"
+            class="transition"
+            :class="openSections.footerSettings ? 'rotate-180' : ''"
+          />
+        </button>
+
+        <div v-if="openSections.footerSettings" class="border-t p-6">
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
+              <input
+                v-model="siteSettings.footer_cta_title"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
+              <input
+                v-model="siteSettings.footer_cta_subtitle"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
+              <input
+                v-model="siteSettings.footer_cta_button_label"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
+              <input
+                v-model="siteSettings.footer_cta_button_url"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
+              <input
+                v-model="siteSettings.footer_email"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
+              <input
+                v-model="siteSettings.footer_phone"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
+              <input
+                v-model="siteSettings.footer_address"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
+              <input
+                v-model="siteSettings.copyright_text"
+                type="text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+            </div>
+          </div>
+
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1">
+              <p
+                v-if="settingsErrorSection === 'footerSettings' && settingsError"
+                class="text-sm text-red-600"
+              >
+                {{ settingsError }}
+              </p>
+
+              <p
+                v-if="settingsSuccessSection === 'footerSettings' && settingsSuccess"
+                class="text-sm text-green-600"
+              >
+                {{ settingsSuccess }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              :disabled="!isSettingsSectionDirty('footerSettings') || settingsLoading"
+              @click="saveSiteSettings('footerSettings')"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="isSettingsSectionDirty('footerSettings') && !settingsLoading
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'cursor-not-allowed bg-gray-300'"
+            >
+              {{ settingsLoadingSection === 'footerSettings' ? 'Saving...' : 'Save Footer Settings' }}
+            </button>
+          </div>
         </div>
       </section>
 

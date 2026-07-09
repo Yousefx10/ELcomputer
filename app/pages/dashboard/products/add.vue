@@ -4,10 +4,6 @@
       Add New Product
     </h2>
 
-    <section class="mb-6">
-      <SideBarMobile :links="links" />
-    </section>
-
     <div class="mx-auto max-w-6xl">
       <form
         @submit.prevent="addProduct"
@@ -250,13 +246,10 @@
 </template>
 
 <script setup>
-import SideBarMobile from '~/components/dashboard/SideBarMobile.vue'
-
 definePageMeta({
   layout: 'dashboard'
 })
 
-const links = dashboardProductsLinks
 const supabase = useSupabaseClient()
 
 const title = ref('')
