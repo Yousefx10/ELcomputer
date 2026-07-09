@@ -1,58 +1,38 @@
 <template>
-    <div class="max-w-full">
-        <p class="text-center font-bold text-4xl pb-5">TOP CATEGORIES</p>
+  <div class="max-w-full">
+    <p class="pb-5 text-center text-4xl font-bold">TOP CATEGORIES</p>
 
-        <section class="flex gap-4">
-            <!-- writting extra for loop to repeat same data 5 times, temporary only -->
-            <div            class="flex flex-col items-center mx-auto" 
-                            v-for="offer in offers" :key="offer.id">
+    <section v-if="categories.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+      <div
+        v-for="category in categories"
+        :key="category.id"
+        class="rounded-2xl bg-white p-5 text-center shadow-sm"
+      >
+        <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 text-2xl font-bold text-gray-700">
+          {{ category.name.charAt(0) }}
+        </div>
 
-                <div        class="rounded-[50px] overflow-hidden">
-                    <img    class="max-w-full h-full object-cover" 
-                            :src="offer.image"/>
-                </div>
+        <p class="font-bold text-gray-900">
+          {{ category.name }}
+        </p>
 
-                <p class="font-bold py-3">{{offer.title}}</p>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ category.productCount || 0 }} products
+        </p>
+      </div>
+    </section>
 
-            </div>
-        </section>
-
-
-    </div>
+    <p v-else class="text-center text-gray-500">
+      No categories available right now.
+    </p>
+  </div>
 </template>
 
 <script setup>
-    const offers=[
-        {
-            id:1,
-            image:'https://placehold.co/200x200',
-            title:'Hedseat',
-        },
-        {
-            id:2,
-            image:'https://placehold.co/200x200',
-            title:'Hedseat',
-        },
-        {
-            id:3,
-            image:'https://placehold.co/200x200',
-            title:'Hedseat',
-        },
-        {
-            id:4,
-            image:'https://placehold.co/200x200',
-            title:'Hedseat',
-        },
-        {
-            id:5,
-            image:'https://placehold.co/200x200',
-            title:'Hedseat',
-        },
-        
-        
-    ]
+defineProps({
+  categories: {
+    type: Array,
+    default: () => []
+  }
+})
 </script>
-
-<style>
-
-</style>

@@ -1,167 +1,156 @@
 <template>
-    <div>
-        <p class="text-center text-blue-500">index Content</p>
+  <section>
+    <CardsHeroCard />
+  </section>
+
+  <section>
+    <OfferSlider />
+  </section>
+
+  <section class="container mx-auto pb-20">
+    <div v-if="homeError" class="mx-4 mt-6 rounded-2xl bg-red-50 p-4 text-red-600">
+      {{ homeError.message }}
     </div>
 
     <section>
-            <CardsHeroCard/>
+      <TopCategories :categories="topCategories" class="mx-1 my-5" />
+    </section>
+
+    <section v-if="featuredProducts.length">
+      <HomeProductSection
+        title="Featured Products"
+        description="Selected products currently available in the store"
+        :products="featuredProducts"
+      />
+    </section>
+
+    <section v-if="topSellerProducts.length">
+      <HomeProductSection
+        title="Top Sellers"
+        description="Popular products from the current catalog"
+        :products="topSellerProducts"
+      />
     </section>
 
     <section>
-        <!-- <CardsOfferCard class="mt-10 w-[250px]"/> -->
-        <OfferSlider/>
+      <CardsBanner />
     </section>
 
-
-
-    <section class="container mx-auto pb-20">
-    <!-- Site Content [START]-->
-
-        <!-- Top Categories Card -->
-        <section>
-            <TopCategories class="my-5 mx-1"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Big Title Here" description="Long Description There"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Top Seller" description="Long Description There"/>
-        </section>
-
-        <!-- Image Banner -->
-        <section>
-            <CardsBanner/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Keyboard" description="Long Description There" :products="keyboardProducts || []"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Mouse" description="Long Description There" :products="mouseProducts || []"/>
-        </section>
-
-        <!-- Featured Brands Section -->
-        <section>
-            <FeaturedBrands title="Featured Brands" description="Shop by your favorite brand"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Headset" description="Long Description There" :products="headsetProducts || []"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Microphone" description="Long Description There"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Mouse pad" description="Long Description There"/>
-        </section>
-
-        <!-- Image Banner -->
-        <section>
-            <CardsBanner/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Accessories" description="Long Description There"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Hot sale" description="Long Description There"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Top Rated" description="Long Description There"/>
-        </section>
-
-        <!-- Product Section -->
-        <section>
-            <HomeProductSection title="Recommended" description="Long Description There"/>
-        </section>
-    <!-- Site Content [END]-->
+    <section v-if="featuredBrands.length">
+      <FeaturedBrands
+        title="Featured Brands"
+        description="Brands currently available in the store"
+        :brands="featuredBrands"
+      />
     </section>
 
+    <section
+      v-for="category in categorySections"
+      :key="category.id"
+    >
+      <HomeProductSection
+        :title="category.name"
+        description="Browse products from this category"
+        :products="category.products"
+      />
+    </section>
+  </section>
 </template>
 
 <script setup>
-import FeaturedBrands from '~/components/cards/FeaturedBrands.vue';
-import TopCategories from '~/components/cards/TopCategories.vue';
-import OfferSlider from '~/components/layout/OfferSlider.vue';
-
-
-
+import FeaturedBrands from '~/components/cards/FeaturedBrands.vue'
+import TopCategories from '~/components/cards/TopCategories.vue'
+import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
 
-const getProductsByCategory = async (category) =>{
-    const {data , error} = await supabase
-    .from('products')
-    .select('*')
-    .eq('category',category)
-    .order('created_at', {ascending: false})
-    .limit(4)
+const { data: homeData, error: homeError } = await useAsyncData('store-home', async () => {
+  const [productsResult, categoriesResult, brandsResult] = await Promise.all([
+    supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        slug,
+        description,
+        price,
+        old_price,
+        image_url,
+        is_featured,
+        is_top_seller,
+        category:categories (
+          id,
+          name,
+          slug
+        ),
+        brand:brands (
+          id,
+          name,
+          slug,
+          logo_url
+        )
+      `)
+      .eq('is_published', true)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .order('name'),
+    supabase
+      .from('brands')
+      .select('id, name, slug, logo_url')
+      .order('name')
+  ])
 
-    if(error) throw error
+  if (productsResult.error) {
+    throw productsResult.error
+  }
 
-    return data
-}
+  if (categoriesResult.error) {
+    throw categoriesResult.error
+  }
 
+  if (brandsResult.error) {
+    throw brandsResult.error
+  }
 
-const {data:keyboardProducts} = await useAsyncData('keyboard-products',() =>{
-    return getProductsByCategory('keyboard')
+  const products = productsResult.data || []
+  const categories = categoriesResult.data || []
+  const brands = brandsResult.data || []
+
+  const categoriesWithProducts = categories
+    .map((category) => {
+      const categoryProducts = products
+        .filter((product) => product.category?.id === category.id)
+        .slice(0, 8)
+
+      return {
+        ...category,
+        productCount: products.filter((product) => product.category?.id === category.id).length,
+        products: categoryProducts
+      }
+    })
+    .filter((category) => category.productCount > 0)
+    .sort((firstCategory, secondCategory) => secondCategory.productCount - firstCategory.productCount)
+
+  const featuredProducts = products.filter((product) => product.is_featured)
+  const topSellerProducts = products.filter((product) => product.is_top_seller)
+  const usedBrandIds = new Set(products.map((product) => product.brand?.id).filter(Boolean))
+
+  return {
+    featuredProducts: (featuredProducts.length ? featuredProducts : products).slice(0, 8),
+    topSellerProducts: (topSellerProducts.length ? topSellerProducts : products).slice(0, 8),
+    topCategories: categoriesWithProducts.slice(0, 6),
+    categorySections: categoriesWithProducts.slice(0, 3),
+    featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
+  }
 })
 
-const {data:mouseProducts} = await useAsyncData('mouse-products',() =>{
-    return getProductsByCategory('mouse')
-})
-
-const {data:headsetProducts} = await useAsyncData('headset-products',() =>{
-    return getProductsByCategory('headset')
-})
-
-
-/*
-// fetch data from DB to be displayed
-const supabase = useSupabaseClient()
-
-const { data: products } = await useAsyncData('products',async() => {
-    const { data , error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at',{ascending:false})
-
-    if(error)
-        throw error
-
-    return data
-})
-
-
-const keyboardProducts = computed(() => {
-    return products .value?.filter(product=>product.category === 'keyboard') || []
-})
-
-const mouseProducts = computed(() => {
-    return products .value?.filter(product=>product.category === 'mouse') || []
-})
-
-const headsetProducts = computed(() => {
-    return products .value?.filter(product=>product.category === 'headset') || []
-})
-*/
+const featuredProducts = computed(() => homeData.value?.featuredProducts || [])
+const topSellerProducts = computed(() => homeData.value?.topSellerProducts || [])
+const topCategories = computed(() => homeData.value?.topCategories || [])
+const categorySections = computed(() => homeData.value?.categorySections || [])
+const featuredBrands = computed(() => homeData.value?.featuredBrands || [])
 </script>
 
 <style>

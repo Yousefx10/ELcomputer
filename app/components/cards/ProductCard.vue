@@ -1,49 +1,54 @@
 <template>
-  <div class="flex-shrink-0 w-[280px] md:w-[300px] bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition">
-    
-    <!-- Title -->
-    <div class="h-[70px] flex items-center justify-center px-4">
-      <p class="text-center font-bold line-clamp-2">
-        {{ product.title }}
-      </p>
-    </div>
-
-    <!-- Image -->
-    <div class="relative h-[220px] bg-gray-100">
+  <NuxtLink
+    :to="product.slug ? `/products/${product.slug}` : '/'"
+    class="block w-[280px] flex-shrink-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg md:w-[300px]"
+  >
+    <div class="flex h-[220px] items-center justify-center bg-gray-100 p-4">
       <img
-        class="h-full w-full object-contain p-4"
+        v-if="product.image_url"
+        class="h-full w-full object-contain"
         :src="product.image_url"
         :alt="product.title"
       />
 
-      <span class="absolute top-4 left-4 px-4 py-2 bg-green-500/90 rounded-full text-white font-bold text-xs">
-        25% OFF
-      </span>
+      <p v-else class="text-sm text-gray-400">
+        No image available
+      </p>
     </div>
 
-    <!-- Price -->
-    <div class="flex justify-between p-5 items-center">
-      <div class="flex flex-col">
-        <span class="text-gray-500 text-sm font-semibold">Buy For</span>
+    <div class="p-5">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        {{ product.brand?.name || product.category?.name || 'Product' }}
+      </p>
 
-        <span
-          class="line-through text-sm text-blue-600"
+      <h3 class="mt-2 line-clamp-2 min-h-[56px] text-lg font-bold text-gray-900">
+        {{ product.title }}
+      </h3>
+
+      <div class="mt-4">
+        <p class="text-2xl font-bold text-blue-700">
+          {{ product.price }} EGP
+        </p>
+
+        <p
           v-if="product.old_price"
+          class="mt-1 text-sm text-gray-400 line-through"
         >
           {{ product.old_price }} EGP
-        </span>
-
-        <span class="text-blue-800 font-black text-2xl">
-          {{ product.price }} EGP
-        </span>
+        </p>
       </div>
 
-      <button class="cursor-pointer hover:bg-blue-500 bg-blue-600 rounded-2xl h-[56px] w-[56px] font-bold text-white text-2xl">
-        +
-      </button>
-    </div>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="text-sm text-gray-500">
+          {{ product.category?.name || 'No Category' }}
+        </span>
 
-  </div>
+        <span class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+          View
+        </span>
+      </div>
+    </div>
+  </NuxtLink>
 </template>
 
 <script setup>
