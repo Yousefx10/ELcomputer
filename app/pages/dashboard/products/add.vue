@@ -19,11 +19,18 @@
                     class="rounded-lg border p-3"
                     />
 
-                    <input
-                    v-model="category"
-                    placeholder="Category"
-                    class="rounded-lg border p-3"
-                    />
+                    <select v-model="categoryId" class="w-full border p-3 rounded-xl">
+                        <option disabled value="">Select Category</option>
+
+                        <option
+                        v-for="category in categories"
+                        :key="category.id"
+                        :value="category.id"
+                        >
+                        {{ category.name }}
+                        </option>
+                    </select>
+                    
 
                     <input
                     v-model="price"
@@ -59,9 +66,6 @@
                 </div>
             </main>
 
-            <section>
-                <DashboardSideBar :links="links"/>
-            </section>
         </div>
 
     </div>
@@ -82,13 +86,13 @@ const supabase = useSupabaseClient()
 const title = ref('')
 const price = ref('')
 const oldPrice = ref('')
-const category = ref('')
 const imageUrl = ref('')
 const products = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
 
-
+const categories = ref([])
+const categoryId = ref('')
 
 
  const addProduct = async() =>{
@@ -100,8 +104,8 @@ const errorMessage = ref('')
         title: title.value,
         price: Number(price.value),
         old_price: oldPrice.value ? Number(oldPrice.value) : null,
-        category: category.value,
-        image_url: imageUrl.value
+        image_url: imageUrl.value,
+        category_id: categoryId.value
     })
 
         loading.value=false
@@ -114,10 +118,31 @@ const errorMessage = ref('')
     title.value = ''
     price.value = ''
     oldPrice.value = ''
-    category.value = ''
     imageUrl.value = ''
 
  }
+
+
+
+ 
+const getCategoriesLIST = async () => {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name')
+    .order('name')
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  categories.value = data
+}
+
+await getCategoriesLIST()
+
+
+
 </script>
 
 <style>
