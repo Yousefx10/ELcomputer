@@ -87,7 +87,7 @@ const title = ref('')
 const price = ref('')
 const oldPrice = ref('')
 const imageUrl = ref('')
-const products = ref([])
+// const products = ref([]) //not been used, until now
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -118,7 +118,10 @@ const categoryId = ref('')
     title.value = ''
     price.value = ''
     oldPrice.value = ''
+    categoryId.value='',
     imageUrl.value = ''
+
+    await navigateTo('/dashboard/products')
 
  }
 
