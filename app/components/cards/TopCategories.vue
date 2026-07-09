@@ -3,9 +3,10 @@
     <p class="pb-5 text-center text-4xl font-bold">TOP CATEGORIES</p>
 
     <section v-if="categories.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
-      <div
+      <NuxtLink
         v-for="category in categories"
         :key="category.id"
+        :to="{ path: '/search', query: { category: category.slug } }"
         class="rounded-2xl bg-white p-5 text-center shadow-sm"
       >
         <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 text-2xl font-bold text-gray-700">
@@ -19,7 +20,7 @@
         <p class="mt-1 text-sm text-gray-500">
           {{ category.productCount || 0 }} products
         </p>
-      </div>
+      </NuxtLink>
     </section>
 
     <p v-else class="text-center text-gray-500">

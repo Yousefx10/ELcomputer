@@ -67,7 +67,11 @@
         </div>
 
         <div class="order-3">
-          <div v-if="product.brand" class="mb-4 flex items-center gap-3">
+          <NuxtLink
+            v-if="product.brand"
+            :to="{ path: '/search', query: { brand: product.brand.slug } }"
+            class="mb-4 flex items-center gap-3"
+          >
             <img
               v-if="product.brand.logo_url"
               :src="product.brand.logo_url"
@@ -78,7 +82,7 @@
             <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">
               {{ product.brand.name }}
             </p>
-          </div>
+          </NuxtLink>
 
           <h1 class="text-3xl font-bold text-gray-900 md:text-4xl">
             {{ product.title }}
@@ -106,12 +110,13 @@
               {{ product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock' }}
             </span>
 
-            <span
+            <NuxtLink
               v-if="product.category"
+              :to="{ path: '/search', query: { category: product.category.slug } }"
               class="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700"
             >
               {{ product.category.name }}
-            </span>
+            </NuxtLink>
 
             <span
               v-if="product.color_name"

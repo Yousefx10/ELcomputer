@@ -9,9 +9,10 @@
 
     <div v-if="brands.length" class="overflow-hidden">
       <div class="flex w-max gap-5 animate-scroll">
-        <div
+        <NuxtLink
           v-for="brand in repeatedBrands"
           :key="brand.loopKey"
+          :to="{ path: '/search', query: { brand: brand.slug } }"
           class="flex h-[180px] min-w-[150px] items-center justify-center rounded-2xl border border-gray-300 bg-white p-4"
         >
           <img
@@ -24,7 +25,7 @@
           <p v-else class="text-center font-bold text-gray-700">
             {{ brand.name }}
           </p>
-        </div>
+        </NuxtLink>
       </div>
     </div>
 

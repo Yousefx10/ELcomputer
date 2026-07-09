@@ -40,9 +40,17 @@ create table public.products (
   stock_quantity integer not null default 0,
   is_published boolean not null default true,
   sku text null,
+  popularity_score integer not null default 0,
+  average_rating numeric (3, 2) not null default 0,
   constraint products_pkey primary key (id),
   constraint products_brand_id_fkey foreign KEY (brand_id) references brands (id) on delete set null,
   constraint products_category_id_fkey foreign KEY (category_id) references categories (id) on delete RESTRICT,
+  constraint products_average_rating_check check (
+    (
+      (average_rating >= (0)::numeric)
+      and (average_rating <= (5)::numeric)
+    )
+  ),
   constraint products_old_price_check check (
     (
       (old_price is null)
@@ -50,6 +58,7 @@ create table public.products (
     )
   ),
   constraint products_price_check check ((price >= (0)::numeric)),
+  constraint products_popularity_score_check check ((popularity_score >= 0)),
   constraint products_stock_quantity_check check ((stock_quantity >= 0))
 ) TABLESPACE pg_default;
 
@@ -64,6 +73,10 @@ create index IF not exists products_category_id_idx on public.products using btr
 create index IF not exists products_brand_id_idx on public.products using btree (brand_id) TABLESPACE pg_default;
 
 create index IF not exists products_is_published_idx on public.products using btree (is_published) TABLESPACE pg_default;
+
+create index IF not exists products_popularity_score_idx on public.products using btree (popularity_score desc) TABLESPACE pg_default;
+
+create index IF not exists products_average_rating_idx on public.products using btree (average_rating desc) TABLESPACE pg_default;
 
 create table public.product_specifications (
   id uuid not null default gen_random_uuid (),

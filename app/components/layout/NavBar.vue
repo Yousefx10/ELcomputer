@@ -36,9 +36,13 @@
                 <li
                   v-for="category in headerCategories"
                   :key="category.id"
-                  class="text-sm text-gray-700"
                 >
-                  {{ category.name }}
+                  <NuxtLink
+                    :to="{ path: '/search', query: { category: category.slug } }"
+                    class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {{ category.name }}
+                  </NuxtLink>
                 </li>
               </ul>
             </div>
@@ -58,7 +62,16 @@
           </NuxtLink>
         </li>
 
-        <li><input type="search" class="w-56 rounded-full border px-4 py-1"></li>
+        <li>
+          <form @submit.prevent="submitDesktopSearch">
+            <input
+              v-model="desktopSearchQuery"
+              type="search"
+              placeholder="Search products"
+              class="w-56 rounded-full border px-4 py-1 text-black"
+            >
+          </form>
+        </li>
 
         <li>
           <NuxtLink to="/dashboard/login" class="text-sm font-medium">
@@ -105,7 +118,13 @@
                 v-for="category in headerCategories"
                 :key="category.id"
               >
-                {{ category.name }}
+                <NuxtLink
+                  :to="{ path: '/search', query: { category: category.slug } }"
+                  class="block rounded-lg px-3 py-2 hover:bg-white/10"
+                  @click="isMenuOpen = false"
+                >
+                  {{ category.name }}
+                </NuxtLink>
               </li>
             </ul>
           </details>
@@ -125,7 +144,16 @@
           </NuxtLink>
         </li>
 
-        <li class="col-span-2"><input type="search" placeholder="Search..." class="w-56 rounded-full border px-4 py-1"></li>
+        <li class="col-span-2">
+          <form @submit.prevent="submitMobileSearch">
+            <input
+              v-model="mobileSearchQuery"
+              type="search"
+              placeholder="Search products"
+              class="w-56 rounded-full border px-4 py-1 text-black"
+            >
+          </form>
+        </li>
 
         <li class="col-span-2" @click="isMenuOpen = false">
           <NuxtLink to="/dashboard/login">
@@ -149,6 +177,7 @@
 import { defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
 
 const supabase = useSupabaseClient()
+const route = useRoute()
 const { data: siteContent } = await useSiteContent()
 const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
   const { data, error } = await supabase
@@ -164,6 +193,8 @@ const { data: categoriesData } = await useAsyncData('navbar-categories', async (
 })
 
 const isMenuOpen = ref(false)
+const desktopSearchQuery = ref('')
+const mobileSearchQuery = ref('')
 
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
@@ -178,4 +209,34 @@ const isExternalUrl = (value) => {
 const isShopCategoryLink = (link) => {
   return link?.default_key === shopCategoryLinkKey || link?.label === 'Shop Category'
 }
+
+const syncSearchQueries = () => {
+  const currentSearchQuery = typeof route.query.q === 'string' ? route.query.q : ''
+
+  desktopSearchQuery.value = currentSearchQuery
+  mobileSearchQuery.value = currentSearchQuery
+}
+
+const submitSearch = async (rawValue, shouldCloseMenu = false) => {
+  const searchQuery = String(rawValue || '').trim()
+
+  if (shouldCloseMenu) {
+    isMenuOpen.value = false
+  }
+
+  await navigateTo({
+    path: '/search',
+    query: searchQuery ? { q: searchQuery } : {}
+  })
+}
+
+const submitDesktopSearch = async () => {
+  await submitSearch(desktopSearchQuery.value)
+}
+
+const submitMobileSearch = async () => {
+  await submitSearch(mobileSearchQuery.value, true)
+}
+
+watch(() => route.query.q, syncSearchQueries, { immediate: true })
 </script>
