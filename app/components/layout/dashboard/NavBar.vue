@@ -36,6 +36,10 @@ const links = [
   {
     label: 'Brands',
     to: '/dashboard/products/brands'
+  },
+  {
+    label: 'Settings',
+    to: '/dashboard/settings'
   }
 ]
 </script>

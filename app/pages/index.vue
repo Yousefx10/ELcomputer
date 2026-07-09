@@ -32,8 +32,14 @@
       />
     </section>
 
-    <section>
-      <CardsBanner />
+    <section v-if="bannerAds.length" class="grid gap-6 md:grid-cols-2">
+      <CardsBanner
+        v-for="banner in bannerAds"
+        :key="banner.id"
+        :image-url="banner.imageUrl"
+        :link-url="banner.linkUrl"
+        :alt-text="banner.altText"
+      />
     </section>
 
     <section v-if="featuredBrands.length">
@@ -63,6 +69,7 @@ import TopCategories from '~/components/cards/TopCategories.vue'
 import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
+const { data: siteContent } = await useSiteContent()
 
 const { data: homeData, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
@@ -151,6 +158,24 @@ const topSellerProducts = computed(() => homeData.value?.topSellerProducts || []
 const topCategories = computed(() => homeData.value?.topCategories || [])
 const categorySections = computed(() => homeData.value?.categorySections || [])
 const featuredBrands = computed(() => homeData.value?.featuredBrands || [])
+const bannerAds = computed(() => {
+  const settings = siteContent.value?.settings || {}
+
+  return [
+    {
+      id: 'banner-ad-1',
+      imageUrl: settings.banner_ad_1_image_url || '',
+      linkUrl: settings.banner_ad_1_link_url || '',
+      altText: 'Banner Ad 1'
+    },
+    {
+      id: 'banner-ad-2',
+      imageUrl: settings.banner_ad_2_image_url || '',
+      linkUrl: settings.banner_ad_2_link_url || '',
+      altText: 'Banner Ad 2'
+    }
+  ].filter((banner) => banner.imageUrl)
+})
 </script>
 
 <style>

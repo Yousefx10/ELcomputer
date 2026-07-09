@@ -1,95 +1,116 @@
 <template>
-    <footer class="bg-black text-white pt-10 mb-0">
+  <footer class="mb-0 bg-black pt-10 text-white">
+    <div class="container mx-auto p-5">
+      <div class="space-y-10 text-center">
+        <img
+          v-if="siteLogoUrl"
+          class="mx-auto max-h-20 w-auto object-contain"
+          :src="siteLogoUrl"
+          :alt="siteName"
+        >
 
-        <div class="container mx-auto p-5 bg-blue">
+        <p v-else class="text-3xl font-bold md:text-4xl">
+          {{ siteName }}
+        </p>
 
-            <div class="text-center space-y-10">
-                <img class="mx-auto"
-                src="https://placehold.co/300x100"/>
-
-                <div class="font-bold text-2xl md:text-4xl">
-                    <p>What are you waiting for?</p>
-                    <p>Purchase your fav gear</p>
-                </div>
-
-                <button class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 p-6 font-bold">
-                    Shop Now <Icon name="lucide:arrow-right" size="20"/>
-                </button>
-            </div>
-
-            <div 
-                class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 text-center md:text-start gap-10 mt-15 text-2xl border-t py-5">
-                <div>
-                    <h3 class="mb-6 font-bold">Shop</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><NuxtLink to="/" >Browse</NuxtLink></li>
-                        <li><NuxtLink to="/" >Keyboards</NuxtLink></li>
-                        <li><NuxtLink to="/" >Mice</NuxtLink></li>
-                        <li><NuxtLink to="/">Headsets</NuxtLink></li>
-                    </ul>
-
-                    <h3 class="mt-10 mb-4 font-bold">Community</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><NuxtLink to="/" >Discord</NuxtLink></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="mb-6 font-bold">Explore</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><NuxtLink to="/" >Mouse Pads</NuxtLink></li>
-                        <li><NuxtLink to="/" >Microphone</NuxtLink></li>
-                        <li><NuxtLink to="/" >Accessories</NuxtLink></li>
-                        <li><NuxtLink to="/">Webcam</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="mb-6 font-bold">Support</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><NuxtLink to="/" >Contact us</NuxtLink></li>
-                        <li><NuxtLink to="/" >Track Order</NuxtLink></li>
-                        <li><NuxtLink to="/" >Return Policy</NuxtLink></li>
-                        <li><NuxtLink to="/">Refund Request</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="mb-6 font-bold">Connect</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><NuxtLink to="/" >Instagram</NuxtLink></li>
-                        <li><NuxtLink to="/" >X(Twitter)</NuxtLink></li>
-                        <li><NuxtLink to="/" >YouTube</NuxtLink></li>
-                        <li><NuxtLink to="/" >Facebook</NuxtLink></li>
-                        <li><NuxtLink to="/" >Amazon</NuxtLink></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="mb-6 font-bold">Contact</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li class="text-white">EMAIL</li>
-                        <li>info@elcomputer.net</li>
-                        <li class="text-white">PHONE</li>
-                        <li>01505121684</li>
-                        <li>address address</li>
-                    </ul>
-                </div>
-            </div>
-
-                <p class="text-center border-t mt-10 py-5 text-lg">
-                    © 2026 All rights reserved by <b>ELCOMPUTER</b>
-                </p>
-
-
+        <div class="text-2xl font-bold md:text-4xl">
+          <p>{{ footerCtaTitle }}</p>
+          <p>{{ footerCtaSubtitle }}</p>
         </div>
 
-    </footer>
+        <a
+          :href="footerCtaButtonUrl || '/'"
+          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-blue-600 p-6 font-bold"
+        >
+          {{ footerCtaButtonLabel }}
+          <Icon name="lucide:arrow-right" size="20" />
+        </a>
+      </div>
+
+      <div class="mt-15 grid grid-cols-2 gap-10 border-t py-5 text-center text-2xl md:grid-cols-3 md:text-start xl:grid-cols-5">
+        <div
+          v-for="group in footerGroups"
+          :key="group.title"
+        >
+          <h3 class="mb-6 font-bold">{{ group.title }}</h3>
+
+          <ul class="space-y-4 text-gray-400">
+            <li
+              v-for="item in group.items"
+              :key="item.id"
+            >
+              <a
+                v-if="item.url && isExternalUrl(item.url)"
+                :href="item.url"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {{ item.label }}
+              </a>
+
+              <NuxtLink v-else-if="item.url" :to="item.url">
+                {{ item.label }}
+              </NuxtLink>
+
+              <span v-else>{{ item.label }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="footerEmail || footerPhone || footerAddress">
+          <h3 class="mb-6 font-bold">Contact</h3>
+
+          <ul class="space-y-4 text-gray-400">
+            <li v-if="footerEmail">{{ footerEmail }}</li>
+            <li v-if="footerPhone">{{ footerPhone }}</li>
+            <li v-if="footerAddress">{{ footerAddress }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="mt-10 border-t py-5 text-center text-lg">
+        {{ copyrightText }}
+      </p>
+    </div>
+  </footer>
 </template>
 
 <script setup>
+const { data: siteContent } = await useSiteContent()
 
+const settings = computed(() => siteContent.value?.settings || {})
+const footerLinks = computed(() => siteContent.value?.footerLinks || [])
+
+const siteName = computed(() => settings.value.site_name || 'ELcomputer')
+const siteLogoUrl = computed(() => settings.value.site_logo_url || '')
+const footerCtaTitle = computed(() => settings.value.footer_cta_title || 'What are you waiting for?')
+const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle || 'Purchase your fav gear')
+const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || 'Shop Now')
+const footerCtaButtonUrl = computed(() => settings.value.footer_cta_button_url || '/')
+const footerEmail = computed(() => settings.value.footer_email || '')
+const footerPhone = computed(() => settings.value.footer_phone || '')
+const footerAddress = computed(() => settings.value.footer_address || '')
+const copyrightText = computed(() => {
+  return settings.value.copyright_text || '© 2026 All rights reserved by ELCOMPUTER'
+})
+
+const footerGroups = computed(() => {
+  const groups = new Map()
+
+  footerLinks.value.forEach((item) => {
+    const title = item.section_title?.trim() || 'More'
+
+    if (!groups.has(title)) {
+      groups.set(title, [])
+    }
+
+    groups.get(title).push(item)
+  })
+
+  return Array.from(groups, ([title, items]) => ({ title, items }))
+})
+
+const isExternalUrl = (value) => {
+  return typeof value === 'string' && /^https?:\/\//i.test(value)
+}
 </script>
-
-<style>
-
-</style>

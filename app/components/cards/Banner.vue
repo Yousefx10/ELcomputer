@@ -1,13 +1,24 @@
 <template>
-    <div class=" my-15">
-        <img class="mx-auto object-cover rounded-3xl" src="https://placehold.co/1200x350"/>
-    </div>
+  <div v-if="imageUrl" class="my-15">
+    <a :href="linkUrl || '#'">
+      <img class="mx-auto rounded-3xl object-cover" :src="imageUrl" :alt="altText">
+    </a>
+  </div>
 </template>
 
 <script setup>
-
+defineProps({
+  imageUrl: {
+    type: String,
+    default: ''
+  },
+  linkUrl: {
+    type: String,
+    default: ''
+  },
+  altText: {
+    type: String,
+    default: 'Banner Ad'
+  }
+})
 </script>
-
-<style>
-
-</style>

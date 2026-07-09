@@ -90,3 +90,67 @@ create table public.product_images (
 ) TABLESPACE pg_default;
 
 create index IF not exists product_images_product_id_sort_idx on public.product_images using btree (product_id, sort_order) TABLESPACE pg_default;
+
+create table public.site_settings (
+  id uuid not null default gen_random_uuid (),
+  key text not null default 'default'::text,
+  site_name text not null default 'ELcomputer'::text,
+  site_logo_url text null,
+  hero_enabled boolean not null default true,
+  top_bar_rotation_seconds integer not null default 3,
+  banner_ad_1_image_url text null,
+  banner_ad_1_link_url text null,
+  banner_ad_2_image_url text null,
+  banner_ad_2_link_url text null,
+  footer_cta_title text null default 'What are you waiting for?'::text,
+  footer_cta_subtitle text null default 'Purchase your fav gear'::text,
+  footer_cta_button_label text null default 'Shop Now'::text,
+  footer_cta_button_url text null default '/'::text,
+  footer_email text null,
+  footer_phone text null,
+  footer_address text null,
+  copyright_text text null default '© 2026 All rights reserved by ELCOMPUTER'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint site_settings_pkey primary key (id),
+  constraint site_settings_key_key unique (key),
+  constraint site_settings_top_bar_rotation_seconds_check check ((top_bar_rotation_seconds >= 1))
+) TABLESPACE pg_default;
+
+create table public.site_hero_banners (
+  id uuid not null default gen_random_uuid (),
+  image_url text not null,
+  link_url text null,
+  sort_order integer not null default 0,
+  is_enabled boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  constraint site_hero_banners_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists site_hero_banners_sort_idx on public.site_hero_banners using btree (sort_order, created_at) TABLESPACE pg_default;
+
+create table public.site_top_bar_messages (
+  id uuid not null default gen_random_uuid (),
+  text text not null,
+  sort_order integer not null default 0,
+  is_enabled boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  constraint site_top_bar_messages_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists site_top_bar_messages_sort_idx on public.site_top_bar_messages using btree (sort_order, created_at) TABLESPACE pg_default;
+
+create table public.site_links (
+  id uuid not null default gen_random_uuid (),
+  location text not null,
+  section_title text null,
+  label text not null,
+  url text null,
+  sort_order integer not null default 0,
+  is_enabled boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  constraint site_links_pkey primary key (id),
+  constraint site_links_location_check check ((location = any (array['header'::text, 'footer'::text])))
+) TABLESPACE pg_default;
+
+create index IF not exists site_links_location_sort_idx on public.site_links using btree (location, section_title, sort_order, created_at) TABLESPACE pg_default;
