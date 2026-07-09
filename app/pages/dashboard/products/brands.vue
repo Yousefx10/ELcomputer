@@ -49,9 +49,10 @@
         <div class="flex gap-3">
           <button
             type="submit"
+            :disabled="saving"
             class="rounded-lg bg-blue-600 px-4 py-3 font-bold text-white"
           >
-            {{ loading ? 'Saving...' : editingId ? 'Update Brand' : 'Add Brand' }}
+            {{ saving ? 'Saving...' : editingId ? 'Update Brand' : 'Add Brand' }}
           </button>
 
           <button
@@ -66,51 +67,97 @@
       </form>
 
       <div class="rounded-2xl bg-white p-5 shadow">
-        <h3 class="mb-4 text-2xl font-bold">All Brands</h3>
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <h3 class="text-2xl font-bold">All Brands</h3>
 
-        <p v-if="!brands.length" class="text-gray-500">
+          <p class="text-sm text-gray-500">
+            {{ totalBrands }} total
+          </p>
+        </div>
+
+        <p v-if="loading" class="text-gray-500">
+          Loading brands...
+        </p>
+
+        <p v-else-if="!brands.length" class="text-gray-500">
           No brands found yet.
         </p>
 
-        <div v-else class="space-y-3">
-          <div
-            v-for="brand in brands"
-            :key="brand.id"
-            class="flex items-center justify-between gap-4 rounded-xl border p-4"
-          >
-            <div class="flex items-center gap-4">
-              <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-50 p-2">
-                <img
-                  v-if="brand.logo_url"
-                  :src="brand.logo_url"
-                  :alt="brand.name"
-                  class="h-full w-full object-contain"
-                />
+        <div v-else>
+          <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+            <p class="text-sm text-gray-500">
+              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalBrands }} brands
+            </p>
 
-                <span v-else class="text-xs text-gray-400">No logo</span>
+            <p class="text-sm font-medium text-gray-600">
+              Page {{ currentPage }} of {{ totalPages }}
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="brand in brands"
+              :key="brand.id"
+              class="flex items-center justify-between gap-4 rounded-xl border p-4"
+            >
+              <div class="flex items-center gap-4">
+                <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-50 p-2">
+                  <img
+                    v-if="brand.logo_url"
+                    :src="brand.logo_url"
+                    :alt="brand.name"
+                    class="h-full w-full object-contain"
+                  />
+
+                  <span v-else class="text-xs text-gray-400">No logo</span>
+                </div>
+
+                <div>
+                  <p class="font-bold">{{ brand.name }}</p>
+                  <p class="text-sm text-gray-500">{{ brand.slug }}</p>
+                </div>
               </div>
 
-              <div>
-                <p class="font-bold">{{ brand.name }}</p>
-                <p class="text-sm text-gray-500">{{ brand.slug }}</p>
+              <div class="flex gap-2">
+                <button
+                  @click="startEdit(brand)"
+                  class="rounded-lg bg-black px-3 py-2 text-sm text-white"
+                >
+                  Edit
+                </button>
+
+                <button
+                  @click="deleteBrand(brand.id)"
+                  class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
+                >
+                  Delete
+                </button>
               </div>
             </div>
+          </div>
 
-            <div class="flex gap-2">
-              <button
-                @click="startEdit(brand)"
-                class="rounded-lg bg-black px-3 py-2 text-sm text-white"
-              >
-                Edit
-              </button>
+          <div class="mt-4 flex items-center justify-between rounded-xl border px-4 py-3">
+            <button
+              type="button"
+              :disabled="currentPage === 1 || loading"
+              @click="goToPreviousPage"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
 
-              <button
-                @click="deleteBrand(brand.id)"
-                class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
-              >
-                Delete
-              </button>
-            </div>
+            <p class="text-sm text-gray-500">
+              Page {{ currentPage }} of {{ totalPages }}
+            </p>
+
+            <button
+              type="button"
+              :disabled="currentPage === totalPages || loading"
+              @click="goToNextPage"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
@@ -131,9 +178,29 @@ const supabase = useSupabaseClient()
 const brands = ref([])
 const name = ref('')
 const logoUrl = ref('')
+const saving = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 const editingId = ref(null)
+const currentPage = ref(1)
+const pageSize = 10
+const totalBrands = ref(0)
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(totalBrands.value / pageSize))
+})
+
+const pageStart = computed(() => {
+  if (!totalBrands.value) {
+    return 0
+  }
+
+  return (currentPage.value - 1) * pageSize + 1
+})
+
+const pageEnd = computed(() => {
+  return Math.min(currentPage.value * pageSize, totalBrands.value)
+})
 
 const makeSlug = (value) => {
   return value
@@ -152,18 +219,36 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
-const getBrandsList = async () => {
-  const { data, error } = await supabase
+const getBrandsList = async (page = currentPage.value) => {
+  loading.value = true
+  errorMessage.value = ''
+  currentPage.value = page
+
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  const { data, error, count } = await supabase
     .from('brands')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('name')
+    .range(from, to)
 
   if (error) {
+    loading.value = false
     errorMessage.value = error.message
     return
   }
 
+  totalBrands.value = count || 0
+
+  if (currentPage.value > totalPages.value) {
+    loading.value = false
+    await getBrandsList(totalPages.value)
+    return
+  }
+
   brands.value = data || []
+  loading.value = false
 }
 
 const saveBrand = async () => {
@@ -181,7 +266,7 @@ const saveBrand = async () => {
     return
   }
 
-  loading.value = true
+  saving.value = true
 
   let response
 
@@ -204,7 +289,7 @@ const saveBrand = async () => {
       })
   }
 
-  loading.value = false
+  saving.value = false
 
   if (response.error) {
     errorMessage.value = response.error.message
@@ -249,6 +334,22 @@ const deleteBrand = async (id) => {
   }
 
   await getBrandsList()
+}
+
+const goToPreviousPage = async () => {
+  if (currentPage.value === 1) {
+    return
+  }
+
+  await getBrandsList(currentPage.value - 1)
+}
+
+const goToNextPage = async () => {
+  if (currentPage.value === totalPages.value) {
+    return
+  }
+
+  await getBrandsList(currentPage.value + 1)
 }
 
 await getBrandsList()

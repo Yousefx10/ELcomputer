@@ -31,9 +31,10 @@
         <div class="flex gap-3">
           <button
             type="submit"
+            :disabled="saving"
             class="rounded-lg bg-blue-600 px-4 py-3 font-bold text-white"
           >
-            {{ loading ? 'Saving...' : editingId ? 'Update Category' : 'Add Category' }}
+            {{ saving ? 'Saving...' : editingId ? 'Update Category' : 'Add Category' }}
           </button>
 
           <button
@@ -48,38 +49,84 @@
       </form>
 
       <div class="rounded-2xl bg-white p-5 shadow">
-        <h3 class="mb-4 text-2xl font-bold">All Categories</h3>
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <h3 class="text-2xl font-bold">All Categories</h3>
 
-        <p v-if="!categories.length" class="text-gray-500">
+          <p class="text-sm text-gray-500">
+            {{ totalCategories }} total
+          </p>
+        </div>
+
+        <p v-if="loading" class="text-gray-500">
+          Loading categories...
+        </p>
+
+        <p v-else-if="!categories.length" class="text-gray-500">
           No categories found yet.
         </p>
 
-        <div v-else class="space-y-3">
-          <div
-            v-for="category in categories"
-            :key="category.id"
-            class="flex items-center justify-between rounded-xl border p-4"
-          >
-            <div>
-              <p class="font-bold">{{ category.name }}</p>
-              <p class="text-sm text-gray-500">{{ category.slug }}</p>
-            </div>
+        <div v-else>
+          <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+            <p class="text-sm text-gray-500">
+              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCategories }} categories
+            </p>
 
-            <div class="flex gap-2">
-              <button
-                @click="startEdit(category)"
-                class="rounded-lg bg-black px-3 py-2 text-sm text-white"
-              >
-                Edit
-              </button>
+            <p class="text-sm font-medium text-gray-600">
+              Page {{ currentPage }} of {{ totalPages }}
+            </p>
+          </div>
 
-              <button
-                @click="deleteCategory(category.id)"
-                class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
-              >
-                Delete
-              </button>
+          <div class="space-y-3">
+            <div
+              v-for="category in categories"
+              :key="category.id"
+              class="flex items-center justify-between rounded-xl border p-4"
+            >
+              <div>
+                <p class="font-bold">{{ category.name }}</p>
+                <p class="text-sm text-gray-500">{{ category.slug }}</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button
+                  @click="startEdit(category)"
+                  class="rounded-lg bg-black px-3 py-2 text-sm text-white"
+                >
+                  Edit
+                </button>
+
+                <button
+                  @click="deleteCategory(category.id)"
+                  class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between rounded-xl border px-4 py-3">
+            <button
+              type="button"
+              :disabled="currentPage === 1 || loading"
+              @click="goToPreviousPage"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            <p class="text-sm text-gray-500">
+              Page {{ currentPage }} of {{ totalPages }}
+            </p>
+
+            <button
+              type="button"
+              :disabled="currentPage === totalPages || loading"
+              @click="goToNextPage"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
@@ -99,9 +146,29 @@ const supabase = useSupabaseClient()
 
 const categories = ref([])
 const name = ref('')
+const saving = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 const editingId = ref(null)
+const currentPage = ref(1)
+const pageSize = 10
+const totalCategories = ref(0)
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(totalCategories.value / pageSize))
+})
+
+const pageStart = computed(() => {
+  if (!totalCategories.value) {
+    return 0
+  }
+
+  return (currentPage.value - 1) * pageSize + 1
+})
+
+const pageEnd = computed(() => {
+  return Math.min(currentPage.value * pageSize, totalCategories.value)
+})
 
 const makeSlug = (value) => {
   return value
@@ -119,18 +186,36 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
-const getCategoriesList = async () => {
-  const { data, error } = await supabase
+const getCategoriesList = async (page = currentPage.value) => {
+  loading.value = true
+  errorMessage.value = ''
+  currentPage.value = page
+
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  const { data, error, count } = await supabase
     .from('categories')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('name')
+    .range(from, to)
 
   if (error) {
+    loading.value = false
     errorMessage.value = error.message
     return
   }
 
-  categories.value = data
+  totalCategories.value = count || 0
+
+  if (currentPage.value > totalPages.value) {
+    loading.value = false
+    await getCategoriesList(totalPages.value)
+    return
+  }
+
+  categories.value = data || []
+  loading.value = false
 }
 
 const saveCategory = async () => {
@@ -148,7 +233,7 @@ const saveCategory = async () => {
     return
   }
 
-  loading.value = true
+  saving.value = true
 
   let response
 
@@ -169,7 +254,7 @@ const saveCategory = async () => {
       })
   }
 
-  loading.value = false
+  saving.value = false
 
   if (response.error) {
     errorMessage.value = response.error.message
@@ -214,6 +299,22 @@ const deleteCategory = async (id) => {
   }
 
   await getCategoriesList()
+}
+
+const goToPreviousPage = async () => {
+  if (currentPage.value === 1) {
+    return
+  }
+
+  await getCategoriesList(currentPage.value - 1)
+}
+
+const goToNextPage = async () => {
+  if (currentPage.value === totalPages.value) {
+    return
+  }
+
+  await getCategoriesList(currentPage.value + 1)
 }
 
 await getCategoriesList()
