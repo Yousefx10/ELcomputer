@@ -13,8 +13,10 @@
       </div>
 
       <form
+        ref="userFormRef"
         @submit.prevent="saveAdminUser"
-        class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
+        class="grid gap-5 rounded-2xl bg-white p-6 shadow transition md:grid-cols-2"
+        :class="editingId ? 'ring-2 ring-blue-200' : ''"
       >
         <div class="md:col-span-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
@@ -39,6 +41,7 @@
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
           <input
+            ref="emailInputRef"
             v-model="form.email"
             type="email"
             placeholder="admin@example.com"
@@ -343,6 +346,8 @@ const totalUsers = ref(0)
 const activeOwnerCount = ref(0)
 const searchQuery = ref('')
 const editingId = ref('')
+const userFormRef = ref(null)
+const emailInputRef = ref(null)
 let searchTimeoutId = null
 
 const form = reactive({
@@ -486,6 +491,15 @@ const startEdit = (user) => {
   form.is_active = user.is_active ?? true
   form.permissions = normalizeAdminPermissions(user.permissions)
   formError.value = ''
+
+  nextTick(() => {
+    userFormRef.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+
+    emailInputRef.value?.focus()
+  })
 }
 
 const getRequiredViewPermission = (permissionKey) => {
