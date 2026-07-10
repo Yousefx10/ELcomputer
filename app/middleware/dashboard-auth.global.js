@@ -8,21 +8,29 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const supabase = useSupabaseClient()
   const {
     adminUser,
+    adminAccessLoaded,
     clearAdminAccess,
     hasPermission,
     loadAdminAccess
   } = useAdminAccess()
 
-  const { data: sessionData } = await supabase.auth.getSession()
-
-  if (!sessionData.session) {
+  if (adminAccessLoaded.value && !adminUser.value) {
     clearAdminAccess()
     return navigateTo('/dashboard/login')
   }
 
-  await loadAdminAccess(true)
+  const routeRequirement = getDashboardRouteRequirement(to.path)
 
-  if (!adminUser.value?.is_active) {
+  const resolvedAdminUser = adminAccessLoaded.value
+    ? adminUser.value
+    : await loadAdminAccess()
+
+  if (!resolvedAdminUser) {
+    clearAdminAccess()
+    return navigateTo('/dashboard/login')
+  }
+
+  if (!resolvedAdminUser.is_active) {
     clearAdminAccess()
 
     if (import.meta.client) {
@@ -37,13 +45,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     })
   }
 
-  const routeRequirement = getDashboardRouteRequirement(to.path)
-
   if (!routeRequirement) {
     return
   }
 
-  if (routeRequirement.role === 'owner' && adminUser.value.role !== 'owner') {
+  if (routeRequirement.role === 'owner' && resolvedAdminUser.role !== 'owner') {
     return navigateTo('/dashboard')
   }
 

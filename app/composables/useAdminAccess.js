@@ -13,7 +13,14 @@ export const useAdminAccess = () => {
 
   const loadAdminAccess = async (force = false) => {
     if (adminAccessPending.value) {
-      return adminUser.value
+      return await new Promise((resolve) => {
+        const stopWatchingPending = watch(adminAccessPending, (isPending) => {
+          if (!isPending) {
+            stopWatchingPending()
+            resolve(adminUser.value)
+          }
+        }, { immediate: true })
+      })
     }
 
     if (adminAccessLoaded.value && !force) {

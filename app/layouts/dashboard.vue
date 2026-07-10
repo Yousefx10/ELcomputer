@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <div v-if="authChecked" class="mx-auto max-w-6xl px-6 pt-6">
+    <div class="mx-auto max-w-6xl px-6 pt-6">
       <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
         <NuxtLink to="/dashboard" class="flex items-center">
           <img
@@ -37,12 +37,6 @@
         <slot />
       </main>
     </div>
-
-    <div v-else class="mx-auto max-w-6xl px-6 pt-6">
-      <div class="rounded-2xl bg-white p-6 text-center text-gray-500 shadow">
-        Loading dashboard...
-      </div>
-    </div>
   </div>
 </template>
 
@@ -50,11 +44,8 @@
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
 const {
-  adminUser,
-  clearAdminAccess,
-  loadAdminAccess
+  clearAdminAccess
 } = useAdminAccess()
-const authChecked = ref(false)
 const dashboardDateTime = ref('')
 
 let dashboardClockInterval
@@ -76,38 +67,16 @@ const logout = async () => {
   await navigateTo('/dashboard/login')
 }
 
-onMounted(async () => {
-  const { data } = await supabase.auth.getSession()
-
-  if (!data.session) {
-    await navigateTo('/dashboard/login')
-    return
-  }
-
-  await loadAdminAccess(true)
-
-  if (!adminUser.value?.is_active) {
-    clearAdminAccess()
-    await supabase.auth.signOut()
-    await navigateTo({
-      path: '/dashboard/login',
-      query: {
-        error: 'not-authorized'
-      }
-    })
-    return
-  }
-
+onMounted(() => {
   updateDashboardDateTime()
   dashboardClockInterval = window.setInterval(updateDashboardDateTime, 1000)
+
   authStateSubscription = supabase.auth.onAuthStateChange(async (_event, session) => {
     if (!session) {
-      authChecked.value = false
       clearAdminAccess()
       await navigateTo('/dashboard/login')
     }
   }).data.subscription
-  authChecked.value = true
 })
 
 onUnmounted(() => {
