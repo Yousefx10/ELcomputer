@@ -9,6 +9,7 @@
       </div>
 
       <form
+        v-if="canAddCategory || canEditCategory"
         @submit.prevent="saveCategory"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
       >
@@ -16,6 +17,7 @@
           v-model="name"
           type="text"
           placeholder="Category name"
+          :disabled="editingId ? !canEditCategory : !canAddCategory"
           class="w-full rounded-lg border p-3"
         />
 
@@ -30,7 +32,7 @@
         <div class="flex gap-3">
           <button
             type="submit"
-            :disabled="saving"
+            :disabled="saving || (editingId ? !canEditCategory : !canAddCategory)"
             class="rounded-lg bg-blue-600 px-4 py-3 font-bold text-white"
           >
             {{ saving ? 'Saving...' : editingId ? 'Update Category' : 'Add Category' }}
@@ -46,6 +48,13 @@
           </button>
         </div>
       </form>
+
+      <div
+        v-else
+        class="mb-8 rounded-2xl bg-white p-5 text-sm text-gray-500 shadow"
+      >
+        You can view categories, but this account cannot add or edit them.
+      </div>
 
       <div class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between gap-3">
@@ -112,6 +121,7 @@
 
               <div class="flex gap-2">
                 <button
+                  v-if="canEditCategory"
                   @click="startEdit(category)"
                   class="rounded-lg bg-black px-3 py-2 text-sm text-white"
                 >
@@ -119,6 +129,7 @@
                 </button>
 
                 <button
+                  v-if="canEditCategory"
                   @click="deleteCategory(category.id)"
                   class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
                 >
@@ -163,6 +174,12 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  hasPermission,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
 
 const categories = ref([])
 const name = ref('')
@@ -178,6 +195,8 @@ let searchTimeoutId = null
 
 const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
+const canAddCategory = computed(() => hasPermission('categories.add'))
+const canEditCategory = computed(() => hasPermission('categories.edit'))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalCategories.value / pageSize))
@@ -252,6 +271,16 @@ const getCategoriesList = async (page = currentPage.value) => {
 const saveCategory = async () => {
   errorMessage.value = ''
 
+  if (editingId.value && !canEditCategory.value) {
+    errorMessage.value = 'You do not have permission to edit categories.'
+    return
+  }
+
+  if (!editingId.value && !canAddCategory.value) {
+    errorMessage.value = 'You do not have permission to add categories.'
+    return
+  }
+
   if (!name.value.trim()) {
     errorMessage.value = 'Category name is required'
     return
@@ -297,6 +326,10 @@ const saveCategory = async () => {
 }
 
 const startEdit = (category) => {
+  if (!canEditCategory.value) {
+    return
+  }
+
   name.value = category.name
   editingId.value = category.id
   errorMessage.value = ''
@@ -308,6 +341,11 @@ const cancelEdit = () => {
 
 const deleteCategory = async (id) => {
   errorMessage.value = ''
+
+  if (!canEditCategory.value) {
+    errorMessage.value = 'You do not have permission to delete categories.'
+    return
+  }
 
   const confirmDelete = confirm('Are you sure you want to delete this category?')
   if (!confirmDelete) return

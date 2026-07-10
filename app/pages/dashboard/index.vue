@@ -4,19 +4,19 @@
       <div class="mb-6 rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Dashboard</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Manage products and categories from one place
+          Overview of the areas available to your current admin account
         </p>
       </div>
 
-      <div class="mb-6 grid gap-4 md:grid-cols-2">
-        <div class="rounded-2xl bg-white p-5 shadow">
+      <div v-if="canViewProducts || canViewCategories" class="mb-6 grid gap-4 md:grid-cols-2">
+        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
           <p class="mt-2 text-3xl font-bold">
             {{ totalProducts }}
           </p>
         </div>
 
-        <div class="rounded-2xl bg-white p-5 shadow">
+        <div v-if="canViewCategories" class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Categories</p>
           <p class="mt-2 text-3xl font-bold">
             {{ totalCategories }}
@@ -28,7 +28,7 @@
         {{ errorMessage }}
       </div>
 
-      <div class="rounded-2xl bg-white p-5 shadow">
+      <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-2xl font-bold">Recent Products</h3>
           <NuxtLink
@@ -61,6 +61,7 @@
             </div>
 
             <NuxtLink
+              v-if="canEditProducts"
               :to="`/dashboard/products/edit/${product.id}`"
               class="rounded-lg bg-black px-3 py-2 text-sm text-white"
             >
@@ -68,6 +69,13 @@
             </NuxtLink>
           </div>
         </div>
+      </div>
+
+      <div
+        v-else-if="!errorMessage"
+        class="rounded-2xl bg-white p-5 text-sm text-gray-500 shadow"
+      >
+        No dashboard panels are available for your current permissions.
       </div>
     </div>
   </div>
@@ -79,35 +87,57 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  hasPermission,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
 
 const totalProducts = ref(0)
 const totalCategories = ref(0)
 const recentProducts = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
+const canViewProducts = computed(() => hasPermission('products.view'))
+const canViewCategories = computed(() => hasPermission('categories.view'))
+const canEditProducts = computed(() => hasPermission('products.edit'))
 
 const getDashboardData = async () => {
+  if (!canViewProducts.value && !canViewCategories.value) {
+    totalProducts.value = 0
+    totalCategories.value = 0
+    recentProducts.value = []
+    return
+  }
+
   loading.value = true
   errorMessage.value = ''
 
   const [productsCountResult, categoriesCountResult, recentProductsResult] = await Promise.all([
-    supabase
-      .from('products')
-      .select('*', { count: 'exact', head: true }),
-    supabase
-      .from('categories')
-      .select('*', { count: 'exact', head: true }),
-    supabase
-      .from('products')
-      .select(`
-        id,
-        title,
-        category:categories (
-          name
-        )
-      `)
-      .order('created_at', { ascending: false })
-      .limit(5)
+    canViewProducts.value
+      ? supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+      : Promise.resolve({ count: 0, error: null }),
+    canViewCategories.value
+      ? supabase
+          .from('categories')
+          .select('*', { count: 'exact', head: true })
+      : Promise.resolve({ count: 0, error: null }),
+    canViewProducts.value
+      ? supabase
+          .from('products')
+          .select(`
+            id,
+            title,
+            category:categories (
+              name
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .limit(5)
+      : Promise.resolve({ data: [], error: null })
   ])
 
   loading.value = false

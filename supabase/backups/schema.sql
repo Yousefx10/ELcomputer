@@ -104,6 +104,42 @@ create table public.product_images (
 
 create index IF not exists product_images_product_id_sort_idx on public.product_images using btree (product_id, sort_order) TABLESPACE pg_default;
 
+create or replace function public.default_admin_permissions () returns jsonb language sql immutable as $$
+  select jsonb_build_object(
+    'products.view', false,
+    'products.add', false,
+    'products.edit', false,
+    'categories.view', false,
+    'categories.add', false,
+    'categories.edit', false,
+    'brands.view', false,
+    'brands.add', false,
+    'brands.edit', false,
+    'settings.view', false,
+    'settings.edit', false
+  );
+$$;
+
+create table public.admin_users (
+  id uuid not null,
+  email text not null,
+  full_name text null,
+  role text not null default 'admin'::text,
+  permissions jsonb not null default public.default_admin_permissions (),
+  is_active boolean not null default true,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint admin_users_pkey primary key (id),
+  constraint admin_users_email_key unique (email),
+  constraint admin_users_id_fkey foreign KEY (id) references auth.users (id) on delete CASCADE,
+  constraint admin_users_role_check check ((role = any (array['owner'::text, 'admin'::text])))
+) TABLESPACE pg_default;
+
+create index IF not exists admin_users_role_active_idx on public.admin_users using btree (role, is_active) TABLESPACE pg_default;
+
+create index IF not exists admin_users_created_at_idx on public.admin_users using btree (created_at desc) TABLESPACE pg_default;
+
 create table public.site_settings (
   id uuid not null default gen_random_uuid (),
   key text not null default 'default'::text,
@@ -173,3 +209,182 @@ create table public.site_links (
 ) TABLESPACE pg_default;
 
 create index IF not exists site_links_location_sort_idx on public.site_links using btree (location, section_title, sort_order, created_at) TABLESPACE pg_default;
+
+create or replace function public.is_owner () returns boolean language sql stable as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where id = auth.uid ()
+      and is_active = true
+      and role = 'owner'
+  );
+$$;
+
+create or replace function public.has_admin_permission (permission_key text) returns boolean language sql stable as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where id = auth.uid ()
+      and is_active = true
+      and (
+        role = 'owner'
+        or coalesce((permissions ->> permission_key)::boolean, false)
+      )
+  );
+$$;
+
+alter table public.admin_users enable row level security;
+alter table public.products enable row level security;
+alter table public.product_images enable row level security;
+alter table public.product_specifications enable row level security;
+alter table public.categories enable row level security;
+alter table public.brands enable row level security;
+alter table public.site_settings enable row level security;
+alter table public.site_hero_banners enable row level security;
+alter table public.site_top_bar_messages enable row level security;
+alter table public.site_links enable row level security;
+
+create policy "Admin users can read their own profile" on public.admin_users for
+select
+  to authenticated
+    using ((auth.uid () = id));
+
+create policy "Public can read published products" on public.products for
+select
+  to public
+    using ((is_published = true));
+
+create policy "Admins can read dashboard products" on public.products for
+select
+  to authenticated
+    using (
+      public.has_admin_permission ('products.view')
+      or public.has_admin_permission ('products.edit')
+    );
+
+create policy "Admins can add products" on public.products for insert to authenticated
+with
+  check (public.has_admin_permission ('products.add'));
+
+create policy "Admins can edit products" on public.products for
+update
+  to authenticated
+    using (public.has_admin_permission ('products.edit'))
+with
+  check (public.has_admin_permission ('products.edit'));
+
+create policy "Admins can delete products" on public.products for delete to authenticated using (public.has_admin_permission ('products.edit'));
+
+create policy "Public can read images for published products" on public.product_images for
+select
+  to public
+    using (
+      exists (
+        select 1
+        from public.products
+        where products.id = product_images.product_id
+          and products.is_published = true
+      )
+      or public.has_admin_permission ('products.view')
+      or public.has_admin_permission ('products.edit')
+    );
+
+create policy "Admins can manage product images" on public.product_images for all to authenticated
+using (public.has_admin_permission ('products.edit'))
+with
+  check (public.has_admin_permission ('products.edit'));
+
+create policy "Public can read specifications for published products" on public.product_specifications for
+select
+  to public
+    using (
+      exists (
+        select 1
+        from public.products
+        where products.id = product_specifications.product_id
+          and products.is_published = true
+      )
+      or public.has_admin_permission ('products.view')
+      or public.has_admin_permission ('products.edit')
+    );
+
+create policy "Admins can manage product specifications" on public.product_specifications for all to authenticated
+using (public.has_admin_permission ('products.edit'))
+with
+  check (public.has_admin_permission ('products.edit'));
+
+create policy "Public can read categories" on public.categories for
+select
+  to public
+    using (true);
+
+create policy "Admins can add categories" on public.categories for insert to authenticated
+with
+  check (public.has_admin_permission ('categories.add'));
+
+create policy "Admins can edit categories" on public.categories for
+update
+  to authenticated
+    using (public.has_admin_permission ('categories.edit'))
+with
+  check (public.has_admin_permission ('categories.edit'));
+
+create policy "Admins can delete categories" on public.categories for delete to authenticated using (public.has_admin_permission ('categories.edit'));
+
+create policy "Public can read brands" on public.brands for
+select
+  to public
+    using (true);
+
+create policy "Admins can add brands" on public.brands for insert to authenticated
+with
+  check (public.has_admin_permission ('brands.add'));
+
+create policy "Admins can edit brands" on public.brands for
+update
+  to authenticated
+    using (public.has_admin_permission ('brands.edit'))
+with
+  check (public.has_admin_permission ('brands.edit'));
+
+create policy "Admins can delete brands" on public.brands for delete to authenticated using (public.has_admin_permission ('brands.edit'));
+
+create policy "Public can read site settings" on public.site_settings for
+select
+  to public
+    using (true);
+
+create policy "Admins can manage site settings" on public.site_settings for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));
+
+create policy "Public can read hero banners" on public.site_hero_banners for
+select
+  to public
+    using (true);
+
+create policy "Admins can manage hero banners" on public.site_hero_banners for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));
+
+create policy "Public can read top bar messages" on public.site_top_bar_messages for
+select
+  to public
+    using (true);
+
+create policy "Admins can manage top bar messages" on public.site_top_bar_messages for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));
+
+create policy "Public can read site links" on public.site_links for
+select
+  to public
+    using (true);
+
+create policy "Admins can manage site links" on public.site_links for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));

@@ -1,5 +1,10 @@
 <script setup>
 const supabase = useSupabaseClient()
+const route = useRoute()
+const {
+  clearAdminAccess,
+  loadAdminAccess
+} = useAdminAccess()
 
 const email = ref('')
 const password = ref('')
@@ -9,6 +14,7 @@ const errorMessage = ref('')
 const login = async () => {
   loading.value = true
   errorMessage.value = ''
+  clearAdminAccess()
 
   const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
@@ -22,8 +28,23 @@ const login = async () => {
     return
   }
 
+  const adminUser = await loadAdminAccess(true)
+
+  if (!adminUser?.is_active) {
+    clearAdminAccess()
+    await supabase.auth.signOut()
+    errorMessage.value = 'This account does not have dashboard access.'
+    return
+  }
+
   await navigateTo('/dashboard')
 }
+
+onMounted(() => {
+  if (route.query.error === 'not-authorized') {
+    errorMessage.value = 'This account does not have dashboard access.'
+  }
+})
 </script>
 
 <template>

@@ -21,7 +21,15 @@
 </template>
 
 <script setup>
-const links = [
+const {
+  hasPermission,
+  isOwner,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
+
+const allLinks = [
   {
     label: 'Home',
     to: '/dashboard',
@@ -30,22 +38,46 @@ const links = [
   {
     label: 'Products',
     to: '/dashboard/products',
-    icon: 'lucide:package'
+    icon: 'lucide:package',
+    permission: 'products.view'
   },
   {
     label: 'Categories',
     to: '/dashboard/products/categories',
-    icon: 'lucide:layout-grid'
+    icon: 'lucide:layout-grid',
+    permission: 'categories.view'
   },
   {
     label: 'Brands',
     to: '/dashboard/products/brands',
-    icon: 'lucide:tag'
+    icon: 'lucide:tag',
+    permission: 'brands.view'
   },
   {
     label: 'Settings',
     to: '/dashboard/settings',
-    icon: 'lucide:settings'
+    icon: 'lucide:settings',
+    permission: 'settings.view'
+  },
+  {
+    label: 'Users',
+    to: '/dashboard/users',
+    icon: 'lucide:users',
+    role: 'owner'
   }
 ]
+
+const links = computed(() => {
+  return allLinks.filter((link) => {
+    if (link.role === 'owner') {
+      return isOwner.value
+    }
+
+    if (link.permission) {
+      return hasPermission(link.permission)
+    }
+
+    return true
+  })
+})
 </script>

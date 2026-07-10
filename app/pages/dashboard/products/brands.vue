@@ -9,6 +9,7 @@
       </div>
 
       <form
+        v-if="canAddBrand || canEditBrand"
         @submit.prevent="saveBrand"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
       >
@@ -16,6 +17,7 @@
           v-model="name"
           type="text"
           placeholder="Brand name"
+          :disabled="editingId ? !canEditBrand : !canAddBrand"
           class="w-full rounded-lg border p-3"
         />
 
@@ -23,6 +25,7 @@
           v-model="logoUrl"
           type="text"
           placeholder="Logo URL"
+          :disabled="editingId ? !canEditBrand : !canAddBrand"
           class="w-full rounded-lg border p-3"
         />
 
@@ -48,7 +51,7 @@
         <div class="flex gap-3">
           <button
             type="submit"
-            :disabled="saving"
+            :disabled="saving || (editingId ? !canEditBrand : !canAddBrand)"
             class="rounded-lg bg-blue-600 px-4 py-3 font-bold text-white"
           >
             {{ saving ? 'Saving...' : editingId ? 'Update Brand' : 'Add Brand' }}
@@ -64,6 +67,13 @@
           </button>
         </div>
       </form>
+
+      <div
+        v-else
+        class="mb-8 rounded-2xl bg-white p-5 text-sm text-gray-500 shadow"
+      >
+        You can view brands, but this account cannot add or edit them.
+      </div>
 
       <div class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between gap-3">
@@ -143,6 +153,7 @@
 
               <div class="flex gap-2">
                 <button
+                  v-if="canEditBrand"
                   @click="startEdit(brand)"
                   class="rounded-lg bg-black px-3 py-2 text-sm text-white"
                 >
@@ -150,6 +161,7 @@
                 </button>
 
                 <button
+                  v-if="canEditBrand"
                   @click="deleteBrand(brand.id)"
                   class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
                 >
@@ -194,6 +206,12 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  hasPermission,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
 
 const brands = ref([])
 const name = ref('')
@@ -210,6 +228,8 @@ let searchTimeoutId = null
 
 const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
+const canAddBrand = computed(() => hasPermission('brands.add'))
+const canEditBrand = computed(() => hasPermission('brands.edit'))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalBrands.value / pageSize))
@@ -285,6 +305,16 @@ const getBrandsList = async (page = currentPage.value) => {
 const saveBrand = async () => {
   errorMessage.value = ''
 
+  if (editingId.value && !canEditBrand.value) {
+    errorMessage.value = 'You do not have permission to edit brands.'
+    return
+  }
+
+  if (!editingId.value && !canAddBrand.value) {
+    errorMessage.value = 'You do not have permission to add brands.'
+    return
+  }
+
   if (!name.value.trim()) {
     errorMessage.value = 'Brand name is required'
     return
@@ -332,6 +362,10 @@ const saveBrand = async () => {
 }
 
 const startEdit = (brand) => {
+  if (!canEditBrand.value) {
+    return
+  }
+
   name.value = brand.name
   logoUrl.value = brand.logo_url || ''
   editingId.value = brand.id
@@ -344,6 +378,11 @@ const cancelEdit = () => {
 
 const deleteBrand = async (id) => {
   errorMessage.value = ''
+
+  if (!canEditBrand.value) {
+    errorMessage.value = 'You do not have permission to delete brands.'
+    return
+  }
 
   const confirmDelete = confirm('Are you sure you want to delete this brand?')
   if (!confirmDelete) {

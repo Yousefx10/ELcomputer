@@ -49,10 +49,16 @@
 <script setup>
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
+const {
+  adminUser,
+  clearAdminAccess,
+  loadAdminAccess
+} = useAdminAccess()
 const authChecked = ref(false)
 const dashboardDateTime = ref('')
 
 let dashboardClockInterval
+let authStateSubscription
 
 const dashboardSiteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const dashboardLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
@@ -65,6 +71,7 @@ const updateDashboardDateTime = () => {
 }
 
 const logout = async () => {
+  clearAdminAccess()
   await supabase.auth.signOut()
   await navigateTo('/dashboard/login')
 }
@@ -77,14 +84,39 @@ onMounted(async () => {
     return
   }
 
+  await loadAdminAccess(true)
+
+  if (!adminUser.value?.is_active) {
+    clearAdminAccess()
+    await supabase.auth.signOut()
+    await navigateTo({
+      path: '/dashboard/login',
+      query: {
+        error: 'not-authorized'
+      }
+    })
+    return
+  }
+
   updateDashboardDateTime()
   dashboardClockInterval = window.setInterval(updateDashboardDateTime, 1000)
+  authStateSubscription = supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (!session) {
+      authChecked.value = false
+      clearAdminAccess()
+      await navigateTo('/dashboard/login')
+    }
+  }).data.subscription
   authChecked.value = true
 })
 
 onUnmounted(() => {
   if (dashboardClockInterval) {
     window.clearInterval(dashboardClockInterval)
+  }
+
+  if (authStateSubscription) {
+    authStateSubscription.unsubscribe()
   }
 })
 </script>

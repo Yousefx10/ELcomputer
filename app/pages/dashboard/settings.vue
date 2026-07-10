@@ -12,13 +12,20 @@
         {{ pageError }}
       </div>
 
-      <div class="max-w-sm">
-        <div class="rounded-2xl bg-white p-5 shadow">
+      <div
+        v-if="!canEditSettings"
+        class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 shadow"
+      >
+        This account has view-only access to settings. Saving and editing actions are disabled.
+      </div>
+
+      <div v-if="isOwner" class="max-w-sm">
+        <NuxtLink to="/dashboard/users" class="block rounded-2xl bg-white p-5 shadow transition hover:bg-gray-50">
           <h3 class="text-lg font-bold">Users</h3>
           <p class="mt-2 text-sm text-gray-500">
-            Placeholder for future user management controls.
+            Create admin users and control their permissions.
           </p>
-        </div>
+        </NuxtLink>
       </div>
 
       <div class="space-y-4">
@@ -43,7 +50,11 @@
             />
           </button>
 
-          <div v-if="openSections.generalSettings" class="border-t p-6">
+          <div
+            v-if="openSections.generalSettings"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
             <div class="grid gap-5 md:grid-cols-2">
               <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">Site Name</label>
@@ -138,7 +149,11 @@
             />
           </button>
 
-          <div v-if="openSections.topBarTexts" class="border-t p-6">
+          <div
+            v-if="openSections.topBarTexts"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
             <div class="mb-5 grid gap-5 md:grid-cols-[220px_auto]">
               <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
@@ -272,7 +287,11 @@
             />
           </button>
 
-          <div v-if="openSections.heroBanners" class="border-t p-6">
+          <div
+            v-if="openSections.heroBanners"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
             <div class="mb-5 grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
               <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
                 <div>
@@ -457,7 +476,11 @@
             />
           </button>
 
-          <div v-if="openSections.bannerAds" class="border-t p-6">
+          <div
+            v-if="openSections.bannerAds"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
             <div class="grid gap-5 md:grid-cols-2">
               <div class="space-y-4 rounded-2xl border bg-gray-50 p-4">
                 <div class="flex items-center justify-between gap-4">
@@ -614,7 +637,11 @@
           />
         </button>
 
-        <div v-if="openSections.headerLinks" class="border-t p-6">
+        <div
+          v-if="openSections.headerLinks"
+          class="border-t p-6"
+          :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+        >
           <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_auto]">
             <input
               v-model="newHeaderLabel"
@@ -771,7 +798,11 @@
           />
         </button>
 
-        <div v-if="openSections.footerSettings" class="border-t p-6">
+        <div
+          v-if="openSections.footerSettings"
+          class="border-t p-6"
+          :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+        >
           <div class="grid gap-5 md:grid-cols-2">
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
@@ -899,7 +930,11 @@
           />
         </button>
 
-        <div v-if="openSections.footerLinks" class="border-t p-6">
+        <div
+          v-if="openSections.footerLinks"
+          class="border-t p-6"
+          :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+        >
         <div class="mb-5 grid gap-3 md:grid-cols-[1fr_1fr_2fr_auto]">
           <input
             v-model="newFooterSectionTitle"
@@ -1019,8 +1054,16 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  hasPermission,
+  isOwner,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
 
 const pageError = ref('')
+const canEditSettings = computed(() => hasPermission('settings.edit'))
 
 const defaultSiteSettings = {
   key: 'default',

@@ -11,6 +11,7 @@
           </div>
 
           <NuxtLink
+            v-if="canAddProduct"
             to="/dashboard/products/add"
             class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
@@ -69,7 +70,7 @@
         </p>
 
         <NuxtLink
-          v-if="!hasActiveSearch"
+          v-if="!hasActiveSearch && canAddProduct"
           to="/dashboard/products/add"
           class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
         >
@@ -137,6 +138,7 @@
 
               <div class="flex gap-3">
                 <NuxtLink
+                  v-if="canEditProduct"
                   :to="`/dashboard/products/edit/${product.id}`"
                   class="flex-1 rounded-lg bg-black px-4 py-3 text-center text-sm font-bold text-white hover:bg-gray-800"
                 >
@@ -181,6 +183,12 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  hasPermission,
+  loadAdminAccess
+} = useAdminAccess()
+
+await loadAdminAccess()
 
 const products = ref([])
 const loading = ref(false)
@@ -193,6 +201,8 @@ let searchTimeoutId = null
 
 const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
+const canAddProduct = computed(() => hasPermission('products.add'))
+const canEditProduct = computed(() => hasPermission('products.edit'))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalProducts.value / pageSize))
