@@ -4,7 +4,7 @@
       <div class="rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Users</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Create admin accounts, review them, and control dashboard permissions.
+          Create admin accounts, review them, control dashboard permissions, and manage store customers.
         </p>
       </div>
 
@@ -311,6 +311,310 @@
             </button>
           </div>
         </div>
+
+        <div class="mt-6 border-t pt-6">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-50 px-5 py-4 text-left"
+            @click="toggleCustomerSection"
+          >
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900">Store Customers</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Review customer accounts, recent order activity, and account status.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-600 shadow-sm">
+                {{ customerTotalUsers }} total
+              </span>
+
+              <Icon
+                name="lucide:chevron-down"
+                size="20"
+                class="transition"
+                :class="customerSectionOpen ? 'rotate-180' : ''"
+              />
+            </div>
+          </button>
+
+          <div v-if="customerSectionOpen" class="mt-6 space-y-6">
+            <div v-if="customerSectionError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow-sm">
+              {{ customerSectionError }}
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border bg-white p-5">
+                <p class="text-sm text-gray-500">Current Users Total</p>
+                <p class="mt-2 text-3xl font-bold text-gray-900">{{ customerTotalUsers }}</p>
+              </div>
+
+              <div class="rounded-2xl border bg-white p-5">
+                <p class="text-sm text-gray-500">Active Users Total</p>
+                <p class="mt-2 text-3xl font-bold text-green-600">{{ customerActiveUsers }}</p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border bg-white p-5">
+              <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div class="flex-1">
+                  <label for="customer-user-search" class="mb-2 block text-sm font-semibold text-gray-700">
+                    Search Store Customers
+                  </label>
+                  <input
+                    id="customer-user-search"
+                    v-model="customerSearchQuery"
+                    type="text"
+                    placeholder="Search by email or full name"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <button
+                  v-if="customerSearchQuery"
+                  type="button"
+                  @click="clearCustomerSearch"
+                  class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border bg-white p-5">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <p class="text-sm text-gray-500">
+                  Showing {{ customerPageStart }}-{{ customerPageEnd }} of {{ customerFilteredTotal }} {{ customerHasActiveSearch ? 'matching customers' : 'customers' }}
+                </p>
+
+                <p class="text-sm font-medium text-gray-600">
+                  Page {{ customerCurrentPage }} of {{ customerTotalPages }}
+                </p>
+              </div>
+
+              <p v-if="customerUsersLoading" class="text-gray-500">
+                Loading store customers...
+              </p>
+
+              <p v-else-if="!customerUsers.length" class="text-gray-500">
+                {{ customerHasActiveSearch ? 'No matching store customers found.' : 'No store customers found yet.' }}
+              </p>
+
+              <div v-else class="space-y-3">
+                <div
+                  v-for="customer in customerUsers"
+                  :key="customer.id"
+                  class="flex flex-col gap-4 rounded-xl border p-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div class="space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <p class="font-bold text-gray-900">
+                        {{ customer.full_name || customer.email || 'No name set' }}
+                      </p>
+
+                      <span
+                        class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                        :class="customer.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
+                      >
+                        {{ customer.is_active ? 'Active' : 'Inactive' }}
+                      </span>
+                    </div>
+
+                    <p class="text-sm text-gray-600">
+                      {{ customer.email || 'No email available' }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                      Wallet {{ formatCurrency(customer.wallet_balance) }}
+                    </p>
+
+                    <p class="text-xs text-gray-400">
+                      Joined {{ formatDate(customer.created_at) }}
+                    </p>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button
+                      type="button"
+                      class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                      @click="toggleCustomerDetails(customer)"
+                    >
+                      {{ selectedCustomerId === customer.id ? 'Hide Details' : 'View Details' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between rounded-xl border px-4 py-3">
+                <button
+                  type="button"
+                  :disabled="customerCurrentPage === 1 || customerUsersLoading"
+                  @click="goToPreviousCustomerPage"
+                  class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                <p class="text-sm text-gray-500">
+                  Page {{ customerCurrentPage }} of {{ customerTotalPages }}
+                </p>
+
+                <button
+                  type="button"
+                  :disabled="customerCurrentPage === customerTotalPages || customerUsersLoading"
+                  @click="goToNextCustomerPage"
+                  class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+
+            <div v-if="selectedCustomerId" class="rounded-2xl border bg-white p-6 shadow-sm">
+              <div v-if="customerDetailLoading" class="text-gray-500">
+                Loading customer details...
+              </div>
+
+              <div v-else-if="customerDetail" class="space-y-6">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h4 class="text-2xl font-bold text-gray-900">
+                        {{ customerDetail.full_name || customerDetail.email || 'Store Customer' }}
+                      </h4>
+
+                      <span
+                        class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                        :class="customerDetail.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
+                      >
+                        {{ customerDetail.is_active ? 'Active' : 'Inactive' }}
+                      </span>
+                    </div>
+
+                    <p class="mt-2 text-sm text-gray-600">
+                      {{ customerDetail.email || 'No email available' }}
+                    </p>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                      Joined {{ formatDate(customerDetail.created_at) }}
+                    </p>
+                  </div>
+
+                  <div class="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      :disabled="customerActionLoading"
+                      class="rounded-lg px-4 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
+                      :class="customerDetail.is_active ? 'bg-gray-700 hover:bg-gray-800' : 'bg-green-600 hover:bg-green-700'"
+                      @click="updateCustomerStatus(!customerDetail.is_active)"
+                    >
+                      {{ customerActionLoading
+                        ? 'Saving...'
+                        : customerDetail.is_active ? 'Disable User' : 'Enable User' }}
+                    </button>
+
+                    <button
+                      type="button"
+                      :disabled="customerActionLoading"
+                      class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                      @click="deleteCustomerUser"
+                    >
+                      {{ customerActionLoading ? 'Please wait...' : 'Delete User' }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+                  <div class="space-y-4">
+                    <div class="rounded-2xl bg-gray-50 p-4">
+                      <p class="text-sm font-semibold text-gray-700">Contact</p>
+                      <p class="mt-2 text-sm text-gray-600">
+                        {{ customerDetail.phone || 'No phone saved yet.' }}
+                      </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-gray-50 p-4">
+                      <p class="text-sm font-semibold text-gray-700">Address</p>
+                      <p class="mt-2 whitespace-pre-line text-sm text-gray-600">
+                        {{ getCustomerAddress(customerDetail) }}
+                      </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-gray-50 p-4">
+                      <p class="text-sm font-semibold text-gray-700">Wallet</p>
+                      <p class="mt-2 text-2xl font-bold text-gray-900">
+                        {{ formatCurrency(customerDetail.wallet_balance) }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="grid gap-4 sm:grid-cols-3">
+                      <div class="rounded-2xl bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">Total Orders</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerDetailStats.totalOrders }}</p>
+                      </div>
+
+                      <div class="rounded-2xl bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">Delivered</p>
+                        <p class="mt-2 text-2xl font-bold text-green-600">{{ customerDetailStats.delivered }}</p>
+                      </div>
+
+                      <div class="rounded-2xl bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">In Progress</p>
+                        <p class="mt-2 text-2xl font-bold text-amber-600">{{ customerDetailStats.inProgress }}</p>
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl bg-gray-50 p-4">
+                      <div class="mb-4 flex items-center justify-between gap-3">
+                        <p class="text-sm font-semibold text-gray-700">Recent Orders</p>
+                        <span class="text-xs text-gray-400">{{ customerDetailStats.totalOrders }} total</span>
+                      </div>
+
+                      <p v-if="!customerRecentOrders.length" class="text-sm text-gray-500">
+                        No orders for this customer yet.
+                      </p>
+
+                      <div v-else class="space-y-3">
+                        <div
+                          v-for="order in customerRecentOrders"
+                          :key="order.id"
+                          class="rounded-xl border bg-white p-3"
+                        >
+                          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <p class="font-semibold text-gray-900">
+                                {{ order.order_number || `Order #${order.id.slice(0, 8)}` }}
+                              </p>
+                              <p class="text-xs text-gray-400">
+                                {{ formatDate(order.created_at) }}
+                              </p>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                              <span
+                                class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                                :class="getOrderStatusClass(order.status)"
+                              >
+                                {{ formatOrderStatus(order.status) }}
+                              </span>
+
+                              <p class="font-semibold text-gray-900">
+                                {{ formatCurrency(order.total_amount) }}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -348,7 +652,29 @@ const searchQuery = ref('')
 const editingId = ref('')
 const userFormRef = ref(null)
 const emailInputRef = ref(null)
+const customerSectionOpen = ref(false)
+const customerSectionLoaded = ref(false)
+const customerUsers = ref([])
+const customerUsersLoading = ref(false)
+const customerSectionError = ref('')
+const customerCurrentPage = ref(1)
+const customerPageSize = 10
+const customerTotalUsers = ref(0)
+const customerActiveUsers = ref(0)
+const customerFilteredTotal = ref(0)
+const customerSearchQuery = ref('')
+const selectedCustomerId = ref('')
+const customerDetail = ref(null)
+const customerDetailLoading = ref(false)
+const customerActionLoading = ref(false)
+const customerRecentOrders = ref([])
+const customerDetailStats = reactive({
+  totalOrders: 0,
+  delivered: 0,
+  inProgress: 0
+})
 let searchTimeoutId = null
+let customerSearchTimeoutId = null
 
 const form = reactive({
   email: '',
@@ -361,9 +687,15 @@ const form = reactive({
 
 const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
+const trimmedCustomerSearchQuery = computed(() => customerSearchQuery.value.trim())
+const customerHasActiveSearch = computed(() => Boolean(trimmedCustomerSearchQuery.value))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalUsers.value / pageSize))
+})
+
+const customerTotalPages = computed(() => {
+  return Math.max(1, Math.ceil(customerFilteredTotal.value / customerPageSize))
 })
 
 const pageStart = computed(() => {
@@ -376,6 +708,18 @@ const pageStart = computed(() => {
 
 const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalUsers.value)
+})
+
+const customerPageStart = computed(() => {
+  if (!customerFilteredTotal.value) {
+    return 0
+  }
+
+  return (customerCurrentPage.value - 1) * customerPageSize + 1
+})
+
+const customerPageEnd = computed(() => {
+  return Math.min(customerCurrentPage.value * customerPageSize, customerFilteredTotal.value)
 })
 
 const isEditingOwner = computed(() => {
@@ -439,6 +783,92 @@ const getAdminUsersList = async (page = currentPage.value) => {
   } finally {
     loading.value = false
   }
+}
+
+const resetCustomerDetail = () => {
+  selectedCustomerId.value = ''
+  customerDetail.value = null
+  customerRecentOrders.value = []
+  customerDetailStats.totalOrders = 0
+  customerDetailStats.delivered = 0
+  customerDetailStats.inProgress = 0
+}
+
+const getCustomerUsersList = async (page = customerCurrentPage.value) => {
+  customerUsersLoading.value = true
+  customerSectionError.value = ''
+  customerCurrentPage.value = page
+
+  try {
+    const response = await $fetch('/api/customer-users', {
+      query: {
+        page,
+        pageSize: customerPageSize,
+        search: trimmedCustomerSearchQuery.value || undefined
+      },
+      headers: await getAuthHeaders()
+    })
+
+    customerTotalUsers.value = response.total || 0
+    customerActiveUsers.value = response.activeTotal || 0
+    customerFilteredTotal.value = response.filteredTotal || 0
+
+    if (customerCurrentPage.value > customerTotalPages.value) {
+      customerUsersLoading.value = false
+      await getCustomerUsersList(customerTotalPages.value)
+      return
+    }
+
+    customerUsers.value = response.items || []
+    customerSectionLoaded.value = true
+
+    if (selectedCustomerId.value && !customerUsers.value.some((customer) => customer.id === selectedCustomerId.value)) {
+      resetCustomerDetail()
+    }
+  } catch (error) {
+    customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not load store customers.'
+  } finally {
+    customerUsersLoading.value = false
+  }
+}
+
+const getCustomerUserDetails = async (customerId) => {
+  customerDetailLoading.value = true
+  customerSectionError.value = ''
+
+  try {
+    const response = await $fetch(`/api/customer-users/${customerId}`, {
+      headers: await getAuthHeaders()
+    })
+
+    selectedCustomerId.value = customerId
+    customerDetail.value = response.item || null
+    customerRecentOrders.value = response.recentOrders || []
+    customerDetailStats.totalOrders = response.stats?.totalOrders || 0
+    customerDetailStats.delivered = response.stats?.delivered || 0
+    customerDetailStats.inProgress = response.stats?.inProgress || 0
+  } catch (error) {
+    customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not load customer details.'
+  } finally {
+    customerDetailLoading.value = false
+  }
+}
+
+const toggleCustomerSection = async () => {
+  customerSectionOpen.value = !customerSectionOpen.value
+
+  if (customerSectionOpen.value && !customerSectionLoaded.value) {
+    await getCustomerUsersList(1)
+  }
+}
+
+const toggleCustomerDetails = async (customer) => {
+  if (selectedCustomerId.value === customer.id) {
+    resetCustomerDetail()
+    return
+  }
+
+  await getCustomerUserDetails(customer.id)
 }
 
 const buildPayload = () => {
@@ -566,8 +996,67 @@ const deleteAdminUser = async () => {
   }
 }
 
+const updateCustomerStatus = async (isActive) => {
+  if (!selectedCustomerId.value) {
+    return
+  }
+
+  customerActionLoading.value = true
+  customerSectionError.value = ''
+
+  try {
+    await $fetch(`/api/customer-users/${selectedCustomerId.value}`, {
+      method: 'PATCH',
+      body: {
+        is_active: isActive
+      },
+      headers: await getAuthHeaders()
+    })
+
+    await getCustomerUsersList(customerCurrentPage.value)
+    await getCustomerUserDetails(selectedCustomerId.value)
+  } catch (error) {
+    customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not update the customer account.'
+  } finally {
+    customerActionLoading.value = false
+  }
+}
+
+const deleteCustomerUser = async () => {
+  if (!selectedCustomerId.value) {
+    return
+  }
+
+  const confirmDelete = confirm('Are you sure you want to delete this customer account?')
+
+  if (!confirmDelete) {
+    return
+  }
+
+  customerActionLoading.value = true
+  customerSectionError.value = ''
+
+  try {
+    await $fetch(`/api/customer-users/${selectedCustomerId.value}`, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    })
+
+    resetCustomerDetail()
+    await getCustomerUsersList(customerCurrentPage.value)
+  } catch (error) {
+    customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not delete the customer account.'
+  } finally {
+    customerActionLoading.value = false
+  }
+}
+
 const clearSearch = () => {
   searchQuery.value = ''
+}
+
+const clearCustomerSearch = () => {
+  customerSearchQuery.value = ''
 }
 
 const goToPreviousPage = async () => {
@@ -586,6 +1075,22 @@ const goToNextPage = async () => {
   await getAdminUsersList(currentPage.value + 1)
 }
 
+const goToPreviousCustomerPage = async () => {
+  if (customerCurrentPage.value === 1) {
+    return
+  }
+
+  await getCustomerUsersList(customerCurrentPage.value - 1)
+}
+
+const goToNextCustomerPage = async () => {
+  if (customerCurrentPage.value === customerTotalPages.value) {
+    return
+  }
+
+  await getCustomerUsersList(customerCurrentPage.value + 1)
+}
+
 const formatDate = (value) => {
   if (!value) {
     return 'recently'
@@ -597,6 +1102,48 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'EGP',
+    maximumFractionDigits: 2
+  }).format(Number(value || 0))
+}
+
+const getCustomerAddress = (customer) => {
+  const addressParts = [
+    customer?.address_line_1,
+    customer?.address_line_2,
+    customer?.city,
+    customer?.state,
+    customer?.country
+  ].filter(Boolean)
+
+  return addressParts.length ? addressParts.join('\n') : 'No address saved yet.'
+}
+
+const formatOrderStatus = (value) => {
+  if (value === 'in_progress') {
+    return 'In Progress'
+  }
+
+  return value
+    ? value.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase())
+    : 'Unknown'
+}
+
+const getOrderStatusClass = (value) => {
+  if (value === 'delivered') {
+    return 'bg-green-100 text-green-700'
+  }
+
+  if (value === 'in_progress') {
+    return 'bg-amber-100 text-amber-700'
+  }
+
+  return 'bg-gray-100 text-gray-600'
+}
+
 watch(searchQuery, () => {
   if (searchTimeoutId) {
     clearTimeout(searchTimeoutId)
@@ -604,6 +1151,18 @@ watch(searchQuery, () => {
 
   searchTimeoutId = setTimeout(() => {
     getAdminUsersList(1)
+  }, 300)
+})
+
+watch(customerSearchQuery, () => {
+  if (customerSearchTimeoutId) {
+    clearTimeout(customerSearchTimeoutId)
+  }
+
+  customerSearchTimeoutId = setTimeout(() => {
+    if (customerSectionOpen.value) {
+      getCustomerUsersList(1)
+    }
   }, 300)
 })
 
@@ -626,6 +1185,10 @@ watch(
 onBeforeUnmount(() => {
   if (searchTimeoutId) {
     clearTimeout(searchTimeoutId)
+  }
+
+  if (customerSearchTimeoutId) {
+    clearTimeout(customerSearchTimeoutId)
   }
 })
 

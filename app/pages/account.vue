@@ -51,6 +51,7 @@ const ensureCustomerProfile = async (accountUser) => {
     .from('customer_profiles')
     .upsert({
       id: accountUser.id,
+      email: accountUser.email || '',
       full_name: getCustomerDisplayName(accountUser),
       avatar_url: accountUser.user_metadata?.avatar_url || null
     })
@@ -82,6 +83,17 @@ const loadAccountPage = async () => {
 
     const accountUser = userData.user
     const accountProfile = await ensureCustomerProfile(accountUser)
+
+    if (accountProfile.is_active === false) {
+      await supabase.auth.signOut()
+      await navigateTo({
+        path: '/login',
+        query: {
+          error: 'account-disabled'
+        }
+      })
+      return
+    }
 
     const [
       totalOrdersResult,

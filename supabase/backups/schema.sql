@@ -212,15 +212,28 @@ create index IF not exists site_links_location_sort_idx on public.site_links usi
 
 create table public.customer_profiles (
   id uuid not null,
+  email text not null,
   full_name text null,
   avatar_url text null,
+  phone text null,
+  address_line_1 text null,
+  address_line_2 text null,
+  city text null,
+  state text null,
+  country text null,
+  is_active boolean not null default true,
   wallet_balance numeric (12, 2) not null default 0,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
   constraint customer_profiles_pkey primary key (id),
   constraint customer_profiles_id_fkey foreign KEY (id) references auth.users (id) on delete CASCADE,
+  constraint customer_profiles_email_key unique (email),
   constraint customer_profiles_wallet_balance_check check ((wallet_balance >= (0)::numeric))
 ) TABLESPACE pg_default;
+
+create index IF not exists customer_profiles_is_active_idx on public.customer_profiles using btree (is_active) TABLESPACE pg_default;
+
+create index IF not exists customer_profiles_created_at_idx on public.customer_profiles using btree (created_at desc) TABLESPACE pg_default;
 
 create table public.customer_orders (
   id uuid not null default gen_random_uuid (),
@@ -251,11 +264,13 @@ set
 begin
   insert into public.customer_profiles (
     id,
+    email,
     full_name,
     avatar_url
   )
   values (
     new.id,
+    new.email,
     coalesce(
       new.raw_user_meta_data ->> 'full_name',
       new.raw_user_meta_data ->> 'name',

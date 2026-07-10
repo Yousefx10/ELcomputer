@@ -46,6 +46,7 @@ const createOrUpdateCustomerProfile = async () => {
     .from('customer_profiles')
     .upsert({
       id: currentUser.id,
+      email: currentUser.email || '',
       full_name: fullName.value.trim() || fallbackName,
       avatar_url: currentUser.user_metadata?.avatar_url || null
     })
@@ -94,6 +95,25 @@ const submitAuthForm = async () => {
       throw error
     }
 
+    const currentUser = user.value
+
+    if (currentUser) {
+      const { data: existingProfile, error: existingProfileError } = await supabase
+        .from('customer_profiles')
+        .select('is_active')
+        .eq('id', currentUser.id)
+        .maybeSingle()
+
+      if (existingProfileError) {
+        throw existingProfileError
+      }
+
+      if (existingProfile && existingProfile.is_active === false) {
+        await supabase.auth.signOut()
+        throw new Error('This customer account is disabled.')
+      }
+    }
+
     await createOrUpdateCustomerProfile()
     await navigateTo('/account')
   } catch (error) {
@@ -135,6 +155,12 @@ watch(
   },
   { immediate: true }
 )
+
+onMounted(() => {
+  if (route.query.error === 'account-disabled') {
+    errorMessage.value = 'This customer account is disabled.'
+  }
+})
 </script>
 
 <template>
