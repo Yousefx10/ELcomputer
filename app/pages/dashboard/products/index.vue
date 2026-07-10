@@ -20,10 +20,20 @@
         </div>
       </div>
 
-      <div class="mb-6 grid gap-4 md:grid-cols-1">
+      <div class="mb-6 grid gap-4 md:grid-cols-3">
         <div class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
-          <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalProducts }}</p>
+          <p class="mt-2 text-3xl font-bold text-gray-900">{{ productStats.total }}</p>
+        </div>
+
+        <div class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Active Products</p>
+          <p class="mt-2 text-3xl font-bold text-green-600">{{ productStats.active }}</p>
+        </div>
+
+        <div class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Inactive Products</p>
+          <p class="mt-2 text-3xl font-bold text-gray-700">{{ productStats.inactive }}</p>
         </div>
       </div>
 
@@ -196,6 +206,11 @@ const errorMessage = ref('')
 const currentPage = ref(1)
 const pageSize = 9
 const totalProducts = ref(0)
+const productStats = reactive({
+  total: 0,
+  active: 0,
+  inactive: 0
+})
 const searchQuery = ref('')
 let searchTimeoutId = null
 
@@ -219,6 +234,31 @@ const pageStart = computed(() => {
 const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalProducts.value)
 })
+
+const getProductStats = async () => {
+  const [activeProductsResult, inactiveProductsResult] = await Promise.all([
+    supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_published', true),
+    supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_published', false)
+  ])
+
+  if (activeProductsResult.error) {
+    throw activeProductsResult.error
+  }
+
+  if (inactiveProductsResult.error) {
+    throw inactiveProductsResult.error
+  }
+
+  productStats.active = activeProductsResult.count || 0
+  productStats.inactive = inactiveProductsResult.count || 0
+  productStats.total = productStats.active + productStats.inactive
+}
 
 const getProductsList = async (page = currentPage.value) => {
   loading.value = true
@@ -301,5 +341,10 @@ onBeforeUnmount(() => {
   }
 })
 
-await getProductsList()
+try {
+  await getProductStats()
+  await getProductsList()
+} catch (error) {
+  errorMessage.value = error.message || 'Could not load product stats.'
+}
 </script>
