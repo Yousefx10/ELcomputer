@@ -19,15 +19,6 @@
         This account has view-only access to settings. Saving and editing actions are disabled.
       </div>
 
-      <div v-if="isOwner" class="max-w-sm">
-        <NuxtLink to="/dashboard/users" class="block rounded-2xl bg-white p-5 shadow transition hover:bg-gray-50">
-          <h3 class="text-lg font-bold">Users</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Create admin users and control their permissions.
-          </p>
-        </NuxtLink>
-      </div>
-
       <div class="space-y-4">
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
@@ -1056,7 +1047,6 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const {
   hasPermission,
-  isOwner,
   loadAdminAccess
 } = useAdminAccess()
 

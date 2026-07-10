@@ -44,6 +44,13 @@ export const adminPermissionKeys = adminPermissionDefinitions.map((permission) =
   return permission.key
 })
 
+export const adminPermissionDependencies = {
+  'products.view': ['products.add', 'products.edit'],
+  'categories.view': ['categories.add', 'categories.edit'],
+  'brands.view': ['brands.add', 'brands.edit'],
+  'settings.view': ['settings.edit']
+}
+
 export const defaultAdminPermissions = Object.fromEntries(
   adminPermissionKeys.map((permissionKey) => [permissionKey, false])
 )
@@ -61,6 +68,16 @@ export const normalizeAdminPermissions = (permissions) => {
 
   adminPermissionKeys.forEach((permissionKey) => {
     normalizedPermissions[permissionKey] = Boolean(permissions[permissionKey])
+  })
+
+  Object.entries(adminPermissionDependencies).forEach(([parentPermissionKey, dependentPermissionKeys]) => {
+    if (normalizedPermissions[parentPermissionKey]) {
+      return
+    }
+
+    dependentPermissionKeys.forEach((dependentPermissionKey) => {
+      normalizedPermissions[dependentPermissionKey] = false
+    })
   })
 
   return normalizedPermissions

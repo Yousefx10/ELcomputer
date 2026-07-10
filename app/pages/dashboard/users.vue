@@ -130,8 +130,10 @@
                   class="flex items-center gap-3 text-sm text-gray-700"
                 >
                   <input
-                    v-model="form.permissions[permission.key]"
+                    :checked="form.permissions[permission.key]"
                     type="checkbox"
+                    :disabled="isPermissionDisabled(permission.key)"
+                    @change="updatePermission(permission.key, $event.target.checked)"
                   >
                   <span>{{ permission.label }}</span>
                 </label>
@@ -160,6 +162,19 @@
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
             Cancel
+          </button>
+
+          <button
+            v-if="editingId"
+            type="button"
+            :disabled="isDeleteDisabled"
+            @click="deleteAdminUser"
+            class="rounded-lg px-5 py-3 font-bold text-white"
+            :class="isDeleteDisabled
+              ? 'cursor-not-allowed bg-red-300'
+              : 'bg-red-600 hover:bg-red-700'"
+          >
+            {{ deleting ? 'Deleting...' : 'Delete User' }}
           </button>
         </div>
       </form>
@@ -301,6 +316,8 @@
 <script setup>
 import {
   adminPermissionGroups,
+  adminPermissionDependencies,
+  adminPermissionKeys,
   createEmptyAdminPermissions,
   normalizeAdminPermissions
 } from '~/utils/adminPermissions'
@@ -317,11 +334,13 @@ await loadAdminAccess()
 const adminUsers = ref([])
 const loading = ref(false)
 const saving = ref(false)
+const deleting = ref(false)
 const pageError = ref('')
 const formError = ref('')
 const currentPage = ref(1)
 const pageSize = 10
 const totalUsers = ref(0)
+const activeOwnerCount = ref(0)
 const searchQuery = ref('')
 const editingId = ref('')
 let searchTimeoutId = null
@@ -352,6 +371,14 @@ const pageStart = computed(() => {
 
 const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalUsers.value)
+})
+
+const isEditingOwner = computed(() => {
+  return Boolean(editingId.value) && form.role === 'owner'
+})
+
+const isDeleteDisabled = computed(() => {
+  return deleting.value || (isEditingOwner.value && activeOwnerCount.value <= 1)
 })
 
 const resetForm = () => {
@@ -393,6 +420,7 @@ const getAdminUsersList = async (page = currentPage.value) => {
     })
 
     totalUsers.value = response.total || 0
+    activeOwnerCount.value = response.activeOwnerCount || 0
 
     if (currentPage.value > totalPages.value) {
       loading.value = false
@@ -460,6 +488,70 @@ const startEdit = (user) => {
   formError.value = ''
 }
 
+const getRequiredViewPermission = (permissionKey) => {
+  const dependencyEntry = Object.entries(adminPermissionDependencies).find(([, dependentPermissionKeys]) => {
+    return dependentPermissionKeys.includes(permissionKey)
+  })
+
+  return dependencyEntry?.[0] || ''
+}
+
+const isPermissionDisabled = (permissionKey) => {
+  const requiredViewPermission = getRequiredViewPermission(permissionKey)
+
+  if (!requiredViewPermission) {
+    return false
+  }
+
+  return !form.permissions[requiredViewPermission]
+}
+
+const updatePermission = (permissionKey, isEnabled) => {
+  form.permissions[permissionKey] = Boolean(isEnabled)
+}
+
+const deleteAdminUser = async () => {
+  formError.value = ''
+
+  if (!editingId.value) {
+    return
+  }
+
+  if (isEditingOwner.value && activeOwnerCount.value <= 1) {
+    formError.value = 'At least one active owner must remain.'
+    return
+  }
+
+  const confirmDelete = confirm('Are you sure you want to delete this admin user?')
+
+  if (!confirmDelete) {
+    return
+  }
+
+  deleting.value = true
+
+  try {
+    const deletingCurrentUser = editingId.value === currentAdminUser.value?.id
+
+    await $fetch(`/api/admin-users/${editingId.value}`, {
+      method: 'DELETE',
+      headers: await getAuthHeaders()
+    })
+
+    resetForm()
+    await getAdminUsersList(currentPage.value)
+
+    if (deletingCurrentUser) {
+      await supabase.auth.signOut()
+      await navigateTo('/dashboard/login')
+    }
+  } catch (error) {
+    formError.value = error?.data?.statusMessage || error?.message || 'Could not delete the admin user.'
+  } finally {
+    deleting.value = false
+  }
+}
+
 const clearSearch = () => {
   searchQuery.value = ''
 }
@@ -500,6 +592,22 @@ watch(searchQuery, () => {
     getAdminUsersList(1)
   }, 300)
 })
+
+watch(
+  () => ({ ...form.permissions }),
+  (value) => {
+    const normalizedPermissions = normalizeAdminPermissions(value)
+
+    adminPermissionKeys.forEach((permissionKey) => {
+      if (form.permissions[permissionKey] !== normalizedPermissions[permissionKey]) {
+        form.permissions[permissionKey] = normalizedPermissions[permissionKey]
+      }
+    })
+  },
+  {
+    deep: true
+  }
+)
 
 onBeforeUnmount(() => {
   if (searchTimeoutId) {

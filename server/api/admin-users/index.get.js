@@ -29,14 +29,27 @@ export default defineEventHandler(async (event) => {
   }
 
   const [
+    { count: activeOwnerCount, error: activeOwnerCountError },
     { count, error: countError },
     { data, error }
   ] = await Promise.all([
+    supabaseAdmin
+      .from('admin_users')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'owner')
+      .eq('is_active', true),
     countQuery,
     dataQuery
       .order('created_at', { ascending: false })
       .range(from, to)
   ])
+
+  if (activeOwnerCountError) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: activeOwnerCountError.message
+    })
+  }
 
   if (countError) {
     throw createError({
@@ -55,6 +68,7 @@ export default defineEventHandler(async (event) => {
   return {
     items: (data || []).map(mapAdminUserRecord),
     total: count || 0,
+    activeOwnerCount: activeOwnerCount || 0,
     page,
     pageSize
   }
