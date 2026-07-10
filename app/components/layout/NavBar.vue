@@ -88,7 +88,7 @@
         </li>
 
         <li>
-          <NuxtLink to="/login">
+          <NuxtLink :to="customerAccountPath">
             <Icon name="lucide:user" size="24" />
           </NuxtLink>
         </li>
@@ -178,7 +178,7 @@
         </li>
 
         <li @click="isMenuOpen = false">
-          <NuxtLink to="/login">
+          <NuxtLink :to="customerAccountPath">
             <Icon name="lucide:user" size="24" />
           </NuxtLink>
         </li>
@@ -194,6 +194,7 @@ import { defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
 
 const supabase = useSupabaseClient()
 const route = useRoute()
+const customerUser = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
 const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
   const { data, error } = await supabase
@@ -216,6 +217,7 @@ const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcom
 const siteLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
 const headerLinks = computed(() => siteContent.value?.headerLinks || [])
 const headerCategories = computed(() => categoriesData.value || [])
+const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
 const shopCategoryLinkKey = defaultHeaderLinkDefinitions.find((link) => link.key === 'shop-category')?.key
 
 const isExternalUrl = (value) => {

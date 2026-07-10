@@ -210,6 +210,69 @@ create table public.site_links (
 
 create index IF not exists site_links_location_sort_idx on public.site_links using btree (location, section_title, sort_order, created_at) TABLESPACE pg_default;
 
+create table public.customer_profiles (
+  id uuid not null,
+  full_name text null,
+  avatar_url text null,
+  wallet_balance numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint customer_profiles_pkey primary key (id),
+  constraint customer_profiles_id_fkey foreign KEY (id) references auth.users (id) on delete CASCADE,
+  constraint customer_profiles_wallet_balance_check check ((wallet_balance >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create table public.customer_orders (
+  id uuid not null default gen_random_uuid (),
+  user_id uuid not null,
+  order_number text null,
+  status text not null default 'in_progress'::text,
+  total_amount numeric (12, 2) not null default 0,
+  currency text not null default 'EGP'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint customer_orders_pkey primary key (id),
+  constraint customer_orders_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE,
+  constraint customer_orders_status_check check ((status = any (array['in_progress'::text, 'delivered'::text, 'cancelled'::text]))),
+  constraint customer_orders_total_amount_check check ((total_amount >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create unique index IF not exists customer_orders_order_number_uidx on public.customer_orders using btree (order_number) TABLESPACE pg_default
+where
+  (order_number is not null);
+
+create index IF not exists customer_orders_user_status_idx on public.customer_orders using btree (user_id, status) TABLESPACE pg_default;
+
+create index IF not exists customer_orders_user_created_at_idx on public.customer_orders using btree (user_id, created_at desc) TABLESPACE pg_default;
+
+create or replace function public.handle_new_customer_profile () returns trigger language plpgsql security definer
+set
+  search_path = public as $$
+begin
+  insert into public.customer_profiles (
+    id,
+    full_name,
+    avatar_url
+  )
+  values (
+    new.id,
+    coalesce(
+      new.raw_user_meta_data ->> 'full_name',
+      new.raw_user_meta_data ->> 'name',
+      split_part(new.email, '@', 1)
+    ),
+    new.raw_user_meta_data ->> 'avatar_url'
+  )
+  on conflict (id) do nothing;
+
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_created_create_customer_profile
+after insert on auth.users for each row
+execute function public.handle_new_customer_profile ();
+
 create or replace function public.is_owner () returns boolean language sql stable as $$
   select exists (
     select 1
@@ -243,6 +306,8 @@ alter table public.site_settings enable row level security;
 alter table public.site_hero_banners enable row level security;
 alter table public.site_top_bar_messages enable row level security;
 alter table public.site_links enable row level security;
+alter table public.customer_profiles enable row level security;
+alter table public.customer_orders enable row level security;
 
 create policy "Admin users can read their own profile" on public.admin_users for
 select
@@ -388,3 +453,24 @@ create policy "Admins can manage site links" on public.site_links for all to aut
 using (public.has_admin_permission ('settings.edit'))
 with
   check (public.has_admin_permission ('settings.edit'));
+
+create policy "Users can read their own customer profile" on public.customer_profiles for
+select
+  to authenticated
+    using ((auth.uid () = id));
+
+create policy "Users can create their own customer profile" on public.customer_profiles for insert to authenticated
+with
+  check ((auth.uid () = id));
+
+create policy "Users can update their own customer profile" on public.customer_profiles for
+update
+  to authenticated
+    using ((auth.uid () = id))
+with
+  check ((auth.uid () = id));
+
+create policy "Users can read their own customer orders" on public.customer_orders for
+select
+  to authenticated
+    using ((auth.uid () = user_id));
