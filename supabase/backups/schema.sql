@@ -210,6 +210,31 @@ create table public.site_links (
 
 create index IF not exists site_links_location_sort_idx on public.site_links using btree (location, section_title, sort_order, created_at) TABLESPACE pg_default;
 
+create table public.site_coupons (
+  id uuid not null default gen_random_uuid (),
+  code text not null,
+  description text null,
+  discount_type text not null default 'fixed'::text,
+  discount_value numeric (12, 2) not null default 0,
+  minimum_order_amount numeric (12, 2) not null default 0,
+  usage_limit integer null,
+  usage_count integer not null default 0,
+  starts_at timestamp with time zone null,
+  ends_at timestamp with time zone null,
+  is_active boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint site_coupons_pkey primary key (id),
+  constraint site_coupons_code_key unique (code),
+  constraint site_coupons_discount_type_check check ((discount_type = any (array['fixed'::text, 'percentage'::text]))),
+  constraint site_coupons_discount_value_check check ((discount_value >= (0)::numeric)),
+  constraint site_coupons_minimum_order_amount_check check ((minimum_order_amount >= (0)::numeric)),
+  constraint site_coupons_usage_count_check check ((usage_count >= 0)),
+  constraint site_coupons_usage_limit_check check (((usage_limit is null) or (usage_limit > 0)))
+) TABLESPACE pg_default;
+
+create index IF not exists site_coupons_is_active_idx on public.site_coupons using btree (is_active, code) TABLESPACE pg_default;
+
 create table public.customer_profiles (
   id uuid not null,
   email text not null,
@@ -240,12 +265,26 @@ create table public.customer_orders (
   user_id uuid not null,
   order_number text null,
   status text not null default 'in_progress'::text,
+  first_name text not null,
+  last_name text null,
+  email text null,
+  phone text not null,
+  street_address text not null,
+  city text not null,
+  governorate text not null,
+  shipping_method text null,
+  payment_method text null,
+  subtotal_amount numeric (12, 2) not null default 0,
+  discount_amount numeric (12, 2) not null default 0,
+  coupon_code text null,
   total_amount numeric (12, 2) not null default 0,
   currency text not null default 'EGP'::text,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
   constraint customer_orders_pkey primary key (id),
   constraint customer_orders_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE,
+  constraint customer_orders_discount_amount_check check ((discount_amount >= (0)::numeric)),
+  constraint customer_orders_subtotal_amount_check check ((subtotal_amount >= (0)::numeric)),
   constraint customer_orders_status_check check ((status = any (array['in_progress'::text, 'delivered'::text, 'cancelled'::text]))),
   constraint customer_orders_total_amount_check check ((total_amount >= (0)::numeric))
 ) TABLESPACE pg_default;
@@ -257,6 +296,27 @@ where
 create index IF not exists customer_orders_user_status_idx on public.customer_orders using btree (user_id, status) TABLESPACE pg_default;
 
 create index IF not exists customer_orders_user_created_at_idx on public.customer_orders using btree (user_id, created_at desc) TABLESPACE pg_default;
+
+create table public.customer_order_items (
+  id uuid not null default gen_random_uuid (),
+  order_id uuid not null,
+  product_id uuid null,
+  product_title text not null,
+  product_slug text null,
+  image_url text null,
+  unit_price numeric (12, 2) not null default 0,
+  quantity integer not null default 1,
+  line_total numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  constraint customer_order_items_pkey primary key (id),
+  constraint customer_order_items_order_id_fkey foreign KEY (order_id) references customer_orders (id) on delete CASCADE,
+  constraint customer_order_items_product_id_fkey foreign KEY (product_id) references products (id) on delete set null,
+  constraint customer_order_items_line_total_check check ((line_total >= (0)::numeric)),
+  constraint customer_order_items_quantity_check check ((quantity > 0)),
+  constraint customer_order_items_unit_price_check check ((unit_price >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists customer_order_items_order_id_idx on public.customer_order_items using btree (order_id, created_at) TABLESPACE pg_default;
 
 create or replace function public.handle_new_customer_profile () returns trigger language plpgsql security definer
 set
@@ -321,8 +381,10 @@ alter table public.site_settings enable row level security;
 alter table public.site_hero_banners enable row level security;
 alter table public.site_top_bar_messages enable row level security;
 alter table public.site_links enable row level security;
+alter table public.site_coupons enable row level security;
 alter table public.customer_profiles enable row level security;
 alter table public.customer_orders enable row level security;
+alter table public.customer_order_items enable row level security;
 
 create policy "Admin users can read their own profile" on public.admin_users for
 select
@@ -469,6 +531,11 @@ using (public.has_admin_permission ('settings.edit'))
 with
   check (public.has_admin_permission ('settings.edit'));
 
+create policy "Admins can manage site coupons" on public.site_coupons for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));
+
 create policy "Users can read their own customer profile" on public.customer_profiles for
 select
   to authenticated
@@ -489,3 +556,15 @@ create policy "Users can read their own customer orders" on public.customer_orde
 select
   to authenticated
     using ((auth.uid () = user_id));
+
+create policy "Users can read their own customer order items" on public.customer_order_items for
+select
+  to authenticated
+    using (
+      exists (
+        select 1
+        from public.customer_orders
+        where customer_orders.id = customer_order_items.order_id
+          and customer_orders.user_id = auth.uid ()
+      )
+    );

@@ -12,6 +12,11 @@ const oauthLoading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+const getPostAuthPath = () => {
+  const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+  return redirectPath.startsWith('/') ? redirectPath : '/account'
+}
+
 const resetMessages = () => {
   errorMessage.value = ''
   successMessage.value = ''
@@ -76,7 +81,7 @@ const submitAuthForm = async () => {
 
       if (data.session) {
         await createOrUpdateCustomerProfile()
-        await navigateTo('/account')
+        await navigateTo(getPostAuthPath())
         return
       }
 
@@ -115,7 +120,7 @@ const submitAuthForm = async () => {
     }
 
     await createOrUpdateCustomerProfile()
-    await navigateTo('/account')
+    await navigateTo(getPostAuthPath())
   } catch (error) {
     errorMessage.value = error?.message || 'Could not complete the request.'
   } finally {
@@ -150,7 +155,7 @@ watch(
   user,
   async (currentUser) => {
     if (currentUser) {
-      await navigateTo('/account')
+      await navigateTo(getPostAuthPath())
     }
   },
   { immediate: true }

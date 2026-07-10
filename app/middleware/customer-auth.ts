@@ -1,9 +1,14 @@
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const supabase = useSupabaseClient()
   const { data: sessionData } = await supabase.auth.getSession()
 
   if (!sessionData.session) {
-    return navigateTo('/login')
+    return navigateTo({
+      path: '/login',
+      query: {
+        redirect: to.fullPath
+      }
+    })
   }
 
   const { data: customerProfile, error: customerProfileError } = await supabase
@@ -24,7 +29,8 @@ export default defineNuxtRouteMiddleware(async () => {
     return navigateTo({
       path: '/login',
       query: {
-        error: 'account-disabled'
+        error: 'account-disabled',
+        redirect: to.fullPath
       }
     })
   }

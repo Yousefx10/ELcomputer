@@ -8,7 +8,9 @@
         </p>
       </div>
 
-      <div v-if="canViewProducts || canViewCategories" class="mb-6 grid gap-4 md:grid-cols-2">
+      <DashboardSecondaryNav :items="secondaryNavItems" class="mb-6" />
+
+      <div v-if="currentView === 'summary' && (canViewProducts || canViewCategories)" class="mb-6 grid gap-4 md:grid-cols-2">
         <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
           <p class="text-sm text-gray-500">Total Products</p>
           <p class="mt-2 text-3xl font-bold">
@@ -28,7 +30,40 @@
         {{ errorMessage }}
       </div>
 
-      <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
+      <div
+        v-if="currentView === 'analysis' && (canViewProducts || canViewCategories)"
+        class="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+      >
+        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Total Products</p>
+          <p class="mt-2 text-3xl font-bold">
+            {{ totalProducts }}
+          </p>
+        </div>
+
+        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Active Products</p>
+          <p class="mt-2 text-3xl font-bold text-green-600">
+            {{ activeProducts }}
+          </p>
+        </div>
+
+        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Inactive Products</p>
+          <p class="mt-2 text-3xl font-bold text-gray-700">
+            {{ inactiveProducts }}
+          </p>
+        </div>
+
+        <div v-if="canViewCategories" class="rounded-2xl bg-white p-5 shadow">
+          <p class="text-sm text-gray-500">Total Categories</p>
+          <p class="mt-2 text-3xl font-bold">
+            {{ totalCategories }}
+          </p>
+        </div>
+      </div>
+
+      <div v-else-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-2xl font-bold">Recent Products</h3>
           <NuxtLink
@@ -87,6 +122,7 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const route = useRoute()
 const {
   hasPermission,
   loadAdminAccess
@@ -96,17 +132,36 @@ await loadAdminAccess()
 
 const totalProducts = ref(0)
 const totalCategories = ref(0)
+const activeProducts = ref(0)
+const inactiveProducts = ref(0)
 const recentProducts = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
 const canViewProducts = computed(() => hasPermission('products.view'))
 const canViewCategories = computed(() => hasPermission('categories.view'))
 const canEditProducts = computed(() => hasPermission('products.edit'))
+const currentView = computed(() => {
+  return route.query.view === 'analysis' ? 'analysis' : 'summary'
+})
+const secondaryNavItems = computed(() => [
+  {
+    label: 'Summary',
+    to: '/dashboard',
+    active: currentView.value === 'summary'
+  },
+  {
+    label: 'Analysis',
+    to: '/dashboard?view=analysis',
+    active: currentView.value === 'analysis'
+  }
+])
 
 const getDashboardData = async () => {
   if (!canViewProducts.value && !canViewCategories.value) {
     totalProducts.value = 0
     totalCategories.value = 0
+    activeProducts.value = 0
+    inactiveProducts.value = 0
     recentProducts.value = []
     return
   }
@@ -114,11 +169,23 @@ const getDashboardData = async () => {
   loading.value = true
   errorMessage.value = ''
 
-  const [productsCountResult, categoriesCountResult, recentProductsResult] = await Promise.all([
+  const [productsCountResult, activeProductsResult, inactiveProductsResult, categoriesCountResult, recentProductsResult] = await Promise.all([
     canViewProducts.value
       ? supabase
           .from('products')
           .select('*', { count: 'exact', head: true })
+      : Promise.resolve({ count: 0, error: null }),
+    canViewProducts.value
+      ? supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_published', true)
+      : Promise.resolve({ count: 0, error: null }),
+    canViewProducts.value
+      ? supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_published', false)
       : Promise.resolve({ count: 0, error: null }),
     canViewCategories.value
       ? supabase
@@ -147,6 +214,16 @@ const getDashboardData = async () => {
     return
   }
 
+  if (activeProductsResult.error) {
+    errorMessage.value = activeProductsResult.error.message
+    return
+  }
+
+  if (inactiveProductsResult.error) {
+    errorMessage.value = inactiveProductsResult.error.message
+    return
+  }
+
   if (categoriesCountResult.error) {
     errorMessage.value = categoriesCountResult.error.message
     return
@@ -158,6 +235,8 @@ const getDashboardData = async () => {
   }
 
   totalProducts.value = productsCountResult.count || 0
+  activeProducts.value = activeProductsResult.count || 0
+  inactiveProducts.value = inactiveProductsResult.count || 0
   totalCategories.value = categoriesCountResult.count || 0
   recentProducts.value = recentProductsResult.data || []
 }

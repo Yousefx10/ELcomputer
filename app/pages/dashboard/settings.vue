@@ -8,6 +8,8 @@
         </p>
       </div>
 
+      <DashboardSecondaryNav :items="secondaryNavItems" />
+
       <div v-if="pageError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow">
         {{ pageError }}
       </div>
@@ -19,7 +21,7 @@
         This account has view-only access to settings. Saving and editing actions are disabled.
       </div>
 
-      <div class="space-y-4">
+      <div v-if="activeSettingsView === 'general'" class="space-y-4">
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
@@ -605,7 +607,6 @@
             </div>
           </div>
         </section>
-      </div>
 
       <section class="overflow-hidden rounded-2xl bg-white shadow">
         <button
@@ -1029,6 +1030,274 @@
           </p>
         </div>
       </section>
+
+      </div>
+
+      <div v-else class="space-y-6">
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">Coupons</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Create and manage coupon codes that can be applied during checkout.
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
+              {{ coupons.length }} coupon{{ coupons.length === 1 ? '' : 's' }}
+            </div>
+          </div>
+
+          <div
+            class="mt-6 rounded-2xl border bg-gray-50 p-5"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
+            <h4 class="text-lg font-bold text-gray-900">
+              Add Coupon
+            </h4>
+
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+                <input
+                  v-model="newCoupon.code"
+                  type="text"
+                  placeholder="SAVE10"
+                  class="w-full rounded-lg border bg-white p-3 uppercase outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Description</label>
+                <input
+                  v-model="newCoupon.description"
+                  type="text"
+                  placeholder="10% off selected orders"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Type</label>
+                <select
+                  v-model="newCoupon.discount_type"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+                  <option value="fixed">Fixed</option>
+                  <option value="percentage">Percentage</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Value</label>
+                <input
+                  v-model="newCoupon.discount_value"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Minimum Order Amount</label>
+                <input
+                  v-model="newCoupon.minimum_order_amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Usage Limit</label>
+                <input
+                  v-model="newCoupon.usage_limit"
+                  type="number"
+                  min="1"
+                  placeholder="Leave empty for unlimited"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Starts At</label>
+                <input
+                  v-model="newCoupon.starts_at"
+                  type="datetime-local"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Ends At</label>
+                <input
+                  v-model="newCoupon.ends_at"
+                  type="datetime-local"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+            </div>
+
+            <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+              <input v-model="newCoupon.is_active" type="checkbox">
+              Active
+            </label>
+
+            <p v-if="couponError" class="mt-4 text-sm text-red-600">
+              {{ couponError }}
+            </p>
+
+            <button
+              type="button"
+              :disabled="couponLoading"
+              class="mt-5 rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+              @click="addCoupon"
+            >
+              {{ couponLoading ? 'Saving...' : 'Add Coupon' }}
+            </button>
+          </div>
+        </section>
+
+        <section
+          class="rounded-2xl bg-white p-6 shadow"
+          :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+        >
+          <h3 class="text-2xl font-bold">Coupon List</h3>
+
+          <p class="mt-1 text-sm text-gray-500">
+            Edit codes, values, active status, and scheduling.
+          </p>
+
+          <div v-if="coupons.length" class="mt-6 space-y-4">
+            <div
+              v-for="coupon in coupons"
+              :key="coupon.id"
+              class="rounded-2xl border p-5"
+            >
+              <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+                  <input
+                    v-model="coupon.code"
+                    type="text"
+                    class="w-full rounded-lg border p-3 uppercase outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Description</label>
+                  <input
+                    v-model="coupon.description"
+                    type="text"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Type</label>
+                  <select
+                    v-model="coupon.discount_type"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                    <option value="fixed">Fixed</option>
+                    <option value="percentage">Percentage</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Value</label>
+                  <input
+                    v-model="coupon.discount_value"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Minimum Order Amount</label>
+                  <input
+                    v-model="coupon.minimum_order_amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Usage Limit</label>
+                  <input
+                    v-model="coupon.usage_limit"
+                    type="number"
+                    min="1"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Starts At</label>
+                  <input
+                    v-model="coupon.starts_at"
+                    type="datetime-local"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Ends At</label>
+                  <input
+                    v-model="coupon.ends_at"
+                    type="datetime-local"
+                    class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  <label class="flex items-center gap-2">
+                    <input v-model="coupon.is_active" type="checkbox">
+                    Active
+                  </label>
+
+                  <span>Used {{ coupon.usage_count }} times</span>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    :disabled="!isCouponDirty(coupon) || couponLoading"
+                    class="rounded-lg px-4 py-3 text-sm font-medium text-white"
+                    :class="isCouponDirty(coupon) && !couponLoading
+                      ? 'bg-blue-600 hover:bg-blue-700'
+                      : 'cursor-not-allowed bg-gray-300'"
+                    @click="saveCoupon(coupon)"
+                  >
+                    Save
+                  </button>
+
+                  <button
+                    type="button"
+                    :disabled="couponLoading"
+                    class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
+                    @click="deleteCoupon(coupon.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p v-else class="mt-6 text-sm text-gray-500">
+            No coupons added yet.
+          </p>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -1045,6 +1314,7 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const route = useRoute()
 const {
   hasPermission,
   loadAdminAccess
@@ -1087,6 +1357,7 @@ const siteSettings = reactive({
 const heroBanners = ref([])
 const topBarMessages = ref([])
 const siteLinks = ref([])
+const coupons = ref([])
 
 const settingsLoading = ref(false)
 const settingsLoadingSection = ref('')
@@ -1104,6 +1375,8 @@ const settingsSuccessSection = ref('')
 const heroError = ref('')
 const topBarError = ref('')
 const linkError = ref('')
+const couponError = ref('')
+const couponLoading = ref(false)
 
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
@@ -1113,6 +1386,17 @@ const newHeaderUrl = ref('')
 const newFooterSectionTitle = ref('')
 const newFooterLabel = ref('')
 const newFooterUrl = ref('')
+const newCoupon = reactive({
+  code: '',
+  description: '',
+  discount_type: 'fixed',
+  discount_value: '',
+  minimum_order_amount: '',
+  usage_limit: '',
+  starts_at: '',
+  ends_at: '',
+  is_active: true
+})
 const openSections = reactive({
   generalSettings: true,
   bannerAds: false,
@@ -1122,6 +1406,21 @@ const openSections = reactive({
   headerLinks: false,
   footerLinks: false
 })
+const activeSettingsView = computed(() => {
+  return route.query.tab === 'coupons' ? 'coupons' : 'general'
+})
+const secondaryNavItems = computed(() => [
+  {
+    label: 'General',
+    to: '/dashboard/settings',
+    active: activeSettingsView.value === 'general'
+  },
+  {
+    label: 'Coupon',
+    to: '/dashboard/settings?tab=coupons',
+    active: activeSettingsView.value === 'coupons'
+  }
+])
 
 const siteSettingsSectionFields = {
   generalSettings: [
@@ -1271,6 +1570,68 @@ const mapSiteLink = (link) => ({
   original_url: link.url || '',
   original_is_enabled: link.is_enabled ?? true
 })
+
+const toDateTimeLocalValue = (value) => {
+  if (!value) {
+    return ''
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  const timezoneOffset = date.getTimezoneOffset() * 60000
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+}
+
+const toIsoDateTimeValue = (value) => {
+  const normalizedValue = String(value || '').trim()
+  return normalizedValue ? new Date(normalizedValue).toISOString() : null
+}
+
+const normalizeCouponPayload = (coupon) => {
+  const discountValue = Number(coupon.discount_value || 0)
+  const minimumOrderAmount = Number(coupon.minimum_order_amount || 0)
+  const usageLimit = String(coupon.usage_limit || '').trim()
+
+  return {
+    code: String(coupon.code || '').trim().toUpperCase(),
+    description: String(coupon.description || '').trim() || null,
+    discount_type: coupon.discount_type === 'percentage' ? 'percentage' : 'fixed',
+    discount_value: discountValue,
+    minimum_order_amount: minimumOrderAmount,
+    usage_limit: usageLimit ? Number(usageLimit) : null,
+    starts_at: toIsoDateTimeValue(coupon.starts_at),
+    ends_at: toIsoDateTimeValue(coupon.ends_at),
+    is_active: coupon.is_active ?? true
+  }
+}
+
+const mapCoupon = (coupon) => {
+  const normalizedCoupon = normalizeCouponPayload(coupon)
+
+  return {
+    ...coupon,
+    ...normalizedCoupon,
+    discount_value: String(normalizedCoupon.discount_value || ''),
+    minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
+    usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
+    starts_at: toDateTimeLocalValue(coupon.starts_at),
+    ends_at: toDateTimeLocalValue(coupon.ends_at),
+    usage_count: Number(coupon.usage_count || 0),
+    original_code: normalizedCoupon.code,
+    original_description: normalizedCoupon.description || '',
+    original_discount_type: normalizedCoupon.discount_type,
+    original_discount_value: String(normalizedCoupon.discount_value || ''),
+    original_minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
+    original_usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
+    original_starts_at: toDateTimeLocalValue(coupon.starts_at),
+    original_ends_at: toDateTimeLocalValue(coupon.ends_at),
+    original_is_active: normalizedCoupon.is_active
+  }
+}
 
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
@@ -1468,6 +1829,24 @@ const getSiteLinks = async () => {
   }
 
   siteLinks.value = siteLinksData.map(mapSiteLink)
+}
+
+const getCoupons = async () => {
+  couponError.value = ''
+
+  const { data, error } = await supabase
+    .from('site_coupons')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    if (!handleTableError(error)) {
+      couponError.value = error.message
+    }
+    return
+  }
+
+  coupons.value = (data || []).map(mapCoupon)
 }
 
 const saveSiteSettings = async (sectionName) => {
@@ -1891,10 +2270,161 @@ const deleteSiteLink = async (linkId) => {
   await refreshNuxtData('site-content')
 }
 
+const validateCouponForm = (coupon, isNewCoupon = false) => {
+  const normalizedCoupon = normalizeCouponPayload(coupon)
+
+  if (!normalizedCoupon.code) {
+    couponError.value = 'Coupon code is required.'
+    return null
+  }
+
+  if (normalizedCoupon.discount_value <= 0) {
+    couponError.value = 'Discount value must be greater than zero.'
+    return null
+  }
+
+  if (normalizedCoupon.discount_type === 'percentage' && normalizedCoupon.discount_value > 100) {
+    couponError.value = 'Percentage discount cannot be greater than 100.'
+    return null
+  }
+
+  if (normalizedCoupon.minimum_order_amount < 0) {
+    couponError.value = 'Minimum order amount cannot be negative.'
+    return null
+  }
+
+  if (
+    normalizedCoupon.starts_at &&
+    normalizedCoupon.ends_at &&
+    new Date(normalizedCoupon.starts_at).getTime() > new Date(normalizedCoupon.ends_at).getTime()
+  ) {
+    couponError.value = 'Coupon end date must be after the start date.'
+    return null
+  }
+
+  if (!isNewCoupon) {
+    return normalizedCoupon
+  }
+
+  return normalizedCoupon
+}
+
+const isCouponDirty = (coupon) => {
+  return String(coupon.code || '').trim().toUpperCase() !== coupon.original_code ||
+    String(coupon.description || '').trim() !== coupon.original_description ||
+    String(coupon.discount_type || '') !== coupon.original_discount_type ||
+    String(coupon.discount_value || '') !== coupon.original_discount_value ||
+    String(coupon.minimum_order_amount || '') !== coupon.original_minimum_order_amount ||
+    String(coupon.usage_limit || '') !== coupon.original_usage_limit ||
+    String(coupon.starts_at || '') !== coupon.original_starts_at ||
+    String(coupon.ends_at || '') !== coupon.original_ends_at ||
+    (coupon.is_active ?? true) !== coupon.original_is_active
+}
+
+const resetNewCoupon = () => {
+  newCoupon.code = ''
+  newCoupon.description = ''
+  newCoupon.discount_type = 'fixed'
+  newCoupon.discount_value = ''
+  newCoupon.minimum_order_amount = ''
+  newCoupon.usage_limit = ''
+  newCoupon.starts_at = ''
+  newCoupon.ends_at = ''
+  newCoupon.is_active = true
+}
+
+const addCoupon = async () => {
+  couponError.value = ''
+  const payload = validateCouponForm(newCoupon, true)
+
+  if (!payload) {
+    return
+  }
+
+  couponLoading.value = true
+
+  const { error } = await supabase
+    .from('site_coupons')
+    .insert({
+      ...payload,
+      usage_count: 0,
+      updated_at: new Date().toISOString()
+    })
+
+  couponLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      couponError.value = error.message
+    }
+    return
+  }
+
+  resetNewCoupon()
+  await getCoupons()
+}
+
+const saveCoupon = async (coupon) => {
+  couponError.value = ''
+  const payload = validateCouponForm(coupon)
+
+  if (!payload) {
+    return
+  }
+
+  couponLoading.value = true
+
+  const { error } = await supabase
+    .from('site_coupons')
+    .update({
+      ...payload,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', coupon.id)
+
+  couponLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      couponError.value = error.message
+    }
+    return
+  }
+
+  await getCoupons()
+}
+
+const deleteCoupon = async (couponId) => {
+  couponError.value = ''
+
+  if (!confirm('Delete this coupon?')) {
+    return
+  }
+
+  couponLoading.value = true
+
+  const { error } = await supabase
+    .from('site_coupons')
+    .delete()
+    .eq('id', couponId)
+
+  couponLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      couponError.value = error.message
+    }
+    return
+  }
+
+  await getCoupons()
+}
+
 await Promise.all([
   getSiteSettings(),
   getHeroBanners(),
   getTopBarMessages(),
-  getSiteLinks()
+  getSiteLinks(),
+  getCoupons()
 ])
 </script>

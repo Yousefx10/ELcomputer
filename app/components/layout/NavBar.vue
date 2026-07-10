@@ -93,7 +93,18 @@
           </NuxtLink>
         </li>
 
-        <li><Icon name="lucide:shopping-cart" size="24" /></li>
+        <li>
+          <NuxtLink to="/cart" class="relative inline-flex">
+            <Icon name="lucide:shopping-cart" size="24" />
+
+            <span
+              v-if="itemCount"
+              class="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-black"
+            >
+              {{ itemCount > 99 ? '99+' : itemCount }}
+            </span>
+          </NuxtLink>
+        </li>
       </ul>
 
       <button class="cursor-pointer text-white lg:hidden" @click="isMenuOpen = !isMenuOpen">
@@ -183,7 +194,18 @@
           </NuxtLink>
         </li>
 
-        <li @click="isMenuOpen = false"><Icon name="lucide:shopping-cart" size="24" /></li>
+        <li @click="isMenuOpen = false">
+          <NuxtLink to="/cart" class="relative inline-flex">
+            <Icon name="lucide:shopping-cart" size="24" />
+
+            <span
+              v-if="itemCount"
+              class="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-black"
+            >
+              {{ itemCount > 99 ? '99+' : itemCount }}
+            </span>
+          </NuxtLink>
+        </li>
       </ul>
     </div>
   </header>
@@ -196,6 +218,7 @@ const supabase = useSupabaseClient()
 const route = useRoute()
 const customerUser = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
+const { itemCount, loadCart } = useCart()
 const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
   const { data, error } = await supabase
     .from('categories')
@@ -257,4 +280,8 @@ const submitMobileSearch = async () => {
 }
 
 watch(() => route.query.q, syncSearchQueries, { immediate: true })
+
+onMounted(() => {
+  loadCart()
+})
 </script>

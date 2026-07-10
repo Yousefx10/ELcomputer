@@ -126,12 +126,47 @@
             </span>
           </div>
 
-          <button
-            type="button"
-            class="mt-8 w-full rounded-xl bg-black px-6 py-4 text-lg font-bold text-white"
-          >
-            Add to Cart - {{ product.price }} EGP
-          </button>
+          <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div class="inline-flex items-center self-start rounded-xl border border-gray-200 bg-white">
+              <button
+                type="button"
+                class="h-12 w-12 text-xl text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="selectedQuantity <= 1"
+                @click="decreaseQuantity"
+              >
+                -
+              </button>
+
+              <span class="inline-flex min-w-14 items-center justify-center text-base font-semibold text-gray-900">
+                {{ selectedQuantity }}
+              </span>
+
+              <button
+                type="button"
+                class="h-12 w-12 text-xl text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="selectedQuantity >= maximumQuantity"
+                @click="increaseQuantity"
+              >
+                +
+              </button>
+            </div>
+
+            <button
+              type="button"
+              :disabled="isOutOfStock"
+              class="w-full rounded-xl px-6 py-4 text-lg font-bold text-white sm:flex-1"
+              :class="isOutOfStock
+                ? 'cursor-not-allowed bg-gray-300'
+                : 'bg-black hover:bg-gray-800'"
+              @click="handleAddToCart"
+            >
+              {{ isOutOfStock ? 'Out of Stock' : `Add to Cart - ${product.price} EGP` }}
+            </button>
+          </div>
+
+          <p v-if="cartMessage" class="mt-3 text-sm text-green-700">
+            {{ cartMessage }}
+          </p>
         </div>
       </div>
 
@@ -175,6 +210,7 @@
 const supabase = useSupabaseClient()
 const route = useRoute()
 const slug = route.params.slug
+const { addItem } = useCart()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
   const { data: productData, error: productError } = await supabase
@@ -230,6 +266,35 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
 })
 
 const selectedImage = ref('')
+const selectedQuantity = ref(1)
+const cartMessage = ref('')
+
+const maximumQuantity = computed(() => {
+  const stockQuantity = Number(product.value?.stock_quantity || 0)
+
+  if (stockQuantity <= 0) {
+    return 1
+  }
+
+  return stockQuantity
+})
+
+const isOutOfStock = computed(() => {
+  return Number(product.value?.stock_quantity || 0) <= 0
+})
+
+const decreaseQuantity = () => {
+  selectedQuantity.value = Math.max(1, selectedQuantity.value - 1)
+}
+
+const increaseQuantity = () => {
+  selectedQuantity.value = Math.min(maximumQuantity.value, selectedQuantity.value + 1)
+}
+
+const handleAddToCart = () => {
+  const result = addItem(product.value, selectedQuantity.value)
+  cartMessage.value = result.message || ''
+}
 
 watchEffect(() => {
   if (!product.value) {
@@ -237,5 +302,6 @@ watchEffect(() => {
   }
 
   selectedImage.value = product.value.image_url || product.value.images[0]?.image_url || ''
+  selectedQuantity.value = 1
 })
 </script>
