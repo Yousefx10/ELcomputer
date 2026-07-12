@@ -10,6 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     adminUser,
     adminAccessLoaded,
     clearAdminAccess,
+    hasAnyPermission,
     hasPermission,
     loadAdminAccess
   } = useAdminAccess()
@@ -19,7 +20,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/dashboard/login')
   }
 
-  const routeRequirement = getDashboardRouteRequirement(to.path)
+  const routeRequirement = getDashboardRouteRequirement(to)
 
   const resolvedAdminUser = adminAccessLoaded.value
     ? adminUser.value
@@ -54,6 +55,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (routeRequirement.permission && !hasPermission(routeRequirement.permission)) {
+    return navigateTo('/dashboard')
+  }
+
+  if (routeRequirement.permissionsAny?.length && !hasAnyPermission(routeRequirement.permissionsAny)) {
     return navigateTo('/dashboard')
   }
 })

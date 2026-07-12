@@ -257,7 +257,13 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
-const secondaryNavItems = computed(() => buildDashboardOverviewLinks('orders'))
+const { hasPermission } = useAdminAccess()
+const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
+const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
+const secondaryNavItems = computed(() => buildDashboardOverviewLinks('orders', {
+  canSeeAnalysis: canSeeAnalysis.value,
+  canSeeOrders: canSeeOrders.value
+}))
 const stats = reactive({
   total: 0,
   today: 0,

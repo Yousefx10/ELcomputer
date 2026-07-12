@@ -78,7 +78,7 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
             <option value="admin">Admin</option>
-            <option value="owner">Owner</option>
+            <option v-if="currentAdminUser?.role === 'owner'" value="owner">Owner</option>
           </select>
         </div>
 
@@ -133,7 +133,7 @@
                   class="flex items-center gap-3 text-sm text-gray-700"
                 >
                   <input
-                    :checked="form.permissions[permission.key]"
+                    :checked="getPermissionValue(permission.key)"
                     type="checkbox"
                     :disabled="isPermissionDisabled(permission.key)"
                     @change="updatePermission(permission.key, $event.target.checked)"
@@ -277,6 +277,7 @@
 
               <div class="flex gap-2">
                 <button
+                  v-if="canEditAdminUser(user)"
                   type="button"
                   @click="startEdit(user)"
                   class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
@@ -606,6 +607,7 @@
                               </p>
 
                               <button
+                                v-if="canSeeOrders"
                                 type="button"
                                 class="rounded-lg bg-black px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
                                 @click="openOrderDialog(order.id)"
@@ -640,6 +642,7 @@ import {
   adminPermissionDependencies,
   adminPermissionKeys,
   createEmptyAdminPermissions,
+  createFullAdminPermissions,
   normalizeAdminPermissions
 } from '~/utils/adminPermissions'
 import {
@@ -658,7 +661,10 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
-const { adminUser: currentAdminUser } = useAdminAccess()
+const {
+  adminUser: currentAdminUser,
+  hasPermission
+} = useAdminAccess()
 
 const adminUsers = ref([])
 const loading = ref(true)
@@ -713,6 +719,7 @@ const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
 const trimmedCustomerSearchQuery = computed(() => customerSearchQuery.value.trim())
 const customerHasActiveSearch = computed(() => Boolean(trimmedCustomerSearchQuery.value))
+const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalUsers.value / pageSize))
@@ -753,6 +760,18 @@ const isEditingOwner = computed(() => {
 const isDeleteDisabled = computed(() => {
   return deleting.value || (isEditingOwner.value && activeOwnerCount.value <= 1)
 })
+
+const canEditAdminUser = (user) => {
+  if (!user) {
+    return false
+  }
+
+  if (user.role === 'owner') {
+    return currentAdminUser.value?.role === 'owner'
+  }
+
+  return true
+}
 
 const resetForm = () => {
   editingId.value = ''
@@ -990,7 +1009,7 @@ const buildPayload = () => {
     full_name: form.full_name,
     role: form.role,
     is_active: form.is_active,
-    permissions: normalizeAdminPermissions(form.permissions)
+    permissions: normalizeAdminPermissions(form.permissions, form.role)
   }
 }
 
@@ -1026,13 +1045,17 @@ const saveAdminUser = async () => {
 }
 
 const startEdit = (user) => {
+  if (!canEditAdminUser(user)) {
+    return
+  }
+
   editingId.value = user.id
   form.email = user.email || ''
   form.password = ''
   form.full_name = user.full_name || ''
   form.role = user.role || 'admin'
   form.is_active = user.is_active ?? true
-  form.permissions = normalizeAdminPermissions(user.permissions)
+  form.permissions = normalizeAdminPermissions(user.permissions, user.role)
   formError.value = ''
 
   nextTick(() => {
@@ -1054,6 +1077,10 @@ const getRequiredViewPermission = (permissionKey) => {
 }
 
 const isPermissionDisabled = (permissionKey) => {
+  if (form.role === 'owner') {
+    return true
+  }
+
   const requiredViewPermission = getRequiredViewPermission(permissionKey)
 
   if (!requiredViewPermission) {
@@ -1063,7 +1090,19 @@ const isPermissionDisabled = (permissionKey) => {
   return !form.permissions[requiredViewPermission]
 }
 
+const getPermissionValue = (permissionKey) => {
+  if (form.role === 'owner') {
+    return true
+  }
+
+  return Boolean(form.permissions[permissionKey])
+}
+
 const updatePermission = (permissionKey, isEnabled) => {
+  if (form.role === 'owner') {
+    return
+  }
+
   form.permissions[permissionKey] = Boolean(isEnabled)
 }
 
@@ -1300,7 +1339,7 @@ watch(customerSearchQuery, () => {
 watch(
   () => ({ ...form.permissions }),
   (value) => {
-    const normalizedPermissions = normalizeAdminPermissions(value)
+    const normalizedPermissions = normalizeAdminPermissions(value, form.role)
 
     adminPermissionKeys.forEach((permissionKey) => {
       if (form.permissions[permissionKey] !== normalizedPermissions[permissionKey]) {
@@ -1312,6 +1351,18 @@ watch(
     deep: true
   }
 )
+
+watch(() => form.role, (role) => {
+  const normalizedPermissions = role === 'owner'
+    ? createFullAdminPermissions()
+    : normalizeAdminPermissions(form.permissions, role)
+
+  adminPermissionKeys.forEach((permissionKey) => {
+    if (form.permissions[permissionKey] !== normalizedPermissions[permissionKey]) {
+      form.permissions[permissionKey] = normalizedPermissions[permissionKey]
+    }
+  })
+})
 
 onBeforeUnmount(() => {
   if (searchTimeoutId) {

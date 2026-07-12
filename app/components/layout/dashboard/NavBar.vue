@@ -22,8 +22,8 @@
 
 <script setup>
 const {
+  hasAnyPermission,
   hasPermission,
-  isOwner,
   loadAdminAccess
 } = useAdminAccess()
 
@@ -57,20 +57,20 @@ const allLinks = [
     label: 'Settings',
     to: '/dashboard/settings',
     icon: 'lucide:settings',
-    permission: 'settings.view'
+    permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory']
   },
   {
     label: 'Users',
     to: '/dashboard/users',
     icon: 'lucide:users',
-    role: 'owner'
+    permission: 'users.view'
   }
 ]
 
 const links = computed(() => {
   return allLinks.filter((link) => {
-    if (link.role === 'owner') {
-      return isOwner.value
+    if (link.permissionsAny) {
+      return hasAnyPermission(link.permissionsAny)
     }
 
     if (link.permission) {

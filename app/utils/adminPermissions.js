@@ -1,5 +1,13 @@
 export const adminPermissionGroups = [
   {
+    key: 'dashboard',
+    title: 'Dashboard',
+    permissions: [
+      { key: 'dashboard.analysis', label: 'Can See Analysis?' },
+      { key: 'dashboard.orders', label: 'Can See Orders?' }
+    ]
+  },
+  {
     key: 'products',
     title: 'Products',
     permissions: [
@@ -31,7 +39,16 @@ export const adminPermissionGroups = [
     title: 'Settings',
     permissions: [
       { key: 'settings.view', label: 'Can view Settings?' },
-      { key: 'settings.edit', label: 'Can edit Settings?' }
+      { key: 'settings.edit', label: 'Can edit Settings?' },
+      { key: 'settings.coupons', label: 'Can Access Coupons?' },
+      { key: 'settings.inventory', label: 'Can Access Inventory?' }
+    ]
+  },
+  {
+    key: 'users',
+    title: 'Users',
+    permissions: [
+      { key: 'users.view', label: 'Can Access Users page?' }
     ]
   }
 ]
@@ -59,7 +76,17 @@ export const createEmptyAdminPermissions = () => {
   return { ...defaultAdminPermissions }
 }
 
-export const normalizeAdminPermissions = (permissions) => {
+export const createFullAdminPermissions = () => {
+  return Object.fromEntries(
+    adminPermissionKeys.map((permissionKey) => [permissionKey, true])
+  )
+}
+
+export const normalizeAdminPermissions = (permissions, role = 'admin') => {
+  if (role === 'owner') {
+    return createFullAdminPermissions()
+  }
+
   const normalizedPermissions = createEmptyAdminPermissions()
 
   if (!permissions || typeof permissions !== 'object' || Array.isArray(permissions)) {
@@ -83,8 +110,8 @@ export const normalizeAdminPermissions = (permissions) => {
   return normalizedPermissions
 }
 
-export const countGrantedAdminPermissions = (permissions) => {
-  return Object.values(normalizeAdminPermissions(permissions)).filter(Boolean).length
+export const countGrantedAdminPermissions = (permissions, role = 'admin') => {
+  return Object.values(normalizeAdminPermissions(permissions, role)).filter(Boolean).length
 }
 
 export const hasAdminPermission = (adminUser, permissionKey) => {
@@ -96,41 +123,79 @@ export const hasAdminPermission = (adminUser, permissionKey) => {
     return true
   }
 
-  const normalizedPermissions = normalizeAdminPermissions(adminUser.permissions)
+  const normalizedPermissions = normalizeAdminPermissions(adminUser.permissions, adminUser.role)
   return Boolean(normalizedPermissions[permissionKey])
 }
 
-const dashboardRouteRules = [
-  {
-    matches: (path) => path === '/dashboard/users',
-    role: 'owner'
-  },
-  {
-    matches: (path) => path === '/dashboard/settings',
-    permission: 'settings.view'
-  },
-  {
-    matches: (path) => path === '/dashboard/products/add',
-    permission: 'products.add'
-  },
-  {
-    matches: (path) => path.startsWith('/dashboard/products/edit/'),
-    permission: 'products.edit'
-  },
-  {
-    matches: (path) => path === '/dashboard/products/categories',
-    permission: 'categories.view'
-  },
-  {
-    matches: (path) => path === '/dashboard/products/brands',
-    permission: 'brands.view'
-  },
-  {
-    matches: (path) => path === '/dashboard/products',
-    permission: 'products.view'
-  }
-]
+export const getDashboardRouteRequirement = (route = '') => {
+  const path = typeof route === 'string' ? route : String(route?.path || '')
+  const query = typeof route === 'string' ? {} : route?.query || {}
 
-export const getDashboardRouteRequirement = (path = '') => {
-  return dashboardRouteRules.find((rule) => rule.matches(String(path))) || null
+  if (path === '/dashboard/users') {
+    return {
+      permission: 'users.view'
+    }
+  }
+
+  if (path === '/dashboard/orders') {
+    return {
+      permission: 'dashboard.orders'
+    }
+  }
+
+  if (path === '/dashboard/settings') {
+    if (query.tab === 'coupons') {
+      return {
+        permission: 'settings.coupons'
+      }
+    }
+
+    if (query.tab === 'inventory') {
+      return {
+        permission: 'settings.inventory'
+      }
+    }
+
+    return {
+      permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory']
+    }
+  }
+
+  if (path === '/dashboard/products/add') {
+    return {
+      permission: 'products.add'
+    }
+  }
+
+  if (path.startsWith('/dashboard/products/edit/')) {
+    return {
+      permission: 'products.edit'
+    }
+  }
+
+  if (path === '/dashboard/products/categories') {
+    return {
+      permission: 'categories.view'
+    }
+  }
+
+  if (path === '/dashboard/products/brands') {
+    return {
+      permission: 'brands.view'
+    }
+  }
+
+  if (path === '/dashboard/products') {
+    return {
+      permission: 'products.view'
+    }
+  }
+
+  if (path === '/dashboard' && query.view === 'analysis') {
+    return {
+      permission: 'dashboard.analysis'
+    }
+  }
+
+  return null
 }

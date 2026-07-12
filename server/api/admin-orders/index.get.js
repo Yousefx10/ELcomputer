@@ -17,7 +17,9 @@ const applyOrderDateRange = (queryBuilder, dateRange) => {
 }
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event)
+  const { supabaseAdmin } = await requireAdminRequest(event, {
+    permission: 'dashboard.orders'
+  })
   const query = getQuery(event)
   const page = Math.max(1, Number(query.page) || 1)
   const pageSize = Math.min(20, Math.max(1, Number(query.pageSize) || 10))

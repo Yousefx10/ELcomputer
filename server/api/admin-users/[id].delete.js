@@ -3,7 +3,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
   const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
-    role: 'owner'
+    permission: 'users.view'
   })
 
   const targetId = getRouterParam(event, 'id')
@@ -25,6 +25,13 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 404,
       statusMessage: existingError?.message || 'Admin user not found.'
+    })
+  }
+
+  if (existingRecord.role === 'owner' && adminUser.role !== 'owner') {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Only an owner can delete an owner account.'
     })
   }
 

@@ -1548,9 +1548,12 @@ const SETTINGS_GENERAL_CACHE_KEY = 'dashboard:settings:general'
 const SETTINGS_COUPONS_CACHE_KEY = 'dashboard:settings:coupons'
 
 const pageError = ref('')
+const canViewGeneralSettings = computed(() => hasPermission('settings.view'))
+const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
+const canAccessInventory = computed(() => hasPermission('settings.inventory'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
-const canViewInventory = computed(() => hasPermission('products.view') || hasPermission('products.edit'))
-const canEditInventory = computed(() => hasPermission('products.edit') && hasPermission('settings.edit'))
+const canViewInventory = computed(() => canAccessInventory.value)
+const canEditInventory = computed(() => canAccessInventory.value && canEditSettings.value)
 
 const defaultSiteSettings = {
   key: 'default',
@@ -1644,33 +1647,57 @@ const openSections = reactive({
   footerLinks: false
 })
 const activeSettingsView = computed(() => {
-  if (route.query.tab === 'coupons') {
+  if (route.query.tab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'
   }
 
-  if (route.query.tab === 'inventory') {
+  if (route.query.tab === 'inventory' && canAccessInventory.value) {
     return 'inventory'
+  }
+
+  if (canViewGeneralSettings.value) {
+    return 'general'
+  }
+
+  if (canAccessInventory.value) {
+    return 'inventory'
+  }
+
+  if (canAccessCoupons.value) {
+    return 'coupons'
   }
 
   return 'general'
 })
-const secondaryNavItems = computed(() => [
-  {
-    label: 'General',
-    to: '/dashboard/settings',
-    active: activeSettingsView.value === 'general'
-  },
-  {
-    label: 'Inventory',
-    to: '/dashboard/settings?tab=inventory',
-    active: activeSettingsView.value === 'inventory'
-  },
-  {
-    label: 'Coupon',
-    to: '/dashboard/settings?tab=coupons',
-    active: activeSettingsView.value === 'coupons'
+const secondaryNavItems = computed(() => {
+  const items = []
+
+  if (canViewGeneralSettings.value) {
+    items.push({
+      label: 'General',
+      to: '/dashboard/settings',
+      active: activeSettingsView.value === 'general'
+    })
   }
-])
+
+  if (canAccessInventory.value) {
+    items.push({
+      label: 'Inventory',
+      to: '/dashboard/settings?tab=inventory',
+      active: activeSettingsView.value === 'inventory'
+    })
+  }
+
+  if (canAccessCoupons.value) {
+    items.push({
+      label: 'Coupon',
+      to: '/dashboard/settings?tab=coupons',
+      active: activeSettingsView.value === 'coupons'
+    })
+  }
+
+  return items
+})
 
 const siteSettingsSectionFields = {
   generalSettings: [

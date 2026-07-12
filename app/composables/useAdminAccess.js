@@ -55,7 +55,7 @@ export const useAdminAccess = () => {
       adminUser.value = data
         ? {
             ...data,
-            permissions: normalizeAdminPermissions(data.permissions)
+            permissions: normalizeAdminPermissions(data.permissions, data.role)
           }
         : null
 

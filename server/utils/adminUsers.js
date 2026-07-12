@@ -1,4 +1,5 @@
 import {
+  createFullAdminPermissions,
   normalizeAdminPermissions,
   countGrantedAdminPermissions
 } from '~/utils/adminPermissions'
@@ -12,7 +13,9 @@ export const normalizeAdminUserInput = (body = {}, options = {}) => {
   const fullName = String(body.full_name ?? body.fullName ?? '').trim()
   const role = body.role === 'owner' ? 'owner' : 'admin'
   const isActive = body.is_active ?? body.isActive ?? true
-  const permissions = normalizeAdminPermissions(body.permissions)
+  const permissions = role === 'owner'
+    ? createFullAdminPermissions()
+    : normalizeAdminPermissions(body.permissions, role)
 
   if (!emailPattern.test(email)) {
     throw createError({
@@ -50,11 +53,11 @@ export const mapAdminUserRecord = (record) => {
     return null
   }
 
-  const normalizedPermissions = normalizeAdminPermissions(record.permissions)
+  const normalizedPermissions = normalizeAdminPermissions(record.permissions, record.role)
 
   return {
     ...record,
     permissions: normalizedPermissions,
-    granted_permissions_count: countGrantedAdminPermissions(normalizedPermissions)
+    granted_permissions_count: countGrantedAdminPermissions(normalizedPermissions, record.role)
   }
 }

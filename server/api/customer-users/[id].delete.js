@@ -3,7 +3,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
   const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
-    role: 'owner'
+    permission: 'users.view'
   })
 
   const targetId = getRouterParam(event, 'id')

@@ -3,7 +3,9 @@ import { normalizeAdminOrderRecord, allowedAdminOrderStatuses } from '../../util
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event)
+  const { supabaseAdmin } = await requireAdminRequest(event, {
+    permission: 'dashboard.orders'
+  })
   const orderId = getRouterParam(event, 'id')
 
   if (!orderId) {

@@ -4,13 +4,20 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
   const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
-    role: 'owner'
+    permission: 'users.view'
   })
 
   const body = await readBody(event)
   const input = normalizeAdminUserInput(body, {
     requirePassword: true
   })
+
+  if (input.role === 'owner' && adminUser.role !== 'owner') {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Only an owner can create another owner account.'
+    })
+  }
 
   const { data: createdUserData, error: createUserError } = await supabaseAdmin.auth.admin.createUser({
     email: input.email,

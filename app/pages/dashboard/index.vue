@@ -141,10 +141,15 @@ const errorMessage = ref('')
 const canViewProducts = computed(() => hasPermission('products.view'))
 const canViewCategories = computed(() => hasPermission('categories.view'))
 const canEditProducts = computed(() => hasPermission('products.edit'))
+const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
+const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
 const currentView = computed(() => {
-  return route.query.view === 'analysis' ? 'analysis' : 'summary'
+  return route.query.view === 'analysis' && canSeeAnalysis.value ? 'analysis' : 'summary'
 })
-const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value))
+const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value, {
+  canSeeAnalysis: canSeeAnalysis.value,
+  canSeeOrders: canSeeOrders.value
+}))
 
 const applyDashboardSnapshot = (snapshot) => {
   totalProducts.value = snapshot?.totalProducts || 0

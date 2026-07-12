@@ -4,7 +4,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event, {
-    role: 'owner'
+    permission: 'users.view'
   })
 
   const query = getQuery(event)
