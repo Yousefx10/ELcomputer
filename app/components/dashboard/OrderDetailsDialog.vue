@@ -31,13 +31,24 @@
               </div>
             </div>
 
-            <button
-              type="button"
-              class="self-start rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-              @click="closeDialog"
-            >
-              Close
-            </button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                :disabled="loading || !orderDetail"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="printOrderDetails"
+              >
+                PDF
+              </button>
+
+              <button
+                type="button"
+                class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                @click="closeDialog"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
 
@@ -52,8 +63,12 @@
 
           <div v-else-if="orderDetail" class="space-y-6">
             <section class="rounded-2xl border bg-gray-50 p-5">
-              <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div>
+              <button
+                type="button"
+                class="flex w-full items-start justify-between gap-4 text-left"
+                @click="statusPanelOpen = !statusPanelOpen"
+              >
+                <div class="min-w-0">
                   <h4 class="text-lg font-bold text-gray-900">
                     Update Status
                   </h4>
@@ -62,12 +77,21 @@
                   </p>
                 </div>
 
-                <p v-if="statusMessage" class="text-sm text-green-700">
-                  {{ statusMessage }}
-                </p>
-              </div>
+                <div class="flex shrink-0 items-center gap-3">
+                  <p v-if="statusMessage" class="text-sm text-green-700">
+                    {{ statusMessage }}
+                  </p>
 
-              <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <Icon
+                    name="lucide:chevron-down"
+                    size="20"
+                    class="transition"
+                    :class="statusPanelOpen ? 'rotate-180' : ''"
+                  />
+                </div>
+              </button>
+
+              <div v-if="statusPanelOpen" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <button
                   v-for="statusOption in customerOrderStatusOptions"
                   :key="statusOption.value"
@@ -240,6 +264,7 @@ const loading = ref(false)
 const statusLoading = ref(false)
 const errorMessage = ref('')
 const statusMessage = ref('')
+const statusPanelOpen = ref(false)
 const orderDetail = ref(null)
 const orderItems = ref([])
 const customerDetail = ref(null)
@@ -283,9 +308,161 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
+const escapeHtml = (value) => {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+const buildPrintableOrderHtml = () => {
+  if (!orderDetail.value) {
+    return ''
+  }
+
+  const printableItems = orderItems.value.length
+    ? orderItems.value.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.product_title || 'Product')}</td>
+          <td>${escapeHtml(item.quantity)}</td>
+          <td>${escapeHtml(formatCurrency(item.unit_price))}</td>
+          <td>${escapeHtml(formatCurrency(item.line_total))}</td>
+        </tr>
+      `).join('')
+    : '<tr><td colspan="4">No order items saved yet.</td></tr>'
+
+  const fullName = `${orderDetail.value.first_name || 'Customer'} ${orderDetail.value.last_name || ''}`.trim()
+  const printableAddress = [
+    orderDetail.value.street_address || customerDetail.value?.address_line_1 || 'No address saved',
+    [orderDetail.value.city || customerDetail.value?.city || 'Unknown city', orderDetail.value.governorate].filter(Boolean).join(', '),
+    customerDetail.value?.country || (orderDetail.value.governorate ? 'Egypt' : '')
+  ].filter(Boolean)
+
+  return `<!doctype html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>${escapeHtml(orderDetail.value.order_number || orderTitle.value)}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 32px; color: #111827; }
+        h1, h2, h3, p { margin: 0; }
+        .header { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+        .muted { color: #6b7280; }
+        .status { display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px; background: #f3f4f6; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .card { border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; }
+        .card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 12px; }
+        .stack > p + p { margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border-bottom: 1px solid #e5e7eb; padding: 12px 10px; text-align: left; font-size: 14px; vertical-align: top; }
+        th { color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .totals { width: 320px; margin-left: auto; margin-top: 24px; }
+        .totals-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; color: #4b5563; }
+        .totals-row.total { border-top: 1px solid #e5e7eb; margin-top: 8px; padding-top: 12px; color: #111827; font-size: 18px; font-weight: 700; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <p class="muted">Order Details</p>
+          <h1>${escapeHtml(orderDetail.value.order_number || orderTitle.value)}</h1>
+          <span class="status">${escapeHtml(formatCustomerOrderStatus(orderDetail.value.status))}</span>
+        </div>
+
+        <div class="muted">
+          <p>${escapeHtml(formatDate(orderDetail.value.created_at))}</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <h3>Customer</h3>
+          <div class="stack">
+            <p>${escapeHtml(fullName)}</p>
+            <p>${escapeHtml(orderDetail.value.email || customerDetail.value?.email || 'No email saved')}</p>
+            <p>${escapeHtml(orderDetail.value.phone || customerDetail.value?.phone || 'No phone saved')}</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Delivery Address</h3>
+          <div class="stack">
+            ${printableAddress.map((line) => `<p>${escapeHtml(line)}</p>`).join('')}
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Order Info</h3>
+          <div class="stack">
+            <p><strong>Payment:</strong> ${escapeHtml(orderDetail.value.payment_method || 'Not selected yet')}</p>
+            <p><strong>Shipping:</strong> ${escapeHtml(orderDetail.value.shipping_method || 'Not selected yet')}</p>
+            <p><strong>Coupon:</strong> ${escapeHtml(orderDetail.value.coupon_code || 'No coupon')}</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="card">
+        <h3>Items</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Line Total</th>
+            </tr>
+          </thead>
+          <tbody>${printableItems}</tbody>
+        </table>
+      </section>
+
+      <div class="totals">
+        <div class="totals-row">
+          <span>Subtotal</span>
+          <span>${escapeHtml(formatCurrency(orderDetail.value.subtotal_amount))}</span>
+        </div>
+        <div class="totals-row">
+          <span>Discount</span>
+          <span>- ${escapeHtml(formatCurrency(orderDetail.value.discount_amount))}</span>
+        </div>
+        <div class="totals-row total">
+          <span>Total</span>
+          <span>${escapeHtml(formatCurrency(orderDetail.value.total_amount))}</span>
+        </div>
+      </div>
+    </body>
+  </html>`
+}
+
+const printOrderDetails = () => {
+  if (!orderDetail.value || typeof window === 'undefined') {
+    return
+  }
+
+  const printWindow = window.open('', '_blank', 'width=960,height=900')
+
+  if (!printWindow) {
+    errorMessage.value = 'Please allow pop-ups so the order can be printed as PDF.'
+    return
+  }
+
+  errorMessage.value = ''
+  printWindow.document.open()
+  printWindow.document.write(buildPrintableOrderHtml())
+  printWindow.document.close()
+  printWindow.focus()
+
+  setTimeout(() => {
+    printWindow.print()
+  }, 150)
+}
+
 const resetDialogState = () => {
   errorMessage.value = ''
   statusMessage.value = ''
+  statusPanelOpen.value = false
   orderDetail.value = null
   orderItems.value = []
   customerDetail.value = null
