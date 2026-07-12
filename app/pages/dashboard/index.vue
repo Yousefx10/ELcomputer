@@ -117,6 +117,8 @@
 </template>
 
 <script setup>
+import { buildDashboardOverviewLinks } from '~/utils/dashboardOverviewLinks'
+
 definePageMeta({
   layout: 'dashboard'
 })
@@ -143,18 +145,7 @@ const canEditProducts = computed(() => hasPermission('products.edit'))
 const currentView = computed(() => {
   return route.query.view === 'analysis' ? 'analysis' : 'summary'
 })
-const secondaryNavItems = computed(() => [
-  {
-    label: 'Summary',
-    to: '/dashboard',
-    active: currentView.value === 'summary'
-  },
-  {
-    label: 'Analysis',
-    to: '/dashboard?view=analysis',
-    active: currentView.value === 'analysis'
-  }
-])
+const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value))
 
 const getDashboardData = async () => {
   if (!canViewProducts.value && !canViewCategories.value) {

@@ -152,7 +152,7 @@ export default defineEventHandler(async (event) => {
     .insert({
       user_id: authUser.id,
       order_number: orderNumber,
-      status: 'in_progress',
+      status: 'pending_payment',
       subtotal_amount: subtotalAmount,
       discount_amount: discountAmount,
       total_amount: totalAmount,

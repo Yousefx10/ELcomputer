@@ -1,4 +1,5 @@
 import { createError, getRouterParam } from 'h3'
+import { completedOrderStatuses, openOrderStatuses } from '../../utils/adminOrders'
 import { mapCustomerProfileRecord } from '../../utils/customerUsers'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
@@ -19,8 +20,8 @@ export default defineEventHandler(async (event) => {
   const [
     { data: profileRecord, error: profileError },
     { count: totalOrders, error: totalOrdersError },
-    { count: deliveredOrders, error: deliveredOrdersError },
-    { count: inProgressOrders, error: inProgressOrdersError },
+    { count: completedOrders, error: completedOrdersError },
+    { count: openOrders, error: openOrdersError },
     { data: recentOrders, error: recentOrdersError }
   ] = await Promise.all([
     supabaseAdmin
@@ -36,12 +37,12 @@ export default defineEventHandler(async (event) => {
       .from('customer_orders')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', targetId)
-      .eq('status', 'delivered'),
+      .in('status', completedOrderStatuses),
     supabaseAdmin
       .from('customer_orders')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', targetId)
-      .eq('status', 'in_progress'),
+      .in('status', openOrderStatuses),
     supabaseAdmin
       .from('customer_orders')
       .select('id, order_number, status, total_amount, currency, created_at, updated_at')
@@ -71,17 +72,17 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (deliveredOrdersError) {
+  if (completedOrdersError) {
     throw createError({
       statusCode: 500,
-      statusMessage: deliveredOrdersError.message
+      statusMessage: completedOrdersError.message
     })
   }
 
-  if (inProgressOrdersError) {
+  if (openOrdersError) {
     throw createError({
       statusCode: 500,
-      statusMessage: inProgressOrdersError.message
+      statusMessage: openOrdersError.message
     })
   }
 
@@ -96,8 +97,8 @@ export default defineEventHandler(async (event) => {
     item: mapCustomerProfileRecord(profileRecord),
     stats: {
       totalOrders: totalOrders || 0,
-      delivered: deliveredOrders || 0,
-      inProgress: inProgressOrders || 0
+      completed: completedOrders || 0,
+      open: openOrders || 0
     },
     recentOrders: (recentOrders || []).map((order) => ({
       ...order,

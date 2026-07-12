@@ -1,4 +1,11 @@
 <script setup>
+import {
+  completedOrderStatuses,
+  formatCustomerOrderStatus,
+  getCustomerOrderStatusClass,
+  openOrderStatuses
+} from '~/utils/orderStatus'
+
 definePageMeta({
   middleware: 'customer-auth'
 })
@@ -109,12 +116,12 @@ const loadAccountPage = async () => {
         .from('customer_orders')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', accountUser.id)
-        .eq('status', 'delivered'),
+        .in('status', completedOrderStatuses),
       supabase
         .from('customer_orders')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', accountUser.id)
-        .eq('status', 'in_progress'),
+        .in('status', openOrderStatuses),
       supabase
         .from('customer_orders')
         .select('id, order_number, status, total_amount, currency, created_at')
@@ -176,25 +183,11 @@ const formatDate = (value) => {
 }
 
 const getStatusLabel = (value) => {
-  if (value === 'in_progress') {
-    return 'In Progress'
-  }
-
-  return value
-    ? value.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase())
-    : 'Unknown'
+  return formatCustomerOrderStatus(value)
 }
 
 const getStatusClass = (value) => {
-  if (value === 'delivered') {
-    return 'bg-green-100 text-green-700'
-  }
-
-  if (value === 'in_progress') {
-    return 'bg-amber-100 text-amber-700'
-  }
-
-  return 'bg-gray-100 text-gray-600'
+  return getCustomerOrderStatusClass(value)
 }
 
 const displayName = computed(() => getCustomerDisplayName(user.value, profile.value))

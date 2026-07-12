@@ -557,13 +557,13 @@
                       </div>
 
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">Delivered</p>
-                        <p class="mt-2 text-2xl font-bold text-green-600">{{ customerDetailStats.delivered }}</p>
+                        <p class="text-sm text-gray-500">Completed</p>
+                        <p class="mt-2 text-2xl font-bold text-green-600">{{ customerDetailStats.completed }}</p>
                       </div>
 
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">In Progress</p>
-                        <p class="mt-2 text-2xl font-bold text-amber-600">{{ customerDetailStats.inProgress }}</p>
+                        <p class="text-sm text-gray-500">Open Orders</p>
+                        <p class="mt-2 text-2xl font-bold text-amber-600">{{ customerDetailStats.open }}</p>
                       </div>
                     </div>
 
@@ -581,7 +581,7 @@
                         <div
                           v-for="order in customerRecentOrders"
                           :key="order.id"
-                          class="rounded-xl border bg-white p-3"
+                          class="rounded-xl border bg-white p-3 transition hover:border-gray-300 hover:bg-gray-50"
                         >
                           <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             <div>
@@ -604,6 +604,14 @@
                               <p class="font-semibold text-gray-900">
                                 {{ formatCurrency(order.total_amount) }}
                               </p>
+
+                              <button
+                                type="button"
+                                class="rounded-lg bg-black px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                                @click="openOrderDialog(order.id)"
+                              >
+                                Open
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -617,6 +625,12 @@
         </div>
       </div>
     </div>
+
+    <DashboardOrderDetailsDialog
+      v-model:open="isOrderDialogOpen"
+      :order-id="selectedOrderId"
+      @updated="handleOrderUpdated"
+    />
   </div>
 </template>
 
@@ -628,6 +642,10 @@ import {
   createEmptyAdminPermissions,
   normalizeAdminPermissions
 } from '~/utils/adminPermissions'
+import {
+  formatCustomerOrderStatus,
+  getCustomerOrderStatusClass
+} from '~/utils/orderStatus'
 
 definePageMeta({
   layout: 'dashboard'
@@ -670,9 +688,11 @@ const customerActionLoading = ref(false)
 const customerRecentOrders = ref([])
 const customerDetailStats = reactive({
   totalOrders: 0,
-  delivered: 0,
-  inProgress: 0
+  completed: 0,
+  open: 0
 })
+const isOrderDialogOpen = ref(false)
+const selectedOrderId = ref('')
 let searchTimeoutId = null
 let customerSearchTimeoutId = null
 
@@ -790,8 +810,8 @@ const resetCustomerDetail = () => {
   customerDetail.value = null
   customerRecentOrders.value = []
   customerDetailStats.totalOrders = 0
-  customerDetailStats.delivered = 0
-  customerDetailStats.inProgress = 0
+  customerDetailStats.completed = 0
+  customerDetailStats.open = 0
 }
 
 const getCustomerUsersList = async (page = customerCurrentPage.value) => {
@@ -845,8 +865,8 @@ const getCustomerUserDetails = async (customerId) => {
     customerDetail.value = response.item || null
     customerRecentOrders.value = response.recentOrders || []
     customerDetailStats.totalOrders = response.stats?.totalOrders || 0
-    customerDetailStats.delivered = response.stats?.delivered || 0
-    customerDetailStats.inProgress = response.stats?.inProgress || 0
+    customerDetailStats.completed = response.stats?.completed || 0
+    customerDetailStats.open = response.stats?.open || 0
   } catch (error) {
     customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not load customer details.'
   } finally {
@@ -1091,6 +1111,32 @@ const goToNextCustomerPage = async () => {
   await getCustomerUsersList(customerCurrentPage.value + 1)
 }
 
+const openOrderDialog = (orderId) => {
+  selectedOrderId.value = orderId
+  isOrderDialogOpen.value = true
+}
+
+const handleOrderUpdated = async (updatedOrder) => {
+  if (!updatedOrder?.id) {
+    return
+  }
+
+  customerRecentOrders.value = customerRecentOrders.value.map((order) => {
+    if (order.id !== updatedOrder.id) {
+      return order
+    }
+
+    return {
+      ...order,
+      ...updatedOrder
+    }
+  })
+
+  if (selectedCustomerId.value) {
+    await getCustomerUserDetails(selectedCustomerId.value)
+  }
+}
+
 const formatDate = (value) => {
   if (!value) {
     return 'recently'
@@ -1123,25 +1169,11 @@ const getCustomerAddress = (customer) => {
 }
 
 const formatOrderStatus = (value) => {
-  if (value === 'in_progress') {
-    return 'In Progress'
-  }
-
-  return value
-    ? value.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase())
-    : 'Unknown'
+  return formatCustomerOrderStatus(value)
 }
 
 const getOrderStatusClass = (value) => {
-  if (value === 'delivered') {
-    return 'bg-green-100 text-green-700'
-  }
-
-  if (value === 'in_progress') {
-    return 'bg-amber-100 text-amber-700'
-  }
-
-  return 'bg-gray-100 text-gray-600'
+  return getCustomerOrderStatusClass(value)
 }
 
 watch(searchQuery, () => {

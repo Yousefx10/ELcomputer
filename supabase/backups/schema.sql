@@ -264,7 +264,7 @@ create table public.customer_orders (
   id uuid not null default gen_random_uuid (),
   user_id uuid not null,
   order_number text null,
-  status text not null default 'in_progress'::text,
+  status text not null default 'pending_payment'::text,
   first_name text not null,
   last_name text null,
   email text null,
@@ -285,7 +285,24 @@ create table public.customer_orders (
   constraint customer_orders_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE,
   constraint customer_orders_discount_amount_check check ((discount_amount >= (0)::numeric)),
   constraint customer_orders_subtotal_amount_check check ((subtotal_amount >= (0)::numeric)),
-  constraint customer_orders_status_check check ((status = any (array['in_progress'::text, 'delivered'::text, 'cancelled'::text]))),
+  constraint customer_orders_status_check check (
+    (
+      status = any (
+        array[
+          'pending_payment'::text,
+          'processing'::text,
+          'being_shipped'::text,
+          'out_for_delivery'::text,
+          'on_hold'::text,
+          'completed'::text,
+          'refunded'::text,
+          'cancelled'::text,
+          'in_progress'::text,
+          'delivered'::text
+        ]
+      )
+    )
+  ),
   constraint customer_orders_total_amount_check check ((total_amount >= (0)::numeric))
 ) TABLESPACE pg_default;
 
