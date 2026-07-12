@@ -1033,6 +1033,199 @@
 
       </div>
 
+      <div v-else-if="activeSettingsView === 'inventory'" class="space-y-6">
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <div
+            class="rounded-2xl border bg-gray-50 p-5"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 class="text-2xl font-bold">Inventory Rules</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  Control whether shoppers can still place orders when a product stock is empty.
+                </p>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-sm font-semibold"
+                  :class="siteSettings.allow_out_of_stock_purchases ? 'text-green-600' : 'text-gray-500'"
+                >
+                  {{ siteSettings.allow_out_of_stock_purchases ? 'ON' : 'OFF' }}
+                </span>
+
+                <button
+                  type="button"
+                  :aria-pressed="siteSettings.allow_out_of_stock_purchases"
+                  @click="siteSettings.allow_out_of_stock_purchases = !siteSettings.allow_out_of_stock_purchases"
+                  class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                  :class="siteSettings.allow_out_of_stock_purchases ? 'bg-green-600' : 'bg-gray-300'"
+                >
+                  <span
+                    class="inline-block h-5 w-5 rounded-full bg-white transition"
+                    :class="siteSettings.allow_out_of_stock_purchases ? 'translate-x-8' : 'translate-x-1'"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'inventorySettings' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'inventorySettings' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!isSettingsSectionDirty('inventorySettings') || settingsLoading"
+                @click="saveSiteSettings('inventorySettings')"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="isSettingsSectionDirty('inventorySettings') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+              >
+                {{ settingsLoadingSection === 'inventorySettings' ? 'Saving...' : 'Save Inventory Rules' }}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">Increase Inventory</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Pick a product, add the incoming stock quantity, and save the latest cost.
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
+              {{ inventoryProducts.length }} product{{ inventoryProducts.length === 1 ? '' : 's' }}
+            </div>
+          </div>
+
+          <div v-if="!canViewInventory" class="mt-6 rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
+            This account needs product view permission to load inventory products.
+          </div>
+
+          <div v-else class="mt-6 space-y-4">
+            <div v-if="!canEditInventory" class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
+              This account needs product edit permission to increase inventory.
+            </div>
+
+            <div
+              class="rounded-2xl border bg-gray-50 p-5"
+              :class="!canEditInventory ? 'pointer-events-none opacity-70' : ''"
+            >
+              <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div class="xl:col-span-2">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Product</label>
+                  <select
+                    v-model="selectedInventoryProductId"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                    <option value="">Select product</option>
+
+                    <option
+                      v-for="inventoryProduct in inventoryProducts"
+                      :key="inventoryProduct.id"
+                      :value="inventoryProduct.id"
+                    >
+                      {{ inventoryProduct.title }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Add Quantity</label>
+                  <input
+                    v-model="inventoryIncreaseQuantity"
+                    type="number"
+                    min="1"
+                    placeholder="1"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">New Product Cost</label>
+                  <input
+                    v-model="inventoryCostPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+              </div>
+
+              <div
+                v-if="selectedInventoryProduct"
+                class="mt-4 grid gap-4 md:grid-cols-3"
+              >
+                <div class="rounded-xl bg-white p-4">
+                  <p class="text-sm text-gray-500">Current Stock</p>
+                  <p class="mt-2 text-2xl font-bold text-gray-900">
+                    {{ selectedInventoryProduct.stock_quantity }}
+                  </p>
+                </div>
+
+                <div class="rounded-xl bg-white p-4">
+                  <p class="text-sm text-gray-500">Current Cost</p>
+                  <p class="mt-2 text-2xl font-bold text-gray-900">
+                    {{ formatInventoryMoney(selectedInventoryProduct.cost_price) }}
+                  </p>
+                </div>
+
+                <div class="rounded-xl bg-white p-4">
+                  <p class="text-sm text-gray-500">Stock After Update</p>
+                  <p class="mt-2 text-2xl font-bold text-gray-900">
+                    {{ nextInventoryStockQuantity }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <div class="space-y-1">
+                  <p v-if="inventoryError" class="text-sm text-red-600">
+                    {{ inventoryError }}
+                  </p>
+
+                  <p v-if="inventorySuccess" class="text-sm text-green-600">
+                    {{ inventorySuccess }}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  :disabled="!isInventoryIncreaseReady || inventoryLoading || !canEditInventory"
+                  @click="increaseInventory"
+                  class="rounded-lg px-5 py-3 font-bold text-white"
+                  :class="isInventoryIncreaseReady && !inventoryLoading && canEditInventory
+                    ? 'bg-blue-600 hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-300'"
+                >
+                  {{ inventoryLoading ? 'Saving...' : 'Increase Inventory' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
       <div v-else class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -1324,6 +1517,8 @@ await loadAdminAccess()
 
 const pageError = ref('')
 const canEditSettings = computed(() => hasPermission('settings.edit'))
+const canViewInventory = computed(() => hasPermission('products.view') || hasPermission('products.edit'))
+const canEditInventory = computed(() => hasPermission('products.edit') && hasPermission('settings.edit'))
 
 const defaultSiteSettings = {
   key: 'default',
@@ -1331,6 +1526,7 @@ const defaultSiteSettings = {
   site_logo_url: '',
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
+  allow_out_of_stock_purchases: false,
   hero_enabled: true,
   hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
@@ -1358,6 +1554,7 @@ const heroBanners = ref([])
 const topBarMessages = ref([])
 const siteLinks = ref([])
 const coupons = ref([])
+const inventoryProducts = ref([])
 
 const settingsLoading = ref(false)
 const settingsLoadingSection = ref('')
@@ -1377,6 +1574,9 @@ const topBarError = ref('')
 const linkError = ref('')
 const couponError = ref('')
 const couponLoading = ref(false)
+const inventoryLoading = ref(false)
+const inventoryError = ref('')
+const inventorySuccess = ref('')
 
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
@@ -1397,6 +1597,9 @@ const newCoupon = reactive({
   ends_at: '',
   is_active: true
 })
+const selectedInventoryProductId = ref('')
+const inventoryIncreaseQuantity = ref(1)
+const inventoryCostPrice = ref('')
 const openSections = reactive({
   generalSettings: true,
   bannerAds: false,
@@ -1407,13 +1610,26 @@ const openSections = reactive({
   footerLinks: false
 })
 const activeSettingsView = computed(() => {
-  return route.query.tab === 'coupons' ? 'coupons' : 'general'
+  if (route.query.tab === 'coupons') {
+    return 'coupons'
+  }
+
+  if (route.query.tab === 'inventory') {
+    return 'inventory'
+  }
+
+  return 'general'
 })
 const secondaryNavItems = computed(() => [
   {
     label: 'General',
     to: '/dashboard/settings',
     active: activeSettingsView.value === 'general'
+  },
+  {
+    label: 'Inventory',
+    to: '/dashboard/settings?tab=inventory',
+    active: activeSettingsView.value === 'inventory'
   },
   {
     label: 'Coupon',
@@ -1428,6 +1644,9 @@ const siteSettingsSectionFields = {
     'site_logo_url',
     'site_background_color',
     'landing_page_title'
+  ],
+  inventorySettings: [
+    'allow_out_of_stock_purchases'
   ],
   heroSettings: [
     'hero_enabled',
@@ -1458,6 +1677,7 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
+  inventorySettings: 'Inventory settings',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
@@ -1533,11 +1753,11 @@ const footerLinks = computed(() => {
   return siteLinks.value.filter((link) => link.location === 'footer')
 })
 
-const isMissingTableError = (error) => error?.code === '42P01'
+const isMissingSchemaError = (error) => error?.code === '42P01' || error?.code === '42703'
 
 const handleTableError = (error) => {
-  if (isMissingTableError(error)) {
-    pageError.value = 'Run the site settings SQL query first, then refresh this page.'
+  if (isMissingSchemaError(error)) {
+    pageError.value = 'Run the latest settings and inventory SQL query first, then refresh this page.'
     return true
   }
 
@@ -1633,11 +1853,64 @@ const mapCoupon = (coupon) => {
   }
 }
 
+const formatInventoryMoney = (value) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'EGP',
+    maximumFractionDigits: 2
+  }).format(Number(value || 0))
+}
+
+const mapInventoryProduct = (product) => ({
+  ...product,
+  stock_quantity: Number(product.stock_quantity || 0),
+  cost_price: Number(product.cost_price || 0)
+})
+
+const selectedInventoryProduct = computed(() => {
+  return inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value) || null
+})
+
+const normalizedInventoryQuantity = computed(() => {
+  const quantity = Number.parseInt(inventoryIncreaseQuantity.value, 10)
+
+  if (!Number.isFinite(quantity) || quantity < 1) {
+    return 0
+  }
+
+  return quantity
+})
+
+const nextInventoryStockQuantity = computed(() => {
+  if (!selectedInventoryProduct.value) {
+    return 0
+  }
+
+  return Number(selectedInventoryProduct.value.stock_quantity || 0) + normalizedInventoryQuantity.value
+})
+
+const isInventoryIncreaseReady = computed(() => {
+  if (!selectedInventoryProductId.value) {
+    return false
+  }
+
+  if (normalizedInventoryQuantity.value < 1) {
+    return false
+  }
+
+  if (String(inventoryCostPrice.value).trim() === '') {
+    return false
+  }
+
+  return Number(inventoryCostPrice.value) >= 0
+})
+
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
   site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
   landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
+  allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   hero_enabled: source.hero_enabled ?? true,
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
@@ -1683,6 +1956,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_name',
       'site_background_color',
       'landing_page_title',
+      'allow_out_of_stock_purchases',
       'hero_enabled',
       'hero_rotation_seconds',
       'top_bar_rotation_seconds',
@@ -1849,6 +2123,29 @@ const getCoupons = async () => {
   coupons.value = (data || []).map(mapCoupon)
 }
 
+const getInventoryProducts = async () => {
+  inventoryError.value = ''
+
+  if (!canViewInventory.value) {
+    inventoryProducts.value = []
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, title, stock_quantity, cost_price, is_published')
+    .order('title')
+
+  if (error) {
+    if (!handleTableError(error)) {
+      inventoryError.value = error.message
+    }
+    return
+  }
+
+  inventoryProducts.value = (data || []).map(mapInventoryProduct)
+}
+
 const saveSiteSettings = async (sectionName) => {
   const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
 
@@ -1894,6 +2191,55 @@ const saveSiteSettings = async (sectionName) => {
 
   settingsSuccess.value = `${siteSettingsSectionLabels[sectionName]} saved successfully.`
   settingsSuccessSection.value = sectionName
+}
+
+const increaseInventory = async () => {
+  inventoryError.value = ''
+  inventorySuccess.value = ''
+
+  if (!canEditInventory.value) {
+    inventoryError.value = 'This account cannot update inventory.'
+    return
+  }
+
+  if (!selectedInventoryProduct.value) {
+    inventoryError.value = 'Select a product first.'
+    return
+  }
+
+  if (normalizedInventoryQuantity.value < 1) {
+    inventoryError.value = 'Add quantity must be at least 1.'
+    return
+  }
+
+  if (String(inventoryCostPrice.value).trim() === '' || Number(inventoryCostPrice.value) < 0) {
+    inventoryError.value = 'Enter a valid product cost.'
+    return
+  }
+
+  inventoryLoading.value = true
+
+  const nextStockQuantity = Number(selectedInventoryProduct.value.stock_quantity || 0) + normalizedInventoryQuantity.value
+  const { error } = await supabase
+    .from('products')
+    .update({
+      stock_quantity: nextStockQuantity,
+      cost_price: Number(inventoryCostPrice.value || 0)
+    })
+    .eq('id', selectedInventoryProduct.value.id)
+
+  inventoryLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      inventoryError.value = error.message
+    }
+    return
+  }
+
+  inventorySuccess.value = `Inventory updated for ${selectedInventoryProduct.value.title}.`
+  inventoryIncreaseQuantity.value = 1
+  await getInventoryProducts()
 }
 
 const isHeroBannerDirty = (banner) => {
@@ -2420,11 +2766,26 @@ const deleteCoupon = async (couponId) => {
   await getCoupons()
 }
 
+watch(selectedInventoryProductId, (productId) => {
+  inventoryError.value = ''
+  inventorySuccess.value = ''
+  inventoryIncreaseQuantity.value = 1
+
+  if (!productId) {
+    inventoryCostPrice.value = ''
+    return
+  }
+
+  const matchedProduct = inventoryProducts.value.find((product) => product.id === productId)
+  inventoryCostPrice.value = matchedProduct ? String(Number(matchedProduct.cost_price || 0)) : ''
+})
+
 await Promise.all([
   getSiteSettings(),
   getHeroBanners(),
   getTopBarMessages(),
   getSiteLinks(),
-  getCoupons()
+  getCoupons(),
+  ...(canViewInventory.value ? [getInventoryProducts()] : [])
 ])
 </script>

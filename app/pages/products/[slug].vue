@@ -107,7 +107,7 @@
 
           <div class="mt-6 flex flex-wrap gap-3">
             <span class="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700">
-              {{ product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock' }}
+              {{ stockLabel }}
             </span>
 
             <NuxtLink
@@ -153,14 +153,14 @@
 
             <button
               type="button"
-              :disabled="isOutOfStock"
+              :disabled="!canPurchaseProduct"
               class="w-full rounded-xl px-6 py-4 text-lg font-bold text-white sm:flex-1"
-              :class="isOutOfStock
+              :class="!canPurchaseProduct
                 ? 'cursor-not-allowed bg-gray-300'
                 : 'bg-black hover:bg-gray-800'"
               @click="handleAddToCart"
             >
-              {{ isOutOfStock ? 'Out of Stock' : `Add to Cart - ${product.price} EGP` }}
+              {{ canPurchaseProduct ? `Add to Cart - ${product.price} EGP` : 'Out of Stock' }}
             </button>
           </div>
 
@@ -210,6 +210,7 @@
 const supabase = useSupabaseClient()
 const route = useRoute()
 const slug = route.params.slug
+const { data: siteContent } = useSiteContent()
 const { addItem } = useCart()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
@@ -268,8 +269,13 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
 const selectedImage = ref('')
 const selectedQuantity = ref(1)
 const cartMessage = ref('')
+const allowOutOfStockPurchases = computed(() => Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases))
 
 const maximumQuantity = computed(() => {
+  if (allowOutOfStockPurchases.value) {
+    return 99
+  }
+
   const stockQuantity = Number(product.value?.stock_quantity || 0)
 
   if (stockQuantity <= 0) {
@@ -282,6 +288,16 @@ const maximumQuantity = computed(() => {
 const isOutOfStock = computed(() => {
   return Number(product.value?.stock_quantity || 0) <= 0
 })
+const canPurchaseProduct = computed(() => {
+  return !isOutOfStock.value || allowOutOfStockPurchases.value
+})
+const stockLabel = computed(() => {
+  if (!isOutOfStock.value) {
+    return 'In Stock'
+  }
+
+  return allowOutOfStockPurchases.value ? 'Available on Backorder' : 'Out of Stock'
+})
 
 const decreaseQuantity = () => {
   selectedQuantity.value = Math.max(1, selectedQuantity.value - 1)
@@ -292,7 +308,10 @@ const increaseQuantity = () => {
 }
 
 const handleAddToCart = () => {
-  const result = addItem(product.value, selectedQuantity.value)
+  const result = addItem({
+    ...product.value,
+    allow_out_of_stock_purchases: allowOutOfStockPurchases.value
+  }, selectedQuantity.value)
   cartMessage.value = result.message || ''
 }
 

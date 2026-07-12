@@ -38,6 +38,7 @@ create table public.products (
   color_name text null,
   color_hex text null,
   stock_quantity integer not null default 0,
+  cost_price numeric not null default 0,
   is_published boolean not null default true,
   sku text null,
   popularity_score integer not null default 0,
@@ -58,6 +59,7 @@ create table public.products (
     )
   ),
   constraint products_price_check check ((price >= (0)::numeric)),
+  constraint products_cost_price_check check ((cost_price >= (0)::numeric)),
   constraint products_popularity_score_check check ((popularity_score >= 0)),
   constraint products_stock_quantity_check check ((stock_quantity >= 0))
 ) TABLESPACE pg_default;
@@ -147,6 +149,7 @@ create table public.site_settings (
   site_logo_url text null,
   site_background_color text null default '#f3f4f6'::text,
   landing_page_title text null default 'ELcomputer'::text,
+  allow_out_of_stock_purchases boolean not null default false,
   hero_enabled boolean not null default true,
   hero_rotation_seconds integer not null default 5,
   top_bar_rotation_seconds integer not null default 3,

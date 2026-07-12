@@ -54,6 +54,10 @@ const generateOrderNumber = () => {
   return `ORD-${datePart}-${randomPart}`
 }
 
+const isMissingSchemaError = (error) => {
+  return error?.code === '42P01' || error?.code === '42703'
+}
+
 export default defineEventHandler(async (event) => {
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
@@ -76,6 +80,22 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Phone number must start with 01 and contain 11 digits.'
     })
   }
+
+  let allowOutOfStockPurchases = false
+  const { data: siteSettings, error: siteSettingsError } = await supabaseAdmin
+    .from('site_settings')
+    .select('allow_out_of_stock_purchases')
+    .eq('key', 'default')
+    .maybeSingle()
+
+  if (siteSettingsError && !isMissingSchemaError(siteSettingsError)) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: siteSettingsError.message
+    })
+  }
+
+  allowOutOfStockPurchases = Boolean(siteSettings?.allow_out_of_stock_purchases)
 
   const productIds = [...new Set(orderItems.map((item) => item.id))]
   const { data: products, error: productsError } = await supabaseAdmin
@@ -118,7 +138,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    if (Number(product.stock_quantity || 0) < item.quantity) {
+    if (!allowOutOfStockPurchases && Number(product.stock_quantity || 0) < item.quantity) {
       throw createError({
         statusCode: 400,
         statusMessage: `${product.title} does not have enough stock for the requested quantity.`

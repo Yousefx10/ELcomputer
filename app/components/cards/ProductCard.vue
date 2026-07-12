@@ -67,7 +67,7 @@
       </p>
 
       <p v-else class="text-xs text-gray-400">
-        {{ isOutOfStock ? 'Unavailable' : 'Available now' }}
+        {{ isOutOfStock ? (allowOutOfStockPurchases ? 'Available to order' : 'Unavailable') : 'Available now' }}
       </p>
 
       <div class="flex items-center gap-2">
@@ -81,9 +81,9 @@
 
         <button
           type="button"
-          :disabled="isOutOfStock"
+          :disabled="!isPurchasable"
           class="inline-flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white transition"
-          :class="isOutOfStock
+          :class="!isPurchasable
             ? 'cursor-not-allowed bg-gray-300'
             : 'bg-black hover:bg-gray-800'"
           @click="handleAddToCart"
@@ -103,11 +103,14 @@ const props = defineProps({
   }
 })
 
+const { data: siteContent } = useSiteContent()
 const { addItem } = useCart()
 
 const numericPrice = computed(() => Number(props.product.price || 0))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
 const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
+const allowOutOfStockPurchases = computed(() => Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases))
+const isPurchasable = computed(() => !isOutOfStock.value || allowOutOfStockPurchases.value)
 
 const hasDiscount = computed(() => {
   return numericOldPrice.value > numericPrice.value
@@ -123,6 +126,9 @@ const formatPrice = (value) => {
 }
 
 const handleAddToCart = () => {
-  addItem(props.product, 1)
+  addItem({
+    ...props.product,
+    allow_out_of_stock_purchases: allowOutOfStockPurchases.value
+  }, 1)
 }
 </script>

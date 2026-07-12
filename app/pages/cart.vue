@@ -189,6 +189,10 @@ const formatCurrency = (value) => {
 }
 
 const getMaximumQuantity = (item) => {
+  if (item?.allow_out_of_stock_purchases) {
+    return 99
+  }
+
   const stockQuantity = Number(item?.stock_quantity || 0)
 
   if (stockQuantity <= 0) {

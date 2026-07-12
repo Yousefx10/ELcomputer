@@ -11,7 +11,11 @@ const normalizePositiveInteger = (value, fallback = 1) => {
   return parsedValue
 }
 
-const getMaximumCartQuantity = (stockQuantity) => {
+const getMaximumCartQuantity = (stockQuantity, allowOutOfStockPurchases = false) => {
+  if (allowOutOfStockPurchases) {
+    return 99
+  }
+
   const normalizedStockQuantity = Number.parseInt(stockQuantity, 10)
 
   if (!Number.isFinite(normalizedStockQuantity) || normalizedStockQuantity < 1) {
@@ -26,7 +30,8 @@ const normalizeCartItem = (item) => {
     return null
   }
 
-  const maximumQuantity = getMaximumCartQuantity(item.stock_quantity)
+  const allowOutOfStockPurchases = Boolean(item.allow_out_of_stock_purchases)
+  const maximumQuantity = getMaximumCartQuantity(item.stock_quantity, allowOutOfStockPurchases)
 
   return {
     id: String(item.id),
@@ -36,8 +41,10 @@ const normalizeCartItem = (item) => {
     price: Number(item.price || 0),
     old_price: Number(item.old_price || 0),
     stock_quantity: Number(item.stock_quantity || 0),
+    cost_price: Number(item.cost_price || 0),
     brand_name: String(item.brand_name || item.brand?.name || ''),
     category_name: String(item.category_name || item.category?.name || ''),
+    allow_out_of_stock_purchases: allowOutOfStockPurchases,
     quantity: Math.min(normalizePositiveInteger(item.quantity, 1), maximumQuantity)
   }
 }
@@ -135,7 +142,10 @@ export const useCart = () => {
       return
     }
 
-    const maximumQuantity = getMaximumCartQuantity(existingItem.stock_quantity)
+    const maximumQuantity = getMaximumCartQuantity(
+      existingItem.stock_quantity,
+      existingItem.allow_out_of_stock_purchases
+    )
     const normalizedQuantity = Math.min(normalizePositiveInteger(nextQuantity, 1), maximumQuantity)
 
     items.value = items.value.map((item) => {
@@ -183,7 +193,13 @@ export const useCart = () => {
       quantity
     })
 
-    if (!normalizedProduct || normalizedProduct.stock_quantity === 0) {
+    if (
+      !normalizedProduct ||
+      (
+        normalizedProduct.stock_quantity === 0 &&
+        !normalizedProduct.allow_out_of_stock_purchases
+      )
+    ) {
       return {
         success: false,
         message: 'This product is currently out of stock.'
@@ -193,7 +209,24 @@ export const useCart = () => {
     const existingItem = items.value.find((item) => item.id === normalizedProduct.id)
 
     if (existingItem) {
-      setQuantity(existingItem.id, existingItem.quantity + normalizedProduct.quantity)
+      const maximumQuantity = getMaximumCartQuantity(
+        normalizedProduct.stock_quantity,
+        normalizedProduct.allow_out_of_stock_purchases
+      )
+      const nextQuantity = Math.min(existingItem.quantity + normalizedProduct.quantity, maximumQuantity)
+
+      items.value = items.value.map((item) => {
+        if (item.id !== normalizedProduct.id) {
+          return item
+        }
+
+        return {
+          ...item,
+          ...normalizedProduct,
+          quantity: nextQuantity
+        }
+      })
+      resetCoupon()
 
       return {
         success: true,

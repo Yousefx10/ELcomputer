@@ -145,6 +145,18 @@
         </div>
 
         <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Product Cost</label>
+          <input
+            v-model="costPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">SKU</label>
           <input
             v-model="sku"
@@ -263,6 +275,7 @@ const categoryId = ref('')
 const brandId = ref('')
 const sku = ref('')
 const stockQuantity = ref(0)
+const costPrice = ref('')
 const colorName = ref('')
 const colorHex = ref('')
 const isPublished = ref(true)
@@ -338,6 +351,11 @@ const addProduct = async () => {
     return
   }
 
+  if (Number(costPrice.value || 0) < 0) {
+    actionError.value = 'Product cost cannot be negative'
+    return
+  }
+
   saving.value = true
 
   const { data, error } = await supabase
@@ -354,6 +372,7 @@ const addProduct = async () => {
       brand_id: brandId.value || null,
       sku: sku.value.trim() || null,
       stock_quantity: Number(stockQuantity.value) || 0,
+      cost_price: Number(costPrice.value || 0),
       color_name: colorName.value.trim() || null,
       color_hex: colorHex.value.trim() || null,
       is_published: isPublished.value
