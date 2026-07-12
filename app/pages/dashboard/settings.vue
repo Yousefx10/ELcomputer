@@ -1129,6 +1129,33 @@
               class="rounded-2xl border bg-gray-50 p-5"
               :class="!canEditInventory ? 'pointer-events-none opacity-70' : ''"
             >
+              <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end">
+                <div class="flex-1">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Search Product</label>
+                  <input
+                    v-model="inventorySearchQuery"
+                    type="text"
+                    placeholder="Search by product name or slug"
+                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                  >
+                </div>
+
+                <button
+                  v-if="inventorySearchQuery.trim()"
+                  type="button"
+                  class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  @click="clearInventorySearch"
+                >
+                  Clear
+                </button>
+              </div>
+
+              <p class="mb-4 text-sm text-gray-500">
+                {{ inventorySearchQuery.trim()
+                  ? `Showing up to 10 matching products for "${inventorySearchQuery.trim()}".`
+                  : 'Showing the latest 10 added products.' }}
+              </p>
+
               <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="xl:col-span-2">
                   <label class="mb-2 block text-sm font-semibold text-gray-700">Product</label>
@@ -1139,11 +1166,11 @@
                     <option value="">Select product</option>
 
                     <option
-                      v-for="inventoryProduct in inventoryProducts"
+                      v-for="inventoryProduct in inventoryProductOptions"
                       :key="inventoryProduct.id"
                       :value="inventoryProduct.id"
                     >
-                      {{ inventoryProduct.title }}
+                      {{ inventoryProduct.title }}{{ inventoryProduct.slug ? ` (${inventoryProduct.slug})` : '' }}
                     </option>
                   </select>
                 </div>
@@ -1577,6 +1604,7 @@ const couponLoading = ref(false)
 const inventoryLoading = ref(false)
 const inventoryError = ref('')
 const inventorySuccess = ref('')
+const inventorySearchQuery = ref('')
 
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
@@ -1598,6 +1626,7 @@ const newCoupon = reactive({
   is_active: true
 })
 const selectedInventoryProductId = ref('')
+const selectedInventoryProductSnapshot = ref(null)
 const inventoryIncreaseQuantity = ref(1)
 const inventoryCostPrice = ref('')
 const openSections = reactive({
@@ -1685,6 +1714,7 @@ const siteSettingsSectionLabels = {
 }
 
 const siteSettingsSnapshot = ref({})
+let inventorySearchTimeoutId = null
 
 const toggleSection = (sectionName) => {
   openSections[sectionName] = !openSections[sectionName]
@@ -1863,12 +1893,36 @@ const formatInventoryMoney = (value) => {
 
 const mapInventoryProduct = (product) => ({
   ...product,
+  slug: product.slug || '',
   stock_quantity: Number(product.stock_quantity || 0),
   cost_price: Number(product.cost_price || 0)
 })
 
 const selectedInventoryProduct = computed(() => {
-  return inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value) || null
+  const matchedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
+
+  if (matchedProduct) {
+    return matchedProduct
+  }
+
+  if (selectedInventoryProductSnapshot.value?.id === selectedInventoryProductId.value) {
+    return selectedInventoryProductSnapshot.value
+  }
+
+  return null
+})
+
+const inventoryProductOptions = computed(() => {
+  const options = [...inventoryProducts.value]
+
+  if (
+    selectedInventoryProduct.value &&
+    !options.some((product) => product.id === selectedInventoryProduct.value.id)
+  ) {
+    options.unshift(selectedInventoryProduct.value)
+  }
+
+  return options
 })
 
 const normalizedInventoryQuantity = computed(() => {
@@ -1904,6 +1958,17 @@ const isInventoryIncreaseReady = computed(() => {
 
   return Number(inventoryCostPrice.value) >= 0
 })
+
+const normalizeInventorySearchTerm = (value) => {
+  return String(value || '')
+    .trim()
+    .replace(/[^a-zA-Z0-9-\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+}
+
+const clearInventorySearch = () => {
+  inventorySearchQuery.value = ''
+}
 
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
@@ -2131,10 +2196,18 @@ const getInventoryProducts = async () => {
     return
   }
 
-  const { data, error } = await supabase
+  const normalizedSearchTerm = normalizeInventorySearchTerm(inventorySearchQuery.value)
+  let query = supabase
     .from('products')
-    .select('id, title, stock_quantity, cost_price, is_published')
-    .order('title')
+    .select('id, title, slug, stock_quantity, cost_price, is_published, created_at')
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (normalizedSearchTerm) {
+    query = query.or(`title.ilike.%${normalizedSearchTerm}%,slug.ilike.%${normalizedSearchTerm}%`)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     if (!handleTableError(error)) {
@@ -2144,6 +2217,11 @@ const getInventoryProducts = async () => {
   }
 
   inventoryProducts.value = (data || []).map(mapInventoryProduct)
+
+  const matchedSelectedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
+  if (matchedSelectedProduct) {
+    selectedInventoryProductSnapshot.value = matchedSelectedProduct
+  }
 }
 
 const saveSiteSettings = async (sectionName) => {
@@ -2772,12 +2850,34 @@ watch(selectedInventoryProductId, (productId) => {
   inventoryIncreaseQuantity.value = 1
 
   if (!productId) {
+    selectedInventoryProductSnapshot.value = null
     inventoryCostPrice.value = ''
     return
   }
 
-  const matchedProduct = inventoryProducts.value.find((product) => product.id === productId)
+  const matchedProduct = selectedInventoryProduct.value
+
+  if (matchedProduct) {
+    selectedInventoryProductSnapshot.value = matchedProduct
+  }
+
   inventoryCostPrice.value = matchedProduct ? String(Number(matchedProduct.cost_price || 0)) : ''
+})
+
+watch(inventorySearchQuery, () => {
+  if (!canViewInventory.value) {
+    return
+  }
+
+  clearTimeout(inventorySearchTimeoutId)
+
+  inventorySearchTimeoutId = setTimeout(async () => {
+    await getInventoryProducts()
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(inventorySearchTimeoutId)
 })
 
 await Promise.all([

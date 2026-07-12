@@ -260,6 +260,7 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'updated'])
 
 const supabase = useSupabaseClient()
+const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
 const statusLoading = ref(false)
 const errorMessage = ref('')
@@ -308,6 +309,14 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
+const printableSiteName = computed(() => {
+  return String(siteContent.value?.settings?.site_name || 'Store').trim() || 'Store'
+})
+
+const printableSiteLogoUrl = computed(() => {
+  return String(siteContent.value?.settings?.site_logo_url || '').trim()
+})
+
 const escapeHtml = (value) => {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -339,6 +348,9 @@ const buildPrintableOrderHtml = () => {
     [orderDetail.value.city || customerDetail.value?.city || 'Unknown city', orderDetail.value.governorate].filter(Boolean).join(', '),
     customerDetail.value?.country || (orderDetail.value.governorate ? 'Egypt' : '')
   ].filter(Boolean)
+  const printableLogoMarkup = printableSiteLogoUrl.value
+    ? `<img src="${escapeHtml(printableSiteLogoUrl.value)}" alt="${escapeHtml(printableSiteName.value)}" class="logo">`
+    : `<p class="brand-name">${escapeHtml(printableSiteName.value)}</p>`
 
   return `<!doctype html>
   <html lang="en">
@@ -348,6 +360,9 @@ const buildPrintableOrderHtml = () => {
       <style>
         body { font-family: Arial, sans-serif; margin: 32px; color: #111827; }
         h1, h2, h3, p { margin: 0; }
+        .brand { margin-bottom: 24px; }
+        .logo { max-width: 180px; max-height: 72px; display: block; object-fit: contain; }
+        .brand-name { font-size: 24px; font-weight: 700; }
         .header { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
         .muted { color: #6b7280; }
         .status { display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px; background: #f3f4f6; font-size: 12px; font-weight: 700; text-transform: uppercase; }
@@ -364,6 +379,10 @@ const buildPrintableOrderHtml = () => {
       </style>
     </head>
     <body>
+      <div class="brand">
+        ${printableLogoMarkup}
+      </div>
+
       <div class="header">
         <div>
           <p class="muted">Order Details</p>
@@ -449,14 +468,13 @@ const printOrderDetails = () => {
   }
 
   errorMessage.value = ''
+  printWindow.addEventListener('load', () => {
+    printWindow.focus()
+    printWindow.print()
+  }, { once: true })
   printWindow.document.open()
   printWindow.document.write(buildPrintableOrderHtml())
   printWindow.document.close()
-  printWindow.focus()
-
-  setTimeout(() => {
-    printWindow.print()
-  }, 150)
 }
 
 const resetDialogState = () => {

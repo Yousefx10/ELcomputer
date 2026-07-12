@@ -30,7 +30,9 @@ const normalizeOrderItems = (items) => {
     })
   }
 
-  return items.map((item) => {
+  const aggregatedItems = new Map()
+
+  items.forEach((item) => {
     const productId = String(item?.id || item?.product_id || '').trim()
     const quantity = Number.parseInt(item?.quantity, 10)
 
@@ -41,8 +43,12 @@ const normalizeOrderItems = (items) => {
       })
     }
 
+    aggregatedItems.set(productId, (aggregatedItems.get(productId) || 0) + quantity)
+  })
+
+  return Array.from(aggregatedItems.entries()).map(([id, quantity]) => {
     return {
-      id: productId,
+      id,
       quantity
     }
   })
@@ -56,6 +62,76 @@ const generateOrderNumber = () => {
 
 const isMissingSchemaError = (error) => {
   return error?.code === '42P01' || error?.code === '42703'
+}
+
+const reduceProductStockQuantities = async ({
+  supabaseAdmin,
+  items,
+  productMap,
+  allowOutOfStockPurchases
+}) => {
+  const updatedProducts = []
+
+  try {
+    for (const item of items) {
+      const product = productMap.get(String(item.product_id))
+      const currentStock = Number(product?.stock_quantity || 0)
+      const nextStockQuantity = allowOutOfStockPurchases
+        ? Math.max(0, currentStock - item.quantity)
+        : currentStock - item.quantity
+
+      let updateQuery = supabaseAdmin
+        .from('products')
+        .update({
+          stock_quantity: nextStockQuantity
+        })
+        .eq('id', item.product_id)
+
+      if (!allowOutOfStockPurchases) {
+        updateQuery = updateQuery.gte('stock_quantity', item.quantity)
+      }
+
+      const { data: updatedProduct, error: stockUpdateError } = await updateQuery
+        .select('id, stock_quantity')
+        .maybeSingle()
+
+      if (stockUpdateError) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: stockUpdateError.message
+        })
+      }
+
+      if (!updatedProduct) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: `${product?.title || 'This product'} no longer has enough stock for checkout.`
+        })
+      }
+
+      updatedProducts.push({
+        id: item.product_id,
+        previousStockQuantity: currentStock
+      })
+    }
+  } catch (error) {
+    await Promise.all(
+      updatedProducts.map(async (updatedProduct) => {
+        const { error: rollbackError } = await supabaseAdmin
+          .from('products')
+          .update({
+            stock_quantity: updatedProduct.previousStockQuantity
+          })
+          .eq('id', updatedProduct.id)
+
+        if (rollbackError) {
+          console.error('Could not roll back product stock:', rollbackError.message)
+        }
+      })
+    )
+
+    throw error
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -215,6 +291,26 @@ export default defineEventHandler(async (event) => {
       statusCode: 400,
       statusMessage: orderItemsError.message
     })
+  }
+
+  try {
+    await reduceProductStockQuantities({
+      supabaseAdmin,
+      items: normalizedItems,
+      productMap,
+      allowOutOfStockPurchases
+    })
+  } catch (stockError) {
+    const { error: cleanupError } = await supabaseAdmin
+      .from('customer_orders')
+      .delete()
+      .eq('id', orderRecord.id)
+
+    if (cleanupError) {
+      console.error('Could not clean up order after stock update failure:', cleanupError.message)
+    }
+
+    throw stockError
   }
 
   const { error: profileUpdateError } = await supabaseAdmin
