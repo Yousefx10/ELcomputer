@@ -12,13 +12,16 @@
         {{ pageError }}
       </div>
 
-      <form
+      <section
         ref="userFormRef"
-        @submit.prevent="saveAdminUser"
-        class="grid gap-5 rounded-2xl bg-white p-6 shadow transition md:grid-cols-2"
+        class="overflow-hidden rounded-2xl bg-white shadow transition"
         :class="editingId ? 'ring-2 ring-blue-200' : ''"
       >
-        <div class="md:col-span-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <button
+          type="button"
+          class="flex w-full items-start justify-between gap-4 p-6 text-left"
+          @click="toggleUserForm"
+        >
           <div>
             <h3 class="text-2xl font-bold">
               {{ editingId ? 'Edit Admin User' : 'Create Admin User' }}
@@ -28,17 +31,41 @@
             </p>
           </div>
 
-          <button
-            v-if="editingId"
-            type="button"
-            @click="resetForm"
-            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          >
-            Cancel Edit
-          </button>
-        </div>
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-gray-500">
+              {{ userFormOpen ? 'OPEN' : 'CLOSED' }}
+            </span>
 
-        <div>
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="userFormOpen ? 'rotate-180' : ''"
+            />
+          </div>
+        </button>
+
+        <form
+          v-if="userFormOpen"
+          @submit.prevent="saveAdminUser"
+          class="grid gap-5 border-t p-6 md:grid-cols-2"
+        >
+          <div class="md:col-span-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div class="text-sm text-gray-500">
+              {{ editingId ? 'Update the selected admin user details below.' : 'Fill the fields below to create a new admin user.' }}
+            </div>
+
+            <button
+              v-if="editingId"
+              type="button"
+              @click="resetForm"
+              class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            >
+              Cancel Edit
+            </button>
+          </div>
+
+          <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
           <input
             ref="emailInputRef"
@@ -47,9 +74,9 @@
             placeholder="admin@example.com"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-        </div>
+          </div>
 
-        <div>
+          <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
             {{ editingId ? 'New Password' : 'Password' }}
           </label>
@@ -59,9 +86,9 @@
             :placeholder="editingId ? 'Leave empty to keep current password' : 'At least 6 characters'"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-        </div>
+          </div>
 
-        <div>
+          <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Full Name</label>
           <input
             v-model="form.full_name"
@@ -69,9 +96,9 @@
             placeholder="Admin name"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-        </div>
+          </div>
 
-        <div>
+          <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Role</label>
           <select
             v-model="form.role"
@@ -80,9 +107,9 @@
             <option value="admin">Admin</option>
             <option v-if="currentAdminUser?.role === 'owner'" value="owner">Owner</option>
           </select>
-        </div>
+          </div>
 
-        <div class="md:col-span-2">
+          <div class="md:col-span-2">
           <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
             <div>
               <p class="text-sm font-semibold text-gray-700">Account Status</p>
@@ -110,9 +137,9 @@
               </button>
             </div>
           </div>
-        </div>
+          </div>
 
-        <div class="md:col-span-2">
+          <div class="md:col-span-2">
           <h4 class="text-xl font-bold">Permissions</h4>
           <p class="mt-1 text-sm text-gray-500">
             These permissions apply to admin accounts. Owner accounts ignore these switches and always have full access.
@@ -124,9 +151,45 @@
               :key="group.key"
               class="rounded-2xl border bg-gray-50 p-4"
             >
-              <h5 class="font-bold text-gray-900">{{ group.title }}</h5>
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <h5 class="font-bold text-gray-900">{{ group.title }}</h5>
+                  <p class="mt-1 text-sm text-gray-500">
+                    {{ isPermissionGroupEnabled(group)
+                      ? 'Access is enabled. You can manage the related options below.'
+                      : 'Access is disabled.' }}
+                  </p>
+                </div>
 
-              <div class="mt-3 space-y-3">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="text-sm font-semibold"
+                    :class="isPermissionGroupEnabled(group) ? 'text-green-600' : 'text-gray-500'"
+                  >
+                    {{ isPermissionGroupEnabled(group) ? 'ON' : 'OFF' }}
+                  </span>
+
+                  <button
+                    type="button"
+                    :aria-pressed="isPermissionGroupEnabled(group)"
+                    :disabled="isPermissionGroupToggleDisabled()"
+                    @click="togglePermissionGroup(group)"
+                    class="relative inline-flex h-7 w-14 items-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-70"
+                    :class="isPermissionGroupEnabled(group) ? 'bg-green-600' : 'bg-gray-300'"
+                  >
+                    <span
+                      class="inline-block h-5 w-5 rounded-full bg-white transition"
+                      :class="isPermissionGroupEnabled(group) ? 'translate-x-8' : 'translate-x-1'"
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                v-if="group.permissions.length"
+                class="mt-4 border-t pt-4"
+              >
+                <div v-if="isPermissionGroupEnabled(group)" class="space-y-3">
                 <label
                   v-for="permission in group.permissions"
                   :key="permission.key"
@@ -140,16 +203,21 @@
                   >
                   <span>{{ permission.label }}</span>
                 </label>
+                </div>
+
+                <p v-else class="text-sm text-gray-500">
+                  Turn this section on first to choose its related options.
+                </p>
               </div>
             </div>
           </div>
-        </div>
+          </div>
 
-        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">
+          <p v-if="formError" class="md:col-span-2 text-sm text-red-600">
           {{ formError }}
-        </p>
+          </p>
 
-        <div class="md:col-span-2 flex flex-wrap gap-3">
+          <div class="md:col-span-2 flex flex-wrap gap-3">
           <button
             type="submit"
             :disabled="saving"
@@ -179,8 +247,9 @@
           >
             {{ deleting ? 'Deleting...' : 'Delete User' }}
           </button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </section>
 
       <div class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between gap-3">
@@ -703,6 +772,7 @@ const customerDetailStats = reactive({
 })
 const isOrderDialogOpen = ref(false)
 const selectedOrderId = ref('')
+const userFormOpen = ref(false)
 let searchTimeoutId = null
 let customerSearchTimeoutId = null
 
@@ -773,6 +843,10 @@ const canEditAdminUser = (user) => {
   return true
 }
 
+const isPermissionGroupToggleDisabled = () => {
+  return form.role === 'owner'
+}
+
 const resetForm = () => {
   editingId.value = ''
   form.email = ''
@@ -782,6 +856,7 @@ const resetForm = () => {
   form.is_active = true
   form.permissions = createEmptyAdminPermissions()
   formError.value = ''
+  userFormOpen.value = false
 }
 
 const buildAdminUsersCacheKey = (page = currentPage.value) => {
@@ -1049,6 +1124,7 @@ const startEdit = (user) => {
     return
   }
 
+  userFormOpen.value = true
   editingId.value = user.id
   form.email = user.email || ''
   form.password = ''
@@ -1066,6 +1142,10 @@ const startEdit = (user) => {
 
     emailInputRef.value?.focus()
   })
+}
+
+const toggleUserForm = () => {
+  userFormOpen.value = !userFormOpen.value
 }
 
 const getRequiredViewPermission = (permissionKey) => {
@@ -1090,6 +1170,10 @@ const isPermissionDisabled = (permissionKey) => {
   return !form.permissions[requiredViewPermission]
 }
 
+const isPermissionGroupEnabled = (group) => {
+  return getPermissionValue(group.accessPermission.key)
+}
+
 const getPermissionValue = (permissionKey) => {
   if (form.role === 'owner') {
     return true
@@ -1104,6 +1188,25 @@ const updatePermission = (permissionKey, isEnabled) => {
   }
 
   form.permissions[permissionKey] = Boolean(isEnabled)
+}
+
+const togglePermissionGroup = (group) => {
+  if (form.role === 'owner') {
+    return
+  }
+
+  const accessPermissionKey = group.accessPermission.key
+  const nextEnabledState = !form.permissions[accessPermissionKey]
+
+  form.permissions[accessPermissionKey] = nextEnabledState
+
+  if (nextEnabledState) {
+    return
+  }
+
+  group.permissions.forEach((permission) => {
+    form.permissions[permission.key] = false
+  })
 }
 
 const deleteAdminUser = async () => {

@@ -2,59 +2,62 @@ export const adminPermissionGroups = [
   {
     key: 'dashboard',
     title: 'Dashboard',
+    accessPermission: { key: 'dashboard.view', label: 'Dashboard Access' },
     permissions: [
-      { key: 'dashboard.analysis', label: 'Can See Analysis?' },
-      { key: 'dashboard.orders', label: 'Can See Orders?' }
+      { key: 'dashboard.analysis', label: 'Analysis' },
+      { key: 'dashboard.orders', label: 'Orders' }
     ]
   },
   {
     key: 'products',
     title: 'Products',
+    accessPermission: { key: 'products.view', label: 'Products Access' },
     permissions: [
-      { key: 'products.view', label: 'Can view products?' },
-      { key: 'products.add', label: 'Can Add product?' },
-      { key: 'products.edit', label: 'Can edit product?' }
+      { key: 'products.add', label: 'Add product' },
+      { key: 'products.edit', label: 'Edit product' }
     ]
   },
   {
     key: 'categories',
     title: 'Categories',
+    accessPermission: { key: 'categories.view', label: 'Categories Access' },
     permissions: [
-      { key: 'categories.view', label: 'Can view category?' },
-      { key: 'categories.add', label: 'Can Add category?' },
-      { key: 'categories.edit', label: 'Can edit category?' }
+      { key: 'categories.add', label: 'Add category' },
+      { key: 'categories.edit', label: 'Edit category' }
     ]
   },
   {
     key: 'brands',
     title: 'Brands',
+    accessPermission: { key: 'brands.view', label: 'Brands Access' },
     permissions: [
-      { key: 'brands.view', label: 'Can view Brands?' },
-      { key: 'brands.add', label: 'Can Add Brands?' },
-      { key: 'brands.edit', label: 'Can edit Brands?' }
+      { key: 'brands.add', label: 'Add brand' },
+      { key: 'brands.edit', label: 'Edit brand' }
     ]
   },
   {
     key: 'settings',
     title: 'Settings',
+    accessPermission: { key: 'settings.view', label: 'Settings Access' },
     permissions: [
-      { key: 'settings.view', label: 'Can view Settings?' },
-      { key: 'settings.edit', label: 'Can edit Settings?' },
-      { key: 'settings.coupons', label: 'Can Access Coupons?' },
-      { key: 'settings.inventory', label: 'Can Access Inventory?' }
+      { key: 'settings.edit', label: 'Edit settings' },
+      { key: 'settings.coupons', label: 'Access coupons' },
+      { key: 'settings.inventory', label: 'Access inventory' }
     ]
   },
   {
     key: 'users',
     title: 'Users',
-    permissions: [
-      { key: 'users.view', label: 'Can Access Users page?' }
-    ]
+    accessPermission: { key: 'users.view', label: 'Users Access' },
+    permissions: []
   }
 ]
 
 export const adminPermissionDefinitions = adminPermissionGroups.flatMap((group) => {
-  return group.permissions
+  return [
+    group.accessPermission,
+    ...group.permissions
+  ]
 })
 
 export const adminPermissionKeys = adminPermissionDefinitions.map((permission) => {
@@ -62,10 +65,11 @@ export const adminPermissionKeys = adminPermissionDefinitions.map((permission) =
 })
 
 export const adminPermissionDependencies = {
+  'dashboard.view': ['dashboard.analysis', 'dashboard.orders'],
   'products.view': ['products.add', 'products.edit'],
   'categories.view': ['categories.add', 'categories.edit'],
   'brands.view': ['brands.add', 'brands.edit'],
-  'settings.view': ['settings.edit']
+  'settings.view': ['settings.edit', 'settings.coupons', 'settings.inventory']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
