@@ -1253,7 +1253,7 @@
         </section>
       </div>
 
-      <div v-else class="space-y-6">
+      <div v-else-if="activeSettingsView === 'coupons'" class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
@@ -1518,6 +1518,96 @@
           </p>
         </section>
       </div>
+
+      <div v-else class="space-y-6">
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">Admin Logs</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Latest owner and admin actions. Each account keeps its newest 50 logs only.
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-3 md:w-[340px]">
+              <label class="text-sm font-semibold text-gray-700">Filter by Admin</label>
+
+              <select
+                v-model="selectedLogAuthor"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+                <option value="">All Admins</option>
+
+                <option
+                  v-for="author in adminLogAuthors"
+                  :key="author.value"
+                  :value="author.value"
+                >
+                  {{ author.name }}{{ author.email ? ` (${author.email})` : '' }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-5 flex justify-end">
+            <button
+              type="button"
+              class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              @click="loadAdminLogs({ force: true })"
+            >
+              Refresh Logs
+            </button>
+          </div>
+
+          <div v-if="logsMissingTable" class="mt-6 rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
+            Run the latest admin logs SQL query first, then refresh this page.
+          </div>
+
+          <p v-else-if="logsError" class="mt-6 text-sm text-red-600">
+            {{ logsError }}
+          </p>
+
+          <p v-else-if="logsLoading" class="mt-6 text-sm text-gray-500">
+            Loading logs...
+          </p>
+
+          <p v-else-if="!adminLogs.length" class="mt-6 text-sm text-gray-500">
+            {{ selectedLogAuthor ? 'No logs found for this admin yet.' : 'No logs recorded yet.' }}
+          </p>
+
+          <div v-else class="mt-6 space-y-3">
+            <div
+              v-for="log in adminLogs"
+              :key="log.id"
+              class="rounded-2xl border bg-gray-50 p-4"
+            >
+              <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <p class="font-semibold text-gray-900">
+                    {{ log.description }}
+                  </p>
+
+                  <p class="mt-1 text-sm text-gray-500">
+                    {{ formatLogDate(log.created_at) }}
+                  </p>
+                </div>
+
+                <div class="text-sm text-gray-600 md:text-right">
+                  <p class="font-semibold text-gray-900">
+                    {{ log.author_name || 'Admin' }}
+                  </p>
+
+                  <p>{{ log.author_email }}</p>
+
+                  <p class="uppercase tracking-wide text-gray-400">
+                    {{ log.author_role }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -1544,6 +1634,10 @@ const {
 const {
   hasPermission
 } = useAdminAccess()
+const {
+  fetchAdminLogs,
+  recordAdminLog
+} = useAdminLogs()
 const SETTINGS_GENERAL_CACHE_KEY = 'dashboard:settings:general'
 const SETTINGS_COUPONS_CACHE_KEY = 'dashboard:settings:coupons'
 
@@ -1552,6 +1646,7 @@ const canViewGeneralSettings = computed(() => hasPermission('settings.view'))
 const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
 const canAccessInventory = computed(() => hasPermission('settings.inventory'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
+const canViewLogs = computed(() => hasPermission('settings.view'))
 const canViewInventory = computed(() => canAccessInventory.value)
 const canEditInventory = computed(() => canAccessInventory.value && canEditSettings.value)
 
@@ -1613,6 +1708,13 @@ const inventoryLoading = ref(false)
 const inventoryError = ref('')
 const inventorySuccess = ref('')
 const inventorySearchQuery = ref('')
+const logsLoading = ref(false)
+const logsError = ref('')
+const logsMissingTable = ref(false)
+const logsLoaded = ref(false)
+const selectedLogAuthor = ref('')
+const adminLogs = ref([])
+const adminLogAuthors = ref([])
 
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
@@ -1647,6 +1749,10 @@ const openSections = reactive({
   footerLinks: false
 })
 const activeSettingsView = computed(() => {
+  if (route.query.tab === 'logs' && canViewLogs.value) {
+    return 'logs'
+  }
+
   if (route.query.tab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'
   }
@@ -1665,6 +1771,10 @@ const activeSettingsView = computed(() => {
 
   if (canAccessCoupons.value) {
     return 'coupons'
+  }
+
+  if (canViewLogs.value) {
+    return 'logs'
   }
 
   return 'general'
@@ -1693,6 +1803,14 @@ const secondaryNavItems = computed(() => {
       label: 'Coupon',
       to: '/dashboard/settings?tab=coupons',
       active: activeSettingsView.value === 'coupons'
+    })
+  }
+
+  if (canViewLogs.value) {
+    items.push({
+      label: 'Log',
+      to: '/dashboard/settings?tab=logs',
+      active: activeSettingsView.value === 'logs'
     })
   }
 
@@ -1743,6 +1861,38 @@ const siteSettingsSectionLabels = {
   topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
   footerSettings: 'Footer settings'
+}
+
+const shortenLogValue = (value, maxLength = 60) => {
+  const text = String(value || '').trim()
+
+  if (!text) {
+    return ''
+  }
+
+  return text.length > maxLength
+    ? `${text.slice(0, maxLength - 1)}...`
+    : text
+}
+
+const formatLogDate = (value) => {
+  if (!value) {
+    return 'Recently'
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(new Date(value))
+}
+
+const logSettingsAction = async (description, actionKey, metadata = {}) => {
+  logsLoaded.value = false
+  await recordAdminLog({
+    description,
+    actionKey,
+    metadata
+  })
 }
 
 const siteSettingsSnapshot = ref({})
@@ -2314,6 +2464,38 @@ const loadCouponsData = async ({ force = false } = {}) => {
   syncCouponsCache()
 }
 
+const loadAdminLogs = async ({ force = false } = {}) => {
+  if (!canViewLogs.value) {
+    adminLogs.value = []
+    adminLogAuthors.value = []
+    logsLoaded.value = true
+    return
+  }
+
+  if (logsLoaded.value && !force) {
+    return
+  }
+
+  logsLoading.value = true
+  logsError.value = ''
+  logsMissingTable.value = false
+
+  try {
+    const response = await fetchAdminLogs({
+      author: selectedLogAuthor.value || undefined
+    })
+
+    adminLogs.value = response.items || []
+    adminLogAuthors.value = response.authors || []
+    logsMissingTable.value = Boolean(response.missingTable)
+    logsLoaded.value = true
+  } catch (error) {
+    logsError.value = error?.data?.statusMessage || error?.message || 'Could not load admin logs.'
+  } finally {
+    logsLoading.value = false
+  }
+}
+
 const getInventoryProducts = async ({ force = false } = {}) => {
   inventoryError.value = ''
 
@@ -2406,6 +2588,14 @@ const saveSiteSettings = async (sectionName) => {
 
   await refreshNuxtData('site-content')
 
+  await logSettingsAction(
+    `Updated ${siteSettingsSectionLabels[sectionName].toLowerCase()}.`,
+    `settings.${sectionName}.update`,
+    {
+      section: sectionName
+    }
+  )
+
   settingsSuccess.value = `${siteSettingsSectionLabels[sectionName]} saved successfully.`
   settingsSuccessSection.value = sectionName
 }
@@ -2455,6 +2645,16 @@ const increaseInventory = async () => {
   }
 
   inventorySuccess.value = `Inventory updated for ${selectedInventoryProduct.value.title}.`
+  await logSettingsAction(
+    `Increased inventory for ${selectedInventoryProduct.value.title} by ${normalizedInventoryQuantity.value}.`,
+    'settings.inventory.increase',
+    {
+      product_id: selectedInventoryProduct.value.id,
+      product_title: selectedInventoryProduct.value.title,
+      quantity_added: normalizedInventoryQuantity.value,
+      cost_price: Number(inventoryCostPrice.value || 0)
+    }
+  )
   inventoryIncreaseQuantity.value = 1
   invalidate('dashboard:settings:inventory:')
   await getInventoryProducts({ force: true })
@@ -2474,13 +2674,16 @@ const addHeroBanner = async () => {
     return
   }
 
+  const heroImageUrl = newHeroImageUrl.value.trim()
+  const heroLinkUrl = newHeroLinkUrl.value.trim() || null
+
   heroLoading.value = true
 
   const { error } = await supabase
     .from('site_hero_banners')
     .insert({
-      image_url: newHeroImageUrl.value.trim(),
-      link_url: newHeroLinkUrl.value.trim() || null,
+      image_url: heroImageUrl,
+      link_url: heroLinkUrl,
       sort_order: heroBanners.value.length
     })
 
@@ -2499,6 +2702,14 @@ const addHeroBanner = async () => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Added hero banner ${shortenLogValue(heroImageUrl)}.`,
+    'settings.hero.create',
+    {
+      image_url: heroImageUrl,
+      link_url: heroLinkUrl
+    }
+  )
 }
 
 const saveHeroBanner = async (banner) => {
@@ -2533,10 +2744,18 @@ const saveHeroBanner = async (banner) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Updated hero banner ${shortenLogValue(banner.image_url)}.`,
+    'settings.hero.update',
+    {
+      hero_banner_id: banner.id
+    }
+  )
 }
 
 const deleteHeroBanner = async (bannerId) => {
   heroError.value = ''
+  const selectedBanner = heroBanners.value.find((banner) => banner.id === bannerId)
 
   if (!confirm('Delete this hero banner?')) {
     return
@@ -2562,6 +2781,13 @@ const deleteHeroBanner = async (bannerId) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Deleted hero banner ${shortenLogValue(selectedBanner?.image_url || bannerId)}.`,
+    'settings.hero.delete',
+    {
+      hero_banner_id: bannerId
+    }
+  )
 }
 
 const isTopBarMessageDirty = (message) => {
@@ -2577,12 +2803,14 @@ const addTopBarMessage = async () => {
     return
   }
 
+  const topBarText = newTopBarText.value.trim()
+
   topBarLoading.value = true
 
   const { error } = await supabase
     .from('site_top_bar_messages')
     .insert({
-      text: newTopBarText.value.trim(),
+      text: topBarText,
       sort_order: topBarMessages.value.length
     })
 
@@ -2600,6 +2828,13 @@ const addTopBarMessage = async () => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Added top bar text ${shortenLogValue(topBarText)}.`,
+    'settings.top-bar.create',
+    {
+      text: topBarText
+    }
+  )
 }
 
 const saveTopBarMessage = async (message) => {
@@ -2633,10 +2868,18 @@ const saveTopBarMessage = async (message) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Updated top bar text ${shortenLogValue(message.text)}.`,
+    'settings.top-bar.update',
+    {
+      top_bar_message_id: message.id
+    }
+  )
 }
 
 const deleteTopBarMessage = async (messageId) => {
   topBarError.value = ''
+  const selectedMessage = topBarMessages.value.find((message) => message.id === messageId)
 
   if (!confirm('Delete this top bar text?')) {
     return
@@ -2662,6 +2905,13 @@ const deleteTopBarMessage = async (messageId) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Deleted top bar text ${shortenLogValue(selectedMessage?.text || messageId)}.`,
+    'settings.top-bar.delete',
+    {
+      top_bar_message_id: messageId
+    }
+  )
 }
 
 const isSiteLinkDirty = (link) => {
@@ -2691,14 +2941,17 @@ const addHeaderLink = async () => {
     return
   }
 
+  const headerLabel = newHeaderLabel.value.trim()
+  const headerUrl = newHeaderUrl.value.trim()
+
   addingHeaderLink.value = true
 
   const { error } = await supabase
     .from('site_links')
     .insert({
       location: 'header',
-      label: newHeaderLabel.value.trim(),
-      url: newHeaderUrl.value.trim(),
+      label: headerLabel,
+      url: headerUrl,
       sort_order: defaultHeaderLinkDefinitions.length + customHeaderLinks.value.length
     })
 
@@ -2717,6 +2970,14 @@ const addHeaderLink = async () => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Added header link ${headerLabel}.`,
+    'settings.header-link.create',
+    {
+      label: headerLabel,
+      url: headerUrl
+    }
+  )
 }
 
 const addFooterLink = async () => {
@@ -2727,15 +2988,19 @@ const addFooterLink = async () => {
     return
   }
 
+  const footerSectionTitle = newFooterSectionTitle.value.trim()
+  const footerLabel = newFooterLabel.value.trim()
+  const footerUrl = newFooterUrl.value.trim() || null
+
   addingFooterLink.value = true
 
   const { error } = await supabase
     .from('site_links')
     .insert({
       location: 'footer',
-      section_title: newFooterSectionTitle.value.trim(),
-      label: newFooterLabel.value.trim(),
-      url: newFooterUrl.value.trim() || null,
+      section_title: footerSectionTitle,
+      label: footerLabel,
+      url: footerUrl,
       sort_order: footerLinks.value.length
     })
 
@@ -2755,6 +3020,15 @@ const addFooterLink = async () => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Added footer link ${footerLabel} under ${footerSectionTitle}.`,
+    'settings.footer-link.create',
+    {
+      section_title: footerSectionTitle,
+      label: footerLabel,
+      url: footerUrl
+    }
+  )
 }
 
 const saveSiteLink = async (link) => {
@@ -2817,6 +3091,14 @@ const saveSiteLink = async (link) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Updated ${link.location} link ${shortenLogValue(link.label)}.`,
+    `settings.${link.location}-link.update`,
+    {
+      link_id: link.id,
+      location: link.location
+    }
+  )
 }
 
 const deleteSiteLink = async (linkId) => {
@@ -2852,6 +3134,14 @@ const deleteSiteLink = async (linkId) => {
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Deleted ${selectedLink?.location || 'site'} link ${shortenLogValue(selectedLink?.label || linkId)}.`,
+    `settings.${selectedLink?.location || 'site'}-link.delete`,
+    {
+      link_id: linkId,
+      location: selectedLink?.location || null
+    }
+  )
 }
 
 const validateCouponForm = (coupon, isNewCoupon = false) => {
@@ -2948,6 +3238,13 @@ const addCoupon = async () => {
   await getCoupons()
   couponsLoaded.value = true
   syncCouponsCache()
+  await logSettingsAction(
+    `Added coupon ${payload.code}.`,
+    'settings.coupons.create',
+    {
+      coupon_code: payload.code
+    }
+  )
 }
 
 const saveCoupon = async (coupon) => {
@@ -2980,10 +3277,19 @@ const saveCoupon = async (coupon) => {
   await getCoupons()
   couponsLoaded.value = true
   syncCouponsCache()
+  await logSettingsAction(
+    `Updated coupon ${payload.code}.`,
+    'settings.coupons.update',
+    {
+      coupon_id: coupon.id,
+      coupon_code: payload.code
+    }
+  )
 }
 
 const deleteCoupon = async (couponId) => {
   couponError.value = ''
+  const selectedCoupon = coupons.value.find((coupon) => coupon.id === couponId)
 
   if (!confirm('Delete this coupon?')) {
     return
@@ -3008,6 +3314,14 @@ const deleteCoupon = async (couponId) => {
   await getCoupons()
   couponsLoaded.value = true
   syncCouponsCache()
+  await logSettingsAction(
+    `Deleted coupon ${selectedCoupon?.code || couponId}.`,
+    'settings.coupons.delete',
+    {
+      coupon_id: couponId,
+      coupon_code: selectedCoupon?.code || ''
+    }
+  )
 }
 
 watch(selectedInventoryProductId, (productId) => {
@@ -3043,6 +3357,11 @@ watch(inventorySearchQuery, () => {
 })
 
 const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
+  if (view === 'logs') {
+    await loadAdminLogs({ force })
+    return
+  }
+
   if (view === 'inventory') {
     if (canViewInventory.value) {
       await getInventoryProducts({ force })
@@ -3065,6 +3384,14 @@ watch(activeSettingsView, async (view, previousView) => {
   }
 
   await loadActiveSettingsView(view)
+})
+
+watch(selectedLogAuthor, async () => {
+  logsLoaded.value = false
+
+  if (activeSettingsView.value === 'logs') {
+    await loadAdminLogs({ force: true })
+  }
 })
 
 onBeforeUnmount(() => {

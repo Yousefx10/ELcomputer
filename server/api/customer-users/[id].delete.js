@@ -1,4 +1,5 @@
 import { createError, getRouterParam } from 'h3'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: existingRecord, error: existingError } = await supabaseAdmin
     .from('customer_profiles')
-    .select('id')
+    .select('id, email, full_name')
     .eq('id', targetId)
     .maybeSingle()
 
@@ -43,6 +44,17 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message
     })
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: 'users.customer.delete',
+    description: `Deleted customer user ${existingRecord.full_name || existingRecord.email}.`,
+    metadata: {
+      target_user_id: targetId,
+      target_email: existingRecord.email || ''
+    }
+  })
 
   return {
     success: true,

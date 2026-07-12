@@ -108,6 +108,9 @@ create index IF not exists product_images_product_id_sort_idx on public.product_
 
 create or replace function public.default_admin_permissions () returns jsonb language sql immutable as $$
   select jsonb_build_object(
+    'dashboard.view', false,
+    'dashboard.analysis', false,
+    'dashboard.orders', false,
     'products.view', false,
     'products.add', false,
     'products.edit', false,
@@ -118,7 +121,10 @@ create or replace function public.default_admin_permissions () returns jsonb lan
     'brands.add', false,
     'brands.edit', false,
     'settings.view', false,
-    'settings.edit', false
+    'settings.edit', false,
+    'settings.coupons', false,
+    'settings.inventory', false,
+    'users.view', false
   );
 $$;
 
@@ -141,6 +147,27 @@ create table public.admin_users (
 create index IF not exists admin_users_role_active_idx on public.admin_users using btree (role, is_active) TABLESPACE pg_default;
 
 create index IF not exists admin_users_created_at_idx on public.admin_users using btree (created_at desc) TABLESPACE pg_default;
+
+create table public.admin_activity_logs (
+  id uuid not null default gen_random_uuid (),
+  admin_user_id uuid null,
+  author_name text not null,
+  author_email text not null,
+  author_role text not null default 'admin'::text,
+  action_key text null,
+  description text not null,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamp with time zone null default now(),
+  constraint admin_activity_logs_pkey primary key (id),
+  constraint admin_activity_logs_admin_user_id_fkey foreign KEY (admin_user_id) references admin_users (id) on delete set null,
+  constraint admin_activity_logs_author_role_check check ((author_role = any (array['owner'::text, 'admin'::text])))
+) TABLESPACE pg_default;
+
+create index IF not exists admin_activity_logs_created_at_idx on public.admin_activity_logs using btree (created_at desc) TABLESPACE pg_default;
+
+create index IF not exists admin_activity_logs_author_idx on public.admin_activity_logs using btree (admin_user_id, created_at desc) TABLESPACE pg_default;
+
+create index IF not exists admin_activity_logs_author_email_idx on public.admin_activity_logs using btree (author_email, created_at desc) TABLESPACE pg_default;
 
 create table public.site_settings (
   id uuid not null default gen_random_uuid (),
@@ -392,6 +419,7 @@ create or replace function public.has_admin_permission (permission_key text) ret
 $$;
 
 alter table public.admin_users enable row level security;
+alter table public.admin_activity_logs enable row level security;
 alter table public.products enable row level security;
 alter table public.product_images enable row level security;
 alter table public.product_specifications enable row level security;
@@ -410,6 +438,11 @@ create policy "Admin users can read their own profile" on public.admin_users for
 select
   to authenticated
     using ((auth.uid () = id));
+
+create policy "Admins can read activity logs" on public.admin_activity_logs for
+select
+  to authenticated
+    using (public.has_admin_permission ('settings.view'));
 
 create policy "Public can read published products" on public.products for
 select

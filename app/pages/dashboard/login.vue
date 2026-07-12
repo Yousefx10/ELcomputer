@@ -5,6 +5,7 @@ const {
   clearAdminAccess,
   loadAdminAccess
 } = useAdminAccess()
+const { recordAdminLog } = useAdminLogs()
 
 const email = ref('')
 const password = ref('')
@@ -36,6 +37,11 @@ const login = async () => {
     errorMessage.value = 'This account does not have dashboard access.'
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'dashboard.login',
+    description: 'Signed in to the dashboard.'
+  })
 
   await navigateTo('/dashboard')
 }

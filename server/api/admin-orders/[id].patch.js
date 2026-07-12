@@ -1,9 +1,10 @@
 import { createError, getRouterParam } from 'h3'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import { normalizeAdminOrderRecord, allowedAdminOrderStatuses } from '../../utils/adminOrders'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event, {
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'dashboard.orders'
   })
   const orderId = getRouterParam(event, 'id')
@@ -25,6 +26,26 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
+    .from('customer_orders')
+    .select('id, order_number, status')
+    .eq('id', orderId)
+    .maybeSingle()
+
+  if (existingOrderError) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: existingOrderError.message
+    })
+  }
+
+  if (!existingOrder) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Order not found.'
+    })
+  }
+
   const { data: updatedOrder, error } = await supabaseAdmin
     .from('customer_orders')
     .update({
@@ -41,6 +62,19 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message
     })
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: 'orders.status.update',
+    description: `Changed order ${existingOrder.order_number || orderId.slice(0, 8)} status from ${existingOrder.status} to ${nextStatus}.`,
+    metadata: {
+      order_id: orderId,
+      order_number: existingOrder.order_number || null,
+      previous_status: existingOrder.status,
+      next_status: nextStatus
+    }
+  })
 
   return {
     order: normalizeAdminOrderRecord(updatedOrder)

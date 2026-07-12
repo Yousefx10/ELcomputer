@@ -1,5 +1,6 @@
 import { createError, getRouterParam } from 'h3'
 import { mapAdminUserRecord, normalizeAdminUserInput } from '../../utils/adminUsers'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
@@ -123,6 +124,19 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message
     })
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: 'users.admin.update',
+    description: `Updated ${existingRecord.role} user ${existingRecord.full_name || existingRecord.email}.`,
+    metadata: {
+      target_user_id: targetId,
+      target_email: input.email,
+      target_role: input.role,
+      is_active: input.is_active
+    }
+  })
 
   return {
     item: mapAdminUserRecord(data)

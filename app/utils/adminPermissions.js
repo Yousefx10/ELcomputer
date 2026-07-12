@@ -148,6 +148,12 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/settings') {
+    if (query.tab === 'logs') {
+      return {
+        permission: 'settings.view'
+      }
+    }
+
     if (query.tab === 'coupons') {
       return {
         permission: 'settings.coupons'

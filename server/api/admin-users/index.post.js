@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import { mapAdminUserRecord, normalizeAdminUserInput } from '../../utils/adminUsers'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
@@ -60,6 +61,18 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message
     })
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: 'users.admin.create',
+    description: `Created ${input.role} user ${input.full_name || input.email}.`,
+    metadata: {
+      target_user_id: data.id,
+      target_email: input.email,
+      target_role: input.role
+    }
+  })
 
   return {
     item: mapAdminUserRecord(data)

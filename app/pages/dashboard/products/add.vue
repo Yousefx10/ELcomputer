@@ -269,6 +269,7 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
+const { recordAdminLog } = useAdminLogs()
 const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
 const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 
@@ -416,6 +417,16 @@ const addProduct = async () => {
     actionError.value = error.message
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'products.create',
+    description: `Added product ${title.value.trim()}.`,
+    metadata: {
+      product_id: data.id,
+      product_title: title.value.trim(),
+      product_slug: normalizedSlug
+    }
+  })
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')

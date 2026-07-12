@@ -1,9 +1,10 @@
 import { createError, getRouterParam } from 'h3'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import { mapCustomerProfileRecord } from '../../utils/customerUsers'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event, {
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'users.view'
   })
 
@@ -61,6 +62,18 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message
     })
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: 'users.customer.update',
+    description: `${body.is_active ? 'Enabled' : 'Disabled'} customer user ${existingRecord.full_name || existingRecord.email}.`,
+    metadata: {
+      target_user_id: targetId,
+      target_email: existingRecord.email,
+      is_active: body.is_active
+    }
+  })
 
   return {
     item: mapCustomerProfileRecord(data)

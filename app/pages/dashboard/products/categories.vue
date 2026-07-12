@@ -183,6 +183,7 @@ const {
 const {
   hasPermission
 } = useAdminAccess()
+const { recordAdminLog } = useAdminLogs()
 const buildCategoriesCacheKey = (page = currentPage.value) => {
   return `dashboard:categories:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
 }
@@ -301,6 +302,7 @@ const getCategoriesList = async (page = currentPage.value, { force = false } = {
 
 const saveCategory = async () => {
   errorMessage.value = ''
+  const isEditing = Boolean(editingId.value)
 
   if (editingId.value && !canEditCategory.value) {
     errorMessage.value = 'You do not have permission to edit categories.'
@@ -352,6 +354,16 @@ const saveCategory = async () => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: isEditing ? 'categories.update' : 'categories.create',
+    description: `${isEditing ? 'Updated' : 'Added'} category ${name.value.trim()}.`,
+    metadata: {
+      category_id: editingId.value || null,
+      category_name: name.value.trim(),
+      category_slug: slug
+    }
+  })
+
   resetForm()
   invalidate('dashboard:categories:')
   invalidate('dashboard:home')
@@ -397,6 +409,16 @@ const deleteCategory = async (id) => {
         : error.message
     return
   }
+
+  const deletedCategory = categories.value.find((category) => category.id === id)
+  await recordAdminLog({
+    actionKey: 'categories.delete',
+    description: `Deleted category ${deletedCategory?.name || id}.`,
+    metadata: {
+      category_id: id,
+      category_name: deletedCategory?.name || ''
+    }
+  })
 
   if (editingId.value === id) {
     resetForm()

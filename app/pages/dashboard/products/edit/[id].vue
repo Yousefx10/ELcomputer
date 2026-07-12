@@ -460,6 +460,7 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
+const { recordAdminLog } = useAdminLogs()
 const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
 const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 
@@ -698,6 +699,16 @@ const updateProduct = async () => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: 'products.update',
+    description: `Updated product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      product_slug: normalizedSlug
+    }
+  })
+
   slug.value = normalizedSlug
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
@@ -729,6 +740,15 @@ const addProductImage = async () => {
     galleryError.value = error.message
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'products.images.create',
+    description: `Added an extra image to product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim()
+    }
+  })
 
   newImageUrl.value = ''
   newImageAlt.value = ''
@@ -769,6 +789,16 @@ const saveProductImage = async (image) => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: 'products.images.update',
+    description: `Updated an extra image for product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      image_id: image.id
+    }
+  })
+
   await getProductImages()
 }
 
@@ -793,6 +823,16 @@ const deleteProductImage = async (imageId) => {
     galleryError.value = error.message
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'products.images.delete',
+    description: `Deleted an extra image from product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      image_id: imageId
+    }
+  })
 
   await getProductImages()
 }
@@ -821,6 +861,16 @@ const addProductSpecification = async () => {
     specError.value = error.message
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'products.specifications.create',
+    description: `Added a specification to product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      label: newSpecLabel.value.trim()
+    }
+  })
 
   newSpecLabel.value = ''
   newSpecValue.value = ''
@@ -861,6 +911,16 @@ const saveProductSpecification = async (specification) => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: 'products.specifications.update',
+    description: `Updated a specification for product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      specification_id: specification.id
+    }
+  })
+
   await getProductSpecifications()
 }
 
@@ -886,6 +946,16 @@ const deleteProductSpecification = async (specificationId) => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: 'products.specifications.delete',
+    description: `Deleted a specification from product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim(),
+      specification_id: specificationId
+    }
+  })
+
   await getProductSpecifications()
 }
 
@@ -910,6 +980,15 @@ const deleteProduct = async () => {
     actionError.value = error.message
     return
   }
+
+  await recordAdminLog({
+    actionKey: 'products.delete',
+    description: `Deleted product ${title.value.trim()}.`,
+    metadata: {
+      product_id: id,
+      product_title: title.value.trim()
+    }
+  })
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')

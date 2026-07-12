@@ -215,6 +215,7 @@ const {
 const {
   hasPermission
 } = useAdminAccess()
+const { recordAdminLog } = useAdminLogs()
 const buildBrandsCacheKey = (page = currentPage.value) => {
   return `dashboard:brands:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
 }
@@ -335,6 +336,7 @@ const getBrandsList = async (page = currentPage.value, { force = false } = {}) =
 
 const saveBrand = async () => {
   errorMessage.value = ''
+  const isEditing = Boolean(editingId.value)
 
   if (editingId.value && !canEditBrand.value) {
     errorMessage.value = 'You do not have permission to edit brands.'
@@ -388,6 +390,16 @@ const saveBrand = async () => {
     return
   }
 
+  await recordAdminLog({
+    actionKey: isEditing ? 'brands.update' : 'brands.create',
+    description: `${isEditing ? 'Updated' : 'Added'} brand ${name.value.trim()}.`,
+    metadata: {
+      brand_id: editingId.value || null,
+      brand_name: name.value.trim(),
+      brand_slug: slug
+    }
+  })
+
   resetForm()
   invalidate('dashboard:brands:')
   invalidate('dashboard:product-form:brands')
@@ -431,6 +443,16 @@ const deleteBrand = async (id) => {
     errorMessage.value = error.message
     return
   }
+
+  const deletedBrand = brands.value.find((brand) => brand.id === id)
+  await recordAdminLog({
+    actionKey: 'brands.delete',
+    description: `Deleted brand ${deletedBrand?.name || id}.`,
+    metadata: {
+      brand_id: id,
+      brand_name: deletedBrand?.name || ''
+    }
+  })
 
   if (editingId.value === id) {
     resetForm()
