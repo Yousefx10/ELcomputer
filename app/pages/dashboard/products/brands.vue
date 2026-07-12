@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 p-6">
+  <div class="">
     <div class="mx-auto max-w-4xl">
       <div class="mb-6 rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Brands</h2>

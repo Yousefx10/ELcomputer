@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 p-6">
+  <div class="">
     <h2 class="my-5 text-center text-4xl font-bold">
       Edit Product
     </h2>
