@@ -454,6 +454,14 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
+const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 
 const route = useRoute()
 const id = route.params.id
@@ -521,6 +529,16 @@ const { data: product, pending, error: fetchError } = await useAsyncData(
 )
 
 const getCategoriesList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    categories.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_CATEGORIES_CACHE_KEY)) {
+    return
+  }
+
   const { data, error } = await supabase
     .from('categories')
     .select('id, name')
@@ -532,9 +550,20 @@ const getCategoriesList = async () => {
   }
 
   categories.value = data || []
+  setSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY, categories.value)
 }
 
 const getBrandsList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    brands.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_BRANDS_CACHE_KEY)) {
+    return
+  }
+
   const { data, error } = await supabase
     .from('brands')
     .select('id, name')
@@ -546,6 +575,7 @@ const getBrandsList = async () => {
   }
 
   brands.value = data || []
+  setSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY, brands.value)
 }
 
 const getProductImages = async () => {
@@ -586,12 +616,14 @@ const getProductSpecifications = async () => {
   }))
 }
 
-await Promise.all([
-  getCategoriesList(),
-  getBrandsList(),
-  getProductImages(),
-  getProductSpecifications()
-])
+onMounted(async () => {
+  await Promise.all([
+    getCategoriesList(),
+    getBrandsList(),
+    getProductImages(),
+    getProductSpecifications()
+  ])
+})
 
 watchEffect(() => {
   if (product.value) {
@@ -667,6 +699,9 @@ const updateProduct = async () => {
   }
 
   slug.value = normalizedSlug
+  invalidate('dashboard:products:')
+  invalidate('dashboard:home')
+  invalidate('dashboard:settings:inventory:')
   await navigateTo('/dashboard/products')
 }
 
@@ -876,6 +911,9 @@ const deleteProduct = async () => {
     return
   }
 
+  invalidate('dashboard:products:')
+  invalidate('dashboard:home')
+  invalidate('dashboard:settings:inventory:')
   await navigateTo('/dashboard/products')
 }
 </script>

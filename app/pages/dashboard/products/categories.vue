@@ -175,16 +175,22 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const {
-  hasPermission,
-  loadAdminAccess
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const {
+  hasPermission
 } = useAdminAccess()
-
-await loadAdminAccess()
+const buildCategoriesCacheKey = (page = currentPage.value) => {
+  return `dashboard:categories:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
+}
 
 const categories = ref([])
 const name = ref('')
 const saving = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const errorMessage = ref('')
 const editingId = ref(null)
 const currentPage = ref(1)
@@ -230,10 +236,28 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
-const getCategoriesList = async (page = currentPage.value) => {
+const applyCategoriesSnapshot = (snapshot) => {
+  currentPage.value = snapshot?.page || 1
+  totalCategories.value = snapshot?.totalCategories || 0
+  categories.value = snapshot?.items || []
+}
+
+const getCategoriesList = async (page = currentPage.value, { force = false } = {}) => {
+  currentPage.value = page
+  const cacheKey = buildCategoriesCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyCategoriesSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    loading.value = false
+    return
+  }
+
   loading.value = true
   errorMessage.value = ''
-  currentPage.value = page
 
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
@@ -260,11 +284,18 @@ const getCategoriesList = async (page = currentPage.value) => {
 
   if (currentPage.value > totalPages.value) {
     loading.value = false
-    await getCategoriesList(totalPages.value)
+    await getCategoriesList(totalPages.value, { force })
     return
   }
 
-  categories.value = data || []
+  const snapshot = {
+    page,
+    totalCategories: count || 0,
+    items: data || []
+  }
+
+  applyCategoriesSnapshot(snapshot)
+  setSnapshot(cacheKey, snapshot)
   loading.value = false
 }
 
@@ -322,7 +353,11 @@ const saveCategory = async () => {
   }
 
   resetForm()
-  await getCategoriesList()
+  invalidate('dashboard:categories:')
+  invalidate('dashboard:home')
+  invalidate('dashboard:products:list:')
+  invalidate('dashboard:product-form:categories')
+  await getCategoriesList(currentPage.value, { force: true })
 }
 
 const startEdit = (category) => {
@@ -367,7 +402,11 @@ const deleteCategory = async (id) => {
     resetForm()
   }
 
-  await getCategoriesList()
+  invalidate('dashboard:categories:')
+  invalidate('dashboard:home')
+  invalidate('dashboard:products:list:')
+  invalidate('dashboard:product-form:categories')
+  await getCategoriesList(currentPage.value, { force: true })
 }
 
 const goToPreviousPage = async () => {
@@ -406,5 +445,7 @@ onBeforeUnmount(() => {
   }
 })
 
-await getCategoriesList()
+onMounted(async () => {
+  await getCategoriesList()
+})
 </script>

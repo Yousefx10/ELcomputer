@@ -251,6 +251,12 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
 const secondaryNavItems = computed(() => buildDashboardOverviewLinks('orders'))
 const stats = reactive({
   total: 0,
@@ -263,7 +269,7 @@ const orders = ref([])
 const totalOrders = ref(0)
 const currentPage = ref(1)
 const pageSize = 10
-const loading = ref(false)
+const loading = ref(true)
 const pageError = ref('')
 const searchQuery = ref('')
 const fromDate = ref('')
@@ -294,6 +300,10 @@ const pageStart = computed(() => {
 const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalOrders.value)
 })
+
+const buildOrdersCacheKey = (page = currentPage.value) => {
+  return `dashboard:orders:${page}:${searchQuery.value.trim().toLowerCase()}:${fromDate.value}:${toDate.value}`
+}
 
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
@@ -326,10 +336,33 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
-const loadOrdersDashboard = async (page = currentPage.value) => {
+const applyOrdersSnapshot = (snapshot) => {
+  currentPage.value = snapshot?.page || 1
+  stats.total = snapshot?.stats?.total || 0
+  stats.today = snapshot?.stats?.today || 0
+  stats.week = snapshot?.stats?.week || 0
+  stats.month = snapshot?.stats?.month || 0
+  recentOrders.value = snapshot?.recentOrders || []
+  orders.value = snapshot?.items || []
+  totalOrders.value = snapshot?.total || 0
+}
+
+const loadOrdersDashboard = async (page = currentPage.value, { force = false } = {}) => {
+  currentPage.value = page
+  const cacheKey = buildOrdersCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyOrdersSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    loading.value = false
+    return
+  }
+
   loading.value = true
   pageError.value = ''
-  currentPage.value = page
 
   try {
     const response = await $fetch('/api/admin-orders', {
@@ -343,17 +376,25 @@ const loadOrdersDashboard = async (page = currentPage.value) => {
       headers: await getAuthHeaders()
     })
 
-    stats.total = response.stats?.total || 0
-    stats.today = response.stats?.today || 0
-    stats.week = response.stats?.week || 0
-    stats.month = response.stats?.month || 0
-    recentOrders.value = response.recentOrders || []
-    orders.value = response.items || []
-    totalOrders.value = response.total || 0
+    const snapshot = {
+      page,
+      stats: {
+        total: response.stats?.total || 0,
+        today: response.stats?.today || 0,
+        week: response.stats?.week || 0,
+        month: response.stats?.month || 0
+      },
+      recentOrders: response.recentOrders || [],
+      items: response.items || [],
+      total: response.total || 0
+    }
+
+    applyOrdersSnapshot(snapshot)
+    setSnapshot(cacheKey, snapshot)
 
     if (currentPage.value > totalPages.value) {
       loading.value = false
-      await loadOrdersDashboard(totalPages.value)
+      await loadOrdersDashboard(totalPages.value, { force })
     }
   } catch (error) {
     pageError.value = error?.data?.statusMessage || error?.message || 'Could not load orders.'
@@ -421,6 +462,7 @@ const handleOrderUpdated = async (updatedOrder) => {
 
   orders.value = orders.value.map(patchOrder)
   recentOrders.value = recentOrders.value.map(patchOrder)
+  invalidate('dashboard:orders:')
 }
 
 const goToPreviousPage = async () => {
@@ -439,5 +481,7 @@ const goToNextPage = async () => {
   await loadOrdersDashboard(currentPage.value + 1)
 }
 
-await loadOrdersDashboard()
+onMounted(async () => {
+  await loadOrdersDashboard()
+})
 </script>

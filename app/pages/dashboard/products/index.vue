@@ -194,14 +194,17 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const {
-  hasPermission,
-  loadAdminAccess
+  getSnapshot,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const {
+  hasPermission
 } = useAdminAccess()
-
-await loadAdminAccess()
+const PRODUCT_STATS_CACHE_KEY = 'dashboard:products:stats'
 
 const products = ref([])
-const loading = ref(false)
+const loading = ref(true)
 const errorMessage = ref('')
 const currentPage = ref(1)
 const pageSize = 9
@@ -235,7 +238,33 @@ const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalProducts.value)
 })
 
-const getProductStats = async () => {
+const buildProductsListCacheKey = (page = currentPage.value) => {
+  return `dashboard:products:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
+}
+
+const applyProductStatsSnapshot = (snapshot) => {
+  productStats.active = snapshot?.active || 0
+  productStats.inactive = snapshot?.inactive || 0
+  productStats.total = snapshot?.total || 0
+}
+
+const applyProductsListSnapshot = (snapshot) => {
+  currentPage.value = snapshot?.page || 1
+  totalProducts.value = snapshot?.totalProducts || 0
+  products.value = snapshot?.items || []
+}
+
+const getProductStats = async ({ force = false } = {}) => {
+  const cachedSnapshot = getSnapshot(PRODUCT_STATS_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    applyProductStatsSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(PRODUCT_STATS_CACHE_KEY)) {
+    return
+  }
+
   const [activeProductsResult, inactiveProductsResult] = await Promise.all([
     supabase
       .from('products')
@@ -255,16 +284,33 @@ const getProductStats = async () => {
     throw inactiveProductsResult.error
   }
 
-  productStats.active = activeProductsResult.count || 0
-  productStats.inactive = inactiveProductsResult.count || 0
-  productStats.total = productStats.active + productStats.inactive
+  const snapshot = {
+    active: activeProductsResult.count || 0,
+    inactive: inactiveProductsResult.count || 0,
+    total: (activeProductsResult.count || 0) + (inactiveProductsResult.count || 0)
+  }
+
+  applyProductStatsSnapshot(snapshot)
+  setSnapshot(PRODUCT_STATS_CACHE_KEY, snapshot)
 }
 
-const getProductsList = async (page = currentPage.value) => {
+const getProductsList = async (page = currentPage.value, { force = false } = {}) => {
+  currentPage.value = page
+  const cacheKey = buildProductsListCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyProductsListSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    loading.value = false
+    return
+  }
+
   loading.value = true
   errorMessage.value = ''
 
-  currentPage.value = page
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
@@ -297,11 +343,18 @@ const getProductsList = async (page = currentPage.value) => {
 
   if (currentPage.value > totalPages.value) {
     loading.value = false
-    await getProductsList(totalPages.value)
+    await getProductsList(totalPages.value, { force })
     return
   }
 
-  products.value = data || []
+  const snapshot = {
+    page,
+    totalProducts: count || 0,
+    items: data || []
+  }
+
+  applyProductsListSnapshot(snapshot)
+  setSnapshot(cacheKey, snapshot)
   loading.value = false
 }
 
@@ -341,10 +394,15 @@ onBeforeUnmount(() => {
   }
 })
 
-try {
-  await getProductStats()
-  await getProductsList()
-} catch (error) {
-  errorMessage.value = error.message || 'Could not load product stats.'
-}
+onMounted(async () => {
+  try {
+    await Promise.all([
+      getProductStats(),
+      getProductsList()
+    ])
+  } catch (error) {
+    errorMessage.value = error.message || 'Could not load product stats.'
+    loading.value = false
+  }
+})
 </script>

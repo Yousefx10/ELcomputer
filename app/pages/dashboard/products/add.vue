@@ -263,6 +263,14 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const {
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
+const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 
 const title = ref('')
 const slug = ref('')
@@ -299,6 +307,16 @@ const useTitleSlug = () => {
 }
 
 const getCategoriesList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    categories.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_CATEGORIES_CACHE_KEY)) {
+    return
+  }
+
   const { data, error } = await supabase
     .from('categories')
     .select('id, name')
@@ -310,9 +328,20 @@ const getCategoriesList = async () => {
   }
 
   categories.value = data || []
+  setSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY, categories.value)
 }
 
 const getBrandsList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    brands.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_BRANDS_CACHE_KEY)) {
+    return
+  }
+
   const { data, error } = await supabase
     .from('brands')
     .select('id, name')
@@ -324,6 +353,7 @@ const getBrandsList = async () => {
   }
 
   brands.value = data || []
+  setSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY, brands.value)
 }
 
 const addProduct = async () => {
@@ -387,11 +417,16 @@ const addProduct = async () => {
     return
   }
 
+  invalidate('dashboard:products:')
+  invalidate('dashboard:home')
+  invalidate('dashboard:settings:inventory:')
   await navigateTo(`/dashboard/products/edit/${data.id}`)
 }
 
-await Promise.all([
-  getCategoriesList(),
-  getBrandsList()
-])
+onMounted(async () => {
+  await Promise.all([
+    getCategoriesList(),
+    getBrandsList()
+  ])
+})
 </script>

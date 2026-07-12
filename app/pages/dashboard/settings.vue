@@ -1536,11 +1536,16 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const route = useRoute()
 const {
-  hasPermission,
-  loadAdminAccess
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const {
+  hasPermission
 } = useAdminAccess()
-
-await loadAdminAccess()
+const SETTINGS_GENERAL_CACHE_KEY = 'dashboard:settings:general'
+const SETTINGS_COUPONS_CACHE_KEY = 'dashboard:settings:coupons'
 
 const pageError = ref('')
 const canEditSettings = computed(() => hasPermission('settings.edit'))
@@ -1714,6 +1719,9 @@ const siteSettingsSectionLabels = {
 }
 
 const siteSettingsSnapshot = ref({})
+const generalSettingsLoaded = ref(false)
+const couponsLoaded = ref(false)
+const inventoryLoaded = ref(false)
 let inventorySearchTimeoutId = null
 
 const toggleSection = (sectionName) => {
@@ -1966,6 +1974,10 @@ const normalizeInventorySearchTerm = (value) => {
     .replace(/\s+/g, ' ')
 }
 
+const buildInventoryProductsCacheKey = () => {
+  return `dashboard:settings:inventory:${normalizeInventorySearchTerm(inventorySearchQuery.value).toLowerCase()}`
+}
+
 const clearInventorySearch = () => {
   inventorySearchQuery.value = ''
 }
@@ -1999,6 +2011,53 @@ siteSettingsSnapshot.value = normalizeSiteSettings(defaultSiteSettings)
 
 const syncSiteSettingsSnapshot = () => {
   siteSettingsSnapshot.value = normalizeSiteSettings(siteSettings)
+}
+
+const captureGeneralSettingsSnapshot = () => ({
+  siteSettings: normalizeSiteSettings(siteSettings),
+  heroBanners: heroBanners.value,
+  topBarMessages: topBarMessages.value,
+  siteLinks: siteLinks.value
+})
+
+const applyGeneralSettingsSnapshot = (snapshot = {}) => {
+  Object.assign(siteSettings, {
+    key: 'default',
+    ...defaultSiteSettings,
+    ...normalizeSiteSettings({
+      ...defaultSiteSettings,
+      ...(snapshot.siteSettings || {})
+    })
+  })
+
+  syncSiteSettingsSnapshot()
+  heroBanners.value = (snapshot.heroBanners || []).map(mapHeroBanner)
+  topBarMessages.value = (snapshot.topBarMessages || []).map(mapTopBarMessage)
+  siteLinks.value = (snapshot.siteLinks || []).map(mapSiteLink)
+}
+
+const syncGeneralSettingsCache = () => {
+  setSnapshot(SETTINGS_GENERAL_CACHE_KEY, captureGeneralSettingsSnapshot())
+}
+
+const applyCouponsSnapshot = (snapshot = {}) => {
+  coupons.value = (snapshot.coupons || []).map(mapCoupon)
+}
+
+const syncCouponsCache = () => {
+  setSnapshot(SETTINGS_COUPONS_CACHE_KEY, {
+    coupons: coupons.value
+  })
+}
+
+const applyInventoryProductsSnapshot = (snapshot = {}) => {
+  inventoryProducts.value = (snapshot.items || []).map(mapInventoryProduct)
+  inventoryLoaded.value = true
+
+  const matchedSelectedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
+  if (matchedSelectedProduct) {
+    selectedInventoryProductSnapshot.value = matchedSelectedProduct
+  }
 }
 
 const isSettingsSectionDirty = (sectionName) => {
@@ -2064,6 +2123,29 @@ const getSiteSettings = async () => {
   })
 
   syncSiteSettingsSnapshot()
+}
+
+const loadGeneralSettingsData = async ({ force = false } = {}) => {
+  const cachedSnapshot = getSnapshot(SETTINGS_GENERAL_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    applyGeneralSettingsSnapshot(cachedSnapshot)
+    generalSettingsLoaded.value = true
+  }
+
+  if (!force && cachedSnapshot && isFresh(SETTINGS_GENERAL_CACHE_KEY)) {
+    return
+  }
+
+  await Promise.all([
+    getSiteSettings(),
+    getHeroBanners(),
+    getTopBarMessages(),
+    getSiteLinks()
+  ])
+
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
 }
 
 const getHeroBanners = async () => {
@@ -2188,11 +2270,39 @@ const getCoupons = async () => {
   coupons.value = (data || []).map(mapCoupon)
 }
 
-const getInventoryProducts = async () => {
+const loadCouponsData = async ({ force = false } = {}) => {
+  const cachedSnapshot = getSnapshot(SETTINGS_COUPONS_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    applyCouponsSnapshot(cachedSnapshot)
+    couponsLoaded.value = true
+  }
+
+  if (!force && cachedSnapshot && isFresh(SETTINGS_COUPONS_CACHE_KEY)) {
+    return
+  }
+
+  await getCoupons()
+  couponsLoaded.value = true
+  syncCouponsCache()
+}
+
+const getInventoryProducts = async ({ force = false } = {}) => {
   inventoryError.value = ''
 
   if (!canViewInventory.value) {
     inventoryProducts.value = []
+    return
+  }
+
+  const cacheKey = buildInventoryProductsCacheKey()
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyInventoryProductsSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
     return
   }
 
@@ -2216,12 +2326,12 @@ const getInventoryProducts = async () => {
     return
   }
 
-  inventoryProducts.value = (data || []).map(mapInventoryProduct)
-
-  const matchedSelectedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
-  if (matchedSelectedProduct) {
-    selectedInventoryProductSnapshot.value = matchedSelectedProduct
-  }
+  applyInventoryProductsSnapshot({
+    items: data || []
+  })
+  setSnapshot(cacheKey, {
+    items: data || []
+  })
 }
 
 const saveSiteSettings = async (sectionName) => {
@@ -2252,6 +2362,8 @@ const saveSiteSettings = async (sectionName) => {
   }
 
   await getSiteSettings()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
 
   Object.keys(siteSettingsSectionFields).forEach((otherSectionName) => {
     if (otherSectionName === sectionName) {
@@ -2317,7 +2429,8 @@ const increaseInventory = async () => {
 
   inventorySuccess.value = `Inventory updated for ${selectedInventoryProduct.value.title}.`
   inventoryIncreaseQuantity.value = 1
-  await getInventoryProducts()
+  invalidate('dashboard:settings:inventory:')
+  await getInventoryProducts({ force: true })
 }
 
 const isHeroBannerDirty = (banner) => {
@@ -2356,6 +2469,8 @@ const addHeroBanner = async () => {
   newHeroImageUrl.value = ''
   newHeroLinkUrl.value = ''
   await getHeroBanners()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2388,6 +2503,8 @@ const saveHeroBanner = async (banner) => {
   }
 
   await getHeroBanners()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2415,6 +2532,8 @@ const deleteHeroBanner = async (bannerId) => {
   }
 
   await getHeroBanners()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2451,6 +2570,8 @@ const addTopBarMessage = async () => {
 
   newTopBarText.value = ''
   await getTopBarMessages()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2482,6 +2603,8 @@ const saveTopBarMessage = async (message) => {
   }
 
   await getTopBarMessages()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2509,6 +2632,8 @@ const deleteTopBarMessage = async (messageId) => {
   }
 
   await getTopBarMessages()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2562,6 +2687,8 @@ const addHeaderLink = async () => {
   newHeaderLabel.value = ''
   newHeaderUrl.value = ''
   await getSiteLinks()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2598,6 +2725,8 @@ const addFooterLink = async () => {
   newFooterLabel.value = ''
   newFooterUrl.value = ''
   await getSiteLinks()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2658,6 +2787,8 @@ const saveSiteLink = async (link) => {
   }
 
   await getSiteLinks()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2691,6 +2822,8 @@ const deleteSiteLink = async (linkId) => {
   }
 
   await getSiteLinks()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
   await refreshNuxtData('site-content')
 }
 
@@ -2786,6 +2919,8 @@ const addCoupon = async () => {
 
   resetNewCoupon()
   await getCoupons()
+  couponsLoaded.value = true
+  syncCouponsCache()
 }
 
 const saveCoupon = async (coupon) => {
@@ -2816,6 +2951,8 @@ const saveCoupon = async (coupon) => {
   }
 
   await getCoupons()
+  couponsLoaded.value = true
+  syncCouponsCache()
 }
 
 const deleteCoupon = async (couponId) => {
@@ -2842,6 +2979,8 @@ const deleteCoupon = async (couponId) => {
   }
 
   await getCoupons()
+  couponsLoaded.value = true
+  syncCouponsCache()
 }
 
 watch(selectedInventoryProductId, (productId) => {
@@ -2876,16 +3015,36 @@ watch(inventorySearchQuery, () => {
   }, 300)
 })
 
+const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
+  if (view === 'inventory') {
+    if (canViewInventory.value) {
+      await getInventoryProducts({ force })
+    }
+
+    return
+  }
+
+  if (view === 'coupons') {
+    await loadCouponsData({ force })
+    return
+  }
+
+  await loadGeneralSettingsData({ force })
+}
+
+watch(activeSettingsView, async (view, previousView) => {
+  if (view === previousView) {
+    return
+  }
+
+  await loadActiveSettingsView(view)
+})
+
 onBeforeUnmount(() => {
   clearTimeout(inventorySearchTimeoutId)
 })
 
-await Promise.all([
-  getSiteSettings(),
-  getHeroBanners(),
-  getTopBarMessages(),
-  getSiteLinks(),
-  getCoupons(),
-  ...(canViewInventory.value ? [getInventoryProducts()] : [])
-])
+onMounted(async () => {
+  await loadActiveSettingsView()
+})
 </script>

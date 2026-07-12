@@ -207,17 +207,23 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const {
-  hasPermission,
-  loadAdminAccess
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const {
+  hasPermission
 } = useAdminAccess()
-
-await loadAdminAccess()
+const buildBrandsCacheKey = (page = currentPage.value) => {
+  return `dashboard:brands:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
+}
 
 const brands = ref([])
 const name = ref('')
 const logoUrl = ref('')
 const saving = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const errorMessage = ref('')
 const editingId = ref(null)
 const currentPage = ref(1)
@@ -264,10 +270,28 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
-const getBrandsList = async (page = currentPage.value) => {
+const applyBrandsSnapshot = (snapshot) => {
+  currentPage.value = snapshot?.page || 1
+  totalBrands.value = snapshot?.totalBrands || 0
+  brands.value = snapshot?.items || []
+}
+
+const getBrandsList = async (page = currentPage.value, { force = false } = {}) => {
+  currentPage.value = page
+  const cacheKey = buildBrandsCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyBrandsSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    loading.value = false
+    return
+  }
+
   loading.value = true
   errorMessage.value = ''
-  currentPage.value = page
 
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
@@ -294,11 +318,18 @@ const getBrandsList = async (page = currentPage.value) => {
 
   if (currentPage.value > totalPages.value) {
     loading.value = false
-    await getBrandsList(totalPages.value)
+    await getBrandsList(totalPages.value, { force })
     return
   }
 
-  brands.value = data || []
+  const snapshot = {
+    page,
+    totalBrands: count || 0,
+    items: data || []
+  }
+
+  applyBrandsSnapshot(snapshot)
+  setSnapshot(cacheKey, snapshot)
   loading.value = false
 }
 
@@ -358,7 +389,9 @@ const saveBrand = async () => {
   }
 
   resetForm()
-  await getBrandsList()
+  invalidate('dashboard:brands:')
+  invalidate('dashboard:product-form:brands')
+  await getBrandsList(currentPage.value, { force: true })
 }
 
 const startEdit = (brand) => {
@@ -403,7 +436,9 @@ const deleteBrand = async (id) => {
     resetForm()
   }
 
-  await getBrandsList()
+  invalidate('dashboard:brands:')
+  invalidate('dashboard:product-form:brands')
+  await getBrandsList(currentPage.value, { force: true })
 }
 
 const goToPreviousPage = async () => {
@@ -442,5 +477,7 @@ onBeforeUnmount(() => {
   }
 })
 
-await getBrandsList()
+onMounted(async () => {
+  await getBrandsList()
+})
 </script>

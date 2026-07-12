@@ -125,12 +125,11 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const route = useRoute()
+const { getSnapshot, isFresh, setSnapshot } = useDashboardCache()
 const {
-  hasPermission,
-  loadAdminAccess
+  hasPermission
 } = useAdminAccess()
-
-await loadAdminAccess()
+const DASHBOARD_HOME_CACHE_KEY = 'dashboard:home'
 
 const totalProducts = ref(0)
 const totalCategories = ref(0)
@@ -147,13 +146,42 @@ const currentView = computed(() => {
 })
 const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value))
 
-const getDashboardData = async () => {
+const applyDashboardSnapshot = (snapshot) => {
+  totalProducts.value = snapshot?.totalProducts || 0
+  totalCategories.value = snapshot?.totalCategories || 0
+  activeProducts.value = snapshot?.activeProducts || 0
+  inactiveProducts.value = snapshot?.inactiveProducts || 0
+  recentProducts.value = snapshot?.recentProducts || []
+}
+
+const getDashboardData = async ({ force = false } = {}) => {
+  const cachedSnapshot = getSnapshot(DASHBOARD_HOME_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    applyDashboardSnapshot(cachedSnapshot)
+  }
+
   if (!canViewProducts.value && !canViewCategories.value) {
-    totalProducts.value = 0
-    totalCategories.value = 0
-    activeProducts.value = 0
-    inactiveProducts.value = 0
-    recentProducts.value = []
+    applyDashboardSnapshot({
+      totalProducts: 0,
+      totalCategories: 0,
+      activeProducts: 0,
+      inactiveProducts: 0,
+      recentProducts: []
+    })
+    setSnapshot(DASHBOARD_HOME_CACHE_KEY, {
+      totalProducts: 0,
+      totalCategories: 0,
+      activeProducts: 0,
+      inactiveProducts: 0,
+      recentProducts: []
+    })
+    loading.value = false
+    return
+  }
+
+  if (!force && cachedSnapshot && isFresh(DASHBOARD_HOME_CACHE_KEY)) {
+    loading.value = false
     return
   }
 
@@ -225,12 +253,19 @@ const getDashboardData = async () => {
     return
   }
 
-  totalProducts.value = productsCountResult.count || 0
-  activeProducts.value = activeProductsResult.count || 0
-  inactiveProducts.value = inactiveProductsResult.count || 0
-  totalCategories.value = categoriesCountResult.count || 0
-  recentProducts.value = recentProductsResult.data || []
+  const snapshot = {
+    totalProducts: productsCountResult.count || 0,
+    activeProducts: activeProductsResult.count || 0,
+    inactiveProducts: inactiveProductsResult.count || 0,
+    totalCategories: categoriesCountResult.count || 0,
+    recentProducts: recentProductsResult.data || []
+  }
+
+  applyDashboardSnapshot(snapshot)
+  setSnapshot(DASHBOARD_HOME_CACHE_KEY, snapshot)
 }
 
-await getDashboardData()
+onMounted(async () => {
+  await getDashboardData()
+})
 </script>

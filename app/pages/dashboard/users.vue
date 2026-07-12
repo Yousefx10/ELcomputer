@@ -652,12 +652,16 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const { adminUser: currentAdminUser, loadAdminAccess } = useAdminAccess()
-
-await loadAdminAccess()
+const {
+  getSnapshot,
+  invalidate,
+  isFresh,
+  setSnapshot
+} = useDashboardCache()
+const { adminUser: currentAdminUser } = useAdminAccess()
 
 const adminUsers = ref([])
-const loading = ref(false)
+const loading = ref(true)
 const saving = ref(false)
 const deleting = ref(false)
 const pageError = ref('')
@@ -761,6 +765,18 @@ const resetForm = () => {
   formError.value = ''
 }
 
+const buildAdminUsersCacheKey = (page = currentPage.value) => {
+  return `dashboard:users:admins:${page}:${trimmedSearchQuery.value.toLowerCase()}`
+}
+
+const buildCustomerUsersCacheKey = (page = customerCurrentPage.value) => {
+  return `dashboard:users:customers:${page}:${trimmedCustomerSearchQuery.value.toLowerCase()}`
+}
+
+const buildCustomerDetailCacheKey = (customerId) => {
+  return `dashboard:users:customer:${customerId}`
+}
+
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
 
@@ -773,10 +789,29 @@ const getAuthHeaders = async () => {
   }
 }
 
-const getAdminUsersList = async (page = currentPage.value) => {
+const applyAdminUsersSnapshot = (snapshot) => {
+  currentPage.value = snapshot?.page || 1
+  totalUsers.value = snapshot?.totalUsers || 0
+  activeOwnerCount.value = snapshot?.activeOwnerCount || 0
+  adminUsers.value = snapshot?.items || []
+}
+
+const getAdminUsersList = async (page = currentPage.value, { force = false } = {}) => {
+  currentPage.value = page
+  const cacheKey = buildAdminUsersCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyAdminUsersSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    loading.value = false
+    return
+  }
+
   loading.value = true
   pageError.value = ''
-  currentPage.value = page
 
   try {
     const response = await $fetch('/api/admin-users', {
@@ -788,16 +823,21 @@ const getAdminUsersList = async (page = currentPage.value) => {
       headers: await getAuthHeaders()
     })
 
-    totalUsers.value = response.total || 0
-    activeOwnerCount.value = response.activeOwnerCount || 0
+    const snapshot = {
+      page,
+      totalUsers: response.total || 0,
+      activeOwnerCount: response.activeOwnerCount || 0,
+      items: response.items || []
+    }
+
+    applyAdminUsersSnapshot(snapshot)
+    setSnapshot(cacheKey, snapshot)
 
     if (currentPage.value > totalPages.value) {
       loading.value = false
-      await getAdminUsersList(totalPages.value)
+      await getAdminUsersList(totalPages.value, { force })
       return
     }
-
-    adminUsers.value = response.items || []
   } catch (error) {
     pageError.value = error?.data?.statusMessage || error?.message || 'Could not load admin users.'
   } finally {
@@ -814,10 +854,31 @@ const resetCustomerDetail = () => {
   customerDetailStats.open = 0
 }
 
-const getCustomerUsersList = async (page = customerCurrentPage.value) => {
+const applyCustomerUsersSnapshot = (snapshot) => {
+  customerCurrentPage.value = snapshot?.page || 1
+  customerTotalUsers.value = snapshot?.totalUsers || 0
+  customerActiveUsers.value = snapshot?.activeUsers || 0
+  customerFilteredTotal.value = snapshot?.filteredTotal || 0
+  customerUsers.value = snapshot?.items || []
+  customerSectionLoaded.value = true
+}
+
+const getCustomerUsersList = async (page = customerCurrentPage.value, { force = false } = {}) => {
+  customerCurrentPage.value = page
+  const cacheKey = buildCustomerUsersCacheKey(page)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyCustomerUsersSnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    customerUsersLoading.value = false
+    return
+  }
+
   customerUsersLoading.value = true
   customerSectionError.value = ''
-  customerCurrentPage.value = page
 
   try {
     const response = await $fetch('/api/customer-users', {
@@ -829,18 +890,22 @@ const getCustomerUsersList = async (page = customerCurrentPage.value) => {
       headers: await getAuthHeaders()
     })
 
-    customerTotalUsers.value = response.total || 0
-    customerActiveUsers.value = response.activeTotal || 0
-    customerFilteredTotal.value = response.filteredTotal || 0
+    const snapshot = {
+      page,
+      totalUsers: response.total || 0,
+      activeUsers: response.activeTotal || 0,
+      filteredTotal: response.filteredTotal || 0,
+      items: response.items || []
+    }
+
+    applyCustomerUsersSnapshot(snapshot)
+    setSnapshot(cacheKey, snapshot)
 
     if (customerCurrentPage.value > customerTotalPages.value) {
       customerUsersLoading.value = false
-      await getCustomerUsersList(customerTotalPages.value)
+      await getCustomerUsersList(customerTotalPages.value, { force })
       return
     }
-
-    customerUsers.value = response.items || []
-    customerSectionLoaded.value = true
 
     if (selectedCustomerId.value && !customerUsers.value.some((customer) => customer.id === selectedCustomerId.value)) {
       resetCustomerDetail()
@@ -852,7 +917,28 @@ const getCustomerUsersList = async (page = customerCurrentPage.value) => {
   }
 }
 
-const getCustomerUserDetails = async (customerId) => {
+const applyCustomerDetailSnapshot = (customerId, snapshot) => {
+  selectedCustomerId.value = customerId
+  customerDetail.value = snapshot?.item || null
+  customerRecentOrders.value = snapshot?.recentOrders || []
+  customerDetailStats.totalOrders = snapshot?.stats?.totalOrders || 0
+  customerDetailStats.completed = snapshot?.stats?.completed || 0
+  customerDetailStats.open = snapshot?.stats?.open || 0
+}
+
+const getCustomerUserDetails = async (customerId, { force = false } = {}) => {
+  const cacheKey = buildCustomerDetailCacheKey(customerId)
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyCustomerDetailSnapshot(customerId, cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    customerDetailLoading.value = false
+    return
+  }
+
   customerDetailLoading.value = true
   customerSectionError.value = ''
 
@@ -861,12 +947,18 @@ const getCustomerUserDetails = async (customerId) => {
       headers: await getAuthHeaders()
     })
 
-    selectedCustomerId.value = customerId
-    customerDetail.value = response.item || null
-    customerRecentOrders.value = response.recentOrders || []
-    customerDetailStats.totalOrders = response.stats?.totalOrders || 0
-    customerDetailStats.completed = response.stats?.completed || 0
-    customerDetailStats.open = response.stats?.open || 0
+    const snapshot = {
+      item: response.item || null,
+      recentOrders: response.recentOrders || [],
+      stats: {
+        totalOrders: response.stats?.totalOrders || 0,
+        completed: response.stats?.completed || 0,
+        open: response.stats?.open || 0
+      }
+    }
+
+    applyCustomerDetailSnapshot(customerId, snapshot)
+    setSnapshot(cacheKey, snapshot)
   } catch (error) {
     customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not load customer details.'
   } finally {
@@ -924,7 +1016,8 @@ const saveAdminUser = async () => {
     }
 
     resetForm()
-    await getAdminUsersList(currentPage.value)
+    invalidate('dashboard:users:admins:')
+    await getAdminUsersList(currentPage.value, { force: true })
   } catch (error) {
     formError.value = error?.data?.statusMessage || error?.message || 'Could not save the admin user.'
   } finally {
@@ -1003,7 +1096,8 @@ const deleteAdminUser = async () => {
     })
 
     resetForm()
-    await getAdminUsersList(currentPage.value)
+    invalidate('dashboard:users:admins:')
+    await getAdminUsersList(currentPage.value, { force: true })
 
     if (deletingCurrentUser) {
       await supabase.auth.signOut()
@@ -1033,8 +1127,10 @@ const updateCustomerStatus = async (isActive) => {
       headers: await getAuthHeaders()
     })
 
-    await getCustomerUsersList(customerCurrentPage.value)
-    await getCustomerUserDetails(selectedCustomerId.value)
+    invalidate('dashboard:users:customers:')
+    invalidate(buildCustomerDetailCacheKey(selectedCustomerId.value))
+    await getCustomerUsersList(customerCurrentPage.value, { force: true })
+    await getCustomerUserDetails(selectedCustomerId.value, { force: true })
   } catch (error) {
     customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not update the customer account.'
   } finally {
@@ -1063,7 +1159,8 @@ const deleteCustomerUser = async () => {
     })
 
     resetCustomerDetail()
-    await getCustomerUsersList(customerCurrentPage.value)
+    invalidate('dashboard:users:customers:')
+    await getCustomerUsersList(customerCurrentPage.value, { force: true })
   } catch (error) {
     customerSectionError.value = error?.data?.statusMessage || error?.message || 'Could not delete the customer account.'
   } finally {
@@ -1133,7 +1230,9 @@ const handleOrderUpdated = async (updatedOrder) => {
   })
 
   if (selectedCustomerId.value) {
-    await getCustomerUserDetails(selectedCustomerId.value)
+    invalidate('dashboard:orders:')
+    invalidate(buildCustomerDetailCacheKey(selectedCustomerId.value))
+    await getCustomerUserDetails(selectedCustomerId.value, { force: true })
   }
 }
 
@@ -1224,5 +1323,7 @@ onBeforeUnmount(() => {
   }
 })
 
-await getAdminUsersList()
+onMounted(async () => {
+  await getAdminUsersList()
+})
 </script>
