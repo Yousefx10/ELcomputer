@@ -225,6 +225,23 @@ create table public.site_top_bar_messages (
 
 create index IF not exists site_top_bar_messages_sort_idx on public.site_top_bar_messages using btree (sort_order, created_at) TABLESPACE pg_default;
 
+create table public.site_offer_cards (
+  id uuid not null default gen_random_uuid (),
+  eyebrow_text text null,
+  title text not null,
+  image_url text not null,
+  target_type text not null default 'search'::text,
+  search_query text null,
+  product_slug text null,
+  sort_order integer not null default 0,
+  is_enabled boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  constraint site_offer_cards_pkey primary key (id),
+  constraint site_offer_cards_target_type_check check ((target_type = any (array['search'::text, 'product'::text])))
+) TABLESPACE pg_default;
+
+create index IF not exists site_offer_cards_sort_idx on public.site_offer_cards using btree (sort_order, created_at) TABLESPACE pg_default;
+
 create table public.site_links (
   id uuid not null default gen_random_uuid (),
   location text not null,
@@ -428,6 +445,7 @@ alter table public.brands enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.site_hero_banners enable row level security;
 alter table public.site_top_bar_messages enable row level security;
+alter table public.site_offer_cards enable row level security;
 alter table public.site_links enable row level security;
 alter table public.site_coupons enable row level security;
 alter table public.customer_profiles enable row level security;
@@ -570,6 +588,16 @@ select
     using (true);
 
 create policy "Admins can manage top bar messages" on public.site_top_bar_messages for all to authenticated
+using (public.has_admin_permission ('settings.edit'))
+with
+  check (public.has_admin_permission ('settings.edit'));
+
+create policy "Public can read offer cards" on public.site_offer_cards for
+select
+  to public
+    using (true);
+
+create policy "Admins can manage offer cards" on public.site_offer_cards for all to authenticated
 using (public.has_admin_permission ('settings.edit'))
 with
   check (public.has_admin_permission ('settings.edit'));

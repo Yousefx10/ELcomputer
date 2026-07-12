@@ -124,6 +124,292 @@
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
+            @click="toggleSection('offerCards')"
+            class="flex w-full items-center justify-between p-6 text-left"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Offer Cards</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Manage the home offer slider cards and choose whether each card opens search results or a product page.
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.offerCards ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div
+            v-if="openSections.offerCards"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
+            <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-sm text-gray-500">
+                  Add cards with an upper label, a giant title, an image, and a shortcut target.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
+                {{ offerCards.length }} card{{ offerCards.length === 1 ? '' : 's' }}
+              </div>
+            </div>
+
+            <p v-if="offerCardsError" class="mb-4 text-sm text-red-600">
+              {{ offerCardsError }}
+            </p>
+
+            <div class="overflow-x-auto pb-2">
+              <div class="flex gap-4">
+                <div class="w-[340px] flex-shrink-0 rounded-2xl border bg-gray-50 p-4">
+                  <p class="text-lg font-bold text-gray-900">
+                    Add Offer Card
+                  </p>
+
+                  <div class="mt-4 overflow-hidden rounded-2xl bg-black">
+                    <div class="relative h-44">
+                      <img
+                        v-if="newOfferCard.image_url"
+                        :src="newOfferCard.image_url"
+                        alt="Offer card preview"
+                        class="absolute inset-0 h-full w-full object-cover"
+                      >
+
+                      <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/80" />
+
+                      <div class="relative flex h-full flex-col justify-between p-4 text-white">
+                        <div>
+                          <p
+                            v-if="newOfferCard.eyebrow_text"
+                            class="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/80"
+                          >
+                            {{ newOfferCard.eyebrow_text }}
+                          </p>
+
+                          <h4 class="mt-3 text-3xl font-black leading-none">
+                            {{ newOfferCard.title || 'Offer Title' }}
+                          </h4>
+                        </div>
+
+                        <span class="inline-flex w-fit rounded-full border border-white/45 bg-white/15 px-4 py-2 text-sm font-semibold">
+                          View Offer
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 space-y-3">
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Upper Text</label>
+                      <input
+                        v-model="newOfferCard.eyebrow_text"
+                        type="text"
+                        placeholder="More than"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Giant Text</label>
+                      <input
+                        v-model="newOfferCard.title"
+                        type="text"
+                        placeholder="40% off"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Image URL</label>
+                      <input
+                        v-model="newOfferCard.image_url"
+                        type="text"
+                        placeholder="https://example.com/offer.jpg"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
+                      <select
+                        v-model="newOfferCard.target_type"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                        <option value="search">Search Result</option>
+                        <option value="product">Product Page</option>
+                      </select>
+                    </div>
+
+                    <div v-if="newOfferCard.target_type === 'search'">
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Search Query</label>
+                      <input
+                        v-model="newOfferCard.search_query"
+                        type="text"
+                        placeholder="gaming mouse"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div v-else>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Product Slug</label>
+                      <input
+                        v-model="newOfferCard.product_slug"
+                        type="text"
+                        placeholder="logitech-g102"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    :disabled="offerCardsLoading"
+                    @click="addOfferCard"
+                    class="mt-4 w-full rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  >
+                    {{ offerCardsLoading ? 'Saving...' : 'Add Offer Card' }}
+                  </button>
+                </div>
+
+                <div
+                  v-for="offerCard in offerCards"
+                  :key="offerCard.id"
+                  class="w-[340px] flex-shrink-0 rounded-2xl border bg-white p-4"
+                >
+                  <div class="overflow-hidden rounded-2xl bg-black">
+                    <div class="relative h-44">
+                      <img
+                        v-if="offerCard.image_url"
+                        :src="offerCard.image_url"
+                        alt="Offer card preview"
+                        class="absolute inset-0 h-full w-full object-cover"
+                      >
+
+                      <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/80" />
+
+                      <div class="relative flex h-full flex-col justify-between p-4 text-white">
+                        <div>
+                          <p
+                            v-if="offerCard.eyebrow_text"
+                            class="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/80"
+                          >
+                            {{ offerCard.eyebrow_text }}
+                          </p>
+
+                          <h4 class="mt-3 text-3xl font-black leading-none">
+                            {{ offerCard.title || 'Offer Title' }}
+                          </h4>
+                        </div>
+
+                        <span class="inline-flex w-fit rounded-full border border-white/45 bg-white/15 px-4 py-2 text-sm font-semibold">
+                          View Offer
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 space-y-3">
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Upper Text</label>
+                      <input
+                        v-model="offerCard.eyebrow_text"
+                        type="text"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Giant Text</label>
+                      <input
+                        v-model="offerCard.title"
+                        type="text"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Image URL</label>
+                      <input
+                        v-model="offerCard.image_url"
+                        type="text"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
+                      <select
+                        v-model="offerCard.target_type"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                        <option value="search">Search Result</option>
+                        <option value="product">Product Page</option>
+                      </select>
+                    </div>
+
+                    <div v-if="offerCard.target_type === 'search'">
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Search Query</label>
+                      <input
+                        v-model="offerCard.search_query"
+                        type="text"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <div v-else>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Product Slug</label>
+                      <input
+                        v-model="offerCard.product_slug"
+                        type="text"
+                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                      >
+                    </div>
+
+                    <label class="flex items-center gap-2 text-sm text-gray-600">
+                      <input v-model="offerCard.is_enabled" type="checkbox">
+                      Enabled
+                    </label>
+                  </div>
+
+                  <div class="mt-4 flex gap-2">
+                    <button
+                      type="button"
+                      :disabled="!isOfferCardDirty(offerCard) || offerCardsLoading"
+                      @click="saveOfferCard(offerCard)"
+                      class="flex-1 rounded-lg px-4 py-3 text-sm font-medium text-white"
+                      :class="isOfferCardDirty(offerCard) && !offerCardsLoading
+                        ? 'bg-blue-600 hover:bg-blue-700'
+                        : 'cursor-not-allowed bg-gray-300'"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      :disabled="offerCardsLoading"
+                      @click="deleteOfferCard(offerCard.id)"
+                      class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p v-if="!offerCards.length" class="mt-4 text-sm text-gray-500">
+              No offer cards added yet. Start by creating one from the first panel.
+            </p>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
             @click="toggleSection('topBarTexts')"
             class="flex w-full items-center justify-between p-6 text-left"
           >
@@ -1682,6 +1968,7 @@ const siteSettings = reactive({
 
 const heroBanners = ref([])
 const topBarMessages = ref([])
+const offerCards = ref([])
 const siteLinks = ref([])
 const coupons = ref([])
 const inventoryProducts = ref([])
@@ -1701,10 +1988,12 @@ const settingsSuccess = ref('')
 const settingsSuccessSection = ref('')
 const heroError = ref('')
 const topBarError = ref('')
+const offerCardsError = ref('')
 const linkError = ref('')
 const couponError = ref('')
 const couponLoading = ref(false)
 const inventoryLoading = ref(false)
+const offerCardsLoading = ref(false)
 const inventoryError = ref('')
 const inventorySuccess = ref('')
 const inventorySearchQuery = ref('')
@@ -1719,6 +2008,15 @@ const adminLogAuthors = ref([])
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
 const newTopBarText = ref('')
+const newOfferCard = reactive({
+  eyebrow_text: '',
+  title: '',
+  image_url: '',
+  target_type: 'search',
+  search_query: '',
+  product_slug: '',
+  is_enabled: true
+})
 const newHeaderLabel = ref('')
 const newHeaderUrl = ref('')
 const newFooterSectionTitle = ref('')
@@ -1744,6 +2042,7 @@ const openSections = reactive({
   bannerAds: false,
   footerSettings: false,
   heroBanners: false,
+  offerCards: false,
   topBarTexts: false,
   headerLinks: false,
   footerLinks: false
@@ -1972,7 +2271,7 @@ const isMissingSchemaError = (error) => error?.code === '42P01' || error?.code =
 
 const handleTableError = (error) => {
   if (isMissingSchemaError(error)) {
-    pageError.value = 'Run the latest settings and inventory SQL query first, then refresh this page.'
+    pageError.value = 'Run the latest dashboard settings SQL query first, then refresh this page.'
     return true
   }
 
@@ -1994,6 +2293,43 @@ const mapTopBarMessage = (message) => ({
   original_text: message.text || '',
   original_is_enabled: message.is_enabled ?? true
 })
+
+const normalizeOfferCardPayload = (offerCard) => {
+  const targetType = offerCard?.target_type === 'product' ? 'product' : 'search'
+
+  return {
+    eyebrow_text: String(offerCard?.eyebrow_text || '').trim() || null,
+    title: String(offerCard?.title || '').trim(),
+    image_url: String(offerCard?.image_url || '').trim(),
+    target_type: targetType,
+    search_query: targetType === 'search'
+      ? String(offerCard?.search_query || '').trim() || null
+      : null,
+    product_slug: targetType === 'product'
+      ? String(offerCard?.product_slug || '').trim() || null
+      : null,
+    is_enabled: offerCard?.is_enabled ?? true
+  }
+}
+
+const mapOfferCard = (offerCard) => {
+  const normalizedOfferCard = normalizeOfferCardPayload(offerCard)
+
+  return {
+    ...offerCard,
+    ...normalizedOfferCard,
+    eyebrow_text: normalizedOfferCard.eyebrow_text || '',
+    search_query: normalizedOfferCard.search_query || '',
+    product_slug: normalizedOfferCard.product_slug || '',
+    original_eyebrow_text: normalizedOfferCard.eyebrow_text || '',
+    original_title: normalizedOfferCard.title,
+    original_image_url: normalizedOfferCard.image_url,
+    original_target_type: normalizedOfferCard.target_type,
+    original_search_query: normalizedOfferCard.search_query || '',
+    original_product_slug: normalizedOfferCard.product_slug || '',
+    original_is_enabled: normalizedOfferCard.is_enabled
+  }
+}
 
 const mapSiteLink = (link) => ({
   ...link,
@@ -2194,6 +2530,7 @@ const captureGeneralSettingsSnapshot = () => ({
   siteSettings: normalizeSiteSettings(siteSettings),
   heroBanners: heroBanners.value,
   topBarMessages: topBarMessages.value,
+  offerCards: offerCards.value,
   siteLinks: siteLinks.value
 })
 
@@ -2210,6 +2547,7 @@ const applyGeneralSettingsSnapshot = (snapshot = {}) => {
   syncSiteSettingsSnapshot()
   heroBanners.value = (snapshot.heroBanners || []).map(mapHeroBanner)
   topBarMessages.value = (snapshot.topBarMessages || []).map(mapTopBarMessage)
+  offerCards.value = (snapshot.offerCards || []).map(mapOfferCard)
   siteLinks.value = (snapshot.siteLinks || []).map(mapSiteLink)
 }
 
@@ -2318,6 +2656,7 @@ const loadGeneralSettingsData = async ({ force = false } = {}) => {
     getSiteSettings(),
     getHeroBanners(),
     getTopBarMessages(),
+    getOfferCards(),
     getSiteLinks()
   ])
 
@@ -2361,6 +2700,25 @@ const getTopBarMessages = async () => {
   }
 
   topBarMessages.value = (data || []).map(mapTopBarMessage)
+}
+
+const getOfferCards = async () => {
+  offerCardsError.value = ''
+
+  const { data, error } = await supabase
+    .from('site_offer_cards')
+    .select('*')
+    .order('sort_order')
+    .order('created_at')
+
+  if (error) {
+    if (!handleTableError(error)) {
+      offerCardsError.value = error.message
+    }
+    return
+  }
+
+  offerCards.value = (data || []).map(mapOfferCard)
 }
 
 const getSiteLinks = async () => {
@@ -2910,6 +3268,170 @@ const deleteTopBarMessage = async (messageId) => {
     'settings.top-bar.delete',
     {
       top_bar_message_id: messageId
+    }
+  )
+}
+
+const resetNewOfferCard = () => {
+  newOfferCard.eyebrow_text = ''
+  newOfferCard.title = ''
+  newOfferCard.image_url = ''
+  newOfferCard.target_type = 'search'
+  newOfferCard.search_query = ''
+  newOfferCard.product_slug = ''
+  newOfferCard.is_enabled = true
+}
+
+const isOfferCardDirty = (offerCard) => {
+  return String(offerCard.eyebrow_text || '').trim() !== offerCard.original_eyebrow_text ||
+    String(offerCard.title || '').trim() !== offerCard.original_title ||
+    String(offerCard.image_url || '').trim() !== offerCard.original_image_url ||
+    String(offerCard.target_type || '') !== offerCard.original_target_type ||
+    String(offerCard.search_query || '').trim() !== offerCard.original_search_query ||
+    String(offerCard.product_slug || '').trim() !== offerCard.original_product_slug ||
+    (offerCard.is_enabled ?? true) !== offerCard.original_is_enabled
+}
+
+const validateOfferCardPayload = (offerCard) => {
+  const payload = normalizeOfferCardPayload(offerCard)
+
+  if (!payload.title) {
+    offerCardsError.value = 'Offer giant text is required.'
+    return null
+  }
+
+  if (!payload.image_url) {
+    offerCardsError.value = 'Offer image URL is required.'
+    return null
+  }
+
+  if (payload.target_type === 'search' && !payload.search_query) {
+    offerCardsError.value = 'Search query is required for search result cards.'
+    return null
+  }
+
+  if (payload.target_type === 'product' && !payload.product_slug) {
+    offerCardsError.value = 'Product slug is required for product cards.'
+    return null
+  }
+
+  return payload
+}
+
+const addOfferCard = async () => {
+  offerCardsError.value = ''
+  const payload = validateOfferCardPayload(newOfferCard)
+
+  if (!payload) {
+    return
+  }
+
+  offerCardsLoading.value = true
+
+  const { error } = await supabase
+    .from('site_offer_cards')
+    .insert({
+      ...payload,
+      sort_order: offerCards.value.length
+    })
+
+  offerCardsLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      offerCardsError.value = error.message
+    }
+    return
+  }
+
+  resetNewOfferCard()
+  await getOfferCards()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
+  await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Added offer card ${shortenLogValue(payload.title)}.`,
+    'settings.offer-cards.create',
+    {
+      title: payload.title,
+      target_type: payload.target_type
+    }
+  )
+}
+
+const saveOfferCard = async (offerCard) => {
+  offerCardsError.value = ''
+  const payload = validateOfferCardPayload(offerCard)
+
+  if (!payload) {
+    return
+  }
+
+  offerCardsLoading.value = true
+
+  const { error } = await supabase
+    .from('site_offer_cards')
+    .update(payload)
+    .eq('id', offerCard.id)
+
+  offerCardsLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      offerCardsError.value = error.message
+    }
+    return
+  }
+
+  await getOfferCards()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
+  await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Updated offer card ${shortenLogValue(payload.title)}.`,
+    'settings.offer-cards.update',
+    {
+      offer_card_id: offerCard.id,
+      title: payload.title,
+      target_type: payload.target_type
+    }
+  )
+}
+
+const deleteOfferCard = async (offerCardId) => {
+  offerCardsError.value = ''
+  const selectedOfferCard = offerCards.value.find((offerCard) => offerCard.id === offerCardId)
+
+  if (!confirm('Delete this offer card?')) {
+    return
+  }
+
+  offerCardsLoading.value = true
+
+  const { error } = await supabase
+    .from('site_offer_cards')
+    .delete()
+    .eq('id', offerCardId)
+
+  offerCardsLoading.value = false
+
+  if (error) {
+    if (!handleTableError(error)) {
+      offerCardsError.value = error.message
+    }
+    return
+  }
+
+  await getOfferCards()
+  generalSettingsLoaded.value = true
+  syncGeneralSettingsCache()
+  await refreshNuxtData('site-content')
+  await logSettingsAction(
+    `Deleted offer card ${shortenLogValue(selectedOfferCard?.title || offerCardId)}.`,
+    'settings.offer-cards.delete',
+    {
+      offer_card_id: offerCardId,
+      title: selectedOfferCard?.title || ''
     }
   )
 }

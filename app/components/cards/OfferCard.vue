@@ -1,27 +1,67 @@
 <template>
-    <div 
-    class="relative flex-shrink-0 w-[150px] md:w-[200px] bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition">
-        
-        <img    class="relative object-cover w-full h-full"
-                src="https://placehold.co/200x250" alt=""/>
+  <article
+    class="relative h-[360px] w-[280px] flex-shrink-0 overflow-hidden rounded-[28px] bg-black shadow-sm md:w-[320px]"
+  >
+    <img
+      v-if="imageUrl"
+      :src="imageUrl"
+      :alt="title || 'Offer card image'"
+      class="absolute inset-0 h-full w-full object-cover"
+    >
 
-        <div class="absolute inset-0 bg-black/20">
-            Detailed Text
-        </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/80" />
 
-        <button class="absolute bottom-8 left-6 border border-white/70 rounded-full p-2 bg-white/20 text-white font-bold px-1 py-1 text-sm md:px-6 md:py-3">
-            View Offer
-        </button>
+    <div class="relative z-10 flex h-full flex-col justify-between p-5 text-white md:p-6">
+      <div>
+        <p
+          v-if="eyebrowText"
+          class="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/80"
+        >
+          {{ eyebrowText }}
+        </p>
+
+        <h3 class="mt-3 max-w-[85%] text-3xl font-black leading-none md:text-[2.8rem]">
+          {{ title || 'Offer' }}
+        </h3>
+      </div>
+
+      <div>
+        <NuxtLink
+          v-if="to"
+          :to="to"
+          class="inline-flex items-center rounded-full border border-white/45 bg-white/15 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+        >
+          View Offer
+        </NuxtLink>
+
+        <span
+          v-else
+          class="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-5 py-3 text-sm font-semibold text-white/70"
+        >
+          View Offer
+        </span>
+      </div>
     </div>
+  </article>
 </template>
 
 <script setup>
 defineProps({
-    image:String,
-    title:String,
+  eyebrowText: {
+    type: String,
+    default: ''
+  },
+  title: {
+    type: String,
+    default: ''
+  },
+  imageUrl: {
+    type: String,
+    default: ''
+  },
+  to: {
+    type: [String, Object],
+    default: null
+  }
 })
 </script>
-
-<style>
-
-</style>

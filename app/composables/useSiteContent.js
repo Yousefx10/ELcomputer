@@ -43,6 +43,8 @@ const defaultTopBarMessages = [
   }
 ]
 
+const defaultOfferCards = []
+
 const defaultSiteLinks = [
   ...defaultHeaderLinkDefinitions.map((definition, index) => ({
     id: `default-header-${definition.key}`,
@@ -68,7 +70,7 @@ export const useSiteContent = () => {
   const supabase = useSupabaseClient()
 
   return useAsyncData('site-content', async () => {
-    const [settingsResult, heroBannersResult, topBarMessagesResult, siteLinksResult] = await Promise.all([
+    const [settingsResult, heroBannersResult, topBarMessagesResult, siteLinksResult, offerCardsResult] = await Promise.all([
       supabase
         .from('site_settings')
         .select('*')
@@ -89,6 +91,11 @@ export const useSiteContent = () => {
         .select('*')
         .order('location')
         .order('section_title')
+        .order('sort_order')
+        .order('created_at'),
+      supabase
+        .from('site_offer_cards')
+        .select('*')
         .order('sort_order')
         .order('created_at')
     ])
@@ -112,6 +119,10 @@ export const useSiteContent = () => {
       ? defaultSiteLinks
       : (siteLinksResult.data?.length ? siteLinksResult.data : defaultSiteLinks)
 
+    const offerCards = offerCardsResult.error && !isMissingTableError(offerCardsResult.error)
+      ? defaultOfferCards
+      : (offerCardsResult.data || defaultOfferCards)
+
     const orderedHeaderLinks = buildOrderedHeaderLinks(siteLinks)
       .filter((link) => link.is_enabled ?? true)
 
@@ -119,6 +130,7 @@ export const useSiteContent = () => {
       settings,
       heroBanners: heroBanners.filter((banner) => banner.is_enabled ?? true),
       topBarMessages: topBarMessages.filter((message) => message.is_enabled ?? true),
+      offerCards: offerCards.filter((offerCard) => offerCard.is_enabled ?? true),
       headerLinks: orderedHeaderLinks,
       footerLinks: siteLinks.filter((link) => link.location === 'footer' && (link.is_enabled ?? true))
     }
