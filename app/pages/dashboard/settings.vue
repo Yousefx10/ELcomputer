@@ -1324,11 +1324,11 @@
 
             <div class="flex flex-wrap gap-3">
               <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-                {{ galleryImages.length }} image{{ galleryImages.length === 1 ? '' : 's' }}
+                {{ galleryTotalItems }} image{{ galleryTotalItems === 1 ? '' : 's' }}
               </div>
 
               <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-                {{ gallerySectionCount }} section{{ gallerySectionCount === 1 ? '' : 's' }}
+                {{ galleryTotalSections }} section{{ galleryTotalSections === 1 ? '' : 's' }}
               </div>
             </div>
           </div>
@@ -1360,6 +1360,16 @@
                 ? `Showing images matching "${gallerySearchQuery.trim()}".`
                 : 'Showing all uploaded images from the server host.' }}
             </p>
+
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 text-sm text-gray-500">
+              <p>
+                Showing {{ galleryPageStart }}-{{ galleryPageEnd }} of {{ galleryTotalItems }}
+              </p>
+
+              <p>
+                {{ gallerySectionCount }} section{{ gallerySectionCount === 1 ? '' : 's' }} on this page
+              </p>
+            </div>
           </div>
         </section>
 
@@ -1412,6 +1422,35 @@
                 </p>
               </div>
             </button>
+          </div>
+
+          <div
+            v-if="galleryImages.length"
+            class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3"
+          >
+            <p class="text-sm text-gray-500">
+              Page {{ galleryCurrentPage }} of {{ galleryTotalPages }}
+            </p>
+
+            <div class="flex gap-2">
+              <button
+                type="button"
+                :disabled="galleryCurrentPage === 1 || galleryLoading"
+                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="changeGalleryPage(galleryCurrentPage - 1)"
+              >
+                Previous
+              </button>
+
+              <button
+                type="button"
+                :disabled="galleryCurrentPage === galleryTotalPages || galleryLoading"
+                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="changeGalleryPage(galleryCurrentPage + 1)"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </section>
 
@@ -2164,6 +2203,11 @@ const galleryError = ref('')
 const gallerySearchQuery = ref('')
 const galleryDeleting = ref(false)
 const selectedGalleryImage = ref(null)
+const galleryCurrentPage = ref(1)
+const galleryTotalPages = ref(1)
+const galleryTotalItems = ref(0)
+const galleryPageSize = ref(24)
+const galleryTotalSections = ref(0)
 const logsLoading = ref(false)
 const logsError = ref('')
 const logsMissingTable = ref(false)
@@ -2456,6 +2500,22 @@ const gallerySectionCount = computed(() => {
   return new Set(galleryImages.value.map((image) => image.section)).size
 })
 
+const galleryPageStart = computed(() => {
+  if (!galleryTotalItems.value) {
+    return 0
+  }
+
+  return (galleryCurrentPage.value - 1) * galleryPageSize.value + 1
+})
+
+const galleryPageEnd = computed(() => {
+  if (!galleryTotalItems.value) {
+    return 0
+  }
+
+  return Math.min(galleryCurrentPage.value * galleryPageSize.value, galleryTotalItems.value)
+})
+
 const isMissingSchemaError = (error) => error?.code === '42P01' || error?.code === '42703'
 
 const handleTableError = (error) => {
@@ -2483,6 +2543,26 @@ const formatGalleryFileSize = (size = 0) => {
 
 const clearGallerySearch = () => {
   gallerySearchQuery.value = ''
+  galleryCurrentPage.value = 1
+}
+
+const changeGalleryPage = async (page) => {
+  const nextPage = Number.parseInt(String(page || ''), 10)
+
+  if (
+    !Number.isFinite(nextPage) ||
+    nextPage < 1 ||
+    nextPage === galleryCurrentPage.value ||
+    nextPage > galleryTotalPages.value
+  ) {
+    return
+  }
+
+  galleryCurrentPage.value = nextPage
+
+  if (activeSettingsView.value === 'gallery' && canViewGallery.value) {
+    await loadGalleryImages({ force: true })
+  }
 }
 
 const getGalleryDownloadUrl = (publicPath = '') => {
@@ -2785,11 +2865,16 @@ const syncCouponsCache = () => {
 }
 
 const buildGalleryCacheKey = () => {
-  return `${SETTINGS_GALLERY_CACHE_KEY}:${gallerySearchQuery.value.trim().toLowerCase()}`
+  return `${SETTINGS_GALLERY_CACHE_KEY}:${gallerySearchQuery.value.trim().toLowerCase()}:${galleryCurrentPage.value}`
 }
 
 const applyGallerySnapshot = (snapshot = {}) => {
   galleryImages.value = snapshot.items || []
+  galleryCurrentPage.value = Math.max(1, Number(snapshot.page || galleryCurrentPage.value || 1))
+  galleryPageSize.value = Math.max(1, Number(snapshot.pageSize || galleryPageSize.value || 24))
+  galleryTotalItems.value = Math.max(0, Number(snapshot.totalItems || 0))
+  galleryTotalPages.value = Math.max(1, Number(snapshot.totalPages || 1))
+  galleryTotalSections.value = Math.max(0, Number(snapshot.totalSections || 0))
   galleryLoaded.value = true
 
   if (selectedGalleryImage.value) {
@@ -2801,7 +2886,12 @@ const applyGallerySnapshot = (snapshot = {}) => {
 
 const syncGalleryCache = () => {
   setSnapshot(buildGalleryCacheKey(), {
-    items: galleryImages.value
+    items: galleryImages.value,
+    page: galleryCurrentPage.value,
+    pageSize: galleryPageSize.value,
+    totalItems: galleryTotalItems.value,
+    totalPages: galleryTotalPages.value,
+    totalSections: galleryTotalSections.value
   })
 }
 
@@ -3099,6 +3189,10 @@ const loadGalleryImages = async ({ force = false } = {}) => {
 
   if (!canViewGallery.value) {
     galleryImages.value = []
+    galleryCurrentPage.value = 1
+    galleryTotalPages.value = 1
+    galleryTotalItems.value = 0
+    galleryTotalSections.value = 0
     galleryLoaded.value = true
     return
   }
@@ -3118,11 +3212,18 @@ const loadGalleryImages = async ({ force = false } = {}) => {
 
   try {
     const response = await fetchGalleryImages({
-      q: gallerySearchQuery.value.trim() || undefined
+      q: gallerySearchQuery.value.trim() || undefined,
+      page: galleryCurrentPage.value,
+      limit: galleryPageSize.value
     })
 
     applyGallerySnapshot({
-      items: response.items || []
+      items: response.items || [],
+      page: response.pagination?.page || galleryCurrentPage.value,
+      pageSize: response.pagination?.pageSize || galleryPageSize.value,
+      totalItems: response.pagination?.totalItems || 0,
+      totalPages: response.pagination?.totalPages || 1,
+      totalSections: response.totalSections || 0
     })
     syncGalleryCache()
   } catch (error) {
@@ -4194,6 +4295,7 @@ watch(gallerySearchQuery, () => {
   }
 
   clearTimeout(gallerySearchTimeoutId)
+  galleryCurrentPage.value = 1
 
   gallerySearchTimeoutId = setTimeout(async () => {
     await loadGalleryImages({ force: true })

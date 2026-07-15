@@ -291,12 +291,24 @@ const walkUploadDirectory = async (directoryPath, rootDirectory) => {
   return nestedEntries.flat()
 }
 
-export const listUploadedImages = async (searchTerm = '') => {
+const normalizePositiveInteger = (value, fallbackValue) => {
+  const parsedValue = Number.parseInt(String(value ?? ''), 10)
+
+  if (!Number.isFinite(parsedValue) || parsedValue < 1) {
+    return fallbackValue
+  }
+
+  return parsedValue
+}
+
+export const listUploadedImages = async (searchTerm = '', options = {}) => {
   const uploadsRootDirectory = getUploadsRootDirectory()
   const normalizedSearchTerm = String(searchTerm || '').trim().toLowerCase()
+  const requestedPage = normalizePositiveInteger(options.page, 1)
+  const pageSize = Math.min(60, normalizePositiveInteger(options.limit, 24))
   const files = await walkUploadDirectory(uploadsRootDirectory, uploadsRootDirectory)
 
-  return files
+  const filteredFiles = files
     .filter((file) => {
       if (!normalizedSearchTerm) {
         return true
@@ -307,6 +319,23 @@ export const listUploadedImages = async (searchTerm = '') => {
     .sort((firstFile, secondFile) => {
       return new Date(secondFile.updated_at).getTime() - new Date(firstFile.updated_at).getTime()
     })
+
+  const totalItems = filteredFiles.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+  const currentPage = Math.min(requestedPage, totalPages)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+
+  return {
+    items: filteredFiles.slice(startIndex, endIndex),
+    pagination: {
+      page: currentPage,
+      pageSize,
+      totalItems,
+      totalPages
+    },
+    totalSections: new Set(filteredFiles.map((file) => file.section)).size
+  }
 }
 
 export const deleteUploadedImageByPublicPath = async (publicPath = '') => {

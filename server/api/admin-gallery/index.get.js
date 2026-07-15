@@ -9,9 +9,12 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event)
   const searchTerm = String(query.q || '').trim()
-  const items = await listUploadedImages(searchTerm)
+  const page = Number.parseInt(String(query.page || '1'), 10)
+  const limit = Number.parseInt(String(query.limit || '24'), 10)
+  const result = await listUploadedImages(searchTerm, {
+    page,
+    limit
+  })
 
-  return {
-    items
-  }
+  return result
 })
