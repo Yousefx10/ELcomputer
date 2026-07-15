@@ -54,6 +54,11 @@ const allLinks = [
     permission: 'brands.view'
   },
   {
+    label: 'Commerce',
+    to: '/dashboard/commerce',
+    icon: 'lucide:briefcase-business'
+  },
+  {
     label: 'Settings',
     to: '/dashboard/settings',
     icon: 'lucide:settings',

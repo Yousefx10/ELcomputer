@@ -650,3 +650,909 @@ select
           and customer_orders.user_id = auth.uid ()
       )
     );
+
+create table public.commerce_crm_accounts (
+  id uuid not null default gen_random_uuid (),
+  account_type text not null,
+  entity_type text not null default 'company'::text,
+  name text not null,
+  code text null,
+  email text null,
+  phone text null,
+  tax_number text null,
+  address_line_1 text null,
+  city text null,
+  country text null,
+  notes text null,
+  primary_contact_name text null,
+  primary_contact_role text null,
+  primary_contact_email text null,
+  primary_contact_phone text null,
+  is_active boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_crm_accounts_pkey primary key (id),
+  constraint commerce_crm_accounts_account_type_check check ((account_type = any (array['supplier'::text, 'customer'::text]))),
+  constraint commerce_crm_accounts_entity_type_check check ((entity_type = any (array['company'::text, 'person'::text])))
+) TABLESPACE pg_default;
+
+create unique index IF not exists commerce_crm_accounts_code_uidx on public.commerce_crm_accounts using btree (code) TABLESPACE pg_default
+where
+  (code is not null);
+
+create index IF not exists commerce_crm_accounts_type_name_idx on public.commerce_crm_accounts using btree (account_type, name) TABLESPACE pg_default;
+
+create table public.commerce_shipping_companies (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  code text null,
+  shipping_cost numeric (12, 2) not null default 0,
+  return_cost numeric (12, 2) not null default 0,
+  client_shipping_price numeric (12, 2) not null default 0,
+  notes text null,
+  is_active boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_shipping_companies_pkey primary key (id),
+  constraint commerce_shipping_companies_shipping_cost_check check ((shipping_cost >= (0)::numeric)),
+  constraint commerce_shipping_companies_return_cost_check check ((return_cost >= (0)::numeric)),
+  constraint commerce_shipping_companies_client_shipping_price_check check ((client_shipping_price >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create unique index IF not exists commerce_shipping_companies_code_uidx on public.commerce_shipping_companies using btree (code) TABLESPACE pg_default
+where
+  (code is not null);
+
+create index IF not exists commerce_shipping_companies_active_name_idx on public.commerce_shipping_companies using btree (is_active, name) TABLESPACE pg_default;
+
+create table public.commerce_warehouses (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  code text null,
+  address_line_1 text null,
+  city text null,
+  country text null,
+  contact_name text null,
+  contact_phone text null,
+  notes text null,
+  is_active boolean not null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_warehouses_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create unique index IF not exists commerce_warehouses_code_uidx on public.commerce_warehouses using btree (code) TABLESPACE pg_default
+where
+  (code is not null);
+
+create index IF not exists commerce_warehouses_active_name_idx on public.commerce_warehouses using btree (is_active, name) TABLESPACE pg_default;
+
+create table public.commerce_warehouse_inventory (
+  id uuid not null default gen_random_uuid (),
+  warehouse_id uuid not null,
+  product_id uuid not null,
+  quantity integer not null default 0,
+  average_cost numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_warehouse_inventory_pkey primary key (id),
+  constraint commerce_warehouse_inventory_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete CASCADE,
+  constraint commerce_warehouse_inventory_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE,
+  constraint commerce_warehouse_inventory_quantity_check check ((quantity >= 0)),
+  constraint commerce_warehouse_inventory_average_cost_check check ((average_cost >= (0)::numeric)),
+  constraint commerce_warehouse_inventory_warehouse_product_key unique (warehouse_id, product_id)
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_warehouse_inventory_product_idx on public.commerce_warehouse_inventory using btree (product_id, updated_at desc) TABLESPACE pg_default;
+
+create table public.commerce_inventory_movements (
+  id uuid not null default gen_random_uuid (),
+  warehouse_id uuid not null,
+  product_id uuid not null,
+  movement_type text not null,
+  reference_type text null,
+  reference_id uuid null,
+  quantity_change integer not null,
+  quantity_after integer not null,
+  unit_cost numeric (12, 2) null,
+  notes text null,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  constraint commerce_inventory_movements_pkey primary key (id),
+  constraint commerce_inventory_movements_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete CASCADE,
+  constraint commerce_inventory_movements_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE,
+  constraint commerce_inventory_movements_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
+  constraint commerce_inventory_movements_movement_type_check check ((movement_type = any (array['procurement'::text, 'transfer_in'::text, 'transfer_out'::text, 'return_in'::text, 'adjustment'::text]))),
+  constraint commerce_inventory_movements_reference_type_check check (((reference_type is null) or (reference_type = any (array['procurement_order'::text, 'warehouse_transfer'::text, 'order_return'::text, 'manual'::text]))))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_inventory_movements_warehouse_created_idx on public.commerce_inventory_movements using btree (warehouse_id, created_at desc) TABLESPACE pg_default;
+
+create index IF not exists commerce_inventory_movements_product_created_idx on public.commerce_inventory_movements using btree (product_id, created_at desc) TABLESPACE pg_default;
+
+create table public.commerce_procurement_orders (
+  id uuid not null default gen_random_uuid (),
+  supplier_id uuid not null,
+  warehouse_id uuid not null,
+  invoice_number text null,
+  notes text null,
+  total_cost numeric (12, 2) not null default 0,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_procurement_orders_pkey primary key (id),
+  constraint commerce_procurement_orders_supplier_id_fkey foreign KEY (supplier_id) references commerce_crm_accounts (id) on delete RESTRICT,
+  constraint commerce_procurement_orders_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
+  constraint commerce_procurement_orders_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
+  constraint commerce_procurement_orders_total_cost_check check ((total_cost >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_procurement_orders_created_at_idx on public.commerce_procurement_orders using btree (created_at desc) TABLESPACE pg_default;
+
+create table public.commerce_procurement_items (
+  id uuid not null default gen_random_uuid (),
+  procurement_order_id uuid not null,
+  product_id uuid not null,
+  quantity integer not null,
+  unit_cost numeric (12, 2) not null default 0,
+  line_total numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  constraint commerce_procurement_items_pkey primary key (id),
+  constraint commerce_procurement_items_procurement_order_id_fkey foreign KEY (procurement_order_id) references commerce_procurement_orders (id) on delete CASCADE,
+  constraint commerce_procurement_items_product_id_fkey foreign KEY (product_id) references products (id) on delete RESTRICT,
+  constraint commerce_procurement_items_quantity_check check ((quantity > 0)),
+  constraint commerce_procurement_items_unit_cost_check check ((unit_cost >= (0)::numeric)),
+  constraint commerce_procurement_items_line_total_check check ((line_total >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_procurement_items_order_idx on public.commerce_procurement_items using btree (procurement_order_id, created_at) TABLESPACE pg_default;
+
+create table public.commerce_warehouse_transfers (
+  id uuid not null default gen_random_uuid (),
+  from_warehouse_id uuid not null,
+  to_warehouse_id uuid not null,
+  reference_number text null,
+  notes text null,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_warehouse_transfers_pkey primary key (id),
+  constraint commerce_warehouse_transfers_from_warehouse_id_fkey foreign KEY (from_warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
+  constraint commerce_warehouse_transfers_to_warehouse_id_fkey foreign KEY (to_warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
+  constraint commerce_warehouse_transfers_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
+  constraint commerce_warehouse_transfers_distinct_warehouses_check check ((from_warehouse_id <> to_warehouse_id))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_warehouse_transfers_created_at_idx on public.commerce_warehouse_transfers using btree (created_at desc) TABLESPACE pg_default;
+
+create table public.commerce_warehouse_transfer_items (
+  id uuid not null default gen_random_uuid (),
+  transfer_id uuid not null,
+  product_id uuid not null,
+  quantity integer not null,
+  created_at timestamp with time zone null default now(),
+  constraint commerce_warehouse_transfer_items_pkey primary key (id),
+  constraint commerce_warehouse_transfer_items_transfer_id_fkey foreign KEY (transfer_id) references commerce_warehouse_transfers (id) on delete CASCADE,
+  constraint commerce_warehouse_transfer_items_product_id_fkey foreign KEY (product_id) references products (id) on delete RESTRICT,
+  constraint commerce_warehouse_transfer_items_quantity_check check ((quantity > 0))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_warehouse_transfer_items_transfer_idx on public.commerce_warehouse_transfer_items using btree (transfer_id, created_at) TABLESPACE pg_default;
+
+create table public.commerce_order_returns (
+  id uuid not null default gen_random_uuid (),
+  order_id uuid not null,
+  warehouse_id uuid not null,
+  reason text null,
+  notes text null,
+  total_items integer not null default 0,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_order_returns_pkey primary key (id),
+  constraint commerce_order_returns_order_id_fkey foreign KEY (order_id) references customer_orders (id) on delete RESTRICT,
+  constraint commerce_order_returns_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
+  constraint commerce_order_returns_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
+  constraint commerce_order_returns_total_items_check check ((total_items >= 0))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_order_returns_order_idx on public.commerce_order_returns using btree (order_id, created_at desc) TABLESPACE pg_default;
+
+create table public.commerce_order_return_items (
+  id uuid not null default gen_random_uuid (),
+  order_return_id uuid not null,
+  order_item_id uuid null,
+  product_id uuid null,
+  quantity integer not null,
+  unit_price numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  constraint commerce_order_return_items_pkey primary key (id),
+  constraint commerce_order_return_items_order_return_id_fkey foreign KEY (order_return_id) references commerce_order_returns (id) on delete CASCADE,
+  constraint commerce_order_return_items_order_item_id_fkey foreign KEY (order_item_id) references customer_order_items (id) on delete set null,
+  constraint commerce_order_return_items_product_id_fkey foreign KEY (product_id) references products (id) on delete set null,
+  constraint commerce_order_return_items_quantity_check check ((quantity > 0)),
+  constraint commerce_order_return_items_unit_price_check check ((unit_price >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_order_return_items_return_idx on public.commerce_order_return_items using btree (order_return_id, created_at) TABLESPACE pg_default;
+
+create or replace function public.is_active_admin () returns boolean language sql stable as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where id = auth.uid ()
+      and is_active = true
+  );
+$$;
+
+create or replace function public.commerce_create_procurement_order (
+  p_supplier_id uuid,
+  p_warehouse_id uuid,
+  p_invoice_number text,
+  p_notes text,
+  p_items jsonb
+) returns uuid language plpgsql security definer
+set
+  search_path = public as $$
+declare
+  v_procurement_id uuid;
+  v_item jsonb;
+  v_product_id uuid;
+  v_quantity integer;
+  v_unit_cost numeric (12, 2);
+  v_line_total numeric (12, 2);
+  v_total_cost numeric (12, 2) := 0;
+  v_product_record public.products%rowtype;
+  v_inventory_record public.commerce_warehouse_inventory%rowtype;
+  v_inventory_exists boolean := false;
+  v_next_product_stock integer;
+  v_next_product_cost numeric (12, 2);
+  v_next_inventory_quantity integer;
+  v_next_inventory_average_cost numeric (12, 2);
+begin
+  if not public.is_active_admin () then
+    raise exception 'Not authorized';
+  end if;
+
+  if p_supplier_id is null or not exists (
+    select 1
+    from public.commerce_crm_accounts
+    where id = p_supplier_id
+      and account_type = 'supplier'
+      and is_active = true
+  ) then
+    raise exception 'A valid supplier is required.';
+  end if;
+
+  if p_warehouse_id is null or not exists (
+    select 1
+    from public.commerce_warehouses
+    where id = p_warehouse_id
+      and is_active = true
+  ) then
+    raise exception 'A valid warehouse is required.';
+  end if;
+
+  if jsonb_typeof (p_items) <> 'array' or jsonb_array_length (p_items) = 0 then
+    raise exception 'At least one procurement item is required.';
+  end if;
+
+  insert into public.commerce_procurement_orders (
+    supplier_id,
+    warehouse_id,
+    invoice_number,
+    notes,
+    total_cost,
+    created_by
+  )
+  values (
+    p_supplier_id,
+    p_warehouse_id,
+    nullif(trim(p_invoice_number), ''),
+    nullif(trim(p_notes), ''),
+    0,
+    auth.uid ()
+  )
+  returning id into v_procurement_id;
+
+  for v_item in
+    select value
+    from jsonb_array_elements (p_items)
+  loop
+    v_product_id := nullif(v_item ->> 'product_id', '')::uuid;
+    v_quantity := coalesce((v_item ->> 'quantity')::integer, 0);
+    v_unit_cost := round(coalesce((v_item ->> 'unit_cost')::numeric, 0), 2);
+
+    if v_product_id is null or v_quantity <= 0 or v_unit_cost < 0 then
+      raise exception 'Every procurement line requires a valid product, quantity, and cost.';
+    end if;
+
+    select *
+    into v_product_record
+    from public.products
+    where id = v_product_id
+    for update;
+
+    if not found then
+      raise exception 'One of the selected products no longer exists.';
+    end if;
+
+    select *
+    into v_inventory_record
+    from public.commerce_warehouse_inventory
+    where warehouse_id = p_warehouse_id
+      and product_id = v_product_id
+    for update;
+
+    v_inventory_exists := found;
+
+    v_line_total := round((v_quantity * v_unit_cost)::numeric, 2);
+    v_total_cost := round((v_total_cost + v_line_total)::numeric, 2);
+    v_next_product_stock := coalesce(v_product_record.stock_quantity, 0) + v_quantity;
+
+    v_next_product_cost := case
+      when v_next_product_stock > 0 then round((
+        (
+          coalesce(v_product_record.cost_price, 0) * greatest(coalesce(v_product_record.stock_quantity, 0), 0)
+        ) + (v_unit_cost * v_quantity)
+      ) / v_next_product_stock, 2)
+      else v_unit_cost
+    end;
+
+    update public.products
+    set
+      stock_quantity = v_next_product_stock,
+      cost_price = v_next_product_cost
+    where id = v_product_id;
+
+    if v_inventory_exists then
+      v_next_inventory_quantity := coalesce(v_inventory_record.quantity, 0) + v_quantity;
+      v_next_inventory_average_cost := case
+        when v_next_inventory_quantity > 0 then round((
+          (
+            coalesce(v_inventory_record.average_cost, 0) * greatest(coalesce(v_inventory_record.quantity, 0), 0)
+          ) + (v_unit_cost * v_quantity)
+        ) / v_next_inventory_quantity, 2)
+        else v_unit_cost
+      end;
+
+      update public.commerce_warehouse_inventory
+      set
+        quantity = v_next_inventory_quantity,
+        average_cost = v_next_inventory_average_cost,
+        updated_at = now()
+      where id = v_inventory_record.id;
+    else
+      v_next_inventory_quantity := v_quantity;
+      v_next_inventory_average_cost := v_unit_cost;
+
+      insert into public.commerce_warehouse_inventory (
+        warehouse_id,
+        product_id,
+        quantity,
+        average_cost
+      )
+      values (
+        p_warehouse_id,
+        v_product_id,
+        v_next_inventory_quantity,
+        v_next_inventory_average_cost
+      );
+    end if;
+
+    insert into public.commerce_procurement_items (
+      procurement_order_id,
+      product_id,
+      quantity,
+      unit_cost,
+      line_total
+    )
+    values (
+      v_procurement_id,
+      v_product_id,
+      v_quantity,
+      v_unit_cost,
+      v_line_total
+    );
+
+    insert into public.commerce_inventory_movements (
+      warehouse_id,
+      product_id,
+      movement_type,
+      reference_type,
+      reference_id,
+      quantity_change,
+      quantity_after,
+      unit_cost,
+      notes,
+      created_by
+    )
+    values (
+      p_warehouse_id,
+      v_product_id,
+      'procurement',
+      'procurement_order',
+      v_procurement_id,
+      v_quantity,
+      v_next_inventory_quantity,
+      v_unit_cost,
+      nullif(trim(p_notes), ''),
+      auth.uid ()
+    );
+  end loop;
+
+  update public.commerce_procurement_orders
+  set
+    total_cost = v_total_cost,
+    updated_at = now()
+  where id = v_procurement_id;
+
+  return v_procurement_id;
+end;
+$$;
+
+create or replace function public.commerce_transfer_inventory (
+  p_from_warehouse_id uuid,
+  p_to_warehouse_id uuid,
+  p_reference_number text,
+  p_notes text,
+  p_items jsonb
+) returns uuid language plpgsql security definer
+set
+  search_path = public as $$
+declare
+  v_transfer_id uuid;
+  v_item jsonb;
+  v_product_id uuid;
+  v_quantity integer;
+  v_source_inventory public.commerce_warehouse_inventory%rowtype;
+  v_target_inventory public.commerce_warehouse_inventory%rowtype;
+  v_target_next_quantity integer;
+  v_target_next_average_cost numeric (12, 2);
+begin
+  if not public.is_active_admin () then
+    raise exception 'Not authorized';
+  end if;
+
+  if p_from_warehouse_id is null or p_to_warehouse_id is null or p_from_warehouse_id = p_to_warehouse_id then
+    raise exception 'Two different warehouses are required.';
+  end if;
+
+  if not exists (
+    select 1
+    from public.commerce_warehouses
+    where id = p_from_warehouse_id
+      and is_active = true
+  ) then
+    raise exception 'The source warehouse is not valid.';
+  end if;
+
+  if not exists (
+    select 1
+    from public.commerce_warehouses
+    where id = p_to_warehouse_id
+      and is_active = true
+  ) then
+    raise exception 'The destination warehouse is not valid.';
+  end if;
+
+  if jsonb_typeof (p_items) <> 'array' or jsonb_array_length (p_items) = 0 then
+    raise exception 'At least one transfer item is required.';
+  end if;
+
+  insert into public.commerce_warehouse_transfers (
+    from_warehouse_id,
+    to_warehouse_id,
+    reference_number,
+    notes,
+    created_by
+  )
+  values (
+    p_from_warehouse_id,
+    p_to_warehouse_id,
+    nullif(trim(p_reference_number), ''),
+    nullif(trim(p_notes), ''),
+    auth.uid ()
+  )
+  returning id into v_transfer_id;
+
+  for v_item in
+    select value
+    from jsonb_array_elements (p_items)
+  loop
+    v_product_id := nullif(v_item ->> 'product_id', '')::uuid;
+    v_quantity := coalesce((v_item ->> 'quantity')::integer, 0);
+
+    if v_product_id is null or v_quantity <= 0 then
+      raise exception 'Every transfer line requires a valid product and quantity.';
+    end if;
+
+    select *
+    into v_source_inventory
+    from public.commerce_warehouse_inventory
+    where warehouse_id = p_from_warehouse_id
+      and product_id = v_product_id
+    for update;
+
+    if not found or coalesce(v_source_inventory.quantity, 0) < v_quantity then
+      raise exception 'The source warehouse does not have enough stock for one of the selected products.';
+    end if;
+
+    update public.commerce_warehouse_inventory
+    set
+      quantity = quantity - v_quantity,
+      updated_at = now()
+    where id = v_source_inventory.id
+    returning * into v_source_inventory;
+
+    select *
+    into v_target_inventory
+    from public.commerce_warehouse_inventory
+    where warehouse_id = p_to_warehouse_id
+      and product_id = v_product_id
+    for update;
+
+    if found then
+      v_target_next_quantity := coalesce(v_target_inventory.quantity, 0) + v_quantity;
+      v_target_next_average_cost := case
+        when v_target_next_quantity > 0 then round((
+          (
+            coalesce(v_target_inventory.average_cost, 0) * greatest(coalesce(v_target_inventory.quantity, 0), 0)
+          ) + (coalesce(v_source_inventory.average_cost, 0) * v_quantity)
+        ) / v_target_next_quantity, 2)
+        else coalesce(v_source_inventory.average_cost, 0)
+      end;
+
+      update public.commerce_warehouse_inventory
+      set
+        quantity = v_target_next_quantity,
+        average_cost = v_target_next_average_cost,
+        updated_at = now()
+      where id = v_target_inventory.id
+      returning * into v_target_inventory;
+    else
+      insert into public.commerce_warehouse_inventory (
+        warehouse_id,
+        product_id,
+        quantity,
+        average_cost
+      )
+      values (
+        p_to_warehouse_id,
+        v_product_id,
+        v_quantity,
+        coalesce(v_source_inventory.average_cost, 0)
+      )
+      returning * into v_target_inventory;
+    end if;
+
+    insert into public.commerce_warehouse_transfer_items (
+      transfer_id,
+      product_id,
+      quantity
+    )
+    values (
+      v_transfer_id,
+      v_product_id,
+      v_quantity
+    );
+
+    insert into public.commerce_inventory_movements (
+      warehouse_id,
+      product_id,
+      movement_type,
+      reference_type,
+      reference_id,
+      quantity_change,
+      quantity_after,
+      unit_cost,
+      notes,
+      created_by
+    )
+    values (
+      p_from_warehouse_id,
+      v_product_id,
+      'transfer_out',
+      'warehouse_transfer',
+      v_transfer_id,
+      -v_quantity,
+      v_source_inventory.quantity,
+      coalesce(v_source_inventory.average_cost, 0),
+      nullif(trim(p_notes), ''),
+      auth.uid ()
+    );
+
+    insert into public.commerce_inventory_movements (
+      warehouse_id,
+      product_id,
+      movement_type,
+      reference_type,
+      reference_id,
+      quantity_change,
+      quantity_after,
+      unit_cost,
+      notes,
+      created_by
+    )
+    values (
+      p_to_warehouse_id,
+      v_product_id,
+      'transfer_in',
+      'warehouse_transfer',
+      v_transfer_id,
+      v_quantity,
+      v_target_inventory.quantity,
+      coalesce(v_target_inventory.average_cost, 0),
+      nullif(trim(p_notes), ''),
+      auth.uid ()
+    );
+  end loop;
+
+  return v_transfer_id;
+end;
+$$;
+
+create or replace function public.commerce_create_order_return (
+  p_order_id uuid,
+  p_warehouse_id uuid,
+  p_reason text,
+  p_notes text,
+  p_items jsonb
+) returns uuid language plpgsql security definer
+set
+  search_path = public as $$
+declare
+  v_return_id uuid;
+  v_item jsonb;
+  v_order_item_id uuid;
+  v_product_id uuid;
+  v_quantity integer;
+  v_total_items integer := 0;
+  v_previously_returned integer;
+  v_order_item public.customer_order_items%rowtype;
+  v_product_record public.products%rowtype;
+  v_inventory_record public.commerce_warehouse_inventory%rowtype;
+  v_next_inventory_quantity integer;
+begin
+  if not public.is_active_admin () then
+    raise exception 'Not authorized';
+  end if;
+
+  if p_order_id is null or not exists (
+    select 1
+    from public.customer_orders
+    where id = p_order_id
+  ) then
+    raise exception 'A valid customer order is required.';
+  end if;
+
+  if p_warehouse_id is null or not exists (
+    select 1
+    from public.commerce_warehouses
+    where id = p_warehouse_id
+      and is_active = true
+  ) then
+    raise exception 'A valid warehouse is required.';
+  end if;
+
+  if jsonb_typeof (p_items) <> 'array' or jsonb_array_length (p_items) = 0 then
+    raise exception 'At least one returned item is required.';
+  end if;
+
+  insert into public.commerce_order_returns (
+    order_id,
+    warehouse_id,
+    reason,
+    notes,
+    total_items,
+    created_by
+  )
+  values (
+    p_order_id,
+    p_warehouse_id,
+    nullif(trim(p_reason), ''),
+    nullif(trim(p_notes), ''),
+    0,
+    auth.uid ()
+  )
+  returning id into v_return_id;
+
+  for v_item in
+    select value
+    from jsonb_array_elements (p_items)
+  loop
+    v_order_item_id := nullif(v_item ->> 'order_item_id', '')::uuid;
+    v_product_id := nullif(v_item ->> 'product_id', '')::uuid;
+    v_quantity := coalesce((v_item ->> 'quantity')::integer, 0);
+
+    if v_order_item_id is null or v_quantity <= 0 then
+      raise exception 'Every return line requires a valid order item and quantity.';
+    end if;
+
+    select *
+    into v_order_item
+    from public.customer_order_items
+    where id = v_order_item_id
+      and order_id = p_order_id
+    for update;
+
+    if not found then
+      raise exception 'One of the selected order items is not valid.';
+    end if;
+
+    select coalesce(sum(ri.quantity), 0)
+    into v_previously_returned
+    from public.commerce_order_return_items ri
+    join public.commerce_order_returns r on r.id = ri.order_return_id
+    where r.order_id = p_order_id
+      and ri.order_item_id = v_order_item_id;
+
+    if (v_previously_returned + v_quantity) > coalesce(v_order_item.quantity, 0) then
+      raise exception 'Returned quantity exceeds the remaining order quantity for one of the items.';
+    end if;
+
+    insert into public.commerce_order_return_items (
+      order_return_id,
+      order_item_id,
+      product_id,
+      quantity,
+      unit_price
+    )
+    values (
+      v_return_id,
+      v_order_item_id,
+      coalesce(v_product_id, v_order_item.product_id),
+      v_quantity,
+      coalesce(v_order_item.unit_price, 0)
+    );
+
+    v_total_items := v_total_items + v_quantity;
+
+    if coalesce(v_product_id, v_order_item.product_id) is not null then
+      select *
+      into v_product_record
+      from public.products
+      where id = coalesce(v_product_id, v_order_item.product_id)
+      for update;
+
+      if found then
+        update public.products
+        set stock_quantity = stock_quantity + v_quantity
+        where id = v_product_record.id;
+
+        select *
+        into v_inventory_record
+        from public.commerce_warehouse_inventory
+        where warehouse_id = p_warehouse_id
+          and product_id = v_product_record.id
+        for update;
+
+        if found then
+          v_next_inventory_quantity := coalesce(v_inventory_record.quantity, 0) + v_quantity;
+
+          update public.commerce_warehouse_inventory
+          set
+            quantity = v_next_inventory_quantity,
+            updated_at = now()
+          where id = v_inventory_record.id;
+        else
+          v_next_inventory_quantity := v_quantity;
+
+          insert into public.commerce_warehouse_inventory (
+            warehouse_id,
+            product_id,
+            quantity,
+            average_cost
+          )
+          values (
+            p_warehouse_id,
+            v_product_record.id,
+            v_quantity,
+            coalesce(v_product_record.cost_price, 0)
+          );
+        end if;
+
+        insert into public.commerce_inventory_movements (
+          warehouse_id,
+          product_id,
+          movement_type,
+          reference_type,
+          reference_id,
+          quantity_change,
+          quantity_after,
+          unit_cost,
+          notes,
+          created_by
+        )
+        values (
+          p_warehouse_id,
+          v_product_record.id,
+          'return_in',
+          'order_return',
+          v_return_id,
+          v_quantity,
+          v_next_inventory_quantity,
+          coalesce(v_product_record.cost_price, 0),
+          nullif(trim(p_notes), ''),
+          auth.uid ()
+        );
+      end if;
+    end if;
+  end loop;
+
+  update public.commerce_order_returns
+  set
+    total_items = v_total_items,
+    updated_at = now()
+  where id = v_return_id;
+
+  return v_return_id;
+end;
+$$;
+
+alter table public.commerce_crm_accounts enable row level security;
+alter table public.commerce_shipping_companies enable row level security;
+alter table public.commerce_warehouses enable row level security;
+alter table public.commerce_warehouse_inventory enable row level security;
+alter table public.commerce_inventory_movements enable row level security;
+alter table public.commerce_procurement_orders enable row level security;
+alter table public.commerce_procurement_items enable row level security;
+alter table public.commerce_warehouse_transfers enable row level security;
+alter table public.commerce_warehouse_transfer_items enable row level security;
+alter table public.commerce_order_returns enable row level security;
+alter table public.commerce_order_return_items enable row level security;
+
+create policy "Admins can manage CRM accounts" on public.commerce_crm_accounts for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage shipping companies" on public.commerce_shipping_companies for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage warehouses" on public.commerce_warehouses for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage warehouse inventory" on public.commerce_warehouse_inventory for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can read inventory movements" on public.commerce_inventory_movements for
+select
+  to authenticated
+    using (public.is_active_admin ());
+
+create policy "Admins can manage procurement orders" on public.commerce_procurement_orders for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage procurement items" on public.commerce_procurement_items for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage warehouse transfers" on public.commerce_warehouse_transfers for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage warehouse transfer items" on public.commerce_warehouse_transfer_items for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage order returns" on public.commerce_order_returns for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage order return items" on public.commerce_order_return_items for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
