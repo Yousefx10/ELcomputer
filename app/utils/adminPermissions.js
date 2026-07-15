@@ -154,6 +154,12 @@ export const getDashboardRouteRequirement = (route = '') => {
       }
     }
 
+    if (query.tab === 'users') {
+      return {
+        permission: 'users.view'
+      }
+    }
+
     if (query.tab === 'gallery') {
       return {
         permission: 'settings.view'
@@ -173,7 +179,7 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
 
     return {
-      permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory']
+      permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory', 'users.view']
     }
   }
 

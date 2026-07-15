@@ -15,7 +15,7 @@
       </div>
 
       <div
-        v-if="!canEditSettings"
+        v-if="!canEditSettings && activeSettingsView !== 'users'"
         class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 shadow"
       >
         This account has view-only access to settings. Saving and editing actions are disabled.
@@ -1999,6 +1999,10 @@
         </section>
       </div>
 
+      <div v-else-if="activeSettingsView === 'users'" class="space-y-6">
+        <DashboardSettingsUsersTab />
+      </div>
+
       <div v-else class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -2093,6 +2097,7 @@
 </template>
 
 <script setup>
+import DashboardSettingsUsersTab from '~/components/dashboard/settings/UsersTab.vue'
 import {
   defaultHeaderLinkDefinitions,
   getDefaultHeaderLinkDefinition,
@@ -2133,6 +2138,7 @@ const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
 const canAccessInventory = computed(() => hasPermission('settings.inventory'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
 const canViewLogs = computed(() => hasPermission('settings.view'))
+const canViewUsers = computed(() => hasPermission('users.view'))
 const canViewInventory = computed(() => canAccessInventory.value)
 const canEditInventory = computed(() => canAccessInventory.value && canEditSettings.value)
 
@@ -2264,6 +2270,10 @@ const activeSettingsView = computed(() => {
     return 'logs'
   }
 
+  if (route.query.tab === 'users' && canViewUsers.value) {
+    return 'users'
+  }
+
   if (route.query.tab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'
   }
@@ -2294,6 +2304,10 @@ const activeSettingsView = computed(() => {
 
   if (canViewLogs.value) {
     return 'logs'
+  }
+
+  if (canViewUsers.value) {
+    return 'users'
   }
 
   return 'general'
@@ -2330,6 +2344,14 @@ const secondaryNavItems = computed(() => {
       label: 'Coupon',
       to: '/dashboard/settings?tab=coupons',
       active: activeSettingsView.value === 'coupons'
+    })
+  }
+
+  if (canViewUsers.value) {
+    items.push({
+      label: 'Users',
+      to: '/dashboard/settings?tab=users',
+      active: activeSettingsView.value === 'users'
     })
   }
 

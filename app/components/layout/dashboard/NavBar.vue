@@ -57,13 +57,7 @@ const allLinks = [
     label: 'Settings',
     to: '/dashboard/settings',
     icon: 'lucide:settings',
-    permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory']
-  },
-  {
-    label: 'Users',
-    to: '/dashboard/users',
-    icon: 'lucide:users',
-    permission: 'users.view'
+    permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory', 'users.view']
   }
 ]
 
