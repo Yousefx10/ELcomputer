@@ -1,96 +1,99 @@
 <template>
   <article
-    class="group w-[260px] flex-shrink-0 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:-translate-y-1 hover:shadow-md md:w-[280px]"
+    class="group w-[calc(50%-0.625rem)] max-w-[178px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:w-[210px] sm:max-w-none lg:w-[232px] xl:w-[248px]"
   >
-    <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/'">
-      <div class="relative overflow-hidden rounded-xl border border-gray-100 bg-gradient-to-b from-gray-50 to-white p-3">
-        <span
-          v-if="hasDiscount"
-          class="absolute left-3 top-3 z-20 rounded-full bg-black px-2.5 py-1 text-[11px] font-semibold text-white"
-        >
-          Sale
-        </span>
-
-        <div class="relative z-0 flex aspect-[4/3] items-center justify-center rounded-lg bg-white">
-          <img
-            v-if="product.image_url"
-            class="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-105"
-            :src="product.image_url"
-            :alt="product.title"
-          />
-
-          <p v-else class="text-sm text-gray-400">
-            No image
-          </p>
-        </div>
-      </div>
-
-      <div class="mt-4 px-1">
-        <div class="mb-2 flex items-center justify-between gap-3">
-          <p class="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">
-            {{ product.brand?.name || product.category?.name || 'Product' }}
-          </p>
-
-          <span
-            v-if="product.category?.name"
-            class="truncate rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600"
-          >
-            {{ product.category.name }}
-          </span>
-        </div>
-
-        <h3 class="line-clamp-2 min-h-[3rem] text-base font-semibold leading-6 text-gray-900">
+    <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/'" class="block">
+      <div class="px-4 pt-4 sm:px-5 sm:pt-5">
+        <h3 class="line-clamp-2 min-h-[3.25rem] text-center text-base font-extrabold leading-6 text-gray-900 sm:min-h-[3.5rem] sm:text-[1.05rem]">
           {{ product.title }}
         </h3>
 
-        <div class="mt-3 flex items-end gap-2">
-          <p class="text-xl font-bold text-gray-900">
-            {{ formatPrice(product.price) }}
-          </p>
+        <div
+          v-if="brandName || categoryName"
+          class="mt-2 flex min-h-[1.5rem] items-center justify-center gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 sm:text-[11px]"
+        >
+          <span v-if="brandName" class="truncate">
+            {{ brandName }}
+          </span>
 
-          <p
+          <span v-if="brandName && categoryName" class="text-gray-300">•</span>
+
+          <span v-if="categoryName" class="truncate">
+            {{ categoryName }}
+          </span>
+        </div>
+      </div>
+
+      <div class="relative mt-3 px-3 pb-3 sm:px-4 sm:pb-4">
+        <div class="relative overflow-hidden rounded-[1.5rem] border border-gray-100 bg-white">
+          <span
             v-if="hasDiscount"
-            class="text-sm text-gray-400 line-through"
+            class="absolute left-3 top-3 z-20 rounded-full bg-emerald-500 px-3 py-1.5 text-[11px] font-bold text-white"
           >
-            {{ formatPrice(product.old_price) }}
-          </p>
+            {{ discountPercent }}% OFF
+          </span>
+
+          <span
+            v-if="hasDiscount"
+            class="pointer-events-none absolute bottom-3 left-3 z-20 rounded-full bg-black/85 px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition duration-200 group-hover:opacity-100"
+          >
+            Save {{ formatPrice(discountAmount) }}
+          </span>
+
+          <span
+            v-if="!isPurchasable"
+            class="absolute right-3 top-3 z-20 rounded-full bg-red-50 px-3 py-1.5 text-[11px] font-semibold text-red-600"
+          >
+            Out of stock
+          </span>
+
+          <div class="flex aspect-[1/1] items-center justify-center p-4 sm:p-5">
+            <img
+              v-if="product.image_url"
+              class="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+              :src="product.image_url"
+              :alt="product.title"
+            >
+
+            <p v-else class="text-sm text-gray-400">
+              No image
+            </p>
+          </div>
         </div>
       </div>
     </NuxtLink>
 
-    <div class="mt-4 flex items-center justify-between gap-3 px-1">
-      <p
-        v-if="hasDiscount"
-        class="text-xs font-medium text-green-700"
-      >
-        Save {{ formatPrice(discountAmount) }}
-      </p>
+    <div class="flex items-end justify-between gap-3 border-t border-gray-100 px-4 py-4 sm:px-5">
+      <div class="min-w-0">
+        <p class="text-sm font-semibold text-gray-400">
+          Buy for
+        </p>
 
-      <p v-else class="text-xs text-gray-400">
-        {{ isOutOfStock ? (allowOutOfStockPurchases ? 'Available to order' : 'Unavailable') : 'Available now' }}
-      </p>
-
-      <div class="flex items-center gap-2">
-        <NuxtLink
-          :to="product.slug ? `/products/${product.slug}` : '/'"
-          class="inline-flex items-center gap-1 text-sm font-medium text-gray-900"
+        <p
+          v-if="hasDiscount"
+          class="mt-1 text-sm font-medium text-blue-500/80 line-through"
         >
-          View
-          <span class="transition group-hover:translate-x-0.5">→</span>
-        </NuxtLink>
+          {{ formatPrice(product.old_price) }}
+        </p>
 
-        <button
-          type="button"
-          :disabled="!isPurchasable"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white transition"
-          :class="!isPurchasable
-            ? 'cursor-not-allowed bg-gray-300'
-            : 'bg-black hover:bg-gray-800'"
-          @click="handleAddToCart"
+        <p
+          class="truncate text-[1.05rem] font-extrabold tracking-tight text-blue-600 sm:text-[1.2rem]"
         >
-          +
-        </button>
+          {{ formatPrice(product.price) }}
+        </p>
       </div>
+
+      <button
+        type="button"
+        :disabled="!isPurchasable"
+        class="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl text-3xl font-light text-white transition sm:h-16 sm:w-16"
+        :class="!isPurchasable
+          ? 'cursor-not-allowed bg-gray-300'
+          : 'bg-blue-600 hover:bg-blue-700'"
+        @click="handleAddToCart"
+      >
+        +
+      </button>
     </div>
   </article>
 </template>
@@ -106,8 +109,12 @@ const props = defineProps({
 const { data: siteContent } = useSiteContent()
 const { addItem } = useCart()
 
+const priceFormatter = new Intl.NumberFormat('en-US')
+
 const numericPrice = computed(() => Number(props.product.price || 0))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
+const brandName = computed(() => String(props.product.brand?.name || '').trim())
+const categoryName = computed(() => String(props.product.category?.name || '').trim())
 const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
 const allowOutOfStockPurchases = computed(() => Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases))
 const isPurchasable = computed(() => !isOutOfStock.value || allowOutOfStockPurchases.value)
@@ -121,8 +128,16 @@ const discountAmount = computed(() => {
   return amount > 0 ? amount : 0
 })
 
+const discountPercent = computed(() => {
+  if (!hasDiscount.value || numericOldPrice.value <= 0) {
+    return 0
+  }
+
+  return Math.round((discountAmount.value / numericOldPrice.value) * 100)
+})
+
 const formatPrice = (value) => {
-  return `${Number(value || 0)} EGP`
+  return `${priceFormatter.format(Number(value || 0))} EGP`
 }
 
 const handleAddToCart = () => {
