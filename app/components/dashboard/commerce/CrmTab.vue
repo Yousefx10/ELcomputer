@@ -44,7 +44,11 @@
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isFormOpen = !isFormOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">
             {{ editingId ? `Edit ${currentTypeLabel}` : `Add ${currentTypeLabel}` }}
@@ -56,17 +60,30 @@
           </p>
         </div>
 
-        <button
-          v-if="editingId"
-          type="button"
-          class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          @click="resetForm"
-        >
-          Cancel Edit
-        </button>
-      </div>
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isFormOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
+      <div v-if="isFormOpen" class="mt-6">
+        <div class="flex justify-end">
+          <button
+            v-if="editingId"
+            type="button"
+            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            @click="resetForm"
+          >
+            Cancel Edit
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Entity Type</label>
           <select
@@ -215,36 +232,37 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
-      </div>
+        </div>
 
-      <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
-        <input v-model="form.is_active" type="checkbox">
-        Active
-      </label>
+        <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+          <input v-model="form.is_active" type="checkbox">
+          Active
+        </label>
 
-      <p v-if="formError" class="mt-4 text-sm text-red-600">
-        {{ formError }}
-      </p>
+        <p v-if="formError" class="mt-4 text-sm text-red-600">
+          {{ formError }}
+        </p>
 
-      <div class="mt-5 flex flex-wrap gap-3">
-        <button
-          type="button"
-          :disabled="saving"
-          class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
-          @click="saveAccount"
-        >
-          {{ saving ? 'Saving...' : editingId ? `Save ${currentTypeLabel}` : `Add ${currentTypeLabel}` }}
-        </button>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            :disabled="saving"
+            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            @click="saveAccount"
+          >
+            {{ saving ? 'Saving...' : editingId ? `Save ${currentTypeLabel}` : `Add ${currentTypeLabel}` }}
+          </button>
 
-        <button
-          v-if="editingId"
-          type="button"
-          :disabled="deleting"
-          class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
-          @click="deleteAccount"
-        >
-          {{ deleting ? 'Deleting...' : 'Delete' }}
-        </button>
+          <button
+            v-if="editingId"
+            type="button"
+            :disabled="deleting"
+            class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+            @click="deleteAccount"
+          >
+            {{ deleting ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
       </div>
     </section>
 
@@ -351,6 +369,7 @@ const pageError = ref('')
 const formError = ref('')
 const searchQuery = ref('')
 const editingId = ref('')
+const isFormOpen = ref(false)
 let searchTimeoutId = null
 
 const createEmptyForm = () => ({
@@ -474,6 +493,7 @@ const loadAccounts = async () => {
 }
 
 const startEdit = (account) => {
+  isFormOpen.value = true
   editingId.value = account.id
   Object.assign(form, {
     entity_type: account.entity_type || 'company',

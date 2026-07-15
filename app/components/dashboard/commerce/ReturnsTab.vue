@@ -29,7 +29,11 @@
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isFormOpen = !isFormOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">Create Return</h3>
           <p class="mt-1 text-sm text-gray-500">
@@ -37,16 +41,29 @@
           </p>
         </div>
 
-        <button
-          type="button"
-          class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          @click="resetReturnForm"
-        >
-          Reset
-        </button>
-      </div>
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isFormOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
+      <div v-if="isFormOpen" class="mt-6">
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            @click="resetReturnForm"
+          >
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Search Order</label>
           <input
@@ -112,120 +129,121 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
-      </div>
-
-      <div
-        v-if="selectedOrder"
-        class="mt-6 rounded-2xl border bg-gray-50 p-4"
-      >
-        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div class="space-y-2">
-            <p class="text-lg font-bold text-gray-900">
-              {{ selectedOrder.order_number || `Order #${selectedOrder.id.slice(0, 8)}` }}
-            </p>
-
-            <p class="text-sm text-gray-600">
-              {{ selectedOrder.first_name || 'Customer' }}<span v-if="selectedOrder.last_name"> {{ selectedOrder.last_name }}</span>
-              <span v-if="selectedOrder.phone"> · {{ selectedOrder.phone }}</span>
-            </p>
-
-            <p class="text-sm text-gray-500">
-              {{ selectedOrder.city || 'No city' }}<span v-if="selectedOrder.governorate">, {{ selectedOrder.governorate }}</span>
-            </p>
-          </div>
-
-          <div class="flex flex-wrap gap-3 text-sm">
-            <div class="rounded-xl bg-white px-4 py-3">
-              <p class="text-gray-500">Status</p>
-              <span
-                class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
-                :class="getCustomerOrderStatusClass(selectedOrder.status)"
-              >
-                {{ formatCustomerOrderStatus(selectedOrder.status) }}
-              </span>
-            </div>
-
-            <div class="rounded-xl bg-white px-4 py-3">
-              <p class="text-gray-500">Total</p>
-              <p class="mt-1 text-lg font-bold text-gray-900">{{ formatCommerceCurrency(selectedOrder.total_amount) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <h4 class="text-lg font-bold text-gray-900">Returned Items</h4>
-            <p class="mt-1 text-sm text-gray-500">
-              Enter only the quantities that are actually returned.
-            </p>
-          </div>
         </div>
 
-        <p v-if="loadingOrderItems" class="mt-4 text-sm text-gray-500">
-          Loading order items...
-        </p>
+        <div
+          v-if="selectedOrder"
+          class="mt-6 rounded-2xl border bg-gray-50 p-4"
+        >
+          <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div class="space-y-2">
+              <p class="text-lg font-bold text-gray-900">
+                {{ selectedOrder.order_number || `Order #${selectedOrder.id.slice(0, 8)}` }}
+              </p>
 
-        <p v-else-if="returnForm.order_id && !returnItems.length" class="mt-4 text-sm text-gray-500">
-          This order does not have returnable product items.
-        </p>
+              <p class="text-sm text-gray-600">
+                {{ selectedOrder.first_name || 'Customer' }}<span v-if="selectedOrder.last_name"> {{ selectedOrder.last_name }}</span>
+                <span v-if="selectedOrder.phone"> · {{ selectedOrder.phone }}</span>
+              </p>
 
-        <p v-else-if="!returnForm.order_id" class="mt-4 text-sm text-gray-500">
-          Select an order first.
-        </p>
-
-        <div v-else class="mt-4 space-y-3">
-          <div
-            v-for="item in returnItems"
-            :key="item.order_item_id"
-            class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_120px_120px_140px]"
-          >
-            <div>
-              <p class="font-bold text-gray-900">{{ item.product_title }}</p>
-              <p class="mt-1 text-sm text-gray-500">
-                Ordered {{ item.purchased_quantity }}
-                <span v-if="item.already_returned_quantity"> · Returned {{ item.already_returned_quantity }}</span>
+              <p class="text-sm text-gray-500">
+                {{ selectedOrder.city || 'No city' }}<span v-if="selectedOrder.governorate">, {{ selectedOrder.governorate }}</span>
               </p>
             </div>
 
-            <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
-              <p class="text-gray-500">Available</p>
-              <p class="mt-1 font-bold text-gray-900">{{ item.remaining_quantity }}</p>
-            </div>
+            <div class="flex flex-wrap gap-3 text-sm">
+              <div class="rounded-xl bg-white px-4 py-3">
+                <p class="text-gray-500">Status</p>
+                <span
+                  class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                  :class="getCustomerOrderStatusClass(selectedOrder.status)"
+                >
+                  {{ formatCustomerOrderStatus(selectedOrder.status) }}
+                </span>
+              </div>
 
-            <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
-              <p class="text-gray-500">Price</p>
-              <p class="mt-1 font-bold text-gray-900">{{ formatCommerceCurrency(item.unit_price) }}</p>
+              <div class="rounded-xl bg-white px-4 py-3">
+                <p class="text-gray-500">Total</p>
+                <p class="mt-1 text-lg font-bold text-gray-900">{{ formatCommerceCurrency(selectedOrder.total_amount) }}</p>
+              </div>
             </div>
-
-            <input
-              v-model="item.return_quantity"
-              type="number"
-              min="0"
-              :max="item.remaining_quantity"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              placeholder="Return qty"
-            >
           </div>
         </div>
 
-        <p v-if="formError" class="mt-4 text-sm text-red-600">
-          {{ formError }}
-        </p>
+        <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h4 class="text-lg font-bold text-gray-900">Returned Items</h4>
+              <p class="mt-1 text-sm text-gray-500">
+                Enter only the quantities that are actually returned.
+              </p>
+            </div>
+          </div>
 
-        <div class="mt-5 flex justify-end">
-          <button
-            type="button"
-            :disabled="saving || !isReadyToSubmit"
-            class="rounded-lg px-5 py-3 font-bold text-white"
-            :class="saving || !isReadyToSubmit
-              ? 'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-600 hover:bg-blue-700'"
-            @click="saveReturn"
-          >
-            {{ saving ? 'Saving...' : 'Receive Return' }}
-          </button>
+          <p v-if="loadingOrderItems" class="mt-4 text-sm text-gray-500">
+            Loading order items...
+          </p>
+
+          <p v-else-if="returnForm.order_id && !returnItems.length" class="mt-4 text-sm text-gray-500">
+            This order does not have returnable product items.
+          </p>
+
+          <p v-else-if="!returnForm.order_id" class="mt-4 text-sm text-gray-500">
+            Select an order first.
+          </p>
+
+          <div v-else class="mt-4 space-y-3">
+            <div
+              v-for="item in returnItems"
+              :key="item.order_item_id"
+              class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_120px_120px_140px]"
+            >
+              <div>
+                <p class="font-bold text-gray-900">{{ item.product_title }}</p>
+                <p class="mt-1 text-sm text-gray-500">
+                  Ordered {{ item.purchased_quantity }}
+                  <span v-if="item.already_returned_quantity"> · Returned {{ item.already_returned_quantity }}</span>
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
+                <p class="text-gray-500">Available</p>
+                <p class="mt-1 font-bold text-gray-900">{{ item.remaining_quantity }}</p>
+              </div>
+
+              <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
+                <p class="text-gray-500">Price</p>
+                <p class="mt-1 font-bold text-gray-900">{{ formatCommerceCurrency(item.unit_price) }}</p>
+              </div>
+
+              <input
+                v-model="item.return_quantity"
+                type="number"
+                min="0"
+                :max="item.remaining_quantity"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                placeholder="Return qty"
+              >
+            </div>
+          </div>
+
+          <p v-if="formError" class="mt-4 text-sm text-red-600">
+            {{ formError }}
+          </p>
+
+          <div class="mt-5 flex justify-end">
+            <button
+              type="button"
+              :disabled="saving || !isReadyToSubmit"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="saving || !isReadyToSubmit
+                ? 'cursor-not-allowed bg-gray-300'
+                : 'bg-blue-600 hover:bg-blue-700'"
+              @click="saveReturn"
+            >
+              {{ saving ? 'Saving...' : 'Receive Return' }}
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -316,6 +334,7 @@ const loadingReturns = ref(false)
 const saving = ref(false)
 const pageError = ref('')
 const formError = ref('')
+const isFormOpen = ref(false)
 const orderSearchQuery = ref('')
 let orderSearchTimeoutId = null
 

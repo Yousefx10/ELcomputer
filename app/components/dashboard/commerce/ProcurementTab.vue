@@ -29,7 +29,11 @@
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isFormOpen = !isFormOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">New Procurement Order</h3>
           <p class="mt-1 text-sm text-gray-500">
@@ -37,16 +41,29 @@
           </p>
         </div>
 
-        <button
-          type="button"
-          class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          @click="resetForm"
-        >
-          Reset
-        </button>
-      </div>
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isFormOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
+      <div v-if="isFormOpen" class="mt-6">
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            @click="resetForm"
+          >
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Supplier</label>
           <select
@@ -112,97 +129,98 @@
             placeholder="Optional notes"
           />
         </div>
-      </div>
-
-      <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h4 class="text-lg font-bold text-gray-900">Products</h4>
-            <p class="mt-1 text-sm text-gray-500">
-              Each line increases both warehouse inventory and the main product stock quantity.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
-            @click="addItem"
-          >
-            Add Product
-          </button>
         </div>
 
-        <div class="mt-4 space-y-3">
-          <div
-            v-for="(item, index) in items"
-            :key="index"
-            class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_120px_140px_auto]"
-          >
-            <select
-              v-model="item.product_id"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-              <option value="">Select product</option>
-
-              <option
-                v-for="product in productOptions"
-                :key="product.id"
-                :value="product.id"
-              >
-                {{ product.title }}{{ product.slug ? ` (${product.slug})` : '' }}
-              </option>
-            </select>
-
-            <input
-              v-model="item.quantity"
-              type="number"
-              min="1"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              placeholder="Qty"
-            >
-
-            <input
-              v-model="item.unit_cost"
-              type="number"
-              min="0"
-              step="0.01"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              placeholder="Cost"
-            >
+        <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h4 class="text-lg font-bold text-gray-900">Products</h4>
+              <p class="mt-1 text-sm text-gray-500">
+                Each line increases both warehouse inventory and the main product stock quantity.
+              </p>
+            </div>
 
             <button
               type="button"
-              class="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200"
-              :disabled="items.length === 1"
-              @click="removeItem(index)"
+              class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              @click="addItem"
             >
-              Remove
+              Add Product
             </button>
           </div>
-        </div>
 
-        <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div class="space-y-1">
-            <p class="text-sm text-gray-500">
-              Estimated total: <span class="font-semibold text-gray-900">{{ estimatedTotalCost }}</span>
-            </p>
+          <div class="mt-4 space-y-3">
+            <div
+              v-for="(item, index) in items"
+              :key="index"
+              class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_120px_140px_auto]"
+            >
+              <select
+                v-model="item.product_id"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+                <option value="">Select product</option>
 
-            <p v-if="formError" class="text-sm text-red-600">
-              {{ formError }}
-            </p>
+                <option
+                  v-for="product in productOptions"
+                  :key="product.id"
+                  :value="product.id"
+                >
+                  {{ product.title }}{{ product.slug ? ` (${product.slug})` : '' }}
+                </option>
+              </select>
+
+              <input
+                v-model="item.quantity"
+                type="number"
+                min="1"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                placeholder="Qty"
+              >
+
+              <input
+                v-model="item.unit_cost"
+                type="number"
+                min="0"
+                step="0.01"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                placeholder="Cost"
+              >
+
+              <button
+                type="button"
+                class="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200"
+                :disabled="items.length === 1"
+                @click="removeItem(index)"
+              >
+                Remove
+              </button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            :disabled="saving || !isReadyToSubmit"
-            class="rounded-lg px-5 py-3 font-bold text-white"
-            :class="saving || !isReadyToSubmit
-              ? 'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-600 hover:bg-blue-700'"
-            @click="saveProcurement"
-          >
-            {{ saving ? 'Saving...' : 'Receive Procurement Order' }}
-          </button>
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1">
+              <p class="text-sm text-gray-500">
+                Estimated total: <span class="font-semibold text-gray-900">{{ estimatedTotalCost }}</span>
+              </p>
+
+              <p v-if="formError" class="text-sm text-red-600">
+                {{ formError }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              :disabled="saving || !isReadyToSubmit"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="saving || !isReadyToSubmit
+                ? 'cursor-not-allowed bg-gray-300'
+                : 'bg-blue-600 hover:bg-blue-700'"
+              @click="saveProcurement"
+            >
+              {{ saving ? 'Saving...' : 'Receive Procurement Order' }}
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -298,6 +316,7 @@ const loading = ref(false)
 const saving = ref(false)
 const pageError = ref('')
 const formError = ref('')
+const isFormOpen = ref(false)
 const supplierId = ref('')
 const warehouseId = ref('')
 const invoiceNumber = ref(buildCommerceReference('PO'))

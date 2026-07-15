@@ -29,7 +29,11 @@
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isWarehouseFormOpen = !isWarehouseFormOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">
             {{ editingWarehouseId ? 'Edit Warehouse' : 'Add Warehouse' }}
@@ -39,17 +43,30 @@
           </p>
         </div>
 
-        <button
-          v-if="editingWarehouseId"
-          type="button"
-          class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          @click="resetWarehouseForm"
-        >
-          Cancel Edit
-        </button>
-      </div>
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isWarehouseFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isWarehouseFormOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
+      <div v-if="isWarehouseFormOpen" class="mt-6">
+        <div class="flex justify-end">
+          <button
+            v-if="editingWarehouseId"
+            type="button"
+            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            @click="resetWarehouseForm"
+          >
+            Cancel Edit
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Warehouse Name</label>
           <input
@@ -129,41 +146,46 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
-      </div>
+        </div>
 
-      <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
-        <input v-model="warehouseForm.is_active" type="checkbox">
-        Active
-      </label>
+        <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+          <input v-model="warehouseForm.is_active" type="checkbox">
+          Active
+        </label>
 
-      <p v-if="warehouseFormError" class="mt-4 text-sm text-red-600">
-        {{ warehouseFormError }}
-      </p>
+        <p v-if="warehouseFormError" class="mt-4 text-sm text-red-600">
+          {{ warehouseFormError }}
+        </p>
 
-      <div class="mt-5 flex flex-wrap gap-3">
-        <button
-          type="button"
-          :disabled="savingWarehouse"
-          class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
-          @click="saveWarehouse"
-        >
-          {{ savingWarehouse ? 'Saving...' : editingWarehouseId ? 'Save Warehouse' : 'Add Warehouse' }}
-        </button>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            :disabled="savingWarehouse"
+            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            @click="saveWarehouse"
+          >
+            {{ savingWarehouse ? 'Saving...' : editingWarehouseId ? 'Save Warehouse' : 'Add Warehouse' }}
+          </button>
 
-        <button
-          v-if="editingWarehouseId"
-          type="button"
-          :disabled="deletingWarehouse"
-          class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
-          @click="deleteWarehouse"
-        >
-          {{ deletingWarehouse ? 'Deleting...' : 'Delete' }}
-        </button>
+          <button
+            v-if="editingWarehouseId"
+            type="button"
+            :disabled="deletingWarehouse"
+            class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+            @click="deleteWarehouse"
+          >
+            {{ deletingWarehouse ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
       </div>
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isTransferFormOpen = !isTransferFormOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">Transfer Stock</h3>
           <p class="mt-1 text-sm text-gray-500">
@@ -171,16 +193,29 @@
           </p>
         </div>
 
-        <button
-          type="button"
-          class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
-          @click="resetTransferForm"
-        >
-          Reset
-        </button>
-      </div>
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isTransferFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isTransferFormOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
+      <div v-if="isTransferFormOpen" class="mt-6">
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
+            @click="resetTransferForm"
+          >
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">From Warehouse</label>
           <select
@@ -246,82 +281,83 @@
             placeholder="Optional transfer notes"
           />
         </div>
-      </div>
-
-      <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h4 class="text-lg font-bold text-gray-900">Transfer Items</h4>
-            <p class="mt-1 text-sm text-gray-500">
-              Move quantities from one warehouse to another without changing total product stock.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
-            @click="addTransferItem"
-          >
-            Add Product
-          </button>
         </div>
 
-        <div class="mt-4 space-y-3">
-          <div
-            v-for="(item, index) in transferForm.items"
-            :key="index"
-            class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_140px_auto]"
-          >
-            <select
-              v-model="item.product_id"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-              <option value="">Select product</option>
-
-              <option
-                v-for="product in productOptions"
-                :key="product.id"
-                :value="product.id"
-              >
-                {{ product.title }}{{ product.slug ? ` (${product.slug})` : '' }}
-              </option>
-            </select>
-
-            <input
-              v-model="item.quantity"
-              type="number"
-              min="1"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              placeholder="Qty"
-            >
+        <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h4 class="text-lg font-bold text-gray-900">Transfer Items</h4>
+              <p class="mt-1 text-sm text-gray-500">
+                Move quantities from one warehouse to another without changing total product stock.
+              </p>
+            </div>
 
             <button
               type="button"
-              class="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200"
-              :disabled="transferForm.items.length === 1"
-              @click="removeTransferItem(index)"
+              class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              @click="addTransferItem"
             >
-              Remove
+              Add Product
             </button>
           </div>
-        </div>
 
-        <p v-if="transferFormError" class="mt-4 text-sm text-red-600">
-          {{ transferFormError }}
-        </p>
+          <div class="mt-4 space-y-3">
+            <div
+              v-for="(item, index) in transferForm.items"
+              :key="index"
+              class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_140px_auto]"
+            >
+              <select
+                v-model="item.product_id"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              >
+                <option value="">Select product</option>
 
-        <div class="mt-5 flex justify-end">
-          <button
-            type="button"
-            :disabled="savingTransfer || !isTransferReady"
-            class="rounded-lg px-5 py-3 font-bold text-white"
-            :class="savingTransfer || !isTransferReady
-              ? 'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-600 hover:bg-blue-700'"
-            @click="saveTransfer"
-          >
-            {{ savingTransfer ? 'Saving...' : 'Transfer Inventory' }}
-          </button>
+                <option
+                  v-for="product in productOptions"
+                  :key="product.id"
+                  :value="product.id"
+                >
+                  {{ product.title }}{{ product.slug ? ` (${product.slug})` : '' }}
+                </option>
+              </select>
+
+              <input
+                v-model="item.quantity"
+                type="number"
+                min="1"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                placeholder="Qty"
+              >
+
+              <button
+                type="button"
+                class="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200"
+                :disabled="transferForm.items.length === 1"
+                @click="removeTransferItem(index)"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <p v-if="transferFormError" class="mt-4 text-sm text-red-600">
+            {{ transferFormError }}
+          </p>
+
+          <div class="mt-5 flex justify-end">
+            <button
+              type="button"
+              :disabled="savingTransfer || !isTransferReady"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="savingTransfer || !isTransferReady
+                ? 'cursor-not-allowed bg-gray-300'
+                : 'bg-blue-600 hover:bg-blue-700'"
+              @click="saveTransfer"
+            >
+              {{ savingTransfer ? 'Saving...' : 'Transfer Inventory' }}
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -567,6 +603,8 @@ const pageError = ref('')
 const warehouseFormError = ref('')
 const transferFormError = ref('')
 const editingWarehouseId = ref('')
+const isWarehouseFormOpen = ref(false)
+const isTransferFormOpen = ref(false)
 const productSearchQuery = ref('')
 const inventoryWarehouseFilter = ref('')
 const inventorySearchQuery = ref('')
@@ -850,6 +888,7 @@ const refreshStockViews = async () => {
 }
 
 const startEditWarehouse = (warehouse) => {
+  isWarehouseFormOpen.value = true
   editingWarehouseId.value = warehouse.id
   Object.assign(warehouseForm, {
     name: warehouse.name || '',
