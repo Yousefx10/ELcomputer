@@ -4,13 +4,13 @@
   >
     <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/'" class="block">
       <div class="px-4 pt-4 sm:px-5 sm:pt-5">
-        <h3 class="line-clamp-2 min-h-[3.25rem] text-center text-base font-extrabold leading-6 text-gray-900 sm:min-h-[3.5rem] sm:text-[1.05rem]">
+        <h3 class="line-clamp-2 min-h-[3rem] text-center text-base font-extrabold leading-6 text-gray-900 sm:min-h-[3.25rem] sm:text-[1.05rem]">
           {{ product.title }}
         </h3>
 
         <div
           v-if="brandName || categoryName"
-          class="mt-2 flex min-h-[1.5rem] items-center justify-center gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 sm:text-[11px]"
+          class="mt-1.5 flex min-h-[1.25rem] items-center justify-center gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 sm:text-[11px]"
         >
           <span v-if="brandName" class="truncate">
             {{ brandName }}
@@ -24,8 +24,8 @@
         </div>
       </div>
 
-      <div class="relative mt-3 px-3 pb-3 sm:px-4 sm:pb-4">
-        <div class="relative overflow-hidden rounded-[1.5rem] border border-gray-100 bg-white">
+      <div class="relative mt-2 px-2 pb-2 sm:px-3 sm:pb-3">
+        <div class="relative overflow-hidden rounded-[1.5rem] bg-white">
           <span
             v-if="hasDiscount"
             class="absolute left-3 top-3 z-20 rounded-full bg-emerald-500 px-3 py-1.5 text-[11px] font-bold text-white"
@@ -47,10 +47,10 @@
             Out of stock
           </span>
 
-          <div class="flex aspect-[1/1] items-center justify-center p-4 sm:p-5">
+          <div class="flex h-[170px] items-center justify-center sm:h-[210px] lg:h-[230px]">
             <img
               v-if="product.image_url"
-              class="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+              class="h-[92%] w-[92%] object-contain transition duration-300 group-hover:scale-110"
               :src="product.image_url"
               :alt="product.title"
             >
