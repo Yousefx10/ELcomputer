@@ -187,12 +187,12 @@
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Main Image URL</label>
-          <input
+          <DashboardMediaUploadField
             v-model="imageUrl"
-            type="text"
-            placeholder="https://example.com/image.jpg"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            label="Main Image"
+            section="products"
+            :preview-alt="title || 'Product image'"
+            help-text="Upload the main product image stored on the server host."
           />
         </div>
 
@@ -214,23 +214,6 @@
             placeholder="Long product description"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
-        </div>
-
-        <div class="md:col-span-2 rounded-2xl border border-dashed bg-gray-50 p-4">
-          <p class="mb-3 text-sm font-semibold text-gray-700">Main Image Preview</p>
-
-          <div class="flex min-h-[260px] items-center justify-center overflow-hidden rounded-xl bg-white p-4">
-            <img
-              v-if="imageUrl"
-              :src="imageUrl"
-              :alt="title || 'Product image'"
-              class="max-h-64 w-full object-contain"
-            />
-
-            <p v-else class="text-gray-400">
-              Add an image URL to preview the product image
-            </p>
-          </div>
         </div>
 
         <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">

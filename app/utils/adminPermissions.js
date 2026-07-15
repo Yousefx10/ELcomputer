@@ -154,6 +154,12 @@ export const getDashboardRouteRequirement = (route = '') => {
       }
     }
 
+    if (query.tab === 'gallery') {
+      return {
+        permission: 'settings.view'
+      }
+    }
+
     if (query.tab === 'coupons') {
       return {
         permission: 'settings.coupons'

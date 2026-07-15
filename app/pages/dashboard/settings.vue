@@ -58,15 +58,14 @@
                 >
               </div>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Site Logo URL</label>
-                <input
-                  v-model="siteSettings.site_logo_url"
-                  type="text"
-                  placeholder="https://example.com/logo.png"
-                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
-              </div>
+              <DashboardMediaUploadField
+                v-model="siteSettings.site_logo_url"
+                label="Site Logo"
+                section="site_logo"
+                preview-alt="Site logo"
+                preview-height-class="h-24"
+                help-text="Used in the public navbar and dashboard header."
+              />
 
               <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">Background Color</label>
@@ -223,15 +222,13 @@
                       >
                     </div>
 
-                    <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Image URL</label>
-                      <input
-                        v-model="newOfferCard.image_url"
-                        type="text"
-                        placeholder="https://example.com/offer.jpg"
-                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                      >
-                    </div>
+                    <DashboardMediaUploadField
+                      v-model="newOfferCard.image_url"
+                      label="Offer Image"
+                      section="offer_cards"
+                      :show-preview="false"
+                      help-text="Upload the card image stored on the server host."
+                    />
 
                     <div>
                       <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
@@ -331,14 +328,13 @@
                       >
                     </div>
 
-                    <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Image URL</label>
-                      <input
-                        v-model="offerCard.image_url"
-                        type="text"
-                        class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                      >
-                    </div>
+                    <DashboardMediaUploadField
+                      v-model="offerCard.image_url"
+                      label="Offer Image"
+                      section="offer_cards"
+                      :show-preview="false"
+                      help-text="Upload the card image stored on the server host."
+                    />
 
                     <div>
                       <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
@@ -641,13 +637,16 @@
               </button>
             </div>
 
-            <div class="mb-5 grid gap-3 md:grid-cols-[2fr_2fr_auto]">
-              <input
+            <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto]">
+              <DashboardMediaUploadField
                 v-model="newHeroImageUrl"
-                type="text"
-                placeholder="Image URL"
-                class="rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+                label="Hero Image"
+                section="hero_banners"
+                preview-alt="Hero banner"
+                preview-image-class="object-cover"
+                preview-height-class="h-28"
+                help-text="Upload a hero banner image stored on the server host."
+              />
 
               <input
                 v-model="newHeroLinkUrl"
@@ -673,22 +672,16 @@
               <div
                 v-for="banner in heroBanners"
                 :key="banner.id"
-                class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,2fr)_auto]"
+                class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto]"
               >
-                <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
-                  <img
-                    v-if="banner.image_url"
-                    :src="banner.image_url"
-                    alt="Hero banner"
-                    class="h-full w-full object-cover"
-                  >
-                </div>
-
-                <input
+                <DashboardMediaUploadField
                   v-model="banner.image_url"
-                  type="text"
-                  class="rounded-lg border p-3 outline-none focus:border-blue-500"
-                >
+                  label="Hero Image"
+                  section="hero_banners"
+                  preview-alt="Hero banner"
+                  preview-image-class="object-cover"
+                  preview-height-class="h-28"
+                />
 
                 <div class="space-y-3">
                   <input
@@ -790,15 +783,15 @@
                   </div>
                 </div>
 
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Image URL</label>
-                  <input
-                    v-model="siteSettings.banner_ad_1_image_url"
-                    type="text"
-                    placeholder="https://example.com/banner-1.jpg"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
+                <DashboardMediaUploadField
+                  v-model="siteSettings.banner_ad_1_image_url"
+                  label="Banner Ad 1 Image"
+                  section="banner_ads"
+                  preview-alt="Banner Ad 1"
+                  preview-image-class="object-cover"
+                  preview-height-class="h-28"
+                  help-text="Used above the keyboard section on the landing page."
+                />
 
                 <div>
                   <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
@@ -840,15 +833,15 @@
                   </div>
                 </div>
 
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Image URL</label>
-                  <input
-                    v-model="siteSettings.banner_ad_2_image_url"
-                    type="text"
-                    placeholder="https://example.com/banner-2.jpg"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
+                <DashboardMediaUploadField
+                  v-model="siteSettings.banner_ad_2_image_url"
+                  label="Banner Ad 2 Image"
+                  section="banner_ads"
+                  preview-alt="Banner Ad 2"
+                  preview-image-class="object-cover"
+                  preview-height-class="h-28"
+                  help-text="Used above the accessories section on the landing page."
+                />
 
                 <div>
                   <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
@@ -1317,6 +1310,168 @@
         </div>
       </section>
 
+      </div>
+
+      <div v-else-if="activeSettingsView === 'gallery'" class="space-y-6">
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">Gallery</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Browse every image uploaded to the server host, preview it, download it, or remove it.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
+                {{ galleryImages.length }} image{{ galleryImages.length === 1 ? '' : 's' }}
+              </div>
+
+              <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
+                {{ gallerySectionCount }} section{{ gallerySectionCount === 1 ? '' : 's' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border bg-gray-50 p-5">
+            <div class="flex flex-col gap-3 md:flex-row md:items-end">
+              <div class="flex-1">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Search Image</label>
+                <input
+                  v-model="gallerySearchQuery"
+                  type="text"
+                  placeholder="Search by file name"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+                >
+              </div>
+
+              <button
+                v-if="gallerySearchQuery.trim()"
+                type="button"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="clearGallerySearch"
+              >
+                Clear
+              </button>
+            </div>
+
+            <p class="mt-4 text-sm text-gray-500">
+              {{ gallerySearchQuery.trim()
+                ? `Showing images matching "${gallerySearchQuery.trim()}".`
+                : 'Showing all uploaded images from the server host.' }}
+            </p>
+          </div>
+        </section>
+
+        <section class="rounded-2xl bg-white p-6 shadow">
+          <p v-if="galleryError" class="text-sm text-red-600">
+            {{ galleryError }}
+          </p>
+
+          <p v-else-if="galleryLoading" class="text-sm text-gray-500">
+            Loading gallery...
+          </p>
+
+          <p v-else-if="!galleryImages.length" class="text-sm text-gray-500">
+            No uploaded images found.
+          </p>
+
+          <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <button
+              v-for="image in galleryImages"
+              :key="image.publicPath"
+              type="button"
+              class="overflow-hidden rounded-2xl border text-left transition hover:-translate-y-1 hover:shadow-md"
+              @click="openGalleryImage(image)"
+            >
+              <div class="flex h-44 items-center justify-center bg-gray-100 p-3">
+                <img
+                  :src="image.publicPath"
+                  :alt="image.name"
+                  class="h-full w-full object-contain"
+                >
+              </div>
+
+              <div class="space-y-2 p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="truncate text-sm font-semibold text-gray-900">
+                    {{ image.name }}
+                  </p>
+
+                  <span class="rounded-full bg-gray-100 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                    {{ image.section }}
+                  </span>
+                </div>
+
+                <p class="text-xs text-gray-500">
+                  {{ formatGalleryFileSize(image.size) }}
+                </p>
+
+                <p class="text-xs text-gray-400">
+                  {{ formatLogDate(image.updated_at) }}
+                </p>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <div
+          v-if="selectedGalleryImage"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          @click.self="closeGalleryImage"
+        >
+          <div class="w-full max-w-4xl rounded-2xl bg-white p-6 shadow-xl">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h4 class="text-2xl font-bold text-gray-900">
+                  {{ selectedGalleryImage.name }}
+                </h4>
+                <p class="mt-1 text-sm text-gray-500">
+                  {{ selectedGalleryImage.section }} · {{ formatGalleryFileSize(selectedGalleryImage.size) }}
+                </p>
+                <p class="mt-1 break-all text-xs text-gray-400">
+                  {{ selectedGalleryImage.publicPath }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="closeGalleryImage"
+              >
+                Close
+              </button>
+            </div>
+
+            <div class="mt-6 flex max-h-[65vh] items-center justify-center overflow-hidden rounded-2xl bg-gray-100 p-4">
+              <img
+                :src="selectedGalleryImage.publicPath"
+                :alt="selectedGalleryImage.name"
+                class="max-h-[60vh] w-full object-contain"
+              >
+            </div>
+
+            <div class="mt-6 flex flex-wrap justify-end gap-3">
+              <a
+                :href="getGalleryDownloadUrl(selectedGalleryImage.publicPath)"
+                :download="selectedGalleryImage.name"
+                class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Download
+              </a>
+
+              <button
+                v-if="canEditSettings"
+                type="button"
+                :disabled="galleryDeleting"
+                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
+                @click="removeGalleryImage(selectedGalleryImage)"
+              >
+                {{ galleryDeleting ? 'Deleting...' : 'Delete' }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-else-if="activeSettingsView === 'inventory'" class="space-y-6">
@@ -1924,11 +2079,17 @@ const {
   fetchAdminLogs,
   recordAdminLog
 } = useAdminLogs()
+const {
+  deleteGalleryImage,
+  fetchGalleryImages
+} = useAdminUploads()
 const SETTINGS_GENERAL_CACHE_KEY = 'dashboard:settings:general'
 const SETTINGS_COUPONS_CACHE_KEY = 'dashboard:settings:coupons'
+const SETTINGS_GALLERY_CACHE_KEY = 'dashboard:settings:gallery'
 
 const pageError = ref('')
 const canViewGeneralSettings = computed(() => hasPermission('settings.view'))
+const canViewGallery = computed(() => hasPermission('settings.view'))
 const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
 const canAccessInventory = computed(() => hasPermission('settings.inventory'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
@@ -1972,6 +2133,7 @@ const offerCards = ref([])
 const siteLinks = ref([])
 const coupons = ref([])
 const inventoryProducts = ref([])
+const galleryImages = ref([])
 
 const settingsLoading = ref(false)
 const settingsLoadingSection = ref('')
@@ -1993,10 +2155,15 @@ const linkError = ref('')
 const couponError = ref('')
 const couponLoading = ref(false)
 const inventoryLoading = ref(false)
+const galleryLoading = ref(false)
 const offerCardsLoading = ref(false)
 const inventoryError = ref('')
 const inventorySuccess = ref('')
 const inventorySearchQuery = ref('')
+const galleryError = ref('')
+const gallerySearchQuery = ref('')
+const galleryDeleting = ref(false)
+const selectedGalleryImage = ref(null)
 const logsLoading = ref(false)
 const logsError = ref('')
 const logsMissingTable = ref(false)
@@ -2037,6 +2204,7 @@ const selectedInventoryProductId = ref('')
 const selectedInventoryProductSnapshot = ref(null)
 const inventoryIncreaseQuantity = ref(1)
 const inventoryCostPrice = ref('')
+const galleryLoaded = ref(false)
 const openSections = reactive({
   generalSettings: true,
   bannerAds: false,
@@ -2056,6 +2224,10 @@ const activeSettingsView = computed(() => {
     return 'coupons'
   }
 
+  if (route.query.tab === 'gallery' && canViewGallery.value) {
+    return 'gallery'
+  }
+
   if (route.query.tab === 'inventory' && canAccessInventory.value) {
     return 'inventory'
   }
@@ -2066,6 +2238,10 @@ const activeSettingsView = computed(() => {
 
   if (canAccessInventory.value) {
     return 'inventory'
+  }
+
+  if (canViewGallery.value) {
+    return 'gallery'
   }
 
   if (canAccessCoupons.value) {
@@ -2086,6 +2262,14 @@ const secondaryNavItems = computed(() => {
       label: 'General',
       to: '/dashboard/settings',
       active: activeSettingsView.value === 'general'
+    })
+  }
+
+  if (canViewGallery.value) {
+    items.push({
+      label: 'Gallery',
+      to: '/dashboard/settings?tab=gallery',
+      active: activeSettingsView.value === 'gallery'
     })
   }
 
@@ -2198,6 +2382,7 @@ const siteSettingsSnapshot = ref({})
 const generalSettingsLoaded = ref(false)
 const couponsLoaded = ref(false)
 const inventoryLoaded = ref(false)
+let gallerySearchTimeoutId = null
 let inventorySearchTimeoutId = null
 
 const toggleSection = (sectionName) => {
@@ -2267,6 +2452,10 @@ const footerLinks = computed(() => {
   return siteLinks.value.filter((link) => link.location === 'footer')
 })
 
+const gallerySectionCount = computed(() => {
+  return new Set(galleryImages.value.map((image) => image.section)).size
+})
+
 const isMissingSchemaError = (error) => error?.code === '42P01' || error?.code === '42703'
 
 const handleTableError = (error) => {
@@ -2276,6 +2465,36 @@ const handleTableError = (error) => {
   }
 
   return false
+}
+
+const formatGalleryFileSize = (size = 0) => {
+  const normalizedSize = Number(size || 0)
+
+  if (normalizedSize >= 1024 * 1024) {
+    return `${(normalizedSize / (1024 * 1024)).toFixed(2)} MB`
+  }
+
+  if (normalizedSize >= 1024) {
+    return `${(normalizedSize / 1024).toFixed(1)} KB`
+  }
+
+  return `${normalizedSize} B`
+}
+
+const clearGallerySearch = () => {
+  gallerySearchQuery.value = ''
+}
+
+const getGalleryDownloadUrl = (publicPath = '') => {
+  return `${publicPath}?download=1`
+}
+
+const openGalleryImage = (image) => {
+  selectedGalleryImage.value = image
+}
+
+const closeGalleryImage = () => {
+  selectedGalleryImage.value = null
 }
 
 const mapHeroBanner = (banner) => ({
@@ -2562,6 +2781,27 @@ const applyCouponsSnapshot = (snapshot = {}) => {
 const syncCouponsCache = () => {
   setSnapshot(SETTINGS_COUPONS_CACHE_KEY, {
     coupons: coupons.value
+  })
+}
+
+const buildGalleryCacheKey = () => {
+  return `${SETTINGS_GALLERY_CACHE_KEY}:${gallerySearchQuery.value.trim().toLowerCase()}`
+}
+
+const applyGallerySnapshot = (snapshot = {}) => {
+  galleryImages.value = snapshot.items || []
+  galleryLoaded.value = true
+
+  if (selectedGalleryImage.value) {
+    selectedGalleryImage.value = galleryImages.value.find((image) => {
+      return image.publicPath === selectedGalleryImage.value?.publicPath
+    }) || null
+  }
+}
+
+const syncGalleryCache = () => {
+  setSnapshot(buildGalleryCacheKey(), {
+    items: galleryImages.value
   })
 }
 
@@ -2854,6 +3094,44 @@ const loadAdminLogs = async ({ force = false } = {}) => {
   }
 }
 
+const loadGalleryImages = async ({ force = false } = {}) => {
+  galleryError.value = ''
+
+  if (!canViewGallery.value) {
+    galleryImages.value = []
+    galleryLoaded.value = true
+    return
+  }
+
+  const cacheKey = buildGalleryCacheKey()
+  const cachedSnapshot = getSnapshot(cacheKey)
+
+  if (cachedSnapshot) {
+    applyGallerySnapshot(cachedSnapshot)
+  }
+
+  if (!force && cachedSnapshot && isFresh(cacheKey)) {
+    return
+  }
+
+  galleryLoading.value = true
+
+  try {
+    const response = await fetchGalleryImages({
+      q: gallerySearchQuery.value.trim() || undefined
+    })
+
+    applyGallerySnapshot({
+      items: response.items || []
+    })
+    syncGalleryCache()
+  } catch (error) {
+    galleryError.value = error?.data?.statusMessage || error?.message || 'Could not load gallery images.'
+  } finally {
+    galleryLoading.value = false
+  }
+}
+
 const getInventoryProducts = async ({ force = false } = {}) => {
   inventoryError.value = ''
 
@@ -3018,6 +3296,38 @@ const increaseInventory = async () => {
   await getInventoryProducts({ force: true })
 }
 
+const removeGalleryImage = async (image) => {
+  if (!image?.publicPath) {
+    return
+  }
+
+  if (!confirm(`Delete image ${image.name}?`)) {
+    return
+  }
+
+  galleryDeleting.value = true
+  galleryError.value = ''
+
+  try {
+    await deleteGalleryImage(image.publicPath)
+    await logSettingsAction(
+      `Deleted uploaded image ${shortenLogValue(image.name)}.`,
+      'settings.gallery.delete',
+      {
+        image_name: image.name,
+        image_path: image.publicPath,
+        image_section: image.section
+      }
+    )
+    closeGalleryImage()
+    await loadGalleryImages({ force: true })
+  } catch (error) {
+    galleryError.value = error?.data?.statusMessage || error?.message || 'Could not delete this image.'
+  } finally {
+    galleryDeleting.value = false
+  }
+}
+
 const isHeroBannerDirty = (banner) => {
   return banner.image_url !== banner.original_image_url ||
     (banner.link_url || '') !== banner.original_link_url ||
@@ -3028,7 +3338,7 @@ const addHeroBanner = async () => {
   heroError.value = ''
 
   if (!newHeroImageUrl.value.trim()) {
-    heroError.value = 'Hero banner image URL is required'
+    heroError.value = 'Hero banner image is required'
     return
   }
 
@@ -3074,7 +3384,7 @@ const saveHeroBanner = async (banner) => {
   heroError.value = ''
 
   if (!banner.image_url.trim()) {
-    heroError.value = 'Hero banner image URL is required'
+    heroError.value = 'Hero banner image is required'
     return
   }
 
@@ -3301,7 +3611,7 @@ const validateOfferCardPayload = (offerCard) => {
   }
 
   if (!payload.image_url) {
-    offerCardsError.value = 'Offer image URL is required.'
+    offerCardsError.value = 'Offer image is required.'
     return null
   }
 
@@ -3878,6 +4188,18 @@ watch(inventorySearchQuery, () => {
   }, 300)
 })
 
+watch(gallerySearchQuery, () => {
+  if (activeSettingsView.value !== 'gallery' || !canViewGallery.value) {
+    return
+  }
+
+  clearTimeout(gallerySearchTimeoutId)
+
+  gallerySearchTimeoutId = setTimeout(async () => {
+    await loadGalleryImages({ force: true })
+  }, 300)
+})
+
 const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
   if (view === 'logs') {
     await loadAdminLogs({ force })
@@ -3889,6 +4211,11 @@ const loadActiveSettingsView = async (view = activeSettingsView.value, { force =
       await getInventoryProducts({ force })
     }
 
+    return
+  }
+
+  if (view === 'gallery') {
+    await loadGalleryImages({ force })
     return
   }
 
@@ -3917,6 +4244,7 @@ watch(selectedLogAuthor, async () => {
 })
 
 onBeforeUnmount(() => {
+  clearTimeout(gallerySearchTimeoutId)
   clearTimeout(inventorySearchTimeoutId)
 })
 

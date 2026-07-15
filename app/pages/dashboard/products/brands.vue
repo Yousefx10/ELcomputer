@@ -21,28 +21,19 @@
           class="w-full rounded-lg border p-3"
         />
 
-        <input
+        <DashboardMediaUploadField
           v-model="logoUrl"
-          type="text"
-          placeholder="Logo URL"
+          label="Brand Logo"
+          section="brands"
           :disabled="editingId ? !canEditBrand : !canAddBrand"
-          class="w-full rounded-lg border p-3"
+          :preview-alt="name || 'Brand logo'"
+          preview-height-class="h-28"
+          help-text="Upload the logo shown on product pages and featured brands."
         />
 
         <p class="text-sm text-gray-500">
           Slug preview: {{ slugPreview || '-' }}
         </p>
-
-        <div
-          v-if="logoUrl"
-          class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl border bg-gray-50 p-2"
-        >
-          <img
-            :src="logoUrl"
-            :alt="name || 'Brand logo'"
-            class="h-full w-full object-contain"
-          />
-        </div>
 
         <p v-if="errorMessage" class="text-red-600">
           {{ errorMessage }}

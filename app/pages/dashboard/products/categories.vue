@@ -23,28 +23,14 @@
           class="w-full rounded-lg border p-3"
         />
 
-        <input
+        <DashboardMediaUploadField
           v-model="imageUrl"
-          type="url"
-          placeholder="Category image URL for Top Categories section"
+          label="Category Image"
+          section="categories"
           :disabled="editingId ? !canEditCategory : !canAddCategory"
-          class="w-full rounded-lg border p-3"
+          :preview-alt="name || 'Category image'"
+          help-text="Used in the Top Categories section on the public home page."
         />
-
-        <div
-          v-if="imageUrl"
-          class="overflow-hidden rounded-2xl border bg-gray-50 p-3"
-        >
-          <p class="mb-3 text-sm font-medium text-gray-600">
-            Image Preview
-          </p>
-
-          <img
-            :src="imageUrl"
-            :alt="name || 'Category preview'"
-            class="h-40 w-full rounded-xl object-contain"
-          >
-        </div>
 
         <p class="text-sm text-gray-500">
           Slug preview: {{ slugPreview || '-' }}

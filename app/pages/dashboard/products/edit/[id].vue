@@ -190,12 +190,12 @@
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Main Image URL</label>
-          <input
+          <DashboardMediaUploadField
             v-model="imageUrl"
-            type="text"
-            placeholder="https://example.com/image.jpg"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            label="Main Image"
+            section="products"
+            :preview-alt="title || 'Product image'"
+            help-text="Upload the main product image stored on the server host."
           />
         </div>
 
@@ -217,23 +217,6 @@
             placeholder="Long product description"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
-        </div>
-
-        <div class="md:col-span-2 rounded-2xl border border-dashed bg-gray-50 p-4">
-          <p class="mb-3 text-sm font-semibold text-gray-700">Main Image Preview</p>
-
-          <div class="flex min-h-[260px] items-center justify-center overflow-hidden rounded-xl bg-white p-4">
-            <img
-              v-if="imageUrl"
-              :src="imageUrl"
-              :alt="title || 'Product image'"
-              class="max-h-64 w-full object-contain"
-            />
-
-            <p v-else class="text-gray-400">
-              Add an image URL to preview the product image
-            </p>
-          </div>
         </div>
 
         <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
@@ -269,16 +252,18 @@
         <div class="mb-4">
           <h3 class="text-2xl font-bold">Extra Images</h3>
           <p class="text-sm text-gray-500">
-            For now, add direct image links. Upload support can be added later.
+            Upload additional product images and save them to the product gallery.
           </p>
         </div>
 
-        <div class="mb-5 grid gap-3 md:grid-cols-[2fr_1fr_auto]">
-          <input
+        <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto]">
+          <DashboardMediaUploadField
             v-model="newImageUrl"
-            type="text"
-            placeholder="Image URL"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
+            label="Extra Image"
+            section="product_gallery"
+            :preview-alt="newImageAlt || title || 'Extra image'"
+            preview-height-class="h-32"
+            help-text="Upload an additional image for the product gallery."
           />
 
           <input
@@ -305,21 +290,14 @@
           <div
             v-for="image in productImages"
             :key="image.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[120px_minmax(0,2fr)_minmax(0,1fr)_auto]"
+            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto]"
           >
-            <div class="flex h-24 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2">
-              <img
-                v-if="image.image_url"
-                :src="image.image_url"
-                :alt="image.alt_text || title"
-                class="h-full w-full object-contain"
-              />
-            </div>
-
-            <input
+            <DashboardMediaUploadField
               v-model="image.image_url"
-              type="text"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
+              label="Image"
+              section="product_gallery"
+              :preview-alt="image.alt_text || title || 'Extra image'"
+              preview-height-class="h-32"
             />
 
             <input
@@ -720,7 +698,7 @@ const addProductImage = async () => {
   galleryError.value = ''
 
   if (!newImageUrl.value.trim()) {
-    galleryError.value = 'Image URL is required'
+    galleryError.value = 'Image is required'
     return
   }
 
@@ -764,7 +742,7 @@ const saveProductImage = async (image) => {
   galleryError.value = ''
 
   if (!image.image_url?.trim()) {
-    galleryError.value = 'Image URL is required'
+    galleryError.value = 'Image is required'
     return
   }
 
