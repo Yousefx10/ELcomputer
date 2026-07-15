@@ -10,10 +10,12 @@
 
       <form
         v-if="canAddCategory || canEditCategory"
+        ref="categoryFormRef"
         @submit.prevent="saveCategory"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
       >
         <input
+          ref="nameInputRef"
           v-model="name"
           type="text"
           placeholder="Category name"
@@ -229,6 +231,8 @@ const buildCategoriesCacheKey = (page = currentPage.value) => {
 const categories = ref([])
 const name = ref('')
 const imageUrl = ref('')
+const categoryFormRef = ref(null)
+const nameInputRef = ref(null)
 const saving = ref(false)
 const loading = ref(true)
 const errorMessage = ref('')
@@ -424,6 +428,14 @@ const startEdit = (category) => {
   imageUrl.value = category.image_url || ''
   editingId.value = category.id
   errorMessage.value = ''
+
+  nextTick(() => {
+    categoryFormRef.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+    nameInputRef.value?.focus()
+  })
 }
 
 const cancelEdit = () => {
