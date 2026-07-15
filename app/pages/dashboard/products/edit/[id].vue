@@ -127,6 +127,48 @@
         </div>
 
         <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Default Supplier</label>
+          <select
+            v-model="defaultSupplierId"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          >
+            <option value="">No Default Supplier</option>
+
+            <option
+              v-for="supplier in suppliers"
+              :key="supplier.id"
+              :value="supplier.id"
+            >
+              {{ supplier.name }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Primary Warehouse</label>
+          <select
+            v-model="primaryWarehouseId"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+          >
+            <option value="">No Primary Warehouse</option>
+
+            <option
+              v-for="warehouse in warehouses"
+              :key="warehouse.id"
+              :value="warehouse.id"
+            >
+              {{ warehouse.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          Manual stock editing is allowed, but it should be used carefully once Commerce is active.
+          This update changes the global product stock and syncs the selected primary warehouse path only.
+          For normal stock receiving or movement, use Commerce procurement, transfer, and returns.
+        </div>
+
+        <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Price</label>
           <input
             v-model="price"
@@ -438,9 +480,14 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
-const { recordAdminLog } = useAdminLogs()
+const {
+  getAdminAuthHeaders,
+  recordAdminLog
+} = useAdminLogs()
 const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
 const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
+const PRODUCT_FORM_SUPPLIERS_CACHE_KEY = 'dashboard:product-form:suppliers'
+const PRODUCT_FORM_WAREHOUSES_CACHE_KEY = 'dashboard:product-form:warehouses'
 
 const route = useRoute()
 const id = route.params.id
@@ -454,6 +501,8 @@ const oldPrice = ref('')
 const imageUrl = ref('')
 const categoryId = ref('')
 const brandId = ref('')
+const defaultSupplierId = ref('')
+const primaryWarehouseId = ref('')
 const sku = ref('')
 const stockQuantity = ref(0)
 const colorName = ref('')
@@ -462,6 +511,8 @@ const isPublished = ref(true)
 
 const categories = ref([])
 const brands = ref([])
+const suppliers = ref([])
+const warehouses = ref([])
 const productImages = ref([])
 const productSpecifications = ref([])
 
@@ -557,6 +608,59 @@ const getBrandsList = async () => {
   setSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY, brands.value)
 }
 
+const getSuppliersList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_SUPPLIERS_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    suppliers.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_SUPPLIERS_CACHE_KEY)) {
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('commerce_crm_accounts')
+    .select('id, name')
+    .eq('account_type', 'supplier')
+    .eq('is_active', true)
+    .order('name')
+
+  if (error) {
+    actionError.value = error.message
+    return
+  }
+
+  suppliers.value = data || []
+  setSnapshot(PRODUCT_FORM_SUPPLIERS_CACHE_KEY, suppliers.value)
+}
+
+const getWarehousesList = async () => {
+  const cachedSnapshot = getSnapshot(PRODUCT_FORM_WAREHOUSES_CACHE_KEY)
+
+  if (cachedSnapshot) {
+    warehouses.value = cachedSnapshot
+  }
+
+  if (cachedSnapshot && isFresh(PRODUCT_FORM_WAREHOUSES_CACHE_KEY)) {
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('commerce_warehouses')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name')
+
+  if (error) {
+    actionError.value = error.message
+    return
+  }
+
+  warehouses.value = data || []
+  setSnapshot(PRODUCT_FORM_WAREHOUSES_CACHE_KEY, warehouses.value)
+}
+
 const getProductImages = async () => {
   const { data, error } = await supabase
     .from('product_images')
@@ -599,6 +703,8 @@ onMounted(async () => {
   await Promise.all([
     getCategoriesList(),
     getBrandsList(),
+    getSuppliersList(),
+    getWarehousesList(),
     getProductImages(),
     getProductSpecifications()
   ])
@@ -615,6 +721,8 @@ watchEffect(() => {
     imageUrl.value = product.value.image_url || ''
     categoryId.value = product.value.category_id || ''
     brandId.value = product.value.brand_id || ''
+    defaultSupplierId.value = product.value.default_supplier_id || ''
+    primaryWarehouseId.value = product.value.primary_warehouse_id || ''
     sku.value = product.value.sku || ''
     stockQuantity.value = product.value.stock_quantity ?? 0
     colorName.value = product.value.color_name || ''
@@ -650,32 +758,37 @@ const updateProduct = async () => {
 
   saving.value = true
 
-  const { error } = await supabase
-    .from('products')
-    .update({
-      title: title.value.trim(),
-      slug: normalizedSlug,
-      description: description.value.trim() || null,
-      long_description: longDescription.value.trim() || null,
-      price: Number(price.value),
-      old_price: oldPrice.value ? Number(oldPrice.value) : null,
-      image_url: imageUrl.value.trim() || null,
-      category_id: categoryId.value || null,
-      brand_id: brandId.value || null,
-      sku: sku.value.trim() || null,
-      stock_quantity: Number(stockQuantity.value) || 0,
-      color_name: colorName.value.trim() || null,
-      color_hex: colorHex.value.trim() || null,
-      is_published: isPublished.value
+  try {
+    await $fetch(`/api/admin-products/${id}`, {
+      method: 'PATCH',
+      headers: await getAdminAuthHeaders(),
+      body: {
+        title: title.value,
+        slug: normalizedSlug,
+        description: description.value,
+        long_description: longDescription.value,
+        price: price.value,
+        old_price: oldPrice.value,
+        image_url: imageUrl.value,
+        category_id: categoryId.value,
+        brand_id: brandId.value,
+        default_supplier_id: defaultSupplierId.value,
+        primary_warehouse_id: primaryWarehouseId.value,
+        sku: sku.value,
+        stock_quantity: stockQuantity.value,
+        cost_price: product.value?.cost_price ?? 0,
+        color_name: colorName.value,
+        color_hex: colorHex.value,
+        is_published: isPublished.value
+      }
     })
-    .eq('id', id)
-
-  saving.value = false
-
-  if (error) {
-    actionError.value = error.message
+  } catch (error) {
+    saving.value = false
+    actionError.value = error?.data?.statusMessage || error?.message || 'Could not save this product.'
     return
   }
+
+  saving.value = false
 
   await recordAdminLog({
     actionKey: 'products.update',

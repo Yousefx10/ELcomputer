@@ -35,6 +35,8 @@ create table public.products (
   category_id uuid null,
   slug text not null,
   brand_id uuid null,
+  default_supplier_id uuid null,
+  primary_warehouse_id uuid null,
   long_description text null,
   color_name text null,
   color_hex text null,
@@ -74,6 +76,10 @@ where
 create index IF not exists products_category_id_idx on public.products using btree (category_id) TABLESPACE pg_default;
 
 create index IF not exists products_brand_id_idx on public.products using btree (brand_id) TABLESPACE pg_default;
+
+create index IF not exists products_default_supplier_id_idx on public.products using btree (default_supplier_id) TABLESPACE pg_default;
+
+create index IF not exists products_primary_warehouse_id_idx on public.products using btree (primary_warehouse_id) TABLESPACE pg_default;
 
 create index IF not exists products_is_published_idx on public.products using btree (is_published) TABLESPACE pg_default;
 
@@ -875,6 +881,12 @@ create table public.commerce_order_return_items (
 ) TABLESPACE pg_default;
 
 create index IF not exists commerce_order_return_items_return_idx on public.commerce_order_return_items using btree (order_return_id, created_at) TABLESPACE pg_default;
+
+alter table public.products
+add constraint products_default_supplier_id_fkey foreign KEY (default_supplier_id) references commerce_crm_accounts (id) on delete set null;
+
+alter table public.products
+add constraint products_primary_warehouse_id_fkey foreign KEY (primary_warehouse_id) references commerce_warehouses (id) on delete set null;
 
 create or replace function public.is_active_admin () returns boolean language sql stable as $$
   select exists (

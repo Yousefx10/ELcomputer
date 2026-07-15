@@ -2737,7 +2737,8 @@ const mapInventoryProduct = (product) => ({
   ...product,
   slug: product.slug || '',
   stock_quantity: Number(product.stock_quantity || 0),
-  cost_price: Number(product.cost_price || 0)
+  cost_price: Number(product.cost_price || 0),
+  primary_warehouse_id: product.primary_warehouse_id || ''
 })
 
 const selectedInventoryProduct = computed(() => {
@@ -3277,7 +3278,7 @@ const getInventoryProducts = async ({ force = false } = {}) => {
   const normalizedSearchTerm = normalizeInventorySearchTerm(inventorySearchQuery.value)
   let query = supabase
     .from('products')
-    .select('id, title, slug, stock_quantity, cost_price, is_published, created_at')
+    .select('id, title, slug, stock_quantity, cost_price, primary_warehouse_id, is_published, created_at')
     .order('created_at', { ascending: false })
     .limit(10)
 
@@ -3394,14 +3395,93 @@ const increaseInventory = async () => {
     })
     .eq('id', selectedInventoryProduct.value.id)
 
-  inventoryLoading.value = false
-
   if (error) {
+    inventoryLoading.value = false
     if (!handleTableError(error)) {
       inventoryError.value = error.message
     }
     return
   }
+
+  if (selectedInventoryProduct.value.primary_warehouse_id) {
+    const { data: warehouseInventoryRow, error: warehouseInventoryFetchError } = await supabase
+      .from('commerce_warehouse_inventory')
+      .select('id, quantity')
+      .eq('product_id', selectedInventoryProduct.value.id)
+      .eq('warehouse_id', selectedInventoryProduct.value.primary_warehouse_id)
+      .maybeSingle()
+
+    if (warehouseInventoryFetchError) {
+      await supabase
+        .from('products')
+        .update({
+          stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
+          cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
+        })
+        .eq('id', selectedInventoryProduct.value.id)
+
+      inventoryLoading.value = false
+      if (!handleTableError(warehouseInventoryFetchError)) {
+        inventoryError.value = warehouseInventoryFetchError.message
+      }
+      return
+    }
+
+    if (warehouseInventoryRow) {
+      const { error: warehouseInventoryUpdateError } = await supabase
+        .from('commerce_warehouse_inventory')
+        .update({
+          quantity: Number(warehouseInventoryRow.quantity || 0) + normalizedInventoryQuantity.value,
+          average_cost: Number(inventoryCostPrice.value || 0),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', warehouseInventoryRow.id)
+
+      if (warehouseInventoryUpdateError) {
+        await supabase
+          .from('products')
+          .update({
+            stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
+            cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
+          })
+          .eq('id', selectedInventoryProduct.value.id)
+
+        inventoryLoading.value = false
+        if (!handleTableError(warehouseInventoryUpdateError)) {
+          inventoryError.value = warehouseInventoryUpdateError.message
+        }
+        return
+      }
+    } else {
+      const { error: warehouseInventoryInsertError } = await supabase
+        .from('commerce_warehouse_inventory')
+        .insert({
+          warehouse_id: selectedInventoryProduct.value.primary_warehouse_id,
+          product_id: selectedInventoryProduct.value.id,
+          quantity: nextStockQuantity,
+          average_cost: Number(inventoryCostPrice.value || 0),
+          updated_at: new Date().toISOString()
+        })
+
+      if (warehouseInventoryInsertError) {
+        await supabase
+          .from('products')
+          .update({
+            stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
+            cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
+          })
+          .eq('id', selectedInventoryProduct.value.id)
+
+        inventoryLoading.value = false
+        if (!handleTableError(warehouseInventoryInsertError)) {
+          inventoryError.value = warehouseInventoryInsertError.message
+        }
+        return
+      }
+    }
+  }
+
+  inventoryLoading.value = false
 
   inventorySuccess.value = `Inventory updated for ${selectedInventoryProduct.value.title}.`
   await logSettingsAction(

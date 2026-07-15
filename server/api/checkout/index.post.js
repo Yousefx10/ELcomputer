@@ -64,13 +64,19 @@ const isMissingSchemaError = (error) => {
   return error?.code === '42P01' || error?.code === '42703'
 }
 
-const reduceProductStockQuantities = async ({
+const buildWarehouseInventoryKey = (productId, warehouseId) => {
+  return `${String(productId)}:${String(warehouseId)}`
+}
+
+const reduceProductAndWarehouseStockQuantities = async ({
   supabaseAdmin,
   items,
   productMap,
+  warehouseInventoryMap,
   allowOutOfStockPurchases
 }) => {
   const updatedProducts = []
+  const updatedWarehouseRows = []
 
   try {
     for (const item of items) {
@@ -113,8 +119,131 @@ const reduceProductStockQuantities = async ({
         id: item.product_id,
         previousStockQuantity: currentStock
       })
+
+      const primaryWarehouseId = String(product?.primary_warehouse_id || '').trim()
+
+      if (!primaryWarehouseId) {
+        continue
+      }
+
+      const warehouseInventoryKey = buildWarehouseInventoryKey(item.product_id, primaryWarehouseId)
+      const currentWarehouseInventory = warehouseInventoryMap.get(warehouseInventoryKey)
+
+      if (!currentWarehouseInventory) {
+        if (!allowOutOfStockPurchases) {
+          throw createError({
+            statusCode: 409,
+            statusMessage: `${product?.title || 'This product'} is linked to a primary warehouse, but no warehouse inventory is configured for checkout.`
+          })
+        }
+
+        const { data: insertedInventoryRow, error: insertWarehouseError } = await supabaseAdmin
+          .from('commerce_warehouse_inventory')
+          .insert({
+            warehouse_id: primaryWarehouseId,
+            product_id: item.product_id,
+            quantity: 0,
+            average_cost: Number(product?.cost_price || 0),
+            updated_at: new Date().toISOString()
+          })
+          .select('id, quantity')
+          .single()
+
+        if (insertWarehouseError) {
+          throw createError({
+            statusCode: 500,
+            statusMessage: insertWarehouseError.message
+          })
+        }
+
+        updatedWarehouseRows.push({
+          id: insertedInventoryRow.id,
+          previousQuantity: null
+        })
+
+        warehouseInventoryMap.set(warehouseInventoryKey, {
+          id: insertedInventoryRow.id,
+          quantity: 0
+        })
+
+        continue
+      }
+
+      const currentWarehouseQuantity = Number(currentWarehouseInventory.quantity || 0)
+      const nextWarehouseQuantity = allowOutOfStockPurchases
+        ? Math.max(0, currentWarehouseQuantity - item.quantity)
+        : currentWarehouseQuantity - item.quantity
+
+      let warehouseUpdateQuery = supabaseAdmin
+        .from('commerce_warehouse_inventory')
+        .update({
+          quantity: nextWarehouseQuantity,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', currentWarehouseInventory.id)
+
+      if (!allowOutOfStockPurchases) {
+        warehouseUpdateQuery = warehouseUpdateQuery.gte('quantity', item.quantity)
+      }
+
+      const { data: updatedWarehouseRow, error: warehouseUpdateError } = await warehouseUpdateQuery
+        .select('id, quantity')
+        .maybeSingle()
+
+      if (warehouseUpdateError) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: warehouseUpdateError.message
+        })
+      }
+
+      if (!updatedWarehouseRow) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: `${product?.title || 'This product'} no longer has enough stock in its primary warehouse for checkout.`
+        })
+      }
+
+      updatedWarehouseRows.push({
+        id: currentWarehouseInventory.id,
+        previousQuantity: currentWarehouseQuantity
+      })
+
+      warehouseInventoryMap.set(warehouseInventoryKey, {
+        ...currentWarehouseInventory,
+        quantity: nextWarehouseQuantity
+      })
     }
   } catch (error) {
+    await Promise.all(
+      updatedWarehouseRows.map(async (warehouseRow) => {
+        if (warehouseRow.previousQuantity === null) {
+          const { error: rollbackDeleteError } = await supabaseAdmin
+            .from('commerce_warehouse_inventory')
+            .delete()
+            .eq('id', warehouseRow.id)
+
+          if (rollbackDeleteError) {
+            console.error('Could not roll back inserted warehouse inventory row:', rollbackDeleteError.message)
+          }
+
+          return
+        }
+
+        const { error: rollbackWarehouseError } = await supabaseAdmin
+          .from('commerce_warehouse_inventory')
+          .update({
+            quantity: warehouseRow.previousQuantity,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', warehouseRow.id)
+
+        if (rollbackWarehouseError) {
+          console.error('Could not roll back warehouse inventory:', rollbackWarehouseError.message)
+        }
+      })
+    )
+
     await Promise.all(
       updatedProducts.map(async (updatedProduct) => {
         const { error: rollbackError } = await supabaseAdmin
@@ -183,6 +312,8 @@ export default defineEventHandler(async (event) => {
       image_url,
       price,
       stock_quantity,
+      cost_price,
+      primary_warehouse_id,
       is_published
     `)
     .in('id', productIds)
@@ -196,6 +327,38 @@ export default defineEventHandler(async (event) => {
 
   const productMap = new Map((products || []).map((product) => [String(product.id), product]))
   const missingItem = orderItems.find((item) => !productMap.has(item.id))
+
+  const primaryWarehouseIds = [
+    ...new Set(
+      (products || [])
+        .map((product) => String(product.primary_warehouse_id || '').trim())
+        .filter(Boolean)
+    )
+  ]
+
+  let warehouseInventoryMap = new Map()
+
+  if (primaryWarehouseIds.length) {
+    const { data: warehouseInventoryRows, error: warehouseInventoryError } = await supabaseAdmin
+      .from('commerce_warehouse_inventory')
+      .select('id, warehouse_id, product_id, quantity')
+      .in('product_id', productIds)
+      .in('warehouse_id', primaryWarehouseIds)
+
+    if (warehouseInventoryError) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: warehouseInventoryError.message
+      })
+    }
+
+    warehouseInventoryMap = new Map(
+      (warehouseInventoryRows || []).map((row) => [
+        buildWarehouseInventoryKey(row.product_id, row.warehouse_id),
+        row
+      ])
+    )
+  }
 
   if (missingItem) {
     throw createError({
@@ -219,6 +382,27 @@ export default defineEventHandler(async (event) => {
         statusCode: 400,
         statusMessage: `${product.title} does not have enough stock for the requested quantity.`
       })
+    }
+
+    const primaryWarehouseId = String(product.primary_warehouse_id || '').trim()
+    if (primaryWarehouseId && !allowOutOfStockPurchases) {
+      const warehouseInventoryRow = warehouseInventoryMap.get(
+        buildWarehouseInventoryKey(product.id, primaryWarehouseId)
+      )
+
+      if (!warehouseInventoryRow) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: `${product.title} is linked to a primary warehouse, but no warehouse inventory is configured yet.`
+        })
+      }
+
+      if (Number(warehouseInventoryRow.quantity || 0) < item.quantity) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: `${product.title} does not have enough stock in its primary warehouse.`
+        })
+      }
     }
 
     const unitPrice = Number(product.price || 0)
@@ -294,10 +478,11 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    await reduceProductStockQuantities({
+    await reduceProductAndWarehouseStockQuantities({
       supabaseAdmin,
       items: normalizedItems,
       productMap,
+      warehouseInventoryMap,
       allowOutOfStockPurchases
     })
   } catch (stockError) {
