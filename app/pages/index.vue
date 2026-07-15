@@ -118,7 +118,7 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
       .order('created_at', { ascending: false }),
     supabase
       .from('categories')
-      .select('id, name, slug')
+      .select('id, name, slug, image_url')
       .order('name'),
     supabase
       .from('brands')
@@ -151,7 +151,8 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
       return {
         ...category,
         productCount: products.filter((product) => product.category?.id === category.id).length,
-        products: categoryProducts
+        products: categoryProducts,
+        displayImageUrl: category.image_url || categoryProducts.find((product) => product.image_url)?.image_url || ''
       }
     })
     .filter((category) => category.productCount > 0)

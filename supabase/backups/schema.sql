@@ -5,6 +5,7 @@ create table public.categories (
   id uuid not null default gen_random_uuid (),
   name text not null,
   slug text not null,
+  image_url text null,
   created_at timestamp with time zone null default now(),
   constraint categories_pkey primary key (id),
   constraint categories_slug_key unique (slug)

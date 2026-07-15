@@ -21,6 +21,29 @@
           class="w-full rounded-lg border p-3"
         />
 
+        <input
+          v-model="imageUrl"
+          type="url"
+          placeholder="Category image URL for Top Categories section"
+          :disabled="editingId ? !canEditCategory : !canAddCategory"
+          class="w-full rounded-lg border p-3"
+        />
+
+        <div
+          v-if="imageUrl"
+          class="overflow-hidden rounded-2xl border bg-gray-50 p-3"
+        >
+          <p class="mb-3 text-sm font-medium text-gray-600">
+            Image Preview
+          </p>
+
+          <img
+            :src="imageUrl"
+            :alt="name || 'Category preview'"
+            class="h-40 w-full rounded-xl object-contain"
+          >
+        </div>
+
         <p class="text-sm text-gray-500">
           Slug preview: {{ slugPreview || '-' }}
         </p>
@@ -114,9 +137,24 @@
               :key="category.id"
               class="flex items-center justify-between rounded-xl border p-4"
             >
-              <div>
-                <p class="font-bold">{{ category.name }}</p>
-                <p class="text-sm text-gray-500">{{ category.slug }}</p>
+              <div class="flex items-center gap-4">
+                <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gray-100">
+                  <img
+                    v-if="category.image_url"
+                    :src="category.image_url"
+                    :alt="category.name"
+                    class="h-full w-full object-cover"
+                  >
+
+                  <span v-else class="text-lg font-bold text-gray-500">
+                    {{ category.name.charAt(0) }}
+                  </span>
+                </div>
+
+                <div>
+                  <p class="font-bold">{{ category.name }}</p>
+                  <p class="text-sm text-gray-500">{{ category.slug }}</p>
+                </div>
               </div>
 
               <div class="flex gap-2">
@@ -190,6 +228,7 @@ const buildCategoriesCacheKey = (page = currentPage.value) => {
 
 const categories = ref([])
 const name = ref('')
+const imageUrl = ref('')
 const saving = ref(false)
 const loading = ref(true)
 const errorMessage = ref('')
@@ -233,6 +272,7 @@ const slugPreview = computed(() => makeSlug(name.value))
 
 const resetForm = () => {
   name.value = ''
+  imageUrl.value = ''
   editingId.value = null
   errorMessage.value = ''
 }
@@ -335,7 +375,8 @@ const saveCategory = async () => {
       .from('categories')
       .update({
         name: name.value.trim(),
-        slug
+        slug,
+        image_url: imageUrl.value.trim() || null
       })
       .eq('id', editingId.value)
   } else {
@@ -343,7 +384,8 @@ const saveCategory = async () => {
       .from('categories')
       .insert({
         name: name.value.trim(),
-        slug
+        slug,
+        image_url: imageUrl.value.trim() || null
       })
   }
 
@@ -360,7 +402,8 @@ const saveCategory = async () => {
     metadata: {
       category_id: editingId.value || null,
       category_name: name.value.trim(),
-      category_slug: slug
+      category_slug: slug,
+      category_image_url: imageUrl.value.trim() || null
     }
   })
 
@@ -378,6 +421,7 @@ const startEdit = (category) => {
   }
 
   name.value = category.name
+  imageUrl.value = category.image_url || ''
   editingId.value = category.id
   errorMessage.value = ''
 }
