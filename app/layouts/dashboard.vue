@@ -3,16 +3,16 @@
     <div class="mx-auto max-w-6xl px-6 pt-6">
       <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
         <NuxtLink to="/dashboard" class="flex items-center">
-          <img
+          <!-- <img
             v-if="dashboardLogoUrl"
             :src="dashboardLogoUrl"
             :alt="dashboardSiteName"
+            class="h-10 w-auto object-contain" /> -->
+          <img
+            src="/images/dashboard-logo.png"
+            alt="ELcomputer Dashboard"
             class="h-10 w-auto object-contain"
           >
-
-          <span v-else class="text-lg font-bold text-gray-900">
-            {{ dashboardSiteName }}
-          </span>
         </NuxtLink>
 
         <div class="flex items-center gap-3">
