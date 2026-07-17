@@ -113,7 +113,7 @@ const canEditProducts = computed(() => hasPermission('products.edit'))
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
 const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
 const currentView = computed(() => {
-  return route.query.view === 'analysis' && canSeeAnalysis.value ? 'analysis' : 'summary'
+  return route.query.view === 'analysis' ? 'analysis' : 'summary'
 })
 const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value, {
   canSeeAnalysis: canSeeAnalysis.value,

@@ -176,20 +176,22 @@ const rangePresets = [
 
 const selectedMetricDefinition = computed(() => chartMetrics.find((metric) => metric.key === selectedMetric.value) || chartMetrics[0])
 
+function buildOverviewPeriod(key, label, comparisonLabel, icon) {
+  return {
+    key,
+    label,
+    comparisonLabel,
+    icon,
+    current: overview.value?.[key]?.current || {},
+    previous: overview.value?.[key]?.previous || {}
+  }
+}
+
 const overviewPeriods = computed(() => [
   buildOverviewPeriod('today', 'Today', 'yesterday', 'lucide:sun'),
   buildOverviewPeriod('weekly', 'Weekly', 'last week', 'lucide:calendar-days'),
   buildOverviewPeriod('monthly', 'Monthly', 'last month', 'lucide:calendar-range')
 ])
-
-const buildOverviewPeriod = (key, label, comparisonLabel, icon) => ({
-  key,
-  label,
-  comparisonLabel,
-  icon,
-  current: overview.value?.[key]?.current || {},
-  previous: overview.value?.[key]?.previous || {}
-})
 
 const padDatePart = (value) => String(value).padStart(2, '0')
 const toDateInput = (date) => `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`
@@ -366,7 +368,8 @@ const chartPolyline = computed(() => chartPoints.value.map((point) => `${point.x
 const chartAreaPath = computed(() => {
   if (!chartPoints.value.length) return ''
   const baseline = chartHasNegativeValues.value ? zeroLineY.value : 268
-  return `M ${chartPoints.value[0].x} ${baseline} L ${chartPoints.value.map((point) => `${point.x} ${point.y}`).join(' L ')} L ${chartPoints.value.at(-1).x} ${baseline} Z`
+  const lastPoint = chartPoints.value[chartPoints.value.length - 1]
+  return `M ${chartPoints.value[0].x} ${baseline} L ${chartPoints.value.map((point) => `${point.x} ${point.y}`).join(' L ')} L ${lastPoint.x} ${baseline} Z`
 })
 
 const getVisibleIndexes = (length, count = 6) => {
@@ -378,7 +381,9 @@ const visibleChartPoints = computed(() => getVisibleIndexes(chartPoints.value.le
 const chartAxisLabels = computed(() => getVisibleIndexes(chartPoints.value.length, 5).map((index) => chartPoints.value[index]))
 
 const formatBucketLabel = (value) => {
-  const date = new Date(`${value}T00:00:00`)
+  const rawDate = String(value || '').slice(0, 10)
+  const date = new Date(`${rawDate}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return rawDate || '-'
   return new Intl.DateTimeFormat('en-US', activeRange.bucket === 'month' ? { month: 'short' } : { month: 'short', day: 'numeric' }).format(date)
 }
 
