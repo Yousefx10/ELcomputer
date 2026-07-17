@@ -7,6 +7,10 @@ const {
 } = useAdminAccess()
 const { recordAdminLog } = useAdminLogs()
 
+useHead({
+  title: 'Dashboard - Login'
+})
+
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
