@@ -267,7 +267,11 @@
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <button
+        type="button"
+        class="flex w-full items-start justify-between gap-4 text-left"
+        @click="isListOpen = !isListOpen"
+      >
         <div>
           <h3 class="text-2xl font-bold">All {{ currentTypeListLabel }}</h3>
           <p class="mt-1 text-sm text-gray-500">
@@ -275,6 +279,18 @@
           </p>
         </div>
 
+        <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+          <span>{{ isListOpen ? 'Collapse' : 'Expand' }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="transition-transform"
+            :class="isListOpen ? 'rotate-180' : ''"
+          />
+        </div>
+      </button>
+
+      <div v-if="isListOpen" class="mt-6">
         <div class="w-full md:max-w-md">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Search</label>
           <input
@@ -284,7 +300,6 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
-      </div>
 
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
         {{ pageError }}
@@ -350,6 +365,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
   </div>
 </template>
@@ -370,6 +386,7 @@ const formError = ref('')
 const searchQuery = ref('')
 const editingId = ref('')
 const isFormOpen = ref(false)
+const isListOpen = ref(false)
 let searchTimeoutId = null
 
 const createEmptyForm = () => ({

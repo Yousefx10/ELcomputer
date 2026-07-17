@@ -54,6 +54,11 @@ const allLinks = [
     permission: 'brands.view'
   },
   {
+    label: 'CRM',
+    to: '/dashboard/crm',
+    icon: 'lucide:contact-round'
+  },
+  {
     label: 'Commerce',
     to: '/dashboard/commerce',
     icon: 'lucide:briefcase-business'

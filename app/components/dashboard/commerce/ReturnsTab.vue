@@ -250,14 +250,31 @@
 
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h3 class="text-2xl font-bold">Recent Returns</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Latest recorded returns across the system.
-          </p>
-        </div>
+        <button
+          type="button"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          @click="isRecentReturnsOpen = !isRecentReturnsOpen"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Recent Returns</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Latest recorded returns across the system.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+            <span>{{ isRecentReturnsOpen ? 'Collapse' : 'Expand' }}</span>
+            <Icon
+              name="lucide:chevron-down"
+              size="18"
+              class="transition-transform"
+              :class="isRecentReturnsOpen ? 'rotate-180' : ''"
+            />
+          </div>
+        </button>
 
         <button
+          v-if="isRecentReturnsOpen"
           type="button"
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentReturns"
@@ -266,6 +283,7 @@
         </button>
       </div>
 
+      <div v-if="isRecentReturnsOpen">
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
         {{ pageError }}
       </p>
@@ -311,6 +329,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
   </div>
 </template>
@@ -335,6 +354,7 @@ const saving = ref(false)
 const pageError = ref('')
 const formError = ref('')
 const isFormOpen = ref(false)
+const isRecentReturnsOpen = ref(false)
 const orderSearchQuery = ref('')
 let orderSearchTimeoutId = null
 

@@ -262,16 +262,6 @@
           >
         </div>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
-          <input
-            v-model="productSearchQuery"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="Search by title or slug"
-          >
-        </div>
-
         <div class="md:col-span-2">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
           <textarea
@@ -301,7 +291,17 @@
             </button>
           </div>
 
-          <div class="mt-4 space-y-3">
+          <div class="mt-4 max-w-xl">
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
+            <input
+              v-model="productSearchQuery"
+              type="text"
+              class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+              placeholder="Search by title or slug"
+            >
+          </div>
+
+          <div class="mt-3 space-y-3">
             <div
               v-for="(item, index) in transferForm.items"
               :key="index"
@@ -448,14 +448,31 @@
 
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h3 class="text-2xl font-bold">Recent Movements</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Procurement, transfers, and returns are tracked here.
-          </p>
-        </div>
+        <button
+          type="button"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          @click="isMovementsOpen = !isMovementsOpen"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Recent Movements</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Procurement, transfers, and returns are tracked here.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+            <span>{{ isMovementsOpen ? 'Collapse' : 'Expand' }}</span>
+            <Icon
+              name="lucide:chevron-down"
+              size="18"
+              class="transition-transform"
+              :class="isMovementsOpen ? 'rotate-180' : ''"
+            />
+          </div>
+        </button>
 
         <button
+          v-if="isMovementsOpen"
           type="button"
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentMovements"
@@ -464,6 +481,7 @@
         </button>
       </div>
 
+      <div v-if="isMovementsOpen">
       <p v-if="loadingMovements" class="mt-5 text-sm text-gray-500">
         Loading movement history...
       </p>
@@ -513,6 +531,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -605,6 +624,7 @@ const transferFormError = ref('')
 const editingWarehouseId = ref('')
 const isWarehouseFormOpen = ref(false)
 const isTransferFormOpen = ref(false)
+const isMovementsOpen = ref(false)
 const productSearchQuery = ref('')
 const inventoryWarehouseFilter = ref('')
 const inventorySearchQuery = ref('')

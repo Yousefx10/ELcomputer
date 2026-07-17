@@ -162,12 +162,6 @@
           </select>
         </div>
 
-        <div class="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          Manual stock editing is allowed, but it should be used carefully once Commerce is active.
-          This update changes the global product stock and syncs the selected primary warehouse path only.
-          For normal stock receiving or movement, use Commerce procurement, transfer, and returns.
-        </div>
-
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">Price</label>
           <input
@@ -198,7 +192,17 @@
             min="0"
             placeholder="0"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            @focus="isStockQuantityFocused = true"
+            @blur="isStockQuantityFocused = false"
           />
+
+          <p
+            v-if="isStockQuantityFocused"
+            class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
+          >
+            Manual stock editing is allowed, but it should be used carefully once Commerce is active.
+            For normal stock receiving or movement, use Commerce procurement, transfer, and returns.
+          </p>
         </div>
 
         <div>
@@ -505,6 +509,7 @@ const defaultSupplierId = ref('')
 const primaryWarehouseId = ref('')
 const sku = ref('')
 const stockQuantity = ref(0)
+const isStockQuantityFocused = ref(false)
 const colorName = ref('')
 const colorHex = ref('')
 const isPublished = ref(true)

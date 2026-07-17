@@ -4,14 +4,13 @@
       <div class="rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Commerce</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Manage suppliers, B2B customers, procurement, shipping companies, warehouses, and returned orders.
+          Manage procurement, shipping companies, warehouses, and returned orders.
         </p>
       </div>
 
       <DashboardSecondaryNav :items="secondaryNavItems" />
 
-      <DashboardCommerceCrmTab v-if="activeTab === 'crm'" />
-      <DashboardCommerceProcurementTab v-else-if="activeTab === 'procurement'" />
+      <DashboardCommerceProcurementTab v-if="activeTab === 'procurement'" />
       <DashboardCommerceShippingTab v-else-if="activeTab === 'shipping'" />
       <DashboardCommerceWarehousesTab v-else-if="activeTab === 'warehouses'" />
       <DashboardCommerceReturnsTab v-else />
@@ -32,7 +31,7 @@ const validTabKeys = new Set(commerceTabs.map((tab) => tab.key))
 
 const activeTab = computed(() => {
   const tab = String(route.query.tab || '').trim().toLowerCase()
-  return validTabKeys.has(tab) ? tab : 'crm'
+  return validTabKeys.has(tab) ? tab : 'procurement'
 })
 
 const secondaryNavItems = computed(() => {

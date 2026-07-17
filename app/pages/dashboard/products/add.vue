@@ -177,7 +177,17 @@
             min="0"
             placeholder="0"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            @focus="isStockQuantityFocused = true"
+            @blur="isStockQuantityFocused = false"
           />
+
+          <p
+            v-if="isStockQuantityFocused"
+            class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
+          >
+            Manual stock editing is allowed, but it should be used carefully once Commerce is active.
+            For normal stock receiving, use Commerce procurement.
+          </p>
         </div>
 
         <div>
@@ -310,6 +320,7 @@ const defaultSupplierId = ref('')
 const primaryWarehouseId = ref('')
 const sku = ref('')
 const stockQuantity = ref(0)
+const isStockQuantityFocused = ref(false)
 const costPrice = ref('')
 const colorName = ref('')
 const colorHex = ref('')

@@ -1,13 +1,8 @@
 export const commerceTabs = [
   {
-    key: 'crm',
-    label: 'CRM',
-    to: '/dashboard/commerce'
-  },
-  {
     key: 'procurement',
     label: 'Procurement',
-    to: '/dashboard/commerce?tab=procurement'
+    to: '/dashboard/commerce'
   },
   {
     key: 'shipping',

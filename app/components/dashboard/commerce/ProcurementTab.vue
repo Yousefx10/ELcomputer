@@ -110,16 +110,6 @@
           >
         </div>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
-          <input
-            v-model="productSearchQuery"
-            type="text"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="Search by title or slug"
-          >
-        </div>
-
         <div class="md:col-span-2">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
           <textarea
@@ -149,7 +139,17 @@
             </button>
           </div>
 
-          <div class="mt-4 space-y-3">
+          <div class="mt-4 max-w-xl">
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
+            <input
+              v-model="productSearchQuery"
+              type="text"
+              class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+              placeholder="Search by title or slug"
+            >
+          </div>
+
+          <div class="mt-3 space-y-3">
             <div
               v-for="(item, index) in items"
               :key="index"
