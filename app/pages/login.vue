@@ -188,14 +188,14 @@ onMounted(() => {
           <div class="rounded-2xl bg-white/10 p-4">
             <p class="text-sm font-semibold">Your account dashboard</p>
             <p class="mt-1 text-sm text-blue-100">
-              View total orders, delivered orders, in-progress orders, and your wallet balance.
+              Elcomputer wallet balance.
             </p>
           </div>
 
           <div class="rounded-2xl bg-white/10 p-4">
             <p class="text-sm font-semibold">One login for the store</p>
             <p class="mt-1 text-sm text-blue-100">
-              Customer access is separated from the admin dashboard login.
+              Customer access.
             </p>
           </div>
         </div>
@@ -301,14 +301,11 @@ onMounted(() => {
         </button>
 
         <p class="mt-4 text-center text-xs text-gray-500">
-          Google sign in works after you enable the Google provider in Supabase Authentication settings.
+          Google sign in.
         </p>
 
         <p class="mt-6 text-center text-sm text-gray-500">
-          Admin?
-          <NuxtLink to="/dashboard/login" class="font-semibold text-blue-600 hover:text-blue-700">
-            Go to dashboard login
-          </NuxtLink>
+          <!-- Meant to be empty -->
         </p>
       </div>
     </div>

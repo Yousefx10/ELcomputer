@@ -82,12 +82,6 @@
         </li>
 
         <li>
-          <NuxtLink to="/dashboard/login" class="text-sm font-medium">
-            Dashboard Login
-          </NuxtLink>
-        </li>
-
-        <li>
           <NuxtLink :to="customerAccountPath">
             <Icon name="lucide:user" size="24" />
           </NuxtLink>
@@ -180,12 +174,6 @@
               >
             </div>
           </form>
-        </li>
-
-        <li class="col-span-2" @click="isMenuOpen = false">
-          <NuxtLink to="/dashboard/login">
-            Dashboard Login
-          </NuxtLink>
         </li>
 
         <li @click="isMenuOpen = false">
