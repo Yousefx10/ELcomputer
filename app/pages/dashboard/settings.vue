@@ -15,7 +15,7 @@
       </div>
 
       <div
-        v-if="!canEditSettings && activeSettingsView !== 'users'"
+        v-if="!canEditSettings"
         class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 shadow"
       >
         This account has view-only access to settings. Saving and editing actions are disabled.
@@ -85,6 +85,39 @@
                   placeholder="ELcomputer"
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
+              </div>
+
+              <div class="md:col-span-2 rounded-2xl border bg-gray-50 p-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="font-bold text-gray-900">Allow out-of-stock purchases</p>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Let shoppers place an order even when the available product stock is zero.
+                    </p>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="text-sm font-semibold"
+                      :class="siteSettings.allow_out_of_stock_purchases ? 'text-green-600' : 'text-gray-500'"
+                    >
+                      {{ siteSettings.allow_out_of_stock_purchases ? 'ON' : 'OFF' }}
+                    </span>
+
+                    <button
+                      type="button"
+                      :aria-pressed="siteSettings.allow_out_of_stock_purchases"
+                      class="relative inline-flex h-7 w-14 items-center rounded-full transition"
+                      :class="siteSettings.allow_out_of_stock_purchases ? 'bg-green-600' : 'bg-gray-300'"
+                      @click="siteSettings.allow_out_of_stock_purchases = !siteSettings.allow_out_of_stock_purchases"
+                    >
+                      <span
+                        class="inline-block h-5 w-5 rounded-full bg-white transition"
+                        :class="siteSettings.allow_out_of_stock_purchases ? 'translate-x-8' : 'translate-x-1'"
+                      />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1513,226 +1546,6 @@
         </div>
       </div>
 
-      <div v-else-if="activeSettingsView === 'inventory'" class="space-y-6">
-        <section class="rounded-2xl bg-white p-6 shadow">
-          <div
-            class="rounded-2xl border bg-gray-50 p-5"
-            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
-          >
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h3 class="text-2xl font-bold">Inventory Rules</h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  Control whether shoppers can still place orders when a product stock is empty.
-                </p>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <span
-                  class="text-sm font-semibold"
-                  :class="siteSettings.allow_out_of_stock_purchases ? 'text-green-600' : 'text-gray-500'"
-                >
-                  {{ siteSettings.allow_out_of_stock_purchases ? 'ON' : 'OFF' }}
-                </span>
-
-                <button
-                  type="button"
-                  :aria-pressed="siteSettings.allow_out_of_stock_purchases"
-                  @click="siteSettings.allow_out_of_stock_purchases = !siteSettings.allow_out_of_stock_purchases"
-                  class="relative inline-flex h-7 w-14 items-center rounded-full transition"
-                  :class="siteSettings.allow_out_of_stock_purchases ? 'bg-green-600' : 'bg-gray-300'"
-                >
-                  <span
-                    class="inline-block h-5 w-5 rounded-full bg-white transition"
-                    :class="siteSettings.allow_out_of_stock_purchases ? 'translate-x-8' : 'translate-x-1'"
-                  />
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1">
-                <p
-                  v-if="settingsErrorSection === 'inventorySettings' && settingsError"
-                  class="text-sm text-red-600"
-                >
-                  {{ settingsError }}
-                </p>
-
-                <p
-                  v-if="settingsSuccessSection === 'inventorySettings' && settingsSuccess"
-                  class="text-sm text-green-600"
-                >
-                  {{ settingsSuccess }}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                :disabled="!isSettingsSectionDirty('inventorySettings') || settingsLoading"
-                @click="saveSiteSettings('inventorySettings')"
-                class="rounded-lg px-5 py-3 font-bold text-white"
-                :class="isSettingsSectionDirty('inventorySettings') && !settingsLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                {{ settingsLoadingSection === 'inventorySettings' ? 'Saving...' : 'Save Inventory Rules' }}
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <section class="rounded-2xl bg-white p-6 shadow">
-          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h3 class="text-2xl font-bold">Increase Inventory</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Pick a product, add the incoming stock quantity, and save the latest cost.
-              </p>
-            </div>
-
-            <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-              {{ inventoryProducts.length }} product{{ inventoryProducts.length === 1 ? '' : 's' }}
-            </div>
-          </div>
-
-          <div v-if="!canViewInventory" class="mt-6 rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
-            This account needs product view permission to load inventory products.
-          </div>
-
-          <div v-else class="mt-6 space-y-4">
-            <div v-if="!canEditInventory" class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
-              This account needs product edit permission to increase inventory.
-            </div>
-
-            <div
-              class="rounded-2xl border bg-gray-50 p-5"
-              :class="!canEditInventory ? 'pointer-events-none opacity-70' : ''"
-            >
-              <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end">
-                <div class="flex-1">
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Search Product</label>
-                  <input
-                    v-model="inventorySearchQuery"
-                    type="text"
-                    placeholder="Search by product name or slug"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <button
-                  v-if="inventorySearchQuery.trim()"
-                  type="button"
-                  class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  @click="clearInventorySearch"
-                >
-                  Clear
-                </button>
-              </div>
-
-              <p class="mb-4 text-sm text-gray-500">
-                {{ inventorySearchQuery.trim()
-                  ? `Showing up to 10 matching products for "${inventorySearchQuery.trim()}".`
-                  : 'Showing the latest 10 added products.' }}
-              </p>
-
-              <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div class="xl:col-span-2">
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Product</label>
-                  <select
-                    v-model="selectedInventoryProductId"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                    <option value="">Select product</option>
-
-                    <option
-                      v-for="inventoryProduct in inventoryProductOptions"
-                      :key="inventoryProduct.id"
-                      :value="inventoryProduct.id"
-                    >
-                      {{ inventoryProduct.title }}{{ inventoryProduct.slug ? ` (${inventoryProduct.slug})` : '' }}
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Add Quantity</label>
-                  <input
-                    v-model="inventoryIncreaseQuantity"
-                    type="number"
-                    min="1"
-                    placeholder="1"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">New Product Cost</label>
-                  <input
-                    v-model="inventoryCostPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-              </div>
-
-              <div
-                v-if="selectedInventoryProduct"
-                class="mt-4 grid gap-4 md:grid-cols-3"
-              >
-                <div class="rounded-xl bg-white p-4">
-                  <p class="text-sm text-gray-500">Current Stock</p>
-                  <p class="mt-2 text-2xl font-bold text-gray-900">
-                    {{ selectedInventoryProduct.stock_quantity }}
-                  </p>
-                </div>
-
-                <div class="rounded-xl bg-white p-4">
-                  <p class="text-sm text-gray-500">Current Cost</p>
-                  <p class="mt-2 text-2xl font-bold text-gray-900">
-                    {{ formatInventoryMoney(selectedInventoryProduct.cost_price) }}
-                  </p>
-                </div>
-
-                <div class="rounded-xl bg-white p-4">
-                  <p class="text-sm text-gray-500">Stock After Update</p>
-                  <p class="mt-2 text-2xl font-bold text-gray-900">
-                    {{ nextInventoryStockQuantity }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
-                <div class="space-y-1">
-                  <p v-if="inventoryError" class="text-sm text-red-600">
-                    {{ inventoryError }}
-                  </p>
-
-                  <p v-if="inventorySuccess" class="text-sm text-green-600">
-                    {{ inventorySuccess }}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  :disabled="!isInventoryIncreaseReady || inventoryLoading || !canEditInventory"
-                  @click="increaseInventory"
-                  class="rounded-lg px-5 py-3 font-bold text-white"
-                  :class="isInventoryIncreaseReady && !inventoryLoading && canEditInventory
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-300'"
-                >
-                  {{ inventoryLoading ? 'Saving...' : 'Increase Inventory' }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
       <div v-else-if="activeSettingsView === 'coupons'" class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -1999,10 +1812,6 @@
         </section>
       </div>
 
-      <div v-else-if="activeSettingsView === 'users'" class="space-y-6">
-        <DashboardSettingsUsersTab />
-      </div>
-
       <div v-else class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -2097,7 +1906,6 @@
 </template>
 
 <script setup>
-import DashboardSettingsUsersTab from '~/components/dashboard/settings/UsersTab.vue'
 import {
   defaultHeaderLinkDefinitions,
   getDefaultHeaderLinkDefinition,
@@ -2110,9 +1918,15 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const route = useRoute()
+
+if (route.query.tab === 'users') {
+  await navigateTo('/dashboard/hr?tab=users', {
+    replace: true
+  })
+}
+
 const {
   getSnapshot,
-  invalidate,
   isFresh,
   setSnapshot
 } = useDashboardCache()
@@ -2135,12 +1949,8 @@ const pageError = ref('')
 const canViewGeneralSettings = computed(() => hasPermission('settings.view'))
 const canViewGallery = computed(() => hasPermission('settings.view'))
 const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
-const canAccessInventory = computed(() => hasPermission('settings.inventory'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
 const canViewLogs = computed(() => hasPermission('settings.view'))
-const canViewUsers = computed(() => hasPermission('users.view'))
-const canViewInventory = computed(() => canAccessInventory.value)
-const canEditInventory = computed(() => canAccessInventory.value && canEditSettings.value)
 
 const defaultSiteSettings = {
   key: 'default',
@@ -2177,7 +1987,6 @@ const topBarMessages = ref([])
 const offerCards = ref([])
 const siteLinks = ref([])
 const coupons = ref([])
-const inventoryProducts = ref([])
 const galleryImages = ref([])
 
 const settingsLoading = ref(false)
@@ -2199,12 +2008,8 @@ const offerCardsError = ref('')
 const linkError = ref('')
 const couponError = ref('')
 const couponLoading = ref(false)
-const inventoryLoading = ref(false)
 const galleryLoading = ref(false)
 const offerCardsLoading = ref(false)
-const inventoryError = ref('')
-const inventorySuccess = ref('')
-const inventorySearchQuery = ref('')
 const galleryError = ref('')
 const gallerySearchQuery = ref('')
 const galleryDeleting = ref(false)
@@ -2250,10 +2055,6 @@ const newCoupon = reactive({
   ends_at: '',
   is_active: true
 })
-const selectedInventoryProductId = ref('')
-const selectedInventoryProductSnapshot = ref(null)
-const inventoryIncreaseQuantity = ref(1)
-const inventoryCostPrice = ref('')
 const galleryLoaded = ref(false)
 const openSections = reactive({
   generalSettings: true,
@@ -2270,10 +2071,6 @@ const activeSettingsView = computed(() => {
     return 'logs'
   }
 
-  if (route.query.tab === 'users' && canViewUsers.value) {
-    return 'users'
-  }
-
   if (route.query.tab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'
   }
@@ -2282,16 +2079,8 @@ const activeSettingsView = computed(() => {
     return 'gallery'
   }
 
-  if (route.query.tab === 'inventory' && canAccessInventory.value) {
-    return 'inventory'
-  }
-
   if (canViewGeneralSettings.value) {
     return 'general'
-  }
-
-  if (canAccessInventory.value) {
-    return 'inventory'
   }
 
   if (canViewGallery.value) {
@@ -2304,10 +2093,6 @@ const activeSettingsView = computed(() => {
 
   if (canViewLogs.value) {
     return 'logs'
-  }
-
-  if (canViewUsers.value) {
-    return 'users'
   }
 
   return 'general'
@@ -2331,27 +2116,11 @@ const secondaryNavItems = computed(() => {
     })
   }
 
-  if (canAccessInventory.value) {
-    items.push({
-      label: 'Inventory',
-      to: '/dashboard/settings?tab=inventory',
-      active: activeSettingsView.value === 'inventory'
-    })
-  }
-
   if (canAccessCoupons.value) {
     items.push({
       label: 'Coupon',
       to: '/dashboard/settings?tab=coupons',
       active: activeSettingsView.value === 'coupons'
-    })
-  }
-
-  if (canViewUsers.value) {
-    items.push({
-      label: 'Users',
-      to: '/dashboard/settings?tab=users',
-      active: activeSettingsView.value === 'users'
     })
   }
 
@@ -2371,9 +2140,7 @@ const siteSettingsSectionFields = {
     'site_name',
     'site_logo_url',
     'site_background_color',
-    'landing_page_title'
-  ],
-  inventorySettings: [
+    'landing_page_title',
     'allow_out_of_stock_purchases'
   ],
   heroSettings: [
@@ -2405,7 +2172,6 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
-  inventorySettings: 'Inventory settings',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
@@ -2447,9 +2213,7 @@ const logSettingsAction = async (description, actionKey, metadata = {}) => {
 const siteSettingsSnapshot = ref({})
 const generalSettingsLoaded = ref(false)
 const couponsLoaded = ref(false)
-const inventoryLoaded = ref(false)
 let gallerySearchTimeoutId = null
-let inventorySearchTimeoutId = null
 
 const toggleSection = (sectionName) => {
   openSections[sectionName] = !openSections[sectionName]
@@ -2725,98 +2489,6 @@ const mapCoupon = (coupon) => {
   }
 }
 
-const formatInventoryMoney = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EGP',
-    maximumFractionDigits: 2
-  }).format(Number(value || 0))
-}
-
-const mapInventoryProduct = (product) => ({
-  ...product,
-  slug: product.slug || '',
-  stock_quantity: Number(product.stock_quantity || 0),
-  cost_price: Number(product.cost_price || 0),
-  primary_warehouse_id: product.primary_warehouse_id || ''
-})
-
-const selectedInventoryProduct = computed(() => {
-  const matchedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
-
-  if (matchedProduct) {
-    return matchedProduct
-  }
-
-  if (selectedInventoryProductSnapshot.value?.id === selectedInventoryProductId.value) {
-    return selectedInventoryProductSnapshot.value
-  }
-
-  return null
-})
-
-const inventoryProductOptions = computed(() => {
-  const options = [...inventoryProducts.value]
-
-  if (
-    selectedInventoryProduct.value &&
-    !options.some((product) => product.id === selectedInventoryProduct.value.id)
-  ) {
-    options.unshift(selectedInventoryProduct.value)
-  }
-
-  return options
-})
-
-const normalizedInventoryQuantity = computed(() => {
-  const quantity = Number.parseInt(inventoryIncreaseQuantity.value, 10)
-
-  if (!Number.isFinite(quantity) || quantity < 1) {
-    return 0
-  }
-
-  return quantity
-})
-
-const nextInventoryStockQuantity = computed(() => {
-  if (!selectedInventoryProduct.value) {
-    return 0
-  }
-
-  return Number(selectedInventoryProduct.value.stock_quantity || 0) + normalizedInventoryQuantity.value
-})
-
-const isInventoryIncreaseReady = computed(() => {
-  if (!selectedInventoryProductId.value) {
-    return false
-  }
-
-  if (normalizedInventoryQuantity.value < 1) {
-    return false
-  }
-
-  if (String(inventoryCostPrice.value).trim() === '') {
-    return false
-  }
-
-  return Number(inventoryCostPrice.value) >= 0
-})
-
-const normalizeInventorySearchTerm = (value) => {
-  return String(value || '')
-    .trim()
-    .replace(/[^a-zA-Z0-9-\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-}
-
-const buildInventoryProductsCacheKey = () => {
-  return `dashboard:settings:inventory:${normalizeInventorySearchTerm(inventorySearchQuery.value).toLowerCase()}`
-}
-
-const clearInventorySearch = () => {
-  inventorySearchQuery.value = ''
-}
-
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
@@ -2918,15 +2590,6 @@ const syncGalleryCache = () => {
   })
 }
 
-const applyInventoryProductsSnapshot = (snapshot = {}) => {
-  inventoryProducts.value = (snapshot.items || []).map(mapInventoryProduct)
-  inventoryLoaded.value = true
-
-  const matchedSelectedProduct = inventoryProducts.value.find((product) => product.id === selectedInventoryProductId.value)
-  if (matchedSelectedProduct) {
-    selectedInventoryProductSnapshot.value = matchedSelectedProduct
-  }
-}
 
 const isSettingsSectionDirty = (sectionName) => {
   const normalizedSettings = normalizeSiteSettings(siteSettings)
@@ -3256,52 +2919,6 @@ const loadGalleryImages = async ({ force = false } = {}) => {
   }
 }
 
-const getInventoryProducts = async ({ force = false } = {}) => {
-  inventoryError.value = ''
-
-  if (!canViewInventory.value) {
-    inventoryProducts.value = []
-    return
-  }
-
-  const cacheKey = buildInventoryProductsCacheKey()
-  const cachedSnapshot = getSnapshot(cacheKey)
-
-  if (cachedSnapshot) {
-    applyInventoryProductsSnapshot(cachedSnapshot)
-  }
-
-  if (!force && cachedSnapshot && isFresh(cacheKey)) {
-    return
-  }
-
-  const normalizedSearchTerm = normalizeInventorySearchTerm(inventorySearchQuery.value)
-  let query = supabase
-    .from('products')
-    .select('id, title, slug, stock_quantity, cost_price, primary_warehouse_id, is_published, created_at')
-    .order('created_at', { ascending: false })
-    .limit(10)
-
-  if (normalizedSearchTerm) {
-    query = query.or(`title.ilike.%${normalizedSearchTerm}%,slug.ilike.%${normalizedSearchTerm}%`)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    if (!handleTableError(error)) {
-      inventoryError.value = error.message
-    }
-    return
-  }
-
-  applyInventoryProductsSnapshot({
-    items: data || []
-  })
-  setSnapshot(cacheKey, {
-    items: data || []
-  })
-}
 
 const saveSiteSettings = async (sectionName) => {
   const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
@@ -3360,144 +2977,6 @@ const saveSiteSettings = async (sectionName) => {
   settingsSuccessSection.value = sectionName
 }
 
-const increaseInventory = async () => {
-  inventoryError.value = ''
-  inventorySuccess.value = ''
-
-  if (!canEditInventory.value) {
-    inventoryError.value = 'This account cannot update inventory.'
-    return
-  }
-
-  if (!selectedInventoryProduct.value) {
-    inventoryError.value = 'Select a product first.'
-    return
-  }
-
-  if (normalizedInventoryQuantity.value < 1) {
-    inventoryError.value = 'Add quantity must be at least 1.'
-    return
-  }
-
-  if (String(inventoryCostPrice.value).trim() === '' || Number(inventoryCostPrice.value) < 0) {
-    inventoryError.value = 'Enter a valid product cost.'
-    return
-  }
-
-  inventoryLoading.value = true
-
-  const nextStockQuantity = Number(selectedInventoryProduct.value.stock_quantity || 0) + normalizedInventoryQuantity.value
-  const { error } = await supabase
-    .from('products')
-    .update({
-      stock_quantity: nextStockQuantity,
-      cost_price: Number(inventoryCostPrice.value || 0)
-    })
-    .eq('id', selectedInventoryProduct.value.id)
-
-  if (error) {
-    inventoryLoading.value = false
-    if (!handleTableError(error)) {
-      inventoryError.value = error.message
-    }
-    return
-  }
-
-  if (selectedInventoryProduct.value.primary_warehouse_id) {
-    const { data: warehouseInventoryRow, error: warehouseInventoryFetchError } = await supabase
-      .from('commerce_warehouse_inventory')
-      .select('id, quantity')
-      .eq('product_id', selectedInventoryProduct.value.id)
-      .eq('warehouse_id', selectedInventoryProduct.value.primary_warehouse_id)
-      .maybeSingle()
-
-    if (warehouseInventoryFetchError) {
-      await supabase
-        .from('products')
-        .update({
-          stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
-          cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
-        })
-        .eq('id', selectedInventoryProduct.value.id)
-
-      inventoryLoading.value = false
-      if (!handleTableError(warehouseInventoryFetchError)) {
-        inventoryError.value = warehouseInventoryFetchError.message
-      }
-      return
-    }
-
-    if (warehouseInventoryRow) {
-      const { error: warehouseInventoryUpdateError } = await supabase
-        .from('commerce_warehouse_inventory')
-        .update({
-          quantity: Number(warehouseInventoryRow.quantity || 0) + normalizedInventoryQuantity.value,
-          average_cost: Number(inventoryCostPrice.value || 0),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', warehouseInventoryRow.id)
-
-      if (warehouseInventoryUpdateError) {
-        await supabase
-          .from('products')
-          .update({
-            stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
-            cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
-          })
-          .eq('id', selectedInventoryProduct.value.id)
-
-        inventoryLoading.value = false
-        if (!handleTableError(warehouseInventoryUpdateError)) {
-          inventoryError.value = warehouseInventoryUpdateError.message
-        }
-        return
-      }
-    } else {
-      const { error: warehouseInventoryInsertError } = await supabase
-        .from('commerce_warehouse_inventory')
-        .insert({
-          warehouse_id: selectedInventoryProduct.value.primary_warehouse_id,
-          product_id: selectedInventoryProduct.value.id,
-          quantity: nextStockQuantity,
-          average_cost: Number(inventoryCostPrice.value || 0),
-          updated_at: new Date().toISOString()
-        })
-
-      if (warehouseInventoryInsertError) {
-        await supabase
-          .from('products')
-          .update({
-            stock_quantity: Number(selectedInventoryProduct.value.stock_quantity || 0),
-            cost_price: Number(selectedInventoryProduct.value.cost_price || 0)
-          })
-          .eq('id', selectedInventoryProduct.value.id)
-
-        inventoryLoading.value = false
-        if (!handleTableError(warehouseInventoryInsertError)) {
-          inventoryError.value = warehouseInventoryInsertError.message
-        }
-        return
-      }
-    }
-  }
-
-  inventoryLoading.value = false
-
-  inventorySuccess.value = `Inventory updated for ${selectedInventoryProduct.value.title}.`
-  await logSettingsAction(
-    `Increased inventory for ${selectedInventoryProduct.value.title} by ${normalizedInventoryQuantity.value}.`,
-    'settings.inventory.increase',
-    {
-      product_id: selectedInventoryProduct.value.id,
-      product_title: selectedInventoryProduct.value.title,
-      quantity_added: normalizedInventoryQuantity.value,
-      cost_price: Number(inventoryCostPrice.value || 0)
-    }
-  )
-  inventoryIncreaseQuantity.value = 1
-  invalidate('dashboard:settings:inventory:')
-  await getInventoryProducts({ force: true })
-}
 
 const removeGalleryImage = async (image) => {
   if (!image?.publicPath) {
@@ -4359,38 +3838,6 @@ const deleteCoupon = async (couponId) => {
   )
 }
 
-watch(selectedInventoryProductId, (productId) => {
-  inventoryError.value = ''
-  inventorySuccess.value = ''
-  inventoryIncreaseQuantity.value = 1
-
-  if (!productId) {
-    selectedInventoryProductSnapshot.value = null
-    inventoryCostPrice.value = ''
-    return
-  }
-
-  const matchedProduct = selectedInventoryProduct.value
-
-  if (matchedProduct) {
-    selectedInventoryProductSnapshot.value = matchedProduct
-  }
-
-  inventoryCostPrice.value = matchedProduct ? String(Number(matchedProduct.cost_price || 0)) : ''
-})
-
-watch(inventorySearchQuery, () => {
-  if (!canViewInventory.value) {
-    return
-  }
-
-  clearTimeout(inventorySearchTimeoutId)
-
-  inventorySearchTimeoutId = setTimeout(async () => {
-    await getInventoryProducts()
-  }, 300)
-})
-
 watch(gallerySearchQuery, () => {
   if (activeSettingsView.value !== 'gallery' || !canViewGallery.value) {
     return
@@ -4410,13 +3857,6 @@ const loadActiveSettingsView = async (view = activeSettingsView.value, { force =
     return
   }
 
-  if (view === 'inventory') {
-    if (canViewInventory.value) {
-      await getInventoryProducts({ force })
-    }
-
-    return
-  }
 
   if (view === 'gallery') {
     await loadGalleryImages({ force })
@@ -4449,7 +3889,6 @@ watch(selectedLogAuthor, async () => {
 
 onBeforeUnmount(() => {
   clearTimeout(gallerySearchTimeoutId)
-  clearTimeout(inventorySearchTimeoutId)
 })
 
 onMounted(async () => {

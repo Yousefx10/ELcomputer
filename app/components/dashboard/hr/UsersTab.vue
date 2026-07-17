@@ -697,6 +697,10 @@
 </template>
 
 <script setup>
+defineOptions({
+  name: 'DashboardHrUsersTab'
+})
+
 import {
   adminPermissionGroups,
   adminPermissionDependencies,

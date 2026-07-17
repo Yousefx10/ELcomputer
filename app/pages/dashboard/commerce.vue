@@ -11,6 +11,7 @@
       <DashboardSecondaryNav :items="secondaryNavItems" />
 
       <DashboardCommerceProcurementTab v-if="activeTab === 'procurement'" />
+      <DashboardCommerceSalesTab v-else-if="activeTab === 'sales'" />
       <DashboardCommerceShippingTab v-else-if="activeTab === 'shipping'" />
       <DashboardCommerceWarehousesTab v-else-if="activeTab === 'warehouses'" />
       <DashboardCommerceReturnsTab v-else />

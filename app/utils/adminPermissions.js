@@ -41,15 +41,30 @@ export const adminPermissionGroups = [
     accessPermission: { key: 'settings.view', label: 'Settings Access' },
     permissions: [
       { key: 'settings.edit', label: 'Edit settings' },
-      { key: 'settings.coupons', label: 'Access coupons' },
-      { key: 'settings.inventory', label: 'Access inventory' }
+      { key: 'settings.coupons', label: 'Access coupons' }
     ]
   },
   {
     key: 'users',
-    title: 'Users',
+    title: 'Admin & Store Users',
     accessPermission: { key: 'users.view', label: 'Users Access' },
     permissions: []
+  },
+  {
+    key: 'hr',
+    title: 'HR',
+    accessPermission: { key: 'hr.view', label: 'HR Access' },
+    permissions: [
+      { key: 'hr.edit', label: 'Add and edit employees' }
+    ]
+  },
+  {
+    key: 'treasury',
+    title: 'Treasury',
+    accessPermission: { key: 'treasury.view', label: 'Treasury Access' },
+    permissions: [
+      { key: 'treasury.edit', label: 'Record Treasury transactions' }
+    ]
   }
 ]
 
@@ -69,7 +84,9 @@ export const adminPermissionDependencies = {
   'products.view': ['products.add', 'products.edit'],
   'categories.view': ['categories.add', 'categories.edit'],
   'brands.view': ['brands.add', 'brands.edit'],
-  'settings.view': ['settings.edit', 'settings.coupons', 'settings.inventory']
+  'settings.view': ['settings.edit', 'settings.coupons'],
+  'hr.view': ['hr.edit'],
+  'treasury.view': ['treasury.edit']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
@@ -141,6 +158,24 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
+  if (path === '/dashboard/hr') {
+    if (query.tab === 'users') {
+      return {
+        permission: 'users.view'
+      }
+    }
+
+    return {
+      permissionsAny: ['hr.view', 'users.view']
+    }
+  }
+
+  if (path === '/dashboard/treasury') {
+    return {
+      permission: 'treasury.view'
+    }
+  }
+
   if (path === '/dashboard/orders') {
     return {
       permission: 'dashboard.orders'
@@ -148,15 +183,15 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/settings') {
-    if (query.tab === 'logs') {
-      return {
-        permission: 'settings.view'
-      }
-    }
-
     if (query.tab === 'users') {
       return {
         permission: 'users.view'
+      }
+    }
+
+    if (query.tab === 'logs') {
+      return {
+        permission: 'settings.view'
       }
     }
 
@@ -172,14 +207,8 @@ export const getDashboardRouteRequirement = (route = '') => {
       }
     }
 
-    if (query.tab === 'inventory') {
-      return {
-        permission: 'settings.inventory'
-      }
-    }
-
     return {
-      permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory', 'users.view']
+      permissionsAny: ['settings.view', 'settings.coupons']
     }
   }
 
@@ -198,6 +227,18 @@ export const getDashboardRouteRequirement = (route = '') => {
   if (path === '/dashboard/products/categories') {
     return {
       permission: 'categories.view'
+    }
+  }
+
+  if (path === '/dashboard/catalog') {
+    if (query.tab === 'brands') {
+      return {
+        permission: 'brands.view'
+      }
+    }
+
+    return {
+      permissionsAny: ['categories.view', 'brands.view']
     }
   }
 

@@ -302,22 +302,24 @@
           </p>
         </div>
 
-        <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto]">
-          <DashboardMediaUploadField
-            v-model="newImageUrl"
-            label="Extra Image"
-            section="product_gallery"
-            :preview-alt="newImageAlt || title || 'Extra image'"
-            preview-height-class="h-32"
-            help-text="Upload an additional image for the product gallery."
-          />
+        <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+          <div class="min-w-0 space-y-3">
+            <DashboardMediaUploadField
+              v-model="newImageUrl"
+              label="Extra Image"
+              section="product_gallery"
+              :preview-alt="newImageAlt || title || 'Extra image'"
+              preview-height-class="h-32"
+              help-text="Upload an additional image for the product gallery."
+            />
 
-          <input
-            v-model="newImageAlt"
-            type="text"
-            placeholder="Alt text"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
+            <input
+              v-model="newImageAlt"
+              type="text"
+              placeholder="Alt text"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            />
+          </div>
 
           <button
             type="button"
@@ -336,22 +338,24 @@
           <div
             v-for="image in productImages"
             :key="image.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto]"
+            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,1fr)_auto]"
           >
-            <DashboardMediaUploadField
-              v-model="image.image_url"
-              label="Image"
-              section="product_gallery"
-              :preview-alt="image.alt_text || title || 'Extra image'"
-              preview-height-class="h-32"
-            />
+            <div class="min-w-0 space-y-3">
+              <DashboardMediaUploadField
+                v-model="image.image_url"
+                label="Image"
+                section="product_gallery"
+                :preview-alt="image.alt_text || title || 'Extra image'"
+                preview-height-class="h-32"
+              />
 
-            <input
-              v-model="image.alt_text"
-              type="text"
-              placeholder="Alt text"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
+              <input
+                v-model="image.alt_text"
+                type="text"
+                placeholder="Alt text"
+                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+              />
+            </div>
 
             <div class="flex gap-2 self-start">
               <button
@@ -808,7 +812,6 @@ const updateProduct = async () => {
   slug.value = normalizedSlug
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  invalidate('dashboard:settings:inventory:')
   await navigateTo('/dashboard/products')
 }
 
@@ -1088,7 +1091,6 @@ const deleteProduct = async () => {
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  invalidate('dashboard:settings:inventory:')
   await navigateTo('/dashboard/products')
 }
 </script>

@@ -5,6 +5,11 @@ export const commerceTabs = [
     to: '/dashboard/commerce'
   },
   {
+    key: 'sales',
+    label: 'Sales',
+    to: '/dashboard/commerce?tab=sales'
+  },
+  {
     key: 'shipping',
     label: 'Shipping',
     to: '/dashboard/commerce?tab=shipping'

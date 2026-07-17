@@ -130,8 +130,11 @@ create or replace function public.default_admin_permissions () returns jsonb lan
     'settings.view', false,
     'settings.edit', false,
     'settings.coupons', false,
-    'settings.inventory', false,
-    'users.view', false
+    'users.view', false,
+    'hr.view', false,
+    'hr.edit', false,
+    'treasury.view', false,
+    'treasury.edit', false
   );
 $$;
 
@@ -768,8 +771,8 @@ create table public.commerce_inventory_movements (
   constraint commerce_inventory_movements_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete CASCADE,
   constraint commerce_inventory_movements_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE,
   constraint commerce_inventory_movements_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
-  constraint commerce_inventory_movements_movement_type_check check ((movement_type = any (array['procurement'::text, 'transfer_in'::text, 'transfer_out'::text, 'return_in'::text, 'adjustment'::text]))),
-  constraint commerce_inventory_movements_reference_type_check check (((reference_type is null) or (reference_type = any (array['procurement_order'::text, 'warehouse_transfer'::text, 'order_return'::text, 'manual'::text]))))
+  constraint commerce_inventory_movements_movement_type_check check ((movement_type = any (array['procurement'::text, 'sale_out'::text, 'transfer_in'::text, 'transfer_out'::text, 'return_in'::text, 'adjustment'::text]))),
+  constraint commerce_inventory_movements_reference_type_check check (((reference_type is null) or (reference_type = any (array['procurement_order'::text, 'sales_order'::text, 'warehouse_transfer'::text, 'order_return'::text, 'manual'::text]))))
 ) TABLESPACE pg_default;
 
 create index IF not exists commerce_inventory_movements_warehouse_created_idx on public.commerce_inventory_movements using btree (warehouse_id, created_at desc) TABLESPACE pg_default;
@@ -783,6 +786,7 @@ create table public.commerce_procurement_orders (
   invoice_number text null,
   notes text null,
   total_cost numeric (12, 2) not null default 0,
+  paid_amount numeric (12, 2) not null default 0,
   created_by uuid null,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
@@ -790,7 +794,8 @@ create table public.commerce_procurement_orders (
   constraint commerce_procurement_orders_supplier_id_fkey foreign KEY (supplier_id) references commerce_crm_accounts (id) on delete RESTRICT,
   constraint commerce_procurement_orders_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
   constraint commerce_procurement_orders_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
-  constraint commerce_procurement_orders_total_cost_check check ((total_cost >= (0)::numeric))
+  constraint commerce_procurement_orders_total_cost_check check ((total_cost >= (0)::numeric)),
+  constraint commerce_procurement_orders_paid_amount_check check (((paid_amount >= (0)::numeric) and (paid_amount <= total_cost)))
 ) TABLESPACE pg_default;
 
 create index IF not exists commerce_procurement_orders_created_at_idx on public.commerce_procurement_orders using btree (created_at desc) TABLESPACE pg_default;
@@ -812,6 +817,49 @@ create table public.commerce_procurement_items (
 ) TABLESPACE pg_default;
 
 create index IF not exists commerce_procurement_items_order_idx on public.commerce_procurement_items using btree (procurement_order_id, created_at) TABLESPACE pg_default;
+
+create table public.commerce_sales_orders (
+  id uuid not null default gen_random_uuid (),
+  customer_id uuid not null,
+  warehouse_id uuid not null,
+  order_number text null,
+  notes text null,
+  total_amount numeric (12, 2) not null default 0,
+  paid_amount numeric (12, 2) not null default 0,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint commerce_sales_orders_pkey primary key (id),
+  constraint commerce_sales_orders_customer_id_fkey foreign KEY (customer_id) references commerce_crm_accounts (id) on delete RESTRICT,
+  constraint commerce_sales_orders_warehouse_id_fkey foreign KEY (warehouse_id) references commerce_warehouses (id) on delete RESTRICT,
+  constraint commerce_sales_orders_created_by_fkey foreign KEY (created_by) references admin_users (id) on delete set null,
+  constraint commerce_sales_orders_total_amount_check check ((total_amount >= (0)::numeric)),
+  constraint commerce_sales_orders_paid_amount_check check (((paid_amount >= (0)::numeric) and (paid_amount <= total_amount)))
+) TABLESPACE pg_default;
+
+create unique index IF not exists commerce_sales_orders_order_number_uidx on public.commerce_sales_orders using btree (order_number) TABLESPACE pg_default
+where
+  (order_number is not null);
+
+create index IF not exists commerce_sales_orders_customer_created_idx on public.commerce_sales_orders using btree (customer_id, created_at desc) TABLESPACE pg_default;
+
+create table public.commerce_sales_items (
+  id uuid not null default gen_random_uuid (),
+  sales_order_id uuid not null,
+  product_id uuid not null,
+  quantity integer not null,
+  unit_price numeric (12, 2) not null default 0,
+  line_total numeric (12, 2) not null default 0,
+  created_at timestamp with time zone null default now(),
+  constraint commerce_sales_items_pkey primary key (id),
+  constraint commerce_sales_items_sales_order_id_fkey foreign KEY (sales_order_id) references commerce_sales_orders (id) on delete CASCADE,
+  constraint commerce_sales_items_product_id_fkey foreign KEY (product_id) references products (id) on delete RESTRICT,
+  constraint commerce_sales_items_quantity_check check ((quantity > 0)),
+  constraint commerce_sales_items_unit_price_check check ((unit_price >= (0)::numeric)),
+  constraint commerce_sales_items_line_total_check check ((line_total >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists commerce_sales_items_order_idx on public.commerce_sales_items using btree (sales_order_id, created_at) TABLESPACE pg_default;
 
 create table public.commerce_warehouse_transfers (
   id uuid not null default gen_random_uuid (),
@@ -902,6 +950,7 @@ create or replace function public.commerce_create_procurement_order (
   p_warehouse_id uuid,
   p_invoice_number text,
   p_notes text,
+  p_paid_amount numeric,
   p_items jsonb
 ) returns uuid language plpgsql security definer
 set
@@ -947,6 +996,10 @@ begin
 
   if jsonb_typeof (p_items) <> 'array' or jsonb_array_length (p_items) = 0 then
     raise exception 'At least one procurement item is required.';
+  end if;
+
+  if coalesce(p_paid_amount, 0) < 0 then
+    raise exception 'Paid amount cannot be negative.';
   end if;
 
   insert into public.commerce_procurement_orders (
@@ -1093,13 +1146,257 @@ begin
     );
   end loop;
 
+  if round(coalesce(p_paid_amount, 0), 2) > v_total_cost then
+    raise exception 'Paid amount cannot be greater than the procurement total.';
+  end if;
+
   update public.commerce_procurement_orders
   set
     total_cost = v_total_cost,
+    paid_amount = round(coalesce(p_paid_amount, 0), 2),
     updated_at = now()
   where id = v_procurement_id;
 
   return v_procurement_id;
+end;
+$$;
+
+create or replace function public.commerce_create_sales_order (
+  p_customer_id uuid,
+  p_warehouse_id uuid,
+  p_order_number text,
+  p_notes text,
+  p_paid_amount numeric,
+  p_items jsonb
+) returns uuid language plpgsql security definer
+set
+  search_path = public as $$
+declare
+  v_sales_order_id uuid;
+  v_item jsonb;
+  v_product_id uuid;
+  v_quantity integer;
+  v_unit_price numeric (12, 2);
+  v_line_total numeric (12, 2);
+  v_total_amount numeric (12, 2) := 0;
+  v_product_record public.products%rowtype;
+  v_inventory_record public.commerce_warehouse_inventory%rowtype;
+  v_next_product_stock integer;
+  v_next_inventory_quantity integer;
+begin
+  if not public.is_active_admin () then
+    raise exception 'Not authorized';
+  end if;
+
+  if p_customer_id is null or not exists (
+    select 1
+    from public.commerce_crm_accounts
+    where id = p_customer_id
+      and account_type = 'customer'
+      and is_active = true
+  ) then
+    raise exception 'A valid CRM customer is required.';
+  end if;
+
+  if p_warehouse_id is null or not exists (
+    select 1
+    from public.commerce_warehouses
+    where id = p_warehouse_id
+      and is_active = true
+  ) then
+    raise exception 'A valid warehouse is required.';
+  end if;
+
+  if jsonb_typeof (p_items) <> 'array' or jsonb_array_length (p_items) = 0 then
+    raise exception 'At least one sales item is required.';
+  end if;
+
+  if coalesce(p_paid_amount, 0) < 0 then
+    raise exception 'Paid amount cannot be negative.';
+  end if;
+
+  insert into public.commerce_sales_orders (
+    customer_id,
+    warehouse_id,
+    order_number,
+    notes,
+    total_amount,
+    paid_amount,
+    created_by
+  )
+  values (
+    p_customer_id,
+    p_warehouse_id,
+    nullif(trim(p_order_number), ''),
+    nullif(trim(p_notes), ''),
+    0,
+    0,
+    auth.uid ()
+  )
+  returning id into v_sales_order_id;
+
+  for v_item in
+    select value
+    from jsonb_array_elements (p_items)
+  loop
+    v_product_id := nullif(v_item ->> 'product_id', '')::uuid;
+    v_quantity := coalesce((v_item ->> 'quantity')::integer, 0);
+    v_unit_price := round(coalesce((v_item ->> 'unit_price')::numeric, 0), 2);
+
+    if v_product_id is null or v_quantity <= 0 or v_unit_price < 0 then
+      raise exception 'Every sales line requires a valid product, quantity, and price.';
+    end if;
+
+    select *
+    into v_product_record
+    from public.products
+    where id = v_product_id
+    for update;
+
+    if not found then
+      raise exception 'One of the selected products no longer exists.';
+    end if;
+
+    select *
+    into v_inventory_record
+    from public.commerce_warehouse_inventory
+    where warehouse_id = p_warehouse_id
+      and product_id = v_product_id
+    for update;
+
+    if not found or coalesce(v_inventory_record.quantity, 0) < v_quantity then
+      raise exception 'Insufficient warehouse stock for %.', v_product_record.title;
+    end if;
+
+    if coalesce(v_product_record.stock_quantity, 0) < v_quantity then
+      raise exception 'Insufficient product stock for %.', v_product_record.title;
+    end if;
+
+    v_line_total := round((v_quantity * v_unit_price)::numeric, 2);
+    v_total_amount := round((v_total_amount + v_line_total)::numeric, 2);
+    v_next_product_stock := coalesce(v_product_record.stock_quantity, 0) - v_quantity;
+    v_next_inventory_quantity := coalesce(v_inventory_record.quantity, 0) - v_quantity;
+
+    update public.products
+    set stock_quantity = v_next_product_stock
+    where id = v_product_id;
+
+    update public.commerce_warehouse_inventory
+    set
+      quantity = v_next_inventory_quantity,
+      updated_at = now()
+    where id = v_inventory_record.id;
+
+    insert into public.commerce_sales_items (
+      sales_order_id,
+      product_id,
+      quantity,
+      unit_price,
+      line_total
+    )
+    values (
+      v_sales_order_id,
+      v_product_id,
+      v_quantity,
+      v_unit_price,
+      v_line_total
+    );
+
+    insert into public.commerce_inventory_movements (
+      warehouse_id,
+      product_id,
+      movement_type,
+      reference_type,
+      reference_id,
+      quantity_change,
+      quantity_after,
+      unit_cost,
+      notes,
+      created_by
+    )
+    values (
+      p_warehouse_id,
+      v_product_id,
+      'sale_out',
+      'sales_order',
+      v_sales_order_id,
+      -v_quantity,
+      v_next_inventory_quantity,
+      coalesce(v_inventory_record.average_cost, 0),
+      nullif(trim(p_notes), ''),
+      auth.uid ()
+    );
+  end loop;
+
+  if round(coalesce(p_paid_amount, 0), 2) > v_total_amount then
+    raise exception 'Paid amount cannot be greater than the sales total.';
+  end if;
+
+  update public.commerce_sales_orders
+  set
+    total_amount = v_total_amount,
+    paid_amount = round(coalesce(p_paid_amount, 0), 2),
+    updated_at = now()
+  where id = v_sales_order_id;
+
+  return v_sales_order_id;
+end;
+$$;
+
+create or replace function public.commerce_get_crm_account_summary (
+  p_account_id uuid
+) returns jsonb language plpgsql security definer stable
+set
+  search_path = public as $$
+declare
+  v_account_type text;
+  v_order_count bigint := 0;
+  v_total_amount numeric (12, 2) := 0;
+  v_paid_amount numeric (12, 2) := 0;
+begin
+  if not public.is_active_admin () then
+    raise exception 'Not authorized';
+  end if;
+
+  select account_type
+  into v_account_type
+  from public.commerce_crm_accounts
+  where id = p_account_id;
+
+  if not found then
+    raise exception 'CRM account not found.';
+  end if;
+
+  if v_account_type = 'supplier' then
+    select
+      count(*),
+      coalesce(sum(total_cost), 0),
+      coalesce(sum(paid_amount), 0)
+    into
+      v_order_count,
+      v_total_amount,
+      v_paid_amount
+    from public.commerce_procurement_orders
+    where supplier_id = p_account_id;
+  else
+    select
+      count(*),
+      coalesce(sum(total_amount), 0),
+      coalesce(sum(paid_amount), 0)
+    into
+      v_order_count,
+      v_total_amount,
+      v_paid_amount
+    from public.commerce_sales_orders
+    where customer_id = p_account_id;
+  end if;
+
+  return jsonb_build_object(
+    'order_count', v_order_count,
+    'total_amount', v_total_amount,
+    'paid_amount', v_paid_amount,
+    'settlement_due', greatest(v_total_amount - v_paid_amount, 0)
+  );
 end;
 $$;
 
@@ -1509,6 +1806,8 @@ alter table public.commerce_warehouse_inventory enable row level security;
 alter table public.commerce_inventory_movements enable row level security;
 alter table public.commerce_procurement_orders enable row level security;
 alter table public.commerce_procurement_items enable row level security;
+alter table public.commerce_sales_orders enable row level security;
+alter table public.commerce_sales_items enable row level security;
 alter table public.commerce_warehouse_transfers enable row level security;
 alter table public.commerce_warehouse_transfer_items enable row level security;
 alter table public.commerce_order_returns enable row level security;
@@ -1549,6 +1848,16 @@ using (public.is_active_admin ())
 with
   check (public.is_active_admin ());
 
+create policy "Admins can manage sales orders" on public.commerce_sales_orders for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
+create policy "Admins can manage sales items" on public.commerce_sales_items for all to authenticated
+using (public.is_active_admin ())
+with
+  check (public.is_active_admin ());
+
 create policy "Admins can manage warehouse transfers" on public.commerce_warehouse_transfers for all to authenticated
 using (public.is_active_admin ())
 with
@@ -1568,3 +1877,418 @@ create policy "Admins can manage order return items" on public.commerce_order_re
 using (public.is_active_admin ())
 with
   check (public.is_active_admin ());
+
+create table public.hr_employees (
+  id uuid not null default gen_random_uuid (),
+  employee_code text null,
+  first_name text not null,
+  last_name text null,
+  email text null,
+  phone text null,
+  address text null,
+  position text not null,
+  department text null,
+  hire_date date null,
+  employment_status text not null default 'active',
+  salary_amount numeric (12, 2) not null default 0,
+  salary_frequency text not null default 'monthly',
+  salary_notes text null,
+  created_by uuid null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint hr_employees_pkey primary key (id),
+  constraint hr_employees_created_by_fkey foreign key (created_by) references public.admin_users (id) on delete set null,
+  constraint hr_employees_status_check check (employment_status = any (array['active'::text, 'on_leave'::text, 'inactive'::text, 'terminated'::text])),
+  constraint hr_employees_salary_amount_check check (salary_amount >= 0),
+  constraint hr_employees_salary_frequency_check check (salary_frequency = any (array['monthly'::text, 'weekly'::text, 'daily'::text, 'hourly'::text]))
+) TABLESPACE pg_default;
+
+create unique index IF not exists hr_employees_code_uidx on public.hr_employees using btree (employee_code) TABLESPACE pg_default
+where employee_code is not null;
+
+create index IF not exists hr_employees_status_name_idx on public.hr_employees using btree (employment_status, first_name, last_name) TABLESPACE pg_default;
+
+create table public.treasury_transactions (
+  id uuid not null default gen_random_uuid (),
+  transaction_type text not null,
+  amount numeric (12, 2) not null,
+  party_name text not null,
+  procurement_order_id uuid null,
+  sales_order_id uuid null,
+  employee_id uuid null,
+  salary_period date null,
+  reference_number text null,
+  notes text null,
+  paid_at date not null default current_date,
+  created_by uuid null,
+  created_at timestamp with time zone not null default now(),
+  constraint treasury_transactions_pkey primary key (id),
+  constraint treasury_transactions_procurement_order_id_fkey foreign key (procurement_order_id) references public.commerce_procurement_orders (id) on delete restrict,
+  constraint treasury_transactions_sales_order_id_fkey foreign key (sales_order_id) references public.commerce_sales_orders (id) on delete restrict,
+  constraint treasury_transactions_employee_id_fkey foreign key (employee_id) references public.hr_employees (id) on delete restrict,
+  constraint treasury_transactions_created_by_fkey foreign key (created_by) references public.admin_users (id) on delete set null,
+  constraint treasury_transactions_amount_check check (amount > 0),
+  constraint treasury_transactions_type_check check (transaction_type = any (array['supplier_payment'::text, 'customer_receipt'::text, 'salary_payment'::text])),
+  constraint treasury_transactions_reference_check check (
+    (
+      transaction_type = 'supplier_payment'
+      and procurement_order_id is not null
+      and sales_order_id is null
+      and employee_id is null
+      and salary_period is null
+    )
+    or (
+      transaction_type = 'customer_receipt'
+      and procurement_order_id is null
+      and sales_order_id is not null
+      and employee_id is null
+      and salary_period is null
+    )
+    or (
+      transaction_type = 'salary_payment'
+      and procurement_order_id is null
+      and sales_order_id is null
+      and employee_id is not null
+      and salary_period is not null
+    )
+  )
+) TABLESPACE pg_default;
+
+create index IF not exists treasury_transactions_paid_at_idx on public.treasury_transactions using btree (paid_at desc, created_at desc) TABLESPACE pg_default;
+
+create index IF not exists treasury_transactions_procurement_idx on public.treasury_transactions using btree (procurement_order_id, created_at desc) TABLESPACE pg_default
+where procurement_order_id is not null;
+
+create index IF not exists treasury_transactions_sales_idx on public.treasury_transactions using btree (sales_order_id, created_at desc) TABLESPACE pg_default
+where sales_order_id is not null;
+
+create index IF not exists treasury_transactions_employee_idx on public.treasury_transactions using btree (employee_id, salary_period desc) TABLESPACE pg_default
+where employee_id is not null;
+
+create or replace function public.treasury_get_outstanding_supplier_invoices ()
+returns table (
+  id uuid,
+  invoice_number text,
+  account_name text,
+  total_amount numeric,
+  paid_amount numeric,
+  due_amount numeric,
+  created_at timestamp with time zone
+)
+language plpgsql
+security definer
+stable
+set search_path = public
+as $$
+begin
+  if not public.has_admin_permission ('treasury.view') then
+    raise exception 'Not authorized';
+  end if;
+
+  return query
+  select
+    procurement.id,
+    procurement.invoice_number,
+    supplier.name,
+    procurement.total_cost,
+    procurement.paid_amount,
+    procurement.total_cost - procurement.paid_amount,
+    procurement.created_at
+  from public.commerce_procurement_orders as procurement
+  join public.commerce_crm_accounts as supplier
+    on supplier.id = procurement.supplier_id
+  where procurement.paid_amount < procurement.total_cost
+  order by procurement.created_at desc;
+end;
+$$;
+
+create or replace function public.treasury_get_outstanding_customer_invoices ()
+returns table (
+  id uuid,
+  invoice_number text,
+  account_name text,
+  total_amount numeric,
+  paid_amount numeric,
+  due_amount numeric,
+  created_at timestamp with time zone
+)
+language plpgsql
+security definer
+stable
+set search_path = public
+as $$
+begin
+  if not public.has_admin_permission ('treasury.view') then
+    raise exception 'Not authorized';
+  end if;
+
+  return query
+  select
+    sale.id,
+    sale.order_number,
+    customer.name,
+    sale.total_amount,
+    sale.paid_amount,
+    sale.total_amount - sale.paid_amount,
+    sale.created_at
+  from public.commerce_sales_orders as sale
+  join public.commerce_crm_accounts as customer
+    on customer.id = sale.customer_id
+  where sale.paid_amount < sale.total_amount
+  order by sale.created_at desc;
+end;
+$$;
+
+create or replace function public.treasury_record_supplier_payment (
+  p_procurement_order_id uuid,
+  p_amount numeric,
+  p_paid_at date,
+  p_reference_number text,
+  p_notes text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_transaction_id uuid;
+  v_total numeric (12, 2);
+  v_paid numeric (12, 2);
+  v_amount numeric (12, 2);
+  v_supplier_name text;
+begin
+  if not public.has_admin_permission ('treasury.edit') then
+    raise exception 'Not authorized';
+  end if;
+
+  v_amount := round(coalesce(p_amount, 0), 2);
+
+  if v_amount <= 0 then
+    raise exception 'Payment amount must be greater than zero.';
+  end if;
+
+  select procurement.total_cost, procurement.paid_amount, supplier.name
+  into v_total, v_paid, v_supplier_name
+  from public.commerce_procurement_orders as procurement
+  join public.commerce_crm_accounts as supplier
+    on supplier.id = procurement.supplier_id
+  where procurement.id = p_procurement_order_id
+  for update of procurement;
+
+  if not found then
+    raise exception 'Procurement invoice not found.';
+  end if;
+
+  if v_amount > (v_total - v_paid) then
+    raise exception 'Payment exceeds the outstanding supplier balance.';
+  end if;
+
+  update public.commerce_procurement_orders
+  set
+    paid_amount = paid_amount + v_amount,
+    updated_at = now()
+  where id = p_procurement_order_id;
+
+  insert into public.treasury_transactions (
+    transaction_type,
+    amount,
+    party_name,
+    procurement_order_id,
+    reference_number,
+    notes,
+    paid_at,
+    created_by
+  )
+  values (
+    'supplier_payment',
+    v_amount,
+    v_supplier_name,
+    p_procurement_order_id,
+    nullif(trim(p_reference_number), ''),
+    nullif(trim(p_notes), ''),
+    coalesce(p_paid_at, current_date),
+    auth.uid ()
+  )
+  returning id into v_transaction_id;
+
+  return v_transaction_id;
+end;
+$$;
+
+create or replace function public.treasury_record_customer_receipt (
+  p_sales_order_id uuid,
+  p_amount numeric,
+  p_paid_at date,
+  p_reference_number text,
+  p_notes text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_transaction_id uuid;
+  v_total numeric (12, 2);
+  v_paid numeric (12, 2);
+  v_amount numeric (12, 2);
+  v_customer_name text;
+begin
+  if not public.has_admin_permission ('treasury.edit') then
+    raise exception 'Not authorized';
+  end if;
+
+  v_amount := round(coalesce(p_amount, 0), 2);
+
+  if v_amount <= 0 then
+    raise exception 'Receipt amount must be greater than zero.';
+  end if;
+
+  select sale.total_amount, sale.paid_amount, customer.name
+  into v_total, v_paid, v_customer_name
+  from public.commerce_sales_orders as sale
+  join public.commerce_crm_accounts as customer
+    on customer.id = sale.customer_id
+  where sale.id = p_sales_order_id
+  for update of sale;
+
+  if not found then
+    raise exception 'Sales invoice not found.';
+  end if;
+
+  if v_amount > (v_total - v_paid) then
+    raise exception 'Receipt exceeds the outstanding customer balance.';
+  end if;
+
+  update public.commerce_sales_orders
+  set
+    paid_amount = paid_amount + v_amount,
+    updated_at = now()
+  where id = p_sales_order_id;
+
+  insert into public.treasury_transactions (
+    transaction_type,
+    amount,
+    party_name,
+    sales_order_id,
+    reference_number,
+    notes,
+    paid_at,
+    created_by
+  )
+  values (
+    'customer_receipt',
+    v_amount,
+    v_customer_name,
+    p_sales_order_id,
+    nullif(trim(p_reference_number), ''),
+    nullif(trim(p_notes), ''),
+    coalesce(p_paid_at, current_date),
+    auth.uid ()
+  )
+  returning id into v_transaction_id;
+
+  return v_transaction_id;
+end;
+$$;
+
+create or replace function public.treasury_record_salary_payment (
+  p_employee_id uuid,
+  p_amount numeric,
+  p_salary_period date,
+  p_paid_at date,
+  p_reference_number text,
+  p_notes text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_transaction_id uuid;
+  v_amount numeric (12, 2);
+  v_employee_name text;
+  v_salary_period date;
+begin
+  if not public.has_admin_permission ('treasury.edit') then
+    raise exception 'Not authorized';
+  end if;
+
+  v_amount := round(coalesce(p_amount, 0), 2);
+
+  if v_amount <= 0 then
+    raise exception 'Salary amount must be greater than zero.';
+  end if;
+
+  if p_salary_period is null then
+    raise exception 'Salary period is required.';
+  end if;
+
+  select trim(concat(first_name, ' ', coalesce(last_name, '')))
+  into v_employee_name
+  from public.hr_employees
+  where id = p_employee_id;
+
+  if not found then
+    raise exception 'Employee not found.';
+  end if;
+
+  v_salary_period := date_trunc('month', p_salary_period)::date;
+
+  insert into public.treasury_transactions (
+    transaction_type,
+    amount,
+    party_name,
+    employee_id,
+    salary_period,
+    reference_number,
+    notes,
+    paid_at,
+    created_by
+  )
+  values (
+    'salary_payment',
+    v_amount,
+    v_employee_name,
+    p_employee_id,
+    v_salary_period,
+    nullif(trim(p_reference_number), ''),
+    nullif(trim(p_notes), ''),
+    coalesce(p_paid_at, current_date),
+    auth.uid ()
+  )
+  returning id into v_transaction_id;
+
+  return v_transaction_id;
+end;
+$$;
+
+alter table public.hr_employees enable row level security;
+alter table public.treasury_transactions enable row level security;
+
+create policy "Admins can read HR employees" on public.hr_employees for select to authenticated
+using (public.has_admin_permission ('hr.view'));
+
+create policy "Admins can add HR employees" on public.hr_employees for insert to authenticated
+with check (public.has_admin_permission ('hr.edit'));
+
+create policy "Admins can edit HR employees" on public.hr_employees for update to authenticated
+using (public.has_admin_permission ('hr.edit'))
+with check (public.has_admin_permission ('hr.edit'));
+
+create policy "Admins can read Treasury transactions" on public.treasury_transactions for select to authenticated
+using (public.has_admin_permission ('treasury.view'));
+
+revoke all on function public.treasury_get_outstanding_supplier_invoices () from public;
+revoke all on function public.treasury_get_outstanding_customer_invoices () from public;
+revoke all on function public.treasury_record_supplier_payment (uuid, numeric, date, text, text) from public;
+revoke all on function public.treasury_record_customer_receipt (uuid, numeric, date, text, text) from public;
+revoke all on function public.treasury_record_salary_payment (uuid, numeric, date, date, text, text) from public;
+
+grant execute on function public.treasury_get_outstanding_supplier_invoices () to authenticated;
+grant execute on function public.treasury_get_outstanding_customer_invoices () to authenticated;
+grant execute on function public.treasury_record_supplier_payment (uuid, numeric, date, text, text) to authenticated;
+grant execute on function public.treasury_record_customer_receipt (uuid, numeric, date, text, text) to authenticated;
+grant execute on function public.treasury_record_salary_payment (uuid, numeric, date, date, text, text) to authenticated;

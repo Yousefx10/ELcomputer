@@ -110,6 +110,18 @@
           >
         </div>
 
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Amount Paid</label>
+          <input
+            v-model="paidAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            placeholder="0"
+          >
+        </div>
+
         <div class="md:col-span-2">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
           <textarea
@@ -204,6 +216,10 @@
                 Estimated total: <span class="font-semibold text-gray-900">{{ estimatedTotalCost }}</span>
               </p>
 
+              <p class="text-sm text-gray-500">
+                Settlement due: <span class="font-semibold text-gray-900">{{ estimatedSettlementDue }}</span>
+              </p>
+
               <p v-if="formError" class="text-sm text-red-600">
                 {{ formError }}
               </p>
@@ -227,14 +243,31 @@
 
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h3 class="text-2xl font-bold">Recent Procurement Orders</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Latest received purchase records.
-          </p>
-        </div>
+        <button
+          type="button"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          @click="isRecentOrdersOpen = !isRecentOrdersOpen"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Recent Procurement Orders</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Latest received purchase records.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
+            <span>{{ isRecentOrdersOpen ? 'Collapse' : 'Expand' }}</span>
+            <Icon
+              name="lucide:chevron-down"
+              size="18"
+              class="transition-transform"
+              :class="isRecentOrdersOpen ? 'rotate-180' : ''"
+            />
+          </div>
+        </button>
 
         <button
+          v-if="isRecentOrdersOpen"
           type="button"
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentProcurements"
@@ -243,6 +276,7 @@
         </button>
       </div>
 
+      <div v-if="isRecentOrdersOpen">
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
         {{ pageError }}
       </p>
@@ -288,9 +322,14 @@
               <p class="mt-1 text-xl font-bold text-gray-900">
                 {{ formatCommerceCurrency(order.total_cost) }}
               </p>
+
+              <p class="mt-1 text-sm text-gray-500">
+                Due {{ formatCommerceCurrency(Math.max(Number(order.total_cost || 0) - Number(order.paid_amount || 0), 0)) }}
+              </p>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   </div>
@@ -321,8 +360,10 @@ const supplierId = ref('')
 const warehouseId = ref('')
 const invoiceNumber = ref(buildCommerceReference('PO'))
 const notes = ref('')
+const paidAmount = ref('')
 const items = ref([createEmptyProcurementItem()])
 const productSearchQuery = ref('')
+const isRecentOrdersOpen = ref(false)
 let productSearchTimeoutId = null
 
 const supplierNameMap = computed(() => {
@@ -333,18 +374,28 @@ const warehouseNameMap = computed(() => {
   return Object.fromEntries(warehouses.value.map((warehouse) => [warehouse.id, warehouse.name]))
 })
 
-const estimatedTotalCost = computed(() => {
-  const total = items.value.reduce((sum, item) => {
+const estimatedTotalValue = computed(() => {
+  return items.value.reduce((sum, item) => {
     const quantity = Number(item.quantity || 0)
     const unitCost = Number(item.unit_cost || 0)
     return sum + (quantity * unitCost)
   }, 0)
+})
 
-  return formatCommerceCurrency(total)
+const estimatedTotalCost = computed(() => {
+  return formatCommerceCurrency(estimatedTotalValue.value)
+})
+
+const estimatedSettlementDue = computed(() => {
+  return formatCommerceCurrency(Math.max(estimatedTotalValue.value - Number(paidAmount.value || 0), 0))
 })
 
 const isReadyToSubmit = computed(() => {
   if (!supplierId.value || !warehouseId.value) {
+    return false
+  }
+
+  if (Number(paidAmount.value || 0) < 0 || Number(paidAmount.value || 0) > estimatedTotalValue.value) {
     return false
   }
 
@@ -376,6 +427,7 @@ const resetForm = () => {
   warehouseId.value = ''
   invoiceNumber.value = buildCommerceReference('PO')
   notes.value = ''
+  paidAmount.value = ''
   items.value = [createEmptyProcurementItem()]
   formError.value = ''
 }
@@ -503,6 +555,7 @@ const saveProcurement = async () => {
       p_warehouse_id: warehouseId.value,
       p_invoice_number: String(invoiceNumber.value || '').trim() || null,
       p_notes: String(notes.value || '').trim() || null,
+      p_paid_amount: Number(paidAmount.value || 0),
       p_items: payloadItems
     })
 

@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-await navigateTo('/dashboard/settings?tab=users', {
+await navigateTo('/dashboard/hr?tab=users', {
   replace: true
 })
 </script>

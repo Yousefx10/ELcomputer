@@ -527,7 +527,6 @@ const addProduct = async () => {
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  invalidate('dashboard:settings:inventory:')
   await navigateTo(`/dashboard/products/edit/${data.id}`)
 }
 

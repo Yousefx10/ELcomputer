@@ -317,7 +317,11 @@
         <div
           v-for="account in accounts"
           :key="account.id"
-          class="rounded-2xl border p-4"
+          role="button"
+          tabindex="0"
+          class="cursor-pointer rounded-2xl border p-4 transition hover:border-gray-400 hover:bg-gray-50"
+          @click="openAccountDetails(account)"
+          @keydown.enter="openAccountDetails(account)"
         >
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="space-y-2">
@@ -357,7 +361,7 @@
               <button
                 type="button"
                 class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
-                @click="startEdit(account)"
+                @click.stop="startEdit(account)"
               >
                 Edit
               </button>
@@ -367,10 +371,140 @@
       </div>
       </div>
     </section>
+
+    <Teleport to="body">
+      <div
+        v-if="selectedAccount"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        @click.self="closeAccountDetails"
+      >
+        <section class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-500">
+                {{ selectedAccount.account_type === 'supplier' ? 'Supplier' : 'Customer' }} Details
+              </p>
+              <h3 class="mt-1 text-3xl font-bold text-gray-900">{{ selectedAccount.name }}</h3>
+              <p class="mt-2 text-sm text-gray-500">
+                {{ selectedAccount.email || 'No email' }}<span v-if="selectedAccount.phone"> · {{ selectedAccount.phone }}</span>
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              @click="closeAccountDetails"
+            >
+              Close
+            </button>
+          </div>
+
+          <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-2xl bg-gray-100 p-4">
+              <p class="text-sm text-gray-500">Orders</p>
+              <p class="mt-2 text-2xl font-bold text-gray-900">{{ accountSummary.order_count }}</p>
+            </div>
+            <div class="rounded-2xl bg-gray-100 p-4">
+              <p class="text-sm text-gray-500">Total Value</p>
+              <p class="mt-2 text-xl font-bold text-gray-900">{{ formatCommerceCurrency(accountSummary.total_amount) }}</p>
+            </div>
+            <div class="rounded-2xl bg-gray-100 p-4">
+              <p class="text-sm text-gray-500">Paid</p>
+              <p class="mt-2 text-xl font-bold text-gray-900">{{ formatCommerceCurrency(accountSummary.paid_amount) }}</p>
+            </div>
+            <div class="rounded-2xl bg-amber-50 p-4">
+              <p class="text-sm text-amber-700">Settlement Due</p>
+              <p class="mt-2 text-xl font-bold text-amber-900">{{ formatCommerceCurrency(accountSummary.settlement_due) }}</p>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h4 class="text-xl font-bold text-gray-900">
+                {{ selectedAccount.account_type === 'supplier' ? 'Purchasing Orders' : 'Selling Orders' }}
+              </h4>
+              <p class="mt-1 text-sm text-gray-500">
+                {{ selectedAccount.account_type === 'supplier'
+                  ? 'Procurement orders connected to this supplier.'
+                  : 'Manual sales connected to this CRM customer.' }}
+              </p>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                type="button"
+                class="rounded-full px-4 py-2 text-sm font-semibold"
+                :class="accountOrdersMode === 'latest' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
+                @click="setAccountOrdersMode('latest')"
+              >
+                Latest
+              </button>
+              <button
+                type="button"
+                class="rounded-full px-4 py-2 text-sm font-semibold"
+                :class="accountOrdersMode === 'all' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
+                @click="setAccountOrdersMode('all')"
+              >
+                All
+              </button>
+            </div>
+          </div>
+
+          <p v-if="accountDetailsError" class="mt-5 text-sm text-red-600">{{ accountDetailsError }}</p>
+          <p v-else-if="accountDetailsLoading" class="mt-5 text-sm text-gray-500">Loading orders...</p>
+          <p v-else-if="!accountOrders.length" class="mt-5 text-sm text-gray-500">No connected orders found.</p>
+
+          <div v-else class="mt-5 space-y-3">
+            <div
+              v-for="order in accountOrders"
+              :key="order.id"
+              class="flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="font-bold text-gray-900">{{ getAccountOrderReference(order) }}</p>
+                <p class="mt-1 text-xs text-gray-400">{{ formatCommerceDate(order.created_at) }}</p>
+              </div>
+
+              <div class="text-left sm:text-right">
+                <p class="font-bold text-gray-900">{{ formatCommerceCurrency(getAccountOrderTotal(order)) }}</p>
+                <p class="mt-1 text-sm text-gray-500">
+                  Paid {{ formatCommerceCurrency(order.paid_amount) }} · Due {{ formatCommerceCurrency(getAccountOrderDue(order)) }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="accountOrdersMode === 'all' && accountOrdersTotalPages > 1"
+            class="mt-6 flex items-center justify-between gap-3"
+          >
+            <button
+              type="button"
+              :disabled="accountOrdersPage === 1"
+              class="rounded-lg border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
+              @click="changeAccountOrdersPage(accountOrdersPage - 1)"
+            >
+              Previous
+            </button>
+            <p class="text-sm text-gray-500">Page {{ accountOrdersPage }} of {{ accountOrdersTotalPages }}</p>
+            <button
+              type="button"
+              :disabled="accountOrdersPage === accountOrdersTotalPages"
+              class="rounded-lg border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
+              @click="changeAccountOrdersPage(accountOrdersPage + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </section>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
+import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
+
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
 
@@ -387,6 +521,19 @@ const searchQuery = ref('')
 const editingId = ref('')
 const isFormOpen = ref(false)
 const isListOpen = ref(false)
+const selectedAccount = ref(null)
+const accountOrders = ref([])
+const accountDetailsLoading = ref(false)
+const accountDetailsError = ref('')
+const accountOrdersMode = ref('latest')
+const accountOrdersPage = ref(1)
+const accountOrdersTotalPages = ref(1)
+const accountSummary = reactive({
+  order_count: 0,
+  total_amount: 0,
+  paid_amount: 0,
+  settlement_due: 0
+})
 let searchTimeoutId = null
 
 const createEmptyForm = () => ({
@@ -414,7 +561,7 @@ const currentTypeListLabel = computed(() => activeAccountType.value === 'supplie
 const trimmedSearchQuery = computed(() => searchQuery.value.trim())
 
 const isMissingSchemaError = (error) => {
-  return error?.code === '42P01' || error?.code === '42703'
+  return error?.code === '42P01' || error?.code === '42703' || error?.code === 'PGRST202'
 }
 
 const resetForm = () => {
@@ -507,6 +654,110 @@ const loadAccounts = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const loadAccountSummary = async () => {
+  const { data, error } = await supabase.rpc('commerce_get_crm_account_summary', {
+    p_account_id: selectedAccount.value.id
+  })
+
+  if (error) throw error
+
+  Object.assign(accountSummary, {
+    order_count: Number(data?.order_count || 0),
+    total_amount: Number(data?.total_amount || 0),
+    paid_amount: Number(data?.paid_amount || 0),
+    settlement_due: Number(data?.settlement_due || 0)
+  })
+}
+
+const loadAccountOrders = async () => {
+  const isSupplier = selectedAccount.value.account_type === 'supplier'
+  const tableName = isSupplier ? 'commerce_procurement_orders' : 'commerce_sales_orders'
+  const accountField = isSupplier ? 'supplier_id' : 'customer_id'
+  const fields = isSupplier
+    ? 'id, invoice_number, total_cost, paid_amount, created_at'
+    : 'id, order_number, total_amount, paid_amount, created_at'
+  const pageSize = accountOrdersMode.value === 'latest' ? 5 : 10
+  const page = accountOrdersMode.value === 'latest' ? 1 : accountOrdersPage.value
+  const from = (page - 1) * pageSize
+
+  const { data, error, count } = await supabase
+    .from(tableName)
+    .select(fields, { count: 'exact' })
+    .eq(accountField, selectedAccount.value.id)
+    .order('created_at', { ascending: false })
+    .range(from, from + pageSize - 1)
+
+  if (error) throw error
+
+  accountOrders.value = data || []
+  accountOrdersTotalPages.value = Math.max(1, Math.ceil(Number(count || 0) / pageSize))
+}
+
+const refreshAccountDetails = async ({ includeSummary = false } = {}) => {
+  if (!selectedAccount.value) return
+
+  accountDetailsLoading.value = true
+  accountDetailsError.value = ''
+
+  try {
+    const requests = [loadAccountOrders()]
+    if (includeSummary) requests.push(loadAccountSummary())
+    await Promise.all(requests)
+  } catch (error) {
+    accountDetailsError.value = isMissingSchemaError(error)
+      ? 'Run the latest Commerce SQL migration first, then reopen this account.'
+      : error.message || 'Could not load the connected CRM orders.'
+  } finally {
+    accountDetailsLoading.value = false
+  }
+}
+
+const openAccountDetails = async (account) => {
+  selectedAccount.value = account
+  accountOrders.value = []
+  accountOrdersMode.value = 'latest'
+  accountOrdersPage.value = 1
+  accountOrdersTotalPages.value = 1
+  Object.assign(accountSummary, {
+    order_count: 0,
+    total_amount: 0,
+    paid_amount: 0,
+    settlement_due: 0
+  })
+  await refreshAccountDetails({ includeSummary: true })
+}
+
+const closeAccountDetails = () => {
+  selectedAccount.value = null
+  accountOrders.value = []
+  accountDetailsError.value = ''
+}
+
+const setAccountOrdersMode = async (mode) => {
+  if (accountOrdersMode.value === mode) return
+  accountOrdersMode.value = mode
+  accountOrdersPage.value = 1
+  await refreshAccountDetails()
+}
+
+const changeAccountOrdersPage = async (page) => {
+  if (page < 1 || page > accountOrdersTotalPages.value) return
+  accountOrdersPage.value = page
+  await refreshAccountDetails()
+}
+
+const getAccountOrderReference = (order) => {
+  return order.invoice_number || order.order_number || `Order #${String(order.id || '').slice(0, 8)}`
+}
+
+const getAccountOrderTotal = (order) => {
+  return Number(order.total_cost ?? order.total_amount ?? 0)
+}
+
+const getAccountOrderDue = (order) => {
+  return Math.max(getAccountOrderTotal(order) - Number(order.paid_amount || 0), 0)
 }
 
 const startEdit = (account) => {
@@ -644,6 +895,7 @@ const deleteAccount = async () => {
 }
 
 watch(activeAccountType, () => {
+  closeAccountDetails()
   resetForm()
   loadAccounts()
 })

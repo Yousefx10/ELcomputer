@@ -42,16 +42,10 @@ const allLinks = [
     permission: 'products.view'
   },
   {
-    label: 'Categories',
-    to: '/dashboard/products/categories',
-    icon: 'lucide:layout-grid',
-    permission: 'categories.view'
-  },
-  {
-    label: 'Brands',
-    to: '/dashboard/products/brands',
-    icon: 'lucide:tag',
-    permission: 'brands.view'
+    label: 'Catalog',
+    to: '/dashboard/catalog',
+    icon: 'lucide:library-big',
+    permissionsAny: ['categories.view', 'brands.view']
   },
   {
     label: 'CRM',
@@ -64,10 +58,22 @@ const allLinks = [
     icon: 'lucide:briefcase-business'
   },
   {
+    label: 'HR',
+    to: '/dashboard/hr',
+    icon: 'lucide:users-round',
+    permissionsAny: ['hr.view', 'users.view']
+  },
+  {
+    label: 'Treasury',
+    to: '/dashboard/treasury',
+    icon: 'lucide:landmark',
+    permission: 'treasury.view'
+  },
+  {
     label: 'Settings',
     to: '/dashboard/settings',
     icon: 'lucide:settings',
-    permissionsAny: ['settings.view', 'settings.coupons', 'settings.inventory', 'users.view']
+    permissionsAny: ['settings.view', 'settings.coupons']
   }
 ]
 
