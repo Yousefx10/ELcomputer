@@ -1,7 +1,7 @@
 <template>
   <div class="">
-    <div class="mx-auto max-w-4xl">
-      <div class="mb-6 rounded-2xl bg-white p-6 shadow">
+    <div class="">
+      <div class="mb-6 rounded-2xl bg-gray-200 p-6 shadow">
         <h2 class="text-4xl font-bold">Categories</h2>
         <p class="mt-2 text-sm text-gray-500">
           Display, add, edit, and delete product categories

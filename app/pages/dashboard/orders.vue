@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 p-6">
+  <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
       <div class="rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Orders</h2>
