@@ -4,7 +4,7 @@
       <div class="mb-4">
         <h3 class="text-2xl font-bold text-gray-900">Overview</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Current calendar periods compared with their immediately preceding periods.
+          Watch calendar periods.
         </p>
       </div>
 
@@ -45,7 +45,7 @@
         <div>
           <h3 class="text-2xl font-bold text-gray-900">Performance Chart</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Select a metric and reporting period. Stock represents net recorded warehouse movement.
+            Select a metric and reporting period.
           </p>
         </div>
 

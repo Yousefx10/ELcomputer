@@ -6,7 +6,7 @@
         <div>
           <h2 class="text-4xl font-bold">Treasury</h2>
           <p class="mt-2 text-sm text-amber-900">
-            Record supplier payments, customer receipts, and employee salary payments.
+            Record payments, customer receipts, employees salary.
           </p>
         </div>
       </div>

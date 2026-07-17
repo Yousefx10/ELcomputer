@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">CRM</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Keep separate supplier and B2B customer records with company or person details and a main contact person.
+            Record Suppliers and People.
           </p>
         </div>
 
@@ -55,8 +55,8 @@
           </h3>
           <p class="mt-1 text-sm text-gray-500">
             {{ activeAccountType === 'supplier'
-              ? 'Suppliers connect procurement to cost and inventory.'
-              : 'These are ERP customers, separate from online store shoppers.' }}
+              ? 'Suppliers used for procurement (cost / inventory).'
+              : 'Direct Customers.' }}
           </p>
         </div>
 

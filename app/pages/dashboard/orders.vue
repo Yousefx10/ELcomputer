@@ -4,7 +4,7 @@
       <div class="rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Orders</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Review recent orders, filter the archive, and update order statuses from one place.
+          Review recent orders and update order statuses.
         </p>
       </div>
 

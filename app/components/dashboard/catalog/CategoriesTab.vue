@@ -29,7 +29,7 @@
           section="categories"
           :disabled="editingId ? !canEditCategory : !canAddCategory"
           :preview-alt="name || 'Category image'"
-          help-text="Used in the Top Categories section on the public home page."
+          help-text="Image displayed in home page."
         />
 
         <p class="text-sm text-gray-500">

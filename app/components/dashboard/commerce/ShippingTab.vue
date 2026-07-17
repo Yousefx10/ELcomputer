@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Shipping Companies</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Define the companies used for online order delivery and keep their internal and customer-facing pricing.
+            Define Shipping Companies.
           </p>
         </div>
 

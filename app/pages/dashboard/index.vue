@@ -4,7 +4,7 @@
       <div class="mb-6 rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Dashboard</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Overview of the areas available to your current admin account
+          Dashboard Overview
         </p>
       </div>
 

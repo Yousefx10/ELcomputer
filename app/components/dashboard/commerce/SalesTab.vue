@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Sales Orders</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Record manual sales for CRM customers and deduct stock from the selected warehouse.
+            Record manual sales for CRM customers.
           </p>
         </div>
 
@@ -37,7 +37,7 @@
         <div>
           <h3 class="text-2xl font-bold">New Manual Sale</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Sell existing stock to a CRM customer and record the amount already paid.
+            Sell to CRM customer.
           </p>
         </div>
 
