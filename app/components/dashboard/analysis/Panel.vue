@@ -151,18 +151,18 @@ const customTo = ref('')
 const activeRange = reactive({ from: '', to: '', bucket: 'day' })
 
 const overviewMetrics = [
-  { key: 'sales', label: 'Total Sales', suffix: ' units' },
+  { key: 'revenue', label: 'Total Sales', currency: true },
   { key: 'orders', label: 'Total Orders' },
-  { key: 'revenue', label: 'Revenue', currency: true }
+  { key: 'sales', label: 'Units Sold', suffix: ' units' }
 ]
 
 const chartMetrics = [
   { key: 'orders', label: 'Orders', color: '#2563eb', fill: '#60a5fa' },
-  { key: 'sales', label: 'Sales', color: '#16a34a', fill: '#4ade80' },
+  { key: 'revenue', label: 'Sales', color: '#16a34a', fill: '#4ade80', currency: true },
+  { key: 'sales', label: 'Units Sold', color: '#0891b2', fill: '#22d3ee' },
   { key: 'return_units', label: 'Returns', color: '#dc2626', fill: '#f87171' },
   { key: 'coupons', label: 'Coupons', color: '#d97706', fill: '#fbbf24' },
   { key: 'stock', label: 'Stock', color: '#4b5563', fill: '#9ca3af', signed: true },
-  { key: 'revenue', label: 'Revenue', color: '#0891b2', fill: '#22d3ee', currency: true },
   { key: 'expenses', label: 'Expenses', color: '#be123c', fill: '#fb7185', currency: true }
 ]
 
