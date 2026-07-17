@@ -26,42 +26,11 @@
         </div>
       </div>
 
-      <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
+      <div v-if="currentView === 'summary' && errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
         {{ errorMessage }}
       </div>
 
-      <div
-        v-if="currentView === 'analysis' && (canViewProducts || canViewCategories)"
-        class="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
-      >
-        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Total Products</p>
-          <p class="mt-2 text-3xl font-bold">
-            {{ totalProducts }}
-          </p>
-        </div>
-
-        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Active Products</p>
-          <p class="mt-2 text-3xl font-bold text-green-600">
-            {{ activeProducts }}
-          </p>
-        </div>
-
-        <div v-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Inactive Products</p>
-          <p class="mt-2 text-3xl font-bold text-gray-700">
-            {{ inactiveProducts }}
-          </p>
-        </div>
-
-        <div v-if="canViewCategories" class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Total Categories</p>
-          <p class="mt-2 text-3xl font-bold">
-            {{ totalCategories }}
-          </p>
-        </div>
-      </div>
+      <DashboardAnalysisPanel v-if="currentView === 'analysis'" />
 
       <div v-else-if="canViewProducts" class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between">
@@ -270,7 +239,15 @@ const getDashboardData = async ({ force = false } = {}) => {
   setSnapshot(DASHBOARD_HOME_CACHE_KEY, snapshot)
 }
 
+watch(currentView, async (view) => {
+  if (view === 'summary') {
+    await getDashboardData()
+  }
+})
+
 onMounted(async () => {
-  await getDashboardData()
+  if (currentView.value === 'summary') {
+    await getDashboardData()
+  }
 })
 </script>
