@@ -210,7 +210,7 @@
                   :aria-label="`${star} ${star === 1 ? 'star' : 'stars'}`"
                   class="rounded p-1 text-gray-300 transition hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   :class="star <= (hoveredRating || selectedRating)
-                    ? 'text-blue-600'
+                    ? 'text-amber-400'
                     : 'text-gray-300'"
                   @mouseenter="hoveredRating = star"
                   @focus="hoveredRating = star"
@@ -220,7 +220,9 @@
                   <Icon
                     name="lucide:star"
                     size="30"
-                    :class="star <= (hoveredRating || selectedRating) ? 'fill-current' : ''"
+                    :class="star <= (hoveredRating || selectedRating)
+                      ? 'fill-amber-400 text-amber-400'
+                      : 'fill-transparent text-gray-300'"
                   />
                 </button>
               </div>
