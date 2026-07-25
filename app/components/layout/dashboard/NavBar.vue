@@ -45,7 +45,7 @@ const allLinks = [
     label: 'Catalog',
     to: '/dashboard/catalog',
     icon: 'lucide:library-big',
-    permissionsAny: ['categories.view', 'brands.view']
+    permissionsAny: ['categories.view', 'brands.view', 'reviews.view']
   },
   {
     label: 'CRM',

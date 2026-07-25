@@ -202,6 +202,11 @@
           </p>
         </section>
       </div>
+
+      <ProductReviews
+        :product-id="product.id"
+        :product-name="product.title"
+      />
     </div>
   </div>
 </template>

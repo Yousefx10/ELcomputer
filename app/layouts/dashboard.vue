@@ -67,7 +67,8 @@ const dashboardRouteTitles = {
 const dashboardTabTitles = {
   '/dashboard/catalog': {
     default: 'Categories',
-    brands: 'Brands'
+    brands: 'Brands',
+    reviews: 'Reviews'
   },
   '/dashboard/commerce': {
     default: 'Procurement',

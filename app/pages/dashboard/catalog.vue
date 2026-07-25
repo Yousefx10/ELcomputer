@@ -3,13 +3,14 @@
     <div class="rounded-2xl bg-white p-6 shadow">
       <h2 class="text-4xl font-bold">Catalog</h2>
       <p class="mt-2 text-sm text-gray-500">
-        Manage the categories and brands used by your products.
+        Manage the categories, brands, and reviews connected to your products.
       </p>
     </div>
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
 
-    <DashboardCatalogBrandsTab v-if="activeTab === 'brands'" />
+    <DashboardCatalogReviewsTab v-if="activeTab === 'reviews'" />
+    <DashboardCatalogBrandsTab v-else-if="activeTab === 'brands'" />
     <DashboardCatalogCategoriesTab v-else />
   </div>
 </template>
@@ -24,8 +25,13 @@ const { hasPermission } = useAdminAccess()
 
 const canViewCategories = computed(() => hasPermission('categories.view'))
 const canViewBrands = computed(() => hasPermission('brands.view'))
+const canViewReviews = computed(() => hasPermission('reviews.view'))
 
 const activeTab = computed(() => {
+  if (route.query.tab === 'reviews' && canViewReviews.value) {
+    return 'reviews'
+  }
+
   if (route.query.tab === 'brands' && canViewBrands.value) {
     return 'brands'
   }
@@ -34,7 +40,11 @@ const activeTab = computed(() => {
     return 'categories'
   }
 
-  return 'brands'
+  if (canViewBrands.value) {
+    return 'brands'
+  }
+
+  return 'reviews'
 })
 
 const secondaryNavItems = computed(() => {
@@ -53,6 +63,14 @@ const secondaryNavItems = computed(() => {
       label: 'Brands',
       to: '/dashboard/catalog?tab=brands',
       active: activeTab.value === 'brands'
+    })
+  }
+
+  if (canViewReviews.value) {
+    items.push({
+      label: 'Reviews',
+      to: '/dashboard/catalog?tab=reviews',
+      active: activeTab.value === 'reviews'
     })
   }
 
