@@ -1,4 +1,4 @@
-import { normalizeDashboardQueryValue } from './dashboardNavigation'
+import { normalizeDashboardQueryValue } from './dashboardNavigation.js'
 
 export const adminPermissionGroups = [
   {
