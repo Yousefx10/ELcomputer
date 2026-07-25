@@ -1,7 +1,87 @@
 import { createError, getRouterParam } from 'h3'
-import { completedOrderStatuses, openOrderStatuses } from '../../utils/adminOrders'
-import { mapCustomerProfileRecord } from '../../utils/customerUsers'
+import { openOrderStatuses } from '../../utils/adminOrders'
+import {
+  calculateCustomerAcceptance,
+  customerAcceptanceResolvedStatuses,
+  mapCustomerProfileRecord
+} from '../../utils/customerUsers'
 import { requireAdminRequest } from '../../utils/adminRequest'
+
+const ANALYTICS_SCHEMA_ERROR_CODES = new Set([
+  '42P01',
+  '42703',
+  'PGRST202',
+  'PGRST204',
+  'PGRST205'
+])
+
+const createEmptyCustomerBehavior = (available = true) => ({
+  available,
+  visits: 0,
+  returningVisits: 0,
+  productViews: 0,
+  totalProductDwellSeconds: 0,
+  averageProductDwellSeconds: 0,
+  addToCartEvents: 0,
+  checkoutStarts: 0,
+  lastSeenAt: null,
+  products: []
+})
+
+const isMissingAnalyticsSchemaError = (error) => {
+  return ANALYTICS_SCHEMA_ERROR_CODES.has(error?.code)
+}
+
+const loadCustomerBehavior = async (supabaseAdmin, customerId) => {
+  const { data, error } = await supabaseAdmin.rpc(
+    'store_analytics_get_customer_behavior',
+    {
+      p_user_id: customerId
+    }
+  )
+
+  if (isMissingAnalyticsSchemaError(error) || error?.code === '42883') {
+    return createEmptyCustomerBehavior(false)
+  }
+
+  if (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Customer behavior data is unavailable.'
+    })
+  }
+
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return createEmptyCustomerBehavior()
+  }
+
+  return {
+    available: data.available !== false,
+    visits: Math.max(0, Number(data.visits || 0)),
+    returningVisits: Math.max(0, Number(data.returningVisits || 0)),
+    productViews: Math.max(0, Number(data.productViews || 0)),
+    totalProductDwellSeconds: Math.max(
+      0,
+      Number(data.totalProductDwellSeconds || 0)
+    ),
+    averageProductDwellSeconds: Math.max(
+      0,
+      Number(data.averageProductDwellSeconds || 0)
+    ),
+    addToCartEvents: Math.max(0, Number(data.addToCartEvents || 0)),
+    checkoutStarts: Math.max(0, Number(data.checkoutStarts || 0)),
+    lastSeenAt: data.lastSeenAt || null,
+    products: Array.isArray(data.products)
+      ? data.products.slice(0, 5).map((product) => ({
+          title: String(product?.title || 'Unavailable product'),
+          slug: String(product?.slug || ''),
+          viewCount: Math.max(0, Number(product?.viewCount || 0)),
+          dwellSeconds: Math.max(0, Number(product?.dwellSeconds || 0)),
+          lastViewedAt: product?.lastViewedAt || null
+        }))
+      : []
+  }
+}
 
 export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event, {
@@ -20,7 +100,7 @@ export default defineEventHandler(async (event) => {
   const [
     { data: profileRecord, error: profileError },
     { count: totalOrders, error: totalOrdersError },
-    { count: completedOrders, error: completedOrdersError },
+    { data: resolvedOrderRecords, error: resolvedOrdersError },
     { count: openOrders, error: openOrdersError },
     { data: recentOrders, error: recentOrdersError }
   ] = await Promise.all([
@@ -35,9 +115,9 @@ export default defineEventHandler(async (event) => {
       .eq('user_id', targetId),
     supabaseAdmin
       .from('customer_orders')
-      .select('*', { count: 'exact', head: true })
+      .select('status')
       .eq('user_id', targetId)
-      .in('status', completedOrderStatuses),
+      .in('status', customerAcceptanceResolvedStatuses),
     supabaseAdmin
       .from('customer_orders')
       .select('*', { count: 'exact', head: true })
@@ -72,10 +152,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (completedOrdersError) {
+  if (resolvedOrdersError) {
     throw createError({
       statusCode: 500,
-      statusMessage: completedOrdersError.message
+      statusMessage: resolvedOrdersError.message
     })
   }
 
@@ -93,11 +173,19 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const acceptance = calculateCustomerAcceptance(resolvedOrderRecords || [])
+  const behavior = await loadCustomerBehavior(supabaseAdmin, targetId)
+
   return {
-    item: mapCustomerProfileRecord(profileRecord),
+    item: {
+      ...mapCustomerProfileRecord(profileRecord),
+      acceptance
+    },
+    acceptance,
+    behavior,
     stats: {
       totalOrders: totalOrders || 0,
-      completed: completedOrders || 0,
+      completed: acceptance.acceptedOrders,
       open: openOrders || 0
     },
     recentOrders: (recentOrders || []).map((order) => ({

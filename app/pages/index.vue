@@ -62,6 +62,11 @@
         :products="category.products"
       />
     </section>
+
+    <NpsSurvey
+      source="homepage"
+      :store-name="siteContent?.settings?.site_name || 'ELcomputer'"
+    />
   </section>
 </template>
 

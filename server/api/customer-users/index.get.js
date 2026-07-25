@@ -1,5 +1,9 @@
 import { createError, getQuery } from 'h3'
-import { mapCustomerProfileRecord } from '../../utils/customerUsers'
+import {
+  calculateCustomerAcceptance,
+  customerAcceptanceResolvedStatuses,
+  mapCustomerProfileRecord
+} from '../../utils/customerUsers'
 import { requireAdminRequest } from '../../utils/adminRequest'
 
 export default defineEventHandler(async (event) => {
@@ -75,8 +79,44 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const profileRecords = data || []
+  const profileIds = profileRecords.map((profile) => profile.id)
+  const acceptanceOrdersByCustomer = new Map(
+    profileIds.map((profileId) => [String(profileId), []])
+  )
+
+  if (profileIds.length) {
+    const { data: acceptanceOrderRecords, error: acceptanceOrdersError } = await supabaseAdmin
+      .from('customer_orders')
+      .select('user_id, status')
+      .in('user_id', profileIds)
+      .in('status', customerAcceptanceResolvedStatuses)
+
+    if (acceptanceOrdersError) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: acceptanceOrdersError.message
+      })
+    }
+
+    const customerAcceptanceOrders = acceptanceOrderRecords || []
+
+    customerAcceptanceOrders.forEach((order) => {
+      const customerOrders = acceptanceOrdersByCustomer.get(String(order.user_id))
+
+      if (customerOrders) {
+        customerOrders.push(order)
+      }
+    })
+  }
+
   return {
-    items: (data || []).map(mapCustomerProfileRecord),
+    items: profileRecords.map((profile) => ({
+      ...mapCustomerProfileRecord(profile),
+      acceptance: calculateCustomerAcceptance(
+        acceptanceOrdersByCustomer.get(String(profile.id)) || []
+      )
+    })),
     total: totalCount || 0,
     activeTotal: activeCount || 0,
     filteredTotal: filteredCount || 0,

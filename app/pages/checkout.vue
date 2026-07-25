@@ -303,6 +303,8 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const {
   items,
+  cartId,
+  itemCount,
   subtotal,
   isEmpty,
   appliedCoupon,
@@ -311,6 +313,7 @@ const {
   resetCoupon,
   loadCart
 } = useCart()
+const { trackEvent } = useStoreAnalytics()
 
 const loadingProfile = ref(false)
 const applyingCoupon = ref(false)
@@ -320,6 +323,7 @@ const couponError = ref('')
 const couponSuccess = ref('')
 const orderError = ref('')
 const orderSuccess = ref('')
+let checkoutStartedTracked = false
 const address = reactive({
   first_name: '',
   last_name: '',
@@ -492,6 +496,7 @@ const placeOrder = async () => {
           id: item.id,
           quantity: item.quantity
         })),
+        cart_id: cartId.value || null,
         coupon_code: appliedCoupon.value?.code || '',
         address: {
           ...address,
@@ -503,7 +508,10 @@ const placeOrder = async () => {
     })
 
     orderSuccess.value = `Order ${response.order.orderNumber} created successfully.`
-    clearCart()
+    clearCart({
+      reason: 'converted',
+      track: false
+    })
     await navigateTo(`/checkout/summary/${response.order.id}`)
   } catch (error) {
     orderError.value = error?.data?.statusMessage || error?.message || 'Could not place the order.'
@@ -515,6 +523,16 @@ const placeOrder = async () => {
 onMounted(async () => {
   loadCart()
   couponCode.value = appliedCoupon.value?.code || ''
+
+  if (!checkoutStartedTracked && !isEmpty.value && cartId.value) {
+    checkoutStartedTracked = true
+    trackEvent('checkout_started', {
+      cartId: cartId.value,
+      quantity: itemCount.value,
+      source: 'checkout_page'
+    })
+  }
+
   await loadCustomerProfile()
 })
 

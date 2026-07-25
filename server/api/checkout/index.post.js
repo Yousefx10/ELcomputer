@@ -1,6 +1,10 @@
 import { createError } from 'h3'
 import { buildCouponResponse, getValidatedCoupon } from '../../utils/coupons'
 import { requireCustomerRequest } from '../../utils/customerRequest'
+import {
+  isStoreAnalyticsUuid,
+  recordStoreOrderCreated
+} from '../../utils/storeAnalytics'
 
 const PHONE_PATTERN = /^01\d{9}$/
 
@@ -278,6 +282,10 @@ export default defineEventHandler(async (event) => {
   const shippingMethod = normalizeOptionalText(body?.shipping_method)
   const paymentMethod = normalizeOptionalText(body?.payment_method)
   const couponCode = String(body?.coupon_code || '').trim().toUpperCase()
+  const requestedCartId = String(body?.cart_id || '').trim()
+  const cartId = isStoreAnalyticsUuid(requestedCartId)
+    ? requestedCartId.toLowerCase()
+    : null
 
   if (!PHONE_PATTERN.test(phone)) {
     throw createError({
@@ -528,6 +536,18 @@ export default defineEventHandler(async (event) => {
 
   if (profileUpdateError) {
     console.error('Could not update customer profile after checkout:', profileUpdateError.message)
+  }
+
+  try {
+    await recordStoreOrderCreated({
+      event,
+      supabaseAdmin,
+      userId: authUser.id,
+      orderId: orderRecord.id,
+      cartId
+    })
+  } catch {
+    console.error('Could not record checkout analytics.')
   }
 
   return {

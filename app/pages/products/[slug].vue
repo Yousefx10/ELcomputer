@@ -271,6 +271,8 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
   }
 })
 
+useProductEngagement(product)
+
 const selectedImage = ref('')
 const selectedQuantity = ref(1)
 const cartMessage = ref('')
@@ -316,7 +318,9 @@ const handleAddToCart = () => {
   const result = addItem({
     ...product.value,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value
-  }, selectedQuantity.value)
+  }, selectedQuantity.value, {
+    source: 'product_detail'
+  })
   cartMessage.value = result.message || ''
 }
 

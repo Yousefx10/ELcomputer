@@ -481,6 +481,17 @@
                       >
                         {{ customer.is_active ? 'Active' : 'Inactive' }}
                       </span>
+
+                      <span
+                        v-if="customer.acceptance"
+                        class="rounded-full px-3 py-1 text-xs font-semibold"
+                        :class="getCustomerAcceptanceClass(customer.acceptance.key)"
+                      >
+                        {{ customer.acceptance.label }}
+                        <template v-if="hasCustomerAcceptanceRate(customer.acceptance)">
+                          · {{ formatCustomerAcceptanceRate(customer.acceptance.acceptanceRate) }}
+                        </template>
+                      </span>
                     </div>
 
                     <p class="text-sm text-gray-600">
@@ -552,6 +563,17 @@
                       >
                         {{ customerDetail.is_active ? 'Active' : 'Inactive' }}
                       </span>
+
+                      <span
+                        v-if="customerDetailAcceptance"
+                        class="rounded-full px-3 py-1 text-xs font-semibold"
+                        :class="getCustomerAcceptanceClass(customerDetailAcceptance.key)"
+                      >
+                        {{ customerDetailAcceptance.label }}
+                        <template v-if="hasCustomerAcceptanceRate(customerDetailAcceptance)">
+                          · {{ formatCustomerAcceptanceRate(customerDetailAcceptance.acceptanceRate) }}
+                        </template>
+                      </span>
                     </div>
 
                     <p class="mt-2 text-sm text-gray-600">
@@ -612,7 +634,7 @@
                   </div>
 
                   <div class="space-y-4">
-                    <div class="grid gap-4 sm:grid-cols-3">
+                    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                       <div class="rounded-2xl bg-gray-50 p-4">
                         <p class="text-sm text-gray-500">Total Orders</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerDetailStats.totalOrders }}</p>
@@ -627,7 +649,33 @@
                         <p class="text-sm text-gray-500">Open Orders</p>
                         <p class="mt-2 text-2xl font-bold text-amber-600">{{ customerDetailStats.open }}</p>
                       </div>
+
+                      <div class="rounded-2xl bg-gray-50 p-4">
+                        <p class="text-sm text-gray-500">Acceptance</p>
+                        <p
+                          class="mt-2 text-2xl font-bold"
+                          :class="getCustomerAcceptanceTextClass(customerDetailAcceptance?.key)"
+                        >
+                          {{ !customerDetailAcceptance
+                            ? '—'
+                            : hasCustomerAcceptanceRate(customerDetailAcceptance)
+                              ? formatCustomerAcceptanceRate(customerDetailAcceptance.acceptanceRate)
+                              : 'New' }}
+                        </p>
+                        <p v-if="customerDetailAcceptance" class="mt-1 text-xs text-gray-400">
+                          {{ customerDetailAcceptance.acceptedOrders }} accepted of
+                          {{ customerDetailAcceptance.resolvedOrders }} resolved
+                        </p>
+                      </div>
                     </div>
+
+                    <p
+                      v-if="customerDetailAcceptance"
+                      class="rounded-xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-700"
+                    >
+                      Acceptance is a fulfillment-success proxy: completed or delivered orders divided by resolved orders.
+                      Open orders are excluded.
+                    </p>
 
                     <div class="rounded-2xl bg-gray-50 p-4">
                       <div class="mb-4 flex items-center justify-between gap-3">
@@ -682,6 +730,113 @@
                     </div>
                   </div>
                 </div>
+
+                <section
+                  v-if="customerBehavior"
+                  class="rounded-2xl border bg-gray-50 p-5"
+                >
+                  <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h5 class="text-xl font-bold text-gray-900">Customer Behavior</h5>
+                      <p class="mt-1 text-sm text-gray-500">
+                        Store visits and shopping activity connected to this signed-in customer.
+                      </p>
+                    </div>
+
+                    <p v-if="customerBehavior.lastSeenAt" class="text-xs text-gray-400">
+                      Last seen {{ formatDate(customerBehavior.lastSeenAt) }}
+                    </p>
+                  </div>
+
+                  <div
+                    v-if="customerBehavior.available === false"
+                    class="mt-4 rounded-xl bg-white p-4 text-sm text-gray-500"
+                  >
+                    Customer behavior tracking is not available until the latest analytics migration is applied.
+                  </div>
+
+                  <template v-else>
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <div class="rounded-xl bg-white p-4">
+                        <p class="text-sm text-gray-500">Store Visits</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.visits }}</p>
+                        <p class="mt-1 text-xs text-gray-400">
+                          {{ customerBehavior.returningVisits }} returning
+                        </p>
+                      </div>
+
+                      <div class="rounded-xl bg-white p-4">
+                        <p class="text-sm text-gray-500">Product Views</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.productViews }}</p>
+                      </div>
+
+                      <div class="rounded-xl bg-white p-4">
+                        <p class="text-sm text-gray-500">Average Product Dwell</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">
+                          {{ formatCustomerBehaviorDuration(customerBehavior.averageProductDwellSeconds) }}
+                        </p>
+                        <p class="mt-1 text-xs text-gray-400">
+                          {{ formatCustomerBehaviorDuration(customerBehavior.totalProductDwellSeconds) }} total
+                        </p>
+                      </div>
+
+                      <div class="rounded-xl bg-white p-4">
+                        <p class="text-sm text-gray-500">Add to Cart</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.addToCartEvents }}</p>
+                      </div>
+
+                      <div class="rounded-xl bg-white p-4">
+                        <p class="text-sm text-gray-500">Checkout Starts</p>
+                        <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.checkoutStarts }}</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-5 rounded-xl bg-white p-4">
+                      <div class="flex items-center justify-between gap-3">
+                        <p class="text-sm font-semibold text-gray-700">Top Viewed Products</p>
+                        <span class="text-xs text-gray-400">Up to 5 products</span>
+                      </div>
+
+                      <p
+                        v-if="!customerBehavior.products?.length"
+                        class="mt-4 text-sm text-gray-500"
+                      >
+                        No product engagement has been tracked for this customer yet.
+                      </p>
+
+                      <div v-else class="mt-4 space-y-3">
+                        <div
+                          v-for="(product, productIndex) in customerBehavior.products"
+                          :key="`${product.slug}:${productIndex}`"
+                          class="flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                          <div>
+                            <NuxtLink
+                              v-if="product.slug"
+                              :to="`/products/${product.slug}`"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="font-semibold text-gray-900 hover:text-blue-600"
+                            >
+                              {{ product.title }}
+                            </NuxtLink>
+                            <p v-else class="font-semibold text-gray-900">{{ product.title }}</p>
+                            <p v-if="product.lastViewedAt" class="mt-1 text-xs text-gray-400">
+                              Last viewed {{ formatDate(product.lastViewedAt) }}
+                            </p>
+                          </div>
+
+                          <div class="text-left text-sm text-gray-500 sm:text-right">
+                            <p>{{ product.viewCount }} views</p>
+                            <p class="mt-1">
+                              {{ formatCustomerBehaviorDuration(product.dwellSeconds) }} dwell
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </section>
               </div>
             </div>
           </div>
@@ -756,6 +911,8 @@ const customerDetail = ref(null)
 const customerDetailLoading = ref(false)
 const customerActionLoading = ref(false)
 const customerRecentOrders = ref([])
+const customerDetailAcceptance = ref(null)
+const customerBehavior = ref(null)
 const customerDetailStats = reactive({
   totalOrders: 0,
   completed: 0,
@@ -934,6 +1091,8 @@ const resetCustomerDetail = () => {
   selectedCustomerId.value = ''
   customerDetail.value = null
   customerRecentOrders.value = []
+  customerDetailAcceptance.value = null
+  customerBehavior.value = null
   customerDetailStats.totalOrders = 0
   customerDetailStats.completed = 0
   customerDetailStats.open = 0
@@ -1006,6 +1165,8 @@ const applyCustomerDetailSnapshot = (customerId, snapshot) => {
   selectedCustomerId.value = customerId
   customerDetail.value = snapshot?.item || null
   customerRecentOrders.value = snapshot?.recentOrders || []
+  customerDetailAcceptance.value = snapshot?.acceptance || snapshot?.item?.acceptance || null
+  customerBehavior.value = snapshot?.behavior || null
   customerDetailStats.totalOrders = snapshot?.stats?.totalOrders || 0
   customerDetailStats.completed = snapshot?.stats?.completed || 0
   customerDetailStats.open = snapshot?.stats?.open || 0
@@ -1035,6 +1196,8 @@ const getCustomerUserDetails = async (customerId, { force = false } = {}) => {
     const snapshot = {
       item: response.item || null,
       recentOrders: response.recentOrders || [],
+      acceptance: response.acceptance || response.item?.acceptance || null,
+      behavior: response.behavior || null,
       stats: {
         totalOrders: response.stats?.totalOrders || 0,
         completed: response.stats?.completed || 0,
@@ -1386,6 +1549,47 @@ const formatCurrency = (value) => {
     currency: 'EGP',
     maximumFractionDigits: 2
   }).format(Number(value || 0))
+}
+
+const hasCustomerAcceptanceRate = (acceptance) => {
+  return acceptance?.acceptanceRate !== null
+    && acceptance?.acceptanceRate !== undefined
+    && Number.isFinite(Number(acceptance.acceptanceRate))
+}
+
+const formatCustomerAcceptanceRate = (value) => {
+  return `${new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
+  }).format(Number(value || 0))}%`
+}
+
+const formatCustomerBehaviorDuration = (value) => {
+  const seconds = Math.max(0, Math.round(Number(value || 0)))
+
+  if (seconds < 60) {
+    return `${seconds}s`
+  }
+
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return remainingSeconds ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`
+}
+
+const getCustomerAcceptanceClass = (key) => {
+  if (key === 'high') return 'bg-green-100 text-green-700'
+  if (key === 'average') return 'bg-amber-100 text-amber-700'
+  if (key === 'low') return 'bg-red-100 text-red-700'
+  if (key === 'new') return 'bg-blue-100 text-blue-700'
+  return 'bg-gray-100 text-gray-600'
+}
+
+const getCustomerAcceptanceTextClass = (key) => {
+  if (key === 'high') return 'text-green-600'
+  if (key === 'average') return 'text-amber-600'
+  if (key === 'low') return 'text-red-600'
+  if (key === 'new') return 'text-blue-600'
+  return 'text-gray-900'
 }
 
 const getCustomerAddress = (customer) => {

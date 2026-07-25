@@ -1,5 +1,7 @@
 <template>
   <div class="space-y-6">
+    <DashboardAnalysisCustomerExperience />
+
     <section>
       <div class="mb-4">
         <h3 class="text-2xl font-bold text-gray-900">Overview</h3>

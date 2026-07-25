@@ -144,6 +144,8 @@ const handleAddToCart = () => {
   addItem({
     ...props.product,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value
-  }, 1)
+  }, 1, {
+    source: 'product_card'
+  })
 }
 </script>

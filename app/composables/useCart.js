@@ -1,5 +1,19 @@
 const CART_STORAGE_KEY = 'elcomputer-cart'
 const CART_COUPON_STORAGE_KEY = 'elcomputer-cart-coupon'
+const CART_ID_STORAGE_KEY = 'elcomputer-cart-id'
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+const createCartIdentifier = () => {
+  if (import.meta.client && typeof window.crypto?.randomUUID === 'function') {
+    return window.crypto.randomUUID()
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+    const randomValue = Math.floor(Math.random() * 16)
+    const value = character === 'x' ? randomValue : ((randomValue & 0x3) | 0x8)
+    return value.toString(16)
+  })
+}
 
 const normalizePositiveInteger = (value, fallback = 1) => {
   const parsedValue = Number.parseInt(value, 10)
@@ -66,22 +80,33 @@ const normalizeAppliedCoupon = (coupon) => {
 export const useCart = () => {
   const items = useState('cart-items', () => [])
   const appliedCoupon = useState('cart-applied-coupon', () => null)
+  const cartId = useState('cart-id', () => '')
   const isReady = useState('cart-is-ready', () => false)
   const syncStarted = useState('cart-sync-started', () => false)
+  const { trackEvent } = useStoreAnalytics()
 
   const persistCart = () => {
     if (!import.meta.client) {
       return
     }
 
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
+    try {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
 
-    if (appliedCoupon.value) {
-      window.localStorage.setItem(CART_COUPON_STORAGE_KEY, JSON.stringify(appliedCoupon.value))
-      return
+      if (items.value.length && cartId.value) {
+        window.localStorage.setItem(CART_ID_STORAGE_KEY, cartId.value)
+      } else {
+        window.localStorage.removeItem(CART_ID_STORAGE_KEY)
+      }
+
+      if (appliedCoupon.value) {
+        window.localStorage.setItem(CART_COUPON_STORAGE_KEY, JSON.stringify(appliedCoupon.value))
+      } else {
+        window.localStorage.removeItem(CART_COUPON_STORAGE_KEY)
+      }
+    } catch {
+      // Keep the in-memory cart usable when browser storage is unavailable.
     }
-
-    window.localStorage.removeItem(CART_COUPON_STORAGE_KEY)
   }
 
   const loadCart = () => {
@@ -92,17 +117,23 @@ export const useCart = () => {
     try {
       const storedItems = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]')
       const storedCoupon = JSON.parse(window.localStorage.getItem(CART_COUPON_STORAGE_KEY) || 'null')
+      const storedCartId = String(window.localStorage.getItem(CART_ID_STORAGE_KEY) || '').trim()
 
       items.value = Array.isArray(storedItems)
         ? storedItems.map(normalizeCartItem).filter(Boolean)
         : []
       appliedCoupon.value = normalizeAppliedCoupon(storedCoupon)
+      cartId.value = items.value.length
+        ? (UUID_PATTERN.test(storedCartId) ? storedCartId : createCartIdentifier())
+        : ''
     } catch {
       items.value = []
       appliedCoupon.value = null
+      cartId.value = ''
     }
 
     isReady.value = true
+    persistCart()
   }
 
   if (import.meta.client) {
@@ -113,6 +144,23 @@ export const useCart = () => {
 
       watch(items, persistCart, { deep: true })
       watch(appliedCoupon, persistCart, { deep: true })
+      watch(cartId, persistCart)
+    }
+  }
+
+  const ensureCartId = () => {
+    if (!cartId.value) {
+      cartId.value = createCartIdentifier()
+    }
+
+    return cartId.value
+  }
+
+  const trackCartEvent = (eventName, payload = {}) => {
+    try {
+      trackEvent(eventName, payload)
+    } catch {
+      // Cart actions must never fail because analytics is unavailable.
     }
   }
 
@@ -124,17 +172,53 @@ export const useCart = () => {
     appliedCoupon.value = normalizeAppliedCoupon(coupon)
   }
 
-  const clearCart = () => {
+  const clearCart = (options = {}) => {
+    const previousCartId = cartId.value
+    const previousQuantity = items.value.reduce((total, item) => {
+      return total + normalizePositiveInteger(item.quantity, 1)
+    }, 0)
+    const shouldTrack = options?.track !== false
+
+    if (shouldTrack && previousCartId && previousQuantity > 0) {
+      trackCartEvent('cart_cleared', {
+        cartId: previousCartId,
+        quantity: previousQuantity,
+        resultingQuantity: 0,
+        source: String(options?.reason || 'manual')
+      })
+    }
+
     items.value = []
     resetCoupon()
+    cartId.value = ''
   }
 
-  const removeItem = (productId) => {
-    items.value = items.value.filter((item) => item.id !== String(productId))
+  const removeItem = (productId, options = {}) => {
+    const productIdValue = String(productId)
+    const existingItem = items.value.find((item) => item.id === productIdValue)
+
+    if (!existingItem) {
+      return
+    }
+
+    const previousCartId = cartId.value
+    items.value = items.value.filter((item) => item.id !== productIdValue)
     resetCoupon()
+
+    trackCartEvent('remove_from_cart', {
+      productId: existingItem.id,
+      cartId: previousCartId,
+      quantity: normalizePositiveInteger(existingItem.quantity, 1),
+      resultingQuantity: 0,
+      source: String(options?.source || 'cart')
+    })
+
+    if (!items.value.length) {
+      cartId.value = ''
+    }
   }
 
-  const setQuantity = (productId, nextQuantity) => {
+  const setQuantity = (productId, nextQuantity, options = {}) => {
     const productIdValue = String(productId)
     const existingItem = items.value.find((item) => item.id === productIdValue)
 
@@ -147,6 +231,11 @@ export const useCart = () => {
       existingItem.allow_out_of_stock_purchases
     )
     const normalizedQuantity = Math.min(normalizePositiveInteger(nextQuantity, 1), maximumQuantity)
+    const previousQuantity = normalizePositiveInteger(existingItem.quantity, 1)
+
+    if (normalizedQuantity === previousQuantity) {
+      return
+    }
 
     items.value = items.value.map((item) => {
       if (item.id !== productIdValue) {
@@ -160,19 +249,26 @@ export const useCart = () => {
     })
 
     resetCoupon()
+    trackCartEvent('cart_quantity_changed', {
+      productId: existingItem.id,
+      cartId: cartId.value,
+      quantity: Math.abs(normalizedQuantity - previousQuantity),
+      resultingQuantity: normalizedQuantity,
+      source: String(options?.source || 'cart')
+    })
   }
 
-  const incrementItem = (productId) => {
+  const incrementItem = (productId, options = {}) => {
     const existingItem = items.value.find((item) => item.id === String(productId))
 
     if (!existingItem) {
       return
     }
 
-    setQuantity(existingItem.id, existingItem.quantity + 1)
+    setQuantity(existingItem.id, existingItem.quantity + 1, options)
   }
 
-  const decrementItem = (productId) => {
+  const decrementItem = (productId, options = {}) => {
     const existingItem = items.value.find((item) => item.id === String(productId))
 
     if (!existingItem) {
@@ -180,14 +276,14 @@ export const useCart = () => {
     }
 
     if (existingItem.quantity <= 1) {
-      removeItem(existingItem.id)
+      removeItem(existingItem.id, options)
       return
     }
 
-    setQuantity(existingItem.id, existingItem.quantity - 1)
+    setQuantity(existingItem.id, existingItem.quantity - 1, options)
   }
 
-  const addItem = (product, quantity = 1) => {
+  const addItem = (product, quantity = 1, options = {}) => {
     const normalizedProduct = normalizeCartItem({
       ...product,
       quantity
@@ -214,6 +310,7 @@ export const useCart = () => {
         normalizedProduct.allow_out_of_stock_purchases
       )
       const nextQuantity = Math.min(existingItem.quantity + normalizedProduct.quantity, maximumQuantity)
+      const addedQuantity = Math.max(0, nextQuantity - existingItem.quantity)
 
       items.value = items.value.map((item) => {
         if (item.id !== normalizedProduct.id) {
@@ -228,14 +325,32 @@ export const useCart = () => {
       })
       resetCoupon()
 
+      if (addedQuantity > 0) {
+        trackCartEvent('add_to_cart', {
+          productId: normalizedProduct.id,
+          cartId: ensureCartId(),
+          quantity: addedQuantity,
+          resultingQuantity: nextQuantity,
+          source: String(options?.source || 'storefront')
+        })
+      }
+
       return {
         success: true,
         message: 'Cart updated.'
       }
     }
 
+    const nextCartId = ensureCartId()
     items.value = [...items.value, normalizedProduct]
     resetCoupon()
+    trackCartEvent('add_to_cart', {
+      productId: normalizedProduct.id,
+      cartId: nextCartId,
+      quantity: normalizedProduct.quantity,
+      resultingQuantity: normalizedProduct.quantity,
+      source: String(options?.source || 'storefront')
+    })
 
     return {
       success: true,
@@ -259,6 +374,7 @@ export const useCart = () => {
   return {
     items,
     appliedCoupon,
+    cartId,
     isReady,
     itemCount,
     distinctItemsCount,
