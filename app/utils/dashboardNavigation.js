@@ -189,10 +189,10 @@ export const dashboardNavigationGroups = [
       },
       {
         key: 'activities',
-        label: 'Calls & Cases',
-        icon: 'lucide:phone-call',
+        label: 'Tickets & Activity',
+        icon: 'lucide:ticket',
         to: '/dashboard/crm?tab=activities',
-        documentTitle: 'Dashboard - CRM - Calls & Cases',
+        documentTitle: 'Dashboard - CRM - Tickets & Activity',
         match: {
           paths: ['/dashboard/crm'],
           queryKey: 'tab',

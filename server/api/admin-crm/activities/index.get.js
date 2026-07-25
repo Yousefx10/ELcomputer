@@ -3,12 +3,18 @@ import { requireAdminRequest } from '../../../utils/adminRequest'
 import {
   CRM_ACTIVITY_STATUSES,
   CRM_ACTIVITY_TYPES,
+  CRM_CASE_PRIORITIES,
   getCrmQueryValue,
   isCrmUuid,
   mapCrmActivity,
+  mapCrmActivitySummary,
   parseCrmDateTime,
   throwCrmDatabaseError
 } from '../../../utils/crmActivities'
+
+const escapeLikePattern = (value) => {
+  return String(value || '').replace(/[\\%_]/g, '\\$&')
+}
 
 const applyFilters = (queryBuilder, filters) => {
   let nextQuery = queryBuilder
@@ -25,11 +31,21 @@ const applyFilters = (queryBuilder, filters) => {
     nextQuery = nextQuery.eq('status', filters.status)
   }
 
+  if (filters.priority) {
+    nextQuery = nextQuery.eq('priority', filters.priority)
+  }
+
+  if (filters.search) {
+    nextQuery = nextQuery.ilike('subject', `%${escapeLikePattern(filters.search)}%`)
+  }
+
   if (filters.from) {
     nextQuery = nextQuery.gte('effective_at', filters.from)
   }
 
-  if (filters.to) {
+  if (filters.toExclusive) {
+    nextQuery = nextQuery.lt('effective_at', filters.toExclusive)
+  } else if (filters.to) {
     nextQuery = nextQuery.lte('effective_at', filters.to)
   }
 
@@ -59,9 +75,13 @@ export default defineEventHandler(async (event) => {
   const accountId = getCrmQueryValue(query.accountId)
   const activityType = getCrmQueryValue(query.activityType).toLowerCase()
   const status = getCrmQueryValue(query.status).toLowerCase()
+  const priority = getCrmQueryValue(query.priority).toLowerCase()
+  const search = getCrmQueryValue(query.search).slice(0, 100)
+  const includeDetails = getCrmQueryValue(query.includeDetails).toLowerCase() !== 'false'
   const includeStats = getCrmQueryValue(query.includeStats).toLowerCase() !== 'false'
   const from = getOptionalBoundary(query.from, 'From date')
   const to = getOptionalBoundary(query.to, 'To date')
+  const toExclusive = getOptionalBoundary(query.toExclusive, 'End date')
 
   if (accountId && !isCrmUuid(accountId)) {
     throw createError({
@@ -84,7 +104,26 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (from && to && Date.parse(from) > Date.parse(to)) {
+  if (priority && !CRM_CASE_PRIORITIES.has(priority)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A valid ticket priority is required.'
+    })
+  }
+
+  if (
+    (activityType === 'call' && status && status !== 'completed')
+    || (activityType === 'case' && status === 'completed')
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'The selected activity and status filters cannot be combined.'
+    })
+  }
+
+  const upperBoundary = toExclusive || to
+
+  if (from && upperBoundary && Date.parse(from) > Date.parse(upperBoundary)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'The from date must be before the to date.'
@@ -95,8 +134,11 @@ export default defineEventHandler(async (event) => {
     accountId,
     activityType,
     status,
+    priority,
+    search,
     from,
-    to
+    to,
+    toExclusive
   }
   const rangeStart = (page - 1) * pageSize
   const rangeEnd = rangeStart + pageSize - 1
@@ -152,7 +194,11 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    items: (activitiesResult.data || []).map(mapCrmActivity),
+    items: (activitiesResult.data || []).map((record) => {
+      return includeDetails
+        ? mapCrmActivity(record)
+        : mapCrmActivitySummary(record)
+    }),
     total: activitiesResult.count || 0,
     page,
     pageSize,

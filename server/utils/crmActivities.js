@@ -108,6 +108,23 @@ export const mapCrmActivity = (record = {}) => {
   }
 }
 
+export const mapCrmActivitySummary = (record = {}) => {
+  const activity = mapCrmActivity(record)
+  const sourceText = activity.notes || activity.resolution || ''
+  const previewLimit = 240
+  const hasMore = sourceText.length > previewLimit
+
+  return {
+    ...activity,
+    notes: '',
+    resolution: '',
+    preview: hasMore
+      ? `${sourceText.slice(0, previewLimit).trimEnd()}…`
+      : sourceText,
+    hasMore
+  }
+}
+
 export const throwCrmDatabaseError = (error, fallbackMessage) => {
   const missingSchema = error?.code === '42P01'
     || error?.code === '42703'

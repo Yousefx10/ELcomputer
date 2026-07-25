@@ -3,7 +3,7 @@
     <div class="rounded-2xl bg-white p-6 shadow">
       <h2 class="text-4xl font-bold">CRM</h2>
       <p class="mt-2 text-sm text-gray-500">
-        Manage contacts, calls, and customer or supplier cases.
+        Manage contacts, calls, and customer or supplier tickets.
       </p>
     </div>
 
@@ -36,7 +36,7 @@ const secondaryNavItems = computed(() => [
     active: activeTab.value === 'contacts'
   },
   {
-    label: 'Calls & Cases',
+    label: 'Tickets & Activity',
     to: '/dashboard/crm?tab=activities',
     active: activeTab.value === 'activities'
   }

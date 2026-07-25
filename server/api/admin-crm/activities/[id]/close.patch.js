@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   if (!isCrmUuid(activityId)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'A valid case is required.'
+      statusMessage: 'A valid ticket is required.'
     })
   }
 
@@ -46,27 +46,27 @@ export default defineEventHandler(async (event) => {
     .maybeSingle()
 
   if (existingCaseError) {
-    throwCrmDatabaseError(existingCaseError, 'Could not load the case.')
+    throwCrmDatabaseError(existingCaseError, 'Could not load the ticket.')
   }
 
   if (!existingCase) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Case not found.'
+      statusMessage: 'Ticket not found.'
     })
   }
 
   if (existingCase.activity_type !== 'case') {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Only a case can be closed.'
+      statusMessage: 'Only a ticket can be closed.'
     })
   }
 
   if (existingCase.status !== 'raised') {
     throw createError({
       statusCode: 409,
-      statusMessage: 'This case has already been closed.'
+      statusMessage: 'This ticket has already been closed.'
     })
   }
 
@@ -93,13 +93,13 @@ export default defineEventHandler(async (event) => {
     .maybeSingle()
 
   if (updateError) {
-    throwCrmDatabaseError(updateError, 'Could not close the case.')
+    throwCrmDatabaseError(updateError, 'Could not close the ticket.')
   }
 
   if (!updatedCase) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'This case was already closed by another administrator.'
+      statusMessage: 'This ticket was already closed by another administrator.'
     })
   }
 
@@ -109,7 +109,7 @@ export default defineEventHandler(async (event) => {
     supabaseAdmin,
     adminUser,
     actionKey: 'commerce.crm.case.close',
-    description: `Closed the case "${existingCase.subject}" for ${contact?.name || 'a CRM contact'}.`,
+    description: `Closed the ticket "${existingCase.subject}" for ${contact?.name || 'a CRM contact'}.`,
     metadata: {
       crm_activity_id: activityId,
       crm_account_id: existingCase.crm_account_id,

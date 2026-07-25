@@ -7,10 +7,15 @@ import {
   throwCrmDatabaseError
 } from '../../utils/crmActivities'
 
+const escapeLikePattern = (value) => {
+  return String(value || '').replace(/[\\%_]/g, '\\$&')
+}
+
 export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event)
   const query = getQuery(event)
   const search = getCrmQueryValue(query.search).slice(0, 100)
+  const selectedOnly = getCrmQueryValue(query.selectedOnly).toLowerCase() === 'true'
   const selectedIds = getCrmQueryValue(query.selectedIds)
     .split(',')
     .map((value) => value.trim())
@@ -27,7 +32,7 @@ export default defineEventHandler(async (event) => {
       .limit(100)
 
     if (search) {
-      contactsQuery = contactsQuery.ilike('name', `%${search}%`)
+      contactsQuery = contactsQuery.ilike('name', `%${escapeLikePattern(search)}%`)
     }
 
     return contactsQuery
@@ -38,8 +43,12 @@ export default defineEventHandler(async (event) => {
     personContactsResult,
     selectedContactsResult
   ] = await Promise.all([
-    buildContactsQuery('company'),
-    buildContactsQuery('person'),
+    selectedOnly
+      ? Promise.resolve({ data: [], error: null })
+      : buildContactsQuery('company'),
+    selectedOnly
+      ? Promise.resolve({ data: [], error: null })
+      : buildContactsQuery('person'),
     selectedIds.length
       ? supabaseAdmin
           .from('commerce_crm_accounts')
@@ -69,20 +78,37 @@ export default defineEventHandler(async (event) => {
     contactsById.set(contact.id, contact)
   }
 
-  const contacts = [...contactsById.values()].sort((leftContact, rightContact) => {
-    const entityComparison = String(leftContact.entity_type || '')
-      .localeCompare(String(rightContact.entity_type || ''))
+  const normalizedSearch = search.toLocaleLowerCase()
+  const getSearchRank = (contact) => {
+    if (!normalizedSearch) return 0
 
-    if (entityComparison) {
-      return entityComparison
+    const name = String(contact.name || '').toLocaleLowerCase()
+    if (name === normalizedSearch) return 0
+    if (name.startsWith(normalizedSearch)) return 1
+    if (name.split(/\s+/).some((word) => word.startsWith(normalizedSearch))) return 2
+    return 3
+  }
+  const contacts = [...contactsById.values()].sort((leftContact, rightContact) => {
+    const rankComparison = getSearchRank(leftContact) - getSearchRank(rightContact)
+    if (rankComparison) {
+      return rankComparison
     }
 
-    return String(leftContact.name || '').localeCompare(String(rightContact.name || ''))
+    const nameComparison = String(leftContact.name || '')
+      .localeCompare(String(rightContact.name || ''))
+    if (nameComparison) {
+      return nameComparison
+    }
+
+    return String(leftContact.entity_type || '')
+      .localeCompare(String(rightContact.entity_type || ''))
   })
 
   return {
     items: contacts.map(mapCrmContact),
-    limited: (companyContactsResult.data || []).length >= 100
+    limited: !selectedOnly && (
+      (companyContactsResult.data || []).length >= 100
       || (personContactsResult.data || []).length >= 100
+    )
   }
 })

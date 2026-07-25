@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   if (!CRM_ACTIVITY_TYPES.has(activityType)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Choose either a call or a case.'
+      statusMessage: 'Choose either a call or a ticket.'
     })
   }
 
@@ -103,7 +103,7 @@ export default defineEventHandler(async (event) => {
       : 'commerce.crm.case.raise',
     description: isCall
       ? `Recorded a call with ${contact.name}.`
-      : `Raised a case for ${contact.name}.`,
+      : `Created a ticket for ${contact.name}.`,
     metadata: {
       crm_activity_id: activity.id,
       crm_account_id: contact.id,

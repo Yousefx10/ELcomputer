@@ -363,6 +363,7 @@
                   path: '/dashboard/crm',
                   query: {
                     tab: 'activities',
+                    panel: 'history',
                     contact: account.id
                   }
                 }"
