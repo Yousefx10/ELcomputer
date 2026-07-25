@@ -1,6 +1,17 @@
+import {
+  getStorefrontAudienceAccessToken,
+  getStorefrontAudienceStatus,
+  STOREFRONT_AUDIENCE_ELIGIBLE,
+  STOREFRONT_AUDIENCE_EXCLUDED,
+  STOREFRONT_AUDIENCE_UNKNOWN,
+  subscribeStorefrontAudience,
+  useStorefrontAudience
+} from './useStorefrontAudience'
+
 const ANALYTICS_ENDPOINT = '/api/analytics/events'
 const ANALYTICS_BATCH_SIZE = 20
 const ANALYTICS_FLUSH_DELAY_MS = 250
+const ANALYTICS_ELIGIBILITY_BUFFER_SIZE = 100
 const MAX_DURATION_MS = 30 * 60 * 1000
 const ALLOWED_EVENT_NAMES = new Set([
   'page_view',
@@ -13,12 +24,11 @@ const ALLOWED_EVENT_NAMES = new Set([
   'checkout_started'
 ])
 
-let analyticsClient
-let cachedAccessToken = ''
-let accessTokenLoaded = false
 let queuedEvents = []
+let eligibilityBufferedEntries = []
 let flushTimerId
 let pageHideListenerRegistered = false
+let audienceSubscriptionRegistered = false
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -49,7 +59,7 @@ const isDashboardPath = (path = '') => {
   return normalizedPath === '/dashboard' || normalizedPath.startsWith('/dashboard/')
 }
 
-export const isStoreAnalyticsAllowed = () => {
+const isStoreAnalyticsPrivacyAllowed = () => {
   if (!import.meta.client) {
     return false
   }
@@ -64,6 +74,11 @@ export const isStoreAnalyticsAllowed = () => {
   return navigator.globalPrivacyControl !== true
     && doNotTrackValue !== '1'
     && doNotTrackValue !== 'yes'
+}
+
+export const isStoreAnalyticsAllowed = () => {
+  return isStoreAnalyticsPrivacyAllowed()
+    && getStorefrontAudienceStatus() === STOREFRONT_AUDIENCE_ELIGIBLE
 }
 
 const normalizeString = (value, maximumLength) => {
@@ -111,7 +126,7 @@ const buildAnalyticsEvent = (event = {}) => {
     !eventName
     || !ALLOWED_EVENT_NAMES.has(eventName)
     || isDashboardPath(path)
-    || !isStoreAnalyticsAllowed()
+    || !isStoreAnalyticsPrivacyAllowed()
   ) {
     return null
   }
@@ -138,39 +153,27 @@ const buildAnalyticsEvent = (event = {}) => {
   return normalizedEvent
 }
 
-const refreshAccessToken = async () => {
-  if (!analyticsClient) {
-    accessTokenLoaded = true
-    cachedAccessToken = ''
-    return ''
-  }
-
-  try {
-    const { data } = await analyticsClient.auth.getSession()
-    cachedAccessToken = data.session?.access_token || ''
-  } catch {
-    cachedAccessToken = ''
-  }
-
-  accessTokenLoaded = true
-  return cachedAccessToken
-}
-
 const sendAnalyticsBatch = async (events, { keepalive = false } = {}) => {
-  if (!import.meta.client || !events.length || !isStoreAnalyticsAllowed()) {
+  if (
+    !import.meta.client
+    || !events.length
+    || !isStoreAnalyticsAllowed()
+  ) {
     return false
   }
 
   try {
-    const accessToken = keepalive
-      ? cachedAccessToken
-      : await refreshAccessToken()
+    const accessToken = getStorefrontAudienceAccessToken()
     const headers = {
       'content-type': 'application/json'
     }
 
     if (accessToken) {
       headers.authorization = `Bearer ${accessToken}`
+    }
+
+    if (getStorefrontAudienceStatus() !== STOREFRONT_AUDIENCE_ELIGIBLE) {
+      return false
     }
 
     const response = await window.fetch(ANALYTICS_ENDPOINT, {
@@ -197,8 +200,15 @@ export const flushStoreAnalyticsEvents = async ({ keepalive = false } = {}) => {
     flushTimerId = undefined
   }
 
-  if (!isStoreAnalyticsAllowed()) {
+  if (
+    !isStoreAnalyticsAllowed()
+  ) {
     queuedEvents = []
+
+    if (keepalive) {
+      eligibilityBufferedEntries = []
+    }
+
     return false
   }
 
@@ -212,15 +222,29 @@ export const flushStoreAnalyticsEvents = async ({ keepalive = false } = {}) => {
     return true
   }
 
-  const results = await Promise.all(
-    batches.map((batch) => sendAnalyticsBatch(batch, { keepalive }))
-  )
+  const results = []
+
+  if (keepalive) {
+    results.push(...await Promise.all(
+      batches.map((batch) => sendAnalyticsBatch(batch, { keepalive: true }))
+    ))
+  } else {
+    // Sequential background batches let the first response establish the
+    // server session cookie before a later batch is classified.
+    for (const batch of batches) {
+      results.push(await sendAnalyticsBatch(batch))
+    }
+  }
 
   return results.every(Boolean)
 }
 
 const scheduleAnalyticsFlush = () => {
-  if (!import.meta.client || flushTimerId) {
+  if (
+    !import.meta.client
+    || flushTimerId
+    || getStorefrontAudienceStatus() !== STOREFRONT_AUDIENCE_ELIGIBLE
+  ) {
     return
   }
 
@@ -241,22 +265,105 @@ const ensurePageHideFlush = () => {
   }, { capture: true })
 }
 
-export const useStoreAnalytics = () => {
-  if (import.meta.client && !analyticsClient) {
-    try {
-      analyticsClient = useSupabaseClient()
-      void refreshAccessToken()
-    } catch {
-      analyticsClient = undefined
-      accessTokenLoaded = true
-    }
+const clearScheduledAnalytics = () => {
+  if (import.meta.client && flushTimerId) {
+    window.clearTimeout(flushTimerId)
   }
 
+  flushTimerId = undefined
+  queuedEvents = []
+}
+
+const sendImmediateEvents = (events, options = {}) => {
+  for (let index = 0; index < events.length; index += ANALYTICS_BATCH_SIZE) {
+    void sendAnalyticsBatch(
+      events.slice(index, index + ANALYTICS_BATCH_SIZE),
+      { keepalive: Boolean(options.keepalive) }
+    )
+  }
+}
+
+const handleAudienceStatusChange = (status) => {
+  if (status === STOREFRONT_AUDIENCE_EXCLUDED) {
+    clearScheduledAnalytics()
+    eligibilityBufferedEntries = []
+    return
+  }
+
+  if (status === STOREFRONT_AUDIENCE_UNKNOWN) {
+    clearScheduledAnalytics()
+    eligibilityBufferedEntries = []
+    return
+  }
+
+  if (status !== STOREFRONT_AUDIENCE_ELIGIBLE || !eligibilityBufferedEntries.length) {
+    return
+  }
+
+  const pendingEntries = eligibilityBufferedEntries
+  eligibilityBufferedEntries = []
+
+  pendingEntries.forEach(({ events, options }) => {
+    if (options.immediate) {
+      sendImmediateEvents(events, options)
+      return
+    }
+
+    queuedEvents.push(...events)
+  })
+
+  if (queuedEvents.length) {
+    scheduleAnalyticsFlush()
+  }
+}
+
+const ensureAudienceIntegration = () => {
+  if (audienceSubscriptionRegistered) {
+    return
+  }
+
+  audienceSubscriptionRegistered = true
+  subscribeStorefrontAudience(handleAudienceStatusChange)
+}
+
+const bufferEventsUntilAudienceResolves = (events, options = {}) => {
+  if (options.keepalive) {
+    return []
+  }
+
+  const bufferedEventCount = eligibilityBufferedEntries.reduce((total, entry) => {
+    return total + entry.events.length
+  }, 0)
+  const availableSlots = Math.max(0, ANALYTICS_ELIGIBILITY_BUFFER_SIZE - bufferedEventCount)
+  const bufferedEvents = events.slice(0, availableSlots)
+
+  if (bufferedEvents.length) {
+    eligibilityBufferedEntries.push({
+      events: bufferedEvents,
+      options: {
+        immediate: Boolean(options.immediate),
+        keepalive: false
+      }
+    })
+  }
+
+  return bufferedEvents.map((event) => event.eventId)
+}
+
+export const useStoreAnalytics = () => {
+  ensureAudienceIntegration()
+  useStorefrontAudience()
   ensurePageHideFlush()
 
   const trackEvents = (events = [], options = {}) => {
     try {
-      if (!import.meta.client || !Array.isArray(events) || !isStoreAnalyticsAllowed()) {
+      if (!import.meta.client || !Array.isArray(events) || !isStoreAnalyticsPrivacyAllowed()) {
+        return []
+      }
+
+      const audienceStatus = getStorefrontAudienceStatus()
+
+      if (audienceStatus === STOREFRONT_AUDIENCE_EXCLUDED) {
         return []
       }
 
@@ -268,17 +375,12 @@ export const useStoreAnalytics = () => {
         return []
       }
 
-      if (options.immediate || options.keepalive) {
-        if (!accessTokenLoaded && !options.keepalive) {
-          void refreshAccessToken()
-        }
+      if (audienceStatus === STOREFRONT_AUDIENCE_UNKNOWN) {
+        return bufferEventsUntilAudienceResolves(normalizedEvents, options)
+      }
 
-        for (let index = 0; index < normalizedEvents.length; index += ANALYTICS_BATCH_SIZE) {
-          void sendAnalyticsBatch(
-            normalizedEvents.slice(index, index + ANALYTICS_BATCH_SIZE),
-            { keepalive: Boolean(options.keepalive) }
-          )
-        }
+      if (options.immediate || options.keepalive) {
+        sendImmediateEvents(normalizedEvents, options)
       } else {
         queuedEvents.push(...normalizedEvents)
         scheduleAnalyticsFlush()

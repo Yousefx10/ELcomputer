@@ -1,6 +1,6 @@
 <template>
   <section
-    v-if="isReady && (submitted || !cooldownActive)"
+    v-if="isReady && audienceEligible && (submitted || !cooldownActive)"
     class="mx-4 my-12 overflow-hidden rounded-[2rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-indigo-50 shadow-sm md:mx-10"
     aria-labelledby="nps-survey-title"
   >
@@ -119,6 +119,10 @@
 
 <script setup>
 import { createStoreAnalyticsId } from '~/composables/useStoreAnalytics'
+import {
+  STOREFRONT_AUDIENCE_ELIGIBLE,
+  useStorefrontAudience
+} from '~/composables/useStorefrontAudience'
 
 const props = defineProps({
   source: {
@@ -138,7 +142,10 @@ const storeName = computed(() => {
 const NPS_COOLDOWN_STORAGE_KEY = 'elcomputer-nps-submitted-at'
 const NPS_COOLDOWN_MS = 90 * 24 * 60 * 60 * 1000
 
-const supabase = useSupabaseClient()
+const {
+  status: audienceStatus,
+  accessToken: audienceAccessToken
+} = useStorefrontAudience()
 const ratings = Array.from({ length: 11 }, (_, index) => index)
 const score = ref(null)
 const feedback = ref('')
@@ -148,6 +155,11 @@ const errorMessage = ref('')
 const isReady = ref(false)
 const cooldownActive = ref(false)
 const responseId = ref(createStoreAnalyticsId())
+let submissionController
+
+const audienceEligible = computed(() => {
+  return audienceStatus.value === STOREFRONT_AUDIENCE_ELIGIBLE
+})
 
 const isDetractor = computed(() => {
   return Number.isInteger(score.value) && score.value >= 0 && score.value <= 6
@@ -159,6 +171,17 @@ watch(score, (nextScore) => {
   if (Number(nextScore) > 6) {
     feedback.value = ''
   }
+})
+
+watch(audienceStatus, (status) => {
+  if (status === STOREFRONT_AUDIENCE_ELIGIBLE) {
+    return
+  }
+
+  submissionController?.abort()
+  submissionController = undefined
+  submitting.value = false
+  errorMessage.value = ''
 })
 
 const loadCooldown = () => {
@@ -190,31 +213,28 @@ const normalizeSource = (value) => {
 const submitSurvey = async () => {
   errorMessage.value = ''
 
+  if (!audienceEligible.value) {
+    return
+  }
+
   if (!Number.isInteger(score.value) || score.value < 0 || score.value > 10) {
     errorMessage.value = 'Please select a score from 0 to 10.'
     return
   }
 
   submitting.value = true
+  const currentController = new AbortController()
+  submissionController = currentController
 
   try {
-    let headers
-
-    try {
-      const { data } = await supabase.auth.getSession()
-
-      if (data?.session?.access_token) {
-        headers = {
-          authorization: `Bearer ${data.session.access_token}`
-        }
-      }
-    } catch {
-      // Anonymous survey submission remains available when auth storage is unavailable.
-    }
+    const headers = audienceAccessToken.value
+      ? { authorization: `Bearer ${audienceAccessToken.value}` }
+      : undefined
 
     await $fetch('/api/nps', {
       method: 'POST',
       headers,
+      signal: currentController.signal,
       body: {
         responseId: responseId.value,
         score: score.value,
@@ -225,20 +245,35 @@ const submitSurvey = async () => {
       }
     })
 
+    if (!audienceEligible.value || currentController.signal.aborted) {
+      return
+    }
+
     saveCooldown()
     cooldownActive.value = true
     submitted.value = true
   } catch (error) {
+    if (currentController.signal.aborted || !audienceEligible.value) {
+      return
+    }
+
     errorMessage.value = error?.data?.statusMessage
       || error?.message
       || 'We could not save your feedback. Please try again.'
   } finally {
-    submitting.value = false
+    if (submissionController === currentController) {
+      submissionController = undefined
+      submitting.value = false
+    }
   }
 }
 
 onMounted(() => {
   loadCooldown()
   isReady.value = true
+})
+
+onBeforeUnmount(() => {
+  submissionController?.abort()
 })
 </script>

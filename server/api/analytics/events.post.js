@@ -3,7 +3,8 @@ import { getSupabaseAdminClient } from '../../utils/supabaseAdmin'
 import {
   ensureStoreAnalyticsSession,
   getOptionalStoreAnalyticsUserId,
-  isStoreAnalyticsUuid
+  isStoreAnalyticsUuid,
+  markStoreAnalyticsInternalCarts
 } from '../../utils/storeAnalytics'
 
 const MAX_EVENTS_PER_REQUEST = 20
@@ -274,8 +275,6 @@ export default defineEventHandler(async (event) => {
 
   const userId = await getOptionalStoreAnalyticsUserId(event, supabaseAdmin)
 
-  await validateProductIds(supabaseAdmin, uniqueEvents)
-
   let identity
 
   try {
@@ -290,6 +289,32 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Analytics events could not be recorded.'
     })
   }
+
+  if (identity.isInternal) {
+    try {
+      await markStoreAnalyticsInternalCarts({
+        supabaseAdmin,
+        cartIds: uniqueEvents
+          .map((eventRecord) => eventRecord.cartId)
+          .filter(Boolean)
+      })
+    } catch {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Analytics events could not be recorded.'
+      })
+    }
+
+    setHeader(event, 'Cache-Control', 'no-store')
+
+    return {
+      success: true,
+      accepted: 0,
+      excluded: true
+    }
+  }
+
+  await validateProductIds(supabaseAdmin, uniqueEvents)
 
   const rows = uniqueEvents.map((eventRecord) => ({
     event_id: eventRecord.eventId,

@@ -137,6 +137,16 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (identity.isInternal) {
+    setHeader(event, 'Cache-Control', 'no-store')
+
+    return {
+      success: true,
+      recorded: false,
+      excluded: true
+    }
+  }
+
   const { data: existingResponse, error: existingResponseError } = await supabaseAdmin
     .from('nps_responses')
     .select('id')
@@ -165,6 +175,7 @@ export default defineEventHandler(async (event) => {
   let cooldownQuery = supabaseAdmin
     .from('nps_responses')
     .select('id')
+    .eq('is_internal', false)
     .gte('created_at', cooldownStart)
     .limit(1)
 
@@ -198,6 +209,7 @@ export default defineEventHandler(async (event) => {
       response_id: responseId,
       user_id: userId,
       visitor_id: identity.visitorId,
+      is_internal: false,
       score,
       feedback,
       source

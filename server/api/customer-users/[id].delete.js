@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
     .from('customer_profiles')
     .select('id, email, full_name')
     .eq('id', targetId)
+    .eq('is_internal', false)
     .maybeSingle()
 
   if (existingError) {

@@ -21,10 +21,12 @@ export default defineEventHandler(async (event) => {
   let filteredCountQuery = supabaseAdmin
     .from('customer_profiles')
     .select('*', { count: 'exact', head: true })
+    .eq('is_internal', false)
 
   let dataQuery = supabaseAdmin
     .from('customer_profiles')
     .select('id, email, full_name, phone, city, country, is_active, wallet_balance, created_at, updated_at')
+    .eq('is_internal', false)
 
   if (searchQuery) {
     const searchFilter = `email.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`
@@ -40,10 +42,12 @@ export default defineEventHandler(async (event) => {
   ] = await Promise.all([
     supabaseAdmin
       .from('customer_profiles')
-      .select('*', { count: 'exact', head: true }),
+      .select('*', { count: 'exact', head: true })
+      .eq('is_internal', false),
     supabaseAdmin
       .from('customer_profiles')
       .select('*', { count: 'exact', head: true })
+      .eq('is_internal', false)
       .eq('is_active', true),
     filteredCountQuery,
     dataQuery

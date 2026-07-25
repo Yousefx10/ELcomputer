@@ -12,6 +12,41 @@ export const isStoreAnalyticsUuid = (value) => {
   return UUID_PATTERN.test(String(value || '').trim())
 }
 
+export const markStoreAnalyticsInternalCarts = async ({
+  supabaseAdmin,
+  cartIds = []
+}) => {
+  const normalizedCartIds = [
+    ...new Set(
+      cartIds
+        .filter(isStoreAnalyticsUuid)
+        .map((cartId) => String(cartId).toLowerCase())
+    )
+  ]
+
+  if (!normalizedCartIds.length) {
+    return 0
+  }
+
+  const { error } = await supabaseAdmin
+    .from('store_analytics_internal_carts')
+    .upsert(
+      normalizedCartIds.map((cartId) => ({
+        cart_id: cartId
+      })),
+      {
+        onConflict: 'cart_id',
+        ignoreDuplicates: true
+      }
+    )
+
+  if (error) {
+    throw new Error('Could not exclude an internal cart from analytics.')
+  }
+
+  return normalizedCartIds.length
+}
+
 const buildCookieOptions = (maxAge) => {
   return {
     httpOnly: true,
@@ -90,10 +125,29 @@ export const getOptionalStoreAnalyticsUserId = async (event, supabaseAdmin) => {
   return authResult.data.user.id
 }
 
+const isInternalStoreAnalyticsUser = async (supabaseAdmin, userId) => {
+  if (!userId) {
+    return false
+  }
+
+  const { data, error } = await supabaseAdmin.rpc(
+    'store_analytics_is_internal_user',
+    {
+      p_user_id: userId
+    }
+  )
+
+  if (error) {
+    throw new Error('Could not classify the analytics identity.')
+  }
+
+  return data === true
+}
+
 const getStoredSession = async (supabaseAdmin, sessionId) => {
   const { data, error } = await supabaseAdmin
     .from('store_analytics_sessions')
-    .select('id, visitor_id, user_id, started_at, last_seen_at')
+    .select('id, visitor_id, user_id, is_internal, started_at, last_seen_at')
     .eq('id', sessionId)
     .maybeSingle()
 
@@ -109,6 +163,7 @@ const createStoredSession = async ({
   sessionId,
   visitorId,
   userId,
+  isInternal,
   observedAt
 }) => {
   const { error } = await supabaseAdmin
@@ -117,6 +172,7 @@ const createStoredSession = async ({
       id: sessionId,
       visitor_id: visitorId,
       user_id: userId,
+      is_internal: Boolean(isInternal),
       started_at: observedAt,
       last_seen_at: observedAt
     })
@@ -151,20 +207,28 @@ const attachCurrentSessionToUser = async ({
   sessionId,
   visitorId,
   userId,
+  isInternal,
   observedAt
 }) => {
-  const { error: sessionError } = await supabaseAdmin
+  const { data: attachedSession, error: sessionError } = await supabaseAdmin
     .from('store_analytics_sessions')
     .update({
       user_id: userId,
+      is_internal: Boolean(isInternal),
       last_seen_at: observedAt
     })
     .eq('id', sessionId)
     .eq('visitor_id', visitorId)
     .is('user_id', null)
+    .select('id, visitor_id, user_id, is_internal, started_at, last_seen_at')
+    .maybeSingle()
 
   if (sessionError) {
     throw new Error('Could not associate the analytics session.')
+  }
+
+  if (!attachedSession) {
+    return null
   }
 
   await backfillCurrentSessionEvents({
@@ -173,6 +237,35 @@ const attachCurrentSessionToUser = async ({
     visitorId,
     userId
   })
+
+  return attachedSession
+}
+
+const storedSessionConflictsWithIdentity = ({
+  storedSession,
+  visitorId,
+  userId
+}) => {
+  if (!storedSession) {
+    return false
+  }
+
+  if (String(storedSession.visitor_id) !== String(visitorId)) {
+    return true
+  }
+
+  if (
+    userId
+    && storedSession.user_id
+    && String(storedSession.user_id) !== String(userId)
+  ) {
+    return true
+  }
+
+  // A request without an authenticated identity starts a new anonymous
+  // session. This prevents a real sign-out from keeping the staff flag alive
+  // indefinitely through the rolling session cookie.
+  return Boolean(!userId && storedSession.user_id)
 }
 
 export const ensureStoreAnalyticsSession = async ({
@@ -185,46 +278,79 @@ export const ensureStoreAnalyticsSession = async ({
   const visitorId = issuedIdentity.visitorId
   let sessionId = issuedIdentity.sessionId
   let storedSession = await getStoredSession(supabaseAdmin, sessionId)
+  let classification
+  let sessionWasAttached = false
+  let identityEstablished = false
 
-  const identityMismatch = storedSession
-    && String(storedSession.visitor_id) !== visitorId
-  const signedInUserMismatch = storedSession
-    && userId
-    && storedSession.user_id
-    && String(storedSession.user_id) !== String(userId)
+  const getClassification = async () => {
+    if (classification === undefined) {
+      classification = await isInternalStoreAnalyticsUser(
+        supabaseAdmin,
+        userId
+      )
+    }
 
-  if (identityMismatch || signedInUserMismatch) {
-    sessionId = randomUUID()
-    setSessionCookie(event, sessionId)
-    storedSession = null
+    return classification
   }
 
-  if (!storedSession) {
-    await createStoredSession({
-      supabaseAdmin,
-      sessionId,
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (storedSessionConflictsWithIdentity({
+      storedSession,
       visitorId,
-      userId,
-      observedAt
-    })
+      userId
+    })) {
+      sessionId = randomUUID()
+      setSessionCookie(event, sessionId)
+      storedSession = null
+    }
 
-    storedSession = await getStoredSession(supabaseAdmin, sessionId)
+    if (!storedSession) {
+      await createStoredSession({
+        supabaseAdmin,
+        sessionId,
+        visitorId,
+        userId,
+        isInternal: await getClassification(),
+        observedAt
+      })
+
+      storedSession = await getStoredSession(supabaseAdmin, sessionId)
+      continue
+    }
+
+    if (userId && !storedSession.user_id) {
+      const attachedSession = await attachCurrentSessionToUser({
+        supabaseAdmin,
+        sessionId,
+        visitorId,
+        userId,
+        isInternal: await getClassification(),
+        observedAt
+      })
+
+      if (attachedSession) {
+        storedSession = attachedSession
+        sessionWasAttached = true
+        identityEstablished = true
+        break
+      }
+
+      // Another request claimed the anonymous session first. Reload it so the
+      // next iteration can either accept that identity or rotate safely.
+      storedSession = await getStoredSession(supabaseAdmin, sessionId)
+      continue
+    }
+
+    identityEstablished = true
+    break
   }
 
-  if (!storedSession) {
+  if (!identityEstablished || !storedSession) {
     throw new Error('Could not initialize the analytics session.')
   }
 
-  if (userId && !storedSession.user_id) {
-    await attachCurrentSessionToUser({
-      supabaseAdmin,
-      sessionId,
-      visitorId,
-      userId,
-      observedAt
-    })
-  } else {
-    const { error: touchError } = await supabaseAdmin
+  if (!sessionWasAttached) {
+    let touchQuery = supabaseAdmin
       .from('store_analytics_sessions')
       .update({
         last_seen_at: observedAt
@@ -233,9 +359,23 @@ export const ensureStoreAnalyticsSession = async ({
       .eq('visitor_id', visitorId)
       .lte('last_seen_at', observedAt)
 
+    touchQuery = storedSession.user_id
+      ? touchQuery.eq('user_id', storedSession.user_id)
+      : touchQuery.is('user_id', null)
+
+    const { data: touchedSession, error: touchError } = await touchQuery
+      .select('id, visitor_id, user_id, is_internal, started_at, last_seen_at')
+      .maybeSingle()
+
     if (touchError) {
       throw new Error('Could not update the analytics session.')
     }
+
+    if (!touchedSession) {
+      throw new Error('The analytics session identity changed concurrently.')
+    }
+
+    storedSession = touchedSession
 
     if (userId) {
       await backfillCurrentSessionEvents({
@@ -250,7 +390,8 @@ export const ensureStoreAnalyticsSession = async ({
   return {
     visitorId,
     sessionId,
-    userId: userId || null
+    userId: userId || null,
+    isInternal: Boolean(storedSession.is_internal)
   }
 }
 
@@ -272,6 +413,20 @@ export const recordStoreOrderCreated = async ({
     userId
   })
 
+  if (identity.isInternal) {
+    if (validatedCartId) {
+      await markStoreAnalyticsInternalCarts({
+        supabaseAdmin,
+        cartIds: [validatedCartId]
+      })
+    }
+
+    return {
+      recorded: false,
+      excluded: true
+    }
+  }
+
   const { error } = await supabaseAdmin
     .from('store_analytics_events')
     .insert({
@@ -288,5 +443,10 @@ export const recordStoreOrderCreated = async ({
 
   if (error && error.code !== '23505') {
     throw new Error('Could not record the order analytics event.')
+  }
+
+  return {
+    recorded: !error,
+    excluded: false
   }
 }

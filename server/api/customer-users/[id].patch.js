@@ -30,6 +30,7 @@ export default defineEventHandler(async (event) => {
     .from('customer_profiles')
     .select('*')
     .eq('id', targetId)
+    .eq('is_internal', false)
     .maybeSingle()
 
   if (existingError) {
@@ -53,6 +54,7 @@ export default defineEventHandler(async (event) => {
       updated_at: new Date().toISOString()
     })
     .eq('id', targetId)
+    .eq('is_internal', false)
     .select('*')
     .single()
 
