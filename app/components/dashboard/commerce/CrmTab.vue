@@ -358,6 +358,20 @@
             </div>
 
             <div class="flex gap-2">
+              <NuxtLink
+                :to="{
+                  path: '/dashboard/crm',
+                  query: {
+                    tab: 'activities',
+                    contact: account.id
+                  }
+                }"
+                class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
+                @click.stop
+              >
+                Activity
+              </NuxtLink>
+
               <button
                 type="button"
                 class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
@@ -888,7 +902,9 @@ const deleteAccount = async () => {
     resetForm()
     await loadAccounts()
   } catch (error) {
-    formError.value = error.message || 'Could not delete this record.'
+    formError.value = error?.code === '23503'
+      ? 'This CRM record has connected orders or activities. Mark it inactive instead of deleting it.'
+      : error.message || 'Could not delete this record.'
   } finally {
     deleting.value = false
   }

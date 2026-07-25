@@ -70,6 +70,10 @@ const dashboardTabTitles = {
     brands: 'Brands',
     reviews: 'Reviews'
   },
+  '/dashboard/crm': {
+    default: 'Contacts',
+    activities: 'Calls & Cases'
+  },
   '/dashboard/commerce': {
     default: 'Procurement',
     procurement: 'Procurement',
