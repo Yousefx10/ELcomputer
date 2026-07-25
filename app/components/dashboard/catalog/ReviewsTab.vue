@@ -190,7 +190,6 @@
               </div>
 
               <button
-                v-if="canDeleteReviews"
                 type="button"
                 :disabled="Boolean(deletingReviewId)"
                 class="shrink-0 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
@@ -245,7 +244,6 @@ defineOptions({
 })
 
 const supabase = useSupabaseClient()
-const { hasPermission } = useAdminAccess()
 
 const reviews = ref([])
 const totalReviews = ref(0)
@@ -260,7 +258,6 @@ const appliedSearch = ref('')
 const appliedRating = ref('')
 const ratingOptions = [1, 2, 3, 4, 5]
 
-const canDeleteReviews = computed(() => hasPermission('reviews.delete'))
 const hasActiveFilters = computed(() => Boolean(appliedSearch.value || appliedRating.value))
 
 const totalPages = computed(() => {
@@ -415,7 +412,7 @@ const clearFilters = async () => {
 }
 
 const deleteReview = async (review) => {
-  if (!canDeleteReviews.value || !review?.id || deletingReviewId.value) {
+  if (!review?.id || deletingReviewId.value) {
     return
   }
 

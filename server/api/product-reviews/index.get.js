@@ -30,8 +30,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const page = Math.max(1, Number(query.page) || 1)
-  const pageSize = Math.min(20, Math.max(1, Number(query.pageSize) || 10))
+  const page = Math.max(1, Math.floor(Number(query.page) || 1))
+  const pageSize = Math.min(10, Math.max(1, Math.floor(Number(query.pageSize) || 10)))
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
   const supabaseAdmin = getSupabaseAdminClient()

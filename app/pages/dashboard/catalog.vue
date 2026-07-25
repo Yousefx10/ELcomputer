@@ -25,10 +25,9 @@ const { hasPermission } = useAdminAccess()
 
 const canViewCategories = computed(() => hasPermission('categories.view'))
 const canViewBrands = computed(() => hasPermission('brands.view'))
-const canViewReviews = computed(() => hasPermission('reviews.view'))
 
 const activeTab = computed(() => {
-  if (route.query.tab === 'reviews' && canViewReviews.value) {
+  if (route.query.tab === 'reviews') {
     return 'reviews'
   }
 
@@ -66,13 +65,11 @@ const secondaryNavItems = computed(() => {
     })
   }
 
-  if (canViewReviews.value) {
-    items.push({
-      label: 'Reviews',
-      to: '/dashboard/catalog?tab=reviews',
-      active: activeTab.value === 'reviews'
-    })
-  }
+  items.push({
+    label: 'Reviews',
+    to: '/dashboard/catalog?tab=reviews',
+    active: activeTab.value === 'reviews'
+  })
 
   return items
 })

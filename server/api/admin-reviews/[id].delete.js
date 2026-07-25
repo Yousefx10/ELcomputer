@@ -4,9 +4,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 import { getRelatedRecord, isUuid } from '../../utils/productReviews'
 
 export default defineEventHandler(async (event) => {
-  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
-    permission: 'reviews.delete'
-  })
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event)
   const reviewId = String(getRouterParam(event, 'id') || '').trim()
 
   if (!isUuid(reviewId)) {

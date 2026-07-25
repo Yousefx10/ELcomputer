@@ -36,14 +36,6 @@ export const adminPermissionGroups = [
     ]
   },
   {
-    key: 'reviews',
-    title: 'Reviews',
-    accessPermission: { key: 'reviews.view', label: 'Reviews Access' },
-    permissions: [
-      { key: 'reviews.delete', label: 'Delete reviews' }
-    ]
-  },
-  {
     key: 'settings',
     title: 'Settings',
     accessPermission: { key: 'settings.view', label: 'Settings Access' },
@@ -92,7 +84,6 @@ export const adminPermissionDependencies = {
   'products.view': ['products.add', 'products.edit'],
   'categories.view': ['categories.add', 'categories.edit'],
   'brands.view': ['brands.add', 'brands.edit'],
-  'reviews.view': ['reviews.delete'],
   'settings.view': ['settings.edit', 'settings.coupons'],
   'hr.view': ['hr.edit'],
   'treasury.view': ['treasury.edit']
@@ -241,9 +232,7 @@ export const getDashboardRouteRequirement = (route = '') => {
 
   if (path === '/dashboard/catalog') {
     if (query.tab === 'reviews') {
-      return {
-        permission: 'reviews.view'
-      }
+      return null
     }
 
     if (query.tab === 'brands') {
@@ -252,9 +241,7 @@ export const getDashboardRouteRequirement = (route = '') => {
       }
     }
 
-    return {
-      permissionsAny: ['categories.view', 'brands.view', 'reviews.view']
-    }
+    return null
   }
 
   if (path === '/dashboard/products/brands') {

@@ -60,7 +60,7 @@
       </div>
 
       <div v-else class="grid gap-10 lg:grid-cols-2">
-        <div>
+        <div ref="reviewsList">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Current reviews</h3>
@@ -132,15 +132,44 @@
               </p>
             </article>
 
-            <button
-              v-if="hasMoreReviews"
-              type="button"
-              :disabled="loadingMore"
-              class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-              @click="loadMoreReviews"
+            <nav
+              v-if="totalPages > 1"
+              class="flex flex-wrap items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white p-3"
+              aria-label="Review pages"
             >
-              {{ loadingMore ? 'Loading...' : 'Load More Reviews' }}
-            </button>
+              <button
+                type="button"
+                :disabled="currentPage <= 1 || reviewsLoading"
+                class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                @click="goToReviewPage(currentPage - 1)"
+              >
+                Previous
+              </button>
+
+              <button
+                v-for="pageNumber in visiblePageNumbers"
+                :key="pageNumber"
+                type="button"
+                :aria-current="pageNumber === currentPage ? 'page' : undefined"
+                :disabled="reviewsLoading"
+                class="min-w-10 rounded-lg border px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                :class="pageNumber === currentPage
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
+                @click="goToReviewPage(pageNumber)"
+              >
+                {{ pageNumber }}
+              </button>
+
+              <button
+                type="button"
+                :disabled="currentPage >= totalPages || reviewsLoading"
+                class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                @click="goToReviewPage(currentPage + 1)"
+              >
+                Next
+              </button>
+            </nav>
           </div>
 
           <p
@@ -314,10 +343,10 @@ const router = useRouter()
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
+const reviewsList = ref(null)
 const reviewsOpen = ref(false)
 const reviewsLoaded = ref(false)
 const reviewsLoading = ref(false)
-const loadingMore = ref(false)
 const reviews = ref([])
 const totalReviews = ref(0)
 const currentPage = ref(1)
@@ -337,7 +366,21 @@ const starOptions = [1, 2, 3, 4, 5]
 
 const reviewCharacterCount = computed(() => Array.from(reviewText.value).length)
 const formattedAverageRating = computed(() => Number(averageRating.value || 0).toFixed(1))
-const hasMoreReviews = computed(() => reviews.value.length < totalReviews.value)
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(totalReviews.value / pageSize))
+})
+const visiblePageNumbers = computed(() => {
+  const maximumVisiblePages = 5
+  let firstPage = Math.max(1, currentPage.value - Math.floor(maximumVisiblePages / 2))
+  const lastPage = Math.min(totalPages.value, firstPage + maximumVisiblePages - 1)
+
+  firstPage = Math.max(1, lastPage - maximumVisiblePages + 1)
+
+  return Array.from(
+    { length: lastPage - firstPage + 1 },
+    (_, index) => firstPage + index
+  )
+})
 const reviewFormHeading = computed(() => {
   if (!totalReviews.value) {
     return `Be the first to review “${props.productName}”`
@@ -383,17 +426,12 @@ const getOptionalAuthHeaders = async () => {
   }
 }
 
-const loadReviews = async ({ page = 1, append = false } = {}) => {
-  if (reviewsLoading.value || loadingMore.value) {
-    return
+const loadReviews = async ({ page = 1 } = {}) => {
+  if (reviewsLoading.value) {
+    return false
   }
 
-  if (append) {
-    loadingMore.value = true
-  } else {
-    reviewsLoading.value = true
-  }
-
+  reviewsLoading.value = true
   loadError.value = ''
 
   try {
@@ -407,26 +445,18 @@ const loadReviews = async ({ page = 1, append = false } = {}) => {
     })
     const nextReviews = (response.items || []).map(normalizeReview)
 
-    if (append) {
-      const existingIds = new Set(reviews.value.map((review) => review.id))
-      reviews.value = [
-        ...reviews.value,
-        ...nextReviews.filter((review) => !existingIds.has(review.id))
-      ]
-    } else {
-      reviews.value = nextReviews
-    }
-
+    reviews.value = nextReviews
     totalReviews.value = Number(response.total || 0)
     currentPage.value = Number(response.page) || page
     averageRating.value = Number(response.averageRating || 0)
     hasReviewed.value = Boolean(response.hasReviewed)
     reviewsLoaded.value = true
+    return true
   } catch (error) {
     loadError.value = error?.data?.statusMessage || error?.message || 'Could not load reviews.'
+    return false
   } finally {
     reviewsLoading.value = false
-    loadingMore.value = false
   }
 }
 
@@ -438,15 +468,28 @@ const toggleReviews = async () => {
   }
 }
 
-const loadMoreReviews = async () => {
-  if (!hasMoreReviews.value) {
+const goToReviewPage = async (page) => {
+  const requestedPage = Number(page)
+
+  if (
+    !Number.isInteger(requestedPage)
+    || requestedPage < 1
+    || requestedPage > totalPages.value
+    || requestedPage === currentPage.value
+    || reviewsLoading.value
+  ) {
     return
   }
 
-  await loadReviews({
-    page: currentPage.value + 1,
-    append: true
-  })
+  const loaded = await loadReviews({ page: requestedPage })
+
+  if (loaded && import.meta.client) {
+    await nextTick()
+    reviewsList.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }
 }
 
 const submitReview = async () => {

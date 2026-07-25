@@ -27,9 +27,7 @@ const applyReviewFilters = (queryBuilder, { rating, matchingProductIds, matching
 }
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event, {
-    permission: 'reviews.view'
-  })
+  const { supabaseAdmin } = await requireAdminRequest(event)
   const query = getQuery(event)
   const page = Math.max(1, Number(query.page) || 1)
   const pageSize = Math.min(20, Math.max(1, Number(query.pageSize) || 10))
