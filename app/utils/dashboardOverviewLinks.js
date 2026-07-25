@@ -1,35 +1,31 @@
+import { dashboardNavigationGroups } from '~/utils/dashboardNavigation'
+
 export const buildDashboardOverviewLinks = (activeKey = 'summary', options = {}) => {
   const {
     canSeeAnalysis = true,
     canSeeOrders = true
   } = options
 
-  const links = [
-    {
-      key: 'summary',
-      label: 'Summary',
-      to: '/dashboard',
-      active: activeKey === 'summary'
-    }
-  ]
+  const dashboardItems = dashboardNavigationGroups.find((group) => {
+    return group.key === 'dashboard'
+  })?.children || []
 
-  if (canSeeAnalysis) {
-    links.push({
-      key: 'analysis',
-      label: 'Analysis',
-      to: '/dashboard?view=analysis',
-      active: activeKey === 'analysis'
+  return dashboardItems
+    .filter((item) => {
+      if (item.key === 'analysis') {
+        return canSeeAnalysis
+      }
+
+      if (item.key === 'orders') {
+        return canSeeOrders
+      }
+
+      return true
     })
-  }
-
-  if (canSeeOrders) {
-    links.push({
-      key: 'orders',
-      label: 'Orders',
-      to: '/dashboard/orders',
-      active: activeKey === 'orders'
-    })
-  }
-
-  return links
+    .map((item) => ({
+      key: item.key,
+      label: item.label,
+      to: item.to,
+      active: activeKey === item.key
+    }))
 }

@@ -1,40 +1,13 @@
-export const commerceTabs = [
-  {
-    key: 'procurement',
-    label: 'Procurement',
-    to: '/dashboard/commerce'
-  },
-  {
-    key: 'sales',
-    label: 'Sales',
-    to: '/dashboard/commerce?tab=sales'
-  },
-  {
-    key: 'shipping',
-    label: 'Shipping',
-    to: '/dashboard/commerce?tab=shipping'
-  },
-  {
-    key: 'warehouses',
-    label: 'Warehouses',
-    to: '/dashboard/commerce?tab=warehouses'
-  },
-  {
-    key: 'serialized',
-    label: 'Serialized Items',
-    to: '/dashboard/commerce?tab=serialized'
-  },
-  {
-    key: 'scan',
-    label: 'Scan Item',
-    to: '/dashboard/commerce?tab=scan'
-  },
-  {
-    key: 'returns',
-    label: 'Returns',
-    to: '/dashboard/commerce?tab=returns'
-  }
-]
+import { dashboardNavigationGroups } from '~/utils/dashboardNavigation'
+
+export const commerceTabs = (
+  dashboardNavigationGroups.find((group) => group.key === 'commerce')?.children
+  || []
+).map((item) => ({
+  key: item.key,
+  label: item.label,
+  to: item.to
+}))
 
 export const serializedItemStatusOptions = [
   { value: 'in_stock', label: 'In Stock' },

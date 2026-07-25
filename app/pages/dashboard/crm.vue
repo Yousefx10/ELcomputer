@@ -15,6 +15,8 @@
 </template>
 
 <script setup>
+import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
+
 definePageMeta({
   layout: 'dashboard'
 })
@@ -22,7 +24,7 @@ definePageMeta({
 const route = useRoute()
 
 const activeTab = computed(() => {
-  return String(route.query.tab || '').trim().toLowerCase() === 'activities'
+  return getDashboardQueryValue(route, 'tab') === 'activities'
     ? 'activities'
     : 'contacts'
 })

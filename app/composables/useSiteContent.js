@@ -6,6 +6,7 @@ const defaultSiteSettings = {
   site_logo_url: '',
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
+  dashboard_layout: 'standard',
   allow_out_of_stock_purchases: false,
   homepage_reviews_enabled: true,
   homepage_reviews_view_all_enabled: true,

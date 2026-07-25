@@ -156,6 +156,153 @@
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
+            class="flex w-full items-center justify-between p-6 text-start"
+            :aria-expanded="openSections.dashboardLayout"
+            aria-controls="dashboard-layout-settings"
+            @click="toggleSection('dashboardLayout')"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Dashboard Layout</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Choose the navigation style used by every dashboard owner and administrator.
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.dashboardLayout ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div
+            v-if="openSections.dashboardLayout"
+            id="dashboard-layout-settings"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
+            <div
+              class="grid gap-4 md:grid-cols-2"
+              role="radiogroup"
+              aria-label="Dashboard layout"
+            >
+              <label
+                v-for="layoutOption in dashboardLayoutOptions"
+                :key="layoutOption.value"
+                class="rounded-2xl border-2 p-4 text-start transition focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
+                :class="siteSettings.dashboard_layout === layoutOption.value
+                  ? 'cursor-pointer border-blue-600 bg-blue-50 shadow-sm'
+                  : canEditSettings
+                    ? 'cursor-pointer border-gray-200 bg-white hover:border-gray-300'
+                    : 'cursor-not-allowed border-gray-200 bg-white'"
+              >
+                <input
+                  v-model="siteSettings.dashboard_layout"
+                  type="radio"
+                  name="dashboard-layout"
+                  :value="layoutOption.value"
+                  :disabled="!canEditSettings"
+                  class="sr-only"
+                >
+
+                <div class="mb-4 h-32 overflow-hidden rounded-xl border bg-gray-100 p-2">
+                  <template v-if="layoutOption.value === 'standard'">
+                    <div class="h-4 rounded bg-gray-800" />
+                    <div class="mt-2 flex gap-1 rounded bg-white p-1 shadow-sm">
+                      <span class="h-3 flex-1 rounded bg-blue-500" />
+                      <span class="h-3 flex-1 rounded bg-gray-200" />
+                      <span class="h-3 flex-1 rounded bg-gray-200" />
+                      <span class="h-3 flex-1 rounded bg-gray-200" />
+                    </div>
+                    <div class="mt-2 grid grid-cols-3 gap-2">
+                      <span class="h-16 rounded bg-white shadow-sm" />
+                      <span class="h-16 rounded bg-white shadow-sm" />
+                      <span class="h-16 rounded bg-white shadow-sm" />
+                    </div>
+                  </template>
+
+                  <div v-else class="flex h-full gap-2">
+                    <div class="w-1/3 rounded-lg bg-white p-2 shadow-sm">
+                      <div class="h-3 rounded bg-gray-800" />
+                      <div class="mt-3 space-y-1.5">
+                        <span class="block h-3 rounded bg-lime-300" />
+                        <span class="block h-3 rounded bg-gray-200" />
+                        <span class="block h-3 rounded bg-gray-200" />
+                        <span class="block h-3 rounded bg-gray-200" />
+                      </div>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="h-5 rounded bg-white shadow-sm" />
+                      <div class="mt-2 grid grid-cols-2 gap-2">
+                        <span class="h-20 rounded bg-white shadow-sm" />
+                        <span class="h-20 rounded bg-white shadow-sm" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="font-bold text-gray-900">{{ layoutOption.label }}</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ layoutOption.description }}</p>
+                  </div>
+
+                  <span
+                    class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2"
+                    :class="siteSettings.dashboard_layout === layoutOption.value
+                      ? 'border-blue-600 bg-blue-600 text-white'
+                      : 'border-gray-300 bg-white'"
+                  >
+                    <Icon
+                      v-if="siteSettings.dashboard_layout === layoutOption.value"
+                      name="lucide:check"
+                      size="14"
+                    />
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <p class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
+              This is one global setting. Saving it changes the dashboard layout for all owners and administrators.
+            </p>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'dashboardLayout' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'dashboardLayout' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!canEditSettings || !isSettingsSectionDirty('dashboardLayout') || settingsLoading"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="canEditSettings && isSettingsSectionDirty('dashboardLayout') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+                @click="saveSiteSettings('dashboardLayout')"
+              >
+                {{ settingsLoadingSection === 'dashboardLayout' ? 'Saving...' : 'Save Dashboard Layout' }}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
             class="flex w-full items-center justify-between p-6 text-left"
             @click="toggleSection('homepageReviews')"
           >
@@ -2041,6 +2188,7 @@ import {
   getDefaultHeaderLinkDefinition,
   isDefaultHeaderLink
 } from '~/utils/siteLinks'
+import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
 
 definePageMeta({
   layout: 'dashboard'
@@ -2049,7 +2197,7 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const route = useRoute()
 
-if (route.query.tab === 'users') {
+if (getDashboardQueryValue(route, 'tab') === 'users') {
   await navigateTo('/dashboard/hr?tab=users', {
     replace: true
   })
@@ -2088,6 +2236,7 @@ const defaultSiteSettings = {
   site_logo_url: '',
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
+  dashboard_layout: 'standard',
   allow_out_of_stock_purchases: false,
   homepage_reviews_enabled: true,
   homepage_reviews_view_all_enabled: true,
@@ -2188,8 +2337,21 @@ const newCoupon = reactive({
   is_active: true
 })
 const galleryLoaded = ref(false)
+const dashboardLayoutOptions = [
+  {
+    value: 'standard',
+    label: 'Standard',
+    description: 'The current dashboard with primary navigation across the top.'
+  },
+  {
+    value: 'detailed',
+    label: 'Detailed',
+    description: 'A sidebar with expandable sections and their attached submenus.'
+  }
+]
 const openSections = reactive({
   generalSettings: true,
+  dashboardLayout: true,
   homepageReviews: false,
   bannerAds: false,
   footerSettings: false,
@@ -2200,15 +2362,17 @@ const openSections = reactive({
   footerLinks: false
 })
 const activeSettingsView = computed(() => {
-  if (route.query.tab === 'logs' && canViewLogs.value) {
+  const requestedTab = getDashboardQueryValue(route, 'tab')
+
+  if (requestedTab === 'logs' && canViewLogs.value) {
     return 'logs'
   }
 
-  if (route.query.tab === 'coupons' && canAccessCoupons.value) {
+  if (requestedTab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'
   }
 
-  if (route.query.tab === 'gallery' && canViewGallery.value) {
+  if (requestedTab === 'gallery' && canViewGallery.value) {
     return 'gallery'
   }
 
@@ -2276,6 +2440,9 @@ const siteSettingsSectionFields = {
     'landing_page_title',
     'allow_out_of_stock_purchases'
   ],
+  dashboardLayout: [
+    'dashboard_layout'
+  ],
   homepageReviews: [
     'homepage_reviews_enabled',
     'homepage_reviews_view_all_enabled'
@@ -2309,6 +2476,7 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
+  dashboardLayout: 'Dashboard layout',
   homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
@@ -2634,6 +2802,9 @@ const normalizeSiteSettings = (source = {}) => ({
   site_logo_url: String(source.site_logo_url || '').trim(),
   site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
   landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
+  dashboard_layout: String(source.dashboard_layout || '').trim().toLowerCase() === 'detailed'
+    ? 'detailed'
+    : 'standard',
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,

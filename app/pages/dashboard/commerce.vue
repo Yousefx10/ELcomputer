@@ -23,6 +23,7 @@
 </template>
 
 <script setup>
+import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
 import { commerceTabs } from '~/utils/commerce'
 
 definePageMeta({
@@ -34,7 +35,7 @@ const route = useRoute()
 const validTabKeys = new Set(commerceTabs.map((tab) => tab.key))
 
 const activeTab = computed(() => {
-  const tab = String(route.query.tab || '').trim().toLowerCase()
+  const tab = getDashboardQueryValue(route, 'tab')
   return validTabKeys.has(tab) ? tab : 'procurement'
 })
 

@@ -15,6 +15,8 @@
 </template>
 
 <script setup>
+import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
+
 definePageMeta({
   layout: 'dashboard'
 })
@@ -26,7 +28,7 @@ const canViewEmployees = computed(() => hasPermission('hr.view'))
 const canViewUsers = computed(() => hasPermission('users.view'))
 
 const activeTab = computed(() => {
-  if (route.query.tab === 'users' && canViewUsers.value) {
+  if (getDashboardQueryValue(route, 'tab') === 'users' && canViewUsers.value) {
     return 'users'
   }
 

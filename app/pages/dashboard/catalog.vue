@@ -16,6 +16,8 @@
 </template>
 
 <script setup>
+import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
+
 definePageMeta({
   layout: 'dashboard'
 })
@@ -27,11 +29,13 @@ const canViewCategories = computed(() => hasPermission('categories.view'))
 const canViewBrands = computed(() => hasPermission('brands.view'))
 
 const activeTab = computed(() => {
-  if (route.query.tab === 'reviews') {
+  const requestedTab = getDashboardQueryValue(route, 'tab')
+
+  if (requestedTab === 'reviews') {
     return 'reviews'
   }
 
-  if (route.query.tab === 'brands' && canViewBrands.value) {
+  if (requestedTab === 'brands' && canViewBrands.value) {
     return 'brands'
   }
 

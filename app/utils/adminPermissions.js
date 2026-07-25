@@ -1,3 +1,5 @@
+import { normalizeDashboardQueryValue } from './dashboardNavigation'
+
 export const adminPermissionGroups = [
   {
     key: 'dashboard',
@@ -151,6 +153,8 @@ export const hasAdminPermission = (adminUser, permissionKey) => {
 export const getDashboardRouteRequirement = (route = '') => {
   const path = typeof route === 'string' ? route : String(route?.path || '')
   const query = typeof route === 'string' ? {} : route?.query || {}
+  const tab = normalizeDashboardQueryValue(query.tab)
+  const view = normalizeDashboardQueryValue(query.view)
 
   if (path === '/dashboard/users') {
     return {
@@ -159,7 +163,7 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/hr') {
-    if (query.tab === 'users') {
+    if (tab === 'users') {
       return {
         permission: 'users.view'
       }
@@ -183,25 +187,25 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/settings') {
-    if (query.tab === 'users') {
+    if (tab === 'users') {
       return {
         permission: 'users.view'
       }
     }
 
-    if (query.tab === 'logs') {
+    if (tab === 'logs') {
       return {
         permission: 'settings.view'
       }
     }
 
-    if (query.tab === 'gallery') {
+    if (tab === 'gallery') {
       return {
         permission: 'settings.view'
       }
     }
 
-    if (query.tab === 'coupons') {
+    if (tab === 'coupons') {
       return {
         permission: 'settings.coupons'
       }
@@ -231,11 +235,11 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/catalog') {
-    if (query.tab === 'reviews') {
+    if (tab === 'reviews') {
       return null
     }
 
-    if (query.tab === 'brands') {
+    if (tab === 'brands') {
       return {
         permission: 'brands.view'
       }
@@ -256,7 +260,7 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
-  if (path === '/dashboard' && query.view === 'analysis') {
+  if (path === '/dashboard' && view === 'analysis') {
     return {
       permission: 'dashboard.analysis'
     }
