@@ -29,7 +29,7 @@
           type="button"
           :disabled="loading"
           class="inline-flex items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
-          @click="loadOverview({ force: true })"
+          @click="refreshMetrics"
         >
           <Icon
             name="lucide:refresh-cw"
@@ -100,7 +100,7 @@
           <div>
             <h4 class="text-xl font-bold text-gray-900">Store Activity</h4>
             <p class="mt-1 text-sm text-gray-500">
-              Supporting activity collected during the selected {{ selectedWindowDays }}-day period.
+              Historical activity uses the selected {{ selectedWindowDays }}-day period; live visitors update separately.
             </p>
           </div>
 
@@ -119,8 +119,17 @@
               <Icon :name="metric.icon" size="17" aria-hidden="true" />
               <p class="text-sm">{{ metric.label }}</p>
             </div>
-            <p class="mt-2 text-2xl font-bold text-gray-900">
+            <p
+              class="mt-2 text-2xl font-bold"
+              :class="metric.valueClass || 'text-gray-900'"
+            >
               {{ metric.value }}
+            </p>
+            <p
+              v-if="metric.description"
+              class="mt-2 text-xs text-gray-400"
+            >
+              {{ metric.description }}
             </p>
           </article>
         </div>
@@ -138,6 +147,17 @@ const selectedWindowDays = ref(30)
 const loading = ref(true)
 const errorMessage = ref('')
 const overview = ref(null)
+const liveVisitors = ref(0)
+const liveVisitorsAvailable = ref(false)
+const liveVisitorWindowSeconds = ref(180)
+
+const LIVE_VISITOR_REFRESH_MS = 30 * 1000
+const LIVE_VISITOR_REQUEST_TIMEOUT_MS = 5 * 1000
+let liveVisitorRefreshTimerId
+let liveVisitorRequestGeneration = 0
+let liveVisitorRequestInFlight = false
+let liveVisitorAbortController
+let liveVisitorPollingActive = false
 
 const createEmptyOverview = (windowDays = selectedWindowDays.value) => ({
   windowDays,
@@ -300,6 +320,18 @@ const headlineCards = computed(() => [
 
 const activityMetrics = computed(() => [
   {
+    key: 'live-visitors',
+    label: 'Live on Store',
+    value: liveVisitorsAvailable.value
+      ? formatNumber(liveVisitors.value)
+      : '—',
+    description: liveVisitorsAvailable.value
+      ? `Tracked visitors active during the last ${Math.ceil(liveVisitorWindowSeconds.value / 60)} minutes`
+      : 'Live count unavailable',
+    icon: 'lucide:radio',
+    valueClass: 'text-green-600'
+  },
+  {
     key: 'page-views',
     label: 'Page Views',
     value: formatNumber(activity.value.pageViews),
@@ -359,6 +391,100 @@ const getAuthHeaders = async () => {
   }
 }
 
+const loadLiveVisitors = async () => {
+  if (
+    !import.meta.client
+    || !liveVisitorPollingActive
+    || document.visibilityState !== 'visible'
+    || liveVisitorRequestInFlight
+  ) {
+    return
+  }
+
+  const requestGeneration = ++liveVisitorRequestGeneration
+  liveVisitorRequestInFlight = true
+  const controller = new AbortController()
+  liveVisitorAbortController = controller
+  const timeoutId = window.setTimeout(() => {
+    controller.abort()
+  }, LIVE_VISITOR_REQUEST_TIMEOUT_MS)
+
+  try {
+    const response = await $fetch('/api/admin-analytics/live', {
+      headers: await getAuthHeaders(),
+      signal: controller.signal
+    })
+
+    if (requestGeneration !== liveVisitorRequestGeneration) {
+      return
+    }
+
+    liveVisitors.value = normalizeNumber(response?.liveVisitors)
+    liveVisitorWindowSeconds.value = Math.max(
+      60,
+      Math.min(
+        600,
+        normalizeNumber(response?.activeWindowSeconds, 180)
+      )
+    )
+    liveVisitorsAvailable.value = true
+  } catch {
+    if (requestGeneration === liveVisitorRequestGeneration) {
+      liveVisitorsAvailable.value = false
+    }
+  } finally {
+    window.clearTimeout(timeoutId)
+
+    if (requestGeneration === liveVisitorRequestGeneration) {
+      liveVisitorRequestInFlight = false
+      liveVisitorAbortController = undefined
+    }
+  }
+}
+
+const clearLiveVisitorRefresh = () => {
+  if (liveVisitorRefreshTimerId !== undefined) {
+    window.clearTimeout(liveVisitorRefreshTimerId)
+  }
+
+  liveVisitorRefreshTimerId = undefined
+}
+
+const scheduleLiveVisitorRefresh = () => {
+  clearLiveVisitorRefresh()
+
+  if (
+    !liveVisitorPollingActive
+    || document.visibilityState !== 'visible'
+  ) {
+    return
+  }
+
+  liveVisitorRefreshTimerId = window.setTimeout(async () => {
+    liveVisitorRefreshTimerId = undefined
+    await loadLiveVisitors()
+    scheduleLiveVisitorRefresh()
+  }, LIVE_VISITOR_REFRESH_MS)
+}
+
+const handleAnalyticsVisibilityChange = () => {
+  if (!liveVisitorPollingActive) {
+    return
+  }
+
+  if (document.visibilityState !== 'visible') {
+    liveVisitorRequestGeneration += 1
+    liveVisitorRequestInFlight = false
+    liveVisitorAbortController?.abort()
+    liveVisitorAbortController = undefined
+    clearLiveVisitorRefresh()
+    return
+  }
+
+  void loadLiveVisitors()
+  scheduleLiveVisitorRefresh()
+}
+
 const loadOverview = async ({ force = false } = {}) => {
   const requestedWindowDays = selectedWindowDays.value
   const cacheKey = buildCacheKey(requestedWindowDays)
@@ -413,5 +539,26 @@ const selectWindow = async (windowDays) => {
   await loadOverview()
 }
 
-onMounted(() => loadOverview())
+const refreshMetrics = () => {
+  void loadLiveVisitors()
+  void loadOverview({ force: true })
+}
+
+onMounted(() => {
+  liveVisitorPollingActive = true
+  void loadOverview()
+  void loadLiveVisitors()
+  document.addEventListener('visibilitychange', handleAnalyticsVisibilityChange)
+  scheduleLiveVisitorRefresh()
+})
+
+onBeforeUnmount(() => {
+  liveVisitorPollingActive = false
+  liveVisitorRequestGeneration += 1
+  liveVisitorRequestInFlight = false
+  liveVisitorAbortController?.abort()
+  liveVisitorAbortController = undefined
+  clearLiveVisitorRefresh()
+  document.removeEventListener('visibilitychange', handleAnalyticsVisibilityChange)
+})
 </script>

@@ -395,6 +395,110 @@ export const ensureStoreAnalyticsSession = async ({
   }
 }
 
+export const touchExistingStoreAnalyticsPresence = async ({
+  event,
+  supabaseAdmin,
+  userId = null,
+  minimumIntervalSeconds = 45
+}) => {
+  const visitorId = getCookie(event, STORE_ANALYTICS_VISITOR_COOKIE)
+  const sessionId = getCookie(event, STORE_ANALYTICS_SESSION_COOKIE)
+
+  if (!isStoreAnalyticsUuid(visitorId) || !isStoreAnalyticsUuid(sessionId)) {
+    return {
+      touched: false,
+      excluded: false
+    }
+  }
+
+  const storedSession = await getStoredSession(supabaseAdmin, sessionId)
+
+  if (!storedSession || String(storedSession.visitor_id) !== String(visitorId)) {
+    return {
+      touched: false,
+      excluded: false
+    }
+  }
+
+  if (storedSession.is_internal) {
+    return {
+      touched: false,
+      excluded: true
+    }
+  }
+
+  const storedUserId = storedSession.user_id
+    ? String(storedSession.user_id)
+    : null
+
+  if (storedUserId && storedUserId !== String(userId || '')) {
+    return {
+      touched: false,
+      excluded: false
+    }
+  }
+
+  if (!storedUserId && userId) {
+    const identity = await ensureStoreAnalyticsSession({
+      event,
+      supabaseAdmin,
+      userId
+    })
+
+    return {
+      touched: !identity.isInternal,
+      excluded: identity.isInternal
+    }
+  }
+
+  // A presence request may refresh an existing server-issued session, but it
+  // never creates a session. Store analytics events remain the admission step.
+  setSessionCookie(event, sessionId)
+
+  const boundedMinimumIntervalSeconds = Math.max(
+    30,
+    Math.min(300, Number(minimumIntervalSeconds) || 45)
+  )
+  const touchCutoff = new Date(
+    Date.now() - (boundedMinimumIntervalSeconds * 1000)
+  ).toISOString()
+
+  if (Date.parse(storedSession.last_seen_at) > Date.parse(touchCutoff)) {
+    return {
+      touched: false,
+      excluded: false
+    }
+  }
+
+  const observedAt = new Date().toISOString()
+  let touchQuery = supabaseAdmin
+    .from('store_analytics_sessions')
+    .update({
+      last_seen_at: observedAt
+    })
+    .eq('id', sessionId)
+    .eq('visitor_id', visitorId)
+    .eq('is_internal', false)
+    .lte('last_seen_at', touchCutoff)
+
+  touchQuery = storedUserId
+    ? touchQuery.eq('user_id', storedUserId)
+    : touchQuery.is('user_id', null)
+
+  const { data: touchedSession, error } = await touchQuery
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    throw new Error('Could not update store presence.')
+  }
+
+  return {
+    touched: Boolean(touchedSession),
+    excluded: false
+  }
+}
+
 export const recordStoreOrderCreated = async ({
   event,
   supabaseAdmin,

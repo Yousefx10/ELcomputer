@@ -6,6 +6,7 @@ import {
   isStoreAnalyticsUuid,
   markStoreAnalyticsInternalCarts
 } from '../../utils/storeAnalytics'
+import { assertStoreAnalyticsRateLimit } from '../../utils/storeAnalyticsRateLimit'
 
 const MAX_EVENTS_PER_REQUEST = 20
 const MAX_REQUEST_BYTES = 32768
@@ -234,6 +235,10 @@ const validateProductIds = async (supabaseAdmin, events) => {
 }
 
 export default defineEventHandler(async (event) => {
+  assertStoreAnalyticsRateLimit(event, {
+    scope: 'events',
+    limit: 240
+  })
   validateRequestSize(event)
 
   let body
