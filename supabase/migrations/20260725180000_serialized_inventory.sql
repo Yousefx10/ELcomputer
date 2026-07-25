@@ -1,9 +1,34 @@
 begin;
 
--- Serialized products keep one durable row per physical item. Aggregate stock
--- remains a projection used by the existing storefront and warehouse screens.
+-- Also permits this migration to upgrade an earlier draft safely while its
+-- projection guards are already installed. The setting is transaction-local.
+select set_config('app.serialized_inventory_write', 'on', true);
+
+-- Every newly-created catalog product is individually tracked. Existing stock is
+-- deliberately left in its legacy mode when its physical units, variants, and
+-- locations cannot be inferred safely. Existing zero-stock products can be
+-- converted without inventing inventory history.
 alter table public.products
-  add column if not exists is_serialized boolean not null default false;
+  add column if not exists is_serialized boolean;
+
+update public.products
+set is_serialized = false
+where is_serialized is null;
+
+update public.products as products
+set is_serialized = true
+where products.is_serialized = false
+  and coalesce(products.stock_quantity, 0) = 0
+  and not exists (
+    select 1
+    from public.commerce_warehouse_inventory as inventory
+    where inventory.product_id = products.id
+      and inventory.quantity <> 0
+  );
+
+alter table public.products
+  alter column is_serialized set default true,
+  alter column is_serialized set not null;
 
 create sequence if not exists public.commerce_serialized_unit_code_seq
   as bigint
@@ -39,15 +64,116 @@ create table if not exists public.product_variants (
   )
 );
 
-create unique index if not exists product_variants_product_code_uidx
-  on public.product_variants (product_id, lower(code));
+drop index if exists public.product_variants_product_code_uidx;
+create unique index product_variants_product_code_uidx
+  on public.product_variants (product_id, lower(code))
+  where is_active;
 
-create unique index if not exists product_variants_sku_uidx
+drop index if exists public.product_variants_sku_uidx;
+create unique index product_variants_sku_uidx
   on public.product_variants (lower(sku))
-  where sku is not null and btrim(sku) <> '';
+  where is_active and sku is not null and btrim(sku) <> '';
 
 create index if not exists product_variants_product_active_idx
   on public.product_variants (product_id, is_active, created_at);
+
+-- A zero-stock legacy product has no physical identity to infer, but it still
+-- needs one catalog reference before Procurement can receive it. Backfill only
+-- that reference: no SKU, quantity, unit, QR token, warehouse balance, or
+-- movement is created. Existing product color metadata is retained when valid.
+insert into public.product_variants (
+  product_id,
+  name,
+  code,
+  color_name,
+  color_hex
+)
+select
+  products.id,
+  coalesce(nullif(btrim(products.color_name), ''), 'Default'),
+  coalesce(
+    nullif(
+      regexp_replace(
+        upper(coalesce(products.color_name, '')),
+        '[^A-Z0-9_-]',
+        '',
+        'g'
+      ),
+      ''
+    ),
+    'DEFAULT'
+  ),
+  nullif(btrim(products.color_name), ''),
+  case
+    when products.color_hex ~ '^#[0-9A-Fa-f]{6}$'
+      then products.color_hex
+    else null
+  end
+from public.products as products
+where products.is_serialized
+  and coalesce(products.stock_quantity, 0) = 0
+  and not exists (
+    select 1
+    from public.commerce_warehouse_inventory as inventory
+    where inventory.product_id = products.id
+      and inventory.quantity <> 0
+  )
+  and not exists (
+    select 1
+    from public.product_variants as variants
+    where variants.product_id = products.id
+  );
+
+-- Procurement is both the purchase document and the immediate receiving event
+-- in the current commerce workflow. The receipt key makes client retries
+-- idempotent, while the payload hash prevents a reused supplier reference from
+-- silently changing an already-received order.
+alter table public.commerce_procurement_orders
+  add column if not exists receipt_key text,
+  add column if not exists receipt_payload_hash text;
+
+create unique index if not exists commerce_procurement_orders_receipt_key_uidx
+  on public.commerce_procurement_orders (receipt_key)
+  where receipt_key is not null;
+
+alter table public.commerce_procurement_items
+  add column if not exists variant_id uuid,
+  add column if not exists received_quantity integer not null default 0;
+
+do $migration$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'commerce_procurement_items_variant_id_fkey'
+      and conrelid = 'public.commerce_procurement_items'::regclass
+  ) then
+    alter table public.commerce_procurement_items
+      add constraint commerce_procurement_items_variant_id_fkey
+      foreign key (variant_id)
+      references public.product_variants (id)
+      on delete restrict;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'commerce_procurement_items_received_quantity_check'
+      and conrelid = 'public.commerce_procurement_items'::regclass
+  ) then
+    alter table public.commerce_procurement_items
+      add constraint commerce_procurement_items_received_quantity_check
+      check (
+        received_quantity >= 0
+        and received_quantity <= quantity
+      );
+  end if;
+end;
+$migration$;
+
+create index if not exists commerce_procurement_items_variant_idx
+  on public.commerce_procurement_items (variant_id, created_at)
+  where variant_id is not null;
 
 alter table public.customer_orders
   add column if not exists checkout_cart_id uuid;
@@ -102,6 +228,10 @@ create table if not exists public.commerce_serialized_inventory_batches (
     references public.products (id) on delete restrict,
   warehouse_id uuid not null
     references public.commerce_warehouses (id) on delete restrict,
+  procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict,
   created_count integer not null default 0,
   variant_count integer not null default 0,
   notes text,
@@ -115,6 +245,16 @@ create table if not exists public.commerce_serialized_inventory_batches (
 
 create index if not exists commerce_serialized_batches_product_created_idx
   on public.commerce_serialized_inventory_batches (product_id, created_at desc);
+
+alter table public.commerce_serialized_inventory_batches
+  add column if not exists procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  add column if not exists procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict;
+
+create unique index if not exists commerce_serialized_batches_procurement_item_uidx
+  on public.commerce_serialized_inventory_batches (procurement_item_id)
+  where procurement_item_id is not null;
 
 create table if not exists public.commerce_serialized_units (
   id uuid primary key default gen_random_uuid(),
@@ -132,6 +272,10 @@ create table if not exists public.commerce_serialized_units (
     references public.commerce_warehouses (id) on delete restrict,
   status text not null default 'in_stock',
   unit_cost numeric(12, 2) not null default 0,
+  procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict,
   customer_order_id uuid
     references public.customer_orders (id) on delete restrict,
   customer_order_item_id uuid
@@ -183,6 +327,16 @@ create index if not exists commerce_serialized_units_order_item_idx
   on public.commerce_serialized_units (customer_order_item_id)
   where customer_order_item_id is not null;
 
+alter table public.commerce_serialized_units
+  add column if not exists procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  add column if not exists procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict;
+
+create index if not exists commerce_serialized_units_procurement_item_idx
+  on public.commerce_serialized_units (procurement_item_id, created_at)
+  where procurement_item_id is not null;
+
 create table if not exists public.commerce_serialized_unit_movements (
   id uuid primary key default gen_random_uuid(),
   unit_id uuid not null
@@ -193,6 +347,10 @@ create table if not exists public.commerce_serialized_unit_movements (
     references public.product_variants (id) on delete restrict,
   warehouse_id uuid not null
     references public.commerce_warehouses (id) on delete restrict,
+  procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict,
   customer_order_id uuid
     references public.customer_orders (id) on delete restrict,
   order_return_id uuid
@@ -228,6 +386,19 @@ create index if not exists commerce_serialized_movements_unit_created_idx
 create index if not exists commerce_serialized_movements_order_idx
   on public.commerce_serialized_unit_movements (customer_order_id, created_at desc)
   where customer_order_id is not null;
+
+alter table public.commerce_serialized_unit_movements
+  add column if not exists procurement_order_id uuid
+    references public.commerce_procurement_orders (id) on delete restrict,
+  add column if not exists procurement_item_id uuid
+    references public.commerce_procurement_items (id) on delete restrict;
+
+create index if not exists commerce_serialized_movements_procurement_item_idx
+  on public.commerce_serialized_unit_movements (
+    procurement_item_id,
+    created_at desc
+  )
+  where procurement_item_id is not null;
 
 alter table public.commerce_order_return_items
   add column if not exists variant_id uuid,
@@ -275,18 +446,40 @@ as $function$
 declare
   v_product_id uuid;
   v_is_serialized boolean;
+  v_old_is_serialized boolean;
 begin
   if current_setting('app.serialized_inventory_write', true) = 'on' then
+    if tg_op = 'DELETE' then
+      return old;
+    end if;
+
     return new;
   end if;
 
   if tg_table_name = 'products' then
+    if tg_op = 'INSERT' and not new.is_serialized then
+      raise exception
+        'Every new product must use individual item IDs and QR tracking.';
+    end if;
+
+    if tg_op = 'INSERT' and new.stock_quantity <> 0 then
+      raise exception
+        'A product must start at zero stock; receive every physical item through Procurement.';
+    end if;
+
     if tg_op = 'INSERT'
-      and new.is_serialized
-      and new.stock_quantity <> 0
+      and (
+        new.primary_warehouse_id is null
+        or not exists (
+          select 1
+          from public.commerce_warehouses as warehouses
+          where warehouses.id = new.primary_warehouse_id
+            and warehouses.is_active
+        )
+      )
     then
       raise exception
-        'A serialized product must start at zero stock; add its physical items with serialized inventory tools.';
+        'Every new tracked product requires an active primary warehouse reference.';
     end if;
 
     if tg_op = 'UPDATE'
@@ -298,23 +491,41 @@ begin
 
     if tg_op = 'UPDATE'
       and old.is_serialized
-      and new.stock_quantity is distinct from old.stock_quantity
+      and new.primary_warehouse_id is distinct from old.primary_warehouse_id
+      and new.primary_warehouse_id is not null
+      and not exists (
+        select 1
+        from public.commerce_warehouses as warehouses
+        where warehouses.id = new.primary_warehouse_id
+          and warehouses.is_active
+      )
     then
       raise exception
-        'Use serialized inventory tools to change stock for serialized products.';
+        'A tracked product requires an active primary warehouse reference.';
     end if;
 
     if tg_op = 'UPDATE'
       and old.is_serialized
-      and not new.is_serialized
-      and exists (
-        select 1
-        from public.commerce_serialized_units as units
-        where units.product_id = old.id
+      and new.primary_warehouse_id is distinct from old.primary_warehouse_id
+      and (
+        coalesce(old.stock_quantity, 0) <> 0
+        or exists (
+          select 1
+          from public.commerce_serialized_units as units
+          where units.product_id = old.id
+        )
       )
     then
       raise exception
-        'A product with serialized inventory history cannot be converted to standard inventory.';
+        'A tracked product warehouse can only change before its first physical item exists.';
+    end if;
+
+    if tg_op = 'UPDATE'
+      and old.is_serialized
+      and new.stock_quantity is distinct from old.stock_quantity
+    then
+      raise exception
+        'Product stock is a projection of individually tracked units; use Procurement.';
     end if;
 
     return new;
@@ -338,30 +549,57 @@ begin
       )
     then
       raise exception
-        'Use serialized inventory tools to change variant stock.';
+        'Variant stock is a projection of individually tracked units; use Procurement.';
     end if;
 
     return new;
   end if;
 
-  v_product_id := new.product_id;
+  v_product_id := case
+    when tg_op = 'DELETE' then old.product_id
+    else new.product_id
+  end;
 
   select products.is_serialized
   into v_is_serialized
   from public.products as products
   where products.id = v_product_id;
 
-  if v_is_serialized
+  if tg_op = 'DELETE' then
+    if v_is_serialized then
+      raise exception
+        'A tracked warehouse balance cannot be deleted; move exact units through inventory workflows.';
+    end if;
+
+    return old;
+  end if;
+
+  if tg_op = 'UPDATE' then
+    select products.is_serialized
+    into v_old_is_serialized
+    from public.products as products
+    where products.id = old.product_id;
+  end if;
+
+  if (
+      v_is_serialized
+      or coalesce(v_old_is_serialized, false)
+    )
     and (
       (tg_op = 'INSERT' and new.quantity <> 0)
       or (
         tg_op = 'UPDATE'
-        and new.quantity is distinct from old.quantity
+        and (
+          new.product_id is distinct from old.product_id
+          or new.warehouse_id is distinct from old.warehouse_id
+          or new.quantity is distinct from old.quantity
+          or new.average_cost is distinct from old.average_cost
+        )
       )
     )
   then
     raise exception
-      'Use serialized inventory tools to change warehouse stock for serialized products.';
+      'Warehouse stock is a projection of individually tracked units; use Procurement.';
   end if;
 
   return new;
@@ -1211,7 +1449,7 @@ execute function public.commerce_reject_serialized_stock_write();
 drop trigger if exists commerce_warehouse_inventory_guard_serialized_stock
   on public.commerce_warehouse_inventory;
 create trigger commerce_warehouse_inventory_guard_serialized_stock
-before insert or update
+before insert or update or delete
 on public.commerce_warehouse_inventory
 for each row
 execute function public.commerce_reject_serialized_stock_write();
@@ -1294,12 +1532,12 @@ on public.commerce_order_return_items
 for each row
 execute function public.commerce_validate_order_return_item();
 
-create or replace function public.commerce_add_serialized_inventory(
+-- Catalog variants are reference data only. This function never creates stock,
+-- warehouse balances, serialized units, QR tokens, or inventory movements.
+create or replace function public.commerce_define_product_variants(
   p_product_id uuid,
-  p_warehouse_id uuid,
   p_variants jsonb,
-  p_notes text default null,
-  p_admin_id uuid default null
+  p_admin_id uuid
 )
 returns jsonb
 language plpgsql
@@ -1308,23 +1546,16 @@ set search_path = ''
 as $function$
 declare
   v_product public.products%rowtype;
-  v_variant_record public.product_variants%rowtype;
-  v_variant jsonb;
+  v_variant public.product_variants%rowtype;
+  v_input jsonb;
   v_variant_id uuid;
   v_variant_name text;
   v_variant_code text;
   v_variant_sku text;
-  v_variant_color_name text;
-  v_variant_color_hex text;
-  v_quantity integer;
-  v_total_created integer := 0;
-  v_variant_count integer := 0;
-  v_unit_number bigint;
-  v_unit_code text;
-  v_unit_id uuid;
-  v_batch_id uuid := gen_random_uuid();
-  v_warehouse_quantity integer;
-  v_index integer;
+  v_color_name text;
+  v_color_hex text;
+  v_submitted_ids uuid[] := array[]::uuid[];
+  v_resolved_inputs jsonb := '[]'::jsonb;
 begin
   if p_admin_id is null or not exists (
     select 1
@@ -1333,11 +1564,11 @@ begin
       and admins.is_active
       and (
         admins.role = 'owner'
-        or coalesce((admins.permissions ->> 'products.edit')::boolean, false)
         or coalesce((admins.permissions ->> 'products.add')::boolean, false)
+        or coalesce((admins.permissions ->> 'products.edit')::boolean, false)
       )
   ) then
-    raise exception 'Not authorized to manage serialized inventory.';
+    raise exception 'Not authorized to define product variants.';
   end if;
 
   select products.*
@@ -1351,14 +1582,286 @@ begin
   end if;
 
   if not v_product.is_serialized then
-    raise exception 'This product does not use serialized inventory.';
+    raise exception
+      'Legacy aggregate-stock products must be reconciled before variants can be defined.';
   end if;
 
-  if v_product.primary_warehouse_id is null
-    or p_warehouse_id <> v_product.primary_warehouse_id
+  if p_variants is null
+    or jsonb_typeof(p_variants) <> 'array'
+    or jsonb_array_length(p_variants) = 0
   then
+    raise exception 'At least one active product variant is required.';
+  end if;
+
+  if jsonb_array_length(p_variants) > 100 then
+    raise exception 'A product cannot have more than 100 variants.';
+  end if;
+
+  if exists (
+    select 1
+    from jsonb_array_elements(p_variants) as rows(value)
+    where rows.value ? 'quantity'
+      or rows.value ? 'stock_quantity'
+  ) then
     raise exception
-      'Serialized batches must be received into the product primary warehouse.';
+      'Variant quantities cannot be defined in the catalog; receive physical items through Procurement.';
+  end if;
+
+  if exists (
+    select 1
+    from jsonb_array_elements(p_variants) as rows(value)
+    group by lower(btrim(coalesce(rows.value ->> 'code', '')))
+    having count(*) > 1
+  ) then
+    raise exception 'Every variant code must be unique within the product.';
+  end if;
+
+  if exists (
+    select 1
+    from jsonb_array_elements(p_variants) as rows(value)
+    where nullif(btrim(rows.value ->> 'sku'), '') is not null
+    group by lower(btrim(rows.value ->> 'sku'))
+    having count(*) > 1
+  ) then
+    raise exception 'Every variant SKU must be unique.';
+  end if;
+
+  -- Lock the complete variant set so omission/deactivation cannot race with a
+  -- receipt that is selecting one of these references.
+  perform variants.id
+  from public.product_variants as variants
+  where variants.product_id = p_product_id
+  order by variants.id
+  for update;
+
+  -- Resolve and validate every reference before changing any active state.
+  -- Existing rows are identified explicitly by UUID, or by their currently
+  -- active code when a new catalog payload has no UUID yet.
+  for v_input in
+    select rows.value
+    from jsonb_array_elements(p_variants) as rows(value)
+  loop
+    v_variant_id := nullif(btrim(v_input ->> 'id'), '')::uuid;
+    v_variant_name := btrim(coalesce(v_input ->> 'name', ''));
+    v_variant_code := upper(btrim(coalesce(v_input ->> 'code', '')));
+    v_variant_sku := nullif(btrim(v_input ->> 'sku'), '');
+    v_color_name := nullif(btrim(v_input ->> 'color_name'), '');
+    v_color_hex := nullif(btrim(v_input ->> 'color_hex'), '');
+
+    if v_variant_name = '' or v_variant_code = '' then
+      raise exception 'Every variant requires a name and code.';
+    end if;
+
+    if v_variant_code !~ '^[A-Z0-9_-]+$' then
+      raise exception
+        'Variant codes may only contain letters, numbers, underscores, and hyphens.';
+    end if;
+
+    if v_color_hex is not null
+      and v_color_hex !~ '^#[0-9A-Fa-f]{6}$'
+    then
+      raise exception 'Variant colors must use a six-digit hex value.';
+    end if;
+
+    if v_variant_id is not null then
+      select variants.*
+      into v_variant
+      from public.product_variants as variants
+      where variants.id = v_variant_id
+        and variants.product_id = p_product_id;
+
+      if not found then
+        raise exception 'One of the selected variants does not belong to this product.';
+      end if;
+    else
+      select variants.*
+      into v_variant
+      from public.product_variants as variants
+      where variants.product_id = p_product_id
+        and variants.is_active
+        and lower(variants.code) = lower(v_variant_code);
+
+      if found then
+        v_variant_id := v_variant.id;
+      end if;
+    end if;
+
+    if v_variant_id is not null then
+      if v_variant_id = any(v_submitted_ids) then
+        raise exception 'The same variant reference cannot be submitted twice.';
+      end if;
+
+      v_submitted_ids := array_append(v_submitted_ids, v_variant_id);
+    end if;
+
+    v_resolved_inputs := v_resolved_inputs || jsonb_build_array(
+      jsonb_build_object(
+        'id', v_variant_id,
+        'name', v_variant_name,
+        'code', v_variant_code,
+        'sku', v_variant_sku,
+        'color_name', v_color_name,
+        'color_hex', v_color_hex
+      )
+    );
+  end loop;
+
+  if exists (
+    select 1
+    from public.product_variants as variants
+    where variants.product_id = p_product_id
+      and variants.is_active
+      and not (variants.id = any(v_submitted_ids))
+      and exists (
+        select 1
+        from public.commerce_serialized_units as units
+        where units.variant_id = variants.id
+      )
+  ) then
+    raise exception
+      'A variant with physical item history cannot be removed from the active catalog.';
+  end if;
+
+  -- Two-phase replacement: first make the old reference set inactive, then
+  -- apply the final submitted set. The active-only unique indexes make code/SKU
+  -- swaps and reuse from an omitted historical variant safe and atomic.
+  update public.product_variants
+  set
+    is_active = false,
+    updated_at = now()
+  where product_id = p_product_id
+    and is_active;
+
+  for v_input in
+    select rows.value
+    from jsonb_array_elements(v_resolved_inputs) as rows(value)
+  loop
+    v_variant_id := nullif(btrim(v_input ->> 'id'), '')::uuid;
+    v_variant_name := v_input ->> 'name';
+    v_variant_code := v_input ->> 'code';
+    v_variant_sku := nullif(v_input ->> 'sku', '');
+    v_color_name := nullif(v_input ->> 'color_name', '');
+    v_color_hex := nullif(v_input ->> 'color_hex', '');
+
+    if v_variant_id is not null then
+      update public.product_variants
+      set
+        name = v_variant_name,
+        code = v_variant_code,
+        sku = v_variant_sku,
+        color_name = v_color_name,
+        color_hex = v_color_hex,
+        is_active = true,
+        updated_at = now()
+      where id = v_variant_id
+        and product_id = p_product_id
+      returning * into v_variant;
+    else
+      insert into public.product_variants (
+        product_id,
+        name,
+        code,
+        sku,
+        color_name,
+        color_hex,
+        price,
+        cost_price,
+        stock_quantity,
+        is_active
+      )
+      values (
+        p_product_id,
+        v_variant_name,
+        v_variant_code,
+        v_variant_sku,
+        v_color_name,
+        v_color_hex,
+        coalesce(v_product.price, 0),
+        0,
+        0,
+        true
+      )
+      returning * into v_variant;
+    end if;
+  end loop;
+
+  if not exists (
+    select 1
+    from public.product_variants as variants
+    where variants.product_id = p_product_id
+      and variants.is_active
+  ) then
+    raise exception 'At least one active product variant is required.';
+  end if;
+
+  return jsonb_build_object(
+    'product_id', p_product_id,
+    'active_variant_count', (
+      select count(*)::integer
+      from public.product_variants as variants
+      where variants.product_id = p_product_id
+        and variants.is_active
+    )
+  );
+end;
+$function$;
+
+-- Creating a procurement order is the sole physical-stock receiving path. The
+-- order, lines, unit identities, opaque QR tokens, projections, and movement
+-- history are committed atomically or rolled back together.
+create or replace function public.commerce_create_procurement_order(
+  p_supplier_id uuid,
+  p_warehouse_id uuid,
+  p_invoice_number text,
+  p_notes text,
+  p_paid_amount numeric,
+  p_items jsonb
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $function$
+declare
+  v_admin_id uuid := auth.uid();
+  v_existing_order public.commerce_procurement_orders%rowtype;
+  v_procurement_id uuid;
+  v_procurement_item_id uuid;
+  v_batch_id uuid;
+  v_item jsonb;
+  v_product public.products%rowtype;
+  v_variant public.product_variants%rowtype;
+  v_inventory public.commerce_warehouse_inventory%rowtype;
+  v_product_id uuid;
+  v_variant_id uuid;
+  v_quantity integer;
+  v_unit_cost numeric(12, 2);
+  v_line_total numeric(12, 2);
+  v_total_cost numeric(12, 2) := 0;
+  v_next_product_quantity integer;
+  v_next_variant_quantity integer;
+  v_next_warehouse_quantity integer;
+  v_next_product_cost numeric(12, 2);
+  v_next_variant_cost numeric(12, 2);
+  v_next_warehouse_cost numeric(12, 2);
+  v_inventory_exists boolean;
+  v_invoice_number text;
+  v_receipt_key text;
+  v_payload_hash text;
+  v_total_received_units bigint;
+begin
+  if not public.is_active_admin() then
+    raise exception 'Not authorized';
+  end if;
+
+  if p_supplier_id is null or not exists (
+    select 1
+    from public.commerce_crm_accounts as accounts
+    where accounts.id = p_supplier_id
+      and accounts.account_type = 'supplier'
+      and accounts.is_active
+  ) then
+    raise exception 'A valid active supplier is required.';
   end if;
 
   if p_warehouse_id is null or not exists (
@@ -1370,143 +1873,261 @@ begin
     raise exception 'A valid active warehouse is required.';
   end if;
 
-  if p_variants is null
-    or jsonb_typeof(p_variants) <> 'array'
-    or jsonb_array_length(p_variants) = 0
-  then
-    raise exception 'At least one product model is required.';
+  v_invoice_number := nullif(btrim(p_invoice_number), '');
+
+  if v_invoice_number is null then
+    raise exception
+      'An invoice or procurement reference is required to prevent duplicate receipts.';
   end if;
 
-  perform set_config('app.serialized_inventory_write', 'on', true);
+  if char_length(v_invoice_number) > 160 then
+    raise exception 'The invoice or procurement reference cannot exceed 160 characters.';
+  end if;
 
-  insert into public.commerce_serialized_inventory_batches (
-    id,
-    product_id,
+  if p_items is null
+    or jsonb_typeof(p_items) <> 'array'
+    or jsonb_array_length(p_items) = 0
+  then
+    raise exception 'At least one procurement item is required.';
+  end if;
+
+  if jsonb_array_length(p_items) > 100 then
+    raise exception 'A procurement order cannot contain more than 100 lines.';
+  end if;
+
+  if lower(coalesce(p_paid_amount, 0)::text) in (
+    'nan',
+    'infinity',
+    '-infinity'
+  ) or coalesce(p_paid_amount, 0) < 0 then
+    raise exception 'Paid amount must be a finite, non-negative number.';
+  end if;
+
+  select coalesce(
+    sum(
+      greatest(
+        coalesce((rows.value ->> 'quantity')::bigint, 0),
+        0
+      )
+    ),
+    0
+  )
+  into v_total_received_units
+  from jsonb_array_elements(p_items) as rows(value);
+
+  if v_total_received_units > 10000 then
+    raise exception
+      'A procurement order cannot receive more than 10,000 physical units.';
+  end if;
+
+  if exists (
+    select 1
+    from jsonb_array_elements(p_items) as rows(value)
+    group by
+      rows.value ->> 'product_id',
+      rows.value ->> 'variant_id'
+    having count(*) > 1
+  ) then
+    raise exception
+      'The same product variant cannot be repeated on one procurement order.';
+  end if;
+
+  v_receipt_key := lower(p_supplier_id::text) || ':' || lower(v_invoice_number);
+  v_payload_hash := md5(
+    jsonb_build_object(
+      'supplier_id', p_supplier_id,
+      'warehouse_id', p_warehouse_id,
+      'invoice_number', lower(v_invoice_number),
+      'notes', nullif(btrim(p_notes), ''),
+      'paid_amount', round(coalesce(p_paid_amount, 0), 2),
+      'items', p_items
+    )::text
+  );
+
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(v_receipt_key, 0)
+  );
+
+  select orders.*
+  into v_existing_order
+  from public.commerce_procurement_orders as orders
+  where orders.receipt_key = v_receipt_key
+  limit 1;
+
+  if found then
+    if v_existing_order.receipt_payload_hash = v_payload_hash then
+      return v_existing_order.id;
+    end if;
+
+    raise exception
+      'This supplier invoice/reference was already received with different details.';
+  end if;
+
+  if exists (
+    select 1
+    from public.commerce_procurement_orders as orders
+    where orders.supplier_id = p_supplier_id
+      and lower(btrim(orders.invoice_number)) = lower(v_invoice_number)
+      and orders.receipt_key is null
+  ) then
+    raise exception
+      'This supplier invoice/reference already exists in procurement history.';
+  end if;
+
+  insert into public.commerce_procurement_orders (
+    supplier_id,
     warehouse_id,
+    invoice_number,
     notes,
+    total_cost,
+    paid_amount,
+    receipt_key,
+    receipt_payload_hash,
     created_by
   )
   values (
-    v_batch_id,
-    p_product_id,
+    p_supplier_id,
     p_warehouse_id,
+    v_invoice_number,
     nullif(btrim(p_notes), ''),
-    p_admin_id
-  );
+    0,
+    0,
+    v_receipt_key,
+    v_payload_hash,
+    v_admin_id
+  )
+  returning id into v_procurement_id;
 
-  for v_variant in
-    select variant_rows.value
-    from jsonb_array_elements(p_variants) as variant_rows(value)
+  perform set_config('app.serialized_inventory_write', 'on', true);
+
+  for v_item in
+    select rows.value
+    from jsonb_array_elements(p_items) as rows(value)
+    order by
+      rows.value ->> 'product_id',
+      rows.value ->> 'variant_id'
   loop
-    v_variant_id := nullif(btrim(v_variant ->> 'id'), '')::uuid;
-    v_variant_name := btrim(coalesce(v_variant ->> 'name', ''));
-    v_variant_code := upper(btrim(coalesce(v_variant ->> 'code', '')));
-    v_variant_sku := nullif(btrim(v_variant ->> 'sku'), '');
-    v_variant_color_name := nullif(btrim(v_variant ->> 'color_name'), '');
-    v_variant_color_hex := nullif(btrim(v_variant ->> 'color_hex'), '');
-    v_quantity := coalesce((v_variant ->> 'quantity')::integer, 0);
+    v_product_id := nullif(btrim(v_item ->> 'product_id'), '')::uuid;
+    v_variant_id := nullif(btrim(v_item ->> 'variant_id'), '')::uuid;
+    v_quantity := coalesce((v_item ->> 'quantity')::integer, 0);
+    v_unit_cost := round(coalesce((v_item ->> 'unit_cost')::numeric, 0), 2);
 
-    if v_variant_name = '' or v_variant_code = '' then
-      raise exception 'Every product model requires a name and code.';
-    end if;
-
-    if v_variant_code !~ '^[A-Z0-9_-]+$' then
-      raise exception 'Product model codes may only contain letters, numbers, underscores, and hyphens.';
-    end if;
-
-    if v_quantity < 0 or v_quantity > 1000 then
-      raise exception 'Each product model quantity must be between 0 and 1,000.';
-    end if;
-
-    if v_variant_color_hex is not null
-      and v_variant_color_hex !~ '^#[0-9A-Fa-f]{6}$'
+    if v_product_id is null
+      or v_variant_id is null
+      or v_quantity < 1
+      or v_quantity > 1000
+      or lower(v_unit_cost::text) in ('nan', 'infinity', '-infinity')
+      or v_unit_cost < 0
     then
-      raise exception 'Product model colors must be six-digit hex values.';
+      raise exception
+        'Every procurement line requires a product, variant, quantity from 1 to 1,000, and non-negative unit cost.';
     end if;
 
-    if v_variant_id is not null then
-      select variants.*
-      into v_variant_record
-      from public.product_variants as variants
-      where variants.id = v_variant_id
-        and variants.product_id = p_product_id
-      for update;
+    select products.*
+    into v_product
+    from public.products as products
+    where products.id = v_product_id
+    for update;
 
-      if not found then
-        raise exception 'One of the selected product models is invalid.';
-      end if;
-
-      update public.product_variants
-      set
-        name = v_variant_name,
-        code = v_variant_code,
-        sku = v_variant_sku,
-        color_name = v_variant_color_name,
-        color_hex = v_variant_color_hex,
-        is_active = true,
-        updated_at = now()
-      where id = v_variant_id
-      returning * into v_variant_record;
-    else
-      select variants.*
-      into v_variant_record
-      from public.product_variants as variants
-      where variants.product_id = p_product_id
-        and lower(variants.code) = lower(v_variant_code)
-      for update;
-
-      if found then
-        v_variant_id := v_variant_record.id;
-
-        update public.product_variants
-        set
-          name = v_variant_name,
-          sku = v_variant_sku,
-          color_name = v_variant_color_name,
-          color_hex = v_variant_color_hex,
-          is_active = true,
-          updated_at = now()
-        where id = v_variant_id
-        returning * into v_variant_record;
-      else
-        insert into public.product_variants (
-          product_id,
-          name,
-          code,
-          sku,
-          color_name,
-          color_hex,
-          price,
-          cost_price,
-          stock_quantity,
-          is_active
-        )
-        values (
-          p_product_id,
-          v_variant_name,
-          v_variant_code,
-          v_variant_sku,
-          v_variant_color_name,
-          v_variant_color_hex,
-          coalesce(v_product.price, 0),
-          coalesce(v_product.cost_price, 0),
-          0,
-          true
-        )
-        returning * into v_variant_record;
-
-        v_variant_id := v_variant_record.id;
-      end if;
+    if not found then
+      raise exception 'One of the selected products no longer exists.';
     end if;
 
-    v_variant_count := v_variant_count + 1;
+    if not v_product.is_serialized then
+      raise exception
+        'This legacy product has untracked aggregate stock. Reconcile it before receiving new physical items.';
+    end if;
 
-    if v_quantity > 0 then
-      for v_index in 1..v_quantity loop
-        v_unit_number := nextval(
-          'public.commerce_serialized_unit_code_seq'::regclass
-        );
-        v_unit_code := format(
+    if v_product.primary_warehouse_id is null
+      or v_product.primary_warehouse_id <> p_warehouse_id
+    then
+      raise exception
+        'Every product must be received into its configured primary warehouse.';
+    end if;
+
+    select variants.*
+    into v_variant
+    from public.product_variants as variants
+    where variants.id = v_variant_id
+      and variants.product_id = v_product_id
+      and variants.is_active
+    for update;
+
+    if not found then
+      raise exception
+        'One of the selected variants is inactive or does not belong to its product.';
+    end if;
+
+    v_line_total := round((v_quantity * v_unit_cost)::numeric, 2);
+    v_total_cost := round((v_total_cost + v_line_total)::numeric, 2);
+
+    insert into public.commerce_procurement_items (
+      procurement_order_id,
+      product_id,
+      variant_id,
+      quantity,
+      received_quantity,
+      unit_cost,
+      line_total
+    )
+    values (
+      v_procurement_id,
+      v_product_id,
+      v_variant_id,
+      v_quantity,
+      v_quantity,
+      v_unit_cost,
+      v_line_total
+    )
+    returning id into v_procurement_item_id;
+
+    v_batch_id := gen_random_uuid();
+
+    insert into public.commerce_serialized_inventory_batches (
+      id,
+      product_id,
+      warehouse_id,
+      procurement_order_id,
+      procurement_item_id,
+      created_count,
+      variant_count,
+      notes,
+      created_by
+    )
+    values (
+      v_batch_id,
+      v_product_id,
+      p_warehouse_id,
+      v_procurement_id,
+      v_procurement_item_id,
+      v_quantity,
+      1,
+      nullif(btrim(p_notes), ''),
+      v_admin_id
+    );
+
+    with unit_numbers as materialized (
+      select nextval(
+        'public.commerce_serialized_unit_code_seq'::regclass
+      ) as unit_number
+      from generate_series(1, v_quantity)
+    ),
+    inserted_units as (
+      insert into public.commerce_serialized_units (
+        batch_id,
+        unit_code,
+        product_id,
+        variant_id,
+        warehouse_id,
+        status,
+        unit_cost,
+        procurement_order_id,
+        procurement_item_id,
+        created_by
+      )
+      select
+        v_batch_id,
+        format(
           'ELC-%s-%s-%s',
           coalesce(
             nullif(
@@ -1520,92 +2141,139 @@ begin
             ),
             upper(substr(replace(v_product.id::text, '-', ''), 1, 8))
           ),
-          regexp_replace(upper(v_variant_code), '[^A-Z0-9_-]', '', 'g'),
-          lpad(v_unit_number::text, 10, '0')
-        );
-
-        insert into public.commerce_serialized_units (
-          batch_id,
-          unit_code,
-          product_id,
-          variant_id,
-          warehouse_id,
-          status,
-          unit_cost,
-          created_by
-        )
-        values (
-          v_batch_id,
-          v_unit_code,
-          p_product_id,
-          v_variant_id,
-          p_warehouse_id,
-          'in_stock',
-          coalesce(v_variant_record.cost_price, v_product.cost_price, 0),
-          p_admin_id
-        )
-        returning id into v_unit_id;
-
-        insert into public.commerce_serialized_unit_movements (
-          unit_id,
-          product_id,
-          variant_id,
-          warehouse_id,
-          actor_admin_id,
-          movement_type,
-          from_status,
-          to_status,
-          notes
-        )
-        values (
-          v_unit_id,
-          p_product_id,
-          v_variant_id,
-          p_warehouse_id,
-          p_admin_id,
-          'received',
-          null,
-          'in_stock',
+          regexp_replace(upper(v_variant.code), '[^A-Z0-9_-]', '', 'g'),
+          lpad(unit_numbers.unit_number::text, 10, '0')
+        ),
+        v_product_id,
+        v_variant_id,
+        p_warehouse_id,
+        'in_stock',
+        v_unit_cost,
+        v_procurement_id,
+        v_procurement_item_id,
+        v_admin_id
+      from unit_numbers
+      returning id
+    )
+      insert into public.commerce_serialized_unit_movements (
+        unit_id,
+        product_id,
+        variant_id,
+        warehouse_id,
+        procurement_order_id,
+        procurement_item_id,
+        actor_admin_id,
+        movement_type,
+        from_status,
+        to_status,
+        notes
+      )
+      select
+        inserted_units.id,
+        v_product_id,
+        v_variant_id,
+        p_warehouse_id,
+        v_procurement_id,
+        v_procurement_item_id,
+        v_admin_id,
+        'received',
+        null,
+        'in_stock',
+        concat_ws(
+          ' — ',
+          'Received through Procurement ' || v_invoice_number,
           nullif(btrim(p_notes), '')
-        );
-      end loop;
+        )
+      from inserted_units;
 
-      update public.product_variants
+    v_next_variant_quantity :=
+      coalesce(v_variant.stock_quantity, 0) + v_quantity;
+    v_next_variant_cost := round(
+      (
+        (
+          coalesce(v_variant.cost_price, 0)
+          * greatest(coalesce(v_variant.stock_quantity, 0), 0)
+        )
+        + (v_unit_cost * v_quantity)
+      ) / v_next_variant_quantity,
+      2
+    );
+
+    update public.product_variants
+    set
+      stock_quantity = v_next_variant_quantity,
+      cost_price = v_next_variant_cost,
+      updated_at = now()
+    where id = v_variant_id;
+
+    v_next_product_quantity :=
+      coalesce(v_product.stock_quantity, 0) + v_quantity;
+    v_next_product_cost := round(
+      (
+        (
+          coalesce(v_product.cost_price, 0)
+          * greatest(coalesce(v_product.stock_quantity, 0), 0)
+        )
+        + (v_unit_cost * v_quantity)
+      ) / v_next_product_quantity,
+      2
+    );
+
+    update public.products
+    set
+      stock_quantity = v_next_product_quantity,
+      cost_price = v_next_product_cost
+    where id = v_product_id;
+
+    select inventory.*
+    into v_inventory
+    from public.commerce_warehouse_inventory as inventory
+    where inventory.warehouse_id = p_warehouse_id
+      and inventory.product_id = v_product_id
+    for update;
+
+    v_inventory_exists := found;
+
+    if v_inventory_exists then
+      v_next_warehouse_quantity :=
+        coalesce(v_inventory.quantity, 0) + v_quantity;
+      v_next_warehouse_cost := round(
+        (
+          (
+            coalesce(v_inventory.average_cost, 0)
+            * greatest(coalesce(v_inventory.quantity, 0), 0)
+          )
+          + (v_unit_cost * v_quantity)
+        ) / v_next_warehouse_quantity,
+        2
+      );
+
+      update public.commerce_warehouse_inventory
       set
-        stock_quantity = stock_quantity + v_quantity,
+        quantity = v_next_warehouse_quantity,
+        average_cost = v_next_warehouse_cost,
         updated_at = now()
-      where id = v_variant_id;
+      where id = v_inventory.id;
+    else
+      v_next_warehouse_quantity := v_quantity;
+      v_next_warehouse_cost := v_unit_cost;
 
-      v_total_created := v_total_created + v_quantity;
+      insert into public.commerce_warehouse_inventory (
+        warehouse_id,
+        product_id,
+        quantity,
+        average_cost,
+        updated_at
+      )
+      values (
+        p_warehouse_id,
+        v_product_id,
+        v_quantity,
+        v_unit_cost,
+        now()
+      );
     end if;
-  end loop;
 
-  update public.products
-  set stock_quantity = stock_quantity + v_total_created
-  where id = p_product_id;
-
-  insert into public.commerce_warehouse_inventory (
-    warehouse_id,
-    product_id,
-    quantity,
-    average_cost,
-    updated_at
-  )
-  values (
-    p_warehouse_id,
-    p_product_id,
-    v_total_created,
-    coalesce(v_product.cost_price, 0),
-    now()
-  )
-  on conflict (warehouse_id, product_id)
-  do update
-  set
-    quantity = commerce_warehouse_inventory.quantity + excluded.quantity,
-    updated_at = now()
-  returning quantity into v_warehouse_quantity;
-
-  if v_total_created > 0 then
     insert into public.commerce_inventory_movements (
       warehouse_id,
       product_id,
@@ -1620,33 +2288,142 @@ begin
     )
     values (
       p_warehouse_id,
-      p_product_id,
-      'adjustment',
-      'manual',
-      v_batch_id,
-      v_total_created,
-      v_warehouse_quantity,
-      coalesce(v_product.cost_price, 0),
-      nullif(btrim(p_notes), ''),
-      p_admin_id
+      v_product_id,
+      'procurement',
+      'procurement_order',
+      v_procurement_id,
+      v_quantity,
+      v_next_warehouse_quantity,
+      v_unit_cost,
+      concat_ws(
+        ' — ',
+        v_variant.name,
+        nullif(btrim(p_notes), '')
+      ),
+      v_admin_id
     );
+  end loop;
+
+  if round(coalesce(p_paid_amount, 0), 2) > v_total_cost then
+    raise exception 'Paid amount cannot be greater than the procurement total.';
   end if;
 
-  update public.commerce_serialized_inventory_batches
+  update public.commerce_procurement_orders
   set
-    created_count = v_total_created,
-    variant_count = v_variant_count
-  where id = v_batch_id;
+    total_cost = v_total_cost,
+    paid_amount = round(coalesce(p_paid_amount, 0), 2),
+    updated_at = now()
+  where id = v_procurement_id;
 
-  return jsonb_build_object(
-    'batch_id', v_batch_id,
-    'created_count', v_total_created,
-    'variant_count', v_variant_count,
-    'product_id', p_product_id,
-    'warehouse_id', p_warehouse_id
-  );
+  return v_procurement_id;
 end;
 $function$;
+
+create or replace function public.commerce_guard_serialized_procurement_item()
+returns trigger
+language plpgsql
+set search_path = ''
+as $function$
+declare
+  v_product_id uuid;
+  v_is_serialized boolean;
+begin
+  if current_setting('app.serialized_inventory_write', true) = 'on' then
+    if tg_op = 'DELETE' then
+      return old;
+    end if;
+
+    return new;
+  end if;
+
+  v_product_id := case
+    when tg_op = 'DELETE' then old.product_id
+    else new.product_id
+  end;
+
+  select products.is_serialized
+  into v_is_serialized
+  from public.products as products
+  where products.id = v_product_id;
+
+  if tg_op in ('INSERT', 'UPDATE') and v_is_serialized then
+    raise exception
+      'Create or change tracked procurement lines only through the Procurement order function.';
+  end if;
+
+  if tg_op in ('UPDATE', 'DELETE')
+    and old.received_quantity > 0
+  then
+    raise exception
+      'A received procurement line is immutable because physical unit IDs were generated from it.';
+  end if;
+
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+
+  return new;
+end;
+$function$;
+
+drop trigger if exists commerce_procurement_items_guard_serialized_receipt
+  on public.commerce_procurement_items;
+create trigger commerce_procurement_items_guard_serialized_receipt
+before insert or update or delete
+on public.commerce_procurement_items
+for each row
+execute function public.commerce_guard_serialized_procurement_item();
+
+create or replace function public.commerce_guard_received_procurement_order()
+returns trigger
+language plpgsql
+set search_path = ''
+as $function$
+begin
+  if current_setting('app.serialized_inventory_write', true) = 'on' then
+    return new;
+  end if;
+
+  if exists (
+    select 1
+    from public.commerce_procurement_items as items
+    where items.procurement_order_id = old.id
+      and items.received_quantity > 0
+  )
+    and (
+      new.supplier_id is distinct from old.supplier_id
+      or new.warehouse_id is distinct from old.warehouse_id
+      or new.invoice_number is distinct from old.invoice_number
+      or new.total_cost is distinct from old.total_cost
+      or new.receipt_key is distinct from old.receipt_key
+      or new.receipt_payload_hash is distinct from old.receipt_payload_hash
+    )
+  then
+    raise exception
+      'A received procurement order cannot change its supplier, warehouse, reference, or received total.';
+  end if;
+
+  return new;
+end;
+$function$;
+
+drop trigger if exists commerce_procurement_orders_guard_received_identity
+  on public.commerce_procurement_orders;
+create trigger commerce_procurement_orders_guard_received_identity
+before update
+on public.commerce_procurement_orders
+for each row
+execute function public.commerce_guard_received_procurement_order();
+
+-- Physical units may no longer be created from catalog or a manual inventory
+-- batch. Keeping no alternate executable path makes Procurement authoritative.
+drop function if exists public.commerce_add_serialized_inventory(
+  uuid,
+  uuid,
+  jsonb,
+  text,
+  uuid
+);
 
 alter table public.product_variants enable row level security;
 alter table public.commerce_serialized_inventory_batches enable row level security;
@@ -1717,20 +2494,33 @@ grant execute on function public.commerce_create_customer_order(
   uuid
 ) to service_role;
 
-revoke all on function public.commerce_add_serialized_inventory(
-  uuid,
+revoke all on function public.commerce_define_product_variants(
   uuid,
   jsonb,
-  text,
   uuid
-) from public, anon, authenticated;
-grant execute on function public.commerce_add_serialized_inventory(
-  uuid,
+) from public, anon, authenticated, service_role;
+grant execute on function public.commerce_define_product_variants(
   uuid,
   jsonb,
-  text,
   uuid
 ) to service_role;
+
+revoke all on function public.commerce_create_procurement_order(
+  uuid,
+  uuid,
+  text,
+  text,
+  numeric,
+  jsonb
+) from public, anon, authenticated, service_role;
+grant execute on function public.commerce_create_procurement_order(
+  uuid,
+  uuid,
+  text,
+  text,
+  numeric,
+  jsonb
+) to authenticated;
 
 revoke all on function public.commerce_return_serialized_unit(
   uuid,
@@ -1752,6 +2542,10 @@ from public, anon, authenticated;
 revoke all on function public.commerce_reject_serialized_movement_mutation()
 from public, anon, authenticated;
 revoke all on function public.commerce_validate_order_return_item()
+from public, anon, authenticated;
+revoke all on function public.commerce_guard_serialized_procurement_item()
+from public, anon, authenticated;
+revoke all on function public.commerce_guard_received_procurement_order()
 from public, anon, authenticated;
 
 commit;

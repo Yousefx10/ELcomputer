@@ -71,69 +71,6 @@ export const normalizeInventoryStatus = (value, { allowEmpty = true } = {}) => {
   return normalizedValue
 }
 
-export const normalizeSerializedBatchRows = (variants = []) => {
-  if (!Array.isArray(variants) || !variants.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Add at least one product model.'
-    })
-  }
-
-  const rows = variants.map((variant, index) => {
-    const name = String(variant?.name || '').trim()
-    const code = String(variant?.code || name)
-      .trim()
-      .toUpperCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^A-Z0-9_-]/g, '')
-    const sku = String(variant?.sku || '').trim() || null
-    const colorName = String(variant?.color_name || '').trim() || name
-    const colorHex = String(variant?.color_hex || '').trim() || null
-    const quantity = Number.parseInt(variant?.quantity, 10)
-
-    if (!name || !code) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `Model ${index + 1} requires a name and code.`
-      })
-    }
-
-    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `Quantity for ${name} must be between 1 and 1,000.`
-      })
-    }
-
-    if (colorHex && !/^#[0-9a-f]{6}$/i.test(colorHex)) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `Color for ${name} must use a six-digit hex value.`
-      })
-    }
-
-    return {
-      id: isInventoryUuid(variant?.id) ? String(variant.id) : null,
-      name,
-      code,
-      sku,
-      color_name: colorName,
-      color_hex: colorHex,
-      quantity
-    }
-  })
-
-  const codes = rows.map((row) => row.code.toLowerCase())
-  if (new Set(codes).size !== codes.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Every model code in the batch must be unique.'
-    })
-  }
-
-  return rows
-}
-
 export const throwInventoryDatabaseError = (error, fallbackMessage) => {
   const message = String(error?.message || '').replace(/^.*ERROR:\s*/i, '').trim()
   const isMissingSchema = isMissingInventorySchemaError(error)

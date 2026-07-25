@@ -9,19 +9,13 @@ export default defineEventHandler(async (event) => {
 
   const [
     productsResult,
-    variantsResult,
     warehousesResult
   ] = await Promise.all([
     supabaseAdmin
       .from('products')
-      .select('id, title, sku, stock_quantity, primary_warehouse_id')
+      .select('id, title, sku')
       .eq('is_serialized', true)
       .order('title'),
-    supabaseAdmin
-      .from('product_variants')
-      .select('*')
-      .eq('is_active', true)
-      .order('name'),
     supabaseAdmin
       .from('commerce_warehouses')
       .select('id, name, code')
@@ -29,7 +23,7 @@ export default defineEventHandler(async (event) => {
       .order('name')
   ])
 
-  const error = productsResult.error || variantsResult.error || warehousesResult.error
+  const error = productsResult.error || warehousesResult.error
 
   if (error) {
     throw createError({
@@ -42,7 +36,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     products: productsResult.data || [],
-    variants: variantsResult.data || [],
     warehouses: warehousesResult.data || []
   }
 })

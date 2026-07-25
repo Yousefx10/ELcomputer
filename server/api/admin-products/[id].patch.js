@@ -9,7 +9,7 @@ import {
 } from '../../utils/adminProducts'
 
 export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event, {
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'products.edit'
   })
 
@@ -23,11 +23,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  const normalizedPayload = normalizeAdminProductPayload(body)
-  const {
-    variants: _variants,
-    ...payload
-  } = normalizedPayload
 
   const { data: previousProduct, error: previousProductError } = await supabaseAdmin
     .from('products')
@@ -43,6 +38,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const wasSerialized = Boolean(previousProduct.is_serialized)
+  const normalizedPayload = normalizeAdminProductPayload(body, {
+    catalogDefinitionsOnly: wasSerialized
+  })
+  const {
+    variants,
+    ...payload
+  } = normalizedPayload
 
   if (wasSerialized !== Boolean(payload.is_serialized)) {
     throw createError({
@@ -51,18 +53,62 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (
-    wasSerialized &&
-    String(previousProduct.primary_warehouse_id || '') !== String(payload.primary_warehouse_id || '')
-  ) {
+  const previousWarehouseId = String(previousProduct.primary_warehouse_id || '')
+  const nextWarehouseId = String(payload.primary_warehouse_id || '')
+  const isPrimaryWarehouseChanging = previousWarehouseId !== nextWarehouseId
+
+  if (wasSerialized && !nextWarehouseId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Move serialized items with inventory tools before changing the primary warehouse.'
+      statusMessage: 'A primary warehouse is required for individually tracked products.'
     })
+  }
+
+  if (wasSerialized && isPrimaryWarehouseChanging) {
+    if (Number(previousProduct.stock_quantity || 0) !== 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Move serialized items with inventory tools before changing the primary warehouse.'
+      })
+    }
+
+    const {
+      count: serializedUnitCount,
+      error: serializedUnitCountError
+    } = await supabaseAdmin
+      .from('commerce_serialized_units')
+      .select('id', {
+        count: 'exact',
+        head: true
+      })
+      .eq('product_id', productId)
+
+    if (serializedUnitCountError) {
+      throw createError({
+        statusCode: isMissingSchemaError(serializedUnitCountError) ? 500 : 400,
+        statusMessage: isMissingSchemaError(serializedUnitCountError)
+          ? 'Run the latest Commerce SQL changes first, then try again.'
+          : serializedUnitCountError.message
+      })
+    }
+
+    if (Number(serializedUnitCount || 0) > 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'The primary warehouse cannot change after physical item IDs exist.'
+      })
+    }
   }
 
   if (wasSerialized) {
     payload.stock_quantity = Number(previousProduct.stock_quantity || 0)
+
+    if (!variants.length) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Add at least one product option reference. Use Default when the product has no model or color options.'
+      })
+    }
   }
 
   try {
@@ -95,7 +141,20 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    if (!wasSerialized) {
+    if (wasSerialized) {
+      const { error: variantDefinitionsError } = await supabaseAdmin.rpc(
+        'commerce_define_product_variants',
+        {
+          p_product_id: productId,
+          p_variants: variants,
+          p_admin_id: adminUser.id
+        }
+      )
+
+      if (variantDefinitionsError) {
+        throw variantDefinitionsError
+      }
+    } else {
       await syncPrimaryWarehouseInventoryForProductUpdate({
         supabaseAdmin,
         productId,
@@ -113,7 +172,11 @@ export default defineEventHandler(async (event) => {
       statusCode: error?.statusCode || (isMissingSchemaError(error) ? 500 : 400),
       statusMessage: isMissingSchemaError(error)
         ? 'Run the latest Commerce SQL changes first, then try again.'
-        : error.message || 'Could not sync primary warehouse inventory.'
+        : error.message || (
+            wasSerialized
+              ? 'Could not update the product variant definitions.'
+              : 'Could not sync primary warehouse inventory.'
+          )
     })
   }
 

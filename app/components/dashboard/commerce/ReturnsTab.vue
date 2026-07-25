@@ -175,9 +175,25 @@
             <div>
               <h4 class="text-lg font-bold text-gray-900">Returned Items</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Enter only the quantities that are actually returned.
+                Enter quantities only for legacy aggregate inventory.
               </p>
             </div>
+          </div>
+
+          <div class="mt-4 flex flex-col gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-blue-900">
+              QR-tracked products are returned one physical item at a time by scanning the exact item's QR code.
+              <span v-if="trackedOrderItemCount">
+                This order has {{ trackedOrderItemCount }} tracked line{{ trackedOrderItemCount === 1 ? '' : 's' }}, hidden from this quantity form.
+              </span>
+            </p>
+
+            <NuxtLink
+              to="/dashboard/commerce?tab=scan"
+              class="shrink-0 text-sm font-bold text-blue-700 hover:text-blue-900 hover:underline"
+            >
+              Scan item QR
+            </NuxtLink>
           </div>
 
           <p v-if="loadingOrderItems" class="mt-4 text-sm text-gray-500">
@@ -185,7 +201,7 @@
           </p>
 
           <p v-else-if="returnForm.order_id && !returnItems.length" class="mt-4 text-sm text-gray-500">
-            This order does not have returnable product items.
+            This order does not have returnable legacy inventory items.
           </p>
 
           <p v-else-if="!returnForm.order_id" class="mt-4 text-sm text-gray-500">
@@ -347,6 +363,7 @@ const recentReturns = ref([])
 const orderCatalog = ref([])
 const selectedOrder = ref(null)
 const returnItems = ref([])
+const trackedOrderItemCount = ref(0)
 const loadingOrders = ref(false)
 const loadingOrderItems = ref(false)
 const loadingReturns = ref(false)
@@ -404,6 +421,7 @@ const resetReturnForm = () => {
   Object.assign(returnForm, createEmptyReturnForm())
   selectedOrder.value = null
   returnItems.value = []
+  trackedOrderItemCount.value = 0
   formError.value = ''
 }
 
@@ -468,11 +486,13 @@ const loadSelectedOrder = async () => {
   if (!returnForm.order_id) {
     selectedOrder.value = null
     returnItems.value = []
+    trackedOrderItemCount.value = 0
     return
   }
 
   loadingOrderItems.value = true
   formError.value = ''
+  trackedOrderItemCount.value = 0
 
   try {
     const { data: orderRecord, error: orderError } = await supabase
@@ -500,6 +520,34 @@ const loadSelectedOrder = async () => {
     if (orderItemsError) {
       throw orderItemsError
     }
+
+    const productIds = [...new Set(
+      (orderItemsData || [])
+        .map((item) => item.product_id)
+        .filter(Boolean)
+    )]
+    const serializedProductIds = new Set()
+
+    if (productIds.length) {
+      const { data: productsData, error: productsError } = await supabase
+        .from('products')
+        .select('id, is_serialized')
+        .in('id', productIds)
+
+      if (productsError) {
+        throw productsError
+      }
+
+      for (const product of productsData || []) {
+        if (product.is_serialized) {
+          serializedProductIds.add(product.id)
+        }
+      }
+    }
+
+    trackedOrderItemCount.value = (orderItemsData || [])
+      .filter((item) => item.product_id && serializedProductIds.has(item.product_id))
+      .length
 
     const { data: returnRecords, error: returnsError } = await supabase
       .from('commerce_order_returns')
@@ -541,6 +589,7 @@ const loadSelectedOrder = async () => {
           order_item_id: item.id,
           product_id: item.product_id,
           product_title: item.product_title,
+          is_serialized: serializedProductIds.has(item.product_id),
           purchased_quantity: purchasedQuantity,
           already_returned_quantity: alreadyReturnedQuantity,
           remaining_quantity: remainingQuantity,
@@ -548,7 +597,7 @@ const loadSelectedOrder = async () => {
           return_quantity: 0
         }
       })
-      .filter((item) => item.remaining_quantity > 0)
+      .filter((item) => !item.is_serialized && item.remaining_quantity > 0)
   } finally {
     loadingOrderItems.value = false
   }
@@ -600,6 +649,11 @@ const saveReturn = async () => {
   const payloadItems = []
 
   for (const item of returnItems.value) {
+    if (item.is_serialized) {
+      formError.value = `${item.product_title} is QR-tracked. Return the exact item through the QR scanner.`
+      return
+    }
+
     const requestedQuantity = Number(item.return_quantity || 0)
 
     if (!requestedQuantity) {

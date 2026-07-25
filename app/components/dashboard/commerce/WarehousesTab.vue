@@ -189,7 +189,7 @@
         <div>
           <h3 class="text-2xl font-bold">Transfer Stock</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Move products between warehouses and keep movement history in sync.
+            Move legacy aggregate stock between warehouses.
           </p>
         </div>
 
@@ -205,6 +205,11 @@
       </button>
 
       <div v-if="isTransferFormOpen" class="mt-6">
+        <div class="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
+          Individually tracked items remain tied to their configured warehouse and cannot be moved with a
+          quantity-only transfer. This form lists legacy aggregate-stock products only.
+        </div>
+
         <div class="flex justify-end">
           <button
             type="button"
@@ -746,7 +751,8 @@ const loadProductCatalogByIds = async (productIds = []) => {
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, title, slug')
+    .select('id, title, slug, is_serialized')
+    .eq('is_serialized', false)
     .in('id', missingIds)
 
   if (error) {

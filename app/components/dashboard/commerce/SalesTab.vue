@@ -37,7 +37,7 @@
         <div>
           <h3 class="text-2xl font-bold">New Manual Sale</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Sell to CRM customer.
+            Record quantity-based sales for legacy aggregate stock.
           </p>
         </div>
 
@@ -53,6 +53,11 @@
       </button>
 
       <div v-if="isFormOpen" class="mt-6">
+        <div class="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
+          Individually tracked products are sold through the store checkout so the exact item IDs are assigned
+          to the customer. This manual quantity form lists legacy aggregate-stock products only.
+        </div>
+
         <div class="flex justify-end">
           <button
             type="button"
@@ -395,7 +400,8 @@ const loadLookups = async () => {
 const loadProductOptions = async () => {
   let query = supabase
     .from('products')
-    .select('id, title, slug, price, stock_quantity')
+    .select('id, title, slug, price, stock_quantity, is_serialized')
+    .eq('is_serialized', false)
     .order('created_at', { ascending: false })
     .limit(30)
 

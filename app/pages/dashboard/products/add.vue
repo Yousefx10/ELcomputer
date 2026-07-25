@@ -46,26 +46,17 @@
 
         <div class="md:col-span-2 flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p class="font-semibold text-gray-900">Individual item tracking & QR codes</p>
+            <p class="font-semibold text-gray-900">Individual item IDs & QR codes</p>
             <p class="mt-1 max-w-3xl text-sm text-gray-600">
-              Enable this when every physical item needs its own ID and QR code. Add each model or color and the quantity to create.
+              Enabled for every new product. Define the product and its model or color references here.
+              Physical units, IDs, QR codes, and stock are created only when inventory is received through Procurement.
             </p>
           </div>
 
-          <button
-            type="button"
-            :disabled="saving"
-            :aria-pressed="isSerialized"
-            aria-label="Toggle individual item tracking"
-            class="relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-50"
-            :class="isSerialized ? 'bg-blue-600' : 'bg-gray-300'"
-            @click="toggleSerializedInventory"
-          >
-            <span
-              class="inline-block h-6 w-6 rounded-full bg-white shadow transition"
-              :class="isSerialized ? 'translate-x-9' : 'translate-x-1'"
-            />
-          </button>
+          <span class="inline-flex shrink-0 items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+            <Icon name="lucide:qr-code" size="17" />
+            Always enabled
+          </span>
         </div>
 
         <div>
@@ -155,7 +146,7 @@
 
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
-            Primary Warehouse{{ isSerialized ? ' *' : '' }}
+            Primary Warehouse *
           </label>
           <select
             v-model="primaryWarehouseId"
@@ -195,35 +186,11 @@
           />
         </div>
 
-        <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Stock Quantity</label>
-          <input
-            v-model="stockQuantity"
-            type="number"
-            min="0"
-            placeholder="0"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            @focus="isStockQuantityFocused = true"
-            @blur="isStockQuantityFocused = false"
-          />
-
-          <p
-            v-if="isStockQuantityFocused"
-            class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
-          >
-            Manual stock editing is allowed, but it should be used carefully once Commerce is active.
-            For normal stock receiving, use Commerce procurement.
-          </p>
-        </div>
-
-        <div
-          v-else
-          class="rounded-xl border border-green-200 bg-green-50 p-4"
-        >
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4">
           <p class="text-sm font-semibold text-green-800">Units to create</p>
-          <p class="mt-1 text-3xl font-bold text-green-700">{{ serializedQuantity }}</p>
+          <p class="mt-1 text-3xl font-bold text-green-700">0</p>
           <p class="mt-1 text-xs text-green-700">
-            Stock is calculated from the individual items below.
+            Product creation never adds stock. Units are created with individual IDs and QR codes after Procurement receiving.
           </p>
         </div>
 
@@ -249,28 +216,7 @@
           />
         </div>
 
-        <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Name</label>
-          <input
-            v-model="colorName"
-            type="text"
-            placeholder="Black"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-        </div>
-
-        <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Hex</label>
-          <input
-            v-model="colorHex"
-            type="text"
-            placeholder="#000000"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-        </div>
-
         <DashboardProductsVariantsEditor
-          v-if="isSerialized"
           v-model="variants"
           :disabled="saving"
           class="md:col-span-2"
@@ -363,13 +309,15 @@ const brandId = ref('')
 const defaultSupplierId = ref('')
 const primaryWarehouseId = ref('')
 const sku = ref('')
-const stockQuantity = ref(0)
-const isStockQuantityFocused = ref(false)
 const costPrice = ref('')
-const colorName = ref('')
-const colorHex = ref('')
-const isSerialized = ref(false)
-const variants = ref([])
+const variants = ref([{
+  id: null,
+  name: 'Default',
+  code: 'DEFAULT',
+  sku: '',
+  color_name: '',
+  color_hex: ''
+}])
 const isPublished = ref(true)
 
 const categories = ref([])
@@ -379,12 +327,6 @@ const warehouses = ref([])
 
 const saving = ref(false)
 const actionError = ref('')
-
-const serializedQuantity = computed(() => {
-  return variants.value.reduce((total, variant) => {
-    return total + Math.max(0, Number.parseInt(variant?.quantity, 10) || 0)
-  }, 0)
-})
 
 const makeSlug = (value) => {
   return value
@@ -396,22 +338,6 @@ const makeSlug = (value) => {
 
 const useTitleSlug = () => {
   slug.value = makeSlug(title.value)
-}
-
-const toggleSerializedInventory = () => {
-  isSerialized.value = !isSerialized.value
-
-  if (isSerialized.value && !variants.value.length) {
-    variants.value = [{
-      id: null,
-      name: '',
-      code: '',
-      sku: '',
-      color_name: '',
-      color_hex: '#000000',
-      quantity: 1
-    }]
-  }
 }
 
 const getCategoriesList = async () => {
@@ -537,18 +463,13 @@ const addProduct = async () => {
     return
   }
 
-  if (Number(stockQuantity.value) < 0) {
-    actionError.value = 'Stock quantity cannot be negative'
+  if (!primaryWarehouseId.value) {
+    actionError.value = 'A primary warehouse is required for individually tracked products.'
     return
   }
 
-  if (isSerialized.value && !primaryWarehouseId.value) {
-    actionError.value = 'A primary warehouse is required for individually tracked items.'
-    return
-  }
-
-  if (isSerialized.value && (!variants.value.length || serializedQuantity.value < 1)) {
-    actionError.value = 'Add at least one model and one item for serialized inventory.'
+  if (!variants.value.length) {
+    actionError.value = 'Add at least one product option reference. Use Default when the product has no model or color options.'
     return
   }
 
@@ -578,12 +499,12 @@ const addProduct = async () => {
         default_supplier_id: defaultSupplierId.value,
         primary_warehouse_id: primaryWarehouseId.value,
         sku: sku.value,
-        stock_quantity: isSerialized.value ? serializedQuantity.value : stockQuantity.value,
+        stock_quantity: 0,
         cost_price: costPrice.value,
-        color_name: colorName.value,
-        color_hex: colorHex.value,
-        is_serialized: isSerialized.value,
-        variants: isSerialized.value ? variants.value : [],
+        color_name: '',
+        color_hex: '',
+        is_serialized: true,
+        variants: variants.value,
         is_published: isPublished.value
       }
     })

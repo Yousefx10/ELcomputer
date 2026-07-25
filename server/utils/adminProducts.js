@@ -55,7 +55,9 @@ const normalizeVariantCode = (value) => {
     .replace(/[^A-Z0-9_-]/g, '')
 }
 
-export const normalizeSerializedVariants = (variants = []) => {
+export const normalizeSerializedVariants = (variants = [], {
+  includeQuantity = true
+} = {}) => {
   if (!Array.isArray(variants)) {
     throw createError({
       statusCode: 400,
@@ -63,10 +65,17 @@ export const normalizeSerializedVariants = (variants = []) => {
     })
   }
 
+  if (variants.length > 100) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A product cannot have more than 100 variants.'
+    })
+  }
+
   const normalizedVariants = variants.map((variant, index) => {
     const name = String(variant?.name || '').trim()
     const code = normalizeVariantCode(variant?.code || name)
-    const quantity = Number(variant?.quantity)
+    const quantity = includeQuantity ? Number(variant?.quantity) : 0
     const colorHex = normalizeText(variant?.color_hex)
 
     if (!name) {
@@ -83,7 +92,10 @@ export const normalizeSerializedVariants = (variants = []) => {
       })
     }
 
-    if (!Number.isInteger(quantity) || quantity < 0 || quantity > 1000) {
+    if (
+      includeQuantity
+      && (!Number.isInteger(quantity) || quantity < 0 || quantity > 1000)
+    ) {
       throw createError({
         statusCode: 400,
         statusMessage: `Quantity for ${name} must be between 0 and 1,000.`
@@ -97,15 +109,20 @@ export const normalizeSerializedVariants = (variants = []) => {
       })
     }
 
-    return {
+    const normalizedVariant = {
       id: normalizeUuid(variant?.id),
       name,
       code,
       sku: normalizeText(variant?.sku),
       color_name: normalizeText(variant?.color_name) || name,
-      color_hex: colorHex,
-      quantity
+      color_hex: colorHex
     }
+
+    if (includeQuantity) {
+      normalizedVariant.quantity = quantity
+    }
+
+    return normalizedVariant
   })
 
   const codes = normalizedVariants.map((variant) => variant.code.toLowerCase())
@@ -139,7 +156,9 @@ export const isMissingSchemaError = (error) => {
     error?.code === 'PGRST205'
 }
 
-export const normalizeAdminProductPayload = (body = {}) => {
+export const normalizeAdminProductPayload = (body = {}, {
+  catalogDefinitionsOnly = false
+} = {}) => {
   const title = String(body?.title || '').trim()
   const slug = normalizeSlug(body?.slug || title)
   const price = Number(body?.price)
@@ -147,9 +166,13 @@ export const normalizeAdminProductPayload = (body = {}) => {
   const costPrice = Number(body?.cost_price || 0)
   const oldPriceValue = String(body?.old_price ?? '').trim()
   const oldPrice = oldPriceValue ? Number(oldPriceValue) : null
-  const isSerialized = normalizeBoolean(body?.is_serialized)
+  const isSerialized = catalogDefinitionsOnly
+    ? true
+    : normalizeBoolean(body?.is_serialized)
   const variants = isSerialized
-    ? normalizeSerializedVariants(body?.variants || [])
+    ? normalizeSerializedVariants(body?.variants || [], {
+        includeQuantity: !catalogDefinitionsOnly
+      })
     : []
 
   if (!title) {
@@ -207,9 +230,11 @@ export const normalizeAdminProductPayload = (body = {}) => {
     default_supplier_id: normalizeUuid(body?.default_supplier_id),
     primary_warehouse_id: normalizeUuid(body?.primary_warehouse_id),
     sku: normalizeText(body?.sku),
-    stock_quantity: isSerialized
-      ? variants.reduce((total, variant) => total + variant.quantity, 0)
-      : stockQuantity,
+    stock_quantity: catalogDefinitionsOnly
+      ? 0
+      : isSerialized
+        ? variants.reduce((total, variant) => total + variant.quantity, 0)
+        : stockQuantity,
     cost_price: costPrice,
     color_name: normalizeText(body?.color_name),
     color_hex: normalizeText(body?.color_hex),
@@ -230,7 +255,7 @@ export const ensureProductCommerceReferences = async (supabaseAdmin, payload) =>
   if (payload.default_supplier_id) {
     const { data: supplier, error } = await supabaseAdmin
       .from('commerce_crm_accounts')
-      .select('id, account_type')
+      .select('id, account_type, is_active')
       .eq('id', payload.default_supplier_id)
       .maybeSingle()
 
@@ -238,10 +263,10 @@ export const ensureProductCommerceReferences = async (supabaseAdmin, payload) =>
       throw error
     }
 
-    if (!supplier || supplier.account_type !== 'supplier') {
+    if (!supplier || supplier.account_type !== 'supplier' || !supplier.is_active) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Default supplier must be an existing supplier record.'
+        statusMessage: 'Default supplier must be an active supplier record.'
       })
     }
   }
@@ -249,7 +274,7 @@ export const ensureProductCommerceReferences = async (supabaseAdmin, payload) =>
   if (payload.primary_warehouse_id) {
     const { data: warehouse, error } = await supabaseAdmin
       .from('commerce_warehouses')
-      .select('id')
+      .select('id, is_active')
       .eq('id', payload.primary_warehouse_id)
       .maybeSingle()
 
@@ -257,10 +282,10 @@ export const ensureProductCommerceReferences = async (supabaseAdmin, payload) =>
       throw error
     }
 
-    if (!warehouse) {
+    if (!warehouse || !warehouse.is_active) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Primary warehouse must be an existing warehouse.'
+        statusMessage: 'Primary warehouse must be an active warehouse.'
       })
     }
   }

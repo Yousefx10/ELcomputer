@@ -4,9 +4,8 @@
       <div>
         <h3 class="text-lg font-bold text-gray-900">Product Variants</h3>
         <p class="mt-1 text-sm text-gray-500">
-          {{ existingMode
-            ? 'Update each option and its available quantity.'
-            : 'Add color or model options and set the quantity available for each one.' }}
+          Variants are references that describe the same product, such as its color or model.
+          They do not create stock or separate products.
         </p>
       </div>
 
@@ -25,7 +24,7 @@
       v-if="!rows.length"
       class="mt-5 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center text-sm text-gray-500"
     >
-      No variants added. The product will continue using its main color and stock quantity.
+      Add at least one option reference. Use “Default” when the product has no model or color options.
     </p>
 
     <div v-else class="mt-5 space-y-4">
@@ -156,25 +155,6 @@
             </div>
           </div>
 
-          <div>
-            <label
-              :for="fieldId(row, 'quantity')"
-              class="mb-2 block text-sm font-semibold text-gray-700"
-            >
-              Stock Quantity *
-            </label>
-            <input
-              :id="fieldId(row, 'quantity')"
-              v-model.number="row.quantity"
-              type="number"
-              min="0"
-              max="1000"
-              step="1"
-              :disabled="disabled"
-              class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:bg-gray-100"
-              @blur="normalizeQuantity(row)"
-            >
-          </div>
         </div>
       </article>
     </div>
@@ -186,8 +166,8 @@
       <span class="font-medium text-gray-500">
         {{ rows.length }} {{ rows.length === 1 ? 'variant' : 'variants' }}
       </span>
-      <span class="font-bold text-gray-900">
-        Total quantity: {{ totalQuantity }}
+      <span class="font-semibold text-blue-700">
+        Stock and item IDs are created through Procurement
       </span>
     </div>
   </section>
@@ -219,11 +199,6 @@ const createRowKey = () => {
   return `variant-row-${nextRowKey}`
 }
 
-const normalizeQuantityValue = (value) => {
-  const quantity = Number.parseInt(value, 10)
-  return Number.isFinite(quantity) && quantity >= 0 ? quantity : 0
-}
-
 const normalizeHexValue = (value) => {
   const normalizedValue = String(value || '').trim()
 
@@ -246,8 +221,7 @@ const toPublicRow = (row = {}) => ({
   code: String(row.code || ''),
   sku: String(row.sku || ''),
   color_name: String(row.color_name || ''),
-  color_hex: normalizeHexValue(row.color_hex),
-  quantity: normalizeQuantityValue(row.quantity ?? row.stock_quantity)
+  color_hex: normalizeHexValue(row.color_hex)
 })
 
 const serializeRows = (value = rows.value) => {
@@ -292,7 +266,6 @@ const addVariant = () => {
     sku: '',
     color_name: '',
     color_hex: '',
-    quantity: 0,
     _key: createRowKey()
   })
 }
@@ -322,19 +295,9 @@ const normalizeHexField = (row) => {
   row.color_hex = normalizeHexValue(row.color_hex)
 }
 
-const normalizeQuantity = (row) => {
-  row.quantity = normalizeQuantityValue(row.quantity)
-}
-
 const fieldId = (row, suffix) => {
   return `${row._key}-${suffix}`
 }
-
-const totalQuantity = computed(() => {
-  return rows.value.reduce((total, row) => {
-    return total + normalizeQuantityValue(row.quantity)
-  }, 0)
-})
 
 watch(
   () => props.modelValue,

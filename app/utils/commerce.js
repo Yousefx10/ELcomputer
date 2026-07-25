@@ -119,7 +119,8 @@ export const buildCommerceReference = (prefix = 'REF') => {
 
 export const createEmptyProcurementItem = () => ({
   product_id: '',
-  quantity: 1,
+  variant_id: '',
+  quantity: '',
   unit_cost: ''
 })
 

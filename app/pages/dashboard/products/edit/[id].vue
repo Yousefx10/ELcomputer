@@ -145,13 +145,17 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Primary Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">
+            Primary Warehouse{{ isSerialized ? ' *' : '' }}
+          </label>
           <select
             v-model="primaryWarehouseId"
-            :disabled="isSerialized"
+            :disabled="isSerialized && !canAssignPrimaryWarehouse"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
-            <option value="">No Primary Warehouse</option>
+            <option value="">
+              {{ isSerialized ? 'Select Primary Warehouse' : 'No Primary Warehouse' }}
+            </option>
 
             <option
               v-for="warehouse in warehouses"
@@ -161,7 +165,10 @@
               {{ warehouse.name }}
             </option>
           </select>
-          <p v-if="isSerialized" class="mt-2 text-xs text-gray-500">
+          <p v-if="isSerialized && canAssignPrimaryWarehouse" class="mt-2 text-xs text-blue-700">
+            You can change this reference until the first physical item ID is created.
+          </p>
+          <p v-else-if="isSerialized" class="mt-2 text-xs text-gray-500">
             The primary warehouse is locked because each physical item and return is tied to this location.
           </p>
         </div>
@@ -189,7 +196,7 @@
         </div>
 
         <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Stock Quantity</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Legacy Aggregate Stock</label>
           <input
             v-model="stockQuantity"
             type="number"
@@ -204,8 +211,8 @@
             v-if="isStockQuantityFocused"
             class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
           >
-            Manual stock editing is allowed, but it should be used carefully once Commerce is active.
-            For normal stock receiving or movement, use Commerce procurement, transfer, and returns.
+            This field only exists for stock recorded before individual item tracking. Reconcile that physical
+            stock into item IDs before receiving future units through Procurement.
           </p>
         </div>
 
@@ -252,13 +259,14 @@
 
         <div
           v-if="isSerialized"
-          class="md:col-span-2 rounded-2xl border border-blue-100 bg-blue-50 p-5"
+          class="md:col-span-2 space-y-4"
         >
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 class="text-lg font-bold text-gray-900">Models and individual QR items</h3>
+              <h3 class="text-lg font-bold text-gray-900">Individual item IDs & QR codes</h3>
               <p class="mt-1 text-sm text-gray-600">
-                Add another model or receive more items, print QR labels, and view item history from Serialized Items.
+                Every physical unit is tracked separately. Product options are maintained below;
+                quantities, item IDs, and QR codes are created through Procurement.
               </p>
             </div>
 
@@ -266,35 +274,15 @@
               :to="`/dashboard/commerce?tab=serialized&product=${id}`"
               class="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              Manage Items
+              View Item IDs & QR Codes
             </NuxtLink>
           </div>
 
-          <div
-            v-if="productVariants.length"
-            class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            <div
-              v-for="variant in productVariants"
-              :key="variant.id"
-              class="rounded-xl border bg-white p-4"
-            >
-              <div class="flex items-center gap-3">
-                <span
-                  v-if="variant.color_hex"
-                  class="h-6 w-6 rounded-full border border-gray-200"
-                  :style="{ backgroundColor: variant.color_hex }"
-                />
-                <div class="min-w-0">
-                  <p class="truncate font-semibold text-gray-900">{{ variant.name }}</p>
-                  <p class="text-xs text-gray-500">{{ variant.sku || variant.code }}</p>
-                </div>
-              </div>
-              <p class="mt-3 text-sm font-medium text-gray-700">
-                {{ Number(variant.stock_quantity || 0) }} in stock
-              </p>
-            </div>
-          </div>
+          <DashboardProductsVariantsEditor
+            v-model="productVariants"
+            :disabled="saving"
+            existing-mode
+          />
         </div>
 
         <div class="md:col-span-2">
@@ -597,6 +585,13 @@ const productImages = ref([])
 const productSpecifications = ref([])
 const productVariants = ref([])
 
+const canAssignPrimaryWarehouse = computed(() => {
+  return Boolean(
+    isSerialized.value
+    && Number(product.value?.stock_quantity || 0) === 0
+  )
+})
+
 const newImageUrl = ref('')
 const newImageAlt = ref('')
 const newSpecLabel = ref('')
@@ -790,6 +785,7 @@ const getProductVariants = async () => {
     .from('product_variants')
     .select('*')
     .eq('product_id', id)
+    .eq('is_active', true)
     .order('name', { ascending: true })
     .order('id', { ascending: true })
 
@@ -860,6 +856,16 @@ const updateProduct = async () => {
     return
   }
 
+  if (isSerialized.value && !productVariants.value.length) {
+    actionError.value = 'Add at least one product option reference. Use Default when the product has no model or color options.'
+    return
+  }
+
+  if (isSerialized.value && !primaryWarehouseId.value) {
+    actionError.value = 'Assign a primary warehouse before saving this tracked product.'
+    return
+  }
+
   saving.value = true
 
   try {
@@ -884,7 +890,7 @@ const updateProduct = async () => {
         color_name: colorName.value,
         color_hex: colorHex.value,
         is_serialized: isSerialized.value,
-        variants: [],
+        variants: isSerialized.value ? productVariants.value : [],
         is_published: isPublished.value
       }
     })

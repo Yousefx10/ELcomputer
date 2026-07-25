@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Procurement</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Receive stock from suppliers, assign it to a warehouse, and update product cost.
+            Receive physical items from suppliers. Every received unit gets its own item ID and QR code.
           </p>
         </div>
 
@@ -37,7 +37,7 @@
         <div>
           <h3 class="text-2xl font-bold">New Procurement Order</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Link existing products to a supplier purchase and send stock into the selected warehouse.
+            Select existing product and variant references, then enter only the quantity actually received.
           </p>
         </div>
 
@@ -53,6 +53,20 @@
       </button>
 
       <div v-if="isFormOpen" class="mt-6">
+        <div
+          v-if="formMessage"
+          class="mb-4 flex flex-col gap-3 rounded-xl bg-green-50 p-4 text-sm text-green-800 sm:flex-row sm:items-center sm:justify-between"
+          role="status"
+        >
+          <span>{{ formMessage }}</span>
+          <NuxtLink
+            to="/dashboard/commerce?tab=serialized"
+            class="shrink-0 font-bold text-green-900 underline"
+          >
+            View item IDs & QR codes
+          </NuxtLink>
+        </div>
+
         <div class="flex justify-end">
           <button
             type="button"
@@ -83,7 +97,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Receiving Warehouse</label>
           <select
             v-model="warehouseId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -98,16 +112,24 @@
               {{ warehouse.name }}
             </option>
           </select>
+          <p class="mt-1 text-xs text-gray-500">
+            All product references on this order must use this as their primary warehouse.
+          </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Invoice / Reference</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Invoice / Reference *</label>
           <input
             v-model="invoiceNumber"
             type="text"
+            maxlength="160"
+            required
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             placeholder="PO-20260715..."
           >
+          <p class="mt-1 text-xs text-gray-500">
+            Required. Retrying the same supplier reference safely returns the original receipt.
+          </p>
         </div>
 
         <div>
@@ -138,26 +160,28 @@
             <div>
               <h4 class="text-lg font-bold text-gray-900">Products</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Each line increases both warehouse inventory and the main product stock quantity.
+                Procurement references the catalog; it does not create products or variants. One physical item
+                record and QR code will be generated for every received unit.
               </p>
             </div>
 
             <button
               type="button"
-              class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              :disabled="items.length >= MAX_PROCUREMENT_LINES"
+              class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               @click="addItem"
             >
-              Add Product
+              {{ items.length >= MAX_PROCUREMENT_LINES ? '100 Line Limit' : 'Add Product' }}
             </button>
           </div>
 
           <div class="mt-4 max-w-xl">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Reference Search</label>
             <input
               v-model="productSearchQuery"
               type="text"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-              placeholder="Search by title or slug"
+              placeholder="Search by title, SKU, or slug"
             >
           </div>
 
@@ -165,43 +189,108 @@
             <div
               v-for="(item, index) in items"
               :key="index"
-              class="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[minmax(0,2fr)_120px_140px_auto]"
+              class="grid gap-3 rounded-2xl border bg-white p-4 xl:grid-cols-[minmax(240px,2fr)_minmax(220px,1.5fr)_120px_140px_auto]"
             >
-              <select
-                v-model="item.product_id"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
-                <option value="">Select product</option>
+              <div>
+                <label :for="`procurement-product-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                  Product Reference
+                </label>
+                <select
+                  :id="`procurement-product-${index}`"
+                  v-model="item.product_id"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  @change="handleProductChange(item)"
+                >
+                  <option value="">Select tracked product</option>
 
-                <option
+                  <option
                   v-for="product in productOptions"
                   :key="product.id"
                   :value="product.id"
+                  :disabled="!product.primary_warehouse_id
+                    || (Boolean(warehouseId) && product.primary_warehouse_id !== warehouseId)"
                 >
-                  {{ product.title }}{{ product.slug ? ` (${product.slug})` : '' }}
-                </option>
-              </select>
+                  {{ formatProductReference(product) }}
+                  </option>
+                </select>
 
-              <input
-                v-model="item.quantity"
-                type="number"
-                min="1"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                placeholder="Qty"
-              >
+                <p
+                  v-if="isWarehouseMismatch(item)"
+                  class="mt-1 text-xs font-medium text-red-600"
+                >
+                  This product belongs to {{ getProductWarehouseName(item) }}.
+                </p>
+              </div>
 
-              <input
-                v-model="item.unit_cost"
-                type="number"
-                min="0"
-                step="0.01"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                placeholder="Cost"
-              >
+              <div>
+                <label :for="`procurement-variant-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                  Variant Reference
+                </label>
+                <select
+                  :id="`procurement-variant-${index}`"
+                  v-model="item.variant_id"
+                  :disabled="!item.product_id || !variantsForProduct(item.product_id).length"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+                >
+                  <option value="">
+                    {{ item.product_id && !variantsForProduct(item.product_id).length
+                      ? 'No active variants available'
+                      : 'Select variant / color' }}
+                  </option>
+
+                  <option
+                    v-for="variant in variantsForProduct(item.product_id)"
+                    :key="variant.id"
+                    :value="variant.id"
+                  >
+                    {{ formatVariantReference(variant) }}
+                  </option>
+                </select>
+
+                <NuxtLink
+                  v-if="item.product_id && !variantsForProduct(item.product_id).length"
+                  :to="`/dashboard/products/edit/${item.product_id}`"
+                  class="mt-1 inline-block text-xs font-bold text-blue-700 underline"
+                >
+                  Define this product’s variant references in Catalog
+                </NuxtLink>
+              </div>
+
+              <div>
+                <label :for="`procurement-quantity-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                  Units Received
+                </label>
+                <input
+                  :id="`procurement-quantity-${index}`"
+                  v-model="item.quantity"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  step="1"
+                  inputmode="numeric"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  placeholder="0"
+                >
+              </div>
+
+              <div>
+                <label :for="`procurement-cost-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
+                  Unit Cost
+                </label>
+                <input
+                  :id="`procurement-cost-${index}`"
+                  v-model="item.unit_cost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  placeholder="0.00"
+                >
+              </div>
 
               <button
                 type="button"
-                class="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200"
+                class="self-end rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50"
                 :disabled="items.length === 1"
                 @click="removeItem(index)"
               >
@@ -220,6 +309,18 @@
                 Settlement due: <span class="font-semibold text-gray-900">{{ estimatedSettlementDue }}</span>
               </p>
 
+              <p class="text-sm font-semibold text-blue-700">
+                {{ totalUnitsToReceive }} {{ totalUnitsToReceive === 1 ? 'unit' : 'units' }}
+                = {{ totalUnitsToReceive }} unique item {{ totalUnitsToReceive === 1 ? 'ID' : 'IDs' }} and QR codes
+              </p>
+
+              <p
+                v-if="totalUnitsToReceive > MAX_PROCUREMENT_UNITS"
+                class="text-sm font-semibold text-red-600"
+              >
+                One Procurement receipt can create at most {{ MAX_PROCUREMENT_UNITS.toLocaleString() }} physical items.
+              </p>
+
               <p v-if="formError" class="text-sm text-red-600">
                 {{ formError }}
               </p>
@@ -234,7 +335,9 @@
                 : 'bg-blue-600 hover:bg-blue-700'"
               @click="saveProcurement"
             >
-              {{ saving ? 'Saving...' : 'Receive Procurement Order' }}
+              {{ saving
+                ? 'Receiving...'
+                : `Receive ${totalUnitsToReceive || ''} ${totalUnitsToReceive === 1 ? 'Item' : 'Items'}` }}
             </button>
           </div>
         </div>
@@ -303,7 +406,13 @@
                 </p>
 
                 <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-600">
-                  {{ getProcurementItemCount(order.id) }} item{{ getProcurementItemCount(order.id) === 1 ? '' : 's' }}
+                  {{ getProcurementLineCount(order.id) }}
+                  {{ getProcurementLineCount(order.id) === 1 ? 'reference' : 'references' }}
+                </span>
+
+                <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase text-blue-700">
+                  {{ getProcurementUnitCount(order.id) }}
+                  {{ getProcurementUnitCount(order.id) === 1 ? 'item ID' : 'item IDs' }}
                 </span>
               </div>
 
@@ -345,16 +454,21 @@ import {
 
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
+const MAX_PROCUREMENT_UNITS = 10000
+const MAX_PROCUREMENT_LINES = 100
+const MAX_PROCUREMENT_REFERENCE_LENGTH = 160
 
 const suppliers = ref([])
 const warehouses = ref([])
 const productOptions = ref([])
 const recentProcurements = ref([])
 const procurementItemCounts = ref({})
+const procurementUnitCounts = ref({})
 const loading = ref(false)
 const saving = ref(false)
 const pageError = ref('')
 const formError = ref('')
+const formMessage = ref('')
 const isFormOpen = ref(false)
 const supplierId = ref('')
 const warehouseId = ref('')
@@ -382,6 +496,13 @@ const estimatedTotalValue = computed(() => {
   }, 0)
 })
 
+const totalUnitsToReceive = computed(() => {
+  return items.value.reduce((total, item) => {
+    const quantity = Number(item.quantity)
+    return total + (Number.isInteger(quantity) && quantity > 0 ? quantity : 0)
+  }, 0)
+})
+
 const estimatedTotalCost = computed(() => {
   return formatCommerceCurrency(estimatedTotalValue.value)
 })
@@ -390,28 +511,96 @@ const estimatedSettlementDue = computed(() => {
   return formatCommerceCurrency(Math.max(estimatedTotalValue.value - Number(paidAmount.value || 0), 0))
 })
 
-const isReadyToSubmit = computed(() => {
-  if (!supplierId.value || !warehouseId.value) {
-    return false
+const procurementValidationError = computed(() => {
+  const normalizedReference = String(invoiceNumber.value || '').trim()
+
+  if (!supplierId.value || !warehouseId.value || !normalizedReference) {
+    return 'Enter a supplier, invoice/reference, and receiving warehouse.'
   }
 
-  if (Number(paidAmount.value || 0) < 0 || Number(paidAmount.value || 0) > estimatedTotalValue.value) {
-    return false
+  if (normalizedReference.length > MAX_PROCUREMENT_REFERENCE_LENGTH) {
+    return `Invoice/reference cannot exceed ${MAX_PROCUREMENT_REFERENCE_LENGTH} characters.`
   }
 
-  return items.value.every((item) => {
-    return item.product_id
-      && Number(item.quantity || 0) > 0
-      && Number(item.unit_cost || 0) >= 0
-  })
+  const normalizedPaidAmount = String(paidAmount.value ?? '').trim()
+  const paidAmountNumber = normalizedPaidAmount === ''
+    ? 0
+    : Number(normalizedPaidAmount)
+
+  if (!Number.isFinite(paidAmountNumber) || paidAmountNumber < 0) {
+    return 'Paid amount must be a valid non-negative number.'
+  }
+
+  if (paidAmountNumber > estimatedTotalValue.value) {
+    return 'Paid amount cannot be greater than the procurement total.'
+  }
+
+  if (totalUnitsToReceive.value > MAX_PROCUREMENT_UNITS) {
+    return `One Procurement receipt can create at most ${MAX_PROCUREMENT_UNITS.toLocaleString()} physical items.`
+  }
+
+  if (!items.value.length || items.value.length > MAX_PROCUREMENT_LINES) {
+    return `A Procurement receipt must contain between 1 and ${MAX_PROCUREMENT_LINES} product lines.`
+  }
+
+  const selectedReferences = new Set()
+
+  for (const item of items.value) {
+    const quantity = Number(item.quantity || 0)
+    const unitCost = Number(item.unit_cost)
+    const product = findProduct(item.product_id)
+    const variantBelongsToProduct = variantsForProduct(item.product_id)
+      .some((variant) => variant.id === item.variant_id)
+
+    if (
+      !item.product_id
+      || !item.variant_id
+      || !variantBelongsToProduct
+      || product?.primary_warehouse_id !== warehouseId.value
+      || isWarehouseMismatch(item)
+    ) {
+      return 'Select an existing product and variant assigned to the receiving warehouse for every line.'
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
+      return 'Every line must contain a whole quantity between 1 and 1,000.'
+    }
+
+    if (
+      String(item.unit_cost ?? '').trim() === ''
+      || !Number.isFinite(unitCost)
+      || unitCost < 0
+    ) {
+      return 'Every line must contain a valid non-negative unit cost.'
+    }
+
+    const referenceKey = `${item.product_id}:${item.variant_id}`
+
+    if (selectedReferences.has(referenceKey)) {
+      return 'The same product variant cannot be repeated on one Procurement receipt.'
+    }
+
+    selectedReferences.add(referenceKey)
+  }
+
+  return ''
 })
+
+const isReadyToSubmit = computed(() => !procurementValidationError.value)
 
 const isMissingSchemaError = (error) => {
   return error?.code === '42P01' || error?.code === '42703' || error?.code === 'PGRST202'
 }
 
 const addItem = () => {
+  if (items.value.length >= MAX_PROCUREMENT_LINES) {
+    formError.value = `A Procurement receipt cannot contain more than ${MAX_PROCUREMENT_LINES} product lines.`
+    return
+  }
+
   items.value.push(createEmptyProcurementItem())
+  formMessage.value = ''
+  formError.value = ''
 }
 
 const removeItem = (index) => {
@@ -430,6 +619,68 @@ const resetForm = () => {
   paidAmount.value = ''
   items.value = [createEmptyProcurementItem()]
   formError.value = ''
+  formMessage.value = ''
+}
+
+const findProduct = (productId) => {
+  return productOptions.value.find((product) => product.id === productId) || null
+}
+
+const variantsForProduct = (productId) => {
+  return findProduct(productId)?.variants || []
+}
+
+const formatProductReference = (product) => {
+  const reference = product.sku || product.slug || String(product.id || '').slice(0, 8)
+  const warehouseName = warehouseNameMap.value[product.primary_warehouse_id]
+  return `${product.title} · ${reference}${warehouseName ? ` · ${warehouseName}` : ''}`
+}
+
+const formatVariantReference = (variant) => {
+  const details = [
+    variant.code,
+    variant.sku,
+    variant.color_name
+  ].filter(Boolean)
+
+  return details.length
+    ? `${variant.name} · ${details.join(' · ')}`
+    : variant.name
+}
+
+const handleProductChange = (item) => {
+  item.variant_id = ''
+  formMessage.value = ''
+
+  const product = findProduct(item.product_id)
+
+  if (!warehouseId.value && product?.primary_warehouse_id) {
+    warehouseId.value = product.primary_warehouse_id
+  }
+
+  const variants = variantsForProduct(item.product_id)
+
+  if (variants.length === 1) {
+    item.variant_id = variants[0].id
+  }
+}
+
+const isWarehouseMismatch = (item) => {
+  const product = findProduct(item.product_id)
+
+  return Boolean(
+    item.product_id
+    && warehouseId.value
+    && product
+    && product.primary_warehouse_id !== warehouseId.value
+  )
+}
+
+const getProductWarehouseName = (item) => {
+  const primaryWarehouseId = findProduct(item.product_id)?.primary_warehouse_id
+  return primaryWarehouseId
+    ? warehouseNameMap.value[primaryWarehouseId] || 'a different primary warehouse'
+    : 'not assigned to a receiving warehouse'
 }
 
 const loadLookups = async () => {
@@ -465,7 +716,25 @@ const loadLookups = async () => {
 const loadProductOptions = async () => {
   let query = supabase
     .from('products')
-    .select('id, title, slug')
+    .select(`
+      id,
+      title,
+      slug,
+      sku,
+      primary_warehouse_id,
+      is_serialized,
+      product_variants (
+        id,
+        product_id,
+        name,
+        code,
+        sku,
+        color_name,
+        color_hex,
+        is_active
+      )
+    `)
+    .eq('is_serialized', true)
     .order('created_at', { ascending: false })
     .limit(30)
 
@@ -473,7 +742,7 @@ const loadProductOptions = async () => {
 
   if (searchValue) {
     const pattern = `%${searchValue}%`
-    query = query.or(`title.ilike.${pattern},slug.ilike.${pattern}`)
+    query = query.or(`title.ilike.${pattern},sku.ilike.${pattern},slug.ilike.${pattern}`)
   }
 
   const { data, error } = await query
@@ -482,7 +751,27 @@ const loadProductOptions = async () => {
     throw error
   }
 
-  productOptions.value = data || []
+  const loadedProducts = (data || []).map((product) => ({
+    ...product,
+    variants: (product.product_variants || [])
+      .filter((variant) => variant.is_active)
+      .sort((left, right) => {
+        return String(left.name || '').localeCompare(String(right.name || ''))
+      })
+  }))
+
+  const selectedProductIds = new Set(
+    items.value.map((item) => item.product_id).filter(Boolean)
+  )
+  const retainedSelectedProducts = productOptions.value.filter((product) => {
+    return selectedProductIds.has(product.id)
+      && !loadedProducts.some((loadedProduct) => loadedProduct.id === product.id)
+  })
+
+  productOptions.value = [
+    ...retainedSelectedProducts,
+    ...loadedProducts
+  ]
 }
 
 const loadRecentProcurements = async () => {
@@ -504,12 +793,13 @@ const loadRecentProcurements = async () => {
 
     if (!recentProcurements.value.length) {
       procurementItemCounts.value = {}
+      procurementUnitCounts.value = {}
       return
     }
 
     const { data: lineItems, error: lineItemsError } = await supabase
       .from('commerce_procurement_items')
-      .select('procurement_order_id')
+      .select('procurement_order_id, received_quantity')
       .in('procurement_order_id', recentProcurements.value.map((order) => order.id))
 
     if (lineItemsError) {
@@ -518,6 +808,13 @@ const loadRecentProcurements = async () => {
 
     procurementItemCounts.value = (lineItems || []).reduce((counts, item) => {
       counts[item.procurement_order_id] = (counts[item.procurement_order_id] || 0) + 1
+      return counts
+    }, {})
+
+    procurementUnitCounts.value = (lineItems || []).reduce((counts, item) => {
+      counts[item.procurement_order_id] = (
+        counts[item.procurement_order_id] || 0
+      ) + Number(item.received_quantity || 0)
       return counts
     }, {})
   } catch (error) {
@@ -529,15 +826,21 @@ const loadRecentProcurements = async () => {
   }
 }
 
-const getProcurementItemCount = (procurementId) => {
+const getProcurementLineCount = (procurementId) => {
   return procurementItemCounts.value[procurementId] || 0
+}
+
+const getProcurementUnitCount = (procurementId) => {
+  return procurementUnitCounts.value[procurementId] || 0
 }
 
 const saveProcurement = async () => {
   formError.value = ''
+  formMessage.value = ''
 
   if (!isReadyToSubmit.value) {
-    formError.value = 'Complete supplier, warehouse, and every product line first.'
+    formError.value = procurementValidationError.value
+      || 'Complete every Procurement field before receiving stock.'
     return
   }
 
@@ -546,9 +849,11 @@ const saveProcurement = async () => {
   try {
     const payloadItems = items.value.map((item) => ({
       product_id: item.product_id,
+      variant_id: item.variant_id,
       quantity: Number(item.quantity || 0),
       unit_cost: Number(item.unit_cost || 0)
     }))
+    const receivedUnitCount = payloadItems.reduce((total, item) => total + item.quantity, 0)
 
     const { data, error } = await supabase.rpc('commerce_create_procurement_order', {
       p_supplier_id: supplierId.value,
@@ -563,18 +868,24 @@ const saveProcurement = async () => {
       throw error
     }
 
+    const procurementId = typeof data === 'string'
+      ? data
+      : data?.procurement_order_id || data?.order_id || null
+
     await recordAdminLog({
       actionKey: 'commerce.procurement.create',
-      description: `Created procurement order ${invoiceNumber.value || String(data || '').slice(0, 8)}.`,
+      description: `Received procurement order ${invoiceNumber.value || String(procurementId || '').slice(0, 8)} with ${receivedUnitCount} serialized units.`,
       metadata: {
-        procurement_order_id: data || null,
+        procurement_order_id: procurementId,
         supplier_id: supplierId.value,
         warehouse_id: warehouseId.value,
-        lines: payloadItems.length
+        lines: payloadItems.length,
+        serialized_units_created: receivedUnitCount
       }
     })
 
     resetForm()
+    formMessage.value = `${receivedUnitCount} ${receivedUnitCount === 1 ? 'physical item was' : 'physical items were'} received. Each item now has its own ID and QR code.`
     await Promise.all([
       loadRecentProcurements(),
       loadProductOptions()
@@ -596,6 +907,32 @@ watch(productSearchQuery, () => {
   productSearchTimeoutId = setTimeout(() => {
     loadProductOptions()
   }, 300)
+})
+
+watch(warehouseId, (nextWarehouseId, previousWarehouseId) => {
+  if (!nextWarehouseId || nextWarehouseId === previousWarehouseId) {
+    return
+  }
+
+  let clearedLineCount = 0
+
+  items.value.forEach((item) => {
+    const product = findProduct(item.product_id)
+
+    if (
+      product
+      && product.primary_warehouse_id !== nextWarehouseId
+    ) {
+      item.product_id = ''
+      item.variant_id = ''
+      clearedLineCount += 1
+    }
+  })
+
+  if (clearedLineCount > 0) {
+    formMessage.value = ''
+    formError.value = `${clearedLineCount} ${clearedLineCount === 1 ? 'product reference was' : 'product references were'} cleared because the receiving warehouse changed.`
+  }
 })
 
 onBeforeUnmount(() => {

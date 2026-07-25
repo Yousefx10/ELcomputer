@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Serialized Items</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Create serialized stock batches, find individual units, and print secure QR labels for warehouse use.
+            Find individual units created by Procurement and print secure QR labels for warehouse use.
           </p>
         </div>
 
@@ -29,297 +29,30 @@
     </section>
 
     <div
-      v-if="pageError"
+      v-if="pageError || optionsError"
       class="rounded-2xl bg-red-50 p-4 text-sm text-red-700 shadow"
       role="alert"
     >
-      {{ pageError }}
+      {{ pageError || optionsError }}
     </div>
 
-    <div
-      v-if="pageMessage"
-      class="rounded-2xl bg-green-50 p-4 text-sm text-green-700 shadow"
-      role="status"
-    >
-      {{ pageMessage }}
-    </div>
-
-    <section class="rounded-2xl bg-white p-6 shadow">
-      <button
-        type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
-        @click="toggleBatchForm"
-      >
+    <section class="rounded-2xl border border-blue-100 bg-blue-50 p-6 shadow">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">Receive Serialized Batch</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Choose a product and warehouse, then describe each variant and quantity being received.
+          <h3 class="text-xl font-bold text-gray-900">Stock is created through Procurement</h3>
+          <p class="mt-1 max-w-3xl text-sm text-gray-600">
+            Products and variants are catalog references only. Enter received quantities in a Procurement order;
+            the system creates one item ID and QR code for every physical unit.
           </p>
         </div>
 
-        <div class="flex shrink-0 items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isBatchFormOpen ? 'Collapse' : 'Expand' }}</span>
-          <Icon
-            name="lucide:chevron-down"
-            size="18"
-            class="transition-transform"
-            :class="isBatchFormOpen ? 'rotate-180' : ''"
-          />
-        </div>
-      </button>
-
-      <div v-if="isBatchFormOpen" class="mt-6">
-        <div
-          v-if="catalogLoading"
-          class="rounded-xl border border-dashed p-6 text-center text-sm text-gray-500"
+        <NuxtLink
+          to="/dashboard/commerce?tab=procurement"
+          class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
         >
-          Loading products and warehouses...
-        </div>
-
-        <div v-else>
-          <div class="grid gap-4 md:grid-cols-2">
-            <div>
-              <label for="serialized-product" class="mb-2 block text-sm font-semibold text-gray-700">
-                Product *
-              </label>
-              <select
-                id="serialized-product"
-                v-model="batchForm.product_id"
-                class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-              >
-                <option value="">Select product</option>
-                <option
-                  v-for="product in productOptions"
-                  :key="product.id"
-                  :value="product.id"
-                >
-                  {{ product.title }}{{ product.sku ? ` · ${product.sku}` : '' }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label for="serialized-warehouse" class="mb-2 block text-sm font-semibold text-gray-700">
-                Receiving Warehouse *
-              </label>
-              <select
-                id="serialized-warehouse"
-                v-model="batchForm.warehouse_id"
-                class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-              >
-                <option value="">Select warehouse</option>
-                <option
-                  v-for="warehouse in warehouseOptions"
-                  :key="warehouse.id"
-                  :value="warehouse.id"
-                  :disabled="Boolean(selectedBatchProduct?.primaryWarehouseId)
-                    && warehouse.id !== selectedBatchProduct.primaryWarehouseId"
-                >
-                  {{ warehouse.name }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h4 class="text-lg font-bold text-gray-900">Variants</h4>
-              <p class="mt-1 text-sm text-gray-500">
-                One serialized unit and QR token will be created for every quantity entered.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
-              @click="addBatchVariant"
-            >
-              <Icon name="lucide:plus" size="17" />
-              Add Variant
-            </button>
-          </div>
-
-          <div class="mt-4 space-y-4">
-            <div
-              v-for="(variant, index) in batchForm.variants"
-              :key="variant.key"
-              class="rounded-2xl border bg-gray-50 p-4"
-            >
-              <div class="mb-4 flex items-center justify-between gap-3">
-                <p class="font-bold text-gray-900">Variant {{ index + 1 }}</p>
-                <button
-                  v-if="batchForm.variants.length > 1"
-                  type="button"
-                  class="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-                  @click="removeBatchVariant(index)"
-                >
-                  Remove
-                </button>
-              </div>
-
-              <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <div v-if="availableVariantsForProduct.length" class="md:col-span-2 xl:col-span-3">
-                  <label :for="`variant-existing-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Existing Variant
-                  </label>
-                  <select
-                    :id="`variant-existing-${variant.key}`"
-                    v-model="variant.id"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                    @change="applyExistingVariant(variant)"
-                  >
-                    <option value="">Create a new variant</option>
-                    <option
-                      v-for="variantOption in availableVariantsForProduct"
-                      :key="variantOption.id"
-                      :value="variantOption.id"
-                    >
-                      {{ variantOption.name }}{{ variantOption.sku ? ` · ${variantOption.sku}` : '' }}
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label :for="`variant-name-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Variant Name *
-                  </label>
-                  <input
-                    :id="`variant-name-${variant.key}`"
-                    v-model="variant.name"
-                    type="text"
-                    maxlength="120"
-                    placeholder="Default, 16 GB / Black..."
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <div>
-                  <label :for="`variant-code-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Variant Code
-                  </label>
-                  <input
-                    :id="`variant-code-${variant.key}`"
-                    v-model="variant.code"
-                    type="text"
-                    maxlength="80"
-                    placeholder="VAR-BLK-16"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <div>
-                  <label :for="`variant-sku-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Variant SKU
-                  </label>
-                  <input
-                    :id="`variant-sku-${variant.key}`"
-                    v-model="variant.sku"
-                    type="text"
-                    maxlength="100"
-                    placeholder="SKU-BLK-16"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <div>
-                  <label :for="`variant-color-name-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Color Name
-                  </label>
-                  <input
-                    :id="`variant-color-name-${variant.key}`"
-                    v-model="variant.color_name"
-                    type="text"
-                    maxlength="80"
-                    placeholder="Midnight Black"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-
-                <div>
-                  <label :for="`variant-color-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Color Hex
-                  </label>
-                  <div class="relative">
-                    <input
-                      :id="`variant-color-${variant.key}`"
-                      v-model="variant.color_hex"
-                      type="text"
-                      maxlength="7"
-                      placeholder="#111827"
-                      class="w-full rounded-lg border bg-white p-3 pr-12 outline-none focus:border-blue-500"
-                    >
-                    <span
-                      v-if="isValidHexColor(variant.color_hex)"
-                      class="absolute right-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border border-gray-300"
-                      :style="{ backgroundColor: variant.color_hex }"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label :for="`variant-quantity-${variant.key}`" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Quantity *
-                  </label>
-                  <input
-                    :id="`variant-quantity-${variant.key}`"
-                    v-model.number="variant.quantity"
-                    type="number"
-                    min="1"
-                    step="1"
-                    inputmode="numeric"
-                    class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <label for="serialized-batch-notes" class="mb-2 block text-sm font-semibold text-gray-700">
-              Receiving Notes
-            </label>
-            <textarea
-              id="serialized-batch-notes"
-              v-model="batchForm.notes"
-              rows="3"
-              maxlength="1000"
-              placeholder="Optional invoice, delivery, or inspection notes"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div class="mt-4 rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-800">
-            This batch will create <strong>{{ batchUnitTotal }}</strong>
-            {{ batchUnitTotal === 1 ? 'serialized unit' : 'serialized units' }} across
-            <strong>{{ batchForm.variants.length }}</strong>
-            {{ batchForm.variants.length === 1 ? 'variant' : 'variants' }}.
-          </div>
-
-          <p v-if="batchError" class="mt-4 text-sm text-red-600" role="alert">
-            {{ batchError }}
-          </p>
-
-          <div class="mt-5 flex flex-wrap gap-3">
-            <button
-              type="button"
-              :disabled="batchSaving || catalogLoading"
-              class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              @click="createBatch"
-            >
-              {{ batchSaving ? 'Creating Batch...' : `Create ${batchUnitTotal || ''} Units` }}
-            </button>
-
-            <button
-              type="button"
-              :disabled="batchSaving"
-              class="rounded-lg border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-              @click="resetBatchForm"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
+          <Icon name="lucide:shopping-cart" size="17" />
+          Open Procurement
+        </NuxtLink>
       </div>
     </section>
 
@@ -475,7 +208,7 @@
         <p class="mt-2 text-sm text-gray-500">
           {{ hasActiveFilters
             ? 'Try a different search term or status.'
-            : 'Expand Receive Serialized Batch to add the first units.' }}
+            : 'Receive a Procurement order to create the first item IDs and QR codes.' }}
         </p>
       </div>
 
@@ -642,7 +375,7 @@ const route = useRoute()
 const items = ref([])
 const loading = ref(true)
 const pageError = ref('')
-const pageMessage = ref('')
+const optionsError = ref('')
 const printError = ref('')
 const printingLabels = ref(false)
 const selectedItemsById = ref(new Map())
@@ -669,37 +402,10 @@ const appliedFilters = reactive({
   warehouse_id: ''
 })
 
-const isBatchFormOpen = ref(false)
 const catalogLoading = ref(false)
 const catalogLoaded = ref(false)
 const productOptions = ref([])
-const variantOptions = ref([])
 const warehouseOptions = ref([])
-const batchError = ref('')
-const batchSaving = ref(false)
-let variantSequence = 0
-
-const createBatchVariant = (name = '') => {
-  variantSequence += 1
-
-  return {
-    key: `variant-${variantSequence}`,
-    id: '',
-    name,
-    code: '',
-    sku: '',
-    color_name: '',
-    color_hex: '',
-    quantity: 1
-  }
-}
-
-const batchForm = reactive({
-  product_id: '',
-  warehouse_id: '',
-  variants: [createBatchVariant('Default')],
-  notes: ''
-})
 
 const selectedItemCount = computed(() => selectedItemsById.value.size)
 const printablePageItems = computed(() => items.value.filter((item) => item.qrToken))
@@ -719,22 +425,6 @@ const hasActiveFilters = computed(() => {
   )
 })
 
-const availableVariantsForProduct = computed(() => {
-  if (!batchForm.product_id) {
-    return []
-  }
-
-  return variantOptions.value.filter((variant) => {
-    return variant.product_id === batchForm.product_id
-  })
-})
-
-const selectedBatchProduct = computed(() => {
-  return productOptions.value.find((product) => {
-    return product.id === batchForm.product_id
-  }) || null
-})
-
 const pageStart = computed(() => {
   if (!pagination.total) {
     return 0
@@ -745,13 +435,6 @@ const pageStart = computed(() => {
 
 const pageEnd = computed(() => {
   return Math.min(pagination.page * pagination.pageSize, pagination.total)
-})
-
-const batchUnitTotal = computed(() => {
-  return batchForm.variants.reduce((total, variant) => {
-    const quantity = Number(variant.quantity)
-    return total + (Number.isInteger(quantity) && quantity > 0 ? quantity : 0)
-  }, 0)
 })
 
 const getAdminAuthHeaders = async () => {
@@ -1130,13 +813,13 @@ const printSelectedLabels = async () => {
   }
 }
 
-const loadBatchCatalog = async () => {
+const loadFilterOptions = async () => {
   if (catalogLoaded.value || catalogLoading.value) {
     return
   }
 
   catalogLoading.value = true
-  batchError.value = ''
+  optionsError.value = ''
 
   try {
     const response = await $fetch('/api/admin-inventory/options', {
@@ -1149,23 +832,8 @@ const loadBatchCatalog = async () => {
     productOptions.value = (Array.isArray(payload.products) ? payload.products : []).map((product) => ({
       id: String(product.id || ''),
       title: String(product.title || 'Untitled product'),
-      sku: String(product.sku || ''),
-      primaryWarehouseId: String(product.primary_warehouse_id || product.primaryWarehouseId || '')
+      sku: String(product.sku || '')
     })).filter((product) => product.id)
-
-    if (selectedBatchProduct.value?.primaryWarehouseId) {
-      batchForm.warehouse_id = selectedBatchProduct.value.primaryWarehouseId
-    }
-
-    variantOptions.value = (Array.isArray(payload.variants) ? payload.variants : []).map((variant) => ({
-      id: String(variant.id || ''),
-      product_id: String(variant.product_id || variant.product?.id || ''),
-      name: String(variant.name || 'Unnamed variant'),
-      code: String(variant.code || ''),
-      sku: String(variant.sku || ''),
-      color_name: String(variant.color_name || ''),
-      color_hex: String(variant.color_hex || '')
-    })).filter((variant) => variant.id && variant.product_id)
 
     warehouseOptions.value = (Array.isArray(payload.warehouses) ? payload.warehouses : []).map((warehouse) => ({
       id: String(warehouse.id || ''),
@@ -1175,180 +843,9 @@ const loadBatchCatalog = async () => {
 
     catalogLoaded.value = true
   } catch (error) {
-    batchError.value = error?.data?.statusMessage || error?.message || 'Could not load inventory options.'
+    optionsError.value = error?.data?.statusMessage || error?.message || 'Could not load inventory filters.'
   } finally {
     catalogLoading.value = false
-  }
-}
-
-const toggleBatchForm = async () => {
-  isBatchFormOpen.value = !isBatchFormOpen.value
-
-  if (isBatchFormOpen.value) {
-    await loadBatchCatalog()
-  }
-}
-
-const addBatchVariant = () => {
-  batchForm.variants.push(createBatchVariant(''))
-}
-
-const removeBatchVariant = (index) => {
-  if (batchForm.variants.length <= 1) {
-    return
-  }
-
-  batchForm.variants.splice(index, 1)
-}
-
-const applyExistingVariant = (variant) => {
-  if (!variant?.id) {
-    return
-  }
-
-  const selectedVariant = variantOptions.value.find((option) => option.id === variant.id)
-
-  if (!selectedVariant) {
-    return
-  }
-
-  variant.name = selectedVariant.name
-  variant.code = selectedVariant.code
-  variant.sku = selectedVariant.sku
-  variant.color_name = selectedVariant.color_name
-  variant.color_hex = selectedVariant.color_hex
-}
-
-const resetBatchForm = () => {
-  batchForm.product_id = ''
-  batchForm.warehouse_id = ''
-  batchForm.variants = [createBatchVariant('Default')]
-  batchForm.notes = ''
-  batchError.value = ''
-}
-
-const validateBatchForm = () => {
-  if (!batchForm.product_id || !batchForm.warehouse_id) {
-    return 'Select a product and receiving warehouse.'
-  }
-
-  if (!batchForm.variants.length) {
-    return 'Add at least one variant.'
-  }
-
-  const usedCodes = new Set()
-  const usedSkus = new Set()
-  const usedVariantIds = new Set()
-
-  for (const variant of batchForm.variants) {
-    const name = String(variant.name || '').trim()
-    const quantity = Number(variant.quantity)
-    const code = String(variant.code || name)
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9_-]/g, '')
-    const sku = String(variant.sku || '').trim().toLowerCase()
-    const colorHex = String(variant.color_hex || '').trim()
-    const variantId = String(variant.id || '').trim()
-
-    if (!name) {
-      return 'Every variant requires a name.'
-    }
-
-    if (!code) {
-      return `Add a Latin-letter or numeric variant code for ${name}.`
-    }
-
-    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
-      return `Enter a whole quantity between 1 and 1,000 for ${name}.`
-    }
-
-    if (colorHex && !isValidHexColor(colorHex)) {
-      return `Use a six-digit hex color such as #111827 for ${name}.`
-    }
-
-    if (variantId && usedVariantIds.has(variantId)) {
-      return `The existing variant "${name}" is selected more than once.`
-    }
-
-    if (code && usedCodes.has(code)) {
-      return `Variant code "${variant.code}" is duplicated in this batch.`
-    }
-
-    if (sku && usedSkus.has(sku)) {
-      return `Variant SKU "${variant.sku}" is duplicated in this batch.`
-    }
-
-    if (code) {
-      usedCodes.add(code)
-    }
-
-    if (sku) {
-      usedSkus.add(sku)
-    }
-
-    if (variantId) {
-      usedVariantIds.add(variantId)
-    }
-  }
-
-  return ''
-}
-
-const createBatch = async () => {
-  if (batchSaving.value) {
-    return
-  }
-
-  batchError.value = validateBatchForm()
-  pageMessage.value = ''
-
-  if (batchError.value) {
-    return
-  }
-
-  const variants = batchForm.variants.map((variant) => {
-    const payload = {
-      name: String(variant.name || '').trim(),
-      code: String(variant.code || '').trim() || null,
-      sku: String(variant.sku || '').trim() || null,
-      color_name: String(variant.color_name || '').trim() || null,
-      color_hex: String(variant.color_hex || '').trim().toUpperCase() || null,
-      quantity: Number(variant.quantity)
-    }
-
-    if (variant.id) {
-      payload.id = variant.id
-    }
-
-    return payload
-  })
-
-  batchSaving.value = true
-
-  try {
-    const response = await $fetch('/api/admin-inventory/batches', {
-      method: 'POST',
-      headers: await getAdminAuthHeaders(),
-      body: {
-        product_id: batchForm.product_id,
-        warehouse_id: batchForm.warehouse_id,
-        variants,
-        notes: String(batchForm.notes || '').trim() || null
-      }
-    })
-
-    const createdCount = Number(response?.createdCount ?? response?.data?.createdCount ?? batchUnitTotal.value)
-    const variantCount = Number(response?.variantCount ?? response?.data?.variantCount ?? variants.length)
-    pageMessage.value = `Created ${createdCount} serialized ${createdCount === 1 ? 'unit' : 'units'} across ${variantCount} ${variantCount === 1 ? 'variant' : 'variants'}.`
-    resetBatchForm()
-    isBatchFormOpen.value = false
-    await loadItems(1)
-  } catch (error) {
-    batchError.value = error?.data?.statusMessage || error?.message || 'Could not create this serialized batch.'
-  } finally {
-    batchSaving.value = false
   }
 }
 
@@ -1361,35 +858,11 @@ onMounted(async () => {
   if (routeProductId) {
     filterForm.product_id = routeProductId
     appliedFilters.product_id = routeProductId
-    batchForm.product_id = routeProductId
   }
 
   await Promise.all([
     loadItems(1),
-    loadBatchCatalog()
+    loadFilterOptions()
   ])
-})
-
-watch(() => batchForm.product_id, () => {
-  if (selectedBatchProduct.value?.primaryWarehouseId) {
-    batchForm.warehouse_id = selectedBatchProduct.value.primaryWarehouseId
-  }
-
-  batchForm.variants.forEach((variant) => {
-    if (!variant.id) {
-      return
-    }
-
-    const selectedVariant = variantOptions.value.find((option) => option.id === variant.id)
-
-    if (selectedVariant?.product_id !== batchForm.product_id) {
-      variant.id = ''
-      variant.name = batchForm.variants.length === 1 ? 'Default' : ''
-      variant.code = ''
-      variant.sku = ''
-      variant.color_name = ''
-      variant.color_hex = ''
-    }
-  })
 })
 </script>
