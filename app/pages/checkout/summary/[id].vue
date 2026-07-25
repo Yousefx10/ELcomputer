@@ -78,6 +78,18 @@
                     <p class="mt-1 text-sm text-gray-500">
                       Qty {{ item.quantity }}
                     </p>
+
+                    <p
+                      v-if="item.variant_name || item.variant_color_name"
+                      class="mt-1 flex items-center gap-2 text-sm font-medium text-gray-600"
+                    >
+                      <span
+                        v-if="isValidColor(item.variant_color_hex)"
+                        class="h-4 w-4 rounded-full border border-black/10"
+                        :style="{ backgroundColor: item.variant_color_hex }"
+                      />
+                      <span>{{ item.variant_name || item.variant_color_name }}</span>
+                    </p>
                   </div>
 
                   <div class="text-right">
@@ -195,6 +207,10 @@ const formatStatus = (value) => {
   }
 
   return String(value || 'Unknown').replace(/_/g, ' ')
+}
+
+const isValidColor = (value) => {
+  return /^#[0-9a-f]{6}$/i.test(String(value || '').trim())
 }
 
 useHead(() => ({

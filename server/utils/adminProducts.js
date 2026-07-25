@@ -17,6 +17,7 @@ const PRODUCT_MUTABLE_FIELDS = [
   'cost_price',
   'color_name',
   'color_hex',
+  'is_serialized',
   'is_published'
 ]
 
@@ -38,8 +39,104 @@ const normalizeUuid = (value) => {
   return normalizedValue || null
 }
 
+const normalizeBoolean = (value) => {
+  if (typeof value === 'string') {
+    return value.trim().toLowerCase() === 'true'
+  }
+
+  return value === true || value === 1
+}
+
+const normalizeVariantCode = (value) => {
+  return String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^A-Z0-9_-]/g, '')
+}
+
+export const normalizeSerializedVariants = (variants = []) => {
+  if (!Array.isArray(variants)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Product models must be a valid list.'
+    })
+  }
+
+  const normalizedVariants = variants.map((variant, index) => {
+    const name = String(variant?.name || '').trim()
+    const code = normalizeVariantCode(variant?.code || name)
+    const quantity = Number(variant?.quantity)
+    const colorHex = normalizeText(variant?.color_hex)
+
+    if (!name) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Model ${index + 1} requires a name.`
+      })
+    }
+
+    if (!code) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Model ${index + 1} requires a code containing letters or numbers.`
+      })
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 0 || quantity > 1000) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Quantity for ${name} must be between 0 and 1,000.`
+      })
+    }
+
+    if (colorHex && !/^#[0-9a-f]{6}$/i.test(colorHex)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Color for ${name} must use a six-digit hex value, such as #2563EB.`
+      })
+    }
+
+    return {
+      id: normalizeUuid(variant?.id),
+      name,
+      code,
+      sku: normalizeText(variant?.sku),
+      color_name: normalizeText(variant?.color_name) || name,
+      color_hex: colorHex,
+      quantity
+    }
+  })
+
+  const codes = normalizedVariants.map((variant) => variant.code.toLowerCase())
+  if (new Set(codes).size !== codes.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Every model code must be unique within this product.'
+    })
+  }
+
+  const skus = normalizedVariants
+    .map((variant) => String(variant.sku || '').toLowerCase())
+    .filter(Boolean)
+
+  if (new Set(skus).size !== skus.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Every model SKU must be unique.'
+    })
+  }
+
+  return normalizedVariants
+}
+
 export const isMissingSchemaError = (error) => {
-  return error?.code === '42P01' || error?.code === '42703' || error?.code === 'PGRST204'
+  return error?.code === '42P01' ||
+    error?.code === '42703' ||
+    error?.code === '42883' ||
+    error?.code === 'PGRST202' ||
+    error?.code === 'PGRST204' ||
+    error?.code === 'PGRST205'
 }
 
 export const normalizeAdminProductPayload = (body = {}) => {
@@ -50,6 +147,10 @@ export const normalizeAdminProductPayload = (body = {}) => {
   const costPrice = Number(body?.cost_price || 0)
   const oldPriceValue = String(body?.old_price ?? '').trim()
   const oldPrice = oldPriceValue ? Number(oldPriceValue) : null
+  const isSerialized = normalizeBoolean(body?.is_serialized)
+  const variants = isSerialized
+    ? normalizeSerializedVariants(body?.variants || [])
+    : []
 
   if (!title) {
     throw createError({
@@ -72,7 +173,7 @@ export const normalizeAdminProductPayload = (body = {}) => {
     })
   }
 
-  if (!Number.isInteger(stockQuantity) || stockQuantity < 0) {
+  if (!isSerialized && (!Number.isInteger(stockQuantity) || stockQuantity < 0)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Stock quantity cannot be negative.'
@@ -106,11 +207,15 @@ export const normalizeAdminProductPayload = (body = {}) => {
     default_supplier_id: normalizeUuid(body?.default_supplier_id),
     primary_warehouse_id: normalizeUuid(body?.primary_warehouse_id),
     sku: normalizeText(body?.sku),
-    stock_quantity: stockQuantity,
+    stock_quantity: isSerialized
+      ? variants.reduce((total, variant) => total + variant.quantity, 0)
+      : stockQuantity,
     cost_price: costPrice,
     color_name: normalizeText(body?.color_name),
     color_hex: normalizeText(body?.color_hex),
-    is_published: Boolean(body?.is_published)
+    is_serialized: isSerialized,
+    variants,
+    is_published: normalizeBoolean(body?.is_published)
   }
 }
 

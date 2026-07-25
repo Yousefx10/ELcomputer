@@ -119,11 +119,67 @@
             </NuxtLink>
 
             <span
-              v-if="product.color_name"
+              v-if="product.color_name && !hasVariants"
               class="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700"
             >
               Color: {{ product.color_name }}
             </span>
+          </div>
+
+          <div v-if="hasVariants" class="mt-7">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-sm font-bold text-gray-900">
+                Choose an option *
+              </p>
+              <p v-if="selectedVariant" class="text-sm text-gray-500">
+                {{ selectedVariantStockLabel }}
+              </p>
+            </div>
+
+            <div
+              class="mt-3 grid gap-3 sm:grid-cols-2"
+              role="radiogroup"
+              aria-label="Product options"
+            >
+              <button
+                v-for="variant in productVariants"
+                :key="variant.id"
+                type="button"
+                role="radio"
+                :aria-checked="selectedVariantId === variant.id"
+                :disabled="isVariantUnavailable(variant)"
+                class="flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-45"
+                :class="selectedVariantId === variant.id
+                  ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600'
+                  : 'border-gray-200 bg-white hover:border-gray-400'"
+                @click="selectVariant(variant)"
+              >
+                <span
+                  v-if="getVariantColor(variant)"
+                  class="h-7 w-7 shrink-0 rounded-full border border-black/10 shadow-sm"
+                  :style="{ backgroundColor: getVariantColor(variant) }"
+                />
+                <span
+                  v-else
+                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400"
+                >
+                  <Icon name="lucide:box" size="15" />
+                </span>
+
+                <span class="min-w-0">
+                  <span class="block truncate text-sm font-bold text-gray-900">
+                    {{ variant.name }}
+                  </span>
+                  <span class="mt-0.5 block truncate text-xs text-gray-500">
+                    {{ getVariantMeta(variant) }}
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            <p v-if="!selectedVariant && hasPurchasableVariants" class="mt-2 text-xs text-gray-500">
+              Select one option before adding this product to your cart.
+            </p>
           </div>
 
           <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -160,7 +216,7 @@
                 : 'bg-black hover:bg-gray-800'"
               @click="handleAddToCart"
             >
-              {{ canPurchaseProduct ? `Add to Cart - ${product.price} EGP` : 'Out of Stock' }}
+              {{ addToCartLabel }}
             </button>
           </div>
 
@@ -243,7 +299,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     throw productError
   }
 
-  const [imagesResult, specificationsResult] = await Promise.all([
+  const [imagesResult, specificationsResult, variantsResult] = await Promise.all([
     supabase
       .from('product_images')
       .select('*')
@@ -253,7 +309,18 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       .from('product_specifications')
       .select('*')
       .eq('product_id', productData.id)
-      .order('created_at')
+      .order('created_at'),
+    productData.is_serialized
+      ? supabase
+          .from('product_variants')
+          .select('id, product_id, name, code, sku, color_name, color_hex, stock_quantity, is_active')
+          .eq('product_id', productData.id)
+          .eq('is_active', true)
+          .order('name', { ascending: true })
+      : Promise.resolve({
+          data: [],
+          error: null
+        })
   ])
 
   if (imagesResult.error) {
@@ -264,10 +331,15 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     throw specificationsResult.error
   }
 
+  if (variantsResult.error) {
+    throw variantsResult.error
+  }
+
   return {
     ...productData,
     images: imagesResult.data || [],
-    specifications: specificationsResult.data || []
+    specifications: specificationsResult.data || [],
+    variants: variantsResult.data || []
   }
 })
 
@@ -275,15 +347,37 @@ useProductEngagement(product)
 
 const selectedImage = ref('')
 const selectedQuantity = ref(1)
+const selectedVariantId = ref('')
 const cartMessage = ref('')
-const allowOutOfStockPurchases = computed(() => Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases))
+const allowOutOfStockPurchases = computed(() => {
+  return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
+    && !product.value?.is_serialized
+})
+const productVariants = computed(() => product.value?.variants || [])
+const hasVariants = computed(() => productVariants.value.length > 0)
+const requiresVariantSelection = computed(() => Boolean(product.value?.is_serialized))
+const selectedVariant = computed(() => {
+  return productVariants.value.find((variant) => variant.id === selectedVariantId.value) || null
+})
+const effectiveStockQuantity = computed(() => {
+  if (requiresVariantSelection.value) {
+    return Number(selectedVariant.value?.stock_quantity || 0)
+  }
+
+  return Number(product.value?.stock_quantity || 0)
+})
+const hasPurchasableVariants = computed(() => {
+  return productVariants.value.some((variant) => {
+    return Number(variant.stock_quantity || 0) > 0 || allowOutOfStockPurchases.value
+  })
+})
 
 const maximumQuantity = computed(() => {
   if (allowOutOfStockPurchases.value) {
     return 99
   }
 
-  const stockQuantity = Number(product.value?.stock_quantity || 0)
+  const stockQuantity = effectiveStockQuantity.value
 
   if (stockQuantity <= 0) {
     return 1
@@ -293,18 +387,96 @@ const maximumQuantity = computed(() => {
 })
 
 const isOutOfStock = computed(() => {
-  return Number(product.value?.stock_quantity || 0) <= 0
+  if (requiresVariantSelection.value && !selectedVariant.value) {
+    return !hasPurchasableVariants.value
+  }
+
+  return effectiveStockQuantity.value <= 0
 })
 const canPurchaseProduct = computed(() => {
+  if (requiresVariantSelection.value && !selectedVariant.value) {
+    return false
+  }
+
   return !isOutOfStock.value || allowOutOfStockPurchases.value
 })
 const stockLabel = computed(() => {
+  if (requiresVariantSelection.value && !hasVariants.value) {
+    return 'Options Unavailable'
+  }
+
+  if (requiresVariantSelection.value && !selectedVariant.value) {
+    if (!hasPurchasableVariants.value) {
+      return allowOutOfStockPurchases.value ? 'Available on Backorder' : 'Out of Stock'
+    }
+
+    return 'Select an Option'
+  }
+
   if (!isOutOfStock.value) {
     return 'In Stock'
   }
 
   return allowOutOfStockPurchases.value ? 'Available on Backorder' : 'Out of Stock'
 })
+const selectedVariantStockLabel = computed(() => {
+  if (!selectedVariant.value) {
+    return ''
+  }
+
+  if (Number(selectedVariant.value.stock_quantity || 0) > 0) {
+    return `${Number(selectedVariant.value.stock_quantity)} available`
+  }
+
+  return allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
+})
+const addToCartLabel = computed(() => {
+  if (requiresVariantSelection.value && !hasVariants.value) {
+    return 'Options Unavailable'
+  }
+
+  if (requiresVariantSelection.value && !selectedVariant.value && hasPurchasableVariants.value) {
+    return 'Choose an Option'
+  }
+
+  if (!canPurchaseProduct.value) {
+    return 'Out of Stock'
+  }
+
+  return `Add to Cart - ${product.value?.price || 0} EGP`
+})
+
+const getVariantColor = (variant) => {
+  const color = String(variant?.color_hex || '').trim()
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : ''
+}
+
+const getVariantMeta = (variant) => {
+  const details = [
+    variant?.color_name,
+    variant?.code || variant?.sku
+  ].map((value) => String(value || '').trim()).filter(Boolean)
+
+  if (!details.length) {
+    return Number(variant?.stock_quantity || 0) > 0 ? 'In stock' : 'Out of stock'
+  }
+
+  return details.join(' · ')
+}
+
+const isVariantUnavailable = (variant) => {
+  return Number(variant?.stock_quantity || 0) <= 0 && !allowOutOfStockPurchases.value
+}
+
+const selectVariant = (variant) => {
+  if (isVariantUnavailable(variant)) {
+    return
+  }
+
+  selectedVariantId.value = variant.id
+  selectedQuantity.value = 1
+  cartMessage.value = ''
+}
 
 const decreaseQuantity = () => {
   selectedQuantity.value = Math.max(1, selectedQuantity.value - 1)
@@ -315,8 +487,14 @@ const increaseQuantity = () => {
 }
 
 const handleAddToCart = () => {
+  if (!canPurchaseProduct.value) {
+    return
+  }
+
   const result = addItem({
     ...product.value,
+    variant: selectedVariant.value,
+    stock_quantity: effectiveStockQuantity.value,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value
   }, selectedQuantity.value, {
     source: 'product_detail'
@@ -324,12 +502,42 @@ const handleAddToCart = () => {
   cartMessage.value = result.message || ''
 }
 
-watchEffect(() => {
-  if (!product.value) {
+watch(
+  [
+    () => product.value?.id,
+    () => route.query.variant
+  ],
+  () => {
+    if (!product.value) {
+      return
+    }
+
+    const requestedVariantId = String(route.query.variant || '').trim()
+    const requestedVariant = product.value.variants.find((variant) => {
+      return variant.id === requestedVariantId
+    })
+
+    selectedImage.value = product.value.image_url || product.value.images[0]?.image_url || ''
+    selectedQuantity.value = 1
+    selectedVariantId.value = requestedVariant?.id
+      || (
+        product.value.variants.length === 1
+        && !isVariantUnavailable(product.value.variants[0])
+          ? product.value.variants[0].id
+          : ''
+      )
+  },
+  {
+    immediate: true
+  }
+)
+
+watch(selectedVariantId, () => {
+  if (!selectedVariantId.value && requiresVariantSelection.value) {
+    selectedQuantity.value = 1
     return
   }
 
-  selectedImage.value = product.value.image_url || product.value.images[0]?.image_url || ''
-  selectedQuantity.value = 1
+  selectedQuantity.value = Math.min(selectedQuantity.value, maximumQuantity.value)
 })
 </script>

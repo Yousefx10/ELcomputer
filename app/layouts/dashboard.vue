@@ -80,6 +80,8 @@ const dashboardTabTitles = {
     sales: 'Sales',
     shipping: 'Shipping',
     warehouses: 'Warehouses',
+    serialized: 'Serialized Items',
+    scan: 'Scan Item',
     returns: 'Returns'
   },
   '/dashboard/hr': {

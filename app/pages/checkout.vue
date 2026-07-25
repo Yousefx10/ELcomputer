@@ -225,7 +225,7 @@
             <div class="mt-5 space-y-4">
               <article
                 v-for="item in items"
-                :key="item.id"
+                :key="item.cart_key"
                 class="flex items-center gap-3 rounded-2xl border p-3"
               >
                 <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-gray-50 p-2">
@@ -241,6 +241,20 @@
                   <p class="line-clamp-2 font-semibold text-gray-900">
                     {{ item.title }}
                   </p>
+
+                  <div
+                    v-if="item.variant_id"
+                    class="mt-1 flex items-center gap-1.5 text-xs text-gray-500"
+                  >
+                    <span
+                      v-if="getVariantColor(item)"
+                      class="h-3.5 w-3.5 shrink-0 rounded-full border border-black/10"
+                      :style="{ backgroundColor: getVariantColor(item) }"
+                    />
+                    <span class="truncate">
+                      {{ item.variant_name || item.variant_color_name || 'Selected option' }}
+                    </span>
+                  </div>
 
                   <p class="mt-1 text-sm text-gray-500">
                     Qty {{ item.quantity }}
@@ -361,6 +375,11 @@ const formatCurrency = (value) => {
     currency: 'EGP',
     maximumFractionDigits: 2
   }).format(Number(value || 0))
+}
+
+const getVariantColor = (item) => {
+  const color = String(item?.variant_color_hex || '').trim()
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : ''
 }
 
 const fillAddressFromProfile = (profile) => {
@@ -494,6 +513,7 @@ const placeOrder = async () => {
       body: {
         items: items.value.map((item) => ({
           id: item.id,
+          variant_id: item.variant_id || null,
           quantity: item.quantity
         })),
         cart_id: cartId.value || null,

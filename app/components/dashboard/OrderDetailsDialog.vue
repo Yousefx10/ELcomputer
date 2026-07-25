@@ -195,6 +195,36 @@
                         <p class="mt-1 text-sm text-gray-500">
                           Qty {{ item.quantity }}
                         </p>
+
+                        <p
+                          v-if="item.variant_name || item.variant_color_name"
+                          class="mt-1 text-sm font-medium text-gray-600"
+                        >
+                          {{ item.variant_name || item.variant_color_name }}
+                          <span v-if="item.variant_sku || item.variant_code" class="text-gray-400">
+                            · {{ item.variant_sku || item.variant_code }}
+                          </span>
+                        </p>
+
+                        <div
+                          v-if="item.serialized_units?.length"
+                          class="mt-2 flex flex-wrap gap-2"
+                        >
+                          <NuxtLink
+                            v-for="unit in item.serialized_units"
+                            :key="unit.id"
+                            :to="{
+                              path: '/dashboard/commerce',
+                              query: {
+                                tab: 'scan',
+                                token: unit.unit_code
+                              }
+                            }"
+                            class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700 hover:bg-purple-200"
+                          >
+                            {{ unit.unit_code }}
+                          </NuxtLink>
+                        </div>
                       </div>
 
                       <div class="text-right text-sm text-gray-600">

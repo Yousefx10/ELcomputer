@@ -148,7 +148,8 @@
           <label class="mb-2 block text-sm font-semibold text-gray-700">Primary Warehouse</label>
           <select
             v-model="primaryWarehouseId"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            :disabled="isSerialized"
+            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
             <option value="">No Primary Warehouse</option>
 
@@ -160,6 +161,9 @@
               {{ warehouse.name }}
             </option>
           </select>
+          <p v-if="isSerialized" class="mt-2 text-xs text-gray-500">
+            The primary warehouse is locked because each physical item and return is tied to this location.
+          </p>
         </div>
 
         <div>
@@ -184,7 +188,7 @@
           />
         </div>
 
-        <div>
+        <div v-if="!isSerialized">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Stock Quantity</label>
           <input
             v-model="stockQuantity"
@@ -205,6 +209,17 @@
           </p>
         </div>
 
+        <div
+          v-else
+          class="rounded-xl border border-green-200 bg-green-50 p-4"
+        >
+          <p class="text-sm font-semibold text-green-800">Individually tracked stock</p>
+          <p class="mt-1 text-3xl font-bold text-green-700">{{ stockQuantity }}</p>
+          <p class="mt-1 text-xs text-green-700">
+            This total is calculated from item IDs and cannot be edited manually.
+          </p>
+        </div>
+
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">SKU</label>
           <input
@@ -215,7 +230,7 @@
           />
         </div>
 
-        <div>
+        <div v-if="!isSerialized">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Color Name</label>
           <input
             v-model="colorName"
@@ -225,7 +240,7 @@
           />
         </div>
 
-        <div>
+        <div v-if="!isSerialized">
           <label class="mb-2 block text-sm font-semibold text-gray-700">Color Hex</label>
           <input
             v-model="colorHex"
@@ -233,6 +248,53 @@
             placeholder="#000000"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
+        </div>
+
+        <div
+          v-if="isSerialized"
+          class="md:col-span-2 rounded-2xl border border-blue-100 bg-blue-50 p-5"
+        >
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Models and individual QR items</h3>
+              <p class="mt-1 text-sm text-gray-600">
+                Add another model or receive more items, print QR labels, and view item history from Serialized Items.
+              </p>
+            </div>
+
+            <NuxtLink
+              :to="`/dashboard/commerce?tab=serialized&product=${id}`"
+              class="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Manage Items
+            </NuxtLink>
+          </div>
+
+          <div
+            v-if="productVariants.length"
+            class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            <div
+              v-for="variant in productVariants"
+              :key="variant.id"
+              class="rounded-xl border bg-white p-4"
+            >
+              <div class="flex items-center gap-3">
+                <span
+                  v-if="variant.color_hex"
+                  class="h-6 w-6 rounded-full border border-gray-200"
+                  :style="{ backgroundColor: variant.color_hex }"
+                />
+                <div class="min-w-0">
+                  <p class="truncate font-semibold text-gray-900">{{ variant.name }}</p>
+                  <p class="text-xs text-gray-500">{{ variant.sku || variant.code }}</p>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-medium text-gray-700">
+                {{ Number(variant.stock_quantity || 0) }} in stock
+              </p>
+            </div>
+          </div>
         </div>
 
         <div class="md:col-span-2">
@@ -278,6 +340,7 @@
           </button>
 
           <button
+            v-if="!isSerialized"
             type="button"
             @click="deleteProduct"
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
@@ -291,6 +354,13 @@
           >
             Back
           </NuxtLink>
+
+          <p
+            v-if="isSerialized"
+            class="w-full text-sm text-gray-500"
+          >
+            Products with item history cannot be deleted. Turn Store Visibility off to archive this product.
+          </p>
         </div>
       </form>
 
@@ -516,6 +586,7 @@ const stockQuantity = ref(0)
 const isStockQuantityFocused = ref(false)
 const colorName = ref('')
 const colorHex = ref('')
+const isSerialized = ref(false)
 const isPublished = ref(true)
 
 const categories = ref([])
@@ -524,6 +595,7 @@ const suppliers = ref([])
 const warehouses = ref([])
 const productImages = ref([])
 const productSpecifications = ref([])
+const productVariants = ref([])
 
 const newImageUrl = ref('')
 const newImageAlt = ref('')
@@ -708,6 +780,27 @@ const getProductSpecifications = async () => {
   }))
 }
 
+const getProductVariants = async () => {
+  if (!product.value?.is_serialized) {
+    productVariants.value = []
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('product_variants')
+    .select('*')
+    .eq('product_id', id)
+    .order('name', { ascending: true })
+    .order('id', { ascending: true })
+
+  if (error) {
+    actionError.value = error.message
+    return
+  }
+
+  productVariants.value = data || []
+}
+
 onMounted(async () => {
   await Promise.all([
     getCategoriesList(),
@@ -715,7 +808,8 @@ onMounted(async () => {
     getSuppliersList(),
     getWarehousesList(),
     getProductImages(),
-    getProductSpecifications()
+    getProductSpecifications(),
+    getProductVariants()
   ])
 })
 
@@ -736,6 +830,7 @@ watchEffect(() => {
     stockQuantity.value = product.value.stock_quantity ?? 0
     colorName.value = product.value.color_name || ''
     colorHex.value = product.value.color_hex || ''
+    isSerialized.value = Boolean(product.value.is_serialized)
     isPublished.value = product.value.is_published ?? true
   }
 })
@@ -760,7 +855,7 @@ const updateProduct = async () => {
     return
   }
 
-  if (Number(stockQuantity.value) < 0) {
+  if (!isSerialized.value && Number(stockQuantity.value) < 0) {
     actionError.value = 'Stock quantity cannot be negative'
     return
   }
@@ -788,6 +883,8 @@ const updateProduct = async () => {
         cost_price: product.value?.cost_price ?? 0,
         color_name: colorName.value,
         color_hex: colorHex.value,
+        is_serialized: isSerialized.value,
+        variants: [],
         is_published: isPublished.value
       }
     })
@@ -1060,6 +1157,11 @@ const deleteProductSpecification = async (specificationId) => {
 
 const deleteProduct = async () => {
   actionError.value = ''
+
+  if (isSerialized.value) {
+    actionError.value = 'Serialized products keep permanent item history. Turn Store Visibility off instead.'
+    return
+  }
 
   const confirmDelete = confirm('Are you sure you want to delete this product?')
   if (!confirmDelete) {

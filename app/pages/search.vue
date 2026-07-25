@@ -555,6 +555,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       old_price,
       image_url,
       stock_quantity,
+      is_serialized,
       created_at,
       is_top_seller,
       is_featured,

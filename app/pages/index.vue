@@ -110,6 +110,8 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
         price,
         old_price,
         image_url,
+        stock_quantity,
+        is_serialized,
         is_featured,
         is_top_seller,
         category:categories (

@@ -23,7 +23,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  const payload = normalizeAdminProductPayload(body)
+  const normalizedPayload = normalizeAdminProductPayload(body)
+  const {
+    variants: _variants,
+    ...payload
+  } = normalizedPayload
 
   const { data: previousProduct, error: previousProductError } = await supabaseAdmin
     .from('products')
@@ -36,6 +40,29 @@ export default defineEventHandler(async (event) => {
       statusCode: 404,
       statusMessage: previousProductError?.message || 'Product not found.'
     })
+  }
+
+  const wasSerialized = Boolean(previousProduct.is_serialized)
+
+  if (wasSerialized !== Boolean(payload.is_serialized)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Inventory tracking mode cannot be changed after a product is created.'
+    })
+  }
+
+  if (
+    wasSerialized &&
+    String(previousProduct.primary_warehouse_id || '') !== String(payload.primary_warehouse_id || '')
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Move serialized items with inventory tools before changing the primary warehouse.'
+    })
+  }
+
+  if (wasSerialized) {
+    payload.stock_quantity = Number(previousProduct.stock_quantity || 0)
   }
 
   try {
@@ -60,18 +87,22 @@ export default defineEventHandler(async (event) => {
 
   if (updateError) {
     throw createError({
-      statusCode: 400,
-      statusMessage: updateError.message
+      statusCode: isMissingSchemaError(updateError) ? 500 : 400,
+      statusMessage: isMissingSchemaError(updateError)
+        ? 'Run the latest serialized inventory migration first, then try again.'
+        : updateError.message
     })
   }
 
   try {
-    await syncPrimaryWarehouseInventoryForProductUpdate({
-      supabaseAdmin,
-      productId,
-      previousProduct,
-      nextProduct: payload
-    })
+    if (!wasSerialized) {
+      await syncPrimaryWarehouseInventoryForProductUpdate({
+        supabaseAdmin,
+        productId,
+        previousProduct,
+        nextProduct: payload
+      })
+    }
   } catch (error) {
     await supabaseAdmin
       .from('products')

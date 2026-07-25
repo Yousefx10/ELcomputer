@@ -128,8 +128,13 @@
                   </p>
                 </div>
 
-                <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-                  Product
+                <span
+                  class="rounded-full px-3 py-1 text-xs font-semibold"
+                  :class="product.is_serialized
+                    ? 'bg-purple-50 text-purple-700'
+                    : 'bg-blue-50 text-blue-600'"
+                >
+                  {{ product.is_serialized ? 'QR Tracked' : 'Product' }}
                 </span>
               </div>
 
@@ -153,6 +158,14 @@
                   class="flex-1 rounded-lg bg-black px-4 py-3 text-center text-sm font-bold text-white hover:bg-gray-800"
                 >
                   Edit Product
+                </NuxtLink>
+
+                <NuxtLink
+                  v-if="canEditProduct && product.is_serialized"
+                  :to="`/dashboard/commerce?tab=serialized&product=${product.id}`"
+                  class="flex-1 rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-center text-sm font-bold text-purple-700 hover:bg-purple-100"
+                >
+                  Items
                 </NuxtLink>
               </div>
             </div>

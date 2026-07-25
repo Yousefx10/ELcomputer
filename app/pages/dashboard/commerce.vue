@@ -4,7 +4,7 @@
       <div class="rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Commerce</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Manage procurement, shipping companies, warehouses, and returned orders.
+          Manage purchasing, sales, warehouses, serialized inventory, scanning, and returns.
         </p>
       </div>
 
@@ -14,7 +14,10 @@
       <DashboardCommerceSalesTab v-else-if="activeTab === 'sales'" />
       <DashboardCommerceShippingTab v-else-if="activeTab === 'shipping'" />
       <DashboardCommerceWarehousesTab v-else-if="activeTab === 'warehouses'" />
-      <DashboardCommerceReturnsTab v-else />
+      <DashboardCommerceSerializedItemsTab v-else-if="activeTab === 'serialized'" />
+      <DashboardCommerceScanItemTab v-else-if="activeTab === 'scan'" />
+      <DashboardCommerceReturnsTab v-else-if="activeTab === 'returns'" />
+      <DashboardCommerceProcurementTab v-else />
     </div>
   </div>
 </template>

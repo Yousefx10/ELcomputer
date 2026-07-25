@@ -20,11 +20,69 @@ export const commerceTabs = [
     to: '/dashboard/commerce?tab=warehouses'
   },
   {
+    key: 'serialized',
+    label: 'Serialized Items',
+    to: '/dashboard/commerce?tab=serialized'
+  },
+  {
+    key: 'scan',
+    label: 'Scan Item',
+    to: '/dashboard/commerce?tab=scan'
+  },
+  {
     key: 'returns',
     label: 'Returns',
     to: '/dashboard/commerce?tab=returns'
   }
 ]
+
+export const serializedItemStatusOptions = [
+  { value: 'in_stock', label: 'In Stock' },
+  { value: 'sold', label: 'Sold' },
+  { value: 'damaged', label: 'Damaged' },
+  { value: 'lost', label: 'Lost' }
+]
+
+export const formatSerializedItemStatus = (value) => {
+  const normalizedValue = String(value || '').trim().toLowerCase()
+  const matchingOption = serializedItemStatusOptions.find((option) => {
+    return option.value === normalizedValue
+  })
+
+  if (matchingOption) {
+    return matchingOption.label
+  }
+
+  if (!normalizedValue) {
+    return 'Unknown'
+  }
+
+  return normalizedValue
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase())
+}
+
+export const getSerializedItemStatusClass = (value) => {
+  const normalizedValue = String(value || '').trim().toLowerCase()
+
+  if (normalizedValue === 'in_stock') {
+    return 'bg-green-100 text-green-700'
+  }
+
+  if (normalizedValue === 'sold') {
+    return 'bg-blue-100 text-blue-700'
+  }
+
+  if (normalizedValue === 'damaged') {
+    return 'bg-amber-100 text-amber-800'
+  }
+
+  if (normalizedValue === 'lost') {
+    return 'bg-red-100 text-red-700'
+  }
+
+  return 'bg-gray-100 text-gray-600'
+}
 
 export const formatCommerceCurrency = (value) => {
   return new Intl.NumberFormat('en-US', {

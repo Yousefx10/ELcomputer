@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { buildCouponResponse, getValidatedCoupon } from '../../utils/coupons'
+import { randomUUID } from 'node:crypto'
 import { requireCustomerRequest } from '../../utils/customerRequest'
 import {
   isStoreAnalyticsUuid,
@@ -7,6 +7,7 @@ import {
 } from '../../utils/storeAnalytics'
 
 const PHONE_PATTERN = /^01\d{9}$/
+const MAX_ORDER_ITEMS = 100
 
 const normalizeRequiredText = (value, fieldLabel) => {
   const normalizedValue = String(value || '').trim()
@@ -34,242 +35,154 @@ const normalizeOrderItems = (items) => {
     })
   }
 
+  if (items.length > MAX_ORDER_ITEMS) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `An order cannot contain more than ${MAX_ORDER_ITEMS} cart lines.`
+    })
+  }
+
   const aggregatedItems = new Map()
 
   items.forEach((item) => {
-    const productId = String(item?.id || item?.product_id || '').trim()
-    const quantity = Number.parseInt(item?.quantity, 10)
+    const productId = String(item?.id || item?.product_id || '').trim().toLowerCase()
+    const normalizedVariantId = String(item?.variant_id || '').trim().toLowerCase()
+    const variantId = normalizedVariantId || null
+    const quantity = Number(item?.quantity)
 
-    if (!productId || !Number.isFinite(quantity) || quantity < 1) {
+    if (
+      !isStoreAnalyticsUuid(productId) ||
+      (variantId && !isStoreAnalyticsUuid(variantId)) ||
+      !Number.isInteger(quantity) ||
+      quantity < 1 ||
+      quantity > 99
+    ) {
       throw createError({
         statusCode: 400,
         statusMessage: 'A valid product and quantity are required.'
       })
     }
 
-    aggregatedItems.set(productId, (aggregatedItems.get(productId) || 0) + quantity)
+    const key = `${productId}:${variantId || 'default'}`
+    const previousItem = aggregatedItems.get(key)
+
+    const aggregatedQuantity = Number(previousItem?.quantity || 0) + quantity
+
+    if (aggregatedQuantity > 99) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'A product option cannot have a quantity greater than 99.'
+      })
+    }
+
+    aggregatedItems.set(key, {
+      product_id: productId,
+      variant_id: variantId,
+      quantity: aggregatedQuantity
+    })
   })
 
-  return Array.from(aggregatedItems.entries()).map(([id, quantity]) => {
-    return {
-      id,
-      quantity
-    }
-  })
+  return [...aggregatedItems.values()]
 }
 
 const generateOrderNumber = () => {
   const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-  const randomPart = Math.floor(1000 + (Math.random() * 9000))
+  const randomPart = randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()
   return `ORD-${datePart}-${randomPart}`
 }
 
 const isMissingSchemaError = (error) => {
-  return error?.code === '42P01' || error?.code === '42703'
+  return error?.code === '42P01' ||
+    error?.code === '42703' ||
+    error?.code === '42883' ||
+    error?.code === 'PGRST202' ||
+    error?.code === 'PGRST204' ||
+    error?.code === 'PGRST205'
 }
 
-const buildWarehouseInventoryKey = (productId, warehouseId) => {
-  return `${String(productId)}:${String(warehouseId)}`
-}
+const throwCheckoutDatabaseError = (error) => {
+  const message = String(error?.message || '').replace(/^.*ERROR:\s*/i, '').trim()
+  const isConflict = /stock|available|serialized unit|variant|already|cart/i.test(message)
 
-const reduceProductAndWarehouseStockQuantities = async ({
-  supabaseAdmin,
-  items,
-  productMap,
-  warehouseInventoryMap,
-  allowOutOfStockPurchases
-}) => {
-  const updatedProducts = []
-  const updatedWarehouseRows = []
-
-  try {
-    for (const item of items) {
-      const product = productMap.get(String(item.product_id))
-      const currentStock = Number(product?.stock_quantity || 0)
-      const nextStockQuantity = allowOutOfStockPurchases
-        ? Math.max(0, currentStock - item.quantity)
-        : currentStock - item.quantity
-
-      let updateQuery = supabaseAdmin
-        .from('products')
-        .update({
-          stock_quantity: nextStockQuantity
-        })
-        .eq('id', item.product_id)
-
-      if (!allowOutOfStockPurchases) {
-        updateQuery = updateQuery.gte('stock_quantity', item.quantity)
-      }
-
-      const { data: updatedProduct, error: stockUpdateError } = await updateQuery
-        .select('id, stock_quantity')
-        .maybeSingle()
-
-      if (stockUpdateError) {
-        throw createError({
-          statusCode: 500,
-          statusMessage: stockUpdateError.message
-        })
-      }
-
-      if (!updatedProduct) {
-        throw createError({
-          statusCode: 409,
-          statusMessage: `${product?.title || 'This product'} no longer has enough stock for checkout.`
-        })
-      }
-
-      updatedProducts.push({
-        id: item.product_id,
-        previousStockQuantity: currentStock
-      })
-
-      const primaryWarehouseId = String(product?.primary_warehouse_id || '').trim()
-
-      if (!primaryWarehouseId) {
-        continue
-      }
-
-      const warehouseInventoryKey = buildWarehouseInventoryKey(item.product_id, primaryWarehouseId)
-      const currentWarehouseInventory = warehouseInventoryMap.get(warehouseInventoryKey)
-
-      if (!currentWarehouseInventory) {
-        if (!allowOutOfStockPurchases) {
-          throw createError({
-            statusCode: 409,
-            statusMessage: `${product?.title || 'This product'} is linked to a primary warehouse, but no warehouse inventory is configured for checkout.`
-          })
-        }
-
-        const { data: insertedInventoryRow, error: insertWarehouseError } = await supabaseAdmin
-          .from('commerce_warehouse_inventory')
-          .insert({
-            warehouse_id: primaryWarehouseId,
-            product_id: item.product_id,
-            quantity: 0,
-            average_cost: Number(product?.cost_price || 0),
-            updated_at: new Date().toISOString()
-          })
-          .select('id, quantity')
-          .single()
-
-        if (insertWarehouseError) {
-          throw createError({
-            statusCode: 500,
-            statusMessage: insertWarehouseError.message
-          })
-        }
-
-        updatedWarehouseRows.push({
-          id: insertedInventoryRow.id,
-          previousQuantity: null
-        })
-
-        warehouseInventoryMap.set(warehouseInventoryKey, {
-          id: insertedInventoryRow.id,
-          quantity: 0
-        })
-
-        continue
-      }
-
-      const currentWarehouseQuantity = Number(currentWarehouseInventory.quantity || 0)
-      const nextWarehouseQuantity = allowOutOfStockPurchases
-        ? Math.max(0, currentWarehouseQuantity - item.quantity)
-        : currentWarehouseQuantity - item.quantity
-
-      let warehouseUpdateQuery = supabaseAdmin
-        .from('commerce_warehouse_inventory')
-        .update({
-          quantity: nextWarehouseQuantity,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', currentWarehouseInventory.id)
-
-      if (!allowOutOfStockPurchases) {
-        warehouseUpdateQuery = warehouseUpdateQuery.gte('quantity', item.quantity)
-      }
-
-      const { data: updatedWarehouseRow, error: warehouseUpdateError } = await warehouseUpdateQuery
-        .select('id, quantity')
-        .maybeSingle()
-
-      if (warehouseUpdateError) {
-        throw createError({
-          statusCode: 500,
-          statusMessage: warehouseUpdateError.message
-        })
-      }
-
-      if (!updatedWarehouseRow) {
-        throw createError({
-          statusCode: 409,
-          statusMessage: `${product?.title || 'This product'} no longer has enough stock in its primary warehouse for checkout.`
-        })
-      }
-
-      updatedWarehouseRows.push({
-        id: currentWarehouseInventory.id,
-        previousQuantity: currentWarehouseQuantity
-      })
-
-      warehouseInventoryMap.set(warehouseInventoryKey, {
-        ...currentWarehouseInventory,
-        quantity: nextWarehouseQuantity
-      })
-    }
-  } catch (error) {
-    await Promise.all(
-      updatedWarehouseRows.map(async (warehouseRow) => {
-        if (warehouseRow.previousQuantity === null) {
-          const { error: rollbackDeleteError } = await supabaseAdmin
-            .from('commerce_warehouse_inventory')
-            .delete()
-            .eq('id', warehouseRow.id)
-
-          if (rollbackDeleteError) {
-            console.error('Could not roll back inserted warehouse inventory row:', rollbackDeleteError.message)
-          }
-
-          return
-        }
-
-        const { error: rollbackWarehouseError } = await supabaseAdmin
-          .from('commerce_warehouse_inventory')
-          .update({
-            quantity: warehouseRow.previousQuantity,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', warehouseRow.id)
-
-        if (rollbackWarehouseError) {
-          console.error('Could not roll back warehouse inventory:', rollbackWarehouseError.message)
-        }
-      })
-    )
-
-    await Promise.all(
-      updatedProducts.map(async (updatedProduct) => {
-        const { error: rollbackError } = await supabaseAdmin
-          .from('products')
-          .update({
-            stock_quantity: updatedProduct.previousStockQuantity
-          })
-          .eq('id', updatedProduct.id)
-
-        if (rollbackError) {
-          console.error('Could not roll back product stock:', rollbackError.message)
-        }
-      })
-    )
-
-    throw error
+  if (isMissingSchemaError(error)) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Run the latest serialized inventory migration first, then try again.'
+    })
   }
+
+  if (error?.code === '23505') {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'The order could not be finalized because of a conflict. Please try again.'
+    })
+  }
+
+  if (error?.code !== 'P0001') {
+    console.error('Checkout transaction failed:', error?.code || 'unknown')
+
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Could not create this order. Please try again.'
+    })
+  }
+
+  throw createError({
+    statusCode: isConflict ? 409 : 400,
+    statusMessage: message || 'Could not create this order.'
+  })
 }
 
 export default defineEventHandler(async (event) => {
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
+  const requestedCartId = String(body?.cart_id || '').trim()
+  const cartId = isStoreAnalyticsUuid(requestedCartId)
+    ? requestedCartId.toLowerCase()
+    : null
+
+  if (!cartId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A valid cart ID is required to place an order.'
+    })
+  }
+
+  const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
+    .from('customer_orders')
+    .select('id, order_number, subtotal_amount, discount_amount, total_amount')
+    .eq('user_id', authUser.id)
+    .eq('checkout_cart_id', cartId)
+    .maybeSingle()
+
+  if (existingOrderError) {
+    if (!isMissingSchemaError(existingOrderError)) {
+      console.error(
+        'Could not check checkout idempotency:',
+        existingOrderError.code || 'unknown'
+      )
+    }
+
+    throw createError({
+      statusCode: 500,
+      statusMessage: isMissingSchemaError(existingOrderError)
+        ? 'Run the latest serialized inventory migration first, then try again.'
+        : 'Could not verify this cart. Please try again.'
+    })
+  }
+
+  if (existingOrder) {
+    return {
+      order: {
+        id: existingOrder.id,
+        orderNumber: existingOrder.order_number,
+        subtotalAmount: Number(existingOrder.subtotal_amount || 0),
+        discountAmount: Number(existingOrder.discount_amount || 0),
+        totalAmount: Number(existingOrder.total_amount || 0),
+        coupon: null
+      }
+    }
+  }
 
   const orderItems = normalizeOrderItems(body?.items)
   const firstName = normalizeRequiredText(body?.address?.first_name, 'First name')
@@ -282,10 +195,6 @@ export default defineEventHandler(async (event) => {
   const shippingMethod = normalizeOptionalText(body?.shipping_method)
   const paymentMethod = normalizeOptionalText(body?.payment_method)
   const couponCode = String(body?.coupon_code || '').trim().toUpperCase()
-  const requestedCartId = String(body?.cart_id || '').trim()
-  const cartId = isStoreAnalyticsUuid(requestedCartId)
-    ? requestedCartId.toLowerCase()
-    : null
 
   if (!PHONE_PATTERN.test(phone)) {
     throw createError({
@@ -294,7 +203,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  let allowOutOfStockPurchases = false
   const { data: siteSettings, error: siteSettingsError } = await supabaseAdmin
     .from('site_settings')
     .select('allow_out_of_stock_purchases')
@@ -302,262 +210,137 @@ export default defineEventHandler(async (event) => {
     .maybeSingle()
 
   if (siteSettingsError && !isMissingSchemaError(siteSettingsError)) {
+    console.error(
+      'Could not load checkout settings:',
+      siteSettingsError.code || 'unknown'
+    )
+
     throw createError({
       statusCode: 500,
-      statusMessage: siteSettingsError.message
+      statusMessage: 'Could not load the checkout settings. Please try again.'
     })
   }
 
-  allowOutOfStockPurchases = Boolean(siteSettings?.allow_out_of_stock_purchases)
-
-  const productIds = [...new Set(orderItems.map((item) => item.id))]
-  const { data: products, error: productsError } = await supabaseAdmin
-    .from('products')
-    .select(`
-      id,
-      title,
-      slug,
-      image_url,
-      price,
-      stock_quantity,
-      cost_price,
-      primary_warehouse_id,
-      is_published
-    `)
-    .in('id', productIds)
-
-  if (productsError) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: productsError.message
-    })
-  }
-
-  const productMap = new Map((products || []).map((product) => [String(product.id), product]))
-  const missingItem = orderItems.find((item) => !productMap.has(item.id))
-
-  const primaryWarehouseIds = [
-    ...new Set(
-      (products || [])
-        .map((product) => String(product.primary_warehouse_id || '').trim())
-        .filter(Boolean)
-    )
-  ]
-
-  let warehouseInventoryMap = new Map()
-
-  if (primaryWarehouseIds.length) {
-    const { data: warehouseInventoryRows, error: warehouseInventoryError } = await supabaseAdmin
-      .from('commerce_warehouse_inventory')
-      .select('id, warehouse_id, product_id, quantity')
-      .in('product_id', productIds)
-      .in('warehouse_id', primaryWarehouseIds)
-
-    if (warehouseInventoryError) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: warehouseInventoryError.message
-      })
-    }
-
-    warehouseInventoryMap = new Map(
-      (warehouseInventoryRows || []).map((row) => [
-        buildWarehouseInventoryKey(row.product_id, row.warehouse_id),
-        row
-      ])
-    )
-  }
-
-  if (missingItem) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'One or more products in the cart are no longer available.'
-    })
-  }
-
-  const normalizedItems = orderItems.map((item) => {
-    const product = productMap.get(item.id)
-
-    if (!product.is_published) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `${product.title} is no longer available.`
-      })
-    }
-
-    if (!allowOutOfStockPurchases && Number(product.stock_quantity || 0) < item.quantity) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `${product.title} does not have enough stock for the requested quantity.`
-      })
-    }
-
-    const primaryWarehouseId = String(product.primary_warehouse_id || '').trim()
-    if (primaryWarehouseId && !allowOutOfStockPurchases) {
-      const warehouseInventoryRow = warehouseInventoryMap.get(
-        buildWarehouseInventoryKey(product.id, primaryWarehouseId)
-      )
-
-      if (!warehouseInventoryRow) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: `${product.title} is linked to a primary warehouse, but no warehouse inventory is configured yet.`
-        })
-      }
-
-      if (Number(warehouseInventoryRow.quantity || 0) < item.quantity) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: `${product.title} does not have enough stock in its primary warehouse.`
-        })
-      }
-    }
-
-    const unitPrice = Number(product.price || 0)
-
-    return {
-      product_id: product.id,
-      product_title: product.title,
-      product_slug: product.slug || null,
-      image_url: product.image_url || null,
-      unit_price: unitPrice,
-      quantity: item.quantity,
-      line_total: Number((unitPrice * item.quantity).toFixed(2))
-    }
-  })
-
-  const subtotalAmount = Number(normalizedItems.reduce((total, item) => total + item.line_total, 0).toFixed(2))
-  const validatedCoupon = couponCode
-    ? await getValidatedCoupon(supabaseAdmin, couponCode, subtotalAmount)
-    : null
-  const discountAmount = Number(validatedCoupon?.discountAmount || 0)
-  const totalAmount = Number(Math.max(0, subtotalAmount - discountAmount).toFixed(2))
+  const allowOutOfStockPurchases = Boolean(siteSettings?.allow_out_of_stock_purchases)
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
-  const orderNumber = generateOrderNumber()
+  const orderPayload = {
+    order_number: generateOrderNumber(),
+    coupon_code: couponCode || null,
+    first_name: firstName,
+    last_name: lastName || null,
+    email,
+    phone,
+    street_address: streetAddress,
+    city,
+    governorate,
+    shipping_method: shippingMethod,
+    payment_method: paymentMethod
+  }
 
-  const { data: orderRecord, error: orderError } = await supabaseAdmin
-    .from('customer_orders')
-    .insert({
-      user_id: authUser.id,
-      order_number: orderNumber,
-      status: 'pending_payment',
-      subtotal_amount: subtotalAmount,
-      discount_amount: discountAmount,
-      total_amount: totalAmount,
-      coupon_code: validatedCoupon?.coupon?.code || null,
-      first_name: firstName,
-      last_name: lastName || null,
-      email,
-      phone,
-      street_address: streetAddress,
-      city,
-      governorate,
-      shipping_method: shippingMethod,
-      payment_method: paymentMethod,
-      updated_at: new Date().toISOString()
-    })
-    .select('*')
-    .single()
+  const { data: orderResult, error: orderError } = await supabaseAdmin.rpc(
+    'commerce_create_customer_order',
+    {
+      p_user_id: authUser.id,
+      p_order: orderPayload,
+      p_items: orderItems,
+      p_allow_out_of_stock: allowOutOfStockPurchases,
+      p_cart_id: cartId
+    }
+  )
 
   if (orderError) {
+    throwCheckoutDatabaseError(orderError)
+  }
+
+  const rpcResult = Array.isArray(orderResult)
+    ? orderResult[0]
+    : orderResult || {}
+  let orderRecord = rpcResult.order && typeof rpcResult.order === 'object'
+    ? rpcResult.order
+    : rpcResult
+  const orderId = orderRecord.id || rpcResult.order_id || rpcResult.orderId
+
+  if (!orderId) {
     throw createError({
-      statusCode: 400,
-      statusMessage: orderError.message
+      statusCode: 500,
+      statusMessage: 'The order transaction completed without returning an order ID.'
     })
   }
 
-  const { error: orderItemsError } = await supabaseAdmin
-    .from('customer_order_items')
-    .insert(normalizedItems.map((item) => ({
-      order_id: orderRecord.id,
-      ...item
-    })))
-
-  if (orderItemsError) {
-    await supabaseAdmin
+  if (!orderRecord.order_number) {
+    const { data: storedOrder, error: storedOrderError } = await supabaseAdmin
       .from('customer_orders')
-      .delete()
-      .eq('id', orderRecord.id)
+      .select('*')
+      .eq('id', orderId)
+      .maybeSingle()
 
-    throw createError({
-      statusCode: 400,
-      statusMessage: orderItemsError.message
-    })
-  }
+    if (storedOrderError || !storedOrder) {
+      if (storedOrderError) {
+        console.error(
+          'Could not load the created checkout order:',
+          storedOrderError.code || 'unknown'
+        )
+      }
 
-  try {
-    await reduceProductAndWarehouseStockQuantities({
-      supabaseAdmin,
-      items: normalizedItems,
-      productMap,
-      warehouseInventoryMap,
-      allowOutOfStockPurchases
-    })
-  } catch (stockError) {
-    const { error: cleanupError } = await supabaseAdmin
-      .from('customer_orders')
-      .delete()
-      .eq('id', orderRecord.id)
-
-    if (cleanupError) {
-      console.error('Could not clean up order after stock update failure:', cleanupError.message)
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Could not load the created order.'
+      })
     }
 
-    throw stockError
+    orderRecord = storedOrder
   }
 
-  const { error: profileUpdateError } = await supabaseAdmin
-    .from('customer_profiles')
-    .upsert({
-      id: authUser.id,
-      email,
-      full_name: fullName || authUser.email?.split('@')[0] || 'Customer',
-      phone,
-      address_line_1: streetAddress,
-      city,
-      state: governorate,
-      country: 'Egypt',
-      updated_at: new Date().toISOString()
-    })
+  const wasCreated = rpcResult.created !== false &&
+    rpcResult.was_created !== false &&
+    rpcResult.wasCreated !== false
 
-  if (validatedCoupon?.coupon) {
-    const { error: couponUpdateError } = await supabaseAdmin
-      .from('site_coupons')
-      .update({
-        usage_count: Number(validatedCoupon.coupon.usage_count || 0) + 1,
+  let profileUpdateError = null
+
+  if (wasCreated) {
+    const profileUpdateResult = await supabaseAdmin
+      .from('customer_profiles')
+      .upsert({
+        id: authUser.id,
+        email,
+        full_name: fullName || authUser.email?.split('@')[0] || 'Customer',
+        phone,
+        address_line_1: streetAddress,
+        city,
+        state: governorate,
+        country: 'Egypt',
         updated_at: new Date().toISOString()
       })
-      .eq('id', validatedCoupon.coupon.id)
 
-    if (couponUpdateError) {
-      console.error('Could not update coupon usage count:', couponUpdateError.message)
-    }
+    profileUpdateError = profileUpdateResult.error
   }
 
   if (profileUpdateError) {
     console.error('Could not update customer profile after checkout:', profileUpdateError.message)
   }
 
-  try {
-    await recordStoreOrderCreated({
-      event,
-      supabaseAdmin,
-      userId: authUser.id,
-      orderId: orderRecord.id,
-      cartId
-    })
-  } catch {
-    console.error('Could not record checkout analytics.')
+  if (wasCreated) {
+    try {
+      await recordStoreOrderCreated({
+        event,
+        supabaseAdmin,
+        userId: authUser.id,
+        orderId,
+        cartId
+      })
+    } catch {
+      console.error('Could not record checkout analytics.')
+    }
   }
 
   return {
     order: {
-      id: orderRecord.id,
+      id: orderId,
       orderNumber: orderRecord.order_number,
-      subtotalAmount,
-      discountAmount,
-      totalAmount,
-      coupon: buildCouponResponse(validatedCoupon?.coupon, discountAmount)
+      subtotalAmount: Number(orderRecord.subtotal_amount || 0),
+      discountAmount: Number(orderRecord.discount_amount || 0),
+      totalAmount: Number(orderRecord.total_amount || 0),
+      coupon: null
     }
   }
 })

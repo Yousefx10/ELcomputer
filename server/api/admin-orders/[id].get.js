@@ -52,6 +52,34 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  let serializedUnitsByOrderItem = new Map()
+  const serializedOrderItemIds = (orderItems || [])
+    .filter((item) => item.variant_id)
+    .map((item) => item.id)
+
+  if (serializedOrderItemIds.length) {
+    const { data: serializedUnits, error: serializedUnitsError } = await supabaseAdmin
+      .from('commerce_serialized_units')
+      .select('id, customer_order_item_id, unit_code, status')
+      .in('customer_order_item_id', serializedOrderItemIds)
+      .order('unit_code')
+
+    if (serializedUnitsError) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: serializedUnitsError.message
+      })
+    }
+
+    serializedUnitsByOrderItem = (serializedUnits || []).reduce((map, unit) => {
+      const key = String(unit.customer_order_item_id)
+      const existingUnits = map.get(key) || []
+      existingUnits.push(unit)
+      map.set(key, existingUnits)
+      return map
+    }, new Map())
+  }
+
   let customerProfile = null
 
   if (orderRecord.user_id) {
@@ -84,7 +112,12 @@ export default defineEventHandler(async (event) => {
 
   return {
     order: normalizeAdminOrderRecord(orderRecord),
-    items: (orderItems || []).map(normalizeAdminOrderItemRecord),
+    items: (orderItems || []).map((item) => {
+      return {
+        ...normalizeAdminOrderItemRecord(item),
+        serialized_units: serializedUnitsByOrderItem.get(String(item.id)) || []
+      }
+    }),
     customer: customerProfile
   }
 })

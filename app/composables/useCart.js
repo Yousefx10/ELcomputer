@@ -25,6 +25,15 @@ const normalizePositiveInteger = (value, fallback = 1) => {
   return parsedValue
 }
 
+const normalizeOptionalIdentifier = (value) => {
+  const normalizedValue = String(value || '').trim()
+  return normalizedValue || null
+}
+
+const buildCartKey = (productId, variantId = null) => {
+  return `${String(productId)}:${variantId || 'default'}`
+}
+
 const getMaximumCartQuantity = (stockQuantity, allowOutOfStockPurchases = false) => {
   if (allowOutOfStockPurchases) {
     return 99
@@ -44,17 +53,37 @@ const normalizeCartItem = (item) => {
     return null
   }
 
+  const productId = String(item.id)
+  const variant = item.variant && typeof item.variant === 'object'
+    ? item.variant
+    : null
+  const variantId = normalizeOptionalIdentifier(item.variant_id || variant?.id)
+  const stockQuantity = Number(
+    variantId
+      ? (item.variant_stock_quantity ?? variant?.stock_quantity ?? item.stock_quantity ?? 0)
+      : (item.stock_quantity || 0)
+  )
+  const isSerialized = Boolean(item.is_serialized)
   const allowOutOfStockPurchases = Boolean(item.allow_out_of_stock_purchases)
-  const maximumQuantity = getMaximumCartQuantity(item.stock_quantity, allowOutOfStockPurchases)
+    && !isSerialized
+  const maximumQuantity = getMaximumCartQuantity(stockQuantity, allowOutOfStockPurchases)
 
   return {
-    id: String(item.id),
+    id: productId,
+    cart_key: buildCartKey(productId, variantId),
+    variant_id: variantId,
+    variant_name: String(item.variant_name ?? variant?.name ?? ''),
+    variant_code: String(item.variant_code ?? variant?.code ?? ''),
+    variant_sku: String(item.variant_sku ?? variant?.sku ?? ''),
+    variant_color_name: String(item.variant_color_name ?? variant?.color_name ?? ''),
+    variant_color_hex: String(item.variant_color_hex ?? variant?.color_hex ?? ''),
+    is_serialized: isSerialized,
     slug: String(item.slug || ''),
     title: String(item.title || 'Product'),
     image_url: String(item.image_url || ''),
     price: Number(item.price || 0),
     old_price: Number(item.old_price || 0),
-    stock_quantity: Number(item.stock_quantity || 0),
+    stock_quantity: stockQuantity,
     cost_price: Number(item.cost_price || 0),
     brand_name: String(item.brand_name || item.brand?.name || ''),
     category_name: String(item.category_name || item.category?.name || ''),
@@ -156,6 +185,13 @@ export const useCart = () => {
     return cartId.value
   }
 
+  const findCartItem = (identifier) => {
+    const identifierValue = String(identifier || '')
+
+    return items.value.find((item) => item.cart_key === identifierValue)
+      || items.value.find((item) => item.id === identifierValue)
+  }
+
   const trackCartEvent = (eventName, payload = {}) => {
     try {
       trackEvent(eventName, payload)
@@ -193,20 +229,21 @@ export const useCart = () => {
     cartId.value = ''
   }
 
-  const removeItem = (productId, options = {}) => {
-    const productIdValue = String(productId)
-    const existingItem = items.value.find((item) => item.id === productIdValue)
+  const removeItem = (cartKey, options = {}) => {
+    const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
       return
     }
 
     const previousCartId = cartId.value
-    items.value = items.value.filter((item) => item.id !== productIdValue)
+    items.value = items.value.filter((item) => item.cart_key !== existingItem.cart_key)
     resetCoupon()
 
     trackCartEvent('remove_from_cart', {
       productId: existingItem.id,
+      variantId: existingItem.variant_id,
+      cartKey: existingItem.cart_key,
       cartId: previousCartId,
       quantity: normalizePositiveInteger(existingItem.quantity, 1),
       resultingQuantity: 0,
@@ -218,9 +255,8 @@ export const useCart = () => {
     }
   }
 
-  const setQuantity = (productId, nextQuantity, options = {}) => {
-    const productIdValue = String(productId)
-    const existingItem = items.value.find((item) => item.id === productIdValue)
+  const setQuantity = (cartKey, nextQuantity, options = {}) => {
+    const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
       return
@@ -238,7 +274,7 @@ export const useCart = () => {
     }
 
     items.value = items.value.map((item) => {
-      if (item.id !== productIdValue) {
+      if (item.cart_key !== existingItem.cart_key) {
         return item
       }
 
@@ -251,6 +287,8 @@ export const useCart = () => {
     resetCoupon()
     trackCartEvent('cart_quantity_changed', {
       productId: existingItem.id,
+      variantId: existingItem.variant_id,
+      cartKey: existingItem.cart_key,
       cartId: cartId.value,
       quantity: Math.abs(normalizedQuantity - previousQuantity),
       resultingQuantity: normalizedQuantity,
@@ -258,29 +296,29 @@ export const useCart = () => {
     })
   }
 
-  const incrementItem = (productId, options = {}) => {
-    const existingItem = items.value.find((item) => item.id === String(productId))
+  const incrementItem = (cartKey, options = {}) => {
+    const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
       return
     }
 
-    setQuantity(existingItem.id, existingItem.quantity + 1, options)
+    setQuantity(existingItem.cart_key, existingItem.quantity + 1, options)
   }
 
-  const decrementItem = (productId, options = {}) => {
-    const existingItem = items.value.find((item) => item.id === String(productId))
+  const decrementItem = (cartKey, options = {}) => {
+    const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
       return
     }
 
     if (existingItem.quantity <= 1) {
-      removeItem(existingItem.id, options)
+      removeItem(existingItem.cart_key, options)
       return
     }
 
-    setQuantity(existingItem.id, existingItem.quantity - 1, options)
+    setQuantity(existingItem.cart_key, existingItem.quantity - 1, options)
   }
 
   const addItem = (product, quantity = 1, options = {}) => {
@@ -292,7 +330,7 @@ export const useCart = () => {
     if (
       !normalizedProduct ||
       (
-        normalizedProduct.stock_quantity === 0 &&
+        normalizedProduct.stock_quantity <= 0 &&
         !normalizedProduct.allow_out_of_stock_purchases
       )
     ) {
@@ -302,7 +340,9 @@ export const useCart = () => {
       }
     }
 
-    const existingItem = items.value.find((item) => item.id === normalizedProduct.id)
+    const existingItem = items.value.find((item) => {
+      return item.cart_key === normalizedProduct.cart_key
+    })
 
     if (existingItem) {
       const maximumQuantity = getMaximumCartQuantity(
@@ -313,7 +353,7 @@ export const useCart = () => {
       const addedQuantity = Math.max(0, nextQuantity - existingItem.quantity)
 
       items.value = items.value.map((item) => {
-        if (item.id !== normalizedProduct.id) {
+        if (item.cart_key !== normalizedProduct.cart_key) {
           return item
         }
 
@@ -328,6 +368,8 @@ export const useCart = () => {
       if (addedQuantity > 0) {
         trackCartEvent('add_to_cart', {
           productId: normalizedProduct.id,
+          variantId: normalizedProduct.variant_id,
+          cartKey: normalizedProduct.cart_key,
           cartId: ensureCartId(),
           quantity: addedQuantity,
           resultingQuantity: nextQuantity,
@@ -346,6 +388,8 @@ export const useCart = () => {
     resetCoupon()
     trackCartEvent('add_to_cart', {
       productId: normalizedProduct.id,
+      variantId: normalizedProduct.variant_id,
+      cartKey: normalizedProduct.cart_key,
       cartId: nextCartId,
       quantity: normalizedProduct.quantity,
       resultingQuantity: normalizedProduct.quantity,

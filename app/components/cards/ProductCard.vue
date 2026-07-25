@@ -86,13 +86,19 @@
       <button
         type="button"
         :disabled="!isPurchasable"
+        :aria-label="requiresOptionSelection ? `Choose options for ${product.title}` : `Add ${product.title} to cart`"
         class="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl text-3xl font-light text-white transition sm:h-16 sm:w-16"
         :class="!isPurchasable
           ? 'cursor-not-allowed bg-gray-300'
           : 'bg-blue-600 hover:bg-blue-700'"
         @click="handleAddToCart"
       >
-        +
+        <Icon
+          v-if="requiresOptionSelection"
+          name="lucide:list-plus"
+          size="24"
+        />
+        <span v-else>+</span>
       </button>
     </div>
   </article>
@@ -116,8 +122,41 @@ const numericOldPrice = computed(() => Number(props.product.old_price || 0))
 const brandName = computed(() => String(props.product.brand?.name || '').trim())
 const categoryName = computed(() => String(props.product.category?.name || '').trim())
 const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
-const allowOutOfStockPurchases = computed(() => Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases))
+const allowOutOfStockPurchases = computed(() => {
+  return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
+    && !props.product.is_serialized
+})
 const isPurchasable = computed(() => !isOutOfStock.value || allowOutOfStockPurchases.value)
+const embeddedVariants = computed(() => {
+  if (Array.isArray(props.product.variants)) {
+    return props.product.variants
+  }
+
+  if (Array.isArray(props.product.product_variants)) {
+    return props.product.product_variants
+  }
+
+  return null
+})
+const requiresOptionSelection = computed(() => {
+  if (props.product.is_serialized) {
+    return true
+  }
+
+  if (embeddedVariants.value) {
+    return embeddedVariants.value.some((variant) => variant?.is_active !== false)
+  }
+
+  if (typeof props.product.has_variants === 'boolean') {
+    return props.product.has_variants
+  }
+
+  if (Number(props.product.variant_count || 0) > 0) {
+    return true
+  }
+
+  return false
+})
 
 const hasDiscount = computed(() => {
   return numericOldPrice.value > numericPrice.value
@@ -140,7 +179,24 @@ const formatPrice = (value) => {
   return `${priceFormatter.format(Number(value || 0))} EGP`
 }
 
-const handleAddToCart = () => {
+const openProductOptions = async () => {
+  if (!props.product.slug) {
+    return
+  }
+
+  await navigateTo(`/products/${props.product.slug}`)
+}
+
+const handleAddToCart = async () => {
+  if (!isPurchasable.value) {
+    return
+  }
+
+  if (requiresOptionSelection.value) {
+    await openProductOptions()
+    return
+  }
+
   addItem({
     ...props.product,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value

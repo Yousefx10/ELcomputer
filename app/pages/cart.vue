@@ -39,12 +39,12 @@
         <section class="space-y-4">
           <article
             v-for="item in items"
-            :key="item.id"
+            :key="item.cart_key"
             class="rounded-2xl bg-white p-5 shadow"
           >
             <div class="flex flex-col gap-5 sm:flex-row">
               <NuxtLink
-                :to="item.slug ? `/products/${item.slug}` : '/'"
+                :to="getProductLink(item)"
                 class="flex h-28 w-full max-w-32 items-center justify-center rounded-2xl border bg-gray-50 p-3"
               >
                 <img
@@ -61,7 +61,7 @@
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div class="min-w-0">
                     <NuxtLink
-                      :to="item.slug ? `/products/${item.slug}` : '/'"
+                      :to="getProductLink(item)"
                       class="line-clamp-2 text-lg font-bold text-gray-900"
                     >
                       {{ item.title }}
@@ -71,6 +71,26 @@
                       {{ item.brand_name || item.category_name || 'Store product' }}
                     </p>
 
+                    <div
+                      v-if="item.variant_id"
+                      class="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600"
+                    >
+                      <span
+                        v-if="getVariantColor(item)"
+                        class="h-4 w-4 rounded-full border border-black/10"
+                        :style="{ backgroundColor: getVariantColor(item) }"
+                      />
+                      <span class="font-semibold">
+                        {{ item.variant_name || item.variant_color_name || 'Selected option' }}
+                      </span>
+                      <span
+                        v-if="item.variant_code || item.variant_sku"
+                        class="text-xs text-gray-400"
+                      >
+                        {{ item.variant_code || item.variant_sku }}
+                      </span>
+                    </div>
+
                     <p class="mt-3 text-base font-semibold text-gray-900">
                       {{ formatCurrency(item.price) }}
                     </p>
@@ -79,7 +99,7 @@
                   <button
                     type="button"
                     class="self-start text-sm font-medium text-red-600 hover:text-red-700"
-                    @click="removeItem(item.id)"
+                    @click="removeItem(item.cart_key)"
                   >
                     Remove
                   </button>
@@ -90,7 +110,7 @@
                     <button
                       type="button"
                       class="h-11 w-11 text-xl text-gray-700 transition hover:bg-gray-100"
-                      @click="decrementItem(item.id)"
+                      @click="decrementItem(item.cart_key)"
                     >
                       -
                     </button>
@@ -103,7 +123,7 @@
                       type="button"
                       class="h-11 w-11 text-xl text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
                       :disabled="item.quantity >= getMaximumQuantity(item)"
-                      @click="incrementItem(item.id)"
+                      @click="incrementItem(item.cart_key)"
                     >
                       +
                     </button>
@@ -186,6 +206,26 @@ const formatCurrency = (value) => {
     currency: 'EGP',
     maximumFractionDigits: 2
   }).format(Number(value || 0))
+}
+
+const getProductLink = (item) => {
+  if (!item?.slug) {
+    return '/'
+  }
+
+  return {
+    path: `/products/${item.slug}`,
+    query: item.variant_id
+      ? {
+          variant: item.variant_id
+        }
+      : {}
+  }
+}
+
+const getVariantColor = (item) => {
+  const color = String(item?.variant_color_hex || '').trim()
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : ''
 }
 
 const getMaximumQuantity = (item) => {
