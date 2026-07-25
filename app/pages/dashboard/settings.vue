@@ -64,7 +64,7 @@
                 section="site_logo"
                 preview-alt="Site logo"
                 preview-height-class="h-24"
-                help-text="Used in the public navbar and dashboard header."
+                help-text="Used across the public storefront branding."
               />
 
               <div>
@@ -222,11 +222,11 @@
                     </div>
                   </template>
 
-                  <div v-else class="flex h-full gap-2">
+                  <div v-else class="flex h-full flex-row-reverse gap-2">
                     <div class="w-1/3 rounded-lg bg-white p-2 shadow-sm">
                       <div class="h-3 rounded bg-gray-800" />
                       <div class="mt-3 space-y-1.5">
-                        <span class="block h-3 rounded bg-lime-300" />
+                        <span class="block h-3 rounded bg-blue-600" />
                         <span class="block h-3 rounded bg-gray-200" />
                         <span class="block h-3 rounded bg-gray-200" />
                         <span class="block h-3 rounded bg-gray-200" />

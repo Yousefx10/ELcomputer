@@ -1,7 +1,7 @@
 <template>
   <aside
     id="detailed-dashboard-navigation"
-    class="detailed-dashboard-sidebar fixed inset-y-0 start-0 z-50 flex w-72 flex-col overflow-hidden bg-white shadow-2xl transition-transform duration-200 lg:sticky lg:top-6 lg:z-0 lg:h-[calc(100vh-3rem)] lg:shrink-0 lg:rounded-2xl lg:shadow"
+    class="detailed-dashboard-sidebar fixed inset-y-0 right-0 z-50 flex w-72 flex-col overflow-hidden bg-white shadow-2xl transition-transform duration-200 lg:sticky lg:right-auto lg:top-6 lg:z-0 lg:h-[calc(100vh-3rem)] lg:shrink-0 lg:rounded-2xl lg:shadow"
     :class="{ 'is-open': open }"
   >
     <div class="flex items-center justify-between gap-3 border-b px-5 py-5">
@@ -11,8 +11,8 @@
         @click="$emit('close')"
       >
         <img
-          :src="logoUrl || '/images/dashboard-logo.png'"
-          :alt="`${siteName} Dashboard`"
+          src="/images/dashboard-logo.png"
+          alt="ELcomputer Dashboard"
           class="h-10 max-w-40 object-contain object-left"
         >
       </NuxtLink>
@@ -47,7 +47,7 @@
             <span
               class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
               :class="activeGroup?.key === group.key
-                ? 'bg-black text-white'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 text-gray-600'"
             >
               <Icon :name="group.icon" size="18" />
@@ -68,7 +68,7 @@
             :to="group.to"
             class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition"
             :class="activeGroup?.key === group.key
-              ? 'bg-black text-white'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'text-gray-700 hover:bg-gray-100'"
             :aria-current="activeGroup?.key === group.key ? 'page' : undefined"
             @click="$emit('close')"
@@ -96,7 +96,7 @@
               :to="item.to"
               class="mb-1 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition last:mb-0"
               :class="activeItem?.key === item.key
-                ? 'bg-lime-300 text-gray-950 shadow-sm'
+                ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'"
               :aria-current="activeItem?.key === item.key ? 'page' : undefined"
               @click="$emit('close')"
@@ -139,17 +139,9 @@
 
 <script setup>
 const props = defineProps({
-  logoUrl: {
-    type: String,
-    default: ''
-  },
   open: {
     type: Boolean,
     default: false
-  },
-  siteName: {
-    type: String,
-    default: 'ELcomputer'
   }
 })
 
@@ -189,11 +181,7 @@ const adminInitials = computed(() => {
 })
 
 const isGroupExpanded = (groupKey) => {
-  if (Object.prototype.hasOwnProperty.call(expandedGroups, groupKey)) {
-    return expandedGroups[groupKey]
-  }
-
-  return activeGroup.value?.key === groupKey
+  return Boolean(expandedGroups[groupKey])
 }
 
 const toggleGroup = (groupKey) => {
@@ -201,8 +189,10 @@ const toggleGroup = (groupKey) => {
 }
 
 watch(
-  () => activeGroup.value?.key,
-  (groupKey) => {
+  () => activeItem.value?.key,
+  () => {
+    const groupKey = activeGroup.value?.key
+
     if (groupKey) {
       expandedGroups[groupKey] = true
     }
@@ -215,7 +205,7 @@ watch(
 
 <style scoped>
 .detailed-dashboard-sidebar {
-  transform: translateX(-100%);
+  transform: translateX(100%);
   transition:
     transform 200ms ease,
     visibility 0s linear 200ms;
@@ -228,17 +218,8 @@ watch(
   visibility: visible;
 }
 
-:global([dir='rtl']) .detailed-dashboard-sidebar {
-  transform: translateX(100%);
-}
-
-:global([dir='rtl']) .detailed-dashboard-sidebar.is-open {
-  transform: translateX(0);
-}
-
 @media (min-width: 1024px) {
-  .detailed-dashboard-sidebar,
-  :global([dir='rtl']) .detailed-dashboard-sidebar {
+  .detailed-dashboard-sidebar {
     transform: none;
     visibility: visible;
   }

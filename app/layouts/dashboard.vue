@@ -7,8 +7,8 @@
       <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
         <NuxtLink to="/dashboard" class="flex items-center">
           <img
-            :src="dashboardLogoUrl || '/images/dashboard-logo.png'"
-            :alt="`${dashboardSiteName} Dashboard`"
+            src="/images/dashboard-logo.png"
+            alt="ELcomputer Dashboard"
             class="h-10 max-w-48 object-contain"
           >
         </NuxtLink>
@@ -39,7 +39,7 @@
 
     <div
       v-else
-      class="mx-auto min-h-screen max-w-[1600px] px-3 py-3 lg:flex lg:items-start lg:gap-6 lg:px-6 lg:py-6"
+      class="detailed-dashboard-shell mx-auto min-h-screen max-w-[1600px] px-3 py-3 lg:flex lg:flex-row-reverse lg:items-start lg:gap-6 lg:px-6 lg:py-6"
     >
       <button
         v-if="detailedSidebarOpen"
@@ -51,8 +51,6 @@
 
       <LayoutDashboardSideBar
         :open="detailedSidebarOpen"
-        :logo-url="dashboardLogoUrl"
-        :site-name="dashboardSiteName"
         @close="detailedSidebarOpen = false"
         @logout="logout"
       />
@@ -62,7 +60,20 @@
         :inert="detailedSidebarOpen || undefined"
       >
         <header class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow">
-          <div class="flex min-w-0 items-center gap-3">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">
+              {{ activeGroup?.detailedLabel || activeGroup?.label || 'Dashboard' }}
+            </p>
+            <p class="truncate font-bold text-gray-900">
+              {{ activeItem?.detailedLabel || activeItem?.label || activeGroup?.label || 'Dashboard' }}
+            </p>
+          </div>
+
+          <div class="ms-auto flex shrink-0 items-center gap-3">
+            <div class="hidden rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
+              {{ dashboardDateTime }}
+            </div>
+
             <button
               type="button"
               class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black text-white lg:hidden"
@@ -73,19 +84,6 @@
             >
               <Icon name="lucide:menu" size="21" />
             </button>
-
-            <div class="min-w-0">
-              <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                {{ activeGroup?.detailedLabel || activeGroup?.label || 'Dashboard' }}
-              </p>
-              <p class="truncate font-bold text-gray-900">
-                {{ activeItem?.detailedLabel || activeItem?.label || activeGroup?.label || 'Dashboard' }}
-              </p>
-            </div>
-          </div>
-
-          <div class="hidden rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
-            {{ dashboardDateTime }}
           </div>
         </header>
 
@@ -122,9 +120,6 @@ let authStateSubscription
 useHead(() => ({
   title: documentTitle.value
 }))
-
-const dashboardSiteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
-const dashboardLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
 
 const updateDashboardDateTime = () => {
   dashboardDateTime.value = new Intl.DateTimeFormat('en-US', {
@@ -219,3 +214,11 @@ onUnmounted(() => {
   }
 })
 </script>
+
+<style scoped>
+@media (min-width: 1024px) {
+  :global([dir='rtl']) .detailed-dashboard-shell {
+    flex-direction: row;
+  }
+}
+</style>
