@@ -1,22 +1,35 @@
 import { createError, getHeader, getQuery } from 'h3'
 import { getSupabaseAdminClient } from '../../utils/supabaseAdmin'
-import { isUuid, mapPublicReview } from '../../utils/productReviews'
+import {
+  getProductReviewEligibility,
+  isUuid,
+  mapPublicReview
+} from '../../utils/productReviews'
 
-const getOptionalUserId = async (event, supabaseAdmin) => {
+const getOptionalAuthUser = async (event, supabaseAdmin) => {
   const authorizationHeader = getHeader(event, 'authorization')
 
   if (!authorizationHeader?.startsWith('Bearer ')) {
-    return ''
+    return {
+      authUser: null,
+      authStatus: 'anonymous'
+    }
   }
 
   const accessToken = authorizationHeader.slice('Bearer '.length)
   const { data, error } = await supabaseAdmin.auth.getUser(accessToken)
 
   if (error || !data.user) {
-    return ''
+    return {
+      authUser: null,
+      authStatus: 'invalid'
+    }
   }
 
-  return data.user.id
+  return {
+    authUser: data.user,
+    authStatus: 'authenticated'
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -63,7 +76,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const userId = await getOptionalUserId(event, supabaseAdmin)
+  const { authUser, authStatus } = await getOptionalAuthUser(event, supabaseAdmin)
+  const userId = authUser?.id || ''
   const reviewsPromise = supabaseAdmin
     .from('product_reviews')
     .select(`
@@ -87,11 +101,40 @@ export default defineEventHandler(async (event) => {
         .eq('product_id', productId)
         .eq('user_id', userId)
     : Promise.resolve({ count: 0, error: null })
+  const reviewEligibilityPromise = authUser
+    ? getProductReviewEligibility({
+        supabaseAdmin,
+        authUser
+      }).catch(() => ({
+        canReview: false,
+        code: 'eligibility_unavailable',
+        eligibleAt: '',
+        remainingSeconds: 0,
+        hasCompletedPurchase: null,
+        message: 'We could not verify your review eligibility right now. Please try again.'
+      }))
+    : Promise.resolve(
+        authStatus === 'invalid'
+          ? {
+              canReview: false,
+              code: 'session_invalid',
+              eligibleAt: '',
+              remainingSeconds: 0,
+              hasCompletedPurchase: null,
+              message: 'Your session could not be verified. Please log in again.'
+            }
+          : null
+      )
 
   const [
     { data: reviewRecords, count, error: reviewsError },
-    { count: currentUserReviewCount, error: currentUserReviewError }
-  ] = await Promise.all([reviewsPromise, hasReviewedPromise])
+    { count: currentUserReviewCount, error: currentUserReviewError },
+    reviewEligibility
+  ] = await Promise.all([
+    reviewsPromise,
+    hasReviewedPromise,
+    reviewEligibilityPromise
+  ])
 
   const encounteredError = reviewsError || currentUserReviewError
 
@@ -108,6 +151,7 @@ export default defineEventHandler(async (event) => {
     page,
     pageSize,
     averageRating: Number(product.average_rating || 0),
-    hasReviewed: Boolean(currentUserReviewCount)
+    hasReviewed: Boolean(currentUserReviewCount),
+    reviewEligibility
   }
 })

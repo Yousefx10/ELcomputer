@@ -215,6 +215,44 @@
             </div>
           </div>
 
+          <div
+            v-else-if="!reviewEligibilityChecked"
+            class="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-gray-700"
+            role="status"
+          >
+            <div class="flex items-center gap-3">
+              <Icon name="lucide:loader-circle" size="22" class="shrink-0 animate-spin" />
+              <p class="font-semibold">Checking review eligibility...</p>
+            </div>
+          </div>
+
+          <div
+            v-else-if="!reviewEligibility.canReview"
+            class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
+            role="status"
+          >
+            <div class="flex items-start gap-3">
+              <Icon name="lucide:clock-3" size="22" class="mt-0.5 shrink-0" />
+              <div>
+                <p class="font-bold">{{ reviewEligibilityHeading }}</p>
+                <p class="mt-2 text-sm leading-6">
+                  {{ reviewEligibility.message }}
+                </p>
+                <p v-if="formattedReviewEligibleAt" class="mt-2 text-sm leading-6">
+                  Your one-hour waiting period ends at {{ formattedReviewEligibleAt }}.
+                </p>
+                <button
+                  type="button"
+                  :disabled="reviewsLoading"
+                  class="mt-4 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-bold text-amber-950 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  @click="loadReviews({ page: currentPage })"
+                >
+                  {{ reviewsLoading ? 'Checking...' : 'Check Again' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <form v-else class="mt-6 space-y-6" @submit.prevent="submitReview">
             <fieldset>
               <legend class="text-base font-bold text-gray-900">Your rating *</legend>
@@ -353,6 +391,24 @@ const currentPage = ref(1)
 const pageSize = 10
 const averageRating = ref(0)
 const hasReviewed = ref(false)
+const createDefaultReviewEligibility = () => ({
+  canReview: false,
+  code: null,
+  eligibleAt: '',
+  remainingSeconds: 0,
+  hasCompletedPurchase: null,
+  message: ''
+})
+const createUnavailableReviewEligibility = ({
+  code = 'eligibility_unavailable',
+  message = 'We could not verify your review eligibility right now. Please try again.'
+} = {}) => ({
+  ...createDefaultReviewEligibility(),
+  code,
+  message
+})
+const reviewEligibility = ref(createDefaultReviewEligibility())
+const reviewEligibilityChecked = ref(false)
 const loadError = ref('')
 const selectedRating = ref(0)
 const hoveredRating = ref(0)
@@ -363,9 +419,42 @@ const submitError = ref('')
 const submitSuccess = ref('')
 const maximumReviewLength = 999
 const starOptions = [1, 2, 3, 4, 5]
+let reviewsRequestGeneration = 0
+let reviewsAbortController = null
+let reviewSubmitGeneration = 0
 
 const reviewCharacterCount = computed(() => Array.from(reviewText.value).length)
 const formattedAverageRating = computed(() => Number(averageRating.value || 0).toFixed(1))
+const reviewEligibilityHeading = computed(() => {
+  if (reviewEligibility.value.code === 'account_too_new') {
+    return 'Your account will be able to review soon.'
+  }
+
+  if (reviewEligibility.value.code === 'session_invalid') {
+    return 'Please log in again to write a review.'
+  }
+
+  return 'Review eligibility is temporarily unavailable.'
+})
+const formattedReviewEligibleAt = computed(() => {
+  if (
+    reviewEligibility.value.code !== 'account_too_new'
+    || !reviewEligibility.value.eligibleAt
+  ) {
+    return ''
+  }
+
+  const eligibleAt = new Date(reviewEligibility.value.eligibleAt)
+
+  if (Number.isNaN(eligibleAt.getTime())) {
+    return ''
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(eligibleAt)
+})
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalReviews.value / pageSize))
 })
@@ -414,35 +503,88 @@ const normalizeReview = (record = {}) => ({
   createdAt: String(record.createdAt ?? record.created_at ?? '')
 })
 
-const getOptionalAuthHeaders = async () => {
+const normalizeReviewEligibility = (record) => {
+  if (!record || typeof record !== 'object') {
+    return createUnavailableReviewEligibility()
+  }
+
+  const canReview = record.canReview === true
+
+  return {
+    canReview,
+    code: record.code ? String(record.code) : null,
+    eligibleAt: String(record.eligibleAt || ''),
+    remainingSeconds: Math.max(0, Number(record.remainingSeconds) || 0),
+    hasCompletedPurchase: typeof record.hasCompletedPurchase === 'boolean'
+      ? record.hasCompletedPurchase
+      : null,
+    message: canReview
+      ? ''
+      : String(
+          record.message
+          || 'We could not verify your review eligibility right now. Please try again.'
+        )
+  }
+}
+
+const getOptionalAuthContext = async () => {
   const { data } = await supabase.auth.getSession()
 
-  if (!data.session?.access_token) {
-    return {}
+  if (!data.session?.access_token || !data.session.user?.id) {
+    return {
+      headers: {},
+      userId: ''
+    }
   }
 
   return {
-    authorization: `Bearer ${data.session.access_token}`
+    headers: {
+      authorization: `Bearer ${data.session.access_token}`
+    },
+    userId: data.session.user.id
   }
 }
 
 const loadReviews = async ({ page = 1 } = {}) => {
-  if (reviewsLoading.value) {
-    return false
-  }
+  const requestGeneration = ++reviewsRequestGeneration
+  const requestUserId = user.value?.id || ''
+  reviewsAbortController?.abort()
+  const requestController = new AbortController()
 
+  reviewsAbortController = requestController
   reviewsLoading.value = true
   loadError.value = ''
 
   try {
+    const authContext = await getOptionalAuthContext()
+    const authContextMatches = requestUserId
+      ? authContext.userId === requestUserId
+      : !authContext.userId
+
+    if (
+      requestGeneration !== reviewsRequestGeneration
+      || requestUserId !== (user.value?.id || '')
+    ) {
+      return false
+    }
+
     const response = await $fetch('/api/product-reviews', {
       query: {
         productId: props.productId,
         page,
         pageSize
       },
-      headers: await getOptionalAuthHeaders()
+      headers: authContextMatches ? authContext.headers : {},
+      signal: requestController.signal
     })
+
+    if (
+      requestGeneration !== reviewsRequestGeneration
+      || requestUserId !== (user.value?.id || '')
+    ) {
+      return false
+    }
+
     const nextReviews = (response.items || []).map(normalizeReview)
 
     reviews.value = nextReviews
@@ -450,13 +592,44 @@ const loadReviews = async ({ page = 1 } = {}) => {
     currentPage.value = Number(response.page) || page
     averageRating.value = Number(response.averageRating || 0)
     hasReviewed.value = Boolean(response.hasReviewed)
+    reviewEligibility.value = requestUserId
+      ? (
+          authContextMatches
+            ? normalizeReviewEligibility(response.reviewEligibility)
+            : createUnavailableReviewEligibility({
+                code: 'session_invalid',
+                message: 'Your session could not be verified. Please log in again.'
+              })
+        )
+      : createDefaultReviewEligibility()
+    reviewEligibilityChecked.value = true
     reviewsLoaded.value = true
     return true
   } catch (error) {
+    if (
+      requestController.signal.aborted
+      || requestGeneration !== reviewsRequestGeneration
+      || requestUserId !== (user.value?.id || '')
+    ) {
+      return false
+    }
+
     loadError.value = error?.data?.statusMessage || error?.message || 'Could not load reviews.'
+
+    if (requestUserId) {
+      reviewEligibility.value = createUnavailableReviewEligibility()
+      reviewEligibilityChecked.value = true
+    }
+
     return false
   } finally {
-    reviewsLoading.value = false
+    if (requestGeneration === reviewsRequestGeneration) {
+      if (reviewsAbortController === requestController) {
+        reviewsAbortController = null
+      }
+
+      reviewsLoading.value = false
+    }
   }
 }
 
@@ -493,11 +666,18 @@ const goToReviewPage = async (page) => {
 }
 
 const submitReview = async () => {
+  if (submitting.value) {
+    return
+  }
+
   submitError.value = ''
   submitSuccess.value = ''
   const trimmedReview = reviewText.value.trim()
+  const reviewRating = selectedRating.value
+  const shouldDisplayFullName = displayFullName.value
+  const submittingUserId = user.value?.id || ''
 
-  if (!selectedRating.value) {
+  if (!reviewRating) {
     submitError.value = 'Choose a rating from 1 to 5 stars.'
     return
   }
@@ -512,12 +692,26 @@ const submitReview = async () => {
     return
   }
 
+  if (!submittingUserId) {
+    submitError.value = 'Please log in to write a review.'
+    return
+  }
+
+  const submitGeneration = ++reviewSubmitGeneration
+  const isCurrentSubmission = () => {
+    return submitGeneration === reviewSubmitGeneration
+      && submittingUserId === (user.value?.id || '')
+  }
+
   submitting.value = true
 
   try {
     const { data } = await supabase.auth.getSession()
 
-    if (!data.session?.access_token) {
+    if (
+      !data.session?.access_token
+      || data.session.user?.id !== submittingUserId
+    ) {
       throw new Error('Your session expired. Please log in again.')
     }
 
@@ -528,11 +722,15 @@ const submitReview = async () => {
       },
       body: {
         productId: props.productId,
-        rating: selectedRating.value,
+        rating: reviewRating,
         reviewText: trimmedReview,
-        displayFullName: displayFullName.value
+        displayFullName: shouldDisplayFullName
       }
     })
+
+    if (!isCurrentSubmission()) {
+      return
+    }
 
     hasReviewed.value = Boolean(response.hasReviewed ?? true)
     selectedRating.value = 0
@@ -542,14 +740,36 @@ const submitReview = async () => {
     submitSuccess.value = 'Your review was submitted successfully.'
     await loadReviews({ page: 1 })
   } catch (error) {
+    if (!isCurrentSubmission()) {
+      return
+    }
+
     const errorMessage = error?.data?.statusMessage || error?.message || 'Could not submit your review.'
+    const eligibilityResponse = error?.data?.data?.reviewEligibility
+
+    if (eligibilityResponse) {
+      reviewEligibility.value = normalizeReviewEligibility(eligibilityResponse)
+      reviewEligibilityChecked.value = true
+    } else if (
+      error?.statusCode === 401
+      || /session expired|log in again/i.test(errorMessage)
+    ) {
+      reviewEligibility.value = createUnavailableReviewEligibility({
+        code: 'session_invalid',
+        message: 'Your session could not be verified. Please log in again.'
+      })
+      reviewEligibilityChecked.value = true
+    }
+
     submitError.value = errorMessage
 
     if (error?.statusCode === 409 || /already reviewed/i.test(errorMessage)) {
       hasReviewed.value = true
     }
   } finally {
-    submitting.value = false
+    if (isCurrentSubmission()) {
+      submitting.value = false
+    }
   }
 }
 
@@ -566,11 +786,30 @@ const formatReviewDate = (value) => {
 watch(
   () => user.value?.id,
   async (currentUserId, previousUserId) => {
-    if (
-      reviewsOpen.value
-      && reviewsLoaded.value
-      && currentUserId !== previousUserId
-    ) {
+    if (currentUserId === previousUserId) {
+      return
+    }
+
+    reviewsRequestGeneration += 1
+    reviewsAbortController?.abort()
+    reviewsAbortController = null
+    reviewSubmitGeneration += 1
+    reviewsLoading.value = false
+    submitting.value = false
+    reviewsLoaded.value = false
+    currentPage.value = 1
+    hasReviewed.value = false
+    reviewEligibility.value = createDefaultReviewEligibility()
+    reviewEligibilityChecked.value = false
+    loadError.value = ''
+    selectedRating.value = 0
+    hoveredRating.value = 0
+    reviewText.value = ''
+    displayFullName.value = true
+    submitError.value = ''
+    submitSuccess.value = ''
+
+    if (reviewsOpen.value) {
       await loadReviews({ page: 1 })
     }
   }
@@ -583,5 +822,12 @@ onMounted(async () => {
 
   reviewsOpen.value = true
   await loadReviews({ page: 1 })
+})
+
+onBeforeUnmount(() => {
+  reviewsRequestGeneration += 1
+  reviewsAbortController?.abort()
+  reviewsAbortController = null
+  reviewSubmitGeneration += 1
 })
 </script>

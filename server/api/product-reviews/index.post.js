@@ -1,7 +1,11 @@
 import { createError, readBody } from 'h3'
 import { requireCustomerRequest } from '../../utils/customerRequest'
 import {
+  PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE,
+  PRODUCT_REVIEW_ACCOUNT_TOO_NEW_DB_MESSAGE,
   PRODUCT_REVIEW_MAX_LENGTH,
+  getProductReviewEligibility,
+  getProductReviewWaitMessage,
   getReviewCharacterCount,
   getReviewerFullName,
   isUuid,
@@ -79,6 +83,31 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  let reviewEligibility
+
+  try {
+    reviewEligibility = await getProductReviewEligibility({
+      supabaseAdmin,
+      authUser
+    })
+  } catch (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: error?.message || 'Could not check review eligibility.'
+    })
+  }
+
+  if (!reviewEligibility.canReview) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: reviewEligibility.message,
+      data: {
+        code: PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE,
+        reviewEligibility
+      }
+    })
+  }
+
   const reviewerFullName = getReviewerFullName(customerProfile, authUser)
 
   if (reviewerFullName !== customerProfile.full_name) {
@@ -111,6 +140,28 @@ export default defineEventHandler(async (event) => {
     .single()
 
   if (reviewError) {
+    if (
+      reviewError.code === 'P0001'
+      && String(reviewError.message || '').includes(PRODUCT_REVIEW_ACCOUNT_TOO_NEW_DB_MESSAGE)
+    ) {
+      const triggerEligibility = {
+        ...reviewEligibility,
+        canReview: false,
+        code: PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE,
+        hasCompletedPurchase: false,
+        message: getProductReviewWaitMessage(reviewEligibility.remainingSeconds)
+      }
+
+      throw createError({
+        statusCode: 403,
+        statusMessage: triggerEligibility.message,
+        data: {
+          code: PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE,
+          reviewEligibility: triggerEligibility
+        }
+      })
+    }
+
     if (reviewError.code === '23505') {
       throw createError({
         statusCode: 409,

@@ -1,4 +1,8 @@
 export const PRODUCT_REVIEW_MAX_LENGTH = 999
+export const PRODUCT_REVIEW_ACCOUNT_WAIT_SECONDS = 60 * 60
+export const PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE = 'account_too_new'
+export const PRODUCT_REVIEW_ACCOUNT_TOO_NEW_DB_MESSAGE = 'PRODUCT_REVIEW_ACCOUNT_TOO_NEW'
+export const PRODUCT_REVIEW_COMPLETED_ORDER_STATUSES = ['completed', 'delivered']
 
 export const isUuid = (value) => {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -12,6 +16,80 @@ export const normalizeReviewText = (value) => {
 
 export const getReviewCharacterCount = (value) => {
   return Array.from(String(value || '')).length
+}
+
+export const getProductReviewWaitMessage = (remainingSeconds) => {
+  const minutes = Math.max(1, Math.ceil(Number(remainingSeconds || 0) / 60))
+  const minuteLabel = minutes === 1 ? 'minute' : 'minutes'
+
+  return `New customer accounts must wait 1 hour before writing a review. Customers with at least one completed purchase can review immediately. Please try again in about ${minutes} ${minuteLabel}.`
+}
+
+export const getProductReviewEligibility = async ({
+  supabaseAdmin,
+  authUser,
+  now = new Date()
+}) => {
+  if (!supabaseAdmin || !authUser?.id) {
+    throw new Error('A verified customer account is required to check review eligibility.')
+  }
+
+  const accountCreatedAtMs = Date.parse(String(authUser.created_at || ''))
+  const nowMs = now instanceof Date
+    ? now.getTime()
+    : Date.parse(String(now || ''))
+
+  if (!Number.isFinite(accountCreatedAtMs) || !Number.isFinite(nowMs)) {
+    throw new Error('Could not verify when this customer account was created.')
+  }
+
+  const eligibleAtMs = accountCreatedAtMs + (PRODUCT_REVIEW_ACCOUNT_WAIT_SECONDS * 1000)
+  const eligibleAt = new Date(eligibleAtMs).toISOString()
+
+  if (nowMs >= eligibleAtMs) {
+    return {
+      canReview: true,
+      code: null,
+      eligibleAt,
+      remainingSeconds: 0,
+      hasCompletedPurchase: null,
+      message: ''
+    }
+  }
+
+  const remainingSeconds = Math.max(1, Math.ceil((eligibleAtMs - nowMs) / 1000))
+  const { data: completedOrders, error: completedOrdersError } = await supabaseAdmin
+    .from('customer_orders')
+    .select('id')
+    .eq('user_id', authUser.id)
+    .in('status', PRODUCT_REVIEW_COMPLETED_ORDER_STATUSES)
+    .limit(1)
+
+  if (completedOrdersError) {
+    throw new Error(completedOrdersError.message)
+  }
+
+  const hasCompletedPurchase = Boolean(completedOrders?.length)
+
+  if (hasCompletedPurchase) {
+    return {
+      canReview: true,
+      code: null,
+      eligibleAt,
+      remainingSeconds,
+      hasCompletedPurchase: true,
+      message: ''
+    }
+  }
+
+  return {
+    canReview: false,
+    code: PRODUCT_REVIEW_ACCOUNT_TOO_NEW_CODE,
+    eligibleAt,
+    remainingSeconds,
+    hasCompletedPurchase: false,
+    message: getProductReviewWaitMessage(remainingSeconds)
+  }
 }
 
 export const normalizeReviewSearch = (value) => {
