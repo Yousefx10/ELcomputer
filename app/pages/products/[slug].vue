@@ -362,6 +362,22 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
   }
 })
 
+const storeName = computed(() => {
+  return String(siteContent.value?.settings?.site_name || '').trim() || 'ELcomputer'
+})
+
+const productPageTitle = computed(() => {
+  const productName = String(product.value?.title || '').trim()
+
+  return productName
+    ? `${productName} - ${storeName.value}`
+    : `Product - ${storeName.value}`
+})
+
+useHead(() => ({
+  title: productPageTitle.value
+}))
+
 useProductEngagement(product)
 
 const selectedImage = ref('')
