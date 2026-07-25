@@ -40,6 +40,11 @@
       />
     </section>
 
+    <HomeCustomerReviews
+      v-if="homepageReviewsEnabled"
+      :show-view-all="homepageReviewsViewAllEnabled"
+    />
+
     <section
       v-for="category in categorySections"
       :key="category.id"
@@ -185,6 +190,13 @@ const topSellerProducts = computed(() => homeData.value?.topSellerProducts || []
 const topCategories = computed(() => homeData.value?.topCategories || [])
 const categorySections = computed(() => homeData.value?.categorySections || [])
 const featuredBrands = computed(() => homeData.value?.featuredBrands || [])
+const homepageReviewsEnabled = computed(() => {
+  return siteContent.value?.settings?.homepage_reviews_enabled ?? true
+})
+const homepageReviewsViewAllEnabled = computed(() => {
+  return homepageReviewsEnabled.value
+    && (siteContent.value?.settings?.homepage_reviews_view_all_enabled ?? true)
+})
 const bannerAds = computed(() => {
   const settings = siteContent.value?.settings || {}
 

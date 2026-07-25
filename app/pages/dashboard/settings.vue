@@ -156,6 +156,136 @@
         <section class="overflow-hidden rounded-2xl bg-white shadow">
           <button
             type="button"
+            class="flex w-full items-center justify-between p-6 text-left"
+            @click="toggleSection('homepageReviews')"
+          >
+            <div>
+              <h3 class="text-2xl font-bold">Homepage Reviews</h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Control the customer reviews carousel and its full-reviews shortcut.
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              size="20"
+              class="transition"
+              :class="openSections.homepageReviews ? 'rotate-180' : ''"
+            />
+          </button>
+
+          <div
+            v-if="openSections.homepageReviews"
+            class="border-t p-6"
+            :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
+          >
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border bg-gray-50 p-5">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="font-bold text-gray-900">Show reviews on homepage</p>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Display a moving carousel of recent customer reviews.
+                    </p>
+                  </div>
+
+                  <div class="flex shrink-0 items-center gap-3">
+                    <span
+                      class="text-sm font-semibold"
+                      :class="siteSettings.homepage_reviews_enabled ? 'text-green-600' : 'text-gray-500'"
+                    >
+                      {{ siteSettings.homepage_reviews_enabled ? 'ON' : 'OFF' }}
+                    </span>
+
+                    <button
+                      type="button"
+                      aria-label="Toggle homepage customer reviews"
+                      :disabled="!canEditSettings"
+                      :aria-pressed="siteSettings.homepage_reviews_enabled"
+                      class="relative inline-flex h-7 w-14 items-center rounded-full transition disabled:cursor-not-allowed"
+                      :class="siteSettings.homepage_reviews_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                      @click="siteSettings.homepage_reviews_enabled = !siteSettings.homepage_reviews_enabled"
+                    >
+                      <span
+                        class="inline-block h-5 w-5 rounded-full bg-white transition"
+                        :class="siteSettings.homepage_reviews_enabled ? 'translate-x-8' : 'translate-x-1'"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border bg-gray-50 p-5">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="font-bold text-gray-900">Show “View all reviews” button</p>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Let customers navigate from the homepage carousel to the complete reviews page.
+                    </p>
+                  </div>
+
+                  <div class="flex shrink-0 items-center gap-3">
+                    <span
+                      class="text-sm font-semibold"
+                      :class="siteSettings.homepage_reviews_view_all_enabled ? 'text-green-600' : 'text-gray-500'"
+                    >
+                      {{ siteSettings.homepage_reviews_view_all_enabled ? 'ON' : 'OFF' }}
+                    </span>
+
+                    <button
+                      type="button"
+                      aria-label="Toggle the View all reviews button"
+                      :disabled="!canEditSettings"
+                      :aria-pressed="siteSettings.homepage_reviews_view_all_enabled"
+                      class="relative inline-flex h-7 w-14 items-center rounded-full transition disabled:cursor-not-allowed"
+                      :class="siteSettings.homepage_reviews_view_all_enabled ? 'bg-green-600' : 'bg-gray-300'"
+                      @click="siteSettings.homepage_reviews_view_all_enabled = !siteSettings.homepage_reviews_view_all_enabled"
+                    >
+                      <span
+                        class="inline-block h-5 w-5 rounded-full bg-white transition"
+                        :class="siteSettings.homepage_reviews_view_all_enabled ? 'translate-x-8' : 'translate-x-1'"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p
+                  v-if="settingsErrorSection === 'homepageReviews' && settingsError"
+                  class="text-sm text-red-600"
+                >
+                  {{ settingsError }}
+                </p>
+
+                <p
+                  v-if="settingsSuccessSection === 'homepageReviews' && settingsSuccess"
+                  class="text-sm text-green-600"
+                >
+                  {{ settingsSuccess }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                :disabled="!canEditSettings || !isSettingsSectionDirty('homepageReviews') || settingsLoading"
+                class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="canEditSettings && isSettingsSectionDirty('homepageReviews') && !settingsLoading
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'cursor-not-allowed bg-gray-300'"
+                @click="saveSiteSettings('homepageReviews')"
+              >
+                {{ settingsLoadingSection === 'homepageReviews' ? 'Saving...' : 'Save Homepage Reviews' }}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow">
+          <button
+            type="button"
             @click="toggleSection('offerCards')"
             class="flex w-full items-center justify-between p-6 text-left"
           >
@@ -1959,6 +2089,8 @@ const defaultSiteSettings = {
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
   allow_out_of_stock_purchases: false,
+  homepage_reviews_enabled: true,
+  homepage_reviews_view_all_enabled: true,
   hero_enabled: true,
   hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,
@@ -2058,6 +2190,7 @@ const newCoupon = reactive({
 const galleryLoaded = ref(false)
 const openSections = reactive({
   generalSettings: true,
+  homepageReviews: false,
   bannerAds: false,
   footerSettings: false,
   heroBanners: false,
@@ -2143,6 +2276,10 @@ const siteSettingsSectionFields = {
     'landing_page_title',
     'allow_out_of_stock_purchases'
   ],
+  homepageReviews: [
+    'homepage_reviews_enabled',
+    'homepage_reviews_view_all_enabled'
+  ],
   heroSettings: [
     'hero_enabled',
     'hero_rotation_seconds'
@@ -2172,6 +2309,7 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
+  homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
@@ -2302,7 +2440,9 @@ const galleryPageEnd = computed(() => {
   return Math.min(galleryCurrentPage.value * galleryPageSize.value, galleryTotalItems.value)
 })
 
-const isMissingSchemaError = (error) => error?.code === '42P01' || error?.code === '42703'
+const isMissingSchemaError = (error) => {
+  return ['42P01', '42703', 'PGRST204'].includes(error?.code)
+}
 
 const handleTableError = (error) => {
   if (isMissingSchemaError(error)) {
@@ -2495,6 +2635,8 @@ const normalizeSiteSettings = (source = {}) => ({
   site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
   landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
+  homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
+  homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
   hero_enabled: source.hero_enabled ?? true,
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
@@ -2612,6 +2754,8 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_background_color',
       'landing_page_title',
       'allow_out_of_stock_purchases',
+      'homepage_reviews_enabled',
+      'homepage_reviews_view_all_enabled',
       'hero_enabled',
       'hero_rotation_seconds',
       'top_bar_rotation_seconds',
@@ -2921,6 +3065,10 @@ const loadGalleryImages = async ({ force = false } = {}) => {
 
 
 const saveSiteSettings = async (sectionName) => {
+  if (!canEditSettings.value) {
+    return
+  }
+
   const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
 
   settingsError.value = ''

@@ -45,22 +45,29 @@ export const getReviewerFullName = (profile, authUser) => {
 export const maskReviewerName = (value) => {
   const characters = Array.from(String(value || '').trim() || 'Customer')
   const visibleCharacter = characters[0] || 'C'
-  const hiddenCharacterCount = Math.max(3, characters.length - 1)
 
-  return `${visibleCharacter}${'*'.repeat(hiddenCharacterCount)}`
+  return `${visibleCharacter}***`
 }
 
 export const mapPublicReview = (record) => {
   const reviewer = getRelatedRecord(record, 'reviewer')
+  const product = getRelatedRecord(record, 'product')
   const fullName = String(reviewer?.full_name || 'Customer').trim() || 'Customer'
 
-  return {
+  const publicReview = {
     id: record.id,
     rating: Number(record.rating) || 0,
     reviewText: String(record.review_text || ''),
     reviewerName: record.display_full_name ? fullName : maskReviewerName(fullName),
     createdAt: record.created_at
   }
+
+  if (product) {
+    publicReview.productTitle = String(product.title || 'Product')
+    publicReview.productSlug = String(product.slug || '')
+  }
+
+  return publicReview
 }
 
 export const mapAdminReview = (record) => {

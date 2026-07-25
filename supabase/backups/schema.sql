@@ -189,6 +189,8 @@ create table public.site_settings (
   site_background_color text null default '#f3f4f6'::text,
   landing_page_title text null default 'ELcomputer'::text,
   allow_out_of_stock_purchases boolean not null default false,
+  homepage_reviews_enabled boolean not null default true,
+  homepage_reviews_view_all_enabled boolean not null default true,
   hero_enabled boolean not null default true,
   hero_rotation_seconds integer not null default 5,
   top_bar_rotation_seconds integer not null default 3,

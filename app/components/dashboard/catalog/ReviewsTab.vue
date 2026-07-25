@@ -131,16 +131,14 @@
                 <div class="flex flex-wrap items-center gap-2">
                   <div
                     class="flex items-center gap-0.5"
+                    role="img"
                     :aria-label="`${review.rating} out of 5 stars`"
                   >
-                    <Icon
+                    <ReviewsStarIcon
                       v-for="star in ratingOptions"
                       :key="star"
-                      name="lucide:star"
-                      size="18"
-                      :class="star <= review.rating
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-gray-300'"
+                      :size="18"
+                      :filled="star <= review.rating"
                     />
                   </div>
 

@@ -73,16 +73,14 @@
             <div
               v-if="totalReviews"
               class="flex items-center gap-1"
+              role="img"
               :aria-label="`${formattedAverageRating} out of 5 stars`"
             >
-              <Icon
+              <ReviewsStarIcon
                 v-for="star in starOptions"
                 :key="star"
-                name="lucide:star"
-                size="18"
-                :class="star <= Math.round(averageRating)
-                  ? 'fill-amber-400 text-amber-400'
-                  : 'text-gray-300'"
+                :size="18"
+                :filled="star <= Math.round(averageRating)"
               />
             </div>
           </div>
@@ -110,16 +108,14 @@
 
                 <div
                   class="flex items-center gap-0.5"
+                  role="img"
                   :aria-label="`${review.rating} out of 5 stars`"
                 >
-                  <Icon
+                  <ReviewsStarIcon
                     v-for="star in starOptions"
                     :key="star"
-                    name="lucide:star"
-                    size="17"
-                    :class="star <= review.rating
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'text-gray-300'"
+                    :size="17"
+                    :filled="star <= review.rating"
                   />
                 </div>
               </div>
@@ -226,34 +222,31 @@
               <div
                 class="mt-3 flex w-fit items-center gap-1"
                 dir="ltr"
-                role="radiogroup"
-                aria-label="Your rating"
                 @mouseleave="hoveredRating = 0"
               >
-                <button
+                <label
                   v-for="star in starOptions"
                   :key="star"
-                  type="button"
-                  role="radio"
-                  :aria-checked="selectedRating === star"
-                  :aria-label="`${star} ${star === 1 ? 'star' : 'stars'}`"
-                  class="rounded p-1 text-gray-300 transition hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  :class="star <= (hoveredRating || selectedRating)
-                    ? 'text-amber-400'
-                    : 'text-gray-300'"
+                  class="cursor-pointer rounded p-1 transition hover:scale-110 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
                   @mouseenter="hoveredRating = star"
-                  @focus="hoveredRating = star"
-                  @blur="hoveredRating = 0"
-                  @click="selectedRating = star"
                 >
-                  <Icon
-                    name="lucide:star"
-                    size="30"
-                    :class="star <= (hoveredRating || selectedRating)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-transparent text-gray-300'"
+                  <input
+                    v-model.number="selectedRating"
+                    type="radio"
+                    :name="`product-review-rating-${productId}`"
+                    :value="star"
+                    :aria-label="`${star} ${star === 1 ? 'star' : 'stars'}`"
+                    :aria-describedby="submitError ? 'product-review-error' : undefined"
+                    required
+                    class="sr-only"
+                    @focus="hoveredRating = star"
+                    @blur="hoveredRating = 0"
+                  >
+                  <ReviewsStarIcon
+                    :size="30"
+                    :filled="star <= (hoveredRating || selectedRating)"
                   />
-                </button>
+                </label>
               </div>
 
               <p v-if="selectedRating" class="mt-2 text-sm text-gray-500">
@@ -280,8 +273,10 @@
                 id="product-review-text"
                 v-model="reviewText"
                 :maxlength="maximumReviewLength"
+                :aria-describedby="submitError ? 'product-review-error' : undefined"
                 rows="9"
                 dir="auto"
+                required
                 placeholder="Share your experience with this product..."
                 class="w-full resize-y rounded-xl border border-gray-300 bg-white p-4 text-start leading-7 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
@@ -304,7 +299,12 @@
               </span>
             </label>
 
-            <p v-if="submitError" class="text-sm text-red-600" role="alert">
+            <p
+              v-if="submitError"
+              id="product-review-error"
+              class="text-sm text-red-600"
+              role="alert"
+            >
               {{ submitError }}
             </p>
 
@@ -357,7 +357,7 @@ const loadError = ref('')
 const selectedRating = ref(0)
 const hoveredRating = ref(0)
 const reviewText = ref('')
-const displayFullName = ref(false)
+const displayFullName = ref(true)
 const submitting = ref(false)
 const submitError = ref('')
 const submitSuccess = ref('')
@@ -538,7 +538,7 @@ const submitReview = async () => {
     selectedRating.value = 0
     hoveredRating.value = 0
     reviewText.value = ''
-    displayFullName.value = false
+    displayFullName.value = true
     submitSuccess.value = 'Your review was submitted successfully.'
     await loadReviews({ page: 1 })
   } catch (error) {
