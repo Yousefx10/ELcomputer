@@ -9,18 +9,11 @@
           </p>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div>
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Lookup</p>
             <p class="mt-2 text-lg font-bold text-gray-900">
               {{ lookupLoading ? 'Searching...' : item ? 'Item Found' : 'Ready' }}
-            </p>
-          </div>
-
-          <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Camera Scanner</p>
-            <p class="mt-2 text-lg font-bold" :class="cameraSupported ? 'text-green-700' : 'text-gray-600'">
-              {{ cameraSupported ? 'Available' : 'Manual Entry' }}
             </p>
           </div>
         </div>
@@ -44,98 +37,43 @@
     </div>
 
     <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
-        <div>
-          <h4 class="text-xl font-bold text-gray-900">Manual Lookup</h4>
-          <p class="mt-1 text-sm text-gray-500">
-            Enter a QR token or paste the full scan URL.
-          </p>
+      <div>
+        <h4 class="flex items-center gap-2 text-xl font-bold text-gray-900">
+          <Icon name="lucide:scan-line" size="24" class="shrink-0 text-gray-500" />
+          Manual Lookup
+        </h4>
+        <p class="mt-1 text-sm text-gray-500">
+          Keep this field focused and scan with your QR scanner, or paste the token or full scan URL.
+        </p>
 
-          <form class="mt-4" @submit.prevent="lookupItem(tokenInput)">
-            <label for="serialized-token" class="mb-2 block text-sm font-semibold text-gray-700">
-              QR Token or Scan URL
-            </label>
-            <div class="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="serialized-token"
-                v-model="tokenInput"
-                type="text"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                placeholder="Scan or paste token"
-                class="min-w-0 flex-1 rounded-lg border p-3 font-mono text-sm outline-none focus:border-blue-500"
-              >
-              <button
-                type="submit"
-                :disabled="lookupLoading || !tokenInput.trim()"
-                class="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-5 py-3 font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Icon name="lucide:search" size="18" />
-                {{ lookupLoading ? 'Looking Up...' : 'Find Item' }}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div class="rounded-2xl border bg-gray-50 p-4">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h4 class="text-lg font-bold text-gray-900">Camera Scanner</h4>
-              <p class="mt-1 text-sm text-gray-500">
-                Camera video stays on this device and stops after a QR code is found.
-              </p>
-            </div>
-            <Icon name="lucide:scan-line" size="24" class="shrink-0 text-gray-500" />
-          </div>
-
-          <div
-            v-if="cameraActive"
-            class="relative mt-4 overflow-hidden rounded-xl bg-black"
-          >
-            <video
-              ref="cameraVideo"
-              class="aspect-video w-full object-cover"
-              autoplay
-              muted
-              playsinline
-            />
-            <div class="pointer-events-none absolute inset-0 grid place-items-center">
-              <div class="aspect-square w-48 rounded-2xl border-2 border-white/90 shadow-[0_0_0_999px_rgba(0,0,0,0.25)]" />
-            </div>
-          </div>
-
-          <p v-if="cameraError" class="mt-3 text-sm text-red-600" role="alert">
-            {{ cameraError }}
-          </p>
-
-          <div class="mt-4 flex flex-wrap gap-3">
-            <button
-              v-if="!cameraActive"
-              type="button"
-              :disabled="!cameraSupported || lookupLoading"
-              class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="startCamera"
+        <form class="mt-4" @submit.prevent="lookupItem(tokenInput)">
+          <label for="serialized-token" class="mb-2 block text-sm font-semibold text-gray-700">
+            QR Token or Scan URL
+          </label>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <input
+              id="serialized-token"
+              ref="tokenInputElement"
+              v-model="tokenInput"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              autofocus
+              placeholder="Scan or paste token"
+              class="min-w-0 flex-1 rounded-lg border p-3 font-mono text-sm outline-none focus:border-blue-500"
+              @focus="$event.currentTarget.select()"
             >
-              <Icon name="lucide:camera" size="17" />
-              Start Camera
-            </button>
-
             <button
-              v-else
-              type="button"
-              class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
-              @click="stopCamera"
+              type="submit"
+              :disabled="lookupLoading || !tokenInput.trim()"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-5 py-3 font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Icon name="lucide:square" size="16" />
-              Stop Camera
+              <Icon name="lucide:search" size="18" />
+              {{ lookupLoading ? 'Looking Up...' : 'Find Item' }}
             </button>
           </div>
-
-          <p v-if="cameraCapabilityChecked && !cameraSupported" class="mt-3 text-xs leading-5 text-gray-500">
-            This browser does not provide QR detection. Use manual entry or a handheld scanner that types the token into the field.
-          </p>
-        </div>
+        </form>
       </div>
     </section>
 
@@ -494,16 +432,12 @@ defineOptions({
 
 const supabase = useSupabaseClient()
 const route = useRoute()
-const cameraVideo = ref(null)
+const tokenInputElement = ref(null)
 const tokenInput = ref('')
 const item = ref(null)
 const lookupLoading = ref(false)
 const lookupError = ref('')
 const lastLookupToken = ref('')
-const cameraSupported = ref(false)
-const cameraCapabilityChecked = ref(false)
-const cameraActive = ref(false)
-const cameraError = ref('')
 const warehouseOptions = ref([])
 const optionsError = ref('')
 const returnFormOpen = ref(false)
@@ -516,10 +450,6 @@ const returnForm = reactive({
   reason: '',
   notes: ''
 })
-
-let barcodeDetector = null
-let cameraStream = null
-let detectionFrameId = null
 
 const hasPurchaser = computed(() => {
   return Boolean(
@@ -720,7 +650,6 @@ const lookupItem = async (value, { preserveMessage = false } = {}) => {
     return
   }
 
-  stopCamera()
   lookupLoading.value = true
   lookupError.value = ''
   returnError.value = ''
@@ -758,120 +687,9 @@ const lookupItem = async (value, { preserveMessage = false } = {}) => {
     lookupError.value = error?.data?.statusMessage || error?.message || 'Could not find this serialized item.'
   } finally {
     lookupLoading.value = false
-  }
-}
-
-const detectQrCode = async () => {
-  if (!cameraActive.value || !barcodeDetector || !cameraVideo.value) {
-    return
-  }
-
-  try {
-    if (cameraVideo.value.readyState >= 2) {
-      const detectedCodes = await barcodeDetector.detect(cameraVideo.value)
-      const detectedValue = detectedCodes.find((code) => code.rawValue)?.rawValue
-
-      if (detectedValue) {
-        stopCamera()
-        tokenInput.value = detectedValue
-        await lookupItem(detectedValue)
-        return
-      }
-    }
-  } catch (error) {
-    cameraError.value = error?.message || 'The camera could not read this frame.'
-  }
-
-  if (cameraActive.value) {
-    detectionFrameId = window.requestAnimationFrame(detectQrCode)
-  }
-}
-
-const startCamera = async () => {
-  if (!import.meta.client || !cameraSupported.value || cameraActive.value) {
-    return
-  }
-
-  cameraError.value = ''
-
-  try {
-    barcodeDetector = new window.BarcodeDetector({
-      formats: ['qr_code']
-    })
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: {
-          ideal: 'environment'
-        }
-      },
-      audio: false
-    })
-    cameraActive.value = true
     await nextTick()
-
-    if (!cameraVideo.value) {
-      throw new Error('The camera preview is not available.')
-    }
-
-    cameraVideo.value.srcObject = cameraStream
-    await cameraVideo.value.play()
-    detectionFrameId = window.requestAnimationFrame(detectQrCode)
-  } catch (error) {
-    cameraError.value = error?.name === 'NotAllowedError'
-      ? 'Camera permission was denied. Allow camera access or use manual entry.'
-      : error?.message || 'Could not start the camera.'
-    stopCamera()
-  }
-}
-
-const stopCamera = () => {
-  if (detectionFrameId && import.meta.client) {
-    window.cancelAnimationFrame(detectionFrameId)
-  }
-
-  detectionFrameId = null
-
-  if (cameraStream) {
-    cameraStream.getTracks().forEach((track) => track.stop())
-  }
-
-  cameraStream = null
-  barcodeDetector = null
-
-  if (cameraVideo.value) {
-    cameraVideo.value.srcObject = null
-  }
-
-  cameraActive.value = false
-}
-
-const checkCameraSupport = async () => {
-  if (!import.meta.client) {
-    return
-  }
-
-  const hasRequiredApis = Boolean(
-    window.BarcodeDetector
-    && navigator.mediaDevices?.getUserMedia
-  )
-
-  if (!hasRequiredApis) {
-    cameraSupported.value = false
-    cameraCapabilityChecked.value = true
-    return
-  }
-
-  try {
-    if (typeof window.BarcodeDetector.getSupportedFormats === 'function') {
-      const supportedFormats = await window.BarcodeDetector.getSupportedFormats()
-      cameraSupported.value = supportedFormats.includes('qr_code')
-    } else {
-      cameraSupported.value = true
-    }
-  } catch {
-    cameraSupported.value = false
-  } finally {
-    cameraCapabilityChecked.value = true
+    tokenInputElement.value?.focus()
+    tokenInputElement.value?.select()
   }
 }
 
@@ -984,10 +802,7 @@ const submitReturn = async () => {
 }
 
 onMounted(async () => {
-  await Promise.all([
-    checkCameraSupport(),
-    loadWarehouseOptions()
-  ])
+  await loadWarehouseOptions()
 
   const routeToken = Array.isArray(route.query.token)
     ? route.query.token[0]
@@ -996,6 +811,9 @@ onMounted(async () => {
   if (routeToken) {
     tokenInput.value = String(routeToken)
     await lookupItem(routeToken)
+  } else {
+    await nextTick()
+    tokenInputElement.value?.focus()
   }
 })
 
@@ -1010,9 +828,5 @@ watch(() => route.query.token, async (nextToken) => {
     tokenInput.value = normalizedToken
     await lookupItem(normalizedToken)
   }
-})
-
-onBeforeUnmount(() => {
-  stopCamera()
 })
 </script>
