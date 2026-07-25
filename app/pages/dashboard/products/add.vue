@@ -127,12 +127,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Default Supplier</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Preferred Supplier (Optional)</label>
           <select
             v-model="defaultSupplierId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Default Supplier</option>
+            <option value="">No preferred supplier</option>
 
             <option
               v-for="supplier in suppliers"
@@ -142,6 +142,9 @@
               {{ supplier.name }}
             </option>
           </select>
+          <p class="mt-2 text-xs text-gray-500">
+            For reference only. Procurement can receive this product from any active supplier.
+          </p>
         </div>
 
         <div>
@@ -194,16 +197,11 @@
           </p>
         </div>
 
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Product Cost</label>
-          <input
-            v-model="costPrice"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="0"
-            class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
+          <p class="text-sm font-semibold text-blue-900">Inventory cost</p>
+          <p class="mt-1 text-sm text-blue-800">
+            Calculated automatically from Procurement receipts and their supplier prices.
+          </p>
         </div>
 
         <div>
@@ -309,7 +307,6 @@ const brandId = ref('')
 const defaultSupplierId = ref('')
 const primaryWarehouseId = ref('')
 const sku = ref('')
-const costPrice = ref('')
 const variants = ref([{
   id: null,
   name: 'Default',
@@ -473,11 +470,6 @@ const addProduct = async () => {
     return
   }
 
-  if (Number(costPrice.value || 0) < 0) {
-    actionError.value = 'Product cost cannot be negative'
-    return
-  }
-
   saving.value = true
 
   let data
@@ -500,7 +492,6 @@ const addProduct = async () => {
         primary_warehouse_id: primaryWarehouseId.value,
         sku: sku.value,
         stock_quantity: 0,
-        cost_price: costPrice.value,
         color_name: '',
         color_hex: '',
         is_serialized: true,

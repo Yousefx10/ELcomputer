@@ -127,12 +127,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Default Supplier</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Preferred Supplier (Optional)</label>
           <select
             v-model="defaultSupplierId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Default Supplier</option>
+            <option value="">No preferred supplier</option>
 
             <option
               v-for="supplier in suppliers"
@@ -142,6 +142,9 @@
               {{ supplier.name }}
             </option>
           </select>
+          <p class="mt-2 text-xs text-gray-500">
+            For reference only. Procurement can receive this product from any active supplier.
+          </p>
         </div>
 
         <div>
@@ -356,12 +359,36 @@
         <div class="mb-4">
           <h3 class="text-2xl font-bold">Extra Images</h3>
           <p class="text-sm text-gray-500">
-            Upload additional product images and save them to the product gallery.
+            Every optional gallery image must belong to one saved product variant.
           </p>
         </div>
 
         <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
           <div class="min-w-0 space-y-3">
+            <div>
+              <label for="new-image-variant" class="mb-2 block text-sm font-semibold text-gray-700">
+                Variant *
+              </label>
+              <select
+                id="new-image-variant"
+                v-model="newImageVariantId"
+                :disabled="!savedVariantOptions.length || galleryLoading"
+                class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+              >
+                <option value="">Select variant</option>
+                <option
+                  v-for="variant in savedVariantOptions"
+                  :key="variant.id"
+                  :value="variant.id"
+                >
+                  {{ formatVariantOption(variant) }}
+                </option>
+              </select>
+              <p v-if="!savedVariantOptions.length" class="mt-2 text-xs text-amber-700">
+                Save at least one product variant before adding gallery images.
+              </p>
+            </div>
+
             <DashboardMediaUploadField
               v-model="newImageUrl"
               label="Extra Image"
@@ -382,7 +409,8 @@
           <button
             type="button"
             @click="addProductImage"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            :disabled="galleryLoading || !savedVariantOptions.length"
+            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ galleryLoading ? 'Saving...' : 'Add Image' }}
           </button>
@@ -399,6 +427,30 @@
             class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,1fr)_auto]"
           >
             <div class="min-w-0 space-y-3">
+              <div>
+                <label
+                  :for="`image-variant-${image.id}`"
+                  class="mb-2 block text-sm font-semibold text-gray-700"
+                >
+                  Variant *
+                </label>
+                <select
+                  :id="`image-variant-${image.id}`"
+                  v-model="image.variant_id"
+                  :disabled="galleryLoading"
+                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+                >
+                  <option value="">Variant assignment required</option>
+                  <option
+                    v-for="variant in savedVariantOptions"
+                    :key="variant.id"
+                    :value="variant.id"
+                  >
+                    {{ formatVariantOption(variant) }}
+                  </option>
+                </select>
+              </div>
+
               <DashboardMediaUploadField
                 v-model="image.image_url"
                 label="Image"
@@ -591,9 +643,15 @@ const canAssignPrimaryWarehouse = computed(() => {
     && Number(product.value?.stock_quantity || 0) === 0
   )
 })
+const savedVariantOptions = computed(() => {
+  return productVariants.value.filter((variant) => {
+    return Boolean(String(variant?.id || '').trim())
+  })
+})
 
 const newImageUrl = ref('')
 const newImageAlt = ref('')
+const newImageVariantId = ref('')
 const newSpecLabel = ref('')
 const newSpecValue = ref('')
 
@@ -751,8 +809,10 @@ const getProductImages = async () => {
 
   productImages.value = (data || []).map((image) => ({
     ...image,
+    variant_id: image.variant_id || '',
     original_image_url: image.image_url || '',
-    original_alt_text: image.alt_text || ''
+    original_alt_text: image.alt_text || '',
+    original_variant_id: image.variant_id || ''
   }))
 }
 
@@ -776,11 +836,6 @@ const getProductSpecifications = async () => {
 }
 
 const getProductVariants = async () => {
-  if (!product.value?.is_serialized) {
-    productVariants.value = []
-    return
-  }
-
   const { data, error } = await supabase
     .from('product_variants')
     .select('*')
@@ -886,7 +941,6 @@ const updateProduct = async () => {
         primary_warehouse_id: primaryWarehouseId.value,
         sku: sku.value,
         stock_quantity: stockQuantity.value,
-        cost_price: product.value?.cost_price ?? 0,
         color_name: colorName.value,
         color_hex: colorHex.value,
         is_serialized: isSerialized.value,
@@ -921,6 +975,16 @@ const updateProduct = async () => {
 const addProductImage = async () => {
   galleryError.value = ''
 
+  if (!newImageVariantId.value) {
+    galleryError.value = 'Select a variant for this image'
+    return
+  }
+
+  if (!savedVariantOptions.value.some((variant) => variant.id === newImageVariantId.value)) {
+    galleryError.value = 'Select a saved active variant for this image'
+    return
+  }
+
   if (!newImageUrl.value.trim()) {
     galleryError.value = 'Image is required'
     return
@@ -932,6 +996,7 @@ const addProductImage = async () => {
     .from('product_images')
     .insert({
       product_id: id,
+      variant_id: newImageVariantId.value,
       image_url: newImageUrl.value.trim(),
       alt_text: newImageAlt.value.trim() || null
     })
@@ -948,22 +1013,35 @@ const addProductImage = async () => {
     description: `Added an extra image to product ${title.value.trim()}.`,
     metadata: {
       product_id: id,
-      product_title: title.value.trim()
+      product_title: title.value.trim(),
+      variant_id: newImageVariantId.value
     }
   })
 
   newImageUrl.value = ''
   newImageAlt.value = ''
+  newImageVariantId.value = ''
   await getProductImages()
 }
 
 const isProductImageDirty = (image) => {
   return image.image_url !== image.original_image_url ||
-    (image.alt_text || '') !== image.original_alt_text
+    (image.alt_text || '') !== image.original_alt_text ||
+    (image.variant_id || '') !== image.original_variant_id
 }
 
 const saveProductImage = async (image) => {
   galleryError.value = ''
+
+  if (!image.variant_id) {
+    galleryError.value = 'Select a variant for this image'
+    return
+  }
+
+  if (!savedVariantOptions.value.some((variant) => variant.id === image.variant_id)) {
+    galleryError.value = 'Select a saved active variant for this image'
+    return
+  }
 
   if (!image.image_url?.trim()) {
     galleryError.value = 'Image is required'
@@ -979,6 +1057,7 @@ const saveProductImage = async (image) => {
   const { error } = await supabase
     .from('product_images')
     .update({
+      variant_id: image.variant_id,
       image_url: image.image_url.trim(),
       alt_text: image.alt_text?.trim() || null
     })
@@ -997,11 +1076,18 @@ const saveProductImage = async (image) => {
     metadata: {
       product_id: id,
       product_title: title.value.trim(),
-      image_id: image.id
+      image_id: image.id,
+      variant_id: image.variant_id
     }
   })
 
   await getProductImages()
+}
+
+const formatVariantOption = (variant) => {
+  const name = String(variant?.name || 'Unnamed variant').trim()
+  const code = String(variant?.code || '').trim()
+  return code ? `${name} (${code})` : name
 }
 
 const deleteProductImage = async (imageId) => {

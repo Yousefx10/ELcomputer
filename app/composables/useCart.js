@@ -84,7 +84,6 @@ const normalizeCartItem = (item) => {
     price: Number(item.price || 0),
     old_price: Number(item.old_price || 0),
     stock_quantity: stockQuantity,
-    cost_price: Number(item.cost_price || 0),
     brand_name: String(item.brand_name || item.brand?.name || ''),
     category_name: String(item.category_name || item.category?.name || ''),
     allow_out_of_stock_purchases: allowOutOfStockPurchases,

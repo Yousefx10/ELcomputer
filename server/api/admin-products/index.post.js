@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
 
   payload.is_serialized = true
   payload.stock_quantity = 0
+  payload.cost_price = 0
 
   try {
     await ensureProductCommerceReferences(supabaseAdmin, payload)

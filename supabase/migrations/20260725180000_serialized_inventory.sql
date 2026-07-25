@@ -122,6 +122,7 @@ where products.is_serialized
     select 1
     from public.product_variants as variants
     where variants.product_id = products.id
+      and variants.is_active
   );
 
 -- Procurement is both the purchase document and the immediate receiving event
@@ -441,6 +442,7 @@ create index if not exists commerce_order_return_items_serialized_unit_idx
 create or replace function public.commerce_reject_serialized_stock_write()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $function$
 declare

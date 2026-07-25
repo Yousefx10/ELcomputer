@@ -14,7 +14,6 @@ const PRODUCT_MUTABLE_FIELDS = [
   'primary_warehouse_id',
   'sku',
   'stock_quantity',
-  'cost_price',
   'color_name',
   'color_hex',
   'is_serialized',
@@ -62,6 +61,13 @@ export const normalizeSerializedVariants = (variants = [], {
     throw createError({
       statusCode: 400,
       statusMessage: 'Product models must be a valid list.'
+    })
+  }
+
+  if (!variants.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Every product requires at least one variant. Use Default when the product has no model or color options.'
     })
   }
 
@@ -163,7 +169,6 @@ export const normalizeAdminProductPayload = (body = {}, {
   const slug = normalizeSlug(body?.slug || title)
   const price = Number(body?.price)
   const stockQuantity = Number.parseInt(body?.stock_quantity, 10)
-  const costPrice = Number(body?.cost_price || 0)
   const oldPriceValue = String(body?.old_price ?? '').trim()
   const oldPrice = oldPriceValue ? Number(oldPriceValue) : null
   const isSerialized = catalogDefinitionsOnly
@@ -203,13 +208,6 @@ export const normalizeAdminProductPayload = (body = {}, {
     })
   }
 
-  if (!Number.isFinite(costPrice) || costPrice < 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Product cost cannot be negative.'
-    })
-  }
-
   if (oldPrice !== null && (!Number.isFinite(oldPrice) || oldPrice < 0)) {
     throw createError({
       statusCode: 400,
@@ -235,7 +233,6 @@ export const normalizeAdminProductPayload = (body = {}, {
       : isSerialized
         ? variants.reduce((total, variant) => total + variant.quantity, 0)
         : stockQuantity,
-    cost_price: costPrice,
     color_name: normalizeText(body?.color_name),
     color_hex: normalizeText(body?.color_hex),
     is_serialized: isSerialized,
@@ -291,34 +288,6 @@ export const ensureProductCommerceReferences = async (supabaseAdmin, payload) =>
   }
 }
 
-export const initializePrimaryWarehouseInventoryForProduct = async ({
-  supabaseAdmin,
-  productId,
-  stockQuantity,
-  costPrice,
-  primaryWarehouseId
-}) => {
-  if (!productId || !primaryWarehouseId || Number(stockQuantity || 0) <= 0) {
-    return
-  }
-
-  const { error } = await supabaseAdmin
-    .from('commerce_warehouse_inventory')
-    .upsert({
-      warehouse_id: primaryWarehouseId,
-      product_id: productId,
-      quantity: Number(stockQuantity || 0),
-      average_cost: Number(costPrice || 0),
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'warehouse_id,product_id'
-    })
-
-  if (error) {
-    throw error
-  }
-}
-
 export const syncPrimaryWarehouseInventoryForProductUpdate = async ({
   supabaseAdmin,
   productId,
@@ -368,7 +337,7 @@ export const syncPrimaryWarehouseInventoryForProductUpdate = async ({
         warehouse_id: nextWarehouseId,
         product_id: productId,
         quantity: nextStockQuantity,
-        average_cost: Number(nextProduct?.cost_price || previousProduct?.cost_price || 0),
+        average_cost: Number(previousProduct?.cost_price || 0),
         updated_at: new Date().toISOString()
       })
 

@@ -38,9 +38,10 @@
 
           <button
             type="button"
-            :disabled="disabled"
+            :disabled="disabled || rows.length <= 1"
             class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
             :aria-label="`Remove variant ${index + 1}`"
+            :title="rows.length <= 1 ? 'Every product requires at least one variant' : undefined"
             @click="removeVariant(index)"
           >
             <Icon name="lucide:trash-2" size="16" />
@@ -271,7 +272,7 @@ const addVariant = () => {
 }
 
 const removeVariant = (index) => {
-  if (props.disabled) {
+  if (props.disabled || rows.value.length <= 1) {
     return
   }
 

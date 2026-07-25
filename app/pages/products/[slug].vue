@@ -36,7 +36,7 @@
           </button>
 
           <button
-            v-for="image in product.images"
+            v-for="image in selectedVariantImages"
             :key="image.id"
             type="button"
             class="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-xl border bg-gray-50 p-2"
@@ -147,8 +147,7 @@
                 type="button"
                 role="radio"
                 :aria-checked="selectedVariantId === variant.id"
-                :disabled="isVariantUnavailable(variant)"
-                class="flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-45"
+                class="flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition"
                 :class="selectedVariantId === variant.id
                   ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600'
                   : 'border-gray-200 bg-white hover:border-gray-400'"
@@ -278,7 +277,27 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
   const { data: productData, error: productError } = await supabase
     .from('products')
     .select(`
-      *,
+      id,
+      title,
+      slug,
+      description,
+      long_description,
+      price,
+      old_price,
+      image_url,
+      is_top_seller,
+      is_featured,
+      created_at,
+      category_id,
+      brand_id,
+      color_name,
+      color_hex,
+      stock_quantity,
+      is_published,
+      sku,
+      popularity_score,
+      average_rating,
+      is_serialized,
       category:categories (
         id,
         name,
@@ -358,6 +377,19 @@ const hasVariants = computed(() => productVariants.value.length > 0)
 const requiresVariantSelection = computed(() => Boolean(product.value?.is_serialized))
 const selectedVariant = computed(() => {
   return productVariants.value.find((variant) => variant.id === selectedVariantId.value) || null
+})
+const selectedVariantImages = computed(() => {
+  const images = Array.isArray(product.value?.images) ? product.value.images : []
+
+  if (!requiresVariantSelection.value) {
+    return images
+  }
+
+  if (!selectedVariantId.value) {
+    return []
+  }
+
+  return images.filter((image) => image.variant_id === selectedVariantId.value)
 })
 const effectiveStockQuantity = computed(() => {
   if (requiresVariantSelection.value) {
@@ -469,10 +501,6 @@ const isVariantUnavailable = (variant) => {
 }
 
 const selectVariant = (variant) => {
-  if (isVariantUnavailable(variant)) {
-    return
-  }
-
   selectedVariantId.value = variant.id
   selectedQuantity.value = 1
   cartMessage.value = ''
@@ -494,12 +522,24 @@ const handleAddToCart = () => {
   const result = addItem({
     ...product.value,
     variant: selectedVariant.value,
+    image_url: selectedVariantImages.value[0]?.image_url || product.value.image_url,
     stock_quantity: effectiveStockQuantity.value,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value
   }, selectedQuantity.value, {
     source: 'product_detail'
   })
   cartMessage.value = result.message || ''
+}
+
+const getPreferredProductImage = (variantId = selectedVariantId.value) => {
+  const images = Array.isArray(product.value?.images) ? product.value.images : []
+
+  if (requiresVariantSelection.value) {
+    const variantImage = images.find((image) => image.variant_id === variantId)
+    return variantImage?.image_url || product.value?.image_url || ''
+  }
+
+  return product.value?.image_url || images[0]?.image_url || ''
 }
 
 watch(
@@ -517,22 +557,27 @@ watch(
       return variant.id === requestedVariantId
     })
 
-    selectedImage.value = product.value.image_url || product.value.images[0]?.image_url || ''
     selectedQuantity.value = 1
-    selectedVariantId.value = requestedVariant?.id
+    const nextVariantId = requestedVariant?.id
       || (
         product.value.variants.length === 1
         && !isVariantUnavailable(product.value.variants[0])
           ? product.value.variants[0].id
           : ''
       )
+    selectedVariantId.value = nextVariantId
+    selectedImage.value = getPreferredProductImage(nextVariantId)
   },
   {
     immediate: true
   }
 )
 
-watch(selectedVariantId, () => {
+watch(selectedVariantId, (nextVariantId, previousVariantId) => {
+  if (nextVariantId !== previousVariantId) {
+    selectedImage.value = getPreferredProductImage(nextVariantId)
+  }
+
   if (!selectedVariantId.value && requiresVariantSelection.value) {
     selectedQuantity.value = 1
     return
