@@ -99,15 +99,21 @@ export const normalizePackingScanToken = (value) => {
 }
 
 export const getPackingSessionState = (session = {}) => {
-  return String(session.state || session.status || '').trim().toLowerCase()
+  const packingSession = session || {}
+
+  return String(
+    packingSession.state || packingSession.status || ''
+  ).trim().toLowerCase()
 }
 
 export const getPackingSessionAdminId = (session = {}) => {
+  const packingSession = session || {}
+
   return String(
-    session.started_by
-    || session.admin_user_id
-    || session.processor_admin_id
-    || session.processed_by
+    packingSession.started_by
+    || packingSession.admin_user_id
+    || packingSession.processor_admin_id
+    || packingSession.processed_by
     || ''
   ).trim()
 }
@@ -293,7 +299,8 @@ export const getOrderPackingDetail = async ({
   const [
     orderResult,
     itemsResult,
-    scansResult
+    scansResult,
+    messagesResult
   ] = await Promise.all([
     supabaseAdmin
       .from('customer_orders')
@@ -309,10 +316,19 @@ export const getOrderPackingDetail = async ({
       .from(ORDER_PACKING_SCANS_TABLE)
       .select('*')
       .eq('session_id', session.id)
-      .order('created_at')
+      .order('created_at'),
+    supabaseAdmin
+      .from(CUSTOMER_MESSAGES_TABLE)
+      .select('*')
+      .eq('order_id', orderId)
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
   ])
 
-  const primaryError = orderResult.error || itemsResult.error || scansResult.error
+  const primaryError = orderResult.error
+    || itemsResult.error
+    || scansResult.error
+    || messagesResult.error
 
   if (primaryError) {
     throwOrderPackingDatabaseError(primaryError, 'Could not load the packing details.')
@@ -445,6 +461,7 @@ export const getOrderPackingDetail = async ({
     order: normalizeAdminOrderRecord(orderResult.data),
     customer: customerResult.data || null,
     items,
+    messages: messagesResult.data || [],
     progress: buildOrderPackingProgress(items)
   }
 }

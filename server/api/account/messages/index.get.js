@@ -5,10 +5,17 @@ const MESSAGE_SELECT = [
   'id',
   'user_id',
   'order_id',
+  'packing_session_id',
   'sender_admin_user_id',
   'sender_name',
+  'sender_type',
+  'message_kind',
+  'sender_customer_user_id',
   'subject',
   'body',
+  'reply_to_message_id',
+  'replied_at',
+  'admin_read_at',
   'read_at',
   'created_at'
 ].join(', ')
@@ -72,6 +79,7 @@ export default defineEventHandler(async (event) => {
         head: true
       })
       .eq('user_id', authUser.id)
+      .eq('sender_type', 'admin')
       .is('read_at', null)
   ])
 
@@ -95,7 +103,7 @@ export default defineEventHandler(async (event) => {
   if (orderIds.length) {
     const { data: orderRows, error: ordersError } = await supabaseAdmin
       .from('customer_orders')
-      .select('id, order_number')
+      .select('id, order_number, status, awaiting_customer_message_id')
       .eq('user_id', authUser.id)
       .in('id', orderIds)
 
@@ -106,16 +114,28 @@ export default defineEventHandler(async (event) => {
     orderNumberMap = new Map(
       (orderRows || []).map((order) => [
         String(order.id),
-        order.order_number || null
+        order
       ])
     )
   }
 
   return {
-    items: (messageRows || []).map((message) => ({
-      ...message,
-      order_number: orderNumberMap.get(String(message.order_id || '')) || null
-    })),
+    items: (messageRows || []).map((message) => {
+      const order = orderNumberMap.get(String(message.order_id || '')) || null
+
+      return {
+        ...message,
+        reply_to_id: message.reply_to_message_id || null,
+        response_requested: message.message_kind === 'packing_problem',
+        responded_at: message.replied_at || null,
+        order_number: order?.order_number || null,
+        order_status: order?.status || null,
+        is_awaiting_response: Boolean(
+          order?.awaiting_customer_message_id
+          && order.awaiting_customer_message_id === message.id
+        )
+      }
+    }),
     total: total || 0,
     unreadCount: unreadCount || 0,
     page,

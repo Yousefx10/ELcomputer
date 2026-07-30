@@ -6,10 +6,17 @@ const MESSAGE_SELECT = [
   'id',
   'user_id',
   'order_id',
+  'packing_session_id',
   'sender_admin_user_id',
   'sender_name',
+  'sender_type',
+  'message_kind',
+  'sender_customer_user_id',
   'subject',
   'body',
+  'reply_to_message_id',
+  'replied_at',
+  'admin_read_at',
   'read_at',
   'created_at'
 ].join(', ')
@@ -31,7 +38,7 @@ const throwMessageDatabaseError = (error) => {
   })
 }
 
-const loadCustomerOrderNumber = async ({
+const loadCustomerOrder = async ({
   supabaseAdmin,
   userId,
   orderId
@@ -42,7 +49,7 @@ const loadCustomerOrderNumber = async ({
 
   const { data, error } = await supabaseAdmin
     .from('customer_orders')
-    .select('order_number')
+    .select('order_number, status, awaiting_customer_message_id')
     .eq('id', orderId)
     .eq('user_id', userId)
     .maybeSingle()
@@ -51,7 +58,7 @@ const loadCustomerOrderNumber = async ({
     throwMessageDatabaseError(error)
   }
 
-  return data?.order_number || null
+  return data || null
 }
 
 export default defineEventHandler(async (event) => {
@@ -126,14 +133,24 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  const order = await loadCustomerOrder({
+    supabaseAdmin,
+    userId: authUser.id,
+    orderId: message.order_id
+  })
+
   return {
     item: {
       ...message,
-      order_number: await loadCustomerOrderNumber({
-        supabaseAdmin,
-        userId: authUser.id,
-        orderId: message.order_id
-      })
+      reply_to_id: message.reply_to_message_id || null,
+      response_requested: message.message_kind === 'packing_problem',
+      responded_at: message.replied_at || null,
+      order_number: order?.order_number || null,
+      order_status: order?.status || null,
+      is_awaiting_response: Boolean(
+        order?.awaiting_customer_message_id
+        && order.awaiting_customer_message_id === message.id
+      )
     }
   }
 })

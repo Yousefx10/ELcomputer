@@ -6,6 +6,7 @@ import {
   getOrderPackingSessionsForOrders,
   getPackingSessionAdminId,
   getPackingSessionState,
+  CUSTOMER_MESSAGES_TABLE,
   ORDER_PACKING_ACTIVE_STATE,
   ORDER_PACKING_ELIGIBLE_STATUSES
 } from '../../../utils/orderPacking'
@@ -81,7 +82,8 @@ export default defineEventHandler(async (event) => {
 
   const [
     processorsResult,
-    orderItemsResult
+    orderItemsResult,
+    messagesResult
   ] = await Promise.all([
     processorIds.length
       ? supabaseAdmin
@@ -94,10 +96,21 @@ export default defineEventHandler(async (event) => {
           .from('customer_order_items')
           .select('id, order_id, quantity')
           .in('order_id', orderIds)
+      : Promise.resolve({ data: [], error: null }),
+    orderIds.length
+      ? supabaseAdmin
+          .from(CUSTOMER_MESSAGES_TABLE)
+          .select('*')
+          .in('order_id', orderIds)
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .limit(500)
       : Promise.resolve({ data: [], error: null })
   ])
 
-  const relatedError = processorsResult.error || orderItemsResult.error
+  const relatedError = processorsResult.error
+    || orderItemsResult.error
+    || messagesResult.error
 
   if (relatedError) {
     throw createError({
@@ -113,6 +126,7 @@ export default defineEventHandler(async (event) => {
     ])
   )
   const itemStatsByOrderId = new Map()
+  const latestMessageByOrderId = new Map()
 
   for (const item of orderItemsResult.data || []) {
     const orderId = String(item.order_id)
@@ -124,6 +138,14 @@ export default defineEventHandler(async (event) => {
     stats.item_count += 1
     stats.total_quantity += Math.max(0, Number(item.quantity || 0))
     itemStatsByOrderId.set(orderId, stats)
+  }
+
+  for (const message of messagesResult.data || []) {
+    const orderId = String(message.order_id || '')
+
+    if (orderId && !latestMessageByOrderId.has(orderId)) {
+      latestMessageByOrderId.set(orderId, message)
+    }
   }
 
   const items = pagedOrders.map((order) => {
@@ -149,6 +171,8 @@ export default defineEventHandler(async (event) => {
         }
       : null
     const currentSessionId = session?.id || null
+    const latestMessage = latestMessageByOrderId.get(String(order.id)) || null
+    const hasCustomerReply = latestMessage?.sender_type === 'customer'
     const activeSession = session
       ? {
           ...session,
@@ -174,6 +198,10 @@ export default defineEventHandler(async (event) => {
       isCurrentAdmin,
       is_current_admin: isCurrentAdmin,
       processor,
+      latest_message: latestMessage,
+      latestMessage,
+      has_customer_reply: hasCustomerReply,
+      hasCustomerReply,
       active_session: activeSession,
       activeSession,
       can_resume: isCurrentAdmin,

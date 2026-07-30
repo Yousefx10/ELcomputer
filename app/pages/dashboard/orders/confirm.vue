@@ -43,6 +43,32 @@
         </button>
       </div>
 
+      <div
+        v-if="pageNotice.message"
+        class="flex items-start justify-between gap-4 rounded-2xl p-4 text-sm shadow"
+        :class="pageNotice.type === 'success'
+          ? 'bg-green-50 text-green-800'
+          : 'bg-blue-50 text-blue-800'"
+        role="status"
+      >
+        <div class="flex items-start gap-3">
+          <Icon
+            :name="pageNotice.type === 'success' ? 'lucide:circle-check' : 'lucide:info'"
+            size="19"
+            class="mt-0.5 shrink-0"
+          />
+          <p>{{ pageNotice.message }}</p>
+        </div>
+        <button
+          type="button"
+          aria-label="Dismiss notice"
+          class="shrink-0 rounded-lg p-1 hover:bg-black/5"
+          @click="clearPageNotice"
+        >
+          <Icon name="lucide:x" size="17" />
+        </button>
+      </div>
+
       <div class="grid items-start gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
         <aside class="rounded-2xl bg-white p-5 shadow xl:sticky xl:top-6">
           <div class="flex items-center justify-between gap-3">
@@ -91,13 +117,15 @@
               v-for="queueOrder in queueOrders"
               :key="queueOrder.id"
               type="button"
-              :disabled="isQueueOrderLocked(queueOrder) || claimLoading"
-              class="w-full rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed"
+              :disabled="isQueueOrderLocked(queueOrder) || Boolean(openingOrderId) || claimLoading || problemLoading"
+              class="relative w-full overflow-hidden rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed"
               :class="[
                 selectedOrderId === queueOrder.id
                   ? 'border-black bg-gray-950 text-white'
                   : 'border-gray-200 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50',
-                isQueueOrderLocked(queueOrder) ? 'opacity-65' : ''
+                isQueueOrderLocked(queueOrder) ? 'opacity-65' : '',
+                openingOrderId && !isQueueOrderOpening(queueOrder) ? 'opacity-60' : '',
+                isQueueOrderOpening(queueOrder) ? 'ring-4 ring-blue-100' : ''
               ]"
               @click="openQueueOrder(queueOrder)"
             >
@@ -114,9 +142,14 @@
                   </p>
                 </div>
                 <Icon
-                  :name="getQueueSession(queueOrder) ? 'lucide:package-open' : 'lucide:chevron-right'"
+                  :name="isQueueOrderOpening(queueOrder)
+                    ? 'lucide:loader-circle'
+                    : getQueueSession(queueOrder)
+                      ? 'lucide:package-open'
+                      : 'lucide:chevron-right'"
                   size="18"
                   class="mt-1 shrink-0"
+                  :class="isQueueOrderOpening(queueOrder) ? 'animate-spin text-blue-500' : ''"
                 />
               </div>
 
@@ -126,6 +159,18 @@
               >
                 <span>{{ formatDate(queueOrder.created_at, false) }}</span>
                 <span>{{ Number(queueOrder.item_quantity || queueOrder.total_quantity || 0) }} items</span>
+              </div>
+
+              <div v-if="hasQueueCustomerReply(queueOrder)" class="mt-3">
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
+                  :class="selectedOrderId === queueOrder.id
+                    ? 'bg-fuchsia-400/20 text-fuchsia-100'
+                    : 'bg-fuchsia-100 text-fuchsia-800'"
+                >
+                  <Icon name="lucide:message-circle-reply" size="13" />
+                  Purchaser replied
+                </span>
               </div>
 
               <p
@@ -141,6 +186,26 @@
                   ? `Being packed by ${getQueueProcessorName(queueOrder)}`
                   : 'Resume your packing session' }}
               </p>
+
+              <div
+                v-if="isQueueOrderOpening(queueOrder)"
+                class="mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold"
+                :class="selectedOrderId === queueOrder.id
+                  ? 'bg-white/10 text-white'
+                  : 'bg-blue-50 text-blue-700'"
+                role="status"
+              >
+                <Icon name="lucide:loader-circle" size="14" class="animate-spin" />
+                {{ getQueueOpeningLabel(queueOrder) }}
+              </div>
+
+              <span
+                v-if="isQueueOrderOpening(queueOrder)"
+                class="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-blue-100"
+                aria-hidden="true"
+              >
+                <span class="block h-full w-1/2 animate-pulse rounded-full bg-blue-600" />
+              </span>
             </button>
           </div>
         </aside>
@@ -305,6 +370,278 @@
                   </dl>
                 </div>
               </div>
+            </section>
+
+            <details class="group overflow-hidden rounded-2xl bg-white shadow">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 transition hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+                <div class="flex items-center gap-3">
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-700">
+                    <Icon name="lucide:receipt-text" size="21" />
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-900">Payment review</h3>
+                    <p class="mt-0.5 text-sm text-gray-500">
+                      {{ orderDetail.payment_method || 'Payment method not selected' }}
+                      · {{ formatCurrency(orderDetail.total_amount) }}
+                    </p>
+                  </div>
+                </div>
+                <span class="inline-flex shrink-0 items-center gap-2 text-xs font-bold text-gray-500">
+                  Review
+                  <Icon
+                    name="lucide:chevron-down"
+                    size="18"
+                    class="transition-transform group-open:rotate-180"
+                  />
+                </span>
+              </summary>
+
+              <div class="border-t bg-gray-50/70 p-5">
+                <div class="grid gap-4 lg:grid-cols-2">
+                  <dl class="rounded-2xl border bg-white p-4 text-sm">
+                    <div class="flex items-start justify-between gap-4 py-2">
+                      <dt class="text-gray-500">Order reference</dt>
+                      <dd class="text-right font-bold text-gray-900">{{ getOrderNumber(orderDetail) }}</dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Placed</dt>
+                      <dd class="text-right font-semibold text-gray-900">{{ formatDate(orderDetail.created_at) }}</dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Order status</dt>
+                      <dd class="text-right font-semibold text-gray-900">
+                        {{ formatCustomerOrderStatus(orderDetail.status) }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Payment method</dt>
+                      <dd class="text-right font-semibold text-gray-900">
+                        {{ orderDetail.payment_method || 'Not selected' }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Shipping method</dt>
+                      <dd class="text-right font-semibold text-gray-900">
+                        {{ orderDetail.shipping_method || 'Not selected' }}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <dl class="rounded-2xl border bg-white p-4 text-sm">
+                    <div class="flex items-start justify-between gap-4 py-2">
+                      <dt class="text-gray-500">Subtotal</dt>
+                      <dd class="text-right font-semibold text-gray-900">
+                        {{ formatCurrency(orderDetail.subtotal_amount) }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Discount</dt>
+                      <dd class="text-right font-semibold text-red-600">
+                        - {{ formatCurrency(orderDetail.discount_amount) }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Coupon</dt>
+                      <dd class="break-all text-right font-semibold text-gray-900">
+                        {{ orderDetail.coupon_code || 'No coupon' }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t py-2">
+                      <dt class="text-gray-500">Currency</dt>
+                      <dd class="text-right font-semibold uppercase text-gray-900">
+                        {{ orderDetail.currency || 'EGP' }}
+                      </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-4 border-t pt-3 text-lg">
+                      <dt class="font-bold text-gray-900">Total</dt>
+                      <dd class="text-right font-black text-gray-950">
+                        {{ formatCurrency(orderDetail.total_amount) }}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+            </details>
+
+            <section
+              v-if="conversationMessages.length"
+              class="rounded-2xl bg-white p-6 shadow"
+            >
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div class="flex items-start gap-3">
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-fuchsia-50 text-fuchsia-700">
+                    <Icon name="lucide:messages-square" size="21" />
+                  </span>
+                  <div>
+                    <h3 class="text-2xl font-bold text-gray-900">Order conversation</h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Store notes and purchaser responses linked to this order.
+                    </p>
+                  </div>
+                </div>
+
+                <span
+                  v-if="latestCustomerResponse"
+                  class="inline-flex shrink-0 items-center gap-2 rounded-full bg-fuchsia-100 px-3 py-1.5 text-xs font-bold text-fuchsia-800"
+                >
+                  <Icon name="lucide:message-circle-reply" size="14" />
+                  Latest purchaser reply {{ formatDate(getConversationDate(latestCustomerResponse), false) }}
+                </span>
+              </div>
+
+              <div class="mt-5 max-h-[32rem] space-y-4 overflow-y-auto rounded-2xl bg-gray-50 p-4">
+                <article
+                  v-for="(message, messageIndex) in conversationMessages"
+                  :key="getConversationKey(message, messageIndex)"
+                  class="flex"
+                  :class="isCustomerConversationMessage(message) ? 'justify-start' : 'justify-end'"
+                >
+                  <div
+                    class="max-w-[90%] rounded-2xl border p-4 shadow-sm sm:max-w-[78%]"
+                    :class="[
+                      isCustomerConversationMessage(message)
+                        ? 'border-fuchsia-200 bg-white text-gray-800'
+                        : 'border-gray-900 bg-gray-950 text-white',
+                      isLatestCustomerResponse(message)
+                        ? 'ring-4 ring-fuchsia-100'
+                        : ''
+                    ]"
+                  >
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                      <span
+                        class="font-bold"
+                        :class="isCustomerConversationMessage(message)
+                          ? 'text-fuchsia-800'
+                          : 'text-white'"
+                      >
+                        {{ getConversationSenderName(message) }}
+                      </span>
+                      <span :class="isCustomerConversationMessage(message) ? 'text-gray-400' : 'text-gray-400'">
+                        {{ formatDate(getConversationDate(message)) }}
+                      </span>
+                      <span
+                        v-if="isLatestCustomerResponse(message)"
+                        class="rounded-full bg-fuchsia-100 px-2 py-0.5 font-bold text-fuchsia-800"
+                      >
+                        Latest purchaser response
+                      </span>
+                    </div>
+
+                    <p
+                      v-if="getConversationSubject(message)"
+                      class="mt-2 font-bold"
+                    >
+                      {{ getConversationSubject(message) }}
+                    </p>
+                    <p dir="auto" class="mt-2 whitespace-pre-wrap break-words text-sm leading-6">
+                      {{ getConversationBody(message) }}
+                    </p>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              v-if="!sessionCompleted"
+              class="overflow-hidden rounded-2xl border border-red-200 bg-white shadow"
+            >
+              <button
+                type="button"
+                class="flex w-full items-start justify-between gap-4 p-5 text-left transition hover:bg-red-50"
+                :aria-expanded="problemFormOpen"
+                :disabled="problemLoading || releaseLoading || claimLoading"
+                @click="toggleProblemForm"
+              >
+                <div class="flex items-start gap-3">
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-red-100 text-red-700">
+                    <Icon name="lucide:triangle-alert" size="21" />
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-bold text-red-800">Problem with order</h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Stop packing and send the purchaser a clear note about what needs attention.
+                    </p>
+                  </div>
+                </div>
+                <Icon
+                  name="lucide:chevron-down"
+                  size="19"
+                  class="mt-2 shrink-0 text-red-700 transition-transform"
+                  :class="problemFormOpen ? 'rotate-180' : ''"
+                />
+              </button>
+
+              <form
+                v-if="problemFormOpen"
+                class="border-t border-red-100 bg-red-50/50 p-5"
+                @submit.prevent="reportOrderProblem"
+              >
+                <div class="grid gap-4">
+                  <div>
+                    <label for="order-problem-subject" class="mb-2 block text-sm font-bold text-gray-800">
+                      Subject <span class="font-normal text-gray-400">(optional)</span>
+                    </label>
+                    <input
+                      id="order-problem-subject"
+                      v-model="problemSubject"
+                      type="text"
+                      maxlength="200"
+                      placeholder="Missing item, address check, payment question..."
+                      class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                    >
+                  </div>
+
+                  <div>
+                    <div class="mb-2 flex items-center justify-between gap-3">
+                      <label for="order-problem-message" class="text-sm font-bold text-gray-800">
+                        Message to purchaser *
+                      </label>
+                      <span class="text-xs text-gray-400">{{ problemMessage.length }} / 2000</span>
+                    </div>
+                    <textarea
+                      id="order-problem-message"
+                      v-model="problemMessage"
+                      rows="5"
+                      maxlength="2000"
+                      required
+                      placeholder="Explain the issue and what you need from the purchaser."
+                      class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                    />
+                  </div>
+                </div>
+
+                <p v-if="problemFormError" class="mt-4 text-sm font-semibold text-red-700" role="alert">
+                  {{ problemFormError }}
+                </p>
+
+                <div class="mt-5 flex flex-col gap-3 border-t border-red-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <p class="text-xs leading-5 text-gray-500">
+                    This closes the current packing session. The order can return to the queue after the purchaser responds.
+                  </p>
+                  <div class="flex shrink-0 flex-wrap gap-2">
+                    <button
+                      type="button"
+                      :disabled="problemLoading"
+                      class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                      @click="closeProblemForm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      :disabled="problemLoading || !problemMessage.trim()"
+                      class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Icon
+                        :name="problemLoading ? 'lucide:loader-circle' : 'lucide:send'"
+                        size="17"
+                        :class="problemLoading ? 'animate-spin' : ''"
+                      />
+                      {{ problemLoading ? 'Sending...' : 'Send problem report' }}
+                    </button>
+                  </div>
+                </div>
+              </form>
             </section>
 
             <section
@@ -598,11 +935,17 @@ const queueOrders = ref([])
 const queueTotal = ref(0)
 const queueLoading = ref(false)
 const claimLoading = ref(false)
+const openingOrderId = ref('')
 const detailLoading = ref(false)
 const scanLoading = ref(false)
 const completionLoading = ref(false)
 const releaseLoading = ref(false)
+const problemLoading = ref(false)
 const pageError = ref('')
+const pageNotice = reactive({
+  type: '',
+  message: ''
+})
 const packingDetail = ref(null)
 const selectedOrderId = ref('')
 const scanCode = ref('')
@@ -613,6 +956,10 @@ const scanFeedback = reactive({
 })
 const completionStatus = ref('ready_to_deliver')
 const purchaserMessage = ref('')
+const problemFormOpen = ref(false)
+const problemSubject = ref('')
+const problemMessage = ref('')
+const problemFormError = ref('')
 
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
 const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
@@ -633,6 +980,50 @@ const orderDetail = computed(() => packingDetail.value?.order || {})
 const customerDetail = computed(() => packingDetail.value?.customer || {})
 const orderItems = computed(() => packingDetail.value?.items || [])
 const sessionCompleted = computed(() => sessionDetail.value.status === 'completed')
+
+const getConversationRows = (value) => {
+  if (Array.isArray(value)) {
+    return value
+  }
+
+  if (Array.isArray(value?.items)) {
+    return value.items
+  }
+
+  if (Array.isArray(value?.messages)) {
+    return value.messages
+  }
+
+  return []
+}
+
+const conversationMessages = computed(() => {
+  const detail = packingDetail.value || {}
+  const rows = [
+    detail.messages,
+    detail.conversation,
+    detail.order_messages,
+    detail.order?.messages,
+    detail.order?.conversation
+  ].map(getConversationRows).find((items) => items.length) || []
+
+  return [...rows].sort((firstMessage, secondMessage) => {
+    const firstTime = new Date(getConversationDate(firstMessage) || 0).getTime()
+    const secondTime = new Date(getConversationDate(secondMessage) || 0).getTime()
+
+    if (!Number.isFinite(firstTime) || !Number.isFinite(secondTime)) {
+      return 0
+    }
+
+    return firstTime - secondTime
+  })
+})
+
+const latestCustomerResponse = computed(() => {
+  return [...conversationMessages.value]
+    .reverse()
+    .find(isCustomerConversationMessage) || null
+})
 
 const getScannedQuantity = (item) => {
   if (Number.isFinite(Number(item?.scanned_quantity))) {
@@ -722,6 +1113,184 @@ const isQueueOrderLocked = (order = {}) => {
   return Boolean(getQueueSession(order)) && !canResumeQueueOrder(order)
 }
 
+const hasQueueCustomerReply = (order = {}) => {
+  const latestMessage = order.latest_message || order.latestMessage || {}
+  const latestSenderType = String(
+    latestMessage.sender_type
+    || latestMessage.senderType
+    || latestMessage.author_type
+    || latestMessage.direction
+    || ''
+  ).trim().toLowerCase()
+
+  return Boolean(
+    order.has_customer_reply
+    || order.hasCustomerReply
+    || latestMessage.is_customer_reply
+    || latestMessage.isCustomerReply
+    || latestSenderType.includes('customer')
+    || latestSenderType.includes('purchaser')
+    || latestSenderType === 'inbound'
+  )
+}
+
+const isQueueOrderOpening = (order = {}) => {
+  return Boolean(openingOrderId.value)
+    && String(openingOrderId.value) === String(order.id || '')
+}
+
+const getQueueOpeningLabel = (order = {}) => {
+  const currentOrderId = String(orderDetail.value.id || selectedOrderId.value || '')
+  const targetOrderId = String(order.id || '')
+
+  if (
+    sessionDetail.value.id
+    && !sessionCompleted.value
+    && currentOrderId
+    && currentOrderId !== targetOrderId
+  ) {
+    return 'Switching orders...'
+  }
+
+  return getQueueSession(order)?.id
+    ? 'Opening session...'
+    : 'Claiming order...'
+}
+
+const getConversationDate = (message = {}) => {
+  return message.created_at
+    || message.sent_at
+    || message.updated_at
+    || message.createdAt
+    || ''
+}
+
+const getConversationBody = (message = {}) => {
+  return String(
+    message.body
+    || message.message
+    || message.content
+    || message.text
+    || ''
+  ).trim() || 'No message text was provided.'
+}
+
+const getConversationSubject = (message = {}) => {
+  return String(message.subject || message.title || '').trim()
+}
+
+const isCustomerConversationMessage = (message = {}) => {
+  const senderType = String(
+    message.sender_type
+    || message.senderType
+    || message.sender_role
+    || message.author_type
+    || message.direction
+    || ''
+  ).trim().toLowerCase()
+
+  if (
+    senderType.includes('customer')
+    || senderType.includes('purchaser')
+    || senderType === 'inbound'
+  ) {
+    return true
+  }
+
+  if (
+    senderType.includes('admin')
+    || senderType.includes('store')
+    || senderType === 'outbound'
+  ) {
+    return false
+  }
+
+  if (message.is_customer_reply || message.isCustomerReply) {
+    return true
+  }
+
+  return !message.sender_admin_user_id
+    && !message.senderAdminUserId
+    && Boolean(
+      message.customer_user_id
+      || message.customerUserId
+      || message.customer_name
+      || message.user_id
+    )
+}
+
+const getConversationSenderName = (message = {}) => {
+  if (isCustomerConversationMessage(message)) {
+    return String(
+      message.sender_name
+      || message.customer_name
+      || message.purchaser_name
+      || getCustomerName(orderDetail.value)
+    ).trim() || 'Purchaser'
+  }
+
+  return String(
+    message.sender_name
+    || message.admin_name
+    || message.author_name
+    || 'Store team'
+  ).trim() || 'Store team'
+}
+
+const getConversationKey = (message = {}, index = 0) => {
+  return message.id
+    || message.message_id
+    || `${getConversationDate(message) || 'message'}-${index}`
+}
+
+const isLatestCustomerResponse = (message = {}) => {
+  if (!latestCustomerResponse.value) {
+    return false
+  }
+
+  if (message === latestCustomerResponse.value) {
+    return true
+  }
+
+  const messageId = message.id || message.message_id
+  const latestMessageId = latestCustomerResponse.value.id
+    || latestCustomerResponse.value.message_id
+
+  return Boolean(messageId)
+    && String(messageId) === String(latestMessageId || '')
+}
+
+const clearPageNotice = () => {
+  pageNotice.type = ''
+  pageNotice.message = ''
+}
+
+const resetProblemForm = () => {
+  problemFormOpen.value = false
+  problemSubject.value = ''
+  problemMessage.value = ''
+  problemFormError.value = ''
+}
+
+const toggleProblemForm = async () => {
+  problemFormOpen.value = !problemFormOpen.value
+  problemFormError.value = ''
+
+  if (problemFormOpen.value) {
+    await nextTick()
+    document.getElementById('order-problem-subject')?.focus()
+  }
+}
+
+const closeProblemForm = () => {
+  if (problemLoading.value) {
+    return
+  }
+
+  resetProblemForm()
+  void focusScanner()
+}
+
 const getItemSku = (item = {}) => {
   return item.variant_sku
     || item.product_sku
@@ -742,10 +1311,16 @@ const formatDate = (value, includeTime = true) => {
     return 'Recently'
   }
 
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Recently'
+  }
+
   return new Intl.DateTimeFormat('en-US', includeTime
     ? { dateStyle: 'medium', timeStyle: 'short' }
     : { dateStyle: 'medium' }
-  ).format(new Date(value))
+  ).format(date)
 }
 
 const setSessionRouteQuery = async (sessionId = '') => {
@@ -794,6 +1369,27 @@ const focusScanner = async () => {
   await nextTick()
   scanInputElement.value?.focus()
   scanInputElement.value?.select()
+}
+
+const clearPackingWorkspace = () => {
+  packingDetail.value = null
+  selectedOrderId.value = ''
+  scanCode.value = ''
+  scanFeedback.type = ''
+  scanFeedback.message = ''
+  completionStatus.value = 'ready_to_deliver'
+  purchaserMessage.value = ''
+  resetProblemForm()
+}
+
+const postReleasePackingSession = async (sessionId) => {
+  return await $fetch(
+    `/api/admin-orders/packing/${encodeURIComponent(sessionId)}/release`,
+    {
+      method: 'POST',
+      headers: await getAuthHeaders()
+    }
+  )
 }
 
 const loadQueue = async ({
@@ -850,6 +1446,7 @@ const loadPackingSession = async (sessionId, { updateRoute = true } = {}) => {
       ? orderDetail.value.status || 'ready_to_deliver'
       : 'ready_to_deliver'
     purchaserMessage.value = ''
+    resetProblemForm()
     sessionLoaded = true
 
     if (updateRoute) {
@@ -867,49 +1464,98 @@ const loadPackingSession = async (sessionId, { updateRoute = true } = {}) => {
 }
 
 const openQueueOrder = async (queueOrder) => {
-  if (!queueOrder?.id || isQueueOrderLocked(queueOrder)) {
+  if (
+    !queueOrder?.id
+    || isQueueOrderLocked(queueOrder)
+    || openingOrderId.value
+    || problemLoading.value
+  ) {
     return
   }
 
-  const existingSession = getQueueSession(queueOrder)
+  const targetOrderId = String(queueOrder.id)
+  const currentSessionId = String(sessionDetail.value.id || '')
+  const currentOrderId = String(orderDetail.value.id || selectedOrderId.value || '')
 
-  if (existingSession?.id) {
-    await loadPackingSession(existingSession.id)
+  if (
+    currentSessionId
+    && currentOrderId === targetOrderId
+    && String(getQueueSession(queueOrder)?.id || '') === currentSessionId
+  ) {
+    await focusScanner()
     return
   }
 
+  openingOrderId.value = targetOrderId
   claimLoading.value = true
   pageError.value = ''
+  clearPageNotice()
+  let releasedCurrentSession = false
 
   try {
-    const response = await $fetch('/api/admin-orders/packing', {
-      method: 'POST',
-      body: {
-        orderId: queueOrder.id
-      },
-      headers: await getAuthHeaders()
-    })
-    const sessionId = response?.session?.id
-      || response?.detail?.session?.id
-      || response?.sessionId
-
-    if (response?.detail?.session?.id || response?.data?.session?.id) {
-      applyPackingDetail(response)
-      await setSessionRouteQuery(sessionDetail.value.id)
-      await focusScanner()
-    } else if (sessionId) {
-      await loadPackingSession(sessionId)
-    } else {
-      throw new Error('The order was claimed without returning a packing session.')
+    if (
+      currentSessionId
+      && !sessionCompleted.value
+      && currentOrderId
+      && currentOrderId !== targetOrderId
+    ) {
+      releaseLoading.value = true
+      await postReleasePackingSession(currentSessionId)
+      releasedCurrentSession = true
+      clearPackingWorkspace()
+      await setSessionRouteQuery('')
+      releaseLoading.value = false
     }
 
-    await loadQueue({ preserveSelection: true })
+    const existingSession = getQueueSession(queueOrder)
+
+    if (existingSession?.id) {
+      await loadPackingSession(existingSession.id)
+    } else {
+      const response = await $fetch('/api/admin-orders/packing', {
+        method: 'POST',
+        body: {
+          orderId: targetOrderId
+        },
+        headers: await getAuthHeaders()
+      })
+      const sessionId = response?.session?.id
+        || response?.detail?.session?.id
+        || response?.sessionId
+
+      if (response?.detail?.session?.id || response?.data?.session?.id) {
+        applyPackingDetail(response)
+        resetProblemForm()
+        await setSessionRouteQuery(sessionDetail.value.id)
+        await focusScanner()
+      } else if (sessionId) {
+        await loadPackingSession(sessionId)
+      } else {
+        throw new Error('The order was claimed without returning a packing session.')
+      }
+    }
+
+    await loadQueue({
+      preserveSelection: true,
+      preserveError: true
+    })
   } catch (error) {
     const claimError = error?.data?.statusMessage || error?.message || 'Could not start packing this order.'
-    await loadQueue({ preserveSelection: true })
+
+    if (releasedCurrentSession) {
+      clearPackingWorkspace()
+      await setSessionRouteQuery('')
+    }
+
+    await loadQueue({
+      preserveSelection: true,
+      preserveError: true
+    })
     pageError.value = claimError
   } finally {
+    releaseLoading.value = false
     claimLoading.value = false
+    openingOrderId.value = ''
   }
 }
 
@@ -1074,6 +1720,66 @@ const completePacking = async () => {
   }
 }
 
+const reportOrderProblem = async () => {
+  const sessionId = String(sessionDetail.value.id || '')
+  const message = problemMessage.value.trim()
+  const subject = problemSubject.value.trim()
+
+  if (!sessionId || sessionCompleted.value || problemLoading.value) {
+    return
+  }
+
+  if (!message) {
+    problemFormError.value = 'Explain the problem before sending this report.'
+    return
+  }
+
+  problemLoading.value = true
+  problemFormError.value = ''
+  pageError.value = ''
+  clearPageNotice()
+
+  const orderNumber = getOrderNumber(orderDetail.value)
+  let response
+
+  try {
+    response = await $fetch(
+      `/api/admin-orders/packing/${encodeURIComponent(sessionId)}/problem`,
+      {
+        method: 'POST',
+        body: {
+          subject: subject || undefined,
+          message
+        },
+        headers: await getAuthHeaders()
+      }
+    )
+  } catch (error) {
+    problemFormError.value = error?.data?.statusMessage
+      || error?.message
+      || 'Could not report this order problem.'
+    return
+  } finally {
+    problemLoading.value = false
+  }
+
+  clearPackingWorkspace()
+  try {
+    await setSessionRouteQuery('')
+  } catch {
+    pageError.value = 'The problem was reported, but the session address could not be reset. Refresh this page before continuing.'
+  }
+  await loadQueue({
+    preserveSelection: true,
+    preserveError: true
+  })
+
+  pageNotice.type = 'success'
+  pageNotice.message = typeof response?.message === 'string'
+    ? response.message
+    : `The problem with ${orderNumber} was reported. The packing session is closed while the order awaits follow-up.`
+}
+
 const releasePackingSession = async () => {
   if (!sessionDetail.value.id || sessionCompleted.value || releaseLoading.value) {
     return
@@ -1088,22 +1794,19 @@ const releasePackingSession = async () => {
 
   releaseLoading.value = true
   pageError.value = ''
+  clearPageNotice()
 
   try {
-    await $fetch(
-      `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/release`,
-      {
-        method: 'POST',
-        headers: await getAuthHeaders()
-      }
-    )
-    packingDetail.value = null
-    selectedOrderId.value = ''
-    scanCode.value = ''
-    scanFeedback.type = ''
-    scanFeedback.message = ''
+    const releasedOrderNumber = getOrderNumber(orderDetail.value)
+    await postReleasePackingSession(sessionDetail.value.id)
+    clearPackingWorkspace()
     await setSessionRouteQuery('')
-    await loadQueue({ preserveSelection: true })
+    await loadQueue({
+      preserveSelection: true,
+      preserveError: true
+    })
+    pageNotice.type = 'info'
+    pageNotice.message = `${releasedOrderNumber} was released back to the confirmation queue.`
   } catch (error) {
     pageError.value = error?.data?.statusMessage || error?.message || 'Could not release this order.'
   } finally {
