@@ -40,7 +40,8 @@ export const dashboardNavigationGroups = [
     icon: 'lucide:layout-dashboard',
     to: '/dashboard',
     match: {
-      paths: ['/dashboard', '/dashboard/orders']
+      paths: ['/dashboard', '/dashboard/orders'],
+      prefixes: ['/dashboard/orders/']
     },
     children: [
       {
@@ -76,7 +77,8 @@ export const dashboardNavigationGroups = [
         permission: 'dashboard.orders',
         documentTitle: 'Dashboard - Orders',
         match: {
-          paths: ['/dashboard/orders']
+          paths: ['/dashboard/orders'],
+          prefixes: ['/dashboard/orders/']
         }
       }
     ]

@@ -180,7 +180,7 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
-  if (path === '/dashboard/orders') {
+  if (path === '/dashboard/orders' || path.startsWith('/dashboard/orders/')) {
     return {
       permission: 'dashboard.orders'
     }

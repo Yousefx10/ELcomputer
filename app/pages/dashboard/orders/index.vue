@@ -2,10 +2,22 @@
   <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
       <div class="rounded-2xl bg-white p-6 shadow">
-        <h2 class="text-4xl font-bold">Orders</h2>
-        <p class="mt-2 text-sm text-gray-500">
-          Review recent orders and update order statuses.
-        </p>
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-4xl font-bold">Orders</h2>
+            <p class="mt-2 text-sm text-gray-500">
+              Review recent orders and update order statuses.
+            </p>
+          </div>
+
+          <NuxtLink
+            to="/dashboard/orders/confirm"
+            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-bold text-white transition hover:bg-gray-800"
+          >
+            <Icon name="lucide:scan-barcode" size="18" />
+            Confirm Orders
+          </NuxtLink>
+        </div>
       </div>
 
       <DashboardSecondaryNav :items="secondaryNavItems" />

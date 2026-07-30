@@ -24,13 +24,6 @@ const stats = reactive({
   wallet: 0
 })
 
-const sidebarItems = [
-  { key: 'profile', label: 'My Profile', icon: 'lucide:user-round', active: true },
-  { key: 'orders', label: 'Orders', icon: 'lucide:file-text', active: false },
-  { key: 'wallet', label: 'Wallet', icon: 'lucide:wallet', active: false },
-  { key: 'settings', label: 'Settings', icon: 'lucide:settings', active: false }
-]
-
 const getCustomerDisplayName = (accountUser, accountProfile) => {
   return accountProfile?.full_name
     || accountUser?.user_metadata?.full_name
@@ -203,7 +196,7 @@ await loadAccountPage()
 
 <template>
   <div class="min-h-screen bg-gray-100 py-8">
-    <div class="mx-auto max-w-7xl px-4 md:px-6">
+    <div id="profile" class="mx-auto max-w-7xl scroll-mt-24 px-4 md:px-6">
       <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
         {{ errorMessage }}
       </div>
@@ -233,17 +226,7 @@ await loadAccountPage()
               Account
             </p>
 
-            <div class="mt-4 space-y-2">
-              <div
-                v-for="item in sidebarItems"
-                :key="item.key"
-                class="flex items-center gap-3 rounded-2xl px-4 py-3"
-                :class="item.active ? 'bg-blue-50 text-blue-700' : 'text-gray-500'"
-              >
-                <Icon :name="item.icon" size="18" />
-                <span class="font-semibold">{{ item.label }}</span>
-              </div>
-            </div>
+            <AccountNavigation />
 
             <button
               type="button"
@@ -297,7 +280,7 @@ await loadAccountPage()
               </div>
             </div>
 
-            <div class="rounded-2xl bg-white p-5 shadow">
+            <div id="wallet" class="scroll-mt-24 rounded-2xl bg-white p-5 shadow">
               <div class="flex items-center gap-4">
                 <div class="rounded-2xl bg-cyan-50 p-4 text-cyan-700">
                   <Icon name="lucide:wallet" size="22" />
@@ -311,7 +294,7 @@ await loadAccountPage()
             </div>
           </div>
 
-          <div class="rounded-3xl bg-white p-6 shadow">
+          <div id="orders" class="scroll-mt-24 rounded-3xl bg-white p-6 shadow">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <h2 class="text-2xl font-bold text-gray-900">Recent Orders</h2>

@@ -1,6 +1,7 @@
 export const customerOrderStatusOptions = [
   { value: 'pending_payment', label: 'Pending Payment' },
   { value: 'processing', label: 'Processing' },
+  { value: 'ready_to_deliver', label: 'Ready to Deliver' },
   { value: 'being_shipped', label: 'Being Shipped' },
   { value: 'out_for_delivery', label: 'Out for Delivery' },
   { value: 'on_hold', label: 'On Hold' },
@@ -12,6 +13,7 @@ export const customerOrderStatusOptions = [
 export const customerOrderStatusLabelMap = {
   pending_payment: 'Pending Payment',
   processing: 'Processing',
+  ready_to_deliver: 'Ready to Deliver',
   being_shipped: 'Being Shipped',
   out_for_delivery: 'Out for Delivery',
   on_hold: 'On Hold',
@@ -27,6 +29,7 @@ export const completedOrderStatuses = ['completed', 'delivered']
 export const activeCustomerOrderStatuses = [
   'pending_payment',
   'processing',
+  'ready_to_deliver',
   'being_shipped',
   'out_for_delivery',
   'on_hold',
@@ -54,6 +57,10 @@ export const getCustomerOrderStatusClass = (value) => {
 
   if (value === 'processing' || value === 'in_progress') {
     return 'bg-blue-100 text-blue-700'
+  }
+
+  if (value === 'ready_to_deliver') {
+    return 'bg-emerald-100 text-emerald-700'
   }
 
   if (value === 'being_shipped' || value === 'out_for_delivery') {
