@@ -16,6 +16,202 @@
       </div>
     </section>
 
+    <section v-if="canConfigureShipping" class="rounded-2xl bg-white p-6 shadow">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h3 class="text-2xl font-bold">PDC API</h3>
+          <p class="mt-1 text-sm text-gray-500">Prepare automatic labels here.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs font-semibold">
+          <span
+            class="rounded-full px-3 py-1"
+            :class="pdcSettings.live_requests_enabled ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
+          >
+            {{ pdcSettings.live_requests_enabled ? 'Live server ready' : 'Live calls off' }}
+          </span>
+          <span
+            class="rounded-full px-3 py-1"
+            :class="pdcSettings.access_token_configured ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
+          >
+            {{ pdcSettings.access_token_configured ? 'Token saved' : 'Token missing' }}
+          </span>
+          <span class="rounded-full bg-blue-100 px-3 py-1 text-blue-700">
+            {{ pdcSettings.city_mapping_count }} cities
+          </span>
+          <span v-if="pdcSettings.pending_job_count" class="rounded-full bg-purple-100 px-3 py-1 text-purple-700">
+            {{ pdcSettings.pending_job_count }} pending
+          </span>
+        </div>
+      </div>
+
+      <p v-if="pdcLoading" class="mt-5 text-sm text-gray-500">Loading PDC settings...</p>
+      <p v-else-if="pdcPageError" class="mt-5 text-sm text-red-600">{{ pdcPageError }}</p>
+
+      <form v-else class="mt-6 space-y-5" @submit.prevent="savePdcSettings">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">API URL</label>
+            <input
+              :value="pdcSettings.base_url"
+              type="text"
+              readonly
+              class="w-full rounded-lg border bg-gray-50 p-3 text-sm text-gray-600"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Company ID</label>
+            <input
+              v-model="pdcSettings.company_id"
+              type="text"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Product ID</label>
+            <input
+              v-model="pdcSettings.product_id"
+              type="number"
+              min="1"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup City ID</label>
+            <input
+              v-model="pdcSettings.origin_city_id"
+              type="number"
+              min="1"
+              placeholder="Required before launch"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Contact</label>
+            <input
+              v-model="pdcSettings.origin_contact_name"
+              type="text"
+              placeholder="Store name"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Phone</label>
+            <input
+              v-model="pdcSettings.origin_phone"
+              type="tel"
+              inputmode="numeric"
+              placeholder="01xxxxxxxxx"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div class="md:col-span-2 xl:col-span-3">
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Address</label>
+            <input
+              v-model="pdcSettings.origin_address"
+              type="text"
+              placeholder="Full pickup address"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Default Weight (kg)</label>
+            <input
+              v-model="pdcSettings.default_weight_kg"
+              type="number"
+              min="0.001"
+              step="0.001"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Shipment Type</label>
+            <select
+              v-model="pdcSettings.shipment_type_id"
+              class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
+            >
+              <option :value="1">General</option>
+              <option :value="3">Reverse</option>
+              <option :value="5">Exchange</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Label Template ID</label>
+            <input
+              v-model="pdcSettings.label_template_id"
+              type="number"
+              min="1"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Access Token</label>
+            <input
+              v-model="pdcSettings.access_token"
+              type="password"
+              autocomplete="new-password"
+              :placeholder="pdcSettings.access_token_configured ? 'Saved; leave blank to keep' : 'Enter at launch'"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block text-sm font-semibold text-gray-700">Webhook Secret</label>
+            <input
+              v-model="pdcSettings.webhook_secret"
+              type="password"
+              autocomplete="new-password"
+              :placeholder="pdcSettings.webhook_secret_configured ? 'Saved; leave blank to keep' : 'At least 32 characters'"
+              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+            >
+          </div>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="pdcSettings.auto_create_labels" type="checkbox">
+            Auto-create paid labels
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="pdcSettings.all_must_valid" type="checkbox">
+            Reject invalid batches
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="pdcSettings.allow_open_shipment" type="checkbox">
+            Allow package opening
+          </label>
+          <label v-if="pdcSettings.live_requests_enabled" class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="pdcSettings.is_enabled" type="checkbox">
+            Enable live requests
+          </label>
+        </div>
+
+        <p v-if="!pdcSettings.encryption_ready" class="text-sm text-amber-700">
+          Add the encryption key before saving secrets.
+        </p>
+        <p v-if="pdcFormError" class="text-sm text-red-600">{{ pdcFormError }}</p>
+        <p v-if="pdcSavedMessage" class="text-sm text-green-700">{{ pdcSavedMessage }}</p>
+
+        <button
+          type="submit"
+          :disabled="pdcSaving"
+          class="rounded-lg bg-black px-5 py-3 font-bold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ pdcSaving ? 'Saving...' : 'Save PDC Settings' }}
+        </button>
+      </form>
+    </section>
+
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
@@ -27,7 +223,7 @@
             {{ editingId ? 'Edit Shipping Company' : 'Add Shipping Company' }}
           </h3>
           <p class="mt-1 text-sm text-gray-500">
-            Store your actual shipping cost, return cost, and what the client pays.
+            Set carrier prices and notes.
           </p>
         </div>
 
@@ -156,7 +352,7 @@
         <div>
           <h3 class="text-2xl font-bold">Company List</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Review the active and inactive carriers used in the platform.
+            Manage active and inactive carriers.
           </p>
         </div>
 
@@ -237,6 +433,7 @@ import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
+const { hasPermission, loadAdminAccess } = useAdminAccess()
 
 const companies = ref([])
 const loading = ref(false)
@@ -247,7 +444,116 @@ const formError = ref('')
 const searchQuery = ref('')
 const editingId = ref('')
 const isFormOpen = ref(false)
+const pdcLoading = ref(false)
+const pdcSaving = ref(false)
+const pdcPageError = ref('')
+const pdcFormError = ref('')
+const pdcSavedMessage = ref('')
 let searchTimeoutId = null
+
+const canConfigureShipping = computed(() => hasPermission('settings.edit'))
+
+const createEmptyPdcSettings = () => ({
+  display_name: 'PDC Courier',
+  base_url: 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/',
+  company_id: '280533',
+  product_id: 40,
+  origin_city_id: '',
+  origin_address: '',
+  origin_phone: '',
+  origin_contact_name: '',
+  default_weight_kg: 1,
+  shipment_type_id: 1,
+  label_template_id: 1,
+  allow_open_shipment: false,
+  all_must_valid: true,
+  is_enabled: false,
+  auto_create_labels: false,
+  access_token: '',
+  webhook_secret: '',
+  access_token_configured: false,
+  webhook_secret_configured: false,
+  encryption_ready: false,
+  live_requests_enabled: false,
+  city_mapping_count: 0,
+  pending_job_count: 0
+})
+
+const pdcSettings = reactive(createEmptyPdcSettings())
+
+const getAuthHeaders = async () => {
+  const { data } = await supabase.auth.getSession()
+
+  if (!data.session?.access_token) {
+    throw new Error('Your session expired. Please log in again.')
+  }
+
+  return {
+    authorization: `Bearer ${data.session.access_token}`
+  }
+}
+
+const loadPdcSettings = async () => {
+  if (!canConfigureShipping.value) {
+    return
+  }
+
+  pdcLoading.value = true
+  pdcPageError.value = ''
+
+  try {
+    const response = await $fetch('/api/admin-shipping/settings', {
+      headers: await getAuthHeaders()
+    })
+
+    Object.assign(pdcSettings, createEmptyPdcSettings(), response.settings || {})
+  } catch (error) {
+    pdcPageError.value = error?.data?.statusMessage || error?.message || 'Could not load PDC settings.'
+  } finally {
+    pdcLoading.value = false
+  }
+}
+
+const savePdcSettings = async () => {
+  pdcSaving.value = true
+  pdcFormError.value = ''
+  pdcSavedMessage.value = ''
+
+  try {
+    await $fetch('/api/admin-shipping/settings', {
+      method: 'PATCH',
+      headers: await getAuthHeaders(),
+      body: {
+        display_name: pdcSettings.display_name,
+        company_id: pdcSettings.company_id,
+        product_id: pdcSettings.product_id,
+        origin_city_id: pdcSettings.origin_city_id,
+        origin_address: pdcSettings.origin_address,
+        origin_phone: pdcSettings.origin_phone,
+        origin_contact_name: pdcSettings.origin_contact_name,
+        default_weight_kg: pdcSettings.default_weight_kg,
+        shipment_type_id: pdcSettings.shipment_type_id,
+        label_template_id: pdcSettings.label_template_id,
+        allow_open_shipment: pdcSettings.allow_open_shipment,
+        all_must_valid: pdcSettings.all_must_valid,
+        is_enabled: pdcSettings.is_enabled,
+        auto_create_labels: pdcSettings.auto_create_labels,
+        access_token: pdcSettings.access_token,
+        webhook_secret: pdcSettings.webhook_secret
+      }
+    })
+
+    const liveCallsOff = !pdcSettings.live_requests_enabled
+    await loadPdcSettings()
+    pdcSavedMessage.value = liveCallsOff
+      ? 'Settings saved. Live calls remain off.'
+      : 'Settings saved.'
+  } catch (error) {
+    pdcFormError.value = error?.data?.statusMessage || error?.message || 'Could not save PDC settings.'
+  } finally {
+    pdcSaving.value = false
+  }
+}
 
 const createEmptyForm = () => ({
   name: '',
@@ -451,6 +757,10 @@ onBeforeUnmount(() => {
 })
 
 onMounted(async () => {
-  await loadCompanies()
+  await loadAdminAccess()
+  await Promise.all([
+    loadCompanies(),
+    loadPdcSettings()
+  ])
 })
 </script>

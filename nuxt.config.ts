@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/supabase','@nuxt/icon'],
   runtimeConfig: {
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
+    shippingCredentialsEncryptionKey: process.env.SHIPPING_CREDENTIALS_ENCRYPTION_KEY || '',
+    shippingLiveRequestsEnabled: process.env.PDC_LIVE_REQUESTS_ENABLED === 'true',
+    shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || ''

@@ -4703,3 +4703,810 @@ set
   public = false,
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
+
+-- PDC shipping final-state delta.
+
+alter table public.customer_orders
+add column if not exists payment_status text not null default 'pending',
+add column if not exists paid_at timestamptz null,
+add column if not exists shipping_review_status text not null default 'not_required';
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'customer_orders_payment_status_check'
+      and conrelid = 'public.customer_orders'::regclass
+  ) then
+    alter table public.customer_orders
+    add constraint customer_orders_payment_status_check
+    check (payment_status in ('pending', 'paid', 'failed', 'refunded'));
+  end if;
+end;
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'customer_orders_shipping_review_status_check'
+      and conrelid = 'public.customer_orders'::regclass
+  ) then
+    alter table public.customer_orders
+    add constraint customer_orders_shipping_review_status_check
+    check (shipping_review_status in ('not_required', 'required', 'approved', 'rejected'));
+  end if;
+end;
+$$;
+
+create table if not exists public.shipping_provider_settings (
+  id text primary key,
+  display_name text not null,
+  base_url text not null,
+  company_id text not null,
+  product_id integer not null,
+  origin_city_id integer null,
+  origin_address text null,
+  origin_phone text null,
+  origin_contact_name text null,
+  default_weight_kg numeric(8, 3) not null default 1,
+  shipment_type_id integer not null default 1,
+  label_template_id integer not null default 1,
+  allow_open_shipment boolean not null default false,
+  all_must_valid boolean not null default true,
+  is_enabled boolean not null default false,
+  auto_create_labels boolean not null default false,
+  access_token_encrypted text null,
+  webhook_secret_encrypted text null,
+  updated_by uuid null references public.admin_users (id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint shipping_provider_settings_id_check check (id = 'pdc'),
+  constraint shipping_provider_settings_base_url_check check (
+    base_url = 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/'
+  ),
+  constraint shipping_provider_settings_product_check check (product_id > 0),
+  constraint shipping_provider_settings_weight_check check (default_weight_kg > 0),
+  constraint shipping_provider_settings_shipment_type_check check (shipment_type_id in (1, 3, 5)),
+  constraint shipping_provider_settings_template_check check (label_template_id > 0)
+);
+
+insert into public.shipping_provider_settings (
+  id,
+  display_name,
+  base_url,
+  company_id,
+  product_id
+)
+values (
+  'pdc',
+  'PDC Courier',
+  'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/',
+  '280533',
+  40
+)
+on conflict (id) do nothing;
+
+create table if not exists public.shipping_city_mappings (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null default 'pdc',
+  provider_city_id integer not null,
+  governorate text not null,
+  city text not null,
+  city_arabic text null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint shipping_city_mappings_provider_check check (provider = 'pdc'),
+  constraint shipping_city_mappings_city_id_check check (provider_city_id > 0)
+);
+
+create unique index if not exists shipping_city_mappings_provider_city_uidx
+on public.shipping_city_mappings (provider, provider_city_id);
+
+create unique index if not exists shipping_city_mappings_name_uidx
+on public.shipping_city_mappings (provider, lower(governorate), lower(city));
+
+create table if not exists public.shipping_status_mappings (
+  provider text not null default 'pdc',
+  provider_status_id integer not null,
+  provider_label text not null,
+  order_status text null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (provider, provider_status_id),
+  constraint shipping_status_mappings_provider_check check (provider = 'pdc'),
+  constraint shipping_status_mappings_order_status_check check (
+    order_status is null or order_status in (
+      'processing',
+      'being_shipped',
+      'out_for_delivery',
+      'on_hold',
+      'delivered',
+      'cancelled'
+    )
+  )
+);
+
+insert into public.shipping_status_mappings (
+  provider,
+  provider_status_id,
+  provider_label,
+  order_status
+)
+values
+  ('pdc', 2, 'Transfer To Branch', 'being_shipped'),
+  ('pdc', 3, 'Received At Branch', 'being_shipped'),
+  ('pdc', 4, 'Out For Delivery', 'out_for_delivery'),
+  ('pdc', 5, 'Shipment Delivered', 'delivered'),
+  ('pdc', 7, 'To Be Returned', 'on_hold'),
+  ('pdc', 8, 'Returned To Shipper', 'cancelled'),
+  ('pdc', 9, 'Shipment Lost', 'on_hold'),
+  ('pdc', 10, 'Package Issue', 'on_hold'),
+  ('pdc', 11, 'Re-Operate', 'processing'),
+  ('pdc', 12, 'Picked Up', 'being_shipped'),
+  ('pdc', 13, 'New Pickup', 'processing'),
+  ('pdc', 14, 'Postponed', 'on_hold'),
+  ('pdc', 15, 'Not Delivered', 'on_hold'),
+  ('pdc', 19, 'Reschedule', 'on_hold'),
+  ('pdc', 24, 'Partial Delivery', 'on_hold'),
+  ('pdc', 77, 'Under Return Process', 'on_hold'),
+  ('pdc', 82, 'In Transit', 'being_shipped'),
+  ('pdc', 83, 'On The Way To Destination Hub', 'being_shipped'),
+  ('pdc', 84, 'Received At Hub', 'being_shipped'),
+  ('pdc', 85, 'Received At Destination Hub', 'being_shipped'),
+  ('pdc', 87, 'In Transit - Undelivered', 'on_hold'),
+  ('pdc', 88, 'In Transit To Destination Hub', 'being_shipped'),
+  ('pdc', 89, 'In Transit - Undelivered', 'on_hold'),
+  ('pdc', 90, 'In Transit - Undelivered', 'on_hold'),
+  ('pdc', 91, 'Wrong Sort', 'on_hold'),
+  ('pdc', 92, 'Unclear Address', 'on_hold'),
+  ('pdc', 93, '3PL International Shipment', 'being_shipped'),
+  ('pdc', 94, 'Hold At Warehouse', 'on_hold'),
+  ('pdc', 95, 'On Hold', 'on_hold'),
+  ('pdc', 96, 'Hold For Update', 'on_hold'),
+  ('pdc', 97, 'Received At Hub', 'being_shipped'),
+  ('pdc', 98, 'Received At Hub', 'being_shipped')
+on conflict (provider, provider_status_id) do update
+set
+  provider_label = excluded.provider_label,
+  order_status = excluded.order_status,
+  updated_at = now();
+
+create table if not exists public.shipping_order_jobs (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.customer_orders (id) on delete cascade,
+  provider text not null default 'pdc',
+  state text not null default 'queued',
+  to_ref text not null,
+  awb text null,
+  provider_status_id integer null,
+  provider_status_name text null,
+  provider_status_at timestamptz null,
+  provider_reason_name text null,
+  label_storage_path text null,
+  request_payload jsonb not null default '{}'::jsonb,
+  response_payload jsonb not null default '{}'::jsonb,
+  attempt_count integer not null default 0,
+  last_error text null,
+  next_attempt_at timestamptz null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint shipping_order_jobs_order_key unique (order_id),
+  constraint shipping_order_jobs_ref_key unique (to_ref),
+  constraint shipping_order_jobs_awb_key unique (awb),
+  constraint shipping_order_jobs_provider_check check (provider = 'pdc'),
+  constraint shipping_order_jobs_state_check check (
+    state in ('queued', 'blocked', 'submitting', 'label_pending', 'ready', 'failed')
+  ),
+  constraint shipping_order_jobs_attempt_check check (attempt_count >= 0)
+);
+
+create index if not exists shipping_order_jobs_queue_idx
+on public.shipping_order_jobs (state, next_attempt_at, created_at);
+
+create table if not exists public.shipping_webhook_events (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null default 'pdc',
+  event_key text not null,
+  awb text not null,
+  order_ref text not null,
+  provider_status_id integer not null,
+  provider_status_name text null,
+  status_date timestamptz null,
+  reason_name text null,
+  payload jsonb not null,
+  processed_at timestamptz null,
+  processing_error text null,
+  received_at timestamptz not null default now(),
+  constraint shipping_webhook_events_key unique (provider, event_key),
+  constraint shipping_webhook_events_provider_check check (provider = 'pdc')
+);
+
+create index if not exists shipping_webhook_events_order_idx
+on public.shipping_webhook_events (order_ref, received_at desc);
+
+create or replace function public.queue_paid_order_for_shipping()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.payment_status <> 'paid' then
+    return new;
+  end if;
+
+  if new.shipping_review_status not in ('not_required', 'approved') then
+    return new;
+  end if;
+
+  if not exists (
+    select 1
+    from public.shipping_provider_settings as settings
+    where settings.id = 'pdc'
+      and settings.is_enabled = true
+      and settings.auto_create_labels = true
+  ) then
+    return new;
+  end if;
+
+  insert into public.shipping_order_jobs (
+    order_id,
+    provider,
+    state,
+    to_ref,
+    next_attempt_at,
+    updated_at
+  )
+  values (
+    new.id,
+    'pdc',
+    'queued',
+    coalesce(nullif(btrim(new.order_number), ''), new.id::text),
+    now(),
+    now()
+  )
+  on conflict (order_id) do update
+  set
+    state = case
+      when shipping_order_jobs.state in ('blocked', 'failed') then 'queued'
+      else shipping_order_jobs.state
+    end,
+    next_attempt_at = case
+      when shipping_order_jobs.state in ('blocked', 'failed') then now()
+      else shipping_order_jobs.next_attempt_at
+    end,
+    updated_at = now();
+
+  return new;
+end;
+$$;
+
+create or replace function public.queue_eligible_paid_orders_for_shipping()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  queued_count integer := 0;
+begin
+  if not exists (
+    select 1
+    from public.shipping_provider_settings as settings
+    where settings.id = 'pdc'
+      and settings.is_enabled = true
+      and settings.auto_create_labels = true
+  ) then
+    return 0;
+  end if;
+
+  insert into public.shipping_order_jobs (
+    order_id,
+    provider,
+    state,
+    to_ref,
+    next_attempt_at,
+    updated_at
+  )
+  select
+    orders.id,
+    'pdc',
+    'queued',
+    coalesce(nullif(btrim(orders.order_number), ''), orders.id::text),
+    now(),
+    now()
+  from public.customer_orders as orders
+  where orders.payment_status = 'paid'
+    and orders.shipping_review_status in ('not_required', 'approved')
+  on conflict (order_id) do update
+  set
+    state = case
+      when shipping_order_jobs.state in ('blocked', 'failed') then 'queued'
+      else shipping_order_jobs.state
+    end,
+    next_attempt_at = case
+      when shipping_order_jobs.state in ('blocked', 'failed') then now()
+      else shipping_order_jobs.next_attempt_at
+    end,
+    updated_at = now();
+
+  get diagnostics queued_count = row_count;
+  return queued_count;
+end;
+$$;
+
+revoke all on function public.queue_paid_order_for_shipping()
+from public, anon, authenticated;
+
+revoke all on function public.queue_eligible_paid_orders_for_shipping()
+from public, anon, authenticated;
+
+grant execute on function public.queue_eligible_paid_orders_for_shipping()
+to service_role;
+
+drop trigger if exists customer_orders_queue_paid_shipping_insert
+on public.customer_orders;
+
+drop trigger if exists customer_orders_queue_paid_shipping_update
+on public.customer_orders;
+
+create trigger customer_orders_queue_paid_shipping_insert
+after insert
+on public.customer_orders
+for each row
+execute function public.queue_paid_order_for_shipping();
+
+create trigger customer_orders_queue_paid_shipping_update
+after update of
+  payment_status,
+  shipping_review_status,
+  order_number,
+  first_name,
+  last_name,
+  phone,
+  street_address,
+  city,
+  governorate
+on public.customer_orders
+for each row
+execute function public.queue_paid_order_for_shipping();
+
+alter table public.shipping_provider_settings enable row level security;
+alter table public.shipping_city_mappings enable row level security;
+alter table public.shipping_status_mappings enable row level security;
+alter table public.shipping_order_jobs enable row level security;
+alter table public.shipping_webhook_events enable row level security;
+
+revoke all on table public.shipping_provider_settings from public, anon, authenticated;
+revoke all on table public.shipping_city_mappings from public, anon, authenticated;
+revoke all on table public.shipping_status_mappings from public, anon, authenticated;
+revoke all on table public.shipping_order_jobs from public, anon, authenticated;
+revoke all on table public.shipping_webhook_events from public, anon, authenticated;
+
+grant select, insert, update, delete on table public.shipping_provider_settings to service_role;
+grant select, insert, update, delete on table public.shipping_city_mappings to service_role;
+grant select, insert, update, delete on table public.shipping_status_mappings to service_role;
+grant select, insert, update, delete on table public.shipping_order_jobs to service_role;
+grant select, insert, update, delete on table public.shipping_webhook_events to service_role;
+
+insert into storage.buckets (
+  id,
+  name,
+  public,
+  file_size_limit,
+  allowed_mime_types
+)
+values (
+  'shipping-labels',
+  'shipping-labels',
+  false,
+  10485760,
+  array['application/pdf']::text[]
+)
+on conflict (id) do update
+set
+  public = false,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+
+
+insert into public.shipping_city_mappings (
+  provider,
+  provider_city_id,
+  governorate,
+  city,
+  city_arabic
+)
+values
+  ('pdc', 1, 'Cairo', 'Al Herafiyeen', 'الحرفيين'),
+  ('pdc', 2, 'Cairo', 'Zamalek', 'الزمالك'),
+  ('pdc', 3, 'Cairo', 'Boulak abul-Ela', 'بولاق أبو العلا'),
+  ('pdc', 4, 'Cairo', 'Down Town', 'وسط البلد'),
+  ('pdc', 5, 'Cairo', 'Garden City', 'جاردن سيتي'),
+  ('pdc', 6, 'Cairo', 'Manial', 'المنيل'),
+  ('pdc', 7, 'Cairo', 'Attaba', 'العتبه'),
+  ('pdc', 8, 'Cairo', 'Qasr el-Einy', 'القصر العيني'),
+  ('pdc', 9, 'Cairo', 'Dhaher', 'الظاهر'),
+  ('pdc', 10, 'Cairo', 'Ramses', 'رمسيس'),
+  ('pdc', 11, 'Cairo', 'Shoubra Masr', 'شبرا مصر'),
+  ('pdc', 12, 'Cairo', 'Darrasa', 'الدراسة'),
+  ('pdc', 13, 'Cairo', 'Abbassiya', 'العباسية'),
+  ('pdc', 14, 'Cairo', 'Darb el-Ahmar', 'الدرب الأحمر'),
+  ('pdc', 15, 'Cairo', 'Bab el-Shiriya', 'باب الشعرية'),
+  ('pdc', 16, 'Cairo', 'Sayeda Zeinab', 'السيدة زينب'),
+  ('pdc', 17, 'Cairo', 'Old Cairo', 'مصر القديمة'),
+  ('pdc', 18, 'Cairo', 'Nasr City', 'مدينة نصر'),
+  ('pdc', 19, 'Cairo', '10th District', 'الحى العاشر'),
+  ('pdc', 20, 'Cairo', 'Heliopolis', 'مصر الجديدة'),
+  ('pdc', 21, 'Cairo', 'Gesr el-Suez', 'جسر السويس'),
+  ('pdc', 22, 'Cairo', 'Alf Maskan', 'الألف مسكن'),
+  ('pdc', 23, 'Cairo', 'Obour Buildings', 'عمارات العبور'),
+  ('pdc', 24, 'Cairo', 'Ard el-Golf', 'ارض الجولف'),
+  ('pdc', 25, 'Cairo', 'Hadayek el-Qobba', 'حدائق القبة'),
+  ('pdc', 26, 'Cairo', 'Zaytoun', 'الزيتون'),
+  ('pdc', 27, 'Cairo', 'Ameeriya', 'الأميرية'),
+  ('pdc', 28, 'Cairo', 'Matariya', 'المطرية'),
+  ('pdc', 29, 'Cairo', 'Ain Shams', 'عين شمس'),
+  ('pdc', 30, 'Cairo', 'New Maadi', 'المعادي الجديدة'),
+  ('pdc', 31, 'Cairo', 'Dar el-Salam', 'دار السلام'),
+  ('pdc', 32, 'Cairo', 'Maadi', 'المعادي'),
+  ('pdc', 33, 'Cairo', 'Moqattam', 'المقطم'),
+  ('pdc', 34, 'Cairo', 'El-Hadaba el-Sofla', 'الهضبة السفلى'),
+  ('pdc', 35, 'Cairo', 'Tora', 'طرة'),
+  ('pdc', 36, 'Cairo', 'Maasara', 'المعصرة'),
+  ('pdc', 37, 'Cairo', 'Helwan', 'حلوان'),
+  ('pdc', 38, 'Cairo', 'Kotsica', 'كوتسيكا'),
+  ('pdc', 39, 'Cairo', 'Qattamiya', 'القطامية'),
+  ('pdc', 40, 'Cairo', 'New Cairo', 'التجمع'),
+  ('pdc', 41, 'Cairo', 'El Rehab', 'الرحاب'),
+  ('pdc', 42, 'Cairo', 'Madinty', 'مدينتى'),
+  ('pdc', 43, 'Cairo', 'Cairo Airport', 'مطار القاهرة'),
+  ('pdc', 44, 'Cairo', 'Salam City', 'مدينة السلام'),
+  ('pdc', 45, 'Cairo', 'Obour City', 'مدينة العبور'),
+  ('pdc', 46, 'Cairo', 'Ezbet el-Haganna', 'عزبة الهجانة'),
+  ('pdc', 47, 'Cairo', 'Tibeen', 'التبين'),
+  ('pdc', 48, 'Cairo', '15th of May City', 'مدينة 15 مايو'),
+  ('pdc', 49, 'Cairo', 'Badr City', 'مدينة بدر'),
+  ('pdc', 50, 'Cairo', 'Shourouq City', 'الشروق'),
+  ('pdc', 51, 'Giza', 'Dokki', 'الدقي'),
+  ('pdc', 52, 'Giza', 'Mohandiseen', 'المهندسين'),
+  ('pdc', 53, 'Giza', 'Agouza', 'العجوزة'),
+  ('pdc', 54, 'Giza', 'Ard-el-Lewa', 'ارض اللواء'),
+  ('pdc', 55, 'Giza', 'Matar Imbaba', 'مطار امبابه'),
+  ('pdc', 56, 'Giza', 'Saft-e-Laban', 'صفط اللبن'),
+  ('pdc', 57, 'Giza', 'Imbaba', 'امبابة'),
+  ('pdc', 58, 'Giza', 'Warraq', 'الوراق'),
+  ('pdc', 59, 'Giza', 'Bashteel', 'بشتيل'),
+  ('pdc', 60, 'Giza', 'Boulak-e-Dakrour', 'بولاق الدكرور'),
+  ('pdc', 61, 'Giza', 'Giza', 'الجيزة'),
+  ('pdc', 62, 'Giza', 'Faisal', 'فيصل'),
+  ('pdc', 63, 'Giza', 'Haram', 'الهرم'),
+  ('pdc', 64, 'Giza', 'Monieb', 'المنيب'),
+  ('pdc', 65, 'Giza', 'Ahram Gardens', 'حدائق الأهرام'),
+  ('pdc', 66, 'Giza', 'Rimaya', 'الرماية'),
+  ('pdc', 67, 'Giza', '6th of October', 'مدينة 6 أكتوبر'),
+  ('pdc', 68, 'Giza', 'Sheikh Zayed', 'مدينة الشيخ زايد'),
+  ('pdc', 69, 'Giza', 'Wahat Road', 'طريق الواحات'),
+  ('pdc', 70, 'Giza', 'Alex desert road till KM 28', 'طريق إسكندرية الصحراوى حتى ك 28'),
+  ('pdc', 71, 'Giza', 'Smart Village', 'القرية الذكية'),
+  ('pdc', 72, 'Giza', 'Nahiya', 'ناهيا البلد'),
+  ('pdc', 73, 'Giza', 'Kafr Hakeem', 'كفر حكيم'),
+  ('pdc', 74, 'Giza', 'Abu Rawash', 'أبو رواش'),
+  ('pdc', 75, 'Giza', 'Saqqara', 'سقارة'),
+  ('pdc', 76, 'Giza', 'Manial Sheeha', 'منيل شيحة'),
+  ('pdc', 77, 'Giza', 'El-Manawat', 'المنوات'),
+  ('pdc', 78, 'Alexandria', 'Sidi Gaber', 'سيدي جابر'),
+  ('pdc', 79, 'Alexandria', 'Moharram Bek', 'محرم بك'),
+  ('pdc', 80, 'Alexandria', 'Mina El-Basal', 'مينا البصل'),
+  ('pdc', 81, 'Alexandria', 'Al Raml', 'الرمل'),
+  ('pdc', 82, 'Alexandria', 'Al Montaza', 'المنتزه'),
+  ('pdc', 83, 'Alexandria', 'Al Mansheya', 'المنشية'),
+  ('pdc', 84, 'Alexandria', 'Al Labban', 'اللبان'),
+  ('pdc', 85, 'Alexandria', 'Qetaa Maryout', 'قطاع مريوط'),
+  ('pdc', 86, 'Alexandria', 'Qetaa at Tarik Al Sahrawi', 'قطاع الطريق الصحراوي'),
+  ('pdc', 87, 'Alexandria', 'Bab Sharqi', 'باب شرقي'),
+  ('pdc', 88, 'Alexandria', 'Al Gomrok', 'الجمرك'),
+  ('pdc', 89, 'Alexandria', 'Al Attarin', 'العطارين'),
+  ('pdc', 90, 'Alexandria', 'New Borg Al Arab', 'برج العرب الجديدة'),
+  ('pdc', 91, 'Alexandria', 'Karmouz', 'كرموز'),
+  ('pdc', 92, 'Alexandria', 'Al king maryout (Sharq & Gharb)', 'كينج مريوط (شرق وغرب)'),
+  ('pdc', 93, 'Alexandria', 'Dekhela', 'الدخيلة'),
+  ('pdc', 94, 'Alexandria', 'Borg Al Arab', 'برج العرب'),
+  ('pdc', 95, 'Alexandria', 'Alexandria Desert', 'الطريق الصحراوي'),
+  ('pdc', 96, 'Alexandria', 'Al Amaria First', 'العامرية أول'),
+  ('pdc', 97, 'Alexandria', 'Al Daerah Al Gomrokeyah', 'الدائرة الجمركية'),
+  ('pdc', 98, 'Alexandria 2', 'North Coast', 'الساحل الشمالي'),
+  ('pdc', 99, 'Al Behaira', 'Shabrakhit', 'شبراخيت'),
+  ('pdc', 100, 'Al Behaira', 'Rashid', 'رشيد'),
+  ('pdc', 101, 'Al Behaira', 'Mahmoudiyah', 'المحمودية'),
+  ('pdc', 102, 'Al Behaira', 'Kom Hamada', 'كوم حمادة'),
+  ('pdc', 103, 'Al Behaira', 'Kafr Al Dawwar', 'كفر الدوار'),
+  ('pdc', 104, 'Al Behaira', 'Itay Al Baroud', 'إيتاي البارود'),
+  ('pdc', 105, 'Al Behaira', 'Hosh Issa', 'حوش عيسى'),
+  ('pdc', 106, 'Al Behaira', 'Edco', 'إدكو'),
+  ('pdc', 107, 'Al Behaira', 'Damanhour', 'دمنهور'),
+  ('pdc', 108, 'Al Behaira', 'Badr', 'بدر'),
+  ('pdc', 109, 'Al Behaira', 'Al delengaat', 'الدلنجات'),
+  ('pdc', 110, 'Al Behaira', 'Al Rahmaniyah', 'الرحمانية'),
+  ('pdc', 111, 'Al Behaira', 'Al Nubaria al-gedida', 'النوبارية الجديدة'),
+  ('pdc', 112, 'Al Behaira', 'Al Behaira', 'البحيرة'),
+  ('pdc', 113, 'Al Behaira', 'Abu Hummus', 'أبو حمص'),
+  ('pdc', 114, 'Al Behaira', 'Abu al-Matamir', 'أبو المطامير'),
+  ('pdc', 115, 'Al Behaira', 'Wadi', 'وادي'),
+  ('pdc', 116, 'Al Mounofia', 'Tella', 'تلا'),
+  ('pdc', 117, 'Al Mounofia', 'Shebeen Alkom', 'شبين الكوم'),
+  ('pdc', 118, 'Al Mounofia', 'Sarss', 'سرس'),
+  ('pdc', 119, 'Al Mounofia', 'Qwessna', 'قويسنا'),
+  ('pdc', 120, 'Al Mounofia', 'Menouf', 'منوف'),
+  ('pdc', 121, 'Al Mounofia', 'Hay Sharq', 'حي شرق'),
+  ('pdc', 122, 'Al Mounofia', 'Hay Gharb', 'حي غرب'),
+  ('pdc', 123, 'Al Mounofia', 'Ashmoun', 'أشمون'),
+  ('pdc', 124, 'Al Mounofia', 'Al shouhdaa', 'الشهداء'),
+  ('pdc', 125, 'Al Mounofia', 'Al sadat', 'السادات'),
+  ('pdc', 126, 'Al Mounofia', 'Al bagour', 'الباجور'),
+  ('pdc', 127, 'Algharbia', 'Al Mahalla el', 'المحلة'),
+  ('pdc', 128, 'Algharbia', 'Tanta', 'طنطا'),
+  ('pdc', 129, 'Algharbia', 'Kafr Al Zayat', 'كفر الزيات'),
+  ('pdc', 130, 'Algharbia', 'Samannoud', 'سمنود'),
+  ('pdc', 131, 'Algharbia', 'Zifta', 'زفتى'),
+  ('pdc', 132, 'Algharbia', 'Basyoun', 'بسيون'),
+  ('pdc', 133, 'Algharbia', 'Desouk', 'دسوق'),
+  ('pdc', 134, 'Dakhahlia', 'Tami Alamdid', 'تمي الأمديد'),
+  ('pdc', 135, 'Dakhahlia', 'Talkha', 'طلخا'),
+  ('pdc', 136, 'Dakhahlia', 'Sherbeen', 'شربين'),
+  ('pdc', 137, 'Dakhahlia', 'Meniat Al Nassr', 'منية النصر'),
+  ('pdc', 138, 'Dakhahlia', 'Meit Ghamr', 'ميت غمر'),
+  ('pdc', 139, 'Dakhahlia', 'Meit Salseil', 'ميت سلسيل'),
+  ('pdc', 140, 'Dakhahlia', 'Mahla Demna', 'محلة دمنة'),
+  ('pdc', 141, 'Dakhahlia', 'Gamassa', 'جمصة'),
+  ('pdc', 142, 'Dakhahlia', 'Dekerness', 'دكرنس'),
+  ('pdc', 143, 'Dakhahlia', 'Dakhahlia', 'الدقهلية'),
+  ('pdc', 144, 'Dakhahlia', 'Belqass', 'بلقاس'),
+  ('pdc', 145, 'Dakhahlia', 'Bani Ebeid', 'بني عبيد'),
+  ('pdc', 146, 'Dakhahlia', 'Banbro', 'منية النصر'),
+  ('pdc', 147, 'Dakhahlia', 'Al senbelaween', 'السنبلاوين'),
+  ('pdc', 148, 'Dakhahlia', 'Al matria', 'المطرية'),
+  ('pdc', 149, 'Dakhahlia', 'Al gamlia', 'الجمالية'),
+  ('pdc', 150, 'Dakhahlia', 'Al Qourdi', 'الكردي'),
+  ('pdc', 151, 'Dakhahlia', 'Al Manzala', 'المنزلة'),
+  ('pdc', 152, 'Dakhahlia', 'Al Mansoura', 'المنصورة'),
+  ('pdc', 153, 'Dakhahlia', 'Aga', 'أجا'),
+  ('pdc', 154, 'Dammitta', 'Rass Al Bar', 'رأس البر'),
+  ('pdc', 155, 'Dammitta', 'Meet Abu Ghaleb', 'ميت أبو غالب'),
+  ('pdc', 156, 'Dammitta', 'Kafr Saad', 'كفر سعد'),
+  ('pdc', 157, 'Dammitta', 'Kafr Albatekh', 'كفر البطيخ'),
+  ('pdc', 158, 'Dammitta', 'Faraskour', 'فارسكور'),
+  ('pdc', 159, 'Dammitta', 'Ezbat Al Borg', 'عزبة البرج'),
+  ('pdc', 160, 'Dammitta', 'Damietta  Al Gedida', 'دمياط الجديدة'),
+  ('pdc', 161, 'Dammitta', 'Dammitta', 'دمياط'),
+  ('pdc', 162, 'Dammitta', 'Al zarqa', 'الزرقا'),
+  ('pdc', 163, 'Dammitta', 'Al rawda', 'الروضة'),
+  ('pdc', 164, 'Dammitta', 'Al Serou', 'السرو'),
+  ('pdc', 165, 'Elsharqia', 'Zaqazeq', 'الزقازيق'),
+  ('pdc', 166, 'Elsharqia', 'San Al Hagar Alqeblia', 'صان الحجر القبلية'),
+  ('pdc', 167, 'Elsharqia', 'Monshaet Abu Omar', 'منشأة أبو عمر'),
+  ('pdc', 168, 'Elsharqia', 'Menia Al Qamh', 'منيا القمح'),
+  ('pdc', 169, 'Elsharqia', 'Mashtoul Alsouk', 'مشتول السوق'),
+  ('pdc', 170, 'Elsharqia', 'Kafr Sakr', 'كفر صقر'),
+  ('pdc', 171, 'Elsharqia', 'Hehia', 'ههيا'),
+  ('pdc', 172, 'Elsharqia', 'faqouss', 'فاقوس'),
+  ('pdc', 173, 'Elsharqia', 'Derb Negm', 'ديرب نجم'),
+  ('pdc', 174, 'Elsharqia', 'Belbass', 'بلبيس'),
+  ('pdc', 175, 'Elsharqia', 'Awlaad sakr', 'أولاد صقر'),
+  ('pdc', 176, 'Elsharqia', 'Alsalhia Algedieda', 'الصالحية الجديدة'),
+  ('pdc', 177, 'Elsharqia', 'Alqarein', 'القرين'),
+  ('pdc', 178, 'Elsharqia', 'Alqaniaat', 'القنايات'),
+  ('pdc', 179, 'Elsharqia', 'Al Ibrahemia', 'الإبراهيمية'),
+  ('pdc', 180, 'Elsharqia', 'Al Hussania', 'الحسينية'),
+  ('pdc', 181, 'Elsharqia', 'Abu Kbeir', 'أبو كبير'),
+  ('pdc', 182, 'Elsharqia', 'Abu Hamaad', 'أبو حماد'),
+  ('pdc', 183, 'Elsharqia', '10th of Ramadan city', 'مدينة العاشر من رمضان'),
+  ('pdc', 184, 'Elsharqia', 'Elsharqia', 'الشرقية'),
+  ('pdc', 185, 'Ismalia', 'Qantara Sharq', 'القنطرة شرق'),
+  ('pdc', 186, 'Ismalia', 'Ismalia', 'الإسماعيلية'),
+  ('pdc', 187, 'Ismalia', 'Fayed', 'فايد'),
+  ('pdc', 188, 'Ismalia', 'alqasaasayn', 'القصاصين'),
+  ('pdc', 189, 'Ismalia', 'Alahyaa Alawal Althany - Althaless', 'الأحياء الأول والثاني والثالث'),
+  ('pdc', 190, 'Ismalia', 'Al Tall Al Kbier', 'التل الكبير'),
+  ('pdc', 191, 'Ismalia', 'Abu Sir', 'أبو صوير'),
+  ('pdc', 192, 'kafr Al Sheikh', 'Sedi Salem', 'سيدي سالم'),
+  ('pdc', 193, 'kafr Al Sheikh', 'Sedi Ghazi', 'سيدي غازي'),
+  ('pdc', 194, 'kafr Al Sheikh', 'Qeleen', 'قلين'),
+  ('pdc', 195, 'kafr Al Sheikh', 'Matobus', 'مطوبس'),
+  ('pdc', 196, 'kafr Al Sheikh', 'Masseir', 'مسير'),
+  ('pdc', 197, 'kafr Al Sheikh', 'Massef Balteem', 'مصيف بلطيم'),
+  ('pdc', 198, 'kafr Al Sheikh', 'Kafr Al-sheikh', 'كفر الشيخ'),
+  ('pdc', 199, 'kafr Al Sheikh', 'Fewa', 'فوه'),
+  ('pdc', 200, 'kafr Al Sheikh', 'Borg Al Broloss', 'برج البرلس'),
+  ('pdc', 201, 'kafr Al Sheikh', 'Bella', 'بيلا'),
+  ('pdc', 202, 'kafr Al Sheikh', 'Balteem', 'بلطيم'),
+  ('pdc', 203, 'kafr Al Sheikh', 'Al reyad', 'الرياض'),
+  ('pdc', 204, 'kafr Al Sheikh', 'Al hamoul', 'الحامول'),
+  ('pdc', 205, 'Port Said', 'Port Said', 'بورسعيد'),
+  ('pdc', 206, 'Port Said', 'Port Fouad', 'بورفؤاد'),
+  ('pdc', 207, 'Port Said', 'Sharq-e-Tafrea''a', 'شرق التفريعة'),
+  ('pdc', 208, 'Qalyubia', 'Toukh', 'طوخ'),
+  ('pdc', 209, 'Qalyubia', 'Shoubra Alkhaima', 'شبرا الخيمة'),
+  ('pdc', 210, 'Qalyubia', 'Shebeen Alqanater', 'شبين القناطر'),
+  ('pdc', 211, 'Qalyubia', 'Qaliub', 'قليوب'),
+  ('pdc', 212, 'Qalyubia', 'Qaha', 'قها'),
+  ('pdc', 213, 'Qalyubia', 'Kanater Khairia', 'القناطر الخيرية'),
+  ('pdc', 214, 'Qalyubia', 'Kafr Shoukr', 'كفر شكر'),
+  ('pdc', 215, 'Qalyubia', 'Banha', 'بنها'),
+  ('pdc', 216, 'Qalyubia', 'Alobour', 'العبور'),
+  ('pdc', 217, 'Qalyubia', 'Alkhanka', 'الخانكة'),
+  ('pdc', 218, 'Qalyubia', 'Al Khousoss', 'الخصوص'),
+  ('pdc', 219, 'Qalyubia', 'Qalyubia', 'القليوبية'),
+  ('pdc', 220, 'Suez', 'Suez', 'السويس'),
+  ('pdc', 221, 'Suez', 'Al Soukhna', 'السخنة'),
+  ('pdc', 222, 'Suez', 'El Ganayen', 'الجناين'),
+  ('pdc', 223, 'Alfayoum', 'Youssef Alsedeik', 'يوسف الصديق'),
+  ('pdc', 224, 'Alfayoum', 'waadi al rayaan', 'وادي الريان'),
+  ('pdc', 225, 'Alfayoum', 'Tamiea', 'طامية'),
+  ('pdc', 226, 'Alfayoum', 'Snourss', 'سنورس'),
+  ('pdc', 227, 'Alfayoum', 'madinat alfayuwm aljadida', 'مدينة الفيوم الجديدة'),
+  ('pdc', 228, 'Alfayoum', 'Itsa', 'إطسا'),
+  ('pdc', 229, 'Alfayoum', 'Abshuaa', 'إبشواي'),
+  ('pdc', 230, 'Alfayoum', 'Alfayoum', 'الفيوم'),
+  ('pdc', 231, 'Assiut', 'Sahel Seleim', 'ساحل سليم'),
+  ('pdc', 232, 'Assiut', 'Sadfaa', 'صدفا'),
+  ('pdc', 233, 'Assiut', 'Manfalout', 'منفلوط'),
+  ('pdc', 234, 'Assiut', 'Dairout', 'ديروط'),
+  ('pdc', 235, 'Assiut', 'Assiut Algedida', 'أسيوط الجديدة'),
+  ('pdc', 236, 'Assiut', 'Assiut', 'أسيوط'),
+  ('pdc', 237, 'Assiut', 'Alzaheir Alsahrawy', 'الظهير الصحراوي'),
+  ('pdc', 238, 'Assiut', 'Alqossya', 'القوصية'),
+  ('pdc', 239, 'Assiut', 'Alghaniem', 'الغنايم'),
+  ('pdc', 240, 'Assiut', 'Alfath', 'الفتح'),
+  ('pdc', 241, 'Assiut', 'Albadry', 'البداري'),
+  ('pdc', 242, 'Assiut', 'Abu Teih', 'أبو تيج'),
+  ('pdc', 243, 'Assiut', 'Abnoob', 'أبنوب'),
+  ('pdc', 244, 'Beni Suef', 'Smastta', 'سمسطا'),
+  ('pdc', 245, 'Beni Suef', 'Nasser', 'ناصر'),
+  ('pdc', 246, 'Beni Suef', 'Ihnassya', 'إهناسيا'),
+  ('pdc', 247, 'Beni Suef', 'Ben Suief Algedida', 'بني سويف الجديدة'),
+  ('pdc', 248, 'Beni Suef', 'Ben Suief', 'بني سويف'),
+  ('pdc', 249, 'Beni Suef', 'Biba', 'ببا'),
+  ('pdc', 250, 'Beni Suef', 'Alwastta', 'الواسطي'),
+  ('pdc', 251, 'Beni Suef', 'Alfeshin', 'الفشن'),
+  ('pdc', 252, 'El Menia', 'Samalout', 'سمالوط'),
+  ('pdc', 253, 'El Menia', 'Mattay', 'مطاي'),
+  ('pdc', 254, 'El Menia', 'Malawy', 'ملوي'),
+  ('pdc', 255, 'El Menia', 'Maghagha', 'مغاغة'),
+  ('pdc', 256, 'El Menia', 'El Menia  Algedida', 'المنيا الجديدة'),
+  ('pdc', 257, 'El Menia', 'El Menia', 'المنيا'),
+  ('pdc', 258, 'El Menia', 'Dirmouass', 'ديرمواس'),
+  ('pdc', 259, 'El Menia', 'Bani Mazar', 'بني مزار'),
+  ('pdc', 260, 'El Menia', 'Aladwa', 'العدوة'),
+  ('pdc', 261, 'El Menia', 'Abu Qorqass', 'أبو قرقاص'),
+  ('pdc', 262, 'Aswan', 'New toushka City', 'توشكى الجديدة'),
+  ('pdc', 263, 'Aswan', 'New Aswan City', 'أسوان الجديدة'),
+  ('pdc', 264, 'Aswan', 'Nassr Alnouba', 'نصر النوبة'),
+  ('pdc', 265, 'Aswan', 'Kom Ambo', 'كوم أمبو'),
+  ('pdc', 266, 'Aswan', 'Kalabsha', 'كلابشة'),
+  ('pdc', 267, 'Aswan', 'Edfo', 'إدفو'),
+  ('pdc', 268, 'Aswan', 'Drawo', 'دراو'),
+  ('pdc', 269, 'Aswan', 'Aswan', 'أسوان'),
+  ('pdc', 270, 'Aswan', 'Alsabaia', 'السباعية'),
+  ('pdc', 271, 'Aswan', 'Albesaila', 'البصيلية'),
+  ('pdc', 272, 'Aswan', 'Al Radessa', 'الرديسية'),
+  ('pdc', 273, 'Aswan', 'Abu Sembal Alsayhia', 'أبو سمبل السياحية'),
+  ('pdc', 274, 'Aswan', 'Abu Sembal', 'أبو سمبل'),
+  ('pdc', 275, 'Aswan', 'Toshka', 'توشكى'),
+  ('pdc', 276, 'Luxor', 'Teiba Algedida', 'طيبة الجديدة'),
+  ('pdc', 277, 'Luxor', 'Luxor Algedida', 'الأقصر الجديدة'),
+  ('pdc', 278, 'Luxor', 'Luxor', 'الأقصر'),
+  ('pdc', 279, 'Luxor', 'Issna', 'إسنا'),
+  ('pdc', 280, 'Luxor', 'Armant', 'أرمنت'),
+  ('pdc', 281, 'Luxor', 'Altoud', 'الطود'),
+  ('pdc', 282, 'Luxor', 'Alqarna', 'القرنة'),
+  ('pdc', 283, 'Luxor', 'Al Zeinya', 'الزينية'),
+  ('pdc', 284, 'Luxor', 'Al bayada', 'البياضية'),
+  ('pdc', 285, 'Qena', 'Quoss', 'قوص'),
+  ('pdc', 286, 'Qena', 'Qena Algedida', 'قنا الجديدة'),
+  ('pdc', 287, 'Qena', 'Qena', 'قنا'),
+  ('pdc', 288, 'Qena', 'Qaft', 'قفط'),
+  ('pdc', 289, 'Qena', 'Naqada', 'نقادة'),
+  ('pdc', 290, 'Qena', 'Naga Hamadi', 'نجع حمادي'),
+  ('pdc', 291, 'Qena', 'Farshout', 'فرشوط'),
+  ('pdc', 292, 'Qena', 'Dashna', 'دشنا'),
+  ('pdc', 293, 'Qena', 'Alwakf', 'الوقف'),
+  ('pdc', 294, 'Qena', 'Abu tesht', 'أبو تشت'),
+  ('pdc', 295, 'Red Sea', 'Safaja', 'سفاجا'),
+  ('pdc', 296, 'Red Sea', 'Ras Gharib', 'رأس غارب'),
+  ('pdc', 297, 'Red Sea', 'Marsa Allam', 'مرسى علم'),
+  ('pdc', 298, 'Red Sea', 'Hurghada', 'الغردقة'),
+  ('pdc', 299, 'Red Sea', 'Halyeb', 'حلايب'),
+  ('pdc', 300, 'Red Sea', 'Alqussier', 'القصير'),
+  ('pdc', 301, 'Red Sea', 'Al shalatten', 'الشلاتين'),
+  ('pdc', 302, 'Red Sea', 'Red Sea', 'البحر الأحمر'),
+  ('pdc', 303, 'Sohag', 'Tama', 'طما'),
+  ('pdc', 304, 'Sohag', 'Tahtaa', 'طهطا'),
+  ('pdc', 305, 'Sohag', 'Suhag', 'سوهاج'),
+  ('pdc', 306, 'Sohag', 'Saqalta', 'ساقلتة'),
+  ('pdc', 307, 'Sohag', 'Hay Alqawssar', 'حي الكوثر'),
+  ('pdc', 308, 'Sohag', 'Gouhaina', 'جهينة'),
+  ('pdc', 309, 'Sohag', 'Gerga', 'جرجا'),
+  ('pdc', 310, 'Sohag', 'Dar Alsalam', 'دار السلام'),
+  ('pdc', 311, 'Sohag', 'Al manshaa', 'المنشأة'),
+  ('pdc', 312, 'Sohag', 'Al Maragha', 'المراغة'),
+  ('pdc', 313, 'Sohag', 'Al Ballena', 'البلينا'),
+  ('pdc', 314, 'Sohag', 'Akhmiem', 'أخميم'),
+  ('pdc', 315, 'New Valley', 'Paris', 'باريس'),
+  ('pdc', 316, 'New Valley', 'Pallat', 'بلاط'),
+  ('pdc', 317, 'New Valley', 'Mout', 'موط'),
+  ('pdc', 318, 'New Valley', 'Al kharga', 'الخارجة'),
+  ('pdc', 319, 'New Valley', 'Al Farafra', 'الفرافرة'),
+  ('pdc', 320, 'New Valley', 'Siwa', 'سيوة'),
+  ('pdc', 321, 'New Valley', 'Kharja Oases', 'واحة الخارجة'),
+  ('pdc', 322, 'New Valley', 'Dakhla Oases', 'واحة الداخلة'),
+  ('pdc', 323, 'Matrouh', 'North Coast Above 90Km', 'الساحل الشمالي فوق 90 كم'),
+  ('pdc', 324, 'Matrouh', 'Um Alrekhim', 'أم الرخم'),
+  ('pdc', 325, 'Matrouh', 'Sidi Heneish', 'سيدي حنيش'),
+  ('pdc', 326, 'Matrouh', 'Ras Alhikma', 'رأس الحكمة'),
+  ('pdc', 327, 'Matrouh', 'Kashuk Emaara', 'كشك عمارة'),
+  ('pdc', 328, 'Matrouh', 'Halazein', 'الحلازين'),
+  ('pdc', 329, 'Matrouh', 'Awlad Marii', 'أولاد مري'),
+  ('pdc', 330, 'Matrouh', 'Atnouh', 'أتنوح'),
+  ('pdc', 331, 'Matrouh', 'Al zayat', 'الزيات'),
+  ('pdc', 332, 'Matrouh', 'Al suynat', 'السوينات'),
+  ('pdc', 333, 'Matrouh', 'Al salom', 'السلام'),
+  ('pdc', 334, 'Matrouh', 'Al qawasim', 'القواسم'),
+  ('pdc', 335, 'Matrouh', 'Al qasr', 'القصر'),
+  ('pdc', 336, 'Matrouh', 'Al oush', 'العوش'),
+  ('pdc', 337, 'Matrouh', 'Al nasr', 'النصر'),
+  ('pdc', 338, 'Matrouh', 'Al grawla', 'الجراولة'),
+  ('pdc', 339, 'Matrouh', 'Al dakhla', 'الداخلة'),
+  ('pdc', 340, 'Matrouh', 'Abuluho Alganouby', 'أبو لحو الجنوبي'),
+  ('pdc', 341, 'Matrouh', 'Abuluho Albahri', 'أبو لحو البحري'),
+  ('pdc', 342, 'Matrouh', 'Abu Mareiq', 'أبو مريق'),
+  ('pdc', 343, 'Matrouh', 'Matrouh', 'مطروح'),
+  ('pdc', 344, 'Matrouh', 'Al Hammam', 'الحمام'),
+  ('pdc', 345, 'Matrouh', 'Al almeen', 'العلمين'),
+  ('pdc', 346, 'Matrouh', 'Brani', 'براني'),
+  ('pdc', 347, 'Matrouh', 'Negela', 'النجيلة'),
+  ('pdc', 348, 'Matrouh', 'Salloum', 'السلوم'),
+  ('pdc', 349, 'North Seina', 'Rafah', 'رفح'),
+  ('pdc', 350, 'North Seina', 'Bir Alabd', 'بئر العبد'),
+  ('pdc', 351, 'North Seina', 'Al sheikh Zwayd', 'الشيخ زويد'),
+  ('pdc', 352, 'North Seina', 'Al nakhl', 'النخل'),
+  ('pdc', 353, 'North Seina', 'Al hassana', 'الحسنة'),
+  ('pdc', 354, 'North Seina', 'Al Aresh', 'العريش'),
+  ('pdc', 355, 'North Seina', 'North Sinai', 'شمال سيناء'),
+  ('pdc', 356, 'South Seina', 'Tor Sinai', 'طور سيناء'),
+  ('pdc', 357, 'South Seina', 'Taba', 'طابا'),
+  ('pdc', 358, 'South Seina', 'Sharm Alsheikh', 'شرم الشيخ'),
+  ('pdc', 359, 'South Seina', 'Saint Katreen', 'سانت كاترين'),
+  ('pdc', 360, 'South Seina', 'Rass Sudr', 'رأس سدر'),
+  ('pdc', 361, 'South Seina', 'Nwabea', 'نويبع'),
+  ('pdc', 362, 'South Seina', 'Dahab', 'دهب'),
+  ('pdc', 363, 'South Seina', 'Abu Zeniema', 'أبو زنيمة'),
+  ('pdc', 364, 'South Seina', 'Abu Redeis', 'أبو رديس'),
+  ('pdc', 365, 'South Seina', 'South Sinai', 'جنوب سيناء'),
+  ('pdc', 366, 'Cairo 2', 'Others', 'أخرى'),
+  ('pdc', 367, 'Cairo 2', 'New capital', 'العاصمة الإدارية الجديدة'),
+  ('pdc', 368, 'Cairo 2', 'Manshiat Nasr', 'منشأة ناصر'),
+  ('pdc', 369, 'Cairo 2', 'Al Waily', 'الوايلي'),
+  ('pdc', 370, 'Cairo 2', 'Al Marg', 'المرج'),
+  ('pdc', 371, 'Cairo 2', 'Al Zawya Elhamra', 'الزاوية الحمراء'),
+  ('pdc', 372, 'Giza 2', 'Al badrasheen', 'البدرشين'),
+  ('pdc', 373, 'Giza 2', 'Kerdassa', 'كرداسة'),
+  ('pdc', 374, 'Giza 2', 'Al Hawamdia', 'الحوامدية'),
+  ('pdc', 375, 'Giza 2', 'Al Wahat city', 'مدينة الواحات'),
+  ('pdc', 376, 'Giza 2', 'Atfeh', 'أطفيح'),
+  ('pdc', 377, 'Giza 2', 'Alsaff', 'الصف'),
+  ('pdc', 378, 'Giza 2', 'Monshaet Alqanater', 'منشأة القناطر'),
+  ('pdc', 379, 'Giza 2', 'Alayaat', 'العياط'),
+  ('pdc', 380, 'Giza 2', 'Awssem', 'أوسيم'),
+  ('pdc', 381, 'Giza 2', 'Abo AlNomross', 'أبو النمرس'),
+  ('pdc', 382, 'Giza 2', 'Al barageel', 'البراجيل')
+on conflict (provider, provider_city_id) do update
+set
+  governorate = excluded.governorate,
+  city = excluded.city,
+  city_arabic = excluded.city_arabic,
+  updated_at = now();

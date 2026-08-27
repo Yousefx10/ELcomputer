@@ -108,6 +108,41 @@
               </div>
             </section>
 
+            <section v-if="shippingDetail" class="rounded-2xl border p-5">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">PDC Shipping</h4>
+                  <p class="mt-1 text-sm text-gray-500">
+                    {{ shippingDetail.awb ? `AWB ${shippingDetail.awb}` : 'Waiting for an AWB.' }}
+                  </p>
+                  <p v-if="shippingDetail.provider_status_name" class="mt-1 text-sm text-gray-600">
+                    {{ shippingDetail.provider_status_name }}
+                  </p>
+                  <p v-if="shippingDetail.provider_reason_name" class="mt-1 text-sm text-gray-600">
+                    {{ shippingDetail.provider_reason_name }}
+                  </p>
+                  <p v-if="shippingDetail.last_error" class="mt-2 text-sm text-red-600">
+                    {{ shippingDetail.last_error }}
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
+                    {{ shippingDetail.state }}
+                  </span>
+                  <button
+                    v-if="shippingDetail.label_ready"
+                    type="button"
+                    :disabled="labelLoading"
+                    class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
+                    @click="downloadShippingLabel"
+                  >
+                    {{ labelLoading ? 'Downloading...' : 'Shipping Label' }}
+                  </button>
+                </div>
+              </div>
+            </section>
+
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <section class="space-y-4">
                 <div class="rounded-2xl border p-5">
@@ -155,6 +190,11 @@
                     <div>
                       <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Payment Method</p>
                       <p class="mt-1">{{ orderDetail.payment_method || 'Not selected yet' }}</p>
+                    </div>
+
+                    <div>
+                      <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Payment Status</p>
+                      <p class="mt-1 capitalize">{{ orderDetail.payment_status || 'pending' }}</p>
                     </div>
 
                     <div>
@@ -293,12 +333,14 @@ const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
 const statusLoading = ref(false)
+const labelLoading = ref(false)
 const errorMessage = ref('')
 const statusMessage = ref('')
 const statusPanelOpen = ref(false)
 const orderDetail = ref(null)
 const orderItems = ref([])
 const customerDetail = ref(null)
+const shippingDetail = ref(null)
 
 const orderTitle = computed(() => {
   if (!props.orderId) {
@@ -514,10 +556,44 @@ const resetDialogState = () => {
   orderDetail.value = null
   orderItems.value = []
   customerDetail.value = null
+  shippingDetail.value = null
 }
 
 const closeDialog = () => {
   emit('update:open', false)
+}
+
+const downloadShippingLabel = async () => {
+  if (!props.orderId || !shippingDetail.value?.label_ready) {
+    return
+  }
+
+  labelLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    const response = await fetch(`/api/admin-shipping/orders/${props.orderId}/label`, {
+      headers: await getAuthHeaders()
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}))
+      throw new Error(errorBody?.statusMessage || 'Could not download the shipping label.')
+    }
+
+    const labelUrl = URL.createObjectURL(await response.blob())
+    const link = document.createElement('a')
+    link.href = labelUrl
+    link.download = `PDC-${shippingDetail.value.awb || props.orderId}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(labelUrl)
+  } catch (error) {
+    errorMessage.value = error?.message || 'Could not download the shipping label.'
+  } finally {
+    labelLoading.value = false
+  }
 }
 
 const loadOrderDetails = async () => {
@@ -537,6 +613,7 @@ const loadOrderDetails = async () => {
     orderDetail.value = response.order || null
     orderItems.value = response.items || []
     customerDetail.value = response.customer || null
+    shippingDetail.value = response.shipping || null
   } catch (error) {
     errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not load order details.'
   } finally {

@@ -81,6 +81,7 @@ export default defineEventHandler(async (event) => {
   }
 
   let customerProfile = null
+  let shipping = null
 
   if (orderRecord.user_id) {
     const { data: customerProfileRecord, error: customerProfileError } = await supabaseAdmin
@@ -110,6 +111,40 @@ export default defineEventHandler(async (event) => {
     customerProfile = customerProfileRecord || null
   }
 
+  const { data: shippingJob, error: shippingJobError } = await supabaseAdmin
+    .from('shipping_order_jobs')
+    .select(`
+      id,
+      provider,
+      state,
+      awb,
+      provider_status_id,
+      provider_status_name,
+      provider_status_at,
+      provider_reason_name,
+      label_storage_path,
+      attempt_count,
+      last_error,
+      updated_at
+    `)
+    .eq('order_id', orderId)
+    .maybeSingle()
+
+  if (shippingJobError && !['42P01', 'PGRST205'].includes(shippingJobError.code)) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: shippingJobError.message
+    })
+  }
+
+  if (shippingJob) {
+    shipping = {
+      ...shippingJob,
+      label_ready: Boolean(shippingJob.label_storage_path)
+    }
+    delete shipping.label_storage_path
+  }
+
   return {
     order: normalizeAdminOrderRecord(orderRecord),
     items: (orderItems || []).map((item) => {
@@ -118,6 +153,7 @@ export default defineEventHandler(async (event) => {
         serialized_units: serializedUnitsByOrderItem.get(String(item.id)) || []
       }
     }),
-    customer: customerProfile
+    customer: customerProfile,
+    shipping
   }
 })
