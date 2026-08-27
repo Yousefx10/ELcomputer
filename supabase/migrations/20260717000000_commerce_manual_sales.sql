@@ -588,4 +588,3 @@ using (public.is_active_admin ())
 with check (public.is_active_admin ());
 
 commit;
-
