@@ -67,6 +67,14 @@ export const adminPermissionGroups = [
     permissions: [
       { key: 'treasury.edit', label: 'Record Treasury transactions' }
     ]
+  },
+  {
+    key: 'documents',
+    title: 'Documents',
+    accessPermission: { key: 'documents.view', label: 'Documents Access' },
+    permissions: [
+      { key: 'documents.manage', label: 'Upload and manage documents' }
+    ]
   }
 ]
 
@@ -88,7 +96,8 @@ export const adminPermissionDependencies = {
   'brands.view': ['brands.add', 'brands.edit'],
   'settings.view': ['settings.edit', 'settings.coupons'],
   'hr.view': ['hr.edit'],
-  'treasury.view': ['treasury.edit']
+  'treasury.view': ['treasury.edit'],
+  'documents.view': ['documents.manage']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
@@ -177,6 +186,12 @@ export const getDashboardRouteRequirement = (route = '') => {
   if (path === '/dashboard/treasury') {
     return {
       permission: 'treasury.view'
+    }
+  }
+
+  if (path === '/dashboard/documents') {
+    return {
+      permission: 'documents.view'
     }
   }
 

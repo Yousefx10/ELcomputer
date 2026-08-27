@@ -349,6 +349,17 @@ export const dashboardNavigationGroups = [
     }
   },
   {
+    key: 'documents',
+    label: 'Documents',
+    icon: 'lucide:folder-closed',
+    to: '/dashboard/documents',
+    permission: 'documents.view',
+    documentTitle: 'Dashboard - Documents',
+    match: {
+      paths: ['/dashboard/documents']
+    }
+  },
+  {
     key: 'settings',
     label: 'Settings',
     icon: 'lucide:settings',
