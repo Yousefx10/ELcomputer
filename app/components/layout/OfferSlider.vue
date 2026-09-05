@@ -1,40 +1,14 @@
 <template>
-  <section
-    v-if="offerCards.length"
-    class="container mx-auto mt-6 px-4"
-  >
-    <div class="relative">
-      <button
-        v-if="offerCards.length > 1"
-        type="button"
-        class="absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/75 text-2xl text-white shadow-lg md:flex"
-        @click="scrollLeft"
-      >
-        ‹
-      </button>
-
-      <div
-        ref="slider"
-        class="flex gap-4 overflow-x-auto scroll-smooth pb-4 md:px-14"
-      >
-        <OfferCard
-          v-for="offer in offerCards"
-          :key="offer.id"
-          :eyebrow-text="offer.eyebrow_text"
-          :title="offer.title"
-          :image-url="offer.image_url"
-          :to="getOfferCardLink(offer)"
-        />
+  <section v-if="offerCards.length" class="store-section" aria-labelledby="store-offers-title">
+    <div class="store-section-header">
+      <h2 id="store-offers-title" class="store-section-title">Discover more</h2>
+      <div v-if="offerCards.length > 3" class="store-product-actions">
+        <button type="button" class="store-round-button" aria-label="Previous offers" @click="scrollLeft"><Icon name="lucide:chevron-left" size="17" /></button>
+        <button type="button" class="store-round-button" aria-label="More offers" @click="scrollRight"><Icon name="lucide:chevron-right" size="17" /></button>
       </div>
-
-      <button
-        v-if="offerCards.length > 1"
-        type="button"
-        class="absolute right-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/75 text-2xl text-white shadow-lg md:flex"
-        @click="scrollRight"
-      >
-        ›
-      </button>
+    </div>
+    <div ref="slider" class="store-offer-rail no-scrollbar">
+      <OfferCard v-for="offer in offerCards" :key="offer.id" :eyebrow-text="offer.eyebrow_text" :title="offer.title" :image-url="offer.image_url" :to="getOfferCardLink(offer)" />
     </div>
   </section>
 </template>
@@ -69,14 +43,14 @@ const getOfferCardLink = (offer) => {
 const scrollLeft = () => {
   slider.value?.scrollBy({
     left: -320,
-    behavior: 'smooth'
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   })
 }
 
 const scrollRight = () => {
   slider.value?.scrollBy({
     left: 320,
-    behavior: 'smooth'
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   })
 }
 </script>

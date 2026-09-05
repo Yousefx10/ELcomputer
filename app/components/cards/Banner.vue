@@ -1,14 +1,15 @@
 <template>
-  <div v-if="imageUrl" class="my-10">
-    <a :href="linkUrl || '#'" class="block overflow-hidden rounded-3xl bg-gray-100">
+  <div v-if="getStoreImageUrl(imageUrl)" class="my-10">
+    <component :is="linkUrl ? 'a' : 'div'" :href="linkUrl || undefined" class="block overflow-hidden rounded-xl bg-gray-100">
       <div class="h-[180px] md:h-[220px]">
-        <img class="h-full w-full object-cover" :src="imageUrl" :alt="altText">
+        <img class="h-full w-full object-cover" :src="imageUrl" :alt="altText" loading="lazy">
       </div>
-    </a>
+    </component>
   </div>
 </template>
 
 <script setup>
+import { getStoreImageUrl } from '~/utils/storefront'
 defineProps({
   imageUrl: {
     type: String,

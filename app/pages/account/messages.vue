@@ -436,7 +436,7 @@ onMounted(loadMessages)
                       <button
                         v-if="canReplyToMessage(message)"
                         type="button"
-                        class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                         :disabled="replyLoading"
                         @click="replyMessageId === message.id ? closeReply() : openReply(message)"
                       >

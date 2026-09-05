@@ -1,8 +1,12 @@
 <template>
-  <div class="bg-blue-500">
-    <p class="p-2 text-center text-xs font-bold text-white">
-      {{ currentMessage }}
-    </p>
+  <div class="store-topbar">
+    <div class="store-container store-topbar-inner">
+      <p>{{ currentMessage }}</p>
+      <div class="store-topbar-links">
+        <NuxtLink to="/search">Explore the store <Icon name="lucide:arrow-right" size="13" /></NuxtLink>
+        <a v-if="supportEmail" :href="`mailto:${supportEmail}`">Need help?</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -13,12 +17,14 @@ const currentMessageIndex = ref(0)
 let topBarInterval = null
 
 const messages = computed(() => siteContent.value?.topBarMessages || [])
+const supportEmail = computed(() => siteContent.value?.settings?.footer_email || '')
 const rotationSeconds = computed(() => {
   return Math.max(1, Number(siteContent.value?.settings?.top_bar_rotation_seconds || 3))
 })
 
 const currentMessage = computed(() => {
-  return messages.value[currentMessageIndex.value]?.text || 'Pretty Cool Text Around'
+  const message = messages.value[currentMessageIndex.value]?.text
+  return message && message !== 'Pretty Cool Text Around' ? message : 'Your next setup starts here.'
 })
 
 const restartTopBarInterval = () => {

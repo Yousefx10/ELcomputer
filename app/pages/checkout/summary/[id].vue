@@ -135,7 +135,7 @@
 
             <NuxtLink
               to="/account"
-              class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+              class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
             >
               Back to Account
             </NuxtLink>

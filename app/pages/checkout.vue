@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
-    <div class="mx-auto max-w-7xl px-4 md:px-6">
-      <div class="rounded-2xl bg-white p-6 shadow">
+  <div class="min-h-[60vh] bg-white py-8">
+    <div class="store-container">
+      <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
           Checkout
         </p>
@@ -29,7 +29,7 @@
 
         <NuxtLink
           to="/cart"
-          class="mt-5 inline-flex rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+          class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
         >
           Go to Cart
         </NuxtLink>
@@ -163,7 +163,7 @@
               <button
                 type="button"
                 :disabled="applyingCoupon"
-                class="rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                class="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
                 @click="applyCoupon"
               >
                 {{ applyingCoupon ? 'Applying...' : 'Apply Coupon' }}
@@ -292,7 +292,7 @@
             <button
               type="button"
               :disabled="placingOrder"
-              class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+              class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
               @click="placeOrder"
             >
               {{ placingOrder ? 'Placing Order...' : 'Place Order' }}

@@ -1,275 +1,121 @@
 <template>
-  <header class="bg-black text-white">
-    <nav class="container mx-auto flex items-center justify-between px-4 py-6">
-      <div>
-        <NuxtLink to="/" class="flex items-center gap-3">
-          <img
-            v-if="siteLogoUrl"
-            :src="siteLogoUrl"
-            :alt="siteName"
-            class="h-10 w-auto object-contain"
-          />
+  <header ref="header" class="store-header" @keydown.esc="closeDepartments(true)">
+    <div class="store-container store-header-main">
+      <NuxtLink to="/" class="store-logo" :aria-label="`${siteName} home`">
+        <img v-if="siteLogoUrl" :src="siteLogoUrl" :alt="siteName" />
+        <span v-else class="store-logo-mark" aria-hidden="true"><Icon name="lucide:monitor" size="25" /></span>
+        <span>{{ siteName }}</span>
+      </NuxtLink>
 
-          <span v-else class="text-lg font-semibold">
-            {{ siteName }}
-          </span>
+      <form role="search" class="store-search" @submit.prevent="submitSearch">
+        <label for="store-search-input" class="sr-only">Search products</label>
+        <input id="store-search-input" v-model="searchQuery" type="search" placeholder="Search products and brands" autocomplete="off" />
+        <button type="submit" aria-label="Search"><Icon name="lucide:search" size="23" /></button>
+      </form>
+
+      <nav class="store-header-actions" aria-label="Your shopping">
+        <NuxtLink :to="ordersPath" class="store-header-action store-orders-action">
+          <Icon name="lucide:package" size="25" />
+          <span class="store-action-copy"><small>Track &amp; manage</small><strong>My orders</strong></span>
         </NuxtLink>
-      </div>
+        <NuxtLink :to="customerAccountPath" class="store-header-action" :aria-label="customerUser ? 'My account' : 'Sign in to your account'">
+          <Icon name="lucide:user-round" size="25" />
+          <span class="store-action-copy"><small>{{ customerUser ? 'Welcome back' : 'Hello, sign in' }}</small><strong>Account</strong></span>
+        </NuxtLink>
+        <NuxtLink to="/cart" class="store-header-action store-cart-action" :aria-label="`Cart, ${itemCount} items`">
+          <span class="store-cart-icon">
+            <Icon name="lucide:shopping-cart" size="27" />
+            <span class="store-cart-count">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+          </span>
+          <span class="store-action-copy"><small>My cart</small><strong>{{ formattedSubtotal }} <span class="store-cart-currency">EGP</span></strong></span>
+        </NuxtLink>
+      </nav>
+    </div>
 
-      <ul class="hidden items-center gap-4 whitespace-nowrap lg:flex">
-        <li v-for="link in headerLinks" :key="link.id">
-          <div
-            v-if="isShopCategoryLink(link)"
-            class="group relative"
-          >
-            <button type="button" class="flex items-center gap-1">
-              <span>{{ link.label }}</span>
-              <Icon name="lucide:chevron-down" size="16" />
-            </button>
-
-            <div class="absolute left-0 top-full z-20 hidden min-w-56 rounded-xl bg-white p-3 text-black shadow-lg group-hover:block">
-              <p v-if="!headerCategories.length" class="text-sm text-gray-500">
-                No categories yet.
-              </p>
-
-              <ul v-else class="space-y-2">
-                <li
-                  v-for="category in headerCategories"
-                  :key="category.id"
-                >
-                  <NuxtLink
-                    :to="{ path: '/search', query: { category: category.slug } }"
-                    class="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    {{ category.name }}
-                  </NuxtLink>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <a
-            v-else-if="isExternalUrl(link.url)"
-            :href="link.url"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {{ link.label }}
-          </a>
-
-          <NuxtLink v-else :to="link.url || '/'">
-            {{ link.label }}
+    <div class="store-department-bar">
+      <nav class="store-container store-department-nav" aria-label="Shop navigation">
+        <div v-if="departmentsEnabled" class="store-department-trigger-wrap">
+          <button ref="departmentButton" type="button" class="store-department-trigger" :aria-expanded="departmentsOpen" aria-controls="store-departments" @click="departmentsOpen = !departmentsOpen">
+            <Icon name="lucide:layout-grid" size="19" />
+            <span>Departments</span>
+            <Icon :name="departmentsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="16" />
+          </button>
+        </div>
+        <div class="store-nav-scroll no-scrollbar">
+          <NuxtLink to="/search" class="store-nav-link store-nav-link-bold" :class="{ 'store-nav-link-active': isShopAllActive }" :aria-current="isShopAllActive ? 'page' : false">Shop all</NuxtLink>
+          <NuxtLink :to="{ path: '/search', query: { sort: 'latest' } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.sort === 'latest' }" :aria-current="route.path === '/search' && route.query.sort === 'latest' ? 'page' : false">New arrivals</NuxtLink>
+          <NuxtLink v-for="category in headerCategories.slice(0, 5)" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.category === category.slug }" :aria-current="route.path === '/search' && route.query.category === category.slug ? 'page' : false">
+            {{ category.name }}
           </NuxtLink>
-        </li>
+          <template v-for="link in extraHeaderLinks" :key="link.id">
+            <a v-if="isExternalUrl(link.url)" :href="link.url" target="_blank" rel="noreferrer" class="store-nav-link">{{ link.label }}</a>
+            <NuxtLink v-else :to="link.url || '/'" class="store-nav-link">{{ link.label }}</NuxtLink>
+          </template>
+        </div>
 
-        <li>
-          <form @submit.prevent="submitDesktopSearch">
-            <div class="relative">
-              <Icon
-                name="lucide:search"
-                size="16"
-                class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-              />
-
-              <input
-                v-model="desktopSearchQuery"
-                type="search"
-                placeholder="Search products"
-                class="w-56 rounded-full border border-white/70 bg-white/10 py-2 pl-11 pr-4 text-sm text-white placeholder:text-gray-300 outline-none transition focus:border-white focus:bg-white/15"
-              >
-            </div>
-          </form>
-        </li>
-
-        <li>
-          <NuxtLink :to="customerAccountPath">
-            <Icon name="lucide:user" size="24" />
+        <div v-if="departmentsOpen" id="store-departments" class="store-departments-panel">
+          <div class="store-departments-heading"><strong>Shop by department</strong><button type="button" aria-label="Close departments" @click="closeDepartments(true)"><Icon name="lucide:x" size="20" /></button></div>
+          <NuxtLink to="/search" class="store-department-item" @click="closeDepartments()"><Icon name="lucide:layout-grid" size="20" /><span>All products</span><Icon name="lucide:arrow-right" size="17" /></NuxtLink>
+          <NuxtLink v-for="category in headerCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-department-item" @click="closeDepartments()">
+            <Icon :name="getStoreCategoryIcon(category.name)" size="19" /><span>{{ category.name }}</span><Icon name="lucide:chevron-right" size="16" />
           </NuxtLink>
-        </li>
-
-        <li>
-          <NuxtLink to="/cart" class="relative inline-flex">
-            <Icon name="lucide:shopping-cart" size="24" />
-
-            <span
-              v-if="itemCount"
-              class="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-black"
-            >
-              {{ itemCount > 99 ? '99+' : itemCount }}
-            </span>
-          </NuxtLink>
-        </li>
-      </ul>
-
-      <button class="cursor-pointer text-white lg:hidden" @click="isMenuOpen = !isMenuOpen">
-        <Icon name="lucide:menu" size="28" />
-      </button>
-    </nav>
-
-    <div v-if="isMenuOpen" class="flex justify-center px-6 pb-6 lg:hidden">
-      <ul class="grid grid-cols-2 gap-4">
-        <li
-          v-for="link in headerLinks"
-          :key="link.id"
-          :class="isShopCategoryLink(link) ? 'col-span-2' : ''"
-        >
-          <details
-            v-if="isShopCategoryLink(link)"
-            class="rounded-xl bg-white/10 p-3"
-          >
-            <summary class="flex cursor-pointer items-center justify-between">
-              <span>{{ link.label }}</span>
-              <Icon name="lucide:chevron-down" size="16" />
-            </summary>
-
-            <p v-if="!headerCategories.length" class="mt-3 text-sm text-gray-200">
-              No categories yet.
-            </p>
-
-            <ul v-else class="mt-3 space-y-2 text-sm text-gray-200">
-              <li
-                v-for="category in headerCategories"
-                :key="category.id"
-              >
-                <NuxtLink
-                  :to="{ path: '/search', query: { category: category.slug } }"
-                  class="block rounded-lg px-3 py-2 hover:bg-white/10"
-                  @click="isMenuOpen = false"
-                >
-                  {{ category.name }}
-                </NuxtLink>
-              </li>
-            </ul>
-          </details>
-
-          <a
-            v-else-if="isExternalUrl(link.url)"
-            :href="link.url"
-            target="_blank"
-            rel="noreferrer"
-            @click="isMenuOpen = false"
-          >
-            {{ link.label }}
-          </a>
-
-          <NuxtLink v-else :to="link.url || '/'" @click="isMenuOpen = false">
-            {{ link.label }}
-          </NuxtLink>
-        </li>
-
-        <li class="col-span-2">
-          <form @submit.prevent="submitMobileSearch">
-            <div class="relative mx-auto w-full max-w-xs">
-              <Icon
-                name="lucide:search"
-                size="16"
-                class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-              />
-
-              <input
-                v-model="mobileSearchQuery"
-                type="search"
-                placeholder="Search products"
-                class="w-full rounded-full border border-white/70 bg-white/10 py-2 pl-11 pr-4 text-sm text-white placeholder:text-gray-300 outline-none transition focus:border-white focus:bg-white/15"
-              >
-            </div>
-          </form>
-        </li>
-
-        <li @click="isMenuOpen = false">
-          <NuxtLink :to="customerAccountPath">
-            <Icon name="lucide:user" size="24" />
-          </NuxtLink>
-        </li>
-
-        <li @click="isMenuOpen = false">
-          <NuxtLink to="/cart" class="relative inline-flex">
-            <Icon name="lucide:shopping-cart" size="24" />
-
-            <span
-              v-if="itemCount"
-              class="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-black"
-            >
-              {{ itemCount > 99 ? '99+' : itemCount }}
-            </span>
-          </NuxtLink>
-        </li>
-      </ul>
+          <p v-if="!headerCategories.length" class="store-department-empty">Browse all products to find your next upgrade.</p>
+        </div>
+      </nav>
     </div>
   </header>
 </template>
 
 <script setup>
-import { defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
-
+import { getStoreCategoryIcon } from '~/utils/storefront'
 const supabase = useSupabaseClient()
 const route = useRoute()
 const customerUser = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
-const { itemCount, loadCart } = useCart()
+const { itemCount, subtotal, loadCart } = useCart()
 const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
-  const { data, error } = await supabase
-    .from('categories')
-    .select('id, name, slug')
-    .order('name')
-
-  if (error) {
-    return []
-  }
-
-  return data || []
+  const { data, error } = await supabase.from('categories').select('id, name, slug').order('name')
+  return error ? [] : (data || [])
 })
 
-const isMenuOpen = ref(false)
-const desktopSearchQuery = ref('')
-const mobileSearchQuery = ref('')
-
+const header = ref(null)
+const departmentButton = ref(null)
+const departmentsOpen = ref(false)
+const searchQuery = ref('')
+const isShopAllActive = computed(() => route.path === '/search' && !Object.keys(route.query).length)
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
-const headerLinks = computed(() => siteContent.value?.headerLinks || [])
 const headerCategories = computed(() => categoriesData.value || [])
 const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
-const shopCategoryLinkKey = defaultHeaderLinkDefinitions.find((link) => link.key === 'shop-category')?.key
-
-const isExternalUrl = (value) => {
-  return typeof value === 'string' && /^https?:\/\//i.test(value)
+const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
+const formattedSubtotal = computed(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(subtotal.value))
+const departmentsEnabled = computed(() => (siteContent.value?.headerLinks || []).some((link) => link.link_type === 'categories-dropdown'))
+const extraHeaderLinks = computed(() => (siteContent.value?.headerLinks || []).filter((link) => link.link_type !== 'categories-dropdown' && link.default_key !== 'home'))
+const isExternalUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value)
+const closeDepartments = (restoreFocus = false) => {
+  departmentsOpen.value = false
+  if (restoreFocus) departmentButton.value?.focus()
 }
-
-const isShopCategoryLink = (link) => {
-  return link?.default_key === shopCategoryLinkKey || link?.label === 'Shop Category'
+const onOutsidePointer = (event) => {
+  if (!header.value?.contains(event.target)) closeDepartments()
 }
-
-const syncSearchQueries = () => {
-  const currentSearchQuery = typeof route.query.q === 'string' ? route.query.q : ''
-
-  desktopSearchQuery.value = currentSearchQuery
-  mobileSearchQuery.value = currentSearchQuery
+const onFocusOutside = (event) => {
+  if (!header.value?.contains(event.target)) closeDepartments()
 }
-
-const submitSearch = async (rawValue, shouldCloseMenu = false) => {
-  const searchQuery = String(rawValue || '').trim()
-
-  if (shouldCloseMenu) {
-    isMenuOpen.value = false
-  }
-
-  await navigateTo({
-    path: '/search',
-    query: searchQuery ? { q: searchQuery } : {}
-  })
+const submitSearch = async () => {
+  closeDepartments()
+  const q = searchQuery.value.trim()
+  await navigateTo({ path: '/search', query: q ? { q } : {} })
 }
-
-const submitDesktopSearch = async () => {
-  await submitSearch(desktopSearchQuery.value)
-}
-
-const submitMobileSearch = async () => {
-  await submitSearch(mobileSearchQuery.value, true)
-}
-
-watch(() => route.query.q, syncSearchQueries, { immediate: true })
-
+watch(() => route.query.q, (value) => { searchQuery.value = typeof value === 'string' ? value : '' }, { immediate: true })
+watch(() => route.fullPath, () => closeDepartments())
 onMounted(() => {
   loadCart()
+  document.addEventListener('pointerdown', onOutsidePointer)
+  document.addEventListener('focusin', onFocusOutside)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', onOutsidePointer)
+  document.removeEventListener('focusin', onFocusOutside)
 })
 </script>

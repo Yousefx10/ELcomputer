@@ -45,7 +45,7 @@
           <p class="text-red-600">{{ loadError }}</p>
           <button
             type="button"
-            class="mt-4 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+            class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             @click="refresh"
           >
             Try Again
@@ -98,7 +98,7 @@
             :disabled="status === 'pending'"
             class="min-w-10 rounded-lg border px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             :class="pageNumber === currentPage
-              ? 'border-black bg-black text-white'
+              ? 'border-blue-600 bg-blue-600 text-white'
               : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
             @click="goToPage(pageNumber)"
           >

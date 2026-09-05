@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
-    <div class="mx-auto max-w-7xl px-4 md:px-6">
-      <div class="rounded-2xl bg-white p-6 shadow">
+  <div class="min-h-[60vh] bg-white py-8">
+    <div class="store-container">
+      <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Your Cart
+          Your bag
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
@@ -11,7 +11,7 @@
         </h1>
 
         <p class="mt-2 text-sm text-gray-500">
-          Review products, update quantity, and continue to checkout.
+          Your next setup is almost yours.
         </p>
       </div>
 
@@ -28,8 +28,8 @@
         </p>
 
         <NuxtLink
-          to="/"
-          class="mt-5 inline-flex rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+          to="/search"
+          class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
         >
           Continue Shopping
         </NuxtLink>
@@ -40,7 +40,7 @@
           <article
             v-for="item in items"
             :key="item.cart_key"
-            class="rounded-2xl bg-white p-5 shadow"
+            class="rounded-xl border border-gray-200 bg-white p-5"
           >
             <div class="flex flex-col gap-5 sm:flex-row">
               <NuxtLink
@@ -138,7 +138,7 @@
           </article>
         </section>
 
-        <aside class="h-fit rounded-2xl bg-white p-5 shadow">
+        <aside class="h-fit rounded-xl border border-gray-200 bg-gray-50 p-5">
           <h2 class="text-2xl font-bold text-gray-900">
             Summary
           </h2>
@@ -169,7 +169,7 @@
 
           <NuxtLink
             to="/checkout"
-            class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+            class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
           >
             Proceed to Checkout
           </NuxtLink>

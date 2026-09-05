@@ -1,15 +1,15 @@
 <template>
-  <section ref="sectionRoot" class="my-14" aria-labelledby="customer-reviews-title">
-    <div class="mb-7 flex flex-col gap-4 px-4 md:flex-row md:items-end md:justify-between md:px-10">
+  <section ref="sectionRoot" class="store-section" aria-labelledby="customer-reviews-title">
+    <div class="store-section-header">
       <div>
         <h2
           id="customer-reviews-title"
-          class="text-4xl font-black uppercase tracking-tight md:text-6xl"
+          class="store-section-title"
         >
-          Customer Reviews
+          From our customers
         </h2>
-        <p class="mt-2 text-base text-gray-700 md:text-lg">
-          What customers are saying about products from our store.
+        <p class="store-section-description">
+          Real reviews from the people who use it.
         </p>
       </div>
 
@@ -28,7 +28,7 @@
         <NuxtLink
           v-if="showViewAll && reviews.length"
           to="/reviews"
-          class="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-bold text-white hover:bg-gray-800 hover:text-white"
+          class="store-text-link"
         >
           View all reviews
           <Icon name="lucide:arrow-right" size="17" />
@@ -53,7 +53,7 @@
       <p class="text-sm text-red-600">{{ loadError }}</p>
       <button
         type="button"
-        class="mt-4 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+        class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
         @click="loadReviews"
       >
         Try Again

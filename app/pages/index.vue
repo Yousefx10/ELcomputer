@@ -1,76 +1,56 @@
 <template>
-  <section>
-    <CardsHeroCard />
-  </section>
+  <div class="store-container store-home">
+    <nav class="store-discovery" aria-label="Explore products">
+      <p class="store-discovery-label">Find your next upgrade</p>
+      <div class="store-discovery-links no-scrollbar">
+        <NuxtLink :to="{ path: '/search', query: { sort: 'latest' } }" class="store-chip"><Icon name="lucide:sparkles" size="14" />Just landed</NuxtLink>
+        <NuxtLink v-for="category in topCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-chip">{{ category.name }}</NuxtLink>
+        <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }" class="store-chip">In stock now</NuxtLink>
+      </div>
+    </nav>
 
-  <section>
-    <OfferSlider />
-  </section>
-
-  <section class="container mx-auto pb-20">
-    <div v-if="homeError" class="mx-4 mt-6 rounded-2xl bg-red-50 p-4 text-red-600">
-      {{ homeError.message }}
+    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ siteContent?.settings?.site_name || 'ELcomputer' }} — Shop your next setup</h1>
+    <div v-if="heroEnabled" class="store-hero-grid">
+      <CardsHeroCard />
+      <div class="store-hero-side">
+        <NuxtLink v-for="(tile, index) in discoveryTiles" :key="index" :to="tile.to" class="store-promo-tile">
+          <div class="store-promo-copy">
+            <p>{{ tile.eyebrow }}</p>
+            <h2>{{ tile.title }}</h2>
+            <span>Explore now <Icon name="lucide:arrow-right" size="14" /></span>
+          </div>
+          <img v-if="tile.image" :src="tile.image" alt="" />
+          <Icon v-else :name="tile.icon" />
+        </NuxtLink>
+      </div>
     </div>
 
-    <section>
-      <TopCategories :categories="topCategories" class="mx-1 my-5" />
+    <nav class="store-service-strip" aria-label="Shopping shortcuts">
+      <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }"><Icon name="lucide:package-check" size="23" /><span>Find in-stock gear</span></NuxtLink>
+      <NuxtLink :to="ordersPath"><Icon name="lucide:truck" size="23" /><span>Track your orders</span></NuxtLink>
+      <a v-if="supportEmail" :href="`mailto:${supportEmail}`"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></a>
+      <NuxtLink v-else to="/account/messages"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></NuxtLink>
+    </nav>
+
+    <div v-if="homeError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">We couldn't load products. Please refresh and try again.</div>
+    <TopCategories :categories="topCategories" />
+    <HomeProductSection v-if="featuredProducts.length" title="Worth a closer look" description="A few picks for your next setup." :products="featuredProducts" />
+    <OfferSlider />
+    <HomeProductSection v-if="topSellerProducts.length" title="More to explore" description="Find something that fits your everyday." :products="topSellerProducts" />
+    <FeaturedBrands v-if="featuredBrands.length" title="Shop your favorite brands" :brands="featuredBrands" />
+
+    <section v-for="category in categorySections" :key="category.id">
+      <CardsBanner v-if="getBannerBeforeCategory(category)" :image-url="getBannerBeforeCategory(category).imageUrl" :link-url="getBannerBeforeCategory(category).linkUrl" :alt-text="getBannerBeforeCategory(category).altText" />
+      <HomeProductSection :title="category.name" :products="category.products" :to="{ path: '/search', query: { category: category.slug } }" />
     </section>
 
-    <section v-if="featuredProducts.length">
-      <HomeProductSection
-        title="Featured Products"
-        description="Selected products currently available in the store"
-        :products="featuredProducts"
-      />
-    </section>
-
-    <section v-if="topSellerProducts.length">
-      <HomeProductSection
-        title="Top Sellers"
-        description="Popular products from the current catalog"
-        :products="topSellerProducts"
-      />
-    </section>
-
-    <section v-if="featuredBrands.length">
-      <FeaturedBrands
-        title="Featured Brands"
-        description="Brands currently available in the store"
-        :brands="featuredBrands"
-      />
-    </section>
-
-    <HomeCustomerReviews
-      v-if="homepageReviewsEnabled"
-      :show-view-all="homepageReviewsViewAllEnabled"
-    />
-
-    <section
-      v-for="category in categorySections"
-      :key="category.id"
-    >
-      <CardsBanner
-        v-if="getBannerBeforeCategory(category)"
-        :image-url="getBannerBeforeCategory(category).imageUrl"
-        :link-url="getBannerBeforeCategory(category).linkUrl"
-        :alt-text="getBannerBeforeCategory(category).altText"
-      />
-
-      <HomeProductSection
-        :title="category.name"
-        description="Browse products from this category"
-        :products="category.products"
-      />
-    </section>
-
-    <NpsSurvey
-      source="homepage"
-      :store-name="siteContent?.settings?.site_name || 'ELcomputer'"
-    />
-  </section>
+    <HomeCustomerReviews v-if="homepageReviewsEnabled" :show-view-all="homepageReviewsViewAllEnabled" />
+    <NpsSurvey source="homepage" :store-name="siteContent?.settings?.site_name || 'ELcomputer'" />
+  </div>
 </template>
 
 <script setup>
+import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import FeaturedBrands from '~/components/cards/FeaturedBrands.vue'
 import TopCategories from '~/components/cards/TopCategories.vue'
 import OfferSlider from '~/components/layout/OfferSlider.vue'
@@ -164,7 +144,7 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
         ...category,
         productCount: products.filter((product) => product.category?.id === category.id).length,
         products: categoryProducts,
-        displayImageUrl: category.image_url || categoryProducts.find((product) => product.image_url)?.image_url || ''
+        displayImageUrl: getStoreImageUrl(category.image_url) || categoryProducts.find((product) => getStoreImageUrl(product.image_url))?.image_url || ''
       }
     })
     .filter((category) => category.productCount > 0)
@@ -184,6 +164,7 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
   })
 
   return {
+    latestImage: products.find((product) => getStoreImageUrl(product.image_url))?.image_url || '',
     featuredProducts: (featuredProducts.length ? featuredProducts : products).slice(0, 8),
     topSellerProducts: (topSellerProducts.length ? topSellerProducts : products).slice(0, 8),
     topCategories: categoriesWithProducts.slice(0, 6),
@@ -191,6 +172,28 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
     featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
   }
 })
+
+const customerUser = useSupabaseUser()
+const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
+const supportEmail = computed(() => siteContent.value?.settings?.footer_email || '')
+const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
+const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
+const discoveryTiles = computed(() => [
+  {
+    eyebrow: 'Shop by category',
+    title: topCategories.value[0]?.name || 'Meet your new favorites',
+    image: topCategories.value[0]?.displayImageUrl,
+    icon: getStoreCategoryIcon(topCategories.value[0]?.name),
+    to: topCategories.value[0] ? { path: '/search', query: { category: topCategories.value[0].slug } } : '/search'
+  },
+  {
+    eyebrow: 'Fresh finds',
+    title: 'New to the store',
+    image: homeData.value?.latestImage || '',
+    icon: 'lucide:headphones',
+    to: { path: '/search', query: { sort: 'latest' } }
+  }
+])
 
 const featuredProducts = computed(() => homeData.value?.featuredProducts || [])
 const topSellerProducts = computed(() => homeData.value?.topSellerProducts || [])
@@ -241,14 +244,3 @@ useHead(() => ({
   title: siteContent.value?.settings?.landing_page_title || siteContent.value?.settings?.site_name || 'ELcomputer'
 }))
 </script>
-
-<style>
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>

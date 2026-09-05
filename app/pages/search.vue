@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
-    <div class="mx-auto max-w-7xl px-4 md:px-6">
-      <div class="rounded-2xl bg-white p-6 shadow">
+  <div class="min-h-[60vh] bg-white py-8">
+    <div class="store-container">
+      <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Store Search
+          Explore the store
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
@@ -19,13 +19,17 @@
         {{ error.message }}
       </div>
 
-      <div class="mt-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside class="rounded-2xl bg-white p-5 shadow">
-          <div class="space-y-5">
+      <div class="mt-6 grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+        <aside class="rounded-xl border border-gray-200 bg-white p-5">
+          <button type="button" class="flex min-h-10 w-full items-center justify-between text-sm font-bold lg:hidden" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen">
+            <span class="flex items-center gap-2"><Icon name="lucide:sliders-horizontal" size="17" />Filter products</span>
+            <Icon :name="filtersOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="17" />
+          </button>
+          <div id="store-search-filters" class="space-y-5 lg:block" :class="filtersOpen ? 'mt-4 lg:mt-0' : 'hidden'">
             <div>
               <h2 class="text-lg font-bold text-gray-900">Filters</h2>
               <p class="mt-1 text-sm text-gray-500">
-                Narrow results by price, category, brand, and stock status.
+                Find the right gear for you.
               </p>
             </div>
 
@@ -47,14 +51,14 @@
                 <div class="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-gray-200" />
 
                 <div
-                  class="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-black"
+                  class="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-blue-600"
                   :style="priceRangeTrackStyle"
                 />
 
                 <button
                   type="button"
                   aria-label="Minimum price"
-                  class="price-slider-thumb absolute top-1/2 z-20 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-black shadow-sm"
+                  class="price-slider-thumb absolute top-1/2 z-20 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue-600 shadow-sm"
                   :class="draggingPriceThumb === 'min' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
                   :style="minThumbStyle"
                   @pointerdown.stop.prevent="startPriceThumbDrag('min', $event)"
@@ -63,7 +67,7 @@
                 <button
                   type="button"
                   aria-label="Maximum price"
-                  class="price-slider-thumb absolute top-1/2 z-30 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-black shadow-sm"
+                  class="price-slider-thumb absolute top-1/2 z-30 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue-600 shadow-sm"
                   :class="draggingPriceThumb === 'max' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
                   :style="maxThumbStyle"
                   @pointerdown.stop.prevent="startPriceThumbDrag('max', $event)"
@@ -165,7 +169,7 @@
             <div class="flex gap-3 border-t pt-5">
               <button
                 type="button"
-                class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
                 @click="applyFilters"
               >
                 Apply Filters
@@ -183,7 +187,7 @@
         </aside>
 
         <section class="space-y-5">
-          <div class="rounded-2xl bg-white p-5 shadow">
+          <div class="rounded-xl border border-gray-200 bg-white p-5">
             <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div class="space-y-3">
                 <div class="flex flex-wrap gap-2">
@@ -241,8 +245,8 @@
             No products match the current search and filters.
           </div>
 
-          <div v-else class="rounded-2xl bg-white p-5 shadow">
-            <div class="flex flex-wrap justify-center gap-5 lg:justify-start">
+          <div v-else class="rounded-xl border border-gray-200 bg-white p-5">
+            <div class="store-search-grid">
               <CardsProductCard
                 v-for="product in products"
                 :key="product.id"
@@ -259,7 +263,7 @@
                 :disabled="currentPage <= 1"
                 class="rounded-lg px-4 py-3 text-sm font-medium"
                 :class="currentPage > 1
-                  ? 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-200 text-gray-400'"
                 @click="goToPage(currentPage - 1)"
               >
@@ -275,7 +279,7 @@
                 :disabled="currentPage >= totalPages"
                 class="rounded-lg px-4 py-3 text-sm font-medium"
                 :class="currentPage < totalPages
-                  ? 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-200 text-gray-400'"
                 @click="goToPage(currentPage + 1)"
               >
@@ -293,6 +297,7 @@
 const supabase = useSupabaseClient()
 const route = useRoute()
 
+const filtersOpen = ref(false)
 const pageSize = 12
 const defaultSort = 'relevance'
 const defaultStatus = ''
@@ -1045,6 +1050,7 @@ const updateMaxPrice = (eventOrValue) => {
 }
 
 const applyFilters = async () => {
+  filtersOpen.value = false
   await navigateTo({
     path: '/search',
     query: buildRouteQuery(1)

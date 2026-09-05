@@ -169,39 +169,39 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 px-4 py-10">
+  <div class="min-h-[60vh] bg-white px-4 py-10">
     <div class="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
-      <div class="rounded-3xl bg-blue-600 p-8 text-white shadow">
+      <div class="hidden rounded-3xl bg-blue-600 p-8 text-white lg:block">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-100">
           Customer Account
         </p>
 
-        <h1 class="mt-4 text-4xl font-bold">
-          Shop faster and keep your orders in one place.
-        </h1>
+        <h2 class="mt-4 text-4xl font-bold">
+          Your gear. Your orders. Your space.
+        </h2>
 
         <p class="mt-4 text-sm text-blue-100">
-          Create your account to review orders, track delivery progress, and keep your wallet balance ready for future purchases.
+          Track orders, manage your wallet, and check out faster.
         </p>
 
         <div class="mt-8 space-y-4">
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">Your account dashboard</p>
+            <p class="text-sm font-semibold">Everything in one place</p>
             <p class="mt-1 text-sm text-blue-100">
-              Elcomputer wallet balance.
+              Your orders and wallet, together.
             </p>
           </div>
 
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">One login for the store</p>
+            <p class="text-sm font-semibold">Ready when you are</p>
             <p class="mt-1 text-sm text-blue-100">
-              Customer access.
+              Sign in for your next upgrade.
             </p>
           </div>
         </div>
       </div>
 
-      <div class="rounded-3xl bg-white p-6 shadow">
+      <div class="rounded-2xl border border-gray-200 bg-white p-6">
         <div class="grid grid-cols-2 gap-2 rounded-2xl bg-gray-100 p-1">
           <button
             type="button"
@@ -223,43 +223,51 @@ onMounted(() => {
         </div>
 
         <div class="mt-6">
-          <h2 class="text-2xl font-bold text-gray-900">
-            {{ authMode === 'login' ? 'Customer Login' : 'Create Your Account' }}
-          </h2>
+          <h1 class="text-2xl font-bold text-gray-900">
+            {{ authMode === 'login' ? 'Welcome back' : 'Create Your Account' }}
+          </h1>
 
           <p class="mt-2 text-sm text-gray-500">
             {{ authMode === 'login'
-              ? 'Sign in to access your customer account.'
+              ? 'Sign in to your account.'
               : 'Create a customer account for faster checkout and order tracking.' }}
           </p>
         </div>
 
         <form class="mt-6 space-y-4" @submit.prevent="submitAuthForm">
           <div v-if="authMode === 'signup'">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Full Name</label>
+            <label for="customer-full-name" class="mb-2 block text-sm font-semibold text-gray-700">Full Name</label>
             <input
+              id="customer-full-name"
               v-model="fullName"
               type="text"
+              autocomplete="name"
               placeholder="Your name"
               class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+            <label for="customer-email" class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
             <input
+              id="customer-email"
               v-model="email"
               type="email"
+              autocomplete="email"
+              required
               placeholder="you@example.com"
               class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Password</label>
+            <label for="customer-password" class="mb-2 block text-sm font-semibold text-gray-700">Password</label>
             <input
+              id="customer-password"
               v-model="password"
               type="password"
+              :autocomplete="authMode === 'signup' ? 'new-password' : 'current-password'"
+              required
               placeholder="At least 6 characters"
               class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
             >

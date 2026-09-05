@@ -1,79 +1,68 @@
 <template>
-  <div v-if="currentBanner" class="relative overflow-hidden bg-gray-100">
-    <a
-      :href="currentBanner.link_url || '#'"
-      class="block"
-    >
-      <div class="h-[220px] sm:h-[280px] md:h-[360px] lg:h-[420px]">
-        <img
-          class="h-full w-full object-cover"
-          alt="Hero Banner"
-          :src="currentBanner.image_url"
-        >
+  <section v-if="heroEnabled" class="store-hero" aria-label="Store highlights" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
+    <component :is="currentBanner.link_url ? 'a' : 'div'" v-if="currentBanner" :href="currentBanner.link_url || undefined" class="store-hero-image-link">
+      <img class="store-hero-image" :alt="currentBanner.alt_text || 'Explore the latest at ' + siteName" :src="currentBanner.image_url" fetchpriority="high" />
+    </component>
+    <div v-else class="store-hero-fallback">
+      <img class="store-hero-scene" src="/images/storefront/setup-hero.png" alt="" fetchpriority="high" width="1536" height="1024" />
+      <div class="store-hero-copy">
+        <p class="store-eyebrow">For work and play</p>
+        <h1>Find your<br /><span>next setup.</span></h1>
+        <p>Keyboards, mice, and more for your desk.</p>
+        <NuxtLink to="/search" class="store-button">Shop now <Icon name="lucide:arrow-right" size="16" /></NuxtLink>
       </div>
-    </a>
-
-    <div v-if="heroBanners.length > 1" class="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-4">
-      <button
-        v-for="(banner, index) in heroBanners"
-        :key="banner.id"
-        type="button"
-        class="inline-block h-2 w-12 rounded-full"
-        :class="index === currentBannerIndex ? 'bg-white' : 'bg-white/50'"
-        @click="currentBannerIndex = index"
-      />
     </div>
-  </div>
+    <div v-if="heroBanners.length > 1" class="store-hero-controls">
+      <button type="button" aria-label="Previous banner" @click="moveBanner(-1)"><Icon name="lucide:chevron-left" size="17" /></button>
+      <span>{{ currentBannerIndex + 1 }} / {{ heroBanners.length }}</span>
+      <button type="button" :aria-label="paused ? 'Play banners' : 'Pause banners'" :aria-pressed="paused" @click="paused = !paused"><Icon :name="paused ? 'lucide:play' : 'lucide:pause'" size="14" /></button>
+      <button type="button" aria-label="Next banner" @click="moveBanner(1)"><Icon name="lucide:chevron-right" size="17" /></button>
+    </div>
+  </section>
 </template>
 
 <script setup>
+import { getStoreImageUrl } from '~/utils/storefront'
 const { data: siteContent } = await useSiteContent()
-
 const currentBannerIndex = ref(0)
+const paused = ref(false)
+const hoverPaused = ref(false)
+const focusPaused = ref(false)
 let heroInterval = null
-
-const heroBanners = computed(() => {
-  if (!(siteContent.value?.settings?.hero_enabled ?? true)) {
-    return []
-  }
-
-  return siteContent.value?.heroBanners || []
-})
-
-const rotationSeconds = computed(() => {
-  return Math.max(1, Number(siteContent.value?.settings?.hero_rotation_seconds || 5))
-})
-
-const currentBanner = computed(() => {
-  return heroBanners.value[currentBannerIndex.value] || null
-})
-
+let motionPreference = null
+const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
+const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
+const heroBanners = computed(() => heroEnabled.value
+  ? (siteContent.value?.heroBanners || []).filter((banner) => getStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner')
+  : [])
+const rotationSeconds = computed(() => Math.max(1, Number(siteContent.value?.settings?.hero_rotation_seconds || 5)))
+const currentBanner = computed(() => heroBanners.value[currentBannerIndex.value] || null)
+const moveBanner = (direction) => {
+  currentBannerIndex.value = (currentBannerIndex.value + direction + heroBanners.value.length) % heroBanners.value.length
+}
+const onFocusOut = (event) => {
+  if (!event.currentTarget.contains(event.relatedTarget)) focusPaused.value = false
+}
 const restartHeroInterval = () => {
-  if (heroInterval) {
-    clearInterval(heroInterval)
-  }
-
-  if (heroBanners.value.length <= 1) {
-    return
-  }
-
+  clearInterval(heroInterval)
+  if (!import.meta.client || heroBanners.value.length <= 1) return
   heroInterval = setInterval(() => {
-    currentBannerIndex.value = (currentBannerIndex.value + 1) % heroBanners.value.length
+    if (!paused.value && !hoverPaused.value && !focusPaused.value && !document.hidden) moveBanner(1)
   }, rotationSeconds.value * 1000)
 }
-
+const onMotionChange = (event) => { paused.value = event.matches }
 watch([heroBanners, rotationSeconds], () => {
   currentBannerIndex.value = 0
   restartHeroInterval()
 })
-
 onMounted(() => {
+  motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+  paused.value = motionPreference.matches
+  motionPreference.addEventListener('change', onMotionChange)
   restartHeroInterval()
 })
-
 onBeforeUnmount(() => {
-  if (heroInterval) {
-    clearInterval(heroInterval)
-  }
+  clearInterval(heroInterval)
+  motionPreference?.removeEventListener('change', onMotionChange)
 })
 </script>

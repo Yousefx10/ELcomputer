@@ -1,76 +1,34 @@
 <template>
-  <footer class="mb-0 bg-black pt-10 text-white">
-    <div class="container mx-auto p-5">
-      <div class="space-y-10 text-center">
-        <img
-          v-if="siteLogoUrl"
-          class="mx-auto max-h-20 w-auto object-contain"
-          :src="siteLogoUrl"
-          :alt="siteName"
-        >
-
-        <p v-else class="text-3xl font-bold md:text-4xl">
-          {{ siteName }}
-        </p>
-
-        <div class="text-2xl font-bold md:text-4xl">
-          <p>{{ footerCtaTitle }}</p>
-          <p>{{ footerCtaSubtitle }}</p>
-        </div>
-
-        <a
-          :href="footerCtaButtonUrl || '/'"
-          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-blue-600 p-6 font-bold"
-        >
-          {{ footerCtaButtonLabel }}
-          <Icon name="lucide:arrow-right" size="20" />
-        </a>
+  <footer class="store-footer">
+    <div class="store-container">
+      <div class="store-footer-cta">
+        <div><h2>{{ footerCtaTitle }}</h2><p>{{ footerCtaSubtitle }}</p></div>
+        <NuxtLink :to="footerCtaButtonUrl" class="store-button">{{ footerCtaButtonLabel }} <Icon name="lucide:arrow-right" size="16" /></NuxtLink>
       </div>
-
-      <div class="mt-15 grid grid-cols-2 gap-10 border-t py-5 text-center text-2xl md:grid-cols-3 md:text-start xl:grid-cols-5">
-        <div
-          v-for="group in footerGroups"
-          :key="group.title"
-        >
-          <h3 class="mb-6 font-bold">{{ group.title }}</h3>
-
-          <ul class="space-y-4 text-gray-400">
-            <li
-              v-for="item in group.items"
-              :key="item.id"
-            >
-              <a
-                v-if="item.url && isExternalUrl(item.url)"
-                :href="item.url"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {{ item.label }}
-              </a>
-
-              <NuxtLink v-else-if="item.url" :to="item.url">
-                {{ item.label }}
-              </NuxtLink>
-
-              <span v-else>{{ item.label }}</span>
-            </li>
-          </ul>
+      <div class="store-footer-main">
+        <div class="store-footer-brand">
+          <img v-if="siteLogoUrl" :src="siteLogoUrl" :alt="siteName" loading="lazy" />
+          <p>{{ siteName }}</p>
+          <div class="store-footer-contact">
+            <a v-if="footerEmail" :href="`mailto:${footerEmail}`"><Icon name="lucide:mail" size="16" />{{ footerEmail }}</a>
+            <a v-if="footerPhone" :href="`tel:${footerPhone}`"><Icon name="lucide:phone" size="16" />{{ footerPhone }}</a>
+            <p v-if="footerAddress && footerAddress !== 'address address'">{{ footerAddress }}</p>
+          </div>
         </div>
-
-        <div v-if="footerEmail || footerPhone || footerAddress">
-          <h3 class="mb-6 font-bold">Contact</h3>
-
-          <ul class="space-y-4 text-gray-400">
-            <li v-if="footerEmail">{{ footerEmail }}</li>
-            <li v-if="footerPhone">{{ footerPhone }}</li>
-            <li v-if="footerAddress">{{ footerAddress }}</li>
-          </ul>
+        <div class="store-footer-groups">
+          <div v-for="group in footerGroups" :key="group.title">
+            <h3>{{ group.title }}</h3>
+            <ul>
+              <li v-for="item in group.items" :key="item.id">
+                <a v-if="item.url && isExternalUrl(item.url)" :href="item.url" target="_blank" rel="noreferrer">{{ item.label }}</a>
+                <NuxtLink v-else-if="item.url" :to="item.url">{{ item.label }}</NuxtLink>
+                <span v-else>{{ item.label }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-
-      <p class="mt-10 border-t py-5 text-center text-lg">
-        {{ copyrightText }}
-      </p>
+      <p class="store-footer-bottom">{{ copyrightText }}</p>
     </div>
   </footer>
 </template>
@@ -83,10 +41,10 @@ const footerLinks = computed(() => siteContent.value?.footerLinks || [])
 
 const siteName = computed(() => settings.value.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => settings.value.site_logo_url || '')
-const footerCtaTitle = computed(() => settings.value.footer_cta_title || 'What are you waiting for?')
-const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle || 'Purchase your fav gear')
+const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? 'Ready for your next upgrade?' : (settings.value.footer_cta_title || 'Ready for your next upgrade?'))
+const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? 'Find something for your setup.' : (settings.value.footer_cta_subtitle || 'Find something for your setup.'))
 const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || 'Shop Now')
-const footerCtaButtonUrl = computed(() => settings.value.footer_cta_button_url || '/')
+const footerCtaButtonUrl = computed(() => settings.value.footer_cta_button_url === '/' ? '/search' : (settings.value.footer_cta_button_url || '/search'))
 const footerEmail = computed(() => settings.value.footer_email || '')
 const footerPhone = computed(() => settings.value.footer_phone || '')
 const footerAddress = computed(() => settings.value.footer_address || '')

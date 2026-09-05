@@ -1,34 +1,21 @@
 <template>
-  <div class="min-h-screen" :style="layoutStyle">
-    <LayoutTopBar/>
-    <LayoutNavBar/>
-
-    <main class="">
-        <slot />
+  <div class="storefront" :style="layoutStyle">
+    <a class="store-skip-link" href="#main-content">Skip to content</a>
+    <LayoutTopBar />
+    <LayoutNavBar />
+    <main id="main-content" tabindex="-1">
+      <slot />
     </main>
-
-
-    <LayoutFooter/>
+    <LayoutFooter />
   </div>
 </template>
 
 <script setup>
-const route = useRoute()
+import '~/assets/css/storefront.css'
+
 const { data: siteContent } = await useSiteContent()
-
 const layoutStyle = computed(() => {
-  if (route.path !== '/') {
-    return {
-      backgroundColor: '#f3f4f6'
-    }
-  }
-
-  return {
-    backgroundColor: siteContent.value?.settings?.site_background_color || '#f3f4f6'
-  }
+  const background = siteContent.value?.settings?.site_background_color
+  return { '--store-page-background': !background || background === '#f3f4f6' ? '#ffffff' : background }
 })
 </script>
-
-<style>
-
-</style>

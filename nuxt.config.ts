@@ -22,7 +22,7 @@ export default defineNuxtConfig({
 
     sourcemap: false,
 
-  css:['./app/assets/css/main.css'],
+  css:['~/assets/css/main.css'],
   vite:{
     plugins:[
       tailwindcss(),

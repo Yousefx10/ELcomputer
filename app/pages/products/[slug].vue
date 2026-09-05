@@ -212,7 +212,7 @@
               class="w-full rounded-xl px-6 py-4 text-lg font-bold text-white sm:flex-1"
               :class="!canPurchaseProduct
                 ? 'cursor-not-allowed bg-gray-300'
-                : 'bg-black hover:bg-gray-800'"
+                : 'bg-blue-600 hover:bg-blue-700'"
               @click="handleAddToCart"
             >
               {{ addToCartLabel }}

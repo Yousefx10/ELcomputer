@@ -165,7 +165,8 @@ export const useCart = () => {
   }
 
   if (import.meta.client) {
-    loadCart()
+    // Match the server's initial cart before restoring browser storage.
+    onMounted(loadCart)
 
     if (!syncStarted.value) {
       syncStarted.value = true
