@@ -3,6 +3,8 @@
 The dashboard has 12 groups and 46 submenu destinations. Existing forms,
 tables and charts are reused. Both saved navigation layouts are supported.
 Choose **Settings → Dashboard layout → Detailed** for the sidebar.
+The compact sidebar opens one group at a time. Click your name to show Logout.
+The account actions close on Escape, outside clicks, or navigation.
 
 | Group | Destinations |
 | --- | --- |
