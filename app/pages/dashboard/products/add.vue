@@ -40,7 +40,7 @@
         <div class="md:col-span-2">
           <h3 class="text-2xl font-bold">Product Details</h3>
           <p class="text-sm text-gray-500">
-            After saving, you will continue in the edit page to add extra images and specifications
+            Save first, then add more images and specifications.
           </p>
         </div>
 
@@ -48,8 +48,7 @@
           <div>
             <p class="font-semibold text-gray-900">Individual item IDs & QR codes</p>
             <p class="mt-1 max-w-3xl text-sm text-gray-600">
-              Enabled for every new product. Define the product and its model or color references here.
-              Physical units, IDs, QR codes, and stock are created only when inventory is received through Procurement.
+              Add product details and options here. Receive stock through purchasing.
             </p>
           </div>
 
@@ -193,14 +192,14 @@
           <p class="text-sm font-semibold text-green-800">Units to create</p>
           <p class="mt-1 text-3xl font-bold text-green-700">0</p>
           <p class="mt-1 text-xs text-green-700">
-            Product creation never adds stock. Units are created with individual IDs and QR codes after Procurement receiving.
+            Add stock through purchasing. Each received item gets a QR code.
           </p>
         </div>
 
         <div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
           <p class="text-sm font-semibold text-blue-900">Inventory cost</p>
           <p class="mt-1 text-sm text-blue-800">
-            Calculated automatically from Procurement receipts and their supplier prices.
+            Calculated from purchase quantities and supplier prices.
           </p>
         </div>
 

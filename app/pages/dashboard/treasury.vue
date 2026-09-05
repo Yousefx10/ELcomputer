@@ -6,13 +6,15 @@
         <div>
           <h2 class="text-4xl font-bold">Treasury</h2>
           <p class="mt-2 text-sm text-amber-900">
-            Record payments, customer receipts, employees salary.
+            Payments, receipts and employee salaries.
           </p>
         </div>
       </div>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-3">
+    <DashboardSecondaryNav />
+
+    <div v-if="activeAction === 'transactions'" class="grid gap-4 md:grid-cols-3">
       <button
         v-for="action in actions"
         :key="action.key"
@@ -21,7 +23,7 @@
         :class="activeAction === action.key
           ? 'border-amber-500 bg-amber-100 text-amber-950'
           : 'border-transparent bg-white text-gray-900 hover:border-amber-200'"
-        @click="activeAction = action.key"
+        @click="navigateTo(`/dashboard/treasury?action=${action.key}`)"
       >
         <Icon :name="action.icon" size="24" />
         <p class="mt-3 font-bold">{{ action.label }}</p>
@@ -29,7 +31,7 @@
       </button>
     </div>
 
-    <section class="rounded-2xl bg-white p-6 shadow">
+    <section v-if="activeAction !== 'transactions'" class="rounded-2xl bg-white p-6 shadow">
       <div v-if="!canEditTreasury" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
         This account can view Treasury records but cannot record transactions.
       </div>
@@ -132,7 +134,7 @@
       </form>
     </section>
 
-    <section class="overflow-hidden rounded-2xl bg-white shadow">
+    <section v-if="activeAction === 'transactions'" class="overflow-hidden rounded-2xl bg-white shadow">
       <button type="button" class="flex w-full items-center justify-between p-6 text-left" @click="transactionsOpen = !transactionsOpen">
         <div>
           <h3 class="text-2xl font-bold">Recent Treasury Transactions</h3>
@@ -191,7 +193,11 @@ const today = new Date().toISOString().slice(0, 10)
 const currentMonth = today.slice(0, 7)
 const createPaymentForm = () => ({ invoice_id: '', amount: '', paid_at: today, reference_number: '', notes: '' })
 
-const activeAction = ref('supplier_payment')
+const route = useRoute()
+const activeAction = computed(() => {
+  const action = String(route.query.action || '')
+  return actions.some(item => item.key === action) ? action : 'transactions'
+})
 const supplierInvoices = ref([])
 const customerInvoices = ref([])
 const employees = ref([])

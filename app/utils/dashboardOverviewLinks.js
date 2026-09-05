@@ -12,11 +12,11 @@ export const buildDashboardOverviewLinks = (activeKey = 'summary', options = {})
 
   return dashboardItems
     .filter((item) => {
-      if (item.key === 'analysis') {
+      if (item.permission === 'dashboard.analysis') {
         return canSeeAnalysis
       }
 
-      if (item.key === 'orders') {
+      if (item.permission === 'dashboard.orders') {
         return canSeeOrders
       }
 

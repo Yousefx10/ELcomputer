@@ -59,7 +59,7 @@
           <NuxtLink v-for="category in headerCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-department-item" @click="closeDepartments()">
             <Icon :name="getStoreCategoryIcon(category.name)" size="19" /><span>{{ category.name }}</span><Icon name="lucide:chevron-right" size="16" />
           </NuxtLink>
-          <p v-if="!headerCategories.length" class="store-department-empty">Browse all products to find your next upgrade.</p>
+          <p v-if="!headerCategories.length" class="store-department-empty">See all products in the store.</p>
         </div>
       </nav>
     </div>

@@ -1,9 +1,9 @@
-import { dashboardNavigationGroups } from '~/utils/dashboardNavigation'
+import { dashboardNavigationGroups } from './dashboardNavigation.js'
 
-export const commerceTabs = (
-  dashboardNavigationGroups.find((group) => group.key === 'commerce')?.children
-  || []
-).map((item) => ({
+export const commerceTabs = dashboardNavigationGroups
+  .filter((group) => ['commerce', 'inventory', 'shipping'].includes(group.key))
+  .flatMap((group) => group.children || [])
+  .map((item) => ({
   key: item.key,
   label: item.label,
   to: item.to

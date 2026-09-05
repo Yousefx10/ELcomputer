@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Procurement</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Receive physical items from suppliers. Every received unit gets its own item ID and QR code.
+            Record received stock. Each item gets an ID and QR code.
           </p>
         </div>
 
@@ -37,7 +37,7 @@
         <div>
           <h3 class="text-2xl font-bold">New Procurement Order</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Select existing product and variant references, then enter only the quantity actually received.
+            Choose a product and option, then enter the received quantity.
           </p>
         </div>
 
@@ -160,8 +160,7 @@
             <div>
               <h4 class="text-lg font-bold text-gray-900">Products</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Procurement references the catalog; it does not create products or variants. One physical item
-                record and QR code will be generated for every received unit.
+                Add products to the catalog before receiving stock. Each received item gets its own QR code.
               </p>
             </div>
 

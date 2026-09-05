@@ -127,7 +127,7 @@
             placeholder="Type a company or person name, then choose the result"
           />
           <p class="mt-2 text-xs text-gray-400">
-            Choosing a contact filters the current panel. Leave it clear to view everyone.
+            Choose a contact, or leave blank to show everyone.
           </p>
         </div>
       </div>
@@ -407,7 +407,7 @@
             </div>
           </div>
           <p class="mt-3 text-xs text-gray-400">
-            Date filters use the call/raised date, and the closing date once a ticket is closed.
+            Filter by call date, ticket creation date or ticket closing date.
           </p>
         </div>
 

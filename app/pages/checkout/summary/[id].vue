@@ -184,7 +184,7 @@ const { data: orderData, pending, error } = await useAsyncData(`checkout-summary
     order: orderResult.data,
     items: itemsResult.data || []
   }
-})
+}, { lazy: true })
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-US', {

@@ -1,7 +1,7 @@
 <template>
   <section v-if="offerCards.length" class="store-section" aria-labelledby="store-offers-title">
     <div class="store-section-header">
-      <h2 id="store-offers-title" class="store-section-title">Discover more</h2>
+      <h2 id="store-offers-title" class="store-section-title">Store offers</h2>
       <div v-if="offerCards.length > 3" class="store-product-actions">
         <button type="button" class="store-round-button" aria-label="Previous offers" @click="scrollLeft"><Icon name="lucide:chevron-left" size="17" /></button>
         <button type="button" class="store-round-button" aria-label="More offers" @click="scrollRight"><Icon name="lucide:chevron-right" size="17" /></button>

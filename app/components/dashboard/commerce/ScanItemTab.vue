@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Scan Item</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Scan a serialized-item QR code or enter its token to see its current state, purchaser, order, and full movement history.
+            Scan an item to see its status and movement history.
           </p>
         </div>
 
@@ -43,7 +43,7 @@
           Manual Lookup
         </h4>
         <p class="mt-1 text-sm text-gray-500">
-          Keep this field focused and scan with your QR scanner, or paste the token or full scan URL.
+          Scan a QR code, or paste its code or link.
         </p>
 
         <form class="mt-4" @submit.prevent="lookupItem(tokenInput)">
@@ -241,7 +241,7 @@
           <div>
             <h3 class="text-2xl font-bold">Return This Unit</h3>
             <p class="mt-1 text-sm text-gray-500">
-              A sold unit can be returned to one warehouse. The server verifies its current state before changing stock.
+              Choose a warehouse for the returned item.
             </p>
           </div>
 

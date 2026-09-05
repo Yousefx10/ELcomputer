@@ -3,12 +3,13 @@
     <div class="mx-auto max-w-6xl">
       <header class="mb-6 rounded-2xl bg-white p-6 shadow">
         <h2 class="text-4xl font-bold">Dashboard</h2>
-        <p class="mt-2 text-sm text-gray-500">Store summary.</p>
+        <p class="mt-2 text-sm text-gray-500">{{ viewDescription }}</p>
       </header>
 
       <DashboardSecondaryNav :items="secondaryNavItems" class="mb-6" />
 
       <DashboardAnalysisPanel v-if="currentView === 'analysis'" />
+      <DashboardAnalysisCustomerExperience v-else-if="currentView === 'customers'" />
 
       <div v-else class="space-y-6">
         <div v-if="loading && !hasSummary" class="rounded-2xl bg-white p-8 text-center text-sm text-gray-500 shadow">
@@ -19,7 +20,7 @@
           {{ errorMessage }}
         </div>
 
-        <section v-if="canSeeOrders">
+        <section v-if="canSeeOrders && currentView !== 'stock'">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Orders</h3>
@@ -52,7 +53,7 @@
           </div>
         </section>
 
-        <section v-if="canViewProducts || canViewCategories">
+        <section v-if="(canViewProducts || canViewCategories) && currentView !== 'orders'">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
               <h3 class="text-2xl font-bold text-gray-900">Catalog</h3>
@@ -140,8 +141,10 @@ const canViewCategories = computed(() => hasPermission('categories.view'))
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
 const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
 const currentView = computed(() => {
-  return getDashboardQueryValue(route, 'view') === 'analysis' ? 'analysis' : 'summary'
+  const view = getDashboardQueryValue(route, 'view')
+  return ['analysis', 'customers', 'orders', 'stock'].includes(view) ? view : 'summary'
 })
+const viewDescription = computed(() => ({ summary: 'Orders, products and stock at a glance.', orders: 'Open orders and delivery progress.', stock: 'Products, availability and categories.', analysis: 'Sales totals and trends over time.', customers: 'Store visits, customer activity and feedback.' })[currentView.value])
 const secondaryNavItems = computed(() => buildDashboardOverviewLinks(currentView.value, {
   canSeeAnalysis: canSeeAnalysis.value,
   canSeeOrders: canSeeOrders.value
@@ -293,13 +296,13 @@ const loadSummary = async ({ force = false } = {}) => {
 }
 
 watch(currentView, async (view) => {
-  if (view === 'summary') {
+  if (['summary', 'orders', 'stock'].includes(view)) {
     await loadSummary()
   }
 })
 
 onMounted(async () => {
-  if (currentView.value === 'summary') {
+  if (['summary', 'orders', 'stock'].includes(currentView.value)) {
     await loadSummary()
   }
 })

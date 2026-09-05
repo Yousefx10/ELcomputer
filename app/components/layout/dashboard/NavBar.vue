@@ -1,15 +1,15 @@
 <template>
   <header class="w-full">
     <nav class="w-full">
-      <ul class="flex w-full flex-wrap justify-center gap-2 p-2 md:flex-nowrap md:gap-0">
+      <ul class="flex w-full flex-wrap gap-1 p-2">
         <li
           v-for="group in navigationGroups"
           :key="group.key"
-          class="md:flex-1"
+          class="grow"
         >
           <NuxtLink
             :to="group.to"
-            class="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-center transition md:w-full md:rounded-none"
+            class="flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-center text-sm transition"
             :class="activeGroup?.key === group.key
               ? 'bg-black text-white'
               : 'text-gray-700 hover:bg-black hover:text-white'"

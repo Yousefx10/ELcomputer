@@ -2,9 +2,9 @@
   <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
       <div class="rounded-2xl bg-white p-6 shadow">
-        <h2 class="text-4xl font-bold">Commerce</h2>
+        <h2 class="text-4xl font-bold">{{ activeGroup?.label || 'Purchases & sales' }}</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Manage purchasing, sales, warehouses, serialized inventory, scanning, and returns.
+          {{ sectionDescription }}
         </p>
       </div>
 
@@ -31,6 +31,8 @@ definePageMeta({
 })
 
 const route = useRoute()
+const { activeGroup } = useDashboardNavigation()
+const sectionDescription = computed(() => ({ inventory: 'Warehouses, item records and QR scanning.', shipping: 'Shipping companies and shipment settings.', commerce: 'Purchase invoices, sales and returns.' })[activeGroup.value?.key] || 'Purchase invoices, sales and returns.')
 
 const validTabKeys = new Set(commerceTabs.map((tab) => tab.key))
 

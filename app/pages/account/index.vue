@@ -17,6 +17,8 @@ const loading = ref(true)
 const errorMessage = ref('')
 const profile = ref(null)
 const recentOrders = ref([])
+let pageActive = true
+onBeforeUnmount(() => { pageActive = false })
 const stats = reactive({
   totalOrders: 0,
   delivered: 0,
@@ -72,6 +74,8 @@ const loadAccountPage = async () => {
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser()
 
+    if (!pageActive) return
+
     if (userError) {
       throw userError
     }
@@ -82,25 +86,14 @@ const loadAccountPage = async () => {
     }
 
     const accountUser = userData.user
-    const accountProfile = await ensureCustomerProfile(accountUser)
-
-    if (accountProfile.is_active === false) {
-      await supabase.auth.signOut()
-      await navigateTo({
-        path: '/login',
-        query: {
-          error: 'account-disabled'
-        }
-      })
-      return
-    }
-
     const [
+      accountProfile,
       totalOrdersResult,
       deliveredOrdersResult,
       inProgressOrdersResult,
       recentOrdersResult
     ] = await Promise.all([
+      ensureCustomerProfile(accountUser),
       supabase
         .from('customer_orders')
         .select('*', { count: 'exact', head: true })
@@ -122,6 +115,14 @@ const loadAccountPage = async () => {
         .order('created_at', { ascending: false })
         .limit(5)
     ])
+
+    if (!pageActive) return
+
+    if (accountProfile.is_active === false) {
+      await supabase.auth.signOut()
+      await navigateTo({ path: '/login', query: { error: 'account-disabled' } })
+      return
+    }
 
     if (totalOrdersResult.error) {
       throw totalOrdersResult.error
@@ -146,9 +147,9 @@ const loadAccountPage = async () => {
     stats.wallet = Number(accountProfile.wallet_balance || 0)
     recentOrders.value = recentOrdersResult.data || []
   } catch (error) {
-    errorMessage.value = error?.message || 'Could not load your account page.'
+    if (pageActive) errorMessage.value = error?.message || 'Could not load your account page.'
   } finally {
-    loading.value = false
+    if (pageActive) loading.value = false
   }
 }
 
@@ -191,7 +192,7 @@ const memberSince = computed(() => {
   }).format(new Date(profile.value?.created_at || user.value?.created_at || Date.now()))
 })
 
-await loadAccountPage()
+onMounted(loadAccountPage)
 </script>
 
 <template>
@@ -216,7 +217,7 @@ await loadAccountPage()
               {{ userEmail }}
             </p>
 
-            <p class="mx-auto mt-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-blue-50">
+            <p v-if="!loading" class="mx-auto mt-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-blue-50">
               Since {{ memberSince }}
             </p>
           </div>
@@ -248,7 +249,7 @@ await loadAccountPage()
                 </div>
 
                 <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ stats.totalOrders }}</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.totalOrders }}</p>
                   <p class="text-sm font-semibold text-gray-500">Total Orders</p>
                 </div>
               </div>
@@ -261,7 +262,7 @@ await loadAccountPage()
                 </div>
 
                 <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ stats.delivered }}</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.delivered }}</p>
                   <p class="text-sm font-semibold text-gray-500">Delivered</p>
                 </div>
               </div>
@@ -274,7 +275,7 @@ await loadAccountPage()
                 </div>
 
                 <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ stats.inProgress }}</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.inProgress }}</p>
                   <p class="text-sm font-semibold text-gray-500">In Progress</p>
                 </div>
               </div>
@@ -287,7 +288,7 @@ await loadAccountPage()
                 </div>
 
                 <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(stats.wallet) }}</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : formatCurrency(stats.wallet) }}</p>
                   <p class="text-sm font-semibold text-gray-500">Wallet</p>
                 </div>
               </div>
@@ -304,11 +305,11 @@ await loadAccountPage()
               </div>
 
               <div class="rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
-                {{ stats.totalOrders }} total
+                {{ loading ? 'Loading…' : `${stats.totalOrders} total` }}
               </div>
             </div>
 
-            <div v-if="loading" class="py-16 text-center text-gray-500">
+            <div v-if="loading" class="py-16 text-center text-gray-500" role="status">
               Loading account details...
             </div>
 

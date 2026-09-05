@@ -11,7 +11,7 @@
         </h1>
 
         <p class="mt-2 text-sm text-gray-500">
-          Confirm your address, apply a coupon if you have one, and review the final summary.
+          Check your delivery address and order details.
         </p>
       </div>
 
@@ -54,8 +54,8 @@
 
                 <p class="mt-1 text-sm text-gray-500">
                   {{ hasSavedAddress
-                    ? 'Update the saved customer address before placing the order.'
-                    : 'No saved address found. Fill in the address details below.' }}
+                    ? 'Check your saved address and update it if needed.'
+                    : 'Enter your delivery address.' }}
                 </p>
               </div>
 
@@ -128,7 +128,7 @@
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
                 <p class="mt-2 text-xs text-gray-500">
-                  Must start with `01` and contain exactly 11 numbers.
+                  Enter 11 digits, starting with 01.
                 </p>
               </div>
 
@@ -149,7 +149,7 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-500">
-              Enter the code exactly as provided, then apply it before placing the order.
+              Enter your coupon code below.
             </p>
 
             <div class="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto]">
@@ -205,15 +205,6 @@
             </div>
           </section>
 
-          <section class="rounded-2xl bg-white p-6 shadow">
-            <h2 class="text-2xl font-bold text-gray-900">
-              Payment & Shipping Method
-            </h2>
-
-            <p class="mt-3 text-sm text-gray-500">
-              This section is intentionally left blank for now and can be connected later.
-            </p>
-          </section>
         </section>
 
         <aside class="space-y-6">

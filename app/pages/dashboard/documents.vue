@@ -9,7 +9,7 @@
           <div>
             <h2 class="text-3xl font-bold sm:text-4xl">Documents</h2>
             <p class="mt-1 text-sm text-blue-50">
-              Store files, organize folders, and control who can view or edit them.
+              Organize files and set folder access.
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@
       <Icon name="lucide:eye" size="20" class="mt-0.5 shrink-0" />
       <div>
         <p class="font-bold">View-only access</p>
-        <p class="mt-0.5">You can open and download files here, but you cannot upload or change anything.</p>
+        <p class="mt-0.5">You can open and download files. Editing is disabled.</p>
       </div>
     </div>
 

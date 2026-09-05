@@ -3,7 +3,7 @@
     <div class="store-container">
       <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Your bag
+          Your cart
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
@@ -11,7 +11,7 @@
         </h1>
 
         <p class="mt-2 text-sm text-gray-500">
-          Your next setup is almost yours.
+          Review your items before checkout.
         </p>
       </div>
 

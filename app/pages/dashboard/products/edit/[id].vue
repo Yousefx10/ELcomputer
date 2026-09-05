@@ -169,10 +169,10 @@
             </option>
           </select>
           <p v-if="isSerialized && canAssignPrimaryWarehouse" class="mt-2 text-xs text-blue-700">
-            You can change this reference until the first physical item ID is created.
+            Editable until the first item is received.
           </p>
           <p v-else-if="isSerialized" class="mt-2 text-xs text-gray-500">
-            The primary warehouse is locked because each physical item and return is tied to this location.
+            This warehouse is locked because items have already been received.
           </p>
         </div>
 
@@ -214,8 +214,7 @@
             v-if="isStockQuantityFocused"
             class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
           >
-            This field only exists for stock recorded before individual item tracking. Reconcile that physical
-            stock into item IDs before receiving future units through Procurement.
+            Older stock must have item IDs before receiving more units.
           </p>
         </div>
 
@@ -268,8 +267,7 @@
             <div>
               <h3 class="text-lg font-bold text-gray-900">Individual item IDs & QR codes</h3>
               <p class="mt-1 text-sm text-gray-600">
-                Every physical unit is tracked separately. Product options are maintained below;
-                quantities, item IDs, and QR codes are created through Procurement.
+                Edit product options below. Receive and track items through purchasing.
               </p>
             </div>
 
@@ -350,7 +348,7 @@
             v-if="isSerialized"
             class="w-full text-sm text-gray-500"
           >
-            Products with item history cannot be deleted. Turn Store Visibility off to archive this product.
+            Products with item history cannot be deleted. Hide them from the store instead.
           </p>
         </div>
       </form>

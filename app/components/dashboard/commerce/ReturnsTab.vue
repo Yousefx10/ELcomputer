@@ -37,7 +37,7 @@
         <div>
           <h3 class="text-2xl font-bold">Create Return</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Select a customer order, choose the returned items, and send them back to inventory.
+            Choose an order and the items returned to stock.
           </p>
         </div>
 

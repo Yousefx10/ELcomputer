@@ -4,8 +4,7 @@
       <div>
         <h3 class="text-lg font-bold text-gray-900">Product Variants</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Variants are references that describe the same product, such as its color or model.
-          They do not create stock or separate products.
+          Options describe product colors or models. Add stock through purchasing.
         </p>
       </div>
 
@@ -24,7 +23,7 @@
       v-if="!rows.length"
       class="mt-5 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center text-sm text-gray-500"
     >
-      Add at least one option reference. Use “Default” when the product has no model or color options.
+      Add an option. Use “Default” if there are no variations.
     </p>
 
     <div v-else class="mt-5 space-y-4">

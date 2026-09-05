@@ -1,15 +1,15 @@
 <template>
   <div class="store-container store-home">
     <nav class="store-discovery" aria-label="Explore products">
-      <p class="store-discovery-label">Find your next upgrade</p>
+      <p class="store-discovery-label">Browse products</p>
       <div class="store-discovery-links no-scrollbar">
-        <NuxtLink :to="{ path: '/search', query: { sort: 'latest' } }" class="store-chip"><Icon name="lucide:sparkles" size="14" />Just landed</NuxtLink>
+        <NuxtLink :to="{ path: '/search', query: { sort: 'latest' } }" class="store-chip">New arrivals</NuxtLink>
         <NuxtLink v-for="category in topCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-chip">{{ category.name }}</NuxtLink>
         <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }" class="store-chip">In stock now</NuxtLink>
       </div>
     </nav>
 
-    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ siteContent?.settings?.site_name || 'ELcomputer' }} — Shop your next setup</h1>
+    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ siteContent?.settings?.site_name || 'ELcomputer' }} — Computer accessories</h1>
     <div v-if="heroEnabled" class="store-hero-grid">
       <CardsHeroCard />
       <div class="store-hero-side">
@@ -17,7 +17,7 @@
           <div class="store-promo-copy">
             <p>{{ tile.eyebrow }}</p>
             <h2>{{ tile.title }}</h2>
-            <span>Explore now <Icon name="lucide:arrow-right" size="14" /></span>
+            <span>Shop now <Icon name="lucide:arrow-right" size="14" /></span>
           </div>
           <img v-if="tile.image" :src="tile.image" alt="" />
           <Icon v-else :name="tile.icon" />
@@ -33,11 +33,12 @@
     </nav>
 
     <div v-if="homeError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">We couldn't load products. Please refresh and try again.</div>
+    <LayoutPageLoading v-else-if="homePending" label="Loading products…" class="mt-8" />
     <TopCategories :categories="topCategories" />
-    <HomeProductSection v-if="featuredProducts.length" title="Worth a closer look" description="A few picks for your next setup." :products="featuredProducts" />
+    <HomeProductSection v-if="featuredProducts.length" title="Store picks" :products="featuredProducts" />
     <OfferSlider />
-    <HomeProductSection v-if="topSellerProducts.length" title="More to explore" description="Find something that fits your everyday." :products="topSellerProducts" />
-    <FeaturedBrands v-if="featuredBrands.length" title="Shop your favorite brands" :brands="featuredBrands" />
+    <HomeProductSection v-if="topSellerProducts.length" title="More products" :products="topSellerProducts" />
+    <FeaturedBrands v-if="featuredBrands.length" title="Shop by brand" :brands="featuredBrands" />
 
     <section v-for="category in categorySections" :key="category.id">
       <CardsBanner v-if="getBannerBeforeCategory(category)" :image-url="getBannerBeforeCategory(category).imageUrl" :link-url="getBannerBeforeCategory(category).linkUrl" :alt-text="getBannerBeforeCategory(category).altText" />
@@ -78,7 +79,7 @@ const categoryMatchesAny = (category, targetValues = []) => {
   })
 }
 
-const { data: homeData, error: homeError } = await useAsyncData('store-home', async () => {
+const { data: homeData, pending: homePending, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
     supabase
       .from('products')
@@ -171,7 +172,7 @@ const { data: homeData, error: homeError } = await useAsyncData('store-home', as
     categorySections: [...preferredCategories, ...remainingCategories].slice(0, 3),
     featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
   }
-})
+}, { lazy: true })
 
 const customerUser = useSupabaseUser()
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
@@ -181,13 +182,13 @@ const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some
 const discoveryTiles = computed(() => [
   {
     eyebrow: 'Shop by category',
-    title: topCategories.value[0]?.name || 'Meet your new favorites',
+    title: topCategories.value[0]?.name || 'Computer accessories',
     image: topCategories.value[0]?.displayImageUrl,
     icon: getStoreCategoryIcon(topCategories.value[0]?.name),
     to: topCategories.value[0] ? { path: '/search', query: { category: topCategories.value[0].slug } } : '/search'
   },
   {
-    eyebrow: 'Fresh finds',
+    eyebrow: 'New arrivals',
     title: 'New to the store',
     image: homeData.value?.latestImage || '',
     icon: 'lucide:headphones',

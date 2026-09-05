@@ -177,25 +177,25 @@ onMounted(() => {
         </p>
 
         <h2 class="mt-4 text-4xl font-bold">
-          Your gear. Your orders. Your space.
+          Your ELcomputer account
         </h2>
 
         <p class="mt-4 text-sm text-blue-100">
-          Track orders, manage your wallet, and check out faster.
+          Track your orders and view your wallet balance.
         </p>
 
         <div class="mt-8 space-y-4">
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">Everything in one place</p>
+            <p class="text-sm font-semibold">Order history</p>
             <p class="mt-1 text-sm text-blue-100">
-              Your orders and wallet, together.
+              Check the status of your orders.
             </p>
           </div>
 
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">Ready when you are</p>
+            <p class="text-sm font-semibold">Order messages</p>
             <p class="mt-1 text-sm text-blue-100">
-              Sign in for your next upgrade.
+              Read updates and contact us about your orders.
             </p>
           </div>
         </div>
@@ -308,13 +308,6 @@ onMounted(() => {
           {{ oauthLoading ? 'Redirecting...' : 'Continue with Google' }}
         </button>
 
-        <p class="mt-4 text-center text-xs text-gray-500">
-          Google sign in.
-        </p>
-
-        <p class="mt-6 text-center text-sm text-gray-500">
-          <!-- Meant to be empty -->
-        </p>
       </div>
     </div>
   </div>

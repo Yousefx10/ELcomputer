@@ -5,6 +5,7 @@
       </div>
 
       <section
+        v-show="!showCustomers"
         ref="userFormRef"
         class="overflow-hidden rounded-2xl bg-white shadow transition"
         :class="editingId ? 'ring-2 ring-blue-200' : ''"
@@ -19,7 +20,7 @@
               {{ editingId ? 'Edit Admin User' : 'Create Admin User' }}
             </h3>
             <p class="mt-1 text-sm text-gray-500">
-              Owner accounts always have full access. Admin accounts follow the permissions you select.
+              Owners have full access. Choose permissions for other admins below.
             </p>
           </div>
 
@@ -134,7 +135,7 @@
           <div class="md:col-span-2">
           <h4 class="text-xl font-bold">Permissions</h4>
           <p class="mt-1 text-sm text-gray-500">
-            These permissions apply to admin accounts. Owner accounts ignore these switches and always have full access.
+            These permissions apply to admins. Owners always have full access.
           </p>
 
           <div class="mt-4 grid gap-4 md:grid-cols-2">
@@ -244,6 +245,7 @@
       </section>
 
       <div class="rounded-2xl bg-white p-5 shadow">
+        <div v-show="!showCustomers">
         <div class="mb-4 flex items-center justify-between gap-3">
           <h3 class="text-2xl font-bold">Admin Users</h3>
 
@@ -374,7 +376,8 @@
           </div>
         </div>
 
-        <div class="mt-6 border-t pt-6">
+        </div>
+        <div v-show="showCustomers">
           <button
             type="button"
             class="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-50 px-5 py-4 text-left"
@@ -673,8 +676,7 @@
                       v-if="customerDetailAcceptance"
                       class="rounded-xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-700"
                     >
-                      Acceptance is a fulfillment-success proxy: completed or delivered orders divided by resolved orders.
-                      Open orders are excluded.
+                      Acceptance: completed or delivered orders divided by resolved orders. Open orders are excluded.
                     </p>
 
                     <div class="rounded-2xl bg-gray-50 p-4">
@@ -870,6 +872,8 @@ import {
 } from '~/utils/orderStatus'
 
 const supabase = useSupabaseClient()
+const route = useRoute()
+const showCustomers = computed(() => route.query.people === 'customers')
 const {
   getSnapshot,
   invalidate,
@@ -1672,7 +1676,12 @@ onBeforeUnmount(() => {
   }
 })
 
+watch(showCustomers, async (show) => {
+  if (show && !customerSectionOpen.value) await toggleCustomerSection()
+})
+
 onMounted(async () => {
+  if (showCustomers.value && !customerSectionOpen.value) await toggleCustomerSection()
   await getAdminUsersList()
 })
 </script>

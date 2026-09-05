@@ -4,9 +4,9 @@
       <div class="mb-6 rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 class="text-4xl font-bold text-gray-900">Products</h2>
+            <h2 class="text-4xl font-bold text-gray-900">{{ productListTitle }}</h2>
             <p class="mt-2 text-sm text-gray-500">
-              Manage your store products from one place
+              Edit product details, prices and availability.
             </p>
           </div>
 
@@ -19,6 +19,8 @@
           </NuxtLink>
         </div>
       </div>
+
+      <DashboardSecondaryNav class="mb-6" />
 
       <div class="mb-6 grid gap-4 md:grid-cols-3">
         <div class="rounded-2xl bg-white p-5 shadow">
@@ -206,6 +208,13 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const route = useRoute()
+const publicationFilter = computed(() => {
+  const status = String(route.query.status || '')
+  return ['published', 'drafts'].includes(status) ? status : 'all'
+})
+const productListTitle = computed(() => ({ all: 'Products', published: 'Published products', drafts: 'Draft products' })[publicationFilter.value])
+let productRequestId = 0
 const {
   getSnapshot,
   isFresh,
@@ -252,7 +261,7 @@ const pageEnd = computed(() => {
 })
 
 const buildProductsListCacheKey = (page = currentPage.value) => {
-  return `dashboard:products:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
+  return `dashboard:products:list:${publicationFilter.value}:${page}:${trimmedSearchQuery.value.toLowerCase()}`
 }
 
 const applyProductStatsSnapshot = (snapshot) => {
@@ -308,6 +317,7 @@ const getProductStats = async ({ force = false } = {}) => {
 }
 
 const getProductsList = async (page = currentPage.value, { force = false } = {}) => {
+  const requestId = ++productRequestId
   currentPage.value = page
   const cacheKey = buildProductsListCacheKey(page)
   const cachedSnapshot = getSnapshot(cacheKey)
@@ -338,6 +348,10 @@ const getProductsList = async (page = currentPage.value, { force = false } = {})
       )
     `, { count: 'exact' })
 
+  if (publicationFilter.value !== 'all') {
+    query = query.eq('is_published', publicationFilter.value === 'published')
+  }
+
   if (trimmedSearchQuery.value) {
     query = query.ilike('title', `%${trimmedSearchQuery.value}%`)
   }
@@ -345,6 +359,8 @@ const getProductsList = async (page = currentPage.value, { force = false } = {})
   const { data, error, count } = await query
     .order('created_at', { ascending: false })
     .range(from, to)
+
+  if (requestId !== productRequestId) return
 
   if (error) {
     loading.value = false
@@ -391,6 +407,11 @@ const clearSearch = () => {
   searchQuery.value = ''
 }
 
+watch(publicationFilter, () => {
+  clearTimeout(searchTimeoutId)
+  getProductsList(1)
+})
+
 watch(searchQuery, () => {
   if (searchTimeoutId) {
     clearTimeout(searchTimeoutId)
@@ -402,6 +423,7 @@ watch(searchQuery, () => {
 })
 
 onBeforeUnmount(() => {
+  productRequestId += 1
   if (searchTimeoutId) {
     clearTimeout(searchTimeoutId)
   }

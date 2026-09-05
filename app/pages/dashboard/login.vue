@@ -66,7 +66,7 @@ onMounted(() => {
       <h1 class="mb-2 text-2xl font-bold">Admin Login</h1>
 
       <p class="mb-6 text-sm text-gray-500">
-        Sign in to manage products, categories, brands, and dashboard content.
+        Sign in to manage your store.
       </p>
 
       <input

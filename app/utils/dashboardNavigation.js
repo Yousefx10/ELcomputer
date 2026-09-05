@@ -1,3 +1,5 @@
+import { dashboardSettingsSections } from './dashboardSettings.js'
+
 export const normalizeDashboardQueryValue = (value) => {
   const selectedValue = Array.isArray(value) ? value[0] : value
 
@@ -23,6 +25,10 @@ export const matchesDashboardNavigation = (route, match = {}) => {
     return false
   }
 
+  if (match.query) {
+    return Object.entries(match.query).every(([key, values]) => values.includes(getDashboardQueryValue(route, key)))
+  }
+
   if (!match.queryKey) {
     return true
   }
@@ -32,399 +38,77 @@ export const matchesDashboardNavigation = (route, match = {}) => {
   )
 }
 
+const child = (key, label, icon, path, queryKey, values, permission) => ({
+  key, label, icon: `lucide:${icon}`, permission,
+  to: path + (queryKey && values[0] ? `?${queryKey}=${values[0]}` : ''),
+  documentTitle: `Dashboard - ${label}`,
+  match: { paths: [path], ...(queryKey ? { queryKey, queryValues: values } : {}) }
+})
+const group = (key, label, icon, match, children, access = {}) => ({
+  key, label, icon: `lucide:${icon}`, match, children, to: children[0]?.to, ...access
+})
+
 export const dashboardNavigationGroups = [
-  {
-    key: 'dashboard',
-    label: 'Home',
-    detailedLabel: 'Dashboard',
-    icon: 'lucide:layout-dashboard',
-    to: '/dashboard',
-    match: {
-      paths: ['/dashboard', '/dashboard/orders'],
-      prefixes: ['/dashboard/orders/']
-    },
-    children: [
-      {
-        key: 'summary',
-        label: 'Summary',
-        icon: 'lucide:gauge',
-        to: '/dashboard',
-        documentTitle: 'Dashboard',
-        match: {
-          paths: ['/dashboard'],
-          queryKey: 'view',
-          queryValues: ['']
-        }
-      },
-      {
-        key: 'analysis',
-        label: 'Analysis',
-        icon: 'lucide:chart-no-axes-combined',
-        to: '/dashboard?view=analysis',
-        permission: 'dashboard.analysis',
-        documentTitle: 'Dashboard - Analysis',
-        match: {
-          paths: ['/dashboard'],
-          queryKey: 'view',
-          queryValues: ['analysis']
-        }
-      },
-      {
-        key: 'orders',
-        label: 'Orders',
-        icon: 'lucide:shopping-bag',
-        to: '/dashboard/orders',
-        permission: 'dashboard.orders',
-        documentTitle: 'Dashboard - Orders',
-        match: {
-          paths: ['/dashboard/orders'],
-          prefixes: ['/dashboard/orders/']
-        }
-      }
-    ]
-  },
-  {
-    key: 'products',
-    label: 'Products',
-    icon: 'lucide:package',
-    to: '/dashboard/products',
-    permission: 'products.view',
-    match: {
-      paths: ['/dashboard/products', '/dashboard/products/add'],
-      prefixes: ['/dashboard/products/edit/']
-    },
-    children: [
-      {
-        key: 'all-products',
-        label: 'All Products',
-        icon: 'lucide:boxes',
-        to: '/dashboard/products',
-        permission: 'products.view',
-        documentTitle: 'Dashboard - Products',
-        match: {
-          paths: ['/dashboard/products'],
-          prefixes: ['/dashboard/products/edit/']
-        }
-      },
-      {
-        key: 'add-product',
-        label: 'Add Product',
-        icon: 'lucide:circle-plus',
-        to: '/dashboard/products/add',
-        permission: 'products.add',
-        documentTitle: 'Dashboard - Add Product',
-        match: {
-          paths: ['/dashboard/products/add']
-        }
-      }
-    ]
-  },
-  {
-    key: 'catalog',
-    label: 'Catalog',
-    icon: 'lucide:library-big',
-    to: '/dashboard/catalog',
-    match: {
-      paths: ['/dashboard/catalog']
-    },
-    children: [
-      {
-        key: 'categories',
-        label: 'Categories',
-        icon: 'lucide:tags',
-        to: '/dashboard/catalog',
-        permission: 'categories.view',
-        documentTitle: 'Dashboard - Catalog - Categories',
-        match: {
-          paths: ['/dashboard/catalog'],
-          queryKey: 'tab',
-          queryValues: ['', 'categories']
-        }
-      },
-      {
-        key: 'brands',
-        label: 'Brands',
-        icon: 'lucide:badge',
-        to: '/dashboard/catalog?tab=brands',
-        permission: 'brands.view',
-        documentTitle: 'Dashboard - Catalog - Brands',
-        match: {
-          paths: ['/dashboard/catalog'],
-          queryKey: 'tab',
-          queryValues: ['brands']
-        }
-      },
-      {
-        key: 'reviews',
-        label: 'Reviews',
-        icon: 'lucide:messages-square',
-        to: '/dashboard/catalog?tab=reviews',
-        documentTitle: 'Dashboard - Catalog - Reviews',
-        match: {
-          paths: ['/dashboard/catalog'],
-          queryKey: 'tab',
-          queryValues: ['reviews']
-        }
-      }
-    ]
-  },
-  {
-    key: 'crm',
-    label: 'CRM',
-    icon: 'lucide:contact-round',
-    to: '/dashboard/crm',
-    match: {
-      paths: ['/dashboard/crm']
-    },
-    children: [
-      {
-        key: 'contacts',
-        label: 'Contacts',
-        icon: 'lucide:contact',
-        to: '/dashboard/crm',
-        documentTitle: 'Dashboard - CRM - Contacts',
-        match: {
-          paths: ['/dashboard/crm'],
-          queryKey: 'tab',
-          queryValues: ['', 'contacts']
-        }
-      },
-      {
-        key: 'activities',
-        label: 'Tickets & Activity',
-        icon: 'lucide:ticket',
-        to: '/dashboard/crm?tab=activities',
-        documentTitle: 'Dashboard - CRM - Tickets & Activity',
-        match: {
-          paths: ['/dashboard/crm'],
-          queryKey: 'tab',
-          queryValues: ['activities']
-        }
-      }
-    ]
-  },
-  {
-    key: 'commerce',
-    label: 'Commerce',
-    icon: 'lucide:briefcase-business',
-    to: '/dashboard/commerce',
-    match: {
-      paths: ['/dashboard/commerce']
-    },
-    children: [
-      {
-        key: 'procurement',
-        label: 'Procurement',
-        icon: 'lucide:shopping-basket',
-        to: '/dashboard/commerce',
-        documentTitle: 'Dashboard - Commerce - Procurement',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['', 'procurement']
-        }
-      },
-      {
-        key: 'sales',
-        label: 'Sales',
-        icon: 'lucide:badge-dollar-sign',
-        to: '/dashboard/commerce?tab=sales',
-        documentTitle: 'Dashboard - Commerce - Sales',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['sales']
-        }
-      },
-      {
-        key: 'shipping',
-        label: 'Shipping',
-        icon: 'lucide:truck',
-        to: '/dashboard/commerce?tab=shipping',
-        documentTitle: 'Dashboard - Commerce - Shipping',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['shipping']
-        }
-      },
-      {
-        key: 'warehouses',
-        label: 'Warehouses',
-        icon: 'lucide:warehouse',
-        to: '/dashboard/commerce?tab=warehouses',
-        documentTitle: 'Dashboard - Commerce - Warehouses',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['warehouses']
-        }
-      },
-      {
-        key: 'serialized',
-        label: 'Serialized Items',
-        icon: 'lucide:package-search',
-        to: '/dashboard/commerce?tab=serialized',
-        documentTitle: 'Dashboard - Commerce - Serialized Items',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['serialized']
-        }
-      },
-      {
-        key: 'scan',
-        label: 'Scan Item',
-        icon: 'lucide:scan-line',
-        to: '/dashboard/commerce?tab=scan',
-        documentTitle: 'Dashboard - Commerce - Scan Item',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['scan']
-        }
-      },
-      {
-        key: 'returns',
-        label: 'Returns',
-        icon: 'lucide:rotate-ccw',
-        to: '/dashboard/commerce?tab=returns',
-        documentTitle: 'Dashboard - Commerce - Returns',
-        match: {
-          paths: ['/dashboard/commerce'],
-          queryKey: 'tab',
-          queryValues: ['returns']
-        }
-      }
-    ]
-  },
-  {
-    key: 'hr',
-    label: 'HR',
-    icon: 'lucide:users-round',
-    to: '/dashboard/hr',
-    permissionsAny: ['hr.view', 'users.view'],
-    match: {
-      paths: ['/dashboard/hr', '/dashboard/users']
-    },
-    children: [
-      {
-        key: 'employees',
-        label: 'Employees',
-        icon: 'lucide:user-round',
-        to: '/dashboard/hr',
-        permission: 'hr.view',
-        documentTitle: 'Dashboard - HR - Employees',
-        match: {
-          paths: ['/dashboard/hr'],
-          queryKey: 'tab',
-          queryValues: ['', 'employees']
-        }
-      },
-      {
-        key: 'users',
-        label: 'Users',
-        detailedLabel: 'Admin & Store Users',
-        icon: 'lucide:users',
-        to: '/dashboard/hr?tab=users',
-        permission: 'users.view',
-        documentTitle: 'Dashboard - HR - Users',
-        match: {
-          paths: ['/dashboard/hr', '/dashboard/users'],
-          queryKey: 'tab',
-          queryValues: ['users', '']
-        }
-      }
-    ]
-  },
-  {
-    key: 'treasury',
-    label: 'Treasury',
-    icon: 'lucide:landmark',
-    to: '/dashboard/treasury',
-    permission: 'treasury.view',
-    documentTitle: 'Dashboard - Treasury',
-    match: {
-      paths: ['/dashboard/treasury']
-    }
-  },
-  {
-    key: 'documents',
-    label: 'Documents',
-    icon: 'lucide:folder-closed',
-    to: '/dashboard/documents',
-    permission: 'documents.view',
-    documentTitle: 'Dashboard - Documents',
-    match: {
-      paths: ['/dashboard/documents']
-    }
-  },
-  {
-    key: 'settings',
-    label: 'Settings',
-    icon: 'lucide:settings',
-    to: '/dashboard/settings',
-    permissionsAny: ['settings.view', 'settings.coupons'],
-    match: {
-      paths: ['/dashboard/settings']
-    },
-    children: [
-      {
-        key: 'general',
-        label: 'General',
-        icon: 'lucide:sliders-horizontal',
-        to: '/dashboard/settings',
-        permission: 'settings.view',
-        documentTitle: 'Dashboard - Settings - General',
-        match: {
-          paths: ['/dashboard/settings'],
-          queryKey: 'tab',
-          queryValues: ['']
-        }
-      },
-      {
-        key: 'gallery',
-        label: 'Gallery',
-        icon: 'lucide:images',
-        to: '/dashboard/settings?tab=gallery',
-        permission: 'settings.view',
-        documentTitle: 'Dashboard - Settings - Gallery',
-        match: {
-          paths: ['/dashboard/settings'],
-          queryKey: 'tab',
-          queryValues: ['gallery']
-        }
-      },
-      {
-        key: 'coupons',
-        label: 'Coupon',
-        detailedLabel: 'Coupons',
-        icon: 'lucide:ticket-percent',
-        to: '/dashboard/settings?tab=coupons',
-        permission: 'settings.coupons',
-        documentTitle: 'Dashboard - Settings - Coupons',
-        match: {
-          paths: ['/dashboard/settings'],
-          queryKey: 'tab',
-          queryValues: ['coupons']
-        }
-      },
-      {
-        key: 'logs',
-        label: 'Log',
-        detailedLabel: 'Activity Log',
-        icon: 'lucide:scroll-text',
-        to: '/dashboard/settings?tab=logs',
-        permission: 'settings.view',
-        documentTitle: 'Dashboard - Settings - Activity Log',
-        match: {
-          paths: ['/dashboard/settings'],
-          queryKey: 'tab',
-          queryValues: ['logs']
-        }
-      }
-    ]
-  }
+  group('dashboard', 'Dashboard', 'layout-dashboard', { paths: ['/dashboard'] }, [
+    child('summary', 'Summary', 'gauge', '/dashboard', 'view', ['', 'summary']),
+    child('order-summary', 'Order summary', 'shopping-bag', '/dashboard', 'view', ['orders'], 'dashboard.orders'),
+    { ...child('stock-summary', 'Stock overview', 'boxes', '/dashboard', 'view', ['stock']), permissionsAny: ['products.view', 'categories.view'] },
+    child('analysis', 'Sales analysis', 'chart-no-axes-combined', '/dashboard', 'view', ['analysis'], 'dashboard.analysis'),
+    child('customer-experience', 'Customer feedback', 'message-square-heart', '/dashboard', 'view', ['customers'], 'dashboard.analysis')
+  ]),
+  group('orders', 'Orders', 'shopping-bag', { paths: ['/dashboard/orders'], prefixes: ['/dashboard/orders/'] }, [
+    child('orders', 'All orders', 'list', '/dashboard/orders', 'view', ['', 'all'], 'dashboard.orders'),
+    child('recent-orders', 'Recent orders', 'clock', '/dashboard/orders', 'view', ['recent'], 'dashboard.orders'),
+    child('confirm-orders', 'Confirm & pack', 'scan-barcode', '/dashboard/orders/confirm', null, [], 'dashboard.orders')
+  ], { permission: 'dashboard.orders' }),
+  group('products', 'Products', 'package', { paths: ['/dashboard/products', '/dashboard/products/add'], prefixes: ['/dashboard/products/edit/'] }, [
+    { ...child('all-products', 'All products', 'boxes', '/dashboard/products', 'status', ['', 'all'], 'products.view'), match: { paths: ['/dashboard/products'], prefixes: ['/dashboard/products/edit/'], queryKey: 'status', queryValues: ['', 'all'] } },
+    child('published-products', 'Published', 'eye', '/dashboard/products', 'status', ['published'], 'products.view'),
+    child('draft-products', 'Drafts', 'file-pen-line', '/dashboard/products', 'status', ['drafts'], 'products.view'),
+    child('add-product', 'Add product', 'circle-plus', '/dashboard/products/add', null, [], 'products.add')
+  ], { permission: 'products.view' }),
+  group('catalog', 'Catalog', 'library-big', { paths: ['/dashboard/catalog'] }, [
+    child('categories', 'Categories', 'tags', '/dashboard/catalog', 'tab', ['', 'categories'], 'categories.view'),
+    child('brands', 'Brands', 'badge', '/dashboard/catalog', 'tab', ['brands'], 'brands.view'),
+    child('reviews', 'Product reviews', 'messages-square', '/dashboard/catalog', 'tab', ['reviews'])
+  ]),
+  group('crm', 'CRM', 'contact-round', { paths: ['/dashboard/crm'] }, [
+    child('contacts', 'Contacts', 'contact', '/dashboard/crm', 'tab', ['', 'contacts']),
+    { ...child('tickets', 'Tickets', 'ticket', '/dashboard/crm', 'tab', ['activities']), match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['', 'tickets'] } } },
+    { ...child('activity-history', 'Calls & history', 'history', '/dashboard/crm', 'tab', ['activities']), to: '/dashboard/crm?tab=activities&panel=history', match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['history'] } } }
+  ]),
+  group('commerce', 'Purchases & sales', 'briefcase-business', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['', 'procurement', 'sales', 'returns'] }, [
+    child('procurement', 'Purchase invoices', 'shopping-basket', '/dashboard/commerce', 'tab', ['', 'procurement']),
+    child('sales', 'Sales invoices', 'badge-dollar-sign', '/dashboard/commerce', 'tab', ['sales']),
+    child('returns', 'Returns', 'rotate-ccw', '/dashboard/commerce', 'tab', ['returns'])
+  ]),
+  group('inventory', 'Inventory', 'warehouse', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['warehouses', 'serialized', 'scan'] }, [
+    child('warehouses', 'Warehouses', 'warehouse', '/dashboard/commerce', 'tab', ['warehouses']),
+    child('serialized', 'Serialized items', 'package-search', '/dashboard/commerce', 'tab', ['serialized']),
+    child('scan', 'Scan item', 'scan-line', '/dashboard/commerce', 'tab', ['scan'])
+  ]),
+  group('shipping', 'Shipping', 'truck', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['shipping'] }, [
+    child('shipping', 'Shipping companies', 'truck', '/dashboard/commerce', 'tab', ['shipping'])
+  ]),
+  group('hr', 'People', 'users-round', { paths: ['/dashboard/hr', '/dashboard/users'] }, [
+    child('employees', 'Employees', 'user-round', '/dashboard/hr', 'tab', ['', 'employees'], 'hr.view'),
+    { ...child('users', 'Admin users', 'shield-user', '/dashboard/hr', 'tab', ['users'], 'users.view'), match: { paths: ['/dashboard/hr'], query: { tab: ['users'], people: ['', 'admins'] } } },
+    { ...child('customers', 'Store customers', 'users', '/dashboard/hr', 'tab', ['users'], 'users.view'), to: '/dashboard/hr?tab=users&people=customers', match: { paths: ['/dashboard/hr'], query: { tab: ['users'], people: ['customers'] } } }
+  ], { permissionsAny: ['hr.view', 'users.view'] }),
+  group('treasury', 'Treasury', 'landmark', { paths: ['/dashboard/treasury'] }, [
+    child('transactions', 'Transactions', 'history', '/dashboard/treasury', 'action', ['', 'transactions'], 'treasury.view'),
+    child('supplier-payment', 'Supplier payments', 'receipt-text', '/dashboard/treasury', 'action', ['supplier_payment'], 'treasury.view'),
+    child('customer-receipt', 'Customer receipts', 'hand-coins', '/dashboard/treasury', 'action', ['customer_receipt'], 'treasury.view'),
+    child('salary-payment', 'Salary payments', 'badge-dollar-sign', '/dashboard/treasury', 'action', ['salary_payment'], 'treasury.view')
+  ], { permission: 'treasury.view' }),
+  { key: 'documents', label: 'Documents', icon: 'lucide:folder-closed', to: '/dashboard/documents', permission: 'documents.view', documentTitle: 'Dashboard - Documents', match: { paths: ['/dashboard/documents'] } },
+  group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
+    child('settings-overview', 'All settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
+    ...dashboardSettingsSections.map(item => ({
+      ...item, documentTitle: `Dashboard - Settings - ${item.label}`,
+      match: { paths: ['/dashboard/settings'], queryKey: 'tab', queryValues: [item.key] }
+    }))
+  ], { permissionsAny: ['settings.view', 'settings.coupons'] })
 ]
 
 const canAccessNavigationItem = (item, access = {}) => {

@@ -27,16 +27,24 @@
       </button>
     </div>
 
-    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Dashboard navigation">
+    <div class="px-4 pt-4">
+      <label class="relative block">
+        <Icon name="lucide:search" size="16" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input v-model="navigationSearch" type="search" aria-label="Find a dashboard page" placeholder="Find a page" class="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-blue-500 focus:bg-white" />
+      </label>
+    </div>
+
+    <nav ref="navigationRoot" class="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Dashboard navigation">
+      <p v-if="!filteredGroups.length" class="px-3 py-4 text-sm text-gray-500">No pages match your search.</p>
       <ul class="space-y-1.5">
         <li
-          v-for="group in navigationGroups"
+          v-for="group in filteredGroups"
           :key="group.key"
         >
           <button
             v-if="group.children.length"
             type="button"
-            class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-start text-sm font-bold transition"
+            class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start text-sm font-bold transition"
             :class="activeGroup?.key === group.key
               ? 'bg-gray-100 text-gray-950'
               : 'text-gray-700 hover:bg-gray-50'"
@@ -95,10 +103,10 @@
               :key="item.key"
               :to="item.to"
               class="mb-1 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition last:mb-0"
-              :class="activeItem?.key === item.key
+              :class="activeGroup?.key === group.key && activeItem?.key === item.key
                 ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'"
-              :aria-current="activeItem?.key === item.key ? 'page' : undefined"
+              :aria-current="activeGroup?.key === group.key && activeItem?.key === item.key ? 'page' : undefined"
               @click="$emit('close')"
             >
               <Icon :name="item.icon" size="16" class="shrink-0" />
@@ -161,6 +169,17 @@ const {
 } = useDashboardNavigation()
 
 const expandedGroups = reactive({})
+const navigationRoot = ref(null)
+const navigationSearch = ref('')
+const filteredGroups = computed(() => {
+  const query = navigationSearch.value.trim().toLowerCase()
+  if (!query) return navigationGroups.value
+  return navigationGroups.value.flatMap(group => {
+    if (group.label.toLowerCase().includes(query)) return [group]
+    const children = group.children.filter(item => `${item.label} ${item.description || ''}`.toLowerCase().includes(query))
+    return children.length ? [{ ...group, children }] : []
+  })
+})
 
 const adminName = computed(() => {
   return String(
@@ -181,26 +200,41 @@ const adminInitials = computed(() => {
 })
 
 const isGroupExpanded = (groupKey) => {
-  return Boolean(expandedGroups[groupKey])
+  return Boolean(navigationSearch.value.trim() || expandedGroups[groupKey])
 }
 
 const toggleGroup = (groupKey) => {
   expandedGroups[groupKey] = !isGroupExpanded(groupKey)
 }
 
+const revealActiveItem = async () => {
+  await nextTick()
+  const nav = navigationRoot.value
+  const link = nav?.querySelector('[aria-current="page"]')
+  if (!nav || !link) return
+  const bounds = nav.getBoundingClientRect()
+  const itemBounds = link.getBoundingClientRect()
+  if (itemBounds.top < bounds.top) nav.scrollTop += itemBounds.top - bounds.top - 8
+  else if (itemBounds.bottom > bounds.bottom) nav.scrollTop += itemBounds.bottom - bounds.bottom + 8
+}
+
 watch(
-  () => activeItem.value?.key,
+  [() => activeGroup.value?.key, () => activeItem.value?.key],
   () => {
+    navigationSearch.value = ''
     const groupKey = activeGroup.value?.key
 
     if (groupKey) {
       expandedGroups[groupKey] = true
     }
+    revealActiveItem()
   },
   {
     immediate: true
   }
 )
+watch(() => props.open, (open) => { if (open) revealActiveItem() })
+onMounted(revealActiveItem)
 </script>
 
 <style scoped>

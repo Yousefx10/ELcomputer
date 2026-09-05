@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen bg-white px-4 py-10 md:px-8">
-    <div v-if="pending" class="mx-auto max-w-6xl rounded-2xl bg-gray-50 p-8 text-center text-gray-500">
-      Loading product...
-    </div>
+    <LayoutPageLoading v-if="pending" label="Loading product…" class="mx-auto max-w-6xl" />
 
     <div
       v-else-if="error"
@@ -229,7 +227,7 @@
         <section class="rounded-2xl bg-gray-50 p-6">
           <h2 class="text-2xl font-bold text-gray-900">Product Description</h2>
           <p class="mt-4 whitespace-pre-line text-gray-600">
-            {{ product.long_description || product.description || 'No long description added yet.' }}
+            {{ product.long_description || product.description || 'No description available.' }}
           </p>
         </section>
 
@@ -253,7 +251,7 @@
           </div>
 
           <p v-else class="mt-4 text-gray-500">
-            No specifications added yet.
+            No specifications available.
           </p>
         </section>
       </div>
@@ -360,7 +358,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     specifications: specificationsResult.data || [],
     variants: variantsResult.data || []
   }
-})
+}, { lazy: true })
 
 const storeName = computed(() => {
   return String(siteContent.value?.settings?.site_name || '').trim() || 'ELcomputer'

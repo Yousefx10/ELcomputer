@@ -7,8 +7,8 @@
       <img class="store-hero-scene" src="/images/storefront/setup-hero.png" alt="" fetchpriority="high" width="1536" height="1024" />
       <div class="store-hero-copy">
         <p class="store-eyebrow">For work and play</p>
-        <h1>Find your<br /><span>next setup.</span></h1>
-        <p>Keyboards, mice, and more for your desk.</p>
+        <h1>Keyboards<br /><span>and mice.</span></h1>
+        <p>Headsets, cables and other desk accessories.</p>
         <NuxtLink to="/search" class="store-button">Shop now <Icon name="lucide:arrow-right" size="16" /></NuxtLink>
       </div>
     </div>

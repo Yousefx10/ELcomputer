@@ -13,7 +13,7 @@
           How likely are you to recommend {{ storeName }}?
         </h2>
         <p class="mt-4 max-w-xl text-base leading-7 text-gray-600">
-          Your feedback helps us improve the store experience, products, and service.
+          Tell us how we did.
         </p>
       </div>
 
@@ -71,7 +71,7 @@
         <div v-if="isDetractor" class="mt-6">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
             <label for="nps-feedback" class="font-bold text-gray-900">
-              We are sorry to hear that. How can we improve?
+              What could we do better?
             </label>
             <span class="text-xs font-medium text-gray-400">Optional</span>
           </div>
@@ -84,7 +84,7 @@
             maxlength="999"
             aria-describedby="nps-feedback-count"
             class="mt-3 w-full resize-y rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            placeholder="Tell us what would make your experience better..."
+            placeholder="Tell us what went wrong or what was missing."
           />
           <p id="nps-feedback-count" class="mt-2 text-right text-xs text-gray-400">
             {{ feedback.length }}/999

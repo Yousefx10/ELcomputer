@@ -3,11 +3,12 @@
     v-if="dashboardLayout === 'standard' && resolvedItems.length"
     class="rounded-2xl bg-white p-2 shadow"
   >
-    <nav class="flex flex-wrap gap-2">
+    <nav class="flex flex-wrap gap-2" aria-label="Section navigation">
       <NuxtLink
         v-for="item in resolvedItems"
         :key="item.to"
         :to="item.to"
+        :aria-current="item.active ? 'page' : undefined"
         class="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition"
         :class="item.active
           ? 'bg-black text-white'

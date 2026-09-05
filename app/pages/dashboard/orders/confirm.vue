@@ -11,7 +11,7 @@
               Confirm Orders
             </h1>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-              Claim an order, scan every requested item, then print its customer bill and shipping paper.
+              Claim an order, scan its items, then print both documents.
             </p>
           </div>
 
@@ -228,7 +228,7 @@
             </span>
             <h2 class="mt-5 text-2xl font-bold text-gray-900">Choose an order to begin</h2>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-              Claiming an order records who is preparing it and prevents another administrator from packing it at the same time.
+              Claim an order to reserve it while you pack.
             </p>
           </section>
 
@@ -616,7 +616,7 @@
 
                 <div class="mt-5 flex flex-col gap-3 border-t border-red-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <p class="text-xs leading-5 text-gray-500">
-                    This closes the current packing session. The order can return to the queue after the purchaser responds.
+                    Packing stops until the customer responds.
                   </p>
                   <div class="flex shrink-0 flex-wrap gap-2">
                     <button
@@ -655,7 +655,7 @@
                     Scan prepared item
                   </h3>
                   <p class="mt-2 max-w-2xl text-sm text-gray-500">
-                    Scan an assigned unit QR/code, variant SKU, or product SKU. The field is re-focused after every attempt.
+                    Scan an item code, variant SKU or product SKU.
                   </p>
                 </div>
                 <p
@@ -830,7 +830,7 @@
                 <div>
                   <h3 class="text-2xl font-bold text-gray-900">Complete order</h3>
                   <p class="mt-1 text-sm text-gray-500">
-                    Completion updates the order, records you as its processor, and opens both print documents.
+                    Complete packing to update the order and print both documents.
                   </p>
                 </div>
               </div>

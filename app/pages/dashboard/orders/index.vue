@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <section class="rounded-2xl bg-white p-6 shadow">
+      <section v-if="showRecentOrders" class="rounded-2xl bg-white p-6 shadow">
         <div class="mb-5 flex items-center justify-between gap-3">
           <div>
             <h3 class="text-2xl font-bold">Recent Orders</h3>
@@ -103,12 +103,12 @@
         </div>
       </section>
 
-      <section class="rounded-2xl bg-white p-6 shadow">
+      <section v-else class="rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-4">
           <div>
             <h3 class="text-2xl font-bold">All Orders</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Search by order number, first name, phone, email, or governorate and filter by date range.
+              Search orders by number or customer details. Filter by date.
             </p>
           </div>
 
@@ -263,6 +263,8 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const route = useRoute()
+const showRecentOrders = computed(() => String(route.query.view || '') === 'recent')
 const {
   getSnapshot,
   invalidate,

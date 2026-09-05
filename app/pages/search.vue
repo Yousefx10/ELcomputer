@@ -3,7 +3,7 @@
     <div class="store-container">
       <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Explore the store
+          Products
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
@@ -25,11 +25,11 @@
             <span class="flex items-center gap-2"><Icon name="lucide:sliders-horizontal" size="17" />Filter products</span>
             <Icon :name="filtersOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="17" />
           </button>
-          <div id="store-search-filters" class="space-y-5 lg:block" :class="filtersOpen ? 'mt-4 lg:mt-0' : 'hidden'">
+          <fieldset id="store-search-filters" :disabled="pending" class="min-w-0 space-y-5 lg:block" :class="filtersOpen ? 'mt-4 lg:mt-0' : 'hidden'">
             <div>
               <h2 class="text-lg font-bold text-gray-900">Filters</h2>
               <p class="mt-1 text-sm text-gray-500">
-                Find the right gear for you.
+                Filter by price, category or brand.
               </p>
             </div>
 
@@ -183,7 +183,7 @@
                 Clear
               </button>
             </div>
-          </div>
+          </fieldset>
         </aside>
 
         <section class="space-y-5">
@@ -207,7 +207,7 @@
                   </span>
                 </div>
 
-                <p class="text-sm text-gray-500">
+                <p v-if="!pending" class="text-sm text-gray-500">
                   {{ totalCount }} product{{ totalCount === 1 ? '' : 's' }} found
                 </p>
               </div>
@@ -234,9 +234,7 @@
             </div>
           </div>
 
-          <div v-if="pending" class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow">
-            Loading results...
-          </div>
+          <LayoutPageLoading v-if="pending" label="Loading products…" />
 
           <div
             v-else-if="!products.length"
@@ -482,70 +480,89 @@ const throwSortErrorIfNeeded = (selectedSort, queryError) => {
   throw queryError
 }
 
+// Public filter options can be reused briefly; product prices and stock stay live.
+const searchMetadata = useState('store-search-metadata', () => null)
+const getSearchMetadata = async (signal) => {
+  if (searchMetadata.value?.expiresAt > Date.now()) {
+    return searchMetadata.value.data
+  }
+
+  const [categoriesResult, brandsResult, minPriceResult, maxPriceResult] = await Promise.all([
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .order('name')
+      .abortSignal(signal),
+    supabase
+      .from('brands')
+      .select('id, name, slug, logo_url')
+      .order('name')
+      .abortSignal(signal),
+    supabase
+      .from('products')
+      .select('price')
+      .eq('is_published', true)
+      .order('price', { ascending: true })
+      .limit(1)
+      .abortSignal(signal)
+      .maybeSingle(),
+    supabase
+      .from('products')
+      .select('price')
+      .eq('is_published', true)
+      .order('price', { ascending: false })
+      .limit(1)
+      .abortSignal(signal)
+      .maybeSingle()
+  ])
+
+  if (categoriesResult.error) {
+    throw categoriesResult.error
+  }
+
+  if (brandsResult.error) {
+    throw brandsResult.error
+  }
+
+  if (minPriceResult.error) {
+    throw minPriceResult.error
+  }
+
+  if (maxPriceResult.error) {
+    throw maxPriceResult.error
+  }
+
+  const categories = categoriesResult.data || []
+  const brands = brandsResult.data || []
+  const minBound = normalizePositiveNumber(minPriceResult.data?.price, 0)
+  const maxBound = Math.max(minBound, normalizePositiveNumber(maxPriceResult.data?.price, minBound))
+  const priceBounds = {
+    min: minBound,
+    max: maxBound
+  }
+
+  const data = { categories, brands, priceBounds }
+  searchMetadata.value = { data, expiresAt: Date.now() + 60_000 }
+  return data
+}
+
 const { data: searchPageData, pending, error } = await useAsyncData(
   () => `store-search-${route.fullPath}`,
-  async () => {
-    const [categoriesResult, brandsResult, minPriceResult, maxPriceResult] = await Promise.all([
-      supabase
-        .from('categories')
-        .select('id, name, slug')
-        .order('name'),
-      supabase
-        .from('brands')
-        .select('id, name, slug, logo_url')
-        .order('name'),
-      supabase
-        .from('products')
-        .select('price')
-        .eq('is_published', true)
-        .order('price', { ascending: true })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from('products')
-        .select('price')
-        .eq('is_published', true)
-        .order('price', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-    ])
+  async (_nuxtApp, { signal }) => {
+    const routeQuery = { ...route.query }
+    const { categories, brands, priceBounds } = await getSearchMetadata(signal)
 
-    if (categoriesResult.error) {
-      throw categoriesResult.error
-    }
-
-    if (brandsResult.error) {
-      throw brandsResult.error
-    }
-
-    if (minPriceResult.error) {
-      throw minPriceResult.error
-    }
-
-    if (maxPriceResult.error) {
-      throw maxPriceResult.error
-    }
-
-    const categories = categoriesResult.data || []
-    const brands = brandsResult.data || []
-    const minBound = normalizePositiveNumber(minPriceResult.data?.price, 0)
-    const maxBound = Math.max(minBound, normalizePositiveNumber(maxPriceResult.data?.price, minBound))
-    const priceBounds = {
-      min: minBound,
-      max: maxBound
-    }
-
-    const searchQuery = normalizeSearchTerm(route.query.q)
-    const selectedCategory = normalizeTextValue(route.query.category)
-    const selectedBrand = normalizeTextValue(route.query.brand)
-    const selectedStatus = validStatusValues.has(String(route.query.status || ''))
-      ? String(route.query.status)
+    const searchQuery = normalizeSearchTerm(routeQuery.q)
+    const selectedCategory = normalizeTextValue(routeQuery.category)
+    const selectedBrand = normalizeTextValue(routeQuery.brand)
+    const selectedStatus = validStatusValues.has(String(routeQuery.status || ''))
+      ? String(routeQuery.status)
       : defaultStatus
-    const selectedSort = validSortValues.has(String(route.query.sort || ''))
-      ? String(route.query.sort)
+    const selectedSort = validSortValues.has(String(routeQuery.sort || ''))
+      ? String(routeQuery.sort)
       : defaultSort
-    const currentPage = normalizePageValue(route.query.page)
-    const normalizedPriceRange = normalizePriceRange(route.query.min, route.query.max, priceBounds)
+    const currentPage = normalizePageValue(routeQuery.page)
+    const normalizedPriceRange = normalizePriceRange(routeQuery.min, routeQuery.max, priceBounds)
 
     const categoryJoin = selectedCategory ? '!inner' : ''
     const brandJoin = selectedBrand ? '!inner' : ''
@@ -582,8 +599,10 @@ const { data: searchPageData, pending, error } = await useAsyncData(
         .from('products')
         .select(selectFields, withCount ? { count: 'exact' } : undefined)
         .eq('is_published', true)
-        .gte('price', normalizedPriceRange.minPrice)
-        .lte('price', normalizedPriceRange.maxPrice)
+        .abortSignal(signal)
+
+      if (routeQuery.min !== undefined) query = query.gte('price', normalizedPriceRange.minPrice)
+      if (routeQuery.max !== undefined) query = query.lte('price', normalizedPriceRange.maxPrice)
 
       if (searchQuery) {
         query = query.or([
@@ -707,7 +726,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     }
   },
   {
-    watch: [() => route.fullPath]
+    lazy: true
   }
 )
 
@@ -778,8 +797,9 @@ const currentBrand = computed(() => {
 })
 
 const pageTitle = computed(() => {
-  if (filters.searchQuery) {
-    return `Search results for "${filters.searchQuery}"`
+  const query = normalizeTextValue(route.query.q)
+  if (query) {
+    return `Search results for "${query}"`
   }
 
   if (currentCategory.value && currentBrand.value) {

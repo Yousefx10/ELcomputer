@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-6">
-    <DashboardAnalysisCustomerExperience />
 
     <section>
       <div class="mb-4">

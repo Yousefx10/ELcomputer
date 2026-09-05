@@ -9,7 +9,7 @@
           All Reviews
         </h1>
         <p class="mt-3 max-w-2xl text-gray-600">
-          Read feedback shared by signed-in customers about products from our store.
+          See what customers think of our products.
         </p>
       </div>
 
@@ -154,6 +154,7 @@ const {
     }
   }),
   {
+    lazy: true,
     watch: [requestedPage]
   }
 )

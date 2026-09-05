@@ -2,13 +2,41 @@
   <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
       <div class="rounded-2xl bg-white p-6 shadow">
-        <h2 class="text-4xl font-bold">Site Settings</h2>
+        <h2 class="text-3xl font-bold">{{ activeSettingsSection?.label || 'Settings' }}</h2>
         <p class="mt-2 text-sm text-gray-500">
-          Control the store name, logo, banners, top bar text, navigation, and footer content
+          {{ activeSettingsSection?.description || 'Choose the settings you want to change.' }}
         </p>
       </div>
 
-      <DashboardSecondaryNav :items="secondaryNavItems" />
+      <nav v-if="activeSettingsSection" class="flex flex-wrap items-center justify-between gap-3" aria-label="Settings sections">
+        <NuxtLink to="/dashboard/settings" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
+          <Icon name="lucide:arrow-left" size="16" /> All settings
+        </NuxtLink>
+        <label class="flex min-w-0 items-center gap-3 text-sm text-gray-600">
+          <span class="shrink-0">Go to</span>
+          <select aria-label="Settings section" :value="activeSettingsSection.key" class="min-w-0 rounded-xl border border-gray-200 bg-white p-3 text-gray-900" @change="navigateTo(`/dashboard/settings?tab=${$event.target.value}`)">
+            <option v-for="item in availableSettingsSections" :key="item.key" :value="item.key">{{ item.label }}</option>
+          </select>
+        </label>
+      </nav>
+
+      <div v-if="activeSettingsView === 'general' && !activeSettingsSection" class="space-y-6">
+        <label class="relative block">
+          <Icon name="lucide:search" size="19" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input v-model="settingsSearch" type="search" aria-label="Find a setting" placeholder="Find a setting" class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 outline-none focus:border-blue-500" />
+        </label>
+        <section v-for="group in settingsGroups" :key="group.label">
+          <h3 class="mb-3 text-sm font-bold text-gray-500">{{ group.label }}</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            <NuxtLink v-for="item in group.items" :key="item.key" :to="item.to" class="flex items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-blue-400 hover:shadow-sm">
+              <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Icon :name="item.icon" size="20" /></span>
+              <div class="min-w-0 flex-1"><h4 class="font-bold text-gray-900">{{ item.label }}</h4><p class="mt-1 text-sm text-gray-500">{{ item.description }}</p></div>
+              <Icon name="lucide:chevron-right" size="17" class="mt-1 shrink-0 text-gray-400" />
+            </NuxtLink>
+          </div>
+        </section>
+        <p v-if="!settingsGroups.length" class="rounded-xl bg-white p-6 text-sm text-gray-500">No settings match your search.</p>
+      </div>
 
       <div v-if="pageError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow">
         {{ pageError }}
@@ -18,12 +46,12 @@
         v-if="!canEditSettings"
         class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 shadow"
       >
-        This account has view-only access to settings. Saving and editing actions are disabled.
+        You can view these settings but cannot change them.
       </div>
 
-      <div v-if="activeSettingsView === 'general'" class="space-y-4">
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+      <fieldset v-if="activeSettingsView === 'general'" :disabled="!canEditSettings" class="min-w-0 space-y-4">
+        <section v-show="activeSettingsSection?.section === 'generalSettings'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.generalSettings"
             type="button"
             @click="toggleSection('generalSettings')"
             class="flex w-full items-center justify-between p-6 text-left"
@@ -64,7 +92,7 @@
                 section="site_logo"
                 preview-alt="Site logo"
                 preview-height-class="h-24"
-                help-text="Used across the public storefront branding."
+                help-text="Shown in the store header and footer."
               />
 
               <div>
@@ -78,7 +106,7 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Landing Page Title</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Homepage Title</label>
                 <input
                   v-model="siteSettings.landing_page_title"
                   type="text"
@@ -92,7 +120,7 @@
                   <div>
                     <p class="font-bold text-gray-900">Allow out-of-stock purchases</p>
                     <p class="mt-1 text-sm text-gray-500">
-                      Let shoppers place an order even when the available product stock is zero.
+                      Allow orders for products with no available stock.
                     </p>
                   </div>
 
@@ -153,8 +181,8 @@
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+        <section v-show="activeSettingsSection?.section === 'homepageReviews'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.homepageReviews"
             type="button"
             class="flex w-full items-center justify-between p-6 text-left"
             @click="toggleSection('homepageReviews')"
@@ -162,7 +190,7 @@
             <div>
               <h3 class="text-2xl font-bold">Homepage Reviews</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Control the customer reviews carousel and its full-reviews shortcut.
+                Show or hide reviews on the homepage.
               </p>
             </div>
 
@@ -220,7 +248,7 @@
                   <div>
                     <p class="font-bold text-gray-900">Show “View all reviews” button</p>
                     <p class="mt-1 text-sm text-gray-500">
-                      Let customers navigate from the homepage carousel to the complete reviews page.
+                      Add a link to the full reviews page.
                     </p>
                   </div>
 
@@ -283,8 +311,8 @@
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+        <section v-show="activeSettingsSection?.section === 'offerCards'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.offerCards"
             type="button"
             @click="toggleSection('offerCards')"
             class="flex w-full items-center justify-between p-6 text-left"
@@ -292,7 +320,7 @@
             <div>
               <h3 class="text-2xl font-bold">Offer Cards</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Manage the home offer slider cards and choose whether each card opens search results or a product page.
+                Add homepage offers and choose where each one links.
               </p>
             </div>
 
@@ -312,7 +340,7 @@
             <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p class="text-sm text-gray-500">
-                  Add cards with an upper label, a giant title, an image, and a shortcut target.
+                  Add a title, image and link for each offer.
                 </p>
               </div>
 
@@ -366,7 +394,7 @@
 
                   <div class="mt-4 space-y-3">
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Upper Text</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Short label</label>
                       <input
                         v-model="newOfferCard.eyebrow_text"
                         type="text"
@@ -376,7 +404,7 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Giant Text</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
                       <input
                         v-model="newOfferCard.title"
                         type="text"
@@ -390,7 +418,7 @@
                       label="Offer Image"
                       section="offer_cards"
                       :show-preview="false"
-                      help-text="Upload the card image stored on the server host."
+                      help-text="Upload an image for this offer."
                     />
 
                     <div>
@@ -474,7 +502,7 @@
 
                   <div class="mt-4 space-y-3">
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Upper Text</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Short label</label>
                       <input
                         v-model="offerCard.eyebrow_text"
                         type="text"
@@ -483,7 +511,7 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Giant Text</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
                       <input
                         v-model="offerCard.title"
                         type="text"
@@ -496,7 +524,7 @@
                       label="Offer Image"
                       section="offer_cards"
                       :show-preview="false"
-                      help-text="Upload the card image stored on the server host."
+                      help-text="Upload an image for this offer."
                     />
 
                     <div>
@@ -561,21 +589,21 @@
             </div>
 
             <p v-if="!offerCards.length" class="mt-4 text-sm text-gray-500">
-              No offer cards added yet. Start by creating one from the first panel.
+              No offer cards yet. Add one above.
             </p>
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+        <section v-show="activeSettingsSection?.section === 'topBarTexts'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.topBarTexts"
             type="button"
             @click="toggleSection('topBarTexts')"
             class="flex w-full items-center justify-between p-6 text-left"
           >
             <div>
-              <h3 class="text-2xl font-bold">Top Bar Texts</h3>
+              <h3 class="text-2xl font-bold">Announcements</h3>
               <p class="mt-1 text-sm text-gray-500">
-                These are the rotating texts shown in the blue bar above the navbar.
+                Messages shown above the store menu.
               </p>
             </div>
 
@@ -704,8 +732,8 @@
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+        <section v-show="activeSettingsSection?.section === 'heroBanners'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.heroBanners"
             type="button"
             @click="toggleSection('heroBanners')"
             class="flex w-full items-center justify-between p-6 text-left"
@@ -713,7 +741,7 @@
             <div>
               <h3 class="text-2xl font-bold">Hero Banners</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Control the main hero slider and add multiple hero banners for the home page.
+                Choose the main homepage images and their rotation speed.
               </p>
             </div>
 
@@ -808,7 +836,7 @@
                 preview-alt="Hero banner"
                 preview-image-class="object-cover"
                 preview-height-class="h-28"
-                help-text="Upload a hero banner image stored on the server host."
+                help-text="Upload the main homepage image."
               />
 
               <input
@@ -890,8 +918,8 @@
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow">
-          <button
+        <section v-show="activeSettingsSection?.section === 'bannerAds'" class="overflow-hidden rounded-2xl bg-white shadow">
+          <button :aria-expanded="openSections.bannerAds"
             type="button"
             @click="toggleSection('bannerAds')"
             class="flex w-full items-center justify-between p-6 text-left"
@@ -953,7 +981,7 @@
                   preview-alt="Banner Ad 1"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Used above the keyboard section on the landing page."
+                  help-text="Shown above keyboards on the homepage."
                 />
 
                 <div>
@@ -1003,7 +1031,7 @@
                   preview-alt="Banner Ad 2"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Used above the accessories section on the landing page."
+                  help-text="Shown above accessories on the homepage."
                 />
 
                 <div>
@@ -1050,8 +1078,8 @@
           </div>
         </section>
 
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
-        <button
+      <section v-show="activeSettingsSection?.section === 'headerLinks'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <button :aria-expanded="openSections.headerLinks"
           type="button"
           @click="toggleSection('headerLinks')"
           class="flex w-full items-center justify-between p-6 text-left"
@@ -1059,7 +1087,7 @@
           <div>
             <h3 class="text-2xl font-bold">Header Navigation Links</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Manage the public navbar links shown on the landing page.
+              Choose the links in the store menu.
             </p>
           </div>
 
@@ -1105,7 +1133,7 @@
           </div>
 
           <p class="mb-4 text-sm text-gray-500">
-            Default links stay at the top and cannot be removed. Any new links appear after them.
+            Default links stay first. New links appear below them.
           </p>
 
           <p v-if="linkError" class="mb-4 text-sm text-red-600">
@@ -1211,8 +1239,8 @@
         </div>
       </section>
 
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
-        <button
+      <section v-show="activeSettingsSection?.section === 'footerSettings'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <button :aria-expanded="openSections.footerSettings"
           type="button"
           @click="toggleSection('footerSettings')"
           class="flex w-full items-center justify-between p-6 text-left"
@@ -1343,8 +1371,8 @@
         </div>
       </section>
 
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
-        <button
+      <section v-show="activeSettingsSection?.section === 'footerLinks'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <button :aria-expanded="openSections.footerLinks"
           type="button"
           @click="toggleSection('footerLinks')"
           class="flex w-full items-center justify-between p-6 text-left"
@@ -1352,7 +1380,7 @@
           <div>
             <h3 class="text-2xl font-bold">Footer Links and Details</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Group footer items by section. Leave the URL empty if the item should be plain text only.
+              Group footer links by heading. Leave links blank for plain text.
             </p>
           </div>
 
@@ -1473,7 +1501,7 @@
         </div>
       </section>
 
-      <section class="overflow-hidden rounded-2xl bg-white shadow">
+      <section v-show="activeSettingsSection?.section === 'dashboardLayout'" class="overflow-hidden rounded-2xl bg-white shadow">
         <button
           type="button"
           class="flex w-full items-center justify-between p-6 text-start"
@@ -1585,7 +1613,7 @@
           </div>
 
           <p class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-           General Dashboard Layout.
+           This layout applies to all dashboard users.
           </p>
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -1620,7 +1648,7 @@
         </div>
       </section>
 
-      </div>
+      </fieldset>
 
       <div v-else-if="activeSettingsView === 'gallery'" class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
@@ -1628,7 +1656,7 @@
             <div>
               <h3 class="text-2xl font-bold">Gallery</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Browse every image uploaded to the server host, preview it, download it, or remove it.
+                Preview, download or delete uploaded images.
               </p>
             </div>
 
@@ -1668,7 +1696,7 @@
             <p class="mt-4 text-sm text-gray-500">
               {{ gallerySearchQuery.trim()
                 ? `Showing images matching "${gallerySearchQuery.trim()}".`
-                : 'Showing all uploaded images from the server host.' }}
+                : 'All uploaded images.' }}
             </p>
 
             <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 text-sm text-gray-500">
@@ -2095,7 +2123,7 @@
             <div>
               <h3 class="text-2xl font-bold">Admin Logs</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Latest owner and admin actions. Each account keeps its newest 50 logs only.
+                The latest 50 actions for each admin account.
               </p>
             </div>
 
@@ -2189,6 +2217,7 @@ import {
   isDefaultHeaderLink
 } from '~/utils/siteLinks'
 import { getDashboardQueryValue } from '~/utils/dashboardNavigation'
+import { dashboardSettingsSections } from '~/utils/dashboardSettings'
 
 definePageMeta({
   layout: 'dashboard'
@@ -2341,12 +2370,12 @@ const dashboardLayoutOptions = [
   {
     value: 'standard',
     label: 'Standard',
-    description: 'primary navigation across the top'
+    description: 'Menus across the top.'
   },
   {
     value: 'detailed',
     label: 'Detailed',
-    description: 'Detailed sidebar sections submenus.'
+    description: 'Expandable menus in a sidebar.'
   }
 ]
 const openSections = reactive({
@@ -2394,43 +2423,23 @@ const activeSettingsView = computed(() => {
 
   return 'general'
 })
-const secondaryNavItems = computed(() => {
-  const items = []
-
-  if (canViewGeneralSettings.value) {
-    items.push({
-      label: 'General',
-      to: '/dashboard/settings',
-      active: activeSettingsView.value === 'general'
-    })
-  }
-
-  if (canViewGallery.value) {
-    items.push({
-      label: 'Gallery',
-      to: '/dashboard/settings?tab=gallery',
-      active: activeSettingsView.value === 'gallery'
-    })
-  }
-
-  if (canAccessCoupons.value) {
-    items.push({
-      label: 'Coupon',
-      to: '/dashboard/settings?tab=coupons',
-      active: activeSettingsView.value === 'coupons'
-    })
-  }
-
-  if (canViewLogs.value) {
-    items.push({
-      label: 'Log',
-      to: '/dashboard/settings?tab=logs',
-      active: activeSettingsView.value === 'logs'
-    })
-  }
-
-  return items
+const settingsSearch = ref('')
+const availableSettingsSections = computed(() => dashboardSettingsSections.filter(item => hasPermission(item.permission)))
+const activeSettingsSection = computed(() => {
+  const tab = getDashboardQueryValue(route, 'tab')
+  return availableSettingsSections.value.find(item => item.key === tab)
+    || (activeSettingsView.value !== 'general' ? availableSettingsSections.value.find(item => item.key === activeSettingsView.value) : null)
 })
+const settingsGroups = computed(() => {
+  const query = settingsSearch.value.trim().toLowerCase()
+  return ['Store', 'Homepage', 'Navigation & footer', 'Administration'].map(label => ({
+    label,
+    items: availableSettingsSections.value.filter(item => item.group === label && `${item.label} ${item.description}`.toLowerCase().includes(query))
+  })).filter(group => group.items.length)
+})
+watch(activeSettingsSection, (item) => {
+  if (item?.section) openSections[item.section] = true
+}, { immediate: true })
 
 const siteSettingsSectionFields = {
   generalSettings: [
@@ -2972,6 +2981,9 @@ const getSiteSettings = async () => {
 }
 
 const loadGeneralSettingsData = async ({ force = false } = {}) => {
+  // Keep edits when moving between settings sections and the media library.
+  if (!force && generalSettingsLoaded.value) return
+
   const cachedSnapshot = getSnapshot(SETTINGS_GENERAL_CACHE_KEY)
 
   if (cachedSnapshot) {
@@ -3607,7 +3619,7 @@ const validateOfferCardPayload = (offerCard) => {
   const payload = normalizeOfferCardPayload(offerCard)
 
   if (!payload.title) {
-    offerCardsError.value = 'Offer giant text is required.'
+    offerCardsError.value = 'Enter an offer title.'
     return null
   }
 

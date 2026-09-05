@@ -143,7 +143,7 @@
             <div>
               <h4 class="text-lg font-bold text-gray-900">Products</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Prices start from the product selling price and can be changed for this sale.
+                Use the listed price or enter a price for this sale.
               </p>
             </div>
 

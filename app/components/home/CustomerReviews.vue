@@ -6,11 +6,8 @@
           id="customer-reviews-title"
           class="store-section-title"
         >
-          From our customers
+          Customer reviews
         </h2>
-        <p class="store-section-description">
-          Real reviews from the people who use it.
-        </p>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">

@@ -5,7 +5,7 @@
         <div>
           <h3 class="text-2xl font-bold">Serialized Items</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Find individual units created by Procurement and print secure QR labels for warehouse use.
+            Find received items and print their QR labels.
           </p>
         </div>
 
@@ -41,8 +41,7 @@
         <div>
           <h3 class="text-xl font-bold text-gray-900">Stock is created through Procurement</h3>
           <p class="mt-1 max-w-3xl text-sm text-gray-600">
-            Products and variants are catalog references only. Enter received quantities in a Procurement order;
-            the system creates one item ID and QR code for every physical unit.
+            Receive stock through a purchase invoice. Each item gets an ID and QR code.
           </p>
         </div>
 
@@ -61,7 +60,7 @@
         <div>
           <h3 class="text-2xl font-bold">Inventory Units</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Search by item code or QR token, then narrow the results with the available filters.
+            Search by item code or QR code.
           </p>
         </div>
 

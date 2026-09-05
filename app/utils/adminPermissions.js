@@ -226,6 +226,10 @@ export const getDashboardRouteRequirement = (route = '') => {
       }
     }
 
+    if (tab) {
+      return { permission: 'settings.view' }
+    }
+
     return {
       permissionsAny: ['settings.view', 'settings.coupons']
     }
@@ -275,7 +279,15 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
-  if (path === '/dashboard' && view === 'analysis') {
+  if (path === '/dashboard' && view === 'orders') {
+    return { permission: 'dashboard.orders' }
+  }
+
+  if (path === '/dashboard' && view === 'stock') {
+    return { permissionsAny: ['products.view', 'categories.view'] }
+  }
+
+  if (path === '/dashboard' && ['analysis', 'customers'].includes(view)) {
     return {
       permission: 'dashboard.analysis'
     }
