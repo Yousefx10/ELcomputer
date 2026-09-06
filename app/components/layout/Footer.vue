@@ -7,8 +7,7 @@
       </div>
       <div class="store-footer-main">
         <div class="store-footer-brand">
-          <img v-if="siteLogoUrl" :src="siteLogoUrl" :alt="siteName" loading="lazy" />
-          <p>{{ siteName }}</p>
+          <img :src="siteLogoUrl" :class="{ 'store-footer-custom-logo': siteLogoUrl !== '/images/dashboard-logo.png' }" :alt="siteName" loading="lazy" />
           <div class="store-footer-contact">
             <a v-if="footerEmail" :href="`mailto:${footerEmail}`"><Icon name="lucide:mail" size="16" />{{ footerEmail }}</a>
             <a v-if="footerPhone" :href="`tel:${footerPhone}`"><Icon name="lucide:phone" size="16" />{{ footerPhone }}</a>
@@ -34,13 +33,14 @@
 </template>
 
 <script setup>
+import { getStoreImageUrl } from '~/utils/storefront'
 const { data: siteContent } = await useSiteContent()
 
 const settings = computed(() => siteContent.value?.settings || {})
 const footerLinks = computed(() => siteContent.value?.footerLinks || [])
 
 const siteName = computed(() => settings.value.site_name || 'ELcomputer')
-const siteLogoUrl = computed(() => settings.value.site_logo_url || '')
+const siteLogoUrl = computed(() => getStoreImageUrl(settings.value.site_logo_url) || '/images/dashboard-logo.png')
 const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? 'Browse computer accessories' : (settings.value.footer_cta_title || 'Browse computer accessories'))
 const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? 'Keyboards, mice, headsets and more.' : (settings.value.footer_cta_subtitle || 'Keyboards, mice, headsets and more.'))
 const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || 'Shop Now')

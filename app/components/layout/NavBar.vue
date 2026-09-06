@@ -1,10 +1,8 @@
 <template>
   <header ref="header" class="store-header" @keydown.esc="closeDepartments(true)">
     <div class="store-container store-header-main">
-      <NuxtLink to="/" class="store-logo" :aria-label="`${siteName} home`">
-        <img v-if="siteLogoUrl" :src="siteLogoUrl" :alt="siteName" />
-        <span v-else class="store-logo-mark" aria-hidden="true"><Icon name="lucide:monitor" size="25" /></span>
-        <span>{{ siteName }}</span>
+      <NuxtLink to="/" class="store-logo" :class="{ 'store-logo-default': siteLogoUrl === '/images/dashboard-logo.png' }" :aria-label="`${siteName} home`">
+        <img :src="siteLogoUrl" :alt="siteName" />
       </NuxtLink>
 
       <form role="search" class="store-search" @submit.prevent="submitSearch">
@@ -67,7 +65,7 @@
 </template>
 
 <script setup>
-import { getStoreCategoryIcon } from '~/utils/storefront'
+import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 const supabase = useSupabaseClient()
 const route = useRoute()
 const customerUser = useSupabaseUser()
@@ -84,7 +82,7 @@ const departmentsOpen = ref(false)
 const searchQuery = ref('')
 const isShopAllActive = computed(() => route.path === '/search' && !Object.keys(route.query).length)
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
-const siteLogoUrl = computed(() => siteContent.value?.settings?.site_logo_url || '')
+const siteLogoUrl = computed(() => getStoreImageUrl(siteContent.value?.settings?.site_logo_url) || '/images/dashboard-logo.png')
 const headerCategories = computed(() => categoriesData.value || [])
 const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
