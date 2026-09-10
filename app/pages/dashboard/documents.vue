@@ -1,323 +1,146 @@
 <template>
-  <div class="mx-auto max-w-6xl space-y-6">
-    <section class="overflow-hidden rounded-2xl bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-500 p-6 text-white shadow">
-      <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-        <div class="flex items-center gap-4">
-          <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-            <Icon name="lucide:folder-closed" size="30" />
-          </span>
-          <div>
-            <h2 class="text-3xl font-bold sm:text-4xl">Documents</h2>
-            <p class="mt-1 text-sm text-blue-50">
-              Organize files and set folder access.
-            </p>
-          </div>
-        </div>
-
-        <div v-if="access.can_edit" class="flex flex-wrap gap-2">
-          <button
-            type="button"
-            class="inline-flex items-center gap-2 rounded-xl bg-white/15 px-4 py-3 text-sm font-bold text-white ring-1 ring-white/25 hover:bg-white/25"
-            @click="openCreateFolder"
-          >
-            <Icon name="lucide:folder-plus" size="18" />
-            New folder
-          </button>
-          <button
-            type="button"
-            class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-blue-700 hover:bg-blue-50"
-            :disabled="uploading"
-            @click="fileInput?.click()"
-          >
-            <Icon name="lucide:upload" size="18" />
-            {{ uploading ? 'Uploading...' : 'Upload files' }}
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div v-if="pageError" class="flex items-start gap-3 rounded-2xl bg-red-50 p-4 text-sm text-red-700 shadow-sm">
-      <Icon name="lucide:circle-alert" size="20" class="mt-0.5 shrink-0" />
-      <div class="min-w-0 flex-1">
-        <p class="font-semibold">Documents could not be loaded</p>
-        <p class="mt-1">{{ pageError }}</p>
-      </div>
-      <button type="button" class="font-bold hover:underline" @click="loadDocuments">Retry</button>
-    </div>
-
-    <div
-      v-if="loaded && !access.can_edit"
-      class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"
-    >
-      <Icon name="lucide:eye" size="20" class="mt-0.5 shrink-0" />
+  <div class="file-workspace mx-auto max-w-6xl pb-6">
+    <header class="file-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
       <div>
-        <p class="font-bold">View-only access</p>
-        <p class="mt-0.5">You can open and download files. Editing is disabled.</p>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-950">File manager</h2>
+        <p class="mt-1.5 text-sm text-gray-500">Organize documents and manage folder access.</p>
+      </div>
+      <div v-if="access.can_edit" class="flex flex-wrap gap-2">
+        <button type="button" class="file-button" @click="openCreateFolder"><Icon name="lucide:folder-plus" size="17" /> New folder</button>
+        <button type="button" class="file-button file-button-primary" :disabled="uploading" @click="fileInput?.click()"><Icon name="lucide:upload" size="17" /> {{ uploading ? 'Uploading…' : 'Upload files' }}</button>
+      </div>
+    </header>
+
+    <div class="grid gap-3 sm:grid-cols-3" aria-label="Current folder summary">
+      <div class="file-stat !border-gray-950 !bg-gray-950 text-white">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-gray-300"><Icon name="lucide:hard-drive" size="21" /></span>
+        <div><p class="text-xs text-gray-400">{{ searchQuery.trim() ? 'Matching file size' : 'Files in this folder' }}</p><p class="mt-1 text-2xl font-semibold tracking-tight">{{ loaded ? formatBytes(summary.size_bytes) : '—' }}</p></div>
+      </div>
+      <div v-for="metric in folderMetrics" :key="metric.key" class="file-stat">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500"><Icon :name="metric.icon" size="21" /></span>
+        <div><p class="file-label">{{ metric.label }}</p><p class="mt-1 text-2xl font-semibold tracking-tight tabular-nums">{{ loaded ? summary[metric.key] : '—' }}</p></div>
       </div>
     </div>
 
-    <section class="overflow-hidden rounded-2xl bg-white shadow">
-      <div class="border-b p-4 sm:p-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <nav class="flex min-w-0 flex-wrap items-center gap-1 text-sm" aria-label="Folder breadcrumb">
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 rounded-lg px-2.5 py-2 font-semibold transition"
-              :class="!currentFolderId ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'"
-              @click="goToFolder(null)"
-            >
-              <Icon name="lucide:hard-drive" size="16" />
-              All documents
-            </button>
+    <div v-if="pageError" role="alert" class="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+      <Icon name="lucide:circle-alert" size="18" class="shrink-0" /><p class="min-w-0 flex-1">{{ pageError }}</p>
+      <button type="button" class="font-semibold" @click="loadDocuments">Retry</button>
+    </div>
+    <p v-if="loaded && !access.can_edit" class="flex items-center gap-2 text-xs text-gray-500"><Icon name="lucide:eye" size="15" /> View-only access. Open or download available files.</p>
 
-            <template v-for="crumb in breadcrumbs" :key="crumb.id">
-              <Icon name="lucide:chevron-right" size="15" class="shrink-0 text-gray-300" />
-              <button
-                type="button"
-                class="max-w-48 truncate rounded-lg px-2.5 py-2 font-semibold transition"
-                :class="crumb.id === currentFolderId ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'"
-                @click="goToFolder(crumb.id)"
-              >
-                {{ crumb.name }}
-              </button>
-            </template>
-          </nav>
+    <section class="file-surface" aria-label="Browse documents" :aria-busy="loading">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+        <nav class="flex min-w-0 flex-wrap items-center gap-1 text-sm" aria-label="Folder breadcrumb">
+          <button type="button" class="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 font-semibold" :class="!currentFolderId ? 'text-gray-950' : 'text-gray-500 hover:bg-gray-100'" :aria-current="!currentFolderId ? 'location' : undefined" @click="goToFolder(null)"><Icon name="lucide:folder-open" size="17" /> All documents</button>
+          <template v-for="crumb in breadcrumbs" :key="crumb.id">
+            <Icon name="lucide:chevron-right" size="14" class="text-gray-300" />
+            <button type="button" class="max-w-40 truncate rounded-lg px-2 py-1.5 font-semibold" :class="crumb.id === currentFolderId ? 'text-gray-950' : 'text-gray-500 hover:bg-gray-100'" :aria-current="crumb.id === currentFolderId ? 'location' : undefined" :title="crumb.name" @click="goToFolder(crumb.id)">{{ crumb.name }}</button>
+          </template>
+        </nav>
+        <div class="flex items-center gap-2">
+          <button v-if="currentFolder?.can_manage_access" type="button" class="file-button" @click="openPermissions(currentFolder)"><Icon name="lucide:users" size="15" /> Folder access</button>
+          <DashboardFileViewToggle v-model="viewMode" />
+        </div>
+      </div>
 
-          <div class="flex items-center gap-2">
-            <label class="relative min-w-0 flex-1 lg:w-72">
-              <Icon name="lucide:search" size="17" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                v-model="searchQuery"
-                type="search"
-                placeholder="Search this folder"
-                class="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              >
-            </label>
-            <div class="flex rounded-xl bg-gray-100 p-1">
-              <button
-                type="button"
-                aria-label="Grid view"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-lg"
-                :class="viewMode === 'grid' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500'"
-                @click="viewMode = 'grid'"
-              >
-                <Icon name="lucide:grid-2x2" size="17" />
-              </button>
-              <button
-                type="button"
-                aria-label="List view"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-lg"
-                :class="viewMode === 'list' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500'"
-                @click="viewMode = 'list'"
-              >
-                <Icon name="lucide:list" size="18" />
-              </button>
-            </div>
+      <div class="flex flex-wrap gap-3 border-b border-gray-100 px-5 py-4">
+        <label class="relative min-w-0 flex-[1_1_220px]">
+          <span class="sr-only">Search this folder</span><Icon name="lucide:search" size="17" class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input v-model="searchQuery" type="search" placeholder="Search this folder…" class="file-search" />
+        </label>
+        <label class="file-button !py-0">
+          <Icon name="lucide:arrow-down-wide-narrow" size="16" /><span class="sr-only">Sort documents</span>
+          <select v-model="sortBy" class="min-h-10 max-w-40 bg-transparent text-xs outline-none"><option value="modified">Last modified</option><option value="name">Name, A–Z</option><option value="size">Largest first</option></select>
+        </label>
+        <button type="button" class="file-button" :disabled="loading" aria-label="Refresh documents" @click="loadDocuments"><Icon name="lucide:refresh-cw" size="16" :class="{ 'motion-safe:animate-spin': loading }" /></button>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-gray-50/50 px-5 py-2.5">
+        <div class="flex gap-1" role="group" aria-label="File type">
+          <button v-for="filter in itemFilters" :key="filter.key" type="button" class="file-chip" :aria-pressed="itemFilter === filter.key" @click="itemFilter = filter.key">{{ filter.label }} <span class="opacity-60">{{ filter.count }}</span></button>
+        </div>
+        <span v-if="searchQuery.trim()" class="file-label">Search results in this folder</span>
+        <span v-else-if="currentFolder?.is_restricted" class="inline-flex items-center gap-1 text-xs text-gray-500"><Icon name="lucide:lock-keyhole" size="13" /> Restricted folder</span>
+      </div>
+
+      <div class="file-content" :class="{ 'has-selection': selectedItem }">
+        <div class="min-w-0">
+          <div v-if="loading" class="file-empty" role="status"><Icon name="lucide:loader-circle" size="26" class="motion-safe:animate-spin text-gray-400" /><p class="mt-2 text-sm text-gray-500">Loading documents…</p></div>
+          <div v-else-if="!visibleItems.length" class="file-empty">
+            <span class="mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400"><Icon :name="pageError ? 'lucide:cloud-off' : 'lucide:folder-search'" size="27" /></span>
+            <h3 class="text-sm font-semibold">{{ pageError ? 'Documents could not load' : searchQuery.trim() ? 'No matching files or folders' : 'Nothing here yet' }}</h3>
+            <p class="text-sm text-gray-500">{{ pageError ? 'Try refreshing the folder.' : searchQuery.trim() ? 'Try another name.' : itemFilter === 'all' ? 'Files and folders will appear here.' : 'Try viewing all items.' }}</p>
+            <button v-if="searchQuery || itemFilter !== 'all'" type="button" class="file-button mt-3" @click="searchQuery = ''; itemFilter = 'all'">Reset filters</button>
           </div>
-        </div>
-      </div>
 
-      <div
-        v-if="access.can_edit"
-        class="m-4 flex min-h-24 cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-4 text-center transition sm:m-5"
-        :class="dragActive ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-blue-300 hover:bg-blue-50/40'"
-        @click="fileInput?.click()"
-        @dragenter.prevent="dragActive = true"
-        @dragover.prevent="dragActive = true"
-        @dragleave.prevent="handleDragLeave"
-        @drop.prevent="handleDrop"
-      >
-        <div class="flex flex-col items-center gap-1 sm:flex-row sm:gap-3">
-          <Icon :name="uploading ? 'lucide:loader-circle' : 'lucide:cloud-upload'" size="25" :class="uploading ? 'animate-spin' : ''" />
-          <div class="text-sm">
-            <span class="font-bold">{{ uploading ? uploadStatus : 'Drop files here or click to browse' }}</span>
-            <span v-if="!uploading" class="ml-1 text-gray-400">Up to 25 MB each</span>
-          </div>
-        </div>
-      </div>
-
-      <input
-        ref="fileInput"
-        type="file"
-        class="hidden"
-        multiple
-        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.text,.rtf,.csv,.json,.xml,.md,.odt,.ods,.jpg,.jpeg,.png,.webp,.gif,.avif,.svg,.bmp,.tif,.tiff,.heic,.zip,.rar,.7z"
-        @change="handleFileSelection"
-      >
-
-      <div class="flex flex-wrap items-center justify-between gap-3 px-4 pb-4 text-xs text-gray-500 sm:px-5">
-        <p>
-          {{ summary.folders }} {{ summary.folders === 1 ? 'folder' : 'folders' }} ·
-          {{ summary.files }} {{ summary.files === 1 ? 'file' : 'files' }} ·
-          {{ formatBytes(summary.size_bytes) }}
-        </p>
-        <div v-if="currentFolder" class="flex items-center gap-2">
-          <span v-if="currentFolder.is_restricted" class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 font-semibold text-violet-700">
-            <Icon name="lucide:lock-keyhole" size="13" /> Restricted
-          </span>
-          <button
-            v-if="currentFolder.can_manage_access"
-            type="button"
-            class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 font-semibold text-gray-700 hover:bg-gray-200"
-            @click="openPermissions(currentFolder)"
-          >
-            <Icon name="lucide:users" size="13" /> Manage access
-          </button>
-        </div>
-      </div>
-
-      <div v-if="loading" class="grid min-h-64 place-items-center border-t p-8 text-gray-500">
-        <div class="text-center">
-          <Icon name="lucide:loader-circle" size="30" class="mx-auto animate-spin text-blue-600" />
-          <p class="mt-3 text-sm font-medium">Loading documents...</p>
-        </div>
-      </div>
-
-      <div v-else-if="!items.length" class="grid min-h-64 place-items-center border-t p-8 text-center">
-        <div>
-          <span class="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
-            <Icon :name="searchQuery.trim() ? 'lucide:search-x' : 'lucide:folder-open'" size="30" />
-          </span>
-          <h3 class="mt-4 text-lg font-bold text-gray-900">
-            {{ searchQuery.trim() ? 'Nothing matched your search' : 'This folder is empty' }}
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            {{ searchQuery.trim()
-              ? 'Try another file or folder name.'
-              : access.can_edit ? 'Upload a file or create a folder to get started.' : 'There are no files available here yet.' }}
-          </p>
-        </div>
-      </div>
-
-      <div v-else-if="viewMode === 'grid'" class="grid gap-4 border-t p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3 xl:grid-cols-4">
-        <article
-          v-for="item in items"
-          :key="`${item.type}-${item.id}`"
-          class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-        >
-          <button
-            type="button"
-            class="flex w-full items-center gap-3 p-4 text-left"
-            @dblclick="activateItem(item)"
-            @click="selectedItemId = item.id"
-          >
-            <span
-              class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-              :class="item.type === 'folder' ? 'bg-amber-50 text-amber-500' : getFileColor(item)"
-            >
-              <Icon :name="item.type === 'folder' ? 'lucide:folder' : getFileIcon(item)" size="25" />
-            </span>
-            <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-bold text-gray-900" :title="item.name">{{ item.name }}</p>
-              <p class="mt-1 truncate text-xs text-gray-500">
-                {{ item.type === 'folder' ? getFolderAccessLabel(item) : formatBytes(item.size_bytes) }}
-              </p>
-            </div>
-          </button>
-
-          <div class="flex items-center gap-1 border-t bg-gray-50/70 px-3 py-2">
-            <button
-              type="button"
-              class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold text-gray-600 hover:bg-white hover:text-blue-700"
-              @click="activateItem(item)"
-            >
-              <Icon :name="item.type === 'folder' ? 'lucide:folder-open' : 'lucide:eye'" size="15" />
-              {{ item.type === 'folder' ? 'Open' : 'View' }}
-            </button>
-            <button
-              v-if="item.type === 'file'"
-              type="button"
-              class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-blue-700"
-              aria-label="Download file"
-              @click="downloadDocument(item)"
-            >
-              <Icon name="lucide:download" size="15" />
-            </button>
-            <button
-              v-if="item.type === 'folder' && item.can_manage_access"
-              type="button"
-              class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-violet-700"
-              aria-label="Manage folder access"
-              @click="openPermissions(item)"
-            >
-              <Icon name="lucide:user-round-cog" size="15" />
-            </button>
-            <button
-              v-if="item.can_edit"
-              type="button"
-              class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-gray-950"
-              :aria-label="`Rename ${item.name}`"
-              @click="openRename(item)"
-            >
-              <Icon name="lucide:pencil" size="15" />
-            </button>
-            <button
-              v-if="item.can_edit"
-              type="button"
-              class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600"
-              :aria-label="`Delete ${item.name}`"
-              @click="deleteItem(item)"
-            >
-              <Icon name="lucide:trash-2" size="15" />
-            </button>
-          </div>
-        </article>
-      </div>
-
-      <div v-else class="overflow-x-auto border-t">
-        <table class="w-full min-w-[720px] text-left text-sm">
-          <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
-            <tr>
-              <th class="px-5 py-3">Name</th>
-              <th class="px-5 py-3">Access / type</th>
-              <th class="px-5 py-3">Size</th>
-              <th class="px-5 py-3">Modified</th>
-              <th class="px-5 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y">
-            <tr v-for="item in items" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50">
-              <td class="px-5 py-3.5">
-                <button type="button" class="flex max-w-sm items-center gap-3 text-left" @click="activateItem(item)">
-                  <span :class="item.type === 'folder' ? 'text-amber-500' : 'text-blue-600'">
-                    <Icon :name="item.type === 'folder' ? 'lucide:folder' : getFileIcon(item)" size="21" />
-                  </span>
-                  <span class="truncate font-semibold text-gray-900">{{ item.name }}</span>
+          <div v-else-if="viewMode === 'grid'" class="space-y-6 p-5">
+            <section v-if="visibleFolders.length" aria-label="Folders">
+              <div class="mb-3 flex items-center gap-2"><h3 class="text-sm font-semibold">Folders</h3><span class="file-label">{{ visibleFolders.length }}</span></div>
+              <div class="file-item-grid">
+                <article v-for="item in visibleFolders" :key="item.id" class="file-card group" :class="{ '!border-gray-900 ring-1 ring-gray-900': selectedItemId === item.id }">
+                  <button type="button" class="block w-full p-4 text-left" :aria-pressed="selectedItemId === item.id" :aria-label="`Details for ${item.name}`" @click="selectedItemId = item.id" @dblclick="activateItem(item)">
+                    <div class="mb-4 flex items-start justify-between"><Icon name="lucide:folder" size="34" class="fill-amber-100 text-amber-400" /><Icon v-if="item.is_restricted" name="lucide:lock-keyhole" size="13" class="text-gray-400" /></div>
+                    <p class="truncate text-sm font-semibold" :title="item.name">{{ item.name }}</p><p class="mt-1.5 truncate text-xs text-gray-500">{{ getFolderAccessLabel(item) }}</p>
+                  </button>
+                  <button type="button" class="flex w-full items-center justify-between border-t border-gray-100 px-4 py-2.5 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900" @click="activateItem(item)">Open folder <Icon name="lucide:arrow-up-right" size="14" /></button>
+                </article>
+              </div>
+            </section>
+            <section v-if="visibleFiles.length" aria-label="Files">
+              <div class="mb-3 flex items-center gap-2"><h3 class="text-sm font-semibold">Files</h3><span class="file-label">{{ visibleFiles.length }}</span></div>
+              <div class="file-item-grid">
+                <button v-for="item in visibleFiles" :key="item.id" type="button" class="file-card group" :aria-pressed="selectedItemId === item.id" :aria-label="`Details for ${item.name}`" @click="selectedItemId = item.id" @dblclick="activateItem(item)">
+                  <div class="file-thumbnail"><span class="flex h-20 w-16 items-center justify-center rounded-xl border border-white bg-white shadow-sm" :class="getFileColor(item)"><Icon :name="getFileIcon(item)" size="33" /></span></div>
+                  <div class="border-t border-gray-100 p-3.5"><p class="truncate text-xs font-semibold" :title="item.name">{{ item.name }}</p><div class="mt-2 flex items-center justify-between gap-1 text-[11px] text-gray-500"><span>{{ formatBytes(item.size_bytes) }}</span><span class="rounded bg-gray-100 px-1.5 py-0.5">{{ getFileType(item) }}</span></div></div>
                 </button>
-              </td>
-              <td class="px-5 py-3.5 text-gray-500">
-                <span v-if="item.type === 'folder'" class="inline-flex items-center gap-1.5">
-                  <Icon :name="item.is_restricted ? 'lucide:lock-keyhole' : 'lucide:users'" size="14" />
-                  {{ getFolderAccessLabel(item) }}
-                </span>
-                <span v-else>{{ getFileType(item) }}</span>
-              </td>
-              <td class="px-5 py-3.5 text-gray-500">{{ item.type === 'file' ? formatBytes(item.size_bytes) : '—' }}</td>
-              <td class="px-5 py-3.5 text-gray-500">{{ formatDate(item.updated_at) }}</td>
-              <td class="px-5 py-3.5">
-                <div class="flex justify-end gap-1">
-                  <button type="button" class="icon-action" :aria-label="item.type === 'folder' ? 'Open folder' : 'View file'" @click="activateItem(item)">
-                    <Icon :name="item.type === 'folder' ? 'lucide:folder-open' : 'lucide:eye'" size="16" />
-                  </button>
-                  <button v-if="item.type === 'file'" type="button" class="icon-action" aria-label="Download file" @click="downloadDocument(item)">
-                    <Icon name="lucide:download" size="16" />
-                  </button>
-                  <button v-if="item.type === 'folder' && item.can_manage_access" type="button" class="icon-action" aria-label="Manage folder access" @click="openPermissions(item)">
-                    <Icon name="lucide:user-round-cog" size="16" />
-                  </button>
-                  <button v-if="item.can_edit" type="button" class="icon-action" :aria-label="`Rename ${item.name}`" @click="openRename(item)">
-                    <Icon name="lucide:pencil" size="16" />
-                  </button>
-                  <button v-if="item.can_edit" type="button" class="icon-action hover:!bg-red-50 hover:!text-red-600" :aria-label="`Delete ${item.name}`" @click="deleteItem(item)">
-                    <Icon name="lucide:trash-2" size="16" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </section>
+          </div>
+
+          <div v-else class="overflow-x-auto">
+            <table class="file-table">
+              <caption class="sr-only">Documents in this folder. Select a name to view details.</caption>
+              <thead><tr><th scope="col">Name</th><th scope="col">Access / type</th><th scope="col">Size</th><th scope="col">Modified</th><th scope="col"><span class="sr-only">Open</span></th></tr></thead>
+              <tbody>
+                <tr v-for="item in visibleItems" :key="`${item.type}-${item.id}`" :aria-selected="selectedItemId === item.id">
+                  <td><button type="button" class="flex w-full max-w-60 items-center gap-3 rounded text-left" :aria-label="`Details for ${item.name}`" @click="selectedItemId = item.id"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" :class="item.type === 'folder' ? 'bg-amber-50 text-amber-500' : getFileColor(item)"><Icon :name="item.type === 'folder' ? 'lucide:folder' : getFileIcon(item)" size="20" /></span><span class="truncate text-xs font-semibold" :title="item.name">{{ item.name }}</span></button></td>
+                  <td class="whitespace-nowrap text-xs text-gray-500">{{ item.type === 'folder' ? getFolderAccessLabel(item) : getFileType(item) }}</td>
+                  <td class="whitespace-nowrap text-xs tabular-nums text-gray-500">{{ item.type === 'file' ? formatBytes(item.size_bytes) : '—' }}</td>
+                  <td class="whitespace-nowrap text-xs text-gray-500">{{ formatDate(item.updated_at) }}</td>
+                  <td><button type="button" class="file-button !min-h-8 !p-2" :aria-label="`Open ${item.name}`" @click="activateItem(item)"><Icon name="lucide:arrow-up-right" size="15" /></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <button v-if="access.can_edit" type="button" class="m-5 flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-center gap-3 rounded-xl border border-dashed p-5 transition disabled:cursor-wait" :class="dragActive ? 'border-gray-700 bg-gray-100' : 'border-gray-300 bg-gray-50/50 hover:bg-gray-100'" :disabled="uploading" @click="fileInput?.click()" @dragenter.prevent="dragActive = true" @dragover.prevent="dragActive = true" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
+            <Icon :name="uploading ? 'lucide:loader-circle' : 'lucide:cloud-upload'" size="22" class="text-gray-400" :class="{ 'motion-safe:animate-spin': uploading }" /><span class="text-xs font-medium text-gray-600" role="status">{{ uploading ? uploadStatus : 'Drop files here or browse' }}</span><span v-if="!uploading" class="text-xs text-gray-400">25 MB per file</span>
+          </button>
+        </div>
+
+        <DashboardFileDetailsPanel v-if="selectedItem" :key="selectedItem.id" @close="selectedItemId = ''">
+          <div class="mb-4 flex h-32 items-center justify-center rounded-xl border border-gray-200 bg-white" :class="selectedItem.type === 'folder' ? 'text-amber-400' : getFileColor(selectedItem)"><Icon :name="selectedItem.type === 'folder' ? 'lucide:folder' : getFileIcon(selectedItem)" size="48" /></div>
+          <h4 class="break-words text-sm font-semibold">{{ selectedItem.name }}</h4>
+          <p class="mt-1 text-xs text-gray-500">{{ selectedItem.type === 'folder' ? 'Folder' : getFileType(selectedItem) + ' document' }}</p>
+          <dl class="my-5 space-y-3 border-y border-gray-200 py-5 text-xs">
+            <div v-if="selectedItem.type === 'file'" class="flex justify-between gap-3"><dt class="text-gray-500">Size</dt><dd class="font-medium">{{ formatBytes(selectedItem.size_bytes) }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-gray-500">Modified</dt><dd>{{ formatDate(selectedItem.updated_at) }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-gray-500">Location</dt><dd class="max-w-36 truncate" :title="currentFolder?.name || 'All documents'">{{ currentFolder?.name || 'All documents' }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-gray-500">Access</dt><dd>{{ selectedItem.can_edit ? 'Can edit' : 'View only' }}</dd></div>
+          </dl>
+          <div class="flex flex-col gap-2">
+            <button type="button" class="file-button file-button-primary" @click="activateItem(selectedItem)"><Icon :name="selectedItem.type === 'folder' ? 'lucide:folder-open' : 'lucide:eye'" size="16" />{{ selectedItem.type === 'folder' ? 'Open folder' : canPreviewDocument(selectedItem) ? 'Preview file' : 'Download file' }}</button>
+            <button v-if="selectedItem.type === 'file' && canPreviewDocument(selectedItem)" type="button" class="file-button" @click="downloadDocument(selectedItem)"><Icon name="lucide:download" size="16" /> Download</button>
+            <button v-if="selectedItem.type === 'folder' && selectedItem.can_manage_access" type="button" class="file-button" @click="openPermissions(selectedItem)"><Icon name="lucide:users" size="16" /> Manage access</button>
+            <button v-if="selectedItem.can_edit" type="button" class="file-button" @click="openRename(selectedItem)"><Icon name="lucide:pencil" size="15" /> Rename</button>
+            <button v-if="selectedItem.can_edit" type="button" class="file-button !border-transparent !bg-transparent !text-red-600 hover:!bg-red-50" @click="deleteItem(selectedItem)"><Icon name="lucide:trash-2" size="15" /> Delete {{ selectedItem.type }}</button>
+          </div>
+        </DashboardFileDetailsPanel>
       </div>
+      <footer class="flex flex-wrap justify-between gap-2 border-t border-gray-100 px-5 py-3.5 text-xs text-gray-500"><span>{{ visibleItems.length }} items{{ searchQuery.trim() ? ' matching your search' : ' in this folder' }}</span><span>Select an item for details</span></footer>
     </section>
+
+    <input ref="fileInput" type="file" class="hidden" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.text,.rtf,.csv,.json,.xml,.md,.odt,.ods,.jpg,.jpeg,.png,.webp,.gif,.avif,.svg,.bmp,.tif,.tiff,.heic,.zip,.rar,.7z" @change="handleFileSelection" >
 
     <Teleport to="body">
       <div v-if="createFolderOpen" class="modal-backdrop" @mousedown.self="closeCreateFolder">
@@ -487,6 +310,28 @@ const pageError = ref('')
 const searchQuery = ref('')
 const viewMode = ref('grid')
 const selectedItemId = ref('')
+const itemFilter = ref('all')
+const sortBy = ref('modified')
+const folderMetrics = [
+  { key: 'folders', label: 'Folders', icon: 'lucide:folders' },
+  { key: 'files', label: 'Documents', icon: 'lucide:files' }
+]
+const selectedItem = computed(() => items.value.find((item) => item.id === selectedItemId.value) || null)
+const itemFilters = computed(() => [
+  { key: 'all', label: 'All items', count: items.value.length },
+  { key: 'folder', label: 'Folders', count: summary.folders },
+  { key: 'file', label: 'Files', count: summary.files }
+])
+const visibleItems = computed(() => {
+  return items.value.filter((item) => itemFilter.value === 'all' || item.type === itemFilter.value).sort((a, b) => {
+    if (a.type !== b.type) return a.type === 'folder' ? -1 : 1
+    if (sortBy.value === 'name') return a.name.localeCompare(b.name, undefined, { numeric: true })
+    if (sortBy.value === 'size') return Number(b.size_bytes || 0) - Number(a.size_bytes || 0)
+    return new Date(b.updated_at || 0) - new Date(a.updated_at || 0)
+  })
+})
+const visibleFolders = computed(() => visibleItems.value.filter((item) => item.type === 'folder'))
+const visibleFiles = computed(() => visibleItems.value.filter((item) => item.type === 'file'))
 const fileInput = ref(null)
 const uploading = ref(false)
 const uploadStatus = ref('Uploading...')
@@ -576,6 +421,7 @@ const loadDocuments = async () => {
 const goToFolder = async (folderId) => {
   searchQuery.value = ''
   selectedItemId.value = ''
+  itemFilter.value = 'all'
   await router.push({
     path: '/dashboard/documents',
     query: folderId ? { folder: folderId } : {}
@@ -771,6 +617,7 @@ const savePermissions = async () => {
 }
 
 const uploadFiles = async (files) => {
+  if (!access.can_edit) return
   const selectedFiles = [...files]
   if (!selectedFiles.length || uploading.value) return
 
@@ -970,8 +817,8 @@ const getFileColor = (item) => {
 }
 
 const getFolderAccessLabel = (folder) => {
-  if (!folder.is_restricted) return 'All document users'
-  return folder.access_level === 'editor' ? 'Restricted · Can edit' : 'Restricted · View only'
+  if (!folder.is_restricted) return 'Shared with admins'
+  return 'Restricted access'
 }
 
 const getInitials = (user) => {
@@ -1018,21 +865,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.icon-action {
-  display: inline-flex;
-  width: 2.25rem;
-  height: 2.25rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  color: rgb(107 114 128);
-}
-
-.icon-action:hover {
-  background: white;
-  color: rgb(29 78 216);
-}
-
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1078,8 +910,8 @@ onUnmounted(() => {
 }
 
 .form-input:focus {
-  border-color: rgb(59 130 246);
-  box-shadow: 0 0 0 3px rgb(219 234 254);
+  border-color: rgb(107 114 128);
+  box-shadow: 0 0 0 3px rgb(243 244 246);
 }
 
 .primary-button,
@@ -1091,12 +923,12 @@ onUnmounted(() => {
 }
 
 .primary-button {
-  background: rgb(37 99 235);
+  background: rgb(3 7 18);
   color: white;
 }
 
 .primary-button:hover:not(:disabled) {
-  background: rgb(29 78 216);
+  background: rgb(31 41 55);
 }
 
 .primary-button:disabled {

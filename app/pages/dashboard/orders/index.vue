@@ -1,256 +1,219 @@
 <template>
-  <div class="">
-    <div class="mx-auto max-w-6xl space-y-6">
-      <div class="rounded-2xl bg-white p-6 shadow">
-        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-4xl font-bold">Orders</h2>
-            <p class="mt-2 text-sm text-gray-500">
-              Review recent orders and update order statuses.
-            </p>
-          </div>
+  <div class="mx-auto max-w-6xl space-y-5 pb-6">
+    <header class="flex flex-col gap-4 rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-950">Orders</h2>
+        <p class="mt-1.5 text-sm text-gray-500">Track orders from checkout to delivery.</p>
+      </div>
+      <NuxtLink
+        to="/dashboard/orders/confirm"
+        class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+      >
+        <Icon name="lucide:scan-barcode" size="18" />
+        Confirm orders
+        <Icon name="lucide:arrow-up-right" size="16" class="ms-2 text-gray-400" />
+      </NuxtLink>
+    </header>
 
-          <NuxtLink
-            to="/dashboard/orders/confirm"
-            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-bold text-white transition hover:bg-gray-800"
-          >
-            <Icon name="lucide:scan-barcode" size="18" />
-            Confirm Orders
-          </NuxtLink>
+    <DashboardSecondaryNav :items="secondaryNavItems" />
+
+    <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Order summary">
+      <div
+        v-for="metric in summaryMetrics"
+        :key="metric.key"
+        class="relative overflow-hidden rounded-2xl border p-4 shadow-sm sm:p-5"
+        :class="metric.key === 'total' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200/80 bg-white text-gray-950'"
+      >
+        <dt class="flex items-center justify-between gap-2 text-xs font-medium sm:text-sm" :class="metric.key === 'total' ? 'text-gray-300' : 'text-gray-500'">
+          {{ metric.label }}
+          <span aria-hidden="true" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" :class="metric.key === 'total' ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-500'">
+            <Icon :name="metric.icon" size="16" />
+          </span>
+        </dt>
+        <dd class="mt-3">
+          <span class="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{{ hasLoadedStats ? formatCount(stats[metric.key]) : '—' }}</span>
+          <span class="mt-2 block text-xs" :class="metric.key === 'total' ? 'text-gray-400' : 'text-gray-500'">{{ metric.caption }}</span>
+        </dd>
+      </div>
+    </dl>
+
+    <div v-if="pageError" role="alert" class="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+      <Icon name="lucide:circle-alert" size="18" class="shrink-0" />
+      {{ pageError }}
+    </div>
+
+    <section class="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm" :aria-busy="loading" aria-labelledby="orders-list-title">
+      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
+        <div class="flex items-center gap-2.5">
+          <h3 id="orders-list-title" class="text-lg font-semibold tracking-tight text-gray-950">{{ showRecentOrders ? 'Recent orders' : 'All orders' }}</h3>
+          <span v-if="hasLoadedStats" class="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-gray-600">
+            {{ formatCount(showRecentOrders ? recentOrders.length : totalOrders) }}
+          </span>
         </div>
+        <NuxtLink v-if="showRecentOrders" to="/dashboard/orders" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-black">
+          View all orders <Icon name="lucide:arrow-right" size="14" />
+        </NuxtLink>
+        <span v-else class="inline-flex items-center gap-1.5 text-xs text-gray-500">
+          <Icon name="lucide:arrow-down-wide-narrow" size="14" />
+          Newest first
+        </span>
       </div>
 
-      <DashboardSecondaryNav :items="secondaryNavItems" />
-
-      <div v-if="pageError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ pageError }}
-      </div>
-
-      <div class="grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Today Orders</p>
-          <p class="mt-2 text-3xl font-bold text-gray-900">{{ stats.today }}</p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Week Orders</p>
-          <p class="mt-2 text-3xl font-bold text-gray-900">{{ stats.week }}</p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Month Orders</p>
-          <p class="mt-2 text-3xl font-bold text-gray-900">{{ stats.month }}</p>
-        </div>
-      </div>
-
-      <section v-if="showRecentOrders" class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-5 flex items-center justify-between gap-3">
-          <div>
-            <h3 class="text-2xl font-bold">Recent Orders</h3>
-            <p class="mt-1 text-sm text-gray-500">
-              Latest orders created in the system.
-            </p>
-          </div>
-
-          <div class="rounded-xl bg-gray-100 px-4 py-2 text-sm text-gray-600">
-            {{ stats.total }} total
-          </div>
-        </div>
-
-        <div v-if="loading" class="py-6 text-center text-gray-500">
-          Loading orders...
-        </div>
-
-        <div v-else-if="!recentOrders.length" class="py-6 text-center text-gray-500">
-          No orders found yet.
-        </div>
-
-        <div v-else class="space-y-3">
-          <button
-            v-for="order in recentOrders"
-            :key="order.id"
-            type="button"
-            class="flex w-full flex-col gap-3 rounded-2xl border p-4 text-left transition hover:border-gray-300 hover:bg-gray-50 md:flex-row md:items-center md:justify-between"
-            @click="openOrderDialog(order.id)"
-          >
-            <div>
-              <p class="font-bold text-gray-900">
-                {{ order.order_number || `Order #${order.id.slice(0, 8)}` }}
-              </p>
-              <p class="mt-1 text-sm text-gray-500">
-                {{ order.first_name || 'Customer' }}
-                <span v-if="order.last_name"> {{ order.last_name }}</span>
-              </p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3 md:justify-end">
-              <span class="text-sm text-gray-500">
-                {{ order.governorate || 'No governorate' }}
-              </span>
-
-              <span
-                class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
-                :class="getCustomerOrderStatusClass(order.status)"
-              >
-                {{ formatCustomerOrderStatus(order.status) }}
-              </span>
-
-              <span class="font-semibold text-gray-900">
-                {{ formatCurrency(order.total_amount) }}
-              </span>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      <section v-else class="rounded-2xl bg-white p-6 shadow">
-        <div class="flex flex-col gap-4">
-          <div>
-            <h3 class="text-2xl font-bold">All Orders</h3>
-            <p class="mt-1 text-sm text-gray-500">
-              Search orders by number or customer details. Filter by date.
-            </p>
-          </div>
-
-          <div class="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_180px_180px_auto]">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search orders"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <input
-              v-model="fromDate"
-              type="date"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <input
-              v-model="toDate"
-              type="date"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-
-            <button
-              type="button"
-              class="rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
-              @click="applyFilters"
-            >
-              Apply
-            </button>
-          </div>
-
-          <div class="flex flex-wrap gap-2">
+      <form v-if="!showRecentOrders" class="border-t border-gray-100" @submit.prevent="applyFilters">
+        <fieldset :disabled="loading" class="min-w-0 disabled:opacity-60">
+          <legend class="sr-only">Filter orders</legend>
+          <div class="flex flex-wrap items-center gap-1.5 border-b border-gray-100 bg-gray-50/60 px-5 py-3 sm:px-6" aria-label="Order date range">
             <button
               v-for="preset in quickFilterOptions"
               :key="preset.key"
               type="button"
-              class="rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
+              :aria-pressed="activePreset === preset.key"
+              class="rounded-lg px-3 py-2 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+              :class="activePreset === preset.key ? 'bg-gray-950 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-200/70 hover:text-gray-900'"
               @click="applyQuickFilter(preset.key)"
             >
               {{ preset.label }}
             </button>
-
+          </div>
+          <div class="flex flex-wrap gap-2 px-5 py-4 sm:px-6">
+            <div class="relative min-w-0 flex-[1_1_220px]">
+              <label for="order-search" class="sr-only">Search orders or customers</label>
+              <Icon name="lucide:search" size="17" class="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input id="order-search" v-model="searchQuery" type="search" placeholder="Search orders or customers…" class="order-input w-full pe-3 ps-10" />
+            </div>
+            <button type="submit" class="rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Search</button>
             <button
               type="button"
-              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700"
-              @click="clearFilters"
+              :aria-expanded="showDateFilters"
+              aria-controls="order-date-filters"
+              class="order-toolbar-button"
+              :class="{ 'order-toolbar-button-active': showDateFilters || appliedFilters.from || appliedFilters.to }"
+              @click="showDateFilters = !showDateFilters"
             >
-              Clear
+              <Icon name="lucide:calendar-days" size="16" />
+              Date range
+              <Icon :name="showDateFilters ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="14" />
             </button>
+            <button v-if="hasActiveFilters" type="button" class="order-toolbar-button" @click="clearFilters">
+              <Icon name="lucide:x" size="15" /> Reset
+            </button>
+            <button type="button" class="order-toolbar-button" aria-label="Refresh orders" title="Refresh orders" @click="loadOrdersDashboard(currentPage, { force: true })">
+              <Icon name="lucide:refresh-cw" size="16" :class="{ 'motion-safe:animate-spin': loading }" />
+            </button>
+          </div>
+          <div v-show="showDateFilters" id="order-date-filters" class="flex flex-wrap items-end gap-3 border-t border-gray-100 bg-gray-50/60 px-5 py-4 sm:px-6">
+            <div class="min-w-0 flex-[1_1_160px]">
+              <label for="order-from-date" class="mb-1.5 block text-xs font-medium text-gray-600">From</label>
+              <input id="order-from-date" v-model="fromDate" type="date" :max="toDate || undefined" class="order-input w-full px-3" />
+            </div>
+            <div class="min-w-0 flex-[1_1_160px]">
+              <label for="order-to-date" class="mb-1.5 block text-xs font-medium text-gray-600">To</label>
+              <input id="order-to-date" v-model="toDate" type="date" :min="fromDate || undefined" class="order-input w-full px-3" />
+            </div>
+            <button type="submit" class="order-toolbar-button">Apply dates</button>
+          </div>
+        </fieldset>
+      </form>
+
+      <div v-if="loading" role="status" class="border-t border-gray-100 px-5 py-6 sm:px-6">
+        <span class="sr-only">Loading orders…</span>
+        <div aria-hidden="true" class="space-y-5 motion-safe:animate-pulse">
+          <div v-for="row in 6" :key="row" class="flex items-center gap-5">
+            <div class="h-10 w-10 shrink-0 rounded-xl bg-gray-100" />
+            <div class="flex-1 space-y-2"><div class="h-3 w-24 rounded bg-gray-100" /><div class="h-2.5 w-36 rounded bg-gray-100" /></div>
+            <div class="hidden h-3 w-24 rounded bg-gray-100 sm:block" />
+            <div class="h-6 w-20 rounded-full bg-gray-100" />
           </div>
         </div>
+      </div>
 
-        <div class="mt-6">
-          <div class="mb-4 flex items-center justify-between rounded-xl border px-4 py-3">
-            <p class="text-sm text-gray-500">
-              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalOrders }} orders
-            </p>
+      <div v-else-if="!displayedOrders.length" class="flex flex-col items-center border-t border-gray-100 px-5 py-16 text-center">
+        <span class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100 text-gray-500"><Icon :name="pageError ? 'lucide:cloud-off' : 'lucide:package-search'" size="24" /></span>
+        <h4 class="text-sm font-semibold text-gray-900">{{ pageError ? 'Orders could not load' : hasActiveFilters && !showRecentOrders ? 'No matching orders' : 'No orders yet' }}</h4>
+        <p class="mt-1.5 text-sm text-gray-500">{{ pageError ? 'Try refreshing the list.' : hasActiveFilters && !showRecentOrders ? 'Try another search or date range.' : 'New orders will appear here.' }}</p>
+        <button v-if="pageError" type="button" class="order-toolbar-button mt-5" @click="loadOrdersDashboard(currentPage, { force: true })">Try again</button>
+        <button v-else-if="hasActiveFilters && !showRecentOrders" type="button" class="order-toolbar-button mt-5" @click="clearFilters">Reset filters</button>
+      </div>
 
-            <p class="text-sm font-medium text-gray-600">
-              Page {{ currentPage }} of {{ totalPages }}
-            </p>
-          </div>
-
-          <div v-if="loading" class="py-6 text-center text-gray-500">
-            Loading filtered orders...
-          </div>
-
-          <div v-else-if="!orders.length" class="py-6 text-center text-gray-500">
-            No orders match the current filters.
-          </div>
-
-          <div v-else class="space-y-3">
-            <button
-              v-for="order in orders"
-              :key="order.id"
-              type="button"
-              class="grid w-full gap-3 rounded-2xl border p-4 text-left transition hover:border-gray-300 hover:bg-gray-50 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_160px_160px]"
-              @click="openOrderDialog(order.id)"
-            >
-              <div>
-                <p class="font-bold text-gray-900">
-                  {{ order.order_number || `Order #${order.id.slice(0, 8)}` }}
-                </p>
-                <p class="mt-1 text-sm text-gray-500">
-                  {{ order.first_name || 'Customer' }}
-                  <span v-if="order.last_name"> {{ order.last_name }}</span>
-                </p>
-              </div>
-
-              <div class="text-sm text-gray-600">
-                <p>{{ order.governorate || 'No governorate' }}</p>
-                <p class="mt-1 text-xs text-gray-400">{{ formatDate(order.created_at) }}</p>
-              </div>
-
-              <div class="font-semibold text-gray-900">
-                {{ formatCurrency(order.total_amount) }}
-              </div>
-
-              <div>
-                <span
-                  class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
-                  :class="getCustomerOrderStatusClass(order.status)"
-                >
-                  {{ formatCustomerOrderStatus(order.status) }}
-                </span>
-              </div>
-            </button>
-          </div>
-
-          <div class="mt-4 flex items-center justify-between rounded-xl border px-4 py-3">
-            <button
-              type="button"
-              :disabled="currentPage === 1 || loading"
-              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPreviousPage"
-            >
-              Previous
-            </button>
-
-            <p class="text-sm text-gray-500">
-              Page {{ currentPage }} of {{ totalPages }}
-            </p>
-
-            <button
-              type="button"
-              :disabled="currentPage === totalPages || loading"
-              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToNextPage"
-            >
-              Next
-            </button>
-          </div>
+      <template v-else>
+        <div class="hidden overflow-x-auto md:block">
+          <table class="w-full text-left text-sm">
+            <caption class="sr-only">{{ showRecentOrders ? 'Recent orders' : 'Orders matching the applied filters' }}. Select an order to view details.</caption>
+            <thead class="border-y border-gray-200/70 bg-gray-50/80 text-xs font-medium text-gray-500">
+              <tr>
+                <th scope="col" class="px-6 py-3 font-medium">Order</th>
+                <th scope="col" class="px-4 py-3 font-medium">Customer</th>
+                <th scope="col" class="px-4 py-3 font-medium">Date</th>
+                <th scope="col" class="px-4 py-3 font-medium">Status</th>
+                <th scope="col" class="px-6 py-3 text-right font-medium">Total</th>
+                <th scope="col" class="w-10 pe-5"><span class="sr-only">View order</span></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr v-for="order in displayedOrders" :key="order.id" class="group cursor-pointer transition-colors hover:bg-gray-50/80 focus-within:bg-gray-50/80" @click="openOrderDialog(order.id)">
+                <td class="py-4 ps-6 pe-4">
+                  <button type="button" class="rounded text-left text-sm font-semibold text-gray-900 underline-offset-4 group-hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-900" :aria-label="`View order ${orderLabel(order)}`" @click.stop="openOrderDialog(order.id)">{{ orderLabel(order) }}</button>
+                </td>
+                <td class="px-4 py-4">
+                  <div class="flex items-center gap-2.5">
+                    <span aria-hidden="true" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200/70 bg-gray-100 text-[11px] font-semibold text-gray-600">{{ customerInitials(order) }}</span>
+                    <div class="min-w-0">
+                      <p class="max-w-44 truncate font-medium text-gray-800" :title="customerName(order)">{{ customerName(order) }}</p>
+                      <p class="mt-0.5 max-w-44 truncate text-xs text-gray-500" :title="order.governorate || ''">{{ order.governorate || 'Location not provided' }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-4 py-4">
+                  <p class="text-xs text-gray-700">{{ formatDate(order.created_at) }}</p>
+                  <p class="mt-1 text-xs text-gray-500">{{ formatTime(order.created_at) }}</p>
+                </td>
+                <td class="whitespace-nowrap px-4 py-4">
+                  <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium" :class="getCustomerOrderStatusClass(order.status)">
+                    <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+                    {{ formatCustomerOrderStatus(order.status) }}
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-right text-xs font-semibold tabular-nums text-gray-900">{{ formatCurrency(order.total_amount) }}</td>
+                <td class="pe-5 text-gray-300 transition-colors group-hover:text-gray-900"><Icon name="lucide:chevron-right" size="16" aria-hidden="true" /></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
-    </div>
 
-    <DashboardOrderDetailsDialog
-      v-model:open="isOrderDialogOpen"
-      :order-id="selectedOrderId"
-      @updated="handleOrderUpdated"
-    />
+        <div class="divide-y divide-gray-100 border-t border-gray-100 md:hidden">
+          <button v-for="order in displayedOrders" :key="order.id" type="button" class="block w-full space-y-3 px-5 py-4 text-left transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-gray-900" :aria-label="`View order ${orderLabel(order)}`" @click="openOrderDialog(order.id)">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-sm font-semibold text-gray-900">{{ orderLabel(order) }}</span>
+              <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium" :class="getCustomerOrderStatusClass(order.status)">
+                <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />{{ formatCustomerOrderStatus(order.status) }}
+              </span>
+            </div>
+            <div class="flex items-end justify-between gap-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm text-gray-700">{{ customerName(order) }}</p>
+                <p class="mt-1 text-xs text-gray-500">{{ order.governorate || 'Location not provided' }} · {{ formatDate(order.created_at) }}</p>
+              </div>
+              <span class="shrink-0 text-xs font-semibold tabular-nums text-gray-900">{{ formatCurrency(order.total_amount) }}</span>
+            </div>
+          </button>
+        </div>
+      </template>
+
+      <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-5 py-4 sm:px-6">
+        <p class="text-xs text-gray-500" aria-live="polite">
+          <template v-if="loading">Loading orders…</template>
+          <template v-else-if="showRecentOrders">Latest {{ displayedOrders.length }} orders</template>
+          <template v-else><span class="font-medium text-gray-700">{{ pageStart }}–{{ pageEnd }}</span> of {{ formatCount(totalOrders) }} orders</template>
+        </p>
+        <div v-if="!showRecentOrders" class="flex items-center gap-2">
+          <span class="me-2 text-xs tabular-nums text-gray-500">Page {{ currentPage }} of {{ totalPages }}</span>
+          <button type="button" :disabled="currentPage === 1 || loading" class="order-toolbar-button !px-2.5" aria-label="Previous page" @click="goToPreviousPage"><Icon name="lucide:chevron-left" size="16" /></button>
+          <button type="button" :disabled="currentPage === totalPages || loading" class="order-toolbar-button !px-2.5" aria-label="Next page" @click="goToNextPage"><Icon name="lucide:chevron-right" size="16" /></button>
+        </div>
+      </footer>
+    </section>
+
+    <DashboardOrderDetailsDialog v-model:open="isOrderDialogOpen" :order-id="selectedOrderId" @updated="handleOrderUpdated" />
   </div>
 </template>
 
@@ -296,13 +259,27 @@ const fromDate = ref('')
 const toDate = ref('')
 const isOrderDialogOpen = ref(false)
 const selectedOrderId = ref('')
+const hasLoadedStats = ref(false)
+const showDateFilters = ref(false)
+const activePreset = ref('all')
+const appliedFilters = reactive({ search: '', from: '', to: '' })
+const hasActiveFilters = computed(() => Boolean(appliedFilters.search || appliedFilters.from || appliedFilters.to))
+const displayedOrders = computed(() => showRecentOrders.value ? recentOrders.value : orders.value)
+
+const summaryMetrics = [
+  { key: 'total', label: 'Total orders', caption: 'All time', icon: 'lucide:shopping-bag' },
+  { key: 'today', label: 'Today', caption: 'Since midnight', icon: 'lucide:sun' },
+  { key: 'week', label: 'Last 7 days', caption: 'Including today', icon: 'lucide:calendar-days' },
+  { key: 'month', label: 'Last 30 days', caption: 'Including today', icon: 'lucide:calendar-range' }
+]
 
 const quickFilterOptions = [
-  { key: '1-week', label: '1 Week' },
-  { key: '2-weeks', label: '2 Weeks' },
-  { key: '1-month', label: '1 Month' },
-  { key: '3-months', label: '3 Month' },
-  { key: 'last-year', label: 'Last Year' }
+  { key: 'all', label: 'All time' },
+  { key: '1-week', label: '7 days' },
+  { key: '2-weeks', label: '14 days' },
+  { key: '1-month', label: '30 days' },
+  { key: '3-months', label: '90 days' },
+  { key: 'last-year', label: '365 days' }
 ]
 
 const totalPages = computed(() => {
@@ -322,8 +299,13 @@ const pageEnd = computed(() => {
 })
 
 const buildOrdersCacheKey = (page = currentPage.value) => {
-  return `dashboard:orders:${page}:${searchQuery.value.trim().toLowerCase()}:${fromDate.value}:${toDate.value}`
+  return `dashboard:orders:${page}:${appliedFilters.search.toLowerCase()}:${appliedFilters.from}:${appliedFilters.to}`
 }
+
+const formatCount = (value) => new Intl.NumberFormat('en-US').format(value)
+const orderLabel = (order) => order.order_number || `Order #${order.id.slice(0, 8)}`
+const customerName = (order) => [order.first_name, order.last_name].filter(Boolean).join(' ') || 'Customer'
+const customerInitials = (order) => [order.first_name, order.last_name].filter(Boolean).map((name) => String(name).trim().charAt(0)).join('').toUpperCase() || 'C'
 
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
@@ -351,12 +333,16 @@ const formatDate = (value) => {
   }
 
   return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    dateStyle: 'medium'
   }).format(new Date(value))
 }
 
+const formatTime = (value) => value
+  ? new Intl.DateTimeFormat('en-US', { timeStyle: 'short' }).format(new Date(value))
+  : ''
+
 const applyOrdersSnapshot = (snapshot) => {
+  hasLoadedStats.value = true
   currentPage.value = snapshot?.page || 1
   stats.total = snapshot?.stats?.total || 0
   stats.today = snapshot?.stats?.today || 0
@@ -369,6 +355,7 @@ const applyOrdersSnapshot = (snapshot) => {
 
 const loadOrdersDashboard = async (page = currentPage.value, { force = false } = {}) => {
   currentPage.value = page
+  pageError.value = ''
   const cacheKey = buildOrdersCacheKey(page)
   const cachedSnapshot = getSnapshot(cacheKey)
 
@@ -382,16 +369,15 @@ const loadOrdersDashboard = async (page = currentPage.value, { force = false } =
   }
 
   loading.value = true
-  pageError.value = ''
 
   try {
     const response = await $fetch('/api/admin-orders', {
       query: {
         page,
         pageSize,
-        search: searchQuery.value.trim() || undefined,
-        from: fromDate.value || undefined,
-        to: toDate.value || undefined
+        search: appliedFilters.search || undefined,
+        from: appliedFilters.from || undefined,
+        to: appliedFilters.to || undefined
       },
       headers: await getAuthHeaders()
     })
@@ -424,6 +410,15 @@ const loadOrdersDashboard = async (page = currentPage.value, { force = false } =
 }
 
 const applyFilters = async () => {
+  if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
+    return
+  }
+  if (appliedFilters.from !== fromDate.value || appliedFilters.to !== toDate.value) {
+    activePreset.value = fromDate.value || toDate.value ? '' : 'all'
+  }
+  appliedFilters.search = searchQuery.value.trim()
+  appliedFilters.from = fromDate.value
+  appliedFilters.to = toDate.value
   await loadOrdersDashboard(1)
 }
 
@@ -431,7 +426,7 @@ const clearFilters = async () => {
   searchQuery.value = ''
   fromDate.value = ''
   toDate.value = ''
-  await loadOrdersDashboard(1)
+  await applyFilters()
 }
 
 const getPresetFromDate = (daysBack) => {
@@ -444,7 +439,10 @@ const applyQuickFilter = async (presetKey) => {
   const today = new Date().toISOString().slice(0, 10)
   toDate.value = today
 
-  if (presetKey === '1-week') {
+  if (presetKey === 'all') {
+    fromDate.value = ''
+    toDate.value = ''
+  } else if (presetKey === '1-week') {
     fromDate.value = getPresetFromDate(6)
   } else if (presetKey === '2-weeks') {
     fromDate.value = getPresetFromDate(13)
@@ -456,7 +454,8 @@ const applyQuickFilter = async (presetKey) => {
     fromDate.value = getPresetFromDate(364)
   }
 
-  await loadOrdersDashboard(1)
+  await applyFilters()
+  activePreset.value = presetKey
 }
 
 const openOrderDialog = (orderId) => {
@@ -505,3 +504,19 @@ onMounted(async () => {
   await loadOrdersDashboard()
 })
 </script>
+
+<style scoped>
+@reference "../../../assets/css/main.css";
+
+.order-input {
+  @apply min-h-10 min-w-0 rounded-lg border border-gray-200 bg-white py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-100;
+}
+
+.order-toolbar-button {
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-40;
+}
+
+.order-toolbar-button-active {
+  @apply border-gray-400 bg-gray-100 text-gray-950;
+}
+</style>

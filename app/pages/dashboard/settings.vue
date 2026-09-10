@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
-      <div class="rounded-2xl bg-white p-6 shadow">
+      <div class="rounded-2xl bg-white p-6 shadow" :class="activeSettingsView === 'gallery' ? 'border border-gray-200/80 !shadow-sm' : ''">
         <h2 class="text-3xl font-bold">{{ activeSettingsSection?.label || 'Settings' }}</h2>
         <p class="mt-2 text-sm text-gray-500">
           {{ activeSettingsSection?.description || 'Choose the settings you want to change.' }}
@@ -1650,206 +1650,25 @@
 
       </fieldset>
 
-      <div v-else-if="activeSettingsView === 'gallery'" class="space-y-6">
-        <section class="rounded-2xl bg-white p-6 shadow">
-          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h3 class="text-2xl font-bold">Gallery</h3>
-              <p class="mt-1 text-sm text-gray-500">
-                Preview, download or delete uploaded images.
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-3">
-              <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-                {{ galleryTotalItems }} image{{ galleryTotalItems === 1 ? '' : 's' }}
-              </div>
-
-              <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-                {{ galleryTotalSections }} section{{ galleryTotalSections === 1 ? '' : 's' }}
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-6 rounded-2xl border bg-gray-50 p-5">
-            <div class="flex flex-col gap-3 md:flex-row md:items-end">
-              <div class="flex-1">
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Search Image</label>
-                <input
-                  v-model="gallerySearchQuery"
-                  type="text"
-                  placeholder="Search by file name"
-                  class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-                >
-              </div>
-
-              <button
-                v-if="gallerySearchQuery.trim()"
-                type="button"
-                class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                @click="clearGallerySearch"
-              >
-                Clear
-              </button>
-            </div>
-
-            <p class="mt-4 text-sm text-gray-500">
-              {{ gallerySearchQuery.trim()
-                ? `Showing images matching "${gallerySearchQuery.trim()}".`
-                : 'All uploaded images.' }}
-            </p>
-
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 text-sm text-gray-500">
-              <p>
-                Showing {{ galleryPageStart }}-{{ galleryPageEnd }} of {{ galleryTotalItems }}
-              </p>
-
-              <p>
-                {{ gallerySectionCount }} section{{ gallerySectionCount === 1 ? '' : 's' }} on this page
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section class="rounded-2xl bg-white p-6 shadow">
-          <p v-if="galleryError" class="text-sm text-red-600">
-            {{ galleryError }}
-          </p>
-
-          <p v-else-if="galleryLoading" class="text-sm text-gray-500">
-            Loading gallery...
-          </p>
-
-          <p v-else-if="!galleryImages.length" class="text-sm text-gray-500">
-            No uploaded images found.
-          </p>
-
-          <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <button
-              v-for="image in galleryImages"
-              :key="image.publicPath"
-              type="button"
-              class="overflow-hidden rounded-2xl border text-left transition hover:-translate-y-1 hover:shadow-md"
-              @click="openGalleryImage(image)"
-            >
-              <div class="flex h-44 items-center justify-center bg-gray-100 p-3">
-                <img
-                  :src="image.publicPath"
-                  :alt="image.name"
-                  class="h-full w-full object-contain"
-                >
-              </div>
-
-              <div class="space-y-2 p-4">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="truncate text-sm font-semibold text-gray-900">
-                    {{ image.name }}
-                  </p>
-
-                  <span class="rounded-full bg-gray-100 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                    {{ image.section }}
-                  </span>
-                </div>
-
-                <p class="text-xs text-gray-500">
-                  {{ formatGalleryFileSize(image.size) }}
-                </p>
-
-                <p class="text-xs text-gray-400">
-                  {{ formatLogDate(image.updated_at) }}
-                </p>
-              </div>
-            </button>
-          </div>
-
-          <div
-            v-if="galleryImages.length"
-            class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3"
-          >
-            <p class="text-sm text-gray-500">
-              Page {{ galleryCurrentPage }} of {{ galleryTotalPages }}
-            </p>
-
-            <div class="flex gap-2">
-              <button
-                type="button"
-                :disabled="galleryCurrentPage === 1 || galleryLoading"
-                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="changeGalleryPage(galleryCurrentPage - 1)"
-              >
-                Previous
-              </button>
-
-              <button
-                type="button"
-                :disabled="galleryCurrentPage === galleryTotalPages || galleryLoading"
-                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="changeGalleryPage(galleryCurrentPage + 1)"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <div
-          v-if="selectedGalleryImage"
-          class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          @click.self="closeGalleryImage"
-        >
-          <div class="w-full max-w-4xl rounded-2xl bg-white p-6 shadow-xl">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h4 class="text-2xl font-bold text-gray-900">
-                  {{ selectedGalleryImage.name }}
-                </h4>
-                <p class="mt-1 text-sm text-gray-500">
-                  {{ selectedGalleryImage.section }} · {{ formatGalleryFileSize(selectedGalleryImage.size) }}
-                </p>
-                <p class="mt-1 break-all text-xs text-gray-400">
-                  {{ selectedGalleryImage.publicPath }}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                @click="closeGalleryImage"
-              >
-                Close
-              </button>
-            </div>
-
-            <div class="mt-6 flex max-h-[65vh] items-center justify-center overflow-hidden rounded-2xl bg-gray-100 p-4">
-              <img
-                :src="selectedGalleryImage.publicPath"
-                :alt="selectedGalleryImage.name"
-                class="max-h-[60vh] w-full object-contain"
-              >
-            </div>
-
-            <div class="mt-6 flex flex-wrap justify-end gap-3">
-              <a
-                :href="getGalleryDownloadUrl(selectedGalleryImage.publicPath)"
-                :download="selectedGalleryImage.name"
-                class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Download
-              </a>
-
-              <button
-                v-if="canEditSettings"
-                type="button"
-                :disabled="galleryDeleting"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
-                @click="removeGalleryImage(selectedGalleryImage)"
-              >
-                {{ galleryDeleting ? 'Deleting...' : 'Delete' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DashboardMediaLibrary
+        v-else-if="activeSettingsView === 'gallery'"
+        v-model:search="gallerySearchQuery"
+        v-model:selected-image="selectedGalleryImage"
+        :images="galleryImages"
+        :total-items="galleryTotalItems"
+        :total-sections="galleryTotalSections"
+        :page="galleryCurrentPage"
+        :page-size="galleryPageSize"
+        :total-pages="galleryTotalPages"
+        :loading="galleryLoading"
+        :loaded="galleryLoaded"
+        :error="galleryError"
+        :can-edit="canEditSettings"
+        :deleting="galleryDeleting"
+        @refresh="loadGalleryImages({ force: true })"
+        @page="changeGalleryPage"
+        @delete="removeGalleryImage"
+      />
 
       <div v-else-if="activeSettingsView === 'coupons'" class="space-y-6">
         <section class="rounded-2xl bg-white p-6 shadow">
@@ -2597,26 +2416,6 @@ const footerLinks = computed(() => {
   return siteLinks.value.filter((link) => link.location === 'footer')
 })
 
-const gallerySectionCount = computed(() => {
-  return new Set(galleryImages.value.map((image) => image.section)).size
-})
-
-const galleryPageStart = computed(() => {
-  if (!galleryTotalItems.value) {
-    return 0
-  }
-
-  return (galleryCurrentPage.value - 1) * galleryPageSize.value + 1
-})
-
-const galleryPageEnd = computed(() => {
-  if (!galleryTotalItems.value) {
-    return 0
-  }
-
-  return Math.min(galleryCurrentPage.value * galleryPageSize.value, galleryTotalItems.value)
-})
-
 const isMissingSchemaError = (error) => {
   return ['42P01', '42703', 'PGRST204'].includes(error?.code)
 }
@@ -2628,25 +2427,6 @@ const handleTableError = (error) => {
   }
 
   return false
-}
-
-const formatGalleryFileSize = (size = 0) => {
-  const normalizedSize = Number(size || 0)
-
-  if (normalizedSize >= 1024 * 1024) {
-    return `${(normalizedSize / (1024 * 1024)).toFixed(2)} MB`
-  }
-
-  if (normalizedSize >= 1024) {
-    return `${(normalizedSize / 1024).toFixed(1)} KB`
-  }
-
-  return `${normalizedSize} B`
-}
-
-const clearGallerySearch = () => {
-  gallerySearchQuery.value = ''
-  galleryCurrentPage.value = 1
 }
 
 const changeGalleryPage = async (page) => {
@@ -2666,14 +2446,6 @@ const changeGalleryPage = async (page) => {
   if (activeSettingsView.value === 'gallery' && canViewGallery.value) {
     await loadGalleryImages({ force: true })
   }
-}
-
-const getGalleryDownloadUrl = (publicPath = '') => {
-  return `${publicPath}?download=1`
-}
-
-const openGalleryImage = (image) => {
-  selectedGalleryImage.value = image
 }
 
 const closeGalleryImage = () => {

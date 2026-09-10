@@ -1,0 +1,27 @@
+@layer components {
+  .file-workspace { @apply min-w-0 space-y-5 text-gray-900; }
+  .file-surface { @apply min-w-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm; }
+  .file-button { @apply inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 hover:text-gray-950 disabled:cursor-not-allowed disabled:opacity-50; }
+  .file-button-primary { @apply border-gray-950 bg-gray-950 text-white hover:bg-gray-800 hover:text-white; }
+  .file-workspace :is(button, a, input, select):focus-visible { @apply outline-2 outline-offset-2 outline-gray-800; }
+  .file-search { @apply min-h-10 w-full min-w-0 rounded-xl border border-gray-200 bg-white py-2.5 ps-10 pe-3 text-sm text-gray-900 placeholder:text-gray-400; }
+  .file-label { @apply text-xs font-medium text-gray-500; }
+  .file-chip { @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900; }
+  .file-chip[aria-pressed='true'] { @apply bg-gray-950 text-white; }
+  .file-card { @apply overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition hover:border-gray-400 hover:shadow-sm; }
+  .file-card[aria-pressed='true'] { @apply border-gray-900 ring-1 ring-gray-900; }
+  .file-thumbnail { @apply flex h-36 items-center justify-center overflow-hidden bg-gray-50 p-5; background-image: radial-gradient(#d1d5db 0.6px, transparent 0.6px); background-size: 10px 10px; }
+  .file-table { @apply w-full min-w-[620px] text-left text-sm; }
+  .file-table thead { @apply border-y border-gray-100 bg-gray-50/80 text-xs text-gray-500; }
+  .file-table th { @apply px-4 py-3 font-medium; }
+  .file-table td { @apply px-4 py-3.5; }
+  .file-table tbody { @apply divide-y divide-gray-100; }
+  .file-table tbody tr { @apply transition hover:bg-gray-50; }
+  .file-table tr[aria-selected='true'] { @apply bg-gray-100/80; }
+  .file-empty { @apply flex min-h-64 flex-col items-center justify-center gap-2 px-5 py-12 text-center; }
+  .file-stat { @apply flex items-center gap-4 rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm; }
+  .file-content { @apply grid min-w-0; }
+  .file-content.has-selection { @apply xl:grid-cols-[minmax(0,1fr)_260px]; }
+  .file-item-grid { @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4; }
+  .has-selection .file-item-grid { @apply xl:grid-cols-3; }
+}
