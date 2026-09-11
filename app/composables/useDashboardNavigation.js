@@ -6,12 +6,14 @@ import {
 export const useDashboardNavigation = () => {
   const route = useRoute()
   const {
+    isOwner,
     hasAnyPermission,
     hasPermission
   } = useAdminAccess()
 
   const navigationGroups = computed(() => {
     return buildDashboardNavigation({
+      isOwner: isOwner.value,
       hasAnyPermission,
       hasPermission
     })

@@ -51,7 +51,8 @@ test('restricted admins only see permitted settings and destinations', () => {
     if (requirement?.permissionsAny) assert.equal(access.hasAnyPermission(requirement.permissionsAny), true, item.to)
   }
   const settings = groups.find(g => g.key === 'settings')
-  assert.equal(settings.children.length, dashboardSettingsSections.length + 1)
+  assert.equal(settings.children.length, dashboardSettingsSections.filter(section => section.role !== 'owner').length + 1)
+  assert.equal(settings.children.some(item => item.key === 'reset'), false)
   assert.equal(access.hasPermission('settings.edit'), false)
 })
 
@@ -61,6 +62,11 @@ test('direct links to the new views retain access checks', () => {
   assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard?view=stock')), { permissionsAny: ['products.view', 'categories.view'] })
   assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard/hr?tab=users&people=customers')), { permission: 'users.view' })
   for (const section of dashboardSettingsSections) {
-    assert.deepEqual(getDashboardRouteRequirement(routeFor(section.to)), { permission: section.permission }, section.to)
+    assert.deepEqual(getDashboardRouteRequirement(routeFor(section.to)), section.role === 'owner' ? { role: 'owner' } : { permission: section.permission }, section.to)
   }
+})
+
+test('only owners see the system reset navigation entry', () => {
+  assert.equal(buildDashboardNavigation({ isOwner: true }).find(group => group.key === 'settings').children.some(item => item.key === 'reset'), true)
+  assert.equal(buildDashboardNavigation({ isOwner: false }).find(group => group.key === 'settings').children.some(item => item.key === 'reset'), false)
 })

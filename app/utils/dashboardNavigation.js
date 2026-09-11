@@ -112,6 +112,8 @@ export const dashboardNavigationGroups = [
 ]
 
 const canAccessNavigationItem = (item, access = {}) => {
+  if (item.role === 'owner' && !access.isOwner) return false
+
   if (item.permissionsAny?.length) {
     return access.hasAnyPermission(item.permissionsAny)
   }
@@ -125,6 +127,7 @@ const canAccessNavigationItem = (item, access = {}) => {
 
 export const buildDashboardNavigation = (access = {}) => {
   const safeAccess = {
+    isOwner: access.isOwner === true,
     hasAnyPermission: access.hasAnyPermission || (() => true),
     hasPermission: access.hasPermission || (() => true)
   }

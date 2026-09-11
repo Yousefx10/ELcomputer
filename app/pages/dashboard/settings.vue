@@ -1650,6 +1650,8 @@
 
       </fieldset>
 
+      <DashboardSystemReset v-else-if="activeSettingsView === 'reset' && isOwner" @changed="handleSystemResetChanged" />
+
       <DashboardMediaLibrary
         v-else-if="activeSettingsView === 'gallery'"
         v-model:search="gallerySearchQuery"
@@ -2057,7 +2059,8 @@ const {
   setSnapshot
 } = useDashboardCache()
 const {
-  hasPermission
+  hasPermission,
+  isOwner
 } = useAdminAccess()
 const {
   fetchAdminLogs,
@@ -2220,6 +2223,8 @@ const activeSettingsView = computed(() => {
     return 'coupons'
   }
 
+  if (requestedTab === 'reset' && isOwner.value) return 'reset'
+
   if (requestedTab === 'gallery' && canViewGallery.value) {
     return 'gallery'
   }
@@ -2243,7 +2248,7 @@ const activeSettingsView = computed(() => {
   return 'general'
 })
 const settingsSearch = ref('')
-const availableSettingsSections = computed(() => dashboardSettingsSections.filter(item => hasPermission(item.permission)))
+const availableSettingsSections = computed(() => dashboardSettingsSections.filter(item => hasPermission(item.permission) && (item.role !== 'owner' || isOwner.value)))
 const activeSettingsSection = computed(() => {
   const tab = getDashboardQueryValue(route, 'tab')
   return availableSettingsSections.value.find(item => item.key === tab)
@@ -3954,12 +3959,24 @@ watch(gallerySearchQuery, () => {
   }, 300)
 })
 
+const handleSystemResetChanged = () => {
+  generalSettingsLoaded.value = false
+  couponsLoaded.value = false
+  galleryLoaded.value = false
+  logsLoaded.value = false
+  adminLogs.value = []
+  galleryImages.value = []
+  coupons.value = []
+}
+
 const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
   if (view === 'logs') {
     await loadAdminLogs({ force })
     return
   }
 
+
+  if (view === 'reset') return
 
   if (view === 'gallery') {
     await loadGalleryImages({ force })

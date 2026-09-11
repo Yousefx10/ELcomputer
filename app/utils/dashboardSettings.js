@@ -11,5 +11,6 @@ export const dashboardSettingsSections = [
   { key: 'layout', section: 'dashboardLayout', label: 'Dashboard layout', group: 'Administration', icon: 'lucide:panel-right', description: 'Choose top navigation or a sidebar.' },
   { key: 'gallery', label: 'Media library', group: 'Store', icon: 'lucide:images', description: 'Find and manage uploaded images.' },
   { key: 'coupons', label: 'Coupons', group: 'Store', icon: 'lucide:badge-percent', permission: 'settings.coupons', description: 'Discount codes, limits and expiry dates.' },
+  { key: 'reset', label: 'Reset system', group: 'Administration', icon: 'lucide:rotate-ccw', role: 'owner', description: 'Reset website data with owner password confirmation.' },
   { key: 'logs', label: 'Activity log', group: 'Administration', icon: 'lucide:scroll-text', description: 'See who changed what and when.' }
 ].map(item => ({ ...item, permission: item.permission || 'settings.view', to: `/dashboard/settings?tab=${item.key}` }))

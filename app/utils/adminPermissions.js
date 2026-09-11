@@ -202,6 +202,8 @@ export const getDashboardRouteRequirement = (route = '') => {
   }
 
   if (path === '/dashboard/settings') {
+    if (tab === 'reset') return { role: 'owner' }
+
     if (tab === 'users') {
       return {
         permission: 'users.view'
