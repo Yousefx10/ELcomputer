@@ -34,7 +34,7 @@ begin
     when 'media' then return array[]::text[];
     when 'content' then return array['site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings']::text[];
     when 'analytics' then return array['store_analytics_events', 'store_analytics_sessions', 'nps_responses']::text[];
-    when 'full' then return array['shipping_webhook_events', 'shipping_order_jobs', 'customer_order_messages', 'order_packing_scans', 'order_packing_sessions', 'commerce_order_return_items', 'commerce_order_returns', 'customer_order_items', 'customer_orders', 'commerce_serialized_unit_movements', 'commerce_serialized_units', 'commerce_serialized_inventory_batches', 'commerce_inventory_movements', 'commerce_warehouse_transfer_items', 'commerce_warehouse_transfers', 'commerce_warehouse_inventory', 'treasury_transactions', 'commerce_sales_items', 'commerce_sales_orders', 'commerce_procurement_items', 'commerce_procurement_orders', 'product_reviews', 'product_specifications', 'product_images', 'product_variants', 'products', 'brands', 'categories', 'document_folder_permissions', 'documents', 'document_folders', 'site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings', 'store_analytics_events', 'store_analytics_sessions', 'nps_responses', 'commerce_crm_activities', 'commerce_crm_accounts', 'commerce_shipping_companies', 'commerce_warehouses', 'hr_employees', 'site_coupons', 'customer_profiles', 'shipping_city_mappings', 'shipping_status_mappings', 'shipping_provider_settings', 'store_analytics_internal_carts', 'store_analytics_internal_users', 'admin_activity_logs']::text[];
+    when 'full' then return array['erp_sync_jobs', 'erp_entity_links', 'shipping_webhook_events', 'shipping_order_jobs', 'customer_order_messages', 'order_packing_scans', 'order_packing_sessions', 'commerce_order_return_items', 'commerce_order_returns', 'customer_order_items', 'customer_orders', 'commerce_serialized_unit_movements', 'commerce_serialized_units', 'commerce_serialized_inventory_batches', 'commerce_inventory_movements', 'commerce_warehouse_transfer_items', 'commerce_warehouse_transfers', 'commerce_warehouse_inventory', 'treasury_transactions', 'commerce_sales_items', 'commerce_sales_orders', 'commerce_procurement_items', 'commerce_procurement_orders', 'product_reviews', 'product_specifications', 'product_images', 'product_variants', 'products', 'brands', 'categories', 'document_folder_permissions', 'documents', 'document_folders', 'site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings', 'store_analytics_events', 'store_analytics_sessions', 'nps_responses', 'commerce_crm_activities', 'commerce_crm_accounts', 'commerce_shipping_companies', 'commerce_warehouses', 'hr_employees', 'site_coupons', 'customer_profiles', 'shipping_city_mappings', 'shipping_status_mappings', 'shipping_provider_settings', 'store_analytics_internal_carts', 'store_analytics_internal_users', 'admin_activity_logs']::text[];
     else raise exception 'Unsupported reset option.' using errcode = '22023';
   end case;
 end;
@@ -192,6 +192,15 @@ begin
   end loop;
   if 'customer_orders' = any(v_tables) and exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'customer_orders' and column_name = 'awaiting_customer_message_id') then
     update public.customer_orders set awaiting_customer_message_id = null;
+  end if;
+  if p_scope in ('orders', 'commerce') and to_regclass('public.erp_sync_jobs') is not null then
+    execute 'delete from public.erp_sync_jobs where local_entity_type = $1' using 'customer_order';
+  end if;
+  if p_scope in ('orders', 'commerce') and to_regclass('public.erp_entity_links') is not null then
+    execute 'delete from public.erp_entity_links where local_entity_type = $1' using 'customer_order';
+  end if;
+  if p_scope = 'products' and to_regclass('public.erp_entity_links') is not null then
+    execute 'delete from public.erp_entity_links where local_entity_type = any($1)' using array['product', 'product_variant']::text[];
   end if;
   select array_agg(t) into v_remaining from unnest(v_tables) t where to_regclass(format('public.%I', t)) is not null;
   while cardinality(v_remaining) > 0 loop

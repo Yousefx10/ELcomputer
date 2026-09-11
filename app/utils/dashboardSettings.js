@@ -9,6 +9,7 @@ export const dashboardSettingsSections = [
   { key: 'footer', section: 'footerSettings', label: 'Footer content', group: 'Navigation & footer', icon: 'lucide:panel-bottom', description: 'Contact details, footer heading and button.' },
   { key: 'footer-links', section: 'footerLinks', label: 'Footer links', group: 'Navigation & footer', icon: 'lucide:link', description: 'Group and arrange links at the bottom of the store.' },
   { key: 'layout', section: 'dashboardLayout', label: 'Dashboard layout', group: 'Administration', icon: 'lucide:panel-right', description: 'Choose top navigation or a sidebar.' },
+  { key: 'erp', label: 'ERP connection', group: 'Administration', icon: 'lucide:cloud-cog', description: 'Choose built-in ERP or connect Daftra.' },
   { key: 'gallery', label: 'Media library', group: 'Store', icon: 'lucide:images', description: 'Find and manage uploaded images.' },
   { key: 'coupons', label: 'Coupons', group: 'Store', icon: 'lucide:badge-percent', permission: 'settings.coupons', description: 'Discount codes, limits and expiry dates.' },
   { key: 'reset', label: 'Reset system', group: 'Administration', icon: 'lucide:rotate-ccw', role: 'owner', description: 'Reset website data with owner password confirmation.' },

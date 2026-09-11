@@ -1650,6 +1650,11 @@
 
       </fieldset>
 
+      <DashboardErpSettings
+        v-else-if="activeSettingsView === 'erp'"
+        :can-edit="canEditSettings"
+      />
+
       <DashboardSystemReset v-else-if="activeSettingsView === 'reset' && isOwner" @changed="handleSystemResetChanged" />
 
       <DashboardMediaLibrary
@@ -2217,6 +2222,10 @@ const activeSettingsView = computed(() => {
 
   if (requestedTab === 'logs' && canViewLogs.value) {
     return 'logs'
+  }
+
+  if (requestedTab === 'erp' && canViewGeneralSettings.value) {
+    return 'erp'
   }
 
   if (requestedTab === 'coupons' && canAccessCoupons.value) {
@@ -3970,6 +3979,8 @@ const handleSystemResetChanged = () => {
 }
 
 const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
+  if (view === 'erp') return
+
   if (view === 'logs') {
     await loadAdminLogs({ force })
     return

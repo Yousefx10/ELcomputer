@@ -43,3 +43,15 @@ their own groups. Permission keys, database tables and APIs are unchanged.
 
 Browser checks used temporary account and data fixtures. Save requests were
 intercepted in the browser; no remote records were changed.
+
+## Daftra mode
+
+Daftra mode adds one ERP group with four destinations.
+
+It hides local purchasing, invoicing, warehousing, treasury, and employees.
+
+CRM, tickets, warranty work, timelines, and status remain available.
+
+Orders, packing, returns, shipping, and serialized items also remain.
+
+Direct links to hidden ERP pages redirect to Daftra equivalents.

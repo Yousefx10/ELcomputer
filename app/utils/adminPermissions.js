@@ -189,6 +189,12 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
+  if (path === '/dashboard/erp') {
+    return {
+      permission: 'dashboard.analysis'
+    }
+  }
+
   if (path === '/dashboard/documents') {
     return {
       permission: 'documents.view'

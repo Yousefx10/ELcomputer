@@ -70,3 +70,16 @@ test('only owners see the system reset navigation entry', () => {
   assert.equal(buildDashboardNavigation({ isOwner: true }).find(group => group.key === 'settings').children.some(item => item.key === 'reset'), true)
   assert.equal(buildDashboardNavigation({ isOwner: false }).find(group => group.key === 'settings').children.some(item => item.key === 'reset'), false)
 })
+
+test('external ERP mode hides built-in ERP entry points', () => {
+  const groups = buildDashboardNavigation({}, { externalErpActive: true })
+  const groupKeys = groups.map(group => group.key)
+
+  assert.equal(groupKeys.includes('daftra'), true)
+  assert.equal(groupKeys.includes('treasury'), false)
+  assert.equal(groups.find(group => group.key === 'commerce').label, 'Returns')
+  assert.deepEqual(groups.find(group => group.key === 'commerce').children.map(item => item.key), ['returns'])
+  assert.deepEqual(groups.find(group => group.key === 'inventory').children.map(item => item.key), ['serialized', 'scan'])
+  assert.equal(groups.find(group => group.key === 'hr').children.some(item => item.key === 'employees'), false)
+  assert.equal(groups.find(group => group.key === 'dashboard').children.some(item => item.key === 'stock-summary'), false)
+})

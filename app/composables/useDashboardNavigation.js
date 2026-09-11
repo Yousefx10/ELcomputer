@@ -5,6 +5,7 @@ import {
 
 export const useDashboardNavigation = () => {
   const route = useRoute()
+  const { data: siteContent } = useSiteContent()
   const {
     isOwner,
     hasAnyPermission,
@@ -12,10 +13,16 @@ export const useDashboardNavigation = () => {
   } = useAdminAccess()
 
   const navigationGroups = computed(() => {
+    const settings = siteContent.value?.settings || {}
+    const externalErpActive = settings.erp_mode === 'daftra'
+      && settings.daftra_connection_status === 'connected'
+
     return buildDashboardNavigation({
       isOwner: isOwner.value,
       hasAnyPermission,
       hasPermission
+    }, {
+      externalErpActive
     })
   })
 
