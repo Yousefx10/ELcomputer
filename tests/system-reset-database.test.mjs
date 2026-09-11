@@ -147,6 +147,19 @@ test('media reset clears uploaded references but preserves external images and p
   assert.equal(await value('select image_url as value from public.products where id=$1',[external]),'https://example.test/image.png')
 })
 
+test('documents reset clears quick access and recent files', async () => {
+  const folder = randomUUID(), document = randomUUID()
+  await db.query(`insert into public.document_folders(id,name,created_by) values($1,'Pinned folder',$2)`, [folder, owner])
+  await db.query(`insert into public.documents(id,folder_id,name,storage_path,created_by) values($1,$2,'Recent.pdf',$3,$4)`, [document, folder, `${folder}/recent.pdf`, owner])
+  await db.query(`insert into public.document_quick_access(admin_user_id,folder_id) values($1,$2)`, [owner, folder])
+  await db.query(`insert into public.document_recent_items(admin_user_id,document_id) values($1,$2)`, [owner, document])
+  await beginReset('documents')
+  assert.equal(await count('document_quick_access'), 0)
+  assert.equal(await count('document_recent_items'), 0)
+  assert.equal(await count('documents'), 0)
+  assert.equal(await count('document_folders'), 0)
+})
+
 test('full reset preserves only the current owner; the new log survives', async () => {
   await seedOrder(await seedProduct())
   await db.query(`insert into public.admin_users(id,email,role) values($1,'customer@test.invalid','owner')`,[customer])

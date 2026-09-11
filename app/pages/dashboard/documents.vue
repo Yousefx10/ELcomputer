@@ -1,15 +1,26 @@
 <template>
   <div class="file-workspace mx-auto max-w-6xl pb-6">
-    <header class="file-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight text-gray-950">File manager</h2>
-        <p class="mt-1.5 text-sm text-gray-500">Organize documents and manage folder access.</p>
+    <header class="file-hero flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+      <div class="flex items-center gap-4">
+        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-blue-200"><Icon name="lucide:folder-kanban" size="24" /></span>
+        <div>
+          <h2 class="text-3xl font-bold tracking-tight text-white">File manager</h2>
+          <p class="mt-1.5 text-sm text-slate-300">Find, share, and manage company files.</p>
+        </div>
       </div>
       <div v-if="access.can_edit" class="flex flex-wrap gap-2">
-        <button type="button" class="file-button" @click="openCreateFolder"><Icon name="lucide:folder-plus" size="17" /> New folder</button>
-        <button type="button" class="file-button file-button-primary" :disabled="uploading" @click="fileInput?.click()"><Icon name="lucide:upload" size="17" /> {{ uploading ? 'Uploading…' : 'Upload files' }}</button>
+        <button type="button" class="file-button !border-white/15 !bg-white/10 !text-white hover:!bg-white/15" @click="openCreateFolder"><Icon name="lucide:folder-plus" size="17" /> New folder</button>
+        <button type="button" class="file-button !border-blue-500 !bg-blue-600 !text-white hover:!bg-blue-500" :disabled="uploading" @click="fileInput?.click()"><Icon name="lucide:upload" size="17" /> {{ uploading ? 'Uploading…' : 'Upload files' }}</button>
       </div>
     </header>
+
+    <DashboardFileWorkspaceOverview
+      :quick-access="quickAccess"
+      :recent-files="recentFiles"
+      :loading="workspaceLoading"
+      @activate="activateItem"
+      @toggle-pin="toggleQuickAccess"
+    />
 
     <div class="grid gap-3 sm:grid-cols-3" aria-label="Current folder summary">
       <div class="file-stat !border-gray-950 !bg-gray-950 text-white">
@@ -24,7 +35,7 @@
 
     <div v-if="pageError" role="alert" class="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
       <Icon name="lucide:circle-alert" size="18" class="shrink-0" /><p class="min-w-0 flex-1">{{ pageError }}</p>
-      <button type="button" class="font-semibold" @click="loadDocuments">Retry</button>
+      <button type="button" class="font-semibold" @click="refreshFileManager">Retry</button>
     </div>
     <p v-if="loaded && !access.can_edit" class="flex items-center gap-2 text-xs text-gray-500"><Icon name="lucide:eye" size="15" /> View-only access. Open or download available files.</p>
 
@@ -52,7 +63,7 @@
           <Icon name="lucide:arrow-down-wide-narrow" size="16" /><span class="sr-only">Sort documents</span>
           <select v-model="sortBy" class="min-h-10 max-w-40 bg-transparent text-xs outline-none"><option value="modified">Last modified</option><option value="name">Name, A–Z</option><option value="size">Largest first</option></select>
         </label>
-        <button type="button" class="file-button" :disabled="loading" aria-label="Refresh documents" @click="loadDocuments"><Icon name="lucide:refresh-cw" size="16" :class="{ 'motion-safe:animate-spin': loading }" /></button>
+        <button type="button" class="file-button" :disabled="loading" aria-label="Refresh documents" @click="refreshFileManager"><Icon name="lucide:refresh-cw" size="16" :class="{ 'motion-safe:animate-spin': loading }" /></button>
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-gray-50/50 px-5 py-2.5">
@@ -118,17 +129,41 @@
           </button>
         </div>
 
-        <DashboardFileDetailsPanel v-if="selectedItem" :key="selectedItem.id" @close="selectedItemId = ''">
-          <div class="mb-4 flex h-32 items-center justify-center rounded-xl border border-gray-200 bg-white" :class="selectedItem.type === 'folder' ? 'text-amber-400' : getFileColor(selectedItem)"><Icon :name="selectedItem.type === 'folder' ? 'lucide:folder' : getFileIcon(selectedItem)" size="48" /></div>
-          <h4 class="break-words text-sm font-semibold">{{ selectedItem.name }}</h4>
-          <p class="mt-1 text-xs text-gray-500">{{ selectedItem.type === 'folder' ? 'Folder' : getFileType(selectedItem) + ' document' }}</p>
-          <dl class="my-5 space-y-3 border-y border-gray-200 py-5 text-xs">
-            <div v-if="selectedItem.type === 'file'" class="flex justify-between gap-3"><dt class="text-gray-500">Size</dt><dd class="font-medium">{{ formatBytes(selectedItem.size_bytes) }}</dd></div>
-            <div class="flex justify-between gap-3"><dt class="text-gray-500">Modified</dt><dd>{{ formatDate(selectedItem.updated_at) }}</dd></div>
-            <div class="flex justify-between gap-3"><dt class="text-gray-500">Location</dt><dd class="max-w-36 truncate" :title="currentFolder?.name || 'All documents'">{{ currentFolder?.name || 'All documents' }}</dd></div>
-            <div class="flex justify-between gap-3"><dt class="text-gray-500">Access</dt><dd>{{ selectedItem.can_edit ? 'Can edit' : 'View only' }}</dd></div>
-          </dl>
-          <div class="flex flex-col gap-2">
+        <DashboardFileDetailsPanel v-if="selectedItem" :key="selectedItem.id" title="File details" @close="selectedItemId = ''">
+          <div class="flex items-start gap-3">
+            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" :class="selectedItem.type === 'folder' ? 'bg-blue-600 text-white' : getFileColor(selectedItem)"><Icon :name="selectedItem.type === 'folder' ? 'lucide:folder' : getFileIcon(selectedItem)" size="24" /></span>
+            <div class="min-w-0 flex-1"><h4 class="break-words text-sm font-bold">{{ selectedItem.name }}</h4><p class="mt-1 text-xs text-gray-500">{{ selectedItem.type === 'folder' ? 'Folder' : getFileType(selectedItem) + ' file' }}</p></div>
+            <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white transition hover:border-blue-200 hover:text-blue-700" :class="selectedItem.is_pinned ? 'text-blue-700' : 'text-gray-400'" :aria-label="selectedItem.is_pinned ? 'Remove from quick access' : 'Add to quick access'" @click="toggleQuickAccess(selectedItem)"><Icon :name="selectedItem.is_pinned ? 'lucide:pin-off' : 'lucide:pin'" size="16" /></button>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 rounded-xl bg-gray-200/70 p-1" role="tablist" aria-label="Item details">
+            <button v-for="tab in detailTabs" :key="tab.key" type="button" role="tab" class="rounded-lg px-3 py-2 text-xs font-bold transition" :class="detailsTab === tab.key ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500'" :aria-selected="detailsTab === tab.key" @click="detailsTab = tab.key"><Icon :name="tab.icon" size="14" class="me-1 inline" />{{ tab.label }}</button>
+          </div>
+
+          <div v-if="detailsTab === 'properties'" class="mt-5">
+            <dl class="space-y-3 text-xs">
+              <div v-if="selectedItem.type === 'file'" class="file-property"><dt>Size</dt><dd>{{ formatBytes(selectedItem.size_bytes) }}</dd></div>
+              <div v-if="selectedItem.type === 'file'" class="file-property"><dt>Format</dt><dd>{{ getFileType(selectedItem) }}</dd></div>
+              <div class="file-property"><dt>Owner</dt><dd>{{ selectedItem.created_by_name || 'Unknown admin' }}</dd></div>
+              <div class="file-property"><dt>Created</dt><dd>{{ formatDate(selectedItem.created_at) }}</dd></div>
+              <div class="file-property"><dt>Modified</dt><dd>{{ formatDate(selectedItem.updated_at) }}</dd></div>
+              <div class="file-property"><dt>Location</dt><dd class="max-w-36 truncate" :title="selectedLocation">{{ selectedLocation }}</dd></div>
+              <div class="file-property"><dt>Access</dt><dd>{{ selectedItem.can_edit ? 'Can edit' : 'View only' }}</dd></div>
+            </dl>
+          </div>
+
+          <div v-else class="mt-5">
+            <div v-if="activityLoading" class="flex min-h-40 items-center justify-center"><Icon name="lucide:loader-circle" size="22" class="animate-spin text-gray-400" /></div>
+            <div v-else-if="itemActivity.length" class="relative space-y-5 before:absolute before:bottom-2 before:start-[7px] before:top-2 before:w-px before:bg-gray-200">
+              <article v-for="activity in itemActivity" :key="activity.id" class="relative flex gap-3">
+                <span class="relative z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-4 border-white bg-blue-600 ring-1 ring-blue-100" />
+                <div class="min-w-0"><p class="text-xs font-semibold leading-5 text-gray-800">{{ activity.description }}</p><p class="mt-1 text-[11px] text-gray-500">{{ activity.author }} · {{ formatDateTime(activity.createdAt) }}</p></div>
+              </article>
+            </div>
+            <div v-else class="flex min-h-40 items-center justify-center text-center"><div><Icon name="lucide:history" size="22" class="mx-auto text-gray-300" /><p class="mt-2 text-xs text-gray-500">No changes recorded yet.</p></div></div>
+          </div>
+
+          <div class="mt-5 flex flex-col gap-2 border-t border-gray-200 pt-5">
             <button type="button" class="file-button file-button-primary" @click="activateItem(selectedItem)"><Icon :name="selectedItem.type === 'folder' ? 'lucide:folder-open' : 'lucide:eye'" size="16" />{{ selectedItem.type === 'folder' ? 'Open folder' : canPreviewDocument(selectedItem) ? 'Preview file' : 'Download file' }}</button>
             <button v-if="selectedItem.type === 'file' && canPreviewDocument(selectedItem)" type="button" class="file-button" @click="downloadDocument(selectedItem)"><Icon name="lucide:download" size="16" /> Download</button>
             <button v-if="selectedItem.type === 'folder' && selectedItem.can_manage_access" type="button" class="file-button" @click="openPermissions(selectedItem)"><Icon name="lucide:users" size="16" /> Manage access</button>
@@ -302,6 +337,9 @@ const { adminUser } = useAdminAccess()
 const items = ref([])
 const breadcrumbs = ref([])
 const currentFolder = ref(null)
+const quickAccess = ref([])
+const recentFiles = ref([])
+const workspaceLoading = ref(true)
 const summary = reactive({ folders: 0, files: 0, size_bytes: 0 })
 const access = reactive({ level: 'viewer', can_edit: false })
 const loading = ref(true)
@@ -312,11 +350,27 @@ const viewMode = ref('grid')
 const selectedItemId = ref('')
 const itemFilter = ref('all')
 const sortBy = ref('modified')
+const detailsTab = ref('properties')
+const itemActivity = ref([])
+const activityLoading = ref(false)
+const detailTabs = [
+  { key: 'properties', label: 'Properties', icon: 'lucide:info' },
+  { key: 'activity', label: 'Activity', icon: 'lucide:history' }
+]
 const folderMetrics = [
   { key: 'folders', label: 'Folders', icon: 'lucide:folders' },
   { key: 'files', label: 'Documents', icon: 'lucide:files' }
 ]
-const selectedItem = computed(() => items.value.find((item) => item.id === selectedItemId.value) || null)
+const pinnedItemKeys = computed(() => new Set(
+  quickAccess.value.map((item) => `${item.type}:${item.id}`)
+))
+const selectedItem = computed(() => {
+  const item = items.value.find((entry) => entry.id === selectedItemId.value)
+  return item ? { ...item, is_pinned: pinnedItemKeys.value.has(`${item.type}:${item.id}`) } : null
+})
+const selectedLocation = computed(() => {
+  return breadcrumbs.value.map((folder) => folder.name).join(' / ') || 'All documents'
+})
 const itemFilters = computed(() => [
   { key: 'all', label: 'All items', count: items.value.length },
   { key: 'folder', label: 'Folders', count: summary.folders },
@@ -415,6 +469,68 @@ const loadDocuments = async () => {
   } finally {
     loading.value = false
     loaded.value = true
+  }
+}
+
+const loadWorkspace = async () => {
+  workspaceLoading.value = true
+
+  try {
+    const response = await $fetch('/api/admin-documents/workspace', {
+      headers: await getAuthHeaders()
+    })
+    quickAccess.value = response.quickAccess || []
+    recentFiles.value = response.recentFiles || []
+  } catch (error) {
+    pageError.value = getErrorMessage(error, 'Could not load file shortcuts.')
+  } finally {
+    workspaceLoading.value = false
+  }
+}
+
+const refreshFileManager = async () => {
+  await Promise.all([loadDocuments(), loadWorkspace()])
+}
+
+const toggleQuickAccess = async (item) => {
+  const wasPinned = pinnedItemKeys.value.has(`${item.type}:${item.id}`)
+  pageError.value = ''
+
+  try {
+    await $fetch('/api/admin-documents/quick-access', {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: {
+        type: item.type,
+        id: item.id,
+        pinned: !wasPinned
+      }
+    })
+    await loadWorkspace()
+  } catch (error) {
+    pageError.value = getErrorMessage(error, 'Could not update quick access.')
+  }
+}
+
+const loadItemActivity = async () => {
+  if (!selectedItem.value || detailsTab.value !== 'activity') return
+
+  activityLoading.value = true
+  itemActivity.value = []
+
+  try {
+    const response = await $fetch('/api/admin-documents/activity', {
+      headers: await getAuthHeaders(),
+      query: {
+        type: selectedItem.value.type,
+        id: selectedItem.value.id
+      }
+    })
+    itemActivity.value = response.items || []
+  } catch (error) {
+    pageError.value = getErrorMessage(error, 'Could not load item activity.')
+  } finally {
+    activityLoading.value = false
   }
 }
 
@@ -545,6 +661,7 @@ const renameItem = async () => {
     renameOpen.value = false
     renameTarget.value = null
     await loadDocuments()
+    await loadWorkspace()
   } catch (error) {
     modalError.value = getErrorMessage(error, 'Could not rename this item.')
   } finally {
@@ -609,6 +726,7 @@ const savePermissions = async () => {
     permissionsOpen.value = false
     permissionFolder.value = null
     await loadDocuments()
+    await loadWorkspace()
   } catch (error) {
     modalError.value = getErrorMessage(error, 'Could not save folder access.')
   } finally {
@@ -711,6 +829,7 @@ const viewDocument = async (item) => {
       throw new Error('Your browser blocked the document preview. Allow pop-ups and try again.')
     }
     window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000)
+    await loadWorkspace()
   } catch (error) {
     previewWindow?.close()
     pageError.value = getErrorMessage(error, 'Could not open the document.')
@@ -730,6 +849,7 @@ const downloadDocument = async (item) => {
     anchor.click()
     anchor.remove()
     URL.revokeObjectURL(objectUrl)
+    await loadWorkspace()
   } catch (error) {
     pageError.value = getErrorMessage(error, 'Could not download the document.')
   }
@@ -753,6 +873,7 @@ const deleteItem = async (item) => {
     })
 
     await loadDocuments()
+    await loadWorkspace()
   } catch (error) {
     pageError.value = getErrorMessage(error, `Could not delete the ${itemLabel}.`)
   }
@@ -777,6 +898,14 @@ const formatBytes = (value) => {
 const formatDate = (value) => {
   if (!value) return '—'
   return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(value))
+}
+
+const formatDateTime = (value) => {
+  if (!value) return '—'
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(new Date(value))
 }
 
 const getFileType = (item) => {
@@ -847,13 +976,20 @@ watch(searchQuery, () => {
   searchTimeoutId = window.setTimeout(() => loadDocuments(), 300)
 })
 
+watch(selectedItemId, () => {
+  detailsTab.value = 'properties'
+  itemActivity.value = []
+})
+
+watch(detailsTab, () => loadItemActivity())
+
 watch([createFolderOpen, renameOpen, permissionsOpen], ([createOpen, renameIsOpen, permissionsIsOpen]) => {
   if (!import.meta.client) return
   document.body.style.overflow = createOpen || renameIsOpen || permissionsIsOpen ? 'hidden' : ''
 })
 
 onMounted(() => {
-  loadDocuments()
+  refreshFileManager()
   window.addEventListener('keydown', handleKeydown)
 })
 

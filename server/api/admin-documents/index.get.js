@@ -50,10 +50,33 @@ export default defineEventHandler(async (event) => {
     throwDocumentsDataError(documentsError, 'Could not load documents.')
   }
 
-  const items = [
+  const rawItems = [
     ...folders,
     ...(documents || []).map((document) => mapDocumentRecord(document, access.canEdit))
   ]
+  const creatorIds = [...new Set(rawItems.map((item) => item.created_by).filter(Boolean))]
+  let creators = new Map()
+
+  if (creatorIds.length) {
+    const { data: creatorRows, error: creatorsError } = await supabaseAdmin
+      .from('admin_users')
+      .select('id, full_name, email')
+      .in('id', creatorIds)
+
+    if (creatorsError) {
+      throwDocumentsDataError(creatorsError, 'Could not load document owners.')
+    }
+
+    creators = new Map((creatorRows || []).map((creator) => [creator.id, creator]))
+  }
+
+  const items = rawItems.map((item) => {
+    const creator = creators.get(item.created_by)
+    return {
+      ...item,
+      created_by_name: creator?.full_name || creator?.email || 'Unknown admin'
+    }
+  })
 
   return {
     access: {

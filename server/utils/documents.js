@@ -443,6 +443,23 @@ export const getDocumentRecord = async (supabaseAdmin, documentId) => {
   return data
 }
 
+export const touchRecentDocument = async (supabaseAdmin, adminUserId, documentId) => {
+  const openedAt = new Date().toISOString()
+  const { error } = await supabaseAdmin
+    .from('document_recent_items')
+    .upsert({
+      admin_user_id: adminUserId,
+      document_id: documentId,
+      last_opened_at: openedAt
+    }, {
+      onConflict: 'admin_user_id,document_id'
+    })
+
+  if (error && !schemaErrorCodes.has(error.code)) {
+    console.error('Could not update recent documents:', error.message)
+  }
+}
+
 export const getDocumentStorageExtension = (name = '') => {
   const extension = extname(String(name || '')).toLowerCase()
   return ALLOWED_EXTENSIONS.has(extension) ? extension : ''

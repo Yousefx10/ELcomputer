@@ -55,3 +55,13 @@ CRM, tickets, warranty work, timelines, and status remain available.
 Orders, packing, returns, shipping, and serialized items also remain.
 
 Direct links to hidden ERP pages redirect to Daftra equivalents.
+
+## File manager
+
+Quick access stores personal file and folder pins.
+
+Recent files track successfully opened documents.
+
+Properties show ownership, dates, location, size, and access.
+
+Activity shows administrative changes, not file contents.

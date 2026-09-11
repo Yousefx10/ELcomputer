@@ -5,6 +5,7 @@ import {
   DOCUMENTS_BUCKET,
   getDocumentRecord,
   requireDocumentFolderAccess,
+  touchRecentDocument,
   throwDocumentsDataError
 } from '../../../../utils/documents'
 
@@ -34,6 +35,8 @@ export default defineEventHandler(async (event) => {
   if (error || !data) {
     throwDocumentsDataError(error, 'Could not download the document.')
   }
+
+  await touchRecentDocument(supabaseAdmin, adminUser.id, document.id)
 
   const fileBuffer = Buffer.from(await data.arrayBuffer())
 
