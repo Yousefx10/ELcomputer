@@ -11,7 +11,7 @@
               Confirm Orders
             </h1>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-              Claim an order, scan its items, then print both documents.
+              Start a session, choose an order, then record packing.
             </p>
           </div>
 
@@ -69,7 +69,150 @@
         </button>
       </div>
 
-      <div class="grid items-start gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
+      <section
+        v-if="workSessionLoading"
+        class="rounded-2xl bg-white p-10 text-center text-gray-500 shadow"
+      >
+        <Icon name="lucide:loader-circle" size="28" class="mx-auto animate-spin" />
+        <p class="mt-3 text-sm">Checking your packing session...</p>
+      </section>
+
+      <section
+        v-else-if="!workSessionActive"
+        class="overflow-hidden rounded-2xl bg-white shadow"
+      >
+        <div class="grid lg:grid-cols-[1fr_360px]">
+          <div class="p-7 sm:p-10">
+            <span class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700">
+              <Icon name="lucide:log-in" size="28" />
+            </span>
+            <p class="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Session closed</p>
+            <h2 class="mt-2 text-3xl font-bold text-gray-950">Start your packing session</h2>
+            <p class="mt-3 max-w-xl text-sm leading-6 text-gray-500">
+              This marks you active. No password is needed.
+            </p>
+            <button
+              type="button"
+              :disabled="workSessionActionLoading"
+              class="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:opacity-50"
+              @click="startWorkSession"
+            >
+              <Icon
+                :name="workSessionActionLoading ? 'lucide:loader-circle' : 'lucide:play'"
+                size="18"
+                :class="workSessionActionLoading ? 'animate-spin' : ''"
+              />
+              {{ workSessionActionLoading ? 'Starting...' : 'Start session' }}
+            </button>
+          </div>
+
+          <div class="bg-gray-950 p-7 text-white sm:p-8">
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Packing steps</p>
+            <ol class="mt-5 space-y-4 text-sm">
+              <li class="flex gap-3"><span class="font-bold text-blue-400">1</span><span>Start your work session.</span></li>
+              <li class="flex gap-3"><span class="font-bold text-blue-400">2</span><span>Connect and position the camera.</span></li>
+              <li class="flex gap-3"><span class="font-bold text-blue-400">3</span><span>Choose an order from the queue.</span></li>
+              <li class="flex gap-3"><span class="font-bold text-blue-400">4</span><span>Pack, scan, and complete the order.</span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section
+        v-else
+        class="overflow-hidden rounded-2xl bg-white shadow"
+      >
+        <div class="grid gap-px bg-gray-200 lg:grid-cols-[minmax(0,1fr)_440px]">
+          <div class="bg-white p-6">
+            <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-4">
+                <span class="grid h-12 w-12 place-items-center rounded-2xl bg-green-100 text-green-700">
+                  <Icon name="lucide:circle-user-round" size="24" />
+                </span>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-xl font-bold text-gray-950">Packing session active</h2>
+                    <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">Active</span>
+                  </div>
+                  <p class="mt-1 text-sm text-gray-500">
+                    {{ workSession.operator_name || 'Operator' }} · {{ workSessionElapsed }}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                :disabled="workSessionActionLoading || hasActivePackingOrder"
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="closeWorkSession"
+              >
+                <Icon name="lucide:log-out" size="17" />
+                {{ workSessionActionLoading ? 'Closing...' : 'Close session' }}
+              </button>
+            </div>
+            <p v-if="hasActivePackingOrder" class="mt-4 text-xs font-semibold text-amber-700">
+              Complete or release the open order first.
+            </p>
+          </div>
+
+          <div class="bg-gray-950 p-5 text-white">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="font-bold">Packing camera</h2>
+                  <span
+                    class="rounded-full px-2 py-0.5 text-xs font-bold"
+                    :class="recordingActive
+                      ? 'bg-red-500 text-white'
+                      : cameraConnected
+                        ? 'bg-green-500/20 text-green-300'
+                        : 'bg-white/10 text-gray-300'"
+                  >
+                    {{ recordingActive ? 'Recording' : cameraConnected ? 'Connected' : 'Required' }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs text-gray-400">Recording starts when you choose an order.</p>
+              </div>
+              <Icon name="lucide:video" size="21" :class="recordingActive ? 'text-red-400' : 'text-gray-400'" />
+            </div>
+
+            <div class="mt-4 aspect-video overflow-hidden rounded-xl bg-black">
+              <video
+                ref="cameraVideoElement"
+                autoplay
+                muted
+                playsinline
+                class="h-full w-full object-cover"
+              />
+            </div>
+
+            <p v-if="cameraError" class="mt-3 text-xs text-red-300">{{ cameraError }}</p>
+            <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+              <select
+                v-if="cameraDevices.length > 1"
+                v-model="selectedCameraId"
+                :disabled="cameraLoading || recordingActive"
+                class="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm text-white outline-none"
+                @change="connectCamera"
+              >
+                <option v-for="device in cameraDevices" :key="device.deviceId" :value="device.deviceId" class="text-gray-950">
+                  {{ device.label || 'Camera' }}
+                </option>
+              </select>
+              <button
+                type="button"
+                :disabled="cameraLoading || recordingActive"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-gray-950 disabled:opacity-50"
+                @click="connectCamera"
+              >
+                <Icon :name="cameraLoading ? 'lucide:loader-circle' : 'lucide:camera'" size="16" :class="cameraLoading ? 'animate-spin' : ''" />
+                {{ cameraLoading ? 'Connecting...' : cameraConnected ? 'Reconnect' : 'Connect camera' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div v-if="workSessionActive" class="grid items-start gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
         <aside class="rounded-2xl bg-white p-5 shadow xl:sticky xl:top-6">
           <div class="flex items-center justify-between gap-3">
             <div>
@@ -117,7 +260,7 @@
               v-for="queueOrder in queueOrders"
               :key="queueOrder.id"
               type="button"
-              :disabled="isQueueOrderLocked(queueOrder) || Boolean(openingOrderId) || claimLoading || problemLoading"
+              :disabled="!cameraConnected || isQueueOrderLocked(queueOrder) || Boolean(openingOrderId) || claimLoading || problemLoading || isDifferentActiveOrder(queueOrder)"
               class="relative w-full overflow-hidden rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed"
               :class="[
                 selectedOrderId === queueOrder.id
@@ -226,9 +369,13 @@
             <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-gray-100 text-gray-500">
               <Icon name="lucide:scan-barcode" size="32" />
             </span>
-            <h2 class="mt-5 text-2xl font-bold text-gray-900">Choose an order to begin</h2>
+            <h2 class="mt-5 text-2xl font-bold text-gray-900">
+              {{ cameraConnected ? 'Choose an order to begin' : 'Connect the camera first' }}
+            </h2>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-              Claim an order to reserve it while you pack.
+              {{ cameraConnected
+                ? 'Recording starts after you select an order.'
+                : 'The queue unlocks after camera access is ready.' }}
             </p>
           </section>
 
@@ -245,6 +392,10 @@
                       <span>{{ getCustomerName(orderDetail) }}</span>
                       <span>Started {{ formatDate(sessionDetail.started_at) }}</span>
                       <span>by {{ sessionDetail.processor_name || sessionDetail.admin_name || 'Admin' }}</span>
+                      <span v-if="!sessionCompleted" class="inline-flex items-center gap-1.5 font-bold text-red-300">
+                        <span class="h-2 w-2 animate-pulse rounded-full bg-red-400" />
+                        {{ recordingActive ? 'Video recording' : 'Recording stopped' }}
+                      </span>
                     </div>
                   </div>
 
@@ -302,6 +453,16 @@
                   </div>
 
                   <div class="flex flex-wrap gap-2">
+                    <button
+                      v-if="packingDetail.video?.status === 'ready'"
+                      type="button"
+                      :disabled="videoDownloadLoading"
+                      class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 bg-white px-4 py-2 text-sm font-bold text-green-800 hover:bg-green-100 disabled:opacity-50"
+                      @click="downloadPackingVideo"
+                    >
+                      <Icon :name="videoDownloadLoading ? 'lucide:loader-circle' : 'lucide:video'" size="17" :class="videoDownloadLoading ? 'animate-spin' : ''" />
+                      Packing video
+                    </button>
                     <button
                       type="button"
                       class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 bg-white px-4 py-2 text-sm font-bold text-green-800 hover:bg-green-100"
@@ -680,13 +841,14 @@
                     autocapitalize="off"
                     spellcheck="false"
                     autofocus
+                    :disabled="!recordingActive"
                     placeholder="Scan SKU, unit code, or QR"
-                    class="min-w-0 flex-1 rounded-xl border border-gray-300 p-4 font-mono text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                    class="min-w-0 flex-1 rounded-xl border border-gray-300 p-4 font-mono text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:bg-gray-100"
                     @focus="$event.currentTarget.select()"
                   >
                   <button
                     type="submit"
-                    :disabled="scanLoading || !scanCode.trim() || allItemsPacked"
+                    :disabled="scanLoading || !scanCode.trim() || allItemsPacked || !recordingActive"
                     class="inline-flex min-w-36 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Icon
@@ -885,18 +1047,23 @@
               </div>
 
               <div class="mt-6 flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p
-                  class="text-sm font-semibold"
-                  :class="allItemsPacked ? 'text-green-700' : 'text-amber-700'"
-                >
-                  {{ allItemsPacked
-                    ? 'All requested quantities are confirmed.'
-                    : `Scan ${progress.remaining} more ${progress.remaining === 1 ? 'item' : 'items'} to continue.` }}
-                </p>
+                <div>
+                  <p
+                    class="text-sm font-semibold"
+                    :class="allItemsPacked ? 'text-green-700' : 'text-amber-700'"
+                  >
+                    {{ allItemsPacked
+                      ? 'All requested quantities are confirmed.'
+                      : `Scan ${progress.remaining} more ${progress.remaining === 1 ? 'item' : 'items'} to continue.` }}
+                  </p>
+                  <p v-if="videoUploadProgress" class="mt-1 text-xs font-semibold text-blue-700">
+                    {{ videoUploadProgress }}
+                  </p>
+                </div>
 
                 <button
                   type="button"
-                  :disabled="completionLoading || !allItemsPacked || !orderItems.length"
+                  :disabled="completionLoading || !allItemsPacked || !orderItems.length || recordingInterrupted"
                   class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
                   @click="completePacking"
                 >
@@ -905,7 +1072,7 @@
                     size="19"
                     :class="completionLoading ? 'animate-spin' : ''"
                   />
-                  {{ completionLoading ? 'Completing...' : 'Complete & Print' }}
+                  {{ completionLoading ? completionButtonLabel : 'Save Video & Complete' }}
                 </button>
               </div>
             </section>
@@ -960,6 +1127,56 @@ const problemFormOpen = ref(false)
 const problemSubject = ref('')
 const problemMessage = ref('')
 const problemFormError = ref('')
+const workSession = ref(null)
+const activePackingSessionId = ref('')
+const workSessionLoading = ref(true)
+const workSessionActionLoading = ref(false)
+const sessionClock = ref(Date.now())
+const cameraVideoElement = ref(null)
+const cameraStream = shallowRef(null)
+const cameraDevices = ref([])
+const selectedCameraId = ref('')
+const cameraLoading = ref(false)
+const cameraError = ref('')
+const recordingState = ref('idle')
+const recordingStartedAt = ref('')
+const recordingEndedAt = ref('')
+const recordingBlob = shallowRef(null)
+const recordingInterrupted = ref(false)
+const videoUploadProgress = ref('')
+const videoDownloadLoading = ref(false)
+let mediaRecorder = null
+let recordingChunks = []
+let stopRecordingPromise = null
+let resolveStopRecording = null
+let expectedRecorderStop = false
+let sessionClockTimer = null
+
+const workSessionActive = computed(() => workSession.value?.status === 'active')
+const cameraConnected = computed(() => {
+  return Boolean(cameraStream.value?.getVideoTracks?.().some((track) => track.readyState === 'live'))
+})
+const recordingActive = computed(() => recordingState.value === 'recording')
+const hasActivePackingOrder = computed(() => {
+  return Boolean(activePackingSessionId.value)
+    || (Boolean(sessionDetail.value.id) && !sessionCompleted.value)
+})
+const completionButtonLabel = computed(() => {
+  if (recordingState.value === 'stopping') return 'Stopping recording...'
+  if (recordingState.value === 'uploading') return 'Uploading video...'
+  return 'Completing order...'
+})
+const workSessionElapsed = computed(() => {
+  const startedAt = new Date(workSession.value?.started_at || '').getTime()
+
+  if (!Number.isFinite(startedAt)) return 'Started recently'
+
+  const totalMinutes = Math.max(0, Math.floor((sessionClock.value - startedAt) / 60000))
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  return hours ? `${hours}h ${minutes}m` : `${minutes}m`
+})
 
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
 const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
@@ -1074,6 +1291,313 @@ const getAuthHeaders = async () => {
   }
 }
 
+const loadWorkSession = async () => {
+  workSessionLoading.value = true
+
+  try {
+    const response = await $fetch('/api/admin-orders/packing/work-session', {
+      headers: await getAuthHeaders()
+    })
+    workSession.value = response?.workSession || null
+    activePackingSessionId.value = String(response?.activePackingSessionId || '')
+  } catch (error) {
+    pageError.value = error?.data?.statusMessage || error?.message || 'Could not load your packing session.'
+  } finally {
+    workSessionLoading.value = false
+  }
+}
+
+const startWorkSession = async () => {
+  if (workSessionActionLoading.value) return
+
+  workSessionActionLoading.value = true
+  pageError.value = ''
+  clearPageNotice()
+
+  try {
+    const response = await $fetch('/api/admin-orders/packing/work-session', {
+      method: 'POST',
+      body: { action: 'start' },
+      headers: await getAuthHeaders()
+    })
+    workSession.value = response?.workSession || null
+    pageNotice.type = 'success'
+    pageNotice.message = 'Packing session started. Connect the camera next.'
+    await loadQueue({ preserveSelection: true })
+  } catch (error) {
+    pageError.value = error?.data?.statusMessage || error?.message || 'Could not start your packing session.'
+  } finally {
+    workSessionActionLoading.value = false
+  }
+}
+
+const stopCamera = () => {
+  for (const track of cameraStream.value?.getTracks?.() || []) {
+    track.stop()
+  }
+
+  cameraStream.value = null
+
+  if (cameraVideoElement.value) {
+    cameraVideoElement.value.srcObject = null
+  }
+}
+
+const closeWorkSession = async () => {
+  if (workSessionActionLoading.value || hasActivePackingOrder.value) return
+
+  workSessionActionLoading.value = true
+  pageError.value = ''
+  clearPageNotice()
+
+  try {
+    await $fetch('/api/admin-orders/packing/work-session', {
+      method: 'POST',
+      body: { action: 'close' },
+      headers: await getAuthHeaders()
+    })
+    stopCamera()
+    clearPackingWorkspace()
+    queueOrders.value = []
+    queueTotal.value = 0
+    activePackingSessionId.value = ''
+    workSession.value = null
+    await setSessionRouteQuery('')
+    pageNotice.type = 'success'
+    pageNotice.message = 'Packing session closed.'
+  } catch (error) {
+    pageError.value = error?.data?.statusMessage || error?.message || 'Could not close your packing session.'
+  } finally {
+    workSessionActionLoading.value = false
+  }
+}
+
+const refreshCameraDevices = async () => {
+  if (!navigator.mediaDevices?.enumerateDevices) return
+
+  const devices = await navigator.mediaDevices.enumerateDevices()
+  cameraDevices.value = devices.filter((device) => device.kind === 'videoinput')
+
+  if (!selectedCameraId.value && cameraDevices.value.length) {
+    selectedCameraId.value = cameraDevices.value[0].deviceId
+  }
+}
+
+const handleCameraEnded = () => {
+  if (recordingActive.value && !expectedRecorderStop) {
+    recordingInterrupted.value = true
+    cameraError.value = 'Camera disconnected. Release and restart this order.'
+    pageError.value = cameraError.value
+  }
+}
+
+const connectCamera = async () => {
+  if (!import.meta.client || cameraLoading.value || recordingActive.value) return
+
+  cameraLoading.value = true
+  cameraError.value = ''
+
+  try {
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      throw new Error('Camera access requires HTTPS or localhost.')
+    }
+
+    stopCamera()
+    const video = selectedCameraId.value
+      ? { deviceId: { exact: selectedCameraId.value }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+      : { width: { ideal: 1920 }, height: { ideal: 1080 } }
+    const stream = await navigator.mediaDevices.getUserMedia({ video, audio: false })
+    const videoTrack = stream.getVideoTracks()[0]
+
+    if (!videoTrack) {
+      stream.getTracks().forEach((track) => track.stop())
+      throw new Error('No webcam was found.')
+    }
+
+    videoTrack.addEventListener('ended', handleCameraEnded)
+    cameraStream.value = stream
+
+    if (cameraVideoElement.value) {
+      cameraVideoElement.value.srcObject = stream
+      await cameraVideoElement.value.play().catch(() => {})
+    }
+
+    await refreshCameraDevices()
+    const settings = videoTrack.getSettings?.() || {}
+    if (settings.deviceId) selectedCameraId.value = settings.deviceId
+    pageNotice.type = 'success'
+    pageNotice.message = 'Camera connected. Choose an order when ready.'
+  } catch (error) {
+    cameraError.value = error?.name === 'NotAllowedError'
+      ? 'Allow camera access in the browser, then retry.'
+      : error?.message || 'Could not connect the camera.'
+  } finally {
+    cameraLoading.value = false
+  }
+}
+
+const getRecordingMimeType = () => {
+  const candidates = [
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm',
+    'video/mp4'
+  ]
+
+  return candidates.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || ''
+}
+
+const startOrderRecording = async () => {
+  if (!cameraConnected.value || !window.MediaRecorder) {
+    throw new Error('Connect a supported webcam before choosing an order.')
+  }
+
+  recordingChunks = []
+  recordingBlob.value = null
+  recordingInterrupted.value = false
+  recordingStartedAt.value = new Date().toISOString()
+  recordingEndedAt.value = ''
+  videoUploadProgress.value = ''
+  expectedRecorderStop = false
+  const mimeType = getRecordingMimeType()
+  mediaRecorder = mimeType
+    ? new MediaRecorder(cameraStream.value, { mimeType, videoBitsPerSecond: 2_500_000 })
+    : new MediaRecorder(cameraStream.value)
+
+  stopRecordingPromise = new Promise((resolve) => {
+    resolveStopRecording = resolve
+  })
+  mediaRecorder.addEventListener('dataavailable', (event) => {
+    if (event.data?.size) recordingChunks.push(event.data)
+  })
+  mediaRecorder.addEventListener('error', () => {
+    recordingInterrupted.value = true
+    pageError.value = 'Camera recording failed. Release and restart this order.'
+  })
+  mediaRecorder.addEventListener('stop', () => {
+    recordingEndedAt.value = new Date().toISOString()
+    const resolvedType = String(mediaRecorder?.mimeType || mimeType || 'video/webm').split(';')[0]
+    recordingBlob.value = new Blob(recordingChunks, { type: resolvedType })
+    recordingState.value = 'stopped'
+
+    if (!expectedRecorderStop) {
+      recordingInterrupted.value = true
+      pageError.value = 'Recording stopped early. Release and restart this order.'
+    }
+
+    resolveStopRecording?.(recordingBlob.value)
+    resolveStopRecording = null
+  }, { once: true })
+  mediaRecorder.start(1000)
+  recordingState.value = 'recording'
+}
+
+const stopOrderRecording = async ({ discard = false } = {}) => {
+  if (recordingActive.value && mediaRecorder?.state !== 'inactive') {
+    expectedRecorderStop = true
+    recordingState.value = 'stopping'
+    mediaRecorder.stop()
+  }
+
+  const blob = stopRecordingPromise ? await stopRecordingPromise : recordingBlob.value
+
+  if (discard) {
+    recordingChunks = []
+    recordingBlob.value = null
+    recordingStartedAt.value = ''
+    recordingEndedAt.value = ''
+    recordingState.value = 'idle'
+    stopRecordingPromise = null
+    mediaRecorder = null
+  }
+
+  return blob
+}
+
+const uploadPackingVideo = async () => {
+  if (packingDetail.value?.video?.status === 'ready') return packingDetail.value.video
+
+  const blob = recordingBlob.value
+
+  if (!blob?.size || recordingInterrupted.value) {
+    throw new Error('A complete packing recording is required.')
+  }
+
+  recordingState.value = 'uploading'
+  videoUploadProgress.value = 'Preparing secure video upload...'
+  const startedAt = new Date(recordingStartedAt.value)
+  const endedAt = new Date(recordingEndedAt.value)
+  const durationSeconds = Math.max(0, (endedAt.getTime() - startedAt.getTime()) / 1000)
+  const response = await $fetch(
+    `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-upload`,
+    {
+      method: 'POST',
+      body: {
+        mimeType: blob.type || 'video/webm',
+        sizeBytes: blob.size,
+        durationSeconds,
+        recordingStartedAt: recordingStartedAt.value,
+        recordingEndedAt: recordingEndedAt.value
+      },
+      headers: await getAuthHeaders()
+    }
+  )
+
+  videoUploadProgress.value = 'Uploading packing video...'
+  const { error: uploadError } = await supabase.storage
+    .from('order-packing-videos')
+    .uploadToSignedUrl(response.upload.path, response.upload.token, blob, {
+      contentType: blob.type || 'video/webm',
+      upsert: true
+    })
+
+  if (uploadError) throw uploadError
+
+  videoUploadProgress.value = 'Verifying packing video...'
+  const completed = await $fetch(
+    `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-complete`,
+    {
+      method: 'POST',
+      headers: await getAuthHeaders()
+    }
+  )
+
+  packingDetail.value.video = completed.video
+  recordingState.value = 'saved'
+  videoUploadProgress.value = `Saved as ${completed.video.file_name}`
+  recordingChunks = []
+  recordingBlob.value = null
+  stopRecordingPromise = null
+  mediaRecorder = null
+  return completed.video
+}
+
+const downloadPackingVideo = async () => {
+  if (!sessionDetail.value.id || videoDownloadLoading.value) return
+
+  videoDownloadLoading.value = true
+  pageError.value = ''
+
+  try {
+    const blob = await $fetch(
+      `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video`,
+      { responseType: 'blob', headers: await getAuthHeaders() }
+    )
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = packingDetail.value?.video?.file_name || 'packing-video.webm'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    pageError.value = error?.data?.statusMessage || error?.message || 'Could not download the packing video.'
+  } finally {
+    videoDownloadLoading.value = false
+  }
+}
+
 const getOrderNumber = (order = {}) => {
   return order.order_number || `Order #${String(order.id || '').slice(0, 8)}`
 }
@@ -1111,6 +1635,12 @@ const canResumeQueueOrder = (order = {}) => {
 
 const isQueueOrderLocked = (order = {}) => {
   return Boolean(getQueueSession(order)) && !canResumeQueueOrder(order)
+}
+
+const isDifferentActiveOrder = (order = {}) => {
+  if (!activePackingSessionId.value) return false
+
+  return String(getQueueSession(order)?.id || '') !== activePackingSessionId.value
 }
 
 const hasQueueCustomerReply = (order = {}) => {
@@ -1359,10 +1889,13 @@ const applyPackingDetail = (response) => {
 
   packingDetail.value = detail
   selectedOrderId.value = detail.order?.id || ''
+  activePackingSessionId.value = detail.session.status === 'active'
+    ? String(detail.session.id)
+    : ''
 }
 
 const focusScanner = async () => {
-  if (sessionCompleted.value) {
+  if (sessionCompleted.value || !recordingActive.value) {
     return
   }
 
@@ -1379,6 +1912,15 @@ const clearPackingWorkspace = () => {
   scanFeedback.message = ''
   completionStatus.value = 'ready_to_deliver'
   purchaserMessage.value = ''
+  videoUploadProgress.value = ''
+  recordingInterrupted.value = false
+  recordingState.value = 'idle'
+  recordingBlob.value = null
+  recordingStartedAt.value = ''
+  recordingEndedAt.value = ''
+  recordingChunks = []
+  stopRecordingPromise = null
+  mediaRecorder = null
   resetProblemForm()
 }
 
@@ -1411,10 +1953,7 @@ const loadQueue = async ({
     })
     queueOrders.value = response.orders || response.items || []
     queueTotal.value = Number(response.total || queueOrders.value.length)
-
-    if (!preserveSelection && response.currentSessionId && !route.query.session) {
-      await loadPackingSession(response.currentSessionId)
-    }
+    activePackingSessionId.value = String(response.currentSessionId || response.current_session_id || '')
 
     return response
   } catch (error) {
@@ -1466,7 +2005,10 @@ const loadPackingSession = async (sessionId, { updateRoute = true } = {}) => {
 const openQueueOrder = async (queueOrder) => {
   if (
     !queueOrder?.id
+    || !workSessionActive.value
+    || !cameraConnected.value
     || isQueueOrderLocked(queueOrder)
+    || isDifferentActiveOrder(queueOrder)
     || openingOrderId.value
     || problemLoading.value
   ) {
@@ -1486,53 +2028,50 @@ const openQueueOrder = async (queueOrder) => {
     return
   }
 
+  if (currentSessionId && !sessionCompleted.value && currentOrderId !== targetOrderId) {
+    pageError.value = 'Complete or release the open order first.'
+    return
+  }
+
   openingOrderId.value = targetOrderId
   claimLoading.value = true
   pageError.value = ''
   clearPageNotice()
-  let releasedCurrentSession = false
+  let recordingStarted = false
 
   try {
-    if (
-      currentSessionId
-      && !sessionCompleted.value
-      && currentOrderId
-      && currentOrderId !== targetOrderId
-    ) {
-      releaseLoading.value = true
-      await postReleasePackingSession(currentSessionId)
-      releasedCurrentSession = true
-      clearPackingWorkspace()
-      await setSessionRouteQuery('')
-      releaseLoading.value = false
-    }
+    await startOrderRecording()
+    recordingStarted = true
+    const videoTrack = cameraStream.value?.getVideoTracks?.()[0]
+    const response = await $fetch('/api/admin-orders/packing', {
+      method: 'POST',
+      body: {
+        orderId: targetOrderId,
+        workSessionId: workSession.value.id,
+        cameraReady: true,
+        cameraLabel: videoTrack?.label || ''
+      },
+      headers: await getAuthHeaders()
+    })
+    const sessionId = response?.session?.id
+      || response?.detail?.session?.id
+      || response?.sessionId
 
-    const existingSession = getQueueSession(queueOrder)
+    if (response?.detail?.session?.id || response?.data?.session?.id) {
+      applyPackingDetail(response)
+      activePackingSessionId.value = sessionCompleted.value ? '' : String(sessionDetail.value.id || '')
+      resetProblemForm()
+      await setSessionRouteQuery(sessionDetail.value.id)
 
-    if (existingSession?.id) {
-      await loadPackingSession(existingSession.id)
-    } else {
-      const response = await $fetch('/api/admin-orders/packing', {
-        method: 'POST',
-        body: {
-          orderId: targetOrderId
-        },
-        headers: await getAuthHeaders()
-      })
-      const sessionId = response?.session?.id
-        || response?.detail?.session?.id
-        || response?.sessionId
-
-      if (response?.detail?.session?.id || response?.data?.session?.id) {
-        applyPackingDetail(response)
-        resetProblemForm()
-        await setSessionRouteQuery(sessionDetail.value.id)
-        await focusScanner()
-      } else if (sessionId) {
-        await loadPackingSession(sessionId)
+      if (packingDetail.value?.video?.status === 'ready') {
+        await stopOrderRecording({ discard: true })
       } else {
-        throw new Error('The order was claimed without returning a packing session.')
+        await focusScanner()
       }
+    } else if (sessionId) {
+      await loadPackingSession(sessionId)
+    } else {
+      throw new Error('The order was claimed without returning a packing session.')
     }
 
     await loadQueue({
@@ -1542,10 +2081,7 @@ const openQueueOrder = async (queueOrder) => {
   } catch (error) {
     const claimError = error?.data?.statusMessage || error?.message || 'Could not start packing this order.'
 
-    if (releasedCurrentSession) {
-      clearPackingWorkspace()
-      await setSessionRouteQuery('')
-    }
+    if (recordingStarted) await stopOrderRecording({ discard: true })
 
     await loadQueue({
       preserveSelection: true,
@@ -1553,7 +2089,6 @@ const openQueueOrder = async (queueOrder) => {
     })
     pageError.value = claimError
   } finally {
-    releaseLoading.value = false
     claimLoading.value = false
     openingOrderId.value = ''
   }
@@ -1562,7 +2097,7 @@ const openQueueOrder = async (queueOrder) => {
 const scanItem = async () => {
   const code = scanCode.value.trim()
 
-  if (!code || !sessionDetail.value.id || scanLoading.value || allItemsPacked.value) {
+  if (!code || !sessionDetail.value.id || scanLoading.value || allItemsPacked.value || !recordingActive.value) {
     return
   }
 
@@ -1679,6 +2214,11 @@ const completePacking = async () => {
   pageError.value = ''
 
   try {
+    if (packingDetail.value?.video?.status !== 'ready') {
+      await stopOrderRecording()
+      await uploadPackingVideo()
+    }
+
     const response = await $fetch(
       `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/complete`,
       {
@@ -1763,6 +2303,7 @@ const reportOrderProblem = async () => {
     problemLoading.value = false
   }
 
+  await stopOrderRecording({ discard: true })
   clearPackingWorkspace()
   try {
     await setSessionRouteQuery('')
@@ -1799,6 +2340,7 @@ const releasePackingSession = async () => {
   try {
     const releasedOrderNumber = getOrderNumber(orderDetail.value)
     await postReleasePackingSession(sessionDetail.value.id)
+    await stopOrderRecording({ discard: true })
     clearPackingWorkspace()
     await setSessionRouteQuery('')
     await loadQueue({
@@ -1827,51 +2369,45 @@ const continueToNextOrder = async () => {
     purchaserMessage.value = ''
     await setSessionRouteQuery('')
     await loadQueue({ preserveSelection: true })
-
-    const nextOrder = queueOrders.value.find((order) => !isQueueOrderLocked(order))
-
-    if (nextOrder) {
-      await openQueueOrder(nextOrder)
-    }
   } finally {
     claimLoading.value = false
   }
 }
 
 onMounted(async () => {
-  const queueResponse = await loadQueue({ preserveSelection: true })
-  const routeSessionId = Array.isArray(route.query.session)
-    ? route.query.session[0]
-    : route.query.session
-  const initialSessionId = String(routeSessionId || queueResponse?.currentSessionId || '').trim()
+  sessionClockTimer = window.setInterval(() => {
+    sessionClock.value = Date.now()
+  }, 30000)
+  window.addEventListener('beforeunload', handleBeforeUnload)
 
-  if (initialSessionId) {
-    await loadPackingSession(initialSessionId, {
-      updateRoute: Boolean(!routeSessionId)
-    })
+  await loadWorkSession()
+
+  if (workSessionActive.value) {
+    await loadQueue({ preserveSelection: true })
+  }
+
+  if (route.query.session) {
+    await setSessionRouteQuery('')
   }
 })
 
-watch(
-  () => route.query.session,
-  async (nextSessionQuery) => {
-    const nextSessionId = String(
-      Array.isArray(nextSessionQuery) ? nextSessionQuery[0] : nextSessionQuery || ''
-    ).trim()
+const handleBeforeUnload = (event) => {
+  if (!workSessionActive.value) return
 
-    if (nextSessionId === String(sessionDetail.value.id || '')) {
-      return
-    }
+  event.preventDefault()
+  event.returnValue = ''
+}
 
-    if (!nextSessionId) {
-      packingDetail.value = null
-      selectedOrderId.value = ''
-      return
-    }
+onBeforeRouteLeave(() => {
+  if (!hasActivePackingOrder.value) return true
 
-    await loadPackingSession(nextSessionId, {
-      updateRoute: false
-    })
-  }
-)
+  return window.confirm('Leave this active order? The current video will be lost.')
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+
+  if (sessionClockTimer) window.clearInterval(sessionClockTimer)
+  stopCamera()
+})
 </script>

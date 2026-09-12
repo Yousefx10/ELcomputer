@@ -3,6 +3,7 @@ import { recordAdminActivity } from '../../../utils/adminLogs'
 import { requireAdminRequest } from '../../../utils/adminRequest'
 import {
   getAdminActiveOrderPackingSession,
+  getAdminActivePackingWorkSession,
   getOrderPackingDetail,
   getOrderPackingSessionsForOrders,
   getPackingSessionAdminId,
@@ -12,6 +13,7 @@ import {
   ORDER_PACKING_COMPLETED_STATE,
   ORDER_PACKING_ELIGIBLE_STATUSES,
   ORDER_PACKING_SESSIONS_TABLE,
+  ORDER_PACKING_WORK_SESSIONS_TABLE,
   throwOrderPackingDatabaseError
 } from '../../../utils/orderPacking'
 
@@ -107,12 +109,50 @@ export default defineEventHandler(async (event) => {
   })
   const body = await readBody(event)
   const orderId = String(body?.orderId || body?.order_id || '').trim()
+  const workSessionId = String(body?.workSessionId || body?.work_session_id || '').trim()
+  const cameraReady = body?.cameraReady === true || body?.camera_ready === true
+  const cameraLabel = String(body?.cameraLabel || body?.camera_label || '').trim().slice(0, 300)
 
   if (!isOrderPackingUuid(orderId)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'A valid order is required.'
     })
+  }
+
+  if (!isOrderPackingUuid(workSessionId) || !cameraReady) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Start your session and connect the camera first.'
+    })
+  }
+
+  const activeWorkSession = await getAdminActivePackingWorkSession(
+    supabaseAdmin,
+    adminUser.id
+  )
+
+  if (!activeWorkSession || String(activeWorkSession.id) !== workSessionId) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Your packing session is closed. Start a new session.'
+    })
+  }
+
+  if (cameraLabel && cameraLabel !== activeWorkSession.camera_label) {
+    const { error: cameraError } = await supabaseAdmin
+      .from(ORDER_PACKING_WORK_SESSIONS_TABLE)
+      .update({
+        camera_label: cameraLabel,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', workSessionId)
+      .eq('admin_user_id', adminUser.id)
+      .eq('status', 'active')
+
+    if (cameraError) {
+      throwOrderPackingDatabaseError(cameraError, 'Could not save the selected camera.')
+    }
   }
 
   const currentAdminSession = await getAdminActiveOrderPackingSession(
@@ -201,6 +241,7 @@ export default defineEventHandler(async (event) => {
       .insert({
         order_id: orderId,
         admin_user_id: adminUser.id,
+        work_session_id: workSessionId,
         processor_name: getAdminDisplayName(adminUser),
         processor_email: String(adminUser.email || '').trim().toLowerCase() || null,
         status: ORDER_PACKING_ACTIVE_STATE,
@@ -273,6 +314,34 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!session.work_session_id) {
+    const { data: linkedSession, error: linkError } = await supabaseAdmin
+      .from(ORDER_PACKING_SESSIONS_TABLE)
+      .update({
+        work_session_id: workSessionId,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', session.id)
+      .eq('admin_user_id', adminUser.id)
+      .eq('status', ORDER_PACKING_ACTIVE_STATE)
+      .is('work_session_id', null)
+      .select('*')
+      .maybeSingle()
+
+    if (linkError) {
+      throwOrderPackingDatabaseError(linkError, 'Could not link this order to your session.')
+    }
+
+    session = linkedSession || session
+  }
+
+  if (String(session.work_session_id || '') !== workSessionId) {
+    throw createSessionConflict({
+      message: 'This order belongs to another packing work session.',
+      session
+    })
+  }
+
   await setOrderProcessing({
     supabaseAdmin,
     order,
@@ -290,6 +359,8 @@ export default defineEventHandler(async (event) => {
       order_id: orderId,
       order_number: order.order_number || null,
       packing_session_id: session.id,
+      work_session_id: workSessionId,
+      camera_label: cameraLabel || null,
       processor_admin_user_id: adminUser.id,
       resumed
     }

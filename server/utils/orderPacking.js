@@ -6,6 +6,9 @@ import {
 
 export const ORDER_PACKING_SESSIONS_TABLE = 'order_packing_sessions'
 export const ORDER_PACKING_SCANS_TABLE = 'order_packing_scans'
+export const ORDER_PACKING_WORK_SESSIONS_TABLE = 'order_packing_work_sessions'
+export const ORDER_PACKING_VIDEOS_TABLE = 'order_packing_videos'
+export const ORDER_PACKING_VIDEOS_BUCKET = 'order-packing-videos'
 export const CUSTOMER_MESSAGES_TABLE = 'customer_order_messages'
 export const ORDER_PACKING_ELIGIBLE_STATUSES = ['pending_payment', 'processing']
 export const ORDER_PACKING_ACTIVE_STATE = 'active'
@@ -280,6 +283,29 @@ export const getAdminActiveOrderPackingSession = async (
   return data || null
 }
 
+export const getAdminActivePackingWorkSession = async (
+  supabaseAdmin,
+  adminUserId
+) => {
+  const { data, error } = await supabaseAdmin
+    .from(ORDER_PACKING_WORK_SESSIONS_TABLE)
+    .select('*')
+    .eq('admin_user_id', adminUserId)
+    .eq('status', ORDER_PACKING_ACTIVE_STATE)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    throwOrderPackingDatabaseError(
+      error,
+      'Could not load your packing work session.'
+    )
+  }
+
+  return data || null
+}
+
 export const getOrderPackingDetail = async ({
   supabaseAdmin,
   sessionId,
@@ -300,7 +326,8 @@ export const getOrderPackingDetail = async ({
     orderResult,
     itemsResult,
     scansResult,
-    messagesResult
+    messagesResult,
+    videoResult
   ] = await Promise.all([
     supabaseAdmin
       .from('customer_orders')
@@ -322,13 +349,19 @@ export const getOrderPackingDetail = async ({
       .select('*')
       .eq('order_id', orderId)
       .order('created_at', { ascending: true })
-      .order('id', { ascending: true })
+      .order('id', { ascending: true }),
+    supabaseAdmin
+      .from(ORDER_PACKING_VIDEOS_TABLE)
+      .select('id, packing_session_id, work_session_id, order_id, file_name, mime_type, size_bytes, duration_seconds, status, recording_started_at, recording_ended_at, uploaded_at, created_at')
+      .eq('packing_session_id', session.id)
+      .maybeSingle()
   ])
 
   const primaryError = orderResult.error
     || itemsResult.error
     || scansResult.error
     || messagesResult.error
+    || videoResult.error
 
   if (primaryError) {
     throwOrderPackingDatabaseError(primaryError, 'Could not load the packing details.')
@@ -462,6 +495,7 @@ export const getOrderPackingDetail = async ({
     customer: customerResult.data || null,
     items,
     messages: messagesResult.data || [],
+    video: videoResult.data || null,
     progress: buildOrderPackingProgress(items)
   }
 }

@@ -110,6 +110,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    if (detailBeforeCompletion.video?.status !== 'ready') {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Save the packing video before completing this order.'
+      })
+    }
+
     if (messageBody && !detailBeforeCompletion.order.user_id) {
       throw createError({
         statusCode: 400,
@@ -183,6 +190,9 @@ export default defineEventHandler(async (event) => {
         order_id: completedOrderId,
         order_number: detailBeforeCompletion.order.order_number || null,
         packing_session_id: sessionId,
+        work_session_id: session.work_session_id || null,
+        packing_video_id: detailBeforeCompletion.video?.id || null,
+        packing_video_file_name: detailBeforeCompletion.video?.file_name || null,
         processor_admin_user_id: adminUser.id,
         processor_name: senderName,
         order_line_count: detailBeforeCompletion.items.length,
