@@ -28,11 +28,15 @@ The next order is never selected automatically.
 
 ## Finish work
 
-Complete or release any open order first.
-
-Then select **Close session**.
+Select **Close session** at any time.
 
 This stops the camera and marks the operator inactive.
+
+An open order returns to the queue.
+
+Its current packing progress is cleared.
+
+The session closure remains in the activity log.
 
 ## Video storage
 

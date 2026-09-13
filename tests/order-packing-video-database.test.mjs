@@ -122,3 +122,59 @@ test('packing requires an operator session and a video covering every scan', asy
   assert.equal(workSession.rows[0].status, 'closed')
   await db.exec('rollback')
 })
+
+test('closing a work session releases its order and writes one log', async () => {
+  const adminId = randomUUID()
+  const customerId = randomUUID()
+  const orderId = randomUUID()
+  const workSessionId = randomUUID()
+  const packingSessionId = randomUUID()
+
+  await db.exec('begin')
+  await db.query(`select set_config('request.jwt.claim.role', 'service_role', true)`)
+  await db.query(
+    `insert into auth.users(id,email) values($1,'closer@test.invalid'),($2,'buyer2@test.invalid')`,
+    [adminId, customerId]
+  )
+  await db.query(
+    `insert into public.admin_users(id,email,full_name,role) values($1,'closer@test.invalid','Session Closer','owner')`,
+    [adminId]
+  )
+  await db.query(
+    `insert into public.customer_orders(id,user_id,order_number,first_name,phone,street_address,city,governorate) values($1,$2,'ORD-200','Buyer','123','Street','Cairo','Cairo')`,
+    [orderId, customerId]
+  )
+  await db.query(
+    `insert into public.order_packing_work_sessions(id,admin_user_id,operator_name) values($1,$2,'Session Closer')`,
+    [workSessionId, adminId]
+  )
+  await db.query(
+    `insert into public.order_packing_sessions(id,order_id,admin_user_id,work_session_id,processor_name) values($1,$2,$3,$4,'Session Closer')`,
+    [packingSessionId, orderId, adminId, workSessionId]
+  )
+
+  const closeResult = await db.query(
+    `select public.close_order_packing_work_session($1,$2,'Session Closer','closer@test.invalid','owner') as value`,
+    [workSessionId, adminId]
+  )
+  const packingSession = await db.query(
+    `select status from public.order_packing_sessions where id=$1`,
+    [packingSessionId]
+  )
+  const workSession = await db.query(
+    `select status from public.order_packing_work_sessions where id=$1`,
+    [workSessionId]
+  )
+  const logs = await db.query(
+    `select description,metadata from public.admin_activity_logs where action_key='orders.packing.work_session.close' and admin_user_id=$1`,
+    [adminId]
+  )
+
+  assert.equal(closeResult.rows[0].value.released_order_id, orderId)
+  assert.equal(packingSession.rows[0].status, 'cancelled')
+  assert.equal(workSession.rows[0].status, 'closed')
+  assert.equal(logs.rows.length, 1)
+  assert.equal(logs.rows[0].description, 'Closed packing session. Order ORD-200 returned to the queue.')
+  assert.equal(logs.rows[0].metadata.packing_progress_cleared, true)
+  await db.exec('rollback')
+})

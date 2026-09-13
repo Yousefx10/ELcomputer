@@ -2,7 +2,6 @@ import { createError, readBody, setHeader } from 'h3'
 import { recordAdminActivity } from '../../../utils/adminLogs'
 import { requireAdminRequest } from '../../../utils/adminRequest'
 import {
-  getAdminActiveOrderPackingSession,
   getAdminActivePackingWorkSession,
   ORDER_PACKING_WORK_SESSIONS_TABLE,
   throwOrderPackingDatabaseError
@@ -82,50 +81,28 @@ export default defineEventHandler(async (event) => {
     return { workSession: null, alreadyClosed: true }
   }
 
-  const activePackingSession = await getAdminActiveOrderPackingSession(
-    supabaseAdmin,
-    adminUser.id
+  const { data: result, error } = await supabaseAdmin.rpc(
+    'close_order_packing_work_session',
+    {
+      p_work_session_id: activeWorkSession.id,
+      p_admin_user_id: adminUser.id,
+      p_author_name: getOperatorName(adminUser),
+      p_author_email: String(adminUser.email || '').trim().toLowerCase(),
+      p_author_role: adminUser.role
+    }
   )
-
-  if (activePackingSession) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Complete or release the open order first.'
-    })
-  }
-
-  const now = new Date().toISOString()
-  const { data: workSession, error } = await supabaseAdmin
-    .from(ORDER_PACKING_WORK_SESSIONS_TABLE)
-    .update({
-      status: 'closed',
-      closed_at: now,
-      updated_at: now
-    })
-    .eq('id', activeWorkSession.id)
-    .eq('admin_user_id', adminUser.id)
-    .eq('status', 'active')
-    .select('*')
-    .maybeSingle()
 
   if (error) {
     throwOrderPackingDatabaseError(error, 'Could not close your packing session.')
   }
 
-  if (!workSession) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'This packing session was already closed.'
-    })
+  return {
+    workSession: {
+      ...activeWorkSession,
+      status: 'closed',
+      closed_at: new Date().toISOString()
+    },
+    result,
+    alreadyClosed: Boolean(result?.already_closed)
   }
-
-  await recordAdminActivity({
-    supabaseAdmin,
-    adminUser,
-    actionKey: 'orders.packing.work_session.close',
-    description: 'Closed a packing work session.',
-    metadata: { work_session_id: workSession.id }
-  })
-
-  return { workSession, alreadyClosed: false }
 })

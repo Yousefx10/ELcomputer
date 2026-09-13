@@ -4,15 +4,9 @@
       <section class="rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
-              Packaging table
-            </p>
-            <h1 class="mt-2 text-4xl font-bold text-gray-900">
+            <h1 class="text-4xl font-bold text-gray-900">
               Confirm Orders
             </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-              Start a session, choose an order, then record packing.
-            </p>
           </div>
 
           <NuxtLink
@@ -79,42 +73,27 @@
 
       <section
         v-else-if="!workSessionActive"
-        class="overflow-hidden rounded-2xl bg-white shadow"
+        class="rounded-2xl bg-white p-8 shadow sm:p-10"
       >
-        <div class="grid lg:grid-cols-[1fr_360px]">
-          <div class="p-7 sm:p-10">
-            <span class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700">
-              <Icon name="lucide:log-in" size="28" />
-            </span>
-            <p class="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Session closed</p>
-            <h2 class="mt-2 text-3xl font-bold text-gray-950">Start your packing session</h2>
-            <p class="mt-3 max-w-xl text-sm leading-6 text-gray-500">
-              This marks you active. No password is needed.
-            </p>
-            <button
-              type="button"
-              :disabled="workSessionActionLoading"
-              class="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:opacity-50"
-              @click="startWorkSession"
-            >
-              <Icon
-                :name="workSessionActionLoading ? 'lucide:loader-circle' : 'lucide:play'"
-                size="18"
-                :class="workSessionActionLoading ? 'animate-spin' : ''"
-              />
-              {{ workSessionActionLoading ? 'Starting...' : 'Start session' }}
-            </button>
-          </div>
-
-          <div class="bg-gray-950 p-7 text-white sm:p-8">
-            <p class="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Packing steps</p>
-            <ol class="mt-5 space-y-4 text-sm">
-              <li class="flex gap-3"><span class="font-bold text-blue-400">1</span><span>Start your work session.</span></li>
-              <li class="flex gap-3"><span class="font-bold text-blue-400">2</span><span>Connect and position the camera.</span></li>
-              <li class="flex gap-3"><span class="font-bold text-blue-400">3</span><span>Choose an order from the queue.</span></li>
-              <li class="flex gap-3"><span class="font-bold text-blue-400">4</span><span>Pack, scan, and complete the order.</span></li>
-            </ol>
-          </div>
+        <div class="max-w-xl">
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-700">
+            <Icon name="lucide:play" size="23" />
+          </span>
+          <h2 class="mt-5 text-2xl font-bold text-gray-950">Start session</h2>
+          <p class="mt-2 text-sm text-gray-500">Start to view and confirm orders.</p>
+          <button
+            type="button"
+            :disabled="workSessionActionLoading"
+            class="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:opacity-50"
+            @click="startWorkSession"
+          >
+            <Icon
+              :name="workSessionActionLoading ? 'lucide:loader-circle' : 'lucide:play'"
+              size="18"
+              :class="workSessionActionLoading ? 'animate-spin' : ''"
+            />
+            {{ workSessionActionLoading ? 'Starting...' : 'Start session' }}
+          </button>
         </div>
       </section>
 
@@ -131,8 +110,7 @@
                 </span>
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-xl font-bold text-gray-950">Packing session active</h2>
-                    <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">Active</span>
+                    <h2 class="text-xl font-bold text-gray-950">Session active</h2>
                   </div>
                   <p class="mt-1 text-sm text-gray-500">
                     {{ workSession.operator_name || 'Operator' }} · {{ workSessionElapsed }}
@@ -141,7 +119,7 @@
               </div>
               <button
                 type="button"
-                :disabled="workSessionActionLoading || hasActivePackingOrder"
+                :disabled="workSessionActionLoading"
                 class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 @click="closeWorkSession"
               >
@@ -149,8 +127,8 @@
                 {{ workSessionActionLoading ? 'Closing...' : 'Close session' }}
               </button>
             </div>
-            <p v-if="hasActivePackingOrder" class="mt-4 text-xs font-semibold text-amber-700">
-              Complete or release the open order first.
+            <p v-if="hasActivePackingOrder" class="mt-4 text-xs text-gray-500">
+              Closing clears this order's packing progress.
             </p>
           </div>
 
@@ -170,7 +148,7 @@
                     {{ recordingActive ? 'Recording' : cameraConnected ? 'Connected' : 'Required' }}
                   </span>
                 </div>
-                <p class="mt-1 text-xs text-gray-400">Recording starts when you choose an order.</p>
+                <p class="mt-1 text-xs text-gray-400">Choose an order to start recording.</p>
               </div>
               <Icon name="lucide:video" size="21" :class="recordingActive ? 'text-red-400' : 'text-gray-400'" />
             </div>
@@ -1344,18 +1322,26 @@ const stopCamera = () => {
 }
 
 const closeWorkSession = async () => {
-  if (workSessionActionLoading.value || hasActivePackingOrder.value) return
+  if (workSessionActionLoading.value) return
+
+  if (
+    hasActivePackingOrder.value
+    && !window.confirm('Close session? Current packing progress will be cleared.')
+  ) {
+    return
+  }
 
   workSessionActionLoading.value = true
   pageError.value = ''
   clearPageNotice()
 
   try {
-    await $fetch('/api/admin-orders/packing/work-session', {
+    const response = await $fetch('/api/admin-orders/packing/work-session', {
       method: 'POST',
       body: { action: 'close' },
       headers: await getAuthHeaders()
     })
+    await stopOrderRecording({ discard: true })
     stopCamera()
     clearPackingWorkspace()
     queueOrders.value = []
@@ -1364,7 +1350,9 @@ const closeWorkSession = async () => {
     workSession.value = null
     await setSessionRouteQuery('')
     pageNotice.type = 'success'
-    pageNotice.message = 'Packing session closed.'
+    pageNotice.message = response?.result?.released_order_id
+      ? 'Session closed. Order returned to the queue.'
+      : 'Session closed.'
   } catch (error) {
     pageError.value = error?.data?.statusMessage || error?.message || 'Could not close your packing session.'
   } finally {

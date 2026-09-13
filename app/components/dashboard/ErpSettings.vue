@@ -96,25 +96,7 @@
       </div>
     </section>
 
-    <section class="grid gap-4 md:grid-cols-2">
-      <div class="rounded-2xl bg-white p-6 shadow">
-        <h3 class="text-lg font-bold">Kept in the dashboard</h3>
-        <ul class="mt-4 space-y-2 text-sm text-gray-600">
-          <li v-for="item in keptModules" :key="item" class="flex gap-2">
-            <Icon name="lucide:check" size="17" class="mt-0.5 shrink-0 text-green-600" />{{ item }}
-          </li>
-        </ul>
-      </div>
-
-      <div class="rounded-2xl bg-white p-6 shadow">
-        <h3 class="text-lg font-bold">Hidden with Daftra</h3>
-        <ul class="mt-4 space-y-2 text-sm text-gray-600">
-          <li v-for="item in hiddenModules" :key="item" class="flex gap-2">
-            <Icon name="lucide:eye-off" size="17" class="mt-0.5 shrink-0 text-gray-400" />{{ item }}
-          </li>
-        </ul>
-      </div>
-    </section>
+    <!-- Dashboard visibility rules are documented in docs/daftra-erp.md. -->
   </div>
 </template>
 
@@ -146,26 +128,6 @@ const settings = reactive({
 const modeOptions = [
   { value: 'built_in', label: 'Built-in ERP', description: 'Use the current purchasing and finance tools.' },
   { value: 'daftra', label: 'Daftra ERP', description: 'Use Daftra for inventory, invoices and accounting.' }
-]
-
-const keptModules = [
-  'Orders and packing',
-  'Products and storefront catalog',
-  'CRM clients and tickets',
-  'Calls and activity history',
-  'Warranty claims and timelines',
-  'Serialized-item lookup and scanning',
-  'Returns and shipping',
-  'Customers, admin users and documents'
-]
-
-const hiddenModules = [
-  'Purchase and local sales invoices',
-  'Warehouse editing and transfers',
-  'Treasury transaction entry',
-  'Supplier and salary payments',
-  'Local employee records',
-  'Local stock overview'
 ]
 
 const connectionLabel = computed(() => ({
