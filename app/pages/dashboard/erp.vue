@@ -30,16 +30,7 @@
 
     <template v-else-if="activeTab === 'overview'">
       <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <article v-for="card in overviewCards" :key="card.key" class="rounded-2xl bg-white p-5 shadow">
-          <div class="flex items-center justify-between gap-3">
-            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-              <Icon :name="card.icon" size="20" />
-            </span>
-            <span v-if="!card.available" class="text-xs font-bold text-red-600">Unavailable</span>
-          </div>
-          <p class="mt-4 text-sm font-semibold text-gray-500">{{ card.label }}</p>
-          <p class="mt-1 text-3xl font-black text-gray-900">{{ card.total ?? '—' }}</p>
-        </article>
+        <DashboardStatCard v-for="card in overviewCards" :key="card.key" :label="card.label" :value="card.total ?? '—'" :icon="card.icon" :tone="card.tone" :badge="card.available ? '' : 'Unavailable'" />
       </section>
 
       <section class="grid gap-4 md:grid-cols-2">
@@ -171,10 +162,10 @@ const canSyncOrders = computed(() => hasPermission('dashboard.orders'))
 const canEditProducts = computed(() => hasPermission('products.edit'))
 const totalPages = computed(() => Number(response.value.pagination?.page_count || 1))
 const overviewCards = computed(() => [
-  { key: 'clients', label: 'Clients', icon: 'lucide:users', ...response.value.overview?.clients },
-  { key: 'products', label: 'Products', icon: 'lucide:boxes', ...response.value.overview?.products },
-  { key: 'invoices', label: 'Invoices', icon: 'lucide:receipt-text', ...response.value.overview?.invoices },
-  { key: 'stores', label: 'Warehouses', icon: 'lucide:warehouse', ...response.value.overview?.stores }
+  { key: 'clients', label: 'Clients', icon: 'lucide:users', tone: 'blue', ...response.value.overview?.clients },
+  { key: 'products', label: 'Products', icon: 'lucide:boxes', tone: 'emerald', ...response.value.overview?.products },
+  { key: 'invoices', label: 'Invoices', icon: 'lucide:receipt-text', tone: 'violet', ...response.value.overview?.invoices },
+  { key: 'stores', label: 'Warehouses', icon: 'lucide:warehouse', tone: 'amber', ...response.value.overview?.stores }
 ])
 
 const getAuthHeaders = async () => {

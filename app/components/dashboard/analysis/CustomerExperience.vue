@@ -58,32 +58,15 @@
 
     <template v-else-if="hasOverview">
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article
+        <DashboardStatCard
           v-for="card in headlineCards"
           :key="card.key"
-          class="rounded-2xl bg-white p-5 shadow"
+          :label="card.label"
+          :value="card.value"
+          :icon="card.icon"
+          :tone="card.tone"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-sm font-semibold text-gray-500">{{ card.label }}</p>
-              <p
-                class="mt-2 text-3xl font-black"
-                :class="card.valueClass"
-              >
-                {{ card.value }}
-              </p>
-            </div>
-
-            <span
-              class="rounded-xl p-2.5"
-              :class="card.iconClass"
-              aria-hidden="true"
-            >
-              <Icon :name="card.icon" size="21" />
-            </span>
-          </div>
-
-          <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
             {{ card.period }}
           </p>
           <p class="mt-2 text-sm text-gray-600">
@@ -92,7 +75,7 @@
           <p class="mt-2 text-xs leading-5 text-gray-400">
             {{ card.definition }}
           </p>
-        </article>
+        </DashboardStatCard>
       </div>
 
       <section class="rounded-2xl bg-white p-6 shadow">
@@ -280,8 +263,7 @@ const headlineCards = computed(() => [
     denominator: `${formatNumber(nps.value.total)} responses · ${formatNumber(nps.value.promoters)} promoters · ${formatNumber(nps.value.passives)} passives · ${formatNumber(nps.value.detractors)} detractors`,
     definition: 'Promoters (9–10) percentage minus detractors (0–6) percentage. The score ranges from -100 to 100.',
     icon: 'lucide:message-circle-heart',
-    iconClass: 'bg-violet-100 text-violet-700',
-    valueClass: 'text-violet-700'
+    tone: 'violet'
   },
   {
     key: 'returning-visitors',
@@ -291,8 +273,7 @@ const headlineCards = computed(() => [
     denominator: `${formatNumber(kpis.value.returningVisits)} returning visits of ${formatNumber(kpis.value.totalVisits)} total · ${formatNumber(kpis.value.uniqueVisitors)} unique visitors`,
     definition: 'The share of store visits made by visitors who had previously visited the store.',
     icon: 'lucide:repeat-2',
-    iconClass: 'bg-blue-100 text-blue-700',
-    valueClass: 'text-blue-700'
+    tone: 'blue'
   },
   {
     key: 'cart-abandonment',
@@ -302,8 +283,7 @@ const headlineCards = computed(() => [
     denominator: `${formatNumber(kpis.value.abandonedCarts)} abandoned of ${formatNumber(kpis.value.matureCarts)} mature carts`,
     definition: 'Carts with an add-to-cart event but no created order. Unconverted carts are counted only after 24 hours without activity.',
     icon: 'lucide:shopping-cart',
-    iconClass: 'bg-amber-100 text-amber-700',
-    valueClass: 'text-amber-700'
+    tone: 'amber'
   },
   {
     key: 'repeat-purchase',
@@ -313,8 +293,7 @@ const headlineCards = computed(() => [
     denominator: `${formatNumber(kpis.value.repeatCustomers)} repeat customers of ${formatNumber(kpis.value.purchasingCustomers)} purchasing customers`,
     definition: 'The share of purchasing customers who have completed at least two successful orders.',
     icon: 'lucide:badge-check',
-    iconClass: 'bg-green-100 text-green-700',
-    valueClass: 'text-green-700'
+    tone: 'emerald'
   }
 ])
 

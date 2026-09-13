@@ -1,15 +1,8 @@
 <template>
   <div class="space-y-6">
     <div class="grid gap-4 sm:grid-cols-2">
-      <div class="rounded-2xl bg-white p-5 shadow">
-        <p class="text-sm font-semibold text-gray-500">Total Employees</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalEmployees }}</p>
-      </div>
-
-      <div class="rounded-2xl bg-white p-5 shadow">
-        <p class="text-sm font-semibold text-gray-500">Active Employees</p>
-        <p class="mt-2 text-3xl font-bold text-green-600">{{ activeEmployees }}</p>
-      </div>
+      <DashboardStatCard label="Total employees" :value="totalEmployees" icon="lucide:users" tone="blue" />
+      <DashboardStatCard label="Active employees" :value="activeEmployees" icon="lucide:user-check" tone="emerald" />
     </div>
 
     <section

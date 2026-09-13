@@ -23,20 +23,9 @@
       <DashboardSecondaryNav class="mb-6" />
 
       <div class="mb-6 grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Total Products</p>
-          <p class="mt-2 text-3xl font-bold text-gray-900">{{ productStats.total }}</p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Active Products</p>
-          <p class="mt-2 text-3xl font-bold text-green-600">{{ productStats.active }}</p>
-        </div>
-
-        <div class="rounded-2xl bg-white p-5 shadow">
-          <p class="text-sm text-gray-500">Inactive Products</p>
-          <p class="mt-2 text-3xl font-bold text-gray-700">{{ productStats.inactive }}</p>
-        </div>
+        <DashboardStatCard label="Total products" :value="productStats.total" icon="lucide:boxes" tone="blue" />
+        <DashboardStatCard label="Published" :value="productStats.active" icon="lucide:circle-check" tone="emerald" />
+        <DashboardStatCard label="Drafts" :value="productStats.inactive" icon="lucide:file-pen-line" tone="amber" />
       </div>
 
       <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">

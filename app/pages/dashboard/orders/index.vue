@@ -17,25 +17,17 @@
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
 
-    <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Order summary">
-      <div
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Order summary">
+      <DashboardStatCard
         v-for="metric in summaryMetrics"
         :key="metric.key"
-        class="relative overflow-hidden rounded-2xl border p-4 shadow-sm sm:p-5"
-        :class="metric.key === 'total' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200/80 bg-white text-gray-950'"
-      >
-        <dt class="flex items-center justify-between gap-2 text-xs font-medium sm:text-sm" :class="metric.key === 'total' ? 'text-gray-300' : 'text-gray-500'">
-          {{ metric.label }}
-          <span aria-hidden="true" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" :class="metric.key === 'total' ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-500'">
-            <Icon :name="metric.icon" size="16" />
-          </span>
-        </dt>
-        <dd class="mt-3">
-          <span class="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{{ hasLoadedStats ? formatCount(stats[metric.key]) : '—' }}</span>
-          <span class="mt-2 block text-xs" :class="metric.key === 'total' ? 'text-gray-400' : 'text-gray-500'">{{ metric.caption }}</span>
-        </dd>
-      </div>
-    </dl>
+        :label="metric.label"
+        :value="hasLoadedStats ? formatCount(stats[metric.key]) : '—'"
+        :icon="metric.icon"
+        :tone="metric.tone"
+        :caption="metric.caption"
+      />
+    </div>
 
     <div v-if="pageError" role="alert" class="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
       <Icon name="lucide:circle-alert" size="18" class="shrink-0" />
@@ -267,10 +259,10 @@ const hasActiveFilters = computed(() => Boolean(appliedFilters.search || applied
 const displayedOrders = computed(() => showRecentOrders.value ? recentOrders.value : orders.value)
 
 const summaryMetrics = [
-  { key: 'total', label: 'Total orders', caption: 'All time', icon: 'lucide:shopping-bag' },
-  { key: 'today', label: 'Today', caption: 'Since midnight', icon: 'lucide:sun' },
-  { key: 'week', label: 'Last 7 days', caption: 'Including today', icon: 'lucide:calendar-days' },
-  { key: 'month', label: 'Last 30 days', caption: 'Including today', icon: 'lucide:calendar-range' }
+  { key: 'total', label: 'Total orders', caption: 'All time', icon: 'lucide:shopping-bag', tone: 'blue' },
+  { key: 'today', label: 'Today', caption: 'Since midnight', icon: 'lucide:sun', tone: 'amber' },
+  { key: 'week', label: 'Last 7 days', caption: 'Including today', icon: 'lucide:calendar-days', tone: 'violet' },
+  { key: 'month', label: 'Last 30 days', caption: 'Including today', icon: 'lucide:calendar-range', tone: 'cyan' }
 ]
 
 const quickFilterOptions = [

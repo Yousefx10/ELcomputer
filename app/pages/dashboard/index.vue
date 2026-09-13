@@ -33,23 +33,15 @@
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <NuxtLink
+            <DashboardStatCard
               v-for="card in orderCards"
               :key="card.key"
+              :label="card.label"
+              :value="card.value"
+              :icon="card.icon"
+              :tone="card.tone"
               to="/dashboard/orders"
-              class="rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <p class="text-sm font-medium text-gray-500">{{ card.label }}</p>
-                  <p class="mt-2 text-3xl font-bold text-gray-900">{{ card.value }}</p>
-                </div>
-
-                <span class="rounded-xl p-2.5" :class="card.iconClass">
-                  <Icon :name="card.icon" size="20" />
-                </span>
-              </div>
-            </NuxtLink>
+            />
           </div>
         </section>
 
@@ -70,23 +62,15 @@
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <NuxtLink
+            <DashboardStatCard
               v-for="card in catalogCards"
               :key="card.key"
+              :label="card.label"
+              :value="card.value"
+              :icon="card.icon"
+              :tone="card.tone"
               :to="card.to"
-              class="rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <p class="text-sm font-medium text-gray-500">{{ card.label }}</p>
-                  <p class="mt-2 text-3xl font-bold text-gray-900">{{ card.value }}</p>
-                </div>
-
-                <span class="rounded-xl p-2.5" :class="card.iconClass">
-                  <Icon :name="card.icon" size="20" />
-                </span>
-              </div>
-            </NuxtLink>
+            />
           </div>
         </section>
 
@@ -156,42 +140,42 @@ const orderCards = computed(() => [
     label: 'Open Orders',
     value: summary.orders.open,
     icon: 'lucide:inbox',
-    iconClass: 'bg-blue-50 text-blue-700'
+    tone: 'blue'
   },
   {
     key: 'today',
     label: 'New Today',
     value: summary.orders.today,
     icon: 'lucide:calendar-days',
-    iconClass: 'bg-purple-50 text-purple-700'
+    tone: 'violet'
   },
   {
     key: 'awaiting-payment',
     label: 'Awaiting Payment',
     value: summary.orders.awaitingPayment,
     icon: 'lucide:credit-card',
-    iconClass: 'bg-amber-50 text-amber-700'
+    tone: 'amber'
   },
   {
     key: 'ready',
     label: 'Ready to Deliver',
     value: summary.orders.readyToDeliver,
     icon: 'lucide:package-check',
-    iconClass: 'bg-emerald-50 text-emerald-700'
+    tone: 'emerald'
   },
   {
     key: 'delivery',
     label: 'In Delivery',
     value: summary.orders.inDelivery,
     icon: 'lucide:truck',
-    iconClass: 'bg-sky-50 text-sky-700'
+    tone: 'cyan'
   },
   {
     key: 'hold',
     label: 'On Hold',
     value: summary.orders.onHold,
     icon: 'lucide:circle-pause',
-    iconClass: 'bg-red-50 text-red-700'
+    tone: 'rose'
   }
 ])
 
@@ -205,7 +189,7 @@ const catalogCards = computed(() => {
         label: 'Products',
         value: summary.catalog.products,
         icon: 'lucide:boxes',
-        iconClass: 'bg-gray-100 text-gray-700',
+        tone: 'slate',
         to: '/dashboard/products'
       },
       {
@@ -213,7 +197,7 @@ const catalogCards = computed(() => {
         label: 'Published',
         value: summary.catalog.published,
         icon: 'lucide:circle-check',
-        iconClass: 'bg-green-50 text-green-700',
+        tone: 'emerald',
         to: '/dashboard/products'
       },
       {
@@ -221,7 +205,7 @@ const catalogCards = computed(() => {
         label: 'Drafts',
         value: summary.catalog.drafts,
         icon: 'lucide:file-pen-line',
-        iconClass: 'bg-amber-50 text-amber-700',
+        tone: 'amber',
         to: '/dashboard/products'
       },
       {
@@ -229,7 +213,7 @@ const catalogCards = computed(() => {
         label: 'Out of Stock',
         value: summary.catalog.outOfStock,
         icon: 'lucide:package-x',
-        iconClass: 'bg-red-50 text-red-700',
+        tone: 'rose',
         to: '/dashboard/products'
       }
     )
@@ -241,7 +225,7 @@ const catalogCards = computed(() => {
       label: 'Categories',
       value: summary.catalog.categories,
       icon: 'lucide:tags',
-      iconClass: 'bg-purple-50 text-purple-700',
+      tone: 'violet',
       to: '/dashboard/catalog'
     })
   }
