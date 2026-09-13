@@ -6,7 +6,7 @@ export const resetTableGroups = {
   trading: ['treasury_transactions', 'commerce_sales_items', 'commerce_sales_orders', 'commerce_procurement_items', 'commerce_procurement_orders'],
   catalog: ['product_reviews', 'product_specifications', 'product_images', 'product_variants', 'products', 'brands', 'categories'],
   documents: ['document_file_tags', 'document_folder_tags', 'document_tags', 'document_quick_access', 'document_recent_items', 'document_folder_permissions', 'documents', 'document_folders'],
-  content: ['site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings'],
+  content: ['site_pages', 'site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings'],
   analytics: ['store_analytics_events', 'store_analytics_sessions', 'nps_responses'],
   other: ['commerce_crm_activities', 'commerce_crm_accounts', 'commerce_shipping_companies', 'commerce_warehouses', 'hr_employees', 'site_coupons', 'customer_profiles', 'shipping_city_mappings', 'shipping_status_mappings', 'shipping_provider_settings', 'store_analytics_internal_carts', 'store_analytics_internal_users', 'admin_activity_logs']
 }

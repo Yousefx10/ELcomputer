@@ -78,7 +78,7 @@ export const useSiteContent = () => {
   const supabase = useSupabaseClient()
 
   return useAsyncData('site-content', async () => {
-    const [settingsResult, heroBannersResult, topBarMessagesResult, siteLinksResult, offerCardsResult] = await Promise.all([
+    const [settingsResult, heroBannersResult, topBarMessagesResult, siteLinksResult, offerCardsResult, sitePagesResult] = await Promise.all([
       supabase
         .from('site_settings')
         .select('*')
@@ -105,6 +105,12 @@ export const useSiteContent = () => {
         .from('site_offer_cards')
         .select('*')
         .order('sort_order')
+        .order('created_at'),
+      supabase
+        .from('site_pages')
+        .select('id, title, path')
+        .eq('is_published', true)
+        .eq('show_in_navbar', true)
         .order('created_at')
     ])
 
@@ -131,6 +137,10 @@ export const useSiteContent = () => {
       ? defaultOfferCards
       : (offerCardsResult.data || defaultOfferCards)
 
+    const customPages = sitePagesResult.error
+      ? []
+      : (sitePagesResult.data || [])
+
     const orderedHeaderLinks = buildOrderedHeaderLinks(siteLinks)
       .filter((link) => link.is_enabled ?? true)
 
@@ -140,6 +150,7 @@ export const useSiteContent = () => {
       topBarMessages: topBarMessages.filter((message) => message.is_enabled ?? true),
       offerCards: offerCards.filter((offerCard) => offerCard.is_enabled ?? true),
       headerLinks: orderedHeaderLinks,
+      customPages,
       footerLinks: siteLinks.filter((link) => link.location === 'footer' && (link.is_enabled ?? true))
     }
   })

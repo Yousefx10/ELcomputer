@@ -182,6 +182,17 @@ test('document tags replace atomically', async () => {
   assert.deepEqual(await value(`select array_agg(tag_id order by tag_id)::text[] as value from public.document_file_tags where document_id=$1`, [document]), [secondTag])
 })
 
+test('public visitors only read published site pages', async () => {
+  await db.query(`insert into public.site_pages(title,path,is_published) values('Public policy','public-policy',true),('Draft policy','draft-policy',false)`)
+  await db.exec('set local role anon')
+  assert.equal(await count('site_pages'), 1)
+  await fails(
+    () => db.query(`insert into public.site_pages(title,path) values('Blocked','blocked')`),
+    /permission denied/
+  )
+  await db.exec('reset role')
+})
+
 test('full reset preserves only the current owner; the new log survives', async () => {
   await seedOrder(await seedProduct())
   await db.query(`insert into public.admin_users(id,email,role) values($1,'customer@test.invalid','owner')`,[customer])

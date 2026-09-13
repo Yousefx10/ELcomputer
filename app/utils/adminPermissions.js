@@ -75,6 +75,14 @@ export const adminPermissionGroups = [
     permissions: [
       { key: 'documents.manage', label: 'Upload and manage documents' }
     ]
+  },
+  {
+    key: 'pages',
+    title: 'Pages',
+    accessPermission: { key: 'pages.view', label: 'Pages Access' },
+    permissions: [
+      { key: 'pages.edit', label: 'Create and edit pages' }
+    ]
   }
 ]
 
@@ -97,7 +105,8 @@ export const adminPermissionDependencies = {
   'settings.view': ['settings.edit', 'settings.coupons'],
   'hr.view': ['hr.edit'],
   'treasury.view': ['treasury.edit'],
-  'documents.view': ['documents.manage']
+  'documents.view': ['documents.manage'],
+  'pages.view': ['pages.edit']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
@@ -198,6 +207,12 @@ export const getDashboardRouteRequirement = (route = '') => {
   if (path === '/dashboard/documents') {
     return {
       permission: 'documents.view'
+    }
+  }
+
+  if (path === '/dashboard/pages') {
+    return {
+      permission: 'pages.view'
     }
   }
 

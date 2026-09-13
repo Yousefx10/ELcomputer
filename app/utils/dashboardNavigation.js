@@ -108,6 +108,7 @@ export const dashboardNavigationGroups = [
     child('salary-payment', 'Salary payments', 'badge-dollar-sign', '/dashboard/treasury', 'action', ['salary_payment'], 'treasury.view')
   ], { permission: 'treasury.view', builtInErpOnly: true }),
   { key: 'documents', label: 'Documents', icon: 'lucide:folder-closed', to: '/dashboard/documents', permission: 'documents.view', documentTitle: 'Dashboard - Documents', match: { paths: ['/dashboard/documents'] } },
+  { key: 'pages', label: 'Pages', icon: 'lucide:file-stack', to: '/dashboard/pages', permission: 'pages.view', documentTitle: 'Dashboard - Pages', match: { paths: ['/dashboard/pages'] } },
   group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
     child('settings-overview', 'All settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
     ...dashboardSettingsSections.map(item => ({

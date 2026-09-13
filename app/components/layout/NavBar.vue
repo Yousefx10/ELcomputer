@@ -49,6 +49,7 @@
             <a v-if="isExternalUrl(link.url)" :href="link.url" target="_blank" rel="noreferrer" class="store-nav-link">{{ link.label }}</a>
             <NuxtLink v-else :to="link.url || '/'" class="store-nav-link">{{ link.label }}</NuxtLink>
           </template>
+          <NuxtLink v-for="page in customPages" :key="page.id" :to="`/${page.path}`" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === `/${page.path}` }" :aria-current="route.path === `/${page.path}` ? 'page' : false">{{ page.title }}</NuxtLink>
         </div>
 
         <div v-if="departmentsOpen" id="store-departments" class="store-departments-panel">
@@ -89,6 +90,7 @@ const ordersPath = computed(() => customerUser.value ? '/account#orders' : { pat
 const formattedSubtotal = computed(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(subtotal.value))
 const departmentsEnabled = computed(() => (siteContent.value?.headerLinks || []).some((link) => link.link_type === 'categories-dropdown'))
 const extraHeaderLinks = computed(() => (siteContent.value?.headerLinks || []).filter((link) => link.link_type !== 'categories-dropdown' && link.default_key !== 'home'))
+const customPages = computed(() => siteContent.value?.customPages || [])
 const isExternalUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value)
 const closeDepartments = (restoreFocus = false) => {
   departmentsOpen.value = false
