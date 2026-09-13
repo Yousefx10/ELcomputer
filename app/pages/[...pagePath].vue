@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-page-wrap">
+  <div v-if="page" class="custom-page-wrap">
     <article class="custom-page-card" :dir="page.text_direction || 'auto'">
       <header class="custom-page-header">
         <p>Information</p>
@@ -9,6 +9,14 @@
       <p v-else class="custom-page-empty">This page has no content yet.</p>
     </article>
   </div>
+  <section v-else class="custom-page-not-found" aria-labelledby="not-found-title">
+    <div class="custom-page-not-found-card">
+      <span>404</span>
+      <h1 id="not-found-title">Page not found</h1>
+      <p>This page is unavailable.</p>
+      <NuxtLink to="/">Return home</NuxtLink>
+    </div>
+  </section>
 </template>
 
 <script setup>
@@ -21,7 +29,7 @@ const pagePath = computed(() => {
   return (Array.isArray(value) ? value : [value]).filter(Boolean).join('/').toLowerCase()
 })
 
-const { data: page } = await useAsyncData(
+const { data: pageResult } = await useAsyncData(
   () => `site-page:${pagePath.value}`,
   async () => {
     const { data, error } = await supabase
@@ -31,20 +39,25 @@ const { data: page } = await useAsyncData(
       .eq('is_published', true)
       .maybeSingle()
 
-    if (error || !data) {
-      throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
-    }
-    return data
+    if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load this page.' })
+    return { item: data || null }
   },
   { watch: [pagePath] }
 )
+const page = computed(() => pageResult.value?.item || null)
+
+if (!page.value) {
+  const event = useRequestEvent()
+  if (event) setResponseStatus(event, 404)
+}
 
 const renderedContent = computed(() => renderSafeMarkdown(page.value?.content_markdown || ''))
 const { data: siteContent } = await useSiteContent()
 
 useSeoMeta({
-  title: () => `${page.value?.title || 'Page'} - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`,
-  description: () => String(page.value?.content_markdown || '').replace(/[#*_>`\[\]]/g, '').slice(0, 155)
+  title: () => `${page.value?.title || 'Page not found'} - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`,
+  description: () => String(page.value?.content_markdown || '').replace(/[#*_>`\[\]]/g, '').slice(0, 155),
+  robots: () => page.value ? 'index, follow' : 'noindex, nofollow'
 })
 </script>
 
@@ -67,6 +80,7 @@ useSeoMeta({
   border-bottom: 1px solid #eef0f3;
   padding: clamp(1.5rem, 4vw, 3rem);
   background: linear-gradient(135deg, #f8fafc, #eff6ff);
+  text-align: center;
 }
 
 .custom-page-header p {
@@ -113,4 +127,58 @@ useSeoMeta({
 .custom-page-markdown :deep(pre code) { background: transparent; padding: 0; color: inherit; }
 .custom-page-markdown :deep(hr) { margin: 2rem 0; border: 0; border-top: 1px solid #e5e7eb; }
 .custom-page-empty { color: #6b7280; }
+
+.custom-page-not-found {
+  display: grid;
+  min-height: 60vh;
+  place-items: center;
+  padding: 3rem 1rem;
+  background: #f8fafc;
+}
+
+.custom-page-not-found-card {
+  width: min(100%, 460px);
+  padding: 3rem 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 1.25rem;
+  background: white;
+  box-shadow: 0 16px 45px rgb(15 23 42 / 0.06);
+  text-align: center;
+}
+
+.custom-page-not-found-card span {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.custom-page-not-found-card h1 {
+  margin: 0;
+  color: #111827;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.1;
+}
+
+.custom-page-not-found-card p {
+  margin: 0.85rem 0 1.5rem;
+  color: #6b7280;
+}
+
+.custom-page-not-found-card a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  background: #2563eb;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
 </style>
