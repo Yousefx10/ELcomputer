@@ -16,14 +16,6 @@ export const defaultHeaderLinkDefinitions = [
     type: 'categories-dropdown'
   },
   {
-    key: 'return-policy',
-    label: 'Return Policy',
-    url: '/return-policy',
-    description: 'Leads to the return policy page.',
-    isUrlEditable: false,
-    type: 'link'
-  },
-  {
     key: 'request-refund',
     label: 'Request Refund',
     url: '/request-refund',

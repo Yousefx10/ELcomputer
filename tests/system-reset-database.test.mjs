@@ -182,6 +182,14 @@ test('document tags replace atomically', async () => {
   assert.deepEqual(await value(`select array_agg(tag_id order by tag_id)::text[] as value from public.document_file_tags where document_id=$1`, [document]), [secondTag])
 })
 
+test('content reset erases custom pages and preserves catalog data', async () => {
+  await seedProduct()
+  await db.query(`insert into public.site_pages(title,path,is_published) values('Store policy','store-policy',true)`)
+  await beginReset('content')
+  assert.equal(await count('site_pages'), 0)
+  assert.equal(await count('products'), 1)
+})
+
 test('public visitors only read published site pages', async () => {
   await db.query(`insert into public.site_pages(title,path,is_published) values('Public policy','public-policy',true),('Draft policy','draft-policy',false)`)
   await db.exec('set local role anon')
@@ -195,12 +203,14 @@ test('public visitors only read published site pages', async () => {
 
 test('full reset preserves only the current owner; the new log survives', async () => {
   await seedOrder(await seedProduct())
+  await db.query(`insert into public.site_pages(title,path,is_published) values('Full reset page','full-reset-page',true)`)
   await db.query(`insert into public.admin_users(id,email,role) values($1,'customer@test.invalid','owner')`,[customer])
   await db.query(`insert into storage.objects(bucket_id,name) values('admin-documents','root/test.pdf')`)
   await db.query(`insert into public.admin_activity_logs(author_name,author_email,description) values('Earlier','earlier@test.invalid','Old entry')`)
   const run=await beginReset('full')
   assert.equal(await count('products'),0)
   assert.equal(await count('customer_orders'),0)
+  assert.equal(await count('site_pages'),0)
   assert.equal(await count('admin_users'),1)
   assert.equal(await value('select id as value from public.admin_users'),owner)
   assert.equal(await count('admin_activity_logs'),0)

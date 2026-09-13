@@ -28,8 +28,7 @@
     <nav class="store-service-strip" aria-label="Shopping shortcuts">
       <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }"><Icon name="lucide:package-check" size="23" /><span>Find in-stock gear</span></NuxtLink>
       <NuxtLink :to="ordersPath"><Icon name="lucide:truck" size="23" /><span>Track your orders</span></NuxtLink>
-      <a v-if="supportEmail" :href="`mailto:${supportEmail}`"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></a>
-      <NuxtLink v-else to="/account/messages"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></NuxtLink>
+      <NuxtLink to="/contact"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></NuxtLink>
     </nav>
 
     <div v-if="homeError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">We couldn't load products. Please refresh and try again.</div>
@@ -176,7 +175,6 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
 
 const customerUser = useSupabaseUser()
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
-const supportEmail = computed(() => siteContent.value?.settings?.footer_email || '')
 const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
 const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [
