@@ -1,5 +1,6 @@
 import { createError, readBody } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
+import { recordAdminActivity } from '../../utils/adminLogs'
 import {
   getDocumentRecord,
   normalizeDocumentId,
@@ -17,6 +18,7 @@ export default defineEventHandler(async (event) => {
     label: type === 'folder' ? 'Folder' : 'Document'
   })
   const pinned = body?.pinned === true
+  let itemName = ''
 
   if (!['file', 'folder'].includes(type)) {
     throw createError({ statusCode: 400, statusMessage: 'Choose a file or folder.' })
@@ -24,13 +26,15 @@ export default defineEventHandler(async (event) => {
 
   if (type === 'file') {
     const document = await getDocumentRecord(supabaseAdmin, id)
+    itemName = document.name
     await requireDocumentFolderAccess({
       supabaseAdmin,
       adminUser,
       folderId: document.folder_id
     })
   } else {
-    await requireDocumentFolderAccess({ supabaseAdmin, adminUser, folderId: id })
+    const access = await requireDocumentFolderAccess({ supabaseAdmin, adminUser, folderId: id })
+    itemName = access.folder.name
   }
 
   const itemColumn = type === 'folder' ? 'folder_id' : 'document_id'
@@ -53,6 +57,14 @@ export default defineEventHandler(async (event) => {
 
     if (error) throwDocumentsDataError(error, 'Could not update quick access.')
   }
+
+  await recordAdminActivity({
+    supabaseAdmin,
+    adminUser,
+    actionKey: `documents.${type}.${pinned ? 'favorited' : 'unfavorited'}`,
+    description: `${pinned ? 'Added' : 'Removed'} ${itemName} ${pinned ? 'to' : 'from'} favorites.`,
+    metadata: { [`${type === 'file' ? 'document' : 'folder'}_id`]: id }
+  })
 
   return { id, type, pinned }
 })

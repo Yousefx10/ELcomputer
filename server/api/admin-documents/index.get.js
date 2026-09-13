@@ -1,6 +1,7 @@
 import { getQuery } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import {
+  enrichDocumentTags,
   getAccessibleChildFolders,
   mapDocumentRecord,
   requireDocumentFolderAccess,
@@ -70,13 +71,14 @@ export default defineEventHandler(async (event) => {
     creators = new Map((creatorRows || []).map((creator) => [creator.id, creator]))
   }
 
-  const items = rawItems.map((item) => {
+  const itemsWithOwners = rawItems.map((item) => {
     const creator = creators.get(item.created_by)
     return {
       ...item,
       created_by_name: creator?.full_name || creator?.email || 'Unknown admin'
     }
   })
+  const items = await enrichDocumentTags(supabaseAdmin, itemsWithOwners)
 
   return {
     access: {

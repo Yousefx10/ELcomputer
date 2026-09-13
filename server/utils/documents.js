@@ -421,6 +421,68 @@ export const mapDocumentRecord = (document, canEdit) => ({
   type: 'file'
 })
 
+export const enrichDocumentTags = async (supabaseAdmin, items = []) => {
+  if (!items.length) return items
+
+  const fileIds = items.filter((item) => item.type === 'file').map((item) => item.id)
+  const folderIds = items.filter((item) => item.type === 'folder').map((item) => item.id)
+  const queries = []
+
+  if (fileIds.length) {
+    queries.push(supabaseAdmin
+      .from('document_file_tags')
+      .select('document_id, tag_id')
+      .in('document_id', fileIds))
+  } else {
+    queries.push(Promise.resolve({ data: [], error: null }))
+  }
+
+  if (folderIds.length) {
+    queries.push(supabaseAdmin
+      .from('document_folder_tags')
+      .select('folder_id, tag_id')
+      .in('folder_id', folderIds))
+  } else {
+    queries.push(Promise.resolve({ data: [], error: null }))
+  }
+
+  const [fileResult, folderResult] = await Promise.all(queries)
+  if (fileResult.error) throwDocumentsDataError(fileResult.error, 'Could not load file tags.')
+  if (folderResult.error) throwDocumentsDataError(folderResult.error, 'Could not load folder tags.')
+
+  const tagIds = [...new Set([
+    ...(fileResult.data || []).map((row) => row.tag_id),
+    ...(folderResult.data || []).map((row) => row.tag_id)
+  ])]
+  let tagsById = new Map()
+
+  if (tagIds.length) {
+    const { data, error } = await supabaseAdmin
+      .from('document_tags')
+      .select('id, name, color')
+      .in('id', tagIds)
+
+    if (error) throwDocumentsDataError(error, 'Could not load document tags.')
+    tagsById = new Map((data || []).map((tag) => [tag.id, tag]))
+  }
+
+  const tagIdsByItem = new Map()
+  ;(fileResult.data || []).forEach((row) => {
+    tagIdsByItem.set(`file:${row.document_id}`, [...(tagIdsByItem.get(`file:${row.document_id}`) || []), row.tag_id])
+  })
+  ;(folderResult.data || []).forEach((row) => {
+    tagIdsByItem.set(`folder:${row.folder_id}`, [...(tagIdsByItem.get(`folder:${row.folder_id}`) || []), row.tag_id])
+  })
+
+  return items.map((item) => ({
+    ...item,
+    tags: (tagIdsByItem.get(`${item.type}:${item.id}`) || [])
+      .map((tagId) => tagsById.get(tagId))
+      .filter(Boolean)
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }))
+}
+
 export const getDocumentRecord = async (supabaseAdmin, documentId) => {
   const normalizedDocumentId = normalizeDocumentId(documentId, { label: 'Document' })
   const { data, error } = await supabaseAdmin

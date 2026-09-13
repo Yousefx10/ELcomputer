@@ -148,16 +148,38 @@ test('media reset clears uploaded references but preserves external images and p
 })
 
 test('documents reset clears quick access and recent files', async () => {
-  const folder = randomUUID(), document = randomUUID()
+  const folder = randomUUID(), document = randomUUID(), tag = randomUUID()
   await db.query(`insert into public.document_folders(id,name,created_by) values($1,'Pinned folder',$2)`, [folder, owner])
   await db.query(`insert into public.documents(id,folder_id,name,storage_path,created_by) values($1,$2,'Recent.pdf',$3,$4)`, [document, folder, `${folder}/recent.pdf`, owner])
   await db.query(`insert into public.document_quick_access(admin_user_id,folder_id) values($1,$2)`, [owner, folder])
   await db.query(`insert into public.document_recent_items(admin_user_id,document_id) values($1,$2)`, [owner, document])
+  await db.query(`insert into public.document_tags(id,name,created_by) values($1,'Finance',$2)`, [tag, owner])
+  await db.query(`insert into public.document_file_tags(document_id,tag_id,added_by) values($1,$2,$3)`, [document, tag, owner])
+  await db.query(`insert into public.document_folder_tags(folder_id,tag_id,added_by) values($1,$2,$3)`, [folder, tag, owner])
   await beginReset('documents')
+  assert.equal(await count('document_file_tags'), 0)
+  assert.equal(await count('document_folder_tags'), 0)
+  assert.equal(await count('document_tags'), 0)
   assert.equal(await count('document_quick_access'), 0)
   assert.equal(await count('document_recent_items'), 0)
   assert.equal(await count('documents'), 0)
   assert.equal(await count('document_folders'), 0)
+})
+
+test('document tags replace atomically', async () => {
+  const document = randomUUID(), firstTag = randomUUID(), secondTag = randomUUID()
+  await db.query(`insert into public.documents(id,name,storage_path,created_by) values($1,'Tagged.pdf',$2,$3)`, [document, `${document}.pdf`, owner])
+  await db.query(`insert into public.document_tags(id,name,created_by) values($1,'Finance',$3),($2,'Signed',$3)`, [firstTag, secondTag, owner])
+  await db.query(`select public.document_set_item_tags('file',$1,$2::uuid[],$3)`, [document, [firstTag], owner])
+  assert.deepEqual(await value(`select array_agg(tag_id order by tag_id)::text[] as value from public.document_file_tags where document_id=$1`, [document]), [firstTag])
+  await db.query(`select public.document_set_item_tags('file',$1,$2::uuid[],$3)`, [document, [secondTag], owner])
+  assert.deepEqual(await value(`select array_agg(tag_id order by tag_id)::text[] as value from public.document_file_tags where document_id=$1`, [document]), [secondTag])
+
+  await fails(
+    () => db.query(`select public.document_set_item_tags('file',$1,$2::uuid[],$3)`, [document, [randomUUID()], owner]),
+    /foreign key/
+  )
+  assert.deepEqual(await value(`select array_agg(tag_id order by tag_id)::text[] as value from public.document_file_tags where document_id=$1`, [document]), [secondTag])
 })
 
 test('full reset preserves only the current owner; the new log survives', async () => {

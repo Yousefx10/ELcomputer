@@ -1,5 +1,6 @@
 import { requireAdminRequest } from '../../utils/adminRequest'
 import {
+  enrichDocumentTags,
   getDocumentRecord,
   mapDocumentRecord,
   requireDocumentFolderAccess,
@@ -108,8 +109,13 @@ export default defineEventHandler(async (event) => {
     })))
   ])
 
+  const [quickAccess, recentFiles] = await Promise.all([
+    enrichCreators(supabaseAdmin, quickItems.filter(Boolean)),
+    enrichCreators(supabaseAdmin, recentItems.filter(Boolean))
+  ])
+
   return {
-    quickAccess: await enrichCreators(supabaseAdmin, quickItems.filter(Boolean)),
-    recentFiles: await enrichCreators(supabaseAdmin, recentItems.filter(Boolean))
+    quickAccess: await enrichDocumentTags(supabaseAdmin, quickAccess),
+    recentFiles: await enrichDocumentTags(supabaseAdmin, recentFiles)
   }
 })

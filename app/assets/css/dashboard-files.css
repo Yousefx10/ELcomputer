@@ -29,4 +29,41 @@
   .file-content.has-selection { @apply xl:grid-cols-[minmax(0,1fr)_310px]; }
   .file-item-grid { @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4; }
   .has-selection .file-item-grid { @apply xl:grid-cols-3; }
+  .documents-workspace { @apply max-w-none space-y-0; }
+  .documents-shell { @apply min-w-0 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-sm; }
+  .documents-topbar { @apply flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-gray-200 bg-white px-5 py-4 lg:px-6; }
+  .documents-logo { @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white; }
+  .documents-topnav { @apply flex items-center gap-1 rounded-xl bg-gray-100 p-1; }
+  .documents-topnav button { @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold text-gray-500 transition hover:text-gray-900; }
+  .documents-topnav button[aria-current='page'] { @apply bg-white text-blue-700 shadow-sm; }
+  .documents-layout { @apply grid min-h-[680px] min-w-0; grid-template-columns: 210px minmax(0, 1fr) 290px; }
+  .documents-sidebar { @apply flex min-w-0 flex-col border-e border-gray-200 bg-gray-50 p-4; }
+  .documents-side-link { @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-gray-500 transition hover:bg-white hover:text-gray-900; }
+  .documents-side-link[aria-current='page'] { @apply bg-blue-50 text-blue-700; }
+  .documents-quick-access { @apply border-b border-gray-100 bg-gray-50/40 p-5 lg:p-6; }
+  .documents-quick-grid { @apply grid grid-cols-2 gap-3 xl:grid-cols-4; }
+  .documents-quick-card { @apply min-w-0 rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-blue-200 hover:shadow-sm; }
+  .documents-files { @apply min-w-0; }
+  .documents-files-head { @apply flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-3 lg:px-6; }
+  .documents-dropzone { @apply m-5 flex w-[calc(100%-2.5rem)] items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-xs font-semibold text-gray-500 transition hover:border-gray-400 hover:bg-gray-100 disabled:cursor-wait; }
+  .documents-details { @apply min-w-0 border-s border-gray-200 bg-white p-5; }
+}
+
+@media (max-width: 1279px) {
+  .documents-layout { grid-template-columns: 180px minmax(0, 1fr) 250px; }
+}
+
+@media (max-width: 1023px) {
+  .documents-layout { grid-template-columns: minmax(0, 1fr); }
+  .documents-sidebar { @apply block overflow-x-auto border-b border-e-0 p-3; }
+  .documents-sidebar > nav { @apply flex min-w-max gap-1; }
+  .documents-side-link { @apply w-auto; }
+  .documents-details { @apply border-s-0 border-t border-gray-200; }
+  .documents-details.is-empty { @apply hidden; }
+}
+
+@media (max-width: 639px) {
+  .documents-topbar { @apply items-start; }
+  .documents-topnav { @apply order-3 w-full; }
+  .documents-topnav button { @apply flex-1 justify-center; }
 }
