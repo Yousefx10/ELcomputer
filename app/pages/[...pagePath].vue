@@ -1,6 +1,6 @@
 <template>
   <div class="custom-page-wrap">
-    <article class="custom-page-card">
+    <article class="custom-page-card" :dir="page.text_direction || 'auto'">
       <header class="custom-page-header">
         <p>Information</p>
         <h1>{{ page.title }}</h1>
@@ -26,7 +26,7 @@ const { data: page } = await useAsyncData(
   async () => {
     const { data, error } = await supabase
       .from('site_pages')
-      .select('id, title, path, content_markdown, updated_at')
+      .select('id, title, path, content_markdown, text_direction, updated_at')
       .eq('path', pagePath.value)
       .eq('is_published', true)
       .maybeSingle()

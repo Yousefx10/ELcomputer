@@ -8,14 +8,14 @@
     <div v-if="pageError" class="mt-4 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700" role="alert"><Icon name="lucide:circle-alert" size="18" /><p class="flex-1">{{ pageError }}</p><button type="button" class="font-bold" @click="loadPages">Retry</button></div>
     <p v-if="!canEdit" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-700">You can view pages but cannot edit them.</p>
 
-    <section class="mt-5 grid min-h-[720px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-[290px_minmax(0,1fr)]">
+    <section class="pages-editor-shell mt-5 grid min-h-[720px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm" :class="{ 'pages-list-collapsed': pagesListCollapsed }">
       <aside class="border-b border-gray-200 bg-gray-50 lg:border-b-0 lg:border-e">
-        <div class="border-b border-gray-200 p-4"><label class="relative block"><span class="sr-only">Search pages</span><Icon name="lucide:search" size="16" class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" /><input v-model="searchQuery" type="search" placeholder="Search pages" class="w-full rounded-xl border border-gray-200 bg-white py-2.5 ps-9 pe-3 text-sm outline-none focus:border-blue-500" /></label></div>
+        <div class="flex items-center gap-2 border-b border-gray-200 p-3"><label class="relative min-w-0 flex-1" :class="{ 'lg:hidden': pagesListCollapsed }"><span class="sr-only">Search pages</span><Icon name="lucide:search" size="16" class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" /><input v-model="searchQuery" type="search" placeholder="Search pages" class="w-full rounded-xl border border-gray-200 bg-white py-2.5 ps-9 pe-3 text-sm outline-none focus:border-blue-500" /></label><button type="button" class="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-gray-900 lg:inline-flex" :aria-label="pagesListCollapsed ? 'Expand page list' : 'Collapse page list'" :title="pagesListCollapsed ? 'Expand page list' : 'Collapse page list'" @click="pagesListCollapsed = !pagesListCollapsed"><Icon :name="pagesListCollapsed ? 'lucide:panel-left-open' : 'lucide:panel-left-close'" size="18" /></button></div>
         <div v-if="loading" class="grid min-h-48 place-items-center"><Icon name="lucide:loader-circle" size="24" class="animate-spin text-gray-400" /></div>
         <div v-else-if="filteredPages.length" class="max-h-80 overflow-y-auto p-2 lg:max-h-[650px]">
-          <button v-for="item in filteredPages" :key="item.id" type="button" class="mb-1 flex w-full items-start gap-3 rounded-xl p-3 text-left transition" :class="draft.id === item.id ? 'bg-white shadow-sm ring-1 ring-gray-200' : 'hover:bg-white'" @click="selectPage(item)"><span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" :class="item.is_published ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-200 text-gray-500'"><Icon :name="item.is_published ? 'lucide:file-check-2' : 'lucide:file-pen-line'" size="17" /></span><span class="min-w-0 flex-1"><span class="block truncate text-sm font-bold">{{ item.title }}</span><span class="mt-1 block truncate text-xs text-gray-400">/{{ item.path }}</span><span class="mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold" :class="item.is_published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-200 text-gray-600'">{{ item.is_published ? 'Published' : 'Draft' }}</span></span></button>
+          <button v-for="item in filteredPages" :key="item.id" type="button" class="mb-1 flex w-full items-start gap-3 rounded-xl p-3 text-start transition" :class="[draft.id === item.id ? 'bg-white shadow-sm ring-1 ring-gray-200' : 'hover:bg-white', pagesListCollapsed ? 'lg:justify-center' : '']" :title="pagesListCollapsed ? item.title : undefined" @click="selectPage(item)"><span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" :class="item.is_published ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-200 text-gray-500'"><Icon :name="item.is_published ? 'lucide:file-check-2' : 'lucide:file-pen-line'" size="17" /></span><span class="min-w-0 flex-1" :class="{ 'lg:hidden': pagesListCollapsed }" :dir="item.text_direction || 'auto'"><span class="block truncate text-sm font-bold">{{ item.title }}</span><span class="mt-1 block truncate text-xs text-gray-400">/{{ item.path }}</span><span class="mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold" :class="item.is_published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-200 text-gray-600'">{{ item.is_published ? 'Published' : 'Draft' }}</span></span></button>
         </div>
-        <div v-else class="grid min-h-48 place-items-center px-5 text-center"><div><Icon name="lucide:files" size="25" class="mx-auto text-gray-300" /><p class="mt-2 text-sm font-semibold">No pages found</p><p class="mt-1 text-xs text-gray-400">Create your first page.</p></div></div>
+        <div v-else class="grid min-h-48 place-items-center px-3 text-center"><div><Icon name="lucide:files" size="25" class="mx-auto text-gray-300" /><div :class="{ 'lg:hidden': pagesListCollapsed }"><p class="mt-2 text-sm font-semibold">No pages found</p><p class="mt-1 text-xs text-gray-400">Create your first page.</p></div></div></div>
       </aside>
 
       <main class="min-w-0">
@@ -29,16 +29,17 @@
             <div class="grid min-h-full xl:grid-cols-2">
               <div class="min-w-0 border-b border-gray-200 p-5 xl:border-b-0 xl:border-e lg:p-6">
                 <div class="grid gap-5 sm:grid-cols-2">
-                  <label class="sm:col-span-2"><span class="mb-2 block text-xs font-bold text-gray-600">Page title</span><input v-model="draft.title" required maxlength="120" type="text" placeholder="Shipping policy" class="page-form-input" /></label>
+                  <label class="sm:col-span-2"><span class="mb-2 block text-xs font-bold text-gray-600">Page title</span><input v-model="draft.title" required maxlength="120" type="text" placeholder="Shipping policy" class="page-form-input" :dir="draft.text_direction" /></label>
                   <label class="sm:col-span-2"><span class="mb-2 block text-xs font-bold text-gray-600">Page URL</span><div class="flex overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-blue-500"><span class="flex items-center border-e bg-gray-50 px-3 text-sm text-gray-400">/</span><input v-model="draft.path" required maxlength="160" type="text" placeholder="shipping-policy" class="min-w-0 flex-1 px-3 py-3 text-sm outline-none" @input="pathEdited = true" /></div><p class="mt-1.5 text-[11px] text-gray-400">Use lowercase words and hyphens.</p></label>
+                  <div class="sm:col-span-2"><span class="mb-2 block text-xs font-bold text-gray-600">Text direction</span><div class="grid grid-cols-3 rounded-xl bg-gray-100 p-1" dir="ltr"><button v-for="direction in textDirections" :key="direction.value" type="button" class="rounded-lg px-3 py-2.5 text-xs font-bold transition" :class="draft.text_direction === direction.value ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'" @click="draft.text_direction = direction.value">{{ direction.label }}</button></div></div>
                   <label class="page-toggle-card"><span><strong>Published</strong><small>Visitors can open this page.</small></span><input v-model="draft.is_published" type="checkbox" /></label>
                   <label class="page-toggle-card"><span><strong>Show in navbar</strong><small>Add the title to navigation.</small></span><input v-model="draft.show_in_navbar" type="checkbox" /></label>
                 </div>
 
-                <div class="mt-6"><div class="mb-2 flex flex-wrap items-center justify-between gap-2"><span class="text-xs font-bold text-gray-600">Markdown content</span><a href="https://www.markdownguide.org/basic-syntax/" target="_blank" rel="noreferrer" class="text-xs font-semibold text-blue-600">Markdown help</a></div><div class="flex flex-wrap gap-1 rounded-t-xl border border-b-0 border-gray-200 bg-gray-50 p-2" role="toolbar" aria-label="Markdown formatting"><button v-for="tool in markdownTools" :key="tool.label" type="button" class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-900" :title="tool.label" @click="insertMarkdown(tool)"><Icon :name="tool.icon" size="15" /><span class="sr-only">{{ tool.label }}</span></button></div><textarea ref="contentInput" v-model="draft.content_markdown" rows="18" placeholder="# Shipping policy&#10;&#10;Write your page here." class="min-h-[430px] w-full resize-y rounded-b-xl border border-gray-200 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-500" /></div>
+                <div class="mt-6"><div class="mb-2 flex flex-wrap items-center justify-between gap-2"><span class="text-xs font-bold text-gray-600">Markdown content</span><a href="https://www.markdownguide.org/basic-syntax/" target="_blank" rel="noreferrer" class="text-xs font-semibold text-blue-600">Markdown help</a></div><div class="flex flex-wrap gap-1 rounded-t-xl border border-b-0 border-gray-200 bg-gray-50 p-2" role="toolbar" aria-label="Markdown formatting"><button v-for="tool in markdownTools" :key="tool.label" type="button" class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-900" :title="tool.label" @click="insertMarkdown(tool)"><Icon :name="tool.icon" size="15" /><span class="sr-only">{{ tool.label }}</span></button></div><textarea ref="contentInput" v-model="draft.content_markdown" rows="18" placeholder="# Shipping policy&#10;&#10;Write your page here." class="min-h-[430px] w-full resize-y rounded-b-xl border border-gray-200 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-500" :dir="draft.text_direction" /></div>
               </div>
 
-              <div class="min-w-0 bg-gray-50 p-5 lg:p-6"><div class="mb-4 flex items-center justify-between"><div><p class="text-sm font-bold">Preview</p><p class="mt-1 text-xs text-gray-400">Updates while you type.</p></div><span class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-gray-500 ring-1 ring-gray-200">Markdown</span></div><article class="min-h-[540px] rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"><h1 class="break-words text-3xl font-bold tracking-tight">{{ draft.title || 'Untitled page' }}</h1><div v-if="draft.content_markdown" class="page-markdown-preview mt-8" v-html="previewHtml" /><p v-else class="mt-8 text-sm text-gray-400">Your content will appear here.</p></article></div>
+              <div class="min-w-0 bg-gray-50 p-5 lg:p-6"><div class="mb-4 flex items-center justify-between"><div><p class="text-sm font-bold">Preview</p><p class="mt-1 text-xs text-gray-400">Updates while you type.</p></div><span class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-gray-500 ring-1 ring-gray-200">Markdown</span></div><article class="min-h-[540px] rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" :dir="draft.text_direction"><h1 class="break-words text-3xl font-bold tracking-tight">{{ draft.title || 'Untitled page' }}</h1><div v-if="draft.content_markdown" class="page-markdown-preview mt-8" v-html="previewHtml" /><p v-else class="mt-8 text-sm text-gray-400">Your content will appear here.</p></article></div>
             </div>
           </fieldset>
         </form>
@@ -60,11 +61,17 @@ const loading = ref(true)
 const saving = ref(false)
 const pageError = ref('')
 const searchQuery = ref('')
+const pagesListCollapsed = ref(false)
 const contentInput = ref(null)
 const pathEdited = ref(false)
-const emptyDraft = () => ({ id: '', title: '', path: '', content_markdown: '', is_published: false, show_in_navbar: false, created_at: '', updated_at: '' })
+const emptyDraft = () => ({ id: '', title: '', path: '', content_markdown: '', text_direction: 'auto', is_published: false, show_in_navbar: false, created_at: '', updated_at: '' })
 const draft = reactive(emptyDraft())
 const original = ref(JSON.stringify(emptyDraft()))
+const textDirections = [
+  { value: 'auto', label: 'Automatic' },
+  { value: 'ltr', label: 'Left to right' },
+  { value: 'rtl', label: 'Right to left' }
+]
 
 const markdownTools = [
   { label: 'Heading', icon: 'lucide:heading-2', prefix: '## ', suffix: '', placeholder: 'Heading' },
@@ -86,6 +93,7 @@ const normalizedDraft = computed(() => JSON.stringify({
   title: draft.title,
   path: draft.path,
   content_markdown: draft.content_markdown,
+  text_direction: draft.text_direction,
   is_published: draft.is_published,
   show_in_navbar: draft.show_in_navbar,
   created_at: draft.created_at,
@@ -158,6 +166,7 @@ const savePage = async () => {
         title: draft.title,
         path: draft.path,
         content_markdown: draft.content_markdown,
+        text_direction: draft.text_direction,
         is_published: draft.is_published,
         show_in_navbar: draft.show_in_navbar
       }
@@ -206,6 +215,11 @@ onMounted(loadPages)
 </script>
 
 <style scoped>
+.pages-editor-shell { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1024px) {
+  .pages-editor-shell { grid-template-columns: 290px minmax(0, 1fr); transition: grid-template-columns 180ms ease; }
+  .pages-editor-shell.pages-list-collapsed { grid-template-columns: 72px minmax(0, 1fr); }
+}
 .page-form-input { width: 100%; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; outline: none; }
 .page-form-input:focus { border-color: #3b82f6; }
 .page-toggle-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.9rem; cursor: pointer; }

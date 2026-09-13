@@ -15,15 +15,21 @@ test('custom page payload keeps publishing and navbar settings explicit', () => 
     title: '  Shipping   policy ',
     path: '/shipping-policy',
     content_markdown: '# Delivery\r\n\r\nDetails ',
+    text_direction: 'rtl',
     is_published: true,
     show_in_navbar: true
   }), {
     title: 'Shipping policy',
     path: 'shipping-policy',
     content_markdown: '# Delivery\n\nDetails',
+    text_direction: 'rtl',
     is_published: true,
     show_in_navbar: true
   })
+})
+
+test('custom pages default to automatic text direction', () => {
+  assert.equal(normalizeSitePagePayload({ title: 'Policy', path: 'policy' }).text_direction, 'auto')
 })
 
 test('markdown renders formatting and escapes unsafe markup', () => {

@@ -48,10 +48,15 @@ export const normalizeSitePagePayload = (body = {}) => {
     throw createError({ statusCode: 400, statusMessage: 'Page content is too long.' })
   }
 
+  const textDirection = ['auto', 'ltr', 'rtl'].includes(body.text_direction)
+    ? body.text_direction
+    : 'auto'
+
   return {
     title,
     path: normalizeSitePagePath(body.path),
     content_markdown: content,
+    text_direction: textDirection,
     is_published: body.is_published === true,
     show_in_navbar: body.show_in_navbar === true
   }
@@ -67,4 +72,4 @@ export const throwSitePageError = (error, fallback = 'Could not save the page.')
   throw createError({ statusCode: 500, statusMessage: error?.message || fallback })
 }
 
-export const sitePageSelect = 'id, title, path, content_markdown, is_published, show_in_navbar, created_by, updated_by, created_at, updated_at'
+export const sitePageSelect = 'id, title, path, content_markdown, text_direction, is_published, show_in_navbar, created_by, updated_by, created_at, updated_at'
