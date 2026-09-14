@@ -67,15 +67,10 @@
 
 <script setup>
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
-const supabase = useSupabaseClient()
 const route = useRoute()
 const customerUser = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
 const { itemCount, subtotal, loadCart } = useCart()
-const { data: categoriesData } = await useAsyncData('navbar-categories', async () => {
-  const { data, error } = await supabase.from('categories').select('id, name, slug').order('name')
-  return error ? [] : (data || [])
-})
 
 const header = ref(null)
 const departmentButton = ref(null)
@@ -84,7 +79,7 @@ const searchQuery = ref('')
 const isShopAllActive = computed(() => route.path === '/search' && !Object.keys(route.query).length)
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => getStoreImageUrl(siteContent.value?.settings?.site_logo_url) || '/images/dashboard-logo.png')
-const headerCategories = computed(() => categoriesData.value || [])
+const headerCategories = computed(() => siteContent.value?.navbarCategories || [])
 const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
 const formattedSubtotal = computed(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(subtotal.value))

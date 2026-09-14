@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     daftraAccountUrl: process.env.DAFTRA_ACCOUNT_URL || '',
     daftraApiKey: process.env.DAFTRA_API_KEY || '',
     daftraClientId: process.env.DAFTRA_CLIENT_ID || '',
+    credentialsEncryptionKey: process.env.CREDENTIALS_ENCRYPTION_KEY || process.env.SHIPPING_CREDENTIALS_ENCRYPTION_KEY || '',
     shippingCredentialsEncryptionKey: process.env.SHIPPING_CREDENTIALS_ENCRYPTION_KEY || '',
     shippingLiveRequestsEnabled: process.env.PDC_LIVE_REQUESTS_ENABLED === 'true',
     shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',

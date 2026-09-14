@@ -1,7 +1,18 @@
 import { createError } from 'h3'
+import {
+  decryptCredentialSecret,
+  isCredentialEncryptionReady
+} from './credentialSecrets.js'
+import { getSupabaseAdminClient } from './supabaseAdmin.js'
 
 const DAFTRA_TIMEOUT_MS = 15000
-const ALLOWED_DAFTRA_HOST = /(^|\.)daftara?\.com$/i
+const DAFTRA_CONFIG_CACHE_MS = 30000
+const ALLOWED_DAFTRA_HOST = /(^|\.)dafta?ra\.com$/i
+const MISSING_SETTINGS_CODES = new Set(['42P01', 'PGRST205'])
+
+let cachedDaftraConfig = null
+let cachedDaftraConfigExpiresAt = 0
+let pendingDaftraConfig = null
 
 const cleanText = (value) => String(value || '').trim()
 
@@ -37,7 +48,7 @@ export const normalizeDaftraAccountUrl = (value) => {
   return `${url.protocol}//${url.hostname}`
 }
 
-export const getDaftraConfig = () => {
+const getEnvironmentDaftraConfig = () => {
   const runtimeConfig = useRuntimeConfig()
   const accountUrl = normalizeDaftraAccountUrl(runtimeConfig.daftraAccountUrl)
   const apiKey = cleanText(runtimeConfig.daftraApiKey)
@@ -46,7 +57,114 @@ export const getDaftraConfig = () => {
     accountUrl,
     apiKey,
     clientId: cleanText(runtimeConfig.daftraClientId),
-    configured: Boolean(accountUrl && apiKey)
+    configured: Boolean(accountUrl && apiKey),
+    source: accountUrl || apiKey ? 'environment' : ''
+  }
+}
+
+const getStoredDaftraSettings = async (supabaseAdmin = getSupabaseAdminClient()) => {
+  const { data, error } = await supabaseAdmin
+    .from('erp_provider_settings')
+    .select('account_url, api_key_encrypted, client_id_encrypted, updated_at')
+    .eq('id', 'daftra')
+    .maybeSingle()
+
+  if (error) {
+    if (MISSING_SETTINGS_CODES.has(error.code)) {
+      return { data: null, storageReady: false }
+    }
+
+    throw createError({ statusCode: 500, statusMessage: error.message })
+  }
+
+  return { data: data || null, storageReady: true }
+}
+
+const loadDaftraConfig = async () => {
+  const storedSettings = await getStoredDaftraSettings()
+
+  if (!storedSettings.data) {
+    return {
+      ...getEnvironmentDaftraConfig(),
+      storageReady: storedSettings.storageReady
+    }
+  }
+
+  const accountUrl = normalizeDaftraAccountUrl(storedSettings.data.account_url)
+  const apiKey = decryptCredentialSecret(storedSettings.data.api_key_encrypted, 'Daftra')
+  const clientId = storedSettings.data.client_id_encrypted
+    ? decryptCredentialSecret(storedSettings.data.client_id_encrypted, 'Daftra')
+    : ''
+
+  return {
+    accountUrl,
+    apiKey,
+    clientId,
+    configured: Boolean(accountUrl && apiKey),
+    source: 'database',
+    storageReady: true
+  }
+}
+
+export const clearDaftraConfigCache = () => {
+  cachedDaftraConfig = null
+  cachedDaftraConfigExpiresAt = 0
+  pendingDaftraConfig = null
+}
+
+export const getDaftraConfig = async () => {
+  if (cachedDaftraConfig && cachedDaftraConfigExpiresAt > Date.now()) {
+    return cachedDaftraConfig
+  }
+
+  if (!pendingDaftraConfig) {
+    pendingDaftraConfig = loadDaftraConfig()
+      .then((config) => {
+        cachedDaftraConfig = config
+        cachedDaftraConfigExpiresAt = Date.now() + DAFTRA_CONFIG_CACHE_MS
+        return config
+      })
+      .finally(() => {
+        pendingDaftraConfig = null
+      })
+  }
+
+  return pendingDaftraConfig
+}
+
+export const getDaftraConfigSummary = async (supabaseAdmin) => {
+  const storedSettings = await getStoredDaftraSettings(supabaseAdmin)
+  const encryptionReady = isCredentialEncryptionReady()
+
+  if (storedSettings.data) {
+    const accountUrl = normalizeDaftraAccountUrl(storedSettings.data.account_url)
+    const apiKeyConfigured = Boolean(storedSettings.data.api_key_encrypted)
+
+    return {
+      accountUrl,
+      accountHost: accountUrl ? new URL(accountUrl).hostname : '',
+      apiKeyConfigured,
+      clientIdConfigured: Boolean(storedSettings.data.client_id_encrypted),
+      configured: Boolean(accountUrl && apiKeyConfigured && encryptionReady),
+      encryptionReady,
+      source: 'database',
+      storageReady: true,
+      updatedAt: storedSettings.data.updated_at || null
+    }
+  }
+
+  const environmentConfig = getEnvironmentDaftraConfig()
+
+  return {
+    accountUrl: environmentConfig.accountUrl,
+    accountHost: environmentConfig.accountUrl ? new URL(environmentConfig.accountUrl).hostname : '',
+    apiKeyConfigured: Boolean(environmentConfig.apiKey),
+    clientIdConfigured: Boolean(environmentConfig.clientId),
+    configured: environmentConfig.configured,
+    encryptionReady,
+    source: environmentConfig.source,
+    storageReady: storedSettings.storageReady,
+    updatedAt: null
   }
 }
 
@@ -63,7 +181,7 @@ const getDaftraErrorMessage = (error) => {
 }
 
 export const daftraRequest = async (path, options = {}) => {
-  const config = getDaftraConfig()
+  const config = options.config || await getDaftraConfig()
 
   if (!config.configured) {
     throw createError({
@@ -97,10 +215,11 @@ export const daftraRequest = async (path, options = {}) => {
 }
 
 export const getDaftraConnectionSummary = async () => {
+  const config = await getDaftraConfig()
   const response = await daftraRequest('/clients.json', {
-    query: { limit: 1, page: 1 }
+    query: { limit: 1, page: 1 },
+    config
   })
-  const config = getDaftraConfig()
 
   return {
     connected: response?.result === 'successful' || Number(response?.code) === 200,

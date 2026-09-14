@@ -18,6 +18,78 @@
       <div v-if="loading" class="mt-6 text-sm text-gray-500">Loading ERP settings...</div>
 
       <div v-else class="mt-6 space-y-5">
+        <div class="space-y-4 rounded-2xl border border-gray-200 p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h4 class="font-bold text-gray-900">Daftra connection</h4>
+              <p class="mt-1 text-sm text-gray-500">Save this site's credentials from the dashboard.</p>
+            </div>
+            <span
+              v-if="settings.credentialsSource"
+              class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600"
+            >
+              {{ settings.credentialsSource === 'database' ? 'Saved in database' : 'Legacy server settings' }}
+            </span>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <label class="md:col-span-2">
+              <span class="mb-2 block text-sm font-semibold text-gray-700">Account URL</span>
+              <input
+                v-model="credentials.accountUrl"
+                type="url"
+                inputmode="url"
+                placeholder="https://your-account.daftra.com"
+                class="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-blue-500"
+                :disabled="!canEdit"
+              >
+            </label>
+
+            <label>
+              <span class="mb-2 block text-sm font-semibold text-gray-700">API key</span>
+              <input
+                v-model="credentials.apiKey"
+                type="password"
+                autocomplete="new-password"
+                :placeholder="settings.apiKeyConfigured ? 'Leave blank to keep saved key' : 'Enter API key'"
+                class="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-blue-500"
+                :disabled="!canEdit"
+              >
+            </label>
+
+            <label>
+              <span class="mb-2 block text-sm font-semibold text-gray-700">Client ID</span>
+              <input
+                v-model="credentials.clientId"
+                type="password"
+                autocomplete="new-password"
+                :placeholder="settings.clientIdConfigured ? 'Leave blank to keep saved ID' : 'Optional'"
+                class="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-blue-500"
+                :disabled="!canEdit"
+              >
+            </label>
+          </div>
+
+          <p v-if="settings.credentialsSource === 'environment'" class="text-sm text-amber-700">
+            Enter the API key once to move this connection into the database.
+          </p>
+
+          <p v-if="!settings.encryptionReady" class="text-sm text-amber-700">
+            Add the credential encryption key before saving secrets.
+          </p>
+
+          <div class="flex justify-end">
+            <button
+              type="button"
+              class="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+              :disabled="!canSaveCredentials"
+              @click="saveCredentials"
+            >
+              {{ credentialsSaving ? 'Saving...' : 'Save connection' }}
+            </button>
+          </div>
+        </div>
+
         <div class="grid gap-3 md:grid-cols-2">
           <label
             v-for="option in modeOptions"
@@ -65,7 +137,7 @@
         </p>
 
         <p v-if="settings.migrationRequired" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-700">
-          Run the Daftra database migration first.
+          Run the latest database migration first.
         </p>
 
         <p v-if="selectedMode === 'daftra'" class="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
@@ -76,7 +148,7 @@
           <button
             type="button"
             class="rounded-xl border border-gray-300 px-5 py-3 font-bold text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="!canEdit || testing || saving || settings.migrationRequired"
+            :disabled="!canEdit || testing || saving || credentialsSaving || settings.migrationRequired || !settings.configured"
             @click="testConnection"
           >
             {{ testing ? 'Testing...' : 'Test connection' }}
@@ -84,7 +156,7 @@
           <button
             type="button"
             class="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-            :disabled="!canEdit || saving || testing || selectedMode === settings.mode || settings.migrationRequired"
+            :disabled="!canEdit || saving || testing || credentialsSaving || selectedMode === settings.mode || settings.migrationRequired"
             @click="saveMode"
           >
             {{ saving ? 'Saving...' : 'Save ERP mode' }}
@@ -112,14 +184,26 @@ const supabase = useSupabaseClient()
 const loading = ref(true)
 const testing = ref(false)
 const saving = ref(false)
+const credentialsSaving = ref(false)
 const errorMessage = ref('')
 const message = ref('')
 const selectedMode = ref('built_in')
+const credentials = reactive({
+  accountUrl: '',
+  apiKey: '',
+  clientId: ''
+})
 const settings = reactive({
   mode: 'built_in',
   connectionStatus: 'disconnected',
   lastCheckedAt: null,
   accountHost: '',
+  accountUrl: '',
+  apiKeyConfigured: false,
+  clientIdConfigured: false,
+  credentialsSource: '',
+  encryptionReady: false,
+  configured: false,
   connectionError: '',
   migrationRequired: false,
   jobCounts: {}
@@ -142,6 +226,19 @@ const connectionClass = computed(() => ({
   disconnected: 'bg-gray-100 text-gray-600'
 })[settings.connectionStatus] || 'bg-gray-100 text-gray-600')
 
+const canSaveCredentials = computed(() => {
+  const hasStoredApiKey = settings.credentialsSource === 'database' && settings.apiKeyConfigured
+
+  return props.canEdit
+    && !credentialsSaving.value
+    && !testing.value
+    && !saving.value
+    && !settings.migrationRequired
+    && settings.encryptionReady
+    && Boolean(credentials.accountUrl.trim())
+    && Boolean(credentials.apiKey.trim() || hasStoredApiKey)
+})
+
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
 
@@ -155,6 +252,7 @@ const getAuthHeaders = async () => {
 const applySettings = (value = {}) => {
   Object.assign(settings, value)
   selectedMode.value = settings.mode || 'built_in'
+  credentials.accountUrl = settings.accountUrl || ''
 }
 
 const loadSettings = async () => {
@@ -194,6 +292,32 @@ const testConnection = async () => {
     errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not connect to Daftra.'
   } finally {
     testing.value = false
+  }
+}
+
+const saveCredentials = async () => {
+  credentialsSaving.value = true
+  message.value = ''
+  errorMessage.value = ''
+
+  try {
+    await $fetch('/api/admin-erp/credentials', {
+      method: 'PATCH',
+      headers: await getAuthHeaders(),
+      body: {
+        accountUrl: credentials.accountUrl,
+        apiKey: credentials.apiKey,
+        clientId: credentials.clientId
+      }
+    })
+    credentials.apiKey = ''
+    credentials.clientId = ''
+    message.value = 'Daftra connection saved. Test it before activation.'
+    await loadSettings()
+  } catch (error) {
+    errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not save the Daftra connection.'
+  } finally {
+    credentialsSaving.value = false
   }
 }
 

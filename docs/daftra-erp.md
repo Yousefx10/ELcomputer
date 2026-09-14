@@ -8,19 +8,25 @@ Daftra failures never cancel a successful website order.
 
 ## Configuration
 
-Set these server-only environment variables:
+Set one server-only encryption key:
 
 ```dotenv
-DAFTRA_ACCOUNT_URL=https://your-account.daftra.com
-DAFTRA_API_KEY=
-DAFTRA_CLIENT_ID=
+CREDENTIALS_ENCRYPTION_KEY=
 ```
 
-Never expose the API key in public runtime configuration.
-
-## Activation
+Use at least 32 random characters.
 
 Open **Dashboard → Settings → ERP connection**.
+
+Enter the account URL, API key, and optional client ID.
+
+Secrets are encrypted before database storage.
+
+They are never returned to the browser.
+
+The older `DAFTRA_*` environment variables remain a fallback.
+
+## Activation
 
 Test the connection before selecting Daftra ERP.
 

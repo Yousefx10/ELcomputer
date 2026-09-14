@@ -1,5 +1,5 @@
 import { requireAdminRequest } from '../../utils/adminRequest'
-import { getDaftraConfig } from '../../utils/daftra'
+import { getDaftraConfigSummary } from '../../utils/daftra'
 import { getErpSettings } from '../../utils/daftraSync'
 
 export default defineEventHandler(async (event) => {
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     permission: 'settings.view'
   })
   const settings = await getErpSettings(supabaseAdmin)
-  const config = getDaftraConfig()
+  const config = await getDaftraConfigSummary(supabaseAdmin)
   let jobCounts = { pending: 0, processing: 0, failed: 0 }
 
   if (!settings.migrationRequired) {
@@ -30,9 +30,13 @@ export default defineEventHandler(async (event) => {
       connectedAt: settings.daftra_connected_at,
       connectionError: settings.daftra_connection_error,
       configured: config.configured,
-      accountHost: config.accountUrl ? new URL(config.accountUrl).hostname : '',
-      clientId: config.clientId,
-      migrationRequired: settings.migrationRequired,
+      accountUrl: config.accountUrl,
+      accountHost: config.accountHost,
+      apiKeyConfigured: config.apiKeyConfigured,
+      clientIdConfigured: config.clientIdConfigured,
+      credentialsSource: config.source,
+      encryptionReady: config.encryptionReady,
+      migrationRequired: settings.migrationRequired || !config.storageReady,
       jobCounts
     }
   }

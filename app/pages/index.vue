@@ -171,7 +171,18 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
     categorySections: [...preferredCategories, ...remainingCategories].slice(0, 3),
     featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
   }
-}, { lazy: true })
+}, {
+  lazy: true,
+  server: false,
+  default: () => ({
+    latestImage: '',
+    featuredProducts: [],
+    topSellerProducts: [],
+    topCategories: [],
+    categorySections: [],
+    featuredBrands: []
+  })
+})
 
 const customerUser = useSupabaseUser()
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })

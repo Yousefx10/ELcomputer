@@ -2436,7 +2436,7 @@ const isMissingSchemaError = (error) => {
 
 const handleTableError = (error) => {
   if (isMissingSchemaError(error)) {
-    pageError.value = 'Run the latest dashboard settings SQL query first, then refresh this page.'
+    pageError.value = 'Apply the latest Supabase migration, then refresh this page.'
     return true
   }
 

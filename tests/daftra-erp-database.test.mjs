@@ -76,3 +76,21 @@ test('claiming a job is atomic and increments attempts', async () => {
   assert.equal(claimed[0].attempts, 1)
   assert.equal((await db.query('select count(*)::int as count from public.claim_daftra_sync_job(null)')).rows[0].count, 0)
 })
+
+test('ERP credentials use a private provider settings table', async () => {
+  await db.query(`
+    insert into public.erp_provider_settings (
+      id, account_url, api_key_encrypted, client_id_encrypted
+    ) values ('daftra', 'https://example.daftra.com', 'encrypted-key', 'encrypted-client')
+  `)
+
+  const settings = (await db.query(`
+    select id, account_url, api_key_encrypted, client_id_encrypted
+    from public.erp_provider_settings
+    where id = 'daftra'
+  `)).rows[0]
+
+  assert.equal(settings.id, 'daftra')
+  assert.equal(settings.account_url, 'https://example.daftra.com')
+  assert.equal(settings.api_key_encrypted, 'encrypted-key')
+})
