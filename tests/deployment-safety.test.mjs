@@ -89,3 +89,10 @@ test('release archive excludes macOS metadata and contains only .output', () => 
   assert.match(localScript, /entry != "\.output" && entry !~ \/\^\\\.output\\\//)
   assert.match(remoteScript, /Archive contains a path outside \.output/)
 })
+
+test('preflight requires the server-only Nuxt service-role runtime variable', () => {
+  const runtimeValidation = remoteScript.match(/validate_pm2_runtime_environment\(\) \{([\s\S]*?)\n\}/)?.[1] || ''
+
+  assert.match(runtimeValidation, /\["NUXT_SUPABASE_SERVICE_ROLE_KEY"\]/)
+  assert.doesNotMatch(runtimeValidation, /\["SUPABASE_SERVICE_ROLE_KEY"/)
+})

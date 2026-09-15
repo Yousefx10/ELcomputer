@@ -112,7 +112,7 @@ validate_pm2_runtime_environment() {
           "SUPABASE_ANON_KEY",
           "SUPABASE_KEY"
         ],
-        ["SUPABASE_SERVICE_ROLE_KEY", "NUXT_SUPABASE_SERVICE_ROLE_KEY"]
+        ["NUXT_SUPABASE_SERVICE_ROLE_KEY"]
       ]
       const missing = requiredGroups
         .filter((group) => !group.some((key) => typeof environment[key] === "string" && environment[key].length > 0))

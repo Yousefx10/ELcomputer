@@ -46,9 +46,9 @@ Test the configuration without building or deploying:
 npm run deploy:check
 ```
 
-Preflight also confirms that the existing PM2 process has Supabase URL, public key, and service-role key variables. It checks variable names and non-empty values without printing any secrets.
+Preflight also confirms that the existing PM2 process has Supabase URL, public key, and the server-only `NUXT_SUPABASE_SERVICE_ROLE_KEY` runtime variable. It checks variable names and non-empty values without printing any secrets.
 
-The release is built without local credentials. Production application settings must therefore already exist in the PM2 process environment. Add or change them through CloudPanel, your PM2 ecosystem configuration, or another server-side secret store before deployment.
+The release is built without local credentials. Production application settings must therefore already exist in the PM2 process environment. The service-role secret must use `NUXT_SUPABASE_SERVICE_ROLE_KEY`; `SUPABASE_SERVICE_ROLE_KEY` alone is only read while evaluating the build configuration. Add or change settings through CloudPanel, your PM2 ecosystem configuration, or another server-side secret store before deployment.
 
 Nuxt may print missing-Supabase warnings during the secret-free build. This is expected; preflight has already verified that PM2 will supply those values at runtime.
 
