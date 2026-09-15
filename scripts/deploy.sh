@@ -254,7 +254,9 @@ package_output() {
   ARCHIVE_PATH="$(mktemp "${TMPDIR:-/tmp}/elcomputer-deploy.XXXXXX")"
 
   log "Packaging .output only..."
-  tar -czf "$ARCHIVE_PATH" -C "$PROJECT_ROOT" .output
+  # macOS stores extended attributes as libarchive PAX records by default.
+  # Strip them so the Linux-side path validator sees only .output entries.
+  COPYFILE_DISABLE=1 tar --no-xattrs -czf "$ARCHIVE_PATH" -C "$PROJECT_ROOT" .output
 
   [[ -s "$ARCHIVE_PATH" ]] || die "The deployment archive is empty."
   tar -tzf "$ARCHIVE_PATH" | awk '

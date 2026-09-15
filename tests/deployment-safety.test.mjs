@@ -83,3 +83,9 @@ test('package scripts expose deploy and preflight commands', () => {
   assert.equal(packageJson.scripts.deploy, 'bash scripts/deploy.sh')
   assert.equal(packageJson.scripts['deploy:check'], 'bash scripts/deploy.sh --check')
 })
+
+test('release archive excludes macOS metadata and contains only .output', () => {
+  assert.match(localScript, /COPYFILE_DISABLE=1 tar --no-xattrs -czf/)
+  assert.match(localScript, /entry != "\.output" && entry !~ \/\^\\\.output\\\//)
+  assert.match(remoteScript, /Archive contains a path outside \.output/)
+})
