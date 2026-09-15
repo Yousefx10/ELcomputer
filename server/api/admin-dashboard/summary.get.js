@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
   const canSeeOrders = hasAdminPermission(adminUser, 'dashboard.orders')
   const canViewProducts = hasAdminPermission(adminUser, 'products.view')
   const canViewCategories = hasAdminPermission(adminUser, 'categories.view')
+  const canViewCustomers = hasAdminPermission(adminUser, 'users.view')
   const todayStartedAt = startOfTodayInRiyadh()
 
   const countOrders = (configure) => {
@@ -44,6 +45,16 @@ export default defineEventHandler(async (event) => {
     )
   }
 
+  const countCustomers = () => {
+    if (!canViewCustomers) {
+      return emptyCountResult()
+    }
+
+    return supabaseAdmin
+      .from('customer_profiles')
+      .select('*', { count: 'exact', head: true })
+  }
+
   const results = await Promise.all([
     countOrders((query) => query.in('status', activeCustomerOrderStatuses)),
     countOrders((query) => query.gte('created_at', todayStartedAt)),
@@ -59,7 +70,9 @@ export default defineEventHandler(async (event) => {
       ? supabaseAdmin
           .from('categories')
           .select('*', { count: 'exact', head: true })
-      : emptyCountResult()
+      : emptyCountResult(),
+    countOrders((query) => query),
+    countCustomers()
   ])
   const encounteredError = results.find((result) => result.error)?.error
 
@@ -74,6 +87,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     orders: {
+      total: results[11].count || 0,
       open: results[0].count || 0,
       today: results[1].count || 0,
       awaitingPayment: results[2].count || 0,
@@ -87,6 +101,9 @@ export default defineEventHandler(async (event) => {
       drafts: results[8].count || 0,
       outOfStock: results[9].count || 0,
       categories: results[10].count || 0
+    },
+    users: {
+      customers: results[12].count || 0
     }
   }
 })

@@ -20,6 +20,14 @@
           {{ errorMessage }}
         </div>
 
+        <DashboardSummaryOverview
+          v-if="currentView === 'summary' && hasSummary"
+          :summary="summary"
+          :can-see-orders="canSeeOrders"
+          :can-see-analysis="canSeeAnalysis"
+          :can-see-customers="canSeeCustomers"
+        />
+
         <section v-if="canSeeOrders && currentView !== 'stock'">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
@@ -117,6 +125,9 @@ const summary = reactive({
     drafts: 0,
     outOfStock: 0,
     categories: 0
+  },
+  users: {
+    customers: 0
   }
 })
 
@@ -124,6 +135,7 @@ const canViewProducts = computed(() => hasPermission('products.view'))
 const canViewCategories = computed(() => hasPermission('categories.view'))
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
 const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
+const canSeeCustomers = computed(() => hasPermission('users.view'))
 const currentView = computed(() => {
   const view = getDashboardQueryValue(route, 'view')
   return ['analysis', 'customers', 'orders', 'stock'].includes(view) ? view : 'summary'
@@ -248,6 +260,7 @@ const getAuthHeaders = async () => {
 const applySnapshot = (snapshot) => {
   Object.assign(summary.orders, snapshot?.orders || {})
   Object.assign(summary.catalog, snapshot?.catalog || {})
+  Object.assign(summary.users, snapshot?.users || {})
   hasSummary.value = true
 }
 

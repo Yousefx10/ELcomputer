@@ -36,8 +36,12 @@
   .documents-topnav { @apply flex items-center gap-1 rounded-xl bg-gray-100 p-1; }
   .documents-topnav button { @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold text-gray-500 transition hover:text-gray-900; }
   .documents-topnav button[aria-current='page'] { @apply bg-white text-blue-700 shadow-sm; }
-  .documents-layout { @apply grid min-h-[680px] min-w-0; grid-template-columns: 210px minmax(0, 1fr) 290px; }
+  .documents-layout { @apply grid min-h-[680px] min-w-0; grid-template-columns: minmax(0, 1fr); }
+  .documents-layout.has-navigation { grid-template-columns: 210px minmax(0, 1fr); }
+  .documents-layout.has-details { grid-template-columns: minmax(0, 1fr) 290px; }
+  .documents-layout.has-navigation.has-details { grid-template-columns: 210px minmax(0, 1fr) 290px; }
   .documents-sidebar { @apply flex min-w-0 flex-col border-e border-gray-200 bg-gray-50 p-4; }
+  .documents-panel-toggle { @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700; }
   .documents-side-link { @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-gray-500 transition hover:bg-white hover:text-gray-900; }
   .documents-side-link[aria-current='page'] { @apply bg-blue-50 text-blue-700; }
   .documents-quick-access { @apply border-b border-gray-100 bg-gray-50/40 p-5 lg:p-6; }
@@ -50,16 +54,20 @@
 }
 
 @media (max-width: 1279px) {
-  .documents-layout { grid-template-columns: 180px minmax(0, 1fr) 250px; }
+  .documents-layout.has-navigation { grid-template-columns: 180px minmax(0, 1fr); }
+  .documents-layout.has-details { grid-template-columns: minmax(0, 1fr) 250px; }
+  .documents-layout.has-navigation.has-details { grid-template-columns: 180px minmax(0, 1fr) 250px; }
 }
 
 @media (max-width: 1023px) {
-  .documents-layout { grid-template-columns: minmax(0, 1fr); }
+  .documents-layout,
+  .documents-layout.has-navigation,
+  .documents-layout.has-details,
+  .documents-layout.has-navigation.has-details { grid-template-columns: minmax(0, 1fr); }
   .documents-sidebar { @apply block overflow-x-auto border-b border-e-0 p-3; }
   .documents-sidebar > nav { @apply flex min-w-max gap-1; }
   .documents-side-link { @apply w-auto; }
   .documents-details { @apply border-s-0 border-t border-gray-200; }
-  .documents-details.is-empty { @apply hidden; }
 }
 
 @media (max-width: 639px) {
