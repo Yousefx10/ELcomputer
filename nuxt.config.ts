@@ -1,5 +1,14 @@
 import tailwindcss from "@tailwindcss/vite";
 
+const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
+const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
+  || process.env.NUXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
+  || process.env.SUPABASE_PUBLISHABLE_KEY
+  || process.env.SUPABASE_ANON_KEY
+  || process.env.SUPABASE_KEY
+  || ''
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
@@ -15,7 +24,11 @@ export default defineNuxtConfig({
     shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',
     public: {
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || ''
+      supabaseUrl,
+      supabase: {
+        url: supabaseUrl,
+        key: supabaseKey
+      }
     }
   },
 
