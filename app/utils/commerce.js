@@ -1,7 +1,7 @@
 import { dashboardNavigationGroups } from './dashboardNavigation.js'
 
 export const commerceTabs = dashboardNavigationGroups
-  .filter((group) => ['commerce', 'inventory', 'shipping'].includes(group.key))
+  .filter((group) => ['purchasing', 'sales', 'inventory', 'shipping'].includes(group.key))
   .flatMap((group) => group.children || [])
   .map((item) => ({
   key: item.key,

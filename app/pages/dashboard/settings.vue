@@ -927,7 +927,7 @@
             <div>
               <h3 class="text-2xl font-bold">Banner Ads</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Control the two banner ads shown above the keyboard and accessories sections
+                Add up to two wide promotions between the main home-page sections.
               </p>
             </div>
 
@@ -950,7 +950,7 @@
                   <div>
                     <p class="text-sm font-semibold text-gray-700">Banner Ad 1</p>
                     <p class="text-sm text-gray-500">
-                      Shows above the keyboard section
+                      Appears after Store picks
                     </p>
                   </div>
 
@@ -981,7 +981,7 @@
                   preview-alt="Banner Ad 1"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Shown above keyboards on the homepage."
+                  help-text="Shown after Store picks on the home page."
                 />
 
                 <div>
@@ -1000,7 +1000,7 @@
                   <div>
                     <p class="text-sm font-semibold text-gray-700">Banner Ad 2</p>
                     <p class="text-sm text-gray-500">
-                      Shows above the accessories section
+                      Appears after More products
                     </p>
                   </div>
 
@@ -1031,7 +1031,7 @@
                   preview-alt="Banner Ad 2"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Shown above accessories on the homepage."
+                  help-text="Shown after More products on the home page."
                 />
 
                 <div>

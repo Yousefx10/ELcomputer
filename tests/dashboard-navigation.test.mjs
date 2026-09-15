@@ -5,6 +5,8 @@ import { dashboardSettingsSections } from '../app/utils/dashboardSettings.js'
 import { commerceTabs } from '../app/utils/commerce.js'
 import { getDashboardRouteRequirement, hasAdminPermission } from '../app/utils/adminPermissions.js'
 
+const primarySettingsKeys = ['settings-overview', 'erp', 'gallery', 'coupons', 'logs', 'reset']
+
 const routeFor = (to) => {
   const url = new URL(to, 'https://example.test')
   return { path: url.pathname, query: Object.fromEntries(url.searchParams) }
@@ -39,6 +41,16 @@ test('commerce still accepts every tab after inventory and shipping move', () =>
   assert.deepEqual(commerceTabs.map(tab => tab.key).sort(), ['procurement', 'returns', 'sales', 'scan', 'serialized', 'shipping', 'warehouses'])
 })
 
+test('single-destination sections open directly instead of showing redundant menus', () => {
+  const groups = buildDashboardNavigation()
+
+  assert.equal(groups.find(group => group.key === 'purchasing').children.length, 0)
+  assert.equal(groups.find(group => group.key === 'purchasing').to, '/dashboard/commerce')
+  assert.equal(groups.find(group => group.key === 'shipping').children.length, 0)
+  assert.equal(groups.find(group => group.key === 'shipping').to, '/dashboard/commerce?tab=shipping')
+  assert.equal(groups.some(group => group.children.length === 1), false)
+})
+
 test('restricted admins only see permitted settings and destinations', () => {
   const user = { is_active: true, role: 'admin', permissions: { 'dashboard.view': true, 'settings.view': true, 'settings.coupons': true } }
   const access = { hasPermission: permission => hasAdminPermission(user, permission), hasAnyPermission: permissions => permissions.some(permission => hasAdminPermission(user, permission)) }
@@ -51,7 +63,7 @@ test('restricted admins only see permitted settings and destinations', () => {
     if (requirement?.permissionsAny) assert.equal(access.hasAnyPermission(requirement.permissionsAny), true, item.to)
   }
   const settings = groups.find(g => g.key === 'settings')
-  assert.equal(settings.children.length, dashboardSettingsSections.filter(section => section.role !== 'owner').length + 1)
+  assert.deepEqual(settings.children.map(item => item.key), primarySettingsKeys.filter(key => key !== 'reset'))
   assert.equal(settings.children.some(item => item.key === 'reset'), false)
   assert.equal(access.hasPermission('settings.edit'), false)
 })
@@ -78,8 +90,10 @@ test('external ERP mode hides built-in ERP entry points', () => {
 
   assert.equal(groupKeys.includes('daftra'), true)
   assert.equal(groupKeys.includes('treasury'), false)
-  assert.equal(groups.find(group => group.key === 'commerce').label, 'Returns')
-  assert.deepEqual(groups.find(group => group.key === 'commerce').children.map(item => item.key), ['returns'])
+  assert.equal(groupKeys.includes('purchasing'), false)
+  assert.equal(groups.find(group => group.key === 'sales').label, 'Returns')
+  assert.equal(groups.find(group => group.key === 'sales').to, '/dashboard/commerce?tab=returns')
+  assert.deepEqual(groups.find(group => group.key === 'sales').children, [])
   assert.deepEqual(groups.find(group => group.key === 'inventory').children.map(item => item.key), ['serialized', 'scan'])
   assert.equal(groups.find(group => group.key === 'hr').children.some(item => item.key === 'employees'), false)
   assert.equal(groups.find(group => group.key === 'dashboard').children.some(item => item.key === 'stock-summary'), false)

@@ -48,12 +48,14 @@ const group = (key, label, icon, match, children, access = {}) => ({
   key, label, icon: `lucide:${icon}`, match, children, to: children[0]?.to, ...access
 })
 
+const primarySettingsKeys = new Set(['erp', 'gallery', 'coupons', 'logs', 'reset'])
+
 export const dashboardNavigationGroups = [
   group('dashboard', 'Dashboard', 'layout-dashboard', { paths: ['/dashboard'] }, [
-    child('summary', 'Summary', 'gauge', '/dashboard', 'view', ['', 'summary']),
-    child('order-summary', 'Order summary', 'shopping-bag', '/dashboard', 'view', ['orders'], 'dashboard.orders'),
+    child('summary', 'Overview', 'gauge', '/dashboard', 'view', ['', 'summary']),
+    child('order-summary', 'Orders overview', 'shopping-bag', '/dashboard', 'view', ['orders'], 'dashboard.orders'),
     { ...child('stock-summary', 'Stock overview', 'boxes', '/dashboard', 'view', ['stock']), permissionsAny: ['products.view', 'categories.view'], builtInErpOnly: true },
-    child('analysis', 'Sales analysis', 'chart-no-axes-combined', '/dashboard', 'view', ['analysis'], 'dashboard.analysis'),
+    child('analysis', 'Sales reports', 'chart-no-axes-combined', '/dashboard', 'view', ['analysis'], 'dashboard.analysis'),
     child('customer-experience', 'Customer feedback', 'message-square-heart', '/dashboard', 'view', ['customers'], 'dashboard.analysis')
   ]),
   group('orders', 'Orders', 'shopping-bag', { paths: ['/dashboard/orders'], prefixes: ['/dashboard/orders/'] }, [
@@ -74,14 +76,16 @@ export const dashboardNavigationGroups = [
   ]),
   group('crm', 'CRM', 'contact-round', { paths: ['/dashboard/crm'] }, [
     child('contacts', 'Contacts', 'contact', '/dashboard/crm', 'tab', ['', 'contacts']),
-    { ...child('tickets', 'Tickets', 'ticket', '/dashboard/crm', 'tab', ['activities']), match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['', 'tickets'] } } },
-    { ...child('activity-history', 'Calls & history', 'history', '/dashboard/crm', 'tab', ['activities']), to: '/dashboard/crm?tab=activities&panel=history', match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['history'] } } }
+    { ...child('tickets', 'Support tickets', 'ticket', '/dashboard/crm', 'tab', ['activities']), match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['', 'tickets'] } } },
+    { ...child('activity-history', 'Activity history', 'history', '/dashboard/crm', 'tab', ['activities']), to: '/dashboard/crm?tab=activities&panel=history', match: { paths: ['/dashboard/crm'], query: { tab: ['activities'], panel: ['history'] } } }
   ]),
-  group('commerce', 'Purchases & sales', 'briefcase-business', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['', 'procurement', 'sales', 'returns'] }, [
-    { ...child('procurement', 'Purchase invoices', 'shopping-basket', '/dashboard/commerce', 'tab', ['', 'procurement']), builtInErpOnly: true },
+  group('purchasing', 'Purchasing', 'shopping-basket', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['', 'procurement'] }, [
+    child('procurement', 'Purchase invoices', 'receipt-text', '/dashboard/commerce', 'tab', ['', 'procurement'])
+  ], { builtInErpOnly: true, collapseSingleChild: true }),
+  group('sales', 'Sales', 'badge-dollar-sign', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['sales', 'returns'] }, [
     { ...child('sales', 'Sales invoices', 'badge-dollar-sign', '/dashboard/commerce', 'tab', ['sales']), builtInErpOnly: true },
     child('returns', 'Returns', 'rotate-ccw', '/dashboard/commerce', 'tab', ['returns'])
-  ], { externalLabel: 'Returns', externalIcon: 'lucide:rotate-ccw' }),
+  ], { externalLabel: 'Returns', externalIcon: 'lucide:rotate-ccw', collapseSingleChild: true }),
   group('inventory', 'Inventory', 'warehouse', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['warehouses', 'serialized', 'scan'] }, [
     { ...child('warehouses', 'Warehouses', 'warehouse', '/dashboard/commerce', 'tab', ['warehouses']), builtInErpOnly: true },
     child('serialized', 'Serialized items', 'package-search', '/dashboard/commerce', 'tab', ['serialized']),
@@ -95,14 +99,14 @@ export const dashboardNavigationGroups = [
   ], { permission: 'dashboard.analysis', externalErpOnly: true }),
   group('shipping', 'Shipping', 'truck', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['shipping'] }, [
     child('shipping', 'Shipping companies', 'truck', '/dashboard/commerce', 'tab', ['shipping'])
-  ]),
+  ], { collapseSingleChild: true }),
   group('hr', 'People', 'users-round', { paths: ['/dashboard/hr', '/dashboard/users'] }, [
     { ...child('employees', 'Employees', 'user-round', '/dashboard/hr', 'tab', ['', 'employees'], 'hr.view'), builtInErpOnly: true },
     { ...child('users', 'Admin users', 'shield-user', '/dashboard/hr', 'tab', ['users'], 'users.view'), match: { paths: ['/dashboard/hr'], query: { tab: ['users'], people: ['', 'admins'] } } },
     { ...child('customers', 'Store customers', 'users', '/dashboard/hr', 'tab', ['users'], 'users.view'), to: '/dashboard/hr?tab=users&people=customers', match: { paths: ['/dashboard/hr'], query: { tab: ['users'], people: ['customers'] } } }
   ], { permissionsAny: ['hr.view', 'users.view'] }),
-  group('treasury', 'Treasury', 'landmark', { paths: ['/dashboard/treasury'] }, [
-    child('transactions', 'Transactions', 'history', '/dashboard/treasury', 'action', ['', 'transactions'], 'treasury.view'),
+  group('treasury', 'Finance', 'landmark', { paths: ['/dashboard/treasury'] }, [
+    child('transactions', 'All transactions', 'history', '/dashboard/treasury', 'action', ['', 'transactions'], 'treasury.view'),
     child('supplier-payment', 'Supplier payments', 'receipt-text', '/dashboard/treasury', 'action', ['supplier_payment'], 'treasury.view'),
     child('customer-receipt', 'Customer receipts', 'hand-coins', '/dashboard/treasury', 'action', ['customer_receipt'], 'treasury.view'),
     child('salary-payment', 'Salary payments', 'badge-dollar-sign', '/dashboard/treasury', 'action', ['salary_payment'], 'treasury.view')
@@ -110,12 +114,12 @@ export const dashboardNavigationGroups = [
   { key: 'documents', label: 'Documents', icon: 'lucide:folder-closed', to: '/dashboard/documents', permission: 'documents.view', documentTitle: 'Dashboard - Documents', match: { paths: ['/dashboard/documents'] } },
   { key: 'pages', label: 'Pages', icon: 'lucide:file-stack', to: '/dashboard/pages', permission: 'pages.view', documentTitle: 'Dashboard - Pages', match: { paths: ['/dashboard/pages'] } },
   group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
-    child('settings-overview', 'All settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
-    ...dashboardSettingsSections.map(item => ({
+    child('settings-overview', 'Store settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
+    ...dashboardSettingsSections.filter(item => primarySettingsKeys.has(item.key)).map(item => ({
       ...item, documentTitle: `Dashboard - Settings - ${item.label}`,
       match: { paths: ['/dashboard/settings'], queryKey: 'tab', queryValues: [item.key] }
     }))
-  ], { permissionsAny: ['settings.view', 'settings.coupons'] })
+  ], { permissionsAny: ['settings.view', 'settings.coupons'], collapseSingleChild: true })
 ]
 
 const canAccessNavigationItem = (item, access = {}) => {
@@ -158,10 +162,26 @@ export const buildDashboardNavigation = (access = {}, options = {}) => {
       return groups
     }
 
+    const label = externalErpActive && group.externalLabel ? group.externalLabel : group.label
+    const icon = externalErpActive && group.externalIcon ? group.externalIcon : group.icon
+
+    if (group.collapseSingleChild && children.length === 1) {
+      groups.push({
+        ...group,
+        label,
+        icon,
+        to: children[0].to,
+        documentTitle: children[0].documentTitle,
+        match: children[0].match,
+        children: []
+      })
+      return groups
+    }
+
     groups.push({
       ...group,
-      label: externalErpActive && group.externalLabel ? group.externalLabel : group.label,
-      icon: externalErpActive && group.externalIcon ? group.externalIcon : group.icon,
+      label,
+      icon,
       to: children[0]?.to || group.to,
       children
     })

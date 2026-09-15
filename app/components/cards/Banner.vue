@@ -1,16 +1,17 @@
 <template>
-  <div v-if="getStoreImageUrl(imageUrl)" class="my-10">
-    <component :is="linkUrl ? 'a' : 'div'" :href="linkUrl || undefined" class="block overflow-hidden rounded-xl bg-gray-100">
-      <div class="h-[180px] md:h-[220px]">
-        <img class="h-full w-full object-cover" :src="imageUrl" :alt="altText" loading="lazy">
+  <div v-if="resolvedImageUrl" class="store-banner-ad">
+    <component :is="bannerComponent" v-bind="bannerAttributes" class="store-banner-ad-link">
+      <div class="store-banner-ad-media">
+        <img :src="resolvedImageUrl" :alt="altText" loading="lazy">
       </div>
     </component>
   </div>
 </template>
 
 <script setup>
-import { getStoreImageUrl } from '~/utils/storefront'
-defineProps({
+import { getConfiguredStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '~/utils/storefront'
+
+const props = defineProps({
   imageUrl: {
     type: String,
     default: ''
@@ -23,5 +24,21 @@ defineProps({
     type: String,
     default: 'Banner Ad'
   }
+})
+
+const nuxtLink = resolveComponent('NuxtLink')
+const resolvedImageUrl = computed(() => getConfiguredStoreImageUrl(props.imageUrl))
+const resolvedLinkUrl = computed(() => getStoreLinkUrl(props.linkUrl))
+const externalLink = computed(() => isExternalStoreLink(resolvedLinkUrl.value))
+const bannerComponent = computed(() => {
+  if (!resolvedLinkUrl.value) return 'div'
+  return externalLink.value ? 'a' : nuxtLink
+})
+const bannerAttributes = computed(() => {
+  if (!resolvedLinkUrl.value) return {}
+  if (externalLink.value) {
+    return { href: resolvedLinkUrl.value, target: '_blank', rel: 'noopener noreferrer' }
+  }
+  return { to: resolvedLinkUrl.value }
 })
 </script>

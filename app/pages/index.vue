@@ -35,12 +35,13 @@
     <LayoutPageLoading v-else-if="homePending" label="Loading products…" class="mt-8" />
     <TopCategories :categories="topCategories" />
     <HomeProductSection v-if="featuredProducts.length" title="Store picks" :products="featuredProducts" />
+    <CardsBanner v-if="bannerAds.bannerAd1" v-bind="bannerAds.bannerAd1" />
     <OfferSlider />
     <HomeProductSection v-if="topSellerProducts.length" title="More products" :products="topSellerProducts" />
+    <CardsBanner v-if="bannerAds.bannerAd2" v-bind="bannerAds.bannerAd2" />
     <FeaturedBrands v-if="featuredBrands.length" title="Shop by brand" :brands="featuredBrands" />
 
     <section v-for="category in categorySections" :key="category.id">
-      <CardsBanner v-if="getBannerBeforeCategory(category)" :image-url="getBannerBeforeCategory(category).imageUrl" :link-url="getBannerBeforeCategory(category).linkUrl" :alt-text="getBannerBeforeCategory(category).altText" />
       <HomeProductSection :title="category.name" :products="category.products" :to="{ path: '/search', query: { category: category.slug } }" />
     </section>
 
@@ -50,33 +51,13 @@
 </template>
 
 <script setup>
-import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
+import { getConfiguredStoreImageUrl, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import FeaturedBrands from '~/components/cards/FeaturedBrands.vue'
 import TopCategories from '~/components/cards/TopCategories.vue'
 import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
-
-const categoryBannerTargets = {
-  bannerAd1: ['keyboard', 'keyboards'],
-  bannerAd2: ['accessory', 'accessories']
-}
-
-const normalizeCategoryValue = (value = '') => {
-  return String(value).trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
-}
-
-const categoryMatchesAny = (category, targetValues = []) => {
-  const categoryValues = [
-    normalizeCategoryValue(category?.slug),
-    normalizeCategoryValue(category?.name)
-  ]
-
-  return targetValues.some((targetValue) => {
-    return categoryValues.includes(normalizeCategoryValue(targetValue))
-  })
-}
 
 const { data: homeData, pending: homePending, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
@@ -153,22 +134,12 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
   const featuredProducts = products.filter((product) => product.is_featured)
   const topSellerProducts = products.filter((product) => product.is_top_seller)
   const usedBrandIds = new Set(products.map((product) => product.brand?.id).filter(Boolean))
-  const preferredCategories = [
-    categoriesWithProducts.find((category) => categoryMatchesAny(category, categoryBannerTargets.bannerAd1)),
-    categoriesWithProducts.find((category) => categoryMatchesAny(category, categoryBannerTargets.bannerAd2))
-  ].filter(Boolean).filter((category, index, list) => {
-    return category && list.findIndex((item) => item.id === category.id) === index
-  })
-  const remainingCategories = categoriesWithProducts.filter((category) => {
-    return !preferredCategories.some((preferredCategory) => preferredCategory.id === category.id)
-  })
-
   return {
     latestImage: products.find((product) => getStoreImageUrl(product.image_url))?.image_url || '',
     featuredProducts: (featuredProducts.length ? featuredProducts : products).slice(0, 8),
     topSellerProducts: (topSellerProducts.length ? topSellerProducts : products).slice(0, 8),
     topCategories: categoriesWithProducts.slice(0, 6),
-    categorySections: [...preferredCategories, ...remainingCategories].slice(0, 3),
+    categorySections: categoriesWithProducts.slice(0, 3),
     featuredBrands: brands.filter((brand) => usedBrandIds.has(brand.id))
   }
 }, {
@@ -187,7 +158,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
 const customerUser = useSupabaseUser()
 const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
 const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
-const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
+const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [
   {
     eyebrow: 'Shop by category',
@@ -225,30 +196,18 @@ const bannerAds = computed(() => {
       ? {
           imageUrl: settings.banner_ad_1_image_url,
           linkUrl: settings.banner_ad_1_link_url || '',
-          altText: 'Banner Ad 1'
+          altText: 'Store promotion'
         }
       : null,
     bannerAd2: settings.banner_ad_2_enabled && settings.banner_ad_2_image_url
       ? {
           imageUrl: settings.banner_ad_2_image_url,
           linkUrl: settings.banner_ad_2_link_url || '',
-          altText: 'Banner Ad 2'
+          altText: 'Store promotion'
         }
       : null
   }
 })
-
-const getBannerBeforeCategory = (category) => {
-  if (categoryMatchesAny(category, categoryBannerTargets.bannerAd1)) {
-    return bannerAds.value.bannerAd1
-  }
-
-  if (categoryMatchesAny(category, categoryBannerTargets.bannerAd2)) {
-    return bannerAds.value.bannerAd2
-  }
-
-  return null
-}
 
 useHead(() => ({
   title: siteContent.value?.settings?.landing_page_title || siteContent.value?.settings?.site_name || 'ELcomputer'

@@ -1,7 +1,7 @@
 <template>
   <section v-if="heroEnabled" class="store-hero" aria-label="Store highlights" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
-    <component :is="currentBanner.link_url ? 'a' : 'div'" v-if="currentBanner" :href="currentBanner.link_url || undefined" class="store-hero-image-link">
-      <img class="store-hero-image" :alt="currentBanner.alt_text || 'Explore the latest at ' + siteName" :src="currentBanner.image_url" fetchpriority="high" />
+    <component :is="currentBannerComponent" v-if="currentBanner" v-bind="currentBannerAttributes" class="store-hero-image-link">
+      <img class="store-hero-image" :alt="currentBanner.alt_text || 'Explore the latest at ' + siteName" :src="currentBannerImageUrl" fetchpriority="high" />
     </component>
     <div v-else class="store-hero-fallback">
       <img class="store-hero-scene" src="/images/storefront/setup-hero.png" alt="" fetchpriority="high" width="1536" height="1024" />
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { getStoreImageUrl } from '~/utils/storefront'
+import { getConfiguredStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '~/utils/storefront'
 const { data: siteContent } = await useSiteContent()
 const currentBannerIndex = ref(0)
 const paused = ref(false)
@@ -33,10 +33,25 @@ let motionPreference = null
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
 const heroBanners = computed(() => heroEnabled.value
-  ? (siteContent.value?.heroBanners || []).filter((banner) => getStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner')
+  ? (siteContent.value?.heroBanners || []).filter((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner')
   : [])
 const rotationSeconds = computed(() => Math.max(1, Number(siteContent.value?.settings?.hero_rotation_seconds || 5)))
 const currentBanner = computed(() => heroBanners.value[currentBannerIndex.value] || null)
+const currentBannerImageUrl = computed(() => getConfiguredStoreImageUrl(currentBanner.value?.image_url))
+const currentBannerLinkUrl = computed(() => getStoreLinkUrl(currentBanner.value?.link_url))
+const currentBannerExternal = computed(() => isExternalStoreLink(currentBannerLinkUrl.value))
+const nuxtLink = resolveComponent('NuxtLink')
+const currentBannerComponent = computed(() => {
+  if (!currentBannerLinkUrl.value) return 'div'
+  return currentBannerExternal.value ? 'a' : nuxtLink
+})
+const currentBannerAttributes = computed(() => {
+  if (!currentBannerLinkUrl.value) return {}
+  if (currentBannerExternal.value) {
+    return { href: currentBannerLinkUrl.value, target: '_blank', rel: 'noopener noreferrer' }
+  }
+  return { to: currentBannerLinkUrl.value }
+})
 const moveBanner = (direction) => {
   currentBannerIndex.value = (currentBannerIndex.value + direction + heroBanners.value.length) % heroBanners.value.length
 }

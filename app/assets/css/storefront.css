@@ -112,6 +112,12 @@
 .storefront .store-service-strip a + a { border-left: 1px solid var(--store-line); }
 .storefront .store-service-strip .iconify { color: var(--store-blue); }
 .storefront .store-service-strip a:hover { background: var(--store-pale); }
+.storefront .store-banner-ad { margin-top: 44px; }
+.storefront .store-banner-ad-link { display: block; overflow: hidden; border: 1px solid var(--store-line); border-radius: 16px; background: #eef3fa; box-shadow: 0 8px 24px #08265c0a; }
+.storefront .store-banner-ad-link:focus-visible { outline: 3px solid #1d6ce5; outline-offset: 3px; }
+.storefront .store-banner-ad-media { height: clamp(150px, 16vw, 230px); }
+.storefront .store-banner-ad-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+.storefront a.store-banner-ad-link:hover img { transform: scale(1.015); }
 .storefront .store-section { margin-top: 44px; }
 .storefront .store-section-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 22px; }
 .storefront .store-section-title { font-size: 26px; font-weight: 700; letter-spacing: -.65px; line-height: 1.2; color: var(--store-navy); }
@@ -255,6 +261,8 @@
   .storefront .store-promo-tile > .iconify { width: 60px; height: 60px; right: 14px; bottom: 14px; }
   .storefront .store-service-strip { margin-top: 16px; }
   .storefront .store-service-strip a { flex-direction: column; gap: 7px; padding: 13px 6px; min-height: 78px; font-size: 10px; text-align: center; }
+  .storefront .store-banner-ad { margin-top: 32px; }
+  .storefront .store-banner-ad-media { height: clamp(120px, 35vw, 180px); }
   .storefront .store-section { margin-top: 32px; }
   .storefront .store-section-header { margin-bottom: 17px; gap: 10px; }
   .storefront .store-section-title { font-size: 22px; }

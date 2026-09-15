@@ -3,6 +3,22 @@ export const getStoreImageUrl = (value = '') => {
   return /^https?:\/\/(?:placehold\.co|via\.placeholder\.com)(?:\/|$)/i.test(url) ? '' : url
 }
 
+export const getConfiguredStoreImageUrl = (value = '') => {
+  const url = String(value || '').trim()
+  return /^(?:https?:\/\/|\/(?!\/))/.test(url) ? url : ''
+}
+
+export const getStoreLinkUrl = (value = '') => {
+  const url = String(value || '').trim()
+
+  if (/^https?:\/\//i.test(url)) return url
+  if (/^(?:\/(?!\/)|#|\?)/.test(url)) return url
+
+  return ''
+}
+
+export const isExternalStoreLink = (value = '') => /^https?:\/\//i.test(getStoreLinkUrl(value))
+
 export const getStoreCategoryIcon = (category = '') => {
   const name = String(category).toLowerCase()
   if (/keyboard/.test(name)) return 'lucide:keyboard'
