@@ -1,12 +1,12 @@
 <template>
   <div class="">
-    <h2 class="my-5 text-center text-4xl font-bold">
-      Edit Product
-    </h2>
-
-    <p class="mb-6 text-center text-sm text-gray-500">
-      Product ID: {{ id }}
-    </p>
+    <DashboardPageIntro
+      title="Edit Product"
+      :description="`Product ID: ${id}`"
+      container-class=""
+      title-class="my-5 text-center text-4xl font-bold"
+      description-class="mb-6 text-center text-sm text-gray-500"
+    />
 
     <div v-if="pending" class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
       Loading product...

@@ -2,10 +2,10 @@
   <div class="space-y-6">
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+        <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">CRM</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Record Suppliers and People.
+            Manage suppliers and customers.
           </p>
         </div>
 

@@ -1,14 +1,12 @@
 <template>
   <div>
     <div class="mx-auto max-w-[1400px] space-y-6">
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 class="text-4xl font-bold text-gray-900">
-              Confirm Orders
-            </h1>
-          </div>
-
+      <DashboardPageIntro
+        title="Confirm Orders"
+        layout-class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"
+        title-class="text-4xl font-bold text-gray-900"
+      >
+        <template #actions>
           <NuxtLink
             to="/dashboard/orders"
             class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
@@ -16,8 +14,8 @@
             <Icon name="lucide:arrow-left" size="17" />
             Orders
           </NuxtLink>
-        </div>
-      </section>
+        </template>
+      </DashboardPageIntro>
 
       <DashboardSecondaryNav :items="secondaryNavItems" />
 

@@ -2,10 +2,10 @@
   <div class="space-y-6">
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
+        <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">Shipping Companies</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Define Shipping Companies.
+            Add and manage delivery companies.
           </p>
         </div>
 

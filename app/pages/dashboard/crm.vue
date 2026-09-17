@@ -1,11 +1,9 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
-    <div class="rounded-2xl bg-white p-6 shadow">
-      <h2 class="text-4xl font-bold">CRM</h2>
-      <p class="mt-2 text-sm text-gray-500">
-        Manage contacts, calls, and customer or supplier tickets.
-      </p>
-    </div>
+    <DashboardPageIntro
+      title="CRM"
+      description="Manage contacts, calls, and customer or supplier tickets."
+    />
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
 

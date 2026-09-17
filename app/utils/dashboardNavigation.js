@@ -38,6 +38,16 @@ export const matchesDashboardNavigation = (route, match = {}) => {
   )
 }
 
+export const resolveDashboardActiveItem = (route, group) => {
+  if (!group) {
+    return null
+  }
+
+  return (group.children || []).find((item) => {
+    return matchesDashboardNavigation(route, item.match)
+  }) || group
+}
+
 const child = (key, label, icon, path, queryKey, values, permission) => ({
   key, label, icon: `lucide:${icon}`, permission,
   to: path + (queryKey && values[0] ? `?${queryKey}=${values[0]}` : ''),

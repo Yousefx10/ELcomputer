@@ -1,11 +1,11 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
-    <section class="rounded-2xl bg-white p-6 shadow">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 class="text-4xl font-bold">Daftra ERP</h2>
-          <p class="mt-2 text-sm text-gray-500">Live ERP data with website orders kept local.</p>
-        </div>
+    <DashboardPageIntro
+      title="Daftra ERP"
+      description="Live ERP data with website orders kept local."
+      layout-class="flex flex-wrap items-start justify-between gap-4"
+    >
+      <template #actions>
         <button
           type="button"
           class="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
@@ -15,8 +15,8 @@
           <Icon name="lucide:refresh-cw" size="17" :class="loading ? 'animate-spin' : ''" />
           Refresh
         </button>
-      </div>
-    </section>
+      </template>
+    </DashboardPageIntro>
 
     <DashboardSecondaryNav />
 

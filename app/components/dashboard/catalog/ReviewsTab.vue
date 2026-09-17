@@ -1,11 +1,10 @@
 <template>
   <div class="space-y-6">
-    <div class="rounded-2xl bg-gray-200 p-6 shadow">
-      <h2 class="text-4xl font-bold">Reviews</h2>
-      <p class="mt-2 text-sm text-gray-500">
-        Read customer feedback and remove reviews that should no longer be displayed.
-      </p>
-    </div>
+    <DashboardPageIntro
+      title="Reviews"
+      description="Read customer feedback and remove reviews that should no longer be displayed."
+      container-class="rounded-2xl bg-gray-200 p-6 shadow"
+    />
 
     <div
       v-if="pageError"

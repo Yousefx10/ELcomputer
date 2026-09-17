@@ -1,15 +1,16 @@
 <template>
   <div class="">
     <div class="mx-auto max-w-7xl">
-      <div class="mb-6 rounded-2xl bg-white p-6 shadow">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 class="text-4xl font-bold text-gray-900">{{ productListTitle }}</h2>
-            <p class="mt-2 text-sm text-gray-500">
-              Edit product details, prices and availability.
-            </p>
-          </div>
-
+      <DashboardPageIntro
+        :title="productListTitle"
+        description="Edit product details, prices and availability."
+        :show-actions="canAddProduct"
+        container-class="mb-6 rounded-2xl bg-white p-6 shadow"
+        layout-class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+        title-class="text-4xl font-bold text-gray-900"
+        modern-actions-class="mb-6 flex flex-wrap items-center justify-end gap-3"
+      >
+        <template #actions>
           <NuxtLink
             v-if="canAddProduct"
             to="/dashboard/products/add"
@@ -17,8 +18,8 @@
           >
             Add New Product
           </NuxtLink>
-        </div>
-      </div>
+        </template>
+      </DashboardPageIntro>
 
       <DashboardSecondaryNav class="mb-6" />
 

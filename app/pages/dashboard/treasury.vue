@@ -1,16 +1,13 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
-    <div class="rounded-2xl bg-amber-400 p-6 text-amber-950 shadow">
-      <div class="flex items-center gap-3">
-        <Icon name="lucide:landmark" size="34" />
-        <div>
-          <h2 class="text-4xl font-bold">Treasury</h2>
-          <p class="mt-2 text-sm text-amber-900">
-            Payments, receipts and employee salaries.
-          </p>
-        </div>
-      </div>
-    </div>
+    <DashboardPageIntro
+      title="Treasury"
+      description="Payments, receipts and employee salaries."
+      icon="lucide:landmark"
+      container-class="rounded-2xl bg-amber-400 p-6 text-amber-950 shadow"
+      layout-class="flex items-center gap-3"
+      description-class="mt-2 text-sm text-amber-900"
+    />
 
     <DashboardSecondaryNav />
 

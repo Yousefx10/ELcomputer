@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+        <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">Serialized Items</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
             Find received items and print their QR labels.

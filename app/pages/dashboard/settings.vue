@@ -1,12 +1,16 @@
 <template>
   <div class="">
     <div class="mx-auto max-w-6xl space-y-6">
-      <div class="rounded-2xl bg-white p-6 shadow" :class="activeSettingsView === 'gallery' ? 'border border-gray-200/80 !shadow-sm' : ''">
-        <h2 class="text-3xl font-bold">{{ activeSettingsSection?.label || 'Settings' }}</h2>
-        <p class="mt-2 text-sm text-gray-500">
-          {{ activeSettingsSection?.description || 'Choose the settings you want to change.' }}
-        </p>
-      </div>
+      <DashboardPageIntro
+        tag="header"
+        :title="activeSettingsSection?.label || 'Settings'"
+        :description="activeSettingsSection?.description || 'Choose the settings you want to change.'"
+        :container-class="[
+          'rounded-2xl bg-white p-6 shadow',
+          activeSettingsView === 'gallery' ? 'border border-gray-200/80 !shadow-sm' : ''
+        ]"
+        title-class="text-3xl font-bold"
+      />
 
       <nav v-if="activeSettingsSection" class="flex flex-wrap items-center justify-between gap-3" aria-label="Settings sections">
         <NuxtLink to="/dashboard/settings" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
@@ -1510,9 +1514,9 @@
           @click="toggleSection('dashboardLayout')"
         >
           <div>
-            <h3 class="text-2xl font-bold">Dashboard Layout</h3>
+            <h3 class="text-2xl font-bold">Dashboard appearance</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Choose the navigation style.
+              Choose the dashboard style used by every admin.
             </p>
           </div>
 
@@ -1533,7 +1537,7 @@
           <div
             class="grid gap-4 md:grid-cols-2"
             role="radiogroup"
-            aria-label="Dashboard layout"
+            aria-label="Dashboard appearance"
           >
             <label
               v-for="layoutOption in dashboardLayoutOptions"
@@ -1554,37 +1558,39 @@
                 class="sr-only"
               >
 
-              <div class="mb-4 h-32 overflow-hidden rounded-xl border bg-gray-100 p-2">
+              <div class="mb-4 h-32 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 p-2">
                 <template v-if="layoutOption.value === 'standard'">
                   <div class="h-4 rounded bg-gray-800" />
-                  <div class="mt-2 flex gap-1 rounded bg-white p-1 shadow-sm">
-                    <span class="h-3 flex-1 rounded bg-blue-500" />
-                    <span class="h-3 flex-1 rounded bg-gray-200" />
-                    <span class="h-3 flex-1 rounded bg-gray-200" />
-                    <span class="h-3 flex-1 rounded bg-gray-200" />
+                  <div class="mt-2 flex gap-1 rounded-md bg-white p-1 shadow-sm">
+                    <span class="h-3 flex-1 rounded-sm bg-blue-500" />
+                    <span class="h-3 flex-1 rounded-sm bg-gray-200" />
+                    <span class="h-3 flex-1 rounded-sm bg-gray-200" />
+                    <span class="h-3 flex-1 rounded-sm bg-gray-200" />
                   </div>
                   <div class="mt-2 grid grid-cols-3 gap-2">
-                    <span class="h-16 rounded bg-white shadow-sm" />
-                    <span class="h-16 rounded bg-white shadow-sm" />
-                    <span class="h-16 rounded bg-white shadow-sm" />
+                    <span class="h-16 rounded-md bg-white shadow-sm" />
+                    <span class="h-16 rounded-md bg-white shadow-sm" />
+                    <span class="h-16 rounded-md bg-white shadow-sm" />
                   </div>
                 </template>
 
-                <div v-else class="flex h-full flex-row-reverse gap-2">
-                  <div class="w-1/3 rounded-lg bg-white p-2 shadow-sm">
-                    <div class="h-3 rounded bg-gray-800" />
+                <div v-else class="flex h-full gap-2">
+                  <div class="w-1/3 rounded-lg border border-gray-200 bg-white p-2 shadow-sm">
+                    <div class="h-3 w-3/4 rounded bg-gray-800" />
                     <div class="mt-3 space-y-1.5">
-                      <span class="block h-3 rounded bg-blue-600" />
-                      <span class="block h-3 rounded bg-gray-200" />
-                      <span class="block h-3 rounded bg-gray-200" />
-                      <span class="block h-3 rounded bg-gray-200" />
+                      <span class="block h-3 rounded bg-blue-100 ring-1 ring-inset ring-blue-200" />
+                      <span class="block h-3 rounded bg-gray-100" />
+                      <span class="block h-3 rounded bg-gray-100" />
+                      <span class="block h-3 rounded bg-gray-100" />
                     </div>
                   </div>
                   <div class="min-w-0 flex-1">
-                    <div class="h-5 rounded bg-white shadow-sm" />
+                    <div class="flex h-5 items-center justify-end rounded-md border border-gray-200 bg-white px-1.5 shadow-sm">
+                      <span class="h-2 w-8 rounded bg-gray-200" />
+                    </div>
                     <div class="mt-2 grid grid-cols-2 gap-2">
-                      <span class="h-20 rounded bg-white shadow-sm" />
-                      <span class="h-20 rounded bg-white shadow-sm" />
+                      <span class="h-20 rounded-lg border border-gray-200 bg-white shadow-sm" />
+                      <span class="h-20 rounded-lg border border-gray-200 bg-white shadow-sm" />
                     </div>
                   </div>
                 </div>
@@ -1613,7 +1619,7 @@
           </div>
 
           <p class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-           This layout applies to all dashboard users.
+            This choice applies to every dashboard user.
           </p>
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -1642,7 +1648,7 @@
                 : 'cursor-not-allowed bg-gray-300'"
               @click="saveSiteSettings('dashboardLayout')"
             >
-              {{ settingsLoadingSection === 'dashboardLayout' ? 'Saving...' : 'Save Dashboard Layout' }}
+              {{ settingsLoadingSection === 'dashboardLayout' ? 'Saving...' : 'Save appearance' }}
             </button>
           </div>
         </div>
@@ -2196,13 +2202,13 @@ const galleryLoaded = ref(false)
 const dashboardLayoutOptions = [
   {
     value: 'standard',
-    label: 'Standard',
-    description: 'Menus across the top.'
+    label: 'Classic',
+    description: 'Simple top navigation with the current layout.'
   },
   {
     value: 'detailed',
-    label: 'Detailed',
-    description: 'Expandable menus in a sidebar.'
+    label: 'Modern',
+    description: 'Sidebar navigation with a cleaner workspace.'
   }
 ]
 const openSections = reactive({
@@ -2318,7 +2324,7 @@ const siteSettingsSectionFields = {
 
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
-  dashboardLayout: 'Dashboard layout',
+  dashboardLayout: 'Dashboard appearance',
   homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
@@ -3081,6 +3087,10 @@ const saveSiteSettings = async (sectionName) => {
   })
 
   await refreshNuxtData('site-content')
+
+  if (sectionName === 'dashboardLayout') {
+    await refreshNuxtData('dashboard-appearance')
+  }
 
   await logSettingsAction(
     `Updated ${siteSettingsSectionLabels[sectionName].toLowerCase()}.`,

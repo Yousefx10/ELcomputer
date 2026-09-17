@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildDashboardNavigation, matchesDashboardNavigation } from '../app/utils/dashboardNavigation.js'
+import { buildDashboardNavigation, matchesDashboardNavigation, resolveDashboardActiveItem } from '../app/utils/dashboardNavigation.js'
 import { dashboardSettingsSections } from '../app/utils/dashboardSettings.js'
 import { commerceTabs } from '../app/utils/commerce.js'
 import { getDashboardRouteRequirement, hasAdminPermission } from '../app/utils/adminPermissions.js'
@@ -35,6 +35,14 @@ test('existing links still select their correct section', () => {
     ['/dashboard/settings?tab=gallery', 'settings'],
     ['/dashboard/settings?tab=coupons', 'settings']
   ]) assert.equal(groups.find(group => matchesDashboardNavigation(routeFor(to), group.match))?.key, key, to)
+})
+
+test('settings pages hidden from the sidebar do not mark another page as current', () => {
+  const settingsGroup = buildDashboardNavigation().find(group => group.key === 'settings')
+  const route = routeFor('/dashboard/settings?tab=hero')
+
+  assert.equal(resolveDashboardActiveItem(route, settingsGroup).key, 'settings')
+  assert.equal(resolveDashboardActiveItem(routeFor('/dashboard/settings'), settingsGroup).key, 'settings-overview')
 })
 
 test('commerce still accepts every tab after inventory and shipping move', () => {

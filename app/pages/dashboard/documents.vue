@@ -13,8 +13,10 @@
           >
             <Icon :name="navigationOpen ? 'lucide:panel-left-close' : 'lucide:panel-left-open'" size="18" />
           </button>
-          <span class="documents-logo"><Icon name="lucide:folder-kanban" size="22" /></span>
-          <div class="min-w-0"><h2 class="truncate text-lg font-bold">Documents</h2><p class="text-xs text-gray-500">Company files in one place.</p></div>
+          <div class="documents-identity flex min-w-0 items-center gap-3">
+            <span class="documents-logo"><Icon name="lucide:folder-kanban" size="22" /></span>
+            <div class="min-w-0"><h2 class="truncate text-lg font-bold">Documents</h2><p class="text-xs text-gray-500">Company files in one place.</p></div>
+          </div>
         </div>
         <nav class="documents-topnav" aria-label="Document sections">
           <button type="button" :aria-current="topView === 'files' ? 'page' : undefined" @click="setTopView('files')"><Icon name="lucide:folder" size="16" /> Files</button>

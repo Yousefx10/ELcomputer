@@ -1,12 +1,11 @@
 <template>
   <div class="">
     <div class="">
-      <div class="mb-6 rounded-2xl bg-gray-200 p-6 shadow">
-        <h2 class="text-4xl font-bold">Categories</h2>
-        <p class="mt-2 text-sm text-gray-500">
-          Display, add, edit, and delete product categories
-        </p>
-      </div>
+      <DashboardPageIntro
+        title="Categories"
+        description="View, add, edit, and remove product categories."
+        container-class="mb-6 rounded-2xl bg-gray-200 p-6 shadow"
+      />
 
       <form
         v-if="canAddCategory || canEditCategory"

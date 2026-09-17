@@ -2,10 +2,10 @@
   <div class="space-y-6">
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+        <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">Returns</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Record returned order items and restock them back into the selected warehouse.
+            Record returned items and send them back to the selected warehouse.
           </p>
         </div>
 
@@ -21,7 +21,7 @@
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Open Order Options</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Eligible Orders</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ orderOptions.length }}</p>
           </div>
         </div>

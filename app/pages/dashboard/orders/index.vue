@@ -1,19 +1,25 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-5 pb-6">
-    <header class="flex flex-col gap-4 rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight text-gray-950">Orders</h2>
-        <p class="mt-1.5 text-sm text-gray-500">Track orders from checkout to delivery.</p>
-      </div>
-      <NuxtLink
-        to="/dashboard/orders/confirm"
-        class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-      >
-        <Icon name="lucide:scan-barcode" size="18" />
-        Confirm orders
-        <Icon name="lucide:arrow-up-right" size="16" class="ms-2 text-gray-400" />
-      </NuxtLink>
-    </header>
+    <DashboardPageIntro
+      tag="header"
+      title="Orders"
+      description="Track orders from checkout to delivery."
+      container-class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm sm:p-6"
+      layout-class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      title-class="text-3xl font-bold tracking-tight text-gray-950"
+      description-class="mt-1.5 text-sm text-gray-500"
+    >
+      <template #actions>
+        <NuxtLink
+          to="/dashboard/orders/confirm"
+          class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        >
+          <Icon name="lucide:scan-barcode" size="18" />
+          Confirm orders
+          <Icon name="lucide:arrow-up-right" size="16" class="ms-2 text-gray-400" />
+        </NuxtLink>
+      </template>
+    </DashboardPageIntro>
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
 

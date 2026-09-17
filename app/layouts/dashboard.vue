@@ -1,93 +1,116 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div
+    class="min-h-screen"
+    :class="dashboardLayout === 'detailed' ? 'dashboard-modern' : 'bg-gray-100'"
+  >
     <div
-      v-if="dashboardLayout === 'standard'"
-      class="mx-auto max-w-6xl px-6 pt-6"
-    >
-      <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
-        <NuxtLink to="/dashboard" class="flex items-center">
-          <img
-            src="/images/dashboard-logo.png"
-            alt="ELcomputer Dashboard"
-            class="h-10 max-w-48 object-contain"
-          >
-        </NuxtLink>
-
-        <div class="flex items-center gap-3">
-          <div class="hidden rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
-            {{ dashboardDateTime }}
-          </div>
-
-          <button
-            type="button"
-            class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            @click="logout"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
-
-      <div class="mb-6 rounded-2xl bg-white shadow">
-        <LayoutDashboardNavBar />
-      </div>
-
-      <main class="min-w-0">
-        <slot />
-      </main>
-    </div>
-
-    <div
-      v-else
-      class="detailed-dashboard-shell mx-auto min-h-screen max-w-[1600px] px-3 py-3 lg:flex lg:flex-row-reverse lg:items-start lg:gap-6 lg:px-6 lg:py-6"
+      :class="dashboardLayout === 'standard'
+        ? 'mx-auto max-w-6xl px-6 pt-6'
+        : 'dashboard-modern-shell min-h-screen lg:flex'"
     >
       <button
-        v-if="detailedSidebarOpen"
+        v-if="dashboardLayout === 'detailed' && detailedSidebarOpen"
         type="button"
+        tabindex="-1"
         aria-label="Close dashboard navigation"
         class="fixed inset-0 z-40 bg-black/40 lg:hidden"
-        @click="detailedSidebarOpen = false"
+        @click="closeDetailedSidebar({ restoreFocus: true })"
       />
 
       <LayoutDashboardSideBar
+        v-if="dashboardLayout === 'detailed'"
         :open="detailedSidebarOpen"
-        @close="detailedSidebarOpen = false"
+        @close="closeDetailedSidebar({ restoreFocus: true })"
         @logout="logout"
       />
 
       <div
+        key="dashboard-content"
         class="min-w-0 flex-1"
-        :inert="detailedSidebarOpen || undefined"
+        :class="dashboardLayout === 'detailed' ? 'dashboard-modern-stage' : ''"
+        :inert="dashboardLayout === 'detailed' && detailedSidebarOpen || undefined"
       >
-        <header class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow">
-          <div class="min-w-0">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">
-              {{ activeGroup?.detailedLabel || activeGroup?.label || 'Dashboard' }}
-            </p>
-            <p class="truncate font-bold text-gray-900">
-              {{ activeItem?.detailedLabel || activeItem?.label || activeGroup?.label || 'Dashboard' }}
-            </p>
-          </div>
+        <template v-if="dashboardLayout === 'standard'">
+          <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
+            <NuxtLink to="/dashboard" class="flex items-center">
+              <img
+                src="/images/dashboard-logo.png"
+                alt="ELcomputer Dashboard"
+                class="h-10 max-w-48 object-contain"
+              >
+            </NuxtLink>
 
-          <div class="ms-auto flex shrink-0 items-center gap-3">
-            <div class="hidden rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
-              {{ dashboardDateTime }}
+            <div class="flex items-center gap-3">
+              <div class="hidden rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
+                {{ dashboardDateTime }}
+              </div>
+
+              <button
+                type="button"
+                class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                @click="logout"
+              >
+                Logout
+              </button>
             </div>
+          </header>
 
+          <div class="mb-6 rounded-2xl bg-white shadow">
+            <LayoutDashboardNavBar />
+          </div>
+        </template>
+
+        <header v-else class="dashboard-modern-topbar">
+          <div class="flex min-w-0 items-center gap-3">
             <button
+              ref="detailedSidebarButton"
               type="button"
-              class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black text-white lg:hidden"
+              class="dashboard-modern-icon-button inline-flex lg:hidden"
               aria-label="Open dashboard navigation"
               aria-controls="detailed-dashboard-navigation"
               :aria-expanded="detailedSidebarOpen"
-              @click="detailedSidebarOpen = true"
+              @click="openDetailedSidebar"
             >
-              <Icon name="lucide:menu" size="21" />
+              <Icon name="lucide:menu" size="20" />
             </button>
+
+            <div class="min-w-0">
+              <p
+                v-if="groupTitle"
+                class="dashboard-modern-breadcrumb"
+              >
+                {{ groupTitle }}
+              </p>
+              <h1 class="dashboard-modern-title">
+                {{ pageTitle }}
+              </h1>
+            </div>
+          </div>
+
+          <div class="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <div class="dashboard-modern-date hidden md:inline-flex">
+              <Icon name="lucide:calendar-days" size="16" />
+              {{ dashboardDateTime }}
+            </div>
+
+            <NuxtLink
+              to="/"
+              target="_blank"
+              rel="noopener"
+              class="dashboard-modern-store-link inline-flex"
+            >
+              <Icon name="lucide:external-link" size="16" />
+              <span class="hidden sm:inline">View store</span>
+              <span class="sr-only sm:hidden">View store</span>
+            </NuxtLink>
           </div>
         </header>
 
-        <main class="min-w-0">
+        <main
+          key="dashboard-page"
+          class="min-w-0"
+          :class="dashboardLayout === 'detailed' ? 'dashboard-modern-page' : ''"
+        >
           <slot />
         </main>
       </div>
@@ -98,14 +121,19 @@
 <script setup>
 const supabase = useSupabaseClient()
 const route = useRoute()
-const { data: siteContent } = await useSiteContent()
+const [siteContentResult, dashboardAppearanceResult] = await Promise.all([
+  useSiteContent(),
+  useDashboardAppearance()
+])
+const { data: siteContent } = siteContentResult
+const { data: dashboardAppearance } = dashboardAppearanceResult
 const {
   clearAdminAccess
 } = useAdminAccess()
 const {
-  activeGroup,
-  activeItem,
-  documentTitle
+  documentTitle,
+  groupTitle,
+  pageTitle
 } = useDashboardNavigation()
 const {
   dashboardLayout,
@@ -113,6 +141,7 @@ const {
 } = useDashboardLayout()
 const dashboardDateTime = ref('')
 const detailedSidebarOpen = ref(false)
+const detailedSidebarButton = ref(null)
 
 let dashboardClockInterval
 let authStateSubscription
@@ -128,13 +157,54 @@ const updateDashboardDateTime = () => {
   }).format(new Date())
 }
 
-const closeDetailedSidebar = () => {
+const openDetailedSidebar = () => {
+  detailedSidebarOpen.value = true
+}
+
+const closeDetailedSidebar = async ({ restoreFocus = false } = {}) => {
+  if (!detailedSidebarOpen.value) {
+    return
+  }
+
   detailedSidebarOpen.value = false
+
+  if (restoreFocus) {
+    await nextTick()
+    detailedSidebarButton.value?.focus()
+  }
 }
 
 const handleDashboardKeydown = (event) => {
   if (event.key === 'Escape' && detailedSidebarOpen.value) {
-    closeDetailedSidebar()
+    event.preventDefault()
+    closeDetailedSidebar({ restoreFocus: true })
+    return
+  }
+
+  if (event.key !== 'Tab' || !detailedSidebarOpen.value) {
+    return
+  }
+
+  const sidebar = document.getElementById('detailed-dashboard-navigation')
+  const focusableElements = Array.from(sidebar?.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  ) || []).filter(element => !element.hidden && element.getClientRects().length)
+
+  if (!focusableElements.length) {
+    event.preventDefault()
+    return
+  }
+
+  const firstElement = focusableElements[0]
+  const lastElement = focusableElements[focusableElements.length - 1]
+  const focusIsOutside = !sidebar?.contains(document.activeElement)
+
+  if (event.shiftKey && (document.activeElement === firstElement || focusIsOutside)) {
+    event.preventDefault()
+    lastElement.focus()
+  } else if (!event.shiftKey && (document.activeElement === lastElement || focusIsOutside)) {
+    event.preventDefault()
+    firstElement.focus()
   }
 }
 
@@ -151,7 +221,10 @@ const logout = async () => {
 }
 
 watchEffect(() => {
-  setDashboardLayout(siteContent.value?.settings?.dashboard_layout)
+  setDashboardLayout(
+    dashboardAppearance.value?.dashboard_layout
+    || siteContent.value?.settings?.dashboard_layout
+  )
 })
 
 watch(
@@ -214,11 +287,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-@media (min-width: 1024px) {
-  :global([dir='rtl']) .detailed-dashboard-shell {
-    flex-direction: row;
-  }
-}
-</style>

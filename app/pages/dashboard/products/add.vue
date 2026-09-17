@@ -1,8 +1,10 @@
 <template>
   <div class="">
-    <h2 class="my-5 text-center text-4xl font-bold">
-      Add New Product
-    </h2>
+    <DashboardPageIntro
+      title="Add New Product"
+      container-class=""
+      title-class="my-5 text-center text-4xl font-bold"
+    />
 
     <div class="mx-auto max-w-6xl">
       <form

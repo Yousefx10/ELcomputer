@@ -1,7 +1,10 @@
 import {
   buildDashboardNavigation,
-  matchesDashboardNavigation
+  getDashboardQueryValue,
+  matchesDashboardNavigation,
+  resolveDashboardActiveItem
 } from '~/utils/dashboardNavigation'
+import { dashboardSettingsSections } from '~/utils/dashboardSettings'
 
 export const useDashboardNavigation = () => {
   const route = useRoute()
@@ -33,15 +36,7 @@ export const useDashboardNavigation = () => {
   })
 
   const activeItem = computed(() => {
-    const group = activeGroup.value
-
-    if (!group) {
-      return null
-    }
-
-    return group.children.find((item) => {
-      return matchesDashboardNavigation(route, item.match)
-    }) || group.children[0] || group
+    return resolveDashboardActiveItem(route, activeGroup.value)
   })
 
   const secondaryItems = computed(() => {
@@ -51,21 +46,46 @@ export const useDashboardNavigation = () => {
     }))
   })
 
-  const documentTitle = computed(() => {
+  const pageTitle = computed(() => {
     if (route.path.startsWith('/dashboard/products/edit/')) {
-      return 'Dashboard - Edit Product'
+      return 'Edit product'
     }
 
-    return activeItem.value?.documentTitle
-      || activeGroup.value?.documentTitle
+    if (route.path === '/dashboard/settings') {
+      const requestedSection = getDashboardQueryValue(route, 'tab')
+      const settingsSection = dashboardSettingsSections.find(({ key }) => key === requestedSection)
+
+      if (settingsSection) {
+        return settingsSection.label
+      }
+    }
+
+    return activeItem.value?.detailedLabel
+      || activeItem.value?.label
+      || activeGroup.value?.detailedLabel
+      || activeGroup.value?.label
       || 'Dashboard'
+  })
+
+  const groupTitle = computed(() => {
+    const label = activeGroup.value?.detailedLabel || activeGroup.value?.label || ''
+
+    return label && label !== pageTitle.value ? label : ''
+  })
+
+  const documentTitle = computed(() => {
+    return pageTitle.value === 'Dashboard'
+      ? 'Dashboard'
+      : `Dashboard - ${pageTitle.value}`
   })
 
   return {
     activeGroup,
     activeItem,
     documentTitle,
+    groupTitle,
     navigationGroups,
+    pageTitle,
     secondaryItems
   }
 }

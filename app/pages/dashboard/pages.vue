@@ -1,9 +1,19 @@
 <template>
   <div class="mx-auto max-w-[1500px] pb-8 text-gray-900">
-    <header class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between lg:p-6">
-      <div><h1 class="text-2xl font-bold tracking-tight">Pages</h1><p class="mt-1 text-sm text-gray-500">Create pages for your website.</p></div>
-      <button v-if="canEdit" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700" @click="startNewPage"><Icon name="lucide:plus" size="18" /> New page</button>
-    </header>
+    <DashboardPageIntro
+      tag="header"
+      title="Pages"
+      description="Create pages for your website."
+      :show-actions="canEdit"
+      container-class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm lg:p-6"
+      layout-class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      title-class="text-2xl font-bold tracking-tight"
+      description-class="mt-1 text-sm text-gray-500"
+    >
+      <template #actions>
+        <button v-if="canEdit" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700" @click="startNewPage"><Icon name="lucide:plus" size="18" /> New page</button>
+      </template>
+    </DashboardPageIntro>
 
     <div v-if="pageError" class="mt-4 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700" role="alert"><Icon name="lucide:circle-alert" size="18" /><p class="flex-1">{{ pageError }}</p><button type="button" class="font-bold" @click="loadPages">Retry</button></div>
     <p v-if="!canEdit" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-700">You can view pages but cannot edit them.</p>

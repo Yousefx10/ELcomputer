@@ -1,11 +1,9 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
-    <div class="rounded-2xl bg-white p-6 shadow">
-      <h2 class="text-4xl font-bold">People</h2>
-      <p class="mt-2 text-sm text-gray-500">
-        Employee records, admin accounts and store customers.
-      </p>
-    </div>
+    <DashboardPageIntro
+      title="People"
+      description="Employee records, admin accounts and store customers."
+    />
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
 
