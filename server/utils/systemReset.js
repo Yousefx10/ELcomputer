@@ -56,6 +56,12 @@ export const finishResetCleanup = async ({ supabaseAdmin, run, ownerId, uploadsR
     const { error } = await supabaseAdmin.storage.from('admin-documents').remove(documents.slice(offset, offset + 100))
     if (error) throw new Error('Document cleanup failed. Retry to finish the reset.')
   }
+  const supportFiles = manifest.support || []
+  for (let offset = 0; offset < supportFiles.length; offset += 100) {
+    const { error } = await supabaseAdmin.storage.from('support-attachments')
+      .remove(supportFiles.slice(offset, offset + 100))
+    if (error) throw new Error('Support attachment cleanup failed. Retry to finish the reset.')
+  }
   await removeResetMediaFiles(uploadsRoot, manifest.media || [])
   for (const userId of manifest.users || []) {
     if (userId === ownerId) throw new Error('The reset cannot delete the current owner.')

@@ -190,6 +190,32 @@ test('content reset erases custom pages and preserves catalog data', async () =>
   assert.equal(await count('products'), 1)
 })
 
+test('content reset removes Help Center content without removing customer tickets', async () => {
+  const category = await value("select id as value from public.help_categories where slug='orders'")
+  await db.query("insert into public.help_articles(category_id,title,slug,status) values($1,'Order help','order-help','published')", [category])
+  const ticket = await value("select public.support_create_ticket($1,null,$2,'Order issue','Please help',$3) as value", [customer, category, randomUUID()])
+  await beginReset('content')
+  assert.equal(await count('help_articles'), 0)
+  assert.equal(await count('help_categories'), 0)
+  assert.equal(await count('support_tickets'), 1)
+  assert.equal(await value('select category_id as value from public.support_tickets where id=$1', [ticket]), null)
+})
+
+test('full reset captures only existing support objects and clears support tables', async () => {
+  const ticket = await value("select public.support_create_ticket($1,null,null,'File issue','Please help',$2) as value", [customer, randomUUID()])
+  const message = await value('select id as value from public.support_ticket_messages where ticket_id=$1', [ticket])
+  const path = `${ticket}/${message}/evidence.pdf`
+  await db.query("insert into storage.objects(bucket_id,name) values('support-attachments',$1)", [path])
+  await db.query("insert into public.support_ticket_attachments(ticket_id,message_id,original_name,storage_path,mime_type,size_bytes) values($1,$2,'evidence.pdf',$3,'application/pdf',100)", [ticket, message, path])
+  const run = await beginReset('full')
+  assert.deepEqual(run.manifest.support, [path])
+  assert.equal(await count('support_ticket_attachments'), 0)
+  assert.equal(await count('support_ticket_messages'), 0)
+  assert.equal(await count('support_tickets'), 0)
+  // Storage bytes are deleted later by the application using the captured path.
+  assert.equal(await value("select count(*)::int as value from storage.objects where bucket_id='support-attachments'"), 1)
+})
+
 test('public visitors only read published site pages', async () => {
   await db.query(`insert into public.site_pages(title,path,is_published) values('Public policy','public-policy',true),('Draft policy','draft-policy',false)`)
   await db.exec('set local role anon')

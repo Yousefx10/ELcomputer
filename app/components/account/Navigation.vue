@@ -24,6 +24,12 @@ const items = [
     to: '/account/messages'
   },
   {
+    key: 'support',
+    label: 'Support',
+    icon: 'lucide:life-buoy',
+    to: '/account/support'
+  },
+  {
     key: 'wallet',
     label: 'Wallet',
     icon: 'lucide:wallet',
@@ -38,6 +44,8 @@ const isActive = (item) => {
   if (item.key === 'messages') {
     return route.path === '/account/messages'
   }
+
+  if (item.key === 'support') return route.path.startsWith('/account/support')
 
   if (route.path !== '/account') {
     return false

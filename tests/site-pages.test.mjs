@@ -7,6 +7,7 @@ test('custom page paths are normalized and reserved routes are rejected', () => 
   assert.equal(normalizeSitePagePath(' /Policies/Shipping-Policy/ '), 'policies/shipping-policy')
   assert.equal(normalizeSitePagePath('https://store.test/returns-policy?draft=1'), 'returns-policy')
   assert.throws(() => normalizeSitePagePath('/dashboard/pages'), /reserved/i)
+  assert.throws(() => normalizeSitePagePath('/help'), /reserved/i)
   assert.throws(() => normalizeSitePagePath('/bad path'), /lowercase words/i)
 })
 

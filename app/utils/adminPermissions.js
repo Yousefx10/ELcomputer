@@ -83,6 +83,21 @@ export const adminPermissionGroups = [
     permissions: [
       { key: 'pages.edit', label: 'Create and edit pages' }
     ]
+  },
+  {
+    key: 'help',
+    title: 'Help Center',
+    accessPermission: { key: 'help.view', label: 'View help articles' },
+    permissions: [{ key: 'help.edit', label: 'Manage help articles and categories' }]
+  },
+  {
+    key: 'support',
+    title: 'Customer Support',
+    accessPermission: { key: 'support.view', label: 'View customer tickets' },
+    permissions: [
+      { key: 'support.reply', label: 'Reply and add internal notes' },
+      { key: 'support.manage', label: 'Manage ticket status, priority and assignment' }
+    ]
   }
 ]
 
@@ -106,7 +121,9 @@ export const adminPermissionDependencies = {
   'hr.view': ['hr.edit'],
   'treasury.view': ['treasury.edit'],
   'documents.view': ['documents.manage'],
-  'pages.view': ['pages.edit']
+  'pages.view': ['pages.edit'],
+  'help.view': ['help.edit'],
+  'support.view': ['support.reply', 'support.manage']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
@@ -214,6 +231,11 @@ export const getDashboardRouteRequirement = (route = '') => {
     return {
       permission: 'pages.view'
     }
+  }
+
+  if (path === '/dashboard/help') return { permission: 'help.view' }
+  if (path === '/dashboard/support' || path.startsWith('/dashboard/support/')) {
+    return { permission: 'support.view' }
   }
 
   if (path === '/dashboard/orders' || path.startsWith('/dashboard/orders/')) {

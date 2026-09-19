@@ -123,6 +123,8 @@ export const dashboardNavigationGroups = [
   ], { permission: 'treasury.view', builtInErpOnly: true }),
   { key: 'documents', label: 'Documents', icon: 'lucide:folder-closed', to: '/dashboard/documents', permission: 'documents.view', documentTitle: 'Dashboard - Documents', match: { paths: ['/dashboard/documents'] } },
   { key: 'pages', label: 'Pages', icon: 'lucide:file-stack', to: '/dashboard/pages', permission: 'pages.view', documentTitle: 'Dashboard - Pages', match: { paths: ['/dashboard/pages'] } },
+  { key: 'help', label: 'Help Center', icon: 'lucide:book-open', to: '/dashboard/help', permission: 'help.view', documentTitle: 'Dashboard - Help Center', match: { paths: ['/dashboard/help'] } },
+  { key: 'support', label: 'Customer Support', icon: 'lucide:life-buoy', to: '/dashboard/support', permission: 'support.view', documentTitle: 'Dashboard - Customer Support', match: { paths: ['/dashboard/support'], prefixes: ['/dashboard/support/'] } },
   group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
     child('settings-overview', 'Store settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
     ...dashboardSettingsSections.filter(item => primarySettingsKeys.has(item.key)).map(item => ({

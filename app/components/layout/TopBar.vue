@@ -4,7 +4,7 @@
       <p>{{ currentMessage }}</p>
       <div class="store-topbar-links">
         <NuxtLink to="/search">Shop all products <Icon name="lucide:arrow-right" size="13" /></NuxtLink>
-        <a v-if="supportEmail" :href="`mailto:${supportEmail}`">Need help?</a>
+        <NuxtLink to="/help">Need help?</NuxtLink>
       </div>
     </div>
   </div>
@@ -17,7 +17,6 @@ const currentMessageIndex = ref(0)
 let topBarInterval = null
 
 const messages = computed(() => siteContent.value?.topBarMessages || [])
-const supportEmail = computed(() => siteContent.value?.settings?.footer_email || '')
 const rotationSeconds = computed(() => {
   return Math.max(1, Number(siteContent.value?.settings?.top_bar_rotation_seconds || 3))
 })

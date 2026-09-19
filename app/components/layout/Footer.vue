@@ -15,6 +15,13 @@
           </div>
         </div>
         <div class="store-footer-groups">
+          <div>
+            <h3>Support</h3>
+            <ul>
+              <li><NuxtLink to="/help">Help Center</NuxtLink></li>
+              <li><NuxtLink to="/account/support">My tickets</NuxtLink></li>
+            </ul>
+          </div>
           <div v-for="group in footerGroups" :key="group.title">
             <h3>{{ group.title }}</h3>
             <ul>
