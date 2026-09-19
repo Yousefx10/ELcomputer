@@ -1,3 +1,4 @@
+import process from 'node:process'
 import tailwindcss from "@tailwindcss/vite";
 
 const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''

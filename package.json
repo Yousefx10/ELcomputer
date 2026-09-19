@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
+    "typecheck": "nuxt typecheck",
     "deploy": "bash scripts/deploy.sh",
     "deploy:check": "bash scripts/deploy.sh --check",
     "dev": "nuxt dev",
@@ -24,6 +25,9 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
-    "supabase": "^2.109.1"
+    "@types/node": "^22.20.4",
+    "supabase": "^2.109.1",
+    "typescript": "~5.9.3",
+    "vue-tsc": "^3.3.11"
   }
 }

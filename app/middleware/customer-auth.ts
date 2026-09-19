@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/login')
   }
 
-  if (customerProfile && customerProfile.is_active === false) {
+  if ((customerProfile as { is_active?: boolean } | null)?.is_active === false) {
     if (import.meta.client) {
       await supabase.auth.signOut()
     }

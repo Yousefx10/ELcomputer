@@ -20,7 +20,23 @@ const canReopen = computed(() => ticket.value && ['closed', 'resolved'].includes
 const load = async () => {
   loading.value = true
   error.value = ''
-  try { detail.value = await request(`/api/support/tickets/${route.params.id}`) }
+  try {
+    detail.value = await request(`/api/support/tickets/${route.params.id}`)
+    const unreadIds = (detail.value.messages || [])
+      .filter(message => message.sender_type === 'staff' && !message.is_internal && !message.customer_read_at)
+      .map(message => message.id)
+    if (unreadIds.length) {
+      try {
+        await request(`/api/support/tickets/${detail.value.ticket.id}/read`, {
+          method: 'PATCH', body: { messageIds: unreadIds }
+        })
+        const readAt = new Date().toISOString()
+        detail.value.messages = detail.value.messages.map(message => unreadIds.includes(message.id)
+          ? { ...message, customer_read_at: readAt } : message)
+        window.dispatchEvent(new Event('support:unread-changed'))
+      } catch (cause) { error.value = errorText(cause, 'Could not mark replies as read.') }
+    }
+  }
   catch (cause) { error.value = errorText(cause, 'Could not load ticket.') }
   finally { loading.value = false }
 }

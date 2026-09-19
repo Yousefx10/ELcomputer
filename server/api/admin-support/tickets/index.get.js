@@ -40,7 +40,13 @@ export default defineEventHandler(async (event) => {
     if (!Number.isFinite(date)) throw createError({ statusCode: 400, statusMessage: 'End date is invalid.' })
     request = request.lt('created_at', new Date(date + 24 * 60 * 60 * 1000).toISOString())
   }
-  const { data, count, error } = await request
+  const [listResult, attentionResult] = await Promise.all([
+    request,
+    supabaseAdmin.from('support_tickets').select('id', { count: 'exact', head: true })
+      .in('status', ['open', 'waiting_for_support'])
+  ])
+  const { data, count, error } = listResult
   if (error) throwSupportError(error, 'Could not load tickets.')
-  return { items: data || [], total: count || 0, page, pageSize }
+  if (attentionResult.error) throwSupportError(attentionResult.error, 'Could not load support attention count.')
+  return { items: data || [], total: count || 0, needsAttentionCount: attentionResult.count || 0, page, pageSize }
 })

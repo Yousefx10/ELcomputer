@@ -8,7 +8,7 @@ import { requireCustomerRequest } from './customerRequest'
 export const SUPPORT_BUCKET = 'support-attachments'
 export const ticketFields = 'id, reference_number, customer_id, customer_email, customer_name, order_id, category_id, subject, status, priority, assigned_admin_id, created_at, updated_at, last_reply_at, closed_at'
 export const customerTicketFields = 'id, reference_number, order_id, category_id, subject, status, created_at, updated_at, last_reply_at, closed_at'
-export const messageFields = 'id, ticket_id, sender_id, sender_type, sender_name, body, is_internal, created_at'
+export const messageFields = 'id, ticket_id, sender_id, sender_type, sender_name, body, is_internal, customer_read_at, created_at'
 export const attachmentFields = 'id, ticket_id, message_id, original_name, mime_type, size_bytes, created_at'
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -80,7 +80,7 @@ export const loadTicketThread = async (supabase, ticket, forStaff = false) => {
 export const loadTicketOrder = async (supabase, ticket, forStaff = false) => {
   if (!ticket.order_id) return null
   const fields = forStaff
-    ? 'id, order_number, status, payment_method, shipping_method, total_amount, currency, created_at'
+    ? 'id, order_number, status, payment_status, payment_method, shipping_method, total_amount, currency, created_at'
     : 'id, order_number, status, created_at'
   const { data, error } = await supabase.from('customer_orders').select(fields)
     .eq('id', ticket.order_id).eq('user_id', ticket.customer_id).maybeSingle()

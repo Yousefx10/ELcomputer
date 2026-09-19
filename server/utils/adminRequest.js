@@ -2,6 +2,7 @@ import { createError, getHeader } from 'h3'
 import { hasAdminPermission } from '~/utils/adminPermissions'
 import { mapAdminUserRecord } from './adminUsers'
 import { getSupabaseAdminClient } from './supabaseAdmin'
+import { throwRequestDatabaseError } from './requestDatabaseError'
 
 export const requireAdminRequest = async (event, options = {}) => {
   const authorizationHeader = getHeader(event, 'authorization')
@@ -31,10 +32,7 @@ export const requireAdminRequest = async (event, options = {}) => {
     .maybeSingle()
 
   if (adminError) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: adminError.message
-    })
+    throwRequestDatabaseError('Admin', adminError)
   }
 
   const adminUser = mapAdminUserRecord(adminRecord)

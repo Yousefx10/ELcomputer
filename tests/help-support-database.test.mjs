@@ -40,9 +40,12 @@ test('customers cannot query private ticket tables or call privileged ticket fun
   await denied(() => query('select id from public.support_tickets'), /permission denied/)
   await denied(() => query('select id from public.support_ticket_messages'), /permission denied/)
   await denied(() => query('select id from public.support_ticket_attachments'), /permission denied/)
+  await denied(() => query("update public.support_ticket_messages set customer_read_at=now()"), /permission denied/)
   await denied(() => query("select public.support_create_ticket($1,null,null,'Subject','Message',$2)", [customerA, randomUUID()]), /permission denied/)
   await denied(() => query("select public.support_add_message($1,$2,'customer','Alice','Reply',false,$3)", [randomUUID(), customerA, randomUUID()]), /permission denied/)
   await denied(() => query("select public.support_update_ticket($1,$2,'customer','closed',null,null,false)", [randomUUID(), customerA]), /permission denied/)
+  await denied(() => query('select public.support_customer_unread_ticket_count($1)', [customerA]), /permission denied/)
+  await denied(() => query('select * from public.support_customer_unread_counts($1,$2::uuid[])', [customerA, [randomUUID()]]), /permission denied/)
   await db.exec('reset role')
   const bucket = await first("select public, file_size_limit from storage.buckets where id='support-attachments'")
   assert.equal(bucket.public, false)
@@ -82,6 +85,26 @@ test('disabled customers cannot create or reply to tickets', async () => {
   await query('update public.customer_profiles set is_active=false where id=$1', [customerA])
   await denied(() => query('select public.support_create_ticket($1,null,null,$2,$3,$4)', [customerA, 'Another', 'Message', randomUUID()]), /Customer account is unavailable/)
   await denied(() => query('select public.support_add_message($1,$2,$3,$4,$5,$6,$7)', [id, customerA, 'customer', 'Alice', 'More', false, randomUUID()]), /Customer account is unavailable/)
+})
+
+test('only customer-visible staff replies create customer unread state', async () => {
+  const ticketA = (await first('select public.support_create_ticket($1,null,null,$2,$3,$4) as id', [customerA, 'Help', 'First message', randomUUID()])).id
+  const ticketB = (await first('select public.support_create_ticket($1,null,null,$2,$3,$4) as id', [customerB, 'Help', 'Another message', randomUUID()])).id
+  const unread = customerId => first('select public.support_customer_unread_ticket_count($1)::int as count', [customerId])
+  assert.equal((await unread(customerA)).count, 0)
+  await query("select public.support_add_message($1,$2,'staff','Staff','Private note',true,$3)", [ticketA, staff, randomUUID()])
+  assert.equal((await unread(customerA)).count, 0)
+  const reply = (await first("select public.support_add_message($1,$2,'staff','Staff','Public reply',false,$3) as id", [ticketA, staff, randomUUID()])).id
+  assert.equal((await unread(customerA)).count, 1)
+  assert.equal((await unread(customerB)).count, 0)
+  assert.deepEqual((await query('select * from public.support_customer_unread_counts($1,$2::uuid[])', [customerA, [ticketA, ticketB]])).rows,
+    [{ ticket_id: ticketA, unread_count: 1 }])
+  assert.equal((await query('select * from public.support_customer_unread_counts($1,$2::uuid[])', [customerB, [ticketA]])).rows.length, 0)
+  await query('update public.support_ticket_messages set customer_read_at=now() where id=$1', [reply])
+  assert.equal((await unread(customerA)).count, 0)
+  await query("select public.support_add_message($1,$2,'customer','Alice','Thanks',false,$3)", [ticketA, customerA, randomUUID()])
+  assert.equal((await first('select status from public.support_tickets where id=$1', [ticketA])).status, 'waiting_for_support')
+  assert.equal((await unread(customerA)).count, 0)
 })
 
 test('ticket status, priority, assignment and history follow existing staff permissions', async () => {

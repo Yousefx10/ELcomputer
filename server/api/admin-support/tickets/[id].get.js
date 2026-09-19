@@ -15,12 +15,19 @@ export default defineEventHandler(async (event) => {
   ])
   if (eventsResult.error) throwSupportError(eventsResult.error, 'Could not load ticket history.')
   let orderItems = []
+  let shippingJob = null
   if (order) {
-    const result = await supabaseAdmin.from('customer_order_items')
-      .select('product_title, quantity, unit_price, line_total').eq('order_id', order.id).limit(100)
-    if (result.error) throwSupportError(result.error, 'Could not load order items.')
-    orderItems = result.data || []
+    const [itemsResult, shippingResult] = await Promise.all([
+      supabaseAdmin.from('customer_order_items')
+        .select('product_title, quantity, unit_price, line_total').eq('order_id', order.id).limit(100),
+      supabaseAdmin.from('shipping_order_jobs')
+        .select('state, awb, provider_status_name, provider_status_at').eq('order_id', order.id).maybeSingle()
+    ])
+    if (itemsResult.error) throwSupportError(itemsResult.error, 'Could not load order items.')
+    if (shippingResult.error) throwSupportError(shippingResult.error, 'Could not load shipment status.')
+    orderItems = itemsResult.data || []
+    shippingJob = shippingResult.data || null
   }
   return { ticket, order, orderItems, category: categoryResult.data || null,
-    assignee: assigneeResult.data || null, events: eventsResult.data || [], ...thread }
+    shippingJob, assignee: assigneeResult.data || null, events: eventsResult.data || [], ...thread }
 })

@@ -1,5 +1,6 @@
 import { createError, getHeader } from 'h3'
 import { getSupabaseAdminClient } from './supabaseAdmin'
+import { throwRequestDatabaseError } from './requestDatabaseError'
 
 export const requireCustomerRequest = async (event) => {
   const authorizationHeader = getHeader(event, 'authorization')
@@ -29,10 +30,7 @@ export const requireCustomerRequest = async (event) => {
     .maybeSingle()
 
   if (customerProfileError) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: customerProfileError.message
-    })
+    throwRequestDatabaseError('Customer', customerProfileError)
   }
 
   if (customerProfile && customerProfile.is_active === false) {
