@@ -20,76 +20,58 @@ onBeforeUnmount(() => window.removeEventListener('support:unread-changed', loadU
 
 const items = [
   {
-    key: 'profile',
-    label: 'My Profile',
-    icon: 'lucide:user-round',
-    to: '/account'
+    label: 'Overview',
+    icon: 'lucide:layout-dashboard',
+    to: '/account',
+    exact: true
   },
   {
-    key: 'orders',
     label: 'Orders',
-    icon: 'lucide:file-text',
-    to: {
-      path: '/account',
-      hash: '#orders'
-    }
+    icon: 'lucide:package',
+    to: '/account/orders'
   },
   {
-    key: 'messages',
     label: 'Messages',
     icon: 'lucide:mail',
     to: '/account/messages'
   },
   {
-    key: 'support',
     label: 'Support',
     icon: 'lucide:life-buoy',
     to: '/account/support'
   },
   {
-    key: 'wallet',
     label: 'Wallet',
     icon: 'lucide:wallet',
-    to: {
-      path: '/account',
-      hash: '#wallet'
-    }
+    to: '/account/wallet'
+  },
+  {
+    label: 'Profile',
+    icon: 'lucide:user-round',
+    to: '/account/profile'
   }
 ]
 
-const isActive = (item) => {
-  if (item.key === 'messages') {
-    return route.path === '/account/messages'
-  }
-
-  if (item.key === 'support') return route.path.startsWith('/account/support')
-
-  if (route.path !== '/account') {
-    return false
-  }
-
-  if (item.key === 'profile') {
-    return !route.hash || route.hash === '#profile'
-  }
-
-  return route.hash === item.to?.hash
-}
+const isActive = item => item.exact
+  ? route.path === item.to
+  : route.path === item.to || route.path.startsWith(`${item.to}/`)
 </script>
 
 <template>
-  <nav class="mt-4 space-y-2" aria-label="Customer account">
+  <nav class="mt-3 flex gap-1 overflow-x-auto pb-1 lg:block lg:space-y-0.5 lg:overflow-visible lg:pb-0" aria-label="Customer account">
     <NuxtLink
       v-for="item in items"
-      :key="item.key"
+      :key="item.to"
       :to="item.to"
-      class="flex items-center gap-3 rounded-2xl px-4 py-3 transition"
+      :aria-current="isActive(item) ? 'page' : undefined"
+      class="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:flex lg:w-full"
       :class="isActive(item)
-        ? 'bg-blue-50 text-blue-700'
-        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+        ? 'bg-blue-50 text-blue-800'
+        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'"
     >
-      <Icon :name="item.icon" size="18" />
-      <span class="font-semibold">{{ item.label }}</span>
-      <span v-if="item.key === 'support' && unreadSupportTickets" class="ms-auto rounded-full bg-blue-600 px-2 py-0.5 text-xs font-bold text-white" :aria-label="`${unreadSupportTickets} support tickets with new replies`">{{ unreadSupportTickets }}</span>
+      <Icon :name="item.icon" size="17" aria-hidden="true" />
+      <span>{{ item.label }}</span>
+      <span v-if="item.to === '/account/support' && unreadSupportTickets" class="rounded-full bg-blue-600 px-1.5 py-0.5 text-xs text-white" :aria-label="`${unreadSupportTickets} support tickets with new replies`">{{ unreadSupportTickets }}</span>
     </NuxtLink>
   </nav>
 </template>

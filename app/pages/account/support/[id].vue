@@ -1,7 +1,7 @@
 <script setup>
 import { supportDate, supportReference, supportStatusLabel } from '~/utils/support'
 
-definePageMeta({ middleware: 'customer-auth' })
+definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 const route = useRoute()
 const user = useSupabaseUser()
 const { request, upload, download, errorText } = useSupportClient()
@@ -82,16 +82,16 @@ useHead(() => ({ title: ticket.value ? `${supportReference(ticket.value.referenc
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 px-4 py-8 md:px-6"><div class="mx-auto max-w-5xl">
+  <div class="space-y-5">
     <NuxtLink to="/account/support" class="inline-flex items-center gap-1 text-sm font-semibold text-blue-700"><Icon name="lucide:arrow-left" size="16" /> My tickets</NuxtLink>
     <p v-if="error" role="alert" class="mt-5 rounded-xl bg-red-50 p-4 text-red-700">{{ error }}</p>
     <p v-if="notice" role="status" class="mt-5 rounded-xl bg-amber-50 p-4 text-amber-800">{{ notice }}</p>
     <p v-if="loading && !detail" class="mt-6 text-gray-500">Loading ticket...</p>
     <template v-else-if="ticket">
-      <header class="mt-5 rounded-3xl bg-white p-6 shadow"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-sm font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><h1 class="mt-2 text-2xl font-bold text-gray-900">{{ ticket.subject }}</h1><p class="mt-2 text-sm text-gray-500">Created {{ supportDate(ticket.created_at) }}<span v-if="detail.order"> · Order {{ detail.order.order_number || detail.order.id.slice(0, 8) }}</span></p></div><span class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{{ supportStatusLabel(ticket.status) }}</span></div><div class="mt-5 flex flex-wrap gap-3"><button v-if="canReply" type="button" :disabled="saving" class="text-sm font-semibold text-gray-600 hover:text-gray-900" @click="changeStatus('closed')">Close ticket</button><button v-else-if="canReopen" type="button" :disabled="saving" class="text-sm font-semibold text-blue-700" @click="changeStatus('open')">Reopen ticket</button></div></header>
-      <section class="mt-6 rounded-3xl bg-white p-5 shadow sm:p-6"><h2 class="mb-5 text-xl font-bold text-gray-900">Conversation</h2><SupportConversation :messages="detail.messages" :attachments="detail.attachments" :current-user-id="user?.id || ''" @download="downloadFile" /></section>
-      <section v-if="canReply" class="mt-6 rounded-3xl bg-white p-6 shadow"><h2 class="text-lg font-bold text-gray-900">Reply</h2><form class="mt-4 space-y-4" @submit.prevent="sendReply"><label class="block"><span class="sr-only">Your reply</span><textarea v-model="reply" required maxlength="10000" rows="5" placeholder="Write your reply" class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label><label class="block text-sm font-semibold text-gray-700">Attach a file<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">Up to 5 MB.</span></label><button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? 'Sending...' : 'Send reply' }}</button></form></section>
+      <header class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-sm font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><h1 class="mt-2 text-2xl font-bold text-gray-900">{{ ticket.subject }}</h1><p class="mt-2 text-sm text-gray-500">Created {{ supportDate(ticket.created_at) }}<span v-if="detail.order"> · Order {{ detail.order.order_number || detail.order.id.slice(0, 8) }}</span></p></div><span class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{{ supportStatusLabel(ticket.status) }}</span></div><div class="mt-5 flex flex-wrap gap-3"><button v-if="canReply" type="button" :disabled="saving" class="text-sm font-semibold text-gray-600 hover:text-gray-900" @click="changeStatus('closed')">Close ticket</button><button v-else-if="canReopen" type="button" :disabled="saving" class="text-sm font-semibold text-blue-700" @click="changeStatus('open')">Reopen ticket</button></div></header>
+      <section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="mb-5 text-xl font-bold text-gray-900">Conversation</h2><SupportConversation :messages="detail.messages" :attachments="detail.attachments" :current-user-id="user?.sub || user?.id || ''" @download="downloadFile" /></section>
+      <section v-if="canReply" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="text-lg font-bold text-gray-900">Reply</h2><form class="mt-4 space-y-4" @submit.prevent="sendReply"><label class="block"><span class="sr-only">Your reply</span><textarea v-model="reply" required maxlength="10000" rows="5" placeholder="Write your reply" class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label><label class="block text-sm font-semibold text-gray-700">Attach a file<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">Up to 5 MB.</span></label><button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? 'Sending...' : 'Send reply' }}</button></form></section>
       <div v-else-if="!canReopen" class="mt-6 rounded-xl bg-white p-5 text-sm text-gray-600">This ticket is closed. Create a new ticket if you still need help.</div>
     </template>
-  </div></div>
+  </div>
 </template>

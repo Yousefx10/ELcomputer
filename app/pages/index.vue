@@ -156,7 +156,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
 })
 
 const customerUser = useSupabaseUser()
-const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
+const ordersPath = computed(() => customerUser.value ? '/account/orders' : { path: '/login', query: { redirect: '/account/orders' } })
 const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
 const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [

@@ -81,7 +81,7 @@ const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcom
 const siteLogoUrl = computed(() => getStoreImageUrl(siteContent.value?.settings?.site_logo_url) || '/images/dashboard-logo.png')
 const headerCategories = computed(() => siteContent.value?.navbarCategories || [])
 const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
-const ordersPath = computed(() => customerUser.value ? '/account#orders' : { path: '/login', query: { redirect: '/account#orders' } })
+const ordersPath = computed(() => customerUser.value ? '/account/orders' : { path: '/login', query: { redirect: '/account/orders' } })
 const formattedSubtotal = computed(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(subtotal.value))
 const departmentsEnabled = computed(() => (siteContent.value?.headerLinks || []).some((link) => link.link_type === 'categories-dropdown'))
 const extraHeaderLinks = computed(() => (siteContent.value?.headerLinks || []).filter((link) => link.link_type !== 'categories-dropdown' && link.default_key !== 'home'))

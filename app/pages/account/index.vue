@@ -1,355 +1,103 @@
 <script setup>
-import {
-  completedOrderStatuses,
-  formatCustomerOrderStatus,
-  getCustomerOrderStatusClass,
-  openOrderStatuses
-} from '~/utils/orderStatus'
+import { formatAccountMoney } from '~/utils/accountOrders'
+import { resolveAccountUser } from '~/utils/accountSession'
+import { completedOrderStatuses, openOrderStatuses } from '~/utils/orderStatus'
 
-definePageMeta({
-  middleware: 'customer-auth'
-})
+definePageMeta({ layout: 'account', middleware: 'customer-auth' })
+useHead({ title: 'Your Account' })
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
-
 const loading = ref(true)
-const errorMessage = ref('')
-const profile = ref(null)
-const recentOrders = ref([])
-let pageActive = true
-onBeforeUnmount(() => { pageActive = false })
-const stats = reactive({
-  totalOrders: 0,
-  delivered: 0,
-  inProgress: 0,
-  wallet: 0
-})
+const error = ref('')
+const orders = ref([])
+const stats = reactive({ total: 0, completed: 0, active: 0, wallet: 0 })
+let active = true
+let loadVersion = 0
+onBeforeUnmount(() => { active = false })
 
-const getCustomerDisplayName = (accountUser, accountProfile) => {
-  return accountProfile?.full_name
-    || accountUser?.user_metadata?.full_name
-    || accountUser?.user_metadata?.name
-    || accountUser?.email?.split('@')[0]
-    || 'Customer'
+const ensureProfile = async (currentUser, signal) => {
+  const { data, error: lookupError } = await supabase.from('customer_profiles')
+    .select('wallet_balance').eq('id', currentUser.id).maybeSingle().abortSignal(signal)
+  if (lookupError) throw lookupError
+  if (data) return data
+  const { data: created, error: createError } = await supabase.from('customer_profiles')
+    .upsert({ id: currentUser.id, email: currentUser.email || '',
+      full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Customer' })
+    .select('wallet_balance').single().abortSignal(signal)
+  if (createError) throw createError
+  return created
 }
 
-const ensureCustomerProfile = async (accountUser) => {
-  const { data: existingProfile, error: existingProfileError } = await supabase
-    .from('customer_profiles')
-    .select('*')
-    .eq('id', accountUser.id)
-    .maybeSingle()
-
-  if (existingProfileError) {
-    throw existingProfileError
-  }
-
-  if (existingProfile) {
-    return existingProfile
-  }
-
-  const { data: createdProfile, error: createProfileError } = await supabase
-    .from('customer_profiles')
-    .upsert({
-      id: accountUser.id,
-      email: accountUser.email || '',
-      full_name: getCustomerDisplayName(accountUser),
-      avatar_url: accountUser.user_metadata?.avatar_url || null
-    })
-    .select('*')
-    .single()
-
-  if (createProfileError) {
-    throw createProfileError
-  }
-
-  return createdProfile
-}
-
-const loadAccountPage = async () => {
+const load = async () => {
+  const version = ++loadVersion
   loading.value = true
-  errorMessage.value = ''
-
+  error.value = ''
   try {
-    const { data: userData, error: userError } = await supabase.auth.getUser()
-
-    if (!pageActive) return
-
-    if (userError) {
-      throw userError
-    }
-
-    if (!userData.user) {
-      await navigateTo('/login')
-      return
-    }
-
-    const accountUser = userData.user
-    const [
-      accountProfile,
-      totalOrdersResult,
-      deliveredOrdersResult,
-      inProgressOrdersResult,
-      recentOrdersResult
-    ] = await Promise.all([
-      ensureCustomerProfile(accountUser),
-      supabase
-        .from('customer_orders')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', accountUser.id),
-      supabase
-        .from('customer_orders')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', accountUser.id)
-        .in('status', completedOrderStatuses),
-      supabase
-        .from('customer_orders')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', accountUser.id)
-        .in('status', openOrderStatuses),
-      supabase
-        .from('customer_orders')
-        .select('id, order_number, status, total_amount, currency, created_at')
-        .eq('user_id', accountUser.id)
-        .order('created_at', { ascending: false })
-        .limit(5)
+    const currentUser = await resolveAccountUser(supabase, user.value)
+    if (!currentUser) throw new Error('No customer session')
+    const signal = AbortSignal.timeout(20000)
+    const [profileResult, total, completed, activeOrders, recent] = await Promise.all([
+      ensureProfile(currentUser, signal),
+      supabase.from('customer_orders').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).abortSignal(signal),
+      supabase.from('customer_orders').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).in('status', completedOrderStatuses).abortSignal(signal),
+      supabase.from('customer_orders').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).in('status', openOrderStatuses).abortSignal(signal),
+      supabase.from('customer_orders').select('id, order_number, status, total_amount, currency, created_at')
+        .eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(4).abortSignal(signal)
     ])
-
-    if (!pageActive) return
-
-    if (accountProfile.is_active === false) {
-      await supabase.auth.signOut()
-      await navigateTo({ path: '/login', query: { error: 'account-disabled' } })
-      return
+    for (const result of [total, completed, activeOrders, recent]) if (result.error) throw result.error
+    const recentRows = recent.data || []
+    let itemRows = []
+    if (recentRows.length) {
+      const itemsResult = await supabase.from('customer_order_items')
+        .select('id, order_id, product_title, image_url, quantity')
+        .in('order_id', recentRows.map(order => order.id)).order('created_at').abortSignal(signal)
+      if (itemsResult.error) throw itemsResult.error
+      itemRows = itemsResult.data || []
     }
-
-    if (totalOrdersResult.error) {
-      throw totalOrdersResult.error
-    }
-
-    if (deliveredOrdersResult.error) {
-      throw deliveredOrdersResult.error
-    }
-
-    if (inProgressOrdersResult.error) {
-      throw inProgressOrdersResult.error
-    }
-
-    if (recentOrdersResult.error) {
-      throw recentOrdersResult.error
-    }
-
-    profile.value = accountProfile
-    stats.totalOrders = totalOrdersResult.count || 0
-    stats.delivered = deliveredOrdersResult.count || 0
-    stats.inProgress = inProgressOrdersResult.count || 0
-    stats.wallet = Number(accountProfile.wallet_balance || 0)
-    recentOrders.value = recentOrdersResult.data || []
-  } catch (error) {
-    if (pageActive) errorMessage.value = error?.message || 'Could not load your account page.'
+    if (!active || version !== loadVersion) return
+    stats.total = total.count || 0
+    stats.completed = completed.count || 0
+    stats.active = activeOrders.count || 0
+    stats.wallet = Number(profileResult.wallet_balance || 0)
+    orders.value = recentRows.map(order => {
+      const items = itemRows.filter(item => item.order_id === order.id)
+      return { ...order, items, itemCount: items.reduce((count, item) => count + item.quantity, 0) }
+    })
+  } catch {
+    if (active && version === loadVersion) error.value = 'Could not load your account. Please try again.'
   } finally {
-    if (pageActive) loading.value = false
+    if (active && version === loadVersion) loading.value = false
   }
 }
 
-const logout = async () => {
-  await supabase.auth.signOut()
-  await navigateTo('/')
-}
-
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EGP',
-    maximumFractionDigits: 2
-  }).format(Number(value || 0))
-}
-
-const formatDate = (value) => {
-  if (!value) {
-    return 'Recently'
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'medium'
-  }).format(new Date(value))
-}
-
-const getStatusLabel = (value) => {
-  return formatCustomerOrderStatus(value)
-}
-
-const getStatusClass = (value) => {
-  return getCustomerOrderStatusClass(value)
-}
-
-const displayName = computed(() => getCustomerDisplayName(user.value, profile.value))
-const userEmail = computed(() => user.value?.email || '')
-const memberSince = computed(() => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric'
-  }).format(new Date(profile.value?.created_at || user.value?.created_at || Date.now()))
-})
-
-onMounted(loadAccountPage)
+onMounted(load)
+watch(() => user.value?.sub || user.value?.id, load)
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
-    <div id="profile" class="mx-auto max-w-7xl scroll-mt-24 px-4 md:px-6">
-      <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ errorMessage }}
-      </div>
-
-      <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside class="overflow-hidden rounded-3xl bg-white shadow">
-          <div class="bg-blue-600 px-6 py-8 text-white">
-            <div class="mx-auto flex h-28 w-28 items-center justify-center rounded-full border-4 border-white/30 bg-white/10">
-              <Icon name="lucide:user-round" size="56" />
-            </div>
-
-            <h1 class="mt-6 text-center text-3xl font-bold">
-              {{ displayName }}
-            </h1>
-
-            <p class="mt-2 text-center text-sm text-blue-100">
-              {{ userEmail }}
-            </p>
-
-            <p v-if="!loading" class="mx-auto mt-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-blue-50">
-              Since {{ memberSince }}
-            </p>
-          </div>
-
-          <div class="p-5">
-            <p class="px-3 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
-              Account
-            </p>
-
-            <AccountNavigation />
-
-            <button
-              type="button"
-              class="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left font-semibold text-red-600 hover:bg-red-50"
-              @click="logout"
-            >
-              <Icon name="lucide:log-out" size="18" />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </aside>
-
-        <section class="space-y-6">
-          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-2xl bg-white p-5 shadow">
-              <div class="flex items-center gap-4">
-                <div class="rounded-2xl bg-blue-50 p-4 text-blue-600">
-                  <Icon name="lucide:file-text" size="22" />
-                </div>
-
-                <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.totalOrders }}</p>
-                  <p class="text-sm font-semibold text-gray-500">Total Orders</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl bg-white p-5 shadow">
-              <div class="flex items-center gap-4">
-                <div class="rounded-2xl bg-green-50 p-4 text-green-600">
-                  <Icon name="lucide:check" size="22" />
-                </div>
-
-                <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.delivered }}</p>
-                  <p class="text-sm font-semibold text-gray-500">Delivered</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl bg-white p-5 shadow">
-              <div class="flex items-center gap-4">
-                <div class="rounded-2xl bg-amber-50 p-4 text-amber-600">
-                  <Icon name="lucide:clock-3" size="22" />
-                </div>
-
-                <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : stats.inProgress }}</p>
-                  <p class="text-sm font-semibold text-gray-500">In Progress</p>
-                </div>
-              </div>
-            </div>
-
-            <div id="wallet" class="scroll-mt-24 rounded-2xl bg-white p-5 shadow">
-              <div class="flex items-center gap-4">
-                <div class="rounded-2xl bg-cyan-50 p-4 text-cyan-700">
-                  <Icon name="lucide:wallet" size="22" />
-                </div>
-
-                <div>
-                  <p class="text-3xl font-bold text-gray-900">{{ loading ? '—' : formatCurrency(stats.wallet) }}</p>
-                  <p class="text-sm font-semibold text-gray-500">Wallet</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="orders" class="scroll-mt-24 rounded-3xl bg-white p-6 shadow">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <h2 class="text-2xl font-bold text-gray-900">Recent Orders</h2>
-                <p class="mt-1 text-sm text-gray-500">
-                  Your latest order activity appears here.
-                </p>
-              </div>
-
-              <div class="rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
-                {{ loading ? 'Loading…' : `${stats.totalOrders} total` }}
-              </div>
-            </div>
-
-            <div v-if="loading" class="py-16 text-center text-gray-500" role="status">
-              Loading account details...
-            </div>
-
-            <div v-else-if="!recentOrders.length" class="py-16 text-center text-gray-400">
-              No orders yet.
-            </div>
-
-            <div v-else class="mt-6 divide-y">
-              <div
-                v-for="order in recentOrders"
-                :key="order.id"
-                class="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
-              >
-                <div>
-                  <p class="font-bold text-gray-900">
-                    {{ order.order_number || `Order #${order.id.slice(0, 8)}` }}
-                  </p>
-
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ formatDate(order.created_at) }}
-                  </p>
-                </div>
-
-                <div class="flex items-center gap-3">
-                  <span
-                    class="rounded-full px-3 py-1 text-xs font-semibold"
-                    :class="getStatusClass(order.status)"
-                  >
-                    {{ getStatusLabel(order.status) }}
-                  </span>
-
-                  <p class="font-semibold text-gray-900">
-                    {{ formatCurrency(order.total_amount) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
+  <div class="space-y-5">
+    <header class="flex flex-wrap items-end justify-between gap-3">
+      <div><p class="text-sm font-semibold text-blue-700">Your account</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Overview</h1><p class="mt-1 text-sm text-slate-600">Your orders and account at a glance.</p></div>
+      <NuxtLink to="/account/orders" class="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">All orders <Icon name="lucide:arrow-right" size="16" class="ml-1" aria-hidden="true" /></NuxtLink>
+    </header>
+    <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ error }}</p>
+    <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Account summary">
+      <NuxtLink v-for="stat in [
+        { label: 'Total orders', value: stats.total, icon: 'lucide:package', to: '/account/orders' },
+        { label: 'In progress', value: stats.active, icon: 'lucide:clock-3', to: '/account/orders?filter=active' },
+        { label: 'Completed', value: stats.completed, icon: 'lucide:check-circle-2', to: '/account/orders?filter=completed' },
+        { label: 'Wallet balance', value: formatAccountMoney(stats.wallet), icon: 'lucide:wallet', to: '/account/wallet' }
+      ]" :key="stat.label" :to="stat.to" class="rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-200 hover:bg-blue-50/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+        <div class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Icon :name="stat.icon" size="19" aria-hidden="true" /></span><span class="text-sm text-slate-600">{{ stat.label }}</span></div>
+        <p class="mt-3 text-2xl font-bold text-slate-900">{{ loading || error ? '—' : stat.value }}</p>
+      </NuxtLink>
+    </section>
+    <section aria-labelledby="recent-orders-heading" class="space-y-3">
+      <div class="flex items-center justify-between gap-3"><h2 id="recent-orders-heading" class="text-xl font-bold text-slate-900">Recent orders</h2><span v-if="!loading && !error" class="text-sm text-slate-500">{{ stats.total }} total</span></div>
+      <p v-if="loading" role="status" class="rounded-2xl bg-white p-8 text-center text-sm text-slate-600">Loading your orders…</p>
+      <div v-else-if="!error && orders.length" class="grid gap-3 xl:grid-cols-2"><AccountOrderCard v-for="order in orders" :key="order.id" :order="order" compact /></div>
+      <div v-else-if="!error" class="rounded-2xl border border-slate-200 bg-white p-8 text-center"><Icon name="lucide:package-open" size="28" class="mx-auto text-slate-400" aria-hidden="true" /><p class="mt-3 font-semibold text-slate-900">No orders yet</p><p class="mt-1 text-sm text-slate-600">Your purchases will appear here.</p><NuxtLink to="/search" class="mt-4 inline-flex min-h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700">Browse products</NuxtLink></div>
+    </section>
   </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup>
+import { resolveAccountUser } from '~/utils/accountSession'
+
 const supabase = useSupabaseClient()
 const route = useRoute()
 const user = useSupabaseUser()
@@ -36,7 +38,7 @@ const getCustomerProfilePayload = () => {
 }
 
 const createOrUpdateCustomerProfile = async () => {
-  const currentUser = user.value
+  const currentUser = await resolveAccountUser(supabase, user.value)
 
   if (!currentUser) {
     return
@@ -100,7 +102,7 @@ const submitAuthForm = async () => {
       throw error
     }
 
-    const currentUser = user.value
+    const currentUser = await resolveAccountUser(supabase, user.value)
 
     if (currentUser) {
       const { data: existingProfile, error: existingProfileError } = await supabase

@@ -1,8 +1,9 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const supabase = useSupabaseClient()
-  const { data: sessionData } = await supabase.auth.getSession()
+  const { data: claimsData, error: authError } = await supabase.auth.getClaims()
+  const customerId = claimsData?.claims?.sub
 
-  if (!sessionData.session) {
+  if (authError || !customerId) {
     return navigateTo({
       path: '/login',
       query: {
@@ -14,7 +15,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { data: customerProfile, error: customerProfileError } = await supabase
     .from('customer_profiles')
     .select('is_active')
-    .eq('id', sessionData.session.user.id)
+    .eq('id', customerId)
     .maybeSingle()
 
   if (customerProfileError) {

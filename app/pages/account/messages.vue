@@ -1,10 +1,11 @@
 <script setup>
 definePageMeta({
+  layout: 'account',
   middleware: 'customer-auth'
 })
+useHead({ title: 'Order Messages' })
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
 const loading = ref(true)
 const errorMessage = ref('')
 const messages = ref([])
@@ -20,15 +21,6 @@ const replyNotice = reactive({
   text: '',
   returnedToProcessing: false
 })
-
-const displayName = computed(() => {
-  return user.value?.user_metadata?.full_name
-    || user.value?.user_metadata?.name
-    || user.value?.email?.split('@')[0]
-    || 'Customer'
-})
-
-const userEmail = computed(() => user.value?.email || '')
 
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
@@ -242,11 +234,6 @@ const submitReply = async (message) => {
   }
 }
 
-const logout = async () => {
-  await supabase.auth.signOut()
-  await navigateTo('/')
-}
-
 const formatDate = (value) => {
   if (!value) {
     return 'Recently'
@@ -268,68 +255,13 @@ onMounted(loadMessages)
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 py-8">
-    <div class="mx-auto max-w-7xl px-4 md:px-6">
-      <div class="mb-6 rounded-3xl bg-white p-6 shadow">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm font-semibold text-blue-600">Customer Account</p>
-            <h1 class="mt-1 text-3xl font-bold text-gray-900">Messages</h1>
-            <p class="mt-2 text-sm text-gray-500">
-              Order updates and notes sent by the store team.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
-            :disabled="loading"
-            @click="loadMessages"
-          >
-            <Icon name="lucide:refresh-cw" size="17" :class="{ 'animate-spin': loading }" />
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-if="errorMessage"
-        role="alert"
-        class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow"
-      >
-        {{ errorMessage }}
-      </div>
-
-      <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside class="h-fit overflow-hidden rounded-3xl bg-white shadow">
-          <div class="bg-blue-600 px-6 py-7 text-white">
-            <div class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/30 bg-white/10">
-              <Icon name="lucide:user-round" size="32" />
-            </div>
-            <p class="mt-4 text-xl font-bold">{{ displayName }}</p>
-            <p class="mt-1 break-all text-sm text-blue-100">{{ userEmail }}</p>
-          </div>
-
-          <div class="p-5">
-            <p class="px-3 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
-              Account
-            </p>
-
-            <AccountNavigation />
-
-            <button
-              type="button"
-              class="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left font-semibold text-red-600 transition hover:bg-red-50"
-              @click="logout"
-            >
-              <Icon name="lucide:log-out" size="18" />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </aside>
-
-        <main class="space-y-6">
-          <section class="grid gap-4 sm:grid-cols-2">
+  <div class="space-y-5">
+    <header class="flex flex-wrap items-end justify-between gap-3">
+      <div><p class="text-sm font-semibold text-blue-700">Your account</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Messages</h1><p class="mt-1 text-sm text-slate-600">Order updates from our team. For a new question, use Support.</p></div>
+      <button type="button" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" :disabled="loading" @click="loadMessages"><Icon name="lucide:refresh-cw" size="16" :class="{ 'animate-spin': loading }" aria-hidden="true" /> Refresh</button>
+    </header>
+    <p v-if="errorMessage" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ errorMessage }}</p>
+    <section class="grid gap-3 sm:grid-cols-2">
             <div class="rounded-2xl bg-white p-5 shadow">
               <p class="text-sm font-semibold text-gray-500">All Messages</p>
               <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalMessages }}</p>
@@ -341,7 +273,7 @@ onMounted(loadMessages)
             </div>
           </section>
 
-          <section class="rounded-3xl bg-white p-6 shadow">
+          <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
             <div v-if="loading" class="py-16 text-center text-gray-500" role="status">
               Loading messages...
             </div>
@@ -544,8 +476,5 @@ onMounted(loadMessages)
               </div>
             </div>
           </section>
-        </main>
-      </div>
-    </div>
   </div>
 </template>
