@@ -1,4 +1,27 @@
-# Project state — 2026-09-20
+# Project state — 2026-09-21
+
+## Live Chat — Phase 3 customer experience complete locally (2026-09-21)
+
+**Status:** Local code only. All three Live Chat migrations (`20260920150000_live_chat_foundation.sql`, `20260920160000_live_chat_transactions.sql`, `20260920170000_live_chat_customer_intake.sql`) remain unapplied to linked Supabase, staging, and production. Anonymous Auth remains disabled. No VPS deployment or staff inbox UI was performed.
+
+### Customer flow
+
+- The default storefront layout mounts a client-only Live Support launcher. A public, no-store `/api/chat/status` returns only enabled/availability/copy/contact-rule/cooldown/length fields. The launcher stays hidden while chat is disabled or on checkout routes. It opens no Realtime socket on page load. The panel is compact on desktop and full-height on mobile, with safe-area positioning, focus/keyboard handling, history navigation, plain-text bubbles, a composer, and loading/error/closed states.
+- A signed-in customer uses the existing Supabase session and account profile. `/api/chat/me` returns only the verified customer's contact projection; the panel asks for a mobile number only when required by settings and missing from the profile. A guest uses a separate browser Supabase client and storage key, created when chat is opened; `signInAnonymously()` runs only on the first submission. It cannot overwrite the storefront's normal Auth session. Guest name plus email or mobile is required, with rules validated again by the server and database. No guest-to-account merge occurs from typed contact values.
+- On opening, the panel lists the actor's saved conversations, resumes the open one if present, and offers closed history. Message history loads 50 at a time with an older-message cursor. The composer keeps typing available during the saved cooldown and disables only Send. Submission keys survive retry while the draft is unchanged; the server saves the first conversation/message atomically, so a failed first message does not leave an empty chat. Message text uses Vue interpolation, never raw HTML.
+- After an existing chat is opened, the client joins only its private `chat:public:<id>` channel and reconciles from the permanent API on subscription, signal, focus, and network return. It merges messages by ID, catches up using sequence cursors, and avoids autoscroll while reading older messages. The channel remains for lightweight reply badges while minimized and is removed on actor/conversation change, checkout, or unmount. The badge is session-local; durable read/unread state is a later phase. A signed-in session does not automatically claim an earlier guest conversation.
+
+### Offline intake and availability
+
+- The Phase 3 migration adds `chat_live_available()` and an insert trigger that stores `live` or `offline` intake based on enabled settings, manual override, configured timezone/hours, and an eligible agent's current online lease. Force-online still requires an eligible agent. A public status check uses the same function. With no agent lease API/UI yet, ordinary staged behavior will be **offline** even if enabled; the panel clearly asks for a saved message instead of promising an immediate reply.
+- `chat_start_with_message` wraps create/resume and first send in one database transaction. The existing create route accepts an optional first message and client keys. A retry returns the same conversation/message. The server still determines customer/guest identity and owned order; the browser supplies no trusted actor ID. If chat is disabled, the launcher hides and new customer sends are denied at the database boundary.
+- The third migration also makes the narrow conversation-guard, message-guard, and create/resume functions `SECURITY DEFINER` with empty search paths. Supabase API roles cannot read the protected Auth schema directly; isolated tests now execute the first-message path as `service_role` without an `auth` schema grant. Browser roles still cannot execute the write RPCs or access chat tables.
+
+### Phase 3 validation and limits
+
+- **VERIFIED locally:** 107 repository tests passed, including atomic offline first-message/retry, service-role Auth-schema isolation, availability override/lease, client reconciliation ordering, contact rules, and cooldown calculations. Nuxt typecheck and production build passed. The locally built storefront returned HTTP 200; unauthenticated `/api/chat/me` and `/api/chat/conversations` returned HTTP 401. `git diff --check` passed. No lint script exists.
+- **NOT VERIFIED:** Guest anonymous sign-in against a real Supabase project, private Realtime delivery/reconnect, authenticated browser interaction, mobile keyboard/focus behavior on devices, visual rendering with live content, live business-hours timezone behavior, or linked-project RLS/Storage state. PGlite tests stub Auth and Realtime; all migrations remain local. A manual browser check cannot exercise an enabled chat until staging applies the migrations and configures Auth/agent availability.
+- **Phase 4 only:** Build the support/admin inbox UI on existing staff APIs, with waiting/assigned/closed views, scoped transcript, reply/internal note, claim/transfer/close/reopen actions and visible state changes. Do not start later-phase read markers, order/ticket integration, attachments, admin settings, or deployment as incidental work.
 
 ## Live Chat — Phase 2 transaction and API layer complete locally (2026-09-20)
 

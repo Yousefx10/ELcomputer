@@ -1,4 +1,43 @@
-# Codex handoff — Live Chat Phase 2
+# Codex handoff — Live Chat Phase 3
+
+Date: 2026-09-21. State: **PHASE 3 COMPLETE LOCALLY — awaiting explicit instruction for Phase 4. No remote change.**
+
+## Completed in Phase 3
+
+- Added local additive migration `supabase/migrations/20260920170000_live_chat_customer_intake.sql`: shared availability function, saved live/offline intake trigger, atomic first-conversation/message RPC, and narrow definer privileges for chat Auth-schema checks. It is not applied remotely. Phase 1 and 2 chat migrations also remain local.
+- Added public `/api/chat/status`, scoped `/api/chat/me`, and optional atomic first-message handling in the create route. Availability remains false without an authorized agent's current online lease; settings default disabled.
+- Added a client-only Live Support launcher and responsive customer panel to the storefront's default layout. Guests use a separately persisted Supabase Auth client and sign in anonymously only when they submit. Signed-in customers reuse existing Auth and contact data. The panel supports guest details, a conditional missing-mobile field, offline messaging, owned resume/history, cursor paging, idempotent sends, cooldown display, private conversation subscription, API reconciliation, and a session-local reply badge. It renders plain text, not message HTML.
+- No staff inbox UI, anonymous Auth remote setting change, remote migration, staging action, or deployment was performed.
+
+## Files changed in Phase 3
+
+- Migration: `supabase/migrations/20260920170000_live_chat_customer_intake.sql` (**new; local only**).
+- Server: `server/api/chat/status.get.js`, `server/api/chat/me.get.js` (**new**), `server/api/chat/conversations/index.post.js`.
+- Application: `app/components/live-chat/Launcher.vue`, `app/composables/useLiveChatClient.js`, `app/utils/liveChat.js` (**new**), `app/layouts/default.vue`; `package.json` and `package-lock.json` now declare the direct `@supabase/supabase-js` dependency.
+- Tests: `tests/live-chat-customer-ui.test.mjs` (**new**), `tests/live-chat-transactions.test.mjs`.
+- Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`. `AGENTS.md` unchanged.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **107 passed, 0 failed**. New tests cover offline/online intake based on agent lease and override, atomic first-message failure/retry, a service-role write without direct Auth-schema access, message reconciliation deduplication/order, contact requirements, and cooldown calculations.
+- `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. The locally built storefront returned HTTP 200, while unauthenticated `/api/chat/me` and `/api/chat/conversations` returned HTTP 401. No lint script exists.
+- **VERIFIED locally:** The third migration loads in PGlite and produces offline intake with no eligible lease. A failed first message rolls back the conversation, while retrying saved keys returns the same rows. The service-role path works while its `auth` schema grant remains absent. The customer component and routes compile. Browser code does not instantiate a guest Auth client or a Realtime channel on initial page load.
+- **NOT VERIFIED:** Real anonymous Auth, authenticated customer/guest HTTP requests, actual private Realtime subscription and reconnect, browser/mobile rendering, software keyboard, full assistive-technology behavior, live Storage/RLS state, and actual linked-project business-hours behavior. No remote migration or deployment occurred.
+
+## Known issues and decisions
+
+- Chat settings default off, and anonymous Auth is disabled in the linked project. The launcher will stay hidden against current production state. Do not enable Auth or apply migrations outside the later staged phase. Guest sign-in may also require project CAPTCHA configuration; test in isolated staging.
+- No agent availability lease writer exists yet, so enabled chat will honestly present an offline message until a later staff/availability phase supplies online leases. `chat_live_available()` enforces current lease plus hours/override; Phase 4 staff UI should show the state clearly.
+- Customer Realtime signals contain IDs only; the panel re-fetches through scoped APIs. Realtime membership/delivery and the session-local reply badge need browser testing. Durable read/unread markers, typing/presence, guest-to-account linking, order context, attachments, ticket conversion, settings UI, and full responsive/accessibility review remain later phases.
+- The panel never links a guest conversation to a permanent account based on contact text. When the main Auth identity changes, it reloads that actor's scoped history. Guest sessions remain isolated under their own storage key.
+
+## Exact next action — Phase 4, only after “Continue with Phase 4”
+
+Re-read the Phase 4 support/admin requirements and current handoff. Build the staff Live Chat inbox in the existing dashboard using `support.view`, `support.reply`, and `support.manage`; show a paged waiting/active/closed queue, scoped transcript and internal notes, customer contact context without unrelated order data, and claim/transfer/close/reopen actions with expected revisions and clear conflict feedback. Reconcile inbox and the viewed conversation from private ID-only signals without subscribing every staff browser to all message bodies. Validate locally, update state/handoff, and stop before Phase 5. Do not deploy or apply chat migrations remotely in Phase 4.
+
+---
+
+# Previous handoff — Live Chat Phase 2
 
 Date: 2026-09-20. State: **PHASE 2 COMPLETE LOCALLY — awaiting explicit instruction for Phase 3. No remote change.**
 

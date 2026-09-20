@@ -8,6 +8,7 @@
       <slot />
     </main>
     <LayoutFooter />
+    <ClientOnly><LiveChatLauncher /></ClientOnly>
   </div>
 </template>
 

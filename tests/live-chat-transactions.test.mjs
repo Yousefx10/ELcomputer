@@ -101,6 +101,42 @@ test('shared message rate limit and configured contact rule hold at the database
   assert.equal((await first('select count(*)::int as count from public.chat_messages where conversation_id=$1', [chat])).count, 12)
 })
 
+test('availability chooses truthful intake and first message commits atomically', async () => {
+  assert.equal((await first('select public.chat_live_available() as available')).available, false)
+  await query("update public.chat_settings set availability_override='online'")
+  assert.equal((await first('select public.chat_live_available() as available')).available, false)
+  await query(`insert into public.chat_agent_availability(admin_id,declared_state,lease_expires_at)
+    values($1,'online',now()+interval '10 minutes')`, [staffA])
+  assert.equal((await first('select public.chat_live_available() as available')).available, true)
+  const liveChat = await create(customerA)
+  assert.equal((await first('select intake_mode from public.chat_conversations where id=$1', [liveChat])).intake_mode, 'live')
+  await query("update public.chat_settings set availability_override='offline'")
+  assert.equal((await first('select public.chat_live_available() as available')).available, false)
+  const creationKey = randomUUID(), messageKey = randomUUID()
+  const args = [guestA, true, 'Guest', 'guest@example.test', null, null,
+    creationKey, hash(guestA), 'Please contact me', messageKey]
+  const started = (await first('select public.chat_start_with_message($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) as result', args)).result
+  assert.equal((await first('select intake_mode from public.chat_conversations where id=$1', [started.conversationId])).intake_mode, 'offline')
+  assert.equal((await first('select count(*)::int as count from public.chat_messages where conversation_id=$1', [started.conversationId])).count, 1)
+  const retried = (await first('select public.chat_start_with_message($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) as result', args)).result
+  assert.deepEqual(retried, started)
+  await denied(() => first('select public.chat_start_with_message($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',
+    [customerB, false, 'B', 'b@example.test', null, null,
+      randomUUID(), hash(customerB), ' ', randomUUID()]), /message length is invalid/)
+  assert.equal((await first('select count(*)::int as count from public.chat_conversations where customer_id=$1', [customerB])).count, 0)
+})
+
+test('service role can save first message without direct auth schema access', async () => {
+  assert.equal((await first("select has_schema_privilege('service_role','auth','USAGE') as allowed")).allowed, false)
+  await db.exec('set local role service_role')
+  const result = await first('select public.chat_start_with_message($1,false,$2,$3,null,null,$4,$5,$6,$7) as started',
+    [customerA, 'Customer A', 'customer-a@example.test', randomUUID(),
+      hash(customerA), 'Service role path', randomUUID()])
+  assert.ok(result.started.conversationId)
+  assert.ok(result.started.messageId)
+  await db.exec('reset role')
+})
+
 test('claim, stale claim, transfer, close and reopen preserve history and serialize sends', async () => {
   const chat = await create(customerA)
   const revision = Number((await first('select revision from public.chat_conversations where id=$1', [chat])).revision)
@@ -143,6 +179,7 @@ test('internal notes generate staff-only message signals and no customer signal'
 test('browser roles cannot execute write RPCs or access private chat tables', async () => {
   const signatures = [
     'public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)',
+    'public.chat_start_with_message(uuid,boolean,text,text,text,uuid,uuid,text,text,uuid)',
     'public.chat_send_message(uuid,uuid,text,text,text,uuid,text,boolean)',
     'public.chat_transition(uuid,uuid,text,uuid,bigint)',
     'public.chat_consume_limit(text,text,integer,integer)'

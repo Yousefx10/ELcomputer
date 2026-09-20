@@ -13,11 +13,24 @@ export default defineEventHandler(async (event) => {
     ? chatContact(body.name, body.email, body.mobile)
     : chatContact(actor.profile.full_name || actor.profile.email,
       actor.profile.email, actor.profile.phone || body.mobile)
-  const { data: id, error } = await actor.supabase.rpc('chat_create_or_resume', {
+  const initialMessage = body.initialMessage
+  if (initialMessage !== undefined && (typeof initialMessage !== 'string'
+    || !initialMessage.trim() || initialMessage.length > 10000)) {
+    throw createError({ statusCode: 400, statusMessage: 'Message is invalid.' })
+  }
+  const args = {
     p_actor_id: actor.id, p_is_guest: actor.kind === 'guest',
     p_name: contact.name, p_email: contact.email, p_mobile: contact.mobile,
     p_order_id: orderId, p_creation_key: key, p_subject_hash: chatActorHash(actor.id)
-  })
+  }
+  const isFirstMessage = initialMessage !== undefined
+  const { data, error } = await actor.supabase.rpc(
+    isFirstMessage ? 'chat_start_with_message' : 'chat_create_or_resume',
+    isFirstMessage ? { ...args, p_body: initialMessage,
+      p_message_key: chatUuid(body.messageKey, 'Submission key') } : args
+  )
   if (error) chatError(error, 'Could not start conversation.')
-  return { item: await loadChatConversation(actor, id) }
+  const id = isFirstMessage ? data?.conversationId : data
+  return { item: await loadChatConversation(actor, id),
+    messageId: isFirstMessage ? data?.messageId : null }
 })
