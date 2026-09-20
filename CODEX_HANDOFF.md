@@ -1,4 +1,41 @@
-# Codex handoff — Live Chat Phase 0
+# Codex handoff — Live Chat Phase 1
+
+Date: 2026-09-20. State: **PHASE 1 COMPLETE LOCALLY — awaiting explicit instruction for Phase 2. No remote change.**
+
+## Completed in Phase 1
+
+- Created additive local migration `supabase/migrations/20260920150000_live_chat_foundation.sql`: eight private chat tables, defaults/constraints/indexes, private chat Storage bucket metadata, customer/guest identity compatibility, conversation/message guards, private Realtime topic read authorization, and system reset integration. The migration has not been pushed or applied outside isolated PGlite tests.
+- Hardened the existing customer boundary: `server/utils/customerRequest.js` requires an active permanent profile, and `app/middleware/customer-auth.ts` rejects missing/inactive/anonymous profiles. The migration skips customer profile creation for anonymous Auth users and denies their browser profile writes. Anonymous sign-ins remain disabled locally and remotely unchanged.
+- Updated reset allowlists and private-file cleanup. Added focused security/schema tests and expanded reset tests. No chat API, claim/send RPC, Broadcast trigger, UI, remote Supabase setting, or VPS deployment was added.
+- Static authenticated-role audit found the customer-profile path above; existing order and order-message reads are owner scoped, support ticket tables/RPCs deny browser roles, and admin operations use active staff permissions. The public `site_settings` table was not reused for private chat controls. This audit does not replace a live Supabase policy check.
+
+## Files changed
+
+- Migration: `supabase/migrations/20260920150000_live_chat_foundation.sql` (**new; not remotely applied**).
+- Application/server: `app/middleware/customer-auth.ts`, `server/utils/customerRequest.js`, `server/utils/systemReset.js`, `server/utils/systemResetScopes.js`.
+- Tests: `tests/live-chat-foundation.test.mjs` (**new**), `tests/helpers/resetDatabase.mjs`, `tests/system-reset-database.test.mjs`, `tests/system-reset.test.mjs`.
+- Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`. `AGENTS.md` was unchanged.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **96 passed, 0 failed**. New tests cover private-table denial, anonymous profile forgery, private topic access by customer/guest/staff, disabled staff, owned order/ticket linkage, open-conversation uniqueness, sender/visibility/idempotency constraints, private bucket metadata, and reset preservation/cleanup.
+- `npm run typecheck`: passed. `npm run build`: passed with existing non-blocking sourcemap warnings. `git diff --check`: passed. No lint script is configured.
+- **VERIFIED locally:** The migration loads in the isolated PGlite database and leaves chat disabled. Customer/guest identity and RLS rules, direct browser-role denial, reset allowlist/manifest, and database constraints behave as tested. The customer account middleware and server helper compile and build.
+- **NOT VERIFIED:** Actual Supabase Realtime channel joins/policies, remote Auth setting or `auth.users` shape, live private Storage policies, guest sign-in, authenticated browser flows, quota, true concurrent agent claims, cooldown/rate-limit enforcement, and any chat UI/API. PGlite stubs Auth/Realtime infrastructure; staging must verify the real services. Existing support Storage manual acceptance is also still outstanding.
+
+## Known issues and decisions
+
+- Enabling anonymous Auth is project-wide because anonymous users receive the `authenticated` role. It remains disabled. Inspect actual remote grants/policies and Auth configuration before enabling it in a disposable staging project. The migration expects `auth.users.is_anonymous` and `realtime.messages`/`realtime.topic()`, matching current Supabase documentation; verify the target project before application.
+- Private Realtime authorization is checked on join/token refresh, and other remote permissive policies could broaden access. The Phase 1 policy alone cannot establish current remote isolation. No customer-sensitive bodies should be broadcast in Phase 2.
+- The database schema prepares cooldown, rates, audit, reads, and assignment, but their transactional operations are not yet implemented. The provisional business timezone is `Africa/Cairo` and hours are Sunday–Thursday 09:00–18:00; confirm before staging. The chat setting defaults to off.
+
+## Exact next action — Phase 2, only after “Continue with Phase 2”
+
+Re-read Phase 2 requirements and the current repository/handoff. Build actor authentication for permanent customer, separate anonymous guest, and authorized staff; create scoped chat APIs and service-only transaction RPCs for create/resume, send, claim/transfer/close; enforce 4-second default cooldown and shared abuse limits; emit only committed private Broadcast signals; write focused ownership, idempotency, race, and reconnect-oriented tests. Do not begin customer launcher or inbox UI, enable anonymous Auth remotely, apply this migration remotely, or deploy. Run the suite/typecheck/build/diff checks, update state/handoff, and stop before Phase 3.
+
+---
+
+# Previous handoff — Live Chat Phase 0
 
 Date: 2026-09-20. State: **PHASE 0 COMPLETE — inspection and architecture only. Awaiting explicit instruction to continue with Phase 1.**
 

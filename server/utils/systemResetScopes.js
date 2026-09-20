@@ -1,5 +1,6 @@
 // Explicit scope lists prevent an unrelated table from being erased implicitly.
 export const resetTableGroups = {
+  chat: ['chat_attachments', 'chat_read_state', 'chat_events', 'chat_messages', 'chat_agent_availability', 'chat_rate_limits', 'chat_conversations', 'chat_settings'],
   support: ['support_ticket_attachments', 'support_ticket_events', 'support_ticket_messages', 'support_tickets', 'help_articles', 'help_categories'],
   erp: ['erp_sync_jobs', 'erp_entity_links', 'erp_provider_settings'],
   orders: ['shipping_webhook_events', 'shipping_order_jobs', 'customer_order_messages', 'order_packing_scans', 'order_packing_videos', 'order_packing_sessions', 'order_packing_work_sessions', 'commerce_order_return_items', 'commerce_order_returns', 'customer_order_items', 'customer_orders'],

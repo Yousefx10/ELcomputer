@@ -22,7 +22,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/login')
   }
 
-  if ((customerProfile as { is_active?: boolean } | null)?.is_active === false) {
+  if (claimsData.claims?.is_anonymous === true || !customerProfile) {
+    if (import.meta.client) {
+      await supabase.auth.signOut()
+    }
+    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  if ((customerProfile as { is_active?: boolean }).is_active === false) {
     if (import.meta.client) {
       await supabase.auth.signOut()
     }

@@ -62,6 +62,12 @@ export const finishResetCleanup = async ({ supabaseAdmin, run, ownerId, uploadsR
       .remove(supportFiles.slice(offset, offset + 100))
     if (error) throw new Error('Support attachment cleanup failed. Retry to finish the reset.')
   }
+  const chatFiles = manifest.chat || []
+  for (let offset = 0; offset < chatFiles.length; offset += 100) {
+    const { error } = await supabaseAdmin.storage.from('chat-attachments')
+      .remove(chatFiles.slice(offset, offset + 100))
+    if (error) throw new Error('Chat attachment cleanup failed. Retry to finish the reset.')
+  }
   await removeResetMediaFiles(uploadsRoot, manifest.media || [])
   for (const userId of manifest.users || []) {
     if (userId === ownerId) throw new Error('The reset cannot delete the current owner.')

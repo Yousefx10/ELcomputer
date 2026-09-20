@@ -33,7 +33,14 @@ export const requireCustomerRequest = async (event) => {
     throwRequestDatabaseError('Customer', customerProfileError)
   }
 
-  if (customerProfile && customerProfile.is_active === false) {
+  if (authData.user.is_anonymous === true || !customerProfile) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'A current customer account is required.'
+    })
+  }
+
+  if (customerProfile.is_active === false) {
     throw createError({
       statusCode: 403,
       statusMessage: 'This customer account is disabled.'

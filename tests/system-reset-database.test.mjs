@@ -194,26 +194,43 @@ test('content reset removes Help Center content without removing customer ticket
   const category = await value("select id as value from public.help_categories where slug='orders'")
   await db.query("insert into public.help_articles(category_id,title,slug,status) values($1,'Order help','order-help','published')", [category])
   const ticket = await value("select public.support_create_ticket($1,null,$2,'Order issue','Please help',$3) as value", [customer, category, randomUUID()])
+  const chat = await value(`insert into public.chat_conversations(customer_id,contact_name,contact_email,creation_key)
+    values($1,'Customer','customer@test.invalid',$2) returning id as value`, [customer, randomUUID()])
   await beginReset('content')
   assert.equal(await count('help_articles'), 0)
   assert.equal(await count('help_categories'), 0)
   assert.equal(await count('support_tickets'), 1)
   assert.equal(await value('select category_id as value from public.support_tickets where id=$1', [ticket]), null)
+  assert.equal(await value('select id as value from public.chat_conversations where id=$1', [chat]), chat)
+  assert.equal(await count('chat_settings'), 1)
 })
 
-test('full reset captures only existing support objects and clears support tables', async () => {
+test('full reset captures private support and chat objects and clears their rows', async () => {
   const ticket = await value("select public.support_create_ticket($1,null,null,'File issue','Please help',$2) as value", [customer, randomUUID()])
   const message = await value('select id as value from public.support_ticket_messages where ticket_id=$1', [ticket])
   const path = `${ticket}/${message}/evidence.pdf`
   await db.query("insert into storage.objects(bucket_id,name) values('support-attachments',$1)", [path])
   await db.query("insert into public.support_ticket_attachments(ticket_id,message_id,original_name,storage_path,mime_type,size_bytes) values($1,$2,'evidence.pdf',$3,'application/pdf',100)", [ticket, message, path])
+  const chat = await value(`insert into public.chat_conversations(customer_id,contact_name,contact_email,creation_key)
+    values($1,'Customer','customer@test.invalid',$2) returning id as value`, [customer, randomUUID()])
+  const chatMessage = await value(`insert into public.chat_messages(conversation_id,sender_id,sender_kind,sender_name,body,idempotency_key)
+    values($1,$2,'customer','Customer','Chat file',$3) returning id as value`, [chat, customer, randomUUID()])
+  const chatPath = `${chat}/${chatMessage}/evidence.pdf`
+  await db.query("insert into storage.objects(bucket_id,name) values('chat-attachments',$1)", [chatPath])
+  await db.query(`insert into public.chat_attachments(conversation_id,message_id,original_name,storage_path,mime_type,size_bytes)
+    values($1,$2,'evidence.pdf',$3,'application/pdf',100)`, [chat, chatMessage, chatPath])
   const run = await beginReset('full')
   assert.deepEqual(run.manifest.support, [path])
+  assert.deepEqual(run.manifest.chat, [chatPath])
   assert.equal(await count('support_ticket_attachments'), 0)
   assert.equal(await count('support_ticket_messages'), 0)
   assert.equal(await count('support_tickets'), 0)
+  assert.equal(await count('chat_attachments'), 0)
+  assert.equal(await count('chat_messages'), 0)
+  assert.equal(await count('chat_conversations'), 0)
   // Storage bytes are deleted later by the application using the captured path.
   assert.equal(await value("select count(*)::int as value from storage.objects where bucket_id='support-attachments'"), 1)
+  assert.equal(await value("select count(*)::int as value from storage.objects where bucket_id='chat-attachments'"), 1)
 })
 
 test('public visitors only read published site pages', async () => {

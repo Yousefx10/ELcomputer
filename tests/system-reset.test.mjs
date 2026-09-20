@@ -54,7 +54,7 @@ test('completion logging occurs only after document and account cleanup', async 
   assert.equal(calls.some(([kind])=>kind==='rpc'),false)
 })
 
-test('full reset removes only captured private support attachments', async () => {
+test('full reset removes only captured private support and chat attachments', async () => {
   const calls = []
   const supabaseAdmin = {
     storage: { from: bucket => ({ remove: async paths => { calls.push([bucket, paths]); return { error: null } } }) },
@@ -63,10 +63,15 @@ test('full reset removes only captured private support attachments', async () =>
   }
   await finishResetCleanup({
     supabaseAdmin,
-    run: { id: randomUUID(), scope: 'full', status: 'cleanup_pending', manifest: { support: ['ticket/old.pdf'] } },
+    run: { id: randomUUID(), scope: 'full', status: 'cleanup_pending', manifest: {
+      support: ['ticket/old.pdf'], chat: ['chat/old.pdf']
+    } },
     ownerId: 'owner', uploadsRoot: '/tmp/elcomputer-empty-uploads'
   })
-  assert.deepEqual(calls, [['support-attachments', ['ticket/old.pdf']]])
+  assert.deepEqual(calls, [
+    ['support-attachments', ['ticket/old.pdf']],
+    ['chat-attachments', ['chat/old.pdf']]
+  ])
 })
 
 test('a completed request never deletes files or accounts again', async () => {
