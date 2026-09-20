@@ -1,4 +1,26 @@
-# Codex handoff — Help Center and customer support
+# Codex handoff — Live Chat Phase 0
+
+Date: 2026-09-20. State: **PHASE 0 COMPLETE — inspection and architecture only. Awaiting explicit instruction to continue with Phase 1.**
+
+## Phase 0 result
+
+- Read the complete 1,256-line Live Chat master specification and inspected Nuxt configuration, layouts, customer and staff auth, profile/order schema, ticket/Help Center/Messages/CRM flows, settings, Storage, Realtime usage, RLS, server routes, tests, reset integration, `AGENTS.md`, and prior project/handoff state. `git status --porcelain` was empty before this documentation update.
+- The proposed architecture, reuse map, database tables, private Realtime topics, authorization model, guest identity, assignment/read models, cooldown and abuse limits, attachments, ticket/order integration, availability, quota considerations, risks, decisions, and final phases are recorded at the top of `PROJECT_STATE.md`.
+- No chat feature code, SQL migration, external setting, remote database action, or deployment was created/performed. The only Phase 0 files changed are `PROJECT_STATE.md` and `CODEX_HANDOFF.md`.
+- Validation: repository inspection, official Supabase documentation review, and `git diff --check` passed. No test, typecheck, or build run was needed for a documentation-only phase. Existing test results later in this file describe earlier releases, not Phase 0 validation.
+- **Verified:** existing ticket and order systems, support permission keys, service-role API pattern, private ticket bucket, public `site_settings` rows, no existing chat Realtime subscriptions, anonymous Auth disabled in local config, and email-required customer-profile trigger.
+- **Not verified:** current remote Auth/Realtime settings, Storage policies, Supabase plan/quota, manual authenticated flows, proposed anonymous-Auth compatibility, new RLS policies, and any Live Chat behavior.
+- **Known decision:** anonymous Auth is the preferred guest identity for private Realtime. Enabling it is project-wide and requires a full `authenticated` policy/API audit and explicit review before staging or production changes. Confirm operating timezone/hours, offline default, and retention before their staging rollout. The proposal defaults chat disabled, manual assignment, offline conversations, and a 4-second customer send delay.
+
+## Exact next action — Phase 1, only after the user says “Continue with Phase 1”
+
+1. Re-read the Phase 1 and security requirements in the attached master specification; inspect current `git status`, this handoff, and the Live Chat section of `PROJECT_STATE.md`.
+2. Audit existing authenticated-role RLS/grants and customer APIs for anonymous-user exposure. Draft local additive migrations for the proposed chat schema, validated default settings, RLS and private topic authorization, guest profile-trigger compatibility, indexes and reset integration. Do not enable anonymous sign-ins remotely or apply any migration to production.
+3. Add focused isolated database tests for defaults, grants/RLS, topic membership, identity boundaries, constraints, assignment concurrency foundations, and reset behavior. Run relevant tests, Nuxt typecheck/build if application code changes, and `git diff --check`. Update state/handoff with exact results and stop before Phase 2.
+
+---
+
+# Previous handoff — Help Center and customer support
 
 Date: 2026-09-20. State: **linked Supabase migrations and VPS application deployed; manual acceptance still required**.
 
