@@ -1654,6 +1654,37 @@
         </div>
       </section>
 
+      <section v-show="activeSettingsSection?.section === 'accountDashboard'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <div class="p-6">
+          <h3 class="text-2xl font-bold">Customer account layout</h3>
+          <p class="mt-1 text-sm text-gray-500">Choose how customers see their account pages. The store header is unchanged.</p>
+        </div>
+        <div class="border-t p-6">
+          <div class="grid gap-4 md:grid-cols-2" role="radiogroup" aria-label="Customer account layout">
+            <label v-for="option in accountDashboardOptions" :key="option.value"
+              class="cursor-pointer rounded-2xl border-2 p-5 transition focus-within:ring-2 focus-within:ring-blue-500"
+              :class="siteSettings.account_dashboard_style === option.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-300'">
+              <input v-model="siteSettings.account_dashboard_style" type="radio" name="account-dashboard-style"
+                :value="option.value" :disabled="!canEditSettings" class="sr-only">
+              <span class="flex items-start justify-between gap-3">
+                <span><span class="block font-bold text-gray-900">{{ option.label }}</span><span class="mt-1 block text-sm text-gray-600">{{ option.description }}</span></span>
+                <Icon v-if="siteSettings.account_dashboard_style === option.value" name="lucide:circle-check" size="21" class="shrink-0 text-blue-700" aria-hidden="true" />
+              </span>
+            </label>
+          </div>
+          <p v-if="settingsErrorSection === 'accountDashboard' && settingsError" role="alert" class="mt-4 text-sm text-red-600">{{ settingsError }}</p>
+          <p v-if="settingsSuccessSection === 'accountDashboard' && settingsSuccess" role="status" class="mt-4 text-sm text-green-700">{{ settingsSuccess }}</p>
+          <div class="mt-5 flex justify-end">
+            <button type="button" :disabled="!canEditSettings || !isSettingsSectionDirty('accountDashboard') || settingsLoading"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="canEditSettings && isSettingsSectionDirty('accountDashboard') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'"
+              @click="saveSiteSettings('accountDashboard')">
+              {{ settingsLoadingSection === 'accountDashboard' ? 'Saving...' : 'Save account layout' }}
+            </button>
+          </div>
+        </div>
+      </section>
+
       </fieldset>
 
       <DashboardErpSettings
@@ -2099,6 +2130,7 @@ const defaultSiteSettings = {
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
   dashboard_layout: 'standard',
+  account_dashboard_style: 'modern',
   allow_out_of_stock_purchases: false,
   homepage_reviews_enabled: true,
   homepage_reviews_view_all_enabled: true,
@@ -2211,9 +2243,14 @@ const dashboardLayoutOptions = [
     description: 'Sidebar navigation with a cleaner workspace.'
   }
 ]
+const accountDashboardOptions = [
+  { value: 'classic', label: 'Classic', description: 'Keep the current account sidebar and summary cards.' },
+  { value: 'modern', label: 'Modern', description: 'Grouped account navigation with focused order, wallet and profile sections.' }
+]
 const openSections = reactive({
   generalSettings: true,
   dashboardLayout: true,
+  accountDashboard: true,
   homepageReviews: false,
   bannerAds: false,
   footerSettings: false,
@@ -2291,6 +2328,9 @@ const siteSettingsSectionFields = {
   dashboardLayout: [
     'dashboard_layout'
   ],
+  accountDashboard: [
+    'account_dashboard_style'
+  ],
   homepageReviews: [
     'homepage_reviews_enabled',
     'homepage_reviews_view_all_enabled'
@@ -2325,6 +2365,7 @@ const siteSettingsSectionFields = {
 const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
   dashboardLayout: 'Dashboard appearance',
+  accountDashboard: 'Customer account layout',
   homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
@@ -2606,6 +2647,9 @@ const normalizeSiteSettings = (source = {}) => ({
   dashboard_layout: String(source.dashboard_layout || '').trim().toLowerCase() === 'detailed'
     ? 'detailed'
     : 'standard',
+  account_dashboard_style: String(source.account_dashboard_style || '').trim().toLowerCase() === 'classic'
+    ? 'classic'
+    : 'modern',
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
@@ -2725,6 +2769,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_name',
       'site_background_color',
       'landing_page_title',
+      'account_dashboard_style',
       'allow_out_of_stock_purchases',
       'homepage_reviews_enabled',
       'homepage_reviews_view_all_enabled',
@@ -3090,6 +3135,9 @@ const saveSiteSettings = async (sectionName) => {
 
   if (sectionName === 'dashboardLayout') {
     await refreshNuxtData('dashboard-appearance')
+  }
+  if (sectionName === 'accountDashboard') {
+    await refreshNuxtData('account-appearance')
   }
 
   await logSettingsAction(
