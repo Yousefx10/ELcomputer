@@ -1,4 +1,41 @@
-# Codex handoff — Live Chat Phase 1
+# Codex handoff — Live Chat Phase 2
+
+Date: 2026-09-20. State: **PHASE 2 COMPLETE LOCALLY — awaiting explicit instruction for Phase 3. No remote change.**
+
+## Completed in Phase 2
+
+- Added local additive migration `supabase/migrations/20260920160000_live_chat_transactions.sql`. It creates service-only create/resume, send, limit, and staff-transition functions; row-lock/revision concurrency checks; durable workflow events; and private, committed ID-only Broadcast signals. The Phase 1 migration remains local too.
+- Added `server/utils/liveChat.js` and customer/guest `server/api/chat` plus staff `server/api/admin-chat` routes. Actors are verified through Supabase Auth and existing customer/admin records. APIs scope projections and cursor-paged message reads, cap request bodies, validate contacts and UUIDs, and leave service credentials on the server.
+- Added focused transaction tests and a local Realtime stub; adjusted the Phase 1 topic test to distinguish database-generated signals from its manually inserted test row. No UI, anonymous Auth setting change, remote migration, or deployment was made.
+
+## Files changed in Phase 2
+
+- Migration: `supabase/migrations/20260920160000_live_chat_transactions.sql` (**new; not remotely applied**).
+- Server: `server/utils/liveChat.js` (**new**); ten route files under `server/api/chat/conversations` and `server/api/admin-chat/conversations` (**new**).
+- Tests: `tests/live-chat-transactions.test.mjs` (**new**), `tests/live-chat-foundation.test.mjs`, `tests/helpers/resetDatabase.mjs`.
+- Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`. `AGENTS.md` unchanged.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **102 passed, 0 failed**. Transaction tests cover identity/order checks even on resume, open-chat and key retries, cooldown, twelve-message minute limit, staff permission/assignment, stale claim, transfer, close/reopen, public versus internal Broadcast signals, and browser-role RPC denial.
+- `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists. The locally built Nitro server returned HTTP 401 for unauthenticated customer/staff list and detail routes.
+- **VERIFIED locally:** PGlite loads both chat migrations. Scoped database writes are atomic in isolated tests; no internal-note customer signal or body-bearing Broadcast payload is generated. Customer/staff route imports compile and the unauthenticated boundary responds correctly.
+- **NOT VERIFIED:** Real Supabase Realtime channels/`realtime.send`, remote grants/policies/Auth shape, live authenticated/anonymous HTTP flows, true parallel database connections, cross-node behavior, production proxy IP identity, or any customer UI. PGlite stubs Auth and Realtime. No migration was remotely applied.
+
+## Known issues and decisions
+
+- Anonymous Auth remains disabled; Phase 3's guest client cannot work against the linked project yet. Enable it only after a staging policy/API audit and a deliberate setting change. Guest contact values are unverified and confer no order access.
+- Shared actor limits are five new conversations/hour and twelve customer/guest messages/minute, plus the saved configurable cooldown and a 15-second identical-body check. New anonymous sessions can change actor ID and bypass these actor-only counters. Do not claim complete guest abuse protection; add trusted proxy/network controls and load testing before production.
+- Settings remain disabled by default. Availability/business hours and offline intake are later work. Client Realtime subscriptions/reconciliation do not exist yet. The Phase 2 trigger uses private `realtime.send`; verify the linked project's function and private channel policies in isolated staging before rollout. No attachments are accepted through chat APIs yet.
+- `chat_events` captures current create/claim/transfer/close/reopen and public staff reply operations. Later phases will add controlled identity, order, and ticket events. Internal notes remain staff-only in APIs and signals.
+
+## Exact next action — Phase 3, only after “Continue with Phase 3”
+
+Re-read the Phase 3 and customer UX portions of the master specification. Build the floating customer launcher and responsive panel using the new scoped APIs; create a separate anonymous guest Supabase client/session only on chat start; support contact intake, signed-in prefill, safe resume/history, offline intake messaging, customer message composer cooldown, and API-based transcript reconciliation. Do not build the staff inbox UI or start a remote migration/deployment in Phase 3. Validate the customer flows locally, update state/handoff, and stop before Phase 4.
+
+---
+
+# Previous handoff — Live Chat Phase 1
 
 Date: 2026-09-20. State: **PHASE 1 COMPLETE LOCALLY — awaiting explicit instruction for Phase 2. No remote change.**
 

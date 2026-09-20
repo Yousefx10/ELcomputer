@@ -1,5 +1,27 @@
 # Project state — 2026-09-20
 
+## Live Chat — Phase 2 transaction and API layer complete locally (2026-09-20)
+
+**Status:** Local implementation only. Neither chat migration (`20260920150000_live_chat_foundation.sql` or `20260920160000_live_chat_transactions.sql`) has been applied to the linked Supabase project, staging, or production. Anonymous Auth remains disabled. No chat UI, remote setting change, or deployment occurred.
+
+### Durable writes and Realtime signals
+
+- The second migration adds service-role-only transaction functions for create/resume, text send, and claim/transfer/close/reopen. A row lock serializes sends and staff transitions against the same conversation. Expected revisions make a second claim or stale transfer fail; assignment and sender triggers remain a second database boundary. Creation reuses an open conversation or the same creation key, so refresh and retries do not create duplicates. Auth identity and order ownership are checked before returning an existing conversation.
+- Text sends use a client UUID idempotency key. Retrying the same key and content returns the saved message even after a close; reusing the key with different content fails. Customer/guest sends enforce the setting's cooldown, maximum message length, a shared 12 messages/minute actor limit, and a 15-second identical-body check. New conversations have a shared five/hour actor limit. Limits use hashed verified Auth IDs in `chat_rate_limits`, with bounded cleanup of expired counters. Guest Auth session rotation is still a spam-bypass risk until trusted network controls are designed and tested.
+- Creation, claim, transfer, close, reopen, and public staff replies create durable audit events. Broadcast triggers call `realtime.send` in the same write transaction, so rolled-back writes do not emit committed signals. Payloads contain only conversation/message IDs, sequence/revision, and kind; no message bodies or contact details. Customer/guest messages notify the staff inbox, and conversation changes notify its public/staff topics. Internal notes notify only the staff topic and do not advance the public conversation revision/activity marker. Clients must fetch authorized deltas and reconcile after reconnect; no client subscription or UI exists yet.
+
+### Server routes and security boundary
+
+- `server/utils/liveChat.js` verifies bearer tokens through Supabase Auth and separates anonymous guests, active customer profiles, and active staff with existing `support.view`/`support.reply` permissions. Guest contact inputs are validated server-side; customer IDs, staff IDs, sender kinds, and rate-limit subjects come from verified sessions. JSON request bodies have a 16 KiB streaming cap. The service-role key stays server-side.
+- `/api/chat/conversations` supports owned list/create/resume; `/api/chat/conversations/:id` and `:id/messages` return owned, cursor-paged public transcripts and accept idempotent text sends. `/api/admin-chat/conversations` provides a paged support inbox; staff detail/messages routes return authorized transcripts and permit assigned-agent replies/internal notes. The transition route handles claim, transfer, close, and reopen with expected revision. Customer APIs exclude internal notes and staff-only identity fields; staff `support.view` can read, while reply/transition operations need `support.reply` and database checks.
+- These routes are an API foundation for later UIs. Availability leases, business-hours/offline intake, read markers, typing, guest sign-in client, guest-to-account linking, order linking after creation, attachments, and ticket conversion remain in later phases. The Phase 1 settings singleton remains disabled by default.
+
+### Phase 2 validation and limits
+
+- **VERIFIED locally:** 102 repository tests passed, including six new transaction tests for ownership, retry, cooldown, shared rate limit, stale claim, transfer, close, internal-note signal isolation, and browser-role RPC denial. Nuxt typecheck and production build passed. Local built-server unauthenticated customer/staff chat route smoke checks returned 401. `git diff --check` passed.
+- **NOT VERIFIED:** A real Supabase `realtime.send` installation, actual private channel delivery/join authorization, remote Auth/Storage/RLS state, authenticated HTTP flows, true multi-connection claim races, cross-node load, trusted proxy IP handling, and customer/agent browser behavior. PGlite's Realtime/Auth stubs establish only local database behavior. No new Realtime client subscription was added.
+- **Phase 3 only:** Build the customer launcher/panel, separate anonymous guest Auth client, guest and signed-in intake, owned resume/history and offline message UX. Do not start the staff inbox UI, deploy, or enable anonymous Auth remotely as an incidental step.
+
 ## Live Chat — Phase 1 foundation complete locally (2026-09-20)
 
 **Status:** Local implementation only. Migration `20260920150000_live_chat_foundation.sql` has **not** been applied to the linked Supabase project or any staging/production database. Anonymous Auth sign-ins remain disabled in `supabase/config.toml`. No chat APIs, Broadcast triggers, customer launcher, or agent inbox exist yet.

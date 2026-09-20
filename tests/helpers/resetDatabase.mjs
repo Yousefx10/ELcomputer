@@ -14,6 +14,9 @@ export const createResetDatabase = async () => {
     grant usage on schema auth to authenticated, anon;
     create table realtime.messages (id bigint generated always as identity primary key, topic text not null, extension text not null, payload jsonb not null default '{}'::jsonb);
     create function realtime.topic() returns text language sql as $$ select current_setting('realtime.topic',true) $$;
+    create function realtime.send(jsonb,text,text,boolean default true) returns void language sql as $$
+      insert into realtime.messages(topic,extension,payload) values ($3,'broadcast',$1);
+    $$;
     alter table realtime.messages enable row level security;
     grant usage on schema realtime to authenticated, anon;
     grant select, insert on realtime.messages to authenticated, anon;

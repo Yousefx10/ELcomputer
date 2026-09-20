@@ -185,7 +185,7 @@ test('private Realtime topics authorize only the correct customer, guest, or sup
     await setIdentity(id, anonymous)
     await query("select set_config('realtime.topic',$1,true)", [topic])
     await db.exec('set local role authenticated')
-    const result = await first('select count(*)::int as count from realtime.messages')
+    const result = await first("select count(*)::int as count from realtime.messages where payload = '{}'::jsonb")
     await db.exec('reset role')
     return result.count
   }
