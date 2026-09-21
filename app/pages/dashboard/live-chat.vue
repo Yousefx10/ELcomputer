@@ -1,5 +1,5 @@
 <script setup>
-import { mergeChatMessages } from '~/utils/liveChat'
+import { chatAuditDescription, mergeChatEvents, mergeChatMessages } from '~/utils/liveChat'
 
 definePageMeta({ layout: 'dashboard' })
 const client = useSupabaseClient()
@@ -22,6 +22,10 @@ const agents = ref([])
 const selected = ref(null)
 const messages = ref([])
 const events = ref([])
+const activityMore = ref(false)
+const activityCursor = ref(null)
+const activityLoading = ref(false)
+const activityError = ref('')
 const older = ref(false)
 const detailLoading = ref(false)
 const detailError = ref('')
@@ -51,6 +55,7 @@ const isMine = computed(() => selected.value?.assigned_admin_id === adminUser.va
 const canReply = computed(() => hasPermission('support.reply') && selected.value?.status === 'active' && isMine.value)
 const canClaim = computed(() => hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
 const canTransfer = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'active')
+const canAssign = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
 const canClose = computed(() => hasPermission('support.reply') && selected.value?.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
 const canReopen = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'closed')
 const lastSequence = () => messages.value.at(-1)?.sequence_number
@@ -81,11 +86,21 @@ const scheduleQueue = () => {
   if (queueTimer) return
   queueTimer = setTimeout(() => { queueTimer = null; refreshQueue() }, 250)
 }
-const loadActivity = async (id) => {
+const loadActivity = async (id, before = null) => {
+  activityLoading.value = true
+  activityError.value = ''
   try {
-    const result = await request(`/api/admin-chat/conversations/${id}/events`)
-    if (selected.value?.id === id) events.value = result.items || []
-  } catch { /* The transcript and actions remain available. */ }
+    const result = await request(`/api/admin-chat/conversations/${id}/events`, { query: before ? { before } : {} })
+    if (selected.value?.id !== id) return
+    const hadEvents = events.value.length > 0
+    events.value = mergeChatEvents(events.value, result.items || [])
+    if (before || !hadEvents) {
+      activityMore.value = result.hasMore === true
+      activityCursor.value = result.before
+    }
+  } catch (cause) {
+    if (selected.value?.id === id) activityError.value = errorText(cause, 'Could not load activity.')
+  } finally { activityLoading.value = false }
 }
 const loadThread = async (id) => {
   const run = ++detailRequest
@@ -165,9 +180,14 @@ const selectThread = async (item) => {
   selected.value = item
   messages.value = []
   events.value = []
+  activityMore.value = false
+  activityCursor.value = null
+  activityError.value = ''
   draft.value = ''
   note.value = false
   sendKey.value = null
+  assignTarget.value = ''
+  transferTarget.value = ''
   actionError.value = ''
   activePane.value = 'thread'
   await loadThread(item.id)
@@ -196,16 +216,23 @@ const transition = async (action, targetId = null) => {
     const result = await request(`/api/admin-chat/conversations/${id}/transition`, {
       method: 'POST', body: { action, targetId, expectedRevision: selected.value.revision }
     })
-    selected.value = result.item
-    await Promise.all([refreshQueue(), loadActivity(id)])
+    if (selected.value?.id === id) selected.value = result.item
+    await refreshQueue()
+    if (selected.value?.id === id) await loadActivity(id)
   } catch (cause) {
-    actionError.value = errorText(cause, 'Could not change the conversation.')
-    if (cause?.statusCode === 409 || cause?.status === 409) {
+    if (selected.value?.id === id) actionError.value = errorText(cause, 'Could not change the conversation.')
+    if (selected.value?.id === id && (cause?.statusCode === 409 || cause?.status === 409)) {
       await Promise.all([loadThread(id), refreshQueue()])
     }
   } finally { busy.value = false }
 }
 const transferTarget = ref('')
+const assignTarget = ref('')
+const assign = async () => {
+  if (!assignTarget.value) return
+  await transition('assign', assignTarget.value)
+  assignTarget.value = ''
+}
 const transfer = async () => {
   if (!transferTarget.value || transferTarget.value === selected.value?.assigned_admin_id) return
   await transition('transfer', transferTarget.value)
@@ -320,6 +347,7 @@ onBeforeUnmount(() => {
           <button v-if="canClose" type="button" :disabled="busy" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold disabled:opacity-50" @click="transition('close')">Close</button>
           <button v-if="canReopen" type="button" :disabled="busy" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold disabled:opacity-50" @click="transition('reopen')">Reopen</button>
         </div>
+        <div v-if="selected && canAssign" class="flex gap-2 border-b border-gray-100 px-4 py-2"><select v-model="assignTarget" aria-label="Assign to agent" class="min-w-0 flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"><option value="">Assign to agent...</option><option v-for="agent in agents" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select><button type="button" :disabled="!assignTarget || busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40" @click="assign">Assign</button></div>
         <div v-if="selected && canTransfer" class="flex gap-2 border-b border-gray-100 px-4 py-2"><select v-model="transferTarget" aria-label="Transfer to agent" class="min-w-0 flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"><option value="">Transfer to agent...</option><option v-for="agent in agents.filter(agent => agent.id !== selected.assigned_admin_id)" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select><button type="button" :disabled="!transferTarget || busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40" @click="transfer">Transfer</button></div>
         <p v-if="detailError || actionError" class="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ actionError || detailError }}</p>
         <template v-if="selected">
@@ -342,7 +370,10 @@ onBeforeUnmount(() => {
       <aside v-if="selected" :class="activePane === 'queue' ? 'hidden lg:block' : 'block'" class="border-t border-gray-200 p-4 text-sm lg:border-l lg:border-t-0" aria-label="Customer context">
         <h2 class="font-bold text-gray-900">Customer context</h2>
         <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div><dt class="font-semibold text-gray-500">Name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Order ID</dt><dd>{{ selected.order_id || 'None linked' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
-        <h3 class="mt-6 font-bold text-gray-900">Activity</h3><ol class="mt-3 space-y-3 text-xs"><li v-for="entry in events" :key="entry.id" class="border-l-2 border-blue-200 pl-3"><span class="font-semibold capitalize">{{ entry.event_type.replaceAll('_', ' ') }}</span><span class="block text-gray-600">{{ entry.actor_kind === 'staff' ? agentName(entry.actor_id) : entry.actor_kind === 'system' ? 'System' : 'Customer' }}</span><time class="block text-gray-500">{{ dateText(entry.created_at) }}</time></li><li v-if="!events.length" class="text-gray-500">No activity loaded.</li></ol>
+        <h3 class="mt-6 font-bold text-gray-900">Activity</h3>
+        <p v-if="activityError" class="mt-2 text-xs text-red-700" role="alert">{{ activityError }}</p>
+        <ol class="mt-3 space-y-3 text-xs"><li v-for="entry in events" :key="entry.id" class="border-l-2 border-blue-200 pl-3"><span class="font-semibold text-gray-900">{{ chatAuditDescription(entry) }}</span><time class="block text-gray-500">{{ dateText(entry.created_at) }}</time></li><li v-if="!events.length && !activityLoading" class="text-gray-500">No activity loaded.</li></ol>
+        <button v-if="activityMore" type="button" :disabled="activityLoading" class="mt-3 text-xs font-semibold text-blue-700 disabled:opacity-40" @click="loadActivity(selected.id, activityCursor)">Load older activity</button>
       </aside>
     </div>
   </div>

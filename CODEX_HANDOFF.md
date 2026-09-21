@@ -1,4 +1,41 @@
-# Codex handoff — Live Chat Phase 4
+# Codex handoff — Live Chat Phase 5
+
+Date: 2026-09-21. State: **PHASE 5 COMPLETE LOCALLY — awaiting explicit instruction for Phase 6. No remote change.**
+
+## Completed in Phase 5
+
+- Added local additive migration `supabase/migrations/20260921100000_live_chat_assignment_audit.sql`. It adds manager assignment of waiting conversations to eligible agents, preserves row-lock/revision conflict handling, rejects inactive or reply-ineligible targets, and captures immutable actor and assignee name snapshots in workflow events. It is not applied remotely.
+- Fixed the transition RPC's service-role execution by making it a restricted `SECURITY DEFINER` function with an empty search path. The staff API continues to derive the actor from verified Supabase Auth, and browser roles still cannot execute the RPC. The event snapshot trigger covers assignment, transfer, closure, and public reply records.
+- Added `assign` to the staff transition API and inbox for `support.manage` plus `support.reply`. Extended the activity API to cursor-page saved audit events, returning only safe event fields and saved names. The inbox loads older activity and shows who acted, source/destination for transfers, and when each action occurred. Existing ID-only signals refresh another agent's viewed conversation.
+- No Phase 6 read markers, presence/availability writer, typing, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 5
+
+- Migration: `supabase/migrations/20260921100000_live_chat_assignment_audit.sql` (**new; local only**).
+- Server: `server/api/admin-chat/conversations/[id]/transition.post.js`, `server/api/admin-chat/conversations/[id]/events.get.js`, `server/utils/liveChat.js`.
+- Application: `app/pages/dashboard/live-chat.vue`, `app/utils/liveChat.js`.
+- Tests: `tests/live-chat-transactions.test.mjs`, `tests/live-chat-customer-ui.test.mjs`.
+- Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **111 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- New PGlite tests verify a manager assigns one eligible agent while a stale second claim loses; a viewer and reply-only staff cannot assign; an ineligible target and disabled transfer fail; service-role assignment, transfer, public reply, and closure work; and saved audit names survive later staff renaming and deletion. A 66-event history test verifies stable keyset paging when timestamps tie. Existing browser-role RPC denial remains green.
+- **NOT VERIFIED:** Real Supabase migration/grants, authenticated staff HTTP/browser paths, actual concurrent agent sessions and private Realtime delivery, PostgREST cursor filtering, or mobile/accessibility behavior. All four chat migrations remain local and chat settings stay off.
+
+## Known issues and decisions
+
+- Older audit rows are backfilled from staff records present when the migration runs. If a staff account was already deleted, its former display name cannot be reconstructed; all new events save a name snapshot before later rename or deletion.
+- Assignment remains manual. Automatic routing is a later settings/routing decision; Phase 5 adds manager assignment to the existing claim and transfer flow. `support.manage` alone does not grant a chat transition without `support.reply`, matching the existing RPC and inbox permissions.
+- The current staff client re-fetches state from ID-only signals. Staging should exercise Agent A/Agent B/Admin competing claims, manager assignment, transfer while another agent views the chat, event paging, and permissions before any rollout.
+
+## Exact next action — Phase 6, only after “Continue with Phase 6”
+
+Re-read the Phase 6 read/unread, presence, typing, and reconnect requirements in the master specification and this handoff. Implement only those capabilities on the existing chat identities, private topics, and durable sequence cursors; validate locally, update both state files, and stop before Phase 7. Do not apply migrations remotely, enable anonymous Auth, or deploy as an incidental step.
+
+---
+
+# Previous handoff — Live Chat Phase 4
 
 Date: 2026-09-21. State: **PHASE 4 COMPLETE LOCALLY — awaiting explicit instruction for Phase 5. No remote change.**
 

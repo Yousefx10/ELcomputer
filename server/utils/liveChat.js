@@ -54,6 +54,7 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_KEY_CONFLICT: [409, 'Submission key was used for another message.'],
     CHAT_STALE: [409, 'Conversation changed. Refresh and try again.'],
     CHAT_ALREADY_ASSIGNED: [409, 'Another agent claimed this conversation.'],
+    CHAT_TARGET_UNAVAILABLE: [409, 'That agent is no longer available for chat.'],
     CHAT_TRANSITION_DENIED: [409, 'This conversation cannot be changed.']
   }[error?.message]
   if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })

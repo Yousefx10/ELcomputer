@@ -1,5 +1,22 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 5 assignment and audit complete locally (2026-09-21)
+
+**Status:** Local code only. Four Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat remains disabled by default, anonymous Auth remains disabled, and no deployment occurred.
+
+### Assignment and permanent history
+
+- New additive migration `20260921100000_live_chat_assignment_audit.sql` extends the row-locked `chat_transition` RPC with manager assignment of an unassigned waiting chat to an active agent who has both `support.view` and `support.reply`. Claims and assignments use the same expected-revision check, so only one competing action can win. Transfers remain for active chats, require `support.manage`, and respect the saved transfer switch. Manager assignment and transfer create separate `assigned` and `transferred` events.
+- The transition RPC is now `SECURITY DEFINER` with an empty search path. A service-role test found that the earlier invoker form could not read `admin_users`; the fixed function still has no browser-role execute grant. It verifies the supplied staff actor against active admin permissions, while the API supplies that actor from verified Auth. Conversation and message guards remain a second database boundary.
+- `chat_events` now saves actor, prior assignee, and next assignee names when each event is inserted. The snapshot trigger also handles public staff-reply events. Renaming an agent later leaves the recorded names intact. A best-effort migration backfill fills names for older rows where the associated staff records still exist; names already lost before migration cannot be recovered.
+- The staff activity API now returns 30 events per request with a `(created_at,id)` cursor, saved names, and whitelisted status details. The inbox can load older history and shows who claimed, assigned, transferred, replied, closed, or reopened, including transfer source and destination. It never sends event JSON values or message bodies to the browser. The manager can assign a waiting chat directly in the inbox. Realtime conversation signals continue to refresh another viewing agent's state.
+
+### Phase 5 validation and limits
+
+- **VERIFIED locally:** 111 repository tests passed, including new assignment authorization, ineligible targets, stale claim, transfer switch, audit snapshots after staff rename/deletion, service-role assignment/transfer/reply/close, and keyset paging with identical timestamps. Nuxt typecheck, production build, and `git diff --check` passed. The previous private-channel and internal-note tests remain green.
+- **NOT VERIFIED:** The new migration on live Supabase, actual concurrent database connections, authenticated multi-agent browser interaction, PostgREST event cursor behavior, Realtime delivery, and historical names for already-deleted staff. These require isolated staging tests before rollout. No remote migration, Auth setting change, or deployment occurred.
+- **Phase 6 only:** Add durable read/unread, agent availability/presence, typing, and reconnect behavior from the master specification. Do not start order/customer context, attachments, ticket conversion, or admin settings as incidental work.
+
 ## Live Chat — Phase 4 support inbox complete locally (2026-09-21)
 
 **Status:** Local code only. All three Live Chat migrations remain unapplied to linked Supabase, staging, and production. Anonymous Auth remains disabled; chat settings remain disabled by default. No deployment, remote configuration, or Phase 5 work was performed.

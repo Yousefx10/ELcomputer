@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatMessages } from '../app/utils/liveChat.js'
+import { chatAuditDescription, chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatEvents, mergeChatMessages } from '../app/utils/liveChat.js'
 
 test('reconnect reconciliation preserves order and does not duplicate messages', () => {
   const first = [{ id: 'a', sequence_number: 10, body: 'Earlier' },
@@ -28,4 +28,14 @@ test('cooldown countdown is based on server message time and ends at zero', () =
   assert.equal(chatSecondsRemaining(sentAt, 4, Date.parse(sentAt) + 3100), 1)
   assert.equal(chatSecondsRemaining(sentAt, 4, Date.parse(sentAt) + 4000), 0)
   assert.equal(chatSecondsRemaining(sentAt, 0, Date.parse(sentAt) + 100), 0)
+})
+
+test('audit history keeps older pages and uses saved names', () => {
+  const older = [{ id: 'a', created_at: '2026-09-20T10:00:00Z', event_type: 'assigned',
+    actor_name: 'Ahmed', new_assignee_name: 'Sara' }]
+  const newer = [{ id: 'b', created_at: '2026-09-20T11:00:00Z', event_type: 'transferred',
+    actor_name: 'Manager', old_assignee_name: 'Sara', new_assignee_name: 'Ahmed' }]
+  assert.deepEqual(mergeChatEvents(older, newer.concat(older)).map(item => item.id), ['b', 'a'])
+  assert.equal(chatAuditDescription(newer[0]), 'Manager transferred Sara → Ahmed')
+  assert.equal(chatAuditDescription(older[0]), 'Ahmed assigned Sara')
 })

@@ -158,6 +158,69 @@ test('claim, stale claim, transfer, close and reopen preserve history and serial
   for (const event of ['created','claimed','agent_replied','transferred','closed','reopened']) assert.ok(events.includes(event))
 })
 
+test('manager assignment has one winner and accepts only eligible targets', async () => {
+  const chat = await create(customerA)
+  await denied(() => transition(chat, viewer, 'assign', 0, staffB), /Support reply access is required/)
+  await denied(() => transition(chat, staffA, 'assign', 0, viewer), /CHAT_TARGET_UNAVAILABLE/)
+  await query('update public.admin_users set permissions=$2 where id=$1', [staffB,
+    JSON.stringify({ 'support.view': true, 'support.reply': true })])
+  await denied(() => transition(chat, staffB, 'assign', 0, staffA), /CHAT_TRANSITION_DENIED/)
+  await transition(chat, staffA, 'assign', 0, staffB)
+  await denied(() => transition(chat, staffA, 'claim', 0), /CHAT_STALE/)
+  const state = await first('select status,assigned_admin_id,revision from public.chat_conversations where id=$1', [chat])
+  assert.equal(state.status, 'active')
+  assert.equal(state.assigned_admin_id, staffB)
+  assert.equal(Number(state.revision), 1)
+  assert.ok(await send(chat, staffB, 'staff', 'Assigned agent reply'))
+  await denied(() => send(chat, staffA, 'staff', 'Wrong agent'), /actor is invalid/)
+  await query('update public.chat_settings set transfers_enabled=false')
+  await denied(() => transition(chat, staffA, 'transfer', Number(state.revision) + 1, staffA), /CHAT_TRANSITION_DENIED/)
+  await query('update public.chat_settings set transfers_enabled=true')
+  await denied(() => transition(chat, staffA, 'transfer', Number(state.revision) + 1, viewer), /CHAT_TARGET_UNAVAILABLE/)
+  const assigned = await first("select event_type,actor_id,new_value->>'assigned_admin_id' as target from public.chat_events where conversation_id=$1 and event_type='assigned'", [chat])
+  assert.equal(assigned.actor_id, staffA)
+  assert.equal(assigned.target, staffB)
+})
+
+test('audit keyset paging has no gaps when event timestamps match', async () => {
+  const chat = await create(customerA)
+  await query(`insert into public.chat_events(conversation_id,actor_id,actor_kind,event_type,created_at)
+    select $1,$2,'staff','status_changed','2026-09-20T10:00:00Z'::timestamptz
+    from generate_series(1,65)`, [chat, staffA])
+  const all = (await query('select id,created_at from public.chat_events where conversation_id=$1 order by created_at desc,id desc', [chat])).rows
+  const firstPage = all.slice(0, 30)
+  const last = firstPage.at(-1)
+  const nextPage = (await query(`select id,created_at from public.chat_events
+    where conversation_id=$1 and (created_at < $2 or (created_at = $2 and id < $3))
+    order by created_at desc,id desc limit 30`, [chat, last.created_at, last.id])).rows
+  assert.deepEqual(firstPage.concat(nextPage).map(row => row.id), all.slice(0, 60).map(row => row.id))
+  assert.equal(new Set(firstPage.concat(nextPage).map(row => row.id)).size, 60)
+})
+
+test('audit snapshots retain actor and transfer names after staff changes', async () => {
+  await query('update public.admin_users set full_name=$2 where id=$1', [staffA, 'Agent Ahmed'])
+  await query('update public.admin_users set full_name=$2 where id=$1', [staffB, 'Agent Sara'])
+  const chat = await create(customerA)
+  await db.exec('set local role service_role')
+  await transition(chat, staffA, 'assign', 0, staffB)
+  await transition(chat, staffA, 'transfer', 1, staffA)
+  await send(chat, staffA, 'staff', 'Handled by Ahmed')
+  await transition(chat, staffA, 'close', 3)
+  await db.exec('reset role')
+  await query('update public.admin_users set full_name=$2 where id=$1', [staffA, 'Renamed A'])
+  await query('update public.admin_users set full_name=$2 where id=$1', [staffB, 'Renamed B'])
+  await query('delete from auth.users where id=$1', [staffB])
+  const events = (await query("select event_type,actor_name,old_assignee_name,new_assignee_name from public.chat_events where conversation_id=$1 and event_type in ('assigned','transferred','agent_replied','closed') order by created_at,id", [chat])).rows
+  assert.deepEqual(events.find(entry => entry.event_type === 'assigned'), {
+    event_type: 'assigned', actor_name: 'Agent Ahmed', old_assignee_name: null, new_assignee_name: 'Agent Sara'
+  })
+  assert.deepEqual(events.find(entry => entry.event_type === 'transferred'), {
+    event_type: 'transferred', actor_name: 'Agent Ahmed', old_assignee_name: 'Agent Sara', new_assignee_name: 'Agent Ahmed'
+  })
+  assert.equal(events.find(entry => entry.event_type === 'closed').actor_name, 'Agent Ahmed')
+  assert.equal(events.find(entry => entry.event_type === 'agent_replied').actor_name, 'Agent Ahmed')
+})
+
 test('internal notes generate staff-only message signals and no customer signal', async () => {
   const chat = await create(customerA)
   await transition(chat, staffA, 'claim', 0)
@@ -182,6 +245,8 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_start_with_message(uuid,boolean,text,text,text,uuid,uuid,text,text,uuid)',
     'public.chat_send_message(uuid,uuid,text,text,text,uuid,text,boolean)',
     'public.chat_transition(uuid,uuid,text,uuid,bigint)',
+    'public.chat_event_name(uuid)',
+    'public.chat_snapshot_event()',
     'public.chat_consume_limit(text,text,integer,integer)'
   ]
   for (const signature of signatures) {

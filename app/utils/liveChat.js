@@ -4,6 +4,31 @@ export const mergeChatMessages = (current = [], incoming = []) => {
   return [...items.values()].sort((a, b) => Number(a.sequence_number) - Number(b.sequence_number))
 }
 
+export const mergeChatEvents = (current = [], incoming = []) => {
+  const items = new Map(current.map(entry => [entry.id, entry]))
+  for (const entry of incoming) items.set(entry.id, entry)
+  return [...items.values()].sort((a, b) =>
+    b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id))
+}
+
+export const chatAuditDescription = (entry = {}) => {
+  const actor = entry.actor_name || (entry.actor_kind === 'system' ? 'System' : 'Unknown actor')
+  const from = entry.old_assignee_name || 'Unassigned'
+  const to = entry.new_assignee_name || 'Unassigned'
+  switch (entry.event_type) {
+    case 'created': return `${actor} started this chat`
+    case 'identified': return `${actor} identified this chat`
+    case 'claimed': return `${actor} claimed this chat`
+    case 'assigned': return `${actor} assigned ${to}`
+    case 'transferred': return `${actor} transferred ${from} → ${to}`
+    case 'agent_replied': return `${actor} replied`
+    case 'closed': return `${actor} closed this chat`
+    case 'reopened': return `${actor} reopened this chat`
+    case 'status_changed': return `Status: ${entry.old_status || 'unknown'} → ${entry.new_status || 'unknown'}`
+    default: return entry.event_type ? entry.event_type.replaceAll('_', ' ') : 'Activity'
+  }
+}
+
 export const chatSecondsRemaining = (sentAt, cooldownSeconds, now = Date.now()) => {
   if (!sentAt || !cooldownSeconds) return 0
   const end = new Date(sentAt).getTime() + Number(cooldownSeconds) * 1000
