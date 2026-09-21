@@ -40,6 +40,18 @@ export const chatSecondsRemaining = (sentAt, cooldownSeconds, now = Date.now()) 
   return Math.max(0, Math.ceil((end - now) / 1000))
 }
 
+export const chatRetryAfterSeconds = (error) => {
+  const header = error?.response?.headers?.get?.('retry-after')
+  const values = [error?.data?.data?.retryAfter, error?.data?.retryAfter,
+    error?.response?._data?.data?.retryAfter, header]
+  const seconds = values.map(Number).find(value => Number.isFinite(value) && value > 0)
+  return seconds ? Math.min(86400, Math.ceil(seconds)) : 0
+}
+
+export const chatSendWaitText = (seconds) => Number(seconds) <= 60
+  ? `Send again in ${Math.max(1, Math.ceil(Number(seconds)))}s`
+  : 'Sending is temporarily paused.'
+
 export const chatMobileValid = value => /^\+?[0-9 ()-]{7,30}$/.test(String(value || '').trim())
 
 export const chatContactValid = (name, email, mobile, rule = 'either') => {

@@ -433,6 +433,7 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_unread_summary(uuid,text,uuid[])',
     'public.chat_set_agent_availability(uuid,text)',
     'public.chat_consume_limit(text,text,integer,integer)',
+    'public.chat_consume_network_limits(text,text,text)',
     'public.chat_set_order(uuid,uuid,text,uuid,bigint)',
     'public.chat_identify_guest(uuid,uuid,uuid,bigint)',
     'public.chat_reserve_attachment(uuid,uuid,uuid,uuid,text,text,text,text,integer,text,text)',

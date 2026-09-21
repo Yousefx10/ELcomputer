@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import { chatActorHash, chatContact, chatError, chatUuid, loadChatConversation, readChatJson, requireChatVisitor } from '../../../utils/liveChat'
+import { enforceChatNetworkLimit } from '../../../utils/liveChatRateLimit'
 
 export default defineEventHandler(async (event) => {
   const actor = await requireChatVisitor(event)
@@ -24,12 +25,14 @@ export default defineEventHandler(async (event) => {
     p_order_id: orderId, p_creation_key: key, p_subject_hash: chatActorHash(actor.id)
   }
   const isFirstMessage = initialMessage !== undefined
+  await enforceChatNetworkLimit(event, actor,
+    isFirstMessage ? 'conversation_message' : 'conversation', initialMessage ?? null)
   const { data, error } = await actor.supabase.rpc(
     isFirstMessage ? 'chat_start_with_message' : 'chat_create_or_resume',
     isFirstMessage ? { ...args, p_body: initialMessage,
       p_message_key: chatUuid(body.messageKey, 'Submission key') } : args
   )
-  if (error) chatError(error, 'Could not start conversation.')
+  if (error) chatError(error, 'Could not start conversation.', event)
   const id = isFirstMessage ? data?.conversationId : data
   return { item: await loadChatConversation(actor, id),
     messageId: isFirstMessage ? data?.messageId : null,

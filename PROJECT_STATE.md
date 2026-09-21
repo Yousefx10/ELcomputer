@@ -1,6 +1,28 @@
 # Project state — 2026-09-21
 
 
+## Live Chat — Phase 11 rate limiting and anti-spam complete locally (2026-09-21)
+
+**Status:** Local code only. Ten Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Durable actor and network limits
+
+- New additive migration `20260921160000_live_chat_rate_limits.sql` extends the existing PostgreSQL counter table with service-only network scopes. The existing per-actor protections remain: configurable database cooldown, 12 customer/guest messages per minute, five conversations per hour, 12 attachment reservations per minute, three typing signals per ten seconds, and idempotency keys. The server adds network budgets of 20 conversation requests/hour and 60/day; 60 message requests/minute and 500/hour; 30 attachment attempts/minute and 120/hour; and 30 customer typing requests/minute and 300/hour.
+- Network identity is derived on the server from the direct client address, or from a forwarded address only when `NUXT_TRUST_PROXY=true` or the direct peer is loopback. IPv4 is grouped by address and IPv6 by `/64`, limiting simple IPv6/session rotation. The service-role secret HMACs all network and content subjects before they reach PostgreSQL. Raw addresses and message text are not stored in rate-limit rows. If no usable address is available, the limiter falls back to the verified actor identity.
+- Customer message duplicate checks now normalize case and whitespace. A second identical message inside 15 seconds is rejected, and a fourth matching actor message inside ten minutes is paused. A separate network/content budget rejects the sixth normalized message of at least 12 characters inside ten minutes, covering anonymous-session rotation while leaving short common replies out of that shared check. Existing exact idempotent retries return their saved result before consuming actor limits or creating duplicates.
+
+### Bounded requests and customer feedback
+
+- Customer conversation starts, messages, attachment attempts, and typing now pass through the shared database-backed network limiter. Staff sends retain the separate trusted-agent policy. Existing 16 KiB JSON caps, configured message length, streaming multipart cap, signature/type/size checks, and per-message attachment count remain enforced.
+- Database cooldown, duplicate, actor-rate, and network-rate failures return a bounded `Retry-After` value and response data. The launcher applies that server delay even when another tab caused it. Only Send is paused; the customer can keep typing. Delays through 60 seconds show a countdown, while longer blocks use a short neutral message.
+
+### Phase 11 validation and limits
+
+- **VERIFIED locally:** 134 repository tests passed. New PGlite tests cover durable network conversation limits across identities, independent message/content/attachment/typing budgets, normalized actor duplicate detection, retry hints, and browser-role RPC denial. Pure tests cover IPv4-mapped addresses, IPv6 `/64` grouping, loopback-proxy detection, HMAC subject stability, normalized content hashing, and client retry-delay behavior. Nuxt typecheck, production build, and `git diff --check` passed. The built conversation-start, message, typing, and attachment POST routes all returned HTTP 401 without authentication.
+- **NOT VERIFIED:** Real reverse-proxy client-address behavior, live Supabase counter contention/cleanup, authenticated HTTP 429 headers, multi-node traffic, IPv6 carrier behavior, false-positive rates on shared networks, sustained/load behavior, Supabase anonymous-Auth rate limits, or CAPTCHA. Botnets and rotating networks can still distribute traffic. Confirm the proxy chain and Supabase Auth/CAPTCHA policy and tune thresholds from staging telemetry before enabling guest chat.
+- **Phase 12 only:** Perform the responsive, accessibility, and product-polish work defined by the master specification. Do not begin Phase 13 security/concurrency/performance audit work, staging migration, remote Auth changes, or deployment.
+
+
 ## Live Chat — Phase 10 admin settings, business hours, and offline behavior complete locally (2026-09-21)
 
 **Status:** Local code only. Nine Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.

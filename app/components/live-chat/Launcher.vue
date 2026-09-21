@@ -1,5 +1,5 @@
 <script setup>
-import { chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatMessages } from '~/utils/liveChat'
+import { chatContactValid, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatMessages } from '~/utils/liveChat'
 
 const route = useRoute()
 const mainUser = useSupabaseUser()
@@ -36,6 +36,7 @@ const fileInput = ref(null)
 const staffTyping = ref(false)
 const newBelow = ref(false)
 const lastOwnSentAt = ref(null)
+const retryAfterUntil = ref(0)
 const clock = ref(Date.now())
 const connectionState = ref('idle')
 const launcher = ref(null)
@@ -47,7 +48,11 @@ const isGuest = computed(() => actor.value?.kind !== 'customer')
 const needsCustomerMobile = computed(() => !isGuest.value
   && ['mobile', 'both'].includes(status.value.guestContactRule)
   && !accountContact.value?.mobile)
-const cooldown = computed(() => chatSecondsRemaining(lastOwnSentAt.value, status.value.cooldownSeconds, clock.value))
+const cooldown = computed(() => Math.max(
+  chatSecondsRemaining(lastOwnSentAt.value, status.value.cooldownSeconds, clock.value),
+  Math.max(0, Math.ceil((retryAfterUntil.value - clock.value) / 1000))
+))
+const sendWaitText = computed(() => chatSendWaitText(cooldown.value))
 const maxLength = computed(() => Number(status.value.maxMessageLength || 4000))
 const canSend = computed(() => !sending.value && !cooldown.value && draft.value.trim().length > 0
   && draft.value.length <= maxLength.value)
@@ -89,6 +94,10 @@ let readPending = false
 
 const requestError = (error, fallback) => error?.data?.statusMessage
   || error?.statusMessage || error?.message || fallback
+const applyRetryAfter = (error) => {
+  const seconds = chatRetryAfterSeconds(error)
+  if (seconds) retryAfterUntil.value = Math.max(retryAfterUntil.value, Date.now() + seconds * 1000)
+}
 
 const loadStatus = async () => {
   try {
@@ -521,6 +530,7 @@ const startConversation = async () => {
     })
     if (currentRun !== runId) return
     pendingStart = null
+    retryAfterUntil.value = 0
     if (draft.value.trim() === text) draft.value = ''
     conversations.value = [result.item, ...conversations.value.filter(item => item.id !== result.item.id)]
     const uploaded = result.messageId && selectedFiles.value.length
@@ -529,7 +539,10 @@ const startConversation = async () => {
     await selectConversation(result.item)
     if (uploaded.failed) errorText.value = 'Message sent. Some attachments could not be uploaded.'
   } catch (error) {
-    if (currentRun === runId) errorText.value = requestError(error, 'Could not save your message. Try again.')
+    if (currentRun === runId) {
+      applyRetryAfter(error)
+      errorText.value = requestError(error, 'Could not save your message. Try again.')
+    }
   } finally {
     sending.value = false
   }
@@ -552,6 +565,7 @@ const sendMessage = async () => {
       })
     if (selectionId !== selected || conversation.value?.id !== conversationId) return
     pendingSend = null
+    retryAfterUntil.value = 0
     if (draft.value.trim() === text) draft.value = ''
     const uploaded = selectedFiles.value.length
       ? await uploadSelectedFiles(conversationId, result.item.id) : { items: [], failed: false }
@@ -562,6 +576,7 @@ const sendMessage = async () => {
     await scrollBottom()
   } catch (error) {
     if (selectionId === selected) {
+      applyRetryAfter(error)
       errorText.value = requestError(error, 'Could not send your message. Try again.')
       scheduleReconcile()
     }
@@ -788,7 +803,7 @@ onBeforeUnmount(() => {
           :placeholder="showThread ? 'Write a message…' : 'What can we help with?'"
           @keydown="onComposerKeydown" />
         <div class="chat-composer-bottom">
-          <span v-if="cooldown">Send again in {{ cooldown }}s</span>
+          <span v-if="cooldown">{{ sendWaitText }}</span>
           <span v-else>{{ draft.length }}/{{ maxLength }}</span>
           <button type="button" class="chat-send" :disabled="!canSend" @click="submitDraft">
             {{ sending ? 'Sending…' : (showThread ? 'Send' : 'Start chat') }}

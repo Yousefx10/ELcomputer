@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { createError, getHeader, getRouterParam } from 'h3'
+import { createError, getHeader, getRouterParam, setHeader } from 'h3'
 import { requireAdminRequest } from './adminRequest'
 import { getSupabaseAdminClient } from './supabaseAdmin'
 
@@ -41,7 +41,7 @@ export const chatContact = (name, email, mobile) => {
   return result
 }
 
-export const chatError = (error, fallback = 'Could not complete the chat request.') => {
+export const chatError = (error, fallback = 'Could not complete the chat request.', event = null) => {
   if (['42P01', '42703', '42883', 'PGRST202', 'PGRST205'].includes(error?.code)) {
     throw createError({ statusCode: 503, statusMessage: 'Live chat is not installed yet.' })
   }
@@ -66,7 +66,14 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_TICKET_DISABLED: [409, 'Ticket conversion is disabled.'],
     CHAT_TICKET_ORDER_LOCKED: [409, 'The linked order is now managed on the support ticket.']
   }[error?.message]
-  if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })
+  if (named) {
+    const parsed = Number(error?.hint)
+    const retryAfter = named[0] === 429 && Number.isFinite(parsed)
+      ? Math.min(86400, Math.max(1, Math.ceil(parsed))) : null
+    if (event && retryAfter) setHeader(event, 'Retry-After', String(retryAfter))
+    throw createError({ statusCode: named[0], statusMessage: named[1],
+      ...(retryAfter ? { data: { retryAfter } } : {}) })
+  }
   if (error?.code === 'P0002') throw createError({ statusCode: 404, statusMessage: 'Conversation not found.' })
   if (error?.code === '42501') throw createError({ statusCode: 403, statusMessage: 'Chat access denied.' })
   if (['22023', '23503', '23514'].includes(error?.code)) {

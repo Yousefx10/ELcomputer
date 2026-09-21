@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { createError, getHeader, getRouterParam, send, setHeader } from 'h3'
 import { chatActorHash, chatError, chatUuid, loadChatConversation, requireChatStaff, requireChatVisitor } from './liveChat'
 import { parseChatMultipart, validateChatAttachmentFile } from './chatAttachmentValidation'
+import { enforceChatNetworkLimit } from './liveChatRateLimit'
 
 export const CHAT_ATTACHMENT_BUCKET = 'chat-attachments'
 export const chatAttachmentFields = 'id,message_id,original_name,mime_type,size_bytes,created_at'
@@ -67,6 +68,7 @@ export const handleChatAttachmentUpload = async (event, staff = false) => {
   const actor = staff ? await requireChatStaff(event, 'support.reply') : await requireChatVisitor(event)
   const conversationId = chatUuid(getRouterParam(event, 'id'))
   await loadChatConversation(actor, conversationId, staff)
+  if (!staff) await enforceChatNetworkLimit(event, actor, 'attachment')
   await cleanupStaleReservations(actor.supabase, conversationId)
   const policy = await loadChatAttachmentPolicy(actor)
   if (!policy.enabled) throw createError({ statusCode: 409, statusMessage: 'Attachments are unavailable.' })
@@ -85,7 +87,7 @@ export const handleChatAttachmentUpload = async (event, staff = false) => {
     p_size_bytes: checked.bytes.length, p_content_sha256: checked.sha256,
     p_subject_hash: chatActorHash(actor.id)
   })
-  if (reserved.error) chatError(reserved.error, 'Could not reserve attachment.')
+  if (reserved.error) chatError(reserved.error, 'Could not reserve attachment.', event)
   if (reserved.data?.ready === true) {
     const existing = await actor.supabase.from('chat_attachments').select(chatAttachmentFields)
       .eq('id', attachmentId).eq('is_ready', true).single()

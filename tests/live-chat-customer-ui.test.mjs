@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chatAuditDescription, chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatEvents, mergeChatMessages } from '../app/utils/liveChat.js'
+import { chatAuditDescription, chatContactValid, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatEvents, mergeChatMessages } from '../app/utils/liveChat.js'
 
 test('reconnect reconciliation preserves order and does not duplicate messages', () => {
   const first = [{ id: 'a', sequence_number: 10, body: 'Earlier' },
@@ -28,6 +28,14 @@ test('cooldown countdown is based on server message time and ends at zero', () =
   assert.equal(chatSecondsRemaining(sentAt, 4, Date.parse(sentAt) + 3100), 1)
   assert.equal(chatSecondsRemaining(sentAt, 4, Date.parse(sentAt) + 4000), 0)
   assert.equal(chatSecondsRemaining(sentAt, 0, Date.parse(sentAt) + 100), 0)
+})
+
+test('server retry delays pause only sending and keep long waits concise', () => {
+  assert.equal(chatRetryAfterSeconds({ data: { data: { retryAfter: 7 } } }), 7)
+  assert.equal(chatRetryAfterSeconds({ response: { headers: { get: () => '61' } } }), 61)
+  assert.equal(chatRetryAfterSeconds({ data: { data: { retryAfter: -1 } } }), 0)
+  assert.equal(chatSendWaitText(7), 'Send again in 7s')
+  assert.equal(chatSendWaitText(61), 'Sending is temporarily paused.')
 })
 
 test('audit history keeps older pages and uses saved names', () => {
