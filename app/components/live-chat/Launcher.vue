@@ -3,7 +3,8 @@ import { chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatMessa
 
 const route = useRoute()
 const mainUser = useSupabaseUser()
-const { getGuestClient, resolveActor, hasStoredGuestSession, ensureGuestSession, request } = useLiveChatClient()
+const { getGuestClient, resolveActor, hasStoredGuestSession, ensureGuestSession, request,
+  uploadAttachment, downloadAttachment } = useLiveChatClient()
 
 const status = ref({ enabled: false, available: false })
 const panelOpen = ref(false)
@@ -29,6 +30,9 @@ const orderNumber = ref('')
 const selectedOrderId = ref('')
 const orderBusy = ref(false)
 const guestToLink = ref(null)
+const conversationAttachmentPolicy = ref(null)
+const selectedFiles = shallowRef([])
+const fileInput = ref(null)
 const staffTyping = ref(false)
 const newBelow = ref(false)
 const lastOwnSentAt = ref(null)
@@ -51,6 +55,19 @@ const heading = computed(() => status.value.available ? 'Live support' : 'Leave 
 const statusCopy = computed(() => status.value.available ? 'A support agent is online.' : 'Our team will reply when available.')
 const showThread = computed(() => screen.value === 'thread' && conversation.value)
 const unreadTotal = computed(() => conversations.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
+const attachmentPolicy = computed(() => conversationAttachmentPolicy.value || {
+  enabled: status.value.attachmentsEnabled === true,
+  allowedMimes: status.value.allowedAttachmentMimes || [],
+  maxBytes: Number(status.value.maxAttachmentBytes || 0),
+  maxPerMessage: Number(status.value.maxAttachmentsPerMessage || 0)
+})
+const attachmentAccept = computed(() => (attachmentPolicy.value.allowedMimes || []).join(','))
+const attachmentLimitText = computed(() => {
+  const bytes = attachmentPolicy.value.maxBytes
+  const size = bytes >= 1048576 ? `${Number((bytes / 1048576).toFixed(1))} MB`
+    : `${Math.max(1, Math.floor(bytes / 1024))} KB`
+  return `Up to ${attachmentPolicy.value.maxPerMessage} files, ${size} each.`
+})
 const orderChoices = computed(() => [...new Map(orders.value.map(order => [order.id, order])).values()])
 
 let channel = null
@@ -103,6 +120,43 @@ const updateConversation = item => {
   conversation.value = item
   conversations.value = [item, ...conversations.value.filter(entry => entry.id !== item.id)]
 }
+const chooseFiles = event => {
+  const files = [...(event.target.files || [])]
+  const policy = attachmentPolicy.value
+  if (!policy.enabled || !files.length) { selectedFiles.value = []; return }
+  if (files.length > policy.maxPerMessage) {
+    errorText.value = `Choose up to ${policy.maxPerMessage} files.`
+    event.target.value = ''; selectedFiles.value = []; return
+  }
+  if (files.some(file => file.size < 1 || file.size > policy.maxBytes
+    || !policy.allowedMimes.includes(file.type))) {
+    errorText.value = 'Choose a permitted file within the size limit.'
+    event.target.value = ''; selectedFiles.value = []; return
+  }
+  selectedFiles.value = files.map(file => ({ id: crypto.randomUUID(), file }))
+  errorText.value = ''
+}
+const clearFiles = () => {
+  selectedFiles.value = []
+  if (fileInput.value) fileInput.value.value = ''
+}
+const uploadSelectedFiles = async (conversationId, messageId) => {
+  const items = []
+  let failed = false
+  for (const selected of selectedFiles.value) {
+    try {
+      const result = await uploadAttachment(actor.value, conversationId, messageId,
+        selected.id, selected.file)
+      items.push(result.item)
+    } catch { failed = true }
+  }
+  clearFiles()
+  return { items, failed }
+}
+const downloadFile = async file => {
+  try { await downloadAttachment(actor.value, file.id, file.original_name) }
+  catch (error) { errorText.value = requestError(error, 'Could not download file.') }
+}
 const markVisibleRead = async () => {
   if (!panelOpen.value || screen.value !== 'thread' || !conversation.value
     || document.visibilityState !== 'visible' || !atBottom() || readPending) return
@@ -149,16 +203,28 @@ const clearSubscription = async () => {
 }
 
 const mergeIncoming = async (incoming) => {
+  if (!incoming.length) return
   const known = new Set(messages.value.map(item => item.id))
   const added = incoming.filter(item => !known.has(item.id))
-  if (!added.length) return
   const stick = panelOpen.value && atBottom()
   messages.value = mergeChatMessages(messages.value, incoming)
+  if (!added.length) return
   const own = latestOwnMessage()
   if (own) lastOwnSentAt.value = own.created_at
   const staffCount = added.filter(item => item.sender_kind === 'staff').length
   if (panelOpen.value && !stick && staffCount) newBelow.value = true
   if (stick) await scrollBottom()
+}
+const refreshLatestMessages = async () => {
+  if (!actor.value?.session || !conversation.value) return
+  const id = conversation.value.id
+  try {
+    const result = await request(actor.value, `/conversations/${id}`)
+    if (conversation.value?.id !== id) return
+    updateConversation(result.item)
+    conversationAttachmentPolicy.value = result.attachmentPolicy || conversationAttachmentPolicy.value
+    messages.value = mergeChatMessages(messages.value, result.messages.items || [])
+  } catch { scheduleReconcile() }
 }
 
 const reconcile = async () => {
@@ -216,7 +282,10 @@ const subscribe = async () => {
     if (session?.access_token && channel) client.realtime.setAuth(session.access_token)
   }).data.subscription
   channel = client.channel(`chat:public:${id}`, { config: { private: true } })
-    .on('broadcast', { event: 'changed' }, () => scheduleReconcile())
+    .on('broadcast', { event: 'changed' }, ({ payload }) => {
+      if (payload?.kind === 'attachment') refreshLatestMessages()
+      else scheduleReconcile()
+    })
     .on('broadcast', { event: 'typing' }, ({ payload }) => onTyping(payload))
     .subscribe((state) => {
       if (state === 'SUBSCRIBED') { connectionState.value = 'connected'; scheduleReconcile() }
@@ -235,6 +304,7 @@ const selectConversation = async (item, currentRun = runId) => {
     const result = await request(actor.value, `/conversations/${item.id}`)
     if (currentRun !== runId || selected !== selectionId) return
     updateConversation(result.item)
+    conversationAttachmentPolicy.value = result.attachmentPolicy || null
     selectedOrderId.value = result.item.order_id || ''
     messages.value = result.messages.items || []
     hasOlder.value = result.messages.hasMore
@@ -258,6 +328,8 @@ const loadActor = async () => {
   if (currentRun !== runId) return
   actor.value = null
   conversation.value = null
+  conversationAttachmentPolicy.value = null
+  clearFiles()
   selectedOrderId.value = ''
   messages.value = []
   conversations.value = []
@@ -451,7 +523,11 @@ const startConversation = async () => {
     pendingStart = null
     if (draft.value.trim() === text) draft.value = ''
     conversations.value = [result.item, ...conversations.value.filter(item => item.id !== result.item.id)]
+    const uploaded = result.messageId && selectedFiles.value.length
+      ? await uploadSelectedFiles(result.item.id, result.messageId) : { items: [], failed: false }
+    if (currentRun !== runId) return
     await selectConversation(result.item)
+    if (uploaded.failed) errorText.value = 'Message sent. Some attachments could not be uploaded.'
   } catch (error) {
     if (currentRun === runId) errorText.value = requestError(error, 'Could not save your message. Try again.')
   } finally {
@@ -477,7 +553,11 @@ const sendMessage = async () => {
     if (selectionId !== selected || conversation.value?.id !== conversationId) return
     pendingSend = null
     if (draft.value.trim() === text) draft.value = ''
-    await mergeIncoming([result.item])
+    const uploaded = selectedFiles.value.length
+      ? await uploadSelectedFiles(conversationId, result.item.id) : { items: [], failed: false }
+    if (selectionId !== selected || conversation.value?.id !== conversationId) return
+    await mergeIncoming([{ ...result.item, attachments: uploaded.items }])
+    if (uploaded.failed) errorText.value = 'Message sent. Some attachments could not be uploaded.'
     lastOwnSentAt.value = result.item.created_at
     await scrollBottom()
   } catch (error) {
@@ -504,6 +584,8 @@ const newConversation = async () => {
   await clearSubscription()
   conversation.value = null
   selectedOrderId.value = ''
+  conversationAttachmentPolicy.value = null
+  clearFiles()
   messages.value = []
   draft.value = ''
   lastOwnSentAt.value = null
@@ -653,6 +735,11 @@ onBeforeUnmount(() => {
             :class="message.sender_kind === 'staff' ? 'from-support' : 'from-customer'">
             <span class="chat-message-sender">{{ message.sender_kind === 'staff' ? 'Support' : 'You' }}</span>
             <p>{{ message.body }}</p>
+            <button v-for="file in message.attachments || []" :key="file.id" type="button"
+              class="chat-attachment" @click="downloadFile(file)">
+              <Icon name="lucide:paperclip" size="13" aria-hidden="true" />
+              {{ file.original_name }}
+            </button>
             <time :datetime="message.created_at">{{ new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) }}</time>
           </div>
           <p v-if="!messages.length" class="chat-muted">No messages yet.</p>
@@ -707,6 +794,16 @@ onBeforeUnmount(() => {
             <Icon name="lucide:arrow-up" size="17" aria-hidden="true" />
           </button>
         </div>
+        <label v-if="attachmentPolicy.enabled" class="chat-file-picker">
+          <Icon name="lucide:paperclip" size="14" aria-hidden="true" /> Attach files
+          <input ref="fileInput" type="file" multiple :accept="attachmentAccept"
+            :disabled="sending" @change="chooseFiles" />
+        </label>
+        <span v-if="attachmentPolicy.enabled && !selectedFiles.length" class="chat-file-limit">{{ attachmentLimitText }}</span>
+        <span v-if="selectedFiles.length" class="chat-file-summary">
+          {{ selectedFiles.length }} {{ selectedFiles.length === 1 ? 'file' : 'files' }} selected
+          <button type="button" :disabled="sending" @click="clearFiles">Clear</button>
+        </span>
       </div>
       <div v-else-if="conversation?.status === 'closed' && screen === 'thread'" class="chat-closed">
         <span>This conversation is closed.</span>
@@ -720,6 +817,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .chat-root{--chat-blue:#174a97;--chat-navy:#102b53;font-family:inherit}
 .chat-account-link,.chat-order-link{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 12px;border-bottom:1px solid #e8edf5;background:#f8fafc;font-size:11px}.chat-account-link button,.chat-order-link button{border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}.chat-order-link input,.chat-order-link select{min-width:0;max-width:150px;padding:5px;border:1px solid #cad5e5;border-radius:7px;background:white}
+.chat-attachment{display:inline-flex;align-items:center;max-width:100%;gap:5px;padding:5px 7px;border:1px solid #bfd1ec;border-radius:8px;background:white;color:#174a97;font-size:10px;font-weight:700;overflow-wrap:anywhere;cursor:pointer}.chat-file-picker{display:inline-flex;align-items:center;gap:5px;margin-top:7px;color:var(--chat-blue);font-size:11px;font-weight:700;cursor:pointer}.chat-file-picker input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.chat-file-limit{margin-left:8px;color:#718096;font-size:10px}.chat-file-summary{display:flex;justify-content:space-between;margin-top:5px;color:#607187;font-size:10px}.chat-file-summary button{border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}
 .chat-launcher{position:fixed;right:22px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:9px;min-height:50px;padding:0 18px;border:1px solid #174a97;border-radius:999px;background:#174a97;color:white;box-shadow:0 10px 28px #0b2a5860;font-size:14px;font-weight:700;cursor:pointer}
 .chat-launcher:hover{background:#123b7a;transform:translateY(-1px)}
 .chat-launcher:focus-visible,.chat-panel button:focus-visible,.chat-panel a:focus-visible,.chat-panel input:focus-visible,.chat-panel textarea:focus-visible{outline:3px solid #eebd50;outline-offset:2px}

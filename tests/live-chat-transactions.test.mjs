@@ -21,6 +21,13 @@ const send = async (chat, id, kind, body, key = randomUUID(), internal = false) 
 const transition = async (chat, id, action, revision, target = null) =>
   (await first('select public.chat_transition($1,$2,$3,$4,$5) as id',
     [chat, id, action, target, revision])).id
+const reserveAttachment = async ({ attachment = randomUUID(), chat, message, actor,
+  kind = 'customer', name = 'proof.pdf', mime = 'application/pdf', size = 100,
+  hashValue = 'a'.repeat(64), path = null }) => first(
+  'select public.chat_reserve_attachment($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as result',
+  [attachment, chat, message, actor, kind, name,
+    path || `${chat}/${message}/${attachment}.${mime === 'application/pdf' ? 'pdf' : 'jpg'}`,
+    mime, size, hashValue, hash(actor)])
 
 before(async () => { db = await createResetDatabase() })
 after(async () => { await db?.close() })
@@ -356,6 +363,64 @@ test('guest chat association requires both verified identities and preserves his
   await denied(() => identify(guestA, customerB, 1), /CHAT_IDENTIFY_DENIED/)
 })
 
+test('attachment reservation enforces ownership, settings, count and idempotency', async () => {
+  await query("update public.chat_settings set customer_send_cooldown_seconds=0,max_attachments_per_message=1")
+  const chat = await create(customerA)
+  const message = await send(chat, customerA, 'customer', 'See the file')
+  const attachment = randomUUID()
+  await denied(() => reserveAttachment({ attachment, chat, message, actor: customerB }), /access denied/)
+  await denied(() => reserveAttachment({ attachment, chat, message, actor: customerA,
+    mime: 'text/plain', path: `${chat}/${message}/${attachment}.txt` }), /type or size is invalid/)
+  await denied(() => reserveAttachment({ attachment, chat, message, actor: customerA,
+    path: `${customerB}/${message}/${attachment}.pdf` }), /path is invalid/)
+  await db.exec('set local role service_role')
+  const reserved = await reserveAttachment({ attachment, chat, message, actor: customerA })
+  assert.equal(reserved.result.created, true)
+  assert.equal(reserved.result.ready, false)
+  const retried = await reserveAttachment({ attachment, chat, message, actor: customerA })
+  assert.equal(retried.result.created, false)
+  await db.exec('reset role')
+  await denied(() => reserveAttachment({ attachment, chat, message, actor: customerA,
+    hashValue: 'b'.repeat(64) }), /CHAT_ATTACHMENT_KEY_CONFLICT/)
+  await denied(() => reserveAttachment({ chat, message, actor: customerA }), /CHAT_ATTACHMENT_LIMIT/)
+  await denied(() => first('select public.chat_complete_attachment($1,$2,$3) as id',
+    [attachment, customerB, 'a'.repeat(64)]), /access denied/)
+  await query('delete from realtime.messages')
+  await db.exec('set local role service_role')
+  assert.equal((await first('select public.chat_complete_attachment($1,$2,$3) as id',
+    [attachment, customerA, 'a'.repeat(64)])).id, attachment)
+  await db.exec('reset role')
+  assert.equal((await first('select is_ready from public.chat_attachments where id=$1', [attachment])).is_ready, true)
+  const topics = (await query("select topic from realtime.messages where payload->>'kind'='attachment' order by topic")).rows.map(row => row.topic)
+  assert.deepEqual(topics, [`chat:public:${chat}`, `chat:staff:${chat}`])
+  await query('update public.chat_settings set attachments_enabled=false')
+  const secondMessage = await send(chat, customerA, 'customer', 'No attachment')
+  await denied(() => reserveAttachment({ chat, message: secondMessage, actor: customerA }), /CHAT_ATTACHMENTS_DISABLED/)
+})
+
+test('staff internal attachments remain staff-only and require the assigned sender', async () => {
+  await query("update public.chat_settings set customer_send_cooldown_seconds=0")
+  const chat = await create(customerA)
+  const customerMessage = await send(chat, customerA, 'customer', 'Public file')
+  await transition(chat, staffA, 'claim', Number((await first(
+    'select revision from public.chat_conversations where id=$1', [chat])).revision))
+  const note = await send(chat, staffA, 'staff', 'Private file', randomUUID(), true)
+  const attachment = randomUUID()
+  await denied(() => reserveAttachment({ attachment, chat, message: note,
+    actor: viewer, kind: 'staff' }), /access denied/)
+  await denied(() => reserveAttachment({ attachment, chat, message: note,
+    actor: staffB, kind: 'staff' }), /access denied/)
+  await reserveAttachment({ attachment, chat, message: note, actor: staffA, kind: 'staff' })
+  await query('delete from realtime.messages')
+  await first('select public.chat_complete_attachment($1,$2,$3)',
+    [attachment, staffA, 'a'.repeat(64)])
+  const topics = (await query("select topic from realtime.messages where payload->>'kind'='attachment'")).rows.map(row => row.topic)
+  assert.deepEqual(topics, [`chat:staff:${chat}`])
+  await query("update public.chat_conversations set status='closed',closed_at=now() where id=$1", [chat])
+  await denied(() => reserveAttachment({ chat, message: customerMessage,
+    actor: customerA }), /CHAT_CLOSED/)
+})
+
 test('browser roles cannot execute write RPCs or access private chat tables', async () => {
   const signatures = [
     'public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)',
@@ -369,7 +434,9 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_set_agent_availability(uuid,text)',
     'public.chat_consume_limit(text,text,integer,integer)',
     'public.chat_set_order(uuid,uuid,text,uuid,bigint)',
-    'public.chat_identify_guest(uuid,uuid,uuid,bigint)'
+    'public.chat_identify_guest(uuid,uuid,uuid,bigint)',
+    'public.chat_reserve_attachment(uuid,uuid,uuid,uuid,text,text,text,text,integer,text,text)',
+    'public.chat_complete_attachment(uuid,uuid,text)'
   ]
   for (const signature of signatures) {
     for (const role of ['anon','authenticated']) {

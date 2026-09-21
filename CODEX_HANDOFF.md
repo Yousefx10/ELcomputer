@@ -1,4 +1,39 @@
-# Codex handoff — Live Chat Phase 7
+# Codex handoff — Live Chat Phase 8
+
+Date: 2026-09-21. State: **PHASE 8 COMPLETE LOCALLY — awaiting explicit instruction for Phase 9. No remote change.**
+
+## Completed in Phase 8
+
+- Added local additive migration `supabase/migrations/20260921130000_live_chat_attachments.sql`. It adds hashed reserved/ready attachment records, service-only reservation/completion RPCs, row-locked per-message counts, saved-policy enforcement, attachment attempt limiting, retry conflict checks, and private ID-only Realtime signals. Internal-note attachments signal staff only. All seven chat migrations remain unapplied remotely.
+- Added bounded multipart parsing with a streaming request cap, matching MIME/extension/file-signature checks for JPEG/PNG/WebP/PDF, configured size/count enforcement, generated private paths, upload rollback, and one-hour stale reservation cleanup. Authorized download routes recheck conversation ownership and internal visibility, verify stored size/hash, force downloads, and expose no public URL.
+- Added configured multi-file selection, upload feedback, transcript file controls, and private downloads to the customer launcher and staff inbox. Attachments remain related to their permanent message; failed files do not erase the saved message. No Phase 9 ticket conversion, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 8
+
+- Migration: `supabase/migrations/20260921130000_live_chat_attachments.sql` (**new; local only**).
+- Server: `server/utils/liveChat.js`, `server/utils/chatAttachmentValidation.js` and `server/utils/liveChatAttachments.js` (**new**); customer/staff attachment upload and download routes; chat detail/message/status projections.
+- Application: `app/components/live-chat/Launcher.vue`, `app/pages/dashboard/live-chat.vue`, `app/composables/useLiveChatClient.js`, `app/composables/useSupportClient.js`.
+- Tests: `tests/live-chat-transactions.test.mjs`, `tests/live-chat-attachments.test.mjs` (**new**). Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **120 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- PGlite verifies ownership, active assignment, internal-note isolation, settings, row-locked count, idempotent reservation, hash conflicts, closed-chat rejection, staff/public Realtime topics, service-role execution, and browser-role RPC denial. Pure tests verify multipart parsing and reject mismatched MIME, extension, signature, and size. All four built-server attachment routes return HTTP 401 without Auth.
+- **NOT VERIFIED:** Real private Supabase Storage behavior and bucket metadata, authenticated uploads/downloads, production proxy body limits, concurrent object retries, Realtime delivery, device file selection, or layout on actual devices. Malware scanning is not included. Seven chat migrations remain local; chat settings stay off and anonymous Auth stays disabled.
+
+## Known issues and decisions
+
+- V1 accepts only JPEG, PNG, WebP, and PDF and always forces downloads as opaque content. Type, extension, magic bytes, configured size, count, ownership, and SHA-256 integrity are checked. These checks do not replace enterprise malware scanning.
+- A message commits before its selected files upload. A later file failure is reported as partial success and never duplicates or removes the message. Normal failures roll back the private object/reservation. A hard process crash can leave a hidden incomplete reservation/object; a later upload cleans incomplete entries older than one hour.
+- Attachment completion signals are private and contain only conversation, message, and attachment IDs. Attachments do not create a second unread message. The saved parent message remains the unread unit, and an open thread refreshes when the completion signal arrives.
+
+## Exact next action — Phase 9, only after “Continue with Phase 9”
+
+Re-read the Phase 9 chat-to-ticket requirements in the master specification and this handoff. Add only safe conversion into the existing ticket architecture, preserving customer/order/chat/attachment relationships and audit actor; validate locally, update both state files, and stop before Phase 10. Do not apply migrations remotely, enable anonymous Auth, or deploy as an incidental step.
+
+---
+
+# Previous handoff — Live Chat Phase 7
 
 Date: 2026-09-21. State: **PHASE 7 COMPLETE LOCALLY — awaiting explicit instruction for Phase 8. No remote change.**
 

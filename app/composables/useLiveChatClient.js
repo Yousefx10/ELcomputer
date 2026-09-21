@@ -55,5 +55,27 @@ export const useLiveChatClient = () => {
     })
   }
 
-  return { getGuestClient, hasStoredGuestSession, resolveActor, ensureGuestSession, request }
+  const uploadAttachment = async (actor, conversationId, messageId, attachmentId, file) => {
+    const form = new FormData()
+    form.append('messageId', messageId)
+    form.append('attachmentId', attachmentId)
+    form.append('file', file)
+    return request(actor, `/conversations/${conversationId}/attachments`, { method: 'POST', body: form })
+  }
+
+  const downloadAttachment = async (actor, id, name) => {
+    const { data, error } = await actor.client.auth.getSession()
+    if (error || !data.session?.access_token) throw new Error('Your chat session expired. Please reopen chat.')
+    const response = await fetch(`/api/chat/attachments/${encodeURIComponent(id)}`, {
+      headers: { authorization: `Bearer ${data.session.access_token}` }, cache: 'no-store'
+    })
+    if (!response.ok) throw new Error('Could not download this file.')
+    const url = URL.createObjectURL(await response.blob())
+    const anchor = document.createElement('a')
+    anchor.href = url; anchor.download = name || 'attachment'; document.body.append(anchor)
+    anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  return { getGuestClient, hasStoredGuestSession, resolveActor, ensureGuestSession,
+    request, uploadAttachment, downloadAttachment }
 }

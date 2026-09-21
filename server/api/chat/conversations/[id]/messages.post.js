@@ -21,5 +21,5 @@ export default defineEventHandler(async (event) => {
     .select('id,sequence_number,sender_kind,sender_name,body,created_at')
     .eq('id', messageId).eq('conversation_id', id).eq('is_internal', false).single()
   if (result.error) chatError(result.error, 'Could not load sent message.')
-  return { item: result.data }
+  return { item: { ...result.data, attachments: [] } }
 })

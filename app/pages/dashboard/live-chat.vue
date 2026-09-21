@@ -3,7 +3,7 @@ import { chatAuditDescription, mergeChatEvents, mergeChatMessages } from '~/util
 
 definePageMeta({ layout: 'dashboard' })
 const client = useSupabaseClient()
-const { request, errorText } = useSupportClient()
+const { request, downloadFrom, errorText } = useSupportClient()
 const { adminUser, hasPermission, loadAdminAccess } = useAdminAccess()
 const views = [
   { key: 'waiting', label: 'Waiting' }, { key: 'mine', label: 'Assigned to me' },
@@ -26,6 +26,9 @@ const contextLoading = ref(false)
 const contextError = ref('')
 const orderNumber = ref('')
 const selectedOrderId = ref('')
+const attachmentPolicy = ref({ enabled: false, allowedMimes: [], maxBytes: 0, maxPerMessage: 0 })
+const selectedFiles = shallowRef([])
+const fileInput = ref(null)
 const messages = ref([])
 const events = ref([])
 const activityMore = ref(false)
@@ -77,6 +80,10 @@ const orderChoices = computed(() => [...new Map([
   ...(context.value?.orderMatches || []), ...(context.value?.openOrders || []),
   ...(context.value?.recentOrders || []), ...(context.value?.relatedOrder ? [context.value.relatedOrder] : [])
 ].map(order => [order.id, order])).values()])
+const attachmentAccept = computed(() => attachmentPolicy.value.allowedMimes.join(','))
+const attachmentSizeText = computed(() => attachmentPolicy.value.maxBytes >= 1048576
+  ? `${Number((attachmentPolicy.value.maxBytes / 1048576).toFixed(1))} MB`
+  : `${Math.max(1, Math.floor(attachmentPolicy.value.maxBytes / 1024))} KB`)
 const unreadOnPage = computed(() => queue.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
 const lastSequence = () => messages.value.at(-1)?.sequence_number
 const scrollBottom = async () => {
@@ -178,6 +185,7 @@ const loadThread = async (id) => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (run !== detailRequest || !mounted) return
     selected.value = result.item
+    attachmentPolicy.value = result.attachmentPolicy || attachmentPolicy.value
     selectedOrderId.value = result.item.order_id || ''
     messages.value = result.messages.items || []
     older.value = result.messages.hasMore === true
@@ -246,6 +254,7 @@ const reconcileThread = async () => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (!mounted || selected.value?.id !== id) return
     selected.value = result.item
+    attachmentPolicy.value = result.attachmentPolicy || attachmentPolicy.value
     if (result.item.revision !== previousRevision) {
       selectedOrderId.value = result.item.order_id || ''
       loadContext(id)
@@ -314,6 +323,8 @@ const selectThread = async (item) => {
   draft.value = ''
   note.value = false
   sendKey.value = null
+  selectedFiles.value = []
+  if (fileInput.value) fileInput.value.value = ''
   assignTarget.value = ''
   transferTarget.value = ''
   actionError.value = ''
@@ -366,6 +377,48 @@ const transfer = async () => {
   await transition('transfer', transferTarget.value)
   transferTarget.value = ''
 }
+const chooseFiles = event => {
+  const files = [...(event.target.files || [])]
+  const policy = attachmentPolicy.value
+  if (files.length > policy.maxPerMessage) {
+    actionError.value = `Choose up to ${policy.maxPerMessage} files.`
+    event.target.value = ''; selectedFiles.value = []; return
+  }
+  if (files.some(file => file.size < 1 || file.size > policy.maxBytes
+    || !policy.allowedMimes.includes(file.type))) {
+    actionError.value = 'Choose a permitted file within the size limit.'
+    event.target.value = ''; selectedFiles.value = []; return
+  }
+  selectedFiles.value = files.map(file => ({ id: crypto.randomUUID(), file }))
+  actionError.value = ''
+}
+const clearFiles = () => {
+  selectedFiles.value = []
+  if (fileInput.value) fileInput.value.value = ''
+}
+const uploadSelectedFiles = async (conversationId, messageId) => {
+  const items = []
+  let failed = false
+  for (const selectedFile of selectedFiles.value) {
+    const form = new FormData()
+    form.append('messageId', messageId)
+    form.append('attachmentId', selectedFile.id)
+    form.append('file', selectedFile.file)
+    try {
+      const result = await request(`/api/admin-chat/conversations/${conversationId}/attachments`, {
+        method: 'POST', body: form
+      })
+      items.push(result.item)
+    } catch { failed = true }
+  }
+  clearFiles()
+  return { items, failed }
+}
+const downloadFile = async file => {
+  try {
+    await downloadFrom(`/api/admin-chat/attachments/${encodeURIComponent(file.id)}`, file.original_name)
+  } catch (cause) { actionError.value = errorText(cause, 'Could not download file.') }
+}
 const send = async () => {
   if (!canReply.value || busy.value || !draft.value.trim()) return
   const id = selected.value.id
@@ -378,8 +431,13 @@ const send = async () => {
       method: 'POST', body: { body, isInternal: note.value, idempotencyKey: sendKey.value }
     })
     if (selected.value?.id === id) {
-      messages.value = mergeChatMessages(messages.value, [result.item])
       if (draft.value.trim() === body) { draft.value = ''; sendKey.value = null }
+      const uploaded = selectedFiles.value.length
+        ? await uploadSelectedFiles(id, result.item.id) : { items: [], failed: false }
+      if (selected.value?.id !== id) return
+      messages.value = mergeChatMessages(messages.value,
+        [{ ...result.item, attachments: uploaded.items }])
+      if (uploaded.failed) actionError.value = 'Message sent. Some attachments could not be uploaded.'
       await scrollBottom()
       scheduleThread()
       scheduleQueue()
@@ -506,12 +564,14 @@ onBeforeUnmount(() => {
             <div v-for="message in messages" :key="message.id" class="flex" :class="message.sender_kind === 'staff' ? 'justify-end' : 'justify-start'">
               <div class="max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm" :class="message.is_internal ? 'border border-amber-200 bg-amber-50 text-amber-950' : message.sender_kind === 'staff' ? 'bg-blue-600 text-white' : 'border border-gray-200 bg-white text-gray-900'">
                 <p class="mb-1 text-xs font-bold opacity-80">{{ message.is_internal ? 'Internal note · ' : '' }}{{ message.sender_name || (message.sender_kind === 'staff' ? 'Agent' : 'Customer') }}</p>
-                <p class="whitespace-pre-wrap break-words">{{ message.body }}</p><time class="mt-2 block text-[11px] opacity-70">{{ dateText(message.created_at) }}</time>
+                <p class="whitespace-pre-wrap break-words">{{ message.body }}</p>
+                <div v-if="message.attachments?.length" class="mt-2 flex flex-wrap gap-1"><button v-for="file in message.attachments" :key="file.id" type="button" class="inline-flex max-w-full items-center gap-1 rounded-lg border border-current/20 bg-white/90 px-2 py-1 text-left text-[11px] font-semibold text-blue-800" @click="downloadFile(file)"><Icon name="lucide:paperclip" size="13" aria-hidden="true" /><span class="break-all">{{ file.original_name }}</span></button></div>
+                <time class="mt-2 block text-[11px] opacity-70">{{ dateText(message.created_at) }}</time>
               </div>
             </div>
           </div>
           <p v-if="typingVisible" class="bg-gray-50 px-4 py-1 text-xs text-gray-500" role="status">Customer is typing…</p>
-          <form v-if="canReply" class="border-t border-gray-100 p-4" @submit.prevent="send"><label class="block text-xs font-semibold text-gray-600">{{ note ? 'Internal note — staff only' : 'Reply to customer' }}<textarea v-model="draft" maxlength="10000" rows="3" class="mt-1 w-full resize-y rounded-xl border border-gray-200 p-3 text-sm" :class="note ? 'bg-amber-50' : ''" placeholder="Write a message" /></label><div class="mt-2 flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-xs text-gray-600"><input v-model="note" type="checkbox" /> Internal note</label><button type="submit" :disabled="busy || !draft.trim()" class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ busy ? 'Sending...' : note ? 'Save note' : 'Send reply' }}</button></div></form>
+          <form v-if="canReply" class="border-t border-gray-100 p-4" @submit.prevent="send"><label class="block text-xs font-semibold text-gray-600">{{ note ? 'Internal note — staff only' : 'Reply to customer' }}<textarea v-model="draft" maxlength="10000" rows="3" class="mt-1 w-full resize-y rounded-xl border border-gray-200 p-3 text-sm" :class="note ? 'bg-amber-50' : ''" placeholder="Write a message" /></label><label v-if="attachmentPolicy.enabled" class="mt-2 block text-xs font-semibold text-gray-600">Attachments<input ref="fileInput" type="file" multiple :accept="attachmentAccept" :disabled="busy" class="mt-1 block w-full text-xs" @change="chooseFiles" /><span class="mt-1 block font-normal text-gray-500">Up to {{ attachmentPolicy.maxPerMessage }} files, {{ attachmentSizeText }} each.</span></label><div v-if="selectedFiles.length" class="mt-1 flex justify-between text-xs text-gray-500"><span>{{ selectedFiles.length }} selected</span><button type="button" :disabled="busy" class="font-semibold text-blue-700" @click="clearFiles">Clear</button></div><div class="mt-2 flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-xs text-gray-600"><input v-model="note" type="checkbox" /> Internal note</label><button type="submit" :disabled="busy || !draft.trim()" class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ busy ? 'Sending...' : note ? 'Save note' : 'Send reply' }}</button></div></form>
           <p v-else class="border-t border-gray-100 p-4 text-center text-xs text-gray-500">{{ selected.status === 'closed' ? 'This conversation is closed.' : selected.status === 'waiting' ? 'Claim this conversation to reply.' : 'Only the assigned agent can reply.' }}</p>
         </template>
         <div v-else class="flex flex-1 items-center justify-center p-8 text-sm text-gray-500">Choose a conversation from the inbox.</div>

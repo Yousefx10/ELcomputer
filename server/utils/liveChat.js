@@ -58,7 +58,10 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_TRANSITION_DENIED: [409, 'This conversation cannot be changed.'],
     CHAT_ORDER_DENIED: [403, 'This order cannot be linked to the conversation.'],
     CHAT_IDENTIFY_DENIED: [403, 'This guest conversation cannot be linked.'],
-    CHAT_ACCOUNT_BUSY: [409, 'Your account already has an open chat. Close it first.']
+    CHAT_ACCOUNT_BUSY: [409, 'Your account already has an open chat. Close it first.'],
+    CHAT_ATTACHMENTS_DISABLED: [409, 'Attachments are unavailable.'],
+    CHAT_ATTACHMENT_LIMIT: [409, 'This message already has the allowed attachments.'],
+    CHAT_ATTACHMENT_KEY_CONFLICT: [409, 'Attachment key was used for another file.']
   }[error?.message]
   if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })
   if (error?.code === 'P0002') throw createError({ statusCode: 404, statusMessage: 'Conversation not found.' })
@@ -154,7 +157,24 @@ export const loadChatMessages = async (actor, conversationId, query = {}, staff 
   const hasMore = (data || []).length > 50
   const items = (data || []).slice(0, 50)
   if (!after) items.reverse()
-  return { items, hasMore, before: items[0]?.sequence_number || null,
+  const messageIds = items.map(item => item.id)
+  let attachments = []
+  if (messageIds.length) {
+    const result = await actor.supabase.from('chat_attachments')
+      .select('id,message_id,original_name,mime_type,size_bytes,created_at')
+      .eq('conversation_id', conversationId).eq('is_ready', true)
+      .in('message_id', messageIds).order('created_at')
+    if (result.error) chatError(result.error, 'Could not load attachments.')
+    attachments = result.data || []
+  }
+  const byMessage = new Map()
+  for (const attachment of attachments) {
+    const existing = byMessage.get(attachment.message_id) || []
+    existing.push(attachment)
+    byMessage.set(attachment.message_id, existing)
+  }
+  return { items: items.map(item => ({ ...item, attachments: byMessage.get(item.id) || [] })),
+    hasMore, before: items[0]?.sequence_number || null,
     after: items.at(-1)?.sequence_number || null }
 }
 

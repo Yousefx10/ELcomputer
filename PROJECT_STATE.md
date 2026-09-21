@@ -1,5 +1,22 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 8 private attachments complete locally (2026-09-21)
+
+**Status:** Local code only. Seven Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Private attachment flow
+
+- New additive migration `20260921130000_live_chat_attachments.sql` adds SHA-256 metadata and a reserved/ready state to the existing private `chat-attachments` design. Service-only RPCs serialize reservations on the parent message, verify the authenticated actor owns the message, enforce the saved MIME/size/count policy, rate-limit attachment attempts, and make an attachment visible only after storage succeeds. Generated paths contain conversation, message, and client-generated attachment UUIDs. A retry key can return the same reservation only when its metadata and hash match.
+- Customer, guest, staff-reply, and internal-note uploads use scoped server routes. The server caps chunked and Content-Length requests before buffering beyond the configured maximum plus multipart overhead. It requires a matching permitted MIME, filename extension, binary signature, file size, and hash. Customers and guests can attach only to their own public message; staff can attach only to their own message while actively assigned. Closed chats reject new reservations. Normal failures remove the reservation and object; later upload attempts clean up incomplete reservations older than one hour.
+- Completed files are returned with transcript pages and appear beside their saved message in both chat clients. Attachment-ready Realtime signals contain only IDs. Public topics never receive internal-note attachment signals. Download routes recheck current conversation access and internal-note visibility, read only from the private bucket, verify saved size/hash, force `application/octet-stream` download, prevent MIME sniffing, and never return public or permanent signed URLs.
+- The customer and staff composers support the configured attachment count, MIME list, and size. A message stays saved if a later file upload fails, and the UI reports the partial failure. JPEG, PNG, WebP, and PDF are supported by the current database defaults. Enterprise malware scanning is not included in V1 because the project has no scanning service; this must be revisited if untrusted files need automated inspection beyond type/signature validation.
+
+### Phase 8 validation and limits
+
+- **VERIFIED locally:** 120 repository tests passed. New tests cover MIME/extension/signature/size validation, multipart parsing, cross-customer and unauthorized-staff denial, exact generated paths, configured count/disable controls, attachment retry conflicts, service-role execution, public versus internal Realtime signals, closed-chat rejection, and browser-role RPC denial. Nuxt typecheck, production build, and `git diff --check` passed. The built server returned HTTP 401 for all four new upload/download routes without Auth.
+- **NOT VERIFIED:** Real Supabase Storage upload/download behavior, remote bucket configuration, authenticated browser flows, large chunked requests through the production proxy, concurrent retry behavior against Storage, device file pickers, and Realtime attachment delivery. Malware scanning is absent. These need isolated staging checks before chat is enabled. A hard process crash may leave an incomplete private reservation/object until a later upload performs the one-hour cleanup.
+- **Phase 9 only:** Convert a chat into the existing support-ticket architecture while preserving customer, order, transcript, attachment, actor, and audit relationships. Do not begin settings, business hours, later anti-spam work, remote migration, Auth changes, or deployment as incidental work.
+
 ## Live Chat — Phase 7 customer and order integration complete locally (2026-09-21)
 
 **Status:** Local code only. Six Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.

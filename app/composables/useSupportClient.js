@@ -19,8 +19,8 @@ export const useSupportClient = () => {
     return request(url, { method: 'POST', body: form })
   }
 
-  const download = async (id, name) => {
-    const response = await fetch(`/api/support/attachments/${encodeURIComponent(id)}`, {
+  const downloadFrom = async (urlPath, name) => {
+    const response = await fetch(urlPath, {
       headers: await authHeaders(), cache: 'no-store'
     })
     if (!response.ok) throw new Error('Could not download this file.')
@@ -35,8 +35,10 @@ export const useSupportClient = () => {
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
+  const download = (id, name) => downloadFrom(`/api/support/attachments/${encodeURIComponent(id)}`, name)
+
   const errorText = (error, fallback) => error?.data?.statusMessage
     || error?.statusMessage || error?.message || fallback
 
-  return { request, upload, download, errorText }
+  return { request, upload, download, downloadFrom, errorText }
 }
