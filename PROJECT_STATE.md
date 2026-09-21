@@ -1,5 +1,22 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 4 support inbox complete locally (2026-09-21)
+
+**Status:** Local code only. All three Live Chat migrations remain unapplied to linked Supabase, staging, and production. Anonymous Auth remains disabled; chat settings remain disabled by default. No deployment, remote configuration, or Phase 5 work was performed.
+
+### Staff inbox
+
+- `/dashboard/live-chat` is part of the existing Customer Support navigation and requires `support.view`. Tickets link to it. The inbox has server-paged Waiting, Assigned to me, Active, Unassigned, Closed, and Offline messages views, with agent, guest/account, reference, contact, order ID, and created-date filters. The existing `status` API filter remains accepted. Only 50 rows are returned per page.
+- The selected thread shows the scoped, cursor-paged transcript, customer-provided contact fields, account/guest and intake labels, linked order **ID only**, and a capped activity list. Message text is rendered as escaped plain text. Staff with `support.reply` can send customer replies or internal notes only as the active assignee. The UI exposes claim, close, transfer, and reopen to eligible staff using the existing database transition RPC and expected conversation revision. A competing claim or stale action produces a visible conflict and reloads current state.
+- Staff join one private `chat:inbox` topic while the page is mounted, and a `chat:staff:<id>` topic only for the selected thread. Signals carry IDs/cursors/revisions, not message bodies; the page fetches authorized API state on signal, subscription, tab focus, and network return. It unsubscribes on thread change and unmount. Staff message retry retains its idempotency key while the draft stays unchanged.
+- Added a `support.view`-protected activity API that returns only event type, actor kind/ID, and timestamp for the selected conversation. It does not return event JSON values or message bodies. Existing Auth, permissions, staff directory, and service-only chat APIs are reused.
+
+### Phase 4 validation and limits
+
+- **VERIFIED locally:** 107 tests passed; dashboard navigation test covers the new route and support submenu. Nuxt typecheck and production build passed; `git diff --check` passed. A local built-server smoke check returned HTTP 401 for unauthenticated staff inbox and activity APIs, and HTTP 302 for the protected dashboard page.
+- **NOT VERIFIED:** Authenticated staff flows against real Supabase, private Realtime delivery/reconnect, concurrent browser agents, visual/mobile/assistive-technology behavior, or remote policy/settings behavior. The linked project cannot exercise this UI while chat migrations are unapplied and chat is disabled. PGlite transaction tests from earlier phases continue to verify the underlying claim/transfer/close/reopen and note isolation logic, but are not a full browser test.
+- **Phase 5 only:** Continue with assignment, transfer, and audit-history improvements defined in the master specification; do not treat this Phase 4 UI as completion of later routing or audit requirements. Durable unread/read state, presence, typing, and agent availability stay in their later phases. No remote migration or deployment occurred.
+
 ## Live Chat — Phase 3 customer experience complete locally (2026-09-21)
 
 **Status:** Local code only. All three Live Chat migrations (`20260920150000_live_chat_foundation.sql`, `20260920160000_live_chat_transactions.sql`, `20260920170000_live_chat_customer_intake.sql`) remain unapplied to linked Supabase, staging, and production. Anonymous Auth remains disabled. No VPS deployment or staff inbox UI was performed.

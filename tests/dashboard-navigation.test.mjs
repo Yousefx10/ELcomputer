@@ -82,6 +82,8 @@ test('direct links to the new views retain access checks', () => {
   assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard?view=stock')), { permissionsAny: ['products.view', 'categories.view'] })
   assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard/hr?tab=users&people=customers')), { permission: 'users.view' })
   assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard/pages')), { permission: 'pages.view' })
+  assert.deepEqual(getDashboardRouteRequirement(routeFor('/dashboard/live-chat')), { permission: 'support.view' })
+  assert.deepEqual(buildDashboardNavigation().find(group => group.key === 'support').children.map(item => item.key), ['support-tickets', 'live-chat'])
   for (const section of dashboardSettingsSections) {
     assert.deepEqual(getDashboardRouteRequirement(routeFor(section.to)), section.role === 'owner' ? { role: 'owner' } : { permission: section.permission }, section.to)
   }

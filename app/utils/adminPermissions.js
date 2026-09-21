@@ -237,6 +237,9 @@ export const getDashboardRouteRequirement = (route = '') => {
   if (path === '/dashboard/support' || path.startsWith('/dashboard/support/')) {
     return { permission: 'support.view' }
   }
+  if (path === '/dashboard/live-chat' || path.startsWith('/dashboard/live-chat/')) {
+    return { permission: 'support.view' }
+  }
 
   if (path === '/dashboard/orders' || path.startsWith('/dashboard/orders/')) {
     return {

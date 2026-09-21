@@ -1,4 +1,39 @@
-# Codex handoff — Live Chat Phase 3
+# Codex handoff — Live Chat Phase 4
+
+Date: 2026-09-21. State: **PHASE 4 COMPLETE LOCALLY — awaiting explicit instruction for Phase 5. No remote change.**
+
+## Completed in Phase 4
+
+- Integrated a native `/dashboard/live-chat` inbox into Customer Support navigation, using existing `support.view`, `support.reply`, and `support.manage` checks. Added six queue views, server paging and filters, selected transcript with older-message paging, internal-note composer, captured contact context, and a bounded activity list.
+- Wired claim, transfer, close, and reopen controls to the existing row-locked RPC with expected revisions. On a 409 conflict, the UI shows the server message and refreshes the selected conversation and queue. Only the current assignee can reply. Staff send retries reuse the submission key while the draft stays unchanged.
+- Subscribed the mounted inbox to one private ID-only topic and the selected conversation to one staff-only topic. Reconciliation fetches authorized APIs on signal, subscribe, focus, and network return; no body-bearing staff-wide payload or every-thread channel was added. Navigation changes and unmount remove subscriptions.
+- No Phase 5 routing/audit expansion, remote migrations, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 4
+
+- Application: `app/pages/dashboard/live-chat.vue` (**new**), `app/pages/dashboard/support/index.vue`, `app/utils/dashboardNavigation.js`, `app/utils/adminPermissions.js`.
+- Server: `server/api/admin-chat/conversations/index.get.js`, `server/api/admin-chat/conversations/[id]/events.get.js` (**new**).
+- Tests: `tests/dashboard-navigation.test.mjs`. Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **107 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- The locally built server returned HTTP 401 for unauthenticated staff inbox and activity routes, and HTTP 302 for the protected dashboard page. The new route's permission requirement and support submenu passed the navigation test.
+- **NOT VERIFIED:** Real authenticated staff UI, private Realtime delivery/reconnect, multi-agent browser race feedback, device layout/accessibility, or linked-project policies. All three chat migrations are local/unapplied; chat settings remain off and anonymous Auth remains disabled. Current PGlite tests verify the underlying workflow transactions and internal-note signals, not the complete browser path.
+
+## Known issues and decisions
+
+- Contact, reference, linked order ID, and agent filters use bounded server queries. Durable unread filters and read markers belong to the later read/unread phase. This UI shows only captured contact and an order ID; deeper customer/order/ticket context stays in its later phase.
+- The activity list shows the latest 30 event labels and actor identities. The full audit rows remain in `chat_events`; deeper audit/assignment management is Phase 5. No event JSON values or message bodies are returned by the activity route.
+- Realtime errors show a reconnecting state; API refetch on return/subscription provides catch-up. A live Supabase staging test remains necessary before enabling chat. With no agent availability lease writer, customer intake remains offline when chat is eventually enabled until a later phase supplies leases.
+
+## Exact next action — Phase 5, only after “Continue with Phase 5”
+
+Re-read the Phase 5 assignment, transfer, and audit requirements in the master specification and this handoff. Build only the remaining Phase 5 routing/assignment and historical audit capabilities on the existing transaction foundation, validate locally, update both state files, and stop before Phase 6. Do not apply migrations remotely, change anonymous Auth settings, or deploy as an incidental step.
+
+---
+
+# Previous handoff — Live Chat Phase 3
 
 Date: 2026-09-21. State: **PHASE 3 COMPLETE LOCALLY — awaiting explicit instruction for Phase 4. No remote change.**
 
