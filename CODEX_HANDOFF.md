@@ -1,4 +1,39 @@
-# Codex handoff — Live Chat Phase 9
+# Codex handoff — Live Chat Phase 10
+
+Date: 2026-09-21. State: **PHASE 10 COMPLETE LOCALLY — awaiting explicit instruction for Phase 11. No remote change.**
+
+## Completed in Phase 10
+
+- Added local migration `supabase/migrations/20260921150000_live_chat_settings.sql`. It adds a service-only availability diagnostic, a locked/stale-safe settings transaction with an atomic permanent admin audit row, enforced ticket-conversion settings, and atomic conversation-or-linked-ticket offline intake. Manual online still requires a current eligible agent lease. All nine chat migrations remain unapplied remotely.
+- Added a grouped Live Chat section to the existing dashboard settings page. It manages enablement, override, timezone and weekly hours, customer text/contact rules, cooldown and message length, attachment policy, transfer/reopen/conversion switches, and offline conversation versus linked-ticket intake. The page shows the evaluated availability reason and recent settings audit rows and supports `settings.view` and `settings.edit` separately.
+- Applied saved workflow settings to public status polling, offline first-message results, and staff transfer/reopen/ticket actions. Offline ticket mode preserves the chat as the guest's authenticated transcript/file channel and creates one linked system ticket using the verified relationships and real captured contact. No Phase 11 rate-limit expansion, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 10
+
+- Migration: `supabase/migrations/20260921150000_live_chat_settings.sql` (**new; local only**).
+- Server: `server/api/admin-chat/settings.get.js` and `.put.js`, `server/utils/liveChatSettings.js`, `server/utils/liveChatSettingsValidation.js` (**new**); public status/intake, staff conversation settings, and chat error mapping updated.
+- Application: `app/components/dashboard/LiveChatSettings.vue` (**new**); dashboard settings navigation/page, staff Live Chat actions, and customer launcher status/offline confirmation updated.
+- Tests: `tests/live-chat-settings.test.mjs` (**new**). Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **128 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- PGlite verifies deterministic availability reasons, timezone hours, eligible-agent/manual override behavior, settings permissions and stale locking, strict payloads, atomic audit snapshots, both offline modes, mobile-only guest tickets, idempotent retry, conversion constraints, and service-only execution. Pure validation rejects overlapping hours and conflicting offline settings. The built settings GET and PUT routes return HTTP 401 without Auth.
+- **NOT VERIFIED:** Real Supabase migration/grants, authenticated browser settings, live timezone and daylight-saving boundaries, remote lease/status refresh, remote ticket intake, private Realtime refresh, device rendering, or accessibility. Nine chat migrations remain local; chat settings stay off and anonymous Auth stays disabled remotely.
+
+## Known issues and decisions
+
+- Manual online is an override of business hours, not agent presence: at least one active staff member with support view/reply access must still hold a current online lease. Disabled and manual-offline states always win.
+- Offline ticket mode retains the chat and first message, then links one system-created support ticket in the same transaction. This preserves the guest's only authenticated conversation channel and the canonical transcript/attachments. A retry cannot create a second ticket or change the original intake outcome.
+- The existing four-second default cooldown is editable and already enforced in the database. Phase 11 should extend broader rate limiting and anti-spam without moving those protections into the UI alone. Automatic assignment and sound settings are not exposed because neither behavior is implemented. Durable unread state remains core behavior, and no retention policy exists. The existing default timezone remains `Africa/Cairo` until an administrator changes it.
+
+## Exact next action — Phase 11, only after “Continue with Phase 11”
+
+Re-read the Phase 11 rate-limiting and anti-spam requirements in the master specification and this handoff. Implement only the remaining abuse controls around the existing database cooldown, actor limits, bounded payloads, and guest identity model; validate locally, update both state files, and stop before Phase 12. Do not begin responsive/accessibility polish, the Phase 13 security/concurrency/performance audit, staging, remote migrations, anonymous Auth changes, or deployment as incidental work.
+
+---
+
+# Previous handoff — Live Chat Phase 9
 
 Date: 2026-09-21. State: **PHASE 9 COMPLETE LOCALLY — awaiting explicit instruction for Phase 10. No remote change.**
 

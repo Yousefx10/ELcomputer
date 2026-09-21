@@ -1,5 +1,28 @@
 # Project state — 2026-09-21
 
+
+## Live Chat — Phase 10 admin settings, business hours, and offline behavior complete locally (2026-09-21)
+
+**Status:** Local code only. Nine Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Settings and availability
+
+- The existing dashboard settings area now contains a focused Live Chat section for enabling chat, automatic/manual availability, timezone, up to three ordered business-hour intervals per day, welcome/offline messages, guest email/mobile rules, customer cooldown, message length, attachment policy, transfers, reopening, ticket conversion, and offline intake behavior. View-only settings users can inspect the values and recent history; only active owners or staff with `settings.edit` can save.
+- New service-only `chat_availability_details` evaluates the saved timezone and hours in PostgreSQL and reports a stable reason for the current state. Disabled and forced-offline settings take priority; manual online still requires a current lease from an active reply-capable agent. The public launcher refreshes status while closed so visibility and messaging follow saved settings without a page reload.
+- Settings saves use strict server normalization, database constraints, a locked singleton row, and an expected `updated_at` value to reject stale tabs. The settings update and its permanent `admin_activity_logs` entry commit in one transaction. Audit metadata records changed fields plus before/after values and snapshots the actor name, email, and role.
+
+### Offline and workflow behavior
+
+- Offline intake always commits the chat and first message atomically. In conversation mode it remains an offline chat. In ticket mode it also creates one linked existing support ticket in the same transaction, using only the verified customer/order relationship and captured real email/mobile contact. The chat stays canonical for the guest transcript and attachments. Submission retries return the original outcome and cannot create a second ticket.
+- The ticket conversion switch is enforced inside the conversion transaction, while transfer and reopen switches remain enforced by their existing database transactions. The staff inbox reads these saved switches and hides or explains unavailable actions. A database constraint prevents ticket-based offline intake while conversion is disabled.
+- Required guest name plus the configurable email/mobile rule remain the V1 identification policy. Automatic assignment, sound controls, and a separate unread toggle are not exposed because there is no implemented behavior for those controls; durable unread state remains part of the core chat workflow. No retention policy was introduced.
+
+### Phase 10 validation and limits
+
+- **VERIFIED locally:** 128 repository tests passed. New PGlite coverage verifies timezone/hour decisions, the online-agent requirement, manual overrides, settings permissions, stale-write rejection, strict payloads, atomic audit history, conversation versus linked-ticket offline intake, mobile-only guests, idempotent retries, workflow constraints, and browser-role RPC denial. Pure server validation covers overlapping hours and conflicting ticket settings. Nuxt typecheck, production build, and `git diff --check` passed. The built settings GET and PUT endpoints both returned HTTP 401 without authentication.
+- **NOT VERIFIED:** Real Supabase migration/grants and timezone catalog behavior, authenticated settings saves in a browser, daylight-saving boundary behavior, live agent lease changes reflected through the remote API, remote offline ticket creation, Realtime reconciliation, device layout, and accessibility. These require isolated staging acceptance before chat is enabled.
+- **Phase 11 only:** Add the rate-limiting and anti-spam controls defined by the master specification. Preserve the existing configurable cooldown and database enforcement; do not begin Phase 12 responsive/accessibility polish, Phase 13 audit work, staging migration, remote Auth changes, or deployment.
+
 ## Live Chat — Phase 9 chat-to-ticket conversion complete locally (2026-09-21)
 
 **Status:** Local code only. Eight Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.

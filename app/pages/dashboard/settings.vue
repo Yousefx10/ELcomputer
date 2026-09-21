@@ -1685,6 +1685,11 @@
         </div>
       </section>
 
+      <DashboardLiveChatSettings
+        v-if="activeSettingsSection?.section === 'liveChat'"
+        :can-edit="canEditSettings"
+      />
+
       </fieldset>
 
       <DashboardErpSettings

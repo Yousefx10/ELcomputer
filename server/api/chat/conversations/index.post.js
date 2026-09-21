@@ -32,5 +32,6 @@ export default defineEventHandler(async (event) => {
   if (error) chatError(error, 'Could not start conversation.')
   const id = isFirstMessage ? data?.conversationId : data
   return { item: await loadChatConversation(actor, id),
-    messageId: isFirstMessage ? data?.messageId : null }
+    messageId: isFirstMessage ? data?.messageId : null,
+    ticketId: isFirstMessage ? data?.ticketId || null : null }
 })

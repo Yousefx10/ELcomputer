@@ -63,6 +63,7 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_ATTACHMENT_LIMIT: [409, 'This message already has the allowed attachments.'],
     CHAT_ATTACHMENT_KEY_CONFLICT: [409, 'Attachment key was used for another file.'],
     CHAT_TICKET_DENIED: [403, 'Claim this conversation before creating a ticket.'],
+    CHAT_TICKET_DISABLED: [409, 'Ticket conversion is disabled.'],
     CHAT_TICKET_ORDER_LOCKED: [409, 'The linked order is now managed on the support ticket.']
   }[error?.message]
   if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })

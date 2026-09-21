@@ -643,7 +643,7 @@ watch([draft, guestName, guestEmail, guestMobile, customerMobile, selectedOrderI
 onMounted(() => {
   loadStatus().then(loadInitialUnread)
   tickTimer = setInterval(() => { clock.value = Date.now() }, 500)
-  statusTimer = setInterval(() => { if (panelOpen.value) loadStatus() }, 60000)
+  statusTimer = setInterval(loadStatus, 60000)
   window.addEventListener('focus', onWindowFocus)
   window.addEventListener('online', onWindowFocus)
   window.addEventListener('popstate', onPopState)
@@ -731,7 +731,7 @@ onBeforeUnmount(() => {
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
             {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}
           </button>
-          <p v-if="conversation.intake_mode === 'offline'" class="chat-intake-note">Your message is saved. Our team will reply when available.</p>
+          <p v-if="conversation.intake_mode === 'offline'" class="chat-intake-note">{{ conversation.ticket_id ? 'Your message is saved as a support ticket.' : 'Your message is saved. Our team will reply when available.' }}</p>
           <div v-for="message in messages" :key="message.id" class="chat-message"
             :class="message.sender_kind === 'staff' ? 'from-support' : 'from-customer'">
             <span class="chat-message-sender">{{ message.sender_kind === 'staff' ? 'Support' : 'You' }}</span>

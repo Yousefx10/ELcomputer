@@ -43,6 +43,9 @@ const actionError = ref('')
 const ticketNotice = ref('')
 const ticketSubject = ref('')
 const showTicketForm = ref(false)
+const ticketConversionEnabled = ref(true)
+const transfersEnabled = ref(true)
+const reopenEnabled = ref(true)
 const busy = ref(false)
 const draft = ref('')
 const note = ref(false)
@@ -74,15 +77,18 @@ const agentName = id => agents.value.find(agent => agent.id === id)?.name || (id
 const isMine = computed(() => selected.value?.assigned_admin_id === adminUser.value?.id)
 const canReply = computed(() => hasPermission('support.reply') && selected.value?.status === 'active' && isMine.value)
 const canClaim = computed(() => hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
-const canTransfer = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'active')
+const canTransfer = computed(() => transfersEnabled.value && hasPermission('support.manage')
+  && hasPermission('support.reply') && selected.value?.status === 'active')
 const canAssign = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
 const canClose = computed(() => hasPermission('support.reply') && selected.value?.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
-const canReopen = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'closed')
+const canReopen = computed(() => reopenEnabled.value && hasPermission('support.manage')
+  && hasPermission('support.reply') && selected.value?.status === 'closed')
 const canLinkOrder = computed(() => hasPermission('support.reply') && selected.value?.customer_id
   && !selected.value.ticket_id && selected.value.status !== 'closed'
   && (isMine.value || hasPermission('support.manage')))
 const canCreateTicket = computed(() => hasPermission('support.reply') && selected.value
-  && !selected.value.ticket_id && (isMine.value || hasPermission('support.manage')))
+  && ticketConversionEnabled.value && !selected.value.ticket_id
+  && (isMine.value || hasPermission('support.manage')))
 const orderChoices = computed(() => [...new Map([
   ...(context.value?.orderMatches || []), ...(context.value?.openOrders || []),
   ...(context.value?.recentOrders || []), ...(context.value?.relatedOrder ? [context.value.relatedOrder] : [])
@@ -192,6 +198,9 @@ const loadThread = async (id) => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (run !== detailRequest || !mounted) return
     selected.value = result.item
+    ticketConversionEnabled.value = result.workflow?.ticketConversionEnabled === true
+    transfersEnabled.value = result.workflow?.transfersEnabled === true
+    reopenEnabled.value = result.workflow?.reopenEnabled === true
     if (!showTicketForm.value) ticketSubject.value = `Live chat #${result.item.reference_number}`
     attachmentPolicy.value = result.attachmentPolicy || attachmentPolicy.value
     selectedOrderId.value = result.item.order_id || ''
@@ -290,6 +299,9 @@ const reconcileThread = async () => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (!mounted || selected.value?.id !== id) return
     selected.value = result.item
+    ticketConversionEnabled.value = result.workflow?.ticketConversionEnabled === true
+    transfersEnabled.value = result.workflow?.transfersEnabled === true
+    reopenEnabled.value = result.workflow?.reopenEnabled === true
     attachmentPolicy.value = result.attachmentPolicy || attachmentPolicy.value
     if (result.item.revision !== previousRevision) {
       selectedOrderId.value = result.item.order_id || ''
@@ -637,7 +649,7 @@ onBeforeUnmount(() => {
               <div class="flex gap-3"><button type="submit" :disabled="busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40">{{ busy ? 'Creating…' : 'Create ticket' }}</button><button type="button" :disabled="busy" class="text-xs font-semibold text-gray-600" @click="showTicketForm = false">Cancel</button></div>
             </form>
           </template>
-          <p v-else class="mt-2 text-xs text-gray-500">Claim this conversation to create a ticket.</p>
+          <p v-else class="mt-2 text-xs text-gray-500">{{ ticketConversionEnabled ? 'Claim this conversation to create a ticket.' : 'Ticket conversion is disabled.' }}</p>
         </section>
         <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Related order">
           <h3 class="text-xs font-bold text-gray-900">Related order</h3>
