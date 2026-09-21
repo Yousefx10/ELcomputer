@@ -308,6 +308,54 @@ test('typing relay uses a short shared limit without saving typing state', async
   assert.equal(Number((await first("select count(*)::int as count from public.chat_rate_limits where scope='typing'")).count), 1)
 })
 
+test('order linking accepts only the verified owner and saves each change', async () => {
+  const chat = await create(customerA)
+  const ownOrder = randomUUID(); const otherOrder = randomUUID()
+  await query(`insert into public.customer_orders(id,user_id,first_name,phone,street_address,city,governorate)
+    values($1,$2,'A','123','Street','Cairo','Cairo'),($3,$4,'B','123','Street','Cairo','Cairo')`,
+  [ownOrder, customerA, otherOrder, customerB])
+  const link = (actor, kind, order, revision) => first(
+    'select public.chat_set_order($1,$2,$3,$4,$5) as id', [chat, actor, kind, order, revision])
+  await denied(() => link(customerB, 'customer', ownOrder, 0), /CHAT_ORDER_DENIED/)
+  await denied(() => link(customerA, 'customer', otherOrder, 0), /CHAT_ORDER_DENIED/)
+  await denied(() => link(guestA, 'guest', ownOrder, 0), /CHAT_ORDER_DENIED/)
+  await denied(() => link(viewer, 'staff', ownOrder, 0), /CHAT_ORDER_DENIED/)
+  await db.exec('set local role service_role')
+  assert.equal((await link(customerA, 'customer', ownOrder, 0)).id, chat)
+  await db.exec('reset role')
+  await denied(() => link(staffA, 'staff', null, 0), /CHAT_STALE/)
+  assert.equal((await link(staffA, 'staff', null, 1)).id, chat)
+  assert.equal((await first('select order_id from public.chat_conversations where id=$1', [chat])).order_id, null)
+  const events = (await query(`select event_type,actor_kind,old_value,new_value from public.chat_events
+    where conversation_id=$1 and event_type in ('order_linked','order_unlinked') order by created_at,id`, [chat])).rows
+  assert.deepEqual(events.map(event => event.event_type).sort(), ['order_linked','order_unlinked'])
+  assert.equal(events.find(event => event.event_type === 'order_linked').new_value.order_id, ownOrder)
+  assert.equal(events.find(event => event.event_type === 'order_unlinked').old_value.order_id, ownOrder)
+  await query("update public.chat_conversations set status='closed',closed_at=now() where id=$1", [chat])
+  await denied(() => link(customerA, 'customer', ownOrder, 3), /CHAT_ORDER_DENIED/)
+})
+
+test('guest chat association requires both verified identities and preserves history', async () => {
+  const guestChat = await create(guestA, true)
+  const accountChat = await create(customerA)
+  const identify = (guest, customer, revision) => first(
+    'select public.chat_identify_guest($1,$2,$3,$4) as id', [guestChat, guest, customer, revision])
+  await denied(() => identify(customerB, customerA, 0), /CHAT_IDENTIFY_DENIED/)
+  await denied(() => identify(guestA, guestA, 0), /CHAT_IDENTIFY_DENIED/)
+  await denied(() => identify(guestA, customerA, 0), /CHAT_ACCOUNT_BUSY/)
+  await query("update public.chat_conversations set status='closed',closed_at=now() where id=$1", [accountChat])
+  await denied(() => identify(guestA, customerA, 1), /CHAT_STALE/)
+  await db.exec('set local role service_role')
+  assert.equal((await identify(guestA, customerA, 0)).id, guestChat)
+  await db.exec('reset role')
+  const chat = await first('select customer_id,guest_auth_user_id,revision from public.chat_conversations where id=$1', [guestChat])
+  assert.equal(chat.customer_id, customerA)
+  assert.equal(chat.guest_auth_user_id, null)
+  assert.equal(Number(chat.revision), 1)
+  assert.equal((await first("select count(*)::int as count from public.chat_events where conversation_id=$1 and event_type='identified'", [guestChat])).count, 1)
+  await denied(() => identify(guestA, customerB, 1), /CHAT_IDENTIFY_DENIED/)
+})
+
 test('browser roles cannot execute write RPCs or access private chat tables', async () => {
   const signatures = [
     'public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)',
@@ -319,7 +367,9 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_mark_read(uuid,uuid,text,bigint)',
     'public.chat_unread_summary(uuid,text,uuid[])',
     'public.chat_set_agent_availability(uuid,text)',
-    'public.chat_consume_limit(text,text,integer,integer)'
+    'public.chat_consume_limit(text,text,integer,integer)',
+    'public.chat_set_order(uuid,uuid,text,uuid,bigint)',
+    'public.chat_identify_guest(uuid,uuid,uuid,bigint)'
   ]
   for (const signature of signatures) {
     for (const role of ['anon','authenticated']) {

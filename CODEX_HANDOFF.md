@@ -1,4 +1,39 @@
-# Codex handoff — Live Chat Phase 6
+# Codex handoff — Live Chat Phase 7
+
+Date: 2026-09-21. State: **PHASE 7 COMPLETE LOCALLY — awaiting explicit instruction for Phase 8. No remote change.**
+
+## Completed in Phase 7
+
+- Added local additive migration `supabase/migrations/20260921120000_live_chat_customer_orders.sql`. Its service-only, row-locked RPCs link or unlink only orders belonging to the conversation's verified account and explicitly associate a guest conversation with an account only when both Auth sessions are verified. Mutations require the expected revision, preserve the transcript, and write `order_linked`, `order_unlinked`, or `identified` audit events. All six chat migrations remain unapplied remotely.
+- Added bounded staff context for account profile, recent/open/related order, related product names, support tickets, and previous chats. Guest context uses only the guest Auth ID. Captured chat contact is visibly separate from account profile data. Added exact owned-order reference lookup, inbox filters by account ID and order UUID/reference, customer and staff order controls, order audit descriptions, and a customer prompt to move a guest chat after login. No typed email/mobile matching is used.
+- No Phase 8 attachments, Phase 9 ticket conversion, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 7
+
+- Migration: `supabase/migrations/20260921120000_live_chat_customer_orders.sql` (**new; local only**).
+- Server: `server/utils/liveChat.js`, `server/utils/liveChatContext.js` (**new**); order, context, and identify routes under `server/api/chat` and `server/api/admin-chat`.
+- Application: `app/components/live-chat/Launcher.vue`, `app/pages/dashboard/live-chat.vue`, `app/utils/liveChat.js`.
+- Tests: `tests/live-chat-transactions.test.mjs`. Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **116 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- PGlite verifies customer B and guest cannot link customer A's order, unauthorized staff cannot link, stale revisions cannot overwrite an order, link/unlink events retain prior/new order IDs, service-role RPC execution works, and a guest chat moves only with the correct guest and customer identities when the account has no other open chat. Browser roles cannot execute either new RPC. All five new built-server routes return HTTP 401 without Auth.
+- **NOT VERIFIED:** Authenticated HTTP/browser paths, real Supabase migration and grants, live order-reference search, Realtime subscription revocation after guest transfer, cross-device identity transfer, or the visual layout on actual devices. Six chat migrations remain local; chat settings stay off and anonymous Auth stays disabled.
+
+## Known issues and decisions
+
+- Existing account and open guest conversations are not merged. The transfer reports a conflict until the account's open conversation is closed. Closed guest conversations can be associated afterward. Guest history is offered one conversation at a time from the existing 20-row customer history response.
+- Order list defaults to the latest 20 owned orders; exact reference search finds an older order. Staff context caps recent/open orders, tickets, and previous chats at eight each and related products at 20. The staff activity view shows short order IDs from durable audit values; no order fields are duplicated in chat.
+- The existing staff context panel is compact and text-heavy on narrow screens; Phase 12 remains the designated responsive/accessibility polish. Staging must verify the permission boundary, current order statuses, order lookup, account transfer, and live channel behavior before rollout.
+
+## Exact next action — Phase 8, only after “Continue with Phase 8”
+
+Re-read the Phase 8 attachment and storage requirements in the master specification and this handoff. Add only private, validated chat attachments on the existing identities and transcript model; validate locally, update both state files, and stop before Phase 9. Do not apply migrations remotely, enable anonymous Auth, or deploy as an incidental step.
+
+---
+
+# Previous handoff — Live Chat Phase 6
 
 Date: 2026-09-21. State: **PHASE 6 COMPLETE LOCALLY — awaiting explicit instruction for Phase 7. No remote change.**
 

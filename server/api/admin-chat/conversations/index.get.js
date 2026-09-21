@@ -48,8 +48,22 @@ export default defineEventHandler(async (event) => {
       : /^[+0-9 ()-]+$/.test(contact) ? 'contact_mobile' : 'contact_name'
     request = request.ilike(field, `%${contact}%`)
   }
+  const customer = String(query.customer || '').trim()
+  if (customer) request = request.eq('customer_id', chatUuid(customer, 'Customer'))
   const order = String(query.order || '').trim()
-  if (order) request = request.eq('order_id', chatUuid(order, 'Order'))
+  if (order) {
+    let orderId = order
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(order)) {
+      if (!/^[A-Za-z0-9-]{1,64}$/.test(order)) {
+        throw createError({ statusCode: 400, statusMessage: 'Order reference is invalid.' })
+      }
+      const found = await actor.supabase.from('customer_orders').select('id')
+        .eq('order_number', order).maybeSingle()
+      if (found.error) chatError(found.error, 'Could not search orders.')
+      orderId = found.data?.id || '00000000-0000-4000-8000-000000000000'
+    }
+    request = request.eq('order_id', orderId)
+  }
   for (const key of ['from', 'to']) {
     const date = String(query[key] || '').trim()
     if (!date) continue

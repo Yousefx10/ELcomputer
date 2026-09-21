@@ -55,7 +55,10 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_STALE: [409, 'Conversation changed. Refresh and try again.'],
     CHAT_ALREADY_ASSIGNED: [409, 'Another agent claimed this conversation.'],
     CHAT_TARGET_UNAVAILABLE: [409, 'That agent is no longer available for chat.'],
-    CHAT_TRANSITION_DENIED: [409, 'This conversation cannot be changed.']
+    CHAT_TRANSITION_DENIED: [409, 'This conversation cannot be changed.'],
+    CHAT_ORDER_DENIED: [403, 'This order cannot be linked to the conversation.'],
+    CHAT_IDENTIFY_DENIED: [403, 'This guest conversation cannot be linked.'],
+    CHAT_ACCOUNT_BUSY: [409, 'Your account already has an open chat. Close it first.']
   }[error?.message]
   if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })
   if (error?.code === 'P0002') throw createError({ statusCode: 404, statusMessage: 'Conversation not found.' })

@@ -11,7 +11,7 @@ const views = [
   { key: 'closed', label: 'Closed' }, { key: 'offline', label: 'Offline messages' }
 ]
 const view = ref('waiting')
-const filters = reactive({ reference: '', contact: '', order: '', agent: '', kind: '', from: '', to: '' })
+const filters = reactive({ reference: '', contact: '', customer: '', order: '', agent: '', kind: '', from: '', to: '' })
 const applied = ref({})
 const page = ref(1)
 const queue = ref([])
@@ -21,6 +21,11 @@ const queueLoading = ref(false)
 const queueError = ref('')
 const agents = ref([])
 const selected = ref(null)
+const context = ref(null)
+const contextLoading = ref(false)
+const contextError = ref('')
+const orderNumber = ref('')
+const selectedOrderId = ref('')
 const messages = ref([])
 const events = ref([])
 const activityMore = ref(false)
@@ -66,6 +71,12 @@ const canTransfer = computed(() => hasPermission('support.manage') && hasPermiss
 const canAssign = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
 const canClose = computed(() => hasPermission('support.reply') && selected.value?.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
 const canReopen = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'closed')
+const canLinkOrder = computed(() => hasPermission('support.reply') && selected.value?.customer_id
+  && selected.value.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
+const orderChoices = computed(() => [...new Map([
+  ...(context.value?.orderMatches || []), ...(context.value?.openOrders || []),
+  ...(context.value?.recentOrders || []), ...(context.value?.relatedOrder ? [context.value.relatedOrder] : [])
+].map(order => [order.id, order])).values()])
 const unreadOnPage = computed(() => queue.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
 const lastSequence = () => messages.value.at(-1)?.sequence_number
 const scrollBottom = async () => {
@@ -167,26 +178,78 @@ const loadThread = async (id) => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (run !== detailRequest || !mounted) return
     selected.value = result.item
+    selectedOrderId.value = result.item.order_id || ''
     messages.value = result.messages.items || []
     older.value = result.messages.hasMore === true
     await scrollBottom()
     await loadActivity(id)
+    await loadContext(id)
   } catch (cause) {
     if (run === detailRequest && mounted) detailError.value = errorText(cause, 'Could not load the conversation.')
   } finally {
     if (run === detailRequest) detailLoading.value = false
   }
 }
+const loadContext = async (id, number = '') => {
+  contextLoading.value = true
+  contextError.value = ''
+  try {
+    const result = await request(`/api/admin-chat/conversations/${id}/context`, {
+      query: number ? { number } : {}
+    })
+    if (selected.value?.id === id) {
+      context.value = result
+      if (number && !result.orderMatches?.length) contextError.value = 'No order found for this customer.'
+    }
+  } catch (cause) {
+    if (selected.value?.id === id) contextError.value = errorText(cause, 'Could not load customer context.')
+  } finally { contextLoading.value = false }
+}
+const searchOrder = () => {
+  if (!selected.value) return
+  const number = orderNumber.value.trim()
+  if (number && !/^[A-Za-z0-9-]{1,64}$/.test(number)) {
+    contextError.value = 'Enter a valid order number.'
+    return
+  }
+  loadContext(selected.value.id, number)
+}
+const setOrder = async (orderId) => {
+  if (!selected.value || !canLinkOrder.value || busy.value) return
+  const id = selected.value.id
+  busy.value = true
+  actionError.value = ''
+  try {
+    const result = await request(`/api/admin-chat/conversations/${id}/order`, {
+      method: 'POST', body: { orderId, expectedRevision: selected.value.revision }
+    })
+    if (selected.value?.id === id) {
+      selected.value = result.item
+      selectedOrderId.value = result.item.order_id || ''
+      await Promise.all([loadContext(id), loadActivity(id), refreshQueue()])
+    }
+  } catch (cause) {
+    if (selected.value?.id === id) actionError.value = errorText(cause, 'Could not link order.')
+    if (selected.value?.id === id && (cause?.statusCode === 409 || cause?.status === 409)) {
+      await Promise.all([loadThread(id), refreshQueue()])
+    }
+  } finally { busy.value = false }
+}
 const reconcileThread = async () => {
   if (!selected.value || syncing) { syncAgain = true; return }
   syncing = true
   const id = selected.value.id
   const previousLast = lastSequence()
+  const previousRevision = selected.value.revision
   const nearBottom = !messageList.value || messageList.value.scrollHeight - messageList.value.scrollTop - messageList.value.clientHeight < 100
   try {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (!mounted || selected.value?.id !== id) return
     selected.value = result.item
+    if (result.item.revision !== previousRevision) {
+      selectedOrderId.value = result.item.order_id || ''
+      loadContext(id)
+    }
     let pages = 0
     let after = previousLast
     let more = Boolean(after)
@@ -239,6 +302,10 @@ const selectThread = async (item) => {
   detailRequest++
   await removeThreadChannel()
   selected.value = item
+  context.value = null
+  contextError.value = ''
+  orderNumber.value = ''
+  selectedOrderId.value = item.order_id || ''
   messages.value = []
   events.value = []
   activityMore.value = false
@@ -400,7 +467,8 @@ onBeforeUnmount(() => {
             <label class="text-xs text-gray-600">Contact<input v-model="filters.contact" placeholder="Name, email, phone" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <label class="text-xs text-gray-600">Agent<select v-model="filters.agent" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm"><option value="">Any</option><option value="unassigned">Unassigned</option><option v-for="agent in agents" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select></label>
             <label class="text-xs text-gray-600">Customer<select v-model="filters.kind" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm"><option value="">All</option><option value="customer">Account</option><option value="guest">Guest</option></select></label>
-            <label class="col-span-2 text-xs text-gray-600">Order ID<input v-model="filters.order" placeholder="Order UUID" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
+            <label class="col-span-2 text-xs text-gray-600">Customer ID<input v-model="filters.customer" placeholder="Account UUID" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
+            <label class="col-span-2 text-xs text-gray-600">Order<input v-model="filters.order" placeholder="Order number or UUID" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <label class="text-xs text-gray-600">From<input v-model="filters.from" type="date" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <label class="text-xs text-gray-600">To<input v-model="filters.to" type="date" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <div class="col-span-2 flex gap-2"><button type="submit" class="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white">Filter</button><button type="button" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold" @click="clearFilters">Clear</button></div>
@@ -451,7 +519,27 @@ onBeforeUnmount(() => {
 
       <aside v-if="selected" :class="activePane === 'queue' ? 'hidden lg:block' : 'block'" class="border-t border-gray-200 p-4 text-sm lg:border-l lg:border-t-0" aria-label="Customer context">
         <h2 class="font-bold text-gray-900">Customer context</h2>
-        <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div><dt class="font-semibold text-gray-500">Name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Order ID</dt><dd>{{ selected.order_id || 'None linked' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
+        <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="selected.customer_id"><dt class="font-semibold text-gray-500">Account ID</dt><dd>{{ selected.customer_id }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account status</dt><dd>{{ context.profile.is_active ? 'Active' : 'Inactive' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account name</dt><dd>{{ context.profile.full_name || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account email</dt><dd>{{ context.profile.email || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account mobile</dt><dd>{{ context.profile.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Chat email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
+        <p v-if="contextLoading" class="mt-3 text-xs text-gray-500">Loading context…</p>
+        <p v-if="contextError" class="mt-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
+        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Related order">
+          <h3 class="text-xs font-bold text-gray-900">Related order</h3>
+          <p class="mt-2 text-xs text-gray-600">{{ context?.relatedOrder ? `#${context.relatedOrder.order_number || context.relatedOrder.id.slice(0, 8)} · ${context.relatedOrder.status}` : selected.order_id ? `Saved order ID: ${selected.order_id}` : 'None linked' }}</p>
+          <p v-if="context?.relatedOrder" class="mt-1 text-xs text-gray-600">Payment: {{ context.relatedOrder.payment_status }} · Total: {{ context.relatedOrder.total_amount }} {{ context.relatedOrder.currency }}</p>
+          <ul v-if="context?.relatedItems?.length" class="mt-2 space-y-1 text-xs text-gray-600"><li v-for="item in context.relatedItems" :key="item.id">{{ item.quantity }} × {{ item.product_title }}</li></ul>
+          <form v-if="canLinkOrder" class="mt-3 space-y-2" @submit.prevent="setOrder(selectedOrderId || null)">
+            <label class="block text-xs text-gray-600">Find order number<input v-model="orderNumber" maxlength="64" class="mt-1 w-full rounded-lg border border-gray-200 p-2" placeholder="Order number" /></label>
+            <button type="button" class="text-xs font-semibold text-blue-700" @click="searchOrder">Find order</button>
+            <label class="block text-xs text-gray-600">Customer orders<select v-model="selectedOrderId" class="mt-1 w-full rounded-lg border border-gray-200 p-2"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select></label>
+            <div class="flex gap-3"><button type="submit" :disabled="busy || !selectedOrderId || selectedOrderId === selected.order_id" class="text-xs font-semibold text-blue-700 disabled:opacity-40">Link order</button><button v-if="selected.order_id" type="button" :disabled="busy" class="text-xs font-semibold text-red-700 disabled:opacity-40" @click="setOrder(null)">Unlink</button></div>
+          </form>
+        </section>
+        <section v-if="selected.customer_id" class="mt-5 border-t border-gray-100 pt-4" aria-label="Customer orders">
+          <h3 class="text-xs font-bold text-gray-900">Open orders</h3><p v-if="!context?.openOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="order in context.openOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul>
+          <h3 class="mt-4 text-xs font-bold text-gray-900">Recent orders</h3><p v-if="!context?.recentOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="order in context.recentOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul>
+          <h3 class="mt-4 text-xs font-bold text-gray-900">Support tickets</h3><p v-if="!context?.tickets?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="ticket in context.tickets" :key="ticket.id"><NuxtLink :to="`/dashboard/support/${ticket.id}`" class="text-blue-700 hover:underline">#{{ ticket.reference_number }} · {{ ticket.subject }}</NuxtLink> · {{ ticket.status }}</li></ul>
+        </section>
+        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Previous chats"><h3 class="text-xs font-bold text-gray-900">Previous chats</h3><p v-if="!context?.previousChats?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="chat in context.previousChats" :key="chat.id"><button type="button" class="text-left text-blue-700 hover:underline" @click="selectThread(chat)">#{{ chat.reference_number }} · {{ chat.status }}</button></li></ul></section>
         <h3 class="mt-6 font-bold text-gray-900">Activity</h3>
         <p v-if="activityError" class="mt-2 text-xs text-red-700" role="alert">{{ activityError }}</p>
         <ol class="mt-3 space-y-3 text-xs"><li v-for="entry in events" :key="entry.id" class="border-l-2 border-blue-200 pl-3"><span class="font-semibold text-gray-900">{{ chatAuditDescription(entry) }}</span><time class="block text-gray-500">{{ dateText(entry.created_at) }}</time></li><li v-if="!events.length && !activityLoading" class="text-gray-500">No activity loaded.</li></ol>

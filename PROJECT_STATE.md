@@ -1,5 +1,22 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 7 customer and order integration complete locally (2026-09-21)
+
+**Status:** Local code only. Six Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Verified customer context and orders
+
+- Staff context now loads account profile status and contact details, recent and open orders, the related order with payment state, total and product names, recent support tickets, and previous chats. The queries are bounded and use only the conversation's verified `customer_id`; guest history uses only its verified guest Auth ID. The inbox labels account profile details separately from contact details captured in chat. It never finds accounts, orders, tickets, or chats by a typed email or mobile number. Deleted account or guest identities show only saved chat contact and the historical order ID.
+- Signed-in customers can select one of their own recent orders or search their exact order reference, both when starting a chat and afterward. Staff can search exact references and link or unlink an order for the verified customer. The staff inbox also filters by account ID or linked order UUID/reference. Guest chats expose no order lookup or linking. The order context is read from existing order tables, not copied into chat rows. Open order and recent order lists are capped; exact reference search reaches older orders.
+- New additive migration `20260921120000_live_chat_customer_orders.sql` adds service-only, row-locked order mutation and guest identification functions. Order changes require a current conversation revision, a live account-owned order, and a verified customer or permitted staff actor. The conversation guard repeats the ownership check. Every change writes a permanent order audit event, including the prior and new order IDs. The staff history shows order changes.
+- A signed-in customer with the original anonymous Auth session can explicitly move a guest conversation to their account. The server validates **both** bearer tokens, checks the guest conversation and active account in the transaction, and refuses a second open conversation. The guest loses transcript access after transfer; the saved transcript remains. No contact-field match can trigger account association.
+
+### Phase 7 validation and limits
+
+- **VERIFIED locally:** 116 repository tests passed. PGlite tests cover cross-customer and guest order denial, staff permission denial, stale revisions, audit rows, open-account conflict, dual-identity database guards, and service-role execution. Nuxt typecheck and production build passed. The built server returned HTTP 401 for all five new endpoints without Auth. `git diff --check` passed.
+- **NOT VERIFIED:** Real Supabase migration and API grants, authenticated HTTP/browser flows, order lookup on live data, two-device guest-to-account transfer, and Realtime channel revocation after transfer. These need isolated staging tests before chat is enabled. A customer with an existing open chat must have it closed before moving an open guest chat; the UI reports the conflict. Historical guest chats are offered one at a time from the existing 20-row history page.
+- **Phase 8 only:** Add private attachments and validate their ownership and storage controls. Do not begin ticket conversion, settings, rate limiting expansion, remote migration, Auth setting changes, or deployment as incidental work.
+
 ## Live Chat — Phase 6 read state, presence, typing, reconnect complete locally (2026-09-21)
 
 **Status:** Local code only. Five Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.

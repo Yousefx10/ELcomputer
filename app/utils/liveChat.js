@@ -25,6 +25,10 @@ export const chatAuditDescription = (entry = {}) => {
     case 'closed': return `${actor} closed this chat`
     case 'reopened': return `${actor} reopened this chat`
     case 'status_changed': return `Status: ${entry.old_status || 'unknown'} → ${entry.new_status || 'unknown'}`
+    case 'order_linked': return entry.old_order_id
+      ? `${actor} changed order ${entry.old_order_id.slice(0, 8)} → ${entry.new_order_id?.slice(0, 8) || 'unknown'}`
+      : `${actor} linked order ${entry.new_order_id?.slice(0, 8) || 'unknown'}`
+    case 'order_unlinked': return `${actor} unlinked order ${entry.old_order_id?.slice(0, 8) || 'unknown'}`
     default: return entry.event_type ? entry.event_type.replaceAll('_', ' ') : 'Activity'
   }
 }

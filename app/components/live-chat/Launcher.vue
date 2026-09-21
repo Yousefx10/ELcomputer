@@ -3,7 +3,7 @@ import { chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatMessa
 
 const route = useRoute()
 const mainUser = useSupabaseUser()
-const { resolveActor, hasStoredGuestSession, ensureGuestSession, request } = useLiveChatClient()
+const { getGuestClient, resolveActor, hasStoredGuestSession, ensureGuestSession, request } = useLiveChatClient()
 
 const status = ref({ enabled: false, available: false })
 const panelOpen = ref(false)
@@ -24,6 +24,11 @@ const guestEmail = ref('')
 const guestMobile = ref('')
 const customerMobile = ref('')
 const accountContact = ref(null)
+const orders = ref([])
+const orderNumber = ref('')
+const selectedOrderId = ref('')
+const orderBusy = ref(false)
+const guestToLink = ref(null)
 const staffTyping = ref(false)
 const newBelow = ref(false)
 const lastOwnSentAt = ref(null)
@@ -46,6 +51,7 @@ const heading = computed(() => status.value.available ? 'Live support' : 'Leave 
 const statusCopy = computed(() => status.value.available ? 'A support agent is online.' : 'Our team will reply when available.')
 const showThread = computed(() => screen.value === 'thread' && conversation.value)
 const unreadTotal = computed(() => conversations.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
+const orderChoices = computed(() => [...new Map(orders.value.map(order => [order.id, order])).values()])
 
 let channel = null
 let authSubscription = null
@@ -91,6 +97,9 @@ const scrollBottom = async () => {
 }
 
 const updateConversation = item => {
+  if (conversation.value?.id === item.id && conversation.value.order_id !== item.order_id) {
+    selectedOrderId.value = item.order_id || ''
+  }
   conversation.value = item
   conversations.value = [item, ...conversations.value.filter(entry => entry.id !== item.id)]
 }
@@ -226,6 +235,7 @@ const selectConversation = async (item, currentRun = runId) => {
     const result = await request(actor.value, `/conversations/${item.id}`)
     if (currentRun !== runId || selected !== selectionId) return
     updateConversation(result.item)
+    selectedOrderId.value = result.item.order_id || ''
     messages.value = result.messages.items || []
     hasOlder.value = result.messages.hasMore
     lastOwnSentAt.value = latestOwnMessage()?.created_at || null
@@ -248,10 +258,13 @@ const loadActor = async () => {
   if (currentRun !== runId) return
   actor.value = null
   conversation.value = null
+  selectedOrderId.value = ''
   messages.value = []
   conversations.value = []
   lastOwnSentAt.value = null
   accountContact.value = null
+  orders.value = []
+  guestToLink.value = null
   customerMobile.value = ''
   try {
     const resolved = await resolveActor()
@@ -261,6 +274,7 @@ const loadActor = async () => {
       const identity = await request(resolved, '/me')
       if (currentRun !== runId) return
       accountContact.value = identity.contact
+      await Promise.all([loadOrders(resolved), findGuestChat(resolved)])
     }
     if (!resolved.session) { screen.value = 'start'; return }
     const result = await request(resolved, '/conversations')
@@ -274,6 +288,63 @@ const loadActor = async () => {
   } finally {
     if (currentRun === runId) loading.value = false
   }
+}
+const loadOrders = async (currentActor, number = '') => {
+  try {
+    const result = await request(currentActor, `/orders${number ? `?number=${encodeURIComponent(number)}` : ''}`)
+    if (actor.value?.session?.user?.id !== currentActor.session.user.id) return
+    orders.value = number ? [...new Map([...result.items, ...orders.value].map(order => [order.id, order])).values()]
+      : result.items || []
+    if (number && !result.items?.length) errorText.value = 'No order found for your account.'
+  } catch (error) { errorText.value = requestError(error, 'Could not load orders.') }
+}
+const findGuestChat = async (currentActor) => {
+  if (!hasStoredGuestSession()) return
+  try {
+    const client = getGuestClient()
+    const { data } = await client.auth.getSession()
+    if (!data.session?.access_token || data.session.user?.is_anonymous !== true) return
+    const guestActor = { kind: 'guest', client, session: data.session }
+    const result = await request(guestActor, '/conversations')
+    if (actor.value?.session?.user?.id !== currentActor.session.user.id) return
+    guestToLink.value = result.items?.[0] ? { actor: guestActor, chat: result.items[0] } : null
+  } catch { /* An expired guest session cannot prove ownership. */ }
+}
+const searchOrders = async () => {
+  const number = orderNumber.value.trim()
+  if (number && !/^[A-Za-z0-9-]{1,64}$/.test(number)) { errorText.value = 'Enter a valid order number.'; return }
+  if (actor.value?.kind === 'customer') await loadOrders(actor.value, number)
+}
+const setOrder = async (orderId) => {
+  if (actor.value?.kind !== 'customer' || !conversation.value || orderBusy.value) return
+  orderBusy.value = true
+  errorText.value = ''
+  try {
+    const id = conversation.value.id
+    const result = await request(actor.value, `/conversations/${id}/order`, {
+      method: 'POST', body: { orderId, expectedRevision: conversation.value.revision }
+    })
+    if (conversation.value?.id === id) updateConversation({ ...conversation.value, ...result.item })
+  } catch (error) {
+    errorText.value = requestError(error, 'Could not link order.')
+    if (error?.statusCode === 409 || error?.status === 409) scheduleReconcile()
+  } finally { orderBusy.value = false }
+}
+const linkGuestChat = async () => {
+  if (!guestToLink.value || actor.value?.kind !== 'customer' || orderBusy.value) return
+  orderBusy.value = true
+  errorText.value = ''
+  try {
+    const guest = guestToLink.value
+    const { data } = await guest.actor.client.auth.getSession()
+    if (!data.session?.access_token) throw new Error('Guest session expired.')
+    await request(actor.value, `/conversations/${guest.chat.id}/identify`, {
+      method: 'POST', headers: { 'x-chat-guest-authorization': `Bearer ${data.session.access_token}` },
+      body: { expectedRevision: guest.chat.revision }
+    })
+    await loadActor()
+  } catch (error) { errorText.value = requestError(error, 'Could not link guest chat.') }
+  finally { orderBusy.value = false }
 }
 
 const isMobile = () => window.matchMedia('(max-width: 640px)').matches
@@ -355,7 +426,7 @@ const startConversation = async () => {
     return
   }
   const fingerprint = JSON.stringify([text, guestName.value, guestEmail.value,
-    guestMobile.value, customerMobile.value])
+    guestMobile.value, customerMobile.value, selectedOrderId.value])
   if (!pendingStart || pendingStart.fingerprint !== fingerprint) {
     pendingStart = { fingerprint, creationKey: crypto.randomUUID(), messageKey: crypto.randomUUID() }
   }
@@ -370,6 +441,7 @@ const startConversation = async () => {
       method: 'POST', body: {
         creationKey: pendingStart.creationKey, messageKey: pendingStart.messageKey,
         initialMessage: text,
+        ...(activeActor.kind === 'customer' && selectedOrderId.value ? { orderId: selectedOrderId.value } : {}),
         ...(activeActor.kind === 'guest' ? {
           name: guestName.value, email: guestEmail.value, mobile: guestMobile.value
         } : needsCustomerMobile.value ? { mobile: customerMobile.value } : {})
@@ -431,6 +503,7 @@ const newConversation = async () => {
   selectionId += 1
   await clearSubscription()
   conversation.value = null
+  selectedOrderId.value = ''
   messages.value = []
   draft.value = ''
   lastOwnSentAt.value = null
@@ -476,11 +549,12 @@ watch(() => route.path, () => {
     clearSubscription()
   }
 })
-watch([draft, guestName, guestEmail, guestMobile, customerMobile], () => {
+watch([draft, guestName, guestEmail, guestMobile, customerMobile, selectedOrderId], () => {
   sendTyping()
   if (pendingSend?.text !== draft.value.trim()) pendingSend = null
   if (pendingStart?.fingerprint !== JSON.stringify([
-    draft.value.trim(), guestName.value, guestEmail.value, guestMobile.value, customerMobile.value
+    draft.value.trim(), guestName.value, guestEmail.value, guestMobile.value,
+    customerMobile.value, selectedOrderId.value
   ])) pendingStart = null
 })
 
@@ -543,6 +617,11 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
+      <div v-if="guestToLink && actor?.kind === 'customer'" class="chat-account-link">
+        <span>Move guest chat #{{ guestToLink.chat.reference_number }} to this account?</span>
+        <button type="button" :disabled="orderBusy" @click="linkGuestChat">Move chat</button>
+      </div>
+
       <div v-if="loading" class="chat-center" role="status">Loading your conversation…</div>
 
       <template v-else-if="screen === 'history'">
@@ -557,6 +636,14 @@ onBeforeUnmount(() => {
       </template>
 
       <template v-else-if="showThread">
+        <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed'" class="chat-order-link">
+          <span>{{ conversation.order_id ? 'Order linked' : 'No order linked' }}</span>
+          <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+          <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link</button>
+          <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Unlink</button>
+          <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
+          <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+        </div>
         <div ref="messageList" class="chat-scroll chat-messages" aria-label="Chat messages" aria-live="polite" @scroll.passive="markVisibleRead">
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
             {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}
@@ -596,6 +683,12 @@ onBeforeUnmount(() => {
             maxlength="30" placeholder="Your mobile number" />
           <small>We need a mobile number to reply.</small>
         </div>
+        <div v-if="actor?.kind === 'customer'" class="chat-order-link">
+          <label for="chat-order-start">Related order (optional)</label>
+          <select id="chat-order-start" v-model="selectedOrderId"><option value="">No order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+          <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
+          <button type="button" @click="searchOrders">Find order</button>
+        </div>
       </div>
 
       <div v-if="errorText" class="chat-error" role="alert">{{ errorText }}</div>
@@ -626,6 +719,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chat-root{--chat-blue:#174a97;--chat-navy:#102b53;font-family:inherit}
+.chat-account-link,.chat-order-link{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 12px;border-bottom:1px solid #e8edf5;background:#f8fafc;font-size:11px}.chat-account-link button,.chat-order-link button{border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}.chat-order-link input,.chat-order-link select{min-width:0;max-width:150px;padding:5px;border:1px solid #cad5e5;border-radius:7px;background:white}
 .chat-launcher{position:fixed;right:22px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:9px;min-height:50px;padding:0 18px;border:1px solid #174a97;border-radius:999px;background:#174a97;color:white;box-shadow:0 10px 28px #0b2a5860;font-size:14px;font-weight:700;cursor:pointer}
 .chat-launcher:hover{background:#123b7a;transform:translateY(-1px)}
 .chat-launcher:focus-visible,.chat-panel button:focus-visible,.chat-panel a:focus-visible,.chat-panel input:focus-visible,.chat-panel textarea:focus-visible{outline:3px solid #eebd50;outline-offset:2px}
