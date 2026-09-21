@@ -154,3 +154,19 @@ export const loadChatMessages = async (actor, conversationId, query = {}, staff 
   return { items, hasMore, before: items[0]?.sequence_number || null,
     after: items.at(-1)?.sequence_number || null }
 }
+
+export const loadChatUnreadSummary = async (actor, ids = []) => {
+  if (!ids.length) return new Map()
+  const { data, error } = await actor.supabase.rpc('chat_unread_summary', {
+    p_actor_id: actor.id, p_actor_kind: actor.kind, p_conversation_ids: ids
+  })
+  if (error) chatError(error, 'Could not load unread chats.')
+  return new Map((data || []).map(row => [row.conversation_id, {
+    unreadCount: Number(row.unread_count || 0),
+    lastReadSequence: Number(row.last_read_sequence || 0)
+  }]))
+}
+
+export const chatUnreadItem = (item, summaries) => ({
+  ...item, ...(summaries.get(item.id) || { unreadCount: 0, lastReadSequence: 0 })
+})

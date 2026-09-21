@@ -1,4 +1,40 @@
-# Codex handoff — Live Chat Phase 5
+# Codex handoff — Live Chat Phase 6
+
+Date: 2026-09-21. State: **PHASE 6 COMPLETE LOCALLY — awaiting explicit instruction for Phase 7. No remote change.**
+
+## Completed in Phase 6
+
+- Added local additive migration `supabase/migrations/20260921110000_live_chat_read_presence.sql`. Its service-only functions provide authorized incoming-message read markers, bounded unread summaries, reply-agent availability leases, and shared typing rate limits. All five chat migrations remain unapplied remotely.
+- Added scoped customer/staff read routes, staff availability routes, and customer/staff typing routes. List/detail APIs now include each verified actor's unread summary. Typing is relayed by the server to private Realtime channels through REST; browser roles received no Broadcast write policy.
+- Added durable unread badges and visible-bottom read behavior to the customer panel and staff inbox. The inbox also shows the waiting-conversation count across views. Existing guest sessions may restore their badge after refresh without anonymous sign-in; a new visitor still opens no guest client or Realtime channel on page load. Staff choose online/away/offline, and online leases renew only while the support page is visible.
+- Added expiring, throttled typing indicators and improved customer cursor catch-up after reconnect. No Phase 7 order/customer integration, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 6
+
+- Migration: `supabase/migrations/20260921110000_live_chat_read_presence.sql` (**new; local only**).
+- Server: `server/utils/liveChat.js`, `server/utils/liveChatTyping.js` (**new**); list/detail/read/typing routes under `server/api/chat/conversations` and `server/api/admin-chat/conversations`; `server/api/admin-chat/availability.get.js` and `.post.js` (**new**).
+- Application: `app/components/live-chat/Launcher.vue`, `app/pages/dashboard/live-chat.vue`, `app/composables/useLiveChatClient.js`.
+- Tests: `tests/live-chat-transactions.test.mjs`. Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **114 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. The locally built server returned HTTP 401 for unauthenticated customer/staff read and typing POST routes and staff availability. No lint script exists.
+- New PGlite tests verify that customer B cannot mark customer A's chat read, customer markers reject own messages and internal notes, two-tab stale markers cannot move backward, unread counts include only incoming visible messages, availability requires reply access and expires without heartbeat, and typing requests hit a shared rate limit without storing typing state. Existing browser-role RPC denial remains green.
+- **NOT VERIFIED:** Supabase REST Broadcast/private-channel behavior, authenticated HTTP and browser flows, real multi-tab/read races, device behavior, live websocket reconnect, or production quota impact. The five chat migrations are local only; chat settings remain off and anonymous Auth remains disabled.
+
+## Known issues and decisions
+
+- The staff inbox displays unread counts for the current 50-row page; it does not yet offer a global unread filter or total. Signed-in and returning guest customers can restore a badge after refresh; a guest without a stored session cannot have saved unread chat. Other open tabs reconcile when they regain focus or receive another message signal.
+- Agent availability uses a 90-second lease renewed every 45 seconds while the support page is visible. If the page closes or sleeps, the lease expires; it is not a permanent presence record. Status UI and private typing relay still need isolated staging verification.
+- Typing travels through a scoped server route and short shared rate counter. No keystrokes or permanent typing rows are stored. The server uses Supabase's documented `channel.httpSend()` REST transport, available in the installed client version, so it does not open a new server WebSocket for each signal. See [Supabase Broadcast documentation](https://supabase.com/docs/guides/realtime/broadcast).
+
+## Exact next action — Phase 7, only after “Continue with Phase 7”
+
+Re-read the Phase 7 customer/order integration requirements in the master specification and this handoff. Add only verified customer context and safe owned-order linking on the existing chat identities and audit model; validate locally, update both state files, and stop before Phase 8. Do not apply migrations remotely, enable anonymous Auth, or deploy as an incidental step.
+
+---
+
+# Previous handoff — Live Chat Phase 5
 
 Date: 2026-09-21. State: **PHASE 5 COMPLETE LOCALLY — awaiting explicit instruction for Phase 6. No remote change.**
 

@@ -1,5 +1,5 @@
 import { createError, getQuery } from 'h3'
-import { chatError, chatStaffFields, chatUuid, requireChatStaff } from '../../../utils/liveChat'
+import { chatError, chatStaffFields, chatUnreadItem, chatUuid, loadChatUnreadSummary, requireChatStaff } from '../../../utils/liveChat'
 
 export default defineEventHandler(async (event) => {
   const actor = await requireChatStaff(event)
@@ -63,5 +63,11 @@ export default defineEventHandler(async (event) => {
   }
   const { data, error } = await request
   if (error) chatError(error, 'Could not load chat inbox.')
-  return { items: (data || []).slice(0, 50), page, hasMore: (data || []).length > 50 }
+  const items = (data || []).slice(0, 50)
+  const summaries = await loadChatUnreadSummary(actor, items.map(item => item.id))
+  const waiting = await actor.supabase.from('chat_conversations')
+    .select('id', { count: 'exact', head: true }).eq('status', 'waiting')
+  if (waiting.error) chatError(waiting.error, 'Could not load waiting count.')
+  return { items: items.map(item => chatUnreadItem(item, summaries)), page,
+    hasMore: (data || []).length > 50, waitingCount: waiting.count || 0 }
 })

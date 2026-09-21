@@ -16,6 +16,7 @@ const applied = ref({})
 const page = ref(1)
 const queue = ref([])
 const queueMore = ref(false)
+const waitingCount = ref(0)
 const queueLoading = ref(false)
 const queueError = ref('')
 const agents = ref([])
@@ -36,6 +37,9 @@ const note = ref(false)
 const sendKey = ref(null)
 const activePane = ref('queue')
 const connection = ref('connecting')
+const availability = ref('offline')
+const availabilityBusy = ref(false)
+const typingVisible = ref(false)
 const messageList = ref(null)
 let inboxChannel = null
 let threadChannel = null
@@ -47,6 +51,10 @@ let detailRequest = 0
 let syncing = false
 let syncAgain = false
 let mounted = false
+let availabilityTimer = null
+let typingTimer = null
+let lastTypingAt = 0
+let readPending = false
 
 const dateText = value => value ? new Date(value).toLocaleString() : '—'
 const statusText = status => ({ waiting: 'Waiting', active: 'Active', closed: 'Closed' })[status] || status
@@ -58,10 +66,58 @@ const canTransfer = computed(() => hasPermission('support.manage') && hasPermiss
 const canAssign = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'waiting' && !selected.value?.assigned_admin_id)
 const canClose = computed(() => hasPermission('support.reply') && selected.value?.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
 const canReopen = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'closed')
+const unreadOnPage = computed(() => queue.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
 const lastSequence = () => messages.value.at(-1)?.sequence_number
 const scrollBottom = async () => {
   await nextTick()
   if (messageList.value) messageList.value.scrollTop = messageList.value.scrollHeight
+  markVisibleRead()
+}
+const threadVisible = () => document.visibilityState === 'visible'
+  && (window.matchMedia('(min-width: 1024px)').matches || activePane.value === 'thread')
+const atBottom = () => !messageList.value || messageList.value.scrollHeight
+  - messageList.value.scrollTop - messageList.value.clientHeight < 100
+const markVisibleRead = async () => {
+  if (!selected.value || !threadVisible() || !atBottom() || readPending) return
+  const incoming = [...messages.value].reverse().find(message => ['customer', 'guest'].includes(message.sender_kind))
+  if (!incoming || Number(incoming.sequence_number) <= Number(selected.value.lastReadSequence || 0)) return
+  const id = selected.value.id
+  readPending = true
+  let saved = false
+  try {
+    const result = await request(`/api/admin-chat/conversations/${id}/read`, {
+      method: 'POST', body: { sequence: Number(incoming.sequence_number) }
+    })
+    if (selected.value?.id === id) {
+      selected.value = { ...selected.value, ...result }
+      queue.value = queue.value.map(item => item.id === id ? { ...item, ...result } : item)
+    }
+    saved = true
+  } catch { /* A later reconcile can retry without hiding messages. */ }
+  finally { readPending = false; if (saved || selected.value?.id !== id) setTimeout(markVisibleRead, 0) }
+}
+const showCustomerTyping = payload => {
+  if (payload?.kind !== 'customer' || payload.conversationId !== selected.value?.id) return
+  typingVisible.value = true
+  if (typingTimer) clearTimeout(typingTimer)
+  typingTimer = setTimeout(() => { typingVisible.value = false; typingTimer = null }, 6000)
+}
+const sendTyping = async () => {
+  if (!canReply.value || note.value || !draft.value.trim() || !threadChannel
+    || Date.now() - lastTypingAt < 4000) return
+  lastTypingAt = Date.now()
+  try { await request(`/api/admin-chat/conversations/${selected.value.id}/typing`, { method: 'POST', body: {} }) }
+  catch { /* Typing is optional; messages remain durable. */ }
+}
+const setAvailability = async state => {
+  if (availabilityBusy.value || !hasPermission('support.reply')) return
+  availabilityBusy.value = true
+  try {
+    const result = await request('/api/admin-chat/availability', { method: 'POST', body: { state } })
+    availability.value = result.state
+    actionError.value = ''
+  } catch (cause) { actionError.value = errorText(cause, 'Could not update availability.') }
+  finally { availabilityBusy.value = false }
 }
 const refreshQueue = async () => {
   const run = ++queueRequest
@@ -72,6 +128,7 @@ const refreshQueue = async () => {
     if (run !== queueRequest || !mounted) return
     queue.value = result.items || []
     queueMore.value = result.hasMore === true
+    waitingCount.value = result.waitingCount || 0
     if (selected.value) {
       const fresh = queue.value.find(item => item.id === selected.value.id)
       if (fresh && fresh.revision > selected.value.revision) scheduleThread()
@@ -163,14 +220,18 @@ const removeThreadChannel = async () => {
   const old = threadChannel
   threadChannel = null
   if (old) await client.removeChannel(old)
+  typingVisible.value = false
+  if (typingTimer) clearTimeout(typingTimer)
+  typingTimer = null
 }
 const subscribeThread = async (id) => {
   await removeThreadChannel()
   if (!mounted || selected.value?.id !== id) return
   threadChannel = client.channel(`chat:staff:${id}`, { config: { private: true } })
     .on('broadcast', { event: 'changed' }, () => scheduleThread())
+    .on('broadcast', { event: 'typing' }, ({ payload }) => showCustomerTyping(payload))
     .subscribe(state => {
-      if (state === 'SUBSCRIBED') scheduleThread()
+      if (state === 'SUBSCRIBED') { connection.value = 'connected'; scheduleThread() }
       if (state === 'CHANNEL_ERROR' || state === 'TIMED_OUT') connection.value = 'reconnecting'
     })
 }
@@ -261,9 +322,10 @@ const send = async () => {
 }
 const applyFilters = () => { applied.value = Object.fromEntries(Object.entries(filters).filter(([, value]) => value)); page.value = 1; refreshQueue() }
 const clearFilters = () => { Object.keys(filters).forEach(key => { filters[key] = '' }); applied.value = {}; page.value = 1; refreshQueue() }
-const refreshOnReturn = () => { if (document.visibilityState === 'visible') { scheduleQueue(); if (selected.value) scheduleThread() } }
+const refreshOnReturn = () => { if (document.visibilityState === 'visible') { scheduleQueue(); if (selected.value) scheduleThread(); if (availability.value === 'online') setAvailability('online') } }
 const reconnectOnNetwork = () => { scheduleQueue(); if (selected.value) scheduleThread() }
-watch([draft, note], () => { sendKey.value = null })
+watch([draft, note], () => { sendKey.value = null; sendTyping() })
+watch(activePane, () => { if (activePane.value === 'thread') markVisibleRead() })
 watch([view, page], () => { if (view.value) refreshQueue() })
 onMounted(async () => {
   mounted = true
@@ -286,6 +348,15 @@ onMounted(async () => {
     const result = await request('/api/admin-support/assignees')
     agents.value = result.items || []
   } catch { /* Agent IDs remain visible if the directory is unavailable. */ }
+  if (hasPermission('support.reply')) {
+    try {
+      const result = await request('/api/admin-chat/availability')
+      availability.value = result.state
+    } catch { /* Stay offline until the staff member chooses a state. */ }
+    availabilityTimer = setInterval(() => {
+      if (availability.value === 'online' && document.visibilityState === 'visible') setAvailability('online')
+    }, 45000)
+  }
   document.addEventListener('visibilitychange', refreshOnReturn)
   window.addEventListener('online', reconnectOnNetwork)
 })
@@ -293,6 +364,8 @@ onBeforeUnmount(() => {
   mounted = false
   if (queueTimer) clearTimeout(queueTimer)
   if (threadTimer) clearTimeout(threadTimer)
+  if (typingTimer) clearTimeout(typingTimer)
+  if (availabilityTimer) clearInterval(availabilityTimer)
   authSubscription?.unsubscribe()
   if (inboxChannel) client.removeChannel(inboxChannel)
   if (threadChannel) client.removeChannel(threadChannel)
@@ -306,14 +379,21 @@ onBeforeUnmount(() => {
     <DashboardPageIntro title="Live Chat" description="Manage customer conversations and offline messages." />
     <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
       <NuxtLink to="/dashboard/support" class="font-semibold text-blue-700 hover:underline">← Support tickets</NuxtLink>
-      <span class="text-gray-500" role="status">Updates: {{ connection === 'connected' ? 'live' : connection === 'reconnecting' ? 'reconnecting' : 'connecting' }}</span>
+      <div class="flex items-center gap-3">
+        <label v-if="hasPermission('support.reply')" class="text-xs font-semibold text-gray-600">Agent status
+          <select :value="availability" :disabled="availabilityBusy" class="ml-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs" @change="setAvailability($event.target.value)">
+            <option value="offline">Offline</option><option value="online">Online</option><option value="away">Away</option>
+          </select>
+        </label>
+        <span class="text-gray-500" role="status">Updates: {{ connection === 'connected' ? 'live' : connection === 'reconnecting' ? 'reconnecting' : 'connecting' }}</span>
+      </div>
     </div>
     <div class="grid min-h-[640px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-[320px_minmax(0,1fr)_260px] xl:grid-cols-[360px_minmax(0,1fr)_290px]">
       <section :class="activePane === 'thread' ? 'hidden lg:flex' : 'flex'" class="min-w-0 flex-col border-r border-gray-200" aria-label="Chat inbox">
         <div class="border-b border-gray-100 p-4">
-          <h2 class="font-bold text-gray-900">Inbox</h2>
+          <h2 class="font-bold text-gray-900">Inbox <span v-if="unreadOnPage" class="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">{{ unreadOnPage }} unread on page</span></h2>
           <div class="mt-3 flex flex-wrap gap-1" role="group" aria-label="Inbox view">
-            <button v-for="option in views" :key="option.key" type="button" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold" :class="view === option.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'" :aria-pressed="view === option.key" @click="view = option.key; page = 1">{{ option.label }}</button>
+            <button v-for="option in views" :key="option.key" type="button" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold" :class="view === option.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'" :aria-pressed="view === option.key" @click="view = option.key; page = 1">{{ option.label }}<span v-if="option.key === 'waiting' && waitingCount" class="ml-1 rounded-full bg-white px-1.5 py-0.5 text-blue-700">{{ waitingCount }}</span></button>
           </div>
           <form class="mt-4 grid grid-cols-2 gap-2" @submit.prevent="applyFilters">
             <label class="text-xs text-gray-600">Reference<input v-model="filters.reference" placeholder="#123" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
@@ -333,6 +413,7 @@ onBeforeUnmount(() => {
             <span class="flex items-start justify-between gap-2"><strong class="truncate text-sm text-gray-900">{{ item.contact_name }}</strong><span class="shrink-0 text-xs text-gray-500">#{{ item.reference_number }}</span></span>
             <span class="mt-1 block truncate text-xs text-gray-500">{{ item.contact_email || item.contact_mobile || (item.customer_id ? 'Account customer' : 'Guest') }}</span>
             <span class="mt-2 flex items-center justify-between gap-2 text-xs"><span class="rounded-full bg-gray-100 px-2 py-1 text-gray-700">{{ statusText(item.status) }} · {{ item.intake_mode === 'offline' ? 'Offline' : agentName(item.assigned_admin_id) }}</span><time class="text-gray-500">{{ dateText(item.last_activity_at) }}</time></span>
+            <span v-if="item.unreadCount" class="mt-2 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">{{ item.unreadCount }} new {{ item.unreadCount === 1 ? 'message' : 'messages' }}</span>
           </button>
           <p v-if="!queue.length && !queueLoading" class="p-6 text-center text-sm text-gray-500">No conversations match this view.</p>
         </div>
@@ -351,7 +432,7 @@ onBeforeUnmount(() => {
         <div v-if="selected && canTransfer" class="flex gap-2 border-b border-gray-100 px-4 py-2"><select v-model="transferTarget" aria-label="Transfer to agent" class="min-w-0 flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"><option value="">Transfer to agent...</option><option v-for="agent in agents.filter(agent => agent.id !== selected.assigned_admin_id)" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select><button type="button" :disabled="!transferTarget || busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40" @click="transfer">Transfer</button></div>
         <p v-if="detailError || actionError" class="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ actionError || detailError }}</p>
         <template v-if="selected">
-          <div ref="messageList" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4" aria-label="Messages">
+          <div ref="messageList" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4" aria-label="Messages" @scroll.passive="markVisibleRead">
             <button v-if="older" type="button" :disabled="detailLoading" class="mx-auto block text-xs font-semibold text-blue-700 disabled:opacity-50" @click="loadOlder">Load older messages</button>
             <p v-if="detailLoading && !messages.length" class="text-center text-sm text-gray-500">Loading messages...</p>
             <div v-for="message in messages" :key="message.id" class="flex" :class="message.sender_kind === 'staff' ? 'justify-end' : 'justify-start'">
@@ -361,6 +442,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </div>
+          <p v-if="typingVisible" class="bg-gray-50 px-4 py-1 text-xs text-gray-500" role="status">Customer is typing…</p>
           <form v-if="canReply" class="border-t border-gray-100 p-4" @submit.prevent="send"><label class="block text-xs font-semibold text-gray-600">{{ note ? 'Internal note — staff only' : 'Reply to customer' }}<textarea v-model="draft" maxlength="10000" rows="3" class="mt-1 w-full resize-y rounded-xl border border-gray-200 p-3 text-sm" :class="note ? 'bg-amber-50' : ''" placeholder="Write a message" /></label><div class="mt-2 flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-xs text-gray-600"><input v-model="note" type="checkbox" /> Internal note</label><button type="submit" :disabled="busy || !draft.trim()" class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ busy ? 'Sending...' : note ? 'Save note' : 'Send reply' }}</button></div></form>
           <p v-else class="border-t border-gray-100 p-4 text-center text-xs text-gray-500">{{ selected.status === 'closed' ? 'This conversation is closed.' : selected.status === 'waiting' ? 'Claim this conversation to reply.' : 'Only the assigned agent can reply.' }}</p>
         </template>

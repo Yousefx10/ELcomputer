@@ -23,6 +23,9 @@ export const useLiveChatClient = () => {
     return guestClient
   }
 
+  const hasStoredGuestSession = () => typeof window !== 'undefined'
+    && Boolean(window.localStorage.getItem(guestStorageKey))
+
   const resolveActor = async () => {
     const { data: main } = await mainClient.auth.getSession()
     if (main.session?.access_token && main.session.user?.is_anonymous !== true) {
@@ -52,5 +55,5 @@ export const useLiveChatClient = () => {
     })
   }
 
-  return { getGuestClient, resolveActor, ensureGuestSession, request }
+  return { getGuestClient, hasStoredGuestSession, resolveActor, ensureGuestSession, request }
 }

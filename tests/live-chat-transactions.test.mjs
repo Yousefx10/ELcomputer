@@ -239,6 +239,75 @@ test('internal notes generate staff-only message signals and no customer signal'
   assert.deepEqual(Object.keys(payload.payload).sort(), ['conversationId','kind','messageId','sequence'])
 })
 
+test('read markers are scoped, incoming-only and monotonic across tabs', async () => {
+  const chat = await create(customerA)
+  const other = await create(customerB)
+  await transition(chat, staffA, 'claim', 0)
+  const customerOne = await send(chat, customerA, 'customer', 'Question one')
+  const staffOne = await send(chat, staffA, 'staff', 'Answer one')
+  await query('update public.chat_settings set customer_send_cooldown_seconds=0')
+  const customerTwo = await send(chat, customerA, 'customer', 'Question two')
+  const staffTwo = await send(chat, staffA, 'staff', 'Answer two')
+  const note = await send(chat, staffA, 'staff', 'Internal only', randomUUID(), true)
+  const sequence = async id => Number((await first('select sequence_number from public.chat_messages where id=$1', [id])).sequence_number)
+  const staffOneSeq = await sequence(staffOne)
+  const customerOneSeq = await sequence(customerOne)
+  const noteSeq = await sequence(note)
+  const summary = async (id, kind, ids = [chat]) => (await query(
+    'select * from public.chat_unread_summary($1,$2,$3)', [id, kind, ids])).rows
+  assert.equal(Number((await summary(customerA, 'customer'))[0].unread_count), 2)
+  assert.equal(Number((await summary(staffA, 'staff'))[0].unread_count), 2)
+  assert.equal((await summary(customerA, 'customer', [chat, other])).length, 1)
+  await denied(() => first('select public.chat_mark_read($1,$2,$3,$4)',
+    [chat, customerB, 'customer', staffOneSeq]), /Chat access denied/)
+  await denied(() => first('select public.chat_mark_read($1,$2,$3,$4)',
+    [chat, customerA, 'customer', customerOneSeq]), /visible incoming message/)
+  await denied(() => first('select public.chat_mark_read($1,$2,$3,$4)',
+    [chat, customerA, 'customer', noteSeq]), /visible incoming message/)
+  await db.exec('set local role service_role')
+  const newest = await sequence(staffTwo)
+  await first('select public.chat_mark_read($1,$2,$3,$4)', [chat, customerA, 'customer', newest])
+  await first('select public.chat_mark_read($1,$2,$3,$4)', [chat, customerA, 'customer', staffOneSeq])
+  await first('select public.chat_mark_read($1,$2,$3,$4)', [chat, staffA, 'staff', await sequence(customerTwo)])
+  await db.exec('reset role')
+  assert.equal(Number((await summary(customerA, 'customer'))[0].last_read_sequence), newest)
+  assert.equal(Number((await summary(customerA, 'customer'))[0].unread_count), 0)
+  assert.equal(Number((await summary(staffA, 'staff'))[0].unread_count), 0)
+})
+
+test('agent availability needs reply access and expires without a heartbeat', async () => {
+  await denied(() => first('select * from public.chat_set_agent_availability($1,$2)',
+    [viewer, 'online']), /availability access denied/)
+  await db.exec('set local role service_role')
+  const online = await first('select * from public.chat_set_agent_availability($1,$2)', [staffA, 'online'])
+  assert.equal(online.declared_state, 'online')
+  assert.ok(new Date(online.lease_expires_at).getTime() > Date.now())
+  await db.exec('reset role')
+  await query("update public.chat_settings set availability_override='online'")
+  assert.equal((await first('select public.chat_live_available() as available')).available, true)
+  await query("update public.chat_agent_availability set lease_expires_at=now()-interval '1 second' where admin_id=$1", [staffA])
+  assert.equal((await first('select public.chat_live_available() as available')).available, false)
+  await db.exec('set local role service_role')
+  await first('select * from public.chat_set_agent_availability($1,$2)', [staffA, 'away'])
+  await db.exec('reset role')
+  assert.equal((await first('select declared_state,lease_expires_at from public.chat_agent_availability where admin_id=$1', [staffA])).lease_expires_at, null)
+  assert.equal((await first('select public.chat_live_available() as available')).available, false)
+})
+
+test('typing relay uses a short shared limit without saving typing state', async () => {
+  const chat = await create(customerA)
+  const before = Number((await first('select count(*)::int as count from public.chat_events where conversation_id=$1', [chat])).count)
+  await db.exec('set local role service_role')
+  for (let index = 0; index < 3; index++) {
+    await first("select public.chat_consume_limit('typing',$1,10,3)", [hash(`${customerA}:${chat}`)])
+  }
+  await denied(() => first("select public.chat_consume_limit('typing',$1,10,3)",
+    [hash(`${customerA}:${chat}`)]), /CHAT_RATE_LIMIT/)
+  await db.exec('reset role')
+  assert.equal(Number((await first('select count(*)::int as count from public.chat_events where conversation_id=$1', [chat])).count), before)
+  assert.equal(Number((await first("select count(*)::int as count from public.chat_rate_limits where scope='typing'")).count), 1)
+})
+
 test('browser roles cannot execute write RPCs or access private chat tables', async () => {
   const signatures = [
     'public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)',
@@ -247,6 +316,9 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_transition(uuid,uuid,text,uuid,bigint)',
     'public.chat_event_name(uuid)',
     'public.chat_snapshot_event()',
+    'public.chat_mark_read(uuid,uuid,text,bigint)',
+    'public.chat_unread_summary(uuid,text,uuid[])',
+    'public.chat_set_agent_availability(uuid,text)',
     'public.chat_consume_limit(text,text,integer,integer)'
   ]
   for (const signature of signatures) {

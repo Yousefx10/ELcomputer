@@ -1,5 +1,27 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 6 read state, presence, typing, reconnect complete locally (2026-09-21)
+
+**Status:** Local code only. Five Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Read state and unread indications
+
+- New local migration `20260921110000_live_chat_read_presence.sql` adds service-only `chat_mark_read` and `chat_unread_summary` functions. Read markers name an existing incoming message in the authorized conversation; customer/guest markers cannot target internal notes or their own messages. The database advances a marker with `greatest`, so an older browser tab cannot move it backward. The summary counts only public staff replies for customers and customer/guest messages for staff.
+- Staff and customer list/detail APIs return the actor's unread count and last-read sequence through one bounded summary call for each result page. Scoped read endpoints derive the actor from verified Auth. The UIs mark read only when the selected transcript is visible and scrolled to the bottom. Staff see new-message badges, a count for the current queue page, and a waiting-conversation count across views; customers see a durable launcher/history badge. An existing guest session can load its badge after refresh without creating a new anonymous account. No guest client is created for a visitor without a stored guest session.
+
+### Agent availability, typing, and catch-up
+
+- A service-only availability function accepts online, away, or offline only for active reply-capable staff. Online grants a 90-second lease, renewed every 45 seconds while the support page is visible. Expired online leases do not make chat available. Agents choose their state in the inbox; the customer status endpoint already consults the shared availability function.
+- Typing uses scoped customer/staff POST routes, a shared three-per-10-second limit, and Supabase's private Broadcast REST send through the server. No browser Broadcast INSERT policy was added. Payloads contain only conversation ID, actor kind, and expiry; no text or typing state is saved in PostgreSQL. Indicators expire after six seconds and clear on thread change. Client sends are throttled to one per four seconds.
+- Both clients re-fetch saved messages on private-channel subscription, signal, focus, and network return. The customer cursor catch-up now continues beyond its 20-page batch instead of stopping there. The customer checks display availability while the panel is open; a status check does not open a Realtime socket for an unopened chat.
+
+### Phase 6 validation and limits
+
+- **VERIFIED locally:** 114 repository tests passed, including ownership, internal-note exclusion, incoming-only and monotonic read markers, service-role availability, lease expiry, and shared typing limits. Nuxt typecheck, production build, and `git diff --check` passed. The built server returned HTTP 401 for unauthenticated read/typing POST routes and staff availability. The previous authorization and transaction tests remain green.
+- **NOT VERIFIED:** Actual Supabase private REST Broadcast, authenticated browser read/typing flows, multi-tab badge updates without focus, websocket recovery under real network loss, or live availability timing. The linked project has no chat migrations applied and chat is disabled. These need isolated staging tests.
+- Phase 6's inbox unread total is explicitly the **current page**, not a global count or server-side unread filter. Typing counters are short-lived rate-limit records, not saved typing presence. Agent availability is a short lease, not durable proof that an agent can answer immediately.
+- **Phase 7 only:** Build verified customer and order context/linking. Leave attachments, ticket conversion, settings UI, and deployment to their designated phases.
+
 ## Live Chat — Phase 5 assignment and audit complete locally (2026-09-21)
 
 **Status:** Local code only. Four Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat remains disabled by default, anonymous Auth remains disabled, and no deployment occurred.

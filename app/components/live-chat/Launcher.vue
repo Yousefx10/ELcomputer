@@ -3,7 +3,7 @@ import { chatContactValid, chatMobileValid, chatSecondsRemaining, mergeChatMessa
 
 const route = useRoute()
 const mainUser = useSupabaseUser()
-const { resolveActor, ensureGuestSession, request } = useLiveChatClient()
+const { resolveActor, hasStoredGuestSession, ensureGuestSession, request } = useLiveChatClient()
 
 const status = ref({ enabled: false, available: false })
 const panelOpen = ref(false)
@@ -24,7 +24,7 @@ const guestEmail = ref('')
 const guestMobile = ref('')
 const customerMobile = ref('')
 const accountContact = ref(null)
-const unreadWhileClosed = ref(0)
+const staffTyping = ref(false)
 const newBelow = ref(false)
 const lastOwnSentAt = ref(null)
 const clock = ref(Date.now())
@@ -45,11 +45,13 @@ const canSend = computed(() => !sending.value && !cooldown.value && draft.value.
 const heading = computed(() => status.value.available ? 'Live support' : 'Leave a message')
 const statusCopy = computed(() => status.value.available ? 'A support agent is online.' : 'Our team will reply when available.')
 const showThread = computed(() => screen.value === 'thread' && conversation.value)
+const unreadTotal = computed(() => conversations.value.reduce((total, item) => total + Number(item.unreadCount || 0), 0))
 
 let channel = null
 let authSubscription = null
 let refreshTimer = null
 let tickTimer = null
+let statusTimer = null
 let runId = 0
 let selectionId = 0
 let syncInProgress = false
@@ -58,6 +60,9 @@ let pendingStart = null
 let pendingSend = null
 let previousBodyOverflow = ''
 let chatHistoryEntry = false
+let typingTimer = null
+let lastTypingAt = 0
+let readPending = false
 
 const requestError = (error, fallback) => error?.data?.statusMessage
   || error?.statusMessage || error?.message || fallback
@@ -82,6 +87,42 @@ const scrollBottom = async () => {
   await nextTick()
   if (messageList.value) messageList.value.scrollTop = messageList.value.scrollHeight
   newBelow.value = false
+  markVisibleRead()
+}
+
+const updateConversation = item => {
+  conversation.value = item
+  conversations.value = [item, ...conversations.value.filter(entry => entry.id !== item.id)]
+}
+const markVisibleRead = async () => {
+  if (!panelOpen.value || screen.value !== 'thread' || !conversation.value
+    || document.visibilityState !== 'visible' || !atBottom() || readPending) return
+  const incoming = [...messages.value].reverse().find(item => item.sender_kind === 'staff')
+  if (!incoming || Number(incoming.sequence_number) <= Number(conversation.value.lastReadSequence || 0)) return
+  const id = conversation.value.id
+  readPending = true
+  let saved = false
+  try {
+    const result = await request(actor.value, `/conversations/${id}/read`, {
+      method: 'POST', body: { sequence: Number(incoming.sequence_number) }
+    })
+    if (conversation.value?.id === id) updateConversation({ ...conversation.value, ...result })
+    saved = true
+  } catch { /* Reconcile or another visible scroll can retry. */ }
+  finally { readPending = false; if (saved || conversation.value?.id !== id) setTimeout(markVisibleRead, 0) }
+}
+const onTyping = payload => {
+  if (payload?.kind !== 'staff' || payload.conversationId !== conversation.value?.id) return
+  staffTyping.value = true
+  if (typingTimer) clearTimeout(typingTimer)
+  typingTimer = setTimeout(() => { staffTyping.value = false; typingTimer = null }, 6000)
+}
+const sendTyping = async () => {
+  if (!panelOpen.value || !showThread.value || conversation.value.status !== 'active'
+    || !draft.value.trim() || !channel || Date.now() - lastTypingAt < 4000) return
+  lastTypingAt = Date.now()
+  try { await request(actor.value, `/conversations/${conversation.value.id}/typing`, { method: 'POST', body: {} }) }
+  catch { /* Typing is optional. */ }
 }
 
 const clearSubscription = async () => {
@@ -92,6 +133,9 @@ const clearSubscription = async () => {
   const old = channel
   channel = null
   connectionState.value = 'idle'
+  staffTyping.value = false
+  if (typingTimer) clearTimeout(typingTimer)
+  typingTimer = null
   if (old && actor.value?.client) await actor.value.client.removeChannel(old)
 }
 
@@ -104,8 +148,7 @@ const mergeIncoming = async (incoming) => {
   const own = latestOwnMessage()
   if (own) lastOwnSentAt.value = own.created_at
   const staffCount = added.filter(item => item.sender_kind === 'staff').length
-  if (!panelOpen.value) unreadWhileClosed.value += staffCount
-  else if (!stick && staffCount) newBelow.value = true
+  if (panelOpen.value && !stick && staffCount) newBelow.value = true
   if (stick) await scrollBottom()
 }
 
@@ -124,12 +167,13 @@ const reconcile = async () => {
       const suffix = cursor ? `?after=${encodeURIComponent(cursor)}` : ''
       const result = await request(actor.value, `/conversations/${selectedConversation}${suffix}`)
       if (selectionId !== selected || conversation.value?.id !== selectedConversation) break
-      conversation.value = result.item
+      updateConversation(result.item)
       if (!cursor) hasOlder.value = result.messages.hasMore
       await mergeIncoming(result.messages.items || [])
       more = Boolean(cursor && result.messages.hasMore && result.messages.items?.length)
       pages += 1
     }
+    if (more && pages === 20) syncAgain = true
     if (selectionId === selected) connectionState.value = 'connected'
   } catch (error) {
     if (selectionId === selected) {
@@ -164,6 +208,7 @@ const subscribe = async () => {
   }).data.subscription
   channel = client.channel(`chat:public:${id}`, { config: { private: true } })
     .on('broadcast', { event: 'changed' }, () => scheduleReconcile())
+    .on('broadcast', { event: 'typing' }, ({ payload }) => onTyping(payload))
     .subscribe((state) => {
       if (state === 'SUBSCRIBED') { connectionState.value = 'connected'; scheduleReconcile() }
       else if (state === 'CHANNEL_ERROR' || state === 'TIMED_OUT') connectionState.value = 'reconnecting'
@@ -180,7 +225,7 @@ const selectConversation = async (item, currentRun = runId) => {
   try {
     const result = await request(actor.value, `/conversations/${item.id}`)
     if (currentRun !== runId || selected !== selectionId) return
-    conversation.value = result.item
+    updateConversation(result.item)
     messages.value = result.messages.items || []
     hasOlder.value = result.messages.hasMore
     lastOwnSentAt.value = latestOwnMessage()?.created_at || null
@@ -250,7 +295,6 @@ const onPopState = () => {
 }
 const openPanel = async () => {
   panelOpen.value = true
-  unreadWhileClosed.value = 0
   mobilePanel.value = isMobile()
   if (mobilePanel.value) {
     previousBodyOverflow = document.body.style.overflow
@@ -263,6 +307,16 @@ const openPanel = async () => {
   await loadStatus()
   if (!status.value.enabled) { closePanel(); return }
   await loadActor()
+}
+
+const loadInitialUnread = async () => {
+  if (!status.value.enabled || panelOpen.value || (!mainUser.value && !hasStoredGuestSession())) return
+  try {
+    const knownActor = await resolveActor()
+    if (!knownActor.session) return
+    const result = await request(knownActor, '/conversations')
+    if (!panelOpen.value) conversations.value = result.items || []
+  } catch { /* The badge refreshes when chat is opened. */ }
 }
 
 const loadOlder = async () => {
@@ -394,7 +448,11 @@ const goToHelp = async () => {
   } else hidePanel()
   await navigateTo('/help')
 }
-const onWindowFocus = () => { if (conversation.value) scheduleReconcile() }
+const onWindowFocus = () => {
+  loadStatus()
+  if (conversation.value) scheduleReconcile()
+  if (!panelOpen.value) loadInitialUnread()
+}
 const onKeydown = (event) => {
   if (!panelOpen.value) return
   if (event.key === 'Escape') { closePanel(); return }
@@ -410,6 +468,7 @@ const onKeydown = (event) => {
 
 watch(() => mainUser.value?.sub || mainUser.value?.id, async () => {
   if (panelOpen.value) await loadActor()
+  else { conversations.value = []; await loadInitialUnread() }
 })
 watch(() => route.path, () => {
   if (route.path.startsWith('/checkout')) {
@@ -418,6 +477,7 @@ watch(() => route.path, () => {
   }
 })
 watch([draft, guestName, guestEmail, guestMobile, customerMobile], () => {
+  sendTyping()
   if (pendingSend?.text !== draft.value.trim()) pendingSend = null
   if (pendingStart?.fingerprint !== JSON.stringify([
     draft.value.trim(), guestName.value, guestEmail.value, guestMobile.value, customerMobile.value
@@ -425,8 +485,9 @@ watch([draft, guestName, guestEmail, guestMobile, customerMobile], () => {
 })
 
 onMounted(() => {
-  loadStatus()
+  loadStatus().then(loadInitialUnread)
   tickTimer = setInterval(() => { clock.value = Date.now() }, 500)
+  statusTimer = setInterval(() => { if (panelOpen.value) loadStatus() }, 60000)
   window.addEventListener('focus', onWindowFocus)
   window.addEventListener('online', onWindowFocus)
   window.addEventListener('popstate', onPopState)
@@ -434,7 +495,9 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   if (tickTimer) clearInterval(tickTimer)
+  if (statusTimer) clearInterval(statusTimer)
   if (refreshTimer) clearTimeout(refreshTimer)
+  if (typingTimer) clearTimeout(typingTimer)
   window.removeEventListener('focus', onWindowFocus)
   window.removeEventListener('online', onWindowFocus)
   window.removeEventListener('popstate', onPopState)
@@ -450,7 +513,7 @@ onBeforeUnmount(() => {
       :aria-expanded="panelOpen" aria-controls="live-chat-panel" @click="panelOpen ? closePanel() : openPanel()">
       <Icon :name="panelOpen ? 'lucide:x' : 'lucide:message-circle'" size="23" aria-hidden="true" />
       <span>Support</span>
-      <span v-if="unreadWhileClosed" class="chat-badge" :aria-label="`${unreadWhileClosed} new replies`">{{ unreadWhileClosed > 9 ? '9+' : unreadWhileClosed }}</span>
+      <span v-if="unreadTotal" class="chat-badge" :aria-label="`${unreadTotal} unread replies`">{{ unreadTotal > 9 ? '9+' : unreadTotal }}</span>
     </button>
 
     <section v-show="panelOpen" id="live-chat-panel" class="chat-panel" role="dialog"
@@ -487,14 +550,14 @@ onBeforeUnmount(() => {
           <button v-for="item in conversations" :key="item.id" type="button" class="chat-history-item"
             @click="selectConversation(item)">
             <span><strong>Conversation #{{ item.reference_number }}</strong><small>{{ new Date(item.created_at).toLocaleDateString() }}</small></span>
-            <span class="chat-history-status">{{ item.status }}</span>
+            <span class="chat-history-status">{{ item.unreadCount ? `${item.unreadCount} new` : item.status }}</span>
           </button>
           <p v-if="!conversations.length" class="chat-muted">No previous chats.</p>
         </div>
       </template>
 
       <template v-else-if="showThread">
-        <div ref="messageList" class="chat-scroll chat-messages" aria-label="Chat messages" aria-live="polite">
+        <div ref="messageList" class="chat-scroll chat-messages" aria-label="Chat messages" aria-live="polite" @scroll.passive="markVisibleRead">
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
             {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}
           </button>
@@ -507,6 +570,7 @@ onBeforeUnmount(() => {
           </div>
           <p v-if="!messages.length" class="chat-muted">No messages yet.</p>
         </div>
+        <p v-if="staffTyping" class="chat-connection" role="status">Support is typing…</p>
         <button v-if="newBelow" type="button" class="chat-new-below" @click="scrollBottom">New message ↓</button>
       </template>
 

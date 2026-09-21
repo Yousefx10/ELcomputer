@@ -1,4 +1,4 @@
-import { chatError, chatPublicFields, requireChatVisitor } from '../../../utils/liveChat'
+import { chatError, chatPublicFields, chatUnreadItem, loadChatUnreadSummary, requireChatVisitor } from '../../../utils/liveChat'
 
 export default defineEventHandler(async (event) => {
   const actor = await requireChatVisitor(event)
@@ -7,5 +7,6 @@ export default defineEventHandler(async (event) => {
     .eq(actor.kind === 'guest' ? 'guest_auth_user_id' : 'customer_id', actor.id)
     .order('created_at', { ascending: false }).limit(20)
   if (error) chatError(error, 'Could not load conversations.')
-  return { items: data || [] }
+  const summaries = await loadChatUnreadSummary(actor, (data || []).map(item => item.id))
+  return { items: (data || []).map(item => chatUnreadItem(item, summaries)) }
 })
