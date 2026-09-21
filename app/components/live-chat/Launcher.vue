@@ -1,5 +1,5 @@
 <script setup>
-import { chatContactValid, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatMessages } from '~/utils/liveChat'
+import { chatContactValid, chatDateText, chatDateTitle, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatMessages } from '~/utils/liveChat'
 
 const route = useRoute()
 const mainUser = useSupabaseUser()
@@ -39,7 +39,9 @@ const lastOwnSentAt = ref(null)
 const retryAfterUntil = ref(0)
 const clock = ref(Date.now())
 const connectionState = ref('idle')
+const liveAnnouncement = ref('')
 const launcher = ref(null)
+const panel = ref(null)
 const closeButton = ref(null)
 const messageList = ref(null)
 const composer = ref(null)
@@ -87,6 +89,7 @@ let syncAgain = false
 let pendingStart = null
 let pendingSend = null
 let previousBodyOverflow = ''
+let bodyLocked = false
 let chatHistoryEntry = false
 let typingTimer = null
 let lastTypingAt = 0
@@ -221,6 +224,12 @@ const mergeIncoming = async (incoming) => {
   const own = latestOwnMessage()
   if (own) lastOwnSentAt.value = own.created_at
   const staffCount = added.filter(item => item.sender_kind === 'staff').length
+  if (staffCount) {
+    liveAnnouncement.value = ''
+    await nextTick()
+    liveAnnouncement.value = staffCount === 1
+      ? 'New support message.' : `${staffCount} new support messages.`
+  }
   if (panelOpen.value && !stick && staffCount) newBelow.value = true
   if (stick) await scrollBottom()
 }
@@ -429,7 +438,35 @@ const linkGuestChat = async () => {
 }
 
 const isMobile = () => window.matchMedia('(max-width: 640px)').matches
-const unlockBody = () => { document.body.style.overflow = previousBodyOverflow }
+const lockBody = () => {
+  if (bodyLocked) return
+  previousBodyOverflow = document.body.style.overflow
+  document.body.style.overflow = 'hidden'
+  bodyLocked = true
+}
+const unlockBody = () => {
+  if (!bodyLocked) return
+  document.body.style.overflow = previousBodyOverflow
+  bodyLocked = false
+}
+const updateViewport = () => {
+  const height = window.visualViewport?.height || window.innerHeight
+  panel.value?.style.setProperty('--chat-viewport-height', `${Math.round(height)}px`)
+}
+const updatePanelMode = () => {
+  const wasMobile = mobilePanel.value
+  const nextMobile = isMobile()
+  mobilePanel.value = nextMobile
+  if (panelOpen.value && nextMobile) {
+    lockBody()
+    if (!wasMobile && !chatHistoryEntry) {
+      window.history.pushState({ ...window.history.state, elChatPanel: true }, '', window.location.href)
+      chatHistoryEntry = true
+    }
+  }
+  else unlockBody()
+  updateViewport()
+}
 const hidePanel = () => {
   panelOpen.value = false
   mobilePanel.value = false
@@ -449,12 +486,12 @@ const openPanel = async () => {
   panelOpen.value = true
   mobilePanel.value = isMobile()
   if (mobilePanel.value) {
-    previousBodyOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    lockBody()
     window.history.pushState({ ...window.history.state, elChatPanel: true }, '', window.location.href)
     chatHistoryEntry = true
   }
   await nextTick()
+  updateViewport()
   closeButton.value?.focus()
   await loadStatus()
   if (!status.value.enabled) { closePanel(); return }
@@ -627,7 +664,7 @@ const onKeydown = (event) => {
   if (!panelOpen.value) return
   if (event.key === 'Escape') { closePanel(); return }
   if (event.key !== 'Tab' || !mobilePanel.value) return
-  const focusable = [...document.querySelectorAll('#live-chat-panel button:not(:disabled), #live-chat-panel input:not(:disabled), #live-chat-panel textarea:not(:disabled)')]
+  const focusable = [...(panel.value?.querySelectorAll('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled)') || [])]
     .filter(element => element.offsetParent !== null)
   if (!focusable.length) return
   const first = focusable[0]
@@ -663,6 +700,8 @@ onMounted(() => {
   window.addEventListener('online', onWindowFocus)
   window.addEventListener('popstate', onPopState)
   window.addEventListener('keydown', onKeydown)
+  window.addEventListener('resize', updatePanelMode)
+  window.visualViewport?.addEventListener('resize', updateViewport)
 })
 onBeforeUnmount(() => {
   if (tickTimer) clearInterval(tickTimer)
@@ -673,6 +712,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('online', onWindowFocus)
   window.removeEventListener('popstate', onPopState)
   window.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('resize', updatePanelMode)
+  window.visualViewport?.removeEventListener('resize', updateViewport)
   if (panelOpen.value) unlockBody()
   clearSubscription()
 })
@@ -680,21 +721,23 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="visible" class="chat-root">
-    <button ref="launcher" class="chat-launcher" type="button" aria-label="Live support"
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveAnnouncement }}</span>
+    <button ref="launcher" class="chat-launcher" type="button"
+      :aria-label="unreadTotal ? `Live support, ${unreadTotal} unread ${unreadTotal === 1 ? 'reply' : 'replies'}` : 'Live support'"
       :aria-expanded="panelOpen" aria-controls="live-chat-panel" @click="panelOpen ? closePanel() : openPanel()">
       <Icon :name="panelOpen ? 'lucide:x' : 'lucide:message-circle'" size="23" aria-hidden="true" />
       <span>Support</span>
-      <span v-if="unreadTotal" class="chat-badge" :aria-label="`${unreadTotal} unread replies`">{{ unreadTotal > 9 ? '9+' : unreadTotal }}</span>
+      <span v-if="unreadTotal" class="chat-badge" aria-hidden="true">{{ unreadTotal > 9 ? '9+' : unreadTotal }}</span>
     </button>
 
-    <section v-show="panelOpen" id="live-chat-panel" class="chat-panel" role="dialog"
+    <section v-show="panelOpen" id="live-chat-panel" ref="panel" class="chat-panel" role="dialog"
       :aria-modal="mobilePanel ? 'true' : undefined"
-      aria-label="Live support conversation">
+      aria-labelledby="live-chat-title" :aria-busy="loading">
       <header class="chat-header">
         <div class="chat-title-wrap">
           <span class="chat-header-icon"><Icon name="lucide:headset" size="19" aria-hidden="true" /></span>
           <div>
-            <h2>{{ heading }}</h2>
+            <h2 id="live-chat-title">{{ heading }}</h2>
             <p><span class="chat-status-dot" :class="{ online: status.available }" />{{ statusCopy }}</p>
           </div>
         </div>
@@ -719,13 +762,13 @@ onBeforeUnmount(() => {
         <button type="button" :disabled="orderBusy" @click="linkGuestChat">Move chat</button>
       </div>
 
-      <div v-if="loading" class="chat-center" role="status">Loading your conversation…</div>
+      <div v-if="loading" class="chat-center" role="status" aria-live="polite">Loading your conversation…</div>
 
       <template v-else-if="screen === 'history'">
-        <div class="chat-scroll chat-history" aria-label="Previous conversations">
+        <div class="chat-scroll chat-history" aria-label="Previous conversations" :aria-busy="loading">
           <button v-for="item in conversations" :key="item.id" type="button" class="chat-history-item"
             @click="selectConversation(item)">
-            <span><strong>Conversation #{{ item.reference_number }}</strong><small>{{ new Date(item.created_at).toLocaleDateString() }}</small></span>
+            <span><strong>Conversation #{{ item.reference_number }}</strong><small>{{ chatDateText(item.created_at) }}</small></span>
             <span class="chat-history-status">{{ item.unreadCount ? `${item.unreadCount} new` : item.status }}</span>
           </button>
           <p v-if="!conversations.length" class="chat-muted">No previous chats.</p>
@@ -742,12 +785,14 @@ onBeforeUnmount(() => {
           <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
         </div>
         <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">The related order is now managed on your support ticket.</p>
-        <div ref="messageList" class="chat-scroll chat-messages" aria-label="Chat messages" aria-live="polite" @scroll.passive="markVisibleRead">
+        <div ref="messageList" class="chat-scroll chat-messages" role="log" aria-label="Chat messages"
+          aria-live="polite" aria-relevant="additions" :aria-busy="loadingOlder" @scroll.passive="markVisibleRead">
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
             {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}
           </button>
           <p v-if="conversation.intake_mode === 'offline'" class="chat-intake-note">{{ conversation.ticket_id ? 'Your message is saved as a support ticket.' : 'Your message is saved. Our team will reply when available.' }}</p>
-          <div v-for="message in messages" :key="message.id" class="chat-message"
+          <article v-for="message in messages" :key="message.id" class="chat-message"
+            :aria-label="`${message.sender_kind === 'staff' ? 'Support' : 'You'}, ${chatDateText(message.created_at)}`"
             :class="message.sender_kind === 'staff' ? 'from-support' : 'from-customer'">
             <span class="chat-message-sender">{{ message.sender_kind === 'staff' ? 'Support' : 'You' }}</span>
             <p>{{ message.body }}</p>
@@ -756,8 +801,8 @@ onBeforeUnmount(() => {
               <Icon name="lucide:paperclip" size="13" aria-hidden="true" />
               {{ file.original_name }}
             </button>
-            <time :datetime="message.created_at">{{ new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) }}</time>
-          </div>
+            <time :datetime="message.created_at" :title="chatDateTitle(message.created_at)">{{ chatDateText(message.created_at) }}</time>
+          </article>
           <p v-if="!messages.length" class="chat-muted">No messages yet.</p>
         </div>
         <p v-if="staffTyping" class="chat-connection" role="status">Support is typing…</p>
@@ -770,15 +815,15 @@ onBeforeUnmount(() => {
         <p>{{ status.available ? status.welcomeMessage : status.offlineMessage }}</p>
         <div v-if="isGuest" class="chat-contact-fields">
           <label for="chat-name">Name <span aria-hidden="true">*</span></label>
-          <input id="chat-name" v-model="guestName" autocomplete="name" maxlength="160" placeholder="Your name" />
+          <input id="chat-name" v-model="guestName" autocomplete="name" maxlength="160" placeholder="Your name" required />
           <label for="chat-email">Email</label>
-          <input id="chat-email" v-model="guestEmail" type="email" autocomplete="email" maxlength="320" placeholder="you@example.com" />
+          <input id="chat-email" v-model="guestEmail" type="email" autocomplete="email" maxlength="320" placeholder="you@example.com" aria-describedby="chat-contact-help" />
           <label for="chat-mobile">Mobile</label>
-          <input id="chat-mobile" v-model="guestMobile" type="tel" autocomplete="tel" maxlength="30" placeholder="Your mobile number" />
-          <small v-if="status.guestContactRule === 'both'">Enter both email and mobile.</small>
-          <small v-else-if="status.guestContactRule === 'email'">Enter your email.</small>
-          <small v-else-if="status.guestContactRule === 'mobile'">Enter your mobile number.</small>
-          <small v-else>Enter an email or mobile number.</small>
+          <input id="chat-mobile" v-model="guestMobile" type="tel" autocomplete="tel" maxlength="30" placeholder="Your mobile number" aria-describedby="chat-contact-help" />
+          <small v-if="status.guestContactRule === 'both'" id="chat-contact-help">Enter both email and mobile.</small>
+          <small v-else-if="status.guestContactRule === 'email'" id="chat-contact-help">Enter your email.</small>
+          <small v-else-if="status.guestContactRule === 'mobile'" id="chat-contact-help">Enter your mobile number.</small>
+          <small v-else id="chat-contact-help">Enter an email or mobile number.</small>
         </div>
         <div v-else-if="needsCustomerMobile" class="chat-contact-fields">
           <label for="chat-customer-mobile">Mobile</label>
@@ -800,10 +845,11 @@ onBeforeUnmount(() => {
       <div v-if="screen !== 'history' && (!conversation || conversation.status !== 'closed')" class="chat-composer">
         <label for="chat-message" class="sr-only">Your message</label>
         <textarea id="chat-message" ref="composer" v-model="draft" rows="2" :maxlength="maxLength"
+          :aria-describedby="cooldown ? 'chat-send-status' : undefined"
           :placeholder="showThread ? 'Write a message…' : 'What can we help with?'"
           @keydown="onComposerKeydown" />
         <div class="chat-composer-bottom">
-          <span v-if="cooldown">{{ sendWaitText }}</span>
+          <span v-if="cooldown" id="chat-send-status" role="status">{{ sendWaitText }}</span>
           <span v-else>{{ draft.length }}/{{ maxLength }}</span>
           <button type="button" class="chat-send" :disabled="!canSend" @click="submitDraft">
             {{ sending ? 'Sending…' : (showThread ? 'Send' : 'Start chat') }}
@@ -832,11 +878,12 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chat-root{--chat-blue:#174a97;--chat-navy:#102b53;font-family:inherit}
-.chat-account-link,.chat-order-link{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 12px;border-bottom:1px solid #e8edf5;background:#f8fafc;font-size:11px}.chat-account-link button,.chat-order-link button{border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}.chat-order-link input,.chat-order-link select{min-width:0;max-width:150px;padding:5px;border:1px solid #cad5e5;border-radius:7px;background:white}
+.chat-account-link,.chat-order-link{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 12px;border-bottom:1px solid #e8edf5;background:#f8fafc;font-size:11px}.chat-account-link button,.chat-order-link button{min-height:32px;border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}.chat-order-link input,.chat-order-link select{min-width:0;max-width:150px;min-height:34px;padding:5px;border:1px solid #cad5e5;border-radius:7px;background:white}
 .chat-attachment{display:inline-flex;align-items:center;max-width:100%;gap:5px;padding:5px 7px;border:1px solid #bfd1ec;border-radius:8px;background:white;color:#174a97;font-size:10px;font-weight:700;overflow-wrap:anywhere;cursor:pointer}.chat-file-picker{display:inline-flex;align-items:center;gap:5px;margin-top:7px;color:var(--chat-blue);font-size:11px;font-weight:700;cursor:pointer}.chat-file-picker input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.chat-file-limit{margin-left:8px;color:#718096;font-size:10px}.chat-file-summary{display:flex;justify-content:space-between;margin-top:5px;color:#607187;font-size:10px}.chat-file-summary button{border:0;background:transparent;color:var(--chat-blue);font-weight:700;cursor:pointer}
 .chat-launcher{position:fixed;right:22px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:9px;min-height:50px;padding:0 18px;border:1px solid #174a97;border-radius:999px;background:#174a97;color:white;box-shadow:0 10px 28px #0b2a5860;font-size:14px;font-weight:700;cursor:pointer}
 .chat-launcher:hover{background:#123b7a;transform:translateY(-1px)}
 .chat-launcher:focus-visible,.chat-panel button:focus-visible,.chat-panel a:focus-visible,.chat-panel input:focus-visible,.chat-panel textarea:focus-visible{outline:3px solid #eebd50;outline-offset:2px}
+.chat-file-picker:focus-within{outline:3px solid #eebd50;outline-offset:3px}
 .chat-badge{position:absolute;top:-7px;right:-7px;display:grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border:2px solid white;border-radius:50%;background:#be2e38;color:white;font-size:11px}
 .chat-panel{position:fixed;right:22px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:71;display:flex;flex-direction:column;width:min(390px,calc(100vw - 32px));height:min(600px,calc(100dvh - 112px));overflow:hidden;border:1px solid #d9e2ee;border-radius:20px;background:white;box-shadow:0 18px 65px #102b5340;color:#1c2d47}
 .chat-header{display:flex;align-items:center;justify-content:space-between;min-height:76px;padding:15px 17px;background:linear-gradient(120deg,#123968,#1d59a9);color:white}
@@ -845,7 +892,7 @@ onBeforeUnmount(() => {
 .chat-scroll{min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain}.chat-center{display:grid;place-items:center;flex:1;color:#64748b;font-size:13px}.chat-intro{padding:22px 22px 14px}.chat-welcome-icon{display:grid;place-items:center;width:48px;height:48px;margin-bottom:14px;border-radius:15px;background:#eaf2ff;color:var(--chat-blue)}.chat-intro h3{margin:0 0 6px;font-size:18px;font-weight:750;color:var(--chat-navy)}.chat-intro>p{margin:0;color:#576a83;font-size:13px;line-height:1.55}.chat-contact-fields{display:grid;gap:6px;margin-top:20px}.chat-contact-fields label{margin-top:5px;font-size:12px;font-weight:700;color:#344863}.chat-contact-fields input{width:100%;min-height:39px;padding:8px 10px;border:1px solid #cad5e5;border-radius:9px;background:white;color:#1c2d47;font-size:13px}.chat-contact-fields small{color:#697b91;font-size:11px}
 .chat-messages{display:flex;flex-direction:column;gap:12px;padding:16px}.chat-intake-note{align-self:center;max-width:90%;margin:0 0 4px;padding:8px 11px;border-radius:10px;background:#eef5ff;color:#3e597a;text-align:center;font-size:11px;line-height:1.4}.chat-message{display:flex;flex-direction:column;max-width:84%;gap:3px}.chat-message.from-customer{align-self:flex-end;align-items:flex-end}.chat-message.from-support{align-self:flex-start;align-items:flex-start}.chat-message-sender{padding:0 4px;color:#586b82;font-size:10px;font-weight:700}.chat-message p{max-width:100%;margin:0;padding:10px 13px;border-radius:14px;background:#edf2f8;color:#223850;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.chat-message.from-customer p{border-bottom-right-radius:4px;background:#174a97;color:white}.chat-message.from-support p{border-bottom-left-radius:4px}.chat-message time{padding:0 4px;color:#73849a;font-size:10px}.chat-load-more{align-self:center;padding:5px 10px;border:0;background:transparent;color:var(--chat-blue);font-size:11px;font-weight:700;cursor:pointer}.chat-muted{margin:auto;color:#718096;text-align:center;font-size:12px}.chat-new-below{align-self:center;margin-bottom:7px;padding:6px 12px;border:1px solid #bfd1ec;border-radius:999px;background:white;color:var(--chat-blue);font-size:11px;font-weight:700;box-shadow:0 3px 10px #102b531c;cursor:pointer}
 .chat-history{padding:6px 10px}.chat-history-item{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px;padding:14px 9px;border:0;border-bottom:1px solid #e8edf5;background:white;text-align:left;cursor:pointer}.chat-history-item:hover{background:#f4f8fe}.chat-history-item span:first-child{display:grid;gap:4px}.chat-history-item strong{font-size:12px;color:#233a56}.chat-history-item small{font-size:11px;color:#718096}.chat-history-status{padding:4px 7px;border-radius:7px;background:#edf2f8;color:#4e6480;font-size:10px;text-transform:capitalize}
-.chat-error{margin:7px 12px 0;padding:8px 10px;border-radius:8px;background:#fff1f2;color:#9d2332;font-size:11px}.chat-connection{padding:4px 12px;color:#8a5c08;font-size:11px}.chat-composer{padding:10px 12px 8px;border-top:1px solid #e5ebf4;background:white}.chat-composer textarea{display:block;resize:none;width:100%;min-height:54px;max-height:120px;padding:8px 10px;border:1px solid #cbd7e6;border-radius:10px;background:#fbfcfe;color:#1e3048;font:inherit;font-size:13px;line-height:1.45}.chat-composer-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px;color:#6f8094;font-size:10px}.chat-send{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:80px;min-height:34px;padding:6px 10px;border:0;border-radius:9px;background:var(--chat-blue);color:white;font-size:12px;font-weight:700;cursor:pointer}.chat-send:hover:not(:disabled){background:#123b7a}.chat-send:disabled{cursor:not-allowed;opacity:.5}.chat-closed{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;border-top:1px solid #e5ebf4;color:#61738b;font-size:11px}.chat-closed button{border:0;background:transparent;color:var(--chat-blue);font-size:11px;font-weight:700;cursor:pointer}.chat-footer{padding:5px 12px 8px;text-align:center}.chat-footer button{border:0;background:transparent;color:#60738d;font-size:10px;text-decoration:underline;cursor:pointer}.chat-footer button:hover{color:var(--chat-blue)}
-@media(max-width:640px){.chat-launcher{right:15px;bottom:calc(82px + env(safe-area-inset-bottom));min-height:48px;padding:0 15px}.chat-panel{inset:0;right:0;bottom:0;width:100vw;height:100dvh;max-height:none;border:0;border-radius:0;box-shadow:none}.chat-header{padding-top:max(15px,env(safe-area-inset-top))}.chat-composer{padding-bottom:max(8px,env(safe-area-inset-bottom))}.chat-intro{padding:24px 20px}.chat-message{max-width:82%}}
+.chat-error{margin:7px 12px 0;padding:8px 10px;border-radius:8px;background:#fff1f2;color:#9d2332;font-size:11px}.chat-connection{padding:4px 12px;color:#8a5c08;font-size:11px}.chat-composer{padding:10px 12px 8px;border-top:1px solid #e5ebf4;background:white}.chat-composer textarea{display:block;resize:none;width:100%;min-height:54px;max-height:120px;padding:8px 10px;border:1px solid #cbd7e6;border-radius:10px;background:#fbfcfe;color:#1e3048;font:inherit;font-size:13px;line-height:1.45}.chat-composer-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px;color:#6f8094;font-size:10px}.chat-send{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:80px;min-height:38px;padding:6px 10px;border:0;border-radius:9px;background:var(--chat-blue);color:white;font-size:12px;font-weight:700;cursor:pointer}.chat-send:hover:not(:disabled){background:#123b7a}.chat-send:disabled{cursor:not-allowed;opacity:.5}.chat-closed{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;border-top:1px solid #e5ebf4;color:#61738b;font-size:11px}.chat-closed button{min-height:32px;border:0;background:transparent;color:var(--chat-blue);font-size:11px;font-weight:700;cursor:pointer}.chat-footer{padding:5px 12px 8px;text-align:center}.chat-footer button{min-height:30px;border:0;background:transparent;color:#60738d;font-size:10px;text-decoration:underline;cursor:pointer}.chat-footer button:hover{color:var(--chat-blue)}
+@media(max-width:640px){.chat-launcher{right:15px;bottom:calc(82px + env(safe-area-inset-bottom));min-height:48px;padding:0 15px}.chat-panel{inset:0;right:0;bottom:0;width:100vw;height:var(--chat-viewport-height,100dvh);max-height:none;border:0;border-radius:0;box-shadow:none}.chat-header{padding-top:max(15px,env(safe-area-inset-top))}.chat-icon-button,.chat-panel button{min-height:44px}.chat-composer{padding-bottom:max(8px,env(safe-area-inset-bottom))}.chat-composer textarea,.chat-panel input,.chat-panel select{font-size:16px}.chat-intro{padding:24px 20px}.chat-message{max-width:88%}.chat-order-link input,.chat-order-link select{max-width:100%;flex:1 1 130px}}
 @media(prefers-reduced-motion:no-preference){.chat-launcher{transition:background .16s ease,transform .16s ease}.chat-panel{animation:chat-appear .18s ease-out}@keyframes chat-appear{from{opacity:.7;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}}
 </style>

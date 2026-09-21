@@ -66,3 +66,24 @@ export const chatContactValid = (name, email, mobile, rule = 'either') => {
   if (rule === 'mobile') return Boolean(cleanMobile)
   return Boolean(cleanEmail || cleanMobile)
 }
+
+export const chatDateText = (value, options = {}) => {
+  const date = new Date(value)
+  if (!value || Number.isNaN(date.getTime())) return '—'
+  const { locale, timeZone } = options
+  return new Intl.DateTimeFormat(locale, {
+    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+    ...(timeZone ? { timeZone } : {})
+  }).format(date)
+}
+
+export const chatDateTitle = (value, options = {}) => {
+  const date = new Date(value)
+  if (!value || Number.isNaN(date.getTime())) return ''
+  const { locale, timeZone } = options
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short',
+    ...(timeZone ? { timeZone } : {})
+  }).format(date)
+}

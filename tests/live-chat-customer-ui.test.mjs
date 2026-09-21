@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chatAuditDescription, chatContactValid, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatEvents, mergeChatMessages } from '../app/utils/liveChat.js'
+import { chatAuditDescription, chatContactValid, chatDateText, chatDateTitle, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatEvents, mergeChatMessages } from '../app/utils/liveChat.js'
 
 test('reconnect reconciliation preserves order and does not duplicate messages', () => {
   const first = [{ id: 'a', sequence_number: 10, body: 'Earlier' },
@@ -46,4 +46,13 @@ test('audit history keeps older pages and uses saved names', () => {
   assert.deepEqual(mergeChatEvents(older, newer.concat(older)).map(item => item.id), ['b', 'a'])
   assert.equal(chatAuditDescription(newer[0]), 'Manager transferred Sara → Ahmed')
   assert.equal(chatAuditDescription(older[0]), 'Ahmed assigned Sara')
+})
+
+test('chat timestamps include a date and expose a timezone-aware full label', () => {
+  const value = '2026-09-21T12:34:56.000Z'
+  assert.equal(chatDateText(value, { locale: 'en-US', timeZone: 'UTC' }), 'Sep 21, 2026, 12:34 PM')
+  assert.match(chatDateTitle(value, { locale: 'en-US', timeZone: 'UTC' }),
+    /^Monday, September 21, 2026 at 12:34:56 PM UTC$/)
+  assert.equal(chatDateText('invalid'), '—')
+  assert.equal(chatDateTitle(null), '')
 })

@@ -1,6 +1,28 @@
 # Project state — 2026-09-21
 
 
+## Live Chat — Phase 12 responsive, accessibility, and polish complete locally (2026-09-21)
+
+**Status:** Local code only. Ten Live Chat migrations exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Customer launcher and panel
+
+- The customer panel now tracks the visual viewport height so the mobile software keyboard does not cover the composer. It updates modal behavior and body locking when the viewport crosses the mobile breakpoint, keeps browser Back able to close a panel that became mobile after opening, traps focus inside the mobile dialog, closes with Escape, and restores focus to the launcher.
+- The launcher exposes its unread count in its accessible name. New staff replies use a polite announcement and retain the existing minimized badge. The transcript is a labelled live log with complete date-and-time text, timezone-aware hover text, loading state, empty state, error alerts, typing status, and a new-message control that preserves the reader's position.
+- Contact guidance is connected to its fields, required name semantics are explicit, attachment controls have visible keyboard focus, mobile controls use larger targets, text inputs avoid mobile browser zoom, safe areas remain respected, and reduced-motion preferences continue to suppress the panel animation. Cooldown continues to block only Send.
+
+### Staff inbox
+
+- The inbox uses a two-column layout at medium desktop widths and adds customer context as the third column only on wider screens. Filters and context are collapsible, while the transcript remains primary. Narrow screens use a viewport-based work area, an explicit Inbox action, Escape navigation, and focus movement between inbox and conversation headings.
+- Message logs now expose loading and empty states, semantic message entries, full timestamps, keyboard focus rings, reduced-motion behavior, and polite new-message announcements. Incoming messages no longer move an agent reading older history; a **New messages** control returns to the latest message. The composer names the exact customer and conversation, reducing wrong-thread replies.
+
+### Phase 12 validation and limits
+
+- **VERIFIED locally:** 135 repository tests passed. A new deterministic timestamp test covers date, time, timezone labels, and invalid input. Nuxt typecheck, production build, and `git diff --check` passed. The built storefront and public chat-status route returned HTTP 200; unauthenticated `/dashboard/live-chat` redirected to dashboard login.
+- **NOT VERIFIED:** Real mobile keyboards, device safe areas, browser Back across installed web-app modes, authenticated customer/staff interactions, screen readers, voice control, high zoom, private Realtime announcements, or visual behavior with live transcripts. Chat remains disabled and its migrations remain unapplied, so these require Phase 14 staging acceptance on supported devices and assistive technology.
+- **Phase 13 only:** Perform the actual-code security, concurrency, and performance audit defined by the master specification. Do not begin staging, remote migrations, anonymous Auth changes, or deployment.
+
+
 ## Live Chat — Phase 11 rate limiting and anti-spam complete locally (2026-09-21)
 
 **Status:** Local code only. Ten Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
@@ -261,7 +283,7 @@
 
 - **SECURITY-SENSITIVE decision before staging:** Approve enabling Supabase anonymous Auth sign-ins after the full existing-policy audit, or select a different guest identity mechanism with equivalent private Realtime authorization. Also confirm business timezone/hours, whether offline chat stays a conversation by default (recommended), and retention expectations. No such setting is changed in Phase 0.
 - **Important risks:** Existing profile trigger and account middleware conflict with anonymous Auth; public `site_settings` exposes full rows; Realtime channel membership is cached; existing live Storage policies remain unverified; service-role APIs require careful projection; competing claims, close/send races, upload body buffering, guest spam, system-reset allowlist, and cross-tab read state need explicit tests. Existing ticket thread loading caps at 500 messages, so chat needs cursor pagination rather than copying that behavior.
-- **Phase 1:** Local schema, settings defaults, RLS/Realtime authorization helpers, guest-auth compatibility and security tests; no remote application. **Phase 2:** Identity, conversation/message APIs, atomic claims/sends, cooldown and abuse limits, private committed Realtime signals. **Phase 3:** Customer launcher, guest/authenticated flow, offline intake, resume/history. **Phase 4:** Support inbox, agent replies, claim/transfer/close/reopen and event display. **Phase 5:** Read/unread, reconnect, typing, availability and notifications. **Phase 6:** Customer/order/ticket context and verified order linking. **Phase 7:** Private attachments. **Phase 8:** Chat-to-ticket conversion. **Phase 9:** Dashboard settings, business hours, offline behavior and audits. **Phase 10:** Responsive, keyboard, screen-reader and visual polish. **Phase 11:** Actual-code security/concurrency/performance review and fixes. **Phase 12:** Isolated staging migration, multi-role manual acceptance, quota measurement. **Phase 13:** Production migration/deployment only after separate explicit approval.
+- **Phase 1:** Local schema, settings defaults, RLS/Realtime authorization helpers, guest-auth compatibility and security tests; no remote application. **Phase 2:** Identity, conversation/message APIs, atomic claims/sends, cooldown and abuse limits, private committed Realtime signals. **Phase 3:** Customer launcher, guest/authenticated flow, offline intake, resume/history. **Phase 4:** Support inbox and agent workflows. **Phase 5:** Assignment, transfers, and audit history. **Phase 6:** Read/unread, reconnect, typing, availability, and notifications. **Phase 7:** Customer and order integration. **Phase 8:** Private attachments. **Phase 9:** Chat-to-ticket conversion. **Phase 10:** Dashboard settings, business hours, offline behavior, and audits. **Phase 11:** Rate limiting and anti-spam. **Phase 12:** Responsive, keyboard, screen-reader, and visual polish. **Phase 13:** Actual-code security, concurrency, and performance review. **Phase 14:** Isolated staging migration, multi-role manual acceptance, and quota measurement. **Phase 15:** Production migration/deployment only after separate explicit approval.
 
 ## Help Center and customer support
 

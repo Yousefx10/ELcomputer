@@ -1,4 +1,38 @@
-# Codex handoff — Live Chat Phase 11
+# Codex handoff — Live Chat Phase 12
+
+Date: 2026-09-21. State: **PHASE 12 COMPLETE LOCALLY — awaiting explicit instruction for Phase 13. No remote change.**
+
+## Completed in Phase 12
+
+- Polished the customer launcher and panel for responsive viewport changes, mobile software keyboards, safe areas, touch targets, browser Back, Escape, modal focus containment, focus restoration, reduced motion, visible keyboard focus, linked contact guidance, semantic loading/error/empty states, unread announcements, and clear full timestamps. Existing cooldown typing, minimized unread badge, incremental history, and non-forcing autoscroll behavior remain intact.
+- Reshaped the staff inbox so the transcript stays primary: filters and customer context are collapsible, context becomes a third column only on wide screens, the mobile work area follows the viewport, Inbox/Escape navigation moves focus deliberately, and the composer names the customer and chat reference. Semantic live logs, explicit loading/empty states, timezone-aware timestamps, and visible focus states were added.
+- Added a staff **New messages** control and polite announcement. Reconciliation keeps the scroll position when an agent reads older history; the control returns to the bottom and then marks visible incoming messages read. No Phase 13 audit, migration, Auth setting, staging action, or deployment was performed.
+
+## Files changed in Phase 12
+
+- Application: `app/components/live-chat/Launcher.vue`, `app/pages/dashboard/live-chat.vue`, and `app/utils/liveChat.js`.
+- Tests: `tests/live-chat-customer-ui.test.mjs`. Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+- Database migrations: none. All ten existing Live Chat migrations remain local only.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **135 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- The new deterministic utility test verifies full local date/time text, timezone-aware labels, and invalid timestamp fallback. The built storefront and `/api/chat/status` returned HTTP 200; unauthenticated `/dashboard/live-chat` returned the expected HTTP 302 login redirect.
+- **NOT VERIFIED:** Authenticated browser interaction, actual mobile keyboard and safe-area behavior, mobile browser/PWA Back behavior, screen-reader or voice-control output, high zoom, visual states with long/live conversations, and remote Realtime announcements. Those checks need enabled chat and isolated staging in Phase 14.
+
+## Known issues and decisions
+
+- The customer dialog is modal only at the mobile breakpoint. Desktop remains a compact nonmodal support panel, with Escape and launcher focus restoration.
+- Timestamps use the viewer's local timezone and expose a full timezone-aware title. The saved UTC value remains in each `datetime` attribute.
+- Source-level semantics, typechecking, and builds cannot establish assistive-technology or device acceptance. Phase 14 must include real mobile browsers, keyboard-only use, zoom, and screen-reader checks before chat is enabled.
+
+## Exact next action — Phase 13, only after “Continue with Phase 13”
+
+Re-read the Phase 13 security, concurrency, and performance requirements in the master specification and this handoff. Audit the actual implementation end to end, fix only confirmed issues within that phase, run the full local validation suite, update both state files, and stop before Phase 14. Do not apply migrations, enable anonymous Auth, stage, or deploy.
+
+---
+
+# Previous handoff — Live Chat Phase 11
 
 Date: 2026-09-21. State: **PHASE 11 COMPLETE LOCALLY — awaiting explicit instruction for Phase 12. No remote change.**
 

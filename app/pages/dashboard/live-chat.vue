@@ -1,5 +1,5 @@
 <script setup>
-import { chatAuditDescription, mergeChatEvents, mergeChatMessages } from '~/utils/liveChat'
+import { chatAuditDescription, chatDateText, chatDateTitle, mergeChatEvents, mergeChatMessages } from '~/utils/liveChat'
 
 definePageMeta({ layout: 'dashboard' })
 const route = useRoute()
@@ -51,11 +51,17 @@ const draft = ref('')
 const note = ref(false)
 const sendKey = ref(null)
 const activePane = ref('queue')
+const filtersOpen = ref(false)
+const contextOpen = ref(false)
+const newBelow = ref(false)
+const liveAnnouncement = ref('')
 const connection = ref('connecting')
 const availability = ref('offline')
 const availabilityBusy = ref(false)
 const typingVisible = ref(false)
 const messageList = ref(null)
+const inboxHeading = ref(null)
+const threadHeading = ref(null)
 let inboxChannel = null
 let threadChannel = null
 let authSubscription = null
@@ -71,7 +77,7 @@ let typingTimer = null
 let lastTypingAt = 0
 let readPending = false
 
-const dateText = value => value ? new Date(value).toLocaleString() : '—'
+const dateText = value => chatDateText(value)
 const statusText = status => ({ waiting: 'Waiting', active: 'Active', closed: 'Closed' })[status] || status
 const agentName = id => agents.value.find(agent => agent.id === id)?.name || (id ? 'Agent' : 'Unassigned')
 const isMine = computed(() => selected.value?.assigned_admin_id === adminUser.value?.id)
@@ -102,6 +108,7 @@ const lastSequence = () => messages.value.at(-1)?.sequence_number
 const scrollBottom = async () => {
   await nextTick()
   if (messageList.value) messageList.value.scrollTop = messageList.value.scrollHeight
+  newBelow.value = false
   markVisibleRead()
 }
 const threadVisible = () => document.visibilityState === 'visible'
@@ -295,6 +302,8 @@ const reconcileThread = async () => {
   const previousLast = lastSequence()
   const previousRevision = selected.value.revision
   const nearBottom = !messageList.value || messageList.value.scrollHeight - messageList.value.scrollTop - messageList.value.clientHeight < 100
+  const knownMessages = new Set(messages.value.map(message => message.id))
+  let incomingCount = 0
   try {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (!mounted || selected.value?.id !== id) return
@@ -313,6 +322,9 @@ const reconcileThread = async () => {
     while (more && pages < 20 && selected.value?.id === id) {
       const delta = await request(`/api/admin-chat/conversations/${id}/messages`, { query: { after } })
       if (!mounted || selected.value?.id !== id) return
+      incomingCount += (delta.items || []).filter(message => !knownMessages.has(message.id)
+        && ['customer', 'guest'].includes(message.sender_kind)).length
+      for (const message of delta.items || []) knownMessages.add(message.id)
       messages.value = mergeChatMessages(messages.value, delta.items || [])
       pages++
       after = delta.after
@@ -322,6 +334,13 @@ const reconcileThread = async () => {
     else syncAgain = true
     await loadActivity(id)
     detailError.value = ''
+    if (incomingCount) {
+      liveAnnouncement.value = ''
+      await nextTick()
+      liveAnnouncement.value = incomingCount === 1
+        ? 'New customer message.' : `${incomingCount} new customer messages.`
+      if (!nearBottom) newBelow.value = true
+    }
     if (nearBottom) await scrollBottom()
   } catch (cause) {
     if (selected.value?.id === id) detailError.value = errorText(cause, 'Could not refresh the conversation.')
@@ -379,9 +398,24 @@ const selectThread = async (item) => {
   ticketNotice.value = ''
   showTicketForm.value = false
   ticketSubject.value = `Live chat #${item.reference_number || ''}`.trim()
+  contextOpen.value = false
+  newBelow.value = false
   activePane.value = 'thread'
   await loadThread(item.id)
   if (selected.value?.id === item.id) await subscribeThread(item.id)
+  await nextTick()
+  threadHeading.value?.focus()
+}
+
+const showInbox = async () => {
+  activePane.value = 'queue'
+  await nextTick()
+  inboxHeading.value?.focus()
+}
+
+const onPageKeydown = event => {
+  if (event.key === 'Escape' && activePane.value === 'thread'
+    && window.matchMedia('(max-width: 1023px)').matches) showInbox()
 }
 const loadOlder = async () => {
   if (!selected.value || !older.value || detailLoading.value) return
@@ -539,6 +573,7 @@ onMounted(async () => {
   }
   document.addEventListener('visibilitychange', refreshOnReturn)
   window.addEventListener('online', reconnectOnNetwork)
+  window.addEventListener('keydown', onPageKeydown)
 })
 onBeforeUnmount(() => {
   mounted = false
@@ -551,11 +586,13 @@ onBeforeUnmount(() => {
   if (threadChannel) client.removeChannel(threadChannel)
   document.removeEventListener('visibilitychange', refreshOnReturn)
   window.removeEventListener('online', reconnectOnNetwork)
+  window.removeEventListener('keydown', onPageKeydown)
 })
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1700px] space-y-4 pb-8">
+  <div class="live-chat-shell mx-auto max-w-[1700px] space-y-4 pb-8">
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveAnnouncement }}</span>
     <DashboardPageIntro title="Live Chat" description="Manage customer conversations and offline messages." />
     <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
       <NuxtLink to="/dashboard/support" class="font-semibold text-blue-700 hover:underline">← Support tickets</NuxtLink>
@@ -568,14 +605,20 @@ onBeforeUnmount(() => {
         <span class="text-gray-500" role="status">Updates: {{ connection === 'connected' ? 'live' : connection === 'reconnecting' ? 'reconnecting' : 'connecting' }}</span>
       </div>
     </div>
-    <div class="grid min-h-[640px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-[320px_minmax(0,1fr)_260px] xl:grid-cols-[360px_minmax(0,1fr)_290px]">
+    <div class="grid min-h-[calc(100dvh-12rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:min-h-[640px] lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_290px]">
       <section :class="activePane === 'thread' ? 'hidden lg:flex' : 'flex'" class="min-w-0 flex-col border-r border-gray-200" aria-label="Chat inbox">
         <div class="border-b border-gray-100 p-4">
-          <h2 class="font-bold text-gray-900">Inbox <span v-if="unreadOnPage" class="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">{{ unreadOnPage }} unread on page</span></h2>
+          <div class="flex items-center justify-between gap-2">
+            <h2 ref="inboxHeading" tabindex="-1" class="font-bold text-gray-900">Inbox <span v-if="unreadOnPage" class="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">{{ unreadOnPage }} unread on page</span></h2>
+            <button type="button" class="rounded-lg px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+              :aria-expanded="filtersOpen" aria-controls="live-chat-filters" @click="filtersOpen = !filtersOpen">
+              {{ filtersOpen ? 'Hide filters' : 'Filters' }}
+            </button>
+          </div>
           <div class="mt-3 flex flex-wrap gap-1" role="group" aria-label="Inbox view">
             <button v-for="option in views" :key="option.key" type="button" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold" :class="view === option.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'" :aria-pressed="view === option.key" @click="view = option.key; page = 1">{{ option.label }}<span v-if="option.key === 'waiting' && waitingCount" class="ml-1 rounded-full bg-white px-1.5 py-0.5 text-blue-700">{{ waitingCount }}</span></button>
           </div>
-          <form class="mt-4 grid grid-cols-2 gap-2" @submit.prevent="applyFilters">
+          <form v-show="filtersOpen" id="live-chat-filters" class="mt-4 grid grid-cols-2 gap-2" @submit.prevent="applyFilters">
             <label class="text-xs text-gray-600">Reference<input v-model="filters.reference" placeholder="#123" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <label class="text-xs text-gray-600">Contact<input v-model="filters.contact" placeholder="Name, email, phone" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
             <label class="text-xs text-gray-600">Agent<select v-model="filters.agent" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm"><option value="">Any</option><option value="unassigned">Unassigned</option><option v-for="agent in agents" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select></label>
@@ -588,12 +631,12 @@ onBeforeUnmount(() => {
           </form>
         </div>
         <p v-if="queueError" class="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ queueError }}</p>
-        <p v-if="queueLoading && !queue.length" class="p-5 text-sm text-gray-500">Loading conversations...</p>
-        <div v-else class="max-h-[700px] min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100">
-          <button v-for="item in queue" :key="item.id" type="button" class="block w-full p-4 text-left hover:bg-blue-50" :class="selected?.id === item.id ? 'bg-blue-50' : ''" @click="selectThread(item)">
+        <p v-if="queueLoading && !queue.length" class="p-5 text-sm text-gray-500" role="status">Loading conversations...</p>
+        <div v-else class="max-h-[700px] min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100" :aria-busy="queueLoading">
+          <button v-for="item in queue" :key="item.id" type="button" class="block w-full p-4 text-left hover:bg-blue-50" :class="selected?.id === item.id ? 'bg-blue-50' : ''" :aria-current="selected?.id === item.id ? 'true' : undefined" @click="selectThread(item)">
             <span class="flex items-start justify-between gap-2"><strong class="truncate text-sm text-gray-900">{{ item.contact_name }}</strong><span class="shrink-0 text-xs text-gray-500">#{{ item.reference_number }}</span></span>
             <span class="mt-1 block truncate text-xs text-gray-500">{{ item.contact_email || item.contact_mobile || (item.customer_id ? 'Account customer' : 'Guest') }}</span>
-            <span class="mt-2 flex items-center justify-between gap-2 text-xs"><span class="rounded-full bg-gray-100 px-2 py-1 text-gray-700">{{ statusText(item.status) }} · {{ item.intake_mode === 'offline' ? 'Offline' : agentName(item.assigned_admin_id) }}</span><time class="text-gray-500">{{ dateText(item.last_activity_at) }}</time></span>
+            <span class="mt-2 flex items-center justify-between gap-2 text-xs"><span class="rounded-full bg-gray-100 px-2 py-1 text-gray-700">{{ statusText(item.status) }} · {{ item.intake_mode === 'offline' ? 'Offline' : agentName(item.assigned_admin_id) }}</span><time class="text-gray-500" :datetime="item.last_activity_at" :title="chatDateTitle(item.last_activity_at)">{{ dateText(item.last_activity_at) }}</time></span>
             <span v-if="item.unreadCount" class="mt-2 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">{{ item.unreadCount }} new {{ item.unreadCount === 1 ? 'message' : 'messages' }}</span>
           </button>
           <p v-if="!queue.length && !queueLoading" class="p-6 text-center text-sm text-gray-500">No conversations match this view.</p>
@@ -603,8 +646,9 @@ onBeforeUnmount(() => {
 
       <section :class="activePane === 'queue' ? 'hidden lg:flex' : 'flex'" class="min-w-0 flex-col" aria-label="Conversation">
         <div v-if="selected" class="flex flex-wrap items-center gap-2 border-b border-gray-100 p-4">
-          <button type="button" class="mr-1 text-sm font-semibold text-blue-700 lg:hidden" @click="activePane = 'queue'">← Inbox</button>
-          <div class="min-w-0 flex-1"><h2 class="truncate font-bold text-gray-900">{{ selected.contact_name }} <span class="text-sm font-normal text-gray-500">#{{ selected.reference_number }}</span></h2><p class="text-xs text-gray-500">{{ statusText(selected.status) }} · {{ agentName(selected.assigned_admin_id) }}</p></div>
+          <button type="button" class="mr-1 min-h-11 text-sm font-semibold text-blue-700 lg:hidden" @click="showInbox">← Inbox</button>
+          <div class="min-w-0 flex-1"><h2 ref="threadHeading" tabindex="-1" class="truncate font-bold text-gray-900">{{ selected.contact_name }} <span class="text-sm font-normal text-gray-500">#{{ selected.reference_number }}</span></h2><p class="text-xs text-gray-500">{{ statusText(selected.status) }} · {{ agentName(selected.assigned_admin_id) }}</p></div>
+          <button type="button" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold xl:hidden" :aria-expanded="contextOpen" aria-controls="live-chat-context" @click="contextOpen = !contextOpen">{{ contextOpen ? 'Hide details' : 'Details' }}</button>
           <button v-if="canClaim" type="button" :disabled="busy" class="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50" @click="transition('claim')">Claim</button>
           <button v-if="canClose" type="button" :disabled="busy" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold disabled:opacity-50" @click="transition('close')">Close</button>
           <button v-if="canReopen" type="button" :disabled="busy" class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold disabled:opacity-50" @click="transition('reopen')">Reopen</button>
@@ -613,29 +657,36 @@ onBeforeUnmount(() => {
         <div v-if="selected && canTransfer" class="flex gap-2 border-b border-gray-100 px-4 py-2"><select v-model="transferTarget" aria-label="Transfer to agent" class="min-w-0 flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"><option value="">Transfer to agent...</option><option v-for="agent in agents.filter(agent => agent.id !== selected.assigned_admin_id)" :key="agent.id" :value="agent.id">{{ agent.name }}</option></select><button type="button" :disabled="!transferTarget || busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40" @click="transfer">Transfer</button></div>
         <p v-if="detailError || actionError" class="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ actionError || detailError }}</p>
         <template v-if="selected">
-          <div ref="messageList" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4" aria-label="Messages" @scroll.passive="markVisibleRead">
+          <div ref="messageList" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4" role="log"
+            aria-label="Conversation messages" aria-live="polite" aria-relevant="additions" :aria-busy="detailLoading" @scroll.passive="markVisibleRead">
             <button v-if="older" type="button" :disabled="detailLoading" class="mx-auto block text-xs font-semibold text-blue-700 disabled:opacity-50" @click="loadOlder">Load older messages</button>
-            <p v-if="detailLoading && !messages.length" class="text-center text-sm text-gray-500">Loading messages...</p>
-            <div v-for="message in messages" :key="message.id" class="flex" :class="message.sender_kind === 'staff' ? 'justify-end' : 'justify-start'">
+            <p v-if="detailLoading && !messages.length" class="text-center text-sm text-gray-500" role="status">Loading messages...</p>
+            <p v-else-if="!messages.length" class="text-center text-sm text-gray-500">No messages yet.</p>
+            <article v-for="message in messages" :key="message.id" class="flex"
+              :aria-label="`${message.sender_name || (message.sender_kind === 'staff' ? 'Agent' : 'Customer')}, ${dateText(message.created_at)}${message.is_internal ? ', internal note' : ''}`"
+              :class="message.sender_kind === 'staff' ? 'justify-end' : 'justify-start'">
               <div class="max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm" :class="message.is_internal ? 'border border-amber-200 bg-amber-50 text-amber-950' : message.sender_kind === 'staff' ? 'bg-blue-600 text-white' : 'border border-gray-200 bg-white text-gray-900'">
                 <p class="mb-1 text-xs font-bold opacity-80">{{ message.is_internal ? 'Internal note · ' : '' }}{{ message.sender_name || (message.sender_kind === 'staff' ? 'Agent' : 'Customer') }}</p>
                 <p class="whitespace-pre-wrap break-words">{{ message.body }}</p>
                 <div v-if="message.attachments?.length" class="mt-2 flex flex-wrap gap-1"><button v-for="file in message.attachments" :key="file.id" type="button" class="inline-flex max-w-full items-center gap-1 rounded-lg border border-current/20 bg-white/90 px-2 py-1 text-left text-[11px] font-semibold text-blue-800" @click="downloadFile(file)"><Icon name="lucide:paperclip" size="13" aria-hidden="true" /><span class="break-all">{{ file.original_name }}</span></button></div>
-                <time class="mt-2 block text-[11px] opacity-70">{{ dateText(message.created_at) }}</time>
+                <time class="mt-2 block text-[11px] opacity-70" :datetime="message.created_at" :title="chatDateTitle(message.created_at)">{{ dateText(message.created_at) }}</time>
               </div>
-            </div>
+            </article>
           </div>
+          <button v-if="newBelow" type="button" class="mx-auto -mt-12 mb-2 rounded-full border border-blue-200 bg-white px-3 py-2 text-xs font-bold text-blue-700 shadow-md" @click="scrollBottom">New messages ↓</button>
           <p v-if="typingVisible" class="bg-gray-50 px-4 py-1 text-xs text-gray-500" role="status">Customer is typing…</p>
-          <form v-if="canReply" class="border-t border-gray-100 p-4" @submit.prevent="send"><label class="block text-xs font-semibold text-gray-600">{{ note ? 'Internal note — staff only' : 'Reply to customer' }}<textarea v-model="draft" maxlength="10000" rows="3" class="mt-1 w-full resize-y rounded-xl border border-gray-200 p-3 text-sm" :class="note ? 'bg-amber-50' : ''" placeholder="Write a message" /></label><label v-if="attachmentPolicy.enabled" class="mt-2 block text-xs font-semibold text-gray-600">Attachments<input ref="fileInput" type="file" multiple :accept="attachmentAccept" :disabled="busy" class="mt-1 block w-full text-xs" @change="chooseFiles" /><span class="mt-1 block font-normal text-gray-500">Up to {{ attachmentPolicy.maxPerMessage }} files, {{ attachmentSizeText }} each.</span></label><div v-if="selectedFiles.length" class="mt-1 flex justify-between text-xs text-gray-500"><span>{{ selectedFiles.length }} selected</span><button type="button" :disabled="busy" class="font-semibold text-blue-700" @click="clearFiles">Clear</button></div><div class="mt-2 flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-xs text-gray-600"><input v-model="note" type="checkbox" /> Internal note</label><button type="submit" :disabled="busy || !draft.trim()" class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ busy ? 'Sending...' : note ? 'Save note' : 'Send reply' }}</button></div></form>
+          <form v-if="canReply" class="border-t border-gray-100 p-4" @submit.prevent="send"><label class="block text-xs font-semibold text-gray-600">{{ note ? `Internal note for chat #${selected.reference_number}` : `Reply to ${selected.contact_name} in chat #${selected.reference_number}` }}<textarea v-model="draft" maxlength="10000" rows="3" class="mt-1 w-full resize-y rounded-xl border border-gray-200 p-3 text-sm" :class="note ? 'bg-amber-50' : ''" placeholder="Write a message" /></label><label v-if="attachmentPolicy.enabled" class="mt-2 block text-xs font-semibold text-gray-600">Attachments<input ref="fileInput" type="file" multiple :accept="attachmentAccept" :disabled="busy" class="mt-1 block w-full text-xs" @change="chooseFiles" /><span class="mt-1 block font-normal text-gray-500">Up to {{ attachmentPolicy.maxPerMessage }} files, {{ attachmentSizeText }} each.</span></label><div v-if="selectedFiles.length" class="mt-1 flex justify-between text-xs text-gray-500"><span>{{ selectedFiles.length }} selected</span><button type="button" :disabled="busy" class="font-semibold text-blue-700" @click="clearFiles">Clear</button></div><div class="mt-2 flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-xs text-gray-600"><input v-model="note" type="checkbox" /> Internal note</label><button type="submit" :disabled="busy || !draft.trim()" class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ busy ? 'Sending...' : note ? 'Save note' : 'Send reply' }}</button></div></form>
           <p v-else class="border-t border-gray-100 p-4 text-center text-xs text-gray-500">{{ selected.status === 'closed' ? 'This conversation is closed.' : selected.status === 'waiting' ? 'Claim this conversation to reply.' : 'Only the assigned agent can reply.' }}</p>
         </template>
         <div v-else class="flex flex-1 items-center justify-center p-8 text-sm text-gray-500">Choose a conversation from the inbox.</div>
       </section>
 
-      <aside v-if="selected" :class="activePane === 'queue' ? 'hidden lg:block' : 'block'" class="border-t border-gray-200 p-4 text-sm lg:border-l lg:border-t-0" aria-label="Customer context">
+      <aside v-if="selected" id="live-chat-context"
+        :class="activePane === 'queue' ? 'hidden xl:block' : contextOpen ? 'block lg:col-start-2 xl:col-start-auto' : 'hidden xl:block'"
+        class="border-t border-gray-200 p-4 text-sm lg:border-l xl:row-start-1 xl:border-t-0" aria-label="Customer context">
         <h2 class="font-bold text-gray-900">Customer context</h2>
         <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="selected.customer_id"><dt class="font-semibold text-gray-500">Account ID</dt><dd>{{ selected.customer_id }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account status</dt><dd>{{ context.profile.is_active ? 'Active' : 'Inactive' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account name</dt><dd>{{ context.profile.full_name || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account email</dt><dd>{{ context.profile.email || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account mobile</dt><dd>{{ context.profile.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Chat email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
-        <p v-if="contextLoading" class="mt-3 text-xs text-gray-500">Loading context…</p>
+        <p v-if="contextLoading" class="mt-3 text-xs text-gray-500" role="status">Loading context…</p>
         <p v-if="contextError" class="mt-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
         <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Support ticket">
           <h3 class="text-xs font-bold text-gray-900">Support ticket</h3>
@@ -677,3 +728,10 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.live-chat-shell :is(button,a,input,select,textarea):focus-visible,
+.live-chat-shell [tabindex="-1"]:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.live-chat-shell [role="log"]{overscroll-behavior:contain;scrollbar-gutter:stable}
+@media(prefers-reduced-motion:reduce){.live-chat-shell *{scroll-behavior:auto!important}}
+</style>
