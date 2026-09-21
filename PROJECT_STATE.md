@@ -1,5 +1,27 @@
 # Project state — 2026-09-21
 
+## Live Chat — Phase 9 chat-to-ticket conversion complete locally (2026-09-21)
+
+**Status:** Local code only. Eight Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.
+
+### Atomic conversion and retained context
+
+- New additive migration `20260921140000_live_chat_ticket_conversion.sql` adds a service-only, row-locked `chat_create_ticket` transaction. An active staff member needs reply access and must be the chat assignee or have support-management access. The transaction checks the current conversation revision, creates exactly one existing `support_tickets` row, links its verified customer when present, copies the already verified related-order foreign key, retains the captured email/mobile contact, assigns the ticket to the chat assignee or the converting manager when unassigned, and links the chat through `chat_conversations.ticket_id`. A committed retry returns the linked ticket instead of creating another.
+- The chat transcript and private attachments remain canonical in their existing tables and bucket; they are not copied into support messages or the support attachment bucket. Staff ticket detail returns the related chat reference and ready-file count and deep-links back to the authorized Live Chat transcript. Account customers see that the ticket came from Live Chat without receiving staff-only attachment counts. The ticket starts with no synthetic message, and conversion does not close or otherwise change the chat state.
+- The copied order relationship cannot be changed through later chat writes after conversion. Account and staff chat UIs stop offering chat order changes once a ticket exists. Existing ticket order context continues to read live order data from the order tables.
+- Mobile-only guest chats can convert without a fabricated email. `support_tickets.customer_email` is now nullable, `customer_mobile` is available, and a database constraint requires at least one real contact channel. Guest tickets retain no account ownership; signed-in chats retain their verified `customer_id`. Ticket search and staff ticket displays support either email or mobile.
+
+### Audit and workflow UI
+
+- Conversion writes a permanent `ticket_created` chat event with the ticket ID/reference and the converting staff actor. Ticket history receives both `created` and `source_chat` rows with the same actor. New ticket audit rows snapshot the readable actor name so later account renames or deletion do not erase who performed the conversion.
+- The staff inbox offers **Create support ticket** only to the assignee or a support manager, accepts a bounded subject, reports stale or authorization conflicts, and turns into a direct ticket link after success. Ticket detail links back to the exact chat through a scoped query parameter; the inbox still reauthorizes and loads that conversation through the normal staff API.
+
+### Phase 9 validation and limits
+
+- **VERIFIED locally:** 123 repository tests passed. The new PGlite tests cover customer/order/contact preservation, mobile-only guests, canonical transcript/attachment retention, one-ticket idempotency, stale revision rejection, assignee/manager permissions, service-only execution, actor snapshots, both audit histories, and locked post-conversion order changes. Nuxt typecheck, production build, and `git diff --check` passed. The built conversion endpoint and both affected ticket-detail endpoints returned HTTP 401 without authentication.
+- **NOT VERIFIED:** Real Supabase migration execution, authenticated staff/customer browser conversion, private Storage downloads reached from a converted ticket, Realtime refresh after the relationship update, multi-agent races against live Postgres, mobile layout, and guest operational follow-up. A guest cannot open an account ticket; its source chat remains open/closed exactly as it was so staff can continue through Live Chat or the captured contact channel. These flows require isolated staging acceptance.
+- **Phase 10 only:** Add dashboard settings, business-hours logic, offline behavior, and settings audits exactly as defined in the master specification. Do not begin the later anti-spam expansion, responsive/accessibility polish, security audit, staging migration, remote Auth changes, or deployment as incidental work.
+
 ## Live Chat — Phase 8 private attachments complete locally (2026-09-21)
 
 **Status:** Local code only. Seven Live Chat migrations now exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No deployment occurred.

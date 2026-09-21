@@ -2,6 +2,7 @@
 import { chatAuditDescription, mergeChatEvents, mergeChatMessages } from '~/utils/liveChat'
 
 definePageMeta({ layout: 'dashboard' })
+const route = useRoute()
 const client = useSupabaseClient()
 const { request, downloadFrom, errorText } = useSupportClient()
 const { adminUser, hasPermission, loadAdminAccess } = useAdminAccess()
@@ -39,6 +40,9 @@ const older = ref(false)
 const detailLoading = ref(false)
 const detailError = ref('')
 const actionError = ref('')
+const ticketNotice = ref('')
+const ticketSubject = ref('')
+const showTicketForm = ref(false)
 const busy = ref(false)
 const draft = ref('')
 const note = ref(false)
@@ -75,7 +79,10 @@ const canAssign = computed(() => hasPermission('support.manage') && hasPermissio
 const canClose = computed(() => hasPermission('support.reply') && selected.value?.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
 const canReopen = computed(() => hasPermission('support.manage') && hasPermission('support.reply') && selected.value?.status === 'closed')
 const canLinkOrder = computed(() => hasPermission('support.reply') && selected.value?.customer_id
-  && selected.value.status !== 'closed' && (isMine.value || hasPermission('support.manage')))
+  && !selected.value.ticket_id && selected.value.status !== 'closed'
+  && (isMine.value || hasPermission('support.manage')))
+const canCreateTicket = computed(() => hasPermission('support.reply') && selected.value
+  && !selected.value.ticket_id && (isMine.value || hasPermission('support.manage')))
 const orderChoices = computed(() => [...new Map([
   ...(context.value?.orderMatches || []), ...(context.value?.openOrders || []),
   ...(context.value?.recentOrders || []), ...(context.value?.relatedOrder ? [context.value.relatedOrder] : [])
@@ -185,6 +192,7 @@ const loadThread = async (id) => {
     const result = await request(`/api/admin-chat/conversations/${id}`)
     if (run !== detailRequest || !mounted) return
     selected.value = result.item
+    if (!showTicketForm.value) ticketSubject.value = `Live chat #${result.item.reference_number}`
     attachmentPolicy.value = result.attachmentPolicy || attachmentPolicy.value
     selectedOrderId.value = result.item.order_id || ''
     messages.value = result.messages.items || []
@@ -238,6 +246,34 @@ const setOrder = async (orderId) => {
     }
   } catch (cause) {
     if (selected.value?.id === id) actionError.value = errorText(cause, 'Could not link order.')
+    if (selected.value?.id === id && (cause?.statusCode === 409 || cause?.status === 409)) {
+      await Promise.all([loadThread(id), refreshQueue()])
+    }
+  } finally { busy.value = false }
+}
+const createTicket = async () => {
+  if (!selected.value || !canCreateTicket.value || busy.value) return
+  const subject = ticketSubject.value.trim()
+  if (!subject || subject.length > 160) {
+    actionError.value = 'Enter a ticket subject up to 160 characters.'
+    return
+  }
+  const id = selected.value.id
+  busy.value = true
+  actionError.value = ''
+  ticketNotice.value = ''
+  try {
+    const result = await request(`/api/admin-chat/conversations/${id}/ticket`, {
+      method: 'POST', body: { subject, expectedRevision: selected.value.revision }
+    })
+    if (selected.value?.id === id) {
+      selected.value = result.item
+      showTicketForm.value = false
+      ticketNotice.value = `Ticket #${result.ticket.reference_number} created.`
+      await Promise.all([loadActivity(id), loadContext(id), refreshQueue()])
+    }
+  } catch (cause) {
+    if (selected.value?.id === id) actionError.value = errorText(cause, 'Could not create support ticket.')
     if (selected.value?.id === id && (cause?.statusCode === 409 || cause?.status === 409)) {
       await Promise.all([loadThread(id), refreshQueue()])
     }
@@ -328,6 +364,9 @@ const selectThread = async (item) => {
   assignTarget.value = ''
   transferTarget.value = ''
   actionError.value = ''
+  ticketNotice.value = ''
+  showTicketForm.value = false
+  ticketSubject.value = `Live chat #${item.reference_number || ''}`.trim()
   activePane.value = 'thread'
   await loadThread(item.id)
   if (selected.value?.id === item.id) await subscribeThread(item.id)
@@ -473,6 +512,10 @@ onMounted(async () => {
     const result = await request('/api/admin-support/assignees')
     agents.value = result.items || []
   } catch { /* Agent IDs remain visible if the directory is unavailable. */ }
+  const linkedConversation = typeof route.query.conversation === 'string' ? route.query.conversation : ''
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(linkedConversation)) {
+    await selectThread({ id: linkedConversation })
+  }
   if (hasPermission('support.reply')) {
     try {
       const result = await request('/api/admin-chat/availability')
@@ -582,6 +625,20 @@ onBeforeUnmount(() => {
         <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="selected.customer_id"><dt class="font-semibold text-gray-500">Account ID</dt><dd>{{ selected.customer_id }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account status</dt><dd>{{ context.profile.is_active ? 'Active' : 'Inactive' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account name</dt><dd>{{ context.profile.full_name || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account email</dt><dd>{{ context.profile.email || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account mobile</dt><dd>{{ context.profile.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Chat email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
         <p v-if="contextLoading" class="mt-3 text-xs text-gray-500">Loading context…</p>
         <p v-if="contextError" class="mt-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
+        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Support ticket">
+          <h3 class="text-xs font-bold text-gray-900">Support ticket</h3>
+          <p v-if="ticketNotice" class="mt-2 text-xs text-green-700" role="status">{{ ticketNotice }}</p>
+          <NuxtLink v-if="selected.ticket_id" :to="`/dashboard/support/${selected.ticket_id}`" class="mt-2 inline-flex text-xs font-semibold text-blue-700 hover:underline">Open support ticket →</NuxtLink>
+          <template v-else-if="canCreateTicket">
+            <button v-if="!showTicketForm" type="button" class="mt-2 text-xs font-semibold text-blue-700" @click="showTicketForm = true; ticketSubject = `Live chat #${selected.reference_number}`">Create support ticket</button>
+            <form v-else class="mt-3 space-y-2" @submit.prevent="createTicket">
+              <label class="block text-xs text-gray-600">Subject<input v-model="ticketSubject" required maxlength="160" class="mt-1 w-full rounded-lg border border-gray-200 p-2" /></label>
+              <p class="text-[11px] text-gray-500">Transcript and files stay linked to this chat.</p>
+              <div class="flex gap-3"><button type="submit" :disabled="busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40">{{ busy ? 'Creating…' : 'Create ticket' }}</button><button type="button" :disabled="busy" class="text-xs font-semibold text-gray-600" @click="showTicketForm = false">Cancel</button></div>
+            </form>
+          </template>
+          <p v-else class="mt-2 text-xs text-gray-500">Claim this conversation to create a ticket.</p>
+        </section>
         <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Related order">
           <h3 class="text-xs font-bold text-gray-900">Related order</h3>
           <p class="mt-2 text-xs text-gray-600">{{ context?.relatedOrder ? `#${context.relatedOrder.order_number || context.relatedOrder.id.slice(0, 8)} · ${context.relatedOrder.status}` : selected.order_id ? `Saved order ID: ${selected.order_id}` : 'None linked' }}</p>

@@ -718,7 +718,7 @@ onBeforeUnmount(() => {
       </template>
 
       <template v-else-if="showThread">
-        <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed'" class="chat-order-link">
+        <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed' && !conversation.ticket_id" class="chat-order-link">
           <span>{{ conversation.order_id ? 'Order linked' : 'No order linked' }}</span>
           <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
           <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link</button>
@@ -726,6 +726,7 @@ onBeforeUnmount(() => {
           <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
           <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
         </div>
+        <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">The related order is now managed on your support ticket.</p>
         <div ref="messageList" class="chat-scroll chat-messages" aria-label="Chat messages" aria-live="polite" @scroll.passive="markVisibleRead">
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
             {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}

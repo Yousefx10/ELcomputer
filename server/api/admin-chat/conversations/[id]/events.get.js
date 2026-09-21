@@ -42,6 +42,8 @@ export default defineEventHandler(async (event) => {
     new_status: row.new_value?.status || null,
     old_order_id: row.event_type.startsWith('order_') ? row.old_value?.order_id || null : null,
     new_order_id: row.event_type.startsWith('order_') ? row.new_value?.order_id || null : null,
+    ticket_id: row.event_type === 'ticket_created' ? row.new_value?.ticket_id || null : null,
+    ticket_reference: row.event_type === 'ticket_created' ? row.new_value?.ticket_reference || null : null,
     created_at: row.created_at
   }))
   const last = rows.at(-1)

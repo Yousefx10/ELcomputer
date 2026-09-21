@@ -18,8 +18,10 @@ export default defineEventHandler(async (event) => {
   else if (query.assignee) request = request.eq('assigned_admin_id', requireSupportUuid(query.assignee, 'Assignee'))
   if (query.order) request = request.eq('order_id', requireSupportUuid(query.order, 'Order'))
   if (query.customer) {
-    const customer = String(query.customer).trim().slice(0, 120).replace(/[%_]/g, '')
-    request = request.ilike('customer_email', `%${customer}%`)
+    const customer = String(query.customer).trim().slice(0, 120)
+      .replace(/[^\p{L}\p{N}@+._ ()-]/gu, '')
+    if (!customer) throw createError({ statusCode: 400, statusMessage: 'Customer search is invalid.' })
+    request = request.or(`customer_email.ilike."%${customer}%",customer_mobile.ilike."%${customer}%"`)
   }
   if (query.subject) {
     const subject = String(query.subject).trim().slice(0, 120).replace(/[%_]/g, '')

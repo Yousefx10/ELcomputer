@@ -1,14 +1,15 @@
 import { getRouterParam } from 'h3'
 import { requireAdminRequest } from '../../../utils/adminRequest'
-import { loadTicketOrder, loadTicketThread, requireStaffTicket, throwSupportError } from '../../../utils/supportTickets'
+import { loadTicketOrder, loadTicketSourceChat, loadTicketThread, requireStaffTicket, throwSupportError } from '../../../utils/supportTickets'
 
 export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event, { permission: 'support.view' })
   const ticket = await requireStaffTicket(supabaseAdmin, getRouterParam(event, 'id'))
-  const [thread, order, eventsResult, categoryResult, assigneeResult] = await Promise.all([
+  const [thread, order, sourceChat, eventsResult, categoryResult, assigneeResult] = await Promise.all([
     loadTicketThread(supabaseAdmin, ticket, true),
     loadTicketOrder(supabaseAdmin, ticket, true),
-    supabaseAdmin.from('support_ticket_events').select('id, actor_type, event_type, old_value, new_value, created_at')
+    loadTicketSourceChat(supabaseAdmin, ticket, true),
+    supabaseAdmin.from('support_ticket_events').select('id, actor_type, actor_name, event_type, old_value, new_value, created_at')
       .eq('ticket_id', ticket.id).order('created_at').limit(500),
     ticket.category_id ? supabaseAdmin.from('help_categories').select('id, name').eq('id', ticket.category_id).maybeSingle() : Promise.resolve({ data: null }),
     ticket.assigned_admin_id ? supabaseAdmin.from('admin_users').select('id, full_name, email').eq('id', ticket.assigned_admin_id).maybeSingle() : Promise.resolve({ data: null })
@@ -29,5 +30,6 @@ export default defineEventHandler(async (event) => {
     shippingJob = shippingResult.data || null
   }
   return { ticket, order, orderItems, category: categoryResult.data || null,
-    shippingJob, assignee: assigneeResult.data || null, events: eventsResult.data || [], ...thread }
+    shippingJob, sourceChat, assignee: assigneeResult.data || null,
+    events: eventsResult.data || [], ...thread }
 })

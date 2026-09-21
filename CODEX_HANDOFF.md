@@ -1,3 +1,38 @@
+# Codex handoff — Live Chat Phase 9
+
+Date: 2026-09-21. State: **PHASE 9 COMPLETE LOCALLY — awaiting explicit instruction for Phase 10. No remote change.**
+
+## Completed in Phase 9
+
+- Added local additive migration `supabase/migrations/20260921140000_live_chat_ticket_conversion.sql`. Its service-only, row-locked conversion function verifies reply/management authority and expected revision, creates one existing support ticket, preserves verified customer/order and real email/mobile contact, links the chat once, assigns the chat assignee or converting manager when unassigned, and writes actor-attributed audit rows on both records. Mobile-only guest tickets are supported without invented email addresses. All eight chat migrations remain unapplied remotely.
+- Kept the transcript and chat files in their canonical chat records and private bucket. Converted tickets expose an authorized source-chat relation and staff deep link instead of copying the transcript or attachments into uncontrolled support records. The ticket has no synthetic opening message. Conversion does not close the chat, and the copied order relationship is locked against later chat-side changes.
+- Added the staff **Create support ticket** action, conflict handling, linked-ticket state, source-chat display in staff/account ticket views, exact-chat deep linking, email/mobile ticket search and display, and readable ticket audit actors. No Phase 10 settings/business-hours/offline work, remote migration, Auth setting change, staging action, or deployment was performed.
+
+## Files changed in Phase 9
+
+- Migration: `supabase/migrations/20260921140000_live_chat_ticket_conversion.sql` (**new; local only**).
+- Server: new staff conversion route; chat event projection/error mapping; ticket source-chat loader; staff/customer ticket detail responses; ticket contact search and projections.
+- Application: staff Live Chat conversion and source-ticket UI, source-chat panels in staff/customer tickets, post-conversion order controls, and ticket audit descriptions.
+- Tests: `tests/live-chat-ticket-conversion.test.mjs` (**new**). Documentation: `PROJECT_STATE.md`, `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **123 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- PGlite verifies customer/order/contact relationships, mobile-only guest tickets, preserved transcript/files, one-ticket retries, stale revisions, assignment/permission boundaries, service-only RPC access, actor snapshots, both audit trails, and immutable copied order links. The built conversion and affected ticket-detail routes return HTTP 401 without Auth.
+- **NOT VERIFIED:** Real Supabase migration/grants, authenticated browser conversion, source-chat file downloads, live Realtime reconciliation, concurrent live-Postgres conversion, responsive layout, or guest follow-up procedures. Eight chat migrations remain local; chat settings stay off and anonymous Auth stays disabled.
+
+## Known issues and decisions
+
+- The chat is the sole transcript/file record; the ticket points to it. Deleting or resetting chat data would remove that context, so staging must test the existing reset manifest and retention expectations before production.
+- Conversion leaves the chat status unchanged. This preserves a guest's only authenticated conversation channel because guest tickets have no customer-account access. Staff should keep guest follow-up in Live Chat or use the captured contact channel until later product behavior is explicitly approved.
+- A converted ticket has no duplicated opening message or category by default. Staff can reply or add notes through the existing ticket workflow, and account customers can see the source relationship. The order copied at conversion is thereafter managed on the ticket.
+
+## Exact next action — Phase 10, only after “Continue with Phase 10”
+
+Re-read the Phase 10 dashboard-settings, business-hours, offline-behavior, and audit requirements in the master specification and this handoff. Implement only those settings on the existing singleton and availability model, validate locally, update both state files, and stop before Phase 11. Do not expand anti-spam/rate limiting, begin responsive/accessibility polish or the security audit, apply migrations remotely, enable anonymous Auth, or deploy as an incidental step.
+
+---
+
 # Codex handoff — Live Chat Phase 8
 
 Date: 2026-09-21. State: **PHASE 8 COMPLETE LOCALLY — awaiting explicit instruction for Phase 9. No remote change.**

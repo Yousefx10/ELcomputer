@@ -61,7 +61,9 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_ACCOUNT_BUSY: [409, 'Your account already has an open chat. Close it first.'],
     CHAT_ATTACHMENTS_DISABLED: [409, 'Attachments are unavailable.'],
     CHAT_ATTACHMENT_LIMIT: [409, 'This message already has the allowed attachments.'],
-    CHAT_ATTACHMENT_KEY_CONFLICT: [409, 'Attachment key was used for another file.']
+    CHAT_ATTACHMENT_KEY_CONFLICT: [409, 'Attachment key was used for another file.'],
+    CHAT_TICKET_DENIED: [403, 'Claim this conversation before creating a ticket.'],
+    CHAT_TICKET_ORDER_LOCKED: [409, 'The linked order is now managed on the support ticket.']
   }[error?.message]
   if (named) throw createError({ statusCode: named[0], statusMessage: named[1] })
   if (error?.code === 'P0002') throw createError({ statusCode: 404, statusMessage: 'Conversation not found.' })

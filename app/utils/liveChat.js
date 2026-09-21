@@ -29,6 +29,7 @@ export const chatAuditDescription = (entry = {}) => {
       ? `${actor} changed order ${entry.old_order_id.slice(0, 8)} → ${entry.new_order_id?.slice(0, 8) || 'unknown'}`
       : `${actor} linked order ${entry.new_order_id?.slice(0, 8) || 'unknown'}`
     case 'order_unlinked': return `${actor} unlinked order ${entry.old_order_id?.slice(0, 8) || 'unknown'}`
+    case 'ticket_created': return `${actor} created support ticket #${entry.ticket_reference || 'unknown'}`
     default: return entry.event_type ? entry.event_type.replaceAll('_', ' ') : 'Activity'
   }
 }

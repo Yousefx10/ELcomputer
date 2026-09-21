@@ -6,7 +6,7 @@ import { requireAdminRequest } from './adminRequest'
 import { requireCustomerRequest } from './customerRequest'
 
 export const SUPPORT_BUCKET = 'support-attachments'
-export const ticketFields = 'id, reference_number, customer_id, customer_email, customer_name, order_id, category_id, subject, status, priority, assigned_admin_id, created_at, updated_at, last_reply_at, closed_at'
+export const ticketFields = 'id, reference_number, customer_id, customer_email, customer_mobile, customer_name, order_id, category_id, subject, status, priority, assigned_admin_id, created_at, updated_at, last_reply_at, closed_at'
 export const customerTicketFields = 'id, reference_number, order_id, category_id, subject, status, created_at, updated_at, last_reply_at, closed_at'
 export const messageFields = 'id, ticket_id, sender_id, sender_type, sender_name, body, is_internal, customer_read_at, created_at'
 export const attachmentFields = 'id, ticket_id, message_id, original_name, mime_type, size_bytes, created_at'
@@ -86,6 +86,20 @@ export const loadTicketOrder = async (supabase, ticket, forStaff = false) => {
     .eq('id', ticket.order_id).eq('user_id', ticket.customer_id).maybeSingle()
   if (error) throwSupportError(error, 'Could not load order.')
   return data || null
+}
+
+export const loadTicketSourceChat = async (supabase, ticket, forStaff = false) => {
+  let request = supabase.from('chat_conversations')
+    .select('id,reference_number,status,created_at').eq('ticket_id', ticket.id)
+  if (!forStaff) request = request.eq('customer_id', ticket.customer_id)
+  const { data, error } = await request.maybeSingle()
+  if (error) throwSupportError(error, 'Could not load source chat.')
+  if (!data) return null
+  if (!forStaff) return data
+  const { count, error: attachmentError } = await supabase.from('chat_attachments')
+    .select('id', { count: 'exact', head: true }).eq('conversation_id', data.id).eq('is_ready', true)
+  if (attachmentError) throwSupportError(attachmentError, 'Could not load source chat files.')
+  return { ...data, attachmentCount: count || 0 }
 }
 
 export const handleSupportUpload = async (event, actorType) => {
