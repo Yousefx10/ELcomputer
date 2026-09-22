@@ -25,12 +25,14 @@ export default defineEventHandler(async (event) => {
     p_order_id: orderId, p_creation_key: key, p_subject_hash: chatActorHash(actor.id)
   }
   const isFirstMessage = initialMessage !== undefined
+  const messageKey = isFirstMessage ? chatUuid(body.messageKey, 'Submission key') : null
   await enforceChatNetworkLimit(event, actor,
-    isFirstMessage ? 'conversation_message' : 'conversation', initialMessage ?? null)
+    isFirstMessage ? 'conversation_message' : 'conversation', initialMessage ?? null,
+    isFirstMessage ? { creationKey: key, messageKey } : {})
   const { data, error } = await actor.supabase.rpc(
     isFirstMessage ? 'chat_start_with_message' : 'chat_create_or_resume',
     isFirstMessage ? { ...args, p_body: initialMessage,
-      p_message_key: chatUuid(body.messageKey, 'Submission key') } : args
+      p_message_key: messageKey } : args
   )
   if (error) chatError(error, 'Could not start conversation.', event)
   const id = isFirstMessage ? data?.conversationId : data

@@ -1,4 +1,30 @@
-# Project state — 2026-09-21
+# Project state — 2026-09-22
+
+
+## Live Chat — Phase 13 security, concurrency, and performance audit complete locally (2026-09-22)
+
+**Status:** Local code only. Eleven Live Chat migrations exist; none is applied to linked Supabase, staging, or production. Chat and anonymous Auth remain disabled remotely. No staging action or deployment occurred.
+
+### Audit findings and fixes
+
+- **CRITICAL:** No confirmed critical issue remains in the locally reviewed implementation.
+- **IMPORTANT — fixed:** Attachment reservation and object upload are separated by network I/O. Completion previously trusted the earlier reservation after a concurrent close, staff transfer, customer deactivation, or guest association. The new migration locks the pending attachment and conversation, reloads its message, and rechecks current identity, visibility, assignment, permission, and open-state authority before publishing the file. An already completed file remains safely retryable.
+- **IMPORTANT — fixed:** An uncertain HTTP response retried with the same submission key could consume the separate network quota before the message transaction returned its saved result. A service-only retry-aware limiter now recognizes the exact committed actor, conversation or creation key, message key, visibility, and trimmed body before counters are consumed. New and conflicting submissions remain rate limited.
+- **IMPORTANT — fixed:** Each public message previously emitted both a message signal and three activity-only conversation signals. Customer messages produced six Broadcast rows and staff replies produced five. The conversation trigger now ignores message-only activity updates, while each public message emits exactly one inbox, staff, and customer signal. Internal notes still emit one staff-only signal.
+- **MINOR — fixed:** Authenticated chat JSON endpoints now set `Cache-Control: private, no-store`, `Vary: Authorization`, and `X-Content-Type-Options: nosniff`, including failure responses. Browser execution was removed from two remaining trigger helpers. Four indexes now match the bounded status, assigned, unassigned, and offline inbox views.
+
+### Verified implementation boundaries
+
+- **VERIFIED OK locally:** Auth tokens are resolved server-side; customer, guest, and staff access is scoped before service-role reads or writes; the service key stays in private runtime configuration; browser roles cannot read private chat tables or execute write RPCs; private Realtime topics authorize the current identity; internal notes never enter customer projections or topics; attachments use a private bucket and authorized download route; messages render as text; JSON and multipart inputs are capped; and rate-limit subjects store hashes rather than raw addresses or bodies.
+- **VERIFIED OK locally:** Message, transition, order, ticket, settings, read-state, and attachment transactions use idempotency keys, row locks, revisions, monotonic cursors, unique constraints, or parent locks where their races require them. Assignment has one winner, stale writes fail, attachment count is serialized on the message, and committed retries return their existing result.
+- **VERIFIED OK locally:** Conversation, message, event, order, ticket, attachment, and context reads are projected and bounded. Transcript and audit history use stable cursors; inbox pages are capped; context queries run as a fixed parallel set rather than per conversation; clients hold only the inbox and selected-thread subscriptions; and Broadcast payloads contain opaque identifiers and cursors rather than message or customer content.
+
+### Phase 13 validation and limits
+
+- **VERIFIED locally:** 141 repository tests passed. New PGlite coverage verifies close and transfer races during attachment completion, safe completed-file retries, exact committed-message and atomic-start retries without network quota use, browser denial for the new RPC and remaining trigger helpers, one scoped Broadcast per audience, internal-note isolation, and the four inbox indexes. Nuxt typecheck, production build, and `git diff --check` passed.
+- **VERIFIED locally:** The built storefront and public status route returned HTTP 200; the protected dashboard returned HTTP 302; unauthenticated customer inbox, staff inbox, and chat settings routes returned HTTP 401 with `private, no-store`, `Vary: Authorization`, and `nosniff` headers.
+- **NOT VERIFIED / REQUIRES MANUAL TESTING:** Real Supabase migration execution, PostgREST grants, private Broadcast and Storage behavior, authenticated multi-role HTTP flows, simultaneous multi-connection races, representative-volume query plans and latency, sustained traffic and quota use, reverse-proxy address handling, anonymous Auth and CAPTCHA policy, mobile/accessibility behavior, and remote reconnect behavior. Fixed-window limits can admit boundary bursts, and substring contact search still needs a staging query plan with representative data.
+- **Phase 14 only:** Apply the eleven intended migrations to an isolated staging project and perform the master specification's manual multi-role security, concurrency, Realtime, attachment, reconnect, device, accessibility, query-plan, and quota acceptance checks. Do not touch production or deploy without the separate Phase 15 approval.
 
 
 ## Live Chat — Phase 12 responsive, accessibility, and polish complete locally (2026-09-21)

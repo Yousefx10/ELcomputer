@@ -1,9 +1,10 @@
-import { readChatJson } from '../../utils/liveChat'
+import { readChatJson, setPrivateChatResponse } from '../../utils/liveChat'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { chatSettingsExpectedAt, loadLiveChatSettings, throwChatSettingsError } from '../../utils/liveChatSettings'
 import { normalizeChatSettings } from '../../utils/liveChatSettingsValidation'
 
 export default defineEventHandler(async (event) => {
+  setPrivateChatResponse(event)
   const { authUser, supabaseAdmin } = await requireAdminRequest(event, { permission: 'settings.edit' })
   const body = await readChatJson(event)
   const settings = normalizeChatSettings(body.settings)

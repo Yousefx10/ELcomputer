@@ -1,4 +1,48 @@
-# Codex handoff — Live Chat Phase 12
+# Codex handoff — Live Chat Phase 13
+
+Date: 2026-09-22. State: **PHASE 13 COMPLETE LOCALLY — awaiting explicit instruction for Phase 14. No remote change.**
+
+## Completed in Phase 13
+
+- Audited the actual Live Chat database, server routes, private Realtime topics, attachment flow, rate limits, customer client, and staff inbox against the master specification. The review covered authorization/RLS, service-key isolation, internal notes, attachment access, XSS, duplicate messages, reconnect, assignment races, read state, audit history, bounded queries, subscriptions, indexes, error handling, mobile behavior, and accessibility evidence from Phase 12. No confirmed critical issue remains locally.
+- Added local additive migration `supabase/migrations/20260922100000_live_chat_audit_hardening.sql`. Pending attachment completion now locks and reauthorizes the current conversation/message actor after upload, closing the race with close, transfer, deactivation, and guest association. Completed attachments remain idempotently retryable. The migration is local only.
+- Added a service-only network limiter that recognizes an exact committed customer/guest message retry before consuming network counters. Both ordinary sends and atomic conversation-plus-message starts pass their verified conversation or creation key, submission key, actor, and body to that boundary. Conflicting or new requests still consume the existing limits.
+- Reduced committed Realtime fanout. Message-only conversation updates no longer produce a second three-topic signal set; public messages now emit exactly one inbox, staff, and customer signal, while internal notes remain staff-only. Added inbox indexes for the common status, assigned, unassigned, and offline queue shapes.
+- Added private no-store, authorization-varying, no-sniff headers to protected chat JSON responses. Revoked browser execution from the remaining chat settings and reset trigger helpers. No staging, remote migration, anonymous Auth change, or deployment was performed.
+
+## Audit classification
+
+- **CRITICAL:** none confirmed.
+- **IMPORTANT, fixed:** attachment completion authorization race; network quota consumption on exact committed HTTP retries; duplicate Broadcast fanout on every public message.
+- **MINOR, fixed:** absent explicit private cache headers on chat JSON routes; default execute privilege on two trigger helpers; missing direct indexes for four common bounded inbox views.
+- **VERIFIED OK locally:** scoped customer/guest/staff authorization, private tables/topics/storage, internal-note isolation, text-only rendering, capped request bodies and result sets, row-locked workflow writes, stale revisions, idempotency, monotonic read state, audit snapshots, reconnect reconciliation, fixed-size context loading, and limited subscriptions.
+
+## Files changed in Phase 13
+
+- Migration: `supabase/migrations/20260922100000_live_chat_audit_hardening.sql` (**new; local only**). All eleven Live Chat migrations remain unapplied remotely.
+- Server: `server/utils/liveChat.js`, `server/utils/liveChatRateLimit.js`, customer conversation-start and message POST routes, and admin chat settings GET/PUT routes.
+- Tests: `tests/live-chat-rate-limits.test.mjs` and `tests/live-chat-transactions.test.mjs`.
+- Documentation: `PROJECT_STATE.md` and `CODEX_HANDOFF.md`.
+
+## Checks and verified behavior
+
+- `node --test tests/*.test.mjs`: **141 passed, 0 failed**. `npm run typecheck`: passed. `npm run build`: passed. `git diff --check`: passed. No lint script exists.
+- Focused PGlite tests prove that a pending customer file cannot complete after close, a pending staff file cannot complete after transfer, a completed file remains retryable, exact committed message/start retries consume no network counter, new messages do, browser roles cannot call the new RPC or trigger helpers, public messages emit exactly three scoped signals, and the four queue indexes exist.
+- The built storefront and `/api/chat/status` returned HTTP 200. `/dashboard/live-chat` returned the expected HTTP 302 login redirect. Unauthenticated customer inbox, staff inbox, and settings routes returned HTTP 401 with `Cache-Control: private, no-store`, `Vary: Authorization`, and `X-Content-Type-Options: nosniff`.
+
+## Unverified areas and remaining work
+
+- **NOT VERIFIED / REQUIRES MANUAL TESTING:** Applying the eleven migrations to real Supabase; remote RLS, grants, PostgREST RPC exposure, private Broadcast, private Storage, authenticated customer/guest/staff HTTP and browser flows, simultaneous database sessions, real query plans with representative chat volume, sustained traffic and Realtime quota, reverse-proxy address selection, anonymous Auth and CAPTCHA policy, reconnect across network loss, devices, and assistive technology.
+- Fixed-window rate counters can allow extra traffic around a boundary. Contact substring search is capped and validated but still needs a staging query plan at representative volume. Thresholds, proxy trust, Auth limits, and CAPTCHA remain operational settings that require staging evidence.
+- Phase 13 completes the local audit checkpoint. Live Chat V1 is not ready for production until Phase 14 staging migration and manual acceptance pass, followed by separate explicit approval for Phase 15.
+
+## Exact next action — Phase 14, only after “Continue with Phase 14”
+
+Verify the exact isolated staging Supabase project, apply only the eleven intended Live Chat migrations there, configure guest Auth only for staging, and run the master specification's multi-role security, concurrency, Realtime, attachment, reconnect, device, accessibility, query-plan, and quota acceptance checks. Record evidence and update both state files. Stop before Phase 15; do not migrate production or deploy without the user's separate explicit approval.
+
+---
+
+# Previous handoff — Live Chat Phase 12
 
 Date: 2026-09-21. State: **PHASE 12 COMPLETE LOCALLY — awaiting explicit instruction for Phase 13. No remote change.**
 

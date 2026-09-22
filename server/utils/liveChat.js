@@ -20,6 +20,12 @@ export const chatUuid = (value, label = 'Conversation') => {
 export const chatRouteId = event => chatUuid(getRouterParam(event, 'id'))
 export const chatActorHash = id => createHash('sha256').update(`chat:actor:${id}`).digest('hex')
 
+export const setPrivateChatResponse = event => {
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'Vary', 'Authorization')
+  setHeader(event, 'X-Content-Type-Options', 'nosniff')
+}
+
 export const chatContact = (name, email, mobile) => {
   const result = {
     name: String(name || '').trim(),
@@ -104,6 +110,7 @@ export const readChatJson = async event => {
 }
 
 export const requireChatVisitor = async event => {
+  setPrivateChatResponse(event)
   const bearer = getHeader(event, 'authorization')
   if (!bearer?.startsWith('Bearer ')) {
     throw createError({ statusCode: 401, statusMessage: 'Missing authorization token.' })
@@ -125,6 +132,7 @@ export const requireChatVisitor = async event => {
 }
 
 export const requireChatStaff = async (event, permission = 'support.view') => {
+  setPrivateChatResponse(event)
   const actor = await requireAdminRequest(event, { permission })
   if (actor.authUser.is_anonymous === true) {
     throw createError({ statusCode: 403, statusMessage: 'Staff account required.' })

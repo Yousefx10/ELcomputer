@@ -246,6 +246,30 @@ test('internal notes generate staff-only message signals and no customer signal'
   assert.deepEqual(Object.keys(payload.payload).sort(), ['conversationId','kind','messageId','sequence'])
 })
 
+test('public messages emit one scoped signal per audience without activity duplicates', async () => {
+  await query("update public.chat_settings set customer_send_cooldown_seconds=0")
+  const chat = await create(customerA)
+  await transition(chat, staffA, 'claim', 0)
+  await query('delete from realtime.messages')
+  await send(chat, customerA, 'customer', 'Customer signal')
+  let signals = (await query(`select topic,payload->>'kind' as kind
+    from realtime.messages order by topic`)).rows
+  assert.deepEqual(signals, [
+    { topic: 'chat:inbox', kind: 'message' },
+    { topic: `chat:public:${chat}`, kind: 'message' },
+    { topic: `chat:staff:${chat}`, kind: 'message' }
+  ])
+  await query('delete from realtime.messages')
+  await send(chat, staffA, 'staff', 'Staff signal')
+  signals = (await query(`select topic,payload->>'kind' as kind
+    from realtime.messages order by topic`)).rows
+  assert.deepEqual(signals, [
+    { topic: 'chat:inbox', kind: 'message' },
+    { topic: `chat:public:${chat}`, kind: 'message' },
+    { topic: `chat:staff:${chat}`, kind: 'message' }
+  ])
+})
+
 test('read markers are scoped, incoming-only and monotonic across tabs', async () => {
   const chat = await create(customerA)
   const other = await create(customerB)
@@ -421,6 +445,69 @@ test('staff internal attachments remain staff-only and require the assigned send
     actor: customerA }), /CHAT_CLOSED/)
 })
 
+test('pending attachment completion rechecks close and assignment races', async () => {
+  await query("update public.chat_settings set customer_send_cooldown_seconds=0")
+  const customerChat = await create(customerA)
+  const customerMessage = await send(customerChat, customerA, 'customer', 'Pending customer file')
+  const customerAttachment = randomUUID()
+  await db.exec('set local role service_role')
+  await reserveAttachment({ attachment: customerAttachment, chat: customerChat,
+    message: customerMessage, actor: customerA })
+  await db.exec('reset role')
+  await query("update public.chat_conversations set status='closed',closed_at=now() where id=$1",
+    [customerChat])
+  await db.exec('set local role service_role')
+  await denied(() => first('select public.chat_complete_attachment($1,$2,$3)',
+    [customerAttachment, customerA, 'a'.repeat(64)]), /CHAT_CLOSED/)
+  await db.exec('reset role')
+  assert.equal((await first('select is_ready from public.chat_attachments where id=$1',
+    [customerAttachment])).is_ready, false)
+
+  const staffChat = await create(customerB)
+  await transition(staffChat, staffA, 'claim', 0)
+  const staffMessage = await send(staffChat, staffA, 'staff', 'Pending staff file')
+  const staffAttachment = randomUUID()
+  await db.exec('set local role service_role')
+  await reserveAttachment({ attachment: staffAttachment, chat: staffChat,
+    message: staffMessage, actor: staffA, kind: 'staff' })
+  await db.exec('reset role')
+  const revision = Number((await first('select revision from public.chat_conversations where id=$1',
+    [staffChat])).revision)
+  await transition(staffChat, staffA, 'transfer', revision, staffB)
+  await db.exec('set local role service_role')
+  await denied(() => first('select public.chat_complete_attachment($1,$2,$3)',
+    [staffAttachment, staffA, 'a'.repeat(64)]), /access denied/)
+  await db.exec('reset role')
+  assert.equal((await first('select is_ready from public.chat_attachments where id=$1',
+    [staffAttachment])).is_ready, false)
+})
+
+test('completed attachments remain idempotently retryable after a conversation closes', async () => {
+  const chat = await create(customerA)
+  const message = await send(chat, customerA, 'customer', 'Completed file')
+  const attachment = randomUUID()
+  await db.exec('set local role service_role')
+  await reserveAttachment({ attachment, chat, message, actor: customerA })
+  assert.equal((await first('select public.chat_complete_attachment($1,$2,$3) as id',
+    [attachment, customerA, 'a'.repeat(64)])).id, attachment)
+  await db.exec('reset role')
+  await query("update public.chat_conversations set status='closed',closed_at=now() where id=$1", [chat])
+  await db.exec('set local role service_role')
+  assert.equal((await first('select public.chat_complete_attachment($1,$2,$3) as id',
+    [attachment, customerA, 'a'.repeat(64)])).id, attachment)
+  await db.exec('reset role')
+})
+
+test('inbox indexes cover the bounded status, assignee, unassigned and offline views', async () => {
+  const indexes = (await query(`select indexname from pg_indexes
+    where schemaname='public' and tablename='chat_conversations'`)).rows
+    .map(row => row.indexname)
+  for (const name of ['chat_conversations_status_activity_idx',
+    'chat_conversations_open_assignee_activity_idx',
+    'chat_conversations_unassigned_activity_idx',
+    'chat_conversations_offline_activity_idx']) assert.ok(indexes.includes(name), name)
+})
+
 test('browser roles cannot execute write RPCs or access private chat tables', async () => {
   const signatures = [
     'public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)',
@@ -434,10 +521,13 @@ test('browser roles cannot execute write RPCs or access private chat tables', as
     'public.chat_set_agent_availability(uuid,text)',
     'public.chat_consume_limit(text,text,integer,integer)',
     'public.chat_consume_network_limits(text,text,text)',
+    'public.chat_consume_network_limits_unless_retry(text,text,text,uuid,text,uuid,uuid,uuid,text)',
     'public.chat_set_order(uuid,uuid,text,uuid,bigint)',
     'public.chat_identify_guest(uuid,uuid,uuid,bigint)',
     'public.chat_reserve_attachment(uuid,uuid,uuid,uuid,text,text,text,text,integer,text,text)',
-    'public.chat_complete_attachment(uuid,uuid,text)'
+    'public.chat_complete_attachment(uuid,uuid,text)',
+    'public.chat_validate_settings()',
+    'public.chat_reset_manifest()'
   ]
   for (const signature of signatures) {
     for (const role of ['anon','authenticated']) {

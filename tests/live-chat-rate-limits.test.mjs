@@ -20,12 +20,17 @@ const denied = async (action, pattern) => {
 }
 const networkLimit = (network, action, content = null) => first(
   'select public.chat_consume_network_limits($1,$2,$3)', [network, action, content])
+const retryAwareNetworkLimit = ({ network, action, body, conversation = null,
+  creationKey = null, messageKey, content = null }) => first(
+  `select public.chat_consume_network_limits_unless_retry(
+    $1,$2,$3,$4,'customer',$5,$6,$7,$8) as consumed`,
+  [network, action, content, customer, conversation, creationKey, messageKey, body])
 const createConversation = async () => (await first(
   'select public.chat_create_or_resume($1,false,$2,$3,null,null,$4,$5) as id',
   [customer, 'Customer', 'customer@example.test', randomUUID(), hash(customer)])).id
-const send = (conversation, body) => first(
+const send = (conversation, body, key = randomUUID()) => first(
   'select public.chat_send_message($1,$2,$3,$4,$5,$6,$7,false) as id',
-  [conversation, customer, 'customer', 'Customer', body, randomUUID(), hash(customer)])
+  [conversation, customer, 'customer', 'Customer', body, key, hash(customer)])
 
 before(async () => { db = await createResetDatabase() })
 after(async () => { await db?.close() })
@@ -92,11 +97,49 @@ test('actor duplicate detection normalizes spacing and case across ten minutes',
     [customer])).count, 3)
 })
 
+test('an exact committed HTTP retry does not consume network budgets', async () => {
+  const network = hash('retry-network')
+  const conversation = await createConversation()
+  const messageKey = randomUUID()
+  await send(conversation, 'Committed response', messageKey)
+  await db.exec('set local role service_role')
+  const retried = await retryAwareNetworkLimit({ network, action: 'message',
+    body: ' Committed response ', conversation, messageKey, content: hash('content') })
+  assert.equal(retried.consumed, false)
+  assert.equal((await first("select count(*)::int as count from public.chat_rate_limits where scope like 'network_%'")).count, 0)
+  const newSubmission = await retryAwareNetworkLimit({ network, action: 'message',
+    body: 'New response', conversation, messageKey: randomUUID(), content: hash('new-content') })
+  await db.exec('reset role')
+  assert.equal(newSubmission.consumed, true)
+  assert.equal((await first("select count(*)::int as count from public.chat_rate_limits where scope like 'network_%'")).count, 3)
+})
+
+test('an exact atomic conversation retry does not consume network budgets', async () => {
+  const network = hash('start-retry-network')
+  const creationKey = randomUUID()
+  const messageKey = randomUUID()
+  const started = (await first(`select public.chat_start_with_message(
+    $1,false,'Customer','customer@example.test',null,null,$2,$3,$4,$5) as result`,
+  [customer, creationKey, hash(customer), 'Initial request', messageKey])).result
+  await db.exec('set local role service_role')
+  const retried = await retryAwareNetworkLimit({ network, action: 'conversation_message',
+    body: 'Initial request', creationKey, messageKey, content: hash('start-content') })
+  await db.exec('reset role')
+  assert.ok(started.conversationId)
+  assert.equal(retried.consumed, false)
+  assert.equal((await first("select count(*)::int as count from public.chat_rate_limits where scope like 'network_%'")).count, 0)
+})
+
 test('browser roles cannot execute the network limiter', async () => {
-  const signature = 'public.chat_consume_network_limits(text,text,text)'
-  for (const role of ['anon','authenticated']) {
-    assert.equal((await first("select has_function_privilege($1,$2,'EXECUTE') as allowed",
-      [role, signature])).allowed, false)
+  const signatures = [
+    'public.chat_consume_network_limits(text,text,text)',
+    'public.chat_consume_network_limits_unless_retry(text,text,text,uuid,text,uuid,uuid,uuid,text)'
+  ]
+  for (const signature of signatures) {
+    for (const role of ['anon','authenticated']) {
+      assert.equal((await first("select has_function_privilege($1,$2,'EXECUTE') as allowed",
+        [role, signature])).allowed, false)
+    }
   }
   await db.exec('set local role authenticated')
   await denied(() => networkLimit(hash('browser'), 'message'), /permission denied/)

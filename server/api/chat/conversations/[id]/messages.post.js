@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Message is invalid.' })
   }
   const key = chatUuid(body.idempotencyKey, 'Submission key')
-  await enforceChatNetworkLimit(event, actor, 'message', body.body)
+  await enforceChatNetworkLimit(event, actor, 'message', body.body,
+    { conversationId: id, messageKey: key })
   const { data: messageId, error } = await actor.supabase.rpc('chat_send_message', {
     p_conversation_id: id, p_sender_id: actor.id, p_sender_kind: actor.kind,
     p_sender_name: actor.kind === 'guest' ? conversation.contact_name
