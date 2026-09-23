@@ -69,6 +69,11 @@ const UPLOAD_SECTION_DEFINITIONS = {
     directory: 'settings/banner-ads',
     permissions: ['settings.edit']
   },
+  footer: {
+    label: 'Footer',
+    directory: 'settings/footer',
+    permissions: ['settings.edit']
+  },
   offer_cards: {
     label: 'Offer Cards',
     directory: 'settings/offer-cards',

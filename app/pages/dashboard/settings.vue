@@ -1252,7 +1252,7 @@
           <div>
             <h3 class="text-2xl font-bold">Footer Settings</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Footer call-to-action, contact details, and copyright text
+              Choose a footer style and edit its content.
             </p>
           </div>
 
@@ -1269,78 +1269,170 @@
           class="border-t p-6"
           :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
         >
-          <div class="grid gap-5 md:grid-cols-2">
+          <fieldset>
+            <legend class="text-sm font-semibold text-gray-700">Footer style</legend>
+            <div class="mt-3 grid gap-3 md:grid-cols-2">
+              <label
+                v-for="option in footerStyleOptions"
+                :key="option.value"
+                class="flex cursor-pointer gap-3 rounded-xl border p-4"
+                :class="siteSettings.footer_style === option.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200'"
+              >
+                <input v-model="siteSettings.footer_style" type="radio" :value="option.value" class="mt-1">
+                <span>
+                  <strong class="block text-gray-900">{{ option.label }}</strong>
+                  <span class="mt-1 block text-sm text-gray-500">{{ option.description }}</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div v-if="siteSettings.footer_style === 'classic'" class="mt-6 grid gap-5 md:grid-cols-2">
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
-              <input
-                v-model="siteSettings.footer_cta_title"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_cta_title" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
-              <input
-                v-model="siteSettings.footer_cta_subtitle"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_cta_subtitle" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
-              <input
-                v-model="siteSettings.footer_cta_button_label"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_cta_button_label" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
-              <input
-                v-model="siteSettings.footer_cta_button_url"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_cta_button_url" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
-              <input
-                v-model="siteSettings.footer_email"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_email" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div>
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
-              <input
-                v-model="siteSettings.footer_phone"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_phone" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div class="md:col-span-2">
               <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
-              <input
-                v-model="siteSettings.footer_address"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.footer_address" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
-
             <div class="md:col-span-2">
               <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
-              <input
-                v-model="siteSettings.copyright_text"
-                type="text"
-                class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-              >
+              <input v-model="siteSettings.copyright_text" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
+          </div>
+
+          <div v-else class="mt-6 space-y-5">
+            <section class="rounded-2xl border bg-gray-50 p-5">
+              <h4 class="font-bold text-gray-900">Left card</h4>
+              <p class="mt-1 text-sm text-gray-500">Edit the image, message, and button.</p>
+              <div class="mt-4 grid gap-5 md:grid-cols-2">
+                <DashboardMediaUploadField
+                  v-model="siteSettings.footer_modern_card_image_url"
+                  label="Card image"
+                  section="footer"
+                  preview-alt="Footer card image"
+                  preview-height-class="h-28"
+                  help-text="A transparent or square image works best."
+                />
+                <div class="space-y-4">
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+                    <input v-model="siteSettings.footer_modern_card_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                  </div>
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Text</label>
+                    <textarea v-model="siteSettings.footer_modern_card_text" rows="3" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
+                  </div>
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Button text</label>
+                  <input v-model="siteSettings.footer_modern_card_button_label" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Button link</label>
+                  <input v-model="siteSettings.footer_modern_card_button_url" type="text" placeholder="/help" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border bg-gray-50 p-5">
+              <h4 class="font-bold text-gray-900">Community link</h4>
+              <p class="mt-1 text-sm text-gray-500">Customize the “Join our Slack” item.</p>
+              <div class="mt-4 grid gap-5 md:grid-cols-2">
+                <DashboardMediaUploadField
+                  v-model="siteSettings.footer_modern_community_image_url"
+                  label="Community image"
+                  section="footer"
+                  preview-alt="Community image"
+                  preview-height-class="h-24"
+                  help-text="Upload the Slack mark or another community icon."
+                />
+                <div class="space-y-4">
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Text</label>
+                    <input v-model="siteSettings.footer_modern_community_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                  </div>
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Link</label>
+                    <input v-model="siteSettings.footer_modern_community_url" type="text" placeholder="https://..." class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border bg-gray-50 p-5">
+              <h4 class="font-bold text-gray-900">Bottom banner</h4>
+              <p class="mt-1 text-sm text-gray-500">The banner is hidden until an image is uploaded.</p>
+              <div class="mt-4 grid gap-5 md:grid-cols-2">
+                <DashboardMediaUploadField
+                  v-model="siteSettings.footer_modern_banner_image_url"
+                  label="Banner image"
+                  section="footer"
+                  preview-alt="Footer banner"
+                  preview-image-class="object-cover"
+                  preview-height-class="h-28"
+                  help-text="Use a wide image for the best result."
+                />
+                <div class="space-y-4">
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Image alt text</label>
+                    <input v-model="siteSettings.footer_modern_banner_alt" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                  </div>
+                  <div>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">Banner link</label>
+                    <input v-model="siteSettings.footer_modern_banner_url" type="text" placeholder="/search" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border bg-gray-50 p-5">
+              <h4 class="font-bold text-gray-900">Lower details</h4>
+              <p class="mt-1 text-sm text-gray-500">Edit the three text areas below the banner.</p>
+              <div class="mt-4 grid gap-5 md:grid-cols-2">
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Left text</label>
+                  <input v-model="siteSettings.footer_modern_bottom_left_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Left text link</label>
+                  <input v-model="siteSettings.footer_modern_bottom_left_url" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Center text</label>
+                  <input v-model="siteSettings.footer_modern_bottom_center_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Right title</label>
+                  <input v-model="siteSettings.footer_modern_bottom_right_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">Right text</label>
+                  <input v-model="siteSettings.footer_modern_bottom_right_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+              </div>
+            </section>
           </div>
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -2155,7 +2247,24 @@ const defaultSiteSettings = {
   footer_email: 'info@elcomputer.net',
   footer_phone: '01505121684',
   footer_address: 'address address',
-  copyright_text: '© 2026 All rights reserved by ELCOMPUTER'
+  copyright_text: '© 2026 All rights reserved by ELCOMPUTER',
+  footer_style: 'classic',
+  footer_modern_card_image_url: '',
+  footer_modern_card_title: 'Need help choosing?',
+  footer_modern_card_text: 'Our team can help you find the right setup.',
+  footer_modern_card_button_label: 'Contact us',
+  footer_modern_card_button_url: '/help',
+  footer_modern_community_image_url: '',
+  footer_modern_community_text: 'Join our Slack',
+  footer_modern_community_url: '',
+  footer_modern_banner_image_url: '',
+  footer_modern_banner_alt: '',
+  footer_modern_banner_url: '',
+  footer_modern_bottom_left_text: 'Legal',
+  footer_modern_bottom_left_url: '',
+  footer_modern_bottom_center_text: '© 2026 All rights reserved by ELCOMPUTER',
+  footer_modern_bottom_right_title: '',
+  footer_modern_bottom_right_text: ''
 }
 
 const siteSettings = reactive({
@@ -2251,6 +2360,10 @@ const dashboardLayoutOptions = [
 const accountDashboardOptions = [
   { value: 'classic', label: 'Classic', description: 'Keep the current account sidebar and summary cards.' },
   { value: 'modern', label: 'Modern', description: 'Grouped account navigation with focused order, wallet and profile sections.' }
+]
+const footerStyleOptions = [
+  { value: 'classic', label: 'Classic', description: 'Keep the current footer call to action, contacts, and link columns.' },
+  { value: 'modern', label: 'Modern', description: 'Use the card-based footer with a banner and flexible lower details.' }
 ]
 const openSections = reactive({
   generalSettings: true,
@@ -2356,6 +2469,7 @@ const siteSettingsSectionFields = {
     'banner_ad_2_link_url'
   ],
   footerSettings: [
+    'footer_style',
     'footer_cta_title',
     'footer_cta_subtitle',
     'footer_cta_button_label',
@@ -2363,7 +2477,23 @@ const siteSettingsSectionFields = {
     'footer_email',
     'footer_phone',
     'footer_address',
-    'copyright_text'
+    'copyright_text',
+    'footer_modern_card_image_url',
+    'footer_modern_card_title',
+    'footer_modern_card_text',
+    'footer_modern_card_button_label',
+    'footer_modern_card_button_url',
+    'footer_modern_community_image_url',
+    'footer_modern_community_text',
+    'footer_modern_community_url',
+    'footer_modern_banner_image_url',
+    'footer_modern_banner_alt',
+    'footer_modern_banner_url',
+    'footer_modern_bottom_left_text',
+    'footer_modern_bottom_left_url',
+    'footer_modern_bottom_center_text',
+    'footer_modern_bottom_right_title',
+    'footer_modern_bottom_right_text'
   ]
 }
 
@@ -2674,7 +2804,24 @@ const normalizeSiteSettings = (source = {}) => ({
   footer_email: String(source.footer_email || '').trim(),
   footer_phone: String(source.footer_phone || '').trim(),
   footer_address: String(source.footer_address || '').trim(),
-  copyright_text: String(source.copyright_text || '').trim()
+  copyright_text: String(source.copyright_text || '').trim(),
+  footer_style: String(source.footer_style || '').trim().toLowerCase() === 'modern' ? 'modern' : 'classic',
+  footer_modern_card_image_url: String(source.footer_modern_card_image_url || '').trim(),
+  footer_modern_card_title: String(source.footer_modern_card_title || '').trim(),
+  footer_modern_card_text: String(source.footer_modern_card_text || '').trim(),
+  footer_modern_card_button_label: String(source.footer_modern_card_button_label || '').trim(),
+  footer_modern_card_button_url: String(source.footer_modern_card_button_url || '').trim(),
+  footer_modern_community_image_url: String(source.footer_modern_community_image_url || '').trim(),
+  footer_modern_community_text: String(source.footer_modern_community_text || '').trim(),
+  footer_modern_community_url: String(source.footer_modern_community_url || '').trim(),
+  footer_modern_banner_image_url: String(source.footer_modern_banner_image_url || '').trim(),
+  footer_modern_banner_alt: String(source.footer_modern_banner_alt || '').trim(),
+  footer_modern_banner_url: String(source.footer_modern_banner_url || '').trim(),
+  footer_modern_bottom_left_text: String(source.footer_modern_bottom_left_text || '').trim(),
+  footer_modern_bottom_left_url: String(source.footer_modern_bottom_left_url || '').trim(),
+  footer_modern_bottom_center_text: String(source.footer_modern_bottom_center_text || '').trim(),
+  footer_modern_bottom_right_title: String(source.footer_modern_bottom_right_title || '').trim(),
+  footer_modern_bottom_right_text: String(source.footer_modern_bottom_right_text || '').trim()
 })
 
 siteSettingsSnapshot.value = normalizeSiteSettings(defaultSiteSettings)
@@ -2775,6 +2922,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_background_color',
       'landing_page_title',
       'account_dashboard_style',
+      'footer_style',
       'allow_out_of_stock_purchases',
       'homepage_reviews_enabled',
       'homepage_reviews_view_all_enabled',

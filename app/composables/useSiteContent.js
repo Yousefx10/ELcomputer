@@ -31,7 +31,24 @@ const defaultSiteSettings = {
   footer_email: 'info@elcomputer.net',
   footer_phone: '01505121684',
   footer_address: 'address address',
-  copyright_text: '© 2026 All rights reserved by ELCOMPUTER'
+  copyright_text: '© 2026 All rights reserved by ELCOMPUTER',
+  footer_style: 'classic',
+  footer_modern_card_image_url: '',
+  footer_modern_card_title: 'Need help choosing?',
+  footer_modern_card_text: 'Our team can help you find the right setup.',
+  footer_modern_card_button_label: 'Contact us',
+  footer_modern_card_button_url: '/help',
+  footer_modern_community_image_url: '',
+  footer_modern_community_text: 'Join our Slack',
+  footer_modern_community_url: '',
+  footer_modern_banner_image_url: '',
+  footer_modern_banner_alt: '',
+  footer_modern_banner_url: '',
+  footer_modern_bottom_left_text: 'Legal',
+  footer_modern_bottom_left_url: '',
+  footer_modern_bottom_center_text: '© 2026 All rights reserved by ELCOMPUTER',
+  footer_modern_bottom_right_title: '',
+  footer_modern_bottom_right_text: ''
 }
 
 const defaultHeroBanners = [

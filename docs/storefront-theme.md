@@ -20,6 +20,23 @@ use category icons, brand names, or empty-image layouts instead. Catalog prices,
 stock, product data, authentication, and order processing are unchanged. Saved
 carts restore after mounting to keep server and browser rendering consistent.
 
+## Footer styles
+
+The footer setting supports Classic and Modern styles. Classic remains the
+default and retains the existing call to action, contact details, logo, link
+columns, and copyright line.
+
+Modern uses the existing enabled Footer Links and groups them by their saved
+section titles. Its promotion card, community link, wide banner, and lower
+details are editable in Footer content. Card and community images plus the
+banner use the dashboard media uploader. External destinations open safely in
+a new tab, while local destinations use storefront navigation.
+
+The modern layout has separate desktop, tablet, and phone arrangements. Tablet
+keeps the promotion and links side by side with the community row below. Phone
+stacks the major sections, keeps link groups in two columns, and stacks the
+lower details.
+
 The current catalog includes many products without photos or available stock.
 The design displays those states without inventing product imagery or availability.
 
