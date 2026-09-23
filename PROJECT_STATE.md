@@ -1,4 +1,42 @@
-# Project state — 2026-09-22
+# Project state — 2026-09-23
+
+
+## Live Chat — Phase 14 staging migration and acceptance complete (2026-09-23)
+
+**Status:** Phase 14 is complete on isolated Supabase project `ELcomputer-Phase14-Staging` (`guaaupeegyvmsfaytfso`). All 11 Live Chat migrations were applied and exercised against hosted Auth, PostgREST, Storage, PostgreSQL, and Realtime. Staging chat is restored to disabled/offline with the four-second cooldown. Anonymous Auth remains enabled only in staging. The deployed site and production-linked project were not migrated or deployed.
+
+### Staging isolation and migration
+
+- Supabase preview branches were unavailable on the current Free plan, so Phase 14 used a separate empty Free-plan project in `ap-southeast-2`. A temporary work directory, separate project link, and temporary baseline migration kept every staging command away from the repository's linked project.
+- The checked-in `supabase/backups/schema.sql` baseline was loaded first because this repository's migration chain is additive and does not create the original schema. The complete repository migration chain then applied successfully. Staging contains 46 matching migration versions: the temporary baseline plus all 45 repository migrations, including the 11 Live Chat migrations from `20260920150000` through `20260922100000`.
+- The repository still links to `zsqhuwgoasrexdnamlks`. A read-only query confirmed that project still ends at migration `20260920140000` and has neither `chat_settings` nor `chat_conversations`. No VPS or public application deployment occurred.
+
+### Architecture and tables
+
+- The customer surface is `LiveChatLauncher` in the default storefront layout, backed by `useLiveChatClient`. Signed-in customers use their normal Supabase session; guests use a separate persisted anonymous Auth session. The server resolves every token, actor kind, active account, conversation owner, order owner, and attachment/message relationship before service-role access.
+- The staff surface is `/dashboard/live-chat` in the existing dashboard layout. It provides bounded inbox views, transcript, read state, assignment/transfer/close/reopen actions, customer/order/ticket context, attachments, internal notes, availability, typing, and activity history. `DashboardLiveChatSettings` remains part of the existing Settings page.
+- Eight server-only tables hold the feature: `chat_settings`, `chat_conversations`, `chat_messages`, `chat_events`, `chat_read_state`, `chat_attachments`, `chat_agent_availability`, and `chat_rate_limits`. Permanent messages, workflow events, read cursors, attachment metadata, presence leases, and abuse counters remain separate.
+
+### Realtime and RLS
+
+- Realtime uses private Broadcast topics: `chat:public:<conversation>` for customer-visible changes, `chat:staff:<conversation>` for staff changes including internal notes, and `chat:inbox` for bounded staff queue refresh. Payloads contain identifiers and cursors, not message or customer content. HTTP reconciliation remains the source of truth after reconnect.
+- All eight chat tables have RLS enabled and zero direct `anon` or `authenticated` table privileges. Write and read RPCs are service-role-only. The sole browser-executable `chat_*` function is the signed-in `chat_can_receive_topic(text)` Realtime authorization predicate. Hosted subscription tests allowed the owning customer/staff topic and rejected Customer B from Customer A's topic.
+- `chat-attachments` is private and has no broad `storage.objects` policy naming it. Files are uploaded and downloaded through actor-scoped server routes; the final staging run rejected cross-customer, unauthenticated, internal-note, public-URL, and bad-signature access.
+
+### Routes, settings, and integrations
+
+- Customer APIs under `/api/chat` cover status, identity, conversation list/start/detail, guest-to-account linking, messages, read state, typing, order linking, attachment upload/download, and order choices. Staff APIs under `/api/admin-chat` cover the inbox, detail/messages/events/context, availability, read/typing, assignment transitions, orders, attachments, ticket conversion, and settings.
+- Settings control enablement, automatic/manual availability, timezone and weekly hours, customer messages and contact rules, the four-second default cooldown, message and attachment limits, transfers, reopening, offline conversation/ticket behavior, and ticket conversion. Saves use an expected timestamp and permanent admin audit rows. Live availability also requires an unexpired lease from an eligible reply-capable agent.
+- The staff context loads the active profile, open/recent owned orders, related order/items, support tickets, previous chats, and chat activity with bounded queries. Chat-to-ticket conversion preserves the verified customer/contact, linked order, assigned staff member, source conversation, transcript, and attachment relationship without copying canonical chat data. Conversion is idempotent.
+
+### Phase 14 acceptance results
+
+- `scripts/live-chat-staging-acceptance.mjs` is a guarded, repeatable hosted-service runner. It requires an exact staging project confirmation, rejects the production-linked ref, and accepts only a local application URL. Its final run passed 17 groups covering Guest A/B, Customer A/B, Support Agent A/B, Admin, and an authenticated outsider.
+- Verified flows include guest/authenticated chat, account linking, unread/read state, one-winner claims, transfer while another agent has the thread open, owned/cross-owned orders, public and internal attachments, chat-to-ticket conversion, forced offline mode, business hours, settings audit, direct four-second cooldown bypass, duplicate retries, two tabs, reconnect reconciliation, customer-send/agent-close concurrency, closed-chat behavior, and cross-account/staff denial.
+- A Chrome production-build check passed at 1440×900 and mobile emulation at 390×844/2×. The customer panel stayed within the viewport, mobile modal/body locking worked, Escape restored launcher focus, visible mobile controls met the checked size floor, the staff queue loaded real staging rows, private Realtime reached **live**, and neither surface overflowed horizontally. Reduced-motion emulation and the accessibility tree passed with a named dialog and labelled controls. No JavaScript exception, error log, or local HTTP 5xx was captured. Physical device and screen-reader hardware were not available; Chrome viewport, keyboard, reduced-motion, and accessibility-tree evidence was used.
+- With 3,000 temporary representative conversations, the waiting, assigned-to-me, unassigned, and offline inbox queries used `chat_conversations_status_activity_idx`, `chat_conversations_open_assignee_activity_idx`, `chat_conversations_unassigned_activity_idx`, and `chat_conversations_offline_activity_idx`. Staging execution time was 0.046–0.070 ms. The temporary rows were removed before the check completed and table statistics were refreshed.
+- Supabase security advisors reported two intentional chat warnings: the authenticated SECURITY DEFINER topic predicate and anonymous signed-in access to the scoped Realtime policy. Hosted cross-topic denial and guest isolation tests cover both boundaries. One earlier repeated run saw a transient staff-topic timeout and recovered through bounded reconnect; the final run connected and retained all permanent messages.
+- Full evidence and the checklist are in `docs/live-chat-staging-acceptance.md`. Phase 15 remains blocked on the user's separate explicit production approval.
 
 
 ## Live Chat — Phase 13 security, concurrency, and performance audit complete locally (2026-09-22)

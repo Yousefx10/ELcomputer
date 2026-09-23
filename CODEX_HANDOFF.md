@@ -1,6 +1,59 @@
-# Codex handoff — Live Chat Phase 13
+# Codex handoff — Live Chat Phase 14
 
-Date: 2026-09-22. State: **PHASE 13 COMPLETE LOCALLY — awaiting explicit instruction for Phase 14. No remote change.**
+Date: 2026-09-23. State: **PHASE 14 COMPLETE IN ISOLATED STAGING — awaiting separate explicit approval for Phase 15. Production was not migrated or deployed.**
+
+## Completed in Phase 14
+
+- Created isolated Supabase project `ELcomputer-Phase14-Staging` (`guaaupeegyvmsfaytfso`) in `ap-southeast-2`. Preview branches were unavailable on the current Free plan, so the staging target is a separate project with no production data.
+- Used a temporary Supabase work directory and project link. Imported the checked-in schema baseline as a temporary staging-only migration, then applied the complete repository migration chain. Staging now has 46 matching versions: one temporary baseline plus all 45 repository migrations, including the 11 Live Chat migrations from `20260920150000` through `20260922100000`.
+- Enabled anonymous Auth only on staging through the Supabase Management API and confirmed a real anonymous sign-in. Staging chat itself is restored to disabled/offline with a four-second cooldown after acceptance.
+- Added guarded runner `scripts/live-chat-staging-acceptance.mjs`. It refuses project ref `zsqhuwgoasrexdnamlks`, requires the staging ref to match both the Supabase URL and an explicit confirmation variable, and accepts only a localhost application URL. The runner seeds generated test identities/orders, exercises hosted Auth/API/Storage/Realtime/database behavior, writes non-secret evidence to `/tmp`, and leaves chat disabled.
+- Completed all 17 acceptance groups with Guest A/B, Customer A/B, Support Agent A/B, Admin owner, and an authenticated outsider. Coverage includes guest/auth chat, account linking, unread/read state, single-winner claim, transfer with a concurrently open thread, order ownership, public/internal files, internal-note isolation, chat-to-ticket conversion, offline mode, business hours, admin audit, direct cooldown bypass, two tabs, reconnect, duplicate retry, send/close concurrency, closed-chat behavior, and customer/guest/staff cross-access denial.
+- Ran real private Broadcast subscriptions. The owning customer and staff subscribed and received the correct scoped signals; Customer B could not subscribe to Customer A's topic; the public topic did not receive the internal note. An earlier repeated run had one transient staff-topic timeout and recovered through bounded reconnect. The final run completed with all permanent messages present.
+- Ran browser acceptance against the staging-configured production build in Chrome. Desktop 1440×900 and mobile 390×844/2× passed viewport containment, mobile modal/body locking, focus movement and Escape restoration, reduced motion, labelled accessibility-tree semantics, loaded staff queue, Realtime **live** state, and horizontal-overflow checks. The final capture recorded no JavaScript exception, error log, or local HTTP 5xx. Physical device and screen-reader hardware were not available; the browser viewport, keyboard, reduced-motion, and accessibility-tree checks are the retained evidence.
+- Verified representative query plans using 3,000 temporary conversations. Waiting, assigned-to-me, unassigned, and offline views used the intended four indexes and completed in 0.046–0.070 ms on staging. The temporary plan rows were deleted and statistics refreshed in the same staging check.
+- Added the detailed evidence checklist at `docs/live-chat-staging-acceptance.md`. Updated `PROJECT_STATE.md` with the architecture, eight tables, private Realtime strategy, RLS/grants, route groups, components, settings, quota behavior, support context, and ticket integration.
+
+## Files changed in Phase 14
+
+- `scripts/live-chat-staging-acceptance.mjs` — new guarded hosted-service acceptance runner.
+- `docs/live-chat-staging-acceptance.md` — new completed staging checklist and evidence summary.
+- `PROJECT_STATE.md` and `CODEX_HANDOFF.md` — Phase 14 state and handoff.
+- No application, server, package, or checked-in migration file changed in Phase 14. The baseline migration existed only in the temporary staging work directory.
+
+## Migration and security evidence
+
+- Staging migration history: 46 local/remote matches, with 11 Live Chat migrations. `chat_settings`, `chat_conversations`, and `chat_messages` exist; the private `chat-attachments` bucket exists.
+- All eight Live Chat tables have RLS enabled. `anon` and `authenticated` have zero direct select/insert/update/delete privilege on them. The only browser-executable `chat_*` routine is `chat_can_receive_topic(text)` for signed-in private Broadcast authorization.
+- The bucket is `public=false` and no broad `storage.objects` policy names it. Hosted route tests reject Customer B, unauthenticated, public-URL, bad-signature, and internal-note file access.
+- Supabase security advisors reported only the two intentional chat warnings: the authenticated SECURITY DEFINER topic predicate and anonymous signed-in access through the scoped Realtime policy. Hosted cross-topic and guest-isolation tests passed.
+- The repository remains linked to `zsqhuwgoasrexdnamlks`. A read-only query confirmed its latest migration remains `20260920140000`; both `chat_settings` and `chat_conversations` are absent. No production database write, anonymous Auth change, VPS action, PM2 restart, or public deployment occurred.
+
+## Validation
+
+- Guarded staging runner: **17 groups passed**, exit 0.
+- Browser staging acceptance: desktop customer, mobile customer, desktop staff, and mobile staff passed; private Realtime reached **live**; console/server error count was zero.
+- Representative staging plans: all four bounded inbox shapes used their intended indexes.
+- `node --test tests/*.test.mjs`: **141 passed, 0 failed**.
+- `npm run typecheck`: passed.
+- `npm run build`: passed against the staging environment. Only the existing non-blocking sourcemap warnings appeared.
+- `git diff --check`: passed after the final documentation update. No lint script exists.
+
+## Staging state and limits
+
+- Staging anonymous Auth remains enabled so the guest flow can be rechecked. Live Chat is disabled, forced offline, and set back to a four-second customer cooldown. The project contains generated `example.test` acceptance records and no production data or credentials.
+- The staging project is on the Free plan and was used for functional/concurrency acceptance, not sustained load capacity. Fixed-window boundary bursts, provider quotas under production traffic, real reverse-proxy address selection, and traffic-based threshold tuning still require operational monitoring after any approved release.
+- Browser emulation verified the mobile viewport and accessibility tree. A physical-device and assistive-technology lab was not available in this environment.
+
+## Exact next action — Phase 15 only after explicit approval
+
+Do not migrate or deploy production without the user's separate explicit Phase 15 approval. After approval, first re-verify the exact production Supabase ref, migration dry run, VPS target, backup path, and rollback plan; apply only the 11 reviewed Live Chat migrations, configure production anonymous Auth deliberately, deploy the scoped application build, keep chat disabled until post-deploy health/security checks pass, then enable it through the audited setting. Do not reuse the temporary staging baseline migration on production.
+
+---
+
+# Previous handoff — Live Chat Phase 13
+
+Date: 2026-09-22. State: **PHASE 13 COMPLETE LOCALLY.**
 
 ## Completed in Phase 13
 
