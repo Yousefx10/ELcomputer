@@ -1,4 +1,54 @@
-# Codex handoff — Live Chat Phase 14
+# Codex handoff — Live Chat Phase 15
+
+Date: 2026-09-23. State: **PHASE 15 COMPLETE IN PRODUCTION. Live Chat V1 is deployed and enabled.**
+
+## Completed in Phase 15
+
+- Re-verified production Supabase project `ElcomputerDEMO` (`zsqhuwgoasrexdnamlks`), the linked migration ledger, locked VPS user/path, single PM2 application `new-elcomputer`, public hostname `new.elcomputer.net`, pre-deploy health, server backup behavior, and automatic rollback path.
+- Ran a linked dry run and confirmed exactly the 11 reviewed Live Chat migrations from `20260920150000` through `20260922100000`. Applied only those migrations; the temporary Phase 14 staging baseline was never used in production. A fresh linked listing shows all 11 local/remote versions matched.
+- Captured production data baselines before migration and verified them afterward: `customer_profiles` 3, `customer_orders` 7, `products` 91, and `support_tickets` 0. All four counts remained unchanged.
+- Enabled production anonymous Auth through a targeted Management API patch while retaining the 30-per-hour anonymous sign-in limit. A real anonymous sign-in passed, created no customer profile, and was deleted.
+- Deployed the production build with the guarded release script. It built without local application secrets, scanned the output, packaged only `.output`, touched only the locked site and PM2 process, and retained rollback backup `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260923-035645-36920`.
+- Kept chat disabled through migration and deployment verification. After all health/security checks passed, enabled it through the authenticated settings API and its atomic audit transaction. The short-lived operator held only `settings.view` and `settings.edit`, was deleted after activation, and left one permanent `chat.settings.updated` actor snapshot showing `is_enabled` changed.
+
+## Final production state
+
+- Public application: `https://new.elcomputer.net` is healthy. The PM2 runtime Supabase hostname was verified without exposing values and resolves to the exact production ref `zsqhuwgoasrexdnamlks`.
+- Live Chat: enabled. Public availability is currently offline because no eligible support agent has a current online lease. Offline intake remains enabled in conversation mode with either email or mobile accepted, a four-second customer cooldown, and private attachments.
+- Database: all eight private chat tables exist. The singleton setting is enabled; every chat data table is empty. No probe identity, temporary admin, conversation, message, event, read state, attachment, availability lease, or rate-limit row remains.
+- Auth: anonymous sign-in is enabled with rate limit 30. The existing Auth site URL remains `http://localhost:3000`; Phase 15 changed only anonymous-user settings. Review reset/invite/OAuth redirect configuration separately before relying on those flows.
+- Storage and authorization: `chat-attachments` is private. Anonymous and authenticated browser roles were denied direct reads from all chat tables, and an authenticated guest was denied an unrelated private topic.
+
+## Validation evidence
+
+- `node --test tests/*.test.mjs`: **141 passed, 0 failed**.
+- `npm run typecheck`: passed.
+- Production build inside `npm run deploy`: passed; only existing non-blocking sourcemap warnings appeared.
+- `npm run deploy:check`: passed before and after deployment.
+- Supabase dry run: exactly 11 intended migrations. Apply: successful. Post-apply linked ledger: all 11 matched.
+- Hosted database checks: existing business counts unchanged; service-role schema/settings checks passed; chat data tables empty; private bucket passed; anonymous/authenticated direct-table denial passed; unrelated private-topic denial passed.
+- Production HTTP checks: home 200; public chat status 200 and enabled/offline; dashboard Live Chat redirected to login; unauthenticated customer, staff, and settings endpoints returned 401 with private no-store, authorization-varying, no-sniff responses.
+- Final state checks: temporary Auth/admin identities absent; one permanent activation audit retained; PM2 application and internal health endpoint passed.
+
+## Files changed in Phase 15
+
+- `PROJECT_STATE.md` and `CODEX_HANDOFF.md` record the production release and evidence.
+- No application, server, package, deployment-script, or migration source file changed in Phase 15.
+
+## Security and operational notes
+
+- Production data was not deleted, policies were not weakened, and no destructive migration ran. The deployment did not touch another site, service, Nginx configuration, global PM2 state, or shared server configuration.
+- Phase 14 remains the full hosted multi-role acceptance record. Phase 15 intentionally used non-destructive probes and created no production customer conversation.
+- Support staff must keep the Live Chat dashboard visible and select Online for a renewable 90-second lease before public status becomes live. Offline messages can be accepted now and should be monitored in the dashboard.
+- Continue normal monitoring for real traffic, quotas, proxy-derived network identities, rate-limit tuning, physical devices, and assistive technology. Fixed-window boundary bursts and the absence of malware scanning remain known V1 limits.
+
+## Handoff
+
+There is no Phase 16 in the master specification. Development phases 1–15 are complete. Routine operations are to monitor the production queue and logs, have authorized staff manage availability and settings through the dashboard, and use the retained release backup if a rollback is required.
+
+---
+
+# Previous handoff — Live Chat Phase 14
 
 Date: 2026-09-23. State: **PHASE 14 COMPLETE IN ISOLATED STAGING — awaiting separate explicit approval for Phase 15. Production was not migrated or deployed.**
 

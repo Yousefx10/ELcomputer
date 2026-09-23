@@ -1,6 +1,39 @@
 # Project state — 2026-09-23
 
 
+## Live Chat — Phase 15 production deployment complete (2026-09-23)
+
+**Status:** Phase 15 is complete in production. The 11 reviewed Live Chat migrations are applied to Supabase project `ElcomputerDEMO` (`zsqhuwgoasrexdnamlks`), the production application is deployed at `https://new.elcomputer.net`, anonymous Auth is enabled with a limit of 30 sign-ins per hour, and Live Chat was enabled through the audited settings API. Public status is currently enabled but unavailable because no eligible support agent has an active online lease; offline intake remains available in conversation mode.
+
+### Production migration and data safety
+
+- The linked project identity, migration history, dry run, locked VPS target, PM2 process, current application health, backup behavior, and rollback path were verified before any production write. The dry run contained exactly the 11 Live Chat migrations from `20260920150000` through `20260922100000`, with no temporary staging baseline or unrelated migration.
+- The 11 migrations applied successfully and now match the local migration ledger. The CLI could not refresh its optional local catalog cache because Docker Desktop was not running; a fresh linked migration listing and direct hosted checks confirmed the remote result.
+- Exact pre/post counts remained unchanged for existing production data: `customer_profiles` 3, `customer_orders` 7, `products` 91, and `support_tickets` 0. No existing production row was deleted or rewritten by the rollout.
+- The new chat tables started empty apart from the singleton settings row. All temporary anonymous identities and the short-lived deployment settings operator were deleted. No probe conversation, message, event, read marker, attachment, availability lease, or rate-limit row remains.
+
+### Production Auth, security, and activation
+
+- The Supabase Management API update was limited to enabling anonymous users and retaining the rate limit of 30. A real anonymous sign-in succeeded, created no `customer_profiles` row, and was removed immediately.
+- Service-role checks verified all eight chat tables and the singleton setting. Anonymous and authenticated browser roles could not read any chat table directly. An authenticated guest was denied an unrelated private Realtime topic. The `chat-attachments` bucket exists and is private.
+- Chat remained disabled during migration and deployment checks. It was then enabled through `/api/admin-chat/settings` with the existing timestamp guard and database transaction. A temporary least-privilege deployment operator had only `settings.view` and `settings.edit`; it was removed after use. The permanent `chat.settings.updated` audit snapshot records `is_enabled` as the changed field and retains the deployment actor name after cleanup.
+- The public API now reports `enabled: true` and `available: false`. Availability will become live only when an active staff member with reply access publishes a current online lease. Offline intake uses the configured contact rule, four-second cooldown, private attachments, and conversation mode.
+
+### Application deployment and validation
+
+- The guarded deployment script built with an empty dotenv file, scanned the output against local secret values, packaged only `.output`, verified the exact SSH user/path and single PM2 process, and restarted only `new-elcomputer`. The server retained rollback backup `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260923-035645-36920`.
+- The PM2 runtime Supabase hostname was checked without printing credentials and matches `zsqhuwgoasrexdnamlks.supabase.co`. The post-deploy internal health check, public HTTPS check, and a second `npm run deploy:check` passed.
+- Production smoke checks passed: `/` returned 200; `/api/chat/status` returned the enabled/offline settings projection; `/dashboard/live-chat` redirected unauthenticated traffic to dashboard login; customer inbox, staff inbox, and settings APIs returned 401 with `private, no-store`, `Vary: Authorization`, and `nosniff` headers.
+- Repository validation passed: 141 tests, Nuxt typecheck, production build within the deployment, and final documentation checks. The build emitted only the existing non-blocking sourcemap warnings.
+
+### Operational state and remaining observation
+
+- Phase 14 already exercised the full multi-role customer/staff workflow, private Realtime, Storage, concurrency, query plans, responsive browser layouts, keyboard flow, reduced motion, and accessibility tree against isolated hosted staging. Phase 15 used non-destructive production probes and did not create customer conversations.
+- Production is ready for offline intake. Support staff must open the Live Chat dashboard and select Online to make the launcher report live availability; the 90-second lease is renewed while the dashboard remains visible.
+- Production traffic, rate thresholds, reverse-proxy address classification, provider quotas, physical devices, and assistive technology still require normal operational monitoring. Fixed-window limits can admit boundary bursts, and the current V1 file checks do not include malware scanning.
+- The pre-existing Supabase Auth site URL was observed as `http://localhost:3000`. The Phase 15 patch deliberately preserved unrelated Auth fields. Password-reset, invite, or OAuth redirect settings should be reviewed separately before those flows are changed or relied on.
+
+
 ## Live Chat — Phase 14 staging migration and acceptance complete (2026-09-23)
 
 **Status:** Phase 14 is complete on isolated Supabase project `ELcomputer-Phase14-Staging` (`guaaupeegyvmsfaytfso`). All 11 Live Chat migrations were applied and exercised against hosted Auth, PostgREST, Storage, PostgreSQL, and Realtime. Staging chat is restored to disabled/offline with the four-second cooldown. Anonymous Auth remains enabled only in staging. The deployed site and production-linked project were not migrated or deployed.
