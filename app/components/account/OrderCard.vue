@@ -2,6 +2,7 @@
 import { formatAccountDate, formatAccountMoney, paymentStatusClass, paymentStatusLabel } from '~/utils/accountOrders'
 import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/orderStatus'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
+import { paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
 
 defineProps({ order: { type: Object, required: true }, compact: { type: Boolean, default: false } })
 </script>
@@ -18,6 +19,7 @@ defineProps({ order: { type: Object, required: true }, compact: { type: Boolean,
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ formatCustomerOrderStatus(order.status) }}</span>
       <span v-if="!compact && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ paymentStatusLabel(order.payment_status) }}</span>
+      <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ paymentProofStatusLabel(order.payment_proof_status) }}</span>
     </div>
     <div v-if="order.items?.length" class="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
       <div class="flex shrink-0 -space-x-2">

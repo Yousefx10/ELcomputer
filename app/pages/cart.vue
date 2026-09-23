@@ -1,252 +1,64 @@
 <template>
-  <div class="min-h-[60vh] bg-white py-8">
+  <div class="min-h-[60vh] bg-slate-50 py-7 sm:py-10">
     <div class="store-container">
-      <div class="store-page-heading">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Your cart
-        </p>
+      <header class="flex flex-wrap items-end justify-between gap-4">
+        <div><p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">Your cart</p><h1 class="mt-2 text-3xl font-bold text-slate-950 sm:text-4xl">Cart <span class="text-xl font-medium text-slate-600">({{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }})</span></h1></div>
+        <NuxtLink v-if="!isEmpty" to="/search" class="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50">Continue shopping</NuxtLink>
+      </header>
 
-        <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
-          Shopping Cart
-        </h1>
-
-        <p class="mt-2 text-sm text-gray-500">
-          Review your items before checkout.
-        </p>
+      <div v-if="isEmpty" class="mt-6 rounded-3xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
+        <span class="mx-auto grid size-14 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:shopping-cart" size="25" aria-hidden="true" /></span>
+        <p class="mt-4 text-lg font-semibold text-slate-900">Your cart is empty.</p><p class="mt-2 text-sm text-slate-600">Add products from the store to start your order.</p>
+        <NuxtLink to="/search" class="mt-6 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Start shopping</NuxtLink>
       </div>
 
-      <div
-        v-if="isEmpty"
-        class="mt-6 rounded-2xl bg-white p-8 text-center shadow"
-      >
-        <p class="text-lg font-semibold text-gray-900">
-          Your cart is empty.
-        </p>
+      <div v-else class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_350px]">
+        <main class="min-w-0 space-y-5">
+          <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="delivery-options-title">
+            <div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:package-check" size="20" aria-hidden="true" /></span><div><h2 id="delivery-options-title" class="text-xl font-bold text-slate-950">Delivery option</h2><p class="mt-0.5 text-sm text-slate-600">Your delivery address is confirmed at checkout.</p></div></div>
+            <div class="mt-5 max-w-sm rounded-2xl border-2 border-slate-950 bg-white p-5 text-center"><span class="mx-auto grid size-12 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:truck" size="24" aria-hidden="true" /></span><p class="mt-3 font-bold text-slate-950">Shipping</p><p class="mt-1 text-sm text-emerald-700">Available</p></div>
+          </section>
 
-        <p class="mt-2 text-sm text-gray-500">
-          Add products from the store to start your order.
-        </p>
+          <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" aria-labelledby="shipping-group-title">
+            <div class="flex items-start gap-4 bg-blue-50 p-5 sm:p-6"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-white text-blue-700 shadow-sm"><Icon name="lucide:truck" size="24" aria-hidden="true" /></span><div><h2 id="shipping-group-title" class="text-xl font-bold text-slate-950">Shipping for {{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }}</h2><p class="mt-1 text-sm text-slate-700">Delivery timing and cost are confirmed during checkout.</p><p class="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700"><Icon name="lucide:shield-check" size="16" aria-hidden="true" /> Stock is checked again when you confirm.</p></div></div>
 
-        <NuxtLink
-          to="/search"
-          class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          Continue Shopping
-        </NuxtLink>
-      </div>
-
-      <div v-else class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section class="space-y-4">
-          <article
-            v-for="item in items"
-            :key="item.cart_key"
-            class="rounded-xl border border-gray-200 bg-white p-5"
-          >
-            <div class="flex flex-col gap-5 sm:flex-row">
-              <NuxtLink
-                :to="getProductLink(item)"
-                class="flex h-28 w-full max-w-32 items-center justify-center rounded-2xl border bg-gray-50 p-3"
-              >
-                <img
-                  v-if="item.image_url"
-                  :src="item.image_url"
-                  :alt="item.title"
-                  class="h-full w-full object-contain"
-                >
-
-                <span v-else class="text-sm text-gray-400">No image</span>
-              </NuxtLink>
-
-              <div class="flex min-w-0 flex-1 flex-col gap-4">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div class="divide-y divide-slate-200 px-5 sm:px-6">
+              <article v-for="item in items" :key="item.cart_key" class="py-6">
+                <p class="mb-4 text-xs font-semibold text-slate-500">Sold and shipped by ELcomputer</p>
+                <div class="grid gap-5 sm:grid-cols-[130px_minmax(0,1fr)]">
+                  <NuxtLink :to="getProductLink(item)" class="flex h-32 w-full items-center justify-center overflow-hidden rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"><Icon v-else name="lucide:image" size="26" class="text-slate-300" aria-label="No image" /></NuxtLink>
                   <div class="min-w-0">
-                    <NuxtLink
-                      :to="getProductLink(item)"
-                      class="line-clamp-2 text-lg font-bold text-gray-900"
-                    >
-                      {{ item.title }}
-                    </NuxtLink>
-
-                    <p class="mt-1 text-sm text-gray-500">
-                      {{ item.brand_name || item.category_name || 'Store product' }}
-                    </p>
-
-                    <div
-                      v-if="item.variant_id"
-                      class="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600"
-                    >
-                      <span
-                        v-if="getVariantColor(item)"
-                        class="h-4 w-4 rounded-full border border-black/10"
-                        :style="{ backgroundColor: getVariantColor(item) }"
-                      />
-                      <span class="font-semibold">
-                        {{ item.variant_name || item.variant_color_name || 'Selected option' }}
-                      </span>
-                      <span
-                        v-if="item.variant_code || item.variant_sku"
-                        class="text-xs text-gray-400"
-                      >
-                        {{ item.variant_code || item.variant_sku }}
-                      </span>
-                    </div>
-
-                    <p class="mt-3 text-base font-semibold text-gray-900">
-                      {{ formatCurrency(item.price) }}
-                    </p>
+                    <div class="flex items-start justify-between gap-4"><div class="min-w-0"><NuxtLink :to="getProductLink(item)" class="line-clamp-2 text-base font-bold leading-6 text-slate-950 hover:text-blue-700">{{ item.title }}</NuxtLink><p class="mt-1 text-sm text-slate-500">{{ item.brand_name || item.category_name || 'Store product' }}</p></div><p class="shrink-0 text-lg font-bold text-slate-950">{{ formatCurrency(item.price * item.quantity) }}</p></div>
+                    <div v-if="item.variant_id" class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600"><span v-if="getVariantColor(item)" class="size-4 rounded-full border border-black/10" :style="{ backgroundColor: getVariantColor(item) }" /><span>{{ item.variant_name || item.variant_color_name || 'Selected option' }}</span></div>
+                    <p class="mt-3 text-sm font-semibold" :class="item.allow_out_of_stock_purchases || Number(item.stock_quantity) > 0 ? 'text-emerald-700' : 'text-red-700'">{{ item.allow_out_of_stock_purchases || Number(item.stock_quantity) > 0 ? 'Available to order' : 'Currently unavailable' }}</p>
+                    <div class="mt-5 flex flex-wrap items-center justify-between gap-4"><div class="inline-flex items-center overflow-hidden rounded-full border border-slate-300 bg-white"><button type="button" class="grid size-11 place-items-center text-xl text-slate-700 hover:bg-slate-100" :aria-label="`Decrease ${item.title} quantity`" @click="decrementItem(item.cart_key)">−</button><span class="inline-flex min-w-12 items-center justify-center text-sm font-bold text-slate-900" aria-live="polite">{{ item.quantity }}</span><button type="button" class="grid size-11 place-items-center text-xl text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300" :aria-label="`Increase ${item.title} quantity`" :disabled="item.quantity >= getMaximumQuantity(item)" @click="incrementItem(item.cart_key)">+</button></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-red-700 hover:bg-red-50" @click="removeItem(item.cart_key)">Remove</button></div>
                   </div>
-
-                  <button
-                    type="button"
-                    class="self-start text-sm font-medium text-red-600 hover:text-red-700"
-                    @click="removeItem(item.cart_key)"
-                  >
-                    Remove
-                  </button>
                 </div>
-
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                  <div class="inline-flex items-center rounded-xl border border-gray-200 bg-white">
-                    <button
-                      type="button"
-                      class="h-11 w-11 text-xl text-gray-700 transition hover:bg-gray-100"
-                      @click="decrementItem(item.cart_key)"
-                    >
-                      -
-                    </button>
-
-                    <span class="inline-flex min-w-14 items-center justify-center text-base font-semibold text-gray-900">
-                      {{ item.quantity }}
-                    </span>
-
-                    <button
-                      type="button"
-                      class="h-11 w-11 text-xl text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
-                      :disabled="item.quantity >= getMaximumQuantity(item)"
-                      @click="incrementItem(item.cart_key)"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <p class="text-lg font-bold text-gray-900">
-                    {{ formatCurrency(item.price * item.quantity) }}
-                  </p>
-                </div>
-              </div>
+              </article>
             </div>
-          </article>
-        </section>
+          </section>
+        </main>
 
-        <aside class="h-fit rounded-xl border border-gray-200 bg-gray-50 p-5">
-          <h2 class="text-2xl font-bold text-gray-900">
-            Summary
-          </h2>
-
-          <div class="mt-5 space-y-4">
-            <div class="flex items-center justify-between text-sm text-gray-500">
-              <span>Items</span>
-              <span>{{ itemCount }}</span>
-            </div>
-
-            <div class="flex items-center justify-between text-sm text-gray-500">
-              <span>Subtotal</span>
-              <span>{{ formatCurrency(subtotal) }}</span>
-            </div>
-
-            <div class="flex items-center justify-between text-sm text-gray-500">
-              <span>Shipping</span>
-              <span>Calculated at checkout</span>
-            </div>
-
-            <div class="border-t pt-4">
-              <div class="flex items-center justify-between text-lg font-bold text-gray-900">
-                <span>Total</span>
-                <span>{{ formatCurrency(subtotal) }}</span>
-              </div>
-            </div>
-          </div>
-
-          <NuxtLink
-            to="/checkout"
-            class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            Proceed to Checkout
-          </NuxtLink>
-
-          <button
-            type="button"
-            class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300"
-            @click="clearCart"
-          >
-            Clear Cart
-          </button>
+        <aside class="hidden h-fit rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:sticky lg:top-40 lg:block">
+          <NuxtLink to="/checkout" class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700">Continue to checkout</NuxtLink>
+          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-5 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>Subtotal ({{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }})</dt><dd>{{ formatCurrency(subtotal) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>Shipping</dt><dd>Calculated at checkout</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-4 text-lg font-bold text-slate-950"><dt>Estimated total</dt><dd>{{ formatCurrency(subtotal) }}</dd></div></dl>
+          <button type="button" class="mt-4 min-h-10 w-full rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100" @click="clearCart">Clear cart</button>
         </aside>
       </div>
+
+      <div v-if="!isEmpty" class="sticky bottom-3 z-20 mt-5 rounded-2xl bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,.22)] ring-1 ring-slate-200 lg:hidden"><div class="flex items-center justify-between gap-3"><div><p class="text-xs text-slate-500">Estimated total</p><p class="text-lg font-bold text-slate-950">{{ formatCurrency(subtotal) }}</p></div><NuxtLink to="/checkout" class="inline-flex min-h-12 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-700">Checkout</NuxtLink></div></div>
     </div>
   </div>
 </template>
 
 <script setup>
-const {
-  items,
-  itemCount,
-  subtotal,
-  isEmpty,
-  incrementItem,
-  decrementItem,
-  removeItem,
-  clearCart,
-  loadCart
-} = useCart()
+const { items, itemCount, subtotal, isEmpty, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EGP',
-    maximumFractionDigits: 2
-  }).format(Number(value || 0))
-}
+const formatCurrency = value => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
+const getProductLink = item => !item?.slug ? '/' : { path: `/products/${item.slug}`, query: item.variant_id ? { variant: item.variant_id } : {} }
+const getVariantColor = item => /^#[0-9a-f]{6}$/i.test(String(item?.variant_color_hex || '').trim()) ? item.variant_color_hex : ''
+const getMaximumQuantity = item => item?.allow_out_of_stock_purchases ? 99 : Math.max(1, Number(item?.stock_quantity || 0))
 
-const getProductLink = (item) => {
-  if (!item?.slug) {
-    return '/'
-  }
-
-  return {
-    path: `/products/${item.slug}`,
-    query: item.variant_id
-      ? {
-          variant: item.variant_id
-        }
-      : {}
-  }
-}
-
-const getVariantColor = (item) => {
-  const color = String(item?.variant_color_hex || '').trim()
-  return /^#[0-9a-f]{6}$/i.test(color) ? color : ''
-}
-
-const getMaximumQuantity = (item) => {
-  if (item?.allow_out_of_stock_purchases) {
-    return 99
-  }
-
-  const stockQuantity = Number(item?.stock_quantity || 0)
-
-  if (stockQuantity <= 0) {
-    return 1
-  }
-
-  return stockQuantity
-}
-
-onMounted(() => {
-  loadCart()
-})
-
-useHead({
-  title: 'Cart'
-})
+onMounted(loadCart)
+useHead({ title: 'Cart' })
 </script>

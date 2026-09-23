@@ -40,6 +40,24 @@ lower details.
 The current catalog includes many products without photos or available stock.
 The design displays those states without inventing product imagery or availability.
 
+## Cart and payment checkout
+
+The cart uses the storefront's blue, navy, rounded-card visual system with a
+shipping group, clearer product availability, a sticky desktop summary, and a
+compact sticky phone checkout bar.
+
+Checkout has separate Delivery and Payment steps. Store settings control card,
+bank transfer, InstaPay, PayPal, and cash availability plus a fixed fee for each
+method. Bank transfer and InstaPay can show administrator-written instructions
+and a proof-of-payment picker. Orders retain their method, fee, and proof state,
+and transfer orders expose the same proof area under My Account > Orders.
+
+Only cash is enabled by default. Card and PayPal controls are frontend-ready but
+must not be enabled until their providers are connected. Raw card values remain
+in the current page and are never sent to the order API. Proof selection and
+validation are implemented in the UI; secure proof-file transmission and review
+remain reserved for the later payment backend.
+
 ## Hero artwork
 
 Asset: `public/images/storefront/setup-hero.png`.

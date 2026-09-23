@@ -5,6 +5,7 @@ export const dashboardSettingsSections = [
   { key: 'announcements', section: 'topBarTexts', label: 'Announcements', group: 'Homepage', icon: 'lucide:megaphone', description: 'Edit the messages shown above the store header.' },
   { key: 'hero', section: 'heroBanners', label: 'Hero banners', group: 'Homepage', icon: 'lucide:panels-top-left', description: 'Upload and arrange the main home-page banners.' },
   { key: 'banners', section: 'bannerAds', label: 'Banner ads', group: 'Homepage', icon: 'lucide:rectangle-horizontal', description: 'Add promotions between the main home-page sections.' },
+  { key: 'payments', section: 'paymentSettings', label: 'Payment methods', group: 'Store', icon: 'lucide:credit-card', description: 'Choose checkout methods, fees, and transfer instructions.' },
   { key: 'header', section: 'headerLinks', label: 'Header links', group: 'Navigation & footer', icon: 'lucide:panel-top', description: 'Choose the links shown in the store header.' },
   { key: 'footer', section: 'footerSettings', label: 'Footer content', group: 'Navigation & footer', icon: 'lucide:panel-bottom', description: 'Edit contact details and the footer call to action.' },
   { key: 'footer-links', section: 'footerLinks', label: 'Footer links', group: 'Navigation & footer', icon: 'lucide:link', description: 'Organize the links at the bottom of the store.' },

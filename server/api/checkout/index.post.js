@@ -6,6 +6,7 @@ import {
   recordStoreOrderCreated
 } from '../../utils/storeAnalytics'
 import { getErpSettings, processNextDaftraJob } from '../../utils/daftraSync'
+import { normalizePaymentMethod } from '~/utils/paymentMethods'
 
 const PHONE_PATTERN = /^01\d{9}$/
 const MAX_ORDER_ITEMS = 100
@@ -151,7 +152,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
     .from('customer_orders')
-    .select('id, order_number, subtotal_amount, discount_amount, total_amount')
+    .select('id, order_number, subtotal_amount, discount_amount, payment_fee_amount, total_amount, payment_method, payment_proof_status')
     .eq('user_id', authUser.id)
     .eq('checkout_cart_id', cartId)
     .maybeSingle()
@@ -179,7 +180,10 @@ export default defineEventHandler(async (event) => {
         orderNumber: existingOrder.order_number,
         subtotalAmount: Number(existingOrder.subtotal_amount || 0),
         discountAmount: Number(existingOrder.discount_amount || 0),
+        paymentFeeAmount: Number(existingOrder.payment_fee_amount || 0),
         totalAmount: Number(existingOrder.total_amount || 0),
+        paymentMethod: existingOrder.payment_method,
+        paymentProofStatus: existingOrder.payment_proof_status,
         coupon: null
       }
     }
@@ -194,7 +198,7 @@ export default defineEventHandler(async (event) => {
   const phone = normalizeRequiredText(body?.address?.phone, 'Phone')
   const email = normalizeRequiredText(body?.address?.email || authUser.email, 'Email')
   const shippingMethod = normalizeOptionalText(body?.shipping_method)
-  const paymentMethod = normalizeOptionalText(body?.payment_method)
+  const paymentMethod = normalizePaymentMethod(body?.payment_method)
   const couponCode = String(body?.coupon_code || '').trim().toUpperCase()
 
   if (!PHONE_PATTERN.test(phone)) {
@@ -204,13 +208,20 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!paymentMethod) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose a valid payment method.'
+    })
+  }
+
   const { data: siteSettings, error: siteSettingsError } = await supabaseAdmin
     .from('site_settings')
-    .select('allow_out_of_stock_purchases')
+    .select('allow_out_of_stock_purchases, payment_card_enabled, payment_bank_transfer_enabled, payment_instapay_enabled, payment_paypal_enabled, payment_cash_enabled')
     .eq('key', 'default')
     .maybeSingle()
 
-  if (siteSettingsError && !isMissingSchemaError(siteSettingsError)) {
+  if (siteSettingsError) {
     console.error(
       'Could not load checkout settings:',
       siteSettingsError.code || 'unknown'
@@ -218,11 +229,21 @@ export default defineEventHandler(async (event) => {
 
     throw createError({
       statusCode: 500,
-      statusMessage: 'Could not load the checkout settings. Please try again.'
+      statusMessage: isMissingSchemaError(siteSettingsError)
+        ? 'Apply the latest payment-method migration, then try again.'
+        : 'Could not load the checkout settings. Please try again.'
     })
   }
 
   const allowOutOfStockPurchases = Boolean(siteSettings?.allow_out_of_stock_purchases)
+  const paymentEnabled = Boolean(siteSettings?.[`payment_${paymentMethod}_enabled`])
+
+  if (!paymentEnabled) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'The selected payment method is not available.'
+    })
+  }
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
   const orderPayload = {
     order_number: generateOrderNumber(),
@@ -364,7 +385,10 @@ export default defineEventHandler(async (event) => {
       orderNumber: orderRecord.order_number,
       subtotalAmount: Number(orderRecord.subtotal_amount || 0),
       discountAmount: Number(orderRecord.discount_amount || 0),
+      paymentFeeAmount: Number(orderRecord.payment_fee_amount || 0),
       totalAmount: Number(orderRecord.total_amount || 0),
+      paymentMethod: orderRecord.payment_method,
+      paymentProofStatus: orderRecord.payment_proof_status,
       coupon: null
     }
   }

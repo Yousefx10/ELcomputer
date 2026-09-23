@@ -1082,6 +1082,61 @@
           </div>
         </section>
 
+      <section v-show="activeSettingsSection?.section === 'paymentSettings'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <button
+          type="button"
+          class="flex w-full items-center justify-between p-6 text-left"
+          :aria-expanded="openSections.paymentSettings"
+          @click="toggleSection('paymentSettings')"
+        >
+          <div>
+            <h3 class="text-2xl font-bold">Payment Methods</h3>
+            <p class="mt-1 text-sm text-gray-500">Choose available methods, fixed fees, and transfer instructions.</p>
+          </div>
+          <Icon name="lucide:chevron-down" size="20" class="transition" :class="openSections.paymentSettings ? 'rotate-180' : ''" />
+        </button>
+
+        <div v-if="openSections.paymentSettings" class="border-t p-6" :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''">
+          <div class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+            Card and PayPal controls configure the checkout UI. Connect their payment providers before enabling them for customers.
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <article v-for="method in paymentSettingCards" :key="method.value" class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700"><Icon :name="method.icon" size="20" /></span>
+                  <div><h4 class="font-bold text-gray-900">{{ method.label }}</h4><p class="mt-1 text-sm text-gray-500">{{ method.description }}</p></div>
+                </div>
+                <button type="button" :aria-pressed="siteSettings[method.enabledField]" class="relative inline-flex h-7 w-14 shrink-0 items-center rounded-full transition" :class="siteSettings[method.enabledField] ? 'bg-green-600' : 'bg-gray-300'" @click="siteSettings[method.enabledField] = !siteSettings[method.enabledField]">
+                  <span class="inline-block h-5 w-5 rounded-full bg-white transition" :class="siteSettings[method.enabledField] ? 'translate-x-8' : 'translate-x-1'" />
+                </button>
+              </div>
+
+              <div class="mt-4">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Fixed fee (EGP)</label>
+                <input v-model.number="siteSettings[method.feeField]" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+              </div>
+
+              <div v-if="method.instructionsField" class="mt-4">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">Transfer instructions</label>
+                <textarea v-model="siteSettings[method.instructionsField]" rows="5" placeholder="Add the account, wallet, reference, and any steps customers need." class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
+              </div>
+            </article>
+          </div>
+
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1">
+              <p v-if="settingsErrorSection === 'paymentSettings' && settingsError" class="text-sm text-red-600">{{ settingsError }}</p>
+              <p v-if="settingsSuccessSection === 'paymentSettings' && settingsSuccess" class="text-sm text-green-600">{{ settingsSuccess }}</p>
+            </div>
+            <button type="button" :disabled="!isSettingsSectionDirty('paymentSettings') || settingsLoading" class="rounded-lg px-5 py-3 font-bold text-white" :class="isSettingsSectionDirty('paymentSettings') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'" @click="saveSiteSettings('paymentSettings')">
+              {{ settingsLoadingSection === 'paymentSettings' ? 'Saving...' : 'Save Payment Methods' }}
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section v-show="activeSettingsSection?.section === 'headerLinks'" class="overflow-hidden rounded-2xl bg-white shadow">
         <button :aria-expanded="openSections.headerLinks"
           type="button"
@@ -2240,6 +2295,18 @@ const defaultSiteSettings = {
   banner_ad_2_enabled: true,
   banner_ad_2_image_url: '',
   banner_ad_2_link_url: '',
+  payment_card_enabled: false,
+  payment_card_fee: 0,
+  payment_bank_transfer_enabled: false,
+  payment_bank_transfer_fee: 0,
+  payment_bank_transfer_instructions: '',
+  payment_instapay_enabled: false,
+  payment_instapay_fee: 0,
+  payment_instapay_instructions: '',
+  payment_paypal_enabled: false,
+  payment_paypal_fee: 0,
+  payment_cash_enabled: true,
+  payment_cash_fee: 0,
   footer_cta_title: 'What are you waiting for?',
   footer_cta_subtitle: 'Purchase your fav gear',
   footer_cta_button_label: 'Shop Now',
@@ -2365,12 +2432,20 @@ const footerStyleOptions = [
   { value: 'classic', label: 'Classic', description: 'Keep the current footer call to action, contacts, and link columns.' },
   { value: 'modern', label: 'Modern', description: 'Use the card-based footer with a banner and flexible lower details.' }
 ]
+const paymentSettingCards = [
+  { value: 'card', label: 'Credit or debit card', description: 'Card-entry checkout and saved-card previews.', icon: 'lucide:credit-card', enabledField: 'payment_card_enabled', feeField: 'payment_card_fee' },
+  { value: 'bank_transfer', label: 'Bank transfer', description: 'Manual transfer with proof of payment.', icon: 'lucide:landmark', enabledField: 'payment_bank_transfer_enabled', feeField: 'payment_bank_transfer_fee', instructionsField: 'payment_bank_transfer_instructions' },
+  { value: 'instapay', label: 'InstaPay', description: 'Manual InstaPay transfer with proof of payment.', icon: 'lucide:smartphone', enabledField: 'payment_instapay_enabled', feeField: 'payment_instapay_fee', instructionsField: 'payment_instapay_instructions' },
+  { value: 'paypal', label: 'PayPal', description: 'PayPal checkout when its provider is connected.', icon: 'lucide:badge-dollar-sign', enabledField: 'payment_paypal_enabled', feeField: 'payment_paypal_fee' },
+  { value: 'cash', label: 'Cash', description: 'Collect cash when the order is delivered.', icon: 'lucide:banknote', enabledField: 'payment_cash_enabled', feeField: 'payment_cash_fee' }
+]
 const openSections = reactive({
   generalSettings: true,
   dashboardLayout: true,
   accountDashboard: true,
   homepageReviews: false,
   bannerAds: false,
+  paymentSettings: false,
   footerSettings: false,
   heroBanners: false,
   offerCards: false,
@@ -2468,6 +2543,20 @@ const siteSettingsSectionFields = {
     'banner_ad_2_image_url',
     'banner_ad_2_link_url'
   ],
+  paymentSettings: [
+    'payment_card_enabled',
+    'payment_card_fee',
+    'payment_bank_transfer_enabled',
+    'payment_bank_transfer_fee',
+    'payment_bank_transfer_instructions',
+    'payment_instapay_enabled',
+    'payment_instapay_fee',
+    'payment_instapay_instructions',
+    'payment_paypal_enabled',
+    'payment_paypal_fee',
+    'payment_cash_enabled',
+    'payment_cash_fee'
+  ],
   footerSettings: [
     'footer_style',
     'footer_cta_title',
@@ -2505,6 +2594,7 @@ const siteSettingsSectionLabels = {
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
   bannerAds: 'Banner ads',
+  paymentSettings: 'Payment methods',
   footerSettings: 'Footer settings'
 }
 
@@ -2797,6 +2887,18 @@ const normalizeSiteSettings = (source = {}) => ({
   banner_ad_2_enabled: source.banner_ad_2_enabled ?? true,
   banner_ad_2_image_url: String(source.banner_ad_2_image_url || '').trim(),
   banner_ad_2_link_url: String(source.banner_ad_2_link_url || '').trim(),
+  payment_card_enabled: source.payment_card_enabled ?? false,
+  payment_card_fee: Math.max(0, Number(source.payment_card_fee) || 0),
+  payment_bank_transfer_enabled: source.payment_bank_transfer_enabled ?? false,
+  payment_bank_transfer_fee: Math.max(0, Number(source.payment_bank_transfer_fee) || 0),
+  payment_bank_transfer_instructions: String(source.payment_bank_transfer_instructions || '').trim(),
+  payment_instapay_enabled: source.payment_instapay_enabled ?? false,
+  payment_instapay_fee: Math.max(0, Number(source.payment_instapay_fee) || 0),
+  payment_instapay_instructions: String(source.payment_instapay_instructions || '').trim(),
+  payment_paypal_enabled: source.payment_paypal_enabled ?? false,
+  payment_paypal_fee: Math.max(0, Number(source.payment_paypal_fee) || 0),
+  payment_cash_enabled: source.payment_cash_enabled ?? true,
+  payment_cash_fee: Math.max(0, Number(source.payment_cash_fee) || 0),
   footer_cta_title: String(source.footer_cta_title || '').trim(),
   footer_cta_subtitle: String(source.footer_cta_subtitle || '').trim(),
   footer_cta_button_label: String(source.footer_cta_button_label || '').trim(),
@@ -2930,7 +3032,17 @@ const buildSiteSettingsPayload = (sectionName) => {
       'hero_rotation_seconds',
       'top_bar_rotation_seconds',
       'banner_ad_1_enabled',
-      'banner_ad_2_enabled'
+      'banner_ad_2_enabled',
+      'payment_card_enabled',
+      'payment_card_fee',
+      'payment_bank_transfer_enabled',
+      'payment_bank_transfer_fee',
+      'payment_instapay_enabled',
+      'payment_instapay_fee',
+      'payment_paypal_enabled',
+      'payment_paypal_fee',
+      'payment_cash_enabled',
+      'payment_cash_fee'
     ].includes(field)) {
       payload[field] = normalizedSettings[field]
       return

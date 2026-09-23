@@ -26,7 +26,7 @@ const load = async () => {
     if (!currentUser) throw new Error('No customer session')
     const signal = AbortSignal.timeout(20000)
     let query = supabase.from('customer_orders')
-      .select('id, order_number, status, payment_status, total_amount, currency, created_at', { count: 'exact' })
+      .select('id, order_number, status, payment_status, payment_method, payment_proof_status, total_amount, currency, created_at', { count: 'exact' })
       .eq('user_id', currentUser.id)
       .order('created_at', { ascending: false })
       .range((page.value - 1) * pageSize, page.value * pageSize - 1).abortSignal(signal)

@@ -10,7 +10,7 @@ export default defineEventHandler(async event => {
   if (!UUID.test(orderId || '')) throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
 
   const { data: order, error: orderError } = await supabaseAdmin.from('customer_orders')
-    .select('id, order_number, user_id, status, payment_status, paid_at, shipping_review_status, shipping_method, payment_method, first_name, last_name, street_address, city, governorate, phone, subtotal_amount, discount_amount, total_amount, currency, created_at, updated_at')
+    .select('id, order_number, user_id, status, payment_status, paid_at, payment_method, payment_fee_amount, payment_proof_status, payment_proof_file_name, payment_proof_uploaded_at, shipping_review_status, shipping_method, first_name, last_name, street_address, city, governorate, phone, subtotal_amount, discount_amount, total_amount, currency, created_at, updated_at')
     .eq('id', orderId).eq('user_id', authUser.id).maybeSingle()
   if (orderError) throwRequestDatabaseError('Customer order', orderError)
   if (!order) throw createError({ statusCode: 404, statusMessage: 'Order not found.' })

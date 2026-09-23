@@ -51,6 +51,15 @@
             </div>
 
             <div class="rounded-2xl bg-white p-6 shadow">
+              <h2 class="text-2xl font-bold text-gray-900">Payment</h2>
+              <p class="mt-3 text-sm font-semibold text-gray-900">{{ getPaymentMethodLabel(orderData.order.payment_method) }}</p>
+              <div v-if="paymentMethodNeedsProof(orderData.order.payment_method)" class="mt-4 rounded-xl bg-amber-50 p-4">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(orderData.order.payment_proof_status)">{{ paymentProofStatusLabel(orderData.order.payment_proof_status) }}</span>
+                <p class="mt-2 text-sm leading-6 text-amber-900">You can add or retry proof of payment from this order in My Account.</p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-white p-6 shadow">
               <h2 class="text-2xl font-bold text-gray-900">
                 Ordered Items
               </h2>
@@ -127,6 +136,11 @@
                 <span>- {{ formatCurrency(orderData.order.discount_amount) }}</span>
               </div>
 
+              <div v-if="Number(orderData.order.payment_fee_amount)" class="flex items-center justify-between text-sm text-gray-500">
+                <span>Payment fee</span>
+                <span>{{ formatCurrency(orderData.order.payment_fee_amount) }}</span>
+              </div>
+
               <div class="flex items-center justify-between border-t pt-3 text-lg font-bold text-gray-900">
                 <span>Total</span>
                 <span>{{ formatCurrency(orderData.order.total_amount) }}</span>
@@ -134,10 +148,10 @@
             </div>
 
             <NuxtLink
-              to="/account"
+              :to="`/account/orders/${orderData.order.id}`"
               class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              Back to Account
+              View order in My Account
             </NuxtLink>
           </aside>
         </div>
@@ -147,6 +161,8 @@
 </template>
 
 <script setup>
+import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
+
 definePageMeta({
   middleware: 'customer-auth'
 })
