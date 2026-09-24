@@ -16,7 +16,6 @@ const notice = ref('')
 const settings = ref(null)
 const snapshot = ref('')
 const availability = ref(null)
-const audit = ref([])
 
 const dirty = computed(() => settings.value && JSON.stringify(settings.value) !== snapshot.value)
 const attachmentMegabytes = computed({
@@ -34,7 +33,6 @@ const applyResult = (result) => {
   settings.value = structuredClone(result.settings)
   snapshot.value = JSON.stringify(settings.value)
   availability.value = result.availability || null
-  audit.value = result.audit || []
 }
 const load = async () => {
   loading.value = true; error.value = ''; notice.value = ''
@@ -73,9 +71,6 @@ const addInterval = (day) => {
   slots.push([toTime(start), toTime(Math.min(1439, start + 60))])
 }
 const removeInterval = (day, index) => settings.value.weekly_hours[day].splice(index, 1)
-const auditFields = entry => (entry.metadata?.changed_fields || [])
-  .map(value => String(value).replaceAll('_', ' ')).join(', ')
-
 watch(() => settings.value?.ticket_conversion_enabled, (enabled) => {
   if (settings.value && enabled === false && settings.value.offline_behavior === 'ticket') {
     settings.value.offline_behavior = 'conversation'
@@ -125,8 +120,6 @@ onMounted(load)
       <section class="rounded-2xl bg-white p-6 shadow"><h2 class="text-xl font-bold text-gray-900">Workflow</h2><fieldset :disabled="!canEdit || saving" class="mt-5 grid gap-4 md:grid-cols-2 disabled:opacity-60"><label class="flex items-start gap-3 rounded-xl border p-4"><input v-model="settings.transfers_enabled" type="checkbox" class="mt-1"><span><strong class="block text-sm">Allow transfers</strong><small class="text-gray-500">Managers can transfer active chats.</small></span></label><label class="flex items-start gap-3 rounded-xl border p-4"><input v-model="settings.reopen_enabled" type="checkbox" class="mt-1"><span><strong class="block text-sm">Allow reopening</strong><small class="text-gray-500">Managers can reopen closed chats.</small></span></label><label class="flex items-start gap-3 rounded-xl border p-4"><input v-model="settings.ticket_conversion_enabled" type="checkbox" class="mt-1"><span><strong class="block text-sm">Allow ticket conversion</strong><small class="text-gray-500">Agents can create linked tickets.</small></span></label><label class="block text-sm font-semibold">Offline intake<select v-model="settings.offline_behavior" class="mt-2 w-full rounded-xl border border-gray-200 p-3 font-normal"><option value="conversation">Save an offline conversation</option><option value="ticket" :disabled="!settings.ticket_conversion_enabled">Save and create a linked ticket</option></select></label></fieldset></section>
 
       <div class="sticky bottom-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-lg"><p class="text-sm text-gray-600">Saved changes apply immediately.</p><div class="flex gap-3"><button type="button" :disabled="saving" class="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="load">Reload</button><button type="button" :disabled="!canEdit || !dirty || saving" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white disabled:opacity-40" @click="save">{{ saving ? 'Saving…' : 'Save Live Chat' }}</button></div></div>
-
-      <section class="rounded-2xl bg-white p-6 shadow"><h2 class="text-xl font-bold text-gray-900">Recent settings changes</h2><p v-if="!audit.length" class="mt-4 text-sm text-gray-500">No settings changes recorded.</p><ol v-else class="mt-4 divide-y"><li v-for="entry in audit" :key="entry.id" class="py-3 text-sm"><div class="flex flex-wrap justify-between gap-2"><span><strong>{{ entry.author_name }}</strong> changed {{ auditFields(entry) || 'Live Chat settings' }}</span><time class="text-xs text-gray-500">{{ new Date(entry.created_at).toLocaleString() }}</time></div></li></ol></section>
     </template>
   </section>
 </template>

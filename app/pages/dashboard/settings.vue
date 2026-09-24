@@ -2429,8 +2429,8 @@ const accountDashboardOptions = [
   { value: 'modern', label: 'Modern', description: 'Grouped account navigation with focused order, wallet and profile sections.' }
 ]
 const footerStyleOptions = [
-  { value: 'classic', label: 'Classic', description: 'Keep the current footer call to action, contacts, and link columns.' },
-  { value: 'modern', label: 'Modern', description: 'Use the card-based footer with a banner and flexible lower details.' }
+  { value: 'classic', label: 'Classic', description: 'Shows contact details, links, and the footer call to action.' },
+  { value: 'modern', label: 'Modern', description: 'Shows a card layout with a banner and contact details.' }
 ]
 const paymentSettingCards = [
   { value: 'card', label: 'Credit or debit card', description: 'Card-entry checkout and saved-card previews.', icon: 'lucide:credit-card', enabledField: 'payment_card_enabled', feeField: 'payment_card_fee' },
