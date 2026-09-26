@@ -1,5 +1,16 @@
 # Project state — 2026-09-23
 
+## Public product detail and specifications refresh — 2026-09-27
+
+**Status:** Local implementation complete; not deployed. The public product detail page now uses a responsive gallery, prominent pricing and availability, live review summary, readable ordered specifications, and a small related-products grid. The existing cart, serialized variant rules, reviews API/component, `product_images`, `product_specifications`, and product card remain in use.
+
+- Gallery shows the main image and images for the selected variant, ordered by `sort_order` then creation time. Duplicate/invalid/broken URLs are removed. A native lightbox provides counter, previous/next buttons, keyboard arrows/Escape, focus containment/restoration, and body scroll locking.
+- The review summary comes from the existing `/api/product-reviews` response and updates when the review component reloads or a review is submitted. It opens and scrolls to the existing reviews area. No review number is fabricated if the API is unavailable.
+- Structured specs render only complete label/value rows in stored order. Free-form descriptions remain untouched. The existing dashboard editor now sorts by `sort_order`, gives new rows the next position, and provides move-up/down controls using the same table. No migration or schema change is required.
+- Recommendations read published products sharing category or brand, exclude the current product and invalid records, then favor category, brand, top sellers, featured products, and popularity. They reuse `CardsProductCard` and are hidden when empty or unavailable.
+- Focused product-detail tests and the full repository suite passed (152 tests). Nuxt typecheck and build passed. Local Chrome checks at 390, 768, 1024, and 1440 pixels showed no horizontal overflow, browser exceptions, or hydration errors. A mobile gallery ordering/height issue found in the first screenshots was corrected and rechecked. The lightbox counter, arrows, Escape, focus restoration, scroll lock, review jump, and an in-stock product cart add were exercised locally. No production action was taken.
+
+
 
 ## Live Chat — Phase 15 production deployment complete (2026-09-23)
 

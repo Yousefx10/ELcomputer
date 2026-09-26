@@ -365,6 +365,7 @@
 </template>
 
 <script setup>
+const emit = defineEmits(['summary-change'])
 const props = defineProps({
   productId: {
     type: String,
@@ -591,6 +592,7 @@ const loadReviews = async ({ page = 1 } = {}) => {
     totalReviews.value = Number(response.total || 0)
     currentPage.value = Number(response.page) || page
     averageRating.value = Number(response.averageRating || 0)
+    emit('summary-change', { total: totalReviews.value, average: averageRating.value })
     hasReviewed.value = Boolean(response.hasReviewed)
     reviewEligibility.value = requestUserId
       ? (
@@ -640,6 +642,12 @@ const toggleReviews = async () => {
     await loadReviews({ page: 1 })
   }
 }
+
+const openReviews = async () => {
+  if (!reviewsOpen.value) await toggleReviews()
+}
+
+defineExpose({ openReviews })
 
 const goToReviewPage = async (page) => {
   const requestedPage = Number(page)

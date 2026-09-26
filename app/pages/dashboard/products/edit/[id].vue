@@ -532,23 +532,27 @@
 
         <div v-if="productSpecifications.length" class="space-y-3">
           <div
-            v-for="specification in productSpecifications"
+            v-for="(specification, index) in productSpecifications"
             :key="specification.id"
             class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
           >
             <input
               v-model="specification.label"
+              :aria-label="`Specification ${index + 1} name`"
               type="text"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             />
 
             <input
               v-model="specification.value"
+              :aria-label="`Specification ${index + 1} value`"
               type="text"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             />
 
             <div class="flex gap-2 self-start">
+              <button type="button" :disabled="specLoading || index === 0" :aria-label="`Move specification ${index + 1} up`" class="rounded-lg border px-3 py-3 text-sm disabled:opacity-40" @click="moveProductSpecification(index, -1)">↑</button>
+              <button type="button" :disabled="specLoading || index === productSpecifications.length - 1" :aria-label="`Move specification ${index + 1} down`" class="rounded-lg border px-3 py-3 text-sm disabled:opacity-40" @click="moveProductSpecification(index, 1)">↓</button>
               <button
                 type="button"
                 @click="saveProductSpecification(specification)"
@@ -798,6 +802,7 @@ const getProductImages = async () => {
     .from('product_images')
     .select('*')
     .eq('product_id', id)
+    .order('sort_order')
     .order('created_at')
 
   if (error) {
@@ -819,6 +824,7 @@ const getProductSpecifications = async () => {
     .from('product_specifications')
     .select('*')
     .eq('product_id', id)
+    .order('sort_order')
     .order('created_at')
 
   if (error) {
@@ -1138,7 +1144,8 @@ const addProductSpecification = async () => {
     .insert({
       product_id: id,
       label: newSpecLabel.value.trim(),
-      value: newSpecValue.value.trim()
+      value: newSpecValue.value.trim(),
+      sort_order: Math.max(-1, ...productSpecifications.value.map((item) => Number(item.sort_order) || 0)) + 1
     })
 
   specLoading.value = false
@@ -1166,6 +1173,38 @@ const addProductSpecification = async () => {
 const isProductSpecificationDirty = (specification) => {
   return specification.label !== specification.original_label ||
     specification.value !== specification.original_value
+}
+
+const moveProductSpecification = async (index, direction) => {
+  const target = index + direction
+  if (specLoading.value || target < 0 || target >= productSpecifications.value.length) return
+  if (productSpecifications.value.some(isProductSpecificationDirty)) {
+    specError.value = 'Save edited specifications before changing their order.'
+    return
+  }
+  specError.value = ''
+  specLoading.value = true
+  const reordered = [...productSpecifications.value]
+  ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
+  try {
+    for (const [position, specification] of reordered.entries()) {
+      const { error } = await supabase.from('product_specifications')
+        .update({ sort_order: position })
+        .eq('id', specification.id)
+        .eq('product_id', id)
+      if (error) throw error
+    }
+    await recordAdminLog({
+      actionKey: 'products.specifications.update',
+      description: `Reordered specifications for product ${title.value.trim()}.`,
+      metadata: { product_id: id, product_title: title.value.trim() }
+    })
+  } catch (error) {
+    specError.value = error.message || 'Could not reorder specifications'
+  } finally {
+    specLoading.value = false
+    await getProductSpecifications()
+  }
 }
 
 const saveProductSpecification = async (specification) => {
