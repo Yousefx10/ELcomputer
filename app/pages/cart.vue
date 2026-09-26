@@ -47,18 +47,96 @@
       </div>
 
       <div v-if="!isEmpty" class="sticky bottom-3 z-20 mt-5 rounded-2xl bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,.22)] ring-1 ring-slate-200 lg:hidden"><div class="flex items-center justify-between gap-3"><div><p class="text-xs text-slate-500">Estimated total</p><p class="text-lg font-bold text-slate-950">{{ formatCurrency(subtotal) }}</p></div><NuxtLink to="/checkout" class="inline-flex min-h-12 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-700">Checkout</NuxtLink></div></div>
+
+      <section v-if="recommendationsLoading || recommendations.length" class="mt-10" aria-labelledby="cart-suggestions-title">
+        <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div><p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">Recommended</p><h2 id="cart-suggestions-title" class="mt-1 text-2xl font-bold text-slate-950">{{ isEmpty ? 'Popular products' : 'You may also like' }}</h2></div>
+          <NuxtLink to="/search" class="text-sm font-semibold text-blue-700 hover:underline">View all products</NuxtLink>
+        </div>
+        <LayoutPageLoading v-if="recommendationsLoading" label="Loading suggestions…" />
+        <div v-else class="store-search-grid">
+          <CardsProductCard v-for="product in recommendations" :key="product.id" :product="product" />
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
 const { items, itemCount, subtotal, isEmpty, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
+const supabase = useSupabaseClient()
+const recommendations = ref([])
+const recommendationsLoading = ref(false)
+let recommendationVersion = 0
 
 const formatCurrency = value => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
 const getProductLink = item => !item?.slug ? '/' : { path: `/products/${item.slug}`, query: item.variant_id ? { variant: item.variant_id } : {} }
 const getVariantColor = item => /^#[0-9a-f]{6}$/i.test(String(item?.variant_color_hex || '').trim()) ? item.variant_color_hex : ''
 const getMaximumQuantity = item => item?.allow_out_of_stock_purchases ? 99 : Math.max(1, Number(item?.stock_quantity || 0))
 
-onMounted(loadCart)
+const loadRecommendations = async () => {
+  const version = ++recommendationVersion
+  recommendationsLoading.value = true
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        slug,
+        description,
+        price,
+        old_price,
+        image_url,
+        stock_quantity,
+        is_serialized,
+        is_featured,
+        is_top_seller,
+        popularity_score,
+        category:categories (id, name, slug),
+        brand:brands (id, name, slug),
+        product_variants (id, is_active)
+      `)
+      .eq('is_published', true)
+      .order('is_top_seller', { ascending: false })
+      .order('popularity_score', { ascending: false })
+      .limit(24)
+
+    if (error) throw error
+    if (version !== recommendationVersion) return
+
+    const cartProductIds = new Set(items.value.map(item => String(item.id)))
+    const cartCategories = new Set(items.value.map(item => String(item.category_name || '').toLocaleLowerCase()).filter(Boolean))
+    const cartBrands = new Set(items.value.map(item => String(item.brand_name || '').toLocaleLowerCase()).filter(Boolean))
+    recommendations.value = (data || [])
+      .filter(product => !cartProductIds.has(String(product.id)))
+      .map(product => ({
+        ...product,
+        recommendationScore:
+          (cartCategories.has(String(product.category?.name || '').toLocaleLowerCase()) ? 4 : 0)
+          + (cartBrands.has(String(product.brand?.name || '').toLocaleLowerCase()) ? 3 : 0)
+          + (product.is_top_seller ? 2 : 0)
+          + (product.is_featured ? 1 : 0)
+      }))
+      .sort((first, second) => second.recommendationScore - first.recommendationScore
+        || Number(second.popularity_score || 0) - Number(first.popularity_score || 0))
+      .slice(0, 4)
+  } catch {
+    if (version === recommendationVersion) recommendations.value = []
+  } finally {
+    if (version === recommendationVersion) recommendationsLoading.value = false
+  }
+}
+
+const cartRecommendationKey = computed(() => items.value
+  .map(item => `${item.id}:${item.brand_name}:${item.category_name}`)
+  .sort()
+  .join('|'))
+
+onMounted(() => {
+  loadCart()
+  loadRecommendations()
+})
+watch(cartRecommendationKey, loadRecommendations)
 useHead({ title: 'Cart' })
 </script>

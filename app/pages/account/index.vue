@@ -62,7 +62,7 @@ const load = async () => {
     let itemRows = []
     if (recentRows.length) {
       const itemsResult = await supabase.from('customer_order_items')
-        .select('id, order_id, product_title, image_url, quantity')
+        .select('id, order_id, product_id, variant_id, product_title, image_url, quantity')
         .in('order_id', recentRows.map(order => order.id)).order('created_at').abortSignal(signal)
       if (itemsResult.error) throw itemsResult.error
       itemRows = itemsResult.data || []

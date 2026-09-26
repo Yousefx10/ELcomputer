@@ -17,7 +17,7 @@ export default defineEventHandler(async event => {
 
   const [itemsResult, shippingResult] = await Promise.all([
     supabaseAdmin.from('customer_order_items')
-      .select('id, product_id, product_title, product_slug, image_url, quantity, unit_price, line_total')
+      .select('id, product_id, variant_id, variant_name, variant_code, variant_sku, variant_color_name, variant_color_hex, product_title, product_slug, image_url, quantity, unit_price, line_total')
       .eq('order_id', order.id).order('created_at'),
     supabaseAdmin.from('shipping_order_jobs')
       .select('provider, state, awb, provider_status_name, provider_status_at')

@@ -40,12 +40,32 @@
 .storefront .store-logo-default { background: white; }
 .storefront .store-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
-.storefront .store-search { display: flex; flex: 1; align-items: center; min-width: 0; height: 50px; padding: 5px; background: white; border-radius: 99px; }
+.storefront .store-search-wrap { position: relative; flex: 1; min-width: 0; }
+.storefront .store-search { display: flex; align-items: center; min-width: 0; height: 50px; padding: 5px; background: white; border-radius: 99px; }
 .storefront .store-search:focus-within { box-shadow: 0 0 0 3px #ffd54f; }
 .storefront .store-search input { flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; padding: 10px 19px; outline: none; font-size: 15px; color: var(--store-navy); }
 .storefront .store-search input::placeholder { color: #566478; opacity: 1; }
 .storefront .store-search button { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; color: white; background: var(--store-navy); border-radius: 50%; }
 .storefront .store-search button:hover { background: #154180; }
+.storefront .store-search-suggestions { position: absolute; top: calc(100% + 9px); left: 0; right: 0; z-index: 60; max-height: min(68vh, 520px); overflow-y: auto; color: var(--store-navy); background: white; border: 1px solid var(--store-line); border-radius: 16px; box-shadow: 0 18px 40px #08265c33; }
+.storefront .store-search-suggestion-section + .store-search-suggestion-section { border-top: 1px solid var(--store-line); }
+.storefront .store-search-suggestion-heading { padding: 12px 16px 7px; color: var(--store-muted); font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.storefront .store-search-category-suggestion, .storefront .store-search-product-suggestion { display: flex; align-items: center; color: var(--store-navy); }
+.storefront .store-search-category-suggestion { gap: 10px; min-height: 42px; padding: 8px 16px; font-size: 13px; }
+.storefront .store-search-category-suggestion span { flex: 1; font-weight: 700; }
+.storefront .store-search-category-suggestion small { color: var(--store-muted); font-size: 11px; }
+.storefront .store-search-product-suggestion { gap: 12px; min-height: 68px; padding: 8px 16px; }
+.storefront .store-search-suggestion-image { display: grid; flex: 0 0 auto; place-items: center; width: 48px; height: 48px; overflow: hidden; border-radius: 9px; background: #f4f6f9; color: #8793a5; }
+.storefront .store-search-suggestion-image img { width: 100%; height: 100%; object-fit: contain; }
+.storefront .store-search-suggestion-copy { min-width: 0; flex: 1; }
+.storefront .store-search-suggestion-copy strong, .storefront .store-search-suggestion-copy small { display: block; }
+.storefront .store-search-suggestion-copy strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.storefront .store-search-suggestion-copy small { margin-top: 3px; color: var(--store-muted); font-size: 10px; }
+.storefront .store-search-suggestion-price { flex-shrink: 0; font-size: 12px; font-weight: 700; }
+.storefront .store-search-suggestion-active, .storefront .store-search-category-suggestion:hover, .storefront .store-search-product-suggestion:hover { color: var(--store-navy); background: var(--store-pale); }
+.storefront .store-search-suggestion-state { padding: 18px 16px; color: var(--store-muted); font-size: 13px; }
+.storefront .store-search-view-all { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 46px; padding: 10px 16px; border-top: 1px solid var(--store-line); color: var(--store-blue); background: #f8faff; font-size: 12px; font-weight: 700; text-align: left; }
+.storefront .store-search-view-all:hover { background: var(--store-pale); }
 .storefront .store-header-actions { display: flex; flex-shrink: 0; align-items: center; gap: 25px; }
 .storefront .store-header-action { display: flex; align-items: center; gap: 10px; color: white; border-radius: 8px; }
 .storefront .store-header-action:hover { color: white; }
@@ -279,7 +299,8 @@
 
 
   .storefront .store-header-actions { grid-column: 2; grid-row: 1; gap: 23px; padding-right: 6px; }
-  .storefront .store-search { grid-row: 2; grid-column: 1 / -1; height: 44px; }
+  .storefront .store-search-wrap { grid-row: 2; grid-column: 1 / -1; }
+  .storefront .store-search { height: 44px; }
   .storefront .store-search input { padding-left: 15px; font-size: 13px; }
   .storefront .store-search button { width: 34px; height: 34px; }
   .storefront .store-department-nav { gap: 8px; min-height: 48px; }

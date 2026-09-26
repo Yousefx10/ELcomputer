@@ -38,7 +38,7 @@ const load = async () => {
     let items = []
     if (rows.length) {
       const result = await supabase.from('customer_order_items')
-        .select('id, order_id, product_title, image_url, quantity')
+        .select('id, order_id, product_id, variant_id, product_title, image_url, quantity')
         .in('order_id', rows.map(order => order.id)).order('created_at').abortSignal(signal)
       if (result.error) throw result.error
       items = result.data || []

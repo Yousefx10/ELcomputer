@@ -19,6 +19,11 @@
         {{ error.message }}
       </div>
 
+      <nav v-if="categories.length" class="mt-6 flex gap-2 overflow-x-auto pb-2" aria-label="Browse categories">
+        <NuxtLink :to="categoryLink('')" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="!filters.category ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">All categories</NuxtLink>
+        <NuxtLink v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ category.name }}</NuxtLink>
+      </nav>
+
       <div class="mt-6 grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside class="rounded-xl border border-gray-200 bg-white p-5">
           <button type="button" class="flex min-h-10 w-full items-center justify-between text-sm font-bold lg:hidden" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen">
@@ -335,8 +340,7 @@ const normalizeTextValue = (value = '') => {
 
 const normalizeSearchTerm = (value = '') => {
   return normalizeTextValue(value)
-    .replace(/[%_]/g, ' ')
-    .replace(/,/g, ' ')
+    .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
     .replace(/\s+/g, ' ')
 }
 
@@ -563,6 +567,13 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       : defaultSort
     const currentPage = normalizePageValue(routeQuery.page)
     const normalizedPriceRange = normalizePriceRange(routeQuery.min, routeQuery.max, priceBounds)
+    const normalizedSearchQuery = searchQuery.toLocaleLowerCase()
+    const matchingCategoryIds = searchQuery
+      ? categories.filter(category => String(category.name || '').toLocaleLowerCase().includes(normalizedSearchQuery)).map(category => category.id)
+      : []
+    const matchingBrandIds = searchQuery
+      ? brands.filter(brand => String(brand.name || '').toLocaleLowerCase().includes(normalizedSearchQuery)).map(brand => brand.id)
+      : []
 
     const categoryJoin = selectedCategory ? '!inner' : ''
     const brandJoin = selectedBrand ? '!inner' : ''
@@ -609,7 +620,9 @@ const { data: searchPageData, pending, error } = await useAsyncData(
           `title.ilike.%${searchQuery}%`,
           `description.ilike.%${searchQuery}%`,
           `long_description.ilike.%${searchQuery}%`,
-          `sku.ilike.%${searchQuery}%`
+          `sku.ilike.%${searchQuery}%`,
+          ...matchingCategoryIds.map(id => `category_id.eq.${id}`),
+          ...matchingBrandIds.map(id => `brand_id.eq.${id}`)
         ].join(','))
       }
 
@@ -795,6 +808,14 @@ const currentCategory = computed(() => {
 const currentBrand = computed(() => {
   return brands.value.find((brand) => brand.slug === filters.brand) || null
 })
+
+const categoryLink = category => {
+  const query = { ...route.query }
+  delete query.page
+  if (category) query.category = category
+  else delete query.category
+  return { path: '/search', query }
+}
 
 const pageTitle = computed(() => {
   const query = normalizeTextValue(route.query.q)

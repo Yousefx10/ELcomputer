@@ -12,6 +12,9 @@ const loading = ref(true)
 const error = ref('')
 const proofFile = ref(null)
 const proofNotice = ref('')
+const reordering = ref(false)
+const reorderMessage = ref('')
+const { addOrderToCart } = useReorder()
 let loadVersion = 0
 
 const load = async () => {
@@ -34,6 +37,20 @@ const stageProof = () => {
     : ''
 }
 
+const reorder = async () => {
+  if (reordering.value || !detail.value?.items?.length) return
+  reordering.value = true
+  reorderMessage.value = ''
+  try {
+    const result = await addOrderToCart(detail.value.items)
+    reorderMessage.value = result.message
+  } catch {
+    reorderMessage.value = 'Could not add this order. Please try again.'
+  } finally {
+    reordering.value = false
+  }
+}
+
 watch(() => route.params.id, load)
 onMounted(load)
 useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.order.order_number} | Your Orders` : 'Order Details' }))
@@ -51,7 +68,8 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
           <div class="min-w-0"><p class="text-sm font-semibold text-blue-700">Order details</p><h1 class="mt-1 break-all text-2xl font-bold text-slate-900">{{ detail.order.order_number || `Order ${detail.order.id.slice(0, 8)}` }}</h1><p class="mt-1 text-sm text-slate-600">Placed {{ formatAccountDate(detail.order.created_at, true) }}</p></div>
           <span class="rounded-full px-3 py-1.5 text-sm font-semibold" :class="getCustomerOrderStatusClass(detail.order.status)">{{ formatCustomerOrderStatus(detail.order.status) }}</span>
         </div>
-        <div class="mt-5 flex flex-wrap items-center gap-3"><NuxtLink :to="{ path: '/account/support', query: { order: detail.order.id } }" class="inline-flex min-h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700">Contact support about this order</NuxtLink><span class="text-xs text-slate-600">For a return or refund, tell us which item needs help.</span></div>
+        <div class="mt-5 flex flex-wrap items-center gap-3"><button v-if="detail.items?.some(item => item.product_id)" type="button" :disabled="reordering" class="inline-flex min-h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-wait disabled:opacity-60" @click="reorder"><Icon name="lucide:rotate-ccw" size="16" aria-hidden="true" />{{ reordering ? 'Adding…' : 'Order again' }}</button><NuxtLink :to="{ path: '/account/support', query: { order: detail.order.id } }" class="inline-flex min-h-10 items-center rounded-lg border border-blue-200 px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50">Contact support</NuxtLink><span class="text-xs text-slate-600">For a return or refund, tell us which item needs help.</span></div>
+        <p v-if="reorderMessage" class="mt-3 text-sm text-slate-600" role="status">{{ reorderMessage }} <NuxtLink v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">View cart</NuxtLink></p>
       </header>
 
       <AccountOrderProgress :order="detail.order" :shipping="detail.shipping" />

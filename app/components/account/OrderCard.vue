@@ -4,7 +4,25 @@ import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
 import { paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
 
-defineProps({ order: { type: Object, required: true }, compact: { type: Boolean, default: false } })
+const props = defineProps({ order: { type: Object, required: true }, compact: { type: Boolean, default: false } })
+const { addOrderToCart } = useReorder()
+const reordering = ref(false)
+const reorderMessage = ref('')
+const canReorder = computed(() => props.order.items?.some(item => item.product_id))
+
+const reorder = async () => {
+  if (reordering.value) return
+  reordering.value = true
+  reorderMessage.value = ''
+  try {
+    const result = await addOrderToCart(props.order.items || [])
+    reorderMessage.value = result.message
+  } catch {
+    reorderMessage.value = 'Could not add this order. Please try again.'
+  } finally {
+    reordering.value = false
+  }
+}
 </script>
 
 <template>
@@ -30,7 +48,9 @@ defineProps({ order: { type: Object, required: true }, compact: { type: Boolean,
       </div>
       <p class="min-w-0 flex-1 truncate text-sm text-slate-600">{{ order.items.map(item => item.product_title).join(', ') }}</p>
     </div>
-    <div class="mt-4 flex justify-end">
+    <p v-if="reorderMessage" class="mt-3 text-right text-xs text-slate-600" role="status">{{ reorderMessage }} <NuxtLink v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">View cart</NuxtLink></p>
+    <div class="mt-4 flex flex-wrap justify-end gap-2">
+      <button v-if="canReorder" type="button" :disabled="reordering" class="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-blue-200 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:cursor-wait disabled:opacity-60" @click="reorder"><Icon name="lucide:rotate-ccw" size="15" aria-hidden="true" />{{ reordering ? 'Adding…' : 'Order again' }}</button>
       <NuxtLink :to="`/account/orders/${order.id}`" class="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">View order <Icon name="lucide:arrow-right" size="16" aria-hidden="true" /></NuxtLink>
     </div>
   </article>

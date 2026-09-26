@@ -5,11 +5,7 @@
         <img :src="siteLogoUrl" :alt="siteName" />
       </NuxtLink>
 
-      <form role="search" class="store-search" @submit.prevent="submitSearch">
-        <label for="store-search-input" class="sr-only">Search products</label>
-        <input id="store-search-input" v-model="searchQuery" type="search" placeholder="Search products and brands" autocomplete="off" />
-        <button type="submit" aria-label="Search"><Icon name="lucide:search" size="23" /></button>
-      </form>
+      <LayoutSearchBar />
 
       <nav class="store-header-actions" aria-label="Your shopping">
         <NuxtLink :to="ordersPath" class="store-header-action store-orders-action">
@@ -75,7 +71,6 @@ const { itemCount, subtotal, loadCart } = useCart()
 const header = ref(null)
 const departmentButton = ref(null)
 const departmentsOpen = ref(false)
-const searchQuery = ref('')
 const isShopAllActive = computed(() => route.path === '/search' && !Object.keys(route.query).length)
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => getStoreImageUrl(siteContent.value?.settings?.site_logo_url) || '/images/dashboard-logo.png')
@@ -97,12 +92,6 @@ const onOutsidePointer = (event) => {
 const onFocusOutside = (event) => {
   if (!header.value?.contains(event.target)) closeDepartments()
 }
-const submitSearch = async () => {
-  closeDepartments()
-  const q = searchQuery.value.trim()
-  await navigateTo({ path: '/search', query: q ? { q } : {} })
-}
-watch(() => route.query.q, (value) => { searchQuery.value = typeof value === 'string' ? value : '' }, { immediate: true })
 watch(() => route.fullPath, () => closeDepartments())
 onMounted(() => {
   loadCart()
