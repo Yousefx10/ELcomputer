@@ -1,11 +1,12 @@
-# Codex handoff — Public product detail refresh
+# Codex handoff — Public product detail refresh deployed
 
-Date: 2026-09-27. State: **LOCAL IMPLEMENTATION; NOT DEPLOYED.**
+Date: 2026-09-27. State: **DEPLOYED TO PRODUCTION.**
 
 - Scope is the public `/products/[slug]` page and specification presentation, plus existing specification editor ordering. No checkout, account, shipping, payment, SEO, RLS, or database schema changes.
 - Product page now has a responsive thumbnail and main-image gallery, keyboard-accessible lightbox, real review summary, savings shown only when `old_price > price`, preserved serialized variant and cart handling, ordered specs, and up to four related products using existing product cards.
 - The existing dashboard editor still adds, edits, and removes specification rows; it now reads and writes `sort_order` and supports moving rows up/down. Existing data needs no migration. Product managers can add structured rows manually in the editor when a product has none; descriptions are not converted.
 - Validation: focused product-detail tests passed; full `node --test tests/*.test.mjs` passed (152/152); `npm run typecheck` passed; `npm run build` passed; `git diff --check` passed. Local Chrome checks at 390/768/1024/1440 passed horizontal-overflow and console-exception checks. A mobile gallery layout issue was corrected and rechecked. Lightbox controls/focus/scroll lock, review jump, and a local in-stock cart add passed.
+- Deployment: guarded `npm run deploy` succeeded with SSH user `newelcomputer`, locked path `/home/newelcomputer/htdocs/new.elcomputer.net`, and PM2 app `new-elcomputer`. Backup retained: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260926-211147-60600`. `npm run deploy:check` passed before and after. Live home, sample product, in-stock product, and `/api/chat/status` returned HTTP 200. Live Chrome at 390 and 1440 pixels showed the new page with no horizontal overflow or JavaScript exceptions; Nuxt emitted nonblocking duplicate prefetch timer warnings. No database migration or data write was part of this deployment.
 - Manually review a representative product with multiple variants and variant galleries, a product with one image, a product with long spec values, and a product with real reviews on mobile and desktop. A local in-stock serialized product with one default option passed cart add. Live multiple-option switching, long spec values, and a populated rating state were unavailable in the sample catalog and remain manual review targets.
 
 ---
