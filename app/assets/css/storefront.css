@@ -96,12 +96,12 @@
 .storefront .store-discovery-links { display: flex; align-items: center; gap: 9px; overflow-x: auto; padding: 4px; }
 .storefront .store-chip { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 8px 16px; border: 1px solid #ccd5e2; border-radius: 99px; background: white; color: var(--store-navy); font-size: 12px; white-space: nowrap; }
 .storefront .store-chip:hover { border-color: var(--store-blue); background: var(--store-pale); color: var(--store-blue); }
-.storefront .store-hero-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 18px; }
-.storefront .store-hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: 18px; }
-.storefront .store-hero { position: relative; min-width: 0; overflow: hidden; border-radius: 16px; background: #dceafe; }
+.storefront .store-hero-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); grid-template-rows: 410px; gap: 18px; }
+.storefront .store-hero-side { display: grid; min-height: 0; height: 100%; grid-template-rows: 1fr 1fr; gap: 18px; }
+.storefront .store-hero { position: relative; min-width: 0; min-height: 0; height: 100%; overflow: hidden; border-radius: 16px; background: #dceafe; }
 .storefront .store-hero-image-link { display: block; height: 100%; }
-.storefront .store-hero-image { width: 100%; height: 100%; min-height: 410px; object-fit: cover; }
-.storefront .store-hero-fallback { position: relative; display: flex; align-items: center; min-height: 410px; height: 100%; overflow: hidden; padding: 48px; background: #dceafe; color: var(--store-navy); }
+.storefront .store-hero-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+.storefront .store-hero-fallback { position: relative; display: flex; align-items: center; min-height: 0; height: 100%; overflow: hidden; padding: 48px; background: #dceafe; color: var(--store-navy); }
 .storefront .store-hero-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .storefront .store-hero-copy { position: relative; z-index: 1; width: 56%; }
 .storefront .store-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
@@ -313,16 +313,17 @@
   .storefront .store-discovery-label { margin-bottom: 9px; font-size: 12px; }
   .storefront .store-discovery-links { margin-left: -4px; }
   .storefront .store-chip { min-height: 34px; font-size: 11px; padding-inline: 13px; }
-  .storefront .store-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .storefront .store-hero-fallback { min-height: 320px; padding: 29px 24px; align-items: center; }
+  .storefront .store-hero-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 12px; }
+  .storefront .store-hero { height: clamp(280px, 80vw, 350px); }
+  .storefront .store-hero-fallback { min-height: 0; padding: 29px 24px; align-items: center; }
   .storefront .store-hero-copy { width: 65%; }
   .storefront .store-hero-scene { object-position: 22% center; opacity: .8; }
   .storefront .store-hero-copy h1 { font-size: clamp(32px, 10vw, 39px); letter-spacing: -1.7px; }
   .storefront .store-hero-copy > p:not(.store-eyebrow) { max-width: 165px; font-size: 12px; }
   .storefront .store-eyebrow { font-size: 10px; letter-spacing: 1px; }
   .storefront .store-hero-copy .store-button { margin-top: 19px; }
-  .storefront .store-hero-image { min-height: 240px; max-height: 350px; }
-  .storefront .store-hero-side { grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 12px; }
+  .storefront .store-hero-image { min-height: 0; max-height: none; }
+  .storefront .store-hero-side { height: auto; grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 12px; }
   .storefront .store-promo-tile { min-height: 216px; padding: 18px; align-items: flex-start; }
   .storefront .store-promo-copy { width: 100%; }
   .storefront .store-promo-copy > p { font-size: 9px; }
