@@ -52,15 +52,17 @@
           </div>
 
           <div v-if="showVariantChoices" class="mt-6">
-            <div class="flex flex-wrap items-baseline justify-between gap-2"><h2 class="text-sm font-bold text-slate-900">Choose an option</h2><span v-if="selectedVariant" class="text-xs text-slate-500">{{ selectedVariantStockLabel }}</span></div>
-            <div role="radiogroup" aria-label="Product options" class="mt-3 grid gap-2 sm:grid-cols-2">
-              <button v-for="variant in productVariants" :key="variant.id" type="button" role="radio" :aria-checked="selectedVariantId === variant.id" class="flex min-h-14 min-w-0 items-center gap-3 rounded-md border px-3 py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700" :class="selectedVariantId === variant.id ? 'border-blue-700 bg-blue-50' : 'border-slate-200 hover:border-slate-400'" @click="selectVariant(variant)">
-                <span v-if="getVariantColor(variant)" class="h-6 w-6 shrink-0 rounded-full border border-slate-300" :style="{ backgroundColor: getVariantColor(variant) }" />
-                <Icon v-else name="lucide:box" size="22" class="shrink-0 text-slate-400" />
-                <span class="min-w-0"><span class="block break-words text-sm font-semibold">{{ variant.name }}</span><span v-if="getVariantMeta(variant)" class="block break-words text-xs text-slate-500">{{ getVariantMeta(variant) }}</span></span>
+            <div class="flex flex-wrap items-baseline justify-between gap-2"><h2 class="text-sm font-bold text-slate-900">{{ hasColorChoices ? 'Color' : 'Choose an option' }}<span v-if="hasColorChoices && selectedVariant">: {{ selectedVariant.color_name }}</span></h2><span v-if="selectedVariant" class="text-xs text-slate-500">{{ selectedVariantStockLabel }}</span></div>
+            <div role="radiogroup" :aria-label="hasColorChoices ? 'Available colors' : 'Product options'" class="mt-3 gap-2" :class="hasColorChoices ? 'flex flex-wrap' : 'grid sm:grid-cols-2'">
+              <button v-for="variant in productVariants" :key="variant.id" type="button" role="radio" :aria-checked="selectedVariantId === variant.id" :aria-label="hasColorChoices ? `${variant.color_name}, ${variantStockLabel(variant)}` : undefined" class="relative flex min-w-0 items-center gap-3 rounded-md border text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700" :class="[selectedVariantId === variant.id ? 'border-blue-700 bg-blue-50 ring-1 ring-blue-700' : 'border-slate-200 hover:border-slate-400', hasColorChoices ? 'min-h-24 w-24 flex-col justify-center gap-1 p-2' : 'min-h-14 px-3 py-2']" @click="selectVariant(variant)">
+                <span v-if="getVariantPreview(variant)" class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white"><img :src="getVariantPreview(variant)" :alt="''" class="h-full w-full object-contain" @error="markImageBroken(getVariantPreview(variant))"></span>
+                <span v-else-if="getVariantColor(variant)" class="h-10 w-10 shrink-0 rounded-full border border-slate-300" :style="{ backgroundColor: getVariantColor(variant) }" />
+                <Icon v-else name="lucide:image-off" size="25" class="shrink-0 text-slate-400" aria-hidden="true" />
+                <span class="min-w-0" :class="hasColorChoices ? 'w-full text-center' : ''"><span class="block break-words text-sm font-semibold">{{ hasColorChoices ? variant.color_name : variant.name }}</span><span v-if="!hasColorChoices && getVariantMeta(variant)" class="block break-words text-xs text-slate-500">{{ getVariantMeta(variant) }}</span></span>
+                <span v-if="hasColorChoices && Number(variant.stock_quantity || 0) <= 0" class="absolute right-1 top-1 rounded-sm bg-white/95 px-1 text-[10px] font-semibold text-amber-800">{{ allowOutOfStockPurchases ? 'Backorder' : 'Sold out' }}</span>
               </button>
             </div>
-            <p v-if="!selectedVariant && hasPurchasableVariants" class="mt-2 text-xs text-slate-500">Select an option before adding to cart.</p>
+            <p v-if="!selectedVariant && hasPurchasableVariants" class="mt-2 text-xs text-slate-500">Select a {{ hasColorChoices ? 'color' : 'product option' }} before adding to cart.</p>
           </div>
           <p v-else-if="selectedVariant && meaningfulVariantName" class="mt-5 text-sm text-slate-600">Option: <strong class="text-slate-900">{{ selectedVariant.name }}</strong></p>
 
@@ -116,8 +118,9 @@
   </div>
 </template>
 <script setup>
-import { buildProductGallery, selectProductGalleryImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
+import { buildProductGallery, hasDistinctColorVariants, selectProductGalleryImages, shouldIncludeMainProductImage, variantPreviewImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
 import { groupProductSpecifications, productHighlights, descriptionBlocks } from '~/utils/specificationLibrary'
+import { getConfiguredStoreImageUrl } from '~/utils/storefront'
 const supabase = useSupabaseClient()
 const route = useRoute()
 const slug = route.params.slug
@@ -275,6 +278,7 @@ const productVariants = computed(() => product.value?.variants || [])
 const hasVariants = computed(() => productVariants.value.length > 0)
 const requiresVariantSelection = computed(() => Boolean(product.value?.is_serialized))
 const showVariantChoices = computed(() => requiresVariantSelection.value && productVariants.value.length > 1)
+const hasColorChoices = computed(() => showVariantChoices.value && hasDistinctColorVariants(productVariants.value))
 const meaningfulVariantName = computed(() => selectedVariant.value && !/^(default|standard|base|product)$/i.test(String(selectedVariant.value.name || '').trim()))
 const selectedVariant = computed(() => {
   return productVariants.value.find((variant) => variant.id === selectedVariantId.value) || null
@@ -283,7 +287,9 @@ const selectedVariantImages = computed(() => {
   const images = Array.isArray(product.value?.images) ? product.value.images : []
   return selectProductGalleryImages(images, requiresVariantSelection.value, selectedVariantId.value)
 })
-const galleryImages = computed(() => buildProductGallery(product.value, selectedVariantImages.value, brokenImages.value))
+const canUseMainImage = computed(() => shouldIncludeMainProductImage(product.value, selectedVariant.value, hasColorChoices.value))
+const galleryImages = computed(() => buildProductGallery(product.value, selectedVariantImages.value, brokenImages.value, { includeMain: canUseMainImage.value }))
+const variantPreviews = computed(() => variantPreviewImages(product.value?.images || []))
 const activeImage = computed(() => galleryImages.value.find((image) => image.url === selectedImage.value) || galleryImages.value[0] || null)
 const activeImageIndex = computed(() => galleryImages.value.findIndex((image) => image.url === activeImage.value?.url))
 const visibleSpecifications = computed(() => visibleProductSpecifications(product.value?.specifications || []))
@@ -347,7 +353,7 @@ const stockLabel = computed(() => {
       return allowOutOfStockPurchases.value ? 'Available on Backorder' : 'Out of Stock'
     }
 
-    return 'Select an Option'
+    return hasColorChoices.value ? 'Select a Color' : 'Select an Option'
   }
 
   if (!isOutOfStock.value) {
@@ -373,7 +379,7 @@ const addToCartLabel = computed(() => {
   }
 
   if (requiresVariantSelection.value && !selectedVariant.value && hasPurchasableVariants.value) {
-    return 'Choose an Option'
+    return hasColorChoices.value ? 'Choose a Color' : 'Choose an Option'
   }
 
   if (!canPurchaseProduct.value) {
@@ -387,18 +393,18 @@ const getVariantColor = (variant) => {
   const color = String(variant?.color_hex || '').trim()
   return /^#[0-9a-f]{6}$/i.test(color) ? color : ''
 }
+const getVariantPreview = (variant) => {
+  const url = variantPreviews.value.get(variant.id)
+    || (hasColorChoices.value && shouldIncludeMainProductImage(product.value, variant, true)
+      ? getConfiguredStoreImageUrl(product.value?.image_url) : '')
+  return url && !brokenImages.value.includes(url) ? url : ''
+}
+const variantStockLabel = (variant) => Number(variant.stock_quantity || 0) > 0
+  ? 'In stock' : allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
 
 const getVariantMeta = (variant) => {
-  const details = [
-    variant?.color_name,
-    variant?.code || variant?.sku
-  ].map((value) => String(value || '').trim()).filter(Boolean)
-
-  if (!details.length) {
-    return Number(variant?.stock_quantity || 0) > 0 ? 'In stock' : 'Out of stock'
-  }
-
-  return details.join(' · ')
+  const color = String(variant?.color_name || '').trim()
+  return [color && color.toLowerCase() !== String(variant?.name || '').trim().toLowerCase() ? color : '', variantStockLabel(variant)].filter(Boolean).join(' · ')
 }
 
 const selectVariant = (variant) => {
@@ -479,7 +485,7 @@ const getPreferredProductImage = (variantId = selectedVariantId.value) => {
 
   if (requiresVariantSelection.value) {
     const variantImage = images.find((image) => image.variant_id === variantId)
-    return variantImage?.image_url || product.value?.image_url || ''
+    return variantImage?.image_url || (canUseMainImage.value ? product.value?.image_url : '') || ''
   }
 
   return product.value?.image_url || images[0]?.image_url || ''

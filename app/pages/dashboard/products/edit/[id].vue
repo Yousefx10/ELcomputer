@@ -357,7 +357,7 @@
         <div class="mb-4">
           <h3 class="text-2xl font-bold">Extra Images</h3>
           <p class="text-sm text-gray-500">
-            Every optional gallery image must belong to one saved product variant.
+            Add an image for every color, including the main color. Its first image appears in the selector.
           </p>
         </div>
 

@@ -1,3 +1,13 @@
+# Codex handoff — Product color variants deployed
+
+Date: 2026-09-27. State: **DEPLOYED TO PRODUCTION.** No schema change.
+
+- User chose colors as variants under one product. The public product page now shows photo-backed color tiles when active variants have distinct `color_name` values; it falls back to valid `color_hex` swatches and marks sold-out choices. Selection uses the existing variant image gallery, stock limits, and cart rules. An unrelated base product image is hidden after choosing another color. Non-color options remain in the generic option layout, with variant thumbnails when present and no internal code shown to shoppers.
+- Staff configure this at `/dashboard/products/edit/[id]`: Product Variants → Color Name / optional Color, save, then Extra Images → assign pictures to each saved variant. The first assigned image is the tile preview; add an image for every color. No current production product has multiple active variants (91 products, 91 variants), so staff configuration is required to make the new selector appear. All currently published products use the serialized variant model.
+- Validation: 158/158 tests, typecheck, deployment build, `git diff --check`, and guarded pre/post VPS checks passed. Live home, two product pages, and chat status returned HTTP 200. Chrome at 390 and 1440 pixels found no overflow or browser exceptions on existing products. A real multi-color visual check remains pending staff data. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-143919-66608`.
+
+---
+
 # Codex handoff — Product specification library deployed
 
 Date: 2026-09-27. State: **DEPLOYED TO PRODUCTION.**

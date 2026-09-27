@@ -4,7 +4,7 @@
       <div>
         <h3 class="text-lg font-bold text-gray-900">Product Variants</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Options describe product colors or models. Add stock through purchasing.
+          Give each color a name. Add its pictures under Extra Images after saving.
         </p>
       </div>
 

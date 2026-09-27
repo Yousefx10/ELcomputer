@@ -1,13 +1,30 @@
 import { getConfiguredStoreImageUrl } from './storefront.js'
 
-export const buildProductGallery = (product, images = [], broken = []) => {
+export const buildProductGallery = (product, images = [], broken = [], { includeMain = true } = {}) => {
   const seen = new Set()
-  return [{ image_url: product?.image_url, alt_text: product?.title }, ...images].flatMap((image) => {
+  return [...(includeMain ? [{ image_url: product?.image_url, alt_text: product?.title }] : []), ...images].flatMap((image) => {
     const url = getConfiguredStoreImageUrl(image?.image_url)
     if (!url || seen.has(url) || broken.includes(url)) return []
     seen.add(url)
     return [{ url, alt: String(image?.alt_text || product?.title || 'Product image') }]
   })
+}
+
+export const hasDistinctColorVariants = (variants = []) => variants.length > 1
+  && variants.every((variant) => String(variant.color_name || '').trim())
+  && new Set(variants.map((variant) => String(variant.color_name).trim().toLowerCase())).size === variants.length
+
+export const shouldIncludeMainProductImage = (product, variant, hasColorChoices) => !hasColorChoices || !variant
+  || Boolean(String(product?.color_name || '').trim())
+    && String(product.color_name).trim().toLowerCase() === String(variant.color_name || '').trim().toLowerCase()
+
+export const variantPreviewImages = (images = []) => {
+  const previews = new Map()
+  for (const image of images) {
+    const url = getConfiguredStoreImageUrl(image?.image_url)
+    if (image?.variant_id && url && !previews.has(image.variant_id)) previews.set(image.variant_id, url)
+  }
+  return previews
 }
 
 export const selectProductGalleryImages = (images = [], requiresVariant = false, variantId = '') => {

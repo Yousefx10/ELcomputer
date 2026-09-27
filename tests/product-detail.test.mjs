@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildProductGallery, selectProductGalleryImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '../app/utils/productDetail.js'
+import { buildProductGallery, hasDistinctColorVariants, selectProductGalleryImages, shouldIncludeMainProductImage, variantPreviewImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '../app/utils/productDetail.js'
 
 test('gallery keeps the main image, variant images, and unique usable URLs', () => {
   const product = { image_url: '/main.jpg', title: 'Keyboard' }
@@ -11,6 +11,7 @@ test('gallery keeps the main image, variant images, and unique usable URLs', () 
   ]), [{ url: '/main.jpg', alt: 'Keyboard' }, { url: '/side.jpg', alt: 'Side' }])
   assert.deepEqual(buildProductGallery(product, [{ image_url: '/side.jpg' }], ['/main.jpg']), [{ url: '/side.jpg', alt: 'Keyboard' }])
   assert.deepEqual(buildProductGallery({}, []), [])
+  assert.deepEqual(buildProductGallery(product, [{ image_url: '/blue.jpg' }], [], { includeMain: false }), [{ url: '/blue.jpg', alt: 'Keyboard' }])
 })
 
 test('variant galleries only show images for the selected option', () => {
@@ -18,6 +19,22 @@ test('variant galleries only show images for the selected option', () => {
   assert.deepEqual(selectProductGalleryImages(images, false, ''), images)
   assert.deepEqual(selectProductGalleryImages(images, true, ''), [])
   assert.deepEqual(selectProductGalleryImages(images, true, 'red'), [images[1]])
+})
+
+test('distinct color choices use their own image and do not imply color from an option code', () => {
+  assert.equal(hasDistinctColorVariants([{ color_name: 'Black' }, { color_name: 'Blue' }]), true)
+  assert.equal(hasDistinctColorVariants([{ color_name: 'Black' }, { color_name: 'black' }]), false)
+  assert.equal(hasDistinctColorVariants([{ name: 'BLACK-SKU' }, { color_name: 'Blue' }]), false)
+  assert.equal(shouldIncludeMainProductImage({ color_name: 'Black' }, { color_name: 'Black' }, true), true)
+  assert.equal(shouldIncludeMainProductImage({ color_name: 'Black' }, { color_name: 'Blue' }, true), false)
+  assert.equal(shouldIncludeMainProductImage({}, { color_name: 'Blue' }, true), false)
+  assert.equal(shouldIncludeMainProductImage({}, null, true), true)
+  assert.deepEqual([...variantPreviewImages([
+    { variant_id: 'black', image_url: '/black-front.jpg' },
+    { variant_id: 'black', image_url: '/black-side.jpg' },
+    { variant_id: 'blue', image_url: 'javascript:bad' },
+    { variant_id: 'blue', image_url: '/blue-front.jpg' }
+  ])], [['black', '/black-front.jpg'], ['blue', '/blue-front.jpg']])
 })
 
 test('specifications preserve order and omit incomplete rows', () => {

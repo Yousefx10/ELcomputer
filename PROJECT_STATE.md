@@ -1,5 +1,13 @@
 # Project state — 2026-09-23
 
+## Product color variant selector — 2026-09-27
+
+**Status:** Deployed to `https://new.elcomputer.net`. No database migration was needed. Existing `product_variants.color_name/color_hex` and variant-owned `product_images` remain the source of truth.
+
+- When a serialized product has multiple active variants with distinct color names, the product page shows compact color tiles. Each tile uses that variant's first assigned image, then a validated color swatch if no image is available. Sold-out colors stay inspectable and are labelled; choosing one updates the gallery, stock, quantity limit, and cart variant together. The main product image is withheld for a different selected color so its photo is not mistaken for that color. Mixed or duplicate-color options keep the existing generic option layout, now with variant thumbnails where assigned; customer-facing option metadata no longer exposes internal codes.
+- Admin setup is in `/dashboard/products/edit/[id]`: give each Product Variant a Color Name (and optionally a valid `#RRGGBB` color), save, then assign at least one Extra Image to every color, including the main color. Stock still comes through existing procurement. The production catalog currently has 91 products and 91 variants, with **zero products having multiple active variants**; staff data entry is required before a live color selector can be observed. Published products currently use the serialized variant model.
+- Validation: 158/158 repository tests, Nuxt typecheck, deployment build, `git diff --check`, and guarded VPS checks passed. Live home, two product pages, and chat status returned HTTP 200. Chrome at 390 and 1440 pixels showed no overflow or browser exceptions on description-only and legacy-spec products. The known nonblocking Nuxt duplicate prefetch timer warnings appeared. No synthetic color data was inserted into production. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-143919-66608`.
+
 ## Product specification library and detail presentation — 2026-09-27
 
 **Status:** Deployed to `https://new.elcomputer.net` on 2026-09-27. Migration `20260927120000_product_specification_library.sql` is applied to production Supabase project `zsqhuwgoasrexdnamlks`; the guarded VPS release runs as PM2 app `new-elcomputer`.
