@@ -3,6 +3,7 @@ import { formatAccountDate, formatAccountMoney, paymentStatusClass, paymentStatu
 import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/orderStatus'
 import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
+import { expectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 const route = useRoute()
@@ -72,9 +73,18 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
         <p v-if="reorderMessage" class="mt-3 text-sm text-slate-600" role="status">{{ reorderMessage }} <NuxtLink v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">View cart</NuxtLink></p>
       </header>
 
+      <section v-if="detail.order.is_preorder" class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-slate-800 sm:p-6">
+        <h2 class="text-base font-bold text-amber-900">PRE-ORDER</h2>
+        <p class="mt-1">This item is awaiting availability and is not ready for delivery.</p>
+        <dl class="mt-4 grid gap-3 sm:grid-cols-2"><div><dt>Order value</dt><dd class="font-bold">{{ formatAccountMoney(detail.order.total_amount, detail.order.currency) }}</dd></div><div><dt>Required initial payment</dt><dd class="font-bold">{{ formatAccountMoney(detail.order.initial_amount_due, detail.order.currency) }}</dd></div><div><dt>Verified paid</dt><dd class="font-bold">{{ formatAccountMoney(detail.order.amount_paid, detail.order.currency) }}</dd></div><div><dt>Balance remaining</dt><dd class="font-bold">{{ formatAccountMoney(Number(detail.order.total_amount) - Number(detail.order.amount_paid), detail.order.currency) }}</dd></div></dl>
+        <p class="mt-3 font-semibold">{{ Number(detail.order.amount_paid) >= Number(detail.order.initial_amount_due) ? 'Initial payment received' : 'Initial payment pending' }}</p>
+        <p v-if="detail.order.status === 'cancelled' && Number(detail.order.amount_paid) > 0" class="mt-2 text-red-700">Contact support about refund handling.</p>
+      </section>
+
       <AccountOrderProgress :order="detail.order" :shipping="detail.shipping" />
 
-      <section v-if="paymentMethodNeedsProof(detail.order.payment_method)" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6" aria-labelledby="proof-title">
+      <section v-if="detail.order.is_preorder" class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-700 sm:p-6">Bank and InstaPay transfers are verified by store staff. Keep your transfer reference and contact the store if your payment has not appeared here.</section>
+      <section v-else-if="paymentMethodNeedsProof(detail.order.payment_method)" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6" aria-labelledby="proof-title">
         <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 id="proof-title" class="text-lg font-bold text-slate-900">Proof of payment</h2><p class="mt-1 text-sm text-slate-600">Use this section if you skipped proof during checkout or need to retry it.</p></div><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(detail.order.payment_proof_status)">{{ paymentProofStatusLabel(detail.order.payment_proof_status) }}</span></div>
         <p v-if="detail.order.payment_proof_file_name" class="mt-4 text-sm text-slate-700">Current file: <strong>{{ detail.order.payment_proof_file_name }}</strong></p>
         <PaymentProofUpload v-if="['pending_upload', 'rejected'].includes(detail.order.payment_proof_status)" v-model="proofFile" show-submit class="mt-5" backend-notice="Secure file submission is intentionally waiting for the payment backend." @submit="stageProof" />
@@ -86,7 +96,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
         <section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6" aria-labelledby="ordered-items-title">
           <h2 id="ordered-items-title" class="text-lg font-bold text-slate-900">Items ordered</h2>
           <div class="mt-4 divide-y divide-slate-100">
-            <div v-for="item in detail.items" :key="item.id" class="flex flex-wrap gap-4 py-4 first:pt-0 last:pb-0"><div class="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-slate-400"><img v-if="getConfiguredStoreImageUrl(item.image_url)" :src="getConfiguredStoreImageUrl(item.image_url)" :alt="item.product_title" class="size-full object-cover"><Icon v-else name="lucide:package" size="24" aria-hidden="true" /></div><div class="min-w-0 flex-1"><p class="font-semibold text-slate-900">{{ item.product_title }}</p><p class="mt-1 text-sm text-slate-600">Qty {{ item.quantity }} · {{ formatAccountMoney(item.unit_price, detail.order.currency) }} each</p></div><p class="ml-auto whitespace-nowrap text-sm font-semibold text-slate-900">{{ formatAccountMoney(item.line_total, detail.order.currency) }}</p></div>
+            <div v-for="item in detail.items" :key="item.id" class="flex flex-wrap gap-4 py-4 first:pt-0 last:pb-0"><div class="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-slate-400"><img v-if="getConfiguredStoreImageUrl(item.image_url)" :src="getConfiguredStoreImageUrl(item.image_url)" :alt="item.product_title" class="size-full object-cover"><Icon v-else name="lucide:package" size="24" aria-hidden="true" /></div><div class="min-w-0 flex-1"><p class="font-semibold text-slate-900">{{ item.product_title }}</p><p v-if="item.is_preorder" class="mt-1 text-xs font-bold text-amber-900">PRE-ORDER · {{ item.preorder_payment_mode === 'deposit' ? `${item.preorder_deposit_percent}% deposit` : 'Full payment' }}</p><p v-if="item.expected_availability_date" class="text-xs text-slate-600">Expected {{ expectedAvailabilityLabel(item.expected_availability_date) }}</p><p v-if="item.availability_message" class="text-xs text-slate-600">{{ item.availability_message }}</p><p class="mt-1 text-sm text-slate-600">Qty {{ item.quantity }} · {{ formatAccountMoney(item.unit_price, detail.order.currency) }} each</p></div><p class="ml-auto whitespace-nowrap text-sm font-semibold text-slate-900">{{ formatAccountMoney(item.line_total, detail.order.currency) }}</p></div>
           </div>
         </section>
 

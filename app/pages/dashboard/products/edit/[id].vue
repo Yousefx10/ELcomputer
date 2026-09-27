@@ -279,7 +279,9 @@
             </NuxtLink>
           </div>
 
-          <DashboardProductsVariantsEditor
+        <DashboardProductsSellingModeFields v-model="sellingConfig" />
+
+        <DashboardProductsVariantsEditor
             v-model="productVariants"
             :disabled="saving"
             existing-mode
@@ -504,6 +506,7 @@
 </template>
 
 <script setup>
+import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
 definePageMeta({
   layout: 'dashboard'
 })
@@ -545,6 +548,7 @@ const colorName = ref('')
 const colorHex = ref('')
 const isSerialized = ref(false)
 const isPublished = ref(true)
+const sellingConfig = ref(defaultSellingConfig())
 
 const categories = ref([])
 const brands = ref([])
@@ -776,6 +780,24 @@ watchEffect(() => {
     colorHex.value = product.value.color_hex || ''
     isSerialized.value = Boolean(product.value.is_serialized)
     isPublished.value = product.value.is_published ?? true
+    const localDateTime = value => {
+      if (!value) return ''
+      const date = new Date(value)
+      return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+    }
+    sellingConfig.value = {
+      ...defaultSellingConfig(),
+      selling_mode: product.value.selling_mode || 'normal',
+      expected_availability_date: product.value.expected_availability_date || '',
+      availability_message: product.value.availability_message || '',
+      preorder_active: product.value.preorder_active ?? true,
+      preorder_starts_at: localDateTime(product.value.preorder_starts_at),
+      preorder_ends_at: localDateTime(product.value.preorder_ends_at),
+      preorder_payment_mode: product.value.preorder_payment_mode || 'full',
+      preorder_deposit_percent: product.value.preorder_deposit_percent ?? '25',
+      preorder_total_limit: product.value.preorder_total_limit ?? '',
+      preorder_customer_limit: product.value.preorder_customer_limit ?? ''
+    }
   }
 })
 
@@ -838,6 +860,7 @@ const updateProduct = async () => {
         color_hex: colorHex.value,
         is_serialized: isSerialized.value,
         variants: isSerialized.value ? productVariants.value : [],
+        ...serializeSellingConfig(sellingConfig.value),
         is_published: isPublished.value
       }
     })

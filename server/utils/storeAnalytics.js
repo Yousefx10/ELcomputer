@@ -504,7 +504,8 @@ export const recordStoreOrderCreated = async ({
   supabaseAdmin,
   userId,
   orderId,
-  cartId = null
+  cartId = null,
+  source = 'checkout'
 }) => {
   if (!isStoreAnalyticsUuid(orderId)) {
     throw new Error('A valid order id is required for analytics.')
@@ -542,7 +543,7 @@ export const recordStoreOrderCreated = async ({
       path: '/checkout',
       cart_id: validatedCartId,
       order_id: orderId,
-      source: 'checkout'
+      source: source === 'preorder_checkout' ? 'preorder_checkout' : 'checkout'
     })
 
   if (error && error.code !== '23505') {

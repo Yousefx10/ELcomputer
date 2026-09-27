@@ -82,6 +82,15 @@ export default defineEventHandler(async (event) => {
 
   let customerProfile = null
   let shipping = null
+  let preorderPayments = []
+
+  if (orderRecord.is_preorder) {
+    const { data, error } = await supabaseAdmin.from('preorder_payments')
+      .select('id, amount, reference, method, verified_by, recorded_at')
+      .eq('order_id', orderId).order('recorded_at')
+    if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load preorder payments.' })
+    preorderPayments = data || []
+  }
 
   if (orderRecord.user_id) {
     const { data: customerProfileRecord, error: customerProfileError } = await supabaseAdmin
@@ -154,6 +163,7 @@ export default defineEventHandler(async (event) => {
       }
     }),
     customer: customerProfile,
-    shipping
+    shipping,
+    preorderPayments
   }
 })

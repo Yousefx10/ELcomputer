@@ -48,7 +48,14 @@
               <del v-if="hasDiscount" class="text-base text-slate-500">{{ formatPrice(product.old_price) }}</del>
             </div>
             <p v-if="hasDiscount" class="mt-1 text-sm font-semibold text-emerald-700">Save {{ formatPrice(savings) }}<span v-if="discountPercent"> ({{ discountPercent }}%)</span></p>
-            <p class="mt-4 inline-flex items-center gap-2 text-sm font-semibold" :class="isOutOfStock ? 'text-amber-700' : 'text-emerald-700'"><Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:circle-check'" size="18" />{{ stockLabel }}</p>
+            <p class="mt-4 inline-flex items-center gap-2 text-sm font-semibold" :class="isOutOfStock || isPreorder || isComingSoon ? 'text-amber-700' : 'text-emerald-700'"><Icon :name="isOutOfStock || isPreorder || isComingSoon ? 'lucide:clock-3' : 'lucide:circle-check'" size="18" />{{ stockLabel }}</p>
+            <div v-if="isPreorder || isComingSoon" class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-slate-800">
+              <strong class="block text-xs font-bold uppercase tracking-widest text-amber-900">{{ isPreorder ? 'Pre-order' : 'Coming Soon' }}</strong>
+              <p v-if="product.expected_availability_date" class="mt-1">Expected availability: {{ expectedAvailabilityLabel(product.expected_availability_date) }}</p>
+              <p v-if="product.availability_message" class="mt-1">{{ product.availability_message }}</p>
+              <p class="mt-1">This item is not ready for normal delivery.</p>
+              <template v-if="isPreorder"><p class="mt-2">Pre-order price: <strong>{{ formatPrice(preorderAmounts.total) }}</strong></p><p>{{ product.preorder_payment_mode === 'deposit' ? `Reserve with ${product.preorder_deposit_percent}% deposit` : 'Full payment required' }}</p><p>Required now: <strong>{{ formatPrice(preorderAmounts.due) }}</strong></p><p v-if="preorderAmounts.balance">Remaining balance: <strong>{{ formatPrice(preorderAmounts.balance) }}</strong></p><p v-if="preorderAvailability?.remaining === 0" class="font-semibold text-red-700">Pre-order allocation sold out.</p></template>
+            </div>
           </div>
 
           <div v-if="showVariantChoices" class="mt-6">
@@ -59,14 +66,14 @@
                 <span v-else-if="getVariantColor(variant)" class="h-10 w-10 shrink-0 rounded-full border border-slate-300" :style="{ backgroundColor: getVariantColor(variant) }" />
                 <Icon v-else name="lucide:image-off" size="25" class="shrink-0 text-slate-400" aria-hidden="true" />
                 <span class="min-w-0" :class="hasColorChoices ? 'w-full text-center' : ''"><span class="block break-words text-sm font-semibold">{{ hasColorChoices ? variant.color_name : variant.name }}</span><span v-if="!hasColorChoices && getVariantMeta(variant)" class="block break-words text-xs text-slate-500">{{ getVariantMeta(variant) }}</span></span>
-                <span v-if="hasColorChoices && Number(variant.stock_quantity || 0) <= 0" class="absolute right-1 top-1 rounded-sm bg-white/95 px-1 text-[10px] font-semibold text-amber-800">{{ allowOutOfStockPurchases ? 'Backorder' : 'Sold out' }}</span>
+                <span v-if="!isPreorder && !isComingSoon && hasColorChoices && Number(variant.stock_quantity || 0) <= 0" class="absolute right-1 top-1 rounded-sm bg-white/95 px-1 text-[10px] font-semibold text-amber-800">{{ allowOutOfStockPurchases ? 'Backorder' : 'Sold out' }}</span>
               </button>
             </div>
             <p v-if="!selectedVariant && hasPurchasableVariants" class="mt-2 text-xs text-slate-500">Select a {{ hasColorChoices ? 'color' : 'product option' }} before adding to cart.</p>
           </div>
           <p v-else-if="selectedVariant && meaningfulVariantName" class="mt-5 text-sm text-slate-600">Option: <strong class="text-slate-900">{{ selectedVariant.name }}</strong></p>
 
-          <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+          <div v-if="!isComingSoon" class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <div class="inline-flex h-12 w-fit items-center overflow-hidden rounded-md border border-slate-300" aria-label="Quantity">
               <button type="button" class="h-12 w-12 text-xl hover:bg-slate-100 disabled:text-slate-300" aria-label="Decrease quantity" :disabled="selectedQuantity <= 1" @click="decreaseQuantity">−</button>
               <output class="min-w-10 text-center font-semibold" aria-label="Selected quantity">{{ selectedQuantity }}</output>
@@ -121,6 +128,7 @@
 import { buildProductGallery, hasDistinctColorVariants, selectProductGalleryImages, shouldIncludeMainProductImage, variantPreviewImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
 import { groupProductSpecifications, productHighlights, descriptionBlocks } from '~/utils/specificationLibrary'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
+import { calculatePreorderAmounts, expectedAvailabilityLabel } from '~/utils/preorder'
 const supabase = useSupabaseClient()
 const route = useRoute()
 const slug = route.params.slug
@@ -152,6 +160,16 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       popularity_score,
       average_rating,
       is_serialized,
+      selling_mode,
+      expected_availability_date,
+      availability_message,
+      preorder_active,
+      preorder_starts_at,
+      preorder_ends_at,
+      preorder_payment_mode,
+      preorder_deposit_percent,
+      preorder_total_limit,
+      preorder_customer_limit,
       category:categories (
         id,
         name,
@@ -199,7 +217,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     $fetch('/api/product-reviews', { query: { productId: productData.id, page: 1, pageSize: 1 } }).catch(() => null),
     productData.category_id || productData.brand_id
       ? supabase.from('products')
-          .select('id, title, slug, price, old_price, image_url, stock_quantity, is_serialized, is_featured, is_top_seller, popularity_score, category_id, brand_id, category:categories(id, name), brand:brands(id, name)')
+          .select('id, title, slug, price, old_price, image_url, stock_quantity, is_serialized, selling_mode, preorder_active, is_featured, is_top_seller, popularity_score, category_id, brand_id, category:categories(id, name), brand:brands(id, name)')
           .eq('is_published', true)
           .neq('id', productData.id)
           .or([productData.category_id && `category_id.eq.${productData.category_id}`, productData.brand_id && `brand_id.eq.${productData.brand_id}`].filter(Boolean).join(','))
@@ -268,6 +286,13 @@ const reviewSummary = ref({ total: null, average: 0 })
 let previousFocus = null
 let previousOverflow = ''
 const selectedQuantity = ref(1)
+const isPreorder = computed(() => product.value?.selling_mode === 'preorder')
+const isComingSoon = computed(() => product.value?.selling_mode === 'coming_soon')
+const { data: preorderAvailability, refresh: refreshPreorderAvailability } = await useAsyncData(`preorder-availability-${slug}`, async () => {
+  if (!product.value || product.value.selling_mode !== 'preorder') return null
+  return $fetch(`/api/preorders/${product.value.id}`)
+}, { watch: [product] })
+const preorderAmounts = computed(() => calculatePreorderAmounts(product.value?.price || 0, selectedQuantity.value, product.value?.preorder_payment_mode, product.value?.preorder_deposit_percent))
 const selectedVariantId = ref('')
 const cartMessage = ref('')
 const allowOutOfStockPurchases = computed(() => {
@@ -316,6 +341,7 @@ const hasPurchasableVariants = computed(() => {
 })
 
 const maximumQuantity = computed(() => {
+  if (isPreorder.value) return Math.max(1, Math.min(99, Number(product.value?.preorder_customer_limit || 99), Number(preorderAvailability.value?.remaining ?? 99)))
   if (allowOutOfStockPurchases.value) {
     return 99
   }
@@ -337,6 +363,12 @@ const isOutOfStock = computed(() => {
   return effectiveStockQuantity.value <= 0
 })
 const canPurchaseProduct = computed(() => {
+  if (isComingSoon.value) return false
+  if (isPreorder.value) return Boolean(product.value?.preorder_active)
+    && (!product.value.preorder_starts_at || new Date() >= new Date(product.value.preorder_starts_at))
+    && (!product.value.preorder_ends_at || new Date() < new Date(product.value.preorder_ends_at))
+    && preorderAvailability.value?.available === true
+    && (!requiresVariantSelection.value || Boolean(selectedVariant.value))
   if (requiresVariantSelection.value && !selectedVariant.value) {
     return false
   }
@@ -344,6 +376,8 @@ const canPurchaseProduct = computed(() => {
   return !isOutOfStock.value || allowOutOfStockPurchases.value
 })
 const stockLabel = computed(() => {
+  if (isComingSoon.value) return 'Coming Soon'
+  if (isPreorder.value) return preorderAvailability.value?.remaining === 0 ? 'Pre-order sold out' : 'Pre-order'
   if (requiresVariantSelection.value && !hasVariants.value) {
     return 'Options Unavailable'
   }
@@ -363,6 +397,7 @@ const stockLabel = computed(() => {
   return allowOutOfStockPurchases.value ? 'Available on Backorder' : 'Out of Stock'
 })
 const selectedVariantStockLabel = computed(() => {
+  if (isPreorder.value) return 'Available for pre-order'
   if (!selectedVariant.value) {
     return ''
   }
@@ -374,6 +409,8 @@ const selectedVariantStockLabel = computed(() => {
   return allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
 })
 const addToCartLabel = computed(() => {
+  if (isComingSoon.value) return 'Coming Soon'
+  if (isPreorder.value) return canPurchaseProduct.value ? 'Pre-order Now' : (preorderAvailability.value?.remaining === 0 ? 'Pre-order sold out' : 'Pre-order unavailable')
   if (requiresVariantSelection.value && !hasVariants.value) {
     return 'Options Unavailable'
   }
@@ -399,7 +436,7 @@ const getVariantPreview = (variant) => {
       ? getConfiguredStoreImageUrl(product.value?.image_url) : '')
   return url && !brokenImages.value.includes(url) ? url : ''
 }
-const variantStockLabel = (variant) => Number(variant.stock_quantity || 0) > 0
+const variantStockLabel = (variant) => isPreorder.value ? 'Pre-order' : Number(variant.stock_quantity || 0) > 0
   ? 'In stock' : allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
 
 const getVariantMeta = (variant) => {
@@ -473,11 +510,20 @@ const handleAddToCart = () => {
     variant: selectedVariant.value,
     image_url: selectedVariantImages.value[0]?.image_url || product.value.image_url,
     stock_quantity: effectiveStockQuantity.value,
-    allow_out_of_stock_purchases: allowOutOfStockPurchases.value
+    allow_out_of_stock_purchases: allowOutOfStockPurchases.value,
+    selling_mode: product.value.selling_mode,
+    expected_availability_date: product.value.expected_availability_date,
+    availability_message: product.value.availability_message,
+    preorder_active: product.value.preorder_active,
+    preorder_payment_mode: product.value.preorder_payment_mode,
+    preorder_deposit_percent: product.value.preorder_deposit_percent,
+    preorder_customer_limit: product.value.preorder_customer_limit,
+    preorder_remaining: preorderAvailability.value?.remaining ?? null
   }, selectedQuantity.value, {
     source: 'product_detail'
   })
   cartMessage.value = result.message || ''
+  if (!result.success && isPreorder.value) refreshPreorderAvailability()
 }
 
 const getPreferredProductImage = (variantId = selectedVariantId.value) => {

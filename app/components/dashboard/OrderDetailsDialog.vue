@@ -18,6 +18,7 @@
               </h3>
 
               <div class="mt-3 flex flex-wrap items-center gap-3">
+                <span v-if="orderDetail?.is_preorder" class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">PRE-ORDER</span>
                 <span
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="getCustomerOrderStatusClass(orderDetail?.status)"
@@ -57,11 +58,12 @@
             Loading order details...
           </div>
 
-          <div v-else-if="errorMessage" class="rounded-2xl bg-red-50 p-4 text-red-600">
+          <div v-else-if="errorMessage && !orderDetail" class="rounded-2xl bg-red-50 p-4 text-red-600">
             {{ errorMessage }}
           </div>
 
           <div v-else-if="orderDetail" class="space-y-6">
+            <p v-if="errorMessage" role="alert" class="rounded-2xl bg-red-50 p-4 text-sm text-red-700">{{ errorMessage }}</p>
             <section class="rounded-2xl border bg-gray-50 p-5">
               <button
                 type="button"
@@ -93,7 +95,7 @@
 
               <div v-if="statusPanelOpen" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <button
-                  v-for="statusOption in customerOrderStatusOptions"
+                  v-for="statusOption in visibleStatusOptions"
                   :key="statusOption.value"
                   type="button"
                   :disabled="statusLoading"
@@ -106,6 +108,22 @@
                   {{ statusOption.label }}
                 </button>
               </div>
+            </section>
+
+            <section v-if="orderDetail.is_preorder" class="rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
+              <h4 class="text-lg font-bold text-gray-900">Pre-order payment and fulfillment</h4>
+              <p class="mt-1 text-sm text-gray-600">{{ orderDetail.preorder_fulfillment_state === 'ready' ? 'Physical stock assigned. This order can proceed through normal fulfillment.' : 'Awaiting stock. Do not pack or ship this order.' }}</p>
+              <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2"><div><dt>Order value</dt><dd class="font-bold">{{ formatCurrency(orderDetail.total_amount) }}</dd></div><div><dt>Required initial payment</dt><dd class="font-bold">{{ formatCurrency(orderDetail.initial_amount_due) }}</dd></div><div><dt>Verified paid</dt><dd class="font-bold">{{ formatCurrency(orderDetail.amount_paid) }}</dd></div><div><dt>Balance remaining</dt><dd class="font-bold">{{ formatCurrency(Number(orderDetail.total_amount) - Number(orderDetail.amount_paid)) }}</dd></div></dl>
+              <p class="mt-3 text-sm font-semibold text-amber-900">{{ Number(orderDetail.amount_paid) >= Number(orderDetail.initial_amount_due) ? 'Initial payment received' : 'Initial payment pending' }}</p>
+              <p v-if="orderDetail.status === 'cancelled' && Number(orderDetail.amount_paid) > 0" class="mt-2 text-sm font-semibold text-red-700">Payment was recorded. Review refund handling manually.</p>
+              <button v-if="orderDetail.preorder_fulfillment_state === 'awaiting_stock' && orderDetail.payment_status === 'paid' && orderDetail.status === 'on_hold'" type="button" :disabled="releaseSaving" class="mt-3 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" @click="releasePreorder">{{ releaseSaving ? 'Checking stock…' : 'Assign arrived stock and release' }}</button>
+              <ul v-if="preorderPayments.length" class="mt-4 space-y-1 text-xs text-gray-600"><li v-for="payment in preorderPayments" :key="payment.id">{{ formatCurrency(payment.amount) }} · {{ payment.reference }} · {{ formatDate(payment.recorded_at) }}</li></ul>
+              <form v-if="!['cancelled', 'refunded'].includes(orderDetail.status) && Number(orderDetail.amount_paid) < Number(orderDetail.total_amount)" class="mt-5 grid gap-3 border-t pt-4 sm:grid-cols-[1fr_1.5fr_auto]" @submit.prevent="recordVerifiedPayment">
+                <label class="text-sm font-semibold">Verified amount<input v-model="paymentAmount" type="number" min="0.01" step="0.01" required class="mt-1 w-full rounded-lg border bg-white p-2"></label>
+                <label class="text-sm font-semibold">Bank or InstaPay reference<input v-model="paymentReference" type="text" minlength="3" maxlength="120" required class="mt-1 w-full rounded-lg border bg-white p-2"></label>
+                <button type="submit" :disabled="paymentSaving" class="self-end rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{{ paymentSaving ? 'Recording…' : 'Record verified payment' }}</button>
+                <label class="flex items-start gap-2 text-xs text-gray-700 sm:col-span-3"><input v-model="paymentVerified" type="checkbox" required> I verified receipt outside this system. This records accounting only.</label>
+              </form>
             </section>
 
             <section v-if="shippingDetail" class="rounded-2xl border p-5">
@@ -235,6 +253,8 @@
                         <p class="mt-1 text-sm text-gray-500">
                           Qty {{ item.quantity }}
                         </p>
+                        <p v-if="item.is_preorder" class="mt-1 text-xs font-bold text-amber-800">PRE-ORDER · {{ item.preorder_payment_mode === 'deposit' ? `${item.preorder_deposit_percent}% deposit` : 'Full payment' }}</p>
+                        <p v-if="item.expected_availability_date" class="text-xs text-gray-600">Expected {{ expectedAvailabilityLabel(item.expected_availability_date) }}</p>
 
                         <p
                           v-if="item.variant_name || item.variant_color_name"
@@ -315,6 +335,7 @@ import {
   formatCustomerOrderStatus,
   getCustomerOrderStatusClass
 } from '~/utils/orderStatus'
+import { expectedAvailabilityLabel } from '~/utils/preorder'
 
 const props = defineProps({
   open: {
@@ -341,6 +362,15 @@ const orderDetail = ref(null)
 const orderItems = ref([])
 const customerDetail = ref(null)
 const shippingDetail = ref(null)
+const preorderPayments = ref([])
+const paymentAmount = ref('')
+const paymentReference = ref('')
+const paymentVerified = ref(false)
+const paymentSaving = ref(false)
+const releaseSaving = ref(false)
+const visibleStatusOptions = computed(() => orderDetail.value?.is_preorder && orderDetail.value?.preorder_fulfillment_state === 'awaiting_stock'
+  ? customerOrderStatusOptions.filter(option => ['on_hold', 'cancelled'].includes(option.value))
+  : customerOrderStatusOptions)
 
 const orderTitle = computed(() => {
   if (!props.orderId) {
@@ -614,11 +644,47 @@ const loadOrderDetails = async () => {
     orderItems.value = response.items || []
     customerDetail.value = response.customer || null
     shippingDetail.value = response.shipping || null
+    preorderPayments.value = response.preorderPayments || []
   } catch (error) {
+    orderDetail.value = null
     errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not load order details.'
   } finally {
     loading.value = false
   }
+}
+
+const recordVerifiedPayment = async () => {
+  if (!paymentVerified.value || paymentSaving.value) return
+  paymentSaving.value = true
+  errorMessage.value = ''
+  try {
+    const response = await $fetch(`/api/admin-orders/${props.orderId}/payments`, {
+      method: 'POST', headers: await getAuthHeaders(),
+      body: { amount: paymentAmount.value, reference: paymentReference.value, verified: true }
+    })
+    orderDetail.value = response.order
+    paymentAmount.value = ''
+    paymentReference.value = ''
+    paymentVerified.value = false
+    await loadOrderDetails()
+    emit('updated', response.order)
+  } catch (error) {
+    errorMessage.value = error?.data?.statusMessage || 'Could not record the payment.'
+  } finally { paymentSaving.value = false }
+}
+
+const releasePreorder = async () => {
+  if (releaseSaving.value) return
+  releaseSaving.value = true
+  errorMessage.value = ''
+  try {
+    const response = await $fetch(`/api/admin-orders/${props.orderId}/release`, { method: 'POST', headers: await getAuthHeaders() })
+    orderDetail.value = response.order
+    await loadOrderDetails()
+    emit('updated', response.order)
+  } catch (error) {
+    errorMessage.value = error?.data?.statusMessage || 'Could not release the preorder.'
+  } finally { releaseSaving.value = false }
 }
 
 const updateOrderStatus = async (nextStatus) => {

@@ -35,10 +35,12 @@ const reorder = async () => {
       <p class="whitespace-nowrap text-base font-bold text-slate-900">{{ formatAccountMoney(order.total_amount, order.currency) }}</p>
     </div>
     <div class="mt-3 flex flex-wrap items-center gap-2">
+      <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-900">PRE-ORDER</span>
       <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ formatCustomerOrderStatus(order.status) }}</span>
       <span v-if="!compact && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ paymentStatusLabel(order.payment_status) }}</span>
       <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ paymentProofStatusLabel(order.payment_proof_status) }}</span>
     </div>
+    <p v-if="order.is_preorder" class="mt-2 text-xs text-slate-600">Required initial payment {{ formatAccountMoney(order.initial_amount_due, order.currency) }} · Verified paid {{ formatAccountMoney(order.amount_paid, order.currency) }} · Balance {{ formatAccountMoney(Number(order.total_amount) - Number(order.amount_paid), order.currency) }}</p>
     <div v-if="order.items?.length" class="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
       <div class="flex shrink-0 -space-x-2">
         <div v-for="item in order.items.slice(0, 3)" :key="item.id" class="flex size-11 items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-slate-100 text-slate-400">

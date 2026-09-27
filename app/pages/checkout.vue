@@ -49,7 +49,7 @@
               </div>
             </section>
 
-            <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="coupon-title">
+            <section v-if="!isPreorderCart" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="coupon-title">
               <h2 id="coupon-title" class="text-xl font-bold text-slate-950">Coupon</h2>
               <p class="mt-1 text-sm text-slate-600">Apply a code before choosing payment.</p>
               <div class="mt-4 flex flex-col gap-3 sm:flex-row"><input v-model="couponCode" type="text" placeholder="Coupon code" class="min-w-0 flex-1 rounded-xl border border-slate-300 p-3 uppercase outline-none focus:border-blue-600"><button type="button" :disabled="applyingCoupon" class="min-h-12 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white hover:bg-slate-800 disabled:bg-slate-400" @click="applyCoupon">{{ applyingCoupon ? 'Applying…' : 'Apply' }}</button><button v-if="appliedCoupon" type="button" class="min-h-12 rounded-xl px-4 text-sm font-semibold text-red-700 hover:bg-red-50" @click="removeCoupon">Remove</button></div>
@@ -59,12 +59,12 @@
 
           <template v-else>
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-wide text-emerald-700">Delivery ready</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ address.street_address }}, {{ address.city }}, {{ address.governorate }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">Edit</button></div>
+              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-wide text-emerald-700">Address saved</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ address.street_address }}, {{ address.city }}, {{ address.governorate }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">Edit</button></div>
             </section>
 
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="payment-method-title">
               <h2 id="payment-method-title" class="text-xl font-bold text-slate-950">Choose a payment method</h2>
-              <p class="mt-1 text-sm text-slate-600">Only methods enabled by the store are shown.</p>
+              <p class="mt-1 text-sm text-slate-600">{{ isPreorderCart ? 'Preorders currently use bank transfer or InstaPay. Payment remains pending until verified.' : 'Only methods enabled by the store are shown.' }}</p>
 
               <div v-if="availablePaymentMethods.length" class="mt-5 grid gap-3 sm:grid-cols-2">
                 <label v-for="method in availablePaymentMethods" :key="method.value" class="flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition" :class="selectedPaymentMethod === method.value ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-300'">
@@ -93,8 +93,8 @@
 
               <div v-else-if="paymentMethodNeedsProof(selectedPaymentMethod)" class="mt-6 space-y-4 border-t border-slate-200 pt-6">
                 <div class="rounded-2xl bg-slate-50 p-5"><h3 class="font-bold text-slate-950">Transfer instructions</h3><p class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-700">{{ paymentInstructions || 'Contact the store for transfer details before sending payment.' }}</p></div>
-                <PaymentProofUpload v-model="proofFile" backend-notice="Proof selection is available now. Secure submission will be activated with the payment backend; you can also return from My Account → Orders." />
-                <p class="text-sm text-slate-600">You can confirm the order without proof and return later. The order will stay at payment pending until proof is submitted and reviewed.</p>
+                <template v-if="isPreorderCart"><p class="text-sm text-slate-600">After confirming, use your order number when contacting the store about your transfer. Staff will record the amount only after verifying it. Your order remains unpaid until then.</p></template>
+                <template v-else><PaymentProofUpload v-model="proofFile" backend-notice="Proof selection is available now. Secure submission will be activated with the payment backend; you can also return from My Account → Orders." /><p class="text-sm text-slate-600">You can confirm the order without proof and return later. The order will stay at payment pending until proof is submitted and reviewed.</p></template>
               </div>
 
               <div v-else-if="selectedPaymentMethod === 'paypal'" class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5"><h3 class="font-bold text-blue-950">PayPal</h3><p class="mt-2 text-sm leading-6 text-blue-900">Your order will remain payment pending until the PayPal connection confirms payment.</p></div>
@@ -106,11 +106,12 @@
         <aside class="h-fit rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:sticky lg:top-40">
           <h2 class="text-xl font-bold text-slate-950">Order summary</h2>
           <div class="mt-4 max-h-64 space-y-3 overflow-y-auto pr-1">
-            <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ item.title }}</p><p class="mt-1 text-xs text-slate-500">Qty {{ item.quantity }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(item.price * item.quantity) }}</p></article>
+            <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ quoteLine(item)?.title || item.title }}</p><p v-if="item.selling_mode === 'preorder'" class="text-xs font-bold text-amber-800">PRE-ORDER · {{ (quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? `${quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent}% deposit` : 'Full payment' }}</p><p v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="text-xs text-slate-600">Expected {{ expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date) }}</p><p class="mt-1 text-xs text-slate-500">Qty {{ item.quantity }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</p></article>
           </div>
-          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>Subtotal</dt><dd>{{ formatCurrency(subtotal) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>Coupon</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount)}` : '—' }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>Shipping</dt><dd>Calculated later</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>Payment fee</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>Estimated total</dt><dd>{{ formatCurrency(totalAmount) }}</dd></div></dl>
+          <p v-if="quoteError" class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ quoteError }}</p>
+          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? 'Preorder merchandise' : 'Subtotal' }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>Coupon</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount)}` : '—' }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>Shipping</dt><dd>Calculated later</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>Payment fee</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>Order value</dt><dd>{{ formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>Required now</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>Remaining after payment</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">No payment is recorded until the store verifies it. Delivery follows availability.</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700" @click="continueToPayment">Continue to payment</button>
-          <button v-else type="button" :disabled="placingOrder || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? 'Confirming…' : 'Confirm checkout' }}</button>
+          <button v-else type="button" :disabled="placingOrder || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? 'Confirming…' : isPreorderCart ? 'Confirm pre-order' : 'Confirm checkout' }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">No card number or security code is stored by this checkout.</p>
         </aside>
       </div>
@@ -121,6 +122,7 @@
 <script setup>
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
 import { formatCardNumber, getAvailablePaymentMethods, getPaymentMethodFee, paymentMethodNeedsProof, validatePaymentCard } from '~/utils/paymentMethods'
+import { expectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({ middleware: 'customer-auth' })
 
@@ -141,6 +143,8 @@ const couponSuccess = ref('')
 const orderError = ref('')
 const selectedPaymentMethod = ref('')
 const proofFile = ref(null)
+const quote = ref(null)
+const quoteError = ref('')
 let checkoutStartedTracked = false
 
 const address = reactive({ first_name: '', last_name: '', street_address: '', city: '', phone: '', email: '', governorate: '' })
@@ -151,16 +155,43 @@ const savedCardPreviews = [
 ]
 
 const settings = computed(() => siteContent.value?.settings || {})
-const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value))
+const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
+const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value).filter(method => !isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value)))
 const discountAmount = computed(() => Number(appliedCoupon.value?.discountAmount || 0))
-const paymentFee = computed(() => getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
-const totalAmount = computed(() => Math.max(0, Number(subtotal.value || 0) - discountAmount.value + paymentFee.value))
+const paymentFee = computed(() => isPreorderCart.value && quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
+const totalAmount = computed(() => Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
+const quoteLine = item => quote.value?.lines?.find(line => line.productId === item.id && line.variantId === (item.variant_id || null))
+
+const refreshQuote = async () => {
+  if (!items.value.length) { quote.value = null; return false }
+  try {
+    const { data } = await supabase.auth.getSession()
+    if (!data.session?.access_token) return false
+    const previousQuote = quote.value
+    const nextQuote = await $fetch('/api/checkout/quote', { method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: {
+      items: items.value.map(item => ({ id: item.id, variant_id: item.variant_id || null, quantity: item.quantity })),
+      coupon_code: isPreorderCart.value ? '' : appliedCoupon.value?.code || '',
+      payment_method: selectedPaymentMethod.value
+    } })
+    quote.value = nextQuote
+    if (previousQuote && (previousQuote.orderValue !== nextQuote.orderValue || previousQuote.requiredNow !== nextQuote.requiredNow || JSON.stringify(previousQuote.lines) !== JSON.stringify(nextQuote.lines))) {
+      quoteError.value = 'The current price or required payment changed. Review the updated summary, then continue.'
+      return false
+    }
+    quoteError.value = ''
+    return true
+  } catch (error) {
+    quoteError.value = error?.data?.statusMessage || 'Could not refresh current prices and availability.'
+    return false
+  }
+}
 const hasSavedAddress = computed(() => Boolean(address.street_address && address.city && address.governorate))
 const paymentInstructions = computed(() => selectedPaymentMethod.value === 'bank_transfer' ? settings.value.payment_bank_transfer_instructions : settings.value.payment_instapay_instructions)
 
 watch(availablePaymentMethods, methods => {
   if (!methods.some(method => method.value === selectedPaymentMethod.value)) selectedPaymentMethod.value = methods[0]?.value || ''
 }, { immediate: true })
+watch(selectedPaymentMethod, () => { if (checkoutStep.value === 'payment') refreshQuote() })
 
 const formatCurrency = value => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
 const getMethodFee = method => getPaymentMethodFee(settings.value, method)
@@ -194,9 +225,10 @@ const validateAddress = () => {
   return true
 }
 
-const continueToPayment = () => {
+const continueToPayment = async () => {
   orderError.value = ''
   if (!validateAddress()) return
+  if (!await refreshQuote()) return
   if (!availablePaymentMethods.value.length) { orderError.value = 'No payment method is available. Please contact the store.'; return }
   checkoutStep.value = 'payment'
   nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
@@ -231,6 +263,7 @@ const placeOrder = async () => {
   if (!validateAddress()) { checkoutStep.value = 'shipping'; return }
   const paymentError = validatePayment()
   if (paymentError) { orderError.value = paymentError; return }
+  if (!await refreshQuote()) return
   placingOrder.value = true
   try {
     const { data: sessionData } = await supabase.auth.getSession()
@@ -254,6 +287,8 @@ const placeOrder = async () => {
 
 onMounted(async () => {
   loadCart(); couponCode.value = appliedCoupon.value?.code || ''
+  if (isPreorderCart.value && appliedCoupon.value) resetCoupon()
+  await refreshQuote()
   if (!checkoutStartedTracked && !isEmpty.value && cartId.value) { checkoutStartedTracked = true; trackEvent('checkout_started', { cartId: cartId.value, quantity: itemCount.value, source: 'checkout_page' }) }
   await loadCustomerProfile()
 })

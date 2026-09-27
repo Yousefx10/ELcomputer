@@ -13,13 +13,13 @@
       </div>
       <p v-if="brandName || categoryName" class="store-product-brand">{{ brandName || categoryName }}</p>
       <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-title"><h3>{{ product.title }}</h3></NuxtLink>
-      <p class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock }">
+      <p class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
-        {{ isOutOfStock ? (isPurchasable ? 'Available to order' : 'Out of stock') : 'In stock' }}
+        {{ isComingSoon ? 'Coming Soon' : isPreorder ? 'Pre-order' : isOutOfStock ? (isPurchasable ? 'Available to order' : 'Out of stock') : 'In stock' }}
       </p>
       <button type="button" :disabled="!isPurchasable" :aria-label="requiresOptionSelection ? `Choose options for ${product.title}` : `Add ${product.title} to cart`" class="store-product-add" @click="handleAddToCart">
         <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
-        {{ !isPurchasable ? 'Out of stock' : (addedToCart ? 'Added' : (requiresOptionSelection ? 'Options' : 'Add to cart')) }}
+        {{ isComingSoon ? 'Coming Soon' : isPreorder ? 'View pre-order' : !isPurchasable ? 'Out of stock' : (addedToCart ? 'Added' : (requiresOptionSelection ? 'Options' : 'Add to cart')) }}
       </button>
       <span class="sr-only" role="status">{{ cartFeedback }}</span>
     </div>
@@ -49,11 +49,13 @@ const numericOldPrice = computed(() => Number(props.product.old_price || 0))
 const brandName = computed(() => String(props.product.brand?.name || '').trim())
 const categoryName = computed(() => String(props.product.category?.name || '').trim())
 const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
+const isPreorder = computed(() => props.product.selling_mode === 'preorder')
+const isComingSoon = computed(() => props.product.selling_mode === 'coming_soon')
 const allowOutOfStockPurchases = computed(() => {
   return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
     && !props.product.is_serialized
 })
-const isPurchasable = computed(() => !isOutOfStock.value || allowOutOfStockPurchases.value)
+const isPurchasable = computed(() => isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value)
 const embeddedVariants = computed(() => {
   if (Array.isArray(props.product.variants)) {
     return props.product.variants
@@ -119,7 +121,7 @@ const handleAddToCart = async () => {
     return
   }
 
-  if (requiresOptionSelection.value) {
+  if (isPreorder.value || requiresOptionSelection.value) {
     await openProductOptions()
     return
   }

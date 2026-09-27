@@ -332,6 +332,9 @@ const loadOrderForDaftra = async (supabaseAdmin, orderId) => {
 
 export const syncOrderToDaftra = async (supabaseAdmin, orderId) => {
   const { order, items } = await loadOrderForDaftra(supabaseAdmin, orderId)
+  if (order.is_preorder) {
+    throw createError({ statusCode: 409, statusMessage: 'Preorder export requires dedicated Daftra payment accounting.' })
+  }
   const clientLink = await ensureDaftraClient(supabaseAdmin, order)
   const catalog = await getOrderCatalog(supabaseAdmin, items)
   const productLinks = []

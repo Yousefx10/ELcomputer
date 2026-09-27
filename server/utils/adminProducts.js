@@ -17,7 +17,11 @@ const PRODUCT_MUTABLE_FIELDS = [
   'color_name',
   'color_hex',
   'is_serialized',
-  'is_published'
+  'is_published',
+  'selling_mode', 'expected_availability_date', 'availability_message',
+  'preorder_active', 'preorder_starts_at', 'preorder_ends_at',
+  'preorder_payment_mode', 'preorder_deposit_percent',
+  'preorder_total_limit', 'preorder_customer_limit'
 ]
 
 const normalizeText = (value) => {
@@ -215,6 +219,48 @@ export const normalizeAdminProductPayload = (body = {}, {
     })
   }
 
+  const sellingMode = String(body?.selling_mode || 'normal').trim().toLowerCase()
+  if (!['normal', 'coming_soon', 'preorder'].includes(sellingMode)) {
+    throw createError({ statusCode: 400, statusMessage: 'Choose a valid selling status.' })
+  }
+  if (sellingMode === 'preorder' && price <= 0) {
+    throw createError({ statusCode: 400, statusMessage: 'A preorder needs a price above zero.' })
+  }
+  const dateValue = value => {
+    const text = String(value || '').trim()
+    if (!text) return null
+    const parsed = new Date(`${text}T00:00:00Z`)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(text) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== text) {
+      throw createError({ statusCode: 400, statusMessage: 'Enter a valid expected availability date.' })
+    }
+    return text
+  }
+  const instantValue = (value, label) => {
+    const text = String(value || '').trim()
+    if (!text) return null
+    const date = new Date(text)
+    if (Number.isNaN(date.getTime())) throw createError({ statusCode: 400, statusMessage: `Enter a valid ${label}.` })
+    return date.toISOString()
+  }
+  const optionalLimit = (value, label) => {
+    if (value === '' || value === null || value === undefined) return null
+    const limit = Number(value)
+    if (!Number.isInteger(limit) || limit < 1) throw createError({ statusCode: 400, statusMessage: `${label} must be a positive whole number.` })
+    return limit
+  }
+  const preorderPaymentMode = String(body?.preorder_payment_mode || 'full').trim().toLowerCase()
+  const depositPercent = body?.preorder_deposit_percent === '' || body?.preorder_deposit_percent == null
+    ? null : Number(body.preorder_deposit_percent)
+  if (sellingMode === 'preorder' && (
+    !['full', 'deposit'].includes(preorderPaymentMode)
+    || (preorderPaymentMode === 'deposit' && (!Number.isFinite(depositPercent) || depositPercent <= 0 || depositPercent >= 100 || !/^\d{1,2}(?:\.\d{1,2})?$/.test(String(body.preorder_deposit_percent))))
+  )) throw createError({ statusCode: 400, statusMessage: 'Deposit must be above 0% and below 100%.' })
+  const startsAt = sellingMode === 'preorder' ? instantValue(body?.preorder_starts_at, 'preorder start') : null
+  const endsAt = sellingMode === 'preorder' ? instantValue(body?.preorder_ends_at, 'preorder close') : null
+  if (startsAt && endsAt && endsAt <= startsAt) throw createError({ statusCode: 400, statusMessage: 'Preorder close must be after its start.' })
+  const availabilityMessage = sellingMode === 'normal' ? null : normalizeText(body?.availability_message)
+  if (availabilityMessage?.length > 500) throw createError({ statusCode: 400, statusMessage: 'Customer message must be 500 characters or fewer.' })
+
   return {
     title,
     slug,
@@ -237,7 +283,17 @@ export const normalizeAdminProductPayload = (body = {}, {
     color_hex: normalizeText(body?.color_hex),
     is_serialized: isSerialized,
     variants,
-    is_published: normalizeBoolean(body?.is_published)
+    is_published: normalizeBoolean(body?.is_published),
+    selling_mode: sellingMode,
+    expected_availability_date: sellingMode === 'normal' ? null : dateValue(body?.expected_availability_date),
+    availability_message: availabilityMessage,
+    preorder_active: sellingMode === 'preorder' ? normalizeBoolean(body?.preorder_active) : true,
+    preorder_starts_at: startsAt,
+    preorder_ends_at: endsAt,
+    preorder_payment_mode: sellingMode === 'preorder' ? preorderPaymentMode : 'full',
+    preorder_deposit_percent: sellingMode === 'preorder' && preorderPaymentMode === 'deposit' ? depositPercent : null,
+    preorder_total_limit: sellingMode === 'preorder' ? optionalLimit(body?.preorder_total_limit, 'Total preorder limit') : null,
+    preorder_customer_limit: sellingMode === 'preorder' ? optionalLimit(body?.preorder_customer_limit, 'Per-customer limit') : null
   }
 }
 

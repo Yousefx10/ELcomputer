@@ -34,7 +34,11 @@ const buildCartKey = (productId, variantId = null) => {
   return `${String(productId)}:${variantId || 'default'}`
 }
 
-const getMaximumCartQuantity = (stockQuantity, allowOutOfStockPurchases = false) => {
+const getMaximumCartQuantity = (stockQuantity, allowOutOfStockPurchases = false, preorderLimit = null) => {
+  if (preorderLimit != null) {
+    const limit = Number(preorderLimit)
+    return Number.isFinite(limit) ? Math.max(1, Math.min(99, limit)) : 99
+  }
   if (allowOutOfStockPurchases) {
     return 99
   }
@@ -64,9 +68,13 @@ const normalizeCartItem = (item) => {
       : (item.stock_quantity || 0)
   )
   const isSerialized = Boolean(item.is_serialized)
+  const sellingMode = ['normal', 'coming_soon', 'preorder'].includes(item.selling_mode) ? item.selling_mode : 'normal'
   const allowOutOfStockPurchases = Boolean(item.allow_out_of_stock_purchases)
-    && !isSerialized
-  const maximumQuantity = getMaximumCartQuantity(stockQuantity, allowOutOfStockPurchases)
+    && !isSerialized || sellingMode === 'preorder'
+  const preorderLimit = sellingMode === 'preorder' ? Math.min(
+    Number(item.preorder_customer_limit || 99), Number(item.preorder_remaining ?? 99)
+  ) : null
+  const maximumQuantity = getMaximumCartQuantity(stockQuantity, allowOutOfStockPurchases, preorderLimit)
 
   return {
     id: productId,
@@ -78,6 +86,13 @@ const normalizeCartItem = (item) => {
     variant_color_name: String(item.variant_color_name ?? variant?.color_name ?? ''),
     variant_color_hex: String(item.variant_color_hex ?? variant?.color_hex ?? ''),
     is_serialized: isSerialized,
+    selling_mode: sellingMode,
+    expected_availability_date: item.expected_availability_date || null,
+    availability_message: String(item.availability_message || ''),
+    preorder_payment_mode: item.preorder_payment_mode === 'deposit' ? 'deposit' : 'full',
+    preorder_deposit_percent: Number(item.preorder_deposit_percent || 0),
+    preorder_customer_limit: item.preorder_customer_limit || null,
+    preorder_remaining: item.preorder_remaining ?? null,
     slug: String(item.slug || ''),
     title: String(item.title || 'Product'),
     image_url: String(item.image_url || ''),
@@ -264,7 +279,8 @@ export const useCart = () => {
 
     const maximumQuantity = getMaximumCartQuantity(
       existingItem.stock_quantity,
-      existingItem.allow_out_of_stock_purchases
+      existingItem.allow_out_of_stock_purchases,
+      existingItem.selling_mode === 'preorder' ? Math.min(Number(existingItem.preorder_customer_limit || 99), Number(existingItem.preorder_remaining ?? 99)) : null
     )
     const normalizedQuantity = Math.min(normalizePositiveInteger(nextQuantity, 1), maximumQuantity)
     const previousQuantity = normalizePositiveInteger(existingItem.quantity, 1)
@@ -327,6 +343,10 @@ export const useCart = () => {
       quantity
     })
 
+    if (normalizedProduct?.selling_mode === 'coming_soon') return { success: false, message: 'This product is Coming Soon.' }
+    if (normalizedProduct && items.value.some(item => (item.selling_mode === 'preorder') !== (normalizedProduct.selling_mode === 'preorder'))) {
+      return { success: false, message: 'Place preorders and ready-to-ship products in separate orders.' }
+    }
     if (
       !normalizedProduct ||
       (
@@ -347,7 +367,8 @@ export const useCart = () => {
     if (existingItem) {
       const maximumQuantity = getMaximumCartQuantity(
         normalizedProduct.stock_quantity,
-        normalizedProduct.allow_out_of_stock_purchases
+        normalizedProduct.allow_out_of_stock_purchases,
+        normalizedProduct.selling_mode === 'preorder' ? Math.min(Number(normalizedProduct.preorder_customer_limit || 99), Number(normalizedProduct.preorder_remaining ?? 99)) : null
       )
       const nextQuantity = Math.min(existingItem.quantity + normalizedProduct.quantity, maximumQuantity)
       const addedQuantity = Math.max(0, nextQuantity - existingItem.quantity)

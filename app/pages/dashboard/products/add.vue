@@ -215,6 +215,8 @@
           />
         </div>
 
+        <DashboardProductsSellingModeFields v-model="sellingConfig" />
+
         <DashboardProductsVariantsEditor
           v-model="variants"
           :disabled="saving"
@@ -276,6 +278,7 @@
 </template>
 
 <script setup>
+import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
 definePageMeta({
   layout: 'dashboard'
 })
@@ -317,6 +320,7 @@ const variants = ref([{
   color_hex: ''
 }])
 const isPublished = ref(true)
+const sellingConfig = ref(defaultSellingConfig())
 
 const categories = ref([])
 const brands = ref([])
@@ -497,6 +501,7 @@ const addProduct = async () => {
         color_hex: '',
         is_serialized: true,
         variants: variants.value,
+        ...serializeSellingConfig(sellingConfig.value),
         is_published: isPublished.value
       }
     })

@@ -24,6 +24,7 @@
           </h1>
 
           <div class="mt-4 flex flex-wrap gap-3">
+            <span v-if="orderData.order.is_preorder" class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">PRE-ORDER</span>
             <span class="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">
               {{ formatStatus(orderData.order.status) }}
             </span>
@@ -52,8 +53,10 @@
 
             <div class="rounded-2xl bg-white p-6 shadow">
               <h2 class="text-2xl font-bold text-gray-900">Payment</h2>
+              <p v-if="orderData.order.is_preorder" class="mt-2 text-sm text-gray-700">Required now: {{ formatCurrency(orderData.order.initial_amount_due) }}. Verified paid: {{ formatCurrency(orderData.order.amount_paid) }}. The balance remains due when arranged with the store.</p>
               <p class="mt-3 text-sm font-semibold text-gray-900">{{ getPaymentMethodLabel(orderData.order.payment_method) }}</p>
-              <div v-if="paymentMethodNeedsProof(orderData.order.payment_method)" class="mt-4 rounded-xl bg-amber-50 p-4">
+              <div v-if="orderData.order.is_preorder" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">The store will verify your bank or InstaPay transfer and record the actual amount paid. Keep your transfer reference.</div>
+              <div v-else-if="paymentMethodNeedsProof(orderData.order.payment_method)" class="mt-4 rounded-xl bg-amber-50 p-4">
                 <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(orderData.order.payment_proof_status)">{{ paymentProofStatusLabel(orderData.order.payment_proof_status) }}</span>
                 <p class="mt-2 text-sm leading-6 text-amber-900">You can add or retry proof of payment from this order in My Account.</p>
               </div>
@@ -83,6 +86,8 @@
                     <p class="font-semibold text-gray-900">
                       {{ item.product_title }}
                     </p>
+                    <p v-if="item.is_preorder" class="mt-1 text-xs font-bold text-amber-900">PRE-ORDER · {{ item.preorder_payment_mode === 'deposit' ? `${item.preorder_deposit_percent}% deposit` : 'Full payment' }}</p>
+                    <p v-if="item.expected_availability_date" class="text-xs text-gray-600">Expected {{ expectedAvailabilityLabel(item.expected_availability_date) }}</p>
 
                     <p class="mt-1 text-sm text-gray-500">
                       Qty {{ item.quantity }}
@@ -145,6 +150,7 @@
                 <span>Total</span>
                 <span>{{ formatCurrency(orderData.order.total_amount) }}</span>
               </div>
+              <template v-if="orderData.order.is_preorder"><div class="flex justify-between text-sm font-semibold text-blue-800"><span>Required initial payment</span><span>{{ formatCurrency(orderData.order.initial_amount_due) }}</span></div><div class="flex justify-between text-sm text-gray-700"><span>Balance remaining</span><span>{{ formatCurrency(Number(orderData.order.total_amount) - Number(orderData.order.amount_paid)) }}</span></div></template>
             </div>
 
             <NuxtLink
@@ -162,6 +168,7 @@
 
 <script setup>
 import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
+import { expectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({
   middleware: 'customer-auth'

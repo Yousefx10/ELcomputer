@@ -109,7 +109,7 @@ const throwCheckoutDatabaseError = (error) => {
   if (isMissingSchemaError(error)) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Run the latest serialized inventory migration first, then try again.'
+      statusMessage: 'Apply the latest checkout database migrations, then try again.'
     })
   }
 
@@ -152,7 +152,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
     .from('customer_orders')
-    .select('id, order_number, subtotal_amount, discount_amount, payment_fee_amount, total_amount, payment_method, payment_proof_status')
+    .select('id, order_number, subtotal_amount, discount_amount, payment_fee_amount, total_amount, payment_method, payment_proof_status, is_preorder, initial_amount_due, amount_paid')
     .eq('user_id', authUser.id)
     .eq('checkout_cart_id', cartId)
     .maybeSingle()
@@ -168,7 +168,7 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 500,
       statusMessage: isMissingSchemaError(existingOrderError)
-        ? 'Run the latest serialized inventory migration first, then try again.'
+        ? 'Apply the latest checkout database migrations, then try again.'
         : 'Could not verify this cart. Please try again.'
     })
   }
@@ -184,12 +184,24 @@ export default defineEventHandler(async (event) => {
         totalAmount: Number(existingOrder.total_amount || 0),
         paymentMethod: existingOrder.payment_method,
         paymentProofStatus: existingOrder.payment_proof_status,
+        isPreorder: existingOrder.is_preorder,
+        initialAmountDue: Number(existingOrder.initial_amount_due || 0),
+        amountPaid: Number(existingOrder.amount_paid || 0),
         coupon: null
       }
     }
   }
 
   const orderItems = normalizeOrderItems(body?.items)
+  if (body?.items?.some(item => [
+    'price', 'unit_price', 'line_total', 'total_amount', 'preorder_price',
+    'deposit_percent', 'preorder_deposit_percent', 'preorder_payment_mode',
+    'amount_due', 'initial_amount_due', 'required_now', 'amount_paid',
+    'remaining_balance', 'balance_remaining', 'selling_mode',
+    'preorder_total_limit', 'preorder_customer_limit'
+  ].some(key => Object.hasOwn(item || {}, key)))) {
+    throw createError({ statusCode: 400, statusMessage: 'Cart financial values must come from the store.' })
+  }
   const firstName = normalizeRequiredText(body?.address?.first_name, 'First name')
   const lastName = String(body?.address?.last_name || '').trim()
   const streetAddress = normalizeRequiredText(body?.address?.street_address, 'Street address')
@@ -244,6 +256,29 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'The selected payment method is not available.'
     })
   }
+  const { data: purchaseProducts, error: purchaseProductsError } = await supabaseAdmin
+    .from('products')
+    .select('id, selling_mode')
+    .in('id', [...new Set(orderItems.map(item => item.product_id))])
+
+  if (purchaseProductsError || purchaseProducts?.length !== new Set(orderItems.map(item => item.product_id)).size) {
+    throw createError({ statusCode: 409, statusMessage: 'One or more products are unavailable. Refresh your cart.' })
+  }
+
+  const sellingModes = new Set(purchaseProducts.map(product => product.selling_mode))
+  if (sellingModes.has('coming_soon')) {
+    throw createError({ statusCode: 409, statusMessage: 'Coming Soon products cannot be ordered yet.' })
+  }
+  if (sellingModes.size > 1) {
+    throw createError({ statusCode: 409, statusMessage: 'Place preorder and ready-to-ship products in separate orders.' })
+  }
+  const isPreorder = sellingModes.has('preorder')
+  if (isPreorder && couponCode) {
+    throw createError({ statusCode: 400, statusMessage: 'Coupons are not available for preorders.' })
+  }
+  if (isPreorder && !['bank_transfer', 'instapay'].includes(paymentMethod)) {
+    throw createError({ statusCode: 400, statusMessage: 'Preorders currently use bank transfer or InstaPay.' })
+  }
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
   const orderPayload = {
     order_number: generateOrderNumber(),
@@ -260,8 +295,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data: orderResult, error: orderError } = await supabaseAdmin.rpc(
-    'commerce_create_customer_order',
-    {
+    isPreorder ? 'commerce_create_preorder' : 'commerce_create_customer_order',
+    isPreorder ? {
+      p_user_id: authUser.id,
+      p_order: orderPayload,
+      p_items: orderItems,
+      p_cart_id: cartId
+    } : {
       p_user_id: authUser.id,
       p_order: orderPayload,
       p_items: orderItems,
@@ -348,13 +388,15 @@ export default defineEventHandler(async (event) => {
         supabaseAdmin,
         userId: authUser.id,
         orderId,
-        cartId
+        cartId,
+        source: isPreorder ? 'preorder_checkout' : 'checkout'
       })
     } catch {
       console.error('Could not record checkout analytics.')
     }
 
     const processDaftraInBackground = async () => {
+      if (isPreorder) return
       try {
         const erpSettings = await getErpSettings(supabaseAdmin)
 
@@ -389,6 +431,9 @@ export default defineEventHandler(async (event) => {
       totalAmount: Number(orderRecord.total_amount || 0),
       paymentMethod: orderRecord.payment_method,
       paymentProofStatus: orderRecord.payment_proof_status,
+      isPreorder: Boolean(orderRecord.is_preorder),
+      initialAmountDue: Number(orderRecord.initial_amount_due || 0),
+      amountPaid: Number(orderRecord.amount_paid || 0),
       coupon: null
     }
   }

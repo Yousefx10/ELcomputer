@@ -49,6 +49,9 @@ export default defineEventHandler(async (event) => {
         last_name,
         governorate,
         total_amount,
+        is_preorder,
+        initial_amount_due,
+        amount_paid,
         status,
         created_at,
         updated_at
@@ -104,6 +107,9 @@ export default defineEventHandler(async (event) => {
         last_name,
         governorate,
         total_amount,
+        is_preorder,
+        initial_amount_due,
+        amount_paid,
         status,
         created_at,
         updated_at

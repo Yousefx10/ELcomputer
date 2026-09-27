@@ -170,6 +170,7 @@
                     <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
                     {{ formatCustomerOrderStatus(order.status) }}
                   </span>
+                  <span v-if="order.is_preorder" class="ml-2 rounded-full bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-900">PRE-ORDER</span>
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-right text-xs font-semibold tabular-nums text-gray-900">{{ formatCurrency(order.total_amount) }}</td>
                 <td class="pe-5 text-gray-300 transition-colors group-hover:text-gray-900"><Icon name="lucide:chevron-right" size="16" aria-hidden="true" /></td>
@@ -185,6 +186,7 @@
               <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium" :class="getCustomerOrderStatusClass(order.status)">
                 <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />{{ formatCustomerOrderStatus(order.status) }}
               </span>
+              <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-900">PRE-ORDER</span>
             </div>
             <div class="flex items-end justify-between gap-3">
               <div class="min-w-0">

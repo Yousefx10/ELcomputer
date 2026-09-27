@@ -28,10 +28,12 @@ export const formatAccountDate = (value, withTime = false) => {
 }
 
 export const paymentStatusLabel = value => ({
+  partially_paid: 'Partially paid',
   pending: 'Payment pending', paid: 'Paid', failed: 'Payment failed', refunded: 'Refunded'
 })[value] || 'Payment status unavailable'
 
 export const paymentStatusClass = value => ({
+  partially_paid: 'bg-blue-100 text-blue-700',
   pending: 'bg-amber-50 text-amber-800',
   paid: 'bg-emerald-50 text-emerald-800',
   failed: 'bg-red-50 text-red-800',

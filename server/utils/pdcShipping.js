@@ -310,6 +310,10 @@ const processPdcJob = async ({ supabaseAdmin, settings, job }) => {
       throw new ShippingPreparationError('The order is not marked as paid.')
     }
 
+    if (orderResult.data.is_preorder && orderResult.data.preorder_fulfillment_state !== 'ready') {
+      throw new ShippingPreparationError('The preorder is awaiting physical stock.')
+    }
+
     if (!['not_required', 'approved'].includes(orderResult.data.shipping_review_status)) {
       throw new ShippingPreparationError('The order still needs review.')
     }

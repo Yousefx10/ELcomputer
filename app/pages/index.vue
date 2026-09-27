@@ -73,6 +73,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
         image_url,
         stock_quantity,
         is_serialized,
+        selling_mode,
         is_featured,
         is_top_seller,
         category:categories (
