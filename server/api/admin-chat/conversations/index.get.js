@@ -79,9 +79,19 @@ export default defineEventHandler(async (event) => {
   if (error) chatError(error, 'Could not load chat inbox.')
   const items = (data || []).slice(0, 50)
   const summaries = await loadChatUnreadSummary(actor, items.map(item => item.id))
-  const waiting = await actor.supabase.from('chat_conversations')
-    .select('id', { count: 'exact', head: true }).eq('status', 'waiting')
-  if (waiting.error) chatError(waiting.error, 'Could not load waiting count.')
+  const countView = (key) => {
+    let count = actor.supabase.from('chat_conversations').select('id', { count: 'exact', head: true })
+    if (['waiting', 'active', 'closed'].includes(key)) count = count.eq('status', key)
+    if (key === 'mine') count = count.eq('assigned_admin_id', actor.id).neq('status', 'closed')
+    if (key === 'unassigned') count = count.is('assigned_admin_id', null).neq('status', 'closed')
+    if (key === 'offline') count = count.eq('intake_mode', 'offline').neq('status', 'closed')
+    return count
+  }
+  const countKeys = ['waiting', 'mine', 'active', 'unassigned', 'closed', 'offline']
+  const countResults = await Promise.all(countKeys.map(countView))
+  const failedCount = countResults.find(result => result.error)
+  if (failedCount?.error) chatError(failedCount.error, 'Could not load inbox counts.')
+  const viewCounts = Object.fromEntries(countKeys.map((key, index) => [key, countResults[index].count || 0]))
   return { items: items.map(item => chatUnreadItem(item, summaries)), page,
-    hasMore: (data || []).length > 50, waitingCount: waiting.count || 0 }
+    hasMore: (data || []).length > 50, waitingCount: viewCounts.waiting, viewCounts }
 })

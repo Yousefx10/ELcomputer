@@ -791,3 +791,20 @@ Account loading follow-up (deployed): The `useSupabaseUser()` value is JWT claim
 Admin `/dashboard/settings?tab=account-dashboard` now controls `site_settings.account_dashboard_style`. Migration `20260920140000_customer_account_appearance.sql` defaults to Modern and allows only Classic/Modern. Classic retains the preceding account interior; Modern follows the reference's information hierarchy with grouped navigation, purchase history, wallet balance, profile details, messages, and support. Unsupported features were omitted, and the store header was not changed. The public `/api/storefront/account-appearance` endpoint is uncached. Files added: `app/composables/useAccountAppearance.js`, `server/api/storefront/account-appearance.get.js`, the migration, and `tests/account-dashboard-theme.test.mjs`. Files changed: `app/layouts/account.vue`, `app/components/account/Navigation.vue`, `app/pages/account/index.vue`, `app/pages/dashboard/settings.vue`, and `app/utils/dashboardSettings.js`.
 
 All 88 tests, Nuxt typecheck, production build, and diff check passed. The linked dry run listed only `20260920140000`; it was applied once, and `supabase migration list --linked` confirmed local/remote parity. The built local API and live public API returned `modern`. `npm run deploy:check` confirmed exact user, site directory, PM2 process, and health before and after `npm run deploy`. Deployment restarted only `new-elcomputer`, retained backup `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260920-172753-15422`, and passed internal/public health. Afterward public `/` and the appearance API returned 200; anonymous account pages redirected to login. PM2 was online in fork mode with the expected cwd/entry, and its error log had not changed since restart. Signed-in customer pages, mobile appearance, browser console/network, and an actual admin Classic→Modern save remain unverified; test these before treating visual acceptance as complete.
+
+## Live Chat delivery and workspace update — deployed 2026-09-27
+
+- Added a visible-thread HTTP reconciliation every 2.5 seconds for customer and staff views while retaining private Realtime as the immediate signal path. The staff inbox also catches up every 10 seconds.
+- Reopening the customer launcher now reuses the loaded conversation. Initial loading appears only while the chat identity is first resolved.
+- Renamed customer “History” to “Past chats.” It lists earlier Live Chat conversations.
+- Collapsed the customer order tools behind a compact order row.
+- Bounded the staff chat workspace to the viewport so the transcript scrolls and the reply composer remains visible.
+- Desktop staff now opens the first available conversation automatically.
+- Replaced the long staff context column with Customer, Orders, and Activity tabs plus a closeable details panel on smaller screens.
+- Added exact server counts for Waiting, Assigned to me, Active, Unassigned, Closed, and Offline messages.
+- Changed files: `app/components/live-chat/Launcher.vue`, `app/pages/dashboard/live-chat.vue`, `server/api/admin-chat/conversations/index.get.js`, `PROJECT_STATE.md`, and `CODEX_HANDOFF.md`.
+- No schema, migration, permission, or Realtime policy change was needed.
+
+Validation: all 158 tests passed; Nuxt typecheck, production build, and `git diff --check` passed. Local built-server smoke returned 200 for home/chat status and 401 for the unauthenticated staff inbox. The locked deployment preflight and production deployment passed. Live home/chat status return 200, anonymous staff inbox access returns 401, and the post-deployment PM2 health check passes. Retained backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-162405-68087`.
+
+Manual follow-up: use one customer browser and one authorized staff browser to measure message arrival in both directions, confirm the composer remains visible at common laptop sizes, and review the details tabs with a customer who has orders and prior chats.

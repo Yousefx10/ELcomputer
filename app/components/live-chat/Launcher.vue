@@ -29,6 +29,7 @@ const orders = ref([])
 const orderNumber = ref('')
 const selectedOrderId = ref('')
 const orderBusy = ref(false)
+const orderToolsOpen = ref(false)
 const guestToLink = ref(null)
 const conversationAttachmentPolicy = ref(null)
 const selectedFiles = shallowRef([])
@@ -76,12 +77,18 @@ const attachmentLimitText = computed(() => {
   return `Up to ${attachmentPolicy.value.maxPerMessage} files, ${size} each.`
 })
 const orderChoices = computed(() => [...new Map(orders.value.map(order => [order.id, order])).values()])
+const linkedOrderLabel = computed(() => {
+  if (!conversation.value?.order_id) return 'Add an order'
+  const order = orderChoices.value.find(item => item.id === conversation.value.order_id)
+  return order ? `Order #${order.order_number || order.id.slice(0, 8)}` : 'Linked order'
+})
 
 let channel = null
 let authSubscription = null
 let refreshTimer = null
 let tickTimer = null
 let statusTimer = null
+let fallbackTimer = null
 let runId = 0
 let selectionId = 0
 let syncInProgress = false
@@ -315,6 +322,7 @@ const selectConversation = async (item, currentRun = runId) => {
   const selected = ++selectionId
   errorText.value = ''
   loading.value = true
+  orderToolsOpen.value = false
   await clearSubscription()
   if (currentRun !== runId || selected !== selectionId) return
   conversation.value = null
@@ -495,6 +503,10 @@ const openPanel = async () => {
   closeButton.value?.focus()
   await loadStatus()
   if (!status.value.enabled) { closePanel(); return }
+  if (actor.value) {
+    if (conversation.value) scheduleReconcile()
+    return
+  }
   await loadActor()
 }
 
@@ -636,6 +648,7 @@ const newConversation = async () => {
   await clearSubscription()
   conversation.value = null
   selectedOrderId.value = ''
+  orderToolsOpen.value = false
   conversationAttachmentPolicy.value = null
   clearFiles()
   messages.value = []
@@ -696,6 +709,9 @@ onMounted(() => {
   loadStatus().then(loadInitialUnread)
   tickTimer = setInterval(() => { clock.value = Date.now() }, 500)
   statusTimer = setInterval(loadStatus, 60000)
+  fallbackTimer = setInterval(() => {
+    if (panelOpen.value && conversation.value && document.visibilityState === 'visible') scheduleReconcile()
+  }, 2500)
   window.addEventListener('focus', onWindowFocus)
   window.addEventListener('online', onWindowFocus)
   window.addEventListener('popstate', onPopState)
@@ -706,6 +722,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (tickTimer) clearInterval(tickTimer)
   if (statusTimer) clearInterval(statusTimer)
+  if (fallbackTimer) clearInterval(fallbackTimer)
   if (refreshTimer) clearTimeout(refreshTimer)
   if (typingTimer) clearTimeout(typingTimer)
   window.removeEventListener('focus', onWindowFocus)
@@ -752,7 +769,7 @@ onBeforeUnmount(() => {
         </button>
         <span v-else class="chat-toolbar-label">{{ showThread ? `Conversation #${conversation.reference_number}` : 'How can we help?' }}</span>
         <button v-if="conversations.length && screen !== 'history'" type="button" class="chat-text-button" @click="showHistory">
-          History
+          Past chats
         </button>
       </div>
 
@@ -761,7 +778,7 @@ onBeforeUnmount(() => {
         <button type="button" :disabled="orderBusy" @click="linkGuestChat">Move chat</button>
       </div>
 
-      <div v-if="loading" class="chat-center" role="status" aria-live="polite">Loading your conversation…</div>
+      <div v-if="loading && !actor" class="chat-center" role="status" aria-live="polite">Opening chat…</div>
 
       <template v-else-if="screen === 'history'">
         <div class="chat-scroll chat-history" aria-label="Previous conversations" :aria-busy="loading">
@@ -775,13 +792,18 @@ onBeforeUnmount(() => {
       </template>
 
       <template v-else-if="showThread">
-        <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed' && !conversation.ticket_id" class="chat-order-link">
-          <span>{{ conversation.order_id ? 'Order linked' : 'No order linked' }}</span>
-          <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
-          <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link</button>
-          <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Unlink</button>
-          <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
-          <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+        <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed' && !conversation.ticket_id" class="chat-order-panel">
+          <button type="button" class="chat-order-summary" :aria-expanded="orderToolsOpen" @click="orderToolsOpen = !orderToolsOpen">
+            <span>{{ linkedOrderLabel }}</span>
+            <Icon :name="orderToolsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="15" aria-hidden="true" />
+          </button>
+          <div v-if="orderToolsOpen" class="chat-order-link">
+            <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+            <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link</button>
+            <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Unlink</button>
+            <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
+            <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+          </div>
         </div>
         <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">The related order is now managed on your support ticket.</p>
         <div ref="messageList" class="chat-scroll chat-messages" role="log" aria-label="Chat messages"
@@ -1028,6 +1050,31 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--chat-line);
   background: #f7f9fc;
   font-size: 11px;
+}
+
+.chat-order-panel {
+  border-bottom: 1px solid var(--chat-line);
+  background: #f7f9fc;
+}
+
+.chat-order-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 14px;
+  border: 0;
+  background: transparent;
+  color: #344863;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-order-panel .chat-order-link {
+  border-top: 1px solid var(--chat-line);
+  border-bottom: 0;
 }
 
 .chat-account-link button,

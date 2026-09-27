@@ -17,7 +17,7 @@ const applied = ref({})
 const page = ref(1)
 const queue = ref([])
 const queueMore = ref(false)
-const waitingCount = ref(0)
+const viewCounts = ref(Object.fromEntries(views.map(option => [option.key, 0])))
 const queueLoading = ref(false)
 const queueError = ref('')
 const agents = ref([])
@@ -53,6 +53,7 @@ const sendKey = ref(null)
 const activePane = ref('queue')
 const filtersOpen = ref(false)
 const contextOpen = ref(false)
+const contextTab = ref('customer')
 const newBelow = ref(false)
 const liveAnnouncement = ref('')
 const connection = ref('connecting')
@@ -73,6 +74,8 @@ let syncing = false
 let syncAgain = false
 let mounted = false
 let availabilityTimer = null
+let fallbackTimer = null
+let queueFallbackTimer = null
 let typingTimer = null
 let lastTypingAt = 0
 let readPending = false
@@ -166,7 +169,7 @@ const refreshQueue = async () => {
     if (run !== queueRequest || !mounted) return
     queue.value = result.items || []
     queueMore.value = result.hasMore === true
-    waitingCount.value = result.waitingCount || 0
+    viewCounts.value = { ...viewCounts.value, ...(result.viewCounts || {}) }
     if (selected.value) {
       const fresh = queue.value.find(item => item.id === selected.value.id)
       if (fresh && fresh.revision > selected.value.revision) scheduleThread()
@@ -399,6 +402,7 @@ const selectThread = async (item) => {
   showTicketForm.value = false
   ticketSubject.value = `Live chat #${item.reference_number || ''}`.trim()
   contextOpen.value = false
+  contextTab.value = 'customer'
   newBelow.value = false
   activePane.value = 'thread'
   await loadThread(item.id)
@@ -561,6 +565,8 @@ onMounted(async () => {
   const linkedConversation = typeof route.query.conversation === 'string' ? route.query.conversation : ''
   if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(linkedConversation)) {
     await selectThread({ id: linkedConversation })
+  } else if (window.matchMedia('(min-width: 1024px)').matches && queue.value[0]) {
+    await selectThread(queue.value[0])
   }
   if (hasPermission('support.reply')) {
     try {
@@ -574,6 +580,12 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', refreshOnReturn)
   window.addEventListener('online', reconnectOnNetwork)
   window.addEventListener('keydown', onPageKeydown)
+  fallbackTimer = setInterval(() => {
+    if (selected.value && document.visibilityState === 'visible') scheduleThread()
+  }, 2500)
+  queueFallbackTimer = setInterval(() => {
+    if (document.visibilityState === 'visible') scheduleQueue()
+  }, 10000)
 })
 onBeforeUnmount(() => {
   mounted = false
@@ -581,6 +593,8 @@ onBeforeUnmount(() => {
   if (threadTimer) clearTimeout(threadTimer)
   if (typingTimer) clearTimeout(typingTimer)
   if (availabilityTimer) clearInterval(availabilityTimer)
+  if (fallbackTimer) clearInterval(fallbackTimer)
+  if (queueFallbackTimer) clearInterval(queueFallbackTimer)
   authSubscription?.unsubscribe()
   if (inboxChannel) client.removeChannel(inboxChannel)
   if (threadChannel) client.removeChannel(threadChannel)
@@ -605,8 +619,8 @@ onBeforeUnmount(() => {
         <span class="text-gray-500" role="status">Updates: {{ connection === 'connected' ? 'live' : connection === 'reconnecting' ? 'reconnecting' : 'connecting' }}</span>
       </div>
     </div>
-    <div class="grid min-h-[calc(100dvh-12rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:min-h-[640px] lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_290px]">
-      <section :class="activePane === 'thread' ? 'hidden lg:flex' : 'flex'" class="min-w-0 flex-col border-r border-gray-200" aria-label="Chat inbox">
+    <div class="relative grid min-h-[calc(100dvh-12rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:h-[calc(100dvh-13rem)] lg:min-h-[560px] lg:max-h-[900px] lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_320px]">
+      <section :class="activePane === 'thread' ? 'hidden lg:flex' : 'flex'" class="min-h-0 min-w-0 flex-col border-r border-gray-200" aria-label="Chat inbox">
         <div class="border-b border-gray-100 p-4">
           <div class="flex items-center justify-between gap-2">
             <h2 ref="inboxHeading" tabindex="-1" class="font-bold text-gray-900">Inbox <span v-if="unreadOnPage" class="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">{{ unreadOnPage }} unread on page</span></h2>
@@ -616,7 +630,7 @@ onBeforeUnmount(() => {
             </button>
           </div>
           <div class="mt-3 flex flex-wrap gap-1" role="group" aria-label="Inbox view">
-            <button v-for="option in views" :key="option.key" type="button" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold" :class="view === option.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'" :aria-pressed="view === option.key" @click="view = option.key; page = 1">{{ option.label }}<span v-if="option.key === 'waiting' && waitingCount" class="ml-1 rounded-full bg-white px-1.5 py-0.5 text-blue-700">{{ waitingCount }}</span></button>
+            <button v-for="option in views" :key="option.key" type="button" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold" :class="view === option.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'" :aria-pressed="view === option.key" @click="view = option.key; page = 1">{{ option.label }}<span class="ml-1 rounded-full px-1.5 py-0.5" :class="view === option.key ? 'bg-white text-blue-700' : 'bg-white text-gray-600'">{{ viewCounts[option.key] || 0 }}</span></button>
           </div>
           <form v-show="filtersOpen" id="live-chat-filters" class="mt-4 grid grid-cols-2 gap-2" @submit.prevent="applyFilters">
             <label class="text-xs text-gray-600">Reference<input v-model="filters.reference" placeholder="#123" class="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm" /></label>
@@ -632,7 +646,7 @@ onBeforeUnmount(() => {
         </div>
         <p v-if="queueError" class="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ queueError }}</p>
         <p v-if="queueLoading && !queue.length" class="p-5 text-sm text-gray-500" role="status">Loading conversations...</p>
-        <div v-else class="max-h-[700px] min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100" :aria-busy="queueLoading">
+        <div v-else class="min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100" :aria-busy="queueLoading">
           <button v-for="item in queue" :key="item.id" type="button" class="block w-full p-4 text-left hover:bg-blue-50" :class="selected?.id === item.id ? 'bg-blue-50' : ''" :aria-current="selected?.id === item.id ? 'true' : undefined" @click="selectThread(item)">
             <span class="flex items-start justify-between gap-2"><strong class="truncate text-sm text-gray-900">{{ item.contact_name }}</strong><span class="shrink-0 text-xs text-gray-500">#{{ item.reference_number }}</span></span>
             <span class="mt-1 block truncate text-xs text-gray-500">{{ item.contact_email || item.contact_mobile || (item.customer_id ? 'Account customer' : 'Guest') }}</span>
@@ -644,7 +658,7 @@ onBeforeUnmount(() => {
         <div class="flex items-center justify-between border-t border-gray-100 p-3 text-xs"><button type="button" :disabled="page <= 1" class="font-semibold text-blue-700 disabled:opacity-40" @click="page--">Previous</button><span>Page {{ page }}</span><button type="button" :disabled="!queueMore" class="font-semibold text-blue-700 disabled:opacity-40" @click="page++">Next</button></div>
       </section>
 
-      <section :class="activePane === 'queue' ? 'hidden lg:flex' : 'flex'" class="min-w-0 flex-col" aria-label="Conversation">
+      <section :class="activePane === 'queue' ? 'hidden lg:flex' : 'flex'" class="min-h-0 min-w-0 flex-col overflow-hidden" aria-label="Conversation">
         <div v-if="selected" class="flex flex-wrap items-center gap-2 border-b border-gray-100 p-4">
           <button type="button" class="mr-1 min-h-11 text-sm font-semibold text-blue-700 lg:hidden" @click="showInbox">← Inbox</button>
           <div class="min-w-0 flex-1"><h2 ref="threadHeading" tabindex="-1" class="truncate font-bold text-gray-900">{{ selected.contact_name }} <span class="text-sm font-normal text-gray-500">#{{ selected.reference_number }}</span></h2><p class="text-xs text-gray-500">{{ statusText(selected.status) }} · {{ agentName(selected.assigned_admin_id) }}</p></div>
@@ -682,48 +696,41 @@ onBeforeUnmount(() => {
       </section>
 
       <aside v-if="selected" id="live-chat-context"
-        :class="activePane === 'queue' ? 'hidden xl:block' : contextOpen ? 'block lg:col-start-2 xl:col-start-auto' : 'hidden xl:block'"
-        class="border-t border-gray-200 p-4 text-sm lg:border-l xl:row-start-1 xl:border-t-0" aria-label="Customer context">
-        <h2 class="font-bold text-gray-900">Customer context</h2>
-        <dl class="mt-4 space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="selected.customer_id"><dt class="font-semibold text-gray-500">Account ID</dt><dd>{{ selected.customer_id }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account status</dt><dd>{{ context.profile.is_active ? 'Active' : 'Inactive' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account name</dt><dd>{{ context.profile.full_name || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account email</dt><dd>{{ context.profile.email || 'Not provided' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Account mobile</dt><dd>{{ context.profile.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat name</dt><dd>{{ selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Chat email</dt><dd>{{ selected.contact_email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Chat mobile</dt><dd>{{ selected.contact_mobile || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Intake</dt><dd>{{ selected.intake_mode === 'offline' ? 'Offline message' : 'Live request' }}</dd></div><div><dt class="font-semibold text-gray-500">Created</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
-        <p v-if="contextLoading" class="mt-3 text-xs text-gray-500" role="status">Loading context…</p>
-        <p v-if="contextError" class="mt-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
-        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Support ticket">
-          <h3 class="text-xs font-bold text-gray-900">Support ticket</h3>
-          <p v-if="ticketNotice" class="mt-2 text-xs text-green-700" role="status">{{ ticketNotice }}</p>
-          <NuxtLink v-if="selected.ticket_id" :to="`/dashboard/support/${selected.ticket_id}`" class="mt-2 inline-flex text-xs font-semibold text-blue-700 hover:underline">Open support ticket →</NuxtLink>
-          <template v-else-if="canCreateTicket">
-            <button v-if="!showTicketForm" type="button" class="mt-2 text-xs font-semibold text-blue-700" @click="showTicketForm = true; ticketSubject = `Live chat #${selected.reference_number}`">Create support ticket</button>
-            <form v-else class="mt-3 space-y-2" @submit.prevent="createTicket">
-              <label class="block text-xs text-gray-600">Subject<input v-model="ticketSubject" required maxlength="160" class="mt-1 w-full rounded-lg border border-gray-200 p-2" /></label>
-              <p class="text-[11px] text-gray-500">Transcript and files stay linked to this chat.</p>
-              <div class="flex gap-3"><button type="submit" :disabled="busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40">{{ busy ? 'Creating…' : 'Create ticket' }}</button><button type="button" :disabled="busy" class="text-xs font-semibold text-gray-600" @click="showTicketForm = false">Cancel</button></div>
-            </form>
-          </template>
-          <p v-else class="mt-2 text-xs text-gray-500">{{ ticketConversionEnabled ? 'Claim this conversation to create a ticket.' : 'Ticket conversion is disabled.' }}</p>
-        </section>
-        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Related order">
-          <h3 class="text-xs font-bold text-gray-900">Related order</h3>
-          <p class="mt-2 text-xs text-gray-600">{{ context?.relatedOrder ? `#${context.relatedOrder.order_number || context.relatedOrder.id.slice(0, 8)} · ${context.relatedOrder.status}` : selected.order_id ? `Saved order ID: ${selected.order_id}` : 'None linked' }}</p>
-          <p v-if="context?.relatedOrder" class="mt-1 text-xs text-gray-600">Payment: {{ context.relatedOrder.payment_status }} · Total: {{ context.relatedOrder.total_amount }} {{ context.relatedOrder.currency }}</p>
-          <ul v-if="context?.relatedItems?.length" class="mt-2 space-y-1 text-xs text-gray-600"><li v-for="item in context.relatedItems" :key="item.id">{{ item.quantity }} × {{ item.product_title }}</li></ul>
-          <form v-if="canLinkOrder" class="mt-3 space-y-2" @submit.prevent="setOrder(selectedOrderId || null)">
-            <label class="block text-xs text-gray-600">Find order number<input v-model="orderNumber" maxlength="64" class="mt-1 w-full rounded-lg border border-gray-200 p-2" placeholder="Order number" /></label>
-            <button type="button" class="text-xs font-semibold text-blue-700" @click="searchOrder">Find order</button>
-            <label class="block text-xs text-gray-600">Customer orders<select v-model="selectedOrderId" class="mt-1 w-full rounded-lg border border-gray-200 p-2"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select></label>
-            <div class="flex gap-3"><button type="submit" :disabled="busy || !selectedOrderId || selectedOrderId === selected.order_id" class="text-xs font-semibold text-blue-700 disabled:opacity-40">Link order</button><button v-if="selected.order_id" type="button" :disabled="busy" class="text-xs font-semibold text-red-700 disabled:opacity-40" @click="setOrder(null)">Unlink</button></div>
-          </form>
-        </section>
-        <section v-if="selected.customer_id" class="mt-5 border-t border-gray-100 pt-4" aria-label="Customer orders">
-          <h3 class="text-xs font-bold text-gray-900">Open orders</h3><p v-if="!context?.openOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="order in context.openOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul>
-          <h3 class="mt-4 text-xs font-bold text-gray-900">Recent orders</h3><p v-if="!context?.recentOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="order in context.recentOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul>
-          <h3 class="mt-4 text-xs font-bold text-gray-900">Support tickets</h3><p v-if="!context?.tickets?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="ticket in context.tickets" :key="ticket.id"><NuxtLink :to="`/dashboard/support/${ticket.id}`" class="text-blue-700 hover:underline">#{{ ticket.reference_number }} · {{ ticket.subject }}</NuxtLink> · {{ ticket.status }}</li></ul>
-        </section>
-        <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Previous chats"><h3 class="text-xs font-bold text-gray-900">Previous chats</h3><p v-if="!context?.previousChats?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-1 text-xs"><li v-for="chat in context.previousChats" :key="chat.id"><button type="button" class="text-left text-blue-700 hover:underline" @click="selectThread(chat)">#{{ chat.reference_number }} · {{ chat.status }}</button></li></ul></section>
-        <h3 class="mt-6 font-bold text-gray-900">Activity</h3>
-        <p v-if="activityError" class="mt-2 text-xs text-red-700" role="alert">{{ activityError }}</p>
-        <ol class="mt-3 space-y-3 text-xs"><li v-for="entry in events" :key="entry.id" class="border-l-2 border-blue-200 pl-3"><span class="font-semibold text-gray-900">{{ chatAuditDescription(entry) }}</span><time class="block text-gray-500">{{ dateText(entry.created_at) }}</time></li><li v-if="!events.length && !activityLoading" class="text-gray-500">No activity loaded.</li></ol>
-        <button v-if="activityMore" type="button" :disabled="activityLoading" class="mt-3 text-xs font-semibold text-blue-700 disabled:opacity-40" @click="loadActivity(selected.id, activityCursor)">Load older activity</button>
+        :class="contextOpen ? 'absolute inset-y-0 right-0 z-20 flex w-full sm:w-[340px] xl:static xl:w-auto' : 'hidden xl:flex'"
+        class="min-h-0 flex-col overflow-hidden border-l border-gray-200 bg-white text-sm shadow-xl xl:row-start-1 xl:shadow-none" aria-label="Conversation details">
+        <div class="flex items-center justify-between border-b border-gray-100 p-4">
+          <h2 class="font-bold text-gray-900">Details</h2>
+          <button type="button" class="rounded-lg px-2 py-1 text-xs font-semibold text-blue-700 xl:hidden" @click="contextOpen = false">Close</button>
+        </div>
+        <div class="grid grid-cols-3 border-b border-gray-100 p-2" role="tablist" aria-label="Conversation details">
+          <button v-for="tab in [{ key: 'customer', label: 'Customer' }, { key: 'orders', label: 'Orders' }, { key: 'activity', label: 'Activity' }]" :key="tab.key" type="button" role="tab" class="rounded-lg px-2 py-2 text-xs font-semibold" :class="contextTab === tab.key ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'" :aria-selected="contextTab === tab.key" @click="contextTab = tab.key">{{ tab.label }}</button>
+        </div>
+        <div class="min-h-0 flex-1 overflow-y-auto p-4">
+          <p v-if="contextLoading" class="text-xs text-gray-500" role="status">Loading details…</p>
+          <p v-if="contextError" class="mb-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
+
+          <div v-show="contextTab === 'customer'">
+            <dl class="space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Name</dt><dd>{{ context.profile.full_name || selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Email</dt><dd>{{ selected.contact_email || context?.profile?.email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Mobile</dt><dd>{{ selected.contact_mobile || context?.profile?.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Started</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
+            <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Support ticket">
+              <h3 class="text-xs font-bold text-gray-900">Support ticket</h3>
+              <p v-if="ticketNotice" class="mt-2 text-xs text-green-700" role="status">{{ ticketNotice }}</p>
+              <NuxtLink v-if="selected.ticket_id" :to="`/dashboard/support/${selected.ticket_id}`" class="mt-2 inline-flex text-xs font-semibold text-blue-700 hover:underline">Open ticket →</NuxtLink>
+              <template v-else-if="canCreateTicket"><button v-if="!showTicketForm" type="button" class="mt-2 text-xs font-semibold text-blue-700" @click="showTicketForm = true; ticketSubject = `Live chat #${selected.reference_number}`">Create ticket</button><form v-else class="mt-3 space-y-2" @submit.prevent="createTicket"><label class="block text-xs text-gray-600">Subject<input v-model="ticketSubject" required maxlength="160" class="mt-1 w-full rounded-lg border border-gray-200 p-2" /></label><div class="flex gap-3"><button type="submit" :disabled="busy" class="text-xs font-semibold text-blue-700 disabled:opacity-40">{{ busy ? 'Creating…' : 'Create' }}</button><button type="button" :disabled="busy" class="text-xs font-semibold text-gray-600" @click="showTicketForm = false">Cancel</button></div></form></template>
+              <p v-else-if="!selected.ticket_id" class="mt-2 text-xs text-gray-500">{{ ticketConversionEnabled ? 'Claim this chat to create a ticket.' : 'Ticket creation is disabled.' }}</p>
+            </section>
+            <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Previous chats"><h3 class="text-xs font-bold text-gray-900">Past chats</h3><p v-if="!context?.previousChats?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-2 text-xs"><li v-for="chat in context.previousChats" :key="chat.id"><button type="button" class="text-left text-blue-700 hover:underline" @click="selectThread(chat)">#{{ chat.reference_number }} · {{ chat.status }}</button></li></ul></section>
+            <section v-if="selected.customer_id" class="mt-5 border-t border-gray-100 pt-4" aria-label="Support tickets"><h3 class="text-xs font-bold text-gray-900">Recent tickets</h3><p v-if="!context?.tickets?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-2 text-xs"><li v-for="ticket in context.tickets" :key="ticket.id"><NuxtLink :to="`/dashboard/support/${ticket.id}`" class="text-blue-700 hover:underline">#{{ ticket.reference_number }} · {{ ticket.subject }}</NuxtLink></li></ul></section>
+          </div>
+
+          <div v-show="contextTab === 'orders'">
+            <section aria-label="Related order"><h3 class="text-xs font-bold text-gray-900">Linked order</h3><p class="mt-2 text-xs text-gray-600">{{ context?.relatedOrder ? `#${context.relatedOrder.order_number || context.relatedOrder.id.slice(0, 8)} · ${context.relatedOrder.status}` : 'None linked' }}</p><p v-if="context?.relatedOrder" class="mt-1 text-xs text-gray-600">{{ context.relatedOrder.total_amount }} {{ context.relatedOrder.currency }} · {{ context.relatedOrder.payment_status }}</p><ul v-if="context?.relatedItems?.length" class="mt-2 space-y-1 text-xs text-gray-600"><li v-for="item in context.relatedItems" :key="item.id">{{ item.quantity }} × {{ item.product_title }}</li></ul>
+              <form v-if="canLinkOrder" class="mt-4 space-y-2" @submit.prevent="setOrder(selectedOrderId || null)"><label class="block text-xs text-gray-600">Order number<input v-model="orderNumber" maxlength="64" class="mt-1 w-full rounded-lg border border-gray-200 p-2" /></label><button type="button" class="text-xs font-semibold text-blue-700" @click="searchOrder">Find</button><label class="block text-xs text-gray-600">Customer orders<select v-model="selectedOrderId" class="mt-1 w-full rounded-lg border border-gray-200 p-2"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select></label><div class="flex gap-3"><button type="submit" :disabled="busy || !selectedOrderId || selectedOrderId === selected.order_id" class="text-xs font-semibold text-blue-700 disabled:opacity-40">Link</button><button v-if="selected.order_id" type="button" :disabled="busy" class="text-xs font-semibold text-red-700 disabled:opacity-40" @click="setOrder(null)">Unlink</button></div></form>
+            </section>
+            <section v-if="selected.customer_id" class="mt-5 border-t border-gray-100 pt-4" aria-label="Customer orders"><h3 class="text-xs font-bold text-gray-900">Open orders</h3><p v-if="!context?.openOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-2 text-xs"><li v-for="order in context.openOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul><h3 class="mt-5 text-xs font-bold text-gray-900">Recent orders</h3><p v-if="!context?.recentOrders?.length" class="mt-2 text-xs text-gray-500">None found.</p><ul v-else class="mt-2 space-y-2 text-xs"><li v-for="order in context.recentOrders" :key="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</li></ul></section>
+          </div>
+
+          <div v-show="contextTab === 'activity'"><p v-if="activityError" class="mb-3 text-xs text-red-700" role="alert">{{ activityError }}</p><ol class="space-y-3 text-xs"><li v-for="entry in events" :key="entry.id" class="border-l-2 border-blue-200 pl-3"><span class="font-semibold text-gray-900">{{ chatAuditDescription(entry) }}</span><time class="block text-gray-500">{{ dateText(entry.created_at) }}</time></li><li v-if="!events.length && !activityLoading" class="text-gray-500">No activity found.</li></ol><button v-if="activityMore" type="button" :disabled="activityLoading" class="mt-4 text-xs font-semibold text-blue-700 disabled:opacity-40" @click="loadActivity(selected.id, activityCursor)">Load older activity</button></div>
+        </div>
       </aside>
     </div>
   </div>
