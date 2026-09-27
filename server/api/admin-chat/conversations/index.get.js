@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const actor = await requireChatStaff(event)
   const query = getQuery(event)
   const view = String(query.view || (query.status ? 'all' : 'waiting')).trim()
-  if (!['waiting', 'mine', 'active', 'unassigned', 'closed', 'offline', 'all'].includes(view)) {
+  if (!['waiting', 'mine', 'active', 'unassigned', 'closed', 'offline', 'callbacks', 'all'].includes(view)) {
     throw createError({ statusCode: 400, statusMessage: 'Inbox view is invalid.' })
   }
   const page = Number(query.page || 1)
@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
   if (view === 'mine') request = request.eq('assigned_admin_id', actor.id).neq('status', 'closed')
   if (view === 'unassigned') request = request.is('assigned_admin_id', null).neq('status', 'closed')
   if (view === 'offline') request = request.eq('intake_mode', 'offline').neq('status', 'closed')
+  if (view === 'callbacks') request = request.eq('callback_status', 'pending')
 
   const agent = String(query.agent || '').trim()
   if (agent) request = agent === 'unassigned'
@@ -85,9 +86,10 @@ export default defineEventHandler(async (event) => {
     if (key === 'mine') count = count.eq('assigned_admin_id', actor.id).neq('status', 'closed')
     if (key === 'unassigned') count = count.is('assigned_admin_id', null).neq('status', 'closed')
     if (key === 'offline') count = count.eq('intake_mode', 'offline').neq('status', 'closed')
+    if (key === 'callbacks') count = count.eq('callback_status', 'pending')
     return count
   }
-  const countKeys = ['waiting', 'mine', 'active', 'unassigned', 'closed', 'offline']
+  const countKeys = ['waiting', 'mine', 'active', 'unassigned', 'closed', 'offline', 'callbacks']
   const countResults = await Promise.all(countKeys.map(countView))
   const failedCount = countResults.find(result => result.error)
   if (failedCount?.error) chatError(failedCount.error, 'Could not load inbox counts.')

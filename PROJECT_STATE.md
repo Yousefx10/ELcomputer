@@ -487,3 +487,20 @@ The customer launcher keeps its loaded conversation when reopened. The repeated 
 The staff workspace now has a viewport-bounded conversation area, so the transcript scrolls while the reply box stays available. Desktop opens the first available inbox item automatically. Customer details use Customer, Orders, and Activity tabs, and smaller screens show the details in a closeable side panel. Every inbox view shows its server-calculated conversation count.
 
 Validation passed: 158 repository tests, Nuxt typecheck, production build, and `git diff --check`. A local built-server smoke check returned HTTP 200 for `/` and `/api/chat/status`, and HTTP 401 for the unauthenticated admin inbox. The site-locked deployment preflight and deployment passed. Production returned HTTP 200 for `/` and `/api/chat/status`, the protected admin inbox returned HTTP 401 without a token, and the post-deployment PM2 health check passed. Backup `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-162405-68087` was retained. An authenticated two-browser customer/staff timing check remains the useful manual acceptance test.
+
+## Live Chat customer flow and follow-up — deployed 2026-09-27
+
+- Signed-in customers now start from their saved account name, email, mobile, and identity. The panel asks for contact details only for guests.
+- A first message always creates or resumes a Live Chat conversation. It never creates a support ticket, and no order is required.
+- Order linking is optional and collapsed behind a compact row. Its select, search field, and actions use full-width responsive layouts.
+- Closed conversations ask “Was your issue resolved?” and accept a one-to-five rating. Positive feedback records the result without a ticket. An unresolved answer or a rating of one or two creates one follow-up ticket and links it to the chat. Repeated submissions return the saved result and do not duplicate the ticket.
+- The follow-up ticket retains the customer, contact, linked order, assigned agent, and a source-chat event. The original transcript remains in Live Chat.
+- Live Chat settings now include `Request a Call`, disabled by default. When enabled, customers can request one callback per conversation. Saved account or chat mobile numbers are reused; only a missing number is requested. Staff see pending callbacks in a counted inbox view and can complete or cancel them.
+- The dashboard Live Chat page no longer links back to Support Tickets. Queue counts, the fixed-height transcript and composer, and Customer, Orders, and Activity tabs remain in place.
+- Existing guest/customer ownership, assignment, transfers, private notes, attachments, read state, typing, history, order linking, manual ticket conversion, rate limits, audit events, and private Realtime channels remain on their existing authorization paths.
+
+Database migration `20260927180000_live_chat_resolution_callbacks.sql` is applied to linked project `zsqhuwgoasrexdnamlks`; local and remote migration lists match. It adds typed feedback and callback state, service-only atomic RPCs, callback indexing and events, the Request a Call setting, and enforces conversation-only offline intake.
+
+Validation: all 161 repository tests passed, including new start, identity, optional order, feedback, ticket deduplication, callback, permission, and browser-role denial coverage. Nuxt typecheck, the production build, `git diff --check`, the database dry run, and deployment preflight passed. Production smoke returned 200 for `/` and `/api/chat/status`, including `offlineBehavior: conversation` and `requestCallEnabled: false`; the unauthenticated staff inbox returned 401. The scoped deployment restarted only `new-elcomputer` and retained `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-172752-69341`.
+
+Manual acceptance still needed: use signed-in customer, guest, assigned-agent, and manager sessions to confirm the complete browser flow on phone and desktop, enable Request a Call from settings for the callback check, and verify one real unresolved chat appears as one linked ticket.

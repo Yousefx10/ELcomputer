@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
   const supabase = getSupabaseAdminClient()
   const result = await supabase.from('chat_settings')
-    .select('is_enabled,welcome_message,offline_message,offline_behavior,guest_contact_rule,customer_send_cooldown_seconds,max_message_length,attachments_enabled,allowed_attachment_mimes,max_attachment_bytes,max_attachments_per_message')
+    .select('is_enabled,welcome_message,offline_message,offline_behavior,guest_contact_rule,customer_send_cooldown_seconds,max_message_length,attachments_enabled,allowed_attachment_mimes,max_attachment_bytes,max_attachments_per_message,request_call_enabled')
     .eq('singleton', true).maybeSingle()
   if (['42P01', 'PGRST205'].includes(result.error?.code)) {
     return { enabled: false, available: false }
@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
       && Number(result.data.max_attachments_per_message) > 0,
     allowedAttachmentMimes: result.data.allowed_attachment_mimes || [],
     maxAttachmentBytes: Number(result.data.max_attachment_bytes || 0),
-    maxAttachmentsPerMessage: Number(result.data.max_attachments_per_message || 0)
+    maxAttachmentsPerMessage: Number(result.data.max_attachments_per_message || 0),
+    requestCallEnabled: result.data.request_call_enabled === true
   }
 })

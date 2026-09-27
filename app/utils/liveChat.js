@@ -30,6 +30,9 @@ export const chatAuditDescription = (entry = {}) => {
       : `${actor} linked order ${entry.new_order_id?.slice(0, 8) || 'unknown'}`
     case 'order_unlinked': return `${actor} unlinked order ${entry.old_order_id?.slice(0, 8) || 'unknown'}`
     case 'ticket_created': return `${actor} created support ticket #${entry.ticket_reference || 'unknown'}`
+    case 'resolution_feedback': return `${actor} submitted chat feedback`
+    case 'callback_requested': return `${actor} requested a callback`
+    case 'callback_updated': return `${actor} marked the callback ${entry.new_status || 'updated'}`
     default: return entry.event_type ? entry.event_type.replaceAll('_', ' ') : 'Activity'
   }
 }

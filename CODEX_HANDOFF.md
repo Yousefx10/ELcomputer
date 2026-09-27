@@ -808,3 +808,28 @@ All 88 tests, Nuxt typecheck, production build, and diff check passed. The linke
 Validation: all 158 tests passed; Nuxt typecheck, production build, and `git diff --check` passed. Local built-server smoke returned 200 for home/chat status and 401 for the unauthenticated staff inbox. The locked deployment preflight and production deployment passed. Live home/chat status return 200, anonymous staff inbox access returns 401, and the post-deployment PM2 health check passes. Retained backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-162405-68087`.
 
 Manual follow-up: use one customer browser and one authorized staff browser to measure message arrival in both directions, confirm the composer remains visible at common laptop sizes, and review the details tabs with a customer who has orders and prior chats.
+
+## Live Chat customer flow and follow-up — deployed 2026-09-27
+
+The customer flow is now immediate. Authenticated users use their saved profile contact and identity, while guests still follow the configured contact rule. Starting with a first message requires no order and creates no support ticket, including during offline intake. Order tools are optional, collapsed, and responsive.
+
+Closed chats collect a resolved yes/no answer and a one-to-five rating. The service-only feedback RPC locks the conversation and saves feedback once. `resolved = false` or a rating at or below two creates one linked follow-up ticket; retries return the first result. Customer/contact, linked order, assigned agent, source-chat reference, and the original Live Chat transcript are preserved.
+
+Admins can enable Request a Call in Live Chat settings. It defaults off. When enabled, the server prefers the signed-in profile mobile, then collects only a missing mobile. A conversation stores one idempotent callback request. The staff inbox has a counted Callbacks view and shows pending callback details with complete/cancel actions guarded by existing support permissions and assignment rules.
+
+The client panel includes the compact order section, callback action, and closed-chat feedback. The dashboard retains its fixed workspace, visible composer, counted queue views, and tabbed details. The Live Chat header no longer navigates to Support Tickets.
+
+Migration `20260927180000_live_chat_resolution_callbacks.sql` is applied to Supabase project `zsqhuwgoasrexdnamlks`, and migration parity is confirmed. The migration also converts any legacy ticket-style offline setting to conversation intake and constrains it there. Tickets can still be created manually by staff or automatically from negative feedback.
+
+Validation and release:
+
+- `node --test tests/*.test.mjs`: 161 passed, 0 failed.
+- `npx nuxt typecheck`: passed.
+- `npm run build`: passed; only the existing non-blocking sourcemap warnings appeared.
+- `git diff --check`: passed.
+- Linked migration dry run listed only `20260927180000`; push completed, and local/remote migration versions match.
+- `npm run deploy:check` and `npm run deploy` passed. Only `new-elcomputer` restarted.
+- Live `/` and `/api/chat/status` returned 200. The status response reports conversation intake and Request a Call disabled by default. Unauthenticated staff access returned 401.
+- Retained backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260927-172752-69341`.
+
+Manual browser acceptance remains for signed-in and guest starts, phone and desktop order layout, closure feedback, one real negative follow-up ticket, callback enablement, and callback handling by assigned staff.

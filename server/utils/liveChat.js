@@ -6,7 +6,7 @@ import { getSupabaseAdminClient } from './supabaseAdmin'
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const mobilePattern = /^\+?[0-9 ()-]{7,30}$/
-export const chatPublicFields = 'id,reference_number,status,intake_mode,contact_name,contact_email,contact_mobile,order_id,ticket_id,revision,last_customer_message_seq,last_staff_message_seq,last_activity_at,created_at,updated_at,closed_at'
+export const chatPublicFields = 'id,reference_number,status,intake_mode,contact_name,contact_email,contact_mobile,order_id,ticket_id,revision,last_customer_message_seq,last_staff_message_seq,last_activity_at,created_at,updated_at,closed_at,resolution_resolved,satisfaction_rating,resolution_feedback_at,callback_status,callback_mobile,callback_requested_at,callback_updated_at'
 export const chatStaffFields = `${chatPublicFields},customer_id,guest_auth_user_id,assigned_admin_id`
 const chatMessageFields = 'id,sequence_number,sender_kind,sender_name,body,is_internal,created_at'
 
@@ -70,7 +70,11 @@ export const chatError = (error, fallback = 'Could not complete the chat request
     CHAT_ATTACHMENT_KEY_CONFLICT: [409, 'Attachment key was used for another file.'],
     CHAT_TICKET_DENIED: [403, 'Claim this conversation before creating a ticket.'],
     CHAT_TICKET_DISABLED: [409, 'Ticket conversion is disabled.'],
-    CHAT_TICKET_ORDER_LOCKED: [409, 'The linked order is now managed on the support ticket.']
+    CHAT_TICKET_ORDER_LOCKED: [409, 'The linked order is now managed on the support ticket.'],
+    CHAT_FEEDBACK_OPEN: [409, 'Feedback is available after the chat closes.'],
+    CHAT_CALLBACK_DISABLED: [409, 'Callback requests are unavailable.'],
+    CHAT_CALLBACK_NOT_PENDING: [409, 'This callback request is no longer pending.'],
+    CHAT_CALLBACK_DENIED: [403, 'You cannot update this callback request.']
   }[error?.message]
   if (named) {
     const parsed = Number(error?.hint)

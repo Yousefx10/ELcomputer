@@ -9,7 +9,8 @@ const { adminUser, hasPermission, loadAdminAccess } = useAdminAccess()
 const views = [
   { key: 'waiting', label: 'Waiting' }, { key: 'mine', label: 'Assigned to me' },
   { key: 'active', label: 'Active' }, { key: 'unassigned', label: 'Unassigned' },
-  { key: 'closed', label: 'Closed' }, { key: 'offline', label: 'Offline messages' }
+  { key: 'closed', label: 'Closed' }, { key: 'offline', label: 'Offline messages' },
+  { key: 'callbacks', label: 'Callbacks' }
 ]
 const view = ref('waiting')
 const filters = reactive({ reference: '', contact: '', customer: '', order: '', agent: '', kind: '', from: '', to: '' })
@@ -98,6 +99,9 @@ const canLinkOrder = computed(() => hasPermission('support.reply') && selected.v
 const canCreateTicket = computed(() => hasPermission('support.reply') && selected.value
   && ticketConversionEnabled.value && !selected.value.ticket_id
   && (isMine.value || hasPermission('support.manage')))
+const canHandleCallback = computed(() => hasPermission('support.reply')
+  && selected.value?.callback_status === 'pending'
+  && (!selected.value.assigned_admin_id || isMine.value || hasPermission('support.manage')))
 const orderChoices = computed(() => [...new Map([
   ...(context.value?.orderMatches || []), ...(context.value?.openOrders || []),
   ...(context.value?.recentOrders || []), ...(context.value?.relatedOrder ? [context.value.relatedOrder] : [])
@@ -296,6 +300,23 @@ const createTicket = async () => {
     if (selected.value?.id === id && (cause?.statusCode === 409 || cause?.status === 409)) {
       await Promise.all([loadThread(id), refreshQueue()])
     }
+  } finally { busy.value = false }
+}
+const updateCallback = async (status) => {
+  if (!selected.value || !canHandleCallback.value || busy.value) return
+  const id = selected.value.id
+  busy.value = true
+  actionError.value = ''
+  try {
+    const result = await request(`/api/admin-chat/conversations/${id}/callback`, {
+      method: 'PATCH', body: { status }
+    })
+    if (selected.value?.id === id) {
+      selected.value = result.item
+      await Promise.all([loadActivity(id), refreshQueue()])
+    }
+  } catch (cause) {
+    if (selected.value?.id === id) actionError.value = errorText(cause, 'Could not update the callback request.')
   } finally { busy.value = false }
 }
 const reconcileThread = async () => {
@@ -609,7 +630,7 @@ onBeforeUnmount(() => {
     <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveAnnouncement }}</span>
     <DashboardPageIntro title="Live Chat" description="Manage customer conversations and offline messages." />
     <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
-      <NuxtLink to="/dashboard/support" class="font-semibold text-blue-700 hover:underline">← Support tickets</NuxtLink>
+      <span class="font-semibold text-gray-700">Customer conversations</span>
       <div class="flex items-center gap-3">
         <label v-if="hasPermission('support.reply')" class="text-xs font-semibold text-gray-600">Agent status
           <select :value="availability" :disabled="availabilityBusy" class="ml-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs" @change="setAvailability($event.target.value)">
@@ -652,6 +673,7 @@ onBeforeUnmount(() => {
             <span class="mt-1 block truncate text-xs text-gray-500">{{ item.contact_email || item.contact_mobile || (item.customer_id ? 'Account customer' : 'Guest') }}</span>
             <span class="mt-2 flex items-center justify-between gap-2 text-xs"><span class="rounded-full bg-gray-100 px-2 py-1 text-gray-700">{{ statusText(item.status) }} · {{ item.intake_mode === 'offline' ? 'Offline' : agentName(item.assigned_admin_id) }}</span><time class="text-gray-500" :datetime="item.last_activity_at" :title="chatDateTitle(item.last_activity_at)">{{ dateText(item.last_activity_at) }}</time></span>
             <span v-if="item.unreadCount" class="mt-2 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">{{ item.unreadCount }} new {{ item.unreadCount === 1 ? 'message' : 'messages' }}</span>
+            <span v-if="item.callback_status === 'pending'" class="mt-2 ml-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">Callback requested</span>
           </button>
           <p v-if="!queue.length && !queueLoading" class="p-6 text-center text-sm text-gray-500">No conversations match this view.</p>
         </div>
@@ -710,6 +732,7 @@ onBeforeUnmount(() => {
           <p v-if="contextError" class="mb-3 text-xs text-red-700" role="alert">{{ contextError }}</p>
 
           <div v-show="contextTab === 'customer'">
+            <section v-if="selected.callback_status" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-3" aria-label="Callback request"><h3 class="text-xs font-bold text-amber-950">Callback {{ selected.callback_status }}</h3><p class="mt-1 text-xs text-amber-900">{{ selected.callback_mobile }}</p><div v-if="canHandleCallback" class="mt-3 flex gap-3"><button type="button" :disabled="busy" class="text-xs font-semibold text-green-700" @click="updateCallback('completed')">Mark completed</button><button type="button" :disabled="busy" class="text-xs font-semibold text-gray-700" @click="updateCallback('cancelled')">Cancel request</button></div></section>
             <dl class="space-y-3 break-words text-xs"><div><dt class="font-semibold text-gray-500">Type</dt><dd>{{ selected.customer_id ? 'Account customer' : 'Guest' }}</dd></div><div v-if="context?.profile"><dt class="font-semibold text-gray-500">Name</dt><dd>{{ context.profile.full_name || selected.contact_name }}</dd></div><div><dt class="font-semibold text-gray-500">Email</dt><dd>{{ selected.contact_email || context?.profile?.email || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Mobile</dt><dd>{{ selected.contact_mobile || context?.profile?.phone || 'Not provided' }}</dd></div><div><dt class="font-semibold text-gray-500">Started</dt><dd>{{ dateText(selected.created_at) }}</dd></div></dl>
             <section class="mt-5 border-t border-gray-100 pt-4" aria-label="Support ticket">
               <h3 class="text-xs font-bold text-gray-900">Support ticket</h3>

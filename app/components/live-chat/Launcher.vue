@@ -23,13 +23,19 @@ const draft = ref('')
 const guestName = ref('')
 const guestEmail = ref('')
 const guestMobile = ref('')
-const customerMobile = ref('')
 const accountContact = ref(null)
 const orders = ref([])
 const orderNumber = ref('')
 const selectedOrderId = ref('')
 const orderBusy = ref(false)
 const orderToolsOpen = ref(false)
+const feedbackResolved = ref(null)
+const feedbackRating = ref(0)
+const feedbackBusy = ref(false)
+const feedbackTicketReference = ref(null)
+const callbackOpen = ref(false)
+const callbackMobile = ref('')
+const callbackBusy = ref(false)
 const guestToLink = ref(null)
 const conversationAttachmentPolicy = ref(null)
 const selectedFiles = shallowRef([])
@@ -48,9 +54,6 @@ const messageList = ref(null)
 const composer = ref(null)
 const visible = computed(() => status.value.enabled && !route.path.startsWith('/checkout'))
 const isGuest = computed(() => actor.value?.kind !== 'customer')
-const needsCustomerMobile = computed(() => !isGuest.value
-  && ['mobile', 'both'].includes(status.value.guestContactRule)
-  && !accountContact.value?.mobile)
 const cooldown = computed(() => Math.max(
   chatSecondsRemaining(lastOwnSentAt.value, status.value.cooldownSeconds, clock.value),
   Math.max(0, Math.ceil((retryAfterUntil.value - clock.value) / 1000))
@@ -77,11 +80,14 @@ const attachmentLimitText = computed(() => {
   return `Up to ${attachmentPolicy.value.maxPerMessage} files, ${size} each.`
 })
 const orderChoices = computed(() => [...new Map(orders.value.map(order => [order.id, order])).values()])
-const linkedOrderLabel = computed(() => {
-  if (!conversation.value?.order_id) return 'Add an order'
-  const order = orderChoices.value.find(item => item.id === conversation.value.order_id)
-  return order ? `Order #${order.order_number || order.id.slice(0, 8)}` : 'Linked order'
+const orderPanelLabel = computed(() => {
+  const id = conversation.value?.order_id || selectedOrderId.value
+  if (!id) return conversation.value ? 'Add an order' : 'Add an order (optional)'
+  const order = orderChoices.value.find(item => item.id === id)
+  return order ? `Order #${order.order_number || order.id.slice(0, 8)}` : 'Selected order'
 })
+const callbackNumber = computed(() => accountContact.value?.mobile
+  || conversation.value?.contact_mobile || '')
 
 let channel = null
 let authSubscription = null
@@ -323,6 +329,11 @@ const selectConversation = async (item, currentRun = runId) => {
   errorText.value = ''
   loading.value = true
   orderToolsOpen.value = false
+  callbackOpen.value = false
+  callbackMobile.value = ''
+  feedbackResolved.value = null
+  feedbackRating.value = 0
+  feedbackTicketReference.value = null
   await clearSubscription()
   if (currentRun !== runId || selected !== selectionId) return
   conversation.value = null
@@ -363,7 +374,6 @@ const loadActor = async () => {
   accountContact.value = null
   orders.value = []
   guestToLink.value = null
-  customerMobile.value = ''
   try {
     const resolved = await resolveActor()
     if (currentRun !== runId) return
@@ -427,6 +437,44 @@ const setOrder = async (orderId) => {
     errorText.value = requestError(error, 'Could not link order.')
     if (error?.statusCode === 409 || error?.status === 409) scheduleReconcile()
   } finally { orderBusy.value = false }
+}
+const requestCallback = async () => {
+  if (!conversation.value || callbackBusy.value) return
+  const mobile = callbackNumber.value || callbackMobile.value.trim()
+  if (!chatMobileValid(mobile)) {
+    errorText.value = 'Enter a valid mobile number.'
+    return
+  }
+  const id = conversation.value.id
+  callbackBusy.value = true
+  errorText.value = ''
+  try {
+    const result = await request(actor.value, `/conversations/${id}/callback`, {
+      method: 'POST', body: callbackNumber.value ? {} : { mobile }
+    })
+    if (conversation.value?.id === id) {
+      updateConversation(result.item)
+      callbackOpen.value = false
+    }
+  } catch (error) { errorText.value = requestError(error, 'Could not request a call.') }
+  finally { callbackBusy.value = false }
+}
+const submitFeedback = async () => {
+  if (!conversation.value || feedbackBusy.value || typeof feedbackResolved.value !== 'boolean'
+    || feedbackRating.value < 1 || feedbackRating.value > 5) return
+  const id = conversation.value.id
+  feedbackBusy.value = true
+  errorText.value = ''
+  try {
+    const result = await request(actor.value, `/conversations/${id}/feedback`, {
+      method: 'POST', body: { resolved: feedbackResolved.value, rating: feedbackRating.value }
+    })
+    if (conversation.value?.id === id) {
+      updateConversation(result.item)
+      feedbackTicketReference.value = result.feedback?.ticketReference || null
+    }
+  } catch (error) { errorText.value = requestError(error, 'Could not save your feedback.') }
+  finally { feedbackBusy.value = false }
 }
 const linkGuestChat = async () => {
   if (!guestToLink.value || actor.value?.kind !== 'customer' || orderBusy.value) return
@@ -551,12 +599,8 @@ const startConversation = async () => {
     errorText.value = 'Enter your name and a valid contact method.'
     return
   }
-  if (needsCustomerMobile.value && !chatMobileValid(customerMobile.value)) {
-    errorText.value = 'Enter a valid mobile number.'
-    return
-  }
   const fingerprint = JSON.stringify([text, guestName.value, guestEmail.value,
-    guestMobile.value, customerMobile.value, selectedOrderId.value])
+    guestMobile.value, selectedOrderId.value])
   if (!pendingStart || pendingStart.fingerprint !== fingerprint) {
     pendingStart = { fingerprint, creationKey: crypto.randomUUID(), messageKey: crypto.randomUUID() }
   }
@@ -574,7 +618,7 @@ const startConversation = async () => {
         ...(activeActor.kind === 'customer' && selectedOrderId.value ? { orderId: selectedOrderId.value } : {}),
         ...(activeActor.kind === 'guest' ? {
           name: guestName.value, email: guestEmail.value, mobile: guestMobile.value
-        } : needsCustomerMobile.value ? { mobile: customerMobile.value } : {})
+        } : {})
       }
     })
     if (currentRun !== runId) return
@@ -649,6 +693,11 @@ const newConversation = async () => {
   conversation.value = null
   selectedOrderId.value = ''
   orderToolsOpen.value = false
+  callbackOpen.value = false
+  callbackMobile.value = ''
+  feedbackResolved.value = null
+  feedbackRating.value = 0
+  feedbackTicketReference.value = null
   conversationAttachmentPolicy.value = null
   clearFiles()
   messages.value = []
@@ -696,12 +745,12 @@ watch(() => route.path, () => {
     clearSubscription()
   }
 })
-watch([draft, guestName, guestEmail, guestMobile, customerMobile, selectedOrderId], () => {
+watch([draft, guestName, guestEmail, guestMobile, selectedOrderId], () => {
   sendTyping()
   if (pendingSend?.text !== draft.value.trim()) pendingSend = null
   if (pendingStart?.fingerprint !== JSON.stringify([
     draft.value.trim(), guestName.value, guestEmail.value, guestMobile.value,
-    customerMobile.value, selectedOrderId.value
+    selectedOrderId.value
   ])) pendingStart = null
 })
 
@@ -768,9 +817,11 @@ onBeforeUnmount(() => {
           <Icon name="lucide:arrow-left" size="16" aria-hidden="true" /> Back
         </button>
         <span v-else class="chat-toolbar-label">{{ showThread ? `Conversation #${conversation.reference_number}` : 'How can we help?' }}</span>
-        <button v-if="conversations.length && screen !== 'history'" type="button" class="chat-text-button" @click="showHistory">
-          Past chats
-        </button>
+        <div v-if="screen !== 'history'" class="chat-toolbar-actions">
+          <button v-if="status.requestCallEnabled && showThread && !conversation.callback_status" type="button"
+            class="chat-text-button" @click="callbackOpen = !callbackOpen">Request a call</button>
+          <button v-if="conversations.length" type="button" class="chat-text-button" @click="showHistory">Past chats</button>
+        </div>
       </div>
 
       <div v-if="guestToLink && actor?.kind === 'customer'" class="chat-account-link">
@@ -792,17 +843,35 @@ onBeforeUnmount(() => {
       </template>
 
       <template v-else-if="showThread">
+        <div v-if="conversation.callback_status" class="chat-callback-status">
+          <span>Call request: {{ conversation.callback_status }}</span>
+          <span v-if="conversation.callback_mobile">{{ conversation.callback_mobile }}</span>
+        </div>
+        <form v-else-if="callbackOpen && status.requestCallEnabled" class="chat-callback-panel" @submit.prevent="requestCallback">
+          <p v-if="callbackNumber">We’ll call {{ callbackNumber }}.</p>
+          <label v-else for="chat-callback-mobile">Mobile number</label>
+          <input v-if="!callbackNumber" id="chat-callback-mobile" v-model="callbackMobile" type="tel"
+            autocomplete="tel" maxlength="30" placeholder="Your mobile number" required />
+          <div class="chat-callback-actions">
+            <button type="button" @click="callbackOpen = false">Cancel</button>
+            <button type="submit" class="primary" :disabled="callbackBusy">{{ callbackBusy ? 'Sending…' : 'Request call' }}</button>
+          </div>
+        </form>
         <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed' && !conversation.ticket_id" class="chat-order-panel">
           <button type="button" class="chat-order-summary" :aria-expanded="orderToolsOpen" @click="orderToolsOpen = !orderToolsOpen">
-            <span>{{ linkedOrderLabel }}</span>
+            <span>{{ orderPanelLabel }}</span>
             <Icon :name="orderToolsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="15" aria-hidden="true" />
           </button>
           <div v-if="orderToolsOpen" class="chat-order-link">
             <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
-            <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link</button>
-            <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Unlink</button>
-            <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
-            <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+            <div class="chat-order-actions">
+              <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link order</button>
+              <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Remove</button>
+            </div>
+            <div class="chat-order-search">
+              <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
+              <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+            </div>
           </div>
         </div>
         <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">The related order is now managed on your support ticket.</p>
@@ -845,17 +914,18 @@ onBeforeUnmount(() => {
           <small v-else-if="status.guestContactRule === 'mobile'" id="chat-contact-help">Enter your mobile number.</small>
           <small v-else id="chat-contact-help">Enter an email or mobile number.</small>
         </div>
-        <div v-else-if="needsCustomerMobile" class="chat-contact-fields">
-          <label for="chat-customer-mobile">Mobile</label>
-          <input id="chat-customer-mobile" v-model="customerMobile" type="tel" autocomplete="tel"
-            maxlength="30" placeholder="Your mobile number" />
-          <small>We need a mobile number to reply.</small>
-        </div>
-        <div v-if="actor?.kind === 'customer'" class="chat-order-link">
-          <label for="chat-order-start">Related order (optional)</label>
-          <select id="chat-order-start" v-model="selectedOrderId"><option value="">No order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
-          <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
-          <button type="button" @click="searchOrders">Find order</button>
+        <div v-if="actor?.kind === 'customer'" class="chat-order-panel chat-order-start">
+          <button type="button" class="chat-order-summary" :aria-expanded="orderToolsOpen" @click="orderToolsOpen = !orderToolsOpen">
+            <span>{{ orderPanelLabel }}</span>
+            <Icon :name="orderToolsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="15" aria-hidden="true" />
+          </button>
+          <div v-if="orderToolsOpen" class="chat-order-link">
+            <select id="chat-order-start" v-model="selectedOrderId" aria-label="Choose your order"><option value="">No order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+            <div class="chat-order-search">
+              <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
+              <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -887,8 +957,29 @@ onBeforeUnmount(() => {
         </span>
       </div>
       <div v-else-if="conversation?.status === 'closed' && screen === 'thread'" class="chat-closed">
-        <span>This conversation is closed.</span>
-        <button type="button" @click="newConversation">Start a new chat</button>
+        <template v-if="!conversation.resolution_feedback_at">
+          <strong>Was your issue resolved?</strong>
+          <div class="chat-feedback-choice" role="group" aria-label="Issue resolution">
+            <button type="button" :class="{ selected: feedbackResolved === true }" :aria-pressed="feedbackResolved === true" @click="feedbackResolved = true">Yes</button>
+            <button type="button" :class="{ selected: feedbackResolved === false }" :aria-pressed="feedbackResolved === false" @click="feedbackResolved = false">No</button>
+          </div>
+          <span>Rate your support</span>
+          <div class="chat-rating" role="group" aria-label="Rate your support from 1 to 5">
+            <button v-for="rating in 5" :key="rating" type="button"
+              :class="{ selected: feedbackRating >= rating }" :aria-label="`${rating} star${rating === 1 ? '' : 's'}`"
+              :aria-pressed="feedbackRating === rating" @click="feedbackRating = rating">★</button>
+          </div>
+          <button type="button" class="chat-feedback-submit"
+            :disabled="feedbackBusy || typeof feedbackResolved !== 'boolean' || !feedbackRating"
+            @click="submitFeedback">{{ feedbackBusy ? 'Saving…' : 'Send feedback' }}</button>
+        </template>
+        <template v-else>
+          <strong>Thank you for your feedback.</strong>
+          <span v-if="conversation.ticket_id && (conversation.resolution_resolved === false || conversation.satisfaction_rating <= 2)">
+            A support ticket was created for follow-up<span v-if="feedbackTicketReference">: #{{ feedbackTicketReference }}</span>.
+          </span>
+        </template>
+        <button type="button" class="chat-new-conversation" @click="newConversation">Start a new chat</button>
       </div>
       <div class="chat-footer"><button type="button" @click="goToHelp">Browse the Help Center</button></div>
     </section>
@@ -1040,8 +1131,9 @@ onBeforeUnmount(() => {
 
 .chat-text-button:hover { text-decoration: underline; }
 
-.chat-account-link,
-.chat-order-link {
+.chat-toolbar-actions { display: flex; align-items: center; gap: 12px; }
+
+.chat-account-link {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1055,6 +1147,13 @@ onBeforeUnmount(() => {
 .chat-order-panel {
   border-bottom: 1px solid var(--chat-line);
   background: #f7f9fc;
+}
+
+.chat-order-start {
+  margin-top: 16px;
+  border: 1px solid var(--chat-line);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .chat-order-summary {
@@ -1073,8 +1172,11 @@ onBeforeUnmount(() => {
 }
 
 .chat-order-panel .chat-order-link {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
   border-top: 1px solid var(--chat-line);
-  border-bottom: 0;
+  background: white;
 }
 
 .chat-account-link button,
@@ -1089,14 +1191,34 @@ onBeforeUnmount(() => {
 
 .chat-order-link input,
 .chat-order-link select {
+  width: 100%;
   min-width: 0;
-  max-width: 150px;
   min-height: 34px;
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid var(--chat-line);
   border-radius: 7px;
   background: white;
 }
+
+.chat-order-actions { display: flex; align-items: center; gap: 12px; }
+.chat-order-search { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+
+.chat-callback-panel {
+  display: grid;
+  gap: 8px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--chat-line);
+  background: #f7f9fc;
+  font-size: 12px;
+}
+
+.chat-callback-panel p { margin: 0; color: #344863; }
+.chat-callback-panel label { color: #344863; font-weight: 700; }
+.chat-callback-panel input { width: 100%; min-height: 38px; padding: 7px 9px; border: 1px solid var(--chat-line); border-radius: 7px; background: white; }
+.chat-callback-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.chat-callback-actions button { min-height: 34px; padding: 5px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--chat-blue); font-weight: 700; cursor: pointer; }
+.chat-callback-actions .primary { background: var(--chat-blue); color: white; }
+.chat-callback-status { display: flex; justify-content: space-between; gap: 10px; padding: 7px 14px; border-bottom: 1px solid var(--chat-line); background: #f7f9fc; color: #4e6480; font-size: 11px; text-transform: capitalize; }
 
 .chat-scroll { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 .chat-center { display: grid; place-items: center; flex: 1; color: var(--chat-muted); font-size: 13px; }
@@ -1272,8 +1394,17 @@ onBeforeUnmount(() => {
 
 .chat-send:hover:not(:disabled) { background: #0344ba; }
 .chat-send:disabled { cursor: not-allowed; opacity: .5; }
-.chat-closed { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px; border-top: 1px solid var(--chat-line); color: #61738b; font-size: 11px; }
-.chat-closed button { min-height: 32px; border: 0; background: transparent; color: var(--chat-blue); font-size: 11px; font-weight: 700; cursor: pointer; }
+.chat-closed { display: grid; gap: 10px; padding: 14px; border-top: 1px solid var(--chat-line); color: #61738b; font-size: 12px; }
+.chat-closed strong { color: #233a56; font-size: 13px; }
+.chat-feedback-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chat-feedback-choice button { min-height: 38px; border: 1px solid var(--chat-line); border-radius: 7px; background: white; color: #344863; font-weight: 700; cursor: pointer; }
+.chat-feedback-choice button.selected { border-color: var(--chat-blue); background: var(--chat-pale); color: var(--chat-blue); }
+.chat-rating { display: flex; gap: 4px; }
+.chat-rating button { min-width: 34px; min-height: 34px; border: 0; background: transparent; color: #a0a9b5; font-size: 22px; line-height: 1; cursor: pointer; }
+.chat-rating button.selected { color: #e3a800; }
+.chat-feedback-submit { justify-self: start; min-height: 36px; padding: 6px 12px; border: 0; border-radius: 7px; background: var(--chat-blue); color: white; font-size: 11px; font-weight: 700; cursor: pointer; }
+.chat-feedback-submit:disabled { cursor: not-allowed; opacity: .5; }
+.chat-new-conversation { justify-self: start; min-height: 32px; padding: 0; border: 0; background: transparent; color: var(--chat-blue); font-size: 11px; font-weight: 700; cursor: pointer; }
 .chat-footer { padding: 5px 12px 8px; text-align: center; }
 .chat-footer button { min-height: 30px; border: 0; background: transparent; color: var(--chat-muted); font-size: 10px; text-decoration: underline; cursor: pointer; }
 .chat-footer button:hover { color: var(--chat-blue); }
@@ -1290,7 +1421,6 @@ onBeforeUnmount(() => {
   .chat-panel select { font-size: 16px; }
   .chat-intro { padding: 24px 20px; }
   .chat-message { max-width: 88%; }
-  .chat-order-link input,
-  .chat-order-link select { max-width: 100%; flex: 1 1 130px; }
+  .chat-toolbar-actions { gap: 8px; }
 }
 </style>

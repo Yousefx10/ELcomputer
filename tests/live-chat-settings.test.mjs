@@ -32,6 +32,7 @@ const settingsPayload = async (changes = {}) => {
     reopen_enabled: row.reopen_enabled,
     offline_behavior: row.offline_behavior,
     ticket_conversion_enabled: row.ticket_conversion_enabled,
+    request_call_enabled: row.request_call_enabled,
     ...changes
   }
 }
@@ -56,7 +57,7 @@ beforeEach(async () => {
 })
 afterEach(async () => { await db.exec('rollback') })
 
-test('server settings validation rejects overlapping hours and conflicting offline options', () => {
+test('server settings validation keeps chat intake lightweight', () => {
   const base = {
     is_enabled: true, availability_override: 'auto', business_timezone: 'Asia/Riyadh',
     weekly_hours: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
@@ -65,13 +66,13 @@ test('server settings validation rejects overlapping hours and conflicting offli
     attachments_enabled: true, allowed_attachment_mimes: ['application/pdf'],
     max_attachment_bytes: 1048576, max_attachments_per_message: 2,
     transfers_enabled: true, reopen_enabled: true, offline_behavior: 'conversation',
-    ticket_conversion_enabled: true
+    ticket_conversion_enabled: true, request_call_enabled: false
   }
   assert.equal(normalizeChatSettings(base).business_timezone, 'Asia/Riyadh')
   assert.throws(() => normalizeChatSettings({ ...base,
     weekly_hours: { ...base.weekly_hours, 0: [['09:00', '12:00'], ['11:00', '13:00']] } }), /overlap/i)
-  assert.throws(() => normalizeChatSettings({ ...base,
-    offline_behavior: 'ticket', ticket_conversion_enabled: false }), /Enable ticket conversion/)
+  assert.throws(() => normalizeChatSettings({ ...base, offline_behavior: 'ticket' }), /Offline behavior/)
+  assert.equal(normalizeChatSettings({ ...base, request_call_enabled: true }).request_call_enabled, true)
 })
 
 test('availability details honor hours, timezone, agents and manual overrides', async () => {
@@ -125,35 +126,20 @@ test('settings update is permissioned, stale-safe, validated and audited atomica
   assert.equal((await first("select count(*)::int as count from public.admin_activity_logs where action_key='chat.settings.updated'")).count, 1)
 })
 
-test('offline intake either stays a conversation or creates one linked system ticket', async () => {
+test('offline intake stays a conversation without creating a ticket', async () => {
   await query("update public.chat_settings set is_enabled=true,availability_override='offline',customer_send_cooldown_seconds=0")
   const firstStart = await startGuest(guestA)
   const firstChat = await first('select intake_mode,ticket_id from public.chat_conversations where id=$1', [firstStart.result.conversationId])
   assert.equal(firstChat.intake_mode, 'offline')
   assert.equal(firstChat.ticket_id, null)
 
-  await query("update public.chat_settings set offline_behavior='ticket'")
-  const creationKey = randomUUID(), messageKey = randomUUID()
-  const secondStart = await startGuest(guestB, creationKey, messageKey)
-  assert.ok(secondStart.result.ticketId)
-  const secondChat = await first('select intake_mode,ticket_id from public.chat_conversations where id=$1', [secondStart.result.conversationId])
-  assert.equal(secondChat.intake_mode, 'offline')
-  assert.equal(secondChat.ticket_id, secondStart.result.ticketId)
-  const ticket = await first('select customer_id,customer_email,customer_mobile,subject from public.support_tickets where id=$1', [secondChat.ticket_id])
-  assert.equal(ticket.customer_id, null)
-  assert.equal(ticket.customer_email, null)
-  assert.equal(ticket.customer_mobile, '+966500000000')
-  assert.match(ticket.subject, /^Offline chat #/)
-  assert.deepEqual((await query('select event_type,actor_type from public.support_ticket_events where ticket_id=$1 order by event_type', [secondChat.ticket_id])).rows,
-    [{ event_type: 'created', actor_type: 'system' }, { event_type: 'source_chat', actor_type: 'system' }])
-  assert.equal((await first("select actor_kind from public.chat_events where conversation_id=$1 and event_type='ticket_created'", [secondStart.result.conversationId])).actor_kind, 'system')
-  const retry = await startGuest(guestB, creationKey, messageKey)
-  assert.equal(retry.result.ticketId, secondStart.result.ticketId)
-  assert.equal((await first('select count(*)::int as count from public.support_tickets where idempotency_key=$1', [secondStart.result.conversationId])).count, 1)
+  assert.equal(firstStart.result.ticketId, null)
+  assert.equal((await first('select count(*)::int as count from public.support_tickets')).count, 0)
+  await denied(() => query("update public.chat_settings set offline_behavior='ticket'"), /conversation_intake_only/)
 })
 
 test('ticket and settings switches are enforced at the database boundary', async () => {
-  await denied(() => query("update public.chat_settings set offline_behavior='ticket',ticket_conversion_enabled=false"), /offline_ticket_check/)
+  await denied(() => query("update public.chat_settings set offline_behavior='ticket'"), /conversation_intake_only/)
   await query('update public.chat_settings set ticket_conversion_enabled=false')
   const chat = await first(`insert into public.chat_conversations
     (guest_auth_user_id,contact_name,contact_mobile,creation_key,status,assigned_admin_id)

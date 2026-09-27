@@ -7,7 +7,7 @@ export const chatSettingsFields = [
   'customer_send_cooldown_seconds', 'max_message_length', 'attachments_enabled',
   'allowed_attachment_mimes', 'max_attachment_bytes', 'max_attachments_per_message',
   'transfers_enabled', 'reopen_enabled', 'offline_behavior',
-  'ticket_conversion_enabled', 'updated_at'
+  'ticket_conversion_enabled', 'request_call_enabled', 'updated_at'
 ].join(',')
 
 export const chatSettingsExpectedAt = (value) => {

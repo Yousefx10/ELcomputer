@@ -54,10 +54,7 @@ export const normalizeChatSettings = (body = {}) => {
     throw createError({ statusCode: 400, statusMessage: 'Attachment types are invalid.' })
   }
   const ticketConversion = boolean(body.ticket_conversion_enabled, 'Ticket conversion')
-  const offlineBehavior = choice(body.offline_behavior, 'Offline behavior', ['conversation', 'ticket'])
-  if (offlineBehavior === 'ticket' && !ticketConversion) {
-    throw createError({ statusCode: 400, statusMessage: 'Enable ticket conversion before ticket-based offline intake.' })
-  }
+  const offlineBehavior = choice(body.offline_behavior, 'Offline behavior', ['conversation'])
   return {
     is_enabled: boolean(body.is_enabled, 'Chat status'),
     availability_override: choice(body.availability_override, 'Availability', ['auto', 'online', 'offline']),
@@ -79,6 +76,7 @@ export const normalizeChatSettings = (body = {}) => {
     transfers_enabled: boolean(body.transfers_enabled, 'Transfers'),
     reopen_enabled: boolean(body.reopen_enabled, 'Reopening'),
     offline_behavior: offlineBehavior,
-    ticket_conversion_enabled: ticketConversion
+    ticket_conversion_enabled: ticketConversion,
+    request_call_enabled: boolean(body.request_call_enabled, 'Request a Call')
   }
 }
