@@ -494,92 +494,7 @@
         </p>
       </section>
 
-      <section class="rounded-2xl bg-white p-6 shadow">
-        <div class="mb-4">
-          <h3 class="text-2xl font-bold">Specifications</h3>
-          <p class="text-sm text-gray-500">
-            Add product details like switch type, weight, connectivity, or dimensions.
-          </p>
-        </div>
-
-        <div class="mb-5 grid gap-3 md:grid-cols-[1fr_2fr_auto]">
-          <input
-            v-model="newSpecLabel"
-            type="text"
-            placeholder="Label"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-
-          <input
-            v-model="newSpecValue"
-            type="text"
-            placeholder="Value"
-            class="rounded-lg border p-3 outline-none focus:border-blue-500"
-          />
-
-          <button
-            type="button"
-            @click="addProductSpecification"
-            class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
-          >
-            {{ specLoading ? 'Saving...' : 'Add Spec' }}
-          </button>
-        </div>
-
-        <p v-if="specError" class="mb-4 text-sm text-red-600">
-          {{ specError }}
-        </p>
-
-        <div v-if="productSpecifications.length" class="space-y-3">
-          <div
-            v-for="(specification, index) in productSpecifications"
-            :key="specification.id"
-            class="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
-          >
-            <input
-              v-model="specification.label"
-              :aria-label="`Specification ${index + 1} name`"
-              type="text"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
-
-            <input
-              v-model="specification.value"
-              :aria-label="`Specification ${index + 1} value`"
-              type="text"
-              class="rounded-lg border p-3 outline-none focus:border-blue-500"
-            />
-
-            <div class="flex gap-2 self-start">
-              <button type="button" :disabled="specLoading || index === 0" :aria-label="`Move specification ${index + 1} up`" class="rounded-lg border px-3 py-3 text-sm disabled:opacity-40" @click="moveProductSpecification(index, -1)">↑</button>
-              <button type="button" :disabled="specLoading || index === productSpecifications.length - 1" :aria-label="`Move specification ${index + 1} down`" class="rounded-lg border px-3 py-3 text-sm disabled:opacity-40" @click="moveProductSpecification(index, 1)">↓</button>
-              <button
-                type="button"
-                @click="saveProductSpecification(specification)"
-                :disabled="!isProductSpecificationDirty(specification) || specLoading"
-                class="rounded-lg px-4 py-3 text-sm font-medium text-white"
-                :class="isProductSpecificationDirty(specification) && !specLoading
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-300'"
-              >
-                Save
-              </button>
-
-              <button
-                type="button"
-                @click="deleteProductSpecification(specification.id)"
-                class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <p v-else class="text-sm text-gray-500">
-          No specifications added yet.
-        </p>
-      </section>
+      <DashboardProductsSpecificationEditor :product-id="id" :product-title="title" :category-id="categoryId" />
     </div>
 
     <div v-else class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
@@ -636,7 +551,6 @@ const brands = ref([])
 const suppliers = ref([])
 const warehouses = ref([])
 const productImages = ref([])
-const productSpecifications = ref([])
 const productVariants = ref([])
 
 const canAssignPrimaryWarehouse = computed(() => {
@@ -654,16 +568,12 @@ const savedVariantOptions = computed(() => {
 const newImageUrl = ref('')
 const newImageAlt = ref('')
 const newImageVariantId = ref('')
-const newSpecLabel = ref('')
-const newSpecValue = ref('')
 
 const saving = ref(false)
 const deleting = ref(false)
 const galleryLoading = ref(false)
-const specLoading = ref(false)
 const actionError = ref('')
 const galleryError = ref('')
-const specError = ref('')
 
 const makeSlug = (value) => {
   return value
@@ -819,26 +729,6 @@ const getProductImages = async () => {
   }))
 }
 
-const getProductSpecifications = async () => {
-  const { data, error } = await supabase
-    .from('product_specifications')
-    .select('*')
-    .eq('product_id', id)
-    .order('sort_order')
-    .order('created_at')
-
-  if (error) {
-    specError.value = error.message
-    return
-  }
-
-  productSpecifications.value = (data || []).map((specification) => ({
-    ...specification,
-    original_label: specification.label || '',
-    original_value: specification.value || ''
-  }))
-}
-
 const getProductVariants = async () => {
   const { data, error } = await supabase
     .from('product_variants')
@@ -863,7 +753,6 @@ onMounted(async () => {
     getSuppliersList(),
     getWarehousesList(),
     getProductImages(),
-    getProductSpecifications(),
     getProductVariants()
   ])
 })
@@ -1127,161 +1016,6 @@ const deleteProductImage = async (imageId) => {
   })
 
   await getProductImages()
-}
-
-const addProductSpecification = async () => {
-  specError.value = ''
-
-  if (!newSpecLabel.value.trim() || !newSpecValue.value.trim()) {
-    specError.value = 'Specification label and value are required'
-    return
-  }
-
-  specLoading.value = true
-
-  const { error } = await supabase
-    .from('product_specifications')
-    .insert({
-      product_id: id,
-      label: newSpecLabel.value.trim(),
-      value: newSpecValue.value.trim(),
-      sort_order: Math.max(-1, ...productSpecifications.value.map((item) => Number(item.sort_order) || 0)) + 1
-    })
-
-  specLoading.value = false
-
-  if (error) {
-    specError.value = error.message
-    return
-  }
-
-  await recordAdminLog({
-    actionKey: 'products.specifications.create',
-    description: `Added a specification to product ${title.value.trim()}.`,
-    metadata: {
-      product_id: id,
-      product_title: title.value.trim(),
-      label: newSpecLabel.value.trim()
-    }
-  })
-
-  newSpecLabel.value = ''
-  newSpecValue.value = ''
-  await getProductSpecifications()
-}
-
-const isProductSpecificationDirty = (specification) => {
-  return specification.label !== specification.original_label ||
-    specification.value !== specification.original_value
-}
-
-const moveProductSpecification = async (index, direction) => {
-  const target = index + direction
-  if (specLoading.value || target < 0 || target >= productSpecifications.value.length) return
-  if (productSpecifications.value.some(isProductSpecificationDirty)) {
-    specError.value = 'Save edited specifications before changing their order.'
-    return
-  }
-  specError.value = ''
-  specLoading.value = true
-  const reordered = [...productSpecifications.value]
-  ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-  try {
-    for (const [position, specification] of reordered.entries()) {
-      const { error } = await supabase.from('product_specifications')
-        .update({ sort_order: position })
-        .eq('id', specification.id)
-        .eq('product_id', id)
-      if (error) throw error
-    }
-    await recordAdminLog({
-      actionKey: 'products.specifications.update',
-      description: `Reordered specifications for product ${title.value.trim()}.`,
-      metadata: { product_id: id, product_title: title.value.trim() }
-    })
-  } catch (error) {
-    specError.value = error.message || 'Could not reorder specifications'
-  } finally {
-    specLoading.value = false
-    await getProductSpecifications()
-  }
-}
-
-const saveProductSpecification = async (specification) => {
-  specError.value = ''
-
-  if (!specification.label?.trim() || !specification.value?.trim()) {
-    specError.value = 'Specification label and value are required'
-    return
-  }
-
-  if (!isProductSpecificationDirty(specification)) {
-    return
-  }
-
-  specLoading.value = true
-
-  const { error } = await supabase
-    .from('product_specifications')
-    .update({
-      label: specification.label.trim(),
-      value: specification.value.trim()
-    })
-    .eq('id', specification.id)
-
-  specLoading.value = false
-
-  if (error) {
-    specError.value = error.message
-    return
-  }
-
-  await recordAdminLog({
-    actionKey: 'products.specifications.update',
-    description: `Updated a specification for product ${title.value.trim()}.`,
-    metadata: {
-      product_id: id,
-      product_title: title.value.trim(),
-      specification_id: specification.id
-    }
-  })
-
-  await getProductSpecifications()
-}
-
-const deleteProductSpecification = async (specificationId) => {
-  specError.value = ''
-
-  const confirmDelete = confirm('Delete this specification?')
-  if (!confirmDelete) {
-    return
-  }
-
-  specLoading.value = true
-
-  const { error } = await supabase
-    .from('product_specifications')
-    .delete()
-    .eq('id', specificationId)
-
-  specLoading.value = false
-
-  if (error) {
-    specError.value = error.message
-    return
-  }
-
-  await recordAdminLog({
-    actionKey: 'products.specifications.delete',
-    description: `Deleted a specification from product ${title.value.trim()}.`,
-    metadata: {
-      product_id: id,
-      product_title: title.value.trim(),
-      specification_id: specificationId
-    }
-  })
-
-  await getProductSpecifications()
 }
 
 const deleteProduct = async () => {

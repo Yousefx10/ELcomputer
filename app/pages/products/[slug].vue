@@ -76,14 +76,30 @@
         </div>
       </div>
 
-      <div class="mt-14 max-w-5xl space-y-12 border-t border-slate-200 pt-10">
-        <section v-if="product.long_description || product.description" aria-labelledby="description-heading"><h2 id="description-heading" class="text-2xl font-bold text-slate-950">Product Description</h2><p class="mt-5 whitespace-pre-line break-words text-base leading-7 text-slate-700">{{ product.long_description || product.description }}</p></section>
-        <section v-if="visibleSpecifications.length" aria-labelledby="specifications-heading"><h2 id="specifications-heading" class="text-2xl font-bold text-slate-950">Specifications</h2>
-          <dl class="mt-5 overflow-hidden rounded-md border border-slate-200">
-            <div v-for="specification in visibleSpecifications" :key="specification.id" class="grid gap-1 border-b border-slate-200 px-4 py-3 last:border-b-0 odd:bg-slate-50 sm:grid-cols-[minmax(150px,36%)_minmax(0,1fr)] sm:gap-6 sm:px-5">
-              <dt class="min-w-0 break-words text-sm font-semibold text-slate-700">{{ specification.label }}</dt><dd class="min-w-0 whitespace-pre-line break-words text-sm leading-6 text-slate-900">{{ specification.value }}</dd>
+      <div class="mt-14 max-w-6xl space-y-12 border-t border-slate-200 pt-10">
+        <section v-if="highlights.length" aria-labelledby="highlights-heading">
+          <h2 id="highlights-heading" class="text-2xl font-bold text-slate-950">Highlights</h2>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div v-for="highlight in highlights" :key="highlight.label" class="min-w-0 rounded-md border border-slate-200 bg-slate-50 px-4 py-5">
+              <p class="break-words text-xs font-semibold uppercase tracking-wide text-slate-500">{{ highlight.label }}</p>
+              <p class="mt-2 break-words text-lg font-bold leading-snug text-slate-950">{{ highlight.value }}</p>
             </div>
-          </dl>
+          </div>
+        </section>
+        <section v-if="descriptionContent.length" aria-labelledby="description-heading">
+          <h2 id="description-heading" class="text-2xl font-bold text-slate-950">About this product</h2>
+          <div class="mt-5 max-w-4xl space-y-4 break-words text-base leading-7 text-slate-700">
+            <template v-for="(block, index) in descriptionContent" :key="index">
+              <p v-if="block.type === 'paragraph'">{{ block.text }}</p>
+              <h3 v-else-if="block.type === 'heading'" class="pt-2 text-lg font-bold text-slate-900">{{ block.text }}</h3>
+              <ul v-else-if="block.type === 'list'" class="list-disc space-y-1 pl-6"><li v-for="(item, itemIndex) in block.items" :key="itemIndex">{{ item }}</li></ul>
+              <div v-else-if="block.type === 'detail'" class="grid gap-1 border-b border-slate-100 pb-2 sm:grid-cols-[minmax(150px,32%)_minmax(0,1fr)] sm:gap-5"><span class="font-semibold text-slate-800">{{ block.label }}</span><span class="min-w-0 break-words">{{ block.value }}</span></div>
+            </template>
+          </div>
+        </section>
+        <section v-if="product.features.length" aria-labelledby="features-heading"><h2 id="features-heading" class="text-2xl font-bold text-slate-950">Features</h2><ul class="mt-5 grid gap-3 sm:grid-cols-2"><li v-for="feature in product.features" :key="feature.id" class="flex min-w-0 gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-700"><Icon name="lucide:check" size="18" class="mt-0.5 shrink-0 text-blue-700" aria-hidden="true" /><span class="break-words">{{ feature.body }}</span></li></ul></section>
+        <section v-if="specificationGroups.length" aria-labelledby="specifications-heading"><h2 id="specifications-heading" class="text-2xl font-bold text-slate-950">Specifications</h2>
+          <div class="mt-5 space-y-7"><div v-for="(group, groupIndex) in specificationGroups" :key="groupIndex"><h3 v-if="group.name" class="mb-2 text-sm font-bold uppercase tracking-wide text-slate-600">{{ group.name }}</h3><dl class="overflow-hidden rounded-md border border-slate-200"><div v-for="specification in group.items" :key="specification.id" class="grid gap-1 border-b border-slate-200 px-4 py-3 last:border-b-0 odd:bg-slate-50 sm:grid-cols-[minmax(150px,34%)_minmax(0,1fr)] sm:gap-6 sm:px-5"><dt class="min-w-0 break-words text-sm font-semibold text-slate-700" :title="specification.definition?.help_text || undefined">{{ specification.displayLabel }}<Icon v-if="specification.definition?.help_text" name="lucide:info" size="13" class="ml-1 inline text-slate-400" aria-hidden="true" /><span v-if="specification.definition?.help_text" class="sr-only"> — {{ specification.definition.help_text }}</span></dt><dd class="min-w-0 whitespace-pre-line break-words text-sm leading-6 text-slate-900">{{ specification.value }}</dd></div></dl></div></div>
         </section>
         <div id="reviews-section" ref="reviewsSection"><ProductReviews ref="reviewsComponent" :product-id="product.id" :product-name="product.title" @summary-change="updateReviewSummary" /></div>
       </div>
@@ -94,12 +110,14 @@
       <div v-if="lightboxOpen && activeImage" ref="lightboxDialog" class="fixed inset-0 z-[100] flex flex-col bg-slate-950/95 p-4 text-white sm:p-6" role="dialog" aria-modal="true" :aria-label="`Product images for ${product.title}`" tabindex="-1" @keydown="onLightboxKeydown">
         <div class="flex items-center justify-between gap-4"><span class="text-sm font-semibold">{{ activeImageIndex + 1 }} / {{ galleryImages.length }}</span><button ref="lightboxClose" type="button" class="flex h-11 w-11 items-center justify-center rounded-md hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Close image gallery" @click="closeLightbox"><Icon name="lucide:x" size="25" /></button></div>
         <div class="flex min-h-0 flex-1 items-center justify-between gap-2"><button v-if="galleryImages.length > 1" type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Previous image" @click="stepImage(-1)"><Icon name="lucide:chevron-left" size="30" /></button><img :src="activeImage.url" :alt="activeImage.alt" class="min-h-0 max-h-full min-w-0 flex-1 object-contain" @error="markImageBroken(activeImage.url)"><button v-if="galleryImages.length > 1" type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Next image" @click="stepImage(1)"><Icon name="lucide:chevron-right" size="30" /></button></div>
+        <div v-if="galleryImages.length > 1" class="mt-3 flex justify-center gap-2 overflow-x-auto pb-1" aria-label="Gallery thumbnails"><button v-for="(image, index) in galleryImages" :key="image.url" type="button" :aria-label="`Show image ${index + 1} of ${galleryImages.length}`" :aria-current="activeImage.url === image.url ? 'true' : undefined" class="h-14 w-14 shrink-0 rounded-md border bg-white p-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" :class="activeImage.url === image.url ? 'border-blue-400 ring-2 ring-blue-400' : 'border-white/30'" @click="selectedImage = image.url"><img :src="image.url" :alt="image.alt" class="h-full w-full object-contain" @error="markImageBroken(image.url)"></button></div>
       </div>
     </Teleport>
   </div>
 </template>
 <script setup>
 import { buildProductGallery, selectProductGalleryImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
+import { groupProductSpecifications, productHighlights, descriptionBlocks } from '~/utils/specificationLibrary'
 const supabase = useSupabaseClient()
 const route = useRoute()
 const slug = route.params.slug
@@ -151,7 +169,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     throw productError
   }
 
-  const [imagesResult, specificationsResult, variantsResult, reviewsResult, relatedResult] = await Promise.all([
+  const [imagesResult, specificationsResult, variantsResult, reviewsResult, relatedResult, featuresResult] = await Promise.all([
     supabase
       .from('product_images')
       .select('*')
@@ -183,7 +201,8 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
           .neq('id', productData.id)
           .or([productData.category_id && `category_id.eq.${productData.category_id}`, productData.brand_id && `brand_id.eq.${productData.brand_id}`].filter(Boolean).join(','))
           .limit(24)
-      : Promise.resolve({ data: [], error: null })
+      : Promise.resolve({ data: [], error: null }),
+    supabase.from('product_features').select('id, body, sort_order').eq('product_id', productData.id).order('sort_order')
   ])
 
   if (imagesResult.error) {
@@ -199,10 +218,17 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
   }
 
 
+  const definitionIds = [...new Set((specificationsResult.data || []).map((item) => item.definition_id).filter(Boolean))]
+  const definitionsResult = definitionIds.length
+    ? await supabase.from('specification_definitions').select('id, name, group_name, help_text').in('id', definitionIds)
+    : { data: [] }
+  const definitionById = new Map((definitionsResult.data || []).map((definition) => [definition.id, definition]))
+
   return {
     ...productData,
     images: imagesResult.data || [],
-    specifications: specificationsResult.data || [],
+    specifications: (specificationsResult.data || []).map((item) => ({ ...item, definition: definitionById.get(item.definition_id) || null })),
+    features: featuresResult.error ? [] : (featuresResult.data || []).filter((item) => String(item.body || '').trim()),
     variants: variantsResult.data || [],
     reviewCount: reviewsResult ? Number(reviewsResult.total || 0) : null,
     reviewAverage: reviewsResult ? Number(reviewsResult.averageRating || 0) : null,
@@ -261,6 +287,9 @@ const galleryImages = computed(() => buildProductGallery(product.value, selected
 const activeImage = computed(() => galleryImages.value.find((image) => image.url === selectedImage.value) || galleryImages.value[0] || null)
 const activeImageIndex = computed(() => galleryImages.value.findIndex((image) => image.url === activeImage.value?.url))
 const visibleSpecifications = computed(() => visibleProductSpecifications(product.value?.specifications || []))
+const specificationGroups = computed(() => groupProductSpecifications(visibleSpecifications.value))
+const highlights = computed(() => productHighlights(visibleSpecifications.value))
+const descriptionContent = computed(() => descriptionBlocks(product.value?.long_description || product.value?.description))
 const relatedProducts = computed(() => pickRelatedProducts(product.value, product.value?.related || []))
 const formatPrice = (value) => `${new Intl.NumberFormat('en-US').format(Number(value || 0))} EGP`
 const discount = computed(() => productSavings(product.value?.price, product.value?.old_price))
