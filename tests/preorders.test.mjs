@@ -39,6 +39,9 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode) values($1,'Soon',($1::uuid)::text,100,0,false,'coming_soon')`, [soonProduct])
     await db.query("select set_config('app.serialized_inventory_write', 'off', true)")
 
+    await fails(() => db.query(`update public.products set preorder_deposit_percent=null where id=$1`, [product]), /products_preorder_payment_check/)
+    await fails(() => db.query(`select public.commerce_create_preorder($1,$2::jsonb,$3::jsonb,$4)`, [customer, JSON.stringify({ ...orderPayload('missing-method'), payment_method: null }), JSON.stringify(item(product)), randomUUID()]), /Choose bank transfer or InstaPay/)
+
     await fails(() => db.query(`select public.commerce_create_customer_order($1,$2::jsonb,$3::jsonb,false,$4)`, [customer, JSON.stringify(orderPayload('soon')), JSON.stringify(item(soonProduct)), randomUUID()]), /not available for normal checkout/)
     await fails(() => db.query(`select public.commerce_create_customer_order($1,$2::jsonb,$3::jsonb,false,$4)`, [customer, JSON.stringify(orderPayload('pre')), JSON.stringify(item(product)), randomUUID()]), /not available for normal checkout/)
 
@@ -51,12 +54,14 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     assert.equal(Number(first.order.amount_paid), 0)
     assert.equal(first.order.payment_status, 'pending')
     assert.equal(first.order.status, 'on_hold')
+    await fails(() => db.query(`update public.customer_orders set preorder_fulfillment_state='not_applicable' where id=$1`, [first.order.id]), /customer_orders_preorder_fulfillment_check/)
     assert.equal((await checkout(product, cart, 2)).created, false)
     assert.equal((await db.query(`select count(*)::int as count from public.customer_orders where checkout_cart_id=$1`, [cart])).rows[0].count, 1)
     const snapshot = (await db.query(`select * from public.customer_order_items where order_id=$1`, [first.order.id])).rows[0]
     assert.equal(Number(snapshot.unit_price), 10000)
     assert.equal(Number(snapshot.preorder_deposit_percent), 25)
     assert.equal(Number(snapshot.initial_amount_due), 5000)
+    await fails(() => db.query(`update public.customer_order_items set initial_amount_due=null where id=$1`, [snapshot.id]), /customer_order_items_preorder_snapshot_check/)
     assert.equal((await db.query(`select stock_quantity from public.products where id=$1`, [product])).rows[0].stock_quantity, 0)
 
     await db.query(`update public.products set price=12000, preorder_deposit_percent=30 where id=$1`, [product])

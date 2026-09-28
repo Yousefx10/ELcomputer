@@ -16,7 +16,7 @@ alter table public.products
   add constraint products_selling_mode_check check (selling_mode in ('normal', 'coming_soon', 'preorder')),
   add constraint products_preorder_payment_check check (
     preorder_payment_mode in ('full', 'deposit')
-    and (preorder_payment_mode <> 'deposit' or preorder_deposit_percent > 0 and preorder_deposit_percent < 100)
+    and (preorder_payment_mode <> 'deposit' or preorder_deposit_percent is not null and preorder_deposit_percent > 0 and preorder_deposit_percent < 100)
   ),
   add constraint products_preorder_dates_check check (preorder_ends_at is null or preorder_starts_at is null or preorder_ends_at > preorder_starts_at),
   add constraint products_preorder_limits_check check (
@@ -38,7 +38,8 @@ alter table public.customer_orders
   ),
   add constraint customer_orders_preorder_fulfillment_check check (
     preorder_fulfillment_state in ('not_applicable', 'awaiting_stock', 'ready')
-    and (is_preorder or preorder_fulfillment_state = 'not_applicable')
+    and (case when is_preorder then preorder_fulfillment_state in ('awaiting_stock', 'ready')
+      else preorder_fulfillment_state = 'not_applicable' end)
   );
 
 alter table public.customer_orders drop constraint if exists customer_orders_payment_status_check;
@@ -106,9 +107,9 @@ alter table public.customer_order_items
 alter table public.customer_order_items
   add constraint customer_order_items_preorder_snapshot_check check (
     not is_preorder or (
-      preorder_payment_mode in ('full', 'deposit')
-      and initial_amount_due >= 0 and initial_amount_due <= line_total
-      and (preorder_payment_mode <> 'deposit' or preorder_deposit_percent > 0 and preorder_deposit_percent < 100)
+      preorder_payment_mode is not null and preorder_payment_mode in ('full', 'deposit')
+      and initial_amount_due is not null and initial_amount_due >= 0 and initial_amount_due <= line_total
+      and (preorder_payment_mode <> 'deposit' or preorder_deposit_percent is not null and preorder_deposit_percent > 0 and preorder_deposit_percent < 100)
     )
   );
 
@@ -195,7 +196,7 @@ begin
   if nullif(btrim(p_order ->> 'coupon_code'), '') is not null then
     raise exception 'Coupons are not available for preorders.';
   end if;
-  if (p_order ->> 'payment_method') not in ('bank_transfer', 'instapay') then
+  if coalesce(p_order ->> 'payment_method', '') not in ('bank_transfer', 'instapay') then
     raise exception 'Choose bank transfer or InstaPay for a preorder.';
   end if;
 
@@ -250,7 +251,7 @@ begin
     v_product_id := (v_item ->> 'product_id')::uuid;
     v_variant_id := nullif(v_item ->> 'variant_id', '')::uuid;
     v_quantity := (v_item ->> 'quantity')::integer;
-    if v_quantity < 1 or v_quantity > 99 then raise exception 'Invalid preorder quantity.'; end if;
+    if v_quantity is null or v_quantity < 1 or v_quantity > 99 then raise exception 'Invalid preorder quantity.'; end if;
     select * into v_product from public.products where id = v_product_id;
     if not found or v_product.selling_mode <> 'preorder' then
       raise exception 'The product is not available for preorder.';
