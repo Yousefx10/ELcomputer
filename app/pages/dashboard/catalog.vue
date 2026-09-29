@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
     <DashboardPageIntro
-      title="Catalog"
-      description="Product categories, brands and customer reviews."
+      :title="$t('common.catalog')"
+      :description="$t('interface.productCategoriesBrandsAndCustomerReviews')"
     />
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
@@ -20,7 +20,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const route = useRoute()
+const route = useUiRoute()
 const { hasPermission } = useAdminAccess()
 
 const canViewCategories = computed(() => hasPermission('categories.view'))

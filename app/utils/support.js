@@ -13,6 +13,6 @@ export const supportStatusLabel = (value, audience = 'customer') => {
   return supportStatuses.find(item => item.value === value)?.label || 'Open'
 }
 export const supportReference = value => `SUP-${String(value || 0).padStart(6, '0')}`
-export const supportDate = value => value ? new Intl.DateTimeFormat('en-US', {
+export const supportDate = (value, locale = 'en-US') => value ? new Intl.DateTimeFormat(locale, {
   dateStyle: 'medium', timeStyle: 'short'
 }).format(new Date(value)) : '—'

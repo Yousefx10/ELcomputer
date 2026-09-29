@@ -3,22 +3,22 @@
 
     <section>
       <div class="mb-4">
-        <h3 class="text-2xl font-bold text-gray-900">Overview</h3>
+        <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.overview') }}</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Watch calendar periods.
+          {{ $t('common.watchCalendarPeriods') }}
         </p>
       </div>
 
       <div v-if="overviewLoading" class="rounded-2xl bg-white p-8 text-center text-sm text-gray-500 shadow">
-        Loading analysis overview...
+        {{ $t('dashboard.analysis.loadingAnalysisOverview') }}
       </div>
 
       <div v-else class="grid gap-4 xl:grid-cols-3">
         <article v-for="period in overviewPeriods" :key="period.key" class="rounded-2xl bg-white p-5 shadow">
           <div class="mb-4 flex items-center justify-between gap-3 border-b pb-4">
             <div>
-              <h4 class="text-xl font-bold text-gray-900">{{ period.label }}</h4>
-              <p class="mt-1 text-xs text-gray-500">Compared with {{ period.comparisonLabel }}</p>
+              <h4 class="text-xl font-bold text-gray-900">{{ $uiLabel(period.label) }}</h4>
+              <p class="mt-1 text-xs text-gray-500">{{ $t('common.comparedWithValue', { value0: ($uiLabel(period.comparisonLabel)) }) }}</p>
             </div>
             <Icon :name="period.icon" size="22" class="text-gray-400" />
           </div>
@@ -26,7 +26,7 @@
           <div class="space-y-4">
             <div v-for="metric in overviewMetrics" :key="metric.key" class="flex items-center justify-between gap-4">
               <div>
-                <p class="text-sm text-gray-500">{{ metric.label }}</p>
+                <p class="text-sm text-gray-500">{{ $uiLabel(metric.label) }}</p>
                 <p class="mt-1 text-2xl font-bold text-gray-900">
                   {{ formatOverviewValue(metric, period.current[metric.key]) }}
                 </p>
@@ -44,15 +44,15 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 class="text-2xl font-bold text-gray-900">Performance Chart</h3>
+          <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.performanceChart') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Select a metric and reporting period.
+            {{ $t('dashboard.analysis.selectAMetricAndReportingPeriod') }}
           </p>
         </div>
 
         <button type="button" :disabled="chartLoading" class="inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-gray-700 disabled:opacity-50" @click="loadChart({ force: true })">
           <Icon name="lucide:refresh-cw" size="16" :class="chartLoading ? 'animate-spin' : ''" />
-          Refresh
+          {{ $t('common.refresh') }}
         </button>
       </div>
 
@@ -65,7 +65,7 @@
           :class="selectedMetric === metric.key ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
           @click="selectedMetric = metric.key"
         >
-          {{ metric.label }}
+          {{ $uiLabel(metric.label) }}
         </button>
       </div>
 
@@ -78,37 +78,37 @@
           :class="selectedRange === preset.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
           @click="selectRange(preset.key)"
         >
-          {{ preset.label }}
+          {{ $uiLabel(preset.label) }}
         </button>
       </div>
 
       <form v-if="selectedRange === 'custom'" class="mt-4 grid gap-3 rounded-xl bg-gray-50 p-4 sm:grid-cols-[1fr_1fr_auto]" @submit.prevent="applyCustomRange">
         <div>
-          <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">From</label>
+          <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $t('common.from') }}</label>
           <input v-model="customFrom" required type="date" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
         </div>
         <div>
-          <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">To</label>
+          <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $t('common.to') }}</label>
           <input v-model="customTo" required type="date" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
         </div>
-        <button type="submit" class="self-end rounded-lg bg-black px-5 py-3 font-semibold text-white">Apply</button>
+        <button type="submit" class="self-end rounded-lg bg-black px-5 py-3 font-semibold text-white">{{ $t('common.apply') }}</button>
       </form>
 
       <div v-if="analysisError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-600">
-        {{ analysisError }}
+        {{ $uiMessage(analysisError) }}
       </div>
 
       <div v-else class="mt-6">
         <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-sm text-gray-500">{{ selectedMetricDefinition.label }} · {{ activeRangeLabel }}</p>
+            <p class="text-sm text-gray-500">{{ $uiLabel(selectedMetricDefinition.label) }} · {{ $uiLabel(activeRangeLabel) }}</p>
             <p class="mt-1 text-3xl font-bold text-gray-900">{{ formatChartValue(chartTotal) }}</p>
           </div>
           <p class="text-sm text-gray-500">{{ chartDateLabel }}</p>
         </div>
 
         <div v-if="chartLoading" class="flex h-80 items-center justify-center rounded-xl bg-gray-50 text-sm text-gray-500">
-          Loading chart data...
+          {{ $t('common.loadingChartData') }}
         </div>
 
         <div v-else class="rounded-xl border bg-gray-50 p-3 sm:p-5">
@@ -117,18 +117,18 @@
               <div v-for="line in 5" :key="line" class="border-t border-dashed border-gray-200" />
             </div>
 
-            <svg viewBox="0 0 1000 280" preserveAspectRatio="none" class="relative h-full w-full overflow-visible" role="img" :aria-label="`${selectedMetricDefinition.label} chart`">
+            <svg viewBox="0 0 1000 280" preserveAspectRatio="none" class="relative h-full w-full overflow-visible" role="img" :aria-label="$t('common.valueChart', { value0: ($uiLabel(selectedMetricDefinition.label)) })">
               <line v-if="chartHasNegativeValues" x1="0" :y1="zeroLineY" x2="1000" :y2="zeroLineY" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="7 7" />
               <path v-if="chartPoints.length > 1" :d="chartAreaPath" :fill="selectedMetricDefinition.fill" opacity="0.18" />
               <polyline v-if="chartPoints.length > 1" :points="chartPolyline" fill="none" :stroke="selectedMetricDefinition.color" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
               <circle v-for="point in visibleChartPoints" :key="point.index" :cx="point.x" :cy="point.y" r="5" :fill="selectedMetricDefinition.color" vector-effect="non-scaling-stroke">
-                <title>{{ point.label }}: {{ formatChartValue(point.value) }}</title>
+                <title>{{ $uiLabel(point.label) }}: {{ formatChartValue(point.value) }}</title>
               </circle>
             </svg>
           </div>
 
           <div class="mt-3 flex justify-between gap-3 text-xs text-gray-500">
-            <span v-for="label in chartAxisLabels" :key="label.index" class="text-center">{{ label.label }}</span>
+            <span v-for="label in chartAxisLabels" :key="label.index" class="text-center">{{ $uiLabel(label.label) }}</span>
           </div>
         </div>
       </div>
@@ -137,6 +137,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const supabase = useSupabaseClient()
 const { getSnapshot, isFresh, setSnapshot } = useDashboardCache()
 
@@ -340,8 +342,8 @@ const getChangeClass = (change) => {
 }
 
 const formatPercentage = (value) => `${Number(value || 0)}%`
-const formatCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
-const formatNumber = (value) => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(value || 0))
+const formatCurrency = (value) => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
+const formatNumber = (value) => new Intl.NumberFormat(intlLocale.value, { maximumFractionDigits: 2 }).format(Number(value || 0))
 const formatOverviewValue = (metric, value) => metric.currency ? formatCurrency(value) : `${formatNumber(value)}${metric.suffix || ''}`
 const formatChartValue = (value) => selectedMetricDefinition.value.currency ? formatCurrency(value) : formatNumber(value)
 
@@ -385,7 +387,7 @@ const formatBucketLabel = (value) => {
   const rawDate = String(value || '').slice(0, 10)
   const date = new Date(`${rawDate}T00:00:00`)
   if (Number.isNaN(date.getTime())) return rawDate || '-'
-  return new Intl.DateTimeFormat('en-US', activeRange.bucket === 'month' ? { month: 'short' } : { month: 'short', day: 'numeric' }).format(date)
+  return new Intl.DateTimeFormat(intlLocale.value, activeRange.bucket === 'month' ? { month: 'short' } : { month: 'short', day: 'numeric' }).format(date)
 }
 
 const activeRangeLabel = computed(() => rangePresets.find((preset) => preset.key === selectedRange.value)?.label || 'Custom')

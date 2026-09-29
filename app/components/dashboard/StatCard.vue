@@ -2,15 +2,15 @@
   <component
     :is="rootComponent"
     v-bind="rootAttributes"
-    class="group relative block h-full overflow-hidden rounded-[1.35rem] border p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] transition duration-200"
+    class="dashboard-stat-card group relative block h-full overflow-hidden rounded-[1.35rem] border p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] transition duration-200"
     :class="[palette.surface, to ? 'hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(15,23,42,0.1)]' : '']"
-    :aria-label="`${label}: ${value}`"
+    :aria-label="$uiLabel(`${label}: ${value}`)"
   >
-    <span class="pointer-events-none absolute -end-8 -top-10 h-28 w-28 rounded-full bg-white/50 blur-2xl" aria-hidden="true" />
+    <span class="dashboard-stat-glow pointer-events-none absolute -end-8 -top-10 h-28 w-28 rounded-full bg-white/50 blur-2xl" aria-hidden="true" />
     <div class="relative flex items-start justify-between gap-4">
       <div class="min-w-0">
-        <p class="text-sm font-semibold text-slate-600">{{ label }}</p>
-        <p class="mt-2 break-words text-3xl font-black tracking-tight tabular-nums sm:text-[2rem]" :class="palette.value">
+        <p class="text-sm font-semibold text-slate-600">{{ $uiLabel(label) }}</p>
+        <p class="dashboard-stat-value mt-2 break-words text-3xl font-black tracking-tight tabular-nums sm:text-[2rem]" :class="palette.value">
           {{ value }}
         </p>
       </div>
@@ -20,8 +20,8 @@
     </div>
     <div v-if="caption || badge || $slots.default" class="relative mt-4 border-t border-slate-900/5 pt-3">
       <div v-if="caption || badge" class="flex flex-wrap items-center justify-between gap-2">
-        <p v-if="caption" class="text-xs font-medium text-slate-500">{{ caption }}</p>
-        <span v-if="badge" class="rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-bold text-slate-600 ring-1 ring-slate-900/5">{{ badge }}</span>
+        <p v-if="caption" class="text-xs font-medium text-slate-500">{{ $uiLabel(caption) }}</p>
+        <span v-if="badge" class="rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-bold text-slate-600 ring-1 ring-slate-900/5">{{ $uiLabel(badge) }}</span>
       </div>
       <slot />
     </div>
@@ -49,7 +49,7 @@ const palettes = {
   slate: { surface: 'border-slate-200 bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100', value: 'text-slate-950', icon: 'text-slate-700' }
 }
 
-const nuxtLinkComponent = resolveComponent('NuxtLink')
+const nuxtLinkComponent = resolveComponent('NuxtLinkLocale')
 const palette = computed(() => palettes[props.tone] || palettes.blue)
 const rootComponent = computed(() => props.to ? nuxtLinkComponent : 'article')
 const rootAttributes = computed(() => props.to ? { to: props.to } : {})

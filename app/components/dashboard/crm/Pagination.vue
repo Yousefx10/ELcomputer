@@ -2,7 +2,7 @@
   <nav
     v-if="totalPages > 1"
     class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3"
-    :aria-label="label"
+    :aria-label="$uiLabel(label)"
   >
     <button
       type="button"
@@ -10,7 +10,7 @@
       class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
       @click="$emit('change', page - 1)"
     >
-      Previous
+      {{ $t('common.previous') }}
     </button>
 
     <div class="flex flex-wrap items-center justify-center gap-1">
@@ -32,7 +32,7 @@
             ? 'bg-blue-600 text-white'
             : 'border text-gray-700 hover:bg-gray-50'"
           :aria-current="item.page === page ? 'page' : undefined"
-          :aria-label="`Page ${item.page}`"
+          :aria-label="$t('common.pageValue', { value0: (item.page) })"
           @click="$emit('change', item.page)"
         >
           {{ item.page }}
@@ -46,7 +46,7 @@
       class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
       @click="$emit('change', page + 1)"
     >
-      Next
+      {{ $t('common.next') }}
     </button>
   </nav>
 </template>
@@ -85,7 +85,7 @@ const paginationItems = computed(() => {
   ])
   const visiblePages = [...pages]
     .filter((page) => page >= 1 && page <= props.totalPages)
-    .sort((left, right) => left - right)
+    .sort((left, right) => start - right)
   const items = []
 
   visiblePages.forEach((page, index) => {

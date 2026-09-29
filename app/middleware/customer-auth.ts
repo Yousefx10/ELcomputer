@@ -1,10 +1,13 @@
-export default defineNuxtRouteMiddleware(async (to) => {
+import { stripLocalePrefix } from '~/utils/appearance'
+export default defineNuxtRouteMiddleware(async (destination) => {
+  const to = { ...destination, path: stripLocalePrefix(destination.path) }
+  const { uiNavigateTo } = useUiNavigation()
   const supabase = useSupabaseClient()
   const { data: claimsData, error: authError } = await supabase.auth.getClaims()
   const customerId = claimsData?.claims?.sub
 
   if (authError || !customerId) {
-    return navigateTo({
+    return uiNavigateTo({
       path: '/login',
       query: {
         redirect: to.fullPath
@@ -19,14 +22,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
     .maybeSingle()
 
   if (customerProfileError) {
-    return navigateTo('/login')
+    return uiNavigateTo('/login')
   }
 
   if (claimsData.claims?.is_anonymous === true || !customerProfile) {
     if (import.meta.client) {
       await supabase.auth.signOut()
     }
-    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+    return uiNavigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
   if ((customerProfile as { is_active?: boolean }).is_active === false) {
@@ -34,7 +37,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await supabase.auth.signOut()
     }
 
-    return navigateTo({
+    return uiNavigateTo({
       path: '/login',
       query: {
         error: 'account-disabled',

@@ -3,7 +3,7 @@
     <div class="store-container">
       <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-          Products
+          {{ $t('common.products') }}
         </p>
 
         <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
@@ -11,36 +11,36 @@
         </h1>
 
         <p class="mt-2 text-sm text-gray-500">
-          {{ resultsSummary }}
+          {{ $uiLabel(resultsSummary) }}
         </p>
       </div>
 
       <div v-if="error" class="mt-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow-sm">
-        {{ error.message }}
+        {{ $uiMessage(error.message) }}
       </div>
 
-      <nav v-if="categories.length" class="mt-6 flex gap-2 overflow-x-auto pb-2" aria-label="Browse categories">
-        <NuxtLink :to="categoryLink('')" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="!filters.category ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">All categories</NuxtLink>
-        <NuxtLink v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ category.name }}</NuxtLink>
+      <nav v-if="categories.length" class="mt-6 flex gap-2 overflow-x-auto pb-2" :aria-label="$t('common.browseCategories')">
+        <NuxtLinkLocale :to="categoryLink('')" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="!filters.category ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ $t('common.allCategories') }}</NuxtLinkLocale>
+        <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ category.name }}</NuxtLinkLocale>
       </nav>
 
       <div class="mt-6 grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside class="rounded-xl border border-gray-200 bg-white p-5">
           <button type="button" class="flex min-h-10 w-full items-center justify-between text-sm font-bold lg:hidden" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen">
-            <span class="flex items-center gap-2"><Icon name="lucide:sliders-horizontal" size="17" />Filter products</span>
+            <span class="flex items-center gap-2"><Icon name="lucide:sliders-horizontal" size="17" />{{ $t('common.filterProducts') }}</span>
             <Icon :name="filtersOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="17" />
           </button>
           <fieldset id="store-search-filters" :disabled="pending" class="min-w-0 space-y-5 lg:block" :class="filtersOpen ? 'mt-4 lg:mt-0' : 'hidden'">
             <div>
-              <h2 class="text-lg font-bold text-gray-900">Filters</h2>
+              <h2 class="text-lg font-bold text-gray-900">{{ $t('common.filters') }}</h2>
               <p class="mt-1 text-sm text-gray-500">
-                Filter by price, category or brand.
+                {{ $t('search.filterByPriceCategoryOrBrand') }}
               </p>
             </div>
 
             <div class="border-t pt-5">
               <label class="mb-3 block text-sm font-semibold text-gray-700">
-                Price Range
+                {{ $t('common.priceRange') }}
               </label>
 
               <div class="mb-3 flex items-center justify-between text-sm text-gray-500">
@@ -53,7 +53,7 @@
                 class="relative mt-5 h-10 touch-none"
                 @pointerdown.prevent="onPriceSliderPointerDown"
               >
-                <div class="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-gray-200" />
+                <div class="absolute start-0 end-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-gray-200" />
 
                 <div
                   class="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-blue-600"
@@ -62,7 +62,7 @@
 
                 <button
                   type="button"
-                  aria-label="Minimum price"
+                  :aria-label="$t('common.minimumPrice')"
                   class="price-slider-thumb absolute top-1/2 z-20 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue-600 shadow-sm"
                   :class="draggingPriceThumb === 'min' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
                   :style="minThumbStyle"
@@ -71,7 +71,7 @@
 
                 <button
                   type="button"
-                  aria-label="Maximum price"
+                  :aria-label="$t('common.maximumPrice')"
                   class="price-slider-thumb absolute top-1/2 z-30 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue-600 shadow-sm"
                   :class="draggingPriceThumb === 'max' ? 'cursor-grabbing ring-4 ring-black/10' : 'cursor-grab'"
                   :style="maxThumbStyle"
@@ -82,7 +82,7 @@
               <div class="mt-4 grid gap-3 sm:grid-cols-2">
                 <div>
                   <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Minimum
+                    {{ $t('common.minimum') }}
                   </label>
 
                   <input
@@ -98,7 +98,7 @@
 
                 <div>
                   <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Maximum
+                    {{ $t('common.maximum') }}
                   </label>
 
                   <input
@@ -116,14 +116,14 @@
 
             <div class="border-t pt-5">
               <label class="mb-2 block text-sm font-semibold text-gray-700">
-                Category
+                {{ $t('common.category') }}
               </label>
 
               <select
                 v-model="filters.category"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                <option value="">All categories</option>
+                <option value="">{{ $t('common.allCategories') }}</option>
 
                 <option
                   v-for="category in categories"
@@ -137,14 +137,14 @@
 
             <div class="border-t pt-5">
               <label class="mb-2 block text-sm font-semibold text-gray-700">
-                Brand
+                {{ $t('common.brand') }}
               </label>
 
               <select
                 v-model="filters.brand"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                <option value="">All brands</option>
+                <option value="">{{ $t('common.allBrands') }}</option>
 
                 <option
                   v-for="brand in brands"
@@ -158,16 +158,16 @@
 
             <div class="border-t pt-5">
               <label class="mb-2 block text-sm font-semibold text-gray-700">
-                Status
+                {{ $t('common.status') }}
               </label>
 
               <select
                 v-model="filters.status"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                <option value="">All products</option>
-                <option value="instock">In Stock</option>
-                <option value="unavailable">Unavailable</option>
+                <option value="">{{ $t('common.allProducts') }}</option>
+                <option value="instock">{{ $t('common.inStock') }}</option>
+                <option value="unavailable">{{ $t('common.unavailable') }}</option>
               </select>
             </div>
 
@@ -177,7 +177,7 @@
                 class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
                 @click="applyFilters"
               >
-                Apply Filters
+                {{ $t('common.applyFilters') }}
               </button>
 
               <button
@@ -185,7 +185,7 @@
                 class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-300"
                 @click="clearFilters"
               >
-                Clear
+                {{ $t('common.clear') }}
               </button>
             </div>
           </fieldset>
@@ -208,18 +208,18 @@
                     v-if="!activeFilterChips.length"
                     class="rounded-full bg-gray-100 px-3 py-2 text-sm text-gray-500"
                   >
-                    No active filters
+                    {{ $t('common.noActiveFilters') }}
                   </span>
                 </div>
 
                 <p v-if="!pending" class="text-sm text-gray-500">
-                  {{ totalCount }} product{{ totalCount === 1 ? '' : 's' }} found
+                  {{ $t('search.valueProductvalueFound', { value0: (totalCount), value1: (totalCount === 1 ? '' : $uiPluralSuffix('s')) }) }}
                 </p>
               </div>
 
               <div class="w-full md:w-64">
                 <label class="mb-2 block text-sm font-semibold text-gray-700">
-                  Sort By
+                  {{ $t('common.sortBy') }}
                 </label>
 
                 <select
@@ -232,20 +232,20 @@
                     :key="option.value"
                     :value="option.value"
                   >
-                    {{ option.label }}
+                    {{ $uiLabel(option.label) }}
                   </option>
                 </select>
               </div>
             </div>
           </div>
 
-          <LayoutPageLoading v-if="pending" label="Loading products…" />
+          <LayoutPageLoading v-if="pending" :label="$t('common.loadingProducts')" />
 
           <div
             v-else-if="!products.length"
             class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow"
           >
-            No products match the current search and filters.
+            {{ $t('search.noProductsMatchTheCurrentSearchAndFilters') }}
           </div>
 
           <div v-else class="rounded-xl border border-gray-200 bg-white p-5">
@@ -270,11 +270,11 @@
                   : 'cursor-not-allowed bg-gray-200 text-gray-400'"
                 @click="goToPage(currentPage - 1)"
               >
-                Previous
+                {{ $t('common.previous') }}
               </button>
 
               <p class="text-sm text-gray-500">
-                Page {{ currentPage }} of {{ totalPages }}
+                {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
               </p>
 
               <button
@@ -286,7 +286,7 @@
                   : 'cursor-not-allowed bg-gray-200 text-gray-400'"
                 @click="goToPage(currentPage + 1)"
               >
-                Next
+                {{ $t('common.next') }}
               </button>
             </div>
           </div>
@@ -297,8 +297,12 @@
 </template>
 
 <script setup>
+const { uiNavigateTo } = useUiNavigation()
+
+const { uiText, uiLabel, intlLocale } = useUiLocale()
+const { locale } = useI18n()
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 
 const filtersOpen = ref(false)
 const pageSize = 12
@@ -792,14 +796,16 @@ const maxThumbPercent = computed(() => {
   return ((filters.maxPrice - sliderMin.value) / priceRangeSpan.value) * 100
 })
 const priceRangeTrackStyle = computed(() => ({
-  left: `${minThumbPercent.value}%`,
-  right: `${100 - maxThumbPercent.value}%`
+  insetInlineStart: `${minThumbPercent.value}%`,
+  insetInlineEnd: `${100 - maxThumbPercent.value}%`
 }))
 const minThumbStyle = computed(() => ({
-  left: `${minThumbPercent.value}%`
+  insetInlineStart: `${minThumbPercent.value}%`,
+  translate: `${locale.value === 'ar' ? '50%' : '-50%'} -50%`
 }))
 const maxThumbStyle = computed(() => ({
-  left: `${maxThumbPercent.value}%`
+  insetInlineStart: `${maxThumbPercent.value}%`,
+  translate: `${locale.value === 'ar' ? '50%' : '-50%'} -50%`
 }))
 
 const currentCategory = computed(() => {
@@ -821,7 +827,7 @@ const categoryLink = category => {
 const pageTitle = computed(() => {
   const query = normalizeTextValue(route.query.q)
   if (query) {
-    return `Search results for "${query}"`
+    return uiText('search.resultsFor', { query })
   }
 
   if (currentCategory.value && currentBrand.value) {
@@ -836,7 +842,7 @@ const pageTitle = computed(() => {
     return currentBrand.value.name
   }
 
-  return 'All Products'
+  return uiLabel('All Products')
 })
 
 const resultsSummary = computed(() => {
@@ -855,28 +861,28 @@ const activeFilterChips = computed(() => {
   const chips = []
 
   if (filters.searchQuery) {
-    chips.push(`Search: ${filters.searchQuery}`)
+    chips.push(`${uiLabel('Search')}: ${filters.searchQuery}`)
   }
 
   if (currentCategory.value) {
-    chips.push(`Category: ${currentCategory.value.name}`)
+    chips.push(`${uiLabel('Category')}: ${currentCategory.value.name}`)
   }
 
   if (currentBrand.value) {
-    chips.push(`Brand: ${currentBrand.value.name}`)
+    chips.push(`${uiLabel('Brand')}: ${currentBrand.value.name}`)
   }
 
   if (filters.status === 'instock') {
-    chips.push('Status: In Stock')
+    chips.push(uiLabel('Status: In Stock'))
   } else if (filters.status === 'unavailable') {
-    chips.push('Status: Unavailable')
+    chips.push(uiLabel('Status: Unavailable'))
   }
 
   if (
     filters.minPrice !== priceBounds.value.min ||
     filters.maxPrice !== priceBounds.value.max
   ) {
-    chips.push(`Price: ${formatCurrency(filters.minPrice)} - ${formatCurrency(filters.maxPrice)}`)
+    chips.push(`${uiLabel('Price')}: ${formatCurrency(filters.minPrice)} - ${formatCurrency(filters.maxPrice)}`)
   }
 
   return chips
@@ -995,7 +1001,8 @@ const getPriceFromPointerPosition = (clientX) => {
     return filters.minPrice
   }
 
-  const pointerPercent = Math.min(Math.max((clientX - trackRect.left) / trackRect.width, 0), 1)
+  const physicalPercent = (clientX - trackRect.left) / trackRect.width
+  const pointerPercent = Math.min(Math.max(locale.value === 'ar' ? 1 - physicalPercent : physicalPercent, 0), 1)
   return sliderMin.value + (pointerPercent * (sliderMax.value - sliderMin.value))
 }
 
@@ -1093,7 +1100,7 @@ const updateMaxPrice = (eventOrValue) => {
 
 const applyFilters = async () => {
   filtersOpen.value = false
-  await navigateTo({
+  await uiNavigateTo({
     path: '/search',
     query: buildRouteQuery(1)
   })
@@ -1108,25 +1115,25 @@ const clearFilters = async () => {
   filters.maxPrice = priceBounds.value.max
   filters.sortBy = defaultSort
 
-  await navigateTo('/search')
+  await uiNavigateTo('/search')
 }
 
 const changeSort = async () => {
-  await navigateTo({
+  await uiNavigateTo({
     path: '/search',
     query: buildRouteQuery(1)
   })
 }
 
 const goToPage = async (page) => {
-  await navigateTo({
+  await uiNavigateTo({
     path: '/search',
     query: buildRouteQuery(page)
   })
 }
 
 const formatCurrency = (value) => {
-  return `${Number(value || 0)} EGP`
+  return new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(Number(value || 0))
 }
 
 useHead(() => ({

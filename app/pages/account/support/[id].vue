@@ -1,8 +1,12 @@
 <script setup>
-import { supportDate, supportReference, supportStatusLabel } from '~/utils/support'
+const { uiLabel } = useUiLocale()
+const { intlLocale } = useUiLocale()
+const supportDate = value => baseSupportDate(value, intlLocale.value)
+
+import { supportDate as baseSupportDate, supportReference, supportStatusLabel } from '~/utils/support'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
-const route = useRoute()
+const route = useUiRoute()
 const user = useSupabaseUser()
 const { request, upload, download, errorText } = useSupportClient()
 const loading = ref(true)
@@ -78,21 +82,21 @@ const downloadFile = async file => {
 }
 onMounted(load)
 watch(() => route.params.id, load)
-useHead(() => ({ title: ticket.value ? `${supportReference(ticket.value.reference_number)} | Support` : 'Support Ticket' }))
+useHead(() => ({ title: ticket.value ? `${supportReference(ticket.value.reference_number)} | ${uiLabel('Support')}` : uiLabel('Support Ticket') }))
 </script>
 
 <template>
   <div class="space-y-5">
-    <NuxtLink to="/account/support" class="inline-flex items-center gap-1 text-sm font-semibold text-blue-700"><Icon name="lucide:arrow-left" size="16" /> My tickets</NuxtLink>
-    <p v-if="error" role="alert" class="mt-5 rounded-xl bg-red-50 p-4 text-red-700">{{ error }}</p>
-    <p v-if="notice" role="status" class="mt-5 rounded-xl bg-amber-50 p-4 text-amber-800">{{ notice }}</p>
-    <p v-if="loading && !detail" class="mt-6 text-gray-500">Loading ticket...</p>
+    <NuxtLinkLocale to="/account/support" class="inline-flex items-center gap-1 text-sm font-semibold text-blue-700"><Icon name="lucide:arrow-left" size="16" class="directional-icon" /> {{ $t('common.myTickets') }}</NuxtLinkLocale>
+    <p v-if="error" role="alert" class="mt-5 rounded-xl bg-red-50 p-4 text-red-700">{{ $uiMessage(error) }}</p>
+    <p v-if="notice" role="status" class="mt-5 rounded-xl bg-amber-50 p-4 text-amber-800">{{ $uiLabel(notice) }}</p>
+    <p v-if="loading && !detail" class="mt-6 text-gray-500">{{ $t('common.loadingTicket') }}</p>
     <template v-else-if="ticket">
-      <header class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-sm font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><h1 class="mt-2 text-2xl font-bold text-gray-900">{{ ticket.subject }}</h1><p class="mt-2 text-sm text-gray-500">Created {{ supportDate(ticket.created_at) }}<span v-if="detail.order"> · Order {{ detail.order.order_number || detail.order.id.slice(0, 8) }}</span></p></div><span class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{{ supportStatusLabel(ticket.status) }}</span></div><div class="mt-5 flex flex-wrap gap-3"><button v-if="canReply" type="button" :disabled="saving" class="text-sm font-semibold text-gray-600 hover:text-gray-900" @click="changeStatus('closed')">Close ticket</button><button v-else-if="canReopen" type="button" :disabled="saving" class="text-sm font-semibold text-blue-700" @click="changeStatus('open')">Reopen ticket</button></div></header>
-      <p v-if="detail.sourceChat" class="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">Created from live chat #{{ detail.sourceChat.reference_number }}. The original transcript and files remain in Live Chat.</p>
-      <section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="mb-5 text-xl font-bold text-gray-900">Conversation</h2><SupportConversation :messages="detail.messages" :attachments="detail.attachments" :current-user-id="user?.sub || user?.id || ''" @download="downloadFile" /></section>
-      <section v-if="canReply" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="text-lg font-bold text-gray-900">Reply</h2><form class="mt-4 space-y-4" @submit.prevent="sendReply"><label class="block"><span class="sr-only">Your reply</span><textarea v-model="reply" required maxlength="10000" rows="5" placeholder="Write your reply" class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label><label class="block text-sm font-semibold text-gray-700">Attach a file<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">Up to 5 MB.</span></label><button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? 'Sending...' : 'Send reply' }}</button></form></section>
-      <div v-else-if="!canReopen" class="mt-6 rounded-xl bg-white p-5 text-sm text-gray-600">This ticket is closed. Create a new ticket if you still need help.</div>
+      <header class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-sm font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><h1 class="mt-2 text-2xl font-bold text-gray-900">{{ ticket.subject }}</h1><p class="mt-2 text-sm text-gray-500">{{ $t('common.createdValue', { value0: (supportDate(ticket.created_at)) }) }}<span v-if="detail.order"> {{ $t('common.orderValue', { value0: (detail.order.order_number || detail.order.id.slice(0, 8)) }) }}</span></p></div><span class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{{ $uiLabel(supportStatusLabel(ticket.status)) }}</span></div><div class="mt-5 flex flex-wrap gap-3"><button v-if="canReply" type="button" :disabled="saving" class="text-sm font-semibold text-gray-600 hover:text-gray-900" @click="changeStatus('closed')">{{ $t('common.closeTicket') }}</button><button v-else-if="canReopen" type="button" :disabled="saving" class="text-sm font-semibold text-blue-700" @click="changeStatus('open')">{{ $t('common.reopenTicket') }}</button></div></header>
+      <p v-if="detail.sourceChat" class="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">{{ $t('account.support.createdFromLiveChatValueTheOriginalTranscriptAndFilesRemainInLiveChat', { value0: (detail.sourceChat.reference_number) }) }}</p>
+      <section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="mb-5 text-xl font-bold text-gray-900">{{ $t('common.conversation') }}</h2><SupportConversation :messages="detail.messages" :attachments="detail.attachments" :current-user-id="user?.sub || user?.id || ''" @download="downloadFile" /></section>
+      <section v-if="canReply" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"><h2 class="text-lg font-bold text-gray-900">{{ $t('common.reply') }}</h2><form class="mt-4 space-y-4" @submit.prevent="sendReply"><label class="block"><span class="sr-only">{{ $t('common.yourReply') }}</span><textarea v-model="reply" required maxlength="10000" rows="5" :placeholder="$t('common.writeYourReply')" class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label><label class="block text-sm font-semibold text-gray-700">{{ $t('common.attachAFile') }}<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">{{ $t('common.upTo5Mb') }}</span></label><button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? $t('common.sending') : $t('common.sendReply') }}</button></form></section>
+      <div v-else-if="!canReopen" class="mt-6 rounded-xl bg-white p-5 text-sm text-gray-600">{{ $t('account.support.thisTicketIsClosedCreateANewTicketIfYouStillNeedHelp') }}</div>
     </template>
   </div>
 </template>

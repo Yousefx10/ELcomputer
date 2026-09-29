@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
     <DashboardPageIntro
-      title="Treasury"
-      description="Payments, receipts and employee salaries."
+      :title="$t('common.treasury')"
+      :description="$t('interface.paymentsReceiptsAndEmployeeSalaries')"
       icon="lucide:landmark"
       container-class="rounded-2xl bg-amber-400 p-6 text-amber-950 shadow"
       layout-class="flex items-center gap-3"
@@ -16,35 +16,35 @@
         v-for="action in actions"
         :key="action.key"
         type="button"
-        class="rounded-2xl border-2 p-5 text-left shadow-sm transition"
+        class="rounded-2xl border-2 p-5 text-start shadow-sm transition"
         :class="activeAction === action.key
           ? 'border-amber-500 bg-amber-100 text-amber-950'
           : 'border-transparent bg-white text-gray-900 hover:border-amber-200'"
-        @click="navigateTo(`/dashboard/treasury?action=${action.key}`)"
+        @click="uiNavigateTo(`/dashboard/treasury?action=${action.key}`)"
       >
         <Icon :name="action.icon" size="24" />
-        <p class="mt-3 font-bold">{{ action.label }}</p>
+        <p class="mt-3 font-bold">{{ $uiLabel(action.label) }}</p>
         <p class="mt-1 text-sm opacity-70">{{ action.description }}</p>
       </button>
     </div>
 
     <section v-if="activeAction !== 'transactions'" class="rounded-2xl bg-white p-6 shadow">
       <div v-if="!canEditTreasury" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-        This account can view Treasury records but cannot record transactions.
+        {{ $t('dashboard.treasury.thisAccountCanViewTreasuryRecordsButCannotRecordTransactions') }}
       </div>
 
       <form v-else-if="activeAction === 'supplier_payment'" class="grid gap-5 md:grid-cols-2" @submit.prevent="recordSupplierPayment">
         <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Pay Supplier Invoice</h3>
-          <p class="mt-1 text-sm text-gray-500">Select an unpaid or partially paid procurement invoice.</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.paySupplierInvoice') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.treasury.selectAnUnpaidOrPartiallyPaidProcurementInvoice') }}</p>
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Supplier Invoice *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.supplierInvoice') }}</label>
           <select v-model="supplierForm.invoice_id" required class="w-full rounded-lg border p-3 outline-none focus:border-amber-500">
-            <option value="">Select an outstanding invoice</option>
+            <option value="">{{ $t('dashboard.treasury.selectAnOutstandingInvoice') }}</option>
             <option v-for="invoice in supplierInvoices" :key="invoice.id" :value="invoice.id">
-              {{ invoice.account_name }} · {{ invoice.invoice_number || shortId(invoice.id) }} · Due {{ formatCurrency(invoice.due_amount) }}
+              {{ $t('dashboard.treasury.valueValueDueValue', { value0: (invoice.account_name), value1: (invoice.invoice_number || shortId(invoice.id)), value2: (formatCurrency(invoice.due_amount)) }) }}
             </option>
           </select>
         </div>
@@ -57,25 +57,25 @@
           :maximum-amount="selectedSupplierInvoice?.due_amount"
         />
 
-        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ formError }}</p>
+        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ $uiMessage(formError) }}</p>
 
         <button type="submit" :disabled="saving" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400 disabled:opacity-60">
-          {{ saving ? 'Recording...' : 'Record Supplier Payment' }}
+          {{ saving ? $t('common.recording') : $t('common.recordSupplierPayment') }}
         </button>
       </form>
 
       <form v-else-if="activeAction === 'customer_receipt'" class="grid gap-5 md:grid-cols-2" @submit.prevent="recordCustomerReceipt">
         <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Receive Customer Payment</h3>
-          <p class="mt-1 text-sm text-gray-500">Settle an unpaid or partially paid manual sales invoice.</p>
+          <h3 class="text-2xl font-bold">{{ $t('dashboard.treasury.receiveCustomerPayment') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.treasury.settleAnUnpaidOrPartiallyPaidManualSalesInvoice') }}</p>
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Customer Invoice *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.customerInvoice') }}</label>
           <select v-model="customerForm.invoice_id" required class="w-full rounded-lg border p-3 outline-none focus:border-amber-500">
-            <option value="">Select an outstanding invoice</option>
+            <option value="">{{ $t('dashboard.treasury.selectAnOutstandingInvoice') }}</option>
             <option v-for="invoice in customerInvoices" :key="invoice.id" :value="invoice.id">
-              {{ invoice.account_name }} · {{ invoice.invoice_number || shortId(invoice.id) }} · Due {{ formatCurrency(invoice.due_amount) }}
+              {{ $t('dashboard.treasury.valueValueDueValue', { value0: (invoice.account_name), value1: (invoice.invoice_number || shortId(invoice.id)), value2: (formatCurrency(invoice.due_amount)) }) }}
             </option>
           </select>
         </div>
@@ -88,23 +88,23 @@
           :maximum-amount="selectedCustomerInvoice?.due_amount"
         />
 
-        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ formError }}</p>
+        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ $uiMessage(formError) }}</p>
 
         <button type="submit" :disabled="saving" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400 disabled:opacity-60">
-          {{ saving ? 'Recording...' : 'Record Customer Receipt' }}
+          {{ saving ? $t('common.recording') : $t('common.recordCustomerReceipt') }}
         </button>
       </form>
 
       <form v-else class="grid gap-5 md:grid-cols-2" @submit.prevent="recordSalaryPayment">
         <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Pay Employee Salary</h3>
-          <p class="mt-1 text-sm text-gray-500">Record a salary payment for an HR employee and period.</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.payEmployeeSalary') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.treasury.recordASalaryPaymentForAnHrEmployeeAndPeriod') }}</p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Employee *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.employee') }}</label>
           <select v-model="salaryForm.employee_id" required class="w-full rounded-lg border p-3 outline-none focus:border-amber-500">
-            <option value="">Select an employee</option>
+            <option value="">{{ $t('common.selectAnEmployee') }}</option>
             <option v-for="employee in employees" :key="employee.id" :value="employee.id">
               {{ employee.first_name }} {{ employee.last_name }} · {{ employee.position }}
             </option>
@@ -112,7 +112,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Salary Period *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.salaryPeriod') }}</label>
           <input v-model="salaryForm.salary_period" required type="month" class="w-full rounded-lg border p-3 outline-none focus:border-amber-500">
         </div>
 
@@ -123,27 +123,27 @@
           v-model:notes="salaryForm.notes"
         />
 
-        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ formError }}</p>
+        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ $uiMessage(formError) }}</p>
 
         <button type="submit" :disabled="saving" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400 disabled:opacity-60">
-          {{ saving ? 'Recording...' : 'Record Salary Payment' }}
+          {{ saving ? $t('common.recording') : $t('common.recordSalaryPayment') }}
         </button>
       </form>
     </section>
 
     <section v-if="activeAction === 'transactions'" class="overflow-hidden rounded-2xl bg-white shadow">
-      <button type="button" class="flex w-full items-center justify-between p-6 text-left" @click="transactionsOpen = !transactionsOpen">
+      <button type="button" class="flex w-full items-center justify-between p-6 text-start" @click="transactionsOpen = !transactionsOpen">
         <div>
-          <h3 class="text-2xl font-bold">Recent Treasury Transactions</h3>
-          <p class="mt-1 text-sm text-gray-500">Latest recorded payments and receipts.</p>
+          <h3 class="text-2xl font-bold">{{ $t('dashboard.treasury.recentTreasuryTransactions') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.treasury.latestRecordedPaymentsAndReceipts') }}</p>
         </div>
         <Icon name="lucide:chevron-down" size="20" class="transition" :class="transactionsOpen ? 'rotate-180' : ''" />
       </button>
 
       <div v-if="transactionsOpen" class="border-t p-6">
-        <p v-if="pageError" class="rounded-xl bg-red-50 p-4 text-sm text-red-600">{{ pageError }}</p>
-        <p v-else-if="loading" class="text-sm text-gray-500">Loading Treasury records...</p>
-        <p v-else-if="!transactions.length" class="text-sm text-gray-500">No Treasury transactions recorded yet.</p>
+        <p v-if="pageError" class="rounded-xl bg-red-50 p-4 text-sm text-red-600">{{ $uiMessage(pageError) }}</p>
+        <p v-else-if="loading" class="text-sm text-gray-500">{{ $t('dashboard.treasury.loadingTreasuryRecords') }}</p>
+        <p v-else-if="!transactions.length" class="text-sm text-gray-500">{{ $t('dashboard.treasury.noTreasuryTransactionsRecordedYet') }}</p>
 
         <div v-else class="space-y-3">
           <article v-for="transaction in transactions" :key="transaction.id" class="flex flex-col gap-3 rounded-xl border p-4 md:flex-row md:items-center md:justify-between">
@@ -155,7 +155,7 @@
                 <span class="text-sm text-gray-500">{{ formatDate(transaction.paid_at) }}</span>
               </div>
               <p class="mt-2 font-semibold text-gray-900">{{ getTransactionParty(transaction) }}</p>
-              <p class="mt-1 text-sm text-gray-500">{{ transaction.reference_number || 'No payment reference' }}</p>
+              <p class="mt-1 text-sm text-gray-500">{{ transaction.reference_number || $t('common.noPaymentReference') }}</p>
             </div>
 
             <p class="text-xl font-bold" :class="transaction.transaction_type === 'customer_receipt' ? 'text-green-600' : 'text-gray-900'">
@@ -169,8 +169,14 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
+const { uiNavigateTo } = useUiNavigation()
+
 import TreasuryCommonFields from '~/components/dashboard/treasury/CommonFields.vue'
-import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
+import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 definePageMeta({
   layout: 'dashboard'
@@ -190,7 +196,7 @@ const today = new Date().toISOString().slice(0, 10)
 const currentMonth = today.slice(0, 7)
 const createPaymentForm = () => ({ invoice_id: '', amount: '', paid_at: today, reference_number: '', notes: '' })
 
-const route = useRoute()
+const route = useUiRoute()
 const activeAction = computed(() => {
   const action = String(route.query.action || '')
   return actions.some(item => item.key === action) ? action : 'transactions'

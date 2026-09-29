@@ -2,18 +2,18 @@
   <div>
     <div class="mx-auto max-w-[1400px] space-y-6">
       <DashboardPageIntro
-        title="Confirm Orders"
+        :title="$t('common.confirmOrders')"
         layout-class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"
         title-class="text-4xl font-bold text-gray-900"
       >
         <template #actions>
-          <NuxtLink
+          <NuxtLinkLocale
             to="/dashboard/orders"
             class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
           >
-            <Icon name="lucide:arrow-left" size="17" />
-            Orders
-          </NuxtLink>
+            <Icon name="lucide:arrow-left" size="17" class="directional-icon" />
+            {{ $t('common.orders') }}
+          </NuxtLinkLocale>
         </template>
       </DashboardPageIntro>
 
@@ -24,10 +24,10 @@
         class="flex items-start justify-between gap-4 rounded-2xl bg-red-50 p-4 text-sm text-red-700 shadow"
         role="alert"
       >
-        <p>{{ pageError }}</p>
+        <p>{{ $uiMessage(pageError) }}</p>
         <button
           type="button"
-          aria-label="Dismiss error"
+          :aria-label="$t('common.dismissError')"
           class="shrink-0 rounded-lg p-1 hover:bg-red-100"
           @click="pageError = ''"
         >
@@ -53,7 +53,7 @@
         </div>
         <button
           type="button"
-          aria-label="Dismiss notice"
+          :aria-label="$t('common.dismissNotice')"
           class="shrink-0 rounded-lg p-1 hover:bg-black/5"
           @click="clearPageNotice"
         >
@@ -66,7 +66,7 @@
         class="rounded-2xl bg-white p-10 text-center text-gray-500 shadow"
       >
         <Icon name="lucide:loader-circle" size="28" class="mx-auto animate-spin" />
-        <p class="mt-3 text-sm">Checking your packing session...</p>
+        <p class="mt-3 text-sm">{{ $t('dashboard.orders.checkingYourPackingSession') }}</p>
       </section>
 
       <section
@@ -77,8 +77,8 @@
           <span class="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-700">
             <Icon name="lucide:play" size="23" />
           </span>
-          <h2 class="mt-5 text-2xl font-bold text-gray-950">Start session</h2>
-          <p class="mt-2 text-sm text-gray-500">Start to view and confirm orders.</p>
+          <h2 class="mt-5 text-2xl font-bold text-gray-950">{{ $t('common.startSession') }}</h2>
+          <p class="mt-2 text-sm text-gray-500">{{ $t('dashboard.orders.startToViewAndConfirmOrders') }}</p>
           <button
             type="button"
             :disabled="workSessionActionLoading"
@@ -90,7 +90,7 @@
               size="18"
               :class="workSessionActionLoading ? 'animate-spin' : ''"
             />
-            {{ workSessionActionLoading ? 'Starting...' : 'Start session' }}
+            {{ workSessionActionLoading ? $t('common.starting') : $t('common.startSession') }}
           </button>
         </div>
       </section>
@@ -108,10 +108,10 @@
                 </span>
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-xl font-bold text-gray-950">Session active</h2>
+                    <h2 class="text-xl font-bold text-gray-950">{{ $t('common.sessionActive') }}</h2>
                   </div>
                   <p class="mt-1 text-sm text-gray-500">
-                    {{ workSession.operator_name || 'Operator' }} · {{ workSessionElapsed }}
+                    {{ workSession.operator_name || $t('common.operator') }} · {{ $uiLabel(workSessionElapsed) }}
                   </p>
                 </div>
               </div>
@@ -122,11 +122,11 @@
                 @click="closeWorkSession"
               >
                 <Icon name="lucide:log-out" size="17" />
-                {{ workSessionActionLoading ? 'Closing...' : 'Close session' }}
+                {{ workSessionActionLoading ? $t('common.closing') : $t('common.closeSession') }}
               </button>
             </div>
             <p v-if="hasActivePackingOrder" class="mt-4 text-xs text-gray-500">
-              Closing clears this order's packing progress.
+              {{ $t('dashboard.orders.closingClearsThisOrderSPackingProgress') }}
             </p>
           </div>
 
@@ -134,7 +134,7 @@
             <div class="flex items-start justify-between gap-4">
               <div>
                 <div class="flex items-center gap-2">
-                  <h2 class="font-bold">Packing camera</h2>
+                  <h2 class="font-bold">{{ $t('common.packingCamera') }}</h2>
                   <span
                     class="rounded-full px-2 py-0.5 text-xs font-bold"
                     :class="recordingActive
@@ -143,10 +143,10 @@
                         ? 'bg-green-500/20 text-green-300'
                         : 'bg-white/10 text-gray-300'"
                   >
-                    {{ recordingActive ? 'Recording' : cameraConnected ? 'Connected' : 'Required' }}
+                    {{ recordingActive ? $t('common.recording') : cameraConnected ? $t('common.connected') : $t('common.required') }}
                   </span>
                 </div>
-                <p class="mt-1 text-xs text-gray-400">Choose an order to start recording.</p>
+                <p class="mt-1 text-xs text-gray-400">{{ $t('dashboard.orders.chooseAnOrderToStartRecording') }}</p>
               </div>
               <Icon name="lucide:video" size="21" :class="recordingActive ? 'text-red-400' : 'text-gray-400'" />
             </div>
@@ -161,7 +161,7 @@
               />
             </div>
 
-            <p v-if="cameraError" class="mt-3 text-xs text-red-300">{{ cameraError }}</p>
+            <p v-if="cameraError" class="mt-3 text-xs text-red-300">{{ $uiMessage(cameraError) }}</p>
             <div class="mt-4 flex flex-col gap-2 sm:flex-row">
               <select
                 v-if="cameraDevices.length > 1"
@@ -171,7 +171,7 @@
                 @change="connectCamera"
               >
                 <option v-for="device in cameraDevices" :key="device.deviceId" :value="device.deviceId" class="text-gray-950">
-                  {{ device.label || 'Camera' }}
+                  {{ device.label || $t('common.camera') }}
                 </option>
               </select>
               <button
@@ -181,7 +181,7 @@
                 @click="connectCamera"
               >
                 <Icon :name="cameraLoading ? 'lucide:loader-circle' : 'lucide:camera'" size="16" :class="cameraLoading ? 'animate-spin' : ''" />
-                {{ cameraLoading ? 'Connecting...' : cameraConnected ? 'Reconnect' : 'Connect camera' }}
+                {{ cameraLoading ? $t('common.connecting') : cameraConnected ? $t('common.reconnect') : $t('common.connectCamera') }}
               </button>
             </div>
           </div>
@@ -192,14 +192,14 @@
         <aside class="rounded-2xl bg-white p-5 shadow xl:sticky xl:top-6">
           <div class="flex items-center justify-between gap-3">
             <div>
-              <h2 class="text-xl font-bold text-gray-900">Confirmation queue</h2>
-              <p class="mt-1 text-xs text-gray-500">Oldest request first</p>
+              <h2 class="text-xl font-bold text-gray-900">{{ $t('common.confirmationQueue') }}</h2>
+              <p class="mt-1 text-xs text-gray-500">{{ $t('common.oldestRequestFirst') }}</p>
             </div>
 
             <button
               type="button"
               :disabled="queueLoading"
-              aria-label="Refresh confirmation queue"
+              :aria-label="$t('dashboard.orders.refreshConfirmationQueue')"
               class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition hover:bg-gray-200 disabled:opacity-50"
               @click="loadQueue({ preserveSelection: true })"
             >
@@ -212,23 +212,23 @@
           </div>
 
           <div class="mt-4 rounded-xl bg-gray-950 px-4 py-3 text-white">
-            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Waiting</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">{{ $t('common.waiting') }}</p>
             <p class="mt-1 text-3xl font-bold">{{ queueTotal }}</p>
             <p v-if="queueTotal > queueOrders.length" class="mt-1 text-xs text-gray-400">
-              Showing the oldest {{ queueOrders.length }}
+              {{ $t('dashboard.orders.showingTheOldestValue', { value0: (queueOrders.length) }) }}
             </p>
           </div>
 
           <div v-if="queueLoading && !queueOrders.length" class="py-12 text-center text-sm text-gray-500">
-            Loading orders...
+            {{ $t('common.loadingOrders') }}
           </div>
 
           <div v-else-if="!queueOrders.length" class="py-12 text-center">
             <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-green-50 text-green-700">
               <Icon name="lucide:package-check" size="24" />
             </span>
-            <p class="mt-4 font-bold text-gray-900">Queue is clear</p>
-            <p class="mt-1 text-sm text-gray-500">There are no orders waiting for confirmation.</p>
+            <p class="mt-4 font-bold text-gray-900">{{ $t('common.queueIsClear') }}</p>
+            <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.orders.thereAreNoOrdersWaitingForConfirmation') }}</p>
           </div>
 
           <div v-else class="mt-4 max-h-[65vh] space-y-3 overflow-y-auto pe-1">
@@ -237,7 +237,7 @@
               :key="queueOrder.id"
               type="button"
               :disabled="!cameraConnected || isQueueOrderLocked(queueOrder) || Boolean(openingOrderId) || claimLoading || problemLoading || isDifferentActiveOrder(queueOrder)"
-              class="relative w-full overflow-hidden rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed"
+              class="relative w-full overflow-hidden rounded-2xl border p-4 text-start transition disabled:cursor-not-allowed"
               :class="[
                 selectedOrderId === queueOrder.id
                   ? 'border-black bg-gray-950 text-white'
@@ -277,7 +277,7 @@
                 :class="selectedOrderId === queueOrder.id ? 'text-gray-300' : 'text-gray-500'"
               >
                 <span>{{ formatDate(queueOrder.created_at, false) }}</span>
-                <span>{{ Number(queueOrder.item_quantity || queueOrder.total_quantity || 0) }} items</span>
+                <span>{{ $t('common.valueItems', { value0: (Number(queueOrder.item_quantity || queueOrder.total_quantity || 0)) }) }}</span>
               </div>
 
               <div v-if="hasQueueCustomerReply(queueOrder)" class="mt-3">
@@ -288,7 +288,7 @@
                     : 'bg-fuchsia-100 text-fuchsia-800'"
                 >
                   <Icon name="lucide:message-circle-reply" size="13" />
-                  Purchaser replied
+                  {{ $t('common.purchaserReplied') }}
                 </span>
               </div>
 
@@ -302,8 +302,8 @@
                     : 'bg-blue-50 text-blue-700'"
               >
                 {{ isQueueOrderLocked(queueOrder)
-                  ? `Being packed by ${getQueueProcessorName(queueOrder)}`
-                  : 'Resume your packing session' }}
+                  ? $t('dashboard.orders.beingPackedByValue', { value0: (getQueueProcessorName(queueOrder)) })
+                  : $t('dashboard.orders.resumeYourPackingSession') }}
               </p>
 
               <div
@@ -335,7 +335,7 @@
             class="rounded-2xl bg-white p-12 text-center text-gray-500 shadow"
           >
             <Icon name="lucide:loader-circle" size="30" class="mx-auto animate-spin" />
-            <p class="mt-4">Opening the packaging table...</p>
+            <p class="mt-4">{{ $t('dashboard.orders.openingThePackagingTable') }}</p>
           </section>
 
           <section
@@ -346,12 +346,12 @@
               <Icon name="lucide:scan-barcode" size="32" />
             </span>
             <h2 class="mt-5 text-2xl font-bold text-gray-900">
-              {{ cameraConnected ? 'Choose an order to begin' : 'Connect the camera first' }}
+              {{ cameraConnected ? $t('dashboard.orders.chooseAnOrderToBegin') : $t('dashboard.orders.connectTheCameraFirst') }}
             </h2>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
               {{ cameraConnected
-                ? 'Recording starts after you select an order.'
-                : 'The queue unlocks after camera access is ready.' }}
+                ? $t('dashboard.orders.recordingStartsAfterYouSelectAnOrder')
+                : $t('dashboard.orders.theQueueUnlocksAfterCameraAccessIsReady') }}
             </p>
           </section>
 
@@ -361,16 +361,16 @@
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   <div>
                     <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
-                      {{ sessionCompleted ? 'Confirmation complete' : 'Active packaging session' }}
+                      {{ sessionCompleted ? $t('common.confirmationComplete') : $t('dashboard.orders.activePackagingSession') }}
                     </p>
                     <h2 class="mt-2 text-3xl font-bold">{{ getOrderNumber(orderDetail) }}</h2>
                     <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-300">
                       <span>{{ getCustomerName(orderDetail) }}</span>
-                      <span>Started {{ formatDate(sessionDetail.started_at) }}</span>
-                      <span>by {{ sessionDetail.processor_name || sessionDetail.admin_name || 'Admin' }}</span>
+                      <span>{{ $t('common.startedValue', { value0: (formatDate(sessionDetail.started_at)) }) }}</span>
+                      <span>{{ $t('common.byValue', { value0: (sessionDetail.processor_name || sessionDetail.admin_name || $t('common.admin')) }) }}</span>
                       <span v-if="!sessionCompleted" class="inline-flex items-center gap-1.5 font-bold text-red-300">
                         <span class="h-2 w-2 animate-pulse rounded-full bg-red-400" />
-                        {{ recordingActive ? 'Video recording' : 'Recording stopped' }}
+                        {{ recordingActive ? $t('common.videoRecording') : $t('common.recordingStopped') }}
                       </span>
                     </div>
                   </div>
@@ -378,7 +378,7 @@
                   <div class="w-full rounded-2xl bg-white/10 p-4 lg:max-w-xs">
                     <div class="flex items-end justify-between gap-4">
                       <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-gray-400">Scanned</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.scanned') }}</p>
                         <p class="mt-1 text-3xl font-bold">
                           {{ progress.scanned }} / {{ progress.required }}
                         </p>
@@ -404,7 +404,7 @@
                         size="14"
                         :class="releaseLoading ? 'animate-spin' : ''"
                       />
-                      {{ releaseLoading ? 'Releasing...' : 'Release order' }}
+                      {{ releaseLoading ? $t('common.releasing') : $t('common.releaseOrder') }}
                     </button>
                   </div>
                 </div>
@@ -418,9 +418,9 @@
                   <div class="flex items-start gap-3">
                     <Icon name="lucide:circle-check-big" size="24" class="mt-0.5 shrink-0" />
                     <div>
-                      <p class="font-bold">Order confirmed and ready for its next step.</p>
+                      <p class="font-bold">{{ $t('dashboard.orders.orderConfirmedAndReadyForItsNextStep') }}</p>
                       <p class="mt-1 text-sm">
-                        Status: {{ formatCustomerOrderStatus(orderDetail.status) }}
+                        {{ $t('common.statusValue', { value0: ($uiLabel(formatCustomerOrderStatus(orderDetail.status))) }) }}
                         <span v-if="sessionDetail.completed_at">
                           · {{ formatDate(sessionDetail.completed_at) }}
                         </span>
@@ -437,7 +437,7 @@
                       @click="downloadPackingVideo"
                     >
                       <Icon :name="videoDownloadLoading ? 'lucide:loader-circle' : 'lucide:video'" size="17" :class="videoDownloadLoading ? 'animate-spin' : ''" />
-                      Packing video
+                      {{ $t('common.packingVideo') }}
                     </button>
                     <button
                       type="button"
@@ -445,7 +445,7 @@
                       @click="printDocuments()"
                     >
                       <Icon name="lucide:printer" size="17" />
-                      Print again
+                      {{ $t('common.printAgain') }}
                     </button>
                     <button
                       type="button"
@@ -453,8 +453,8 @@
                       class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50"
                       @click="continueToNextOrder"
                     >
-                      Next order
-                      <Icon name="lucide:arrow-right" size="17" />
+                      {{ $t('common.nextOrder') }}
+                      <Icon name="lucide:arrow-right" size="17" class="directional-icon" />
                     </button>
                   </div>
                 </div>
@@ -462,47 +462,47 @@
 
               <div class="grid gap-px bg-gray-200 md:grid-cols-3">
                 <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">Purchaser</p>
+                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.purchaser') }}</p>
                   <p class="mt-3 font-bold text-gray-900">{{ getCustomerName(orderDetail) }}</p>
                   <p class="mt-1 break-all text-sm text-gray-500">
-                    {{ orderDetail.email || customerDetail.email || 'No email saved' }}
+                    {{ orderDetail.email || customerDetail.email || $t('common.noEmailSaved') }}
                   </p>
                   <p class="mt-1 text-sm text-gray-500">
-                    {{ orderDetail.phone || customerDetail.phone || 'No phone saved' }}
+                    {{ orderDetail.phone || customerDetail.phone || $t('common.noPhoneSaved') }}
                   </p>
                 </div>
 
                 <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">Delivery address</p>
+                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.deliveryAddress') }}</p>
                   <p class="mt-3 text-sm font-semibold leading-6 text-gray-900">
-                    {{ orderDetail.street_address || customerDetail.address_line_1 || 'No address saved' }}
+                    {{ orderDetail.street_address || customerDetail.address_line_1 || $t('common.noAddressSaved') }}
                   </p>
                   <p class="mt-1 text-sm text-gray-500">
-                    {{ [orderDetail.city || customerDetail.city, orderDetail.governorate || customerDetail.state].filter(Boolean).join(', ') || 'City not saved' }}
+                    {{ [orderDetail.city || customerDetail.city, orderDetail.governorate || customerDetail.state].filter(Boolean).join(', ') || $t('common.cityNotSaved') }}
                   </p>
                   <p v-if="customerDetail.country || orderDetail.governorate" class="mt-1 text-sm text-gray-500">
-                    {{ customerDetail.country || 'Egypt' }}
+                    {{ customerDetail.country || $t('common.egypt') }}
                   </p>
                 </div>
 
                 <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">Order details</p>
+                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.orderDetails') }}</p>
                   <dl class="mt-3 space-y-2 text-sm">
                     <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">Placed</dt>
-                      <dd class="text-right font-semibold text-gray-900">{{ formatDate(orderDetail.created_at, false) }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.placed') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">{{ formatDate(orderDetail.created_at, false) }}</dd>
                     </div>
                     <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">Payment</dt>
-                      <dd class="text-right font-semibold text-gray-900">{{ orderDetail.payment_method || 'Not selected' }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.payment') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">{{ $uiLabel(orderDetail.payment_method || $t('common.notSelected')) }}</dd>
                     </div>
                     <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">Shipping</dt>
-                      <dd class="text-right font-semibold text-gray-900">{{ orderDetail.shipping_method || 'Not selected' }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.shipping') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">{{ $uiLabel(orderDetail.shipping_method || $t('common.notSelected')) }}</dd>
                     </div>
                     <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">Total</dt>
-                      <dd class="text-right font-bold text-gray-900">{{ formatCurrency(orderDetail.total_amount) }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.total') }}</dt>
+                      <dd class="text-end font-bold text-gray-900">{{ formatCurrency(orderDetail.total_amount) }}</dd>
                     </div>
                   </dl>
                 </div>
@@ -516,15 +516,15 @@
                     <Icon name="lucide:receipt-text" size="21" />
                   </span>
                   <div>
-                    <h3 class="text-lg font-bold text-gray-900">Payment review</h3>
+                    <h3 class="text-lg font-bold text-gray-900">{{ $t('common.paymentReview') }}</h3>
                     <p class="mt-0.5 text-sm text-gray-500">
-                      {{ orderDetail.payment_method || 'Payment method not selected' }}
+                      {{ $uiLabel(orderDetail.payment_method || $t('dashboard.orders.paymentMethodNotSelected')) }}
                       · {{ formatCurrency(orderDetail.total_amount) }}
                     </p>
                   </div>
                 </div>
                 <span class="inline-flex shrink-0 items-center gap-2 text-xs font-bold text-gray-500">
-                  Review
+                  {{ $t('common.review') }}
                   <Icon
                     name="lucide:chevron-down"
                     size="18"
@@ -537,61 +537,61 @@
                 <div class="grid gap-4 lg:grid-cols-2">
                   <dl class="rounded-2xl border bg-white p-4 text-sm">
                     <div class="flex items-start justify-between gap-4 py-2">
-                      <dt class="text-gray-500">Order reference</dt>
-                      <dd class="text-right font-bold text-gray-900">{{ getOrderNumber(orderDetail) }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.orderReference') }}</dt>
+                      <dd class="text-end font-bold text-gray-900">{{ getOrderNumber(orderDetail) }}</dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Placed</dt>
-                      <dd class="text-right font-semibold text-gray-900">{{ formatDate(orderDetail.created_at) }}</dd>
+                      <dt class="text-gray-500">{{ $t('common.placed') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">{{ formatDate(orderDetail.created_at) }}</dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Order status</dt>
-                      <dd class="text-right font-semibold text-gray-900">
-                        {{ formatCustomerOrderStatus(orderDetail.status) }}
+                      <dt class="text-gray-500">{{ $t('common.orderStatus') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">
+                        {{ $uiLabel(formatCustomerOrderStatus(orderDetail.status)) }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Payment method</dt>
-                      <dd class="text-right font-semibold text-gray-900">
-                        {{ orderDetail.payment_method || 'Not selected' }}
+                      <dt class="text-gray-500">{{ $t('common.paymentMethod') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">
+                        {{ $uiLabel(orderDetail.payment_method || $t('common.notSelected')) }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Shipping method</dt>
-                      <dd class="text-right font-semibold text-gray-900">
-                        {{ orderDetail.shipping_method || 'Not selected' }}
+                      <dt class="text-gray-500">{{ $t('common.shippingMethod') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">
+                        {{ $uiLabel(orderDetail.shipping_method || $t('common.notSelected')) }}
                       </dd>
                     </div>
                   </dl>
 
                   <dl class="rounded-2xl border bg-white p-4 text-sm">
                     <div class="flex items-start justify-between gap-4 py-2">
-                      <dt class="text-gray-500">Subtotal</dt>
-                      <dd class="text-right font-semibold text-gray-900">
+                      <dt class="text-gray-500">{{ $t('common.subtotal') }}</dt>
+                      <dd class="text-end font-semibold text-gray-900">
                         {{ formatCurrency(orderDetail.subtotal_amount) }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Discount</dt>
-                      <dd class="text-right font-semibold text-red-600">
+                      <dt class="text-gray-500">{{ $t('common.discount') }}</dt>
+                      <dd class="text-end font-semibold text-red-600">
                         - {{ formatCurrency(orderDetail.discount_amount) }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Coupon</dt>
-                      <dd class="break-all text-right font-semibold text-gray-900">
-                        {{ orderDetail.coupon_code || 'No coupon' }}
+                      <dt class="text-gray-500">{{ $t('common.coupon') }}</dt>
+                      <dd class="break-all text-end font-semibold text-gray-900">
+                        {{ orderDetail.coupon_code || $t('common.noCoupon') }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">Currency</dt>
-                      <dd class="text-right font-semibold uppercase text-gray-900">
+                      <dt class="text-gray-500">{{ $t('common.currency') }}</dt>
+                      <dd class="text-end font-semibold uppercase text-gray-900">
                         {{ orderDetail.currency || 'EGP' }}
                       </dd>
                     </div>
                     <div class="flex items-start justify-between gap-4 border-t pt-3 text-lg">
-                      <dt class="font-bold text-gray-900">Total</dt>
-                      <dd class="text-right font-black text-gray-950">
+                      <dt class="font-bold text-gray-900">{{ $t('common.total') }}</dt>
+                      <dd class="text-end font-black text-gray-950">
                         {{ formatCurrency(orderDetail.total_amount) }}
                       </dd>
                     </div>
@@ -610,9 +610,9 @@
                     <Icon name="lucide:messages-square" size="21" />
                   </span>
                   <div>
-                    <h3 class="text-2xl font-bold text-gray-900">Order conversation</h3>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.orderConversation') }}</h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Store notes and purchaser responses linked to this order.
+                      {{ $t('dashboard.orders.storeNotesAndPurchaserResponsesLinkedToThisOrder') }}
                     </p>
                   </div>
                 </div>
@@ -622,7 +622,7 @@
                   class="inline-flex shrink-0 items-center gap-2 rounded-full bg-fuchsia-100 px-3 py-1.5 text-xs font-bold text-fuchsia-800"
                 >
                   <Icon name="lucide:message-circle-reply" size="14" />
-                  Latest purchaser reply {{ formatDate(getConversationDate(latestCustomerResponse), false) }}
+                  {{ $t('dashboard.orders.latestPurchaserReplyValue', { value0: (formatDate(getConversationDate(latestCustomerResponse), false)) }) }}
                 </span>
               </div>
 
@@ -660,7 +660,7 @@
                         v-if="isLatestCustomerResponse(message)"
                         class="rounded-full bg-fuchsia-100 px-2 py-0.5 font-bold text-fuchsia-800"
                       >
-                        Latest purchaser response
+                        {{ $t('dashboard.orders.latestPurchaserResponse') }}
                       </span>
                     </div>
 
@@ -684,7 +684,7 @@
             >
               <button
                 type="button"
-                class="flex w-full items-start justify-between gap-4 p-5 text-left transition hover:bg-red-50"
+                class="flex w-full items-start justify-between gap-4 p-5 text-start transition hover:bg-red-50"
                 :aria-expanded="problemFormOpen"
                 :disabled="problemLoading || releaseLoading || claimLoading"
                 @click="toggleProblemForm"
@@ -694,9 +694,9 @@
                     <Icon name="lucide:triangle-alert" size="21" />
                   </span>
                   <div>
-                    <h3 class="text-lg font-bold text-red-800">Problem with order</h3>
+                    <h3 class="text-lg font-bold text-red-800">{{ $t('common.problemWithOrder') }}</h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Stop packing and send the purchaser a clear note about what needs attention.
+                      {{ $t('dashboard.orders.stopPackingAndSendThePurchaserAClearNoteAboutWhatNeedsAttention') }}
                     </p>
                   </div>
                 </div>
@@ -716,14 +716,14 @@
                 <div class="grid gap-4">
                   <div>
                     <label for="order-problem-subject" class="mb-2 block text-sm font-bold text-gray-800">
-                      Subject <span class="font-normal text-gray-400">(optional)</span>
+                      {{ $t('common.subject') }} <span class="font-normal text-gray-400">{{ $t('common.optional') }}</span>
                     </label>
                     <input
                       id="order-problem-subject"
                       v-model="problemSubject"
                       type="text"
                       maxlength="200"
-                      placeholder="Missing item, address check, payment question..."
+                      :placeholder="$t('dashboard.orders.missingItemAddressCheckPaymentQuestion')"
                       class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
                     >
                   </div>
@@ -731,7 +731,7 @@
                   <div>
                     <div class="mb-2 flex items-center justify-between gap-3">
                       <label for="order-problem-message" class="text-sm font-bold text-gray-800">
-                        Message to purchaser *
+                        {{ $t('common.messageToPurchaserVariant2') }}
                       </label>
                       <span class="text-xs text-gray-400">{{ problemMessage.length }} / 2000</span>
                     </div>
@@ -741,19 +741,19 @@
                       rows="5"
                       maxlength="2000"
                       required
-                      placeholder="Explain the issue and what you need from the purchaser."
+                      :placeholder="$t('dashboard.orders.explainTheIssueAndWhatYouNeedFromThePurchaser')"
                       class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
                     />
                   </div>
                 </div>
 
                 <p v-if="problemFormError" class="mt-4 text-sm font-semibold text-red-700" role="alert">
-                  {{ problemFormError }}
+                  {{ $uiMessage(problemFormError) }}
                 </p>
 
                 <div class="mt-5 flex flex-col gap-3 border-t border-red-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <p class="text-xs leading-5 text-gray-500">
-                    Packing stops until the customer responds.
+                    {{ $t('dashboard.orders.packingStopsUntilTheCustomerResponds') }}
                   </p>
                   <div class="flex shrink-0 flex-wrap gap-2">
                     <button
@@ -762,7 +762,7 @@
                       class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                       @click="closeProblemForm"
                     >
-                      Cancel
+                      {{ $t('common.cancel') }}
                     </button>
                     <button
                       type="submit"
@@ -774,7 +774,7 @@
                         size="17"
                         :class="problemLoading ? 'animate-spin' : ''"
                       />
-                      {{ problemLoading ? 'Sending...' : 'Send problem report' }}
+                      {{ problemLoading ? $t('common.sending') : $t('common.sendProblemReport') }}
                     </button>
                   </div>
                 </div>
@@ -789,23 +789,23 @@
                 <div>
                   <h3 class="flex items-center gap-2 text-2xl font-bold text-gray-900">
                     <Icon name="lucide:scan-line" size="25" class="text-blue-600" />
-                    Scan prepared item
+                    {{ $t('common.scanPreparedItem') }}
                   </h3>
                   <p class="mt-2 max-w-2xl text-sm text-gray-500">
-                    Scan an item code, variant SKU or product SKU.
+                    {{ $t('dashboard.orders.scanAnItemCodeVariantSkuOrProductSku') }}
                   </p>
                 </div>
                 <p
                   class="rounded-full px-3 py-1 text-xs font-bold"
                   :class="allItemsPacked ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'"
                 >
-                  {{ allItemsPacked ? 'All items prepared' : `${progress.remaining} remaining` }}
+                  {{ allItemsPacked ? $t('common.allItemsPrepared') : $t('common.valueRemaining', { value0: (progress.remaining) }) }}
                 </p>
               </div>
 
               <form class="mt-5" @submit.prevent="scanItem">
                 <label for="packing-scan-code" class="mb-2 block text-sm font-bold text-gray-700">
-                  Item code
+                  {{ $t('common.itemCode') }}
                 </label>
                 <div class="flex flex-col gap-3 sm:flex-row">
                   <input
@@ -818,7 +818,7 @@
                     spellcheck="false"
                     autofocus
                     :disabled="!recordingActive"
-                    placeholder="Scan SKU, unit code, or QR"
+                    :placeholder="$t('dashboard.orders.scanSkuUnitCodeOrQr')"
                     class="min-w-0 flex-1 rounded-xl border border-gray-300 p-4 font-mono text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:bg-gray-100"
                     @focus="$event.currentTarget.select()"
                   >
@@ -832,7 +832,7 @@
                       size="19"
                       :class="scanLoading ? 'animate-spin' : ''"
                     />
-                    {{ scanLoading ? 'Checking...' : 'Confirm scan' }}
+                    {{ scanLoading ? $t('common.checking') : $t('common.confirmScan') }}
                   </button>
                 </div>
               </form>
@@ -857,18 +857,18 @@
             <section class="rounded-2xl bg-white p-6 shadow">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h3 class="text-2xl font-bold text-gray-900">Requested items</h3>
+                  <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.requestedItems') }}</h3>
                   <p class="mt-1 text-sm text-gray-500">
-                    Every unit must be selected before this order can be completed.
+                    {{ $t('dashboard.orders.everyUnitMustBeSelectedBeforeThisOrderCanBeCompleted') }}
                   </p>
                 </div>
                 <p class="text-sm font-bold text-gray-600">
-                  {{ completedLineCount }} / {{ orderItems.length }} lines complete
+                  {{ $t('dashboard.orders.valueValueLinesComplete', { value0: (completedLineCount), value1: (orderItems.length) }) }}
                 </p>
               </div>
 
               <div v-if="!orderItems.length" class="py-10 text-center text-sm text-gray-500">
-                This order has no saved items and cannot be confirmed.
+                {{ $t('dashboard.orders.thisOrderHasNoSavedItemsAndCannotBeConfirmed') }}
               </div>
 
               <div v-else class="mt-5 space-y-4">
@@ -885,7 +885,7 @@
                       <img
                         v-if="item.image_url"
                         :src="item.image_url"
-                        :alt="item.product_title || 'Product'"
+                        :alt="item.product_title || $t('common.product')"
                         class="h-full w-full object-contain"
                       >
                       <Icon v-else name="lucide:package" size="28" class="text-gray-300" />
@@ -894,12 +894,12 @@
                     <div class="min-w-0 flex-1">
                       <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <p class="font-bold text-gray-900">{{ item.product_title || 'Product' }}</p>
+                          <p class="font-bold text-gray-900">{{ item.product_title || $t('common.product') }}</p>
                           <p v-if="item.variant_name || item.variant_color_name" class="mt-1 text-sm text-gray-600">
                             {{ item.variant_name || item.variant_color_name }}
                           </p>
                           <p class="mt-2 break-all font-mono text-xs font-semibold text-gray-500">
-                            SKU: {{ getItemSku(item) }}
+                            {{ $t('common.skuValueVariant2', { value0: (getItemSku(item)) }) }}
                           </p>
                         </div>
 
@@ -966,9 +966,9 @@
                   <Icon name="lucide:clipboard-check" size="22" />
                 </span>
                 <div>
-                  <h3 class="text-2xl font-bold text-gray-900">Complete order</h3>
+                  <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.completeOrder') }}</h3>
                   <p class="mt-1 text-sm text-gray-500">
-                    Complete packing to update the order and print both documents.
+                    {{ $t('dashboard.orders.completePackingToUpdateTheOrderAndPrintBothDocuments') }}
                   </p>
                 </div>
               </div>
@@ -976,7 +976,7 @@
               <div class="mt-6 grid gap-5 lg:grid-cols-2">
                 <div>
                   <label for="completed-order-status" class="mb-2 block text-sm font-bold text-gray-700">
-                    New order status
+                    {{ $t('common.newOrderStatus') }}
                   </label>
                   <select
                     id="completed-order-status"
@@ -988,17 +988,17 @@
                       :key="statusOption.value"
                       :value="statusOption.value"
                     >
-                      {{ statusOption.label }}
+                      {{ $uiLabel(statusOption.label) }}
                     </option>
                   </select>
                   <p class="mt-2 text-xs text-gray-500">
-                    Ready to Deliver is selected by default.
+                    {{ $t('dashboard.orders.readyToDeliverIsSelectedByDefault') }}
                   </p>
                 </div>
 
                 <div>
                   <label for="purchaser-message" class="mb-2 block text-sm font-bold text-gray-700">
-                    Message to purchaser <span class="font-normal text-gray-400">(optional)</span>
+                    {{ $t('common.messageToPurchaser') }} <span class="font-normal text-gray-400">{{ $t('common.optional') }}</span>
                   </label>
                   <textarea
                     id="purchaser-message"
@@ -1007,15 +1007,15 @@
                     maxlength="2000"
                     :disabled="!orderDetail.user_id"
                     :placeholder="orderDetail.user_id
-                      ? 'Your order has been prepared and is ready for delivery.'
-                      : 'Guest order — no customer account inbox'"
+                      ? $t('dashboard.orders.yourOrderHasBeenPreparedAndIsReadyForDelivery')
+                      : $t('dashboard.orders.guestOrderNoCustomerAccountInbox')"
                     class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
                   />
                   <div class="mt-2 flex items-center justify-between gap-3 text-xs text-gray-500">
                     <span>
                       {{ orderDetail.user_id
-                        ? 'The message will appear in the customer account inbox.'
-                        : 'This purchaser does not have a linked account.' }}
+                        ? $t('dashboard.orders.theMessageWillAppearInTheCustomerAccountInbox')
+                        : $t('dashboard.orders.thisPurchaserDoesNotHaveALinkedAccount') }}
                     </span>
                     <span>{{ purchaserMessage.length }} / 2000</span>
                   </div>
@@ -1029,11 +1029,11 @@
                     :class="allItemsPacked ? 'text-green-700' : 'text-amber-700'"
                   >
                     {{ allItemsPacked
-                      ? 'All requested quantities are confirmed.'
-                      : `Scan ${progress.remaining} more ${progress.remaining === 1 ? 'item' : 'items'} to continue.` }}
+                      ? $t('dashboard.orders.allRequestedQuantitiesAreConfirmed')
+                      : $t('dashboard.orders.scanValueMoreValueToContinue', { value0: (progress.remaining), value1: (progress.remaining === 1 ? $t('common.item') : $t('common.items')) }) }}
                   </p>
                   <p v-if="videoUploadProgress" class="mt-1 text-xs font-semibold text-blue-700">
-                    {{ videoUploadProgress }}
+                    {{ $uiLabel(videoUploadProgress) }}
                   </p>
                 </div>
 
@@ -1048,7 +1048,7 @@
                     size="19"
                     :class="completionLoading ? 'animate-spin' : ''"
                   />
-                  {{ completionLoading ? completionButtonLabel : 'Save Video & Complete' }}
+                  {{ completionLoading ? completionButtonLabel : $t('common.saveVideoComplete') }}
                 </button>
               </div>
             </section>
@@ -1060,6 +1060,13 @@
 </template>
 
 <script setup>
+const { uiText } = useUiLocale()
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+
+const { uiRouterReplace } = useUiNavigation()
+
 import { buildDashboardOverviewLinks } from '~/utils/dashboardOverviewLinks'
 import { buildOrderPackingDocumentsHtml } from '~/utils/orderPackingPrint'
 import { formatCustomerOrderStatus } from '~/utils/orderStatus'
@@ -1068,7 +1075,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const route = useRoute()
+const route = useUiRoute()
 const router = useRouter()
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
@@ -1151,7 +1158,7 @@ const workSessionElapsed = computed(() => {
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
 
-  return hours ? `${hours}h ${minutes}m` : `${minutes}m`
+  return hours ? uiText('dashboard.hoursMinutes', { value0: hours, value1: minutes }) : uiText('dashboard.minutes', { value0: minutes })
 })
 
 const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
@@ -1324,7 +1331,7 @@ const closeWorkSession = async () => {
 
   if (
     hasActivePackingOrder.value
-    && !window.confirm('Close session? Current packing progress will be cleared.')
+    && !window.confirm(uiLabel('Close session? Current packing progress will be cleared.'))
   ) {
     return
   }
@@ -1815,7 +1822,7 @@ const getItemSku = (item = {}) => {
 }
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(intlLocale.value, {
     style: 'currency',
     currency: String(orderDetail.value.currency || 'EGP').toUpperCase(),
     maximumFractionDigits: 2
@@ -1833,7 +1840,7 @@ const formatDate = (value, includeTime = true) => {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', includeTime
+  return new Intl.DateTimeFormat(intlLocale.value, includeTime
     ? { dateStyle: 'medium', timeStyle: 'short' }
     : { dateStyle: 'medium' }
   ).format(date)
@@ -1848,7 +1855,7 @@ const setSessionRouteQuery = async (sessionId = '') => {
     delete nextQuery.session
   }
 
-  await router.replace({
+  await uiRouterReplace({
     path: route.path,
     query: nextQuery
   })
@@ -2149,7 +2156,9 @@ const writePrintDocuments = (printWindow) => {
     customer: customerDetail.value,
     items: orderItems.value,
     siteName: getPrintableSiteName(),
-    siteLogoUrl: getPrintableSiteLogoUrl()
+    siteLogoUrl: getPrintableSiteLogoUrl(),
+    locale: intlLocale.value,
+    translate: uiLabel
   })
 
   printWindow.document.open()
@@ -2314,7 +2323,7 @@ const releasePackingSession = async () => {
 
   if (
     import.meta.client
-    && !window.confirm('Release this order back to the queue? Its current scan history will remain in the audit record, and a new session will start from zero.')
+    && !window.confirm(uiLabel('Release this order back to the queue? Its current scan history will remain in the audit record, and a new session will start from zero.'))
   ) {
     return
   }
@@ -2387,7 +2396,7 @@ const handleBeforeUnload = (event) => {
 onBeforeRouteLeave(() => {
   if (!hasActivePackingOrder.value) return true
 
-  return window.confirm('Leave this active order? The current video will be lost.')
+  return window.confirm(uiLabel('Leave this active order? The current video will be lost.'))
 })
 
 onBeforeUnmount(() => {

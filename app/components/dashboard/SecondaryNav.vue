@@ -3,8 +3,8 @@
     v-if="dashboardLayout === 'standard' && resolvedItems.length"
     class="rounded-2xl bg-white p-2 shadow"
   >
-    <nav class="flex flex-wrap gap-2" aria-label="Section navigation">
-      <NuxtLink
+    <nav class="flex flex-wrap gap-2" :aria-label="$t('common.sectionNavigation')">
+      <NuxtLinkLocale
         v-for="item in resolvedItems"
         :key="item.to"
         :to="item.to"
@@ -15,8 +15,8 @@
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
       >
         <Icon v-if="item.icon" :name="item.icon" size="16" />
-        {{ item.label }}
-      </NuxtLink>
+        {{ $uiLabel(item.label) }}
+      </NuxtLinkLocale>
     </nav>
   </div>
 </template>

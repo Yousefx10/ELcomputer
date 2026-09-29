@@ -2,14 +2,14 @@
   <section class="space-y-4">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h3 class="text-2xl font-bold text-gray-900">Customer Experience</h3>
+        <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.customerExperience') }}</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Customer loyalty, return visits, purchasing behavior, and storefront activity.
+          {{ $t('dashboard.analysis.customerLoyaltyReturnVisitsPurchasingBehaviorAndStorefrontActivity') }}
         </p>
       </div>
 
       <div class="flex flex-col gap-3 sm:items-end">
-        <div class="flex flex-wrap gap-2" aria-label="Customer experience reporting period">
+        <div class="flex flex-wrap gap-2" :aria-label="$t('dashboard.analysis.customerExperienceReportingPeriod')">
           <button
             v-for="option in windowOptions"
             :key="option"
@@ -21,7 +21,7 @@
             :aria-pressed="selectedWindowDays === option"
             @click="selectWindow(option)"
           >
-            {{ option }} days
+            {{ $t('common.valueDays', { value0: (option) }) }}
           </button>
         </div>
 
@@ -36,7 +36,7 @@
             size="16"
             :class="loading ? 'animate-spin' : ''"
           />
-          Refresh
+          {{ $t('common.refresh') }}
         </button>
       </div>
     </div>
@@ -46,14 +46,14 @@
       class="rounded-2xl bg-red-50 p-4 text-sm text-red-600 shadow"
       role="alert"
     >
-      {{ errorMessage }}
+      {{ $uiMessage(errorMessage) }}
     </div>
 
     <div
       v-if="loading && !hasOverview"
       class="rounded-2xl bg-white p-8 text-center text-sm text-gray-500 shadow"
     >
-      Loading customer experience metrics...
+      {{ $t('dashboard.analysis.loadingCustomerExperienceMetrics') }}
     </div>
 
     <template v-else-if="hasOverview">
@@ -61,7 +61,7 @@
         <DashboardStatCard
           v-for="card in headlineCards"
           :key="card.key"
-          :label="card.label"
+          :label="$uiLabel(card.label)"
           :value="card.value"
           :icon="card.icon"
           :tone="card.tone"
@@ -81,14 +81,14 @@
       <section class="rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h4 class="text-xl font-bold text-gray-900">Store Activity</h4>
+            <h4 class="text-xl font-bold text-gray-900">{{ $t('common.storeActivity') }}</h4>
             <p class="mt-1 text-sm text-gray-500">
-              Historical activity uses the selected {{ selectedWindowDays }}-day period; live visitors update separately.
+              {{ $t('dashboard.analysis.historicalActivityUsesTheSelectedValueDayPeriodLiveVisitorsUpdateSeparately', { value0: (selectedWindowDays) }) }}
             </p>
           </div>
 
           <p class="text-xs text-gray-400">
-            Dwell time is averaged across completed product-view sessions.
+            {{ $t('dashboard.analysis.dwellTimeIsAveragedAcrossCompletedProductViewSessions') }}
           </p>
         </div>
 
@@ -100,7 +100,7 @@
           >
             <div class="flex items-center gap-2 text-gray-500">
               <Icon :name="metric.icon" size="17" aria-hidden="true" />
-              <p class="text-sm">{{ metric.label }}</p>
+              <p class="text-sm">{{ $uiLabel(metric.label) }}</p>
             </div>
             <p
               class="mt-2 text-2xl font-bold"
@@ -122,6 +122,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const supabase = useSupabaseClient()
 const { getSnapshot, isFresh, setSnapshot } = useDashboardCache()
 
@@ -222,17 +224,17 @@ const nps = computed(() => resolvedOverview.value.nps)
 const kpis = computed(() => resolvedOverview.value.kpis)
 const activity = computed(() => resolvedOverview.value.activity)
 
-const numberFormatter = new Intl.NumberFormat('en-US', {
+const numberFormatter = computed(() => new Intl.NumberFormat(intlLocale.value, {
   maximumFractionDigits: 0
-})
+}))
 
-const percentFormatter = new Intl.NumberFormat('en-US', {
+const percentFormatter = computed(() => new Intl.NumberFormat(intlLocale.value, {
   minimumFractionDigits: 0,
   maximumFractionDigits: 1
-})
+}))
 
-const formatNumber = (value) => numberFormatter.format(normalizeNumber(value))
-const formatPercent = (value) => `${percentFormatter.format(normalizeNumber(value))}%`
+const formatNumber = (value) => numberFormatter.value.format(normalizeNumber(value))
+const formatPercent = (value) => `${percentFormatter.value.format(normalizeNumber(value))}%`
 const formatNpsScore = () => {
   if (!nps.value.total || nps.value.score === null) {
     return '—'

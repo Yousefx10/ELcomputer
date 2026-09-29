@@ -2,8 +2,8 @@
   <div class="">
     <div class="">
       <DashboardPageIntro
-        title="Brands"
-        description="View, add, edit, and remove product brands."
+        :title="$t('common.brands')"
+        :description="$t('interface.viewAddEditAndRemoveProductBrands')"
         container-class="mb-6 rounded-2xl bg-gray-200 p-6 shadow"
       />
 
@@ -15,27 +15,27 @@
         <input
           v-model="name"
           type="text"
-          placeholder="Brand name"
+          :placeholder="$t('common.brandName')"
           :disabled="editingId ? !canEditBrand : !canAddBrand"
           class="w-full rounded-lg border p-3"
         />
 
         <DashboardMediaUploadField
           v-model="logoUrl"
-          label="Brand Logo"
+          :label="$t('common.brandLogo')"
           section="brands"
           :disabled="editingId ? !canEditBrand : !canAddBrand"
           :preview-alt="name || 'Brand logo'"
           preview-height-class="h-28"
-          help-text="Upload the logo shown on product pages and featured brands."
+          :help-text="$t('dashboard.catalog.uploadTheLogoShownOnProductPagesAndFeaturedBrands')"
         />
 
         <p class="text-sm text-gray-500">
-          Slug preview: {{ slugPreview || '-' }}
+          {{ $t('common.slugPreviewValue', { value0: (slugPreview || '-') }) }}
         </p>
 
         <p v-if="errorMessage" class="text-red-600">
-          {{ errorMessage }}
+          {{ $uiMessage(errorMessage) }}
         </p>
 
         <div class="flex gap-3">
@@ -44,7 +44,7 @@
             :disabled="saving || (editingId ? !canEditBrand : !canAddBrand)"
             class="rounded-lg bg-blue-600 px-4 py-3 font-bold text-white"
           >
-            {{ saving ? 'Saving...' : editingId ? 'Update Brand' : 'Add Brand' }}
+            {{ saving ? $t('common.saving') : editingId ? $t('common.updateBrand') : $t('common.addBrand') }}
           </button>
 
           <button
@@ -53,7 +53,7 @@
             @click="cancelEdit"
             class="rounded-lg bg-gray-200 px-4 py-3 font-bold"
           >
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
         </div>
       </form>
@@ -62,28 +62,28 @@
         v-else
         class="mb-8 rounded-2xl bg-white p-5 text-sm text-gray-500 shadow"
       >
-        You can view brands, but this account cannot add or edit them.
+        {{ $t('dashboard.catalog.youCanViewBrandsButThisAccountCannotAddOrEditThem') }}
       </div>
 
       <div class="rounded-2xl bg-white p-5 shadow">
         <div class="mb-4 flex items-center justify-between gap-3">
-          <h3 class="text-2xl font-bold">All Brands</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.allBrands') }}</h3>
 
           <p class="text-sm text-gray-500">
-            {{ totalBrands }} {{ hasActiveSearch ? 'matching' : 'total' }}
+            {{ totalBrands }} {{ hasActiveSearch ? $t('common.matching') : $t('common.total') }}
           </p>
         </div>
 
         <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <label for="brand-search" class="mb-2 block text-sm font-semibold text-gray-700">
-              Search Brands
+              {{ $t('common.searchBrands') }}
             </label>
             <input
               id="brand-search"
               v-model="searchQuery"
               type="text"
-              placeholder="Search by brand name"
+              :placeholder="$t('common.searchByBrandName')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
@@ -94,26 +94,26 @@
             @click="clearSearch"
             class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
           >
-            Clear
+            {{ $t('common.clear') }}
           </button>
         </div>
 
         <p v-if="loading" class="text-gray-500">
-          Loading brands...
+          {{ $t('common.loadingBrands') }}
         </p>
 
         <p v-else-if="!brands.length" class="text-gray-500">
-          {{ hasActiveSearch ? 'No matching brands found.' : 'No brands found yet.' }}
+          {{ hasActiveSearch ? $t('dashboard.catalog.noMatchingBrandsFound') : $t('common.noBrandsFoundYet') }}
         </p>
 
         <div v-else>
           <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
             <p class="text-sm text-gray-500">
-              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalBrands }} {{ hasActiveSearch ? 'matching brands' : 'brands' }}
+              {{ $t('common.showingValueValueOfValueValue', { value0: (pageStart), value1: (pageEnd), value2: (totalBrands), value3: (hasActiveSearch ? $t('common.matchingBrands') : $t('common.brands')) }) }}
             </p>
 
             <p class="text-sm font-medium text-gray-600">
-              Page {{ currentPage }} of {{ totalPages }}
+              {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
             </p>
           </div>
 
@@ -132,7 +132,7 @@
                     class="h-full w-full object-contain"
                   />
 
-                  <span v-else class="text-xs text-gray-400">No logo</span>
+                  <span v-else class="text-xs text-gray-400">{{ $t('common.noLogo') }}</span>
                 </div>
 
                 <div>
@@ -147,7 +147,7 @@
                   @click="startEdit(brand)"
                   class="rounded-lg bg-black px-3 py-2 text-sm text-white"
                 >
-                  Edit
+                  {{ $t('common.edit') }}
                 </button>
 
                 <button
@@ -155,7 +155,7 @@
                   @click="deleteBrand(brand.id)"
                   class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
                 >
-                  Delete
+                  {{ $t('common.delete') }}
                 </button>
               </div>
             </div>
@@ -168,11 +168,11 @@
               @click="goToPreviousPage"
               class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Previous
+              {{ $t('common.previous') }}
             </button>
 
             <p class="text-sm text-gray-500">
-              Page {{ currentPage }} of {{ totalPages }}
+              {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
             </p>
 
             <button
@@ -181,7 +181,7 @@
               @click="goToNextPage"
               class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Next
+              {{ $t('common.next') }}
             </button>
           </div>
         </div>
@@ -191,6 +191,8 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
 const supabase = useSupabaseClient()
 const {
   getSnapshot,
@@ -415,7 +417,7 @@ const deleteBrand = async (id) => {
     return
   }
 
-  const confirmDelete = confirm('Are you sure you want to delete this brand?')
+  const confirmDelete = confirm(uiLabel('Are you sure you want to delete this brand?'))
   if (!confirmDelete) {
     return
   }

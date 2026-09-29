@@ -1,15 +1,17 @@
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const {
   clearAdminAccess,
   loadAdminAccess
 } = useAdminAccess()
 const { recordAdminLog } = useAdminLogs()
 
-useHead({
-  title: 'Dashboard - Login'
-})
+useHead(() => ({ title: uiLabel('Dashboard - Login') }))
 
 const email = ref('')
 const password = ref('')
@@ -47,7 +49,7 @@ const login = async () => {
     description: 'Signed in to the dashboard.'
   })
 
-  await navigateTo('/dashboard')
+  await uiNavigateTo('/dashboard')
 }
 
 onMounted(() => {
@@ -58,47 +60,48 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="fixed end-4 top-4 z-10"><UiPreferences /></div>
   <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <form
       @submit.prevent="login"
       class="w-full max-w-sm rounded-2xl bg-white p-6 shadow"
     >
-      <h1 class="mb-2 text-2xl font-bold">Admin Login</h1>
+      <h1 class="mb-2 text-2xl font-bold">{{ $t('common.adminLogin') }}</h1>
 
       <p class="mb-6 text-sm text-gray-500">
-        Sign in to manage your store.
+        {{ $t('dashboard.login.signInToManageYourStore') }}
       </p>
 
       <input
         v-model="email"
         type="email"
-        placeholder="Email"
+        :placeholder="$t('common.email')"
         class="mb-3 w-full rounded-lg border p-3"
       />
 
       <input
         v-model="password"
         type="password"
-        placeholder="Password"
+        :placeholder="$t('common.password')"
         class="mb-3 w-full rounded-lg border p-3"
       />
 
       <p v-if="errorMessage" class="mb-3 text-sm text-red-600">
-        {{ errorMessage }}
+        {{ $uiMessage(errorMessage) }}
       </p>
 
       <button
         type="submit"
         class="w-full rounded-lg bg-blue-600 p-3 font-bold text-white"
       >
-        {{ loading ? 'Loading...' : 'Login' }}
+        {{ loading ? $t('common.loading') : $t('common.login') }}
       </button>
 
       <p class="mt-4 text-center text-sm text-gray-500">
-        Shopper?
-        <NuxtLink to="/login" class="font-semibold text-blue-600 hover:text-blue-700">
-          Go to customer login
-        </NuxtLink>
+        {{ $t('common.shopper') }}
+        <NuxtLinkLocale to="/login" class="font-semibold text-blue-600 hover:text-blue-700">
+          {{ $t('common.goToCustomerLogin') }}
+        </NuxtLinkLocale>
       </p>
     </form>
   </div>

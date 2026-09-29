@@ -15,6 +15,8 @@
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",
     "@nuxt/icon": "^2.2.3",
+    "@nuxtjs/color-mode": "^4.0.1",
+    "@nuxtjs/i18n": "^10.6.0",
     "@nuxtjs/supabase": "^2.0.9",
     "@supabase/supabase-js": "^2.108.2",
     "@tailwindcss/vite": "^4.3.1",

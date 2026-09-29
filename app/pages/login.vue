@@ -1,8 +1,10 @@
 <script setup>
+const { uiNavigateTo } = useUiNavigation()
+
 import { resolveAccountUser } from '~/utils/accountSession'
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const user = useSupabaseUser()
 
 const authMode = ref(route.query.mode === 'signup' ? 'signup' : 'login')
@@ -83,7 +85,7 @@ const submitAuthForm = async () => {
 
       if (data.session) {
         await createOrUpdateCustomerProfile()
-        await navigateTo(getPostAuthPath())
+        await uiNavigateTo(getPostAuthPath())
         return
       }
 
@@ -122,7 +124,7 @@ const submitAuthForm = async () => {
     }
 
     await createOrUpdateCustomerProfile()
-    await navigateTo(getPostAuthPath())
+    await uiNavigateTo(getPostAuthPath())
   } catch (error) {
     errorMessage.value = error?.message || 'Could not complete the request.'
   } finally {
@@ -157,7 +159,7 @@ watch(
   user,
   async (currentUser) => {
     if (currentUser) {
-      await navigateTo(getPostAuthPath())
+      await uiNavigateTo(getPostAuthPath())
     }
   },
   { immediate: true }
@@ -175,29 +177,29 @@ onMounted(() => {
     <div class="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
       <div class="hidden rounded-3xl bg-blue-600 p-8 text-white lg:block">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-100">
-          Customer Account
+          {{ $t('common.customerAccount') }}
         </p>
 
         <h2 class="mt-4 text-4xl font-bold">
-          Your ELcomputer account
+          {{ $t('common.yourElcomputerAccount') }}
         </h2>
 
         <p class="mt-4 text-sm text-blue-100">
-          Track your orders and view your wallet balance.
+          {{ $t('login.trackYourOrdersAndViewYourWalletBalance') }}
         </p>
 
         <div class="mt-8 space-y-4">
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">Order history</p>
+            <p class="text-sm font-semibold">{{ $t('common.orderHistory') }}</p>
             <p class="mt-1 text-sm text-blue-100">
-              Check the status of your orders.
+              {{ $t('login.checkTheStatusOfYourOrders') }}
             </p>
           </div>
 
           <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm font-semibold">Order messages</p>
+            <p class="text-sm font-semibold">{{ $t('common.orderMessages') }}</p>
             <p class="mt-1 text-sm text-blue-100">
-              Read updates and contact us about your orders.
+              {{ $t('login.readUpdatesAndContactUsAboutYourOrders') }}
             </p>
           </div>
         </div>
@@ -211,7 +213,7 @@ onMounted(() => {
             :class="authMode === 'login' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'"
             @click="switchMode('login')"
           >
-            Login
+            {{ $t('common.login') }}
           </button>
 
           <button
@@ -220,37 +222,37 @@ onMounted(() => {
             :class="authMode === 'signup' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'"
             @click="switchMode('signup')"
           >
-            Create Account
+            {{ $t('common.createAccount') }}
           </button>
         </div>
 
         <div class="mt-6">
           <h1 class="text-2xl font-bold text-gray-900">
-            {{ authMode === 'login' ? 'Welcome back' : 'Create Your Account' }}
+            {{ authMode === 'login' ? $t('common.welcomeBack') : $t('common.createYourAccount') }}
           </h1>
 
           <p class="mt-2 text-sm text-gray-500">
             {{ authMode === 'login'
-              ? 'Sign in to your account.'
-              : 'Create a customer account for faster checkout and order tracking.' }}
+              ? $t('common.signInToYourAccount')
+              : $t('login.createACustomerAccountForFasterCheckoutAndOrderTracking') }}
           </p>
         </div>
 
         <form class="mt-6 space-y-4" @submit.prevent="submitAuthForm">
           <div v-if="authMode === 'signup'">
-            <label for="customer-full-name" class="mb-2 block text-sm font-semibold text-gray-700">Full Name</label>
+            <label for="customer-full-name" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.fullName') }}</label>
             <input
               id="customer-full-name"
               v-model="fullName"
               type="text"
               autocomplete="name"
-              placeholder="Your name"
+              :placeholder="$t('common.yourName')"
               class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label for="customer-email" class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+            <label for="customer-email" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.email') }}</label>
             <input
               id="customer-email"
               v-model="email"
@@ -263,24 +265,24 @@ onMounted(() => {
           </div>
 
           <div>
-            <label for="customer-password" class="mb-2 block text-sm font-semibold text-gray-700">Password</label>
+            <label for="customer-password" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.password') }}</label>
             <input
               id="customer-password"
               v-model="password"
               type="password"
               :autocomplete="authMode === 'signup' ? 'new-password' : 'current-password'"
               required
-              placeholder="At least 6 characters"
+              :placeholder="$t('common.atLeast6Characters')"
               class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <p v-if="errorMessage" class="text-sm text-red-600">
-            {{ errorMessage }}
+            {{ $uiMessage(errorMessage) }}
           </p>
 
           <p v-if="successMessage" class="text-sm text-green-600">
-            {{ successMessage }}
+            {{ $uiLabel(successMessage) }}
           </p>
 
           <button
@@ -289,14 +291,14 @@ onMounted(() => {
             class="w-full rounded-xl bg-blue-600 p-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {{ loading
-              ? (authMode === 'login' ? 'Logging in...' : 'Creating account...')
-              : (authMode === 'login' ? 'Login' : 'Create Account') }}
+              ? (authMode === 'login' ? $t('common.loggingIn') : $t('common.creatingAccount'))
+              : (authMode === 'login' ? $t('common.login') : $t('common.createAccount')) }}
           </button>
         </form>
 
         <div class="my-6 flex items-center gap-3">
           <div class="h-px flex-1 bg-gray-200" />
-          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">or</span>
+          <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">{{ $t('interface.or') }}</span>
           <div class="h-px flex-1 bg-gray-200" />
         </div>
 
@@ -307,7 +309,7 @@ onMounted(() => {
           @click="continueWithGoogle"
         >
           <Icon name="lucide:chrome" size="18" />
-          {{ oauthLoading ? 'Redirecting...' : 'Continue with Google' }}
+          {{ oauthLoading ? $t('common.redirecting') : $t('common.continueWithGoogle') }}
         </button>
 
       </div>

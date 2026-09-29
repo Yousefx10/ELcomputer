@@ -3,9 +3,9 @@
     <section class="rounded-2xl bg-white p-5 shadow sm:p-6">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 class="text-2xl font-bold text-gray-900">Store CRM Activity</h3>
+          <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.storeCrmActivity') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Calls and ticket events use the store reporting timezone (Asia/Riyadh).
+            {{ $t('dashboard.crm.callsAndTicketEventsUseTheStoreReportingTimezoneAsiaRiyadh') }}
           </p>
           <p v-if="statsRangeLabel" class="mt-2 text-xs font-medium text-gray-400">
             {{ statsRangeLabel }}
@@ -13,7 +13,7 @@
         </div>
 
         <fieldset>
-          <legend class="sr-only">CRM statistics period</legend>
+          <legend class="sr-only">{{ $t('common.crmStatisticsPeriod') }}</legend>
           <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <label
               v-for="option in statsPeriodOptions"
@@ -30,7 +30,7 @@
                 :value="option.value"
                 class="sr-only"
               >
-              {{ option.label }}
+              {{ $uiLabel(option.label) }}
             </label>
           </div>
         </fieldset>
@@ -41,14 +41,14 @@
         class="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
         role="alert"
       >
-        {{ statsError }}
+        {{ $uiMessage(statsError) }}
       </p>
 
       <div class="mt-5 grid gap-4 md:grid-cols-3">
         <div class="rounded-2xl border bg-gray-50 p-5">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-sm font-medium text-gray-500">Completed Calls</p>
+              <p class="text-sm font-medium text-gray-500">{{ $t('common.completedCalls') }}</p>
               <p class="mt-2 text-3xl font-bold text-gray-900">
                 {{ statsLoading ? '—' : stats.calls }}
               </p>
@@ -62,7 +62,7 @@
         <div class="rounded-2xl border bg-gray-50 p-5">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-sm font-medium text-gray-500">Tickets Created</p>
+              <p class="text-sm font-medium text-gray-500">{{ $t('common.ticketsCreated') }}</p>
               <p class="mt-2 text-3xl font-bold text-amber-700">
                 {{ statsLoading ? '—' : stats.raisedTickets }}
               </p>
@@ -76,7 +76,7 @@
         <div class="rounded-2xl border bg-gray-50 p-5">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-sm font-medium text-gray-500">Tickets Closed</p>
+              <p class="text-sm font-medium text-gray-500">{{ $t('common.ticketsClosed') }}</p>
               <p class="mt-2 text-3xl font-bold text-emerald-700">
                 {{ statsLoading ? '—' : stats.closedTickets }}
               </p>
@@ -93,9 +93,9 @@
       <div class="border-b p-5 sm:p-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h3 class="text-2xl font-bold text-gray-900">Tickets & Activity</h3>
+            <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.ticketsActivity') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Search by contact, review tickets, or open a complete activity record.
+              {{ $t('dashboard.crm.searchByContactReviewTicketsOrOpenACompleteActivityRecord') }}
             </p>
           </div>
 
@@ -106,7 +106,7 @@
               @click="openCreateDialog('call')"
             >
               <Icon name="lucide:phone-call" size="18" />
-              Record Call
+              {{ $t('common.recordCall') }}
             </button>
             <button
               type="button"
@@ -114,7 +114,7 @@
               @click="openCreateDialog('ticket')"
             >
               <Icon name="lucide:ticket-plus" size="18" />
-              Create Ticket
+              {{ $t('common.createTicket') }}
             </button>
           </div>
         </div>
@@ -123,16 +123,16 @@
           <DashboardCrmContactPicker
             v-model="selectedContactId"
             input-id="crm-page-contact"
-            label="Find CRM Contact"
-            placeholder="Type a company or person name, then choose the result"
+            :label="$t('common.findCrmContact')"
+            :placeholder="$t('dashboard.crm.typeACompanyOrPersonNameThenChooseTheResult')"
           />
           <p class="mt-2 text-xs text-gray-400">
-            Choose a contact, or leave blank to show everyone.
+            {{ $t('dashboard.crm.chooseAContactOrLeaveBlankToShowEveryone') }}
           </p>
         </div>
       </div>
 
-      <nav class="flex gap-2 border-b px-5 pt-4 sm:px-6" aria-label="CRM activity panels">
+      <nav class="flex gap-2 border-b px-5 pt-4 sm:px-6" :aria-label="$t('common.crmActivityPanels')">
         <button
           v-for="panel in panels"
           :key="panel.value"
@@ -145,7 +145,7 @@
           @click="setActivePanel(panel.value)"
         >
           <Icon :name="panel.icon" size="17" />
-          {{ panel.label }}
+          {{ $uiLabel(panel.label) }}
         </button>
       </nav>
 
@@ -154,7 +154,7 @@
         class="mx-5 mt-5 rounded-xl bg-emerald-50 p-4 text-sm font-medium text-emerald-700 sm:mx-6"
         role="status"
       >
-        {{ successMessage }}
+        {{ $uiMessage(successMessage) }}
       </p>
 
       <div v-if="activePanel === 'tickets'" class="p-5 sm:p-6">
@@ -162,7 +162,7 @@
           <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_180px_180px_auto]">
             <div>
               <label for="crm-ticket-search" class="mb-2 block text-sm font-semibold text-gray-700">
-                Search Ticket Subject
+                {{ $t('common.searchTicketSubject') }}
               </label>
               <div class="relative">
                 <input
@@ -170,7 +170,7 @@
                   v-model="ticketFilters.search"
                   type="search"
                   maxlength="100"
-                  placeholder="Search by ticket subject"
+                  :placeholder="$t('dashboard.crm.searchByTicketSubject')"
                   class="w-full rounded-xl border bg-white p-3 pe-11 outline-none focus:border-blue-500"
                 >
                 <Icon name="lucide:search" size="18" class="absolute end-3 top-3.5 text-gray-400" />
@@ -179,33 +179,33 @@
 
             <div>
               <label for="crm-ticket-status" class="mb-2 block text-sm font-semibold text-gray-700">
-                Status
+                {{ $t('common.status') }}
               </label>
               <select
                 id="crm-ticket-status"
                 v-model="ticketFilters.status"
                 class="w-full rounded-xl border bg-white p-3 outline-none focus:border-blue-500"
               >
-                <option value="">Open and Closed</option>
-                <option value="raised">Open</option>
-                <option value="closed">Closed</option>
+                <option value="">{{ $t('common.openAndClosed') }}</option>
+                <option value="raised">{{ $t('common.open') }}</option>
+                <option value="closed">{{ $t('common.closed') }}</option>
               </select>
             </div>
 
             <div>
               <label for="crm-ticket-priority" class="mb-2 block text-sm font-semibold text-gray-700">
-                Priority
+                {{ $t('common.priority') }}
               </label>
               <select
                 id="crm-ticket-priority"
                 v-model="ticketFilters.priority"
                 class="w-full rounded-xl border bg-white p-3 outline-none focus:border-blue-500"
               >
-                <option value="">All Priorities</option>
-                <option value="urgent">Urgent</option>
-                <option value="high">High</option>
-                <option value="normal">Normal</option>
-                <option value="low">Low</option>
+                <option value="">{{ $t('common.allPriorities') }}</option>
+                <option value="urgent">{{ $t('common.urgent') }}</option>
+                <option value="high">{{ $t('common.high') }}</option>
+                <option value="normal">{{ $t('common.normal') }}</option>
+                <option value="low">{{ $t('common.low') }}</option>
               </select>
             </div>
 
@@ -216,7 +216,7 @@
                 class="min-h-11 w-full rounded-xl border bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 @click="clearTicketFilters"
               >
-                Clear
+                {{ $t('common.clear') }}
               </button>
             </div>
           </div>
@@ -225,11 +225,11 @@
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p class="text-sm text-gray-500">
             <template v-if="ticketTotal">
-              Showing {{ ticketPageStart }}–{{ ticketPageEnd }} of {{ ticketTotal }} tickets
+              {{ $t('dashboard.crm.showingValueValueOfValueTickets', { value0: (ticketPageStart), value1: (ticketPageEnd), value2: (ticketTotal) }) }}
             </template>
-            <template v-else>No tickets found</template>
+            <template v-else>{{ $t('common.noTicketsFound') }}</template>
           </p>
-          <p class="text-sm font-medium text-gray-500">20 results per page</p>
+          <p class="text-sm font-medium text-gray-500">{{ $t('common.20ResultsPerPage') }}</p>
         </div>
 
         <p
@@ -237,17 +237,17 @@
           class="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
           role="alert"
         >
-          {{ ticketsError }}
+          {{ $uiMessage(ticketsError) }}
         </p>
 
         <div v-else-if="ticketsLoading" class="py-12 text-center text-gray-500">
           <Icon name="lucide:loader-circle" size="24" class="mx-auto animate-spin" />
-          <p class="mt-3">Loading tickets...</p>
+          <p class="mt-3">{{ $t('common.loadingTickets') }}</p>
         </div>
 
         <div v-else-if="!tickets.length" class="py-12 text-center text-gray-500">
           <Icon name="lucide:ticket" size="30" class="mx-auto text-gray-300" />
-          <p class="mt-3">No open or closed tickets match these filters.</p>
+          <p class="mt-3">{{ $t('dashboard.crm.noOpenOrClosedTicketsMatchTheseFilters') }}</p>
         </div>
 
         <div v-else class="mt-4 space-y-3">
@@ -265,30 +265,30 @@
                   class="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase"
                   :class="getStatusClass(ticket.status)"
                 >
-                  {{ getStatusLabel(ticket.status) }}
+                  {{ $uiLabel(getStatusLabel(ticket.status)) }}
                 </span>
                 <span
                   class="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase"
                   :class="getPriorityClass(ticket.priority)"
                 >
-                  {{ ticket.priority || 'normal' }}
+                  {{ $uiLabel(ticket.priority || $t('common.normal')) }}
                 </span>
               </span>
               <span class="mt-2 block truncate text-sm font-medium text-gray-600">
-                {{ ticket.contact?.name || 'Deleted CRM contact' }}
+                {{ ticket.contact?.name || $t('common.deletedCrmContact') }}
               </span>
               <span class="mt-1 block text-xs text-gray-400">
-                Ticket #{{ getTicketNumber(ticket.id) }}
+                {{ $t('common.ticketValue', { value0: (getTicketNumber(ticket.id)) }) }}
               </span>
             </span>
 
             <span class="text-sm text-gray-500">
-              <span class="block text-xs font-semibold uppercase text-gray-400">Contact</span>
+              <span class="block text-xs font-semibold uppercase text-gray-400">{{ $t('common.contact') }}</span>
               <span class="mt-1 block">{{ getContactMeta(ticket.contact) }}</span>
             </span>
 
             <span class="text-sm text-gray-500">
-              <span class="block text-xs font-semibold uppercase text-gray-400">Raised</span>
+              <span class="block text-xs font-semibold uppercase text-gray-400">{{ $t('common.raised') }}</span>
               <time :datetime="ticket.occurredAt" class="mt-1 block">
                 {{ formatCrmDate(ticket.occurredAt) }}
               </time>
@@ -296,15 +296,15 @@
 
             <span class="text-sm text-gray-500">
               <span class="block text-xs font-semibold uppercase text-gray-400">
-                {{ ticket.closedAt ? 'Closed' : 'Current Status' }}
+                {{ ticket.closedAt ? $t('common.closed') : $t('common.currentStatus') }}
               </span>
               <time v-if="ticket.closedAt" :datetime="ticket.closedAt" class="mt-1 block">
                 {{ formatCrmDate(ticket.closedAt) }}
               </time>
-              <span v-else class="mt-1 block font-semibold text-amber-700">Waiting for resolution</span>
+              <span v-else class="mt-1 block font-semibold text-amber-700">{{ $t('common.waitingForResolution') }}</span>
             </span>
 
-            <Icon name="lucide:chevron-right" size="20" class="hidden text-gray-400 lg:block" />
+            <Icon name="lucide:chevron-right" size="20" class="directional-icon hidden text-gray-400 lg:block" />
           </button>
         </div>
 
@@ -312,7 +312,7 @@
           :page="ticketPage"
           :total-pages="ticketTotalPages"
           :loading="ticketsLoading"
-          label="Ticket pages"
+          :label="$t('common.ticketPages')"
           @change="loadTickets"
         />
       </div>
@@ -322,7 +322,7 @@
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_160px_160px_150px_150px_auto]">
             <div>
               <label for="crm-history-search" class="mb-2 block text-sm font-semibold text-gray-700">
-                Search Subject
+                {{ $t('common.searchSubject') }}
               </label>
               <div class="relative">
                 <input
@@ -330,7 +330,7 @@
                   v-model="historyFilters.search"
                   type="search"
                   maxlength="100"
-                  placeholder="Search call or ticket subject"
+                  :placeholder="$t('dashboard.crm.searchCallOrTicketSubject')"
                   class="w-full rounded-xl border bg-white p-3 pe-11 outline-none focus:border-blue-500"
                 >
                 <Icon name="lucide:search" size="18" class="absolute end-3 top-3.5 text-gray-400" />
@@ -339,22 +339,22 @@
 
             <div>
               <label for="crm-history-type" class="mb-2 block text-sm font-semibold text-gray-700">
-                Activity
+                {{ $t('common.activity') }}
               </label>
               <select
                 id="crm-history-type"
                 v-model="historyFilters.activityType"
                 class="w-full rounded-xl border bg-white p-3 outline-none focus:border-blue-500"
               >
-                <option value="">Calls and Tickets</option>
-                <option value="call">Calls</option>
-                <option value="case">Tickets</option>
+                <option value="">{{ $t('common.callsAndTickets') }}</option>
+                <option value="call">{{ $t('common.calls') }}</option>
+                <option value="case">{{ $t('common.tickets') }}</option>
               </select>
             </div>
 
             <div>
               <label for="crm-history-status" class="mb-2 block text-sm font-semibold text-gray-700">
-                Status
+                {{ $t('common.status') }}
               </label>
               <select
                 id="crm-history-status"
@@ -366,14 +366,14 @@
                   :key="option.value || 'all'"
                   :value="option.value"
                 >
-                  {{ option.label }}
+                  {{ $uiLabel(option.label) }}
                 </option>
               </select>
             </div>
 
             <div>
               <label for="crm-history-from" class="mb-2 block text-sm font-semibold text-gray-700">
-                From
+                {{ $t('common.from') }}
               </label>
               <input
                 id="crm-history-from"
@@ -385,7 +385,7 @@
 
             <div>
               <label for="crm-history-to" class="mb-2 block text-sm font-semibold text-gray-700">
-                To
+                {{ $t('common.to') }}
               </label>
               <input
                 id="crm-history-to"
@@ -402,23 +402,23 @@
                 class="min-h-11 w-full rounded-xl border bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 @click="clearHistoryFilters"
               >
-                Clear
+                {{ $t('common.clear') }}
               </button>
             </div>
           </div>
           <p class="mt-3 text-xs text-gray-400">
-            Filter by call date, ticket creation date or ticket closing date.
+            {{ $t('dashboard.crm.filterByCallDateTicketCreationDateOrTicketClosingDate') }}
           </p>
         </div>
 
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p class="text-sm text-gray-500">
             <template v-if="historyTotal">
-              Showing {{ historyPageStart }}–{{ historyPageEnd }} of {{ historyTotal }} activities
+              {{ $t('dashboard.crm.showingValueValueOfValueActivities', { value0: (historyPageStart), value1: (historyPageEnd), value2: (historyTotal) }) }}
             </template>
-            <template v-else>No activities found</template>
+            <template v-else>{{ $t('common.noActivitiesFound') }}</template>
           </p>
-          <p class="text-sm font-medium text-gray-500">20 results per page</p>
+          <p class="text-sm font-medium text-gray-500">{{ $t('common.20ResultsPerPage') }}</p>
         </div>
 
         <p
@@ -426,17 +426,17 @@
           class="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
           role="alert"
         >
-          {{ historyError }}
+          {{ $uiMessage(historyError) }}
         </p>
 
         <div v-else-if="historyLoading" class="py-12 text-center text-gray-500">
           <Icon name="lucide:loader-circle" size="24" class="mx-auto animate-spin" />
-          <p class="mt-3">Loading activity history...</p>
+          <p class="mt-3">{{ $t('dashboard.crm.loadingActivityHistory') }}</p>
         </div>
 
         <div v-else-if="!history.length" class="py-12 text-center text-gray-500">
           <Icon name="lucide:history" size="30" class="mx-auto text-gray-300" />
-          <p class="mt-3">No activities match these filters.</p>
+          <p class="mt-3">{{ $t('dashboard.crm.noActivitiesMatchTheseFilters') }}</p>
         </div>
 
         <div v-else class="mt-4 space-y-3">
@@ -472,12 +472,12 @@
                   class="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase"
                   :class="getStatusClass(activityItem.status)"
                 >
-                  {{ getStatusLabel(activityItem.status) }}
+                  {{ $uiLabel(getStatusLabel(activityItem.status)) }}
                 </span>
               </span>
 
               <span class="mt-2 block text-sm font-medium text-gray-600">
-                {{ activityItem.contact?.name || 'Deleted CRM contact' }}
+                {{ activityItem.contact?.name || $t('common.deletedCrmContact') }}
                 <span class="font-normal text-gray-400"> · {{ getContactMeta(activityItem.contact) }}</span>
               </span>
 
@@ -491,17 +491,17 @@
 
               <span class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
                 <span>
-                  {{ activityItem.activityType === 'call' ? 'Call' : 'Raised' }}
+                  {{ activityItem.activityType === 'call' ? $t('common.call') : $t('common.raised') }}
                   {{ formatCrmDate(activityItem.occurredAt) }}
                 </span>
                 <span v-if="activityItem.closedAt">
-                  Closed {{ formatCrmDate(activityItem.closedAt) }}
+                  {{ $t('common.closedValue', { value0: (formatCrmDate(activityItem.closedAt)) }) }}
                 </span>
-                <span class="font-semibold text-blue-600">View full details</span>
+                <span class="font-semibold text-blue-600">{{ $t('common.viewFullDetails') }}</span>
               </span>
             </span>
 
-            <Icon name="lucide:chevron-right" size="20" class="mt-2 shrink-0 text-gray-400" />
+            <Icon name="lucide:chevron-right" size="20" class="directional-icon mt-2 shrink-0 text-gray-400" />
           </button>
         </div>
 
@@ -509,7 +509,7 @@
           :page="historyPage"
           :total-pages="historyTotalPages"
           :loading="historyLoading"
-          label="Activity history pages"
+          :label="$t('common.activityHistoryPages')"
           @change="loadHistory"
         />
       </div>
@@ -527,13 +527,19 @@
 </template>
 
 <script setup>
+const formatCrmDate = value => baseFormatCrmDate(value, intlLocale.value)
+
+const { intlLocale } = useUiLocale()
+
+const { uiRouterReplace } = useUiNavigation()
+
 import {
   CRM_TIME_ZONE,
-  formatCrmDate,
+  formatCrmDate as baseFormatCrmDate,
   toCrmDateBoundary
 } from '~/utils/crmDateTime'
 
-const route = useRoute()
+const route = useUiRoute()
 const router = useRouter()
 const { getAdminAuthHeaders } = useAdminLogs()
 const PAGE_SIZE = 20
@@ -679,7 +685,7 @@ const historyStatusOptions = computed(() => {
 const statsRangeLabel = computed(() => {
   if (!statsFrom.value || !statsToExclusive.value) return ''
 
-  const formatter = new Intl.DateTimeFormat('en-US', {
+  const formatter = new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeZone: CRM_TIME_ZONE
   })
@@ -900,7 +906,7 @@ const setActivePanel = async (panel) => {
   if (!['tickets', 'history'].includes(panel)) return
   activePanel.value = panel
 
-  await router.replace({
+  await uiRouterReplace({
     query: {
       ...route.query,
       tab: 'activities',
@@ -985,7 +991,7 @@ watch(selectedContactId, async () => {
   if (!mounted) return
 
   if (getRouteQueryValue(route.query.contact) !== selectedContactId.value) {
-    await router.replace({
+    await uiRouterReplace({
       query: {
         ...route.query,
         tab: 'activities',

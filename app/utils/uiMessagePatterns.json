@@ -1,0 +1,1214 @@
+[
+  {
+    "text": "· Order {value0}",
+    "key": "common.orderValue"
+  },
+  {
+    "text": "· Returned {value0}",
+    "key": "common.returnedValue"
+  },
+  {
+    "text": "{value0} — Computer accessories",
+    "key": "home.valueComputerAccessories"
+  },
+  {
+    "text": "{value0} · {value1} · Due {value2}",
+    "key": "dashboard.treasury.valueValueDueValue"
+  },
+  {
+    "text": "{value0} · Attempt {value1}/{value2}",
+    "key": "dashboard.erp.valueAttemptValueValue"
+  },
+  {
+    "text": "{value0} · Opened {value1}",
+    "key": "dashboard.support.valueOpenedValue"
+  },
+  {
+    "text": "{value0} {value1} · {value2} in progress",
+    "key": "account.index.valueValueValueInProgress"
+  },
+  {
+    "text": "{value0} {value1} = {value2} unique item {value3} and QR codes",
+    "key": "dashboard.commerce.valueValueValueUniqueItemValueAndQrCodes"
+  },
+  {
+    "text": "{value0} {value1} selected",
+    "key": "livechat.Launcher.valueValueSelected"
+  },
+  {
+    "text": "{value0} / {value1} lines complete",
+    "key": "dashboard.orders.valueValueLinesComplete"
+  },
+  {
+    "text": "{value0} accepted of {value1} resolved",
+    "key": "dashboard.hr.valueAcceptedOfValueResolved"
+  },
+  {
+    "text": "{value0} card{value1}",
+    "key": "common.valueCardvalue"
+  },
+  {
+    "text": "{value0} chart",
+    "key": "common.valueChart"
+  },
+  {
+    "text": "{value0} cities",
+    "key": "common.valueCities"
+  },
+  {
+    "text": "{value0} coupon{value1}",
+    "key": "common.valueCouponvalue"
+  },
+  {
+    "text": "{value0} days",
+    "key": "common.valueDays"
+  },
+  {
+    "text": "{value0} Details",
+    "key": "common.valueDetails"
+  },
+  {
+    "text": "{value0} dwell",
+    "key": "common.valueDwell"
+  },
+  {
+    "text": "{value0} each",
+    "key": "common.valueEach"
+  },
+  {
+    "text": "{value0} EGP",
+    "key": "common.valueEgp"
+  },
+  {
+    "text": "{value0} eligible agent{value1} online · {value2} {value3}",
+    "key": "dashboard.liveChatSettings.valueEligibleAgentvalueOnlineValueValue"
+  },
+  {
+    "text": "{value0} home",
+    "key": "common.valueHome"
+  },
+  {
+    "text": "{value0} in files",
+    "key": "common.valueInFiles"
+  },
+  {
+    "text": "{value0} item{value1}",
+    "key": "common.valueItemvalue"
+  },
+  {
+    "text": "{value0} items",
+    "key": "common.valueItems"
+  },
+  {
+    "text": "{value0} linked file{value1}",
+    "key": "dashboard.support.valueLinkedFilevalue"
+  },
+  {
+    "text": "{value0} matching employee records",
+    "key": "dashboard.hr.valueMatchingEmployeeRecords"
+  },
+  {
+    "text": "{value0} new",
+    "key": "common.valueNew"
+  },
+  {
+    "text": "{value0} new {value1}",
+    "key": "common.valueNewValue"
+  },
+  {
+    "text": "{value0} open orders",
+    "key": "common.valueOpenOrders"
+  },
+  {
+    "text": "{value0} out of 10",
+    "key": "common.valueOutOf10"
+  },
+  {
+    "text": "{value0} out of 5 from {value1} {value2}",
+    "key": "product.Reviews.valueOutOf5FromValueValue"
+  },
+  {
+    "text": "{value0} out of 5 stars",
+    "key": "common.valueOutOf5Stars"
+  },
+  {
+    "text": "{value0} pending",
+    "key": "common.valuePending"
+  },
+  {
+    "text": "{value0} permissions granted",
+    "key": "dashboard.hr.valuePermissionsGranted"
+  },
+  {
+    "text": "{value0} product{value1} found",
+    "key": "search.valueProductvalueFound"
+  },
+  {
+    "text": "{value0} remaining",
+    "key": "common.valueRemaining"
+  },
+  {
+    "text": "{value0} returning",
+    "key": "common.valueReturning"
+  },
+  {
+    "text": "{value0} selected",
+    "key": "common.valueSelected"
+  },
+  {
+    "text": "{value0} star{value1}",
+    "key": "common.valueStarvalue"
+  },
+  {
+    "text": "{value0} support tickets with new replies",
+    "key": "account.Navigation.valueSupportTicketsWithNewReplies"
+  },
+  {
+    "text": "{value0} total",
+    "key": "common.valueTotal"
+  },
+  {
+    "text": "{value0} unread on page",
+    "key": "common.valueUnreadOnPage"
+  },
+  {
+    "text": "{value0} value",
+    "key": "common.valueValue"
+  },
+  {
+    "text": "{value0} views",
+    "key": "common.valueViews"
+  },
+  {
+    "text": "{value0}–{value1} of {value2} images",
+    "key": "dashboard.MediaLibrary.valueValueOfValueImages"
+  },
+  {
+    "text": "{value0}. Select an order to view details.",
+    "key": "dashboard.orders.valueSelectAnOrderToViewDetails"
+  },
+  {
+    "text": "{value0}{value1} · Stock {value2}",
+    "key": "dashboard.commerce.valuevalueStockValue"
+  },
+  {
+    "text": "{value0}% deposit required",
+    "key": "cart.valueDepositRequired"
+  },
+  {
+    "text": "+ {value0} fee",
+    "key": "common.valueFee"
+  },
+  {
+    "text": "Add {value0}",
+    "key": "common.addValue"
+  },
+  {
+    "text": "Add {value0} to cart",
+    "key": "common.addValueToCart"
+  },
+  {
+    "text": "After {value0}",
+    "key": "common.afterValue"
+  },
+  {
+    "text": "All {value0}",
+    "key": "common.allValue"
+  },
+  {
+    "text": "AWB {value0}",
+    "key": "common.awbValue"
+  },
+  {
+    "text": "Being packed by {value0}",
+    "key": "dashboard.orders.beingPackedByValue"
+  },
+  {
+    "text": "By {value0}",
+    "key": "common.byValue"
+  },
+  {
+    "text": "Call request: {value0}",
+    "key": "common.callRequestValue"
+  },
+  {
+    "text": "Callback {value0}",
+    "key": "common.callbackValue"
+  },
+  {
+    "text": "Canonical name for pasted line {value0}",
+    "key": "dashboard.products.canonicalNameForPastedLineValue"
+  },
+  {
+    "text": "Cart, {value0} items",
+    "key": "common.cartValueItems"
+  },
+  {
+    "text": "Choose color for variant {value0}",
+    "key": "dashboard.products.chooseColorForVariantValue"
+  },
+  {
+    "text": "Choose options for {value0}",
+    "key": "cards.ProductCard.chooseOptionsForValue"
+  },
+  {
+    "text": "Client pays {value0}",
+    "key": "common.clientPaysValue"
+  },
+  {
+    "text": "Closed {value0}",
+    "key": "common.closedValue"
+  },
+  {
+    "text": "Compared with {value0}",
+    "key": "common.comparedWithValue"
+  },
+  {
+    "text": "Conversation #{value0}",
+    "key": "common.conversationValue"
+  },
+  {
+    "text": "Create it inside {value0}.",
+    "key": "dashboard.documents.createItInsideValue"
+  },
+  {
+    "text": "Created {value0}",
+    "key": "common.createdValue"
+  },
+  {
+    "text": "Created {value0} · Updated {value1}",
+    "key": "account.support.createdValueUpdatedValue"
+  },
+  {
+    "text": "Created from live chat #{value0}. The original transcript and files remain in Live Chat.",
+    "key": "account.support.createdFromLiveChatValueTheOriginalTranscriptAndFilesRemainInLiveChat"
+  },
+  {
+    "text": "Decrease {value0} quantity",
+    "key": "cart.decreaseValueQuantity"
+  },
+  {
+    "text": "Details for {value0}",
+    "key": "common.detailsForValue"
+  },
+  {
+    "text": "Due {value0}",
+    "key": "common.dueValue"
+  },
+  {
+    "text": "Edit “{value0}”",
+    "key": "common.editValue"
+  },
+  {
+    "text": "Edit {value0}",
+    "key": "common.editValueVariant2"
+  },
+  {
+    "text": "Error: {value0}",
+    "key": "common.errorValue"
+  },
+  {
+    "text": "Expected {value0}",
+    "key": "common.expectedValue"
+  },
+  {
+    "text": "Expected availability: {value0}",
+    "key": "products.slug.expectedAvailabilityValue"
+  },
+  {
+    "text": "Feature {value0}",
+    "key": "common.featureValue"
+  },
+  {
+    "text": "From {value0}",
+    "key": "common.fromValue"
+  },
+  {
+    "text": "Hi, {value0}",
+    "key": "common.hiValue"
+  },
+  {
+    "text": "Historical activity uses the selected {value0}-day period; live visitors update separately.",
+    "key": "dashboard.analysis.historicalActivityUsesTheSelectedValueDayPeriodLiveVisitorsUpdateSeparately"
+  },
+  {
+    "text": "How likely are you to recommend {value0}?",
+    "key": "nps.Survey.howLikelyAreYouToRecommendValue"
+  },
+  {
+    "text": "I checked “{value0}” as a reusable name.",
+    "key": "dashboard.products.iCheckedValueAsAReusableName"
+  },
+  {
+    "text": "Increase {value0} quantity",
+    "key": "cart.increaseValueQuantity"
+  },
+  {
+    "text": "Internal note for chat #{value0}",
+    "key": "dashboard.livechat.internalNoteForChatValue"
+  },
+  {
+    "text": "Joined {value0}",
+    "key": "common.joinedValue"
+  },
+  {
+    "text": "Last seen {value0}",
+    "key": "common.lastSeenValue"
+  },
+  {
+    "text": "Last viewed {value0}",
+    "key": "common.lastViewedValue"
+  },
+  {
+    "text": "Latest {value0} orders",
+    "key": "common.latestValueOrders"
+  },
+  {
+    "text": "Latest courier update: {value0}",
+    "key": "account.OrderProgress.latestCourierUpdateValue"
+  },
+  {
+    "text": "Latest purchaser reply {value0}",
+    "key": "dashboard.orders.latestPurchaserReplyValue"
+  },
+  {
+    "text": "Latest update: {value0}",
+    "key": "common.latestUpdateValue"
+  },
+  {
+    "text": "Legacy: {value0}",
+    "key": "common.legacyValue"
+  },
+  {
+    "text": "Live chat #{value0} · {value1}",
+    "key": "dashboard.support.liveChatValueValue"
+  },
+  {
+    "text": "Live support, {value0} unread {value1}",
+    "key": "livechat.Launcher.liveSupportValueUnreadValue"
+  },
+  {
+    "text": "Maybe {value0}",
+    "key": "common.maybeValue"
+  },
+  {
+    "text": "Member since {value0}",
+    "key": "common.memberSinceValue"
+  },
+  {
+    "text": "Method: {value0}",
+    "key": "common.methodValue"
+  },
+  {
+    "text": "More {value0}",
+    "key": "common.moreValue"
+  },
+  {
+    "text": "Move {value0} suggestion down",
+    "key": "dashboard.products.moveValueSuggestionDown"
+  },
+  {
+    "text": "Move {value0} suggestion up",
+    "key": "dashboard.products.moveValueSuggestionUp"
+  },
+  {
+    "text": "Move guest chat #{value0} to this account?",
+    "key": "livechat.Launcher.moveGuestChatValueToThisAccount"
+  },
+  {
+    "text": "Move specification {value0} down",
+    "key": "dashboard.products.moveSpecificationValueDown"
+  },
+  {
+    "text": "Move specification {value0} up",
+    "key": "dashboard.products.moveSpecificationValueUp"
+  },
+  {
+    "text": "No {value0} orders",
+    "key": "common.noValueOrders"
+  },
+  {
+    "text": "No CRM contacts match “{value0}”.",
+    "key": "dashboard.crm.noCrmContactsMatchValue"
+  },
+  {
+    "text": "of {value0} orders",
+    "key": "common.ofValueOrders"
+  },
+  {
+    "text": "One Procurement receipt can create at most {value0} physical items.",
+    "key": "dashboard.commerce.oneProcurementReceiptCanCreateAtMostValuePhysicalItems"
+  },
+  {
+    "text": "Open {value0}",
+    "key": "common.openValue"
+  },
+  {
+    "text": "Open image gallery, image {value0} of {value1}",
+    "key": "products.slug.openImageGalleryImageValueOfValue"
+  },
+  {
+    "text": "Order {value0}",
+    "key": "common.orderValueVariant2"
+  },
+  {
+    "text": "Order #{value0}",
+    "key": "common.orderValueVariant3"
+  },
+  {
+    "text": "Ordered {value0}",
+    "key": "common.orderedValue"
+  },
+  {
+    "text": "Page {value0}",
+    "key": "common.pageValue"
+  },
+  {
+    "text": "Page {value0} of {value1}",
+    "key": "common.pageValueOfValue"
+  },
+  {
+    "text": "Paid {value0}",
+    "key": "common.paidValue"
+  },
+  {
+    "text": "Paid {value0} · Due {value1}",
+    "key": "dashboard.commerce.paidValueDueValue"
+  },
+  {
+    "text": "Placed {value0}",
+    "key": "common.placedValue"
+  },
+  {
+    "text": "PRE-ORDER · {value0}",
+    "key": "common.preOrderValue"
+  },
+  {
+    "text": "Preview {value0}",
+    "key": "common.previewValue"
+  },
+  {
+    "text": "Previous {value0}",
+    "key": "common.previousValue"
+  },
+  {
+    "text": "Primary Warehouse{value0}",
+    "key": "dashboard.products.primaryWarehousevalue"
+  },
+  {
+    "text": "Print {value0} Labels",
+    "key": "common.printValueLabels"
+  },
+  {
+    "text": "Procurement #{value0}",
+    "key": "common.procurementValue"
+  },
+  {
+    "text": "Product images for {value0}",
+    "key": "products.slug.productImagesForValue"
+  },
+  {
+    "text": "QR {value0}",
+    "key": "common.qrValue"
+  },
+  {
+    "text": "Qty {value0}",
+    "key": "common.qtyValue"
+  },
+  {
+    "text": "Qty {value0} · {value1} each",
+    "key": "account.orders.qtyValueValueEach"
+  },
+  {
+    "text": "Read {value0}",
+    "key": "common.readValue"
+  },
+  {
+    "text": "Receive {value0} {value1}",
+    "key": "dashboard.commerce.receiveValueValue"
+  },
+  {
+    "text": "Remaining after payment: {value0}",
+    "key": "cart.remainingAfterPaymentValue"
+  },
+  {
+    "text": "Remove {value0} from quick access",
+    "key": "dashboard.FileWorkspaceOverview.removeValueFromQuickAccess"
+  },
+  {
+    "text": "Remove variant {value0}",
+    "key": "common.removeVariantValue"
+  },
+  {
+    "text": "Rename {value0}",
+    "key": "common.renameValue"
+  },
+  {
+    "text": "Reply to {value0} in chat #{value1}",
+    "key": "dashboard.livechat.replyToValueInChatValue"
+  },
+  {
+    "text": "Required initial payment {value0} · Verified paid {value1} · Balance {value2}",
+    "key": "account.OrderCard.requiredInitialPaymentValueVerifiedPaidValueBalanceValue"
+  },
+  {
+    "text": "Required now: {value0}",
+    "key": "common.requiredNowValue"
+  },
+  {
+    "text": "Required now: {value0}. Verified paid: {value1}. The balance remains due when arranged with the store.",
+    "key": "checkout.summary.requiredNowValueVerifiedPaidValueTheBalanceRemainsDueWhenArrangedWithTheStore"
+  },
+  {
+    "text": "Reserve with {value0}% deposit",
+    "key": "products.slug.reserveWithValueDeposit"
+  },
+  {
+    "text": "Results for “{value0}”",
+    "key": "common.resultsForValue"
+  },
+  {
+    "text": "Returned {value0}",
+    "key": "common.returnedValueVariant2"
+  },
+  {
+    "text": "Sale #{value0}",
+    "key": "common.saleValue"
+  },
+  {
+    "text": "Save {value0}",
+    "key": "common.saveValue"
+  },
+  {
+    "text": "Save {value0}%",
+    "key": "common.saveValueVariant2"
+  },
+  {
+    "text": "Scan {value0} more {value1} to continue.",
+    "key": "dashboard.orders.scanValueMoreValueToContinue"
+  },
+  {
+    "text": "See all results for “{value0}”",
+    "key": "layout.SearchBar.seeAllResultsForValue"
+  },
+  {
+    "text": "Select a {value0} before adding to cart.",
+    "key": "products.slug.selectAValueBeforeAddingToCart"
+  },
+  {
+    "text": "Select label for {value0}",
+    "key": "dashboard.commerce.selectLabelForValue"
+  },
+  {
+    "text": "Shipping {value0} · Return {value1}",
+    "key": "dashboard.commerce.shippingValueReturnValue"
+  },
+  {
+    "text": "Shipping for {value0} {value1}",
+    "key": "cart.shippingForValueValue"
+  },
+  {
+    "text": "Show image {value0} of {value1}",
+    "key": "products.slug.showImageValueOfValue"
+  },
+  {
+    "text": "Show information for {value0}",
+    "key": "dashboard.documents.showInformationForValue"
+  },
+  {
+    "text": "Show product image {value0} of {value1}",
+    "key": "products.slug.showProductImageValueOfValue"
+  },
+  {
+    "text": "Showing {value0}-{value1} of {value2} · Page {value3} of {value4}",
+    "key": "dashboard.commerce.showingValueValueOfValuePageValueOfValue"
+  },
+  {
+    "text": "Showing {value0}-{value1} of {value2} {value3}",
+    "key": "common.showingValueValueOfValueValue"
+  },
+  {
+    "text": "Showing {value0}–{value1} of {value2} activities",
+    "key": "dashboard.crm.showingValueValueOfValueActivities"
+  },
+  {
+    "text": "Showing {value0}–{value1} of {value2} tickets",
+    "key": "dashboard.crm.showingValueValueOfValueTickets"
+  },
+  {
+    "text": "Showing the oldest {value0}",
+    "key": "dashboard.orders.showingTheOldestValue"
+  },
+  {
+    "text": "Similar name: {value0}. Choose it above if it means the same thing.",
+    "key": "dashboard.products.similarNameValueChooseItAboveIfItMeansTheSameThing"
+  },
+  {
+    "text": "SKU {value0}",
+    "key": "common.skuValue"
+  },
+  {
+    "text": "SKU: {value0}",
+    "key": "common.skuValueVariant2"
+  },
+  {
+    "text": "Slug preview: {value0}",
+    "key": "common.slugPreviewValue"
+  },
+  {
+    "text": "Sold {value0}",
+    "key": "common.soldValue"
+  },
+  {
+    "text": "Specification {value0} name",
+    "key": "dashboard.products.specificationValueName"
+  },
+  {
+    "text": "Specification {value0} value",
+    "key": "dashboard.products.specificationValueValue"
+  },
+  {
+    "text": "Started {value0}",
+    "key": "common.startedValue"
+  },
+  {
+    "text": "Status: {value0}",
+    "key": "common.statusValue"
+  },
+  {
+    "text": "Submitted {value0}",
+    "key": "common.submittedValue"
+  },
+  {
+    "text": "Subtotal ({value0} {value1})",
+    "key": "cart.subtotalValueValue"
+  },
+  {
+    "text": "This order has {value0} tracked line{value1}, hidden from this quantity form.",
+    "key": "dashboard.commerce.thisOrderHasValueTrackedLinevalueHiddenFromThisQuantityForm"
+  },
+  {
+    "text": "This product belongs to {value0}.",
+    "key": "dashboard.commerce.thisProductBelongsToValue"
+  },
+  {
+    "text": "Ticket #{value0}",
+    "key": "common.ticketValue"
+  },
+  {
+    "text": "Up to {value0} files, {value1} each.",
+    "key": "dashboard.livechat.upToValueFilesValueEach"
+  },
+  {
+    "text": "Updated {value0}",
+    "key": "common.updatedValue"
+  },
+  {
+    "text": "Updates: {value0}",
+    "key": "common.updatesValue"
+  },
+  {
+    "text": "Used {value0} times",
+    "key": "common.usedValueTimes"
+  },
+  {
+    "text": "Value for pasted line {value0}",
+    "key": "dashboard.products.valueForPastedLineValue"
+  },
+  {
+    "text": "Variant {value0}",
+    "key": "common.variantValue"
+  },
+  {
+    "text": "View order {value0}",
+    "key": "common.viewOrderValue"
+  },
+  {
+    "text": "Wallet {value0}",
+    "key": "common.walletValue"
+  },
+  {
+    "text": "We’ll call {value0}.",
+    "key": "common.weLlCallValue"
+  },
+  {
+    "text": "Welcome back, {value0}",
+    "key": "common.welcomeBackValue"
+  },
+  {
+    "text": "Your one-hour waiting period ends at {value0}.",
+    "key": "product.Reviews.yourOneHourWaitingPeriodEndsAtValue"
+  },
+  {
+    "text": "{value0} available",
+    "key": "product.availableCount"
+  },
+  {
+    "text": "Send again in {value0}s",
+    "key": "livechat.sendAgainIn"
+  },
+  {
+    "text": "{value0} item{value1} added to your cart.",
+    "key": "account.reorderAdded"
+  },
+  {
+    "text": "{value0} item{value1} added. {value2} could not be reordered.",
+    "key": "account.reorderPartial"
+  },
+  {
+    "text": "{value0} is required.",
+    "key": "validation.required"
+  },
+  {
+    "text": "{value0} is invalid.",
+    "key": "validation.invalid"
+  },
+  {
+    "text": "{value0} started this chat",
+    "key": "livechat.startedBy"
+  },
+  {
+    "text": "{value0} identified this chat",
+    "key": "livechat.identifiedBy"
+  },
+  {
+    "text": "{value0} claimed this chat",
+    "key": "livechat.claimedBy"
+  },
+  {
+    "text": "{value0} assigned {value1}",
+    "key": "livechat.assignedBy"
+  },
+  {
+    "text": "{value0} transferred {value1} → {value2}",
+    "key": "livechat.transferredBy"
+  },
+  {
+    "text": "{value0} closed this chat",
+    "key": "livechat.closedBy"
+  },
+  {
+    "text": "{value0} reopened this chat",
+    "key": "livechat.reopenedBy"
+  },
+  {
+    "text": "{value0} changed order {value1} → {value2}",
+    "key": "livechat.orderChangedBy"
+  },
+  {
+    "text": "{value0} linked order {value1}",
+    "key": "livechat.orderLinkedBy"
+  },
+  {
+    "text": "{value0} unlinked order {value1}",
+    "key": "livechat.orderUnlinkedBy"
+  },
+  {
+    "text": "{value0} created support ticket #{value1}",
+    "key": "livechat.ticketCreatedBy"
+  },
+  {
+    "text": "{value0} submitted chat feedback",
+    "key": "livechat.feedbackSubmittedBy"
+  },
+  {
+    "text": "{value0} requested a callback",
+    "key": "livechat.callbackRequestedBy"
+  },
+  {
+    "text": "{value0} marked the callback {value1}",
+    "key": "livechat.callbackMarkedBy"
+  },
+  {
+    "text": "{value0} added to cart.",
+    "key": "product.addedToCartNotice"
+  },
+  {
+    "text": "{value0} added today",
+    "key": "dashboard.addedToday"
+  },
+  {
+    "text": "Choose up to {value0} files.",
+    "key": "livechat.chooseFiles"
+  },
+  {
+    "text": "{value0} new support messages.",
+    "key": "livechat.newSupportMessages"
+  },
+  {
+    "text": "Be the first to review “{value0}”",
+    "key": "product.firstReview"
+  },
+  {
+    "text": "Your review cannot exceed {value0} characters.",
+    "key": "product.reviewMaxLength"
+  },
+  {
+    "text": "Uploading {value0} of {value1}...",
+    "key": "dashboard.uploadingBatch"
+  },
+  {
+    "text": "Uploading {value0}...",
+    "key": "dashboard.uploadingFile"
+  },
+  {
+    "text": "Delete the {value0} “{value1}”? This cannot be undone.",
+    "key": "dashboard.deleteNamedItem"
+  },
+  {
+    "text": "Could not delete the {value0}.",
+    "key": "dashboard.deleteItemFailed"
+  },
+  {
+    "text": "Updated {value0} products. {value1} need SKU mapping.",
+    "key": "dashboard.erpProductsUpdated"
+  },
+  {
+    "text": "Live chat #{value0}",
+    "key": "livechat.referenceLabel"
+  },
+  {
+    "text": "{value0} new customer messages.",
+    "key": "livechat.newCustomerMessages"
+  },
+  {
+    "text": "Updated {value0}.",
+    "key": "dashboard.updatedName"
+  },
+  {
+    "text": "{value0} saved successfully.",
+    "key": "dashboard.savedName"
+  },
+  {
+    "text": "Delete image {value0}?",
+    "key": "dashboard.deleteImageConfirm"
+  },
+  {
+    "text": "Deleted uploaded image {value0}.",
+    "key": "dashboard.imageDeleted"
+  },
+  {
+    "text": "Added hero banner {value0}.",
+    "key": "dashboard.heroAdded"
+  },
+  {
+    "text": "Updated hero banner {value0}.",
+    "key": "dashboard.heroUpdated"
+  },
+  {
+    "text": "Deleted hero banner {value0}.",
+    "key": "dashboard.heroDeleted"
+  },
+  {
+    "text": "Added top bar text {value0}.",
+    "key": "dashboard.topbarAdded"
+  },
+  {
+    "text": "Updated top bar text {value0}.",
+    "key": "dashboard.topbarUpdated"
+  },
+  {
+    "text": "Deleted top bar text {value0}.",
+    "key": "dashboard.topbarDeleted"
+  },
+  {
+    "text": "Added offer card {value0}.",
+    "key": "dashboard.offerAdded"
+  },
+  {
+    "text": "Updated offer card {value0}.",
+    "key": "dashboard.offerUpdated"
+  },
+  {
+    "text": "Deleted offer card {value0}.",
+    "key": "dashboard.offerDeleted"
+  },
+  {
+    "text": "Added header link {value0}.",
+    "key": "dashboard.headerLinkAdded"
+  },
+  {
+    "text": "Added footer link {value0} under {value1}.",
+    "key": "dashboard.footerLinkAdded"
+  },
+  {
+    "text": "Updated {value0} link {value1}.",
+    "key": "dashboard.linkUpdated"
+  },
+  {
+    "text": "Deleted {value0} link {value1}.",
+    "key": "dashboard.linkDeleted"
+  },
+  {
+    "text": "Added coupon {value0}.",
+    "key": "dashboard.couponAdded"
+  },
+  {
+    "text": "Updated coupon {value0}.",
+    "key": "dashboard.couponUpdated"
+  },
+  {
+    "text": "Deleted coupon {value0}.",
+    "key": "dashboard.couponDeleted"
+  },
+  {
+    "text": "Recorded supplier payment for {value0}.",
+    "key": "dashboard.supplierPaymentRecorded"
+  },
+  {
+    "text": "Recorded customer receipt for {value0}.",
+    "key": "dashboard.customerReceiptRecorded"
+  },
+  {
+    "text": "Recorded salary payment for {value0}.",
+    "key": "dashboard.salaryPaymentRecorded"
+  },
+  {
+    "text": "Last {value0} days",
+    "key": "analysis.lastDays"
+  },
+  {
+    "text": "{value0} returning visits of {value1} total · {value2} unique visitors",
+    "key": "analysis.returningVisits"
+  },
+  {
+    "text": "Last {value0} days · lower is better",
+    "key": "analysis.lastDaysLowerBetter"
+  },
+  {
+    "text": "{value0} abandoned of {value1} mature carts",
+    "key": "analysis.abandonedCarts"
+  },
+  {
+    "text": "{value0} repeat customers of {value1} purchasing customers",
+    "key": "analysis.repeatCustomers"
+  },
+  {
+    "text": "Tracked visitors active during the last {value0} minutes",
+    "key": "analysis.activeVisitors"
+  },
+  {
+    "text": "{value0} to {value1}",
+    "key": "analysis.dateRange"
+  },
+  {
+    "text": "{value0} brand {value1}.",
+    "key": "dashboard.brandSaved"
+  },
+  {
+    "text": "Deleted brand {value0}.",
+    "key": "dashboard.brandDeleted"
+  },
+  {
+    "text": "{value0} category {value1}.",
+    "key": "dashboard.categorySaved"
+  },
+  {
+    "text": "Deleted category {value0}.",
+    "key": "dashboard.categoryDeleted"
+  },
+  {
+    "text": "Are you sure you want to delete this review for \"{value0}\"?",
+    "key": "dashboard.reviewDeleteConfirm"
+  },
+  {
+    "text": "Updated {value0} {value1}.",
+    "key": "dashboard.contactUpdated"
+  },
+  {
+    "text": "Added {value0} {value1}.",
+    "key": "dashboard.contactAdded"
+  },
+  {
+    "text": "Deleted {value0} {value1}.",
+    "key": "dashboard.contactDeleted"
+  },
+  {
+    "text": "Invoice/reference cannot exceed {value0} characters.",
+    "key": "validation.referenceMaxLength"
+  },
+  {
+    "text": "A Procurement receipt must contain between 1 and {value0} product lines.",
+    "key": "validation.procurementLineRange"
+  },
+  {
+    "text": "A Procurement receipt cannot contain more than {value0} product lines.",
+    "key": "validation.procurementMaxLines"
+  },
+  {
+    "text": "Received procurement order {value0} with {value1} serialized units.",
+    "key": "dashboard.procurementReceived"
+  },
+  {
+    "text": "{value0} {value1} received. Each item now has its own ID and QR code.",
+    "key": "dashboard.unitsReceived"
+  },
+  {
+    "text": "{value0} {value1} cleared because the receiving warehouse changed.",
+    "key": "dashboard.unitsCleared"
+  },
+  {
+    "text": "{value0} is QR-tracked. Return the exact item through the QR scanner.",
+    "key": "dashboard.qrReturnInstruction"
+  },
+  {
+    "text": "Return quantity for {value0} is not valid.",
+    "key": "validation.returnQuantity"
+  },
+  {
+    "text": "Recorded return for {value0}.",
+    "key": "dashboard.returnRecorded"
+  },
+  {
+    "text": "Created manual sale {value0}.",
+    "key": "dashboard.manualSaleCreated"
+  },
+  {
+    "text": "Return unit {value0} to {value1}?",
+    "key": "dashboard.unitReturnConfirm"
+  },
+  {
+    "text": " Return reference: {value0}.",
+    "key": "dashboard.returnReference"
+  },
+  {
+    "text": "Unit {value0} was returned to {value1}.{value2}",
+    "key": "dashboard.unitReturned"
+  },
+  {
+    "text": "Updated shipping company {value0}.",
+    "key": "dashboard.carrierUpdated"
+  },
+  {
+    "text": "Added shipping company {value0}.",
+    "key": "dashboard.carrierAdded"
+  },
+  {
+    "text": "Deleted shipping company {value0}.",
+    "key": "dashboard.carrierDeleted"
+  },
+  {
+    "text": "Updated warehouse {value0}.",
+    "key": "dashboard.warehouseUpdated"
+  },
+  {
+    "text": "Added warehouse {value0}.",
+    "key": "dashboard.warehouseAdded"
+  },
+  {
+    "text": "Deleted warehouse {value0}.",
+    "key": "dashboard.warehouseDeleted"
+  },
+  {
+    "text": "Transferred inventory from {value0} to {value1}.",
+    "key": "dashboard.inventoryTransferred"
+  },
+  {
+    "text": "{value0} CRM contact{value1} found.",
+    "key": "dashboard.crmContactCount"
+  },
+  {
+    "text": "{value0} employee {value1}.",
+    "key": "dashboard.employeeSaved"
+  },
+  {
+    "text": "Name created, but category suggestion failed: {value0}",
+    "key": "dashboard.specSuggestionFailed"
+  },
+  {
+    "text": "Created shared specification name {value0}.",
+    "key": "dashboard.specNameCreated"
+  },
+  {
+    "text": "Created {value0}. Enter its value for this product.",
+    "key": "dashboard.specCreatedPrompt"
+  },
+  {
+    "text": "Updated shared specification name {value0}.",
+    "key": "dashboard.specNameUpdated"
+  },
+  {
+    "text": "Added {value0} to product {value1}.",
+    "key": "dashboard.specAdded"
+  },
+  {
+    "text": "Updated a specification for product {value0}.",
+    "key": "dashboard.specUpdated"
+  },
+  {
+    "text": "Delete {value0}?",
+    "key": "dashboard.deleteNameConfirm"
+  },
+  {
+    "text": "Deleted a specification from product {value0}.",
+    "key": "dashboard.specDeleted"
+  },
+  {
+    "text": "Reordered specifications for product {value0}.",
+    "key": "dashboard.specReordered"
+  },
+  {
+    "text": "Review {value0} line{value1} before importing.",
+    "key": "dashboard.importReviewCount"
+  },
+  {
+    "text": "Imported {value0} specifications for product {value1}.",
+    "key": "dashboard.specImportedForProduct"
+  },
+  {
+    "text": "{value0} specifications imported.",
+    "key": "dashboard.specImportedCount"
+  },
+  {
+    "text": "Added a feature for product {value0}.",
+    "key": "dashboard.featureAdded"
+  },
+  {
+    "text": "Updated a feature for product {value0}.",
+    "key": "dashboard.featureUpdated"
+  },
+  {
+    "text": "Deleted a feature from product {value0}.",
+    "key": "dashboard.featureDeleted"
+  },
+  {
+    "text": "Saved as {value0}",
+    "key": "dashboard.savedAs"
+  },
+  {
+    "text": "{value0} scanned successfully.",
+    "key": "dashboard.scannedSuccess"
+  },
+  {
+    "text": "The problem with {value0} was reported. The packing session is closed while the order awaits follow-up.",
+    "key": "dashboard.packingProblemReported"
+  },
+  {
+    "text": "{value0} was released back to the confirmation queue.",
+    "key": "dashboard.releasedToQueue"
+  },
+  {
+    "text": "Added product {value0}.",
+    "key": "dashboard.productAdded"
+  },
+  {
+    "text": "Updated product {value0}.",
+    "key": "dashboard.productUpdated"
+  },
+  {
+    "text": "Added an extra image to product {value0}.",
+    "key": "dashboard.productImageAdded"
+  },
+  {
+    "text": "Updated an extra image for product {value0}.",
+    "key": "dashboard.productImageUpdated"
+  },
+  {
+    "text": "Deleted an extra image from product {value0}.",
+    "key": "dashboard.productImageDeleted"
+  },
+  {
+    "text": "Deleted product {value0}.",
+    "key": "dashboard.productDeleted"
+  }
+]

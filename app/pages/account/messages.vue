@@ -1,9 +1,13 @@
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+
 definePageMeta({
   layout: 'account',
   middleware: 'customer-auth'
 })
-useHead({ title: 'Order Messages' })
+useHead(() => ({ title: uiLabel('Order Messages') }))
 
 const supabase = useSupabaseClient()
 const loading = ref(true)
@@ -245,7 +249,7 @@ const formatDate = (value) => {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(date)
@@ -257,34 +261,34 @@ onMounted(loadMessages)
 <template>
   <div class="space-y-5">
     <header class="flex flex-wrap items-end justify-between gap-3">
-      <div><p class="text-sm font-semibold text-blue-700">Your account</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Messages</h1><p class="mt-1 text-sm text-slate-600">Order updates from our team. For a new question, use Support.</p></div>
-      <button type="button" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" :disabled="loading" @click="loadMessages"><Icon name="lucide:refresh-cw" size="16" :class="{ 'animate-spin': loading }" aria-hidden="true" /> Refresh</button>
+      <div><p class="text-sm font-semibold text-blue-700">{{ $t('common.yourAccount') }}</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $t('common.messages') }}</h1><p class="mt-1 text-sm text-slate-600">{{ $t('account.messages.orderUpdatesFromOurTeamForANewQuestionUseSupport') }}</p></div>
+      <button type="button" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" :disabled="loading" @click="loadMessages"><Icon name="lucide:refresh-cw" size="16" :class="{ 'animate-spin': loading }" aria-hidden="true" /> {{ $t('common.refresh') }}</button>
     </header>
-    <p v-if="errorMessage" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(errorMessage) }}</p>
     <section class="grid gap-3 sm:grid-cols-2">
             <div class="rounded-2xl bg-white p-5 shadow">
-              <p class="text-sm font-semibold text-gray-500">All Messages</p>
+              <p class="text-sm font-semibold text-gray-500">{{ $t('common.allMessages') }}</p>
               <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalMessages }}</p>
             </div>
 
             <div class="rounded-2xl bg-white p-5 shadow">
-              <p class="text-sm font-semibold text-gray-500">Unread</p>
+              <p class="text-sm font-semibold text-gray-500">{{ $t('common.unread') }}</p>
               <p class="mt-2 text-3xl font-bold text-blue-600">{{ unreadCount }}</p>
             </div>
           </section>
 
           <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
             <div v-if="loading" class="py-16 text-center text-gray-500" role="status">
-              Loading messages...
+              {{ $t('common.loadingMessages') }}
             </div>
 
             <div v-else-if="!messages.length" class="py-16 text-center">
               <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">
                 <Icon name="lucide:mail-open" size="28" />
               </div>
-              <h2 class="mt-4 text-xl font-bold text-gray-900">No messages yet</h2>
+              <h2 class="mt-4 text-xl font-bold text-gray-900">{{ $t('common.noMessagesYet') }}</h2>
               <p class="mt-2 text-sm text-gray-500">
-                Messages about your orders will appear here.
+                {{ $t('account.messages.messagesAboutYourOrdersWillAppearHere') }}
               </p>
             </div>
 
@@ -298,10 +302,10 @@ onMounted(loadMessages)
                 <article
                   class="w-full max-w-3xl rounded-2xl border p-5 transition"
                   :class="isCustomerMessage(message)
-                    ? 'border-blue-600 bg-blue-600 text-white sm:ml-12'
+                    ? 'border-blue-600 bg-blue-600 text-white sm:ms-12'
                     : message.read_at
-                      ? 'border-gray-200 bg-white sm:mr-12'
-                      : 'border-blue-200 bg-blue-50/60 sm:mr-12'"
+                      ? 'border-gray-200 bg-white sm:me-12'
+                      : 'border-blue-200 bg-blue-50/60 sm:me-12'"
                 >
                   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div class="min-w-0">
@@ -310,7 +314,7 @@ onMounted(loadMessages)
                           v-if="!isCustomerMessage(message) && !message.read_at"
                           class="rounded-full bg-blue-600 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white"
                         >
-                          New
+                          {{ $t('common.new') }}
                         </span>
                         <span
                           class="rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide"
@@ -318,7 +322,7 @@ onMounted(loadMessages)
                             ? 'bg-white/15 text-blue-50'
                             : 'bg-gray-900 text-white'"
                         >
-                          {{ isCustomerMessage(message) ? 'Your reply' : 'Store message' }}
+                          {{ isCustomerMessage(message) ? $t('common.yourReply') : $t('common.storeMessage') }}
                         </span>
                         <span
                           v-if="message.order_number"
@@ -335,17 +339,17 @@ onMounted(loadMessages)
                         class="mt-3 text-xl font-bold"
                         :class="isCustomerMessage(message) ? 'text-white' : 'text-gray-900'"
                       >
-                        {{ message.subject || (isCustomerMessage(message) ? 'Your reply' : 'Order update') }}
+                        {{ message.subject || (isCustomerMessage(message) ? $t('common.yourReply') : $t('common.orderUpdate')) }}
                       </h2>
                       <p
                         class="mt-1 text-sm"
                         :class="isCustomerMessage(message) ? 'text-blue-100' : 'text-gray-500'"
                       >
                         <template v-if="isCustomerMessage(message)">
-                          Sent by you
+                          {{ $t('common.sentByYou') }}
                         </template>
                         <template v-else>
-                          From {{ message.sender_name || 'ELcomputer Team' }}
+                          {{ $t('common.fromValue', { value0: (message.sender_name || $t('account.messages.elcomputerTeam')) }) }}
                         </template>
                         · {{ formatDate(message.created_at) }}
                       </p>
@@ -362,7 +366,7 @@ onMounted(loadMessages)
                         :disabled="Boolean(markingMessageId)"
                         @click="markAsRead(message)"
                       >
-                        {{ markingMessageId === message.id ? 'Saving...' : 'Mark as read' }}
+                        {{ markingMessageId === message.id ? $t('common.saving') : $t('common.markAsRead') }}
                       </button>
 
                       <button
@@ -376,7 +380,7 @@ onMounted(loadMessages)
                           :name="replyMessageId === message.id ? 'lucide:x' : 'lucide:reply'"
                           size="16"
                         />
-                        {{ replyMessageId === message.id ? 'Cancel' : 'Reply' }}
+                        {{ replyMessageId === message.id ? $t('common.cancel') : $t('common.reply') }}
                       </button>
                     </div>
                   </div>
@@ -392,7 +396,7 @@ onMounted(loadMessages)
                     v-if="!isCustomerMessage(message) && message.read_at"
                     class="mt-4 text-xs font-medium text-gray-400"
                   >
-                    Read {{ formatDate(message.read_at) }}
+                    {{ $t('common.readValue', { value0: (formatDate(message.read_at)) }) }}
                   </p>
 
                   <div
@@ -422,7 +426,7 @@ onMounted(loadMessages)
                       :for="`message-reply-${message.id}`"
                       class="block text-sm font-bold text-gray-900"
                     >
-                      Reply to the store team
+                      {{ $t('common.replyToTheStoreTeam') }}
                     </label>
                     <p
                       v-if="message.is_awaiting_response"
@@ -430,7 +434,7 @@ onMounted(loadMessages)
                     >
                       <Icon name="lucide:info" size="18" class="mt-0.5 shrink-0" />
                       <span>
-                        This order is on hold. Sending your reply will return it to the processing queue.
+                        {{ $t('account.messages.thisOrderIsOnHoldSendingYourReplyWillReturnItToTheProcessingQueue') }}
                       </span>
                     </p>
                     <textarea
@@ -439,15 +443,15 @@ onMounted(loadMessages)
                       rows="4"
                       maxlength="2000"
                       :disabled="replyLoading"
-                      placeholder="Write your reply about this order..."
+                      :placeholder="$t('account.messages.writeYourReplyAboutThisOrder')"
                       class="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
                     />
                     <div class="mt-2 flex items-center justify-between gap-3 text-xs text-gray-500">
-                      <span>Your reply will be shared with the order-processing team.</span>
+                      <span>{{ $t('account.messages.yourReplyWillBeSharedWithTheOrderProcessingTeam') }}</span>
                       <span>{{ replyDraft.length }} / 2000</span>
                     </div>
                     <p v-if="replyError" role="alert" class="mt-3 text-sm font-semibold text-red-600">
-                      {{ replyError }}
+                      {{ $uiMessage(replyError) }}
                     </p>
                     <div class="mt-4 flex flex-wrap justify-end gap-2">
                       <button
@@ -456,7 +460,7 @@ onMounted(loadMessages)
                         :disabled="replyLoading"
                         @click="closeReply"
                       >
-                        Cancel
+                        {{ $t('common.cancel') }}
                       </button>
                       <button
                         type="submit"
@@ -468,7 +472,7 @@ onMounted(loadMessages)
                           size="16"
                           :class="{ 'animate-spin': replyLoading }"
                         />
-                        {{ replyLoading ? 'Sending...' : 'Send reply' }}
+                        {{ replyLoading ? $t('common.sending') : $t('common.sendReply') }}
                       </button>
                     </div>
                   </form>

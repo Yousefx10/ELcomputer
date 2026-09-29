@@ -7,7 +7,7 @@
           :key="group.key"
           class="grow"
         >
-          <NuxtLink
+          <NuxtLinkLocale
             :to="group.to"
             class="flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-center text-sm transition"
             :class="activeGroup?.key === group.key
@@ -15,8 +15,8 @@
               : 'text-gray-700 hover:bg-black hover:text-white'"
           >
             <Icon :name="group.icon" size="18" />
-            <span>{{ group.label }}</span>
-          </NuxtLink>
+            <span>{{ $uiLabel(group.label) }}</span>
+          </NuxtLinkLocale>
         </li>
       </ul>
     </nav>

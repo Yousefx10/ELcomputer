@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
       <div v-if="pageError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </div>
 
       <section
@@ -12,21 +12,21 @@
       >
         <button
           type="button"
-          class="flex w-full items-start justify-between gap-4 p-6 text-left"
+          class="flex w-full items-start justify-between gap-4 p-6 text-start"
           @click="toggleUserForm"
         >
           <div>
             <h3 class="text-2xl font-bold">
-              {{ editingId ? 'Edit Admin User' : 'Create Admin User' }}
+              {{ editingId ? $t('common.editAdminUser') : $t('common.createAdminUser') }}
             </h3>
             <p class="mt-1 text-sm text-gray-500">
-              Owners have full access. Choose permissions for other admins below.
+              {{ $t('dashboard.hr.ownersHaveFullAccessChoosePermissionsForOtherAdminsBelow') }}
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <span class="text-sm font-semibold text-gray-500">
-              {{ userFormOpen ? 'OPEN' : 'CLOSED' }}
+              {{ userFormOpen ? $t('common.open') : $t('common.closed') }}
             </span>
 
             <Icon
@@ -45,7 +45,7 @@
         >
           <div class="md:col-span-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div class="text-sm text-gray-500">
-              {{ editingId ? 'Update the selected admin user details below.' : 'Fill the fields below to create a new admin user.' }}
+              {{ editingId ? $t('dashboard.hr.updateTheSelectedAdminUserDetailsBelow') : $t('dashboard.hr.fillTheFieldsBelowToCreateANewAdminUser') }}
             </div>
 
             <button
@@ -54,12 +54,12 @@
               @click="resetForm"
               class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             >
-              Cancel Edit
+              {{ $t('common.cancelEdit') }}
             </button>
           </div>
 
           <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.email') }}</label>
           <input
             ref="emailInputRef"
             v-model="form.email"
@@ -71,49 +71,49 @@
 
           <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
-            {{ editingId ? 'New Password' : 'Password' }}
+            {{ editingId ? $t('common.newPassword') : $t('common.password') }}
           </label>
           <input
             v-model="form.password"
             type="password"
-            :placeholder="editingId ? 'Leave empty to keep current password' : 'At least 6 characters'"
+            :placeholder="editingId ? $t('dashboard.hr.leaveEmptyToKeepCurrentPassword') : $t('common.atLeast6Characters')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
           </div>
 
           <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Full Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.fullName') }}</label>
           <input
             v-model="form.full_name"
             type="text"
-            placeholder="Admin name"
+            :placeholder="$t('common.adminName')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
           </div>
 
           <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Role</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.role') }}</label>
           <select
             v-model="form.role"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="admin">Admin</option>
-            <option v-if="currentAdminUser?.role === 'owner'" value="owner">Owner</option>
+            <option value="admin">{{ $t('common.admin') }}</option>
+            <option v-if="currentAdminUser?.role === 'owner'" value="owner">{{ $t('common.owner') }}</option>
           </select>
           </div>
 
           <div class="md:col-span-2">
           <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
             <div>
-              <p class="text-sm font-semibold text-gray-700">Account Status</p>
+              <p class="text-sm font-semibold text-gray-700">{{ $t('common.accountStatus') }}</p>
               <p class="text-sm text-gray-500">
-                Disable the account to block dashboard access without deleting the user.
+                {{ $t('dashboard.hr.disableTheAccountToBlockDashboardAccessWithoutDeletingTheUser') }}
               </p>
             </div>
 
             <div class="flex items-center gap-3">
               <span class="text-sm font-semibold" :class="form.is_active ? 'text-green-600' : 'text-gray-500'">
-                {{ form.is_active ? 'ACTIVE' : 'INACTIVE' }}
+                {{ form.is_active ? $t('common.active') : $t('common.inactive') }}
               </span>
 
               <button
@@ -133,9 +133,9 @@
           </div>
 
           <div class="md:col-span-2">
-          <h4 class="text-xl font-bold">Permissions</h4>
+          <h4 class="text-xl font-bold">{{ $t('common.permissions') }}</h4>
           <p class="mt-1 text-sm text-gray-500">
-            These permissions apply to admins. Owners always have full access.
+            {{ $t('dashboard.hr.thesePermissionsApplyToAdminsOwnersAlwaysHaveFullAccess') }}
           </p>
 
           <div class="mt-4 grid gap-4 md:grid-cols-2">
@@ -149,8 +149,8 @@
                   <h5 class="font-bold text-gray-900">{{ group.title }}</h5>
                   <p class="mt-1 text-sm text-gray-500">
                     {{ isPermissionGroupEnabled(group)
-                      ? 'Access is enabled. You can manage the related options below.'
-                      : 'Access is disabled.' }}
+                      ? $t('dashboard.hr.accessIsEnabledYouCanManageTheRelatedOptionsBelow')
+                      : $t('common.accessIsDisabled') }}
                   </p>
                 </div>
 
@@ -159,7 +159,7 @@
                     class="text-sm font-semibold"
                     :class="isPermissionGroupEnabled(group) ? 'text-green-600' : 'text-gray-500'"
                   >
-                    {{ isPermissionGroupEnabled(group) ? 'ON' : 'OFF' }}
+                    {{ isPermissionGroupEnabled(group) ? $t('common.on') : $t('common.off') }}
                   </span>
 
                   <button
@@ -194,12 +194,12 @@
                     :disabled="isPermissionDisabled(permission.key)"
                     @change="updatePermission(permission.key, $event.target.checked)"
                   >
-                  <span>{{ permission.label }}</span>
+                  <span>{{ $uiLabel(permission.label) }}</span>
                 </label>
                 </div>
 
                 <p v-else class="text-sm text-gray-500">
-                  Turn this section on first to choose its related options.
+                  {{ $t('dashboard.hr.turnThisSectionOnFirstToChooseItsRelatedOptions') }}
                 </p>
               </div>
             </div>
@@ -207,7 +207,7 @@
           </div>
 
           <p v-if="formError" class="md:col-span-2 text-sm text-red-600">
-          {{ formError }}
+          {{ $uiMessage(formError) }}
           </p>
 
           <div class="md:col-span-2 flex flex-wrap gap-3">
@@ -216,7 +216,7 @@
             :disabled="saving"
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {{ saving ? 'Saving...' : editingId ? 'Save Admin User' : 'Create Admin User' }}
+            {{ saving ? $t('common.saving') : editingId ? $t('common.saveAdminUser') : $t('common.createAdminUser') }}
           </button>
 
           <button
@@ -225,7 +225,7 @@
             @click="resetForm"
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
 
           <button
@@ -238,7 +238,7 @@
               ? 'cursor-not-allowed bg-red-300'
               : 'bg-red-600 hover:bg-red-700'"
           >
-            {{ deleting ? 'Deleting...' : 'Delete User' }}
+            {{ deleting ? $t('common.deleting') : $t('common.deleteUser') }}
           </button>
           </div>
         </form>
@@ -247,23 +247,23 @@
       <div class="rounded-2xl bg-white p-5 shadow">
         <div v-show="!showCustomers">
         <div class="mb-4 flex items-center justify-between gap-3">
-          <h3 class="text-2xl font-bold">Admin Users</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.adminUsers') }}</h3>
 
           <p class="text-sm text-gray-500">
-            {{ totalUsers }} {{ hasActiveSearch ? 'matching' : 'total' }}
+            {{ totalUsers }} {{ hasActiveSearch ? $t('common.matching') : $t('common.total') }}
           </p>
         </div>
 
         <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <label for="admin-user-search" class="mb-2 block text-sm font-semibold text-gray-700">
-              Search Admin Users
+              {{ $t('common.searchAdminUsers') }}
             </label>
             <input
               id="admin-user-search"
               v-model="searchQuery"
               type="text"
-              placeholder="Search by email or full name"
+              :placeholder="$t('dashboard.hr.searchByEmailOrFullName')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
@@ -274,26 +274,26 @@
             @click="clearSearch"
             class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
           >
-            Clear
+            {{ $t('common.clear') }}
           </button>
         </div>
 
         <p v-if="loading" class="text-gray-500">
-          Loading users...
+          {{ $t('common.loadingUsers') }}
         </p>
 
         <p v-else-if="!adminUsers.length" class="text-gray-500">
-          {{ hasActiveSearch ? 'No matching admin users found.' : 'No admin users found yet.' }}
+          {{ hasActiveSearch ? $t('dashboard.hr.noMatchingAdminUsersFound') : $t('dashboard.hr.noAdminUsersFoundYet') }}
         </p>
 
         <div v-else>
           <div class="mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
             <p class="text-sm text-gray-500">
-              Showing {{ pageStart }}-{{ pageEnd }} of {{ totalUsers }} {{ hasActiveSearch ? 'matching admin users' : 'admin users' }}
+              {{ $t('common.showingValueValueOfValueValue', { value0: (pageStart), value1: (pageEnd), value2: (totalUsers), value3: (hasActiveSearch ? $t('common.matchingAdminUsers') : $t('common.adminUsers')) }) }}
             </p>
 
             <p class="text-sm font-medium text-gray-600">
-              Page {{ currentPage }} of {{ totalPages }}
+              {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
             </p>
           </div>
 
@@ -306,7 +306,7 @@
               <div class="space-y-2">
                 <div class="flex flex-wrap items-center gap-2">
                   <p class="font-bold text-gray-900">
-                    {{ user.full_name || 'No name set' }}
+                    {{ user.full_name || $t('common.noNameSet') }}
                   </p>
 
                   <span
@@ -320,7 +320,7 @@
                     class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                     :class="user.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                   >
-                    {{ user.is_active ? 'Active' : 'Inactive' }}
+                    {{ user.is_active ? $t('common.active') : $t('common.inactive') }}
                   </span>
                 </div>
 
@@ -329,12 +329,12 @@
                 </p>
 
                 <p class="text-sm text-gray-500">
-                  {{ user.role === 'owner' ? 'Full owner access' : `${user.granted_permissions_count} permissions granted` }}
+                  {{ user.role === 'owner' ? $t('common.fullOwnerAccess') : $t('dashboard.hr.valuePermissionsGranted', { value0: (user.granted_permissions_count) }) }}
                 </p>
 
                 <p class="text-xs text-gray-400">
-                  Updated {{ formatDate(user.updated_at || user.created_at) }}
-                  <span v-if="currentAdminUser?.id === user.id">(You)</span>
+                  {{ $t('common.updatedValue', { value0: (formatDate(user.updated_at || user.created_at)) }) }}
+                  <span v-if="currentAdminUser?.id === user.id">{{ $t('common.you') }}</span>
                 </p>
               </div>
 
@@ -345,7 +345,7 @@
                   @click="startEdit(user)"
                   class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
                 >
-                  Edit
+                  {{ $t('common.edit') }}
                 </button>
               </div>
             </div>
@@ -358,11 +358,11 @@
               @click="goToPreviousPage"
               class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Previous
+              {{ $t('common.previous') }}
             </button>
 
             <p class="text-sm text-gray-500">
-              Page {{ currentPage }} of {{ totalPages }}
+              {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
             </p>
 
             <button
@@ -371,7 +371,7 @@
               @click="goToNextPage"
               class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Next
+              {{ $t('common.next') }}
             </button>
           </div>
         </div>
@@ -380,19 +380,19 @@
         <div v-show="showCustomers">
           <button
             type="button"
-            class="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-50 px-5 py-4 text-left"
+            class="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-50 px-5 py-4 text-start"
             @click="toggleCustomerSection"
           >
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Store Customers</h3>
+              <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.storeCustomers') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Review customer accounts, recent order activity, and account status.
+                {{ $t('dashboard.hr.reviewCustomerAccountsRecentOrderActivityAndAccountStatus') }}
               </p>
             </div>
 
             <div class="flex items-center gap-3">
               <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-600 shadow-sm">
-                {{ customerTotalUsers }} total
+                {{ $t('common.valueTotal', { value0: (customerTotalUsers) }) }}
               </span>
 
               <Icon
@@ -406,17 +406,17 @@
 
           <div v-if="customerSectionOpen" class="mt-6 space-y-6">
             <div v-if="customerSectionError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow-sm">
-              {{ customerSectionError }}
+              {{ $uiMessage(customerSectionError) }}
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
               <div class="rounded-2xl border bg-white p-5">
-                <p class="text-sm text-gray-500">Current Users Total</p>
+                <p class="text-sm text-gray-500">{{ $t('common.currentUsersTotal') }}</p>
                 <p class="mt-2 text-3xl font-bold text-gray-900">{{ customerTotalUsers }}</p>
               </div>
 
               <div class="rounded-2xl border bg-white p-5">
-                <p class="text-sm text-gray-500">Active Users Total</p>
+                <p class="text-sm text-gray-500">{{ $t('common.activeUsersTotal') }}</p>
                 <p class="mt-2 text-3xl font-bold text-green-600">{{ customerActiveUsers }}</p>
               </div>
             </div>
@@ -425,13 +425,13 @@
               <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div class="flex-1">
                   <label for="customer-user-search" class="mb-2 block text-sm font-semibold text-gray-700">
-                    Search Store Customers
+                    {{ $t('common.searchStoreCustomers') }}
                   </label>
                   <input
                     id="customer-user-search"
                     v-model="customerSearchQuery"
                     type="text"
-                    placeholder="Search by email or full name"
+                    :placeholder="$t('dashboard.hr.searchByEmailOrFullName')"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                   >
                 </div>
@@ -442,7 +442,7 @@
                   @click="clearCustomerSearch"
                   class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
                 >
-                  Clear
+                  {{ $t('common.clear') }}
                 </button>
               </div>
             </div>
@@ -450,20 +450,20 @@
             <div class="rounded-2xl border bg-white p-5">
               <div class="mb-4 flex items-center justify-between gap-3">
                 <p class="text-sm text-gray-500">
-                  Showing {{ customerPageStart }}-{{ customerPageEnd }} of {{ customerFilteredTotal }} {{ customerHasActiveSearch ? 'matching customers' : 'customers' }}
+                  {{ $t('common.showingValueValueOfValueValue', { value0: (customerPageStart), value1: (customerPageEnd), value2: (customerFilteredTotal), value3: (customerHasActiveSearch ? $t('common.matchingCustomers') : $t('common.customers')) }) }}
                 </p>
 
                 <p class="text-sm font-medium text-gray-600">
-                  Page {{ customerCurrentPage }} of {{ customerTotalPages }}
+                  {{ $t('common.pageValueOfValue', { value0: (customerCurrentPage), value1: (customerTotalPages) }) }}
                 </p>
               </div>
 
               <p v-if="customerUsersLoading" class="text-gray-500">
-                Loading store customers...
+                {{ $t('dashboard.hr.loadingStoreCustomers') }}
               </p>
 
               <p v-else-if="!customerUsers.length" class="text-gray-500">
-                {{ customerHasActiveSearch ? 'No matching store customers found.' : 'No store customers found yet.' }}
+                {{ customerHasActiveSearch ? $t('dashboard.hr.noMatchingStoreCustomersFound') : $t('dashboard.hr.noStoreCustomersFoundYet') }}
               </p>
 
               <div v-else class="space-y-3">
@@ -475,14 +475,14 @@
                   <div class="space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                       <p class="font-bold text-gray-900">
-                        {{ customer.full_name || customer.email || 'No name set' }}
+                        {{ customer.full_name || customer.email || $t('common.noNameSet') }}
                       </p>
 
                       <span
                         class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                         :class="customer.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                       >
-                        {{ customer.is_active ? 'Active' : 'Inactive' }}
+                        {{ customer.is_active ? $t('common.active') : $t('common.inactive') }}
                       </span>
 
                       <span
@@ -490,7 +490,7 @@
                         class="rounded-full px-3 py-1 text-xs font-semibold"
                         :class="getCustomerAcceptanceClass(customer.acceptance.key)"
                       >
-                        {{ customer.acceptance.label }}
+                        {{ $uiLabel(customer.acceptance.label) }}
                         <template v-if="hasCustomerAcceptanceRate(customer.acceptance)">
                           · {{ formatCustomerAcceptanceRate(customer.acceptance.acceptanceRate) }}
                         </template>
@@ -498,15 +498,15 @@
                     </div>
 
                     <p class="text-sm text-gray-600">
-                      {{ customer.email || 'No email available' }}
+                      {{ customer.email || $t('common.noEmailAvailable') }}
                     </p>
 
                     <p class="text-sm text-gray-500">
-                      Wallet {{ formatCurrency(customer.wallet_balance) }}
+                      {{ $t('common.walletValue', { value0: (formatCurrency(customer.wallet_balance)) }) }}
                     </p>
 
                     <p class="text-xs text-gray-400">
-                      Joined {{ formatDate(customer.created_at) }}
+                      {{ $t('common.joinedValue', { value0: (formatDate(customer.created_at)) }) }}
                     </p>
                   </div>
 
@@ -516,7 +516,7 @@
                       class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
                       @click="toggleCustomerDetails(customer)"
                     >
-                      {{ selectedCustomerId === customer.id ? 'Hide Details' : 'View Details' }}
+                      {{ selectedCustomerId === customer.id ? $t('common.hideDetails') : $t('common.viewDetails') }}
                     </button>
                   </div>
                 </div>
@@ -529,11 +529,11 @@
                   @click="goToPreviousCustomerPage"
                   class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Previous
+                  {{ $t('common.previous') }}
                 </button>
 
                 <p class="text-sm text-gray-500">
-                  Page {{ customerCurrentPage }} of {{ customerTotalPages }}
+                  {{ $t('common.pageValueOfValue', { value0: (customerCurrentPage), value1: (customerTotalPages) }) }}
                 </p>
 
                 <button
@@ -542,14 +542,14 @@
                   @click="goToNextCustomerPage"
                   class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next
+                  {{ $t('common.next') }}
                 </button>
               </div>
             </div>
 
             <div v-if="selectedCustomerId" class="rounded-2xl border bg-white p-6 shadow-sm">
               <div v-if="customerDetailLoading" class="text-gray-500">
-                Loading customer details...
+                {{ $t('dashboard.hr.loadingCustomerDetails') }}
               </div>
 
               <div v-else-if="customerDetail" class="space-y-6">
@@ -557,14 +557,14 @@
                   <div>
                     <div class="flex flex-wrap items-center gap-2">
                       <h4 class="text-2xl font-bold text-gray-900">
-                        {{ customerDetail.full_name || customerDetail.email || 'Store Customer' }}
+                        {{ customerDetail.full_name || customerDetail.email || $t('common.storeCustomer') }}
                       </h4>
 
                       <span
                         class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                         :class="customerDetail.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                       >
-                        {{ customerDetail.is_active ? 'Active' : 'Inactive' }}
+                        {{ customerDetail.is_active ? $t('common.active') : $t('common.inactive') }}
                       </span>
 
                       <span
@@ -572,7 +572,7 @@
                         class="rounded-full px-3 py-1 text-xs font-semibold"
                         :class="getCustomerAcceptanceClass(customerDetailAcceptance.key)"
                       >
-                        {{ customerDetailAcceptance.label }}
+                        {{ $uiLabel(customerDetailAcceptance.label) }}
                         <template v-if="hasCustomerAcceptanceRate(customerDetailAcceptance)">
                           · {{ formatCustomerAcceptanceRate(customerDetailAcceptance.acceptanceRate) }}
                         </template>
@@ -580,11 +580,11 @@
                     </div>
 
                     <p class="mt-2 text-sm text-gray-600">
-                      {{ customerDetail.email || 'No email available' }}
+                      {{ customerDetail.email || $t('common.noEmailAvailable') }}
                     </p>
 
                     <p class="mt-1 text-sm text-gray-500">
-                      Joined {{ formatDate(customerDetail.created_at) }}
+                      {{ $t('common.joinedValue', { value0: (formatDate(customerDetail.created_at)) }) }}
                     </p>
                   </div>
 
@@ -597,8 +597,8 @@
                       @click="updateCustomerStatus(!customerDetail.is_active)"
                     >
                       {{ customerActionLoading
-                        ? 'Saving...'
-                        : customerDetail.is_active ? 'Disable User' : 'Enable User' }}
+                        ? $t('common.saving')
+                        : customerDetail.is_active ? $t('common.disableUser') : $t('common.enableUser') }}
                     </button>
 
                     <button
@@ -607,7 +607,7 @@
                       class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
                       @click="deleteCustomerUser"
                     >
-                      {{ customerActionLoading ? 'Please wait...' : 'Delete User' }}
+                      {{ customerActionLoading ? $t('common.pleaseWait') : $t('common.deleteUser') }}
                     </button>
                   </div>
                 </div>
@@ -615,21 +615,21 @@
                 <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
                   <div class="space-y-4">
                     <div class="rounded-2xl bg-gray-50 p-4">
-                      <p class="text-sm font-semibold text-gray-700">Contact</p>
+                      <p class="text-sm font-semibold text-gray-700">{{ $t('common.contact') }}</p>
                       <p class="mt-2 text-sm text-gray-600">
-                        {{ customerDetail.phone || 'No phone saved yet.' }}
+                        {{ customerDetail.phone || $t('common.noPhoneSavedYet') }}
                       </p>
                     </div>
 
                     <div class="rounded-2xl bg-gray-50 p-4">
-                      <p class="text-sm font-semibold text-gray-700">Address</p>
+                      <p class="text-sm font-semibold text-gray-700">{{ $t('common.address') }}</p>
                       <p class="mt-2 whitespace-pre-line text-sm text-gray-600">
                         {{ getCustomerAddress(customerDetail) }}
                       </p>
                     </div>
 
                     <div class="rounded-2xl bg-gray-50 p-4">
-                      <p class="text-sm font-semibold text-gray-700">Wallet</p>
+                      <p class="text-sm font-semibold text-gray-700">{{ $t('common.wallet') }}</p>
                       <p class="mt-2 text-2xl font-bold text-gray-900">
                         {{ formatCurrency(customerDetail.wallet_balance) }}
                       </p>
@@ -639,22 +639,22 @@
                   <div class="space-y-4">
                     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">Total Orders</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.totalOrders') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerDetailStats.totalOrders }}</p>
                       </div>
 
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">Completed</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.completed') }}</p>
                         <p class="mt-2 text-2xl font-bold text-green-600">{{ customerDetailStats.completed }}</p>
                       </div>
 
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">Open Orders</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.openOrders') }}</p>
                         <p class="mt-2 text-2xl font-bold text-amber-600">{{ customerDetailStats.open }}</p>
                       </div>
 
                       <div class="rounded-2xl bg-gray-50 p-4">
-                        <p class="text-sm text-gray-500">Acceptance</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.acceptance') }}</p>
                         <p
                           class="mt-2 text-2xl font-bold"
                           :class="getCustomerAcceptanceTextClass(customerDetailAcceptance?.key)"
@@ -663,11 +663,10 @@
                             ? '—'
                             : hasCustomerAcceptanceRate(customerDetailAcceptance)
                               ? formatCustomerAcceptanceRate(customerDetailAcceptance.acceptanceRate)
-                              : 'New' }}
+                              : $t('common.new') }}
                         </p>
                         <p v-if="customerDetailAcceptance" class="mt-1 text-xs text-gray-400">
-                          {{ customerDetailAcceptance.acceptedOrders }} accepted of
-                          {{ customerDetailAcceptance.resolvedOrders }} resolved
+                          {{ $t('dashboard.hr.valueAcceptedOfValueResolved', { value0: (customerDetailAcceptance.acceptedOrders), value1: (customerDetailAcceptance.resolvedOrders) }) }}
                         </p>
                       </div>
                     </div>
@@ -676,17 +675,17 @@
                       v-if="customerDetailAcceptance"
                       class="rounded-xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-700"
                     >
-                      Acceptance: completed or delivered orders divided by resolved orders. Open orders are excluded.
+                      {{ $t('dashboard.hr.acceptanceCompletedOrDeliveredOrdersDividedByResolvedOrdersOpenOrdersAreExcluded') }}
                     </p>
 
                     <div class="rounded-2xl bg-gray-50 p-4">
                       <div class="mb-4 flex items-center justify-between gap-3">
-                        <p class="text-sm font-semibold text-gray-700">Recent Orders</p>
-                        <span class="text-xs text-gray-400">{{ customerDetailStats.totalOrders }} total</span>
+                        <p class="text-sm font-semibold text-gray-700">{{ $t('common.recentOrders') }}</p>
+                        <span class="text-xs text-gray-400">{{ $t('common.valueTotal', { value0: (customerDetailStats.totalOrders) }) }}</span>
                       </div>
 
                       <p v-if="!customerRecentOrders.length" class="text-sm text-gray-500">
-                        No orders for this customer yet.
+                        {{ $t('dashboard.hr.noOrdersForThisCustomerYet') }}
                       </p>
 
                       <div v-else class="space-y-3">
@@ -698,7 +697,7 @@
                           <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             <div>
                               <p class="font-semibold text-gray-900">
-                                {{ order.order_number || `Order #${order.id.slice(0, 8)}` }}
+                                {{ order.order_number || $t('common.orderValueVariant3', { value0: (order.id.slice(0, 8)) }) }}
                               </p>
                               <p class="text-xs text-gray-400">
                                 {{ formatDate(order.created_at) }}
@@ -710,7 +709,7 @@
                                 class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                                 :class="getOrderStatusClass(order.status)"
                               >
-                                {{ formatOrderStatus(order.status) }}
+                                {{ $uiLabel(formatOrderStatus(order.status)) }}
                               </span>
 
                               <p class="font-semibold text-gray-900">
@@ -723,7 +722,7 @@
                                 class="rounded-lg bg-black px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
                                 @click="openOrderDialog(order.id)"
                               >
-                                Open
+                                {{ $t('common.open') }}
                               </button>
                             </div>
                           </div>
@@ -739,14 +738,14 @@
                 >
                   <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h5 class="text-xl font-bold text-gray-900">Customer Behavior</h5>
+                      <h5 class="text-xl font-bold text-gray-900">{{ $t('common.customerBehavior') }}</h5>
                       <p class="mt-1 text-sm text-gray-500">
-                        Store visits and shopping activity connected to this signed-in customer.
+                        {{ $t('dashboard.hr.storeVisitsAndShoppingActivityConnectedToThisSignedInCustomer') }}
                       </p>
                     </div>
 
                     <p v-if="customerBehavior.lastSeenAt" class="text-xs text-gray-400">
-                      Last seen {{ formatDate(customerBehavior.lastSeenAt) }}
+                      {{ $t('common.lastSeenValue', { value0: (formatDate(customerBehavior.lastSeenAt)) }) }}
                     </p>
                   </div>
 
@@ -754,56 +753,56 @@
                     v-if="customerBehavior.available === false"
                     class="mt-4 rounded-xl bg-white p-4 text-sm text-gray-500"
                   >
-                    Customer behavior tracking is not available until the latest analytics migration is applied.
+                    {{ $t('dashboard.hr.customerBehaviorTrackingIsNotAvailableUntilTheLatestAnalyticsMigrationIsApplied') }}
                   </div>
 
                   <template v-else>
                     <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       <div class="rounded-xl bg-white p-4">
-                        <p class="text-sm text-gray-500">Store Visits</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.storeVisits') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.visits }}</p>
                         <p class="mt-1 text-xs text-gray-400">
-                          {{ customerBehavior.returningVisits }} returning
+                          {{ $t('common.valueReturning', { value0: (customerBehavior.returningVisits) }) }}
                         </p>
                       </div>
 
                       <div class="rounded-xl bg-white p-4">
-                        <p class="text-sm text-gray-500">Product Views</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.productViews') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.productViews }}</p>
                       </div>
 
                       <div class="rounded-xl bg-white p-4">
-                        <p class="text-sm text-gray-500">Average Product Dwell</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.averageProductDwell') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">
                           {{ formatCustomerBehaviorDuration(customerBehavior.averageProductDwellSeconds) }}
                         </p>
                         <p class="mt-1 text-xs text-gray-400">
-                          {{ formatCustomerBehaviorDuration(customerBehavior.totalProductDwellSeconds) }} total
+                          {{ $t('common.valueTotal', { value0: (formatCustomerBehaviorDuration(customerBehavior.totalProductDwellSeconds)) }) }}
                         </p>
                       </div>
 
                       <div class="rounded-xl bg-white p-4">
-                        <p class="text-sm text-gray-500">Add to Cart</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.addToCart') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.addToCartEvents }}</p>
                       </div>
 
                       <div class="rounded-xl bg-white p-4">
-                        <p class="text-sm text-gray-500">Checkout Starts</p>
+                        <p class="text-sm text-gray-500">{{ $t('common.checkoutStarts') }}</p>
                         <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerBehavior.checkoutStarts }}</p>
                       </div>
                     </div>
 
                     <div class="mt-5 rounded-xl bg-white p-4">
                       <div class="flex items-center justify-between gap-3">
-                        <p class="text-sm font-semibold text-gray-700">Top Viewed Products</p>
-                        <span class="text-xs text-gray-400">Up to 5 products</span>
+                        <p class="text-sm font-semibold text-gray-700">{{ $t('common.topViewedProducts') }}</p>
+                        <span class="text-xs text-gray-400">{{ $t('common.upTo5Products') }}</span>
                       </div>
 
                       <p
                         v-if="!customerBehavior.products?.length"
                         class="mt-4 text-sm text-gray-500"
                       >
-                        No product engagement has been tracked for this customer yet.
+                        {{ $t('dashboard.hr.noProductEngagementHasBeenTrackedForThisCustomerYet') }}
                       </p>
 
                       <div v-else class="mt-4 space-y-3">
@@ -813,7 +812,7 @@
                           class="flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div>
-                            <NuxtLink
+                            <NuxtLinkLocale
                               v-if="product.slug"
                               :to="`/products/${product.slug}`"
                               target="_blank"
@@ -821,17 +820,17 @@
                               class="font-semibold text-gray-900 hover:text-blue-600"
                             >
                               {{ product.title }}
-                            </NuxtLink>
+                            </NuxtLinkLocale>
                             <p v-else class="font-semibold text-gray-900">{{ product.title }}</p>
                             <p v-if="product.lastViewedAt" class="mt-1 text-xs text-gray-400">
-                              Last viewed {{ formatDate(product.lastViewedAt) }}
+                              {{ $t('common.lastViewedValue', { value0: (formatDate(product.lastViewedAt)) }) }}
                             </p>
                           </div>
 
-                          <div class="text-left text-sm text-gray-500 sm:text-right">
-                            <p>{{ product.viewCount }} views</p>
+                          <div class="text-start text-sm text-gray-500 sm:text-end">
+                            <p>{{ $t('common.valueViews', { value0: (product.viewCount) }) }}</p>
                             <p class="mt-1">
-                              {{ formatCustomerBehaviorDuration(product.dwellSeconds) }} dwell
+                              {{ $t('common.valueDwell', { value0: (formatCustomerBehaviorDuration(product.dwellSeconds)) }) }}
                             </p>
                           </div>
                         </div>
@@ -854,6 +853,12 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 defineOptions({
   name: 'DashboardHrUsersTab'
 })
@@ -872,7 +877,7 @@ import {
 } from '~/utils/orderStatus'
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const showCustomers = computed(() => route.query.people === 'customers')
 const {
   getSnapshot,
@@ -1379,7 +1384,7 @@ const deleteAdminUser = async () => {
     return
   }
 
-  const confirmDelete = confirm('Are you sure you want to delete this admin user?')
+  const confirmDelete = confirm(uiLabel('Are you sure you want to delete this admin user?'))
 
   if (!confirmDelete) {
     return
@@ -1401,7 +1406,7 @@ const deleteAdminUser = async () => {
 
     if (deletingCurrentUser) {
       await supabase.auth.signOut()
-      await navigateTo('/dashboard/login')
+      await uiNavigateTo('/dashboard/login')
     }
   } catch (error) {
     formError.value = error?.data?.statusMessage || error?.message || 'Could not delete the admin user.'
@@ -1443,7 +1448,7 @@ const deleteCustomerUser = async () => {
     return
   }
 
-  const confirmDelete = confirm('Are you sure you want to delete this customer account?')
+  const confirmDelete = confirm(uiLabel('Are you sure you want to delete this customer account?'))
 
   if (!confirmDelete) {
     return
@@ -1541,14 +1546,14 @@ const formatDate = (value) => {
     return 'recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(value))
 }
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(intlLocale.value, {
     style: 'currency',
     currency: 'EGP',
     maximumFractionDigits: 2
@@ -1562,7 +1567,7 @@ const hasCustomerAcceptanceRate = (acceptance) => {
 }
 
 const formatCustomerAcceptanceRate = (value) => {
-  return `${new Intl.NumberFormat('en-US', {
+  return `${new Intl.NumberFormat(intlLocale.value, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 1
   }).format(Number(value || 0))}%`

@@ -13,8 +13,8 @@
       />
 
       <div :class="copyClass">
-        <h1 :class="titleClass">{{ title }}</h1>
-        <p v-if="description" :class="descriptionClass">{{ description }}</p>
+        <h1 :class="titleClass">{{ $uiLabel(title) }}</h1>
+        <p v-if="description" :class="descriptionClass">{{ $uiLabel(description) }}</p>
       </div>
 
       <template v-if="showActions && $slots.actions">
@@ -30,7 +30,7 @@
     v-else-if="showActions && $slots.actions"
     :class="modernActionsClass"
     role="group"
-    aria-label="Page actions"
+    :aria-label="$t('common.pageActions')"
   >
     <slot name="actions" />
   </div>

@@ -2,9 +2,9 @@
   <section class="rounded-2xl border bg-gray-50 p-5">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h3 class="text-lg font-bold text-gray-900">Product Variants</h3>
+        <h3 class="text-lg font-bold text-gray-900">{{ $t('common.productVariants') }}</h3>
         <p class="mt-1 text-sm text-gray-500">
-          Give each color a name. Add its pictures under Extra Images after saving.
+          {{ $t('dashboard.products.giveEachColorANameAddItsPicturesUnderExtraImagesAfterSaving') }}
         </p>
       </div>
 
@@ -15,7 +15,7 @@
         @click="addVariant"
       >
         <Icon name="lucide:plus" size="17" />
-        Add Variant
+        {{ $t('common.addVariant') }}
       </button>
     </div>
 
@@ -23,7 +23,7 @@
       v-if="!rows.length"
       class="mt-5 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center text-sm text-gray-500"
     >
-      Add an option. Use “Default” if there are no variations.
+      {{ $t('dashboard.products.addAnOptionUseDefaultIfThereAreNoVariations') }}
     </p>
 
     <div v-else class="mt-5 space-y-4">
@@ -33,18 +33,18 @@
         class="rounded-2xl border bg-white p-4"
       >
         <div class="flex items-center justify-between gap-3">
-          <p class="font-bold text-gray-900">Variant {{ index + 1 }}</p>
+          <p class="font-bold text-gray-900">{{ $t('common.variantValue', { value0: (index + 1) }) }}</p>
 
           <button
             type="button"
             :disabled="disabled || rows.length <= 1"
             class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-            :aria-label="`Remove variant ${index + 1}`"
-            :title="rows.length <= 1 ? 'Every product requires at least one variant' : undefined"
+            :aria-label="$t('common.removeVariantValue', { value0: (index + 1) })"
+            :title="rows.length <= 1 ? $t('dashboard.products.everyProductRequiresAtLeastOneVariant') : undefined"
             @click="removeVariant(index)"
           >
             <Icon name="lucide:trash-2" size="16" />
-            Remove
+            {{ $t('common.remove') }}
           </button>
         </div>
 
@@ -54,7 +54,7 @@
               :for="fieldId(row, 'name')"
               class="mb-2 block text-sm font-semibold text-gray-700"
             >
-              Variant Name *
+              {{ $t('common.variantName') }}
             </label>
             <input
               :id="fieldId(row, 'name')"
@@ -62,7 +62,7 @@
               type="text"
               maxlength="120"
               :disabled="disabled"
-              placeholder="Example: Black / 16 GB"
+              :placeholder="$t('common.exampleBlack16Gb')"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:bg-gray-100"
               @blur="trimField(row, 'name')"
             >
@@ -73,7 +73,7 @@
               :for="fieldId(row, 'code')"
               class="mb-2 block text-sm font-semibold text-gray-700"
             >
-              Option Code
+              {{ $t('common.optionCode') }}
             </label>
             <input
               :id="fieldId(row, 'code')"
@@ -81,7 +81,7 @@
               type="text"
               maxlength="80"
               :disabled="disabled"
-              placeholder="Example: BLACK-16"
+              :placeholder="$t('common.exampleBlack16')"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:bg-gray-100"
               @blur="trimField(row, 'code')"
             >
@@ -92,7 +92,7 @@
               :for="fieldId(row, 'sku')"
               class="mb-2 block text-sm font-semibold text-gray-700"
             >
-              Variant SKU
+              {{ $t('common.variantSku') }}
             </label>
             <input
               :id="fieldId(row, 'sku')"
@@ -100,7 +100,7 @@
               type="text"
               maxlength="120"
               :disabled="disabled"
-              placeholder="Unique SKU"
+              :placeholder="$t('common.uniqueSku')"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:bg-gray-100"
               @blur="trimField(row, 'sku')"
             >
@@ -111,7 +111,7 @@
               :for="fieldId(row, 'color-name')"
               class="mb-2 block text-sm font-semibold text-gray-700"
             >
-              Color Name
+              {{ $t('common.colorName') }}
             </label>
             <input
               :id="fieldId(row, 'color-name')"
@@ -119,7 +119,7 @@
               type="text"
               maxlength="80"
               :disabled="disabled"
-              placeholder="Example: Midnight Black"
+              :placeholder="$t('common.exampleMidnightBlack')"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:bg-gray-100"
               @blur="trimField(row, 'color_name')"
             >
@@ -130,7 +130,7 @@
               :for="fieldId(row, 'color-hex')"
               class="mb-2 block text-sm font-semibold text-gray-700"
             >
-              Color
+              {{ $t('common.color') }}
             </label>
             <div class="flex gap-2">
               <input
@@ -139,7 +139,7 @@
                 :value="pickerColor(row.color_hex)"
                 :disabled="disabled"
                 class="h-12 w-14 shrink-0 cursor-pointer rounded-lg border bg-white p-1 disabled:cursor-not-allowed disabled:bg-gray-100"
-                :aria-label="`Choose color for variant ${index + 1}`"
+                :aria-label="$t('dashboard.products.chooseColorForVariantValue', { value0: (index + 1) })"
                 @input="setPickerColor(row, $event)"
               >
               <input
@@ -164,10 +164,10 @@
       class="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white px-4 py-3 text-sm"
     >
       <span class="font-medium text-gray-500">
-        {{ rows.length }} {{ rows.length === 1 ? 'variant' : 'variants' }}
+        {{ rows.length }} {{ rows.length === 1 ? $t('common.variant') : 'variants' }}
       </span>
       <span class="font-semibold text-blue-700">
-        Stock and item IDs are created through Procurement
+        {{ $t('dashboard.products.stockAndItemIdsAreCreatedThroughProcurement') }}
       </span>
     </div>
   </section>

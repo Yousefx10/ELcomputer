@@ -5,18 +5,18 @@
         <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">CRM</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Manage suppliers and customers.
+            {{ $t('dashboard.commerce.manageSuppliersAndCustomers') }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-2">
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Suppliers</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.suppliers') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ supplierCount }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Customers</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.customers') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ customerCount }}</p>
           </div>
         </div>
@@ -29,7 +29,7 @@
           :class="activeAccountType === 'supplier' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
           @click="activeAccountType = 'supplier'"
         >
-          Suppliers
+          {{ $t('common.suppliers') }}
         </button>
 
         <button
@@ -38,7 +38,7 @@
           :class="activeAccountType === 'customer' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
           @click="activeAccountType = 'customer'"
         >
-          Customers
+          {{ $t('common.customers') }}
         </button>
       </div>
     </section>
@@ -46,22 +46,22 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isFormOpen = !isFormOpen"
       >
         <div>
           <h3 class="text-2xl font-bold">
-            {{ editingId ? `Edit ${currentTypeLabel}` : `Add ${currentTypeLabel}` }}
+            {{ editingId ? $t('common.editValueVariant2', { value0: ($uiLabel(currentTypeLabel)) }) : $t('common.addValue', { value0: ($uiLabel(currentTypeLabel)) }) }}
           </h3>
           <p class="mt-1 text-sm text-gray-500">
             {{ activeAccountType === 'supplier'
-              ? 'Suppliers used for procurement (cost / inventory).'
-              : 'Direct Customers.' }}
+              ? $t('dashboard.commerce.suppliersUsedForProcurementCostInventory')
+              : $t('common.directCustomers') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -79,56 +79,56 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetForm"
           >
-            Cancel Edit
+            {{ $t('common.cancelEdit') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Entity Type</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.entityType') }}</label>
           <select
             v-model="form.entity_type"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="company">Company</option>
-            <option value="person">Person</option>
+            <option value="company">{{ $t('common.company') }}</option>
+            <option value="person">{{ $t('common.person') }}</option>
           </select>
         </div>
 
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
-            {{ form.entity_type === 'company' ? 'Company Name' : 'Person Name' }}
+            {{ form.entity_type === 'company' ? $t('common.companyName') : $t('common.personName') }}
           </label>
           <input
             v-model="form.name"
             type="text"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            :placeholder="form.entity_type === 'company' ? 'Company name' : 'Person full name'"
+            :placeholder="form.entity_type === 'company' ? $t('common.companyName') : $t('common.personFullName')"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.code') }}</label>
           <input
             v-model="form.code"
             type="text"
-            placeholder="Optional internal code"
+            :placeholder="$t('common.optionalInternalCode')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Tax Number</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.taxNumber') }}</label>
           <input
             v-model="form.tax_number"
             type="text"
-            placeholder="Optional tax number"
+            :placeholder="$t('common.optionalTaxNumber')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.email') }}</label>
           <input
             v-model="form.email"
             type="email"
@@ -138,7 +138,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Phone</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.phone') }}</label>
           <input
             v-model="form.phone"
             type="text"
@@ -148,31 +148,31 @@
         </div>
 
         <div class="md:col-span-2 rounded-2xl border bg-gray-50 p-4">
-          <h4 class="text-lg font-bold text-gray-900">Primary Contact Person</h4>
+          <h4 class="text-lg font-bold text-gray-900">{{ $t('common.primaryContactPerson') }}</h4>
 
           <div class="mt-4 grid gap-4 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Name</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactName') }}</label>
               <input
                 v-model="form.primary_contact_name"
                 type="text"
-                placeholder="Main contact name"
+                :placeholder="$t('common.mainContactName')"
                 class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
               >
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Role</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactRole') }}</label>
               <input
                 v-model="form.primary_contact_role"
                 type="text"
-                placeholder="Sales manager"
+                :placeholder="$t('common.salesManager')"
                 class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
               >
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Email</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactEmail') }}</label>
               <input
                 v-model="form.primary_contact_email"
                 type="email"
@@ -182,7 +182,7 @@
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Phone</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactPhone') }}</label>
               <input
                 v-model="form.primary_contact_phone"
                 type="text"
@@ -194,41 +194,41 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">City</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.city') }}</label>
           <input
             v-model="form.city"
             type="text"
-            placeholder="Cairo"
+            :placeholder="$t('common.cairo')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Country</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.country') }}</label>
           <input
             v-model="form.country"
             type="text"
-            placeholder="Egypt"
+            :placeholder="$t('common.egypt')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Address</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.address') }}</label>
           <textarea
             v-model="form.address_line_1"
             rows="3"
-            placeholder="Address line"
+            :placeholder="$t('common.addressLine')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="form.notes"
             rows="3"
-            placeholder="Extra notes"
+            :placeholder="$t('common.extraNotes')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
@@ -236,11 +236,11 @@
 
         <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <input v-model="form.is_active" type="checkbox">
-          Active
+          {{ $t('common.active') }}
         </label>
 
         <p v-if="formError" class="mt-4 text-sm text-red-600">
-          {{ formError }}
+          {{ $uiMessage(formError) }}
         </p>
 
         <div class="mt-5 flex flex-wrap gap-3">
@@ -250,7 +250,7 @@
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="saveAccount"
           >
-            {{ saving ? 'Saving...' : editingId ? `Save ${currentTypeLabel}` : `Add ${currentTypeLabel}` }}
+            {{ saving ? $t('common.saving') : editingId ? $t('common.saveValue', { value0: ($uiLabel(currentTypeLabel)) }) : $t('common.addValue', { value0: ($uiLabel(currentTypeLabel)) }) }}
           </button>
 
           <button
@@ -260,7 +260,7 @@
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="deleteAccount"
           >
-            {{ deleting ? 'Deleting...' : 'Delete' }}
+            {{ deleting ? $t('common.deleting') : $t('common.delete') }}
           </button>
         </div>
       </div>
@@ -269,18 +269,18 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isListOpen = !isListOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">All {{ currentTypeListLabel }}</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.allValue', { value0: ($uiLabel(currentTypeListLabel)) }) }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Search by name, contact, email, or phone.
+            {{ $t('dashboard.commerce.searchByNameContactEmailOrPhone') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isListOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isListOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -292,25 +292,25 @@
 
       <div v-if="isListOpen" class="mt-6">
         <div class="w-full md:max-w-md">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Search</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.search') }}</label>
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search records"
+            :placeholder="$t('common.searchRecords')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </p>
 
       <p v-else-if="loading" class="mt-5 text-sm text-gray-500">
-        Loading records...
+        {{ $t('common.loadingRecords') }}
       </p>
 
       <p v-else-if="!accounts.length" class="mt-5 text-sm text-gray-500">
-        No records found.
+        {{ $t('common.noRecordsFound') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -338,27 +338,27 @@
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="account.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                 >
-                  {{ account.is_active ? 'Active' : 'Inactive' }}
+                  {{ account.is_active ? $t('common.active') : $t('common.inactive') }}
                 </span>
               </div>
 
               <p class="text-sm text-gray-600">
-                {{ account.email || 'No email' }}<span v-if="account.phone"> · {{ account.phone }}</span>
+                {{ account.email || $t('common.noEmail') }}<span v-if="account.phone"> · {{ account.phone }}</span>
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ account.primary_contact_name || 'No contact person' }}
+                {{ account.primary_contact_name || $t('common.noContactPerson') }}
                 <span v-if="account.primary_contact_role"> · {{ account.primary_contact_role }}</span>
               </p>
 
               <p class="text-xs text-gray-400">
-                {{ account.city || 'No city' }}<span v-if="account.country"> · {{ account.country }}</span>
+                {{ account.city || $t('common.noCity') }}<span v-if="account.country"> · {{ account.country }}</span>
                 <span v-if="account.code"> · {{ account.code }}</span>
               </p>
             </div>
 
             <div class="flex gap-2">
-              <NuxtLink
+              <NuxtLinkLocale
                 :to="{
                   path: '/dashboard/crm',
                   query: {
@@ -370,15 +370,15 @@
                 class="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
                 @click.stop
               >
-                Activity
-              </NuxtLink>
+                {{ $t('common.activity') }}
+              </NuxtLinkLocale>
 
               <button
                 type="button"
                 class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
                 @click.stop="startEdit(account)"
               >
-                Edit
+                {{ $t('common.edit') }}
               </button>
             </div>
           </div>
@@ -397,11 +397,11 @@
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-500">
-                {{ selectedAccount.account_type === 'supplier' ? 'Supplier' : 'Customer' }} Details
+                {{ $t('common.valueDetails', { value0: (selectedAccount.account_type === 'supplier' ? $t('common.supplier') : $t('common.customer')) }) }}
               </p>
               <h3 class="mt-1 text-3xl font-bold text-gray-900">{{ selectedAccount.name }}</h3>
               <p class="mt-2 text-sm text-gray-500">
-                {{ selectedAccount.email || 'No email' }}<span v-if="selectedAccount.phone"> · {{ selectedAccount.phone }}</span>
+                {{ selectedAccount.email || $t('common.noEmail') }}<span v-if="selectedAccount.phone"> · {{ selectedAccount.phone }}</span>
               </p>
             </div>
 
@@ -410,25 +410,25 @@
               class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
               @click="closeAccountDetails"
             >
-              Close
+              {{ $t('common.close') }}
             </button>
           </div>
 
           <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div class="rounded-2xl bg-gray-100 p-4">
-              <p class="text-sm text-gray-500">Orders</p>
+              <p class="text-sm text-gray-500">{{ $t('common.orders') }}</p>
               <p class="mt-2 text-2xl font-bold text-gray-900">{{ accountSummary.order_count }}</p>
             </div>
             <div class="rounded-2xl bg-gray-100 p-4">
-              <p class="text-sm text-gray-500">Total Value</p>
+              <p class="text-sm text-gray-500">{{ $t('common.totalValue') }}</p>
               <p class="mt-2 text-xl font-bold text-gray-900">{{ formatCommerceCurrency(accountSummary.total_amount) }}</p>
             </div>
             <div class="rounded-2xl bg-gray-100 p-4">
-              <p class="text-sm text-gray-500">Paid</p>
+              <p class="text-sm text-gray-500">{{ $t('common.paid') }}</p>
               <p class="mt-2 text-xl font-bold text-gray-900">{{ formatCommerceCurrency(accountSummary.paid_amount) }}</p>
             </div>
             <div class="rounded-2xl bg-amber-50 p-4">
-              <p class="text-sm text-amber-700">Settlement Due</p>
+              <p class="text-sm text-amber-700">{{ $t('common.settlementDue') }}</p>
               <p class="mt-2 text-xl font-bold text-amber-900">{{ formatCommerceCurrency(accountSummary.settlement_due) }}</p>
             </div>
           </div>
@@ -436,12 +436,12 @@
           <div class="mt-6 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h4 class="text-xl font-bold text-gray-900">
-                {{ selectedAccount.account_type === 'supplier' ? 'Purchasing Orders' : 'Selling Orders' }}
+                {{ selectedAccount.account_type === 'supplier' ? $t('common.purchasingOrders') : $t('common.sellingOrders') }}
               </h4>
               <p class="mt-1 text-sm text-gray-500">
                 {{ selectedAccount.account_type === 'supplier'
-                  ? 'Procurement orders connected to this supplier.'
-                  : 'Manual sales connected to this CRM customer.' }}
+                  ? $t('dashboard.commerce.procurementOrdersConnectedToThisSupplier')
+                  : $t('dashboard.commerce.manualSalesConnectedToThisCrmCustomer') }}
               </p>
             </div>
 
@@ -452,7 +452,7 @@
                 :class="accountOrdersMode === 'latest' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
                 @click="setAccountOrdersMode('latest')"
               >
-                Latest
+                {{ $t('common.latest') }}
               </button>
               <button
                 type="button"
@@ -460,14 +460,14 @@
                 :class="accountOrdersMode === 'all' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'"
                 @click="setAccountOrdersMode('all')"
               >
-                All
+                {{ $t('common.all') }}
               </button>
             </div>
           </div>
 
-          <p v-if="accountDetailsError" class="mt-5 text-sm text-red-600">{{ accountDetailsError }}</p>
-          <p v-else-if="accountDetailsLoading" class="mt-5 text-sm text-gray-500">Loading orders...</p>
-          <p v-else-if="!accountOrders.length" class="mt-5 text-sm text-gray-500">No connected orders found.</p>
+          <p v-if="accountDetailsError" class="mt-5 text-sm text-red-600">{{ $uiMessage(accountDetailsError) }}</p>
+          <p v-else-if="accountDetailsLoading" class="mt-5 text-sm text-gray-500">{{ $t('common.loadingOrders') }}</p>
+          <p v-else-if="!accountOrders.length" class="mt-5 text-sm text-gray-500">{{ $t('dashboard.commerce.noConnectedOrdersFound') }}</p>
 
           <div v-else class="mt-5 space-y-3">
             <div
@@ -480,10 +480,10 @@
                 <p class="mt-1 text-xs text-gray-400">{{ formatCommerceDate(order.created_at) }}</p>
               </div>
 
-              <div class="text-left sm:text-right">
+              <div class="text-start sm:text-end">
                 <p class="font-bold text-gray-900">{{ formatCommerceCurrency(getAccountOrderTotal(order)) }}</p>
                 <p class="mt-1 text-sm text-gray-500">
-                  Paid {{ formatCommerceCurrency(order.paid_amount) }} · Due {{ formatCommerceCurrency(getAccountOrderDue(order)) }}
+                  {{ $t('dashboard.commerce.paidValueDueValue', { value0: (formatCommerceCurrency(order.paid_amount)), value1: (formatCommerceCurrency(getAccountOrderDue(order))) }) }}
                 </p>
               </div>
             </div>
@@ -499,16 +499,16 @@
               class="rounded-lg border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
               @click="changeAccountOrdersPage(accountOrdersPage - 1)"
             >
-              Previous
+              {{ $t('common.previous') }}
             </button>
-            <p class="text-sm text-gray-500">Page {{ accountOrdersPage }} of {{ accountOrdersTotalPages }}</p>
+            <p class="text-sm text-gray-500">{{ $t('common.pageValueOfValue', { value0: (accountOrdersPage), value1: (accountOrdersTotalPages) }) }}</p>
             <button
               type="button"
               :disabled="accountOrdersPage === accountOrdersTotalPages"
               class="rounded-lg border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
               @click="changeAccountOrdersPage(accountOrdersPage + 1)"
             >
-              Next
+              {{ $t('common.next') }}
             </button>
           </div>
         </section>
@@ -518,7 +518,13 @@
 </template>
 
 <script setup>
-import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
+import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
@@ -870,7 +876,7 @@ const deleteAccount = async () => {
     return
   }
 
-  const confirmed = confirm('Delete this CRM record?')
+  const confirmed = confirm(uiLabel('Delete this CRM record?'))
 
   if (!confirmed) {
     return

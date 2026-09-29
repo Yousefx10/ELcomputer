@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div class="grid gap-4 sm:grid-cols-2">
-      <DashboardStatCard label="Total employees" :value="totalEmployees" icon="lucide:users" tone="blue" />
-      <DashboardStatCard label="Active employees" :value="activeEmployees" icon="lucide:user-check" tone="emerald" />
+      <DashboardStatCard :label="$t('common.totalEmployees')" :value="totalEmployees" icon="lucide:users" tone="blue" />
+      <DashboardStatCard :label="$t('common.activeEmployees')" :value="activeEmployees" icon="lucide:user-check" tone="emerald" />
     </div>
 
     <section
@@ -13,13 +13,13 @@
     >
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 p-6 text-left"
+        class="flex w-full items-start justify-between gap-4 p-6 text-start"
         @click="formOpen = !formOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">{{ editingId ? 'Edit Employee' : 'Add Employee' }}</h3>
+          <h3 class="text-2xl font-bold">{{ editingId ? $t('common.editEmployee') : $t('common.addEmployee') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Store employment, contact, position, and salary information.
+            {{ $t('dashboard.hr.storeEmploymentContactPositionAndSalaryInformation') }}
           </p>
         </div>
 
@@ -37,7 +37,7 @@
         @submit.prevent="saveEmployee"
       >
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">First Name *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.firstName') }}</label>
           <input
             ref="firstNameInputRef"
             v-model="form.first_name"
@@ -48,92 +48,92 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Last Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.lastName') }}</label>
           <input v-model="form.last_name" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Employee Code</label>
-          <input v-model="form.employee_code" type="text" placeholder="EMP-001" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.employeeCode') }}</label>
+          <input v-model="form.employee_code" type="text" :placeholder="$t('common.emp001')" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Position *</label>
-          <input v-model="form.position" required type="text" placeholder="Sales Manager" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.positionVariant2') }}</label>
+          <input v-model="form.position" required type="text" :placeholder="$t('common.salesManager')" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Department</label>
-          <input v-model="form.department" type="text" placeholder="Sales" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.department') }}</label>
+          <input v-model="form.department" type="text" :placeholder="$t('common.sales')" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Hire Date</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.hireDate') }}</label>
           <input v-model="form.hire_date" type="date" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.email') }}</label>
           <input v-model="form.email" type="email" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Phone</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.phone') }}</label>
           <input v-model="form.phone" type="tel" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Address</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.address') }}</label>
           <textarea v-model="form.address" rows="3" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500" />
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Employment Status</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.employmentStatus') }}</label>
           <select v-model="form.employment_status" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
-            <option value="active">Active</option>
-            <option value="on_leave">On Leave</option>
-            <option value="inactive">Inactive</option>
-            <option value="terminated">Terminated</option>
+            <option value="active">{{ $t('common.active') }}</option>
+            <option value="on_leave">{{ $t('common.onLeave') }}</option>
+            <option value="inactive">{{ $t('common.inactive') }}</option>
+            <option value="terminated">{{ $t('common.terminated') }}</option>
           </select>
         </div>
 
         <div />
 
         <div class="md:col-span-2 rounded-2xl border bg-gray-50 p-5">
-          <h4 class="text-xl font-bold">Salary Details</h4>
+          <h4 class="text-xl font-bold">{{ $t('common.salaryDetails') }}</h4>
 
           <div class="mt-4 grid gap-4 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Salary Amount</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.salaryAmount') }}</label>
               <input v-model="form.salary_amount" min="0" step="0.01" type="number" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Salary Frequency</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.salaryFrequency') }}</label>
               <select v-model="form.salary_frequency" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="daily">Daily</option>
-                <option value="hourly">Hourly</option>
+                <option value="monthly">{{ $t('common.monthly') }}</option>
+                <option value="weekly">{{ $t('common.weekly') }}</option>
+                <option value="daily">{{ $t('common.daily') }}</option>
+                <option value="hourly">{{ $t('common.hourly') }}</option>
               </select>
             </div>
 
             <div class="md:col-span-2">
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Salary Notes</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.salaryNotes') }}</label>
               <textarea v-model="form.salary_notes" rows="2" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500" />
             </div>
           </div>
         </div>
 
-        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ formError }}</p>
+        <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ $uiMessage(formError) }}</p>
 
         <div class="md:col-span-2 flex flex-wrap gap-3">
           <button type="submit" :disabled="saving" class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-60">
-            {{ saving ? 'Saving...' : editingId ? 'Save Employee' : 'Add Employee' }}
+            {{ saving ? $t('common.saving') : editingId ? $t('common.saveEmployee') : $t('common.addEmployee') }}
           </button>
 
           <button v-if="editingId" type="button" class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800" @click="resetForm">
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
         </div>
       </form>
@@ -142,22 +142,22 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">Employees</h3>
-          <p class="mt-1 text-sm text-gray-500">{{ filteredTotal }} matching employee records</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.employees') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.hr.valueMatchingEmployeeRecords', { value0: (filteredTotal) }) }}</p>
         </div>
 
         <div class="w-full md:max-w-sm">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Search Employees</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.searchEmployees') }}</label>
           <div class="relative">
-            <Icon name="lucide:search" size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input v-model="searchQuery" type="search" placeholder="Name, code, position, or department" class="w-full rounded-lg border py-3 pl-10 pr-3 outline-none focus:border-blue-500">
+            <Icon name="lucide:search" size="18" class="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input v-model="searchQuery" type="search" :placeholder="$t('dashboard.hr.nameCodePositionOrDepartment')" class="w-full rounded-lg border py-3 ps-10 pe-3 outline-none focus:border-blue-500">
           </div>
         </div>
       </div>
 
-      <p v-if="pageError" class="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-600">{{ pageError }}</p>
-      <p v-else-if="loading" class="mt-5 text-sm text-gray-500">Loading employees...</p>
-      <p v-else-if="!employees.length" class="mt-5 text-sm text-gray-500">No employees found.</p>
+      <p v-if="pageError" class="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-600">{{ $uiMessage(pageError) }}</p>
+      <p v-else-if="loading" class="mt-5 text-sm text-gray-500">{{ $t('common.loadingEmployees') }}</p>
+      <p v-else-if="!employees.length" class="mt-5 text-sm text-gray-500">{{ $t('common.noEmployeesFound') }}</p>
 
       <div v-else class="mt-5 space-y-3">
         <article v-for="employee in employees" :key="employee.id" class="rounded-2xl border p-4">
@@ -166,30 +166,30 @@
               <div class="flex flex-wrap items-center gap-2">
                 <h4 class="font-bold text-gray-900">{{ employee.first_name }} {{ employee.last_name }}</h4>
                 <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getStatusClass(employee.employment_status)">
-                  {{ formatStatus(employee.employment_status) }}
+                  {{ $uiLabel(formatStatus(employee.employment_status)) }}
                 </span>
               </div>
               <p class="mt-1 text-sm text-gray-600">{{ employee.position }}{{ employee.department ? ` · ${employee.department}` : '' }}</p>
-              <p class="mt-1 text-xs text-gray-400">{{ employee.employee_code || 'No employee code' }}</p>
+              <p class="mt-1 text-xs text-gray-400">{{ employee.employee_code || $t('common.noEmployeeCode') }}</p>
             </div>
 
-            <div class="flex items-center gap-4 md:text-right">
+            <div class="flex items-center gap-4 md:text-end">
               <div>
                 <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(employee.salary_amount) }}</p>
                 <p class="text-xs capitalize text-gray-500">{{ employee.salary_frequency }}</p>
               </div>
 
               <button v-if="canEditEmployees" type="button" class="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white" @click="startEdit(employee)">
-                Edit
+                {{ $t('common.edit') }}
               </button>
             </div>
           </div>
         </article>
 
         <div class="flex items-center justify-between border-t pt-4">
-          <button type="button" :disabled="currentPage <= 1 || loading" class="rounded-lg border px-4 py-2 text-sm disabled:opacity-50" @click="loadEmployees(currentPage - 1)">Previous</button>
-          <p class="text-sm text-gray-500">Page {{ currentPage }} of {{ totalPages }}</p>
-          <button type="button" :disabled="currentPage >= totalPages || loading" class="rounded-lg border px-4 py-2 text-sm disabled:opacity-50" @click="loadEmployees(currentPage + 1)">Next</button>
+          <button type="button" :disabled="currentPage <= 1 || loading" class="rounded-lg border px-4 py-2 text-sm disabled:opacity-50" @click="loadEmployees(currentPage - 1)">{{ $t('common.previous') }}</button>
+          <p class="text-sm text-gray-500">{{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}</p>
+          <button type="button" :disabled="currentPage >= totalPages || loading" class="rounded-lg border px-4 py-2 text-sm disabled:opacity-50" @click="loadEmployees(currentPage + 1)">{{ $t('common.next') }}</button>
         </div>
       </div>
     </section>
@@ -197,6 +197,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const supabase = useSupabaseClient()
 const { adminUser, hasPermission } = useAdminAccess()
 const { recordAdminLog } = useAdminLogs()
@@ -373,7 +375,7 @@ const startEdit = (employee) => {
   })
 }
 
-const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
+const formatCurrency = (value) => new Intl.NumberFormat(intlLocale.value, {
   style: 'currency',
   currency: 'EGP',
   maximumFractionDigits: 2

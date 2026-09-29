@@ -3,38 +3,38 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 class="text-2xl font-bold">ERP mode</h3>
-          <p class="mt-1 text-sm text-gray-500">The website always owns ecommerce orders.</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.erpMode') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.ErpSettings.theWebsiteAlwaysOwnsEcommerceOrders') }}</p>
         </div>
 
         <span
           class="rounded-full px-3 py-1 text-sm font-bold"
           :class="connectionClass"
         >
-          {{ connectionLabel }}
+          {{ $uiLabel(connectionLabel) }}
         </span>
       </div>
 
-      <div v-if="loading" class="mt-6 text-sm text-gray-500">Loading ERP settings...</div>
+      <div v-if="loading" class="mt-6 text-sm text-gray-500">{{ $t('common.loadingErpSettings') }}</div>
 
       <div v-else class="mt-6 space-y-5">
         <div class="space-y-4 rounded-2xl border border-gray-200 p-5">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h4 class="font-bold text-gray-900">Daftra connection</h4>
-              <p class="mt-1 text-sm text-gray-500">Save this site's credentials from the dashboard.</p>
+              <h4 class="font-bold text-gray-900">{{ $t('common.daftraConnection') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.ErpSettings.saveThisSiteSCredentialsFromTheDashboard') }}</p>
             </div>
             <span
               v-if="settings.credentialsSource"
               class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600"
             >
-              {{ settings.credentialsSource === 'database' ? 'Saved in database' : 'Legacy server settings' }}
+              {{ settings.credentialsSource === 'database' ? $t('common.savedInDatabase') : $t('common.legacyServerSettings') }}
             </span>
           </div>
 
           <div class="grid gap-4 md:grid-cols-2">
             <label class="md:col-span-2">
-              <span class="mb-2 block text-sm font-semibold text-gray-700">Account URL</span>
+              <span class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.accountUrl') }}</span>
               <input
                 v-model="credentials.accountUrl"
                 type="url"
@@ -46,24 +46,24 @@
             </label>
 
             <label>
-              <span class="mb-2 block text-sm font-semibold text-gray-700">API key</span>
+              <span class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.apiKey') }}</span>
               <input
                 v-model="credentials.apiKey"
                 type="password"
                 autocomplete="new-password"
-                :placeholder="settings.apiKeyConfigured ? 'Leave blank to keep saved key' : 'Enter API key'"
+                :placeholder="settings.apiKeyConfigured ? $t('dashboard.ErpSettings.leaveBlankToKeepSavedKey') : $t('common.enterApiKey')"
                 class="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-blue-500"
                 :disabled="!canEdit"
               >
             </label>
 
             <label>
-              <span class="mb-2 block text-sm font-semibold text-gray-700">Client ID</span>
+              <span class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.clientId') }}</span>
               <input
                 v-model="credentials.clientId"
                 type="password"
                 autocomplete="new-password"
-                :placeholder="settings.clientIdConfigured ? 'Leave blank to keep saved ID' : 'Optional'"
+                :placeholder="settings.clientIdConfigured ? $t('dashboard.ErpSettings.leaveBlankToKeepSavedId') : $t('common.optionalVariant2')"
                 class="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-blue-500"
                 :disabled="!canEdit"
               >
@@ -71,11 +71,11 @@
           </div>
 
           <p v-if="settings.credentialsSource === 'environment'" class="text-sm text-amber-700">
-            Enter the API key once to move this connection into the database.
+            {{ $t('dashboard.ErpSettings.enterTheApiKeyOnceToMoveThisConnectionIntoTheDatabase') }}
           </p>
 
           <p v-if="!settings.encryptionReady" class="text-sm text-amber-700">
-            Add the credential encryption key before saving secrets.
+            {{ $t('dashboard.ErpSettings.addTheCredentialEncryptionKeyBeforeSavingSecrets') }}
           </p>
 
           <div class="flex justify-end">
@@ -85,7 +85,7 @@
               :disabled="!canSaveCredentials"
               @click="saveCredentials"
             >
-              {{ credentialsSaving ? 'Saving...' : 'Save connection' }}
+              {{ credentialsSaving ? $t('common.saving') : $t('common.saveConnection') }}
             </button>
           </div>
         </div>
@@ -106,7 +106,7 @@
                 <Icon v-if="selectedMode === option.value" name="lucide:check" size="14" />
               </span>
               <span>
-                <span class="block font-bold text-gray-900">{{ option.label }}</span>
+                <span class="block font-bold text-gray-900">{{ $uiLabel(option.label) }}</span>
                 <span class="mt-1 block text-sm text-gray-500">{{ option.description }}</span>
               </span>
             </span>
@@ -115,19 +115,19 @@
 
         <div class="grid gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:grid-cols-2">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">Daftra account</p>
-            <p class="mt-1 font-semibold text-gray-900">{{ settings.accountHost || 'Not configured' }}</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ $t('common.daftraAccount') }}</p>
+            <p class="mt-1 font-semibold text-gray-900">{{ settings.accountHost || $t('common.notConfigured') }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">Last checked</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ $t('common.lastChecked') }}</p>
             <p class="mt-1 font-semibold text-gray-900">{{ formatDate(settings.lastCheckedAt) }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">Pending syncs</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ $t('common.pendingSyncs') }}</p>
             <p class="mt-1 font-semibold text-gray-900">{{ settings.jobCounts?.pending || 0 }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">Failed syncs</p>
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ $t('common.failedSyncs') }}</p>
             <p class="mt-1 font-semibold text-gray-900">{{ settings.jobCounts?.failed || 0 }}</p>
           </div>
         </div>
@@ -137,11 +137,11 @@
         </p>
 
         <p v-if="settings.migrationRequired" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-700">
-          Run the latest database migration first.
+          {{ $t('dashboard.ErpSettings.runTheLatestDatabaseMigrationFirst') }}
         </p>
 
         <p v-if="selectedMode === 'daftra'" class="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
-          New orders will sync after local storage succeeds.
+          {{ $t('dashboard.ErpSettings.newOrdersWillSyncAfterLocalStorageSucceeds') }}
         </p>
 
         <div class="flex flex-wrap justify-end gap-3">
@@ -151,7 +151,7 @@
             :disabled="!canEdit || testing || saving || credentialsSaving || settings.migrationRequired || !settings.configured"
             @click="testConnection"
           >
-            {{ testing ? 'Testing...' : 'Test connection' }}
+            {{ testing ? $t('common.testing') : $t('common.testConnection') }}
           </button>
           <button
             type="button"
@@ -159,12 +159,12 @@
             :disabled="!canEdit || saving || testing || credentialsSaving || selectedMode === settings.mode || settings.migrationRequired"
             @click="saveMode"
           >
-            {{ saving ? 'Saving...' : 'Save ERP mode' }}
+            {{ saving ? $t('common.saving') : $t('common.saveErpMode') }}
           </button>
         </div>
 
-        <p v-if="message" class="text-sm text-green-700">{{ message }}</p>
-        <p v-if="errorMessage" class="text-sm text-red-700">{{ errorMessage }}</p>
+        <p v-if="message" class="text-sm text-green-700">{{ $uiLabel(message) }}</p>
+        <p v-if="errorMessage" class="text-sm text-red-700">{{ $uiMessage(errorMessage) }}</p>
       </div>
     </section>
 
@@ -173,6 +173,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const props = defineProps({
   canEdit: {
     type: Boolean,
@@ -347,7 +349,7 @@ const saveMode = async () => {
 
 const formatDate = (value) => {
   if (!value) return 'Never'
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+  return new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 }
 
 onMounted(loadSettings)

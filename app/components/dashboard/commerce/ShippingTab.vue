@@ -3,14 +3,14 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Shipping Companies</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.shippingCompanies') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Add and manage delivery companies.
+            {{ $t('dashboard.commerce.addAndManageDeliveryCompanies') }}
           </p>
         </div>
 
         <div class="rounded-2xl bg-gray-100 px-4 py-3">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Companies</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.companies') }}</p>
           <p class="mt-2 text-2xl font-bold text-gray-900">{{ companies.length }}</p>
         </div>
       </div>
@@ -19,8 +19,8 @@
     <section v-if="canConfigureShipping" class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">PDC API</h3>
-          <p class="mt-1 text-sm text-gray-500">Prepare automatic labels here.</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.pdcApi') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.commerce.prepareAutomaticLabelsHere') }}</p>
         </div>
 
         <div class="flex flex-wrap gap-2 text-xs font-semibold">
@@ -28,30 +28,30 @@
             class="rounded-full px-3 py-1"
             :class="pdcSettings.live_requests_enabled ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
           >
-            {{ pdcSettings.live_requests_enabled ? 'Live server ready' : 'Live calls off' }}
+            {{ pdcSettings.live_requests_enabled ? $t('common.liveServerReady') : $t('common.liveCallsOff') }}
           </span>
           <span
             class="rounded-full px-3 py-1"
             :class="pdcSettings.access_token_configured ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
           >
-            {{ pdcSettings.access_token_configured ? 'Token saved' : 'Token missing' }}
+            {{ pdcSettings.access_token_configured ? $t('common.tokenSaved') : $t('common.tokenMissing') }}
           </span>
           <span class="rounded-full bg-blue-100 px-3 py-1 text-blue-700">
-            {{ pdcSettings.city_mapping_count }} cities
+            {{ $t('common.valueCities', { value0: (pdcSettings.city_mapping_count) }) }}
           </span>
           <span v-if="pdcSettings.pending_job_count" class="rounded-full bg-purple-100 px-3 py-1 text-purple-700">
-            {{ pdcSettings.pending_job_count }} pending
+            {{ $t('common.valuePending', { value0: (pdcSettings.pending_job_count) }) }}
           </span>
         </div>
       </div>
 
-      <p v-if="pdcLoading" class="mt-5 text-sm text-gray-500">Loading PDC settings...</p>
-      <p v-else-if="pdcPageError" class="mt-5 text-sm text-red-600">{{ pdcPageError }}</p>
+      <p v-if="pdcLoading" class="mt-5 text-sm text-gray-500">{{ $t('common.loadingPdcSettings') }}</p>
+      <p v-else-if="pdcPageError" class="mt-5 text-sm text-red-600">{{ $uiMessage(pdcPageError) }}</p>
 
       <form v-else class="mt-6 space-y-5" @submit.prevent="savePdcSettings">
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">API URL</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.apiUrl') }}</label>
             <input
               :value="pdcSettings.base_url"
               type="text"
@@ -61,7 +61,7 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Company ID</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.companyId') }}</label>
             <input
               v-model="pdcSettings.company_id"
               type="text"
@@ -70,7 +70,7 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Product ID</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productId') }}</label>
             <input
               v-model="pdcSettings.product_id"
               type="number"
@@ -80,49 +80,49 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup City ID</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupCityId') }}</label>
             <input
               v-model="pdcSettings.origin_city_id"
               type="number"
               min="1"
-              placeholder="Required before launch"
+              :placeholder="$t('common.requiredBeforeLaunch')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Contact</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupContact') }}</label>
             <input
               v-model="pdcSettings.origin_contact_name"
               type="text"
-              placeholder="Store name"
+              :placeholder="$t('common.storeName')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Phone</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupPhone') }}</label>
             <input
               v-model="pdcSettings.origin_phone"
               type="tel"
               inputmode="numeric"
-              placeholder="01xxxxxxxxx"
+              :placeholder="$t('common.01xxxxxxxxx')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div class="md:col-span-2 xl:col-span-3">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Pickup Address</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupAddress') }}</label>
             <input
               v-model="pdcSettings.origin_address"
               type="text"
-              placeholder="Full pickup address"
+              :placeholder="$t('common.fullPickupAddress')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Default Weight (kg)</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.defaultWeightKg') }}</label>
             <input
               v-model="pdcSettings.default_weight_kg"
               type="number"
@@ -133,19 +133,19 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Shipment Type</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shipmentType') }}</label>
             <select
               v-model="pdcSettings.shipment_type_id"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
             >
-              <option :value="1">General</option>
-              <option :value="3">Reverse</option>
-              <option :value="5">Exchange</option>
+              <option :value="1">{{ $t('common.general') }}</option>
+              <option :value="3">{{ $t('common.reverse') }}</option>
+              <option :value="5">{{ $t('common.exchange') }}</option>
             </select>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Label Template ID</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.labelTemplateId') }}</label>
             <input
               v-model="pdcSettings.label_template_id"
               type="number"
@@ -155,23 +155,23 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Access Token</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.accessToken') }}</label>
             <input
               v-model="pdcSettings.access_token"
               type="password"
               autocomplete="new-password"
-              :placeholder="pdcSettings.access_token_configured ? 'Saved; leave blank to keep' : 'Enter at launch'"
+              :placeholder="pdcSettings.access_token_configured ? $t('dashboard.commerce.savedLeaveBlankToKeep') : $t('common.enterAtLaunch')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
 
           <div class="md:col-span-2">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Webhook Secret</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.webhookSecret') }}</label>
             <input
               v-model="pdcSettings.webhook_secret"
               type="password"
               autocomplete="new-password"
-              :placeholder="pdcSettings.webhook_secret_configured ? 'Saved; leave blank to keep' : 'At least 32 characters'"
+              :placeholder="pdcSettings.webhook_secret_configured ? $t('dashboard.commerce.savedLeaveBlankToKeep') : $t('common.atLeast32Characters')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
@@ -180,34 +180,34 @@
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.auto_create_labels" type="checkbox">
-            Auto-create paid labels
+            {{ $t('common.autoCreatePaidLabels') }}
           </label>
           <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.all_must_valid" type="checkbox">
-            Reject invalid batches
+            {{ $t('common.rejectInvalidBatches') }}
           </label>
           <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.allow_open_shipment" type="checkbox">
-            Allow package opening
+            {{ $t('common.allowPackageOpening') }}
           </label>
           <label v-if="pdcSettings.live_requests_enabled" class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.is_enabled" type="checkbox">
-            Enable live requests
+            {{ $t('common.enableLiveRequests') }}
           </label>
         </div>
 
         <p v-if="!pdcSettings.encryption_ready" class="text-sm text-amber-700">
-          Add the encryption key before saving secrets.
+          {{ $t('dashboard.commerce.addTheEncryptionKeyBeforeSavingSecrets') }}
         </p>
-        <p v-if="pdcFormError" class="text-sm text-red-600">{{ pdcFormError }}</p>
-        <p v-if="pdcSavedMessage" class="text-sm text-green-700">{{ pdcSavedMessage }}</p>
+        <p v-if="pdcFormError" class="text-sm text-red-600">{{ $uiMessage(pdcFormError) }}</p>
+        <p v-if="pdcSavedMessage" class="text-sm text-green-700">{{ $uiLabel(pdcSavedMessage) }}</p>
 
         <button
           type="submit"
           :disabled="pdcSaving"
           class="rounded-lg bg-black px-5 py-3 font-bold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {{ pdcSaving ? 'Saving...' : 'Save PDC Settings' }}
+          {{ pdcSaving ? $t('common.saving') : $t('common.savePdcSettings') }}
         </button>
       </form>
     </section>
@@ -215,20 +215,20 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isFormOpen = !isFormOpen"
       >
         <div>
           <h3 class="text-2xl font-bold">
-            {{ editingId ? 'Edit Shipping Company' : 'Add Shipping Company' }}
+            {{ editingId ? $t('common.editShippingCompany') : $t('common.addShippingCompany') }}
           </h3>
           <p class="mt-1 text-sm text-gray-500">
-            Set carrier prices and notes.
+            {{ $t('dashboard.commerce.setCarrierPricesAndNotes') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -246,33 +246,33 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetForm"
           >
-            Cancel Edit
+            {{ $t('common.cancelEdit') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Company Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.companyName') }}</label>
           <input
             v-model="form.name"
             type="text"
-            placeholder="Shipping company name"
+            :placeholder="$t('common.shippingCompanyName')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.code') }}</label>
           <input
             v-model="form.code"
             type="text"
-            placeholder="Optional code"
+            :placeholder="$t('common.optionalCode')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Shipping Cost</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shippingCost') }}</label>
           <input
             v-model="form.shipping_cost"
             type="number"
@@ -283,7 +283,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Return Cost</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.returnCost') }}</label>
           <input
             v-model="form.return_cost"
             type="number"
@@ -294,7 +294,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Shipping Price For Client</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.commerce.shippingPriceForClient') }}</label>
           <input
             v-model="form.client_shipping_price"
             type="number"
@@ -305,23 +305,23 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="form.notes"
             rows="3"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="Optional notes"
+            :placeholder="$t('common.optionalNotes')"
           />
         </div>
         </div>
 
         <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <input v-model="form.is_active" type="checkbox">
-          Active
+          {{ $t('common.active') }}
         </label>
 
         <p v-if="formError" class="mt-4 text-sm text-red-600">
-          {{ formError }}
+          {{ $uiMessage(formError) }}
         </p>
 
         <div class="mt-5 flex flex-wrap gap-3">
@@ -331,7 +331,7 @@
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="saveCompany"
           >
-            {{ saving ? 'Saving...' : editingId ? 'Save Company' : 'Add Company' }}
+            {{ saving ? $t('common.saving') : editingId ? $t('common.saveCompany') : $t('common.addCompany') }}
           </button>
 
           <button
@@ -341,7 +341,7 @@
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="deleteCompany"
           >
-            {{ deleting ? 'Deleting...' : 'Delete' }}
+            {{ deleting ? $t('common.deleting') : $t('common.delete') }}
           </button>
         </div>
       </div>
@@ -350,33 +350,33 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">Company List</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.companyList') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Manage active and inactive carriers.
+            {{ $t('dashboard.commerce.manageActiveAndInactiveCarriers') }}
           </p>
         </div>
 
         <div class="w-full md:max-w-md">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Search</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.search') }}</label>
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search by name"
+            :placeholder="$t('common.searchByName')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
       </div>
 
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </p>
 
       <p v-else-if="loading" class="mt-5 text-sm text-gray-500">
-        Loading shipping companies...
+        {{ $t('dashboard.commerce.loadingShippingCompanies') }}
       </p>
 
       <p v-else-if="!companies.length" class="mt-5 text-sm text-gray-500">
-        No shipping companies found yet.
+        {{ $t('dashboard.commerce.noShippingCompaniesFoundYet') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -394,17 +394,16 @@
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="company.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                 >
-                  {{ company.is_active ? 'Active' : 'Inactive' }}
+                  {{ company.is_active ? $t('common.active') : $t('common.inactive') }}
                 </span>
               </div>
 
               <p class="text-sm text-gray-600">
-                Shipping {{ formatCommerceCurrency(company.shipping_cost) }}
-                · Return {{ formatCommerceCurrency(company.return_cost) }}
+                {{ $t('dashboard.commerce.shippingValueReturnValue', { value0: (formatCommerceCurrency(company.shipping_cost)), value1: (formatCommerceCurrency(company.return_cost)) }) }}
               </p>
 
               <p class="text-sm text-gray-500">
-                Client pays {{ formatCommerceCurrency(company.client_shipping_price) }}
+                {{ $t('common.clientPaysValue', { value0: (formatCommerceCurrency(company.client_shipping_price)) }) }}
               </p>
 
               <p class="text-xs text-gray-400">
@@ -418,7 +417,7 @@
                 class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
                 @click="startEdit(company)"
               >
-                Edit
+                {{ $t('common.edit') }}
               </button>
             </div>
           </div>
@@ -429,7 +428,13 @@
 </template>
 
 <script setup>
-import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
+import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
@@ -704,7 +709,7 @@ const deleteCompany = async () => {
     return
   }
 
-  const confirmed = confirm('Delete this shipping company?')
+  const confirmed = confirm(uiLabel('Delete this shipping company?'))
   if (!confirmed) {
     return
   }

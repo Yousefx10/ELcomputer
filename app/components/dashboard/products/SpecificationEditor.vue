@@ -2,107 +2,109 @@
   <section class="rounded-xl border border-gray-200 bg-white p-5 sm:p-6" aria-labelledby="product-specification-editor-heading">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h3 id="product-specification-editor-heading" class="text-2xl font-bold text-gray-900">Specifications</h3>
-        <p class="mt-1 text-sm text-gray-600">Choose shared names. Add only the values you know.</p>
+        <h3 id="product-specification-editor-heading" class="text-2xl font-bold text-gray-900">{{ $t('common.specifications') }}</h3>
+        <p class="mt-1 text-sm text-gray-600">{{ $t('dashboard.products.chooseSharedNamesAddOnlyTheValuesYouKnow') }}</p>
       </div>
-      <button type="button" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50" @click="showLibraryTools = !showLibraryTools">{{ showLibraryTools ? 'Hide library tools' : 'Manage names & suggestions' }}</button>
+      <button type="button" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50" @click="showLibraryTools = !showLibraryTools">{{ showLibraryTools ? $t('common.hideLibraryTools') : $t('dashboard.products.manageNamesSuggestions') }}</button>
     </div>
 
-    <p v-if="error" class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{{ error }}</p>
-    <p v-if="notice" class="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">{{ notice }}</p>
+    <p v-if="error" class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(error) }}</p>
+    <p v-if="notice" class="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">{{ $uiMessage(notice) }}</p>
 
     <div v-if="libraryReady" class="mt-6 space-y-8">
       <div v-if="categoryId" class="rounded-md bg-blue-50 p-4">
         <div class="flex flex-wrap items-baseline justify-between gap-2">
-          <h4 class="font-bold text-blue-950">Suggested specifications</h4>
-          <span class="text-xs text-blue-800">Suggestions are optional</span>
+          <h4 class="font-bold text-blue-950">{{ $t('dashboard.products.suggestedSpecifications') }}</h4>
+          <span class="text-xs text-blue-800">{{ $t('dashboard.products.suggestionsAreOptional') }}</span>
         </div>
         <div v-if="suggestedDefinitions.length" class="mt-3 flex flex-wrap gap-2">
           <button v-for="item in suggestedDefinitions" :key="item.definition_id" type="button" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 hover:border-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700" @click="chooseDefinition(item.definition_id)">+ {{ definitionById(item.definition_id)?.name }}</button>
         </div>
-        <p v-else class="mt-2 text-sm text-blue-800">All suggested fields are added, or this category has no template yet.</p>
+        <p v-else class="mt-2 text-sm text-blue-800">{{ $t('dashboard.products.allSuggestedFieldsAreAddedOrThisCategoryHasNoTemplateYet') }}</p>
       </div>
 
       <div class="grid gap-4 rounded-md border border-gray-200 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
         <div class="min-w-0">
-          <label for="spec-search" class="block text-sm font-bold text-gray-900">Add specification</label>
-          <input id="spec-search" v-model="search" type="search" autocomplete="off" placeholder="Search name or alias, e.g. colour" class="mt-2 w-full rounded-md border border-gray-300 p-3 outline-none focus:border-blue-600" @keydown.enter.prevent="chooseFirstMatch">
-          <div v-if="search.trim()" class="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200" role="listbox" aria-label="Matching specifications">
-            <button v-for="match in searchMatches" :key="match.definition.id" type="button" role="option" :aria-selected="selectedDefinitionId === match.definition.id" class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-blue-50 last:border-0" @click="chooseDefinition(match.definition.id)">{{ match.definition.name }}<span v-if="match.definition.group_name" class="ml-2 text-xs text-gray-500">{{ match.definition.group_name }}</span></button>
-            <p v-if="!searchMatches.length" class="px-3 py-2 text-sm text-gray-500">No matching name. Create a new one below.</p>
+          <label for="spec-search" class="block text-sm font-bold text-gray-900">{{ $t('common.addSpecification') }}</label>
+          <input id="spec-search" v-model="search" type="search" autocomplete="off" :placeholder="$t('dashboard.products.searchNameOrAliasEGColour')" class="mt-2 w-full rounded-md border border-gray-300 p-3 outline-none focus:border-blue-600" @keydown.enter.prevent="chooseFirstMatch">
+          <div v-if="search.trim()" class="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200" role="listbox" :aria-label="$t('common.matchingSpecifications')">
+            <button v-for="match in searchMatches" :key="match.definition.id" type="button" role="option" :aria-selected="selectedDefinitionId === match.definition.id" class="block w-full border-b border-gray-100 px-3 py-2 text-start text-sm hover:bg-blue-50 last:border-0" @click="chooseDefinition(match.definition.id)">{{ match.definition.name }}<span v-if="match.definition.group_name" class="ms-2 text-xs text-gray-500">{{ match.definition.group_name }}</span></button>
+            <p v-if="!searchMatches.length" class="px-3 py-2 text-sm text-gray-500">{{ $t('dashboard.products.noMatchingNameCreateANewOneBelow') }}</p>
           </div>
-          <button v-if="search.trim()" type="button" class="mt-2 text-sm font-semibold text-blue-700 hover:underline" @click="openCreateDefinition">+ Create new specification name</button>
+          <button v-if="search.trim()" type="button" class="mt-2 text-sm font-semibold text-blue-700 hover:underline" @click="openCreateDefinition">{{ $t('dashboard.products.createNewSpecificationName') }}</button>
         </div>
         <form class="min-w-0" @submit.prevent="addSpecification">
-          <label for="spec-value" class="block text-sm font-bold text-gray-900">{{ selectedDefinition?.name || 'Select a name first' }} value</label>
-          <input id="spec-value" ref="draftValueInput" v-model="draftValue" type="text" :disabled="!selectedDefinitionId || saving" maxlength="500" placeholder="Enter the product value" class="mt-2 w-full rounded-md border border-gray-300 p-3 outline-none focus:border-blue-600 disabled:bg-gray-50">
+          <label for="spec-value" class="block text-sm font-bold text-gray-900">{{ $t('common.valueValue', { value0: (selectedDefinition?.name || $t('dashboard.products.selectNameFirst')) }) }}</label>
+          <input id="spec-value" ref="draftValueInput" v-model="draftValue" type="text" :disabled="!selectedDefinitionId || saving" maxlength="500" :placeholder="$t('common.enterTheProductValue')" class="mt-2 w-full rounded-md border border-gray-300 p-3 outline-none focus:border-blue-600 disabled:bg-gray-50">
           <div class="mt-3 flex flex-wrap items-center gap-4">
-            <label v-if="selectedDefinitionId" class="inline-flex items-center gap-2 text-sm text-gray-700"><input v-model="draftHighlight" type="checkbox"> Show as highlight</label>
-            <button type="submit" :disabled="!selectedDefinitionId || !draftValue.trim() || saving" class="rounded-md bg-blue-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-300">Add specification</button>
+            <label v-if="selectedDefinitionId" class="inline-flex items-center gap-2 text-sm text-gray-700"><input v-model="draftHighlight" type="checkbox"> {{ $t('common.showAsHighlight') }}</label>
+            <button type="submit" :disabled="!selectedDefinitionId || !draftValue.trim() || saving" class="rounded-md bg-blue-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-300">{{ $t('common.addSpecification') }}</button>
           </div>
         </form>
       </div>
 
       <div v-if="creatingDefinition" class="rounded-md border border-blue-200 bg-blue-50 p-4">
-        <h4 class="font-bold text-blue-950">Create a shared specification name</h4>
-        <p class="mt-1 text-sm text-blue-900">Check the final name. Every product can reuse it.</p>
+        <h4 class="font-bold text-blue-950">{{ $t('dashboard.products.createASharedSpecificationName') }}</h4>
+        <p class="mt-1 text-sm text-blue-900">{{ $t('dashboard.products.checkTheFinalNameEveryProductCanReuseIt') }}</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-          <label class="text-sm font-semibold">Canonical name<input v-model="newName" maxlength="100" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
-          <label class="text-sm font-semibold">Group, optional<input v-model="newGroup" maxlength="80" placeholder="Performance" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
-          <label class="text-sm font-semibold">Search aliases, optional<input v-model="newAliases" placeholder="Colour, Product Color" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
-          <label class="text-sm font-semibold">Help text, optional<input v-model="newHelp" maxlength="300" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
+          <label class="text-sm font-semibold">{{ $t('common.canonicalName') }}<input v-model="newName" maxlength="100" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
+          <label class="text-sm font-semibold">{{ $t('common.groupOptional') }}<input v-model="newGroup" maxlength="80" :placeholder="$t('common.performance')" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
+          <label class="text-sm font-semibold">{{ $t('dashboard.products.searchAliasesOptional') }}<input v-model="newAliases" :placeholder="$t('common.colourProductColor')" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
+          <label class="text-sm font-semibold">{{ $t('common.helpTextOptional') }}<input v-model="newHelp" maxlength="300" class="mt-1 w-full rounded-md border border-gray-300 bg-white p-2.5"></label>
         </div>
-        <p v-if="duplicateCandidates.length" class="mt-3 text-sm text-amber-900">Similar name: {{ duplicateCandidates.map((match) => match.definition.name).join(', ') }}. Choose it above if it means the same thing.</p>
-        <label v-if="categoryId" class="mt-3 inline-flex items-center gap-2 text-sm"><input v-model="suggestNewForCategory" type="checkbox"> Suggest this name for this category</label>
-        <label class="mt-3 flex items-start gap-2 text-sm"><input v-model="confirmNewName" type="checkbox" class="mt-1"> I checked “{{ newName.trim() || 'new name' }}” as a reusable name.</label>
-        <div class="mt-3 flex gap-2"><button type="button" :disabled="saving || !confirmNewName || !newName.trim() || duplicateCandidates.some((match) => match.exact)" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="createDefinition">Create name</button><button type="button" class="rounded-md border px-4 py-2 text-sm" @click="creatingDefinition = false">Cancel</button></div>
+        <p v-if="duplicateCandidates.length" class="mt-3 text-sm text-amber-900">{{ $t('dashboard.products.similarNameValueChooseItAboveIfItMeansTheSameThing', { value0: (duplicateCandidates.map((match) => match.definition.name).join(', ')) }) }}</p>
+        <label v-if="categoryId" class="mt-3 inline-flex items-center gap-2 text-sm"><input v-model="suggestNewForCategory" type="checkbox"> {{ $t('dashboard.products.suggestThisNameForThisCategory') }}</label>
+        <label class="mt-3 flex items-start gap-2 text-sm"><input v-model="confirmNewName" type="checkbox" class="mt-1"> {{ $t('dashboard.products.iCheckedValueAsAReusableName', { value0: (newName.trim() || $t('dashboard.products.newName')) }) }}</label>
+        <div class="mt-3 flex gap-2"><button type="button" :disabled="saving || !confirmNewName || !newName.trim() || duplicateCandidates.some((match) => match.exact)" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="createDefinition">{{ $t('common.createName') }}</button><button type="button" class="rounded-md border px-4 py-2 text-sm" @click="creatingDefinition = false">{{ $t('common.cancel') }}</button></div>
       </div>
 
       <div v-if="showLibraryTools" class="space-y-5 rounded-md border border-gray-200 bg-gray-50 p-4">
         <div v-if="categoryId">
-          <h4 class="font-bold">Category suggestions</h4>
-          <p class="mt-1 text-sm text-gray-600">Choose reusable fields staff should see for this category.</p>
-          <div class="mt-3 flex flex-wrap gap-2"><select v-model="templateDefinitionId" aria-label="Name to suggest" class="min-w-48 rounded-md border p-2.5"><option value="">Choose a name</option><option v-for="definition in availableTemplateDefinitions" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select><button type="button" :disabled="!templateDefinitionId || saving" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="addTemplateSuggestion">Add suggestion</button></div>
-          <div v-if="templates.length" class="mt-3 space-y-2"><div v-for="(item, index) in templates" :key="item.definition_id" class="flex flex-wrap items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm"><span class="min-w-32 flex-1 font-semibold">{{ definitionById(item.definition_id)?.name || 'Unknown name' }}</span><label class="inline-flex items-center gap-1"><input :checked="item.highlight_default" type="checkbox" :disabled="saving" @change="setTemplateHighlight(item, $event.target.checked)"> Highlight by default</label><button type="button" :disabled="saving || index === 0" :aria-label="`Move ${definitionById(item.definition_id)?.name} suggestion up`" class="px-2 disabled:opacity-40" @click="moveTemplate(index, -1)">↑</button><button type="button" :disabled="saving || index === templates.length - 1" :aria-label="`Move ${definitionById(item.definition_id)?.name} suggestion down`" class="px-2 disabled:opacity-40" @click="moveTemplate(index, 1)">↓</button><button type="button" :disabled="saving" class="font-semibold text-red-700" @click="removeTemplateSuggestion(item)">Remove</button></div></div>
+          <h4 class="font-bold">{{ $t('common.categorySuggestions') }}</h4>
+          <p class="mt-1 text-sm text-gray-600">{{ $t('dashboard.products.chooseReusableFieldsStaffShouldSeeForThisCategory') }}</p>
+          <div class="mt-3 flex flex-wrap gap-2"><select v-model="templateDefinitionId" :aria-label="$t('common.nameToSuggest')" class="min-w-48 rounded-md border p-2.5"><option value="">{{ $t('common.chooseAName') }}</option><option v-for="definition in availableTemplateDefinitions" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select><button type="button" :disabled="!templateDefinitionId || saving" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="addTemplateSuggestion">{{ $t('common.addSuggestion') }}</button></div>
+          <div v-if="templates.length" class="mt-3 space-y-2"><div v-for="(item, index) in templates" :key="item.definition_id" class="flex flex-wrap items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm"><span class="min-w-32 flex-1 font-semibold">{{ definitionById(item.definition_id)?.name || $t('common.unknownName') }}</span><label class="inline-flex items-center gap-1"><input :checked="item.highlight_default" type="checkbox" :disabled="saving" @change="setTemplateHighlight(item, $event.target.checked)"> {{ $t('common.highlightByDefault') }}</label><button type="button" :disabled="saving || index === 0" :aria-label="$t('dashboard.products.moveValueSuggestionUp', { value0: (definitionById(item.definition_id)?.name) })" class="px-2 disabled:opacity-40" @click="moveTemplate(index, -1)">↑</button><button type="button" :disabled="saving || index === templates.length - 1" :aria-label="$t('dashboard.products.moveValueSuggestionDown', { value0: (definitionById(item.definition_id)?.name) })" class="px-2 disabled:opacity-40" @click="moveTemplate(index, 1)">↓</button><button type="button" :disabled="saving" class="font-semibold text-red-700" @click="removeTemplateSuggestion(item)">{{ $t('common.remove') }}</button></div></div>
         </div>
         <div v-if="selectedDefinition" class="border-t border-gray-200 pt-4">
-          <h4 class="font-bold">Edit “{{ selectedDefinition.name }}”</h4>
-          <p class="mt-1 text-xs text-gray-600">Changes to this shared name appear on linked products.</p>
-          <div class="mt-3 grid gap-2 sm:grid-cols-2"><label class="text-sm">Display name<input v-model="definitionDraft.name" maxlength="100" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">Group<input v-model="definitionDraft.group_name" maxlength="80" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">Aliases, comma separated<input v-model="definitionDraft.aliases" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">Help text<input v-model="definitionDraft.help_text" maxlength="300" class="mt-1 w-full rounded-md border bg-white p-2"></label></div>
-          <label class="mt-2 inline-flex items-center gap-2 text-sm"><input v-model="definitionDraft.is_active" type="checkbox"> Available for new products</label>
-          <button type="button" :disabled="saving" class="mt-3 block rounded-md border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800" @click="saveDefinition">Save shared name</button>
+          <h4 class="font-bold">{{ $t('common.editValue', { value0: (selectedDefinition.name) }) }}</h4>
+          <p class="mt-1 text-xs text-gray-600">{{ $t('dashboard.products.changesToThisSharedNameAppearOnLinkedProducts') }}</p>
+          <div class="mt-3 grid gap-2 sm:grid-cols-2"><label class="text-sm">{{ $t('common.displayName') }}<input v-model="definitionDraft.name" maxlength="100" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">{{ $t('common.group') }}<input v-model="definitionDraft.group_name" maxlength="80" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">{{ $t('dashboard.products.aliasesCommaSeparated') }}<input v-model="definitionDraft.aliases" class="mt-1 w-full rounded-md border bg-white p-2"></label><label class="text-sm">{{ $t('common.helpText') }}<input v-model="definitionDraft.help_text" maxlength="300" class="mt-1 w-full rounded-md border bg-white p-2"></label></div>
+          <label class="mt-2 inline-flex items-center gap-2 text-sm"><input v-model="definitionDraft.is_active" type="checkbox"> {{ $t('dashboard.products.availableForNewProducts') }}</label>
+          <button type="button" :disabled="saving" class="mt-3 block rounded-md border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800" @click="saveDefinition">{{ $t('common.saveSharedName') }}</button>
         </div>
       </div>
 
       <div>
-        <h4 class="font-bold text-gray-900">This product's specifications</h4>
+        <h4 class="font-bold text-gray-900">{{ $t('dashboard.products.thisProductSSpecifications') }}</h4>
         <div v-if="rows.length" class="mt-3 space-y-2">
           <div v-for="(row, index) in rows" :key="row.id" class="grid gap-2 rounded-md border border-gray-200 p-3 md:grid-cols-[minmax(160px,0.8fr)_minmax(0,1.5fr)_auto]">
-            <label class="min-w-0 text-xs font-semibold text-gray-600">Name<select v-model="row.definition_id" :aria-label="`Specification ${index + 1} name`" class="mt-1 w-full rounded-md border p-2.5 text-sm"><option v-if="!row.original.definition_id" value="">Legacy: {{ row.label }}</option><option v-for="definition in definitions" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select></label>
-            <label class="min-w-0 text-xs font-semibold text-gray-600">Value<input v-model="row.value" :aria-label="`Specification ${index + 1} value`" maxlength="500" class="mt-1 w-full rounded-md border p-2.5 text-sm" @keydown.enter.prevent="saveRow(row)"></label>
-            <div class="flex flex-wrap items-end gap-2"><label class="mr-1 inline-flex items-center gap-1 text-xs"><input v-model="row.is_highlight" type="checkbox"> Highlight</label><button type="button" :disabled="saving || index === 0" :aria-label="`Move specification ${index + 1} up`" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, -1)">↑</button><button type="button" :disabled="saving || index === rows.length - 1" :aria-label="`Move specification ${index + 1} down`" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, 1)">↓</button><button type="button" :disabled="saving || !rowDirty(row)" class="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" @click="saveRow(row)">Save</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteRow(row)">Delete</button></div>
+            <label class="min-w-0 text-xs font-semibold text-gray-600">{{ $t('common.name') }}<select v-model="row.definition_id" :aria-label="$t('dashboard.products.specificationValueName', { value0: (index + 1) })" class="mt-1 w-full rounded-md border p-2.5 text-sm"><option v-if="!row.original.definition_id" value="">{{ $t('common.legacyValue', { value0: (row.label) }) }}</option><option v-for="definition in definitions" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select></label>
+            <label class="min-w-0 text-xs font-semibold text-gray-600">{{ $t('common.value') }}<input v-model="row.value" :aria-label="$t('dashboard.products.specificationValueValue', { value0: (index + 1) })" maxlength="500" class="mt-1 w-full rounded-md border p-2.5 text-sm" @keydown.enter.prevent="saveRow(row)"></label>
+            <div class="flex flex-wrap items-end gap-2"><label class="me-1 inline-flex items-center gap-1 text-xs"><input v-model="row.is_highlight" type="checkbox"> {{ $t('common.highlight') }}</label><button type="button" :disabled="saving || index === 0" :aria-label="$t('dashboard.products.moveSpecificationValueUp', { value0: (index + 1) })" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, -1)">↑</button><button type="button" :disabled="saving || index === rows.length - 1" :aria-label="$t('dashboard.products.moveSpecificationValueDown', { value0: (index + 1) })" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, 1)">↓</button><button type="button" :disabled="saving || !rowDirty(row)" class="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" @click="saveRow(row)">{{ $t('common.save') }}</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteRow(row)">{{ $t('common.delete') }}</button></div>
           </div>
         </div>
-        <p v-else class="mt-2 text-sm text-gray-500">No structured specifications yet. The description still appears on the product page.</p>
+        <p v-else class="mt-2 text-sm text-gray-500">{{ $t('dashboard.products.noStructuredSpecificationsYetTheDescriptionStillAppearsOnTheProductPage') }}</p>
       </div>
 
       <div class="border-t border-gray-200 pt-6">
-        <button type="button" class="text-sm font-bold text-blue-700 hover:underline" @click="showPaste = !showPaste">{{ showPaste ? 'Hide paste helper' : 'Paste specifications' }}</button>
-        <div v-if="showPaste" class="mt-3 space-y-3"><p class="text-sm text-gray-600">Paste one “Name: Value” or “Name - Value” per line. Review every match before importing.</p><textarea v-model="pasteText" rows="7" maxlength="10000" aria-label="Paste specification lines" class="w-full rounded-md border p-3 font-mono text-sm" placeholder="Sensor: Optical&#10;DPI: 3600" /><button type="button" class="rounded-md border border-blue-300 px-4 py-2 text-sm font-bold text-blue-800" @click="reviewPaste">Review lines</button>
-          <div v-if="pasteRows.length" class="space-y-2"><div v-for="(item, index) in pasteRows" :key="index" class="grid gap-2 rounded-md border p-3 sm:grid-cols-[minmax(100px,0.8fr)_minmax(160px,1fr)_minmax(160px,1.2fr)]"><div><label class="inline-flex items-center gap-2 text-sm font-semibold"><input v-model="item.include" type="checkbox"> {{ item.label }}</label><p v-if="item.suggestion && !item.definition_id" class="mt-1 text-xs text-amber-800">Maybe {{ item.suggestion }}</p></div><select v-model="item.definition_id" :aria-label="`Canonical name for pasted line ${index + 1}`" class="min-w-0 rounded-md border p-2 text-sm"><option value="">Choose canonical name</option><option v-for="definition in definitions.filter((entry) => entry.is_active)" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select><input v-model="item.value" :aria-label="`Value for pasted line ${index + 1}`" maxlength="500" class="min-w-0 rounded-md border p-2 text-sm"></div><button type="button" :disabled="saving" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="importPaste">Import reviewed rows</button></div>
+        <button type="button" class="text-sm font-bold text-blue-700 hover:underline" @click="showPaste = !showPaste">{{ showPaste ? $t('common.hidePasteHelper') : $t('common.pasteSpecifications') }}</button>
+        <div v-if="showPaste" class="mt-3 space-y-3"><p class="text-sm text-gray-600">{{ $t('dashboard.products.pasteOneNameValueOrNameValuePerLineReviewEveryMatchBeforeImporting') }}</p><textarea v-model="pasteText" rows="7" maxlength="10000" :aria-label="$t('dashboard.products.pasteSpecificationLines')" class="w-full rounded-md border p-3 font-mono text-sm" :placeholder="$t('dashboard.products.sensorOpticalDpi3600')" /><button type="button" class="rounded-md border border-blue-300 px-4 py-2 text-sm font-bold text-blue-800" @click="reviewPaste">{{ $t('common.reviewLines') }}</button>
+          <div v-if="pasteRows.length" class="space-y-2"><div v-for="(item, index) in pasteRows" :key="index" class="grid gap-2 rounded-md border p-3 sm:grid-cols-[minmax(100px,0.8fr)_minmax(160px,1fr)_minmax(160px,1.2fr)]"><div><label class="inline-flex items-center gap-2 text-sm font-semibold"><input v-model="item.include" type="checkbox"> {{ item.label }}</label><p v-if="item.suggestion && !item.definition_id" class="mt-1 text-xs text-amber-800">{{ $t('common.maybeValue', { value0: (item.suggestion) }) }}</p></div><select v-model="item.definition_id" :aria-label="$t('dashboard.products.canonicalNameForPastedLineValue', { value0: (index + 1) })" class="min-w-0 rounded-md border p-2 text-sm"><option value="">{{ $t('common.chooseCanonicalName') }}</option><option v-for="definition in definitions.filter((entry) => entry.is_active)" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select><input v-model="item.value" :aria-label="$t('dashboard.products.valueForPastedLineValue', { value0: (index + 1) })" maxlength="500" class="min-w-0 rounded-md border p-2 text-sm"></div><button type="button" :disabled="saving" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300" @click="importPaste">{{ $t('common.importReviewedRows') }}</button></div>
         </div>
       </div>
 
       <div class="border-t border-gray-200 pt-6">
-        <h4 class="font-bold text-gray-900">Product features</h4><p class="mt-1 text-sm text-gray-600">Optional selling points. Keep factual specs above.</p>
-        <form class="mt-3 flex flex-col gap-2 sm:flex-row" @submit.prevent="addFeature"><input v-model="newFeature" maxlength="500" aria-label="New product feature" placeholder="A short benefit for customers" class="min-w-0 flex-1 rounded-md border p-3 text-sm"><button type="submit" :disabled="saving || !newFeature.trim()" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300">Add feature</button></form>
-        <div v-if="features.length" class="mt-3 space-y-2"><div v-for="feature in features" :key="feature.id" class="flex flex-wrap gap-2"><input v-model="feature.body" maxlength="500" :aria-label="`Feature ${feature.id}`" class="min-w-0 flex-1 rounded-md border p-2.5 text-sm"><button type="button" :disabled="saving || feature.body === feature.originalBody" class="rounded-md border border-blue-300 px-3 py-2 text-sm font-semibold text-blue-800 disabled:opacity-40" @click="saveFeature(feature)">Save</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteFeature(feature)">Delete</button></div></div>
+        <h4 class="font-bold text-gray-900">{{ $t('common.productFeatures') }}</h4><p class="mt-1 text-sm text-gray-600">{{ $t('dashboard.products.optionalSellingPointsKeepFactualSpecsAbove') }}</p>
+        <form class="mt-3 flex flex-col gap-2 sm:flex-row" @submit.prevent="addFeature"><input v-model="newFeature" maxlength="500" :aria-label="$t('common.newProductFeature')" :placeholder="$t('dashboard.products.aShortBenefitForCustomers')" class="min-w-0 flex-1 rounded-md border p-3 text-sm"><button type="submit" :disabled="saving || !newFeature.trim()" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:bg-gray-300">{{ $t('common.addFeature') }}</button></form>
+        <div v-if="features.length" class="mt-3 space-y-2"><div v-for="feature in features" :key="feature.id" class="flex flex-wrap gap-2"><input v-model="feature.body" maxlength="500" :aria-label="$t('common.featureValue', { value0: (feature.id) })" class="min-w-0 flex-1 rounded-md border p-2.5 text-sm"><button type="button" :disabled="saving || feature.body === feature.originalBody" class="rounded-md border border-blue-300 px-3 py-2 text-sm font-semibold text-blue-800 disabled:opacity-40" @click="saveFeature(feature)">{{ $t('common.save') }}</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteFeature(feature)">{{ $t('common.delete') }}</button></div></div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
 import { duplicateSpecificationCandidates, matchSpecificationDefinitions, parsePastedSpecifications, parseSpecificationAliases, specificationKey } from '~/utils/specificationLibrary'
 
 const props = defineProps({
@@ -441,7 +443,7 @@ const saveFeature = async (feature) => {
   setNotice('Feature saved.')
 }
 const deleteFeature = async (feature) => {
-  if (!confirm('Delete this product feature?')) return
+  if (!confirm(uiLabel('Delete this product feature?'))) return
   saving.value = true
   const { error: queryError } = await supabase.from('product_features').delete().eq('id', feature.id).eq('product_id', props.productId)
   saving.value = false

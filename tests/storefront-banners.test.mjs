@@ -1,9 +1,10 @@
+import { expandUiSource } from './helpers/readUiSource.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { getConfiguredStoreImageUrl, getStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '../app/utils/storefront.js'
 
-const homepageSource = await readFile(new URL('../app/pages/index.vue', import.meta.url), 'utf8')
+const homepageSource = expandUiSource(await readFile(new URL('../app/pages/index.vue', import.meta.url), 'utf8'))
 const heroSource = await readFile(new URL('../app/components/cards/HeroCard.vue', import.meta.url), 'utf8')
 const bannerSource = await readFile(new URL('../app/components/cards/Banner.vue', import.meta.url), 'utf8')
 
@@ -38,7 +39,7 @@ test('admin-configured banner images are honored even when they use a placeholde
 
 test('hero and banner links use internal navigation and protect external links', () => {
   for (const source of [heroSource, bannerSource]) {
-    assert.match(source, /resolveComponent\('NuxtLink'\)/)
+    assert.match(source, /resolveComponent\('NuxtLinkLocale'\)/)
     assert.match(source, /noopener noreferrer/)
     assert.match(source, /getStoreLinkUrl/)
   }

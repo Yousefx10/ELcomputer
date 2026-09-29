@@ -1,10 +1,10 @@
 <template>
-  <section class="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.8fr)]" aria-label="Document shortcuts">
+  <section class="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.8fr)]" :aria-label="$t('common.documentShortcuts')">
     <article class="file-surface p-5 sm:p-6">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <h3 class="text-base font-bold text-gray-950">Quick access</h3>
-          <p class="mt-1 text-xs text-gray-500">Pin important files and folders.</p>
+          <h3 class="text-base font-bold text-gray-950">{{ $t('common.quickAccess') }}</h3>
+          <p class="mt-1 text-xs text-gray-500">{{ $t('dashboard.FileWorkspaceOverview.pinImportantFilesAndFolders') }}</p>
         </div>
         <span class="file-count">{{ quickAccess.length }}</span>
       </div>
@@ -15,29 +15,29 @@
 
       <div v-else-if="quickAccess.length" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <article v-for="item in quickAccess" :key="`${item.type}-${item.id}`" class="group relative rounded-2xl border border-gray-200 bg-gray-50/60 p-4 transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm">
-          <button type="button" class="block w-full text-left" @click="$emit('activate', item)">
+          <button type="button" class="block w-full text-start" @click="$emit('activate', item)">
             <span class="flex h-10 w-10 items-center justify-center rounded-xl" :class="item.type === 'folder' ? 'bg-blue-600 text-white' : fileColor(item)">
               <Icon :name="item.type === 'folder' ? 'lucide:folder' : fileIcon(item)" size="20" />
             </span>
             <span class="mt-4 block truncate text-sm font-bold text-gray-900" :title="item.name">{{ item.name }}</span>
             <span class="mt-1 block truncate text-[11px] text-gray-500">{{ item.type === 'folder' ? item.location : formatBytes(item.size_bytes) }}</span>
           </button>
-          <button type="button" class="absolute end-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 opacity-70 transition hover:bg-white hover:opacity-100" :aria-label="`Remove ${item.name} from quick access`" @click.stop="$emit('toggle-pin', item)">
+          <button type="button" class="absolute end-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 opacity-70 transition hover:bg-white hover:opacity-100" :aria-label="$t('dashboard.FileWorkspaceOverview.removeValueFromQuickAccess', { value0: (item.name) })" @click.stop="$emit('toggle-pin', item)">
             <Icon name="lucide:pin-off" size="15" />
           </button>
         </article>
       </div>
 
       <div v-else class="mt-5 flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-5 text-center">
-        <div><Icon name="lucide:pin" size="22" class="mx-auto text-gray-300" /><p class="mt-2 text-xs text-gray-500">Pin items from the properties panel.</p></div>
+        <div><Icon name="lucide:pin" size="22" class="mx-auto text-gray-300" /><p class="mt-2 text-xs text-gray-500">{{ $t('dashboard.FileWorkspaceOverview.pinItemsFromThePropertiesPanel') }}</p></div>
       </div>
     </article>
 
     <article class="file-surface p-5 sm:p-6">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <h3 class="text-base font-bold text-gray-950">Recent files</h3>
-          <p class="mt-1 text-xs text-gray-500">Files you opened recently.</p>
+          <h3 class="text-base font-bold text-gray-950">{{ $t('common.recentFiles') }}</h3>
+          <p class="mt-1 text-xs text-gray-500">{{ $t('dashboard.FileWorkspaceOverview.filesYouOpenedRecently') }}</p>
         </div>
         <Icon name="lucide:history" size="18" class="text-gray-400" />
       </div>
@@ -47,15 +47,15 @@
       </div>
 
       <div v-else-if="recentFiles.length" class="mt-4 space-y-1">
-        <button v-for="item in recentFiles.slice(0, 5)" :key="item.id" type="button" class="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition hover:bg-gray-50" @click="$emit('activate', item)">
+        <button v-for="item in recentFiles.slice(0, 5)" :key="item.id" type="button" class="flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition hover:bg-gray-50" @click="$emit('activate', item)">
           <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" :class="fileColor(item)"><Icon :name="fileIcon(item)" size="18" /></span>
           <span class="min-w-0 flex-1"><span class="block truncate text-xs font-bold text-gray-900">{{ item.name }}</span><span class="mt-0.5 block truncate text-[11px] text-gray-500">{{ relativeDate(item.last_opened_at) }}</span></span>
-          <Icon name="lucide:chevron-right" size="15" class="text-gray-300" />
+          <Icon name="lucide:chevron-right" size="15" class="directional-icon text-gray-300" />
         </button>
       </div>
 
       <div v-else class="mt-4 flex min-h-40 items-center justify-center text-center">
-        <div><Icon name="lucide:file-clock" size="24" class="mx-auto text-gray-300" /><p class="mt-2 text-xs text-gray-500">Opened files will appear here.</p></div>
+        <div><Icon name="lucide:file-clock" size="24" class="mx-auto text-gray-300" /><p class="mt-2 text-xs text-gray-500">{{ $t('dashboard.FileWorkspaceOverview.openedFilesWillAppearHere') }}</p></div>
       </div>
     </article>
   </section>

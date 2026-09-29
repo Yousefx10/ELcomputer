@@ -2,7 +2,7 @@
   <div v-if="resolvedImageUrl" class="store-banner-ad">
     <component :is="bannerComponent" v-bind="bannerAttributes" class="store-banner-ad-link">
       <div class="store-banner-ad-media">
-        <img :src="resolvedImageUrl" :alt="altText" loading="lazy">
+        <img :src="resolvedImageUrl" :alt="altText || $t('application.bannerAd')" loading="lazy">
       </div>
     </component>
   </div>
@@ -22,11 +22,11 @@ const props = defineProps({
   },
   altText: {
     type: String,
-    default: 'Banner Ad'
+    default: ''
   }
 })
 
-const nuxtLink = resolveComponent('NuxtLink')
+const nuxtLink = resolveComponent('NuxtLinkLocale')
 const resolvedImageUrl = computed(() => getConfiguredStoreImageUrl(props.imageUrl))
 const resolvedLinkUrl = computed(() => getStoreLinkUrl(props.linkUrl))
 const externalLink = computed(() => isExternalStoreLink(resolvedLinkUrl.value))

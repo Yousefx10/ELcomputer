@@ -7,13 +7,13 @@
     <div class="grid gap-8 p-6 md:p-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center">
       <div>
         <p class="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
-          Help us improve
+          {{ $t('common.helpUsImprove') }}
         </p>
         <h2 id="nps-survey-title" class="mt-3 text-3xl font-black tracking-tight text-gray-950 md:text-4xl">
-          How likely are you to recommend {{ storeName }}?
+          {{ $t('nps.Survey.howLikelyAreYouToRecommendValue', { value0: (storeName) }) }}
         </h2>
         <p class="mt-4 max-w-xl text-base leading-7 text-gray-600">
-          Tell us how we did.
+          {{ $t('common.tellUsHowWeDid') }}
         </p>
       </div>
 
@@ -26,9 +26,9 @@
         <div class="flex items-start gap-3">
           <Icon name="lucide:circle-check-big" size="24" class="mt-0.5 flex-shrink-0" />
           <div>
-            <p class="text-lg font-bold">Thank you for your feedback.</p>
+            <p class="text-lg font-bold">{{ $t('common.thankYouForYourFeedback') }}</p>
             <p class="mt-1 text-sm text-emerald-700">
-              Your response has been recorded.
+              {{ $t('nps.Survey.yourResponseHasBeenRecorded') }}
             </p>
           </div>
         </div>
@@ -37,7 +37,7 @@
       <form v-else class="rounded-3xl bg-white p-5 shadow-sm md:p-7" @submit.prevent="submitSurvey">
         <fieldset>
           <legend class="text-base font-bold text-gray-900">
-            Select a score from 0 to 10
+            {{ $t('nps.Survey.selectAScoreFrom0To10') }}
           </legend>
 
           <div class="mt-4 grid grid-cols-6 gap-2 sm:grid-cols-11" role="radiogroup" aria-describedby="nps-scale-help">
@@ -55,7 +55,7 @@
                 type="radio"
                 name="nps-score"
                 :value="rating"
-                :aria-label="`${rating} out of 10`"
+                :aria-label="$t('common.valueOutOf10', { value0: (rating) })"
                 required
               >
               <span aria-hidden="true">{{ rating }}</span>
@@ -63,17 +63,17 @@
           </div>
 
           <div id="nps-scale-help" class="mt-2 flex justify-between gap-4 text-xs font-medium text-gray-500">
-            <span>0 — Not at all likely</span>
-            <span class="text-right">10 — Extremely likely</span>
+            <span>{{ $t('common.0NotAtAllLikely') }}</span>
+            <span class="text-end">{{ $t('common.10ExtremelyLikely') }}</span>
           </div>
         </fieldset>
 
         <div v-if="isDetractor" class="mt-6">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
             <label for="nps-feedback" class="font-bold text-gray-900">
-              What could we do better?
+              {{ $t('nps.Survey.whatCouldWeDoBetter') }}
             </label>
-            <span class="text-xs font-medium text-gray-400">Optional</span>
+            <span class="text-xs font-medium text-gray-400">{{ $t('common.optionalVariant2') }}</span>
           </div>
 
           <textarea
@@ -84,9 +84,9 @@
             maxlength="999"
             aria-describedby="nps-feedback-count"
             class="mt-3 w-full resize-y rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            placeholder="Tell us what went wrong or what was missing."
+            :placeholder="$t('nps.Survey.tellUsWhatWentWrongOrWhatWasMissing')"
           />
-          <p id="nps-feedback-count" class="mt-2 text-right text-xs text-gray-400">
+          <p id="nps-feedback-count" class="mt-2 text-end text-xs text-gray-400">
             {{ feedback.length }}/999
           </p>
         </div>
@@ -96,7 +96,7 @@
           class="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
           role="alert"
         >
-          {{ errorMessage }}
+          {{ $uiMessage(errorMessage) }}
         </p>
 
         <button
@@ -108,9 +108,9 @@
             v-if="submitting"
             name="lucide:loader-circle"
             size="18"
-            class="mr-2 animate-spin"
+            class="me-2 animate-spin"
           />
-          {{ submitting ? 'Sending feedback...' : 'Submit feedback' }}
+          {{ submitting ? $t('common.sendingFeedback') : $t('common.submitFeedback') }}
         </button>
       </form>
     </div>

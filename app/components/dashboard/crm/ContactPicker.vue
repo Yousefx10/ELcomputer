@@ -4,7 +4,7 @@
       :for="resolvedInputId"
       class="mb-2 block text-sm font-semibold text-gray-700"
     >
-      {{ label }}<span v-if="required" class="text-red-600"> *</span>
+      {{ $uiLabel(label) }}<span v-if="required" class="text-red-600"> *</span>
     </label>
 
     <div
@@ -22,7 +22,7 @@
         class="shrink-0 rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
         @click="clearSelection"
       >
-        Change
+        {{ $t('common.change') }}
       </button>
     </div>
 
@@ -39,7 +39,7 @@
         :aria-controls="resultsId"
         :aria-activedescendant="activeOptionId"
         :disabled="disabled"
-        :placeholder="selectedContact ? 'Search to choose another contact' : placeholder"
+        :placeholder="selectedContact ? $t('dashboard.crm.searchToChooseAnotherContact') : placeholder"
         class="w-full rounded-xl border bg-white p-3 pe-11 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
         @focus="openResults"
         @blur="scheduleCloseResults"
@@ -63,7 +63,7 @@
         <div
           :id="resultsId"
           role="listbox"
-          :aria-label="label"
+          :aria-label="$uiLabel(label)"
         >
           <div
             v-if="normalizedSearch.length < 2"
@@ -71,7 +71,7 @@
             aria-disabled="true"
             class="px-3 py-4 text-sm text-gray-500"
           >
-            Type at least 2 characters, then choose a company or person.
+            {{ $t('dashboard.crm.typeAtLeast2CharactersThenChooseACompanyOrPerson') }}
           </div>
 
           <div
@@ -80,7 +80,7 @@
             aria-disabled="true"
             class="px-3 py-4 text-sm text-gray-500"
           >
-            Searching CRM contacts...
+            {{ $t('dashboard.crm.searchingCrmContacts') }}
           </div>
 
           <div
@@ -89,7 +89,7 @@
             aria-disabled="true"
             class="px-3 py-4 text-sm text-red-600"
           >
-            {{ searchError }}
+            {{ $uiMessage(searchError) }}
           </div>
 
           <div
@@ -98,7 +98,7 @@
             aria-disabled="true"
             class="px-3 py-4 text-sm text-gray-500"
           >
-            No CRM contacts match “{{ normalizedSearch }}”.
+            {{ $t('dashboard.crm.noCrmContactsMatchValue', { value0: (normalizedSearch) }) }}
           </div>
 
           <div
@@ -138,18 +138,19 @@
           v-if="resultsLimited && visibleContacts.length"
           class="border-t px-3 pt-3 text-xs text-gray-400"
         >
-          Refine the search to see more matches.
+          {{ $t('dashboard.crm.refineTheSearchToSeeMoreMatches') }}
         </p>
       </div>
     </div>
 
     <p class="sr-only" aria-live="polite">
-      {{ resultAnnouncement }}
+      {{ $uiLabel(resultAnnouncement) }}
     </p>
   </div>
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
 const props = defineProps({
   disabled: {
     type: Boolean,
@@ -252,7 +253,7 @@ const getContactMeta = (contact) => {
   const entity = contact.entityType === 'person' ? 'Person' : 'Company'
   const account = contact.accountType === 'supplier' ? 'Supplier' : 'Customer'
   const inactive = contact.isActive ? '' : ' · Inactive'
-  return `${entity} · ${account}${inactive}`
+  return `${uiLabel(entity)} · ${uiLabel(account)}${inactive ? ' · ' + uiLabel('Inactive') : ''}`
 }
 
 const getErrorMessage = (error, fallbackMessage) => {

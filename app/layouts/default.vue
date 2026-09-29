@@ -1,7 +1,7 @@
 <template>
   <div class="storefront" :style="layoutStyle">
     <NuxtLoadingIndicator color="#ffd54f" :height="3" :throttle="0" />
-    <a class="store-skip-link" href="#main-content">Skip to content</a>
+    <a class="store-skip-link" href="#main-content">{{ $t('common.skipToContent') }}</a>
     <LayoutTopBar />
     <LayoutNavBar />
     <main id="main-content" tabindex="-1">

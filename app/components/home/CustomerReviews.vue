@@ -6,7 +6,7 @@
           id="customer-reviews-title"
           class="store-section-title"
         >
-          Customer reviews
+          {{ $t('common.customerReviews') }}
         </h2>
       </div>
 
@@ -19,17 +19,17 @@
           @click="carouselPaused = !carouselPaused"
         >
           <Icon :name="carouselPaused ? 'lucide:play' : 'lucide:pause'" size="16" />
-          {{ carouselPaused ? 'Play' : 'Pause' }}
+          {{ carouselPaused ? $t('common.play') : $t('common.pause') }}
         </button>
 
-        <NuxtLink
+        <NuxtLinkLocale
           v-if="showViewAll && reviews.length"
           to="/reviews"
           class="store-text-link"
         >
-          View all reviews
-          <Icon name="lucide:arrow-right" size="17" />
-        </NuxtLink>
+          {{ $t('common.viewAllReviews') }}
+          <Icon name="lucide:arrow-right" size="17" class="directional-icon" />
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -37,7 +37,7 @@
       v-if="loading"
       class="flex gap-5 overflow-hidden px-4 md:px-10"
       aria-live="polite"
-      aria-label="Loading customer reviews"
+      :aria-label="$t('home.CustomerReviews.loadingCustomerReviews')"
     >
       <div
         v-for="placeholder in 3"
@@ -47,18 +47,18 @@
     </div>
 
     <div v-else-if="loadError" class="mx-4 rounded-2xl border border-red-200 bg-red-50 p-6 text-center md:mx-10">
-      <p class="text-sm text-red-600">{{ loadError }}</p>
+      <p class="text-sm text-red-600">{{ $uiMessage(loadError) }}</p>
       <button
         type="button"
         class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
         @click="loadReviews"
       >
-        Try Again
+        {{ $t('common.tryAgain') }}
       </button>
     </div>
 
     <p v-else-if="!reviews.length" class="px-4 text-gray-500 md:px-10">
-      No customer reviews are available yet.
+      {{ $t('home.CustomerReviews.noCustomerReviewsAreAvailableYet') }}
     </p>
 
     <div
@@ -73,7 +73,7 @@
         class="review-track flex w-max"
         :class="{ 'review-track-paused': carouselPaused || hoverPaused || focusPaused }"
       >
-        <div class="review-group flex shrink-0 gap-5 pr-5">
+        <div class="review-group flex shrink-0 gap-5 pe-5">
           <ReviewsCard
             v-for="review in carouselReviews"
             :key="`primary-${review.carouselKey}`"
@@ -86,7 +86,7 @@
           />
         </div>
 
-        <div class="review-group flex shrink-0 gap-5 pr-5" aria-hidden="true" inert>
+        <div class="review-group flex shrink-0 gap-5 pe-5" aria-hidden="true" inert>
           <ReviewsCard
             v-for="review in carouselReviews"
             :key="`duplicate-${review.carouselKey}`"

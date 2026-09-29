@@ -1,10 +1,15 @@
 <script setup>
-import { formatAccountMoney } from '~/utils/accountOrders'
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+const formatAccountMoney = (value, option = 'EGP') => baseFormatAccountMoney(value, option, intlLocale.value)
+
+import { formatAccountMoney as baseFormatAccountMoney } from '~/utils/accountOrders'
 import { resolveAccountUser } from '~/utils/accountSession'
 import { completedOrderStatuses, openOrderStatuses } from '~/utils/orderStatus'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
-useHead({ title: 'Your Account' })
+useHead(() => ({ title: uiLabel('Your Account') }))
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -93,82 +98,82 @@ watch(() => user.value?.sub || user.value?.id, load)
   <div v-if="isModern" class="space-y-5">
     <header class="flex flex-wrap items-start justify-between gap-4 pb-1">
       <div>
-        <p class="text-sm font-semibold text-blue-700">Your account</p>
-        <h1 class="mt-1 text-3xl font-bold tracking-tight text-slate-950">Welcome back, {{ firstName }}</h1>
-        <p class="mt-2 text-sm text-slate-600">Your orders and account details, all in one place.</p>
+        <p class="text-sm font-semibold text-blue-700">{{ $t('common.yourAccount') }}</p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight text-slate-950">{{ $t('common.welcomeBackValue', { value0: (firstName) }) }}</h1>
+        <p class="mt-2 text-sm text-slate-600">{{ $t('account.index.yourOrdersAndAccountDetailsAllInOnePlace') }}</p>
       </div>
-      <NuxtLink to="/account/wallet" class="flex min-w-[190px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+      <NuxtLinkLocale to="/account/wallet" class="flex min-w-[190px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
         <span class="flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:wallet" size="20" aria-hidden="true" /></span>
-        <span><span class="block text-xs text-slate-500">Wallet balance</span><span class="block font-bold text-slate-950">{{ loading || error ? '—' : formatAccountMoney(stats.wallet) }}</span></span>
-      </NuxtLink>
+        <span><span class="block text-xs text-slate-500">{{ $t('common.walletBalance') }}</span><span class="block font-bold text-slate-950">{{ loading || error ? '—' : formatAccountMoney(stats.wallet) }}</span></span>
+      </NuxtLinkLocale>
     </header>
 
-    <p v-if="error" role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ error }}</p>
+    <p v-if="error" role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(error) }}</p>
 
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-labelledby="modern-orders-title">
-      <NuxtLink to="/account/orders" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 sm:px-6">
+      <NuxtLinkLocale to="/account/orders" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 sm:px-6">
         <Icon name="lucide:receipt-text" size="21" class="text-blue-700" aria-hidden="true" />
-        <span class="min-w-0 flex-1"><span id="modern-orders-title" class="block text-lg font-bold text-slate-950">Purchase history</span><span v-if="!loading && !error" class="block text-sm text-slate-600">{{ stats.total }} {{ stats.total === 1 ? 'order' : 'orders' }} · {{ stats.active }} in progress</span></span>
-        <Icon name="lucide:chevron-right" size="20" class="text-slate-600" aria-hidden="true" />
-      </NuxtLink>
+        <span class="min-w-0 flex-1"><span id="modern-orders-title" class="block text-lg font-bold text-slate-950">{{ $t('common.purchaseHistory') }}</span><span v-if="!loading && !error" class="block text-sm text-slate-600">{{ $t('account.index.valueValueValueInProgress', { value0: (stats.total), value1: (stats.total === 1 ? $t('common.order') : $t('common.orders')), value2: (stats.active) }) }}</span></span>
+        <Icon name="lucide:chevron-right" size="20" class="directional-icon text-slate-600" aria-hidden="true" />
+      </NuxtLinkLocale>
       <div class="p-4 sm:p-6">
-        <p v-if="loading" role="status" class="py-6 text-center text-sm text-slate-600">Loading your orders…</p>
+        <p v-if="loading" role="status" class="py-6 text-center text-sm text-slate-600">{{ $t('common.loadingYourOrders') }}</p>
         <div v-else-if="!error && orders.length" class="grid gap-3 xl:grid-cols-2"><AccountOrderCard v-for="order in orders" :key="order.id" :order="order" compact /></div>
-        <p v-else-if="!error" class="py-6 text-center text-sm text-slate-600">No purchases yet. Your orders will appear here.</p>
-        <NuxtLink v-if="!loading && !error && orders.length" to="/account/orders" class="mt-5 inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">View all orders <Icon name="lucide:arrow-right" size="16" aria-hidden="true" /></NuxtLink>
+        <p v-else-if="!error" class="py-6 text-center text-sm text-slate-600">{{ $t('account.index.noPurchasesYetYourOrdersWillAppearHere') }}</p>
+        <NuxtLinkLocale v-if="!loading && !error && orders.length" to="/account/orders" class="mt-5 inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">{{ $t('common.viewAllOrders') }} <Icon name="lucide:arrow-right" size="16" aria-hidden="true" class="directional-icon" /></NuxtLinkLocale>
       </div>
     </section>
 
     <div class="grid gap-5 xl:grid-cols-2">
       <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-labelledby="modern-wallet-title">
-        <NuxtLink to="/account/wallet" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+        <NuxtLinkLocale to="/account/wallet" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
           <Icon name="lucide:wallet" size="21" class="text-blue-700" aria-hidden="true" />
-          <span id="modern-wallet-title" class="flex-1 text-lg font-bold text-slate-950">Wallet</span>
-          <Icon name="lucide:chevron-right" size="20" class="text-slate-600" aria-hidden="true" />
-        </NuxtLink>
-        <div class="px-5 py-5"><p class="text-sm text-slate-500">Available balance</p><p class="mt-1 text-2xl font-bold text-slate-950">{{ loading || error ? '—' : formatAccountMoney(stats.wallet) }}</p><p class="mt-3 text-xs text-slate-500">A detailed activity list is not available yet.</p></div>
+          <span id="modern-wallet-title" class="flex-1 text-lg font-bold text-slate-950">{{ $t('common.wallet') }}</span>
+          <Icon name="lucide:chevron-right" size="20" class="directional-icon text-slate-600" aria-hidden="true" />
+        </NuxtLinkLocale>
+        <div class="px-5 py-5"><p class="text-sm text-slate-500">{{ $t('common.availableBalance') }}</p><p class="mt-1 text-2xl font-bold text-slate-950">{{ loading || error ? '—' : formatAccountMoney(stats.wallet) }}</p><p class="mt-3 text-xs text-slate-500">{{ $t('account.index.aDetailedActivityListIsNotAvailableYet') }}</p></div>
       </section>
       <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-labelledby="modern-profile-title">
-        <NuxtLink to="/account/profile" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+        <NuxtLinkLocale to="/account/profile" class="flex items-center gap-3 bg-blue-50/70 px-5 py-4 transition hover:bg-blue-100/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
           <Icon name="lucide:user-round" size="21" class="text-blue-700" aria-hidden="true" />
-          <span id="modern-profile-title" class="flex-1 text-lg font-bold text-slate-950">Account info</span>
-          <Icon name="lucide:chevron-right" size="20" class="text-slate-600" aria-hidden="true" />
-        </NuxtLink>
+          <span id="modern-profile-title" class="flex-1 text-lg font-bold text-slate-950">{{ $t('common.accountInfo') }}</span>
+          <Icon name="lucide:chevron-right" size="20" class="directional-icon text-slate-600" aria-hidden="true" />
+        </NuxtLinkLocale>
         <dl class="divide-y divide-slate-100 text-sm">
-          <div class="px-5 py-3"><dt class="text-slate-500">Email</dt><dd class="mt-1 break-all font-medium text-slate-950">{{ loading || error ? '—' : accountEmail || 'Not provided' }}</dd></div>
-          <div class="px-5 py-3"><dt class="text-slate-500">Phone</dt><dd class="mt-1 font-medium text-slate-950">{{ loading || error ? '—' : profile?.phone || 'Not added' }}</dd></div>
-          <div class="px-5 py-3"><dt class="text-slate-500">Address</dt><dd class="mt-1 font-medium text-slate-950">{{ loading || error ? '—' : address || 'Not added' }}</dd></div>
+          <div class="px-5 py-3"><dt class="text-slate-500">{{ $t('common.email') }}</dt><dd class="mt-1 break-all font-medium text-slate-950">{{ loading || error ? '—' : accountEmail || $t('common.notProvided') }}</dd></div>
+          <div class="px-5 py-3"><dt class="text-slate-500">{{ $t('common.phone') }}</dt><dd class="mt-1 font-medium text-slate-950">{{ loading || error ? '—' : profile?.phone || $t('common.notAdded') }}</dd></div>
+          <div class="px-5 py-3"><dt class="text-slate-500">{{ $t('common.address') }}</dt><dd class="mt-1 font-medium text-slate-950">{{ loading || error ? '—' : address || $t('common.notAdded') }}</dd></div>
         </dl>
       </section>
     </div>
 
-    <section class="grid gap-3 sm:grid-cols-2" aria-label="Account help">
-      <NuxtLink to="/account/messages" class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:mail" size="20" class="text-blue-700" aria-hidden="true" /><span class="flex-1"><span class="block font-semibold text-slate-950">Messages</span><span class="block text-xs text-slate-500">Updates from our team</span></span><Icon name="lucide:chevron-right" size="18" class="text-slate-500" aria-hidden="true" /></NuxtLink>
-      <NuxtLink to="/account/support" class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:life-buoy" size="20" class="text-blue-700" aria-hidden="true" /><span class="flex-1"><span class="block font-semibold text-slate-950">Support</span><span class="block text-xs text-slate-500">View tickets or ask a question</span></span><Icon name="lucide:chevron-right" size="18" class="text-slate-500" aria-hidden="true" /></NuxtLink>
+    <section class="grid gap-3 sm:grid-cols-2" :aria-label="$t('common.accountHelp')">
+      <NuxtLinkLocale to="/account/messages" class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:mail" size="20" class="text-blue-700" aria-hidden="true" /><span class="flex-1"><span class="block font-semibold text-slate-950">{{ $t('common.messages') }}</span><span class="block text-xs text-slate-500">{{ $t('common.updatesFromOurTeam') }}</span></span><Icon name="lucide:chevron-right" size="18" class="directional-icon text-slate-500" aria-hidden="true" /></NuxtLinkLocale>
+      <NuxtLinkLocale to="/account/support" class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:life-buoy" size="20" class="text-blue-700" aria-hidden="true" /><span class="flex-1"><span class="block font-semibold text-slate-950">{{ $t('common.support') }}</span><span class="block text-xs text-slate-500">{{ $t('account.index.viewTicketsOrAskAQuestion') }}</span></span><Icon name="lucide:chevron-right" size="18" class="directional-icon text-slate-500" aria-hidden="true" /></NuxtLinkLocale>
     </section>
   </div>
   <div v-else class="space-y-5">
     <header class="flex flex-wrap items-end justify-between gap-3">
-      <div><p class="text-sm font-semibold text-blue-700">Your account</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Overview</h1><p class="mt-1 text-sm text-slate-600">Your orders and account at a glance.</p></div>
-      <NuxtLink to="/account/orders" class="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">All orders <Icon name="lucide:arrow-right" size="16" class="ml-1" aria-hidden="true" /></NuxtLink>
+      <div><p class="text-sm font-semibold text-blue-700">{{ $t('common.yourAccount') }}</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $t('common.overview') }}</h1><p class="mt-1 text-sm text-slate-600">{{ $t('account.index.yourOrdersAndAccountAtAGlance') }}</p></div>
+      <NuxtLinkLocale to="/account/orders" class="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">{{ $t('common.allOrders') }} <Icon name="lucide:arrow-right" size="16" class="directional-icon ms-1" aria-hidden="true" /></NuxtLinkLocale>
     </header>
-    <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ error }}</p>
-    <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Account summary">
-      <NuxtLink v-for="stat in [
+    <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(error) }}</p>
+    <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" :aria-label="$t('common.accountSummary')">
+      <NuxtLinkLocale v-for="stat in [
         { label: 'Total orders', value: stats.total, icon: 'lucide:package', to: '/account/orders' },
         { label: 'In progress', value: stats.active, icon: 'lucide:clock-3', to: '/account/orders?filter=active' },
         { label: 'Completed', value: stats.completed, icon: 'lucide:check-circle-2', to: '/account/orders?filter=completed' },
         { label: 'Wallet balance', value: formatAccountMoney(stats.wallet), icon: 'lucide:wallet', to: '/account/wallet' }
       ]" :key="stat.label" :to="stat.to" class="rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-200 hover:bg-blue-50/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
-        <div class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Icon :name="stat.icon" size="19" aria-hidden="true" /></span><span class="text-sm text-slate-600">{{ stat.label }}</span></div>
+        <div class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Icon :name="stat.icon" size="19" aria-hidden="true" /></span><span class="text-sm text-slate-600">{{ $uiLabel(stat.label) }}</span></div>
         <p class="mt-3 text-2xl font-bold text-slate-900">{{ loading || error ? '—' : stat.value }}</p>
-      </NuxtLink>
+      </NuxtLinkLocale>
     </section>
     <section aria-labelledby="recent-orders-heading" class="space-y-3">
-      <div class="flex items-center justify-between gap-3"><h2 id="recent-orders-heading" class="text-xl font-bold text-slate-900">Recent orders</h2><span v-if="!loading && !error" class="text-sm text-slate-500">{{ stats.total }} total</span></div>
-      <p v-if="loading" role="status" class="rounded-2xl bg-white p-8 text-center text-sm text-slate-600">Loading your orders…</p>
+      <div class="flex items-center justify-between gap-3"><h2 id="recent-orders-heading" class="text-xl font-bold text-slate-900">{{ $t('common.recentOrders') }}</h2><span v-if="!loading && !error" class="text-sm text-slate-500">{{ $t('common.valueTotal', { value0: (stats.total) }) }}</span></div>
+      <p v-if="loading" role="status" class="rounded-2xl bg-white p-8 text-center text-sm text-slate-600">{{ $t('common.loadingYourOrders') }}</p>
       <div v-else-if="!error && orders.length" class="grid gap-3 xl:grid-cols-2"><AccountOrderCard v-for="order in orders" :key="order.id" :order="order" compact /></div>
-      <div v-else-if="!error" class="rounded-2xl border border-slate-200 bg-white p-8 text-center"><Icon name="lucide:package-open" size="28" class="mx-auto text-slate-400" aria-hidden="true" /><p class="mt-3 font-semibold text-slate-900">No orders yet</p><p class="mt-1 text-sm text-slate-600">Your purchases will appear here.</p><NuxtLink to="/search" class="mt-4 inline-flex min-h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700">Browse products</NuxtLink></div>
+      <div v-else-if="!error" class="rounded-2xl border border-slate-200 bg-white p-8 text-center"><Icon name="lucide:package-open" size="28" class="mx-auto text-slate-400" aria-hidden="true" /><p class="mt-3 font-semibold text-slate-900">{{ $t('common.noOrdersYet') }}</p><p class="mt-1 text-sm text-slate-600">{{ $t('account.index.yourPurchasesWillAppearHere') }}</p><NuxtLinkLocale to="/search" class="mt-4 inline-flex min-h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700">{{ $t('common.browseProducts') }}</NuxtLinkLocale></div>
     </section>
   </div>
 </template>

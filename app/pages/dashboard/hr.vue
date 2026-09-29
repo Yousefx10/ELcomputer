@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-6xl space-y-6">
     <DashboardPageIntro
-      title="People"
-      description="Employee records, admin accounts and store customers."
+      :title="$t('common.people')"
+      :description="$t('interface.employeeRecordsAdminAccountsAndStoreCustomers')"
     />
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
@@ -19,7 +19,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const route = useRoute()
+const route = useUiRoute()
 const { hasPermission } = useAdminAccess()
 
 const canViewEmployees = computed(() => hasPermission('hr.view'))

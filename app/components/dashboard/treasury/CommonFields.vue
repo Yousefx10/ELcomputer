@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="mb-2 block text-sm font-semibold text-gray-700">Amount *</label>
+    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.amount') }}</label>
     <input
       :value="amount"
       required
@@ -14,7 +14,7 @@
   </div>
 
   <div>
-    <label class="mb-2 block text-sm font-semibold text-gray-700">Payment Date *</label>
+    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.paymentDate') }}</label>
     <input
       :value="paidAt"
       required
@@ -25,18 +25,18 @@
   </div>
 
   <div>
-    <label class="mb-2 block text-sm font-semibold text-gray-700">Reference Number</label>
+    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.referenceNumber') }}</label>
     <input
       :value="referenceNumber"
       type="text"
-      placeholder="Receipt, transfer, or cheque number"
+      :placeholder="$t('dashboard.treasury.receiptTransferOrChequeNumber')"
       class="w-full rounded-lg border p-3 outline-none focus:border-amber-500"
       @input="$emit('update:referenceNumber', $event.target.value)"
     >
   </div>
 
   <div>
-    <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
     <input
       :value="notes"
       type="text"

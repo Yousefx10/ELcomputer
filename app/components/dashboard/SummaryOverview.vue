@@ -2,11 +2,11 @@
   <section class="space-y-4" aria-labelledby="business-overview-title">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h3 id="business-overview-title" class="text-2xl font-bold text-gray-900">Business overview</h3>
-        <p class="mt-1 text-sm text-gray-500">Customers, orders and sales performance at a glance.</p>
+        <h3 id="business-overview-title" class="text-2xl font-bold text-gray-900">{{ $t('common.businessOverview') }}</h3>
+        <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.SummaryOverview.customersOrdersAndSalesPerformanceAtAGlance') }}</p>
       </div>
       <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm ring-1 ring-gray-200">
-        <Icon name="lucide:calendar-days" size="14" /> Last 7 days
+        <Icon name="lucide:calendar-days" size="14" /> {{ $t('common.last7Days') }}
       </span>
     </div>
 
@@ -14,7 +14,7 @@
       <DashboardStatCard
         v-for="card in overviewCards"
         :key="card.key"
-        :label="card.label"
+        :label="$uiLabel(card.label)"
         :value="card.value"
         :icon="card.icon"
         :tone="card.tone"
@@ -31,25 +31,25 @@
       <article v-if="canSeeAnalysis" class="overflow-hidden rounded-[1.35rem] border border-gray-200/80 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p class="text-base font-bold text-gray-950">Sales performance</p>
-            <p class="mt-1 text-xs text-gray-500">Daily revenue for the last seven days.</p>
+            <p class="text-base font-bold text-gray-950">{{ $t('common.salesPerformance') }}</p>
+            <p class="mt-1 text-xs text-gray-500">{{ $t('dashboard.SummaryOverview.dailyRevenueForTheLastSevenDays') }}</p>
           </div>
-          <div class="text-right">
-            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">7-day sales</p>
+          <div class="text-end">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ $t('common.7DaySales') }}</p>
             <p class="mt-1 text-xl font-black tabular-nums text-gray-950">{{ analyticsLoading || analyticsError ? '—' : formatCurrency(chartTotal) }}</p>
           </div>
         </div>
 
         <div v-if="analyticsLoading" class="mt-6 h-56 animate-pulse rounded-2xl bg-gray-100" />
         <div v-else-if="analyticsError" class="mt-6 flex h-56 items-center justify-center rounded-2xl bg-gray-50 p-6 text-center text-sm text-gray-500">
-          {{ analyticsError }}
+          {{ $uiMessage(analyticsError) }}
         </div>
         <div v-else class="mt-6">
           <div class="relative h-52 overflow-hidden rounded-2xl bg-gradient-to-b from-blue-50/70 to-white px-3 pt-4">
             <div class="pointer-events-none absolute inset-x-3 inset-y-4 flex flex-col justify-between" aria-hidden="true">
               <span v-for="line in 4" :key="line" class="border-t border-dashed border-blue-100" />
             </div>
-            <svg viewBox="0 0 1000 220" preserveAspectRatio="none" class="relative h-full w-full overflow-visible" role="img" aria-label="Seven-day sales chart">
+            <svg viewBox="0 0 1000 220" preserveAspectRatio="none" class="relative h-full w-full overflow-visible" role="img" :aria-label="$t('common.sevenDaySalesChart')">
               <defs>
                 <linearGradient id="summary-sales-fill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3" />
@@ -59,7 +59,7 @@
               <path v-if="chartPoints.length > 1" :d="chartAreaPath" fill="url(#summary-sales-fill)" />
               <polyline v-if="chartPoints.length > 1" :points="chartPolyline" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
               <circle v-for="point in chartPoints" :key="point.index" :cx="point.x" :cy="point.y" r="5" fill="#2563eb" stroke="white" stroke-width="3" vector-effect="non-scaling-stroke">
-                <title>{{ point.label }}: {{ formatCurrency(point.value) }}</title>
+                <title>{{ $uiLabel(point.label) }}: {{ formatCurrency(point.value) }}</title>
               </circle>
             </svg>
           </div>
@@ -71,21 +71,21 @@
 
       <article v-if="canSeeOrders" class="rounded-[1.35rem] border border-gray-200/80 bg-white p-5 shadow-sm sm:p-6">
         <div>
-          <p class="text-base font-bold text-gray-950">Order status</p>
-          <p class="mt-1 text-xs text-gray-500">Current open-order workload.</p>
+          <p class="text-base font-bold text-gray-950">{{ $t('common.orderStatus') }}</p>
+          <p class="mt-1 text-xs text-gray-500">{{ $t('dashboard.SummaryOverview.currentOpenOrderWorkload') }}</p>
         </div>
 
         <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row xl:flex-col 2xl:flex-row">
-          <div class="relative h-40 w-40 shrink-0 rounded-full" :style="{ background: orderStatusGradient }" role="img" :aria-label="`${formatNumber(summary.orders.open)} open orders`">
+          <div class="relative h-40 w-40 shrink-0 rounded-full" :style="{ background: orderStatusGradient }" role="img" :aria-label="$t('common.valueOpenOrders', { value0: (formatNumber(summary.orders.open)) })">
             <div class="absolute inset-7 grid place-items-center rounded-full bg-white text-center shadow-inner">
-              <div><p class="text-2xl font-black tabular-nums text-gray-950">{{ formatNumber(summary.orders.open) }}</p><p class="text-[10px] font-bold uppercase tracking-wide text-gray-400">Open</p></div>
+              <div><p class="text-2xl font-black tabular-nums text-gray-950">{{ formatNumber(summary.orders.open) }}</p><p class="text-[10px] font-bold uppercase tracking-wide text-gray-400">{{ $t('common.open') }}</p></div>
             </div>
           </div>
 
           <div class="w-full min-w-0 space-y-3">
             <div v-for="status in orderStatuses" :key="status.key" class="flex items-center gap-2.5 text-xs">
               <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: status.color }" />
-              <span class="min-w-0 flex-1 truncate text-gray-500">{{ status.label }}</span>
+              <span class="min-w-0 flex-1 truncate text-gray-500">{{ $uiLabel(status.label) }}</span>
               <strong class="tabular-nums text-gray-900">{{ formatNumber(status.value) }}</strong>
             </div>
           </div>
@@ -96,6 +96,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const props = defineProps({
   summary: { type: Object, required: true },
   canSeeOrders: { type: Boolean, default: false },
@@ -111,15 +113,15 @@ const analyticsLoading = ref(props.canSeeAnalysis)
 const analyticsError = ref('')
 const ANALYTICS_CACHE_KEY = 'dashboard:summary:visual-overview:v1'
 
-const numberFormatter = new Intl.NumberFormat('en-US')
-const currencyFormatter = new Intl.NumberFormat('en-US', {
+const numberFormatter = computed(() => new Intl.NumberFormat(intlLocale.value))
+const currencyFormatter = computed(() => new Intl.NumberFormat(intlLocale.value, {
   style: 'currency',
   currency: 'EGP',
   maximumFractionDigits: 0
-})
+}))
 
-const formatNumber = (value) => numberFormatter.format(Number(value || 0))
-const formatCurrency = (value) => currencyFormatter.format(Number(value || 0))
+const formatNumber = (value) => numberFormatter.value.format(Number(value || 0))
+const formatCurrency = (value) => currencyFormatter.value.format(Number(value || 0))
 const formatPercentage = (value) => `${value > 0 ? '+' : ''}${Number(value || 0).toFixed(1)}%`
 
 const monthlyCurrent = computed(() => Number(analyticsOverview.value?.monthly?.current?.revenue || 0))
@@ -192,8 +194,8 @@ const chartPoints = computed(() => {
       value: Number(row.revenue || 0),
       x: rows.length > 1 ? (index / (rows.length - 1)) * 1000 : 500,
       y: 200 - (Number(row.revenue || 0) / maximum) * 170,
-      label: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date),
-      shortLabel: new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date)
+      label: new Intl.DateTimeFormat(intlLocale.value, { month: 'short', day: 'numeric' }).format(date),
+      shortLabel: new Intl.DateTimeFormat(intlLocale.value, { weekday: 'short' }).format(date)
     }
   })
 })

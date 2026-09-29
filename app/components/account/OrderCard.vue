@@ -1,5 +1,9 @@
 <script setup>
-import { formatAccountDate, formatAccountMoney, paymentStatusClass, paymentStatusLabel } from '~/utils/accountOrders'
+const { intlLocale } = useUiLocale()
+const formatAccountMoney = (value, option = 'EGP') => baseFormatAccountMoney(value, option, intlLocale.value)
+const formatAccountDate = (value, option = false) => baseFormatAccountDate(value, option, intlLocale.value)
+
+import { formatAccountDate as baseFormatAccountDate, formatAccountMoney as baseFormatAccountMoney, paymentStatusClass, paymentStatusLabel } from '~/utils/accountOrders'
 import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/orderStatus'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
 import { paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
@@ -29,18 +33,18 @@ const reorder = async () => {
   <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <h2 class="break-all text-base font-bold text-slate-900">{{ order.order_number || `Order ${order.id.slice(0, 8)}` }}</h2>
-        <p class="mt-1 text-xs text-slate-500">{{ formatAccountDate(order.created_at) }} · {{ order.itemCount || 0 }} {{ order.itemCount === 1 ? 'item' : 'items' }}</p>
+        <h2 class="break-all text-base font-bold text-slate-900">{{ order.order_number || $t('common.orderValueVariant2', { value0: (order.id.slice(0, 8)) }) }}</h2>
+        <p class="mt-1 text-xs text-slate-500">{{ formatAccountDate(order.created_at) }} · {{ order.itemCount || 0 }} {{ order.itemCount === 1 ? $t('common.item') : $t('common.items') }}</p>
       </div>
       <p class="whitespace-nowrap text-base font-bold text-slate-900">{{ formatAccountMoney(order.total_amount, order.currency) }}</p>
     </div>
     <div class="mt-3 flex flex-wrap items-center gap-2">
-      <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-900">PRE-ORDER</span>
-      <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ formatCustomerOrderStatus(order.status) }}</span>
-      <span v-if="!compact && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ paymentStatusLabel(order.payment_status) }}</span>
-      <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ paymentProofStatusLabel(order.payment_proof_status) }}</span>
+      <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
+      <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ $uiLabel(formatCustomerOrderStatus(order.status)) }}</span>
+      <span v-if="!compact && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ $uiLabel(paymentStatusLabel(order.payment_status)) }}</span>
+      <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ $uiLabel(paymentProofStatusLabel(order.payment_proof_status)) }}</span>
     </div>
-    <p v-if="order.is_preorder" class="mt-2 text-xs text-slate-600">Required initial payment {{ formatAccountMoney(order.initial_amount_due, order.currency) }} · Verified paid {{ formatAccountMoney(order.amount_paid, order.currency) }} · Balance {{ formatAccountMoney(Number(order.total_amount) - Number(order.amount_paid), order.currency) }}</p>
+    <p v-if="order.is_preorder" class="mt-2 text-xs text-slate-600">{{ $t('account.OrderCard.requiredInitialPaymentValueVerifiedPaidValueBalanceValue', { value0: (formatAccountMoney(order.initial_amount_due, order.currency)), value1: (formatAccountMoney(order.amount_paid, order.currency)), value2: (formatAccountMoney(Number(order.total_amount) - Number(order.amount_paid), order.currency)) }) }}</p>
     <div v-if="order.items?.length" class="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
       <div class="flex shrink-0 -space-x-2">
         <div v-for="item in order.items.slice(0, 3)" :key="item.id" class="flex size-11 items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-slate-100 text-slate-400">
@@ -50,10 +54,10 @@ const reorder = async () => {
       </div>
       <p class="min-w-0 flex-1 truncate text-sm text-slate-600">{{ order.items.map(item => item.product_title).join(', ') }}</p>
     </div>
-    <p v-if="reorderMessage" class="mt-3 text-right text-xs text-slate-600" role="status">{{ reorderMessage }} <NuxtLink v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">View cart</NuxtLink></p>
+    <p v-if="reorderMessage" class="mt-3 text-end text-xs text-slate-600" role="status">{{ $uiLabel(reorderMessage) }} <NuxtLinkLocale v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">{{ $t('common.viewCart') }}</NuxtLinkLocale></p>
     <div class="mt-4 flex flex-wrap justify-end gap-2">
-      <button v-if="canReorder" type="button" :disabled="reordering" class="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-blue-200 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:cursor-wait disabled:opacity-60" @click="reorder"><Icon name="lucide:rotate-ccw" size="15" aria-hidden="true" />{{ reordering ? 'Adding…' : 'Order again' }}</button>
-      <NuxtLink :to="`/account/orders/${order.id}`" class="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">View order <Icon name="lucide:arrow-right" size="16" aria-hidden="true" /></NuxtLink>
+      <button v-if="canReorder" type="button" :disabled="reordering" class="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-blue-200 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:cursor-wait disabled:opacity-60" @click="reorder"><Icon name="lucide:rotate-ccw" size="15" aria-hidden="true" />{{ reordering ? $t('common.adding') : $t('common.orderAgain') }}</button>
+      <NuxtLinkLocale :to="`/account/orders/${order.id}`" class="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">{{ $t('common.viewOrder') }} <Icon name="lucide:arrow-right" size="16" aria-hidden="true" class="directional-icon" /></NuxtLinkLocale>
     </div>
   </article>
 </template>

@@ -12,45 +12,45 @@
         title-class="text-3xl font-bold"
       />
 
-      <nav v-if="activeSettingsSection" class="flex flex-wrap items-center justify-between gap-3" aria-label="Settings sections">
-        <NuxtLink to="/dashboard/settings" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
-          <Icon name="lucide:arrow-left" size="16" /> All settings
-        </NuxtLink>
+      <nav v-if="activeSettingsSection" class="flex flex-wrap items-center justify-between gap-3" :aria-label="$t('common.settingsSections')">
+        <NuxtLinkLocale to="/dashboard/settings" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
+          <Icon name="lucide:arrow-left" size="16" class="directional-icon" /> {{ $t('common.allSettings') }}
+        </NuxtLinkLocale>
         <label class="flex min-w-0 items-center gap-3 text-sm text-gray-600">
-          <span class="shrink-0">Go to</span>
-          <select aria-label="Settings section" :value="activeSettingsSection.key" class="min-w-0 rounded-xl border border-gray-200 bg-white p-3 text-gray-900" @change="navigateTo(`/dashboard/settings?tab=${$event.target.value}`)">
-            <option v-for="item in availableSettingsSections" :key="item.key" :value="item.key">{{ item.label }}</option>
+          <span class="shrink-0">{{ $t('common.goTo') }}</span>
+          <select :aria-label="$t('common.settingsSection')" :value="activeSettingsSection.key" class="min-w-0 rounded-xl border border-gray-200 bg-white p-3 text-gray-900" @change="uiNavigateTo(`/dashboard/settings?tab=${$event.target.value}`)">
+            <option v-for="item in availableSettingsSections" :key="item.key" :value="item.key">{{ $uiLabel(item.label) }}</option>
           </select>
         </label>
       </nav>
 
       <div v-if="activeSettingsView === 'general' && !activeSettingsSection" class="space-y-6">
         <label class="relative block">
-          <Icon name="lucide:search" size="19" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input v-model="settingsSearch" type="search" aria-label="Find a setting" placeholder="Find a setting" class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 outline-none focus:border-blue-500" />
+          <Icon name="lucide:search" size="19" class="absolute start-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input v-model="settingsSearch" type="search" :aria-label="$t('common.findASetting')" :placeholder="$t('common.findASetting')" class="w-full rounded-xl border border-gray-200 bg-white py-3 ps-11 pe-4 outline-none focus:border-blue-500" />
         </label>
         <section v-for="group in settingsGroups" :key="group.label">
-          <h3 class="mb-3 text-sm font-bold text-gray-500">{{ group.label }}</h3>
+          <h3 class="mb-3 text-sm font-bold text-gray-500">{{ $uiLabel(group.label) }}</h3>
           <div class="grid gap-3 md:grid-cols-2">
-            <NuxtLink v-for="item in group.items" :key="item.key" :to="item.to" class="flex items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-blue-400 hover:shadow-sm">
+            <NuxtLinkLocale v-for="item in group.items" :key="item.key" :to="item.to" class="flex items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-blue-400 hover:shadow-sm">
               <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Icon :name="item.icon" size="20" /></span>
-              <div class="min-w-0 flex-1"><h4 class="font-bold text-gray-900">{{ item.label }}</h4><p class="mt-1 text-sm text-gray-500">{{ item.description }}</p></div>
-              <Icon name="lucide:chevron-right" size="17" class="mt-1 shrink-0 text-gray-400" />
-            </NuxtLink>
+              <div class="min-w-0 flex-1"><h4 class="font-bold text-gray-900">{{ $uiLabel(item.label) }}</h4><p class="mt-1 text-sm text-gray-500">{{ $uiLabel(item.description) }}</p></div>
+              <Icon name="lucide:chevron-right" size="17" class="directional-icon mt-1 shrink-0 text-gray-400" />
+            </NuxtLinkLocale>
           </div>
         </section>
-        <p v-if="!settingsGroups.length" class="rounded-xl bg-white p-6 text-sm text-gray-500">No settings match your search.</p>
+        <p v-if="!settingsGroups.length" class="rounded-xl bg-white p-6 text-sm text-gray-500">{{ $t('dashboard.settings.noSettingsMatchYourSearch') }}</p>
       </div>
 
       <div v-if="pageError" class="rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </div>
 
       <div
         v-if="!canEditSettings"
         class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 shadow"
       >
-        You can view these settings but cannot change them.
+        {{ $t('dashboard.settings.youCanViewTheseSettingsButCannotChangeThem') }}
       </div>
 
       <fieldset v-if="activeSettingsView === 'general'" :disabled="!canEditSettings" class="min-w-0 space-y-4">
@@ -58,12 +58,12 @@
           <button :aria-expanded="openSections.generalSettings"
             type="button"
             @click="toggleSection('generalSettings')"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
           >
             <div>
-              <h3 class="text-2xl font-bold">General Settings</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.generalSettings') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Main site details and logo
+                {{ $t('dashboard.settings.mainSiteDetailsAndLogo') }}
               </p>
             </div>
 
@@ -82,7 +82,7 @@
           >
             <div class="grid gap-5 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Site Name</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.siteName') }}</label>
                 <input
                   v-model="siteSettings.site_name"
                   type="text"
@@ -92,15 +92,27 @@
 
               <DashboardMediaUploadField
                 v-model="siteSettings.site_logo_url"
-                label="Site Logo"
+                :label="$t('common.siteLogo')"
                 section="site_logo"
-                preview-alt="Site logo"
+                :preview-alt="$t('common.siteLogo')"
                 preview-height-class="h-24"
-                help-text="Shown in the store header and footer."
+                :help-text="$t('dashboard.settings.shownInTheStoreHeaderAndFooter')"
               />
 
+              <section class="space-y-4 rounded-xl border border-gray-200 p-4" aria-labelledby="branding-heading">
+                <h3 id="branding-heading" class="font-semibold">{{ $t('common.appearanceAndBranding') }}</h3>
+                <label class="block text-sm font-semibold">{{ $t('common.siteTheme') }}
+                  <select v-model="siteSettings.site_theme_default" class="mt-2 block w-full rounded-lg border p-3" :disabled="!canEditSettings">
+                    <option value="system">{{ $t('common.system') }}</option><option value="light">{{ $t('common.light') }}</option><option value="dark">{{ $t('common.dark') }}</option>
+                  </select>
+                </label>
+                <p class="text-sm text-gray-500">{{ $t('dashboard.settings.visitorsSavedThemeChoicesTakePriority') }}</p>
+                <DashboardMediaUploadField v-model="siteSettings.site_logo_light_url" preview-theme="light" :label="$t('common.lightModeLogo')" section="site_logo" :preview-alt="$t('common.lightModeLogo')" preview-height-class="h-24" :disabled="!canEditSettings" :help-text="$t('dashboard.settings.usesTheExistingSiteLogoWhenEmpty')" />
+                <DashboardMediaUploadField v-model="siteSettings.site_logo_dark_url" preview-theme="dark" :label="$t('common.darkModeLogo')" section="site_logo" :preview-alt="$t('common.darkModeLogo')" preview-height-class="h-24" :disabled="!canEditSettings" :help-text="$t('dashboard.settings.usesTheLightLogoWhenEmpty')" />
+              </section>
+
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Background Color</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.backgroundColor') }}</label>
                 <input
                   v-model="siteSettings.site_background_color"
                   type="text"
@@ -110,7 +122,7 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Homepage Title</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.homepageTitle') }}</label>
                 <input
                   v-model="siteSettings.landing_page_title"
                   type="text"
@@ -122,9 +134,9 @@
               <div class="md:col-span-2 rounded-2xl border bg-gray-50 p-5">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p class="font-bold text-gray-900">Allow out-of-stock purchases</p>
+                    <p class="font-bold text-gray-900">{{ $t('dashboard.settings.allowOutOfStockPurchases') }}</p>
                     <p class="mt-1 text-sm text-gray-500">
-                      Allow orders for products with no available stock.
+                      {{ $t('dashboard.settings.allowOrdersForProductsWithNoAvailableStock') }}
                     </p>
                   </div>
 
@@ -133,7 +145,7 @@
                       class="text-sm font-semibold"
                       :class="siteSettings.allow_out_of_stock_purchases ? 'text-green-600' : 'text-gray-500'"
                     >
-                      {{ siteSettings.allow_out_of_stock_purchases ? 'ON' : 'OFF' }}
+                      {{ siteSettings.allow_out_of_stock_purchases ? $t('common.on') : $t('common.off') }}
                     </span>
 
                     <button
@@ -159,7 +171,7 @@
                   v-if="settingsErrorSection === 'generalSettings' && settingsError"
                   class="text-sm text-red-600"
                 >
-                  {{ settingsError }}
+                  {{ $uiMessage(settingsError) }}
                 </p>
 
                 <p
@@ -179,7 +191,7 @@
                   ? 'bg-blue-600 hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-300'"
               >
-                {{ settingsLoadingSection === 'generalSettings' ? 'Saving...' : 'Save General Settings' }}
+                {{ settingsLoadingSection === 'generalSettings' ? $t('common.saving') : $t('common.saveGeneralSettings') }}
               </button>
             </div>
           </div>
@@ -188,13 +200,13 @@
         <section v-show="activeSettingsSection?.section === 'homepageReviews'" class="overflow-hidden rounded-2xl bg-white shadow">
           <button :aria-expanded="openSections.homepageReviews"
             type="button"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
             @click="toggleSection('homepageReviews')"
           >
             <div>
-              <h3 class="text-2xl font-bold">Homepage Reviews</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.homepageReviews') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Show or hide reviews on the homepage.
+                {{ $t('dashboard.settings.showOrHideReviewsOnTheHomepage') }}
               </p>
             </div>
 
@@ -215,9 +227,9 @@
               <div class="rounded-2xl border bg-gray-50 p-5">
                 <div class="flex items-center justify-between gap-4">
                   <div>
-                    <p class="font-bold text-gray-900">Show reviews on homepage</p>
+                    <p class="font-bold text-gray-900">{{ $t('dashboard.settings.showReviewsOnHomepage') }}</p>
                     <p class="mt-1 text-sm text-gray-500">
-                      Display a moving carousel of recent customer reviews.
+                      {{ $t('dashboard.settings.displayAMovingCarouselOfRecentCustomerReviews') }}
                     </p>
                   </div>
 
@@ -226,12 +238,12 @@
                       class="text-sm font-semibold"
                       :class="siteSettings.homepage_reviews_enabled ? 'text-green-600' : 'text-gray-500'"
                     >
-                      {{ siteSettings.homepage_reviews_enabled ? 'ON' : 'OFF' }}
+                      {{ siteSettings.homepage_reviews_enabled ? $t('common.on') : $t('common.off') }}
                     </span>
 
                     <button
                       type="button"
-                      aria-label="Toggle homepage customer reviews"
+                      :aria-label="$t('dashboard.settings.toggleHomepageCustomerReviews')"
                       :disabled="!canEditSettings"
                       :aria-pressed="siteSettings.homepage_reviews_enabled"
                       class="relative inline-flex h-7 w-14 items-center rounded-full transition disabled:cursor-not-allowed"
@@ -250,9 +262,9 @@
               <div class="rounded-2xl border bg-gray-50 p-5">
                 <div class="flex items-center justify-between gap-4">
                   <div>
-                    <p class="font-bold text-gray-900">Show “View all reviews” button</p>
+                    <p class="font-bold text-gray-900">{{ $t('dashboard.settings.showViewAllReviewsButton') }}</p>
                     <p class="mt-1 text-sm text-gray-500">
-                      Add a link to the full reviews page.
+                      {{ $t('dashboard.settings.addALinkToTheFullReviewsPage') }}
                     </p>
                   </div>
 
@@ -261,12 +273,12 @@
                       class="text-sm font-semibold"
                       :class="siteSettings.homepage_reviews_view_all_enabled ? 'text-green-600' : 'text-gray-500'"
                     >
-                      {{ siteSettings.homepage_reviews_view_all_enabled ? 'ON' : 'OFF' }}
+                      {{ siteSettings.homepage_reviews_view_all_enabled ? $t('common.on') : $t('common.off') }}
                     </span>
 
                     <button
                       type="button"
-                      aria-label="Toggle the View all reviews button"
+                      :aria-label="$t('dashboard.settings.toggleTheViewAllReviewsButton')"
                       :disabled="!canEditSettings"
                       :aria-pressed="siteSettings.homepage_reviews_view_all_enabled"
                       class="relative inline-flex h-7 w-14 items-center rounded-full transition disabled:cursor-not-allowed"
@@ -289,7 +301,7 @@
                   v-if="settingsErrorSection === 'homepageReviews' && settingsError"
                   class="text-sm text-red-600"
                 >
-                  {{ settingsError }}
+                  {{ $uiMessage(settingsError) }}
                 </p>
 
                 <p
@@ -309,7 +321,7 @@
                   : 'cursor-not-allowed bg-gray-300'"
                 @click="saveSiteSettings('homepageReviews')"
               >
-                {{ settingsLoadingSection === 'homepageReviews' ? 'Saving...' : 'Save Homepage Reviews' }}
+                {{ settingsLoadingSection === 'homepageReviews' ? $t('common.saving') : $t('common.saveHomepageReviews') }}
               </button>
             </div>
           </div>
@@ -319,12 +331,12 @@
           <button :aria-expanded="openSections.offerCards"
             type="button"
             @click="toggleSection('offerCards')"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
           >
             <div>
-              <h3 class="text-2xl font-bold">Offer Cards</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.offerCards') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Add homepage offers and choose where each one links.
+                {{ $t('dashboard.settings.addHomepageOffersAndChooseWhereEachOneLinks') }}
               </p>
             </div>
 
@@ -344,24 +356,24 @@
             <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p class="text-sm text-gray-500">
-                  Add a title, image and link for each offer.
+                  {{ $t('dashboard.settings.addATitleImageAndLinkForEachOffer') }}
                 </p>
               </div>
 
               <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-                {{ offerCards.length }} card{{ offerCards.length === 1 ? '' : 's' }}
+                {{ $t('common.valueCardvalue', { value0: (offerCards.length), value1: (offerCards.length === 1 ? '' : $uiPluralSuffix('s')) }) }}
               </div>
             </div>
 
             <p v-if="offerCardsError" class="mb-4 text-sm text-red-600">
-              {{ offerCardsError }}
+              {{ $uiMessage(offerCardsError) }}
             </p>
 
             <div class="overflow-x-auto pb-2">
               <div class="flex gap-4">
                 <div class="w-[340px] flex-shrink-0 rounded-2xl border bg-gray-50 p-4">
                   <p class="text-lg font-bold text-gray-900">
-                    Add Offer Card
+                    {{ $t('common.addOfferCard') }}
                   </p>
 
                   <div class="mt-4 overflow-hidden rounded-2xl bg-black">
@@ -369,7 +381,7 @@
                       <img
                         v-if="newOfferCard.image_url"
                         :src="newOfferCard.image_url"
-                        alt="Offer card preview"
+                        :alt="$t('common.offerCardPreview')"
                         class="absolute inset-0 h-full w-full object-cover"
                       >
 
@@ -385,12 +397,12 @@
                           </p>
 
                           <h4 class="mt-3 text-3xl font-black leading-none">
-                            {{ newOfferCard.title || 'Offer Title' }}
+                            {{ newOfferCard.title || $t('common.offerTitle') }}
                           </h4>
                         </div>
 
                         <span class="inline-flex w-fit rounded-full border border-white/45 bg-white/15 px-4 py-2 text-sm font-semibold">
-                          View Offer
+                          {{ $t('common.viewOffer') }}
                         </span>
                       </div>
                     </div>
@@ -398,56 +410,56 @@
 
                   <div class="mt-4 space-y-3">
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Short label</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortLabel') }}</label>
                       <input
                         v-model="newOfferCard.eyebrow_text"
                         type="text"
-                        placeholder="More than"
+                        :placeholder="$t('common.moreThan')"
                         class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                       >
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
                       <input
                         v-model="newOfferCard.title"
                         type="text"
-                        placeholder="40% off"
+                        :placeholder="$t('common.40Off')"
                         class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                       >
                     </div>
 
                     <DashboardMediaUploadField
                       v-model="newOfferCard.image_url"
-                      label="Offer Image"
+                      :label="$t('common.offerImage')"
                       section="offer_cards"
                       :show-preview="false"
-                      help-text="Upload an image for this offer."
+                      :help-text="$t('dashboard.settings.uploadAnImageForThisOffer')"
                     />
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortcutType') }}</label>
                       <select
                         v-model="newOfferCard.target_type"
                         class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                       >
-                        <option value="search">Search Result</option>
-                        <option value="product">Product Page</option>
+                        <option value="search">{{ $t('common.searchResult') }}</option>
+                        <option value="product">{{ $t('common.productPage') }}</option>
                       </select>
                     </div>
 
                     <div v-if="newOfferCard.target_type === 'search'">
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Search Query</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.searchQuery') }}</label>
                       <input
                         v-model="newOfferCard.search_query"
                         type="text"
-                        placeholder="gaming mouse"
+                        :placeholder="$t('common.gamingMouse')"
                         class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                       >
                     </div>
 
                     <div v-else>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Product Slug</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productSlug') }}</label>
                       <input
                         v-model="newOfferCard.product_slug"
                         type="text"
@@ -463,7 +475,7 @@
                     @click="addOfferCard"
                     class="mt-4 w-full rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
                   >
-                    {{ offerCardsLoading ? 'Saving...' : 'Add Offer Card' }}
+                    {{ offerCardsLoading ? $t('common.saving') : $t('common.addOfferCard') }}
                   </button>
                 </div>
 
@@ -477,7 +489,7 @@
                       <img
                         v-if="offerCard.image_url"
                         :src="offerCard.image_url"
-                        alt="Offer card preview"
+                        :alt="$t('common.offerCardPreview')"
                         class="absolute inset-0 h-full w-full object-cover"
                       >
 
@@ -493,12 +505,12 @@
                           </p>
 
                           <h4 class="mt-3 text-3xl font-black leading-none">
-                            {{ offerCard.title || 'Offer Title' }}
+                            {{ offerCard.title || $t('common.offerTitle') }}
                           </h4>
                         </div>
 
                         <span class="inline-flex w-fit rounded-full border border-white/45 bg-white/15 px-4 py-2 text-sm font-semibold">
-                          View Offer
+                          {{ $t('common.viewOffer') }}
                         </span>
                       </div>
                     </div>
@@ -506,7 +518,7 @@
 
                   <div class="mt-4 space-y-3">
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Short label</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortLabel') }}</label>
                       <input
                         v-model="offerCard.eyebrow_text"
                         type="text"
@@ -515,7 +527,7 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
                       <input
                         v-model="offerCard.title"
                         type="text"
@@ -525,25 +537,25 @@
 
                     <DashboardMediaUploadField
                       v-model="offerCard.image_url"
-                      label="Offer Image"
+                      :label="$t('common.offerImage')"
                       section="offer_cards"
                       :show-preview="false"
-                      help-text="Upload an image for this offer."
+                      :help-text="$t('dashboard.settings.uploadAnImageForThisOffer')"
                     />
 
                     <div>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Shortcut Type</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortcutType') }}</label>
                       <select
                         v-model="offerCard.target_type"
                         class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                       >
-                        <option value="search">Search Result</option>
-                        <option value="product">Product Page</option>
+                        <option value="search">{{ $t('common.searchResult') }}</option>
+                        <option value="product">{{ $t('common.productPage') }}</option>
                       </select>
                     </div>
 
                     <div v-if="offerCard.target_type === 'search'">
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Search Query</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.searchQuery') }}</label>
                       <input
                         v-model="offerCard.search_query"
                         type="text"
@@ -552,7 +564,7 @@
                     </div>
 
                     <div v-else>
-                      <label class="mb-2 block text-sm font-semibold text-gray-700">Product Slug</label>
+                      <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productSlug') }}</label>
                       <input
                         v-model="offerCard.product_slug"
                         type="text"
@@ -562,7 +574,7 @@
 
                     <label class="flex items-center gap-2 text-sm text-gray-600">
                       <input v-model="offerCard.is_enabled" type="checkbox">
-                      Enabled
+                      {{ $t('common.enabled') }}
                     </label>
                   </div>
 
@@ -576,7 +588,7 @@
                         ? 'bg-blue-600 hover:bg-blue-700'
                         : 'cursor-not-allowed bg-gray-300'"
                     >
-                      Save
+                      {{ $t('common.save') }}
                     </button>
 
                     <button
@@ -585,7 +597,7 @@
                       @click="deleteOfferCard(offerCard.id)"
                       class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
                     >
-                      Delete
+                      {{ $t('common.delete') }}
                     </button>
                   </div>
                 </div>
@@ -593,7 +605,7 @@
             </div>
 
             <p v-if="!offerCards.length" class="mt-4 text-sm text-gray-500">
-              No offer cards yet. Add one above.
+              {{ $t('dashboard.settings.noOfferCardsYetAddOneAbove') }}
             </p>
           </div>
         </section>
@@ -602,12 +614,12 @@
           <button :aria-expanded="openSections.topBarTexts"
             type="button"
             @click="toggleSection('topBarTexts')"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
           >
             <div>
-              <h3 class="text-2xl font-bold">Announcements</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.announcements') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Messages shown above the store menu.
+                {{ $t('dashboard.settings.messagesShownAboveTheStoreMenu') }}
               </p>
             </div>
 
@@ -626,7 +638,7 @@
           >
             <div class="mb-5 grid gap-5 md:grid-cols-[220px_auto]">
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Top Bar Rotation Seconds</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.topBarRotationSeconds') }}</label>
                 <input
                   v-model="siteSettings.top_bar_rotation_seconds"
                   type="number"
@@ -645,7 +657,7 @@
                     ? 'bg-blue-600 hover:bg-blue-700'
                     : 'cursor-not-allowed bg-gray-300'"
                 >
-                  {{ settingsLoadingSection === 'topBarSettings' ? 'Saving...' : 'Save Top Bar Timing' }}
+                  {{ settingsLoadingSection === 'topBarSettings' ? $t('common.saving') : $t('common.saveTopBarTiming') }}
                 </button>
               </div>
             </div>
@@ -655,7 +667,7 @@
                 v-if="settingsErrorSection === 'topBarSettings' && settingsError"
                 class="text-sm text-red-600"
               >
-                {{ settingsError }}
+                {{ $uiMessage(settingsError) }}
               </p>
 
               <p
@@ -670,7 +682,7 @@
               <input
                 v-model="newTopBarText"
                 type="text"
-                placeholder="Top bar text"
+                :placeholder="$t('common.topBarText')"
                 class="rounded-lg border p-3 outline-none focus:border-blue-500"
               >
 
@@ -679,12 +691,12 @@
                 @click="addTopBarMessage"
                 class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
               >
-                {{ topBarLoading ? 'Saving...' : 'Add Text' }}
+                {{ topBarLoading ? $t('common.saving') : $t('common.addText') }}
               </button>
             </div>
 
             <p v-if="topBarError" class="mb-4 text-sm text-red-600">
-              {{ topBarError }}
+              {{ $uiMessage(topBarError) }}
             </p>
 
             <div v-if="topBarMessages.length" class="space-y-3">
@@ -702,7 +714,7 @@
 
                   <label class="flex items-center gap-2 text-sm text-gray-600">
                     <input v-model="message.is_enabled" type="checkbox">
-                    Enabled
+                    {{ $t('common.enabled') }}
                   </label>
                 </div>
 
@@ -716,7 +728,7 @@
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : 'cursor-not-allowed bg-gray-300'"
                   >
-                    Save
+                    {{ $t('common.save') }}
                   </button>
 
                   <button
@@ -724,14 +736,14 @@
                     @click="deleteTopBarMessage(message.id)"
                     class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
                   >
-                    Delete
+                    {{ $t('common.delete') }}
                   </button>
                 </div>
               </div>
             </div>
 
             <p v-else class="text-sm text-gray-500">
-              No top bar texts added yet.
+              {{ $t('dashboard.settings.noTopBarTextsAddedYet') }}
             </p>
           </div>
         </section>
@@ -740,12 +752,12 @@
           <button :aria-expanded="openSections.heroBanners"
             type="button"
             @click="toggleSection('heroBanners')"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
           >
             <div>
-              <h3 class="text-2xl font-bold">Hero Banners</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.heroBanners') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Choose the main homepage images and their rotation speed.
+                {{ $t('dashboard.settings.chooseTheMainHomepageImagesAndTheirRotationSpeed') }}
               </p>
             </div>
 
@@ -765,15 +777,15 @@
             <div class="mb-5 grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
               <div class="flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
                 <div>
-                  <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
+                  <p class="text-sm font-semibold text-gray-700">{{ $t('common.heroBanner') }}</p>
                   <p class="text-sm text-gray-500">
-                    Turn the main home hero banner section on or off
+                    {{ $t('dashboard.settings.turnTheMainHomeHeroBannerSectionOnOrOff') }}
                   </p>
                 </div>
 
                 <div class="flex items-center gap-3">
                   <span class="text-sm font-semibold" :class="siteSettings.hero_enabled ? 'text-green-600' : 'text-gray-500'">
-                    {{ siteSettings.hero_enabled ? 'ON' : 'OFF' }}
+                    {{ siteSettings.hero_enabled ? $t('common.on') : $t('common.off') }}
                   </span>
 
                   <button
@@ -792,7 +804,7 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Hero Rotation Seconds</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.heroRotationSeconds') }}</label>
                 <input
                   v-model="siteSettings.hero_rotation_seconds"
                   type="number"
@@ -808,7 +820,7 @@
                   v-if="settingsErrorSection === 'heroSettings' && settingsError"
                   class="text-sm text-red-600"
                 >
-                  {{ settingsError }}
+                  {{ $uiMessage(settingsError) }}
                 </p>
 
                 <p
@@ -828,25 +840,25 @@
                   ? 'bg-blue-600 hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-300'"
               >
-                {{ settingsLoadingSection === 'heroSettings' ? 'Saving...' : 'Save Hero Settings' }}
+                {{ settingsLoadingSection === 'heroSettings' ? $t('common.saving') : $t('common.saveHeroSettings') }}
               </button>
             </div>
 
             <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto]">
               <DashboardMediaUploadField
                 v-model="newHeroImageUrl"
-                label="Hero Image"
+                :label="$t('common.heroImage')"
                 section="hero_banners"
-                preview-alt="Hero banner"
+                :preview-alt="$t('common.heroBanner')"
                 preview-image-class="object-cover"
                 preview-height-class="h-28"
-                help-text="Upload the main homepage image."
+                :help-text="$t('dashboard.settings.uploadTheMainHomepageImage')"
               />
 
               <input
                 v-model="newHeroLinkUrl"
                 type="text"
-                placeholder="Link URL"
+                :placeholder="$t('common.linkUrl')"
                 class="rounded-lg border p-3 outline-none focus:border-blue-500"
               >
 
@@ -855,12 +867,12 @@
                 @click="addHeroBanner"
                 class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
               >
-                {{ heroLoading ? 'Saving...' : 'Add Banner' }}
+                {{ heroLoading ? $t('common.saving') : $t('common.addBanner') }}
               </button>
             </div>
 
             <p v-if="heroError" class="mb-4 text-sm text-red-600">
-              {{ heroError }}
+              {{ $uiMessage(heroError) }}
             </p>
 
             <div v-if="heroBanners.length" class="space-y-3">
@@ -871,9 +883,9 @@
               >
                 <DashboardMediaUploadField
                   v-model="banner.image_url"
-                  label="Hero Image"
+                  :label="$t('common.heroImage')"
                   section="hero_banners"
-                  preview-alt="Hero banner"
+                  :preview-alt="$t('common.heroBanner')"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
                 />
@@ -882,13 +894,13 @@
                   <input
                     v-model="banner.link_url"
                     type="text"
-                    placeholder="Link URL"
+                    :placeholder="$t('common.linkUrl')"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                   >
 
                   <label class="flex items-center gap-2 text-sm text-gray-600">
                     <input v-model="banner.is_enabled" type="checkbox">
-                    Enabled
+                    {{ $t('common.enabled') }}
                   </label>
                 </div>
 
@@ -902,7 +914,7 @@
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : 'cursor-not-allowed bg-gray-300'"
                   >
-                    Save
+                    {{ $t('common.save') }}
                   </button>
 
                   <button
@@ -910,14 +922,14 @@
                     @click="deleteHeroBanner(banner.id)"
                     class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
                   >
-                    Delete
+                    {{ $t('common.delete') }}
                   </button>
                 </div>
               </div>
             </div>
 
             <p v-else class="text-sm text-gray-500">
-              No hero banners added yet.
+              {{ $t('dashboard.settings.noHeroBannersAddedYet') }}
             </p>
           </div>
         </section>
@@ -926,12 +938,12 @@
           <button :aria-expanded="openSections.bannerAds"
             type="button"
             @click="toggleSection('bannerAds')"
-            class="flex w-full items-center justify-between p-6 text-left"
+            class="flex w-full items-center justify-between p-6 text-start"
           >
             <div>
-              <h3 class="text-2xl font-bold">Banner Ads</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.bannerAds') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Add up to two wide promotions between the main home-page sections.
+                {{ $t('dashboard.settings.addUpToTwoWidePromotionsBetweenTheMainHomePageSections') }}
               </p>
             </div>
 
@@ -952,15 +964,15 @@
               <div class="space-y-4 rounded-2xl border bg-gray-50 p-4">
                 <div class="flex items-center justify-between gap-4">
                   <div>
-                    <p class="text-sm font-semibold text-gray-700">Banner Ad 1</p>
+                    <p class="text-sm font-semibold text-gray-700">{{ $t('common.bannerAd1') }}</p>
                     <p class="text-sm text-gray-500">
-                      Appears after Store picks
+                      {{ $t('dashboard.settings.appearsAfterStorePicks') }}
                     </p>
                   </div>
 
                   <div class="flex items-center gap-3">
                     <span class="text-sm font-semibold" :class="siteSettings.banner_ad_1_enabled ? 'text-green-600' : 'text-gray-500'">
-                      {{ siteSettings.banner_ad_1_enabled ? 'ON' : 'OFF' }}
+                      {{ siteSettings.banner_ad_1_enabled ? $t('common.on') : $t('common.off') }}
                     </span>
 
                     <button
@@ -980,16 +992,16 @@
 
                 <DashboardMediaUploadField
                   v-model="siteSettings.banner_ad_1_image_url"
-                  label="Banner Ad 1 Image"
+                  :label="$t('common.bannerAd1Image')"
                   section="banner_ads"
-                  preview-alt="Banner Ad 1"
+                  :preview-alt="$t('common.bannerAd1')"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Shown after Store picks on the home page."
+                  :help-text="$t('dashboard.settings.shownAfterStorePicksOnTheHomePage')"
                 />
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 1 Link</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.bannerAd1Link') }}</label>
                   <input
                     v-model="siteSettings.banner_ad_1_link_url"
                     type="text"
@@ -1002,15 +1014,15 @@
               <div class="space-y-4 rounded-2xl border bg-gray-50 p-4">
                 <div class="flex items-center justify-between gap-4">
                   <div>
-                    <p class="text-sm font-semibold text-gray-700">Banner Ad 2</p>
+                    <p class="text-sm font-semibold text-gray-700">{{ $t('common.bannerAd2') }}</p>
                     <p class="text-sm text-gray-500">
-                      Appears after More products
+                      {{ $t('dashboard.settings.appearsAfterMoreProducts') }}
                     </p>
                   </div>
 
                   <div class="flex items-center gap-3">
                     <span class="text-sm font-semibold" :class="siteSettings.banner_ad_2_enabled ? 'text-green-600' : 'text-gray-500'">
-                      {{ siteSettings.banner_ad_2_enabled ? 'ON' : 'OFF' }}
+                      {{ siteSettings.banner_ad_2_enabled ? $t('common.on') : $t('common.off') }}
                     </span>
 
                     <button
@@ -1030,16 +1042,16 @@
 
                 <DashboardMediaUploadField
                   v-model="siteSettings.banner_ad_2_image_url"
-                  label="Banner Ad 2 Image"
+                  :label="$t('common.bannerAd2Image')"
                   section="banner_ads"
-                  preview-alt="Banner Ad 2"
+                  :preview-alt="$t('common.bannerAd2')"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Shown after More products on the home page."
+                  :help-text="$t('dashboard.settings.shownAfterMoreProductsOnTheHomePage')"
                 />
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Banner Ad 2 Link</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.bannerAd2Link') }}</label>
                   <input
                     v-model="siteSettings.banner_ad_2_link_url"
                     type="text"
@@ -1056,7 +1068,7 @@
                   v-if="settingsErrorSection === 'bannerAds' && settingsError"
                   class="text-sm text-red-600"
                 >
-                  {{ settingsError }}
+                  {{ $uiMessage(settingsError) }}
                 </p>
 
                 <p
@@ -1076,7 +1088,7 @@
                   ? 'bg-blue-600 hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-300'"
               >
-                {{ settingsLoadingSection === 'bannerAds' ? 'Saving...' : 'Save Banner Ads' }}
+                {{ settingsLoadingSection === 'bannerAds' ? $t('common.saving') : $t('common.saveBannerAds') }}
               </button>
             </div>
           </div>
@@ -1085,20 +1097,20 @@
       <section v-show="activeSettingsSection?.section === 'paymentSettings'" class="overflow-hidden rounded-2xl bg-white shadow">
         <button
           type="button"
-          class="flex w-full items-center justify-between p-6 text-left"
+          class="flex w-full items-center justify-between p-6 text-start"
           :aria-expanded="openSections.paymentSettings"
           @click="toggleSection('paymentSettings')"
         >
           <div>
-            <h3 class="text-2xl font-bold">Payment Methods</h3>
-            <p class="mt-1 text-sm text-gray-500">Choose available methods, fixed fees, and transfer instructions.</p>
+            <h3 class="text-2xl font-bold">{{ $t('common.paymentMethods') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.chooseAvailableMethodsFixedFeesAndTransferInstructions') }}</p>
           </div>
           <Icon name="lucide:chevron-down" size="20" class="transition" :class="openSections.paymentSettings ? 'rotate-180' : ''" />
         </button>
 
         <div v-if="openSections.paymentSettings" class="border-t p-6" :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''">
           <div class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-            Card and PayPal controls configure the checkout UI. Connect their payment providers before enabling them for customers.
+            {{ $t('dashboard.settings.cardAndPaypalControlsConfigureTheCheckoutUiConnectTheirPaymentProvidersBeforeEnablingThemForCustomers') }}
           </div>
 
           <div class="mt-5 grid gap-4 lg:grid-cols-2">
@@ -1106,7 +1118,7 @@
               <div class="flex items-start justify-between gap-4">
                 <div class="flex items-start gap-3">
                   <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700"><Icon :name="method.icon" size="20" /></span>
-                  <div><h4 class="font-bold text-gray-900">{{ method.label }}</h4><p class="mt-1 text-sm text-gray-500">{{ method.description }}</p></div>
+                  <div><h4 class="font-bold text-gray-900">{{ $uiLabel(method.label) }}</h4><p class="mt-1 text-sm text-gray-500">{{ method.description }}</p></div>
                 </div>
                 <button type="button" :aria-pressed="siteSettings[method.enabledField]" class="relative inline-flex h-7 w-14 shrink-0 items-center rounded-full transition" :class="siteSettings[method.enabledField] ? 'bg-green-600' : 'bg-gray-300'" @click="siteSettings[method.enabledField] = !siteSettings[method.enabledField]">
                   <span class="inline-block h-5 w-5 rounded-full bg-white transition" :class="siteSettings[method.enabledField] ? 'translate-x-8' : 'translate-x-1'" />
@@ -1114,24 +1126,24 @@
               </div>
 
               <div class="mt-4">
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Fixed fee (EGP)</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.fixedFeeEgp') }}</label>
                 <input v-model.number="siteSettings[method.feeField]" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
               </div>
 
               <div v-if="method.instructionsField" class="mt-4">
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Transfer instructions</label>
-                <textarea v-model="siteSettings[method.instructionsField]" rows="5" placeholder="Add the account, wallet, reference, and any steps customers need." class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.transferInstructions') }}</label>
+                <textarea v-model="siteSettings[method.instructionsField]" rows="5" :placeholder="$t('dashboard.settings.addTheAccountWalletReferenceAndAnyStepsCustomersNeed')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
               </div>
             </article>
           </div>
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-1">
-              <p v-if="settingsErrorSection === 'paymentSettings' && settingsError" class="text-sm text-red-600">{{ settingsError }}</p>
+              <p v-if="settingsErrorSection === 'paymentSettings' && settingsError" class="text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
               <p v-if="settingsSuccessSection === 'paymentSettings' && settingsSuccess" class="text-sm text-green-600">{{ settingsSuccess }}</p>
             </div>
             <button type="button" :disabled="!isSettingsSectionDirty('paymentSettings') || settingsLoading" class="rounded-lg px-5 py-3 font-bold text-white" :class="isSettingsSectionDirty('paymentSettings') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'" @click="saveSiteSettings('paymentSettings')">
-              {{ settingsLoadingSection === 'paymentSettings' ? 'Saving...' : 'Save Payment Methods' }}
+              {{ settingsLoadingSection === 'paymentSettings' ? $t('common.saving') : $t('common.savePaymentMethods') }}
             </button>
           </div>
         </div>
@@ -1141,12 +1153,12 @@
         <button :aria-expanded="openSections.headerLinks"
           type="button"
           @click="toggleSection('headerLinks')"
-          class="flex w-full items-center justify-between p-6 text-left"
+          class="flex w-full items-center justify-between p-6 text-start"
         >
           <div>
-            <h3 class="text-2xl font-bold">Header Navigation Links</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.headerNavigationLinks') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Choose the links in the store menu.
+              {{ $t('dashboard.settings.chooseTheLinksInTheStoreMenu') }}
             </p>
           </div>
 
@@ -1167,7 +1179,7 @@
             <input
               v-model="newHeaderLabel"
               type="text"
-              placeholder="Label"
+              :placeholder="$t('common.label')"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
@@ -1187,16 +1199,16 @@
                 ? 'cursor-not-allowed bg-gray-400'
                 : 'bg-black hover:bg-gray-800'"
             >
-              {{ addingHeaderLink ? 'Saving...' : 'Add Link' }}
+              {{ addingHeaderLink ? $t('common.saving') : $t('common.addLink') }}
             </button>
           </div>
 
           <p class="mb-4 text-sm text-gray-500">
-            Default links stay first. New links appear below them.
+            {{ $t('dashboard.settings.defaultLinksStayFirstNewLinksAppearBelowThem') }}
           </p>
 
           <p v-if="linkError" class="mb-4 text-sm text-red-600">
-            {{ linkError }}
+            {{ $uiMessage(linkError) }}
           </p>
 
           <div v-if="headerLinks.length" class="space-y-3">
@@ -1208,18 +1220,18 @@
               >
                 <div class="mb-3 flex items-center gap-2">
                   <p class="font-semibold text-gray-900">
-                    {{ link.label }}
+                    {{ $uiLabel(link.label) }}
                   </p>
 
                   <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
-                    Default
+                    {{ $t('common.default') }}
                   </span>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between gap-3">
                   <label class="flex items-center gap-2 text-sm text-gray-600">
                     <input v-model="link.is_enabled" type="checkbox">
-                    Enabled
+                    {{ $t('common.enabled') }}
                   </label>
 
                   <button
@@ -1231,7 +1243,7 @@
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : 'cursor-not-allowed bg-gray-300'"
                   >
-                    {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
+                    {{ isSiteLinkSaving(link.id) ? $t('common.saving') : $t('common.save') }}
                   </button>
                 </div>
               </div>
@@ -1246,7 +1258,7 @@
                 <input
                   v-model="link.label"
                   type="text"
-                  placeholder="Link label"
+                  :placeholder="$t('common.linkLabel')"
                   class="rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
@@ -1260,7 +1272,7 @@
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                   <input v-model="link.is_enabled" type="checkbox">
-                  Enabled
+                  {{ $t('common.enabled') }}
                 </label>
               </div>
 
@@ -1274,7 +1286,7 @@
                     ? 'bg-blue-600 hover:bg-blue-700'
                     : 'cursor-not-allowed bg-gray-300'"
                 >
-                  {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
+                  {{ isSiteLinkSaving(link.id) ? $t('common.saving') : $t('common.save') }}
                 </button>
 
                 <button
@@ -1286,14 +1298,14 @@
                     ? 'cursor-not-allowed bg-red-400'
                     : 'bg-red-600 hover:bg-red-700'"
                 >
-                  {{ isSiteLinkDeleting(link.id) ? 'Deleting...' : 'Delete' }}
+                  {{ isSiteLinkDeleting(link.id) ? $t('common.deleting') : $t('common.delete') }}
                 </button>
               </div>
             </div>
           </div>
 
           <p v-else class="text-sm text-gray-500">
-            No header links added yet.
+            {{ $t('dashboard.settings.noHeaderLinksAddedYet') }}
           </p>
         </div>
       </section>
@@ -1302,12 +1314,12 @@
         <button :aria-expanded="openSections.footerSettings"
           type="button"
           @click="toggleSection('footerSettings')"
-          class="flex w-full items-center justify-between p-6 text-left"
+          class="flex w-full items-center justify-between p-6 text-start"
         >
           <div>
-            <h3 class="text-2xl font-bold">Footer Settings</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.footerSettings') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Choose a footer style and edit its content.
+              {{ $t('dashboard.settings.chooseAFooterStyleAndEditItsContent') }}
             </p>
           </div>
 
@@ -1325,7 +1337,7 @@
           :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
         >
           <fieldset>
-            <legend class="text-sm font-semibold text-gray-700">Footer style</legend>
+            <legend class="text-sm font-semibold text-gray-700">{{ $t('common.footerStyle') }}</legend>
             <div class="mt-3 grid gap-3 md:grid-cols-2">
               <label
                 v-for="option in footerStyleOptions"
@@ -1335,7 +1347,7 @@
               >
                 <input v-model="siteSettings.footer_style" type="radio" :value="option.value" class="mt-1">
                 <span>
-                  <strong class="block text-gray-900">{{ option.label }}</strong>
+                  <strong class="block text-gray-900">{{ $uiLabel(option.label) }}</strong>
                   <span class="mt-1 block text-sm text-gray-500">{{ option.description }}</span>
                 </span>
               </label>
@@ -1344,92 +1356,92 @@
 
           <div v-if="siteSettings.footer_style === 'classic'" class="mt-6 grid gap-5 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Title</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerCtaTitle') }}</label>
               <input v-model="siteSettings.footer_cta_title" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer CTA Subtitle</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerCtaSubtitle') }}</label>
               <input v-model="siteSettings.footer_cta_subtitle" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Label</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerButtonLabel') }}</label>
               <input v-model="siteSettings.footer_cta_button_label" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Button Link</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerButtonLink') }}</label>
               <input v-model="siteSettings.footer_cta_button_url" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Email</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerEmail') }}</label>
               <input v-model="siteSettings.footer_email" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Phone</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerPhone') }}</label>
               <input v-model="siteSettings.footer_phone" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div class="md:col-span-2">
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Footer Address</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.footerAddress') }}</label>
               <input v-model="siteSettings.footer_address" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
             <div class="md:col-span-2">
-              <label class="mb-2 block text-sm font-semibold text-gray-700">Copyright Text</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.copyrightText') }}</label>
               <input v-model="siteSettings.copyright_text" type="text" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
             </div>
           </div>
 
           <div v-else class="mt-6 space-y-5">
             <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">Left card</h4>
-              <p class="mt-1 text-sm text-gray-500">Edit the image, message, and button.</p>
+              <h4 class="font-bold text-gray-900">{{ $t('common.leftCard') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.editTheImageMessageAndButton') }}</p>
               <div class="mt-4 grid gap-5 md:grid-cols-2">
                 <DashboardMediaUploadField
                   v-model="siteSettings.footer_modern_card_image_url"
-                  label="Card image"
+                  :label="$t('common.cardImage')"
                   section="footer"
-                  preview-alt="Footer card image"
+                  :preview-alt="$t('common.footerCardImage')"
                   preview-height-class="h-28"
-                  help-text="A transparent or square image works best."
+                  :help-text="$t('dashboard.settings.aTransparentOrSquareImageWorksBest')"
                 />
                 <div class="space-y-4">
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
                     <input v-model="siteSettings.footer_modern_card_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                   </div>
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Text</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.text') }}</label>
                     <textarea v-model="siteSettings.footer_modern_card_text" rows="3" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
                   </div>
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Button text</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.buttonText') }}</label>
                   <input v-model="siteSettings.footer_modern_card_button_label" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Button link</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.buttonLink') }}</label>
                   <input v-model="siteSettings.footer_modern_card_button_url" type="text" placeholder="/help" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
               </div>
             </section>
 
             <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">Community link</h4>
-              <p class="mt-1 text-sm text-gray-500">Customize the “Join our Slack” item.</p>
+              <h4 class="font-bold text-gray-900">{{ $t('common.communityLink') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.customizeTheJoinOurSlackItem') }}</p>
               <div class="mt-4 grid gap-5 md:grid-cols-2">
                 <DashboardMediaUploadField
                   v-model="siteSettings.footer_modern_community_image_url"
-                  label="Community image"
+                  :label="$t('common.communityImage')"
                   section="footer"
-                  preview-alt="Community image"
+                  :preview-alt="$t('common.communityImage')"
                   preview-height-class="h-24"
-                  help-text="Upload the Slack mark or another community icon."
+                  :help-text="$t('dashboard.settings.uploadTheSlackMarkOrAnotherCommunityIcon')"
                 />
                 <div class="space-y-4">
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Text</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.text') }}</label>
                     <input v-model="siteSettings.footer_modern_community_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                   </div>
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Link</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.link') }}</label>
                     <input v-model="siteSettings.footer_modern_community_url" type="text" placeholder="https://..." class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                   </div>
                 </div>
@@ -1437,25 +1449,25 @@
             </section>
 
             <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">Bottom banner</h4>
-              <p class="mt-1 text-sm text-gray-500">The banner is hidden until an image is uploaded.</p>
+              <h4 class="font-bold text-gray-900">{{ $t('common.bottomBanner') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.theBannerIsHiddenUntilAnImageIsUploaded') }}</p>
               <div class="mt-4 grid gap-5 md:grid-cols-2">
                 <DashboardMediaUploadField
                   v-model="siteSettings.footer_modern_banner_image_url"
-                  label="Banner image"
+                  :label="$t('common.bannerImage')"
                   section="footer"
-                  preview-alt="Footer banner"
+                  :preview-alt="$t('common.footerBanner')"
                   preview-image-class="object-cover"
                   preview-height-class="h-28"
-                  help-text="Use a wide image for the best result."
+                  :help-text="$t('dashboard.settings.useAWideImageForTheBestResult')"
                 />
                 <div class="space-y-4">
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Image alt text</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.imageAltText') }}</label>
                     <input v-model="siteSettings.footer_modern_banner_alt" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                   </div>
                   <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Banner link</label>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.bannerLink') }}</label>
                     <input v-model="siteSettings.footer_modern_banner_url" type="text" placeholder="/search" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                   </div>
                 </div>
@@ -1463,27 +1475,27 @@
             </section>
 
             <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">Lower details</h4>
-              <p class="mt-1 text-sm text-gray-500">Edit the three text areas below the banner.</p>
+              <h4 class="font-bold text-gray-900">{{ $t('common.lowerDetails') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.editTheThreeTextAreasBelowTheBanner') }}</p>
               <div class="mt-4 grid gap-5 md:grid-cols-2">
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Left text</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.leftText') }}</label>
                   <input v-model="siteSettings.footer_modern_bottom_left_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Left text link</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.leftTextLink') }}</label>
                   <input v-model="siteSettings.footer_modern_bottom_left_url" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
                 <div class="md:col-span-2">
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Center text</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.centerText') }}</label>
                   <input v-model="siteSettings.footer_modern_bottom_center_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Right title</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.rightTitle') }}</label>
                   <input v-model="siteSettings.footer_modern_bottom_right_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Right text</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.rightText') }}</label>
                   <input v-model="siteSettings.footer_modern_bottom_right_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
               </div>
@@ -1496,7 +1508,7 @@
                 v-if="settingsErrorSection === 'footerSettings' && settingsError"
                 class="text-sm text-red-600"
               >
-                {{ settingsError }}
+                {{ $uiMessage(settingsError) }}
               </p>
 
               <p
@@ -1516,7 +1528,7 @@
                 ? 'bg-blue-600 hover:bg-blue-700'
                 : 'cursor-not-allowed bg-gray-300'"
             >
-              {{ settingsLoadingSection === 'footerSettings' ? 'Saving...' : 'Save Footer Settings' }}
+              {{ settingsLoadingSection === 'footerSettings' ? $t('common.saving') : $t('common.saveFooterSettings') }}
             </button>
           </div>
         </div>
@@ -1526,12 +1538,12 @@
         <button :aria-expanded="openSections.footerLinks"
           type="button"
           @click="toggleSection('footerLinks')"
-          class="flex w-full items-center justify-between p-6 text-left"
+          class="flex w-full items-center justify-between p-6 text-start"
         >
           <div>
-            <h3 class="text-2xl font-bold">Footer Links and Details</h3>
+            <h3 class="text-2xl font-bold">{{ $t('dashboard.settings.footerLinksAndDetails') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Group footer links by heading. Leave links blank for plain text.
+              {{ $t('dashboard.settings.groupFooterLinksByHeadingLeaveLinksBlankForPlainText') }}
             </p>
           </div>
 
@@ -1552,21 +1564,21 @@
           <input
             v-model="newFooterSectionTitle"
             type="text"
-            placeholder="Section title"
+            :placeholder="$t('common.sectionTitle')"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
             <input
               v-model="newFooterLabel"
               type="text"
-              placeholder="Label"
+              :placeholder="$t('common.label')"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
             <input
               v-model="newFooterUrl"
               type="text"
-              placeholder="URL or leave empty"
+              :placeholder="$t('common.urlOrLeaveEmpty')"
               class="rounded-lg border p-3 outline-none focus:border-blue-500"
             >
 
@@ -1579,12 +1591,12 @@
                 ? 'cursor-not-allowed bg-gray-400'
                 : 'bg-black hover:bg-gray-800'"
             >
-              {{ addingFooterLink ? 'Saving...' : 'Add Item' }}
+              {{ addingFooterLink ? $t('common.saving') : $t('common.addItem') }}
             </button>
           </div>
 
           <p v-if="linkError" class="mb-4 text-sm text-red-600">
-            {{ linkError }}
+            {{ $uiMessage(linkError) }}
           </p>
 
           <div v-if="footerLinks.length" class="space-y-3">
@@ -1614,7 +1626,7 @@
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                   <input v-model="link.is_enabled" type="checkbox">
-                  Enabled
+                  {{ $t('common.enabled') }}
                 </label>
               </div>
 
@@ -1628,7 +1640,7 @@
                     ? 'bg-blue-600 hover:bg-blue-700'
                     : 'cursor-not-allowed bg-gray-300'"
                 >
-                  {{ isSiteLinkSaving(link.id) ? 'Saving...' : 'Save' }}
+                  {{ isSiteLinkSaving(link.id) ? $t('common.saving') : $t('common.save') }}
                 </button>
 
                 <button
@@ -1640,14 +1652,14 @@
                     ? 'cursor-not-allowed bg-red-400'
                     : 'bg-red-600 hover:bg-red-700'"
                 >
-                  {{ isSiteLinkDeleting(link.id) ? 'Deleting...' : 'Delete' }}
+                  {{ isSiteLinkDeleting(link.id) ? $t('common.deleting') : $t('common.delete') }}
                 </button>
               </div>
             </div>
           </div>
 
           <p v-else class="text-sm text-gray-500">
-            No footer items added yet.
+            {{ $t('dashboard.settings.noFooterItemsAddedYet') }}
           </p>
         </div>
       </section>
@@ -1661,9 +1673,9 @@
           @click="toggleSection('dashboardLayout')"
         >
           <div>
-            <h3 class="text-2xl font-bold">Dashboard appearance</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.dashboardAppearance') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Choose the dashboard style used by every admin.
+              {{ $t('dashboard.settings.chooseTheDashboardStyleUsedByEveryAdmin') }}
             </p>
           </div>
 
@@ -1684,7 +1696,7 @@
           <div
             class="grid gap-4 md:grid-cols-2"
             role="radiogroup"
-            aria-label="Dashboard appearance"
+            :aria-label="$t('common.dashboardAppearance')"
           >
             <label
               v-for="layoutOption in dashboardLayoutOptions"
@@ -1745,7 +1757,7 @@
 
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <p class="font-bold text-gray-900">{{ layoutOption.label }}</p>
+                  <p class="font-bold text-gray-900">{{ $uiLabel(layoutOption.label) }}</p>
                   <p class="mt-1 text-sm text-gray-500">{{ layoutOption.description }}</p>
                 </div>
 
@@ -1766,7 +1778,7 @@
           </div>
 
           <p class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-            This choice applies to every dashboard user.
+            {{ $t('dashboard.settings.thisChoiceAppliesToEveryDashboardUser') }}
           </p>
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -1775,7 +1787,7 @@
                 v-if="settingsErrorSection === 'dashboardLayout' && settingsError"
                 class="text-sm text-red-600"
               >
-                {{ settingsError }}
+                {{ $uiMessage(settingsError) }}
               </p>
 
               <p
@@ -1795,7 +1807,7 @@
                 : 'cursor-not-allowed bg-gray-300'"
               @click="saveSiteSettings('dashboardLayout')"
             >
-              {{ settingsLoadingSection === 'dashboardLayout' ? 'Saving...' : 'Save appearance' }}
+              {{ settingsLoadingSection === 'dashboardLayout' ? $t('common.saving') : $t('common.saveAppearance') }}
             </button>
           </div>
         </div>
@@ -1803,30 +1815,30 @@
 
       <section v-show="activeSettingsSection?.section === 'accountDashboard'" class="overflow-hidden rounded-2xl bg-white shadow">
         <div class="p-6">
-          <h3 class="text-2xl font-bold">Customer account layout</h3>
-          <p class="mt-1 text-sm text-gray-500">Choose how customers see their account pages. The store header is unchanged.</p>
+          <h3 class="text-2xl font-bold">{{ $t('common.customerAccountLayout') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.chooseHowCustomersSeeTheirAccountPagesTheStoreHeaderIsUnchanged') }}</p>
         </div>
         <div class="border-t p-6">
-          <div class="grid gap-4 md:grid-cols-2" role="radiogroup" aria-label="Customer account layout">
+          <div class="grid gap-4 md:grid-cols-2" role="radiogroup" :aria-label="$t('common.customerAccountLayout')">
             <label v-for="option in accountDashboardOptions" :key="option.value"
               class="cursor-pointer rounded-2xl border-2 p-5 transition focus-within:ring-2 focus-within:ring-blue-500"
               :class="siteSettings.account_dashboard_style === option.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-300'">
               <input v-model="siteSettings.account_dashboard_style" type="radio" name="account-dashboard-style"
                 :value="option.value" :disabled="!canEditSettings" class="sr-only">
               <span class="flex items-start justify-between gap-3">
-                <span><span class="block font-bold text-gray-900">{{ option.label }}</span><span class="mt-1 block text-sm text-gray-600">{{ option.description }}</span></span>
+                <span><span class="block font-bold text-gray-900">{{ $uiLabel(option.label) }}</span><span class="mt-1 block text-sm text-gray-600">{{ option.description }}</span></span>
                 <Icon v-if="siteSettings.account_dashboard_style === option.value" name="lucide:circle-check" size="21" class="shrink-0 text-blue-700" aria-hidden="true" />
               </span>
             </label>
           </div>
-          <p v-if="settingsErrorSection === 'accountDashboard' && settingsError" role="alert" class="mt-4 text-sm text-red-600">{{ settingsError }}</p>
+          <p v-if="settingsErrorSection === 'accountDashboard' && settingsError" role="alert" class="mt-4 text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
           <p v-if="settingsSuccessSection === 'accountDashboard' && settingsSuccess" role="status" class="mt-4 text-sm text-green-700">{{ settingsSuccess }}</p>
           <div class="mt-5 flex justify-end">
             <button type="button" :disabled="!canEditSettings || !isSettingsSectionDirty('accountDashboard') || settingsLoading"
               class="rounded-lg px-5 py-3 font-bold text-white"
               :class="canEditSettings && isSettingsSectionDirty('accountDashboard') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'"
               @click="saveSiteSettings('accountDashboard')">
-              {{ settingsLoadingSection === 'accountDashboard' ? 'Saving...' : 'Save account layout' }}
+              {{ settingsLoadingSection === 'accountDashboard' ? $t('common.saving') : $t('common.saveAccountLayout') }}
             </button>
           </div>
         </div>
@@ -1870,14 +1882,14 @@
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <h3 class="text-2xl font-bold">Coupons</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.coupons') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                Create and manage coupon codes that can be applied during checkout.
+                {{ $t('dashboard.settings.createAndManageCouponCodesThatCanBeAppliedDuringCheckout') }}
               </p>
             </div>
 
             <div class="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-600">
-              {{ coupons.length }} coupon{{ coupons.length === 1 ? '' : 's' }}
+              {{ $t('common.valueCouponvalue', { value0: (coupons.length), value1: (coupons.length === 1 ? '' : $uiPluralSuffix('s')) }) }}
             </div>
           </div>
 
@@ -1886,43 +1898,43 @@
             :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
           >
             <h4 class="text-lg font-bold text-gray-900">
-              Add Coupon
+              {{ $t('common.addCoupon') }}
             </h4>
 
             <div class="mt-4 grid gap-4 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.code') }}</label>
                 <input
                   v-model="newCoupon.code"
                   type="text"
-                  placeholder="SAVE10"
+                  :placeholder="$t('common.save10')"
                   class="w-full rounded-lg border bg-white p-3 uppercase outline-none focus:border-blue-500"
                 >
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Description</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.description') }}</label>
                 <input
                   v-model="newCoupon.description"
                   type="text"
-                  placeholder="10% off selected orders"
+                  :placeholder="$t('common.10OffSelectedOrders')"
                   class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
                 >
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Type</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.discountType') }}</label>
                 <select
                   v-model="newCoupon.discount_type"
                   class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
                 >
-                  <option value="fixed">Fixed</option>
-                  <option value="percentage">Percentage</option>
+                  <option value="fixed">{{ $t('common.fixed') }}</option>
+                  <option value="percentage">{{ $t('common.percentage') }}</option>
                 </select>
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Value</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.discountValue') }}</label>
                 <input
                   v-model="newCoupon.discount_value"
                   type="number"
@@ -1933,7 +1945,7 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Minimum Order Amount</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.minimumOrderAmount') }}</label>
                 <input
                   v-model="newCoupon.minimum_order_amount"
                   type="number"
@@ -1944,18 +1956,18 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Usage Limit</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.usageLimit') }}</label>
                 <input
                   v-model="newCoupon.usage_limit"
                   type="number"
                   min="1"
-                  placeholder="Leave empty for unlimited"
+                  :placeholder="$t('dashboard.settings.leaveEmptyForUnlimited')"
                   class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
                 >
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Starts At</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.startsAt') }}</label>
                 <input
                   v-model="newCoupon.starts_at"
                   type="datetime-local"
@@ -1964,7 +1976,7 @@
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700">Ends At</label>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.endsAt') }}</label>
                 <input
                   v-model="newCoupon.ends_at"
                   type="datetime-local"
@@ -1975,11 +1987,11 @@
 
             <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
               <input v-model="newCoupon.is_active" type="checkbox">
-              Active
+              {{ $t('common.active') }}
             </label>
 
             <p v-if="couponError" class="mt-4 text-sm text-red-600">
-              {{ couponError }}
+              {{ $uiMessage(couponError) }}
             </p>
 
             <button
@@ -1988,7 +2000,7 @@
               class="mt-5 rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
               @click="addCoupon"
             >
-              {{ couponLoading ? 'Saving...' : 'Add Coupon' }}
+              {{ couponLoading ? $t('common.saving') : $t('common.addCoupon') }}
             </button>
           </div>
         </section>
@@ -1997,10 +2009,10 @@
           class="rounded-2xl bg-white p-6 shadow"
           :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''"
         >
-          <h3 class="text-2xl font-bold">Coupon List</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.couponList') }}</h3>
 
           <p class="mt-1 text-sm text-gray-500">
-            Edit codes, values, active status, and scheduling.
+            {{ $t('dashboard.settings.editCodesValuesActiveStatusAndScheduling') }}
           </p>
 
           <div v-if="coupons.length" class="mt-6 space-y-4">
@@ -2011,7 +2023,7 @@
             >
               <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.code') }}</label>
                   <input
                     v-model="coupon.code"
                     type="text"
@@ -2020,7 +2032,7 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Description</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.description') }}</label>
                   <input
                     v-model="coupon.description"
                     type="text"
@@ -2029,18 +2041,18 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Type</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.discountType') }}</label>
                   <select
                     v-model="coupon.discount_type"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                   >
-                    <option value="fixed">Fixed</option>
-                    <option value="percentage">Percentage</option>
+                    <option value="fixed">{{ $t('common.fixed') }}</option>
+                    <option value="percentage">{{ $t('common.percentage') }}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Discount Value</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.discountValue') }}</label>
                   <input
                     v-model="coupon.discount_value"
                     type="number"
@@ -2051,7 +2063,7 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Minimum Order Amount</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.minimumOrderAmount') }}</label>
                   <input
                     v-model="coupon.minimum_order_amount"
                     type="number"
@@ -2062,7 +2074,7 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Usage Limit</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.usageLimit') }}</label>
                   <input
                     v-model="coupon.usage_limit"
                     type="number"
@@ -2072,7 +2084,7 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Starts At</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.startsAt') }}</label>
                   <input
                     v-model="coupon.starts_at"
                     type="datetime-local"
@@ -2081,7 +2093,7 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">Ends At</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.endsAt') }}</label>
                   <input
                     v-model="coupon.ends_at"
                     type="datetime-local"
@@ -2094,10 +2106,10 @@
                 <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                   <label class="flex items-center gap-2">
                     <input v-model="coupon.is_active" type="checkbox">
-                    Active
+                    {{ $t('common.active') }}
                   </label>
 
-                  <span>Used {{ coupon.usage_count }} times</span>
+                  <span>{{ $t('common.usedValueTimes', { value0: (coupon.usage_count) }) }}</span>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
@@ -2110,7 +2122,7 @@
                       : 'cursor-not-allowed bg-gray-300'"
                     @click="saveCoupon(coupon)"
                   >
-                    Save
+                    {{ $t('common.save') }}
                   </button>
 
                   <button
@@ -2119,7 +2131,7 @@
                     class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
                     @click="deleteCoupon(coupon.id)"
                   >
-                    Delete
+                    {{ $t('common.delete') }}
                   </button>
                 </div>
               </div>
@@ -2127,7 +2139,7 @@
           </div>
 
           <p v-else class="mt-6 text-sm text-gray-500">
-            No coupons added yet.
+            {{ $t('common.noCouponsAddedYet') }}
           </p>
         </section>
       </div>
@@ -2136,20 +2148,20 @@
         <section class="rounded-2xl bg-white p-6 shadow">
           <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h3 class="text-2xl font-bold">Admin Logs</h3>
+              <h3 class="text-2xl font-bold">{{ $t('common.adminLogs') }}</h3>
               <p class="mt-1 text-sm text-gray-500">
-                The latest 50 actions for each admin account.
+                {{ $t('dashboard.settings.theLatest50ActionsForEachAdminAccount') }}
               </p>
             </div>
 
             <div class="flex flex-col gap-3 md:w-[340px]">
-              <label class="text-sm font-semibold text-gray-700">Filter by Admin</label>
+              <label class="text-sm font-semibold text-gray-700">{{ $t('common.filterByAdmin') }}</label>
 
               <select
                 v-model="selectedLogAuthor"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                <option value="">All Admins</option>
+                <option value="">{{ $t('common.allAdmins') }}</option>
 
                 <option
                   v-for="author in adminLogAuthors"
@@ -2168,24 +2180,24 @@
               class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100"
               @click="loadAdminLogs({ force: true })"
             >
-              Refresh Logs
+              {{ $t('common.refreshLogs') }}
             </button>
           </div>
 
           <div v-if="logsMissingTable" class="mt-6 rounded-2xl bg-amber-50 p-4 text-sm text-amber-700">
-            Run the latest admin logs SQL query first, then refresh this page.
+            {{ $t('dashboard.settings.runTheLatestAdminLogsSqlQueryFirstThenRefreshThisPage') }}
           </div>
 
           <p v-else-if="logsError" class="mt-6 text-sm text-red-600">
-            {{ logsError }}
+            {{ $uiMessage(logsError) }}
           </p>
 
           <p v-else-if="logsLoading" class="mt-6 text-sm text-gray-500">
-            Loading logs...
+            {{ $t('common.loadingLogs') }}
           </p>
 
           <p v-else-if="!adminLogs.length" class="mt-6 text-sm text-gray-500">
-            {{ selectedLogAuthor ? 'No logs found for this admin yet.' : 'No logs recorded yet.' }}
+            {{ selectedLogAuthor ? $t('dashboard.settings.noLogsFoundForThisAdminYet') : $t('common.noLogsRecordedYet') }}
           </p>
 
           <div v-else class="mt-6 space-y-3">
@@ -2205,9 +2217,9 @@
                   </p>
                 </div>
 
-                <div class="text-sm text-gray-600 md:text-right">
+                <div class="text-sm text-gray-600 md:text-end">
                   <p class="font-semibold text-gray-900">
-                    {{ log.author_name || 'Admin' }}
+                    {{ log.author_name || $t('common.admin') }}
                   </p>
 
                   <p>{{ log.author_email }}</p>
@@ -2226,6 +2238,12 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 import {
   defaultHeaderLinkDefinitions,
   getDefaultHeaderLinkDefinition,
@@ -2239,10 +2257,10 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 
 if (getDashboardQueryValue(route, 'tab') === 'users') {
-  await navigateTo('/dashboard/hr?tab=users', {
+  await uiNavigateTo('/dashboard/hr?tab=users', {
     replace: true
   })
 }
@@ -2279,6 +2297,9 @@ const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
   site_logo_url: '',
+  site_logo_light_url: '',
+  site_logo_dark_url: '',
+  site_theme_default: 'system',
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
   dashboard_layout: 'standard',
@@ -2318,7 +2339,7 @@ const defaultSiteSettings = {
   footer_style: 'classic',
   footer_modern_card_image_url: '',
   footer_modern_card_title: 'Need help choosing?',
-  footer_modern_card_text: 'Our team can help you find the right setup.',
+  footer_modern_card_text: 'Our team can help you find the end setup.',
   footer_modern_card_button_label: 'Contact us',
   footer_modern_card_button_url: '/help',
   footer_modern_community_image_url: '',
@@ -2514,6 +2535,9 @@ const siteSettingsSectionFields = {
   generalSettings: [
     'site_name',
     'site_logo_url',
+    'site_logo_light_url',
+    'site_logo_dark_url',
+    'site_theme_default',
     'site_background_color',
     'landing_page_title',
     'allow_out_of_stock_purchases'
@@ -2615,7 +2639,7 @@ const formatLogDate = (value) => {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(value))
@@ -2867,6 +2891,9 @@ const mapCoupon = (coupon) => {
 const normalizeSiteSettings = (source = {}) => ({
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
+  site_logo_light_url: String(source.site_logo_light_url || '').trim(),
+  site_logo_dark_url: String(source.site_logo_dark_url || '').trim(),
+  site_theme_default: ['system', 'light', 'dark'].includes(source.site_theme_default) ? source.site_theme_default : 'system',
   site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
   landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
   dashboard_layout: String(source.dashboard_layout || '').trim().toLowerCase() === 'detailed'
@@ -3547,7 +3574,7 @@ const deleteHeroBanner = async (bannerId) => {
   heroError.value = ''
   const selectedBanner = heroBanners.value.find((banner) => banner.id === bannerId)
 
-  if (!confirm('Delete this hero banner?')) {
+  if (!confirm(uiLabel('Delete this hero banner?'))) {
     return
   }
 
@@ -3671,7 +3698,7 @@ const deleteTopBarMessage = async (messageId) => {
   topBarError.value = ''
   const selectedMessage = topBarMessages.value.find((message) => message.id === messageId)
 
-  if (!confirm('Delete this top bar text?')) {
+  if (!confirm(uiLabel('Delete this top bar text?'))) {
     return
   }
 
@@ -3834,7 +3861,7 @@ const deleteOfferCard = async (offerCardId) => {
   offerCardsError.value = ''
   const selectedOfferCard = offerCards.value.find((offerCard) => offerCard.id === offerCardId)
 
-  if (!confirm('Delete this offer card?')) {
+  if (!confirm(uiLabel('Delete this offer card?'))) {
     return
   }
 
@@ -4064,7 +4091,7 @@ const deleteSiteLink = async (linkId) => {
     return
   }
 
-  if (!confirm('Delete this link item?')) {
+  if (!confirm(uiLabel('Delete this link item?'))) {
     return
   }
 
@@ -4245,7 +4272,7 @@ const deleteCoupon = async (couponId) => {
   couponError.value = ''
   const selectedCoupon = coupons.value.find((coupon) => coupon.id === couponId)
 
-  if (!confirm('Delete this coupon?')) {
+  if (!confirm(uiLabel('Delete this coupon?'))) {
     return
   }
 

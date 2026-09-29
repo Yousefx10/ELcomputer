@@ -2,7 +2,7 @@
   <footer v-if="isModern" class="store-footer-modern">
     <div class="store-container store-footer-modern-shell">
       <div class="store-footer-modern-main">
-        <section class="store-footer-modern-card" aria-label="Footer promotion">
+        <section class="store-footer-modern-card" :aria-label="$t('common.footerPromotion')">
           <img
             v-if="modernCardImageUrl"
             :src="modernCardImageUrl"
@@ -24,31 +24,31 @@
             >
               {{ modernCardButtonLabel }}
             </a>
-            <NuxtLink
+            <NuxtLinkLocale
               v-else-if="modernCardButtonLabel && modernCardButtonUrl"
               :to="modernCardButtonUrl"
               class="store-footer-modern-card-button"
             >
               {{ modernCardButtonLabel }}
-            </NuxtLink>
+            </NuxtLinkLocale>
           </div>
         </section>
 
-        <nav v-if="footerGroups.length" class="store-footer-modern-groups" aria-label="Footer links">
+        <nav v-if="footerGroups.length" class="store-footer-modern-groups" :aria-label="$t('common.footerLinks')">
           <div v-for="group in footerGroups" :key="group.title" class="store-footer-modern-group">
             <h2>{{ group.title }}</h2>
             <ul>
               <li v-for="item in group.items" :key="item.id">
-                <a v-if="resolvedLink(item.url) && isExternalUrl(item.url)" :href="resolvedLink(item.url)" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
-                <NuxtLink v-else-if="resolvedLink(item.url)" :to="resolvedLink(item.url)">{{ item.label }}</NuxtLink>
-                <span v-else>{{ item.label }}</span>
+                <a v-if="resolvedLink(item.url) && isExternalUrl(item.url)" :href="resolvedLink(item.url)" target="_blank" rel="noopener noreferrer">{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</a>
+                <NuxtLinkLocale v-else-if="resolvedLink(item.url)" :to="resolvedLink(item.url)">{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</NuxtLinkLocale>
+                <span v-else>{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</span>
               </li>
             </ul>
           </div>
         </nav>
 
-        <aside v-if="modernCommunityText" class="store-footer-modern-community" aria-label="Community">
-          <p>Connect</p>
+        <aside v-if="modernCommunityText" class="store-footer-modern-community" :aria-label="$t('common.community')">
+          <p>{{ $t('common.connect') }}</p>
           <a
             v-if="isExternalUrl(modernCommunityUrl)"
             :href="modernCommunityUrl"
@@ -60,7 +60,7 @@
             <Icon v-else name="lucide:messages-square" size="28" aria-hidden="true" />
             <span>{{ modernCommunityText }}</span>
           </a>
-          <NuxtLink
+          <NuxtLinkLocale
             v-else-if="modernCommunityUrl"
             :to="modernCommunityUrl"
             class="store-footer-modern-community-link"
@@ -68,7 +68,7 @@
             <img v-if="modernCommunityImageUrl" :src="modernCommunityImageUrl" alt="" loading="lazy">
             <Icon v-else name="lucide:messages-square" size="28" aria-hidden="true" />
             <span>{{ modernCommunityText }}</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
           <div v-else class="store-footer-modern-community-link">
             <img v-if="modernCommunityImageUrl" :src="modernCommunityImageUrl" alt="" loading="lazy">
             <Icon v-else name="lucide:messages-square" size="28" aria-hidden="true" />
@@ -81,9 +81,9 @@
         <a v-if="isExternalUrl(modernBannerUrl)" :href="modernBannerUrl" target="_blank" rel="noopener noreferrer">
           <img :src="modernBannerImageUrl" :alt="modernBannerAlt" loading="lazy">
         </a>
-        <NuxtLink v-else-if="modernBannerUrl" :to="modernBannerUrl">
+        <NuxtLinkLocale v-else-if="modernBannerUrl" :to="modernBannerUrl">
           <img :src="modernBannerImageUrl" :alt="modernBannerAlt" loading="lazy">
-        </NuxtLink>
+        </NuxtLinkLocale>
         <img v-else :src="modernBannerImageUrl" :alt="modernBannerAlt" loading="lazy">
       </div>
 
@@ -96,9 +96,9 @@
         >
           {{ modernBottomLeftText }}
         </a>
-        <NuxtLink v-else-if="modernBottomLeftText && modernBottomLeftUrl" :to="modernBottomLeftUrl">
+        <NuxtLinkLocale v-else-if="modernBottomLeftText && modernBottomLeftUrl" :to="modernBottomLeftUrl">
           {{ modernBottomLeftText }}
-        </NuxtLink>
+        </NuxtLinkLocale>
         <p v-else class="store-footer-modern-bottom-left">{{ modernBottomLeftText }}</p>
 
         <p class="store-footer-modern-bottom-center">{{ modernBottomCenterText }}</p>
@@ -115,11 +115,11 @@
     <div class="store-container">
       <div class="store-footer-cta">
         <div><h2>{{ footerCtaTitle }}</h2><p>{{ footerCtaSubtitle }}</p></div>
-        <NuxtLink :to="footerCtaButtonUrl" class="store-button">{{ footerCtaButtonLabel }} <Icon name="lucide:arrow-right" size="16" /></NuxtLink>
+        <NuxtLinkLocale :to="footerCtaButtonUrl" class="store-button">{{ footerCtaButtonLabel }} <Icon name="lucide:arrow-right" size="16" class="directional-icon" /></NuxtLinkLocale>
       </div>
       <div class="store-footer-main">
         <div class="store-footer-brand">
-          <img :src="siteLogoUrl" :class="{ 'store-footer-custom-logo': siteLogoUrl !== '/images/dashboard-logo.png' }" :alt="siteName" loading="lazy" />
+          <BrandLogo :settings="siteContent?.settings" :alt="siteName" />
           <div class="store-footer-contact">
             <a v-if="footerEmail" :href="`mailto:${footerEmail}`"><Icon name="lucide:mail" size="16" />{{ footerEmail }}</a>
             <a v-if="footerPhone" :href="`tel:${footerPhone}`"><Icon name="lucide:phone" size="16" />{{ footerPhone }}</a>
@@ -128,19 +128,19 @@
         </div>
         <div class="store-footer-groups">
           <div>
-            <h3>Support</h3>
+            <h3>{{ $t('common.support') }}</h3>
             <ul>
-              <li><NuxtLink to="/help">Help Center</NuxtLink></li>
-              <li><NuxtLink to="/account/support">My tickets</NuxtLink></li>
+              <li><NuxtLinkLocale to="/help">{{ $t('common.helpCenter') }}</NuxtLinkLocale></li>
+              <li><NuxtLinkLocale to="/account/support">{{ $t('common.myTickets') }}</NuxtLinkLocale></li>
             </ul>
           </div>
           <div v-for="group in footerGroups" :key="group.title">
             <h3>{{ group.title }}</h3>
             <ul>
               <li v-for="item in group.items" :key="item.id">
-                <a v-if="item.url && isExternalUrl(item.url)" :href="item.url" target="_blank" rel="noreferrer">{{ item.label }}</a>
-                <NuxtLink v-else-if="item.url" :to="item.url">{{ item.label }}</NuxtLink>
-                <span v-else>{{ item.label }}</span>
+                <a v-if="item.url && isExternalUrl(item.url)" :href="item.url" target="_blank" rel="noreferrer">{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</a>
+                <NuxtLinkLocale v-else-if="item.url" :to="item.url">{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</NuxtLinkLocale>
+                <span v-else>{{ item.id?.startsWith('default-') ? $uiLabel(item.label) : item.label }}</span>
               </li>
             </ul>
           </div>
@@ -152,6 +152,8 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
 import { getConfiguredStoreImageUrl, getStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '~/utils/storefront'
 
 const { data: siteContent } = await useSiteContent()
@@ -162,9 +164,9 @@ const footerLinks = computed(() => siteContent.value?.footerLinks || [])
 const isModern = computed(() => settings.value.footer_style === 'modern')
 const siteName = computed(() => settings.value.site_name || 'ELcomputer')
 const siteLogoUrl = computed(() => getStoreImageUrl(settings.value.site_logo_url) || '/images/dashboard-logo.png')
-const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? 'Browse computer accessories' : (settings.value.footer_cta_title || 'Browse computer accessories'))
-const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? 'Keyboards, mice, headsets and more.' : (settings.value.footer_cta_subtitle || 'Keyboards, mice, headsets and more.'))
-const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || 'Shop Now')
+const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? uiLabel('Browse computer accessories') : (settings.value.footer_cta_title || uiLabel('Browse computer accessories')))
+const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? uiLabel('Keyboards, mice, headsets and more.') : (settings.value.footer_cta_subtitle || uiLabel('Keyboards, mice, headsets and more.')))
+const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || uiLabel('Shop Now'))
 const footerCtaButtonUrl = computed(() => settings.value.footer_cta_button_url === '/' ? '/search' : (settings.value.footer_cta_button_url || '/search'))
 const footerEmail = computed(() => settings.value.footer_email || '')
 const footerPhone = computed(() => settings.value.footer_phone || '')

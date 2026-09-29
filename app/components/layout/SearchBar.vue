@@ -1,12 +1,12 @@
 <template>
   <div ref="root" class="store-search-wrap">
     <form role="search" class="store-search" @submit.prevent="submitSearch">
-      <label for="store-search-input" class="sr-only">Search products</label>
+      <label for="store-search-input" class="sr-only">{{ $t('common.searchProducts') }}</label>
       <input
         id="store-search-input"
         v-model="searchQuery"
         type="search"
-        placeholder="Search products and brands"
+        :placeholder="$t('layout.SearchBar.searchProductsAndBrands')"
         autocomplete="off"
         role="combobox"
         aria-autocomplete="list"
@@ -19,16 +19,16 @@
         @keydown.enter="selectActiveSuggestion"
         @keydown.esc.stop="closeSuggestions"
       />
-      <button type="submit" aria-label="Search"><Icon name="lucide:search" size="23" /></button>
+      <button type="submit" :aria-label="$t('common.search')"><Icon name="lucide:search" size="23" /></button>
     </form>
 
-    <div v-if="suggestionsOpen" id="store-search-suggestions" class="store-search-suggestions" role="listbox" aria-label="Search suggestions">
-      <p v-if="suggestionsLoading" class="store-search-suggestion-state" role="status">Finding products…</p>
+    <div v-if="suggestionsOpen" id="store-search-suggestions" class="store-search-suggestions" role="listbox" :aria-label="$t('common.searchSuggestions')">
+      <p v-if="suggestionsLoading" class="store-search-suggestion-state" role="status">{{ $t('common.findingProducts') }}</p>
 
       <template v-else>
         <div v-if="categorySuggestions.length" class="store-search-suggestion-section">
-          <p class="store-search-suggestion-heading">Categories</p>
-          <NuxtLink
+          <p class="store-search-suggestion-heading">{{ $t('common.categories') }}</p>
+          <NuxtLinkLocale
             v-for="category in categorySuggestions"
             :id="getOptionId(`category-${category.id}`)"
             :key="category.id"
@@ -42,13 +42,13 @@
           >
             <Icon name="lucide:layout-grid" size="17" />
             <span>{{ category.name }}</span>
-            <small>Category</small>
-          </NuxtLink>
+            <small>{{ $t('common.category') }}</small>
+          </NuxtLinkLocale>
         </div>
 
         <div v-if="brandSuggestions.length" class="store-search-suggestion-section">
-          <p class="store-search-suggestion-heading">Brands</p>
-          <NuxtLink
+          <p class="store-search-suggestion-heading">{{ $t('common.brands') }}</p>
+          <NuxtLinkLocale
             v-for="brand in brandSuggestions"
             :id="getOptionId(`brand-${brand.id}`)"
             :key="brand.id"
@@ -62,13 +62,13 @@
           >
             <Icon name="lucide:badge" size="17" />
             <span>{{ brand.name }}</span>
-            <small>Brand</small>
-          </NuxtLink>
+            <small>{{ $t('common.brand') }}</small>
+          </NuxtLinkLocale>
         </div>
 
         <div v-if="productSuggestions.length" class="store-search-suggestion-section">
-          <p class="store-search-suggestion-heading">Products</p>
-          <NuxtLink
+          <p class="store-search-suggestion-heading">{{ $t('common.products') }}</p>
+          <NuxtLinkLocale
             v-for="product in productSuggestions"
             :id="getOptionId(`product-${product.id}`)"
             :key="product.id"
@@ -86,17 +86,17 @@
             </span>
             <span class="store-search-suggestion-copy">
               <strong>{{ product.title }}</strong>
-              <small>{{ product.brand?.name || product.category?.name || 'Store product' }}</small>
+              <small>{{ product.brand?.name || product.category?.name || $t('common.storeProduct') }}</small>
             </span>
             <span class="store-search-suggestion-price">{{ formatPrice(product.price) }}</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
 
-        <p v-if="hasSearchTerm && !hasSuggestions" class="store-search-suggestion-state">No quick matches found.</p>
+        <p v-if="hasSearchTerm && !hasSuggestions" class="store-search-suggestion-state">{{ $t('common.noQuickMatchesFound') }}</p>
 
         <button v-if="hasSearchTerm" type="button" class="store-search-view-all" @click="submitSearch">
           <Icon name="lucide:search" size="16" />
-          <span>See all results for “{{ normalizedQuery }}”</span>
+          <span>{{ $t('layout.SearchBar.seeAllResultsForValue', { value0: (normalizedQuery) }) }}</span>
         </button>
       </template>
     </div>
@@ -104,9 +104,13 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 import { getStoreImageUrl } from '~/utils/storefront'
 
-const route = useRoute()
+const route = useUiRoute()
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
 
@@ -139,7 +143,7 @@ const suggestionsOpen = computed(() => suggestionsOpenRequested.value && hasSear
 const activeOptionId = computed(() => activeSuggestionKey.value ? getOptionId(activeSuggestionKey.value) : '')
 
 const getOptionId = key => `store-search-option-${key}`
-const formatPrice = value => `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(value || 0))} EGP`
+const formatPrice = value => `${new Intl.NumberFormat(intlLocale.value, { maximumFractionDigits: 2 }).format(Number(value || 0))} EGP`
 
 const closeSuggestions = () => {
   suggestionsOpenRequested.value = false
@@ -253,13 +257,13 @@ const selectActiveSuggestion = async event => {
   if (!suggestionsOpen.value || !item) return
   event.preventDefault()
   closeSuggestions()
-  await navigateTo(item.to)
+  await uiNavigateTo(item.to)
 }
 
 const submitSearch = async () => {
   const q = normalizedQuery.value
   closeSuggestions()
-  await navigateTo({ path: '/search', query: q ? { q } : {} })
+  await uiNavigateTo({ path: '/search', query: q ? { q } : {} })
 }
 
 const onOutsidePointer = event => {

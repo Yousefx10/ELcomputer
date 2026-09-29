@@ -1,7 +1,13 @@
 <script setup>
-import { chatContactValid, chatDateText, chatDateTitle, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatMessages } from '~/utils/liveChat'
+const { intlLocale } = useUiLocale()
+const chatDateText = (value, options = {}) => baseChatDateText(value, { ...options, locale: intlLocale.value })
+const chatDateTitle = (value, options = {}) => baseChatDateTitle(value, { ...options, locale: intlLocale.value })
 
-const route = useRoute()
+const { uiNavigateTo } = useUiNavigation()
+
+import { chatContactValid, chatDateText as baseChatDateText, chatDateTitle as baseChatDateTitle, chatMobileValid, chatRetryAfterSeconds, chatSecondsRemaining, chatSendWaitText, mergeChatMessages } from '~/utils/liveChat'
+
+const route = useUiRoute()
 const mainUser = useSupabaseUser()
 const { getGuestClient, resolveActor, hasStoredGuestSession, ensureGuestSession, request,
   uploadAttachment, downloadAttachment } = useLiveChatClient()
@@ -715,7 +721,7 @@ const goToHelp = async () => {
       window.history.back()
     })
   } else hidePanel()
-  await navigateTo('/help')
+  await uiNavigateTo('/help')
 }
 const onWindowFocus = () => {
   loadStatus()
@@ -787,12 +793,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="visible" class="chat-root">
-    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveAnnouncement }}</span>
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ $uiLabel(liveAnnouncement) }}</span>
     <button ref="launcher" class="chat-launcher" type="button"
-      :aria-label="unreadTotal ? `Live support, ${unreadTotal} unread ${unreadTotal === 1 ? 'reply' : 'replies'}` : 'Live support'"
+      :aria-label="unreadTotal ? $t('livechat.Launcher.liveSupportValueUnreadValue', { value0: (unreadTotal), value1: ($uiPluralSuffix(unreadTotal === 1 ? 'reply' : 'replies')) }) : $t('common.liveSupport')"
       :aria-expanded="panelOpen" aria-controls="live-chat-panel" @click="panelOpen ? closePanel() : openPanel()">
       <Icon :name="panelOpen ? 'lucide:x' : 'lucide:message-circle'" size="23" aria-hidden="true" />
-      <span>Chat</span>
+      <span>{{ $t('common.chat') }}</span>
       <span v-if="unreadTotal" class="chat-badge" aria-hidden="true">{{ unreadTotal > 9 ? '9+' : unreadTotal }}</span>
     </button>
 
@@ -802,89 +808,89 @@ onBeforeUnmount(() => {
       <header class="chat-header">
         <div class="chat-title-wrap">
           <div>
-            <h2 id="live-chat-title">{{ heading }}</h2>
-            <p><span class="chat-status-dot" :class="{ online: status.available }" />{{ statusCopy }}</p>
+            <h2 id="live-chat-title">{{ $uiLabel(heading) }}</h2>
+            <p><span class="chat-status-dot" :class="{ online: status.available }" />{{ $uiLabel(statusCopy) }}</p>
           </div>
         </div>
         <button ref="closeButton" type="button" class="chat-icon-button chat-header-close"
-          aria-label="Close live support" @click="closePanel">
+          :aria-label="$t('common.closeLiveSupport')" @click="closePanel">
           <Icon name="lucide:x" size="20" aria-hidden="true" />
         </button>
       </header>
 
       <div class="chat-toolbar">
         <button v-if="screen === 'history'" type="button" class="chat-text-button" @click="backFromHistory">
-          <Icon name="lucide:arrow-left" size="16" aria-hidden="true" /> Back
+          <Icon name="lucide:arrow-left" size="16" aria-hidden="true" class="directional-icon" /> {{ $t('common.back') }}
         </button>
-        <span v-else class="chat-toolbar-label">{{ showThread ? `Conversation #${conversation.reference_number}` : 'How can we help?' }}</span>
+        <span v-else class="chat-toolbar-label">{{ showThread ? $t('common.conversationValue', { value0: (conversation.reference_number) }) : $t('common.howCanWeHelp') }}</span>
         <div v-if="screen !== 'history'" class="chat-toolbar-actions">
           <button v-if="status.requestCallEnabled && showThread && !conversation.callback_status" type="button"
-            class="chat-text-button" @click="callbackOpen = !callbackOpen">Request a call</button>
-          <button v-if="conversations.length" type="button" class="chat-text-button" @click="showHistory">Past chats</button>
+            class="chat-text-button" @click="callbackOpen = !callbackOpen">{{ $t('common.requestACall') }}</button>
+          <button v-if="conversations.length" type="button" class="chat-text-button" @click="showHistory">{{ $t('common.pastChats') }}</button>
         </div>
       </div>
 
       <div v-if="guestToLink && actor?.kind === 'customer'" class="chat-account-link">
-        <span>Move guest chat #{{ guestToLink.chat.reference_number }} to this account?</span>
-        <button type="button" :disabled="orderBusy" @click="linkGuestChat">Move chat</button>
+        <span>{{ $t('livechat.Launcher.moveGuestChatValueToThisAccount', { value0: (guestToLink.chat.reference_number) }) }}</span>
+        <button type="button" :disabled="orderBusy" @click="linkGuestChat">{{ $t('common.moveChat') }}</button>
       </div>
 
-      <div v-if="loading && !actor" class="chat-center" role="status" aria-live="polite">Opening chat…</div>
+      <div v-if="loading && !actor" class="chat-center" role="status" aria-live="polite">{{ $t('common.openingChat') }}</div>
 
       <template v-else-if="screen === 'history'">
-        <div class="chat-scroll chat-history" aria-label="Previous conversations" :aria-busy="loading">
+        <div class="chat-scroll chat-history" :aria-label="$t('common.previousConversations')" :aria-busy="loading">
           <button v-for="item in conversations" :key="item.id" type="button" class="chat-history-item"
             @click="selectConversation(item)">
-            <span><strong>Conversation #{{ item.reference_number }}</strong><small>{{ chatDateText(item.created_at) }}</small></span>
-            <span class="chat-history-status">{{ item.unreadCount ? `${item.unreadCount} new` : item.status }}</span>
+            <span><strong>{{ $t('common.conversationValue', { value0: (item.reference_number) }) }}</strong><small>{{ chatDateText(item.created_at) }}</small></span>
+            <span class="chat-history-status">{{ item.unreadCount ? $t('common.valueNew', { value0: (item.unreadCount) }) : $uiLabel(item.status) }}</span>
           </button>
-          <p v-if="!conversations.length" class="chat-muted">No previous chats.</p>
+          <p v-if="!conversations.length" class="chat-muted">{{ $t('common.noPreviousChats') }}</p>
         </div>
       </template>
 
       <template v-else-if="showThread">
         <div v-if="conversation.callback_status" class="chat-callback-status">
-          <span>Call request: {{ conversation.callback_status }}</span>
+          <span>{{ $t('common.callRequestValue', { value0: ($uiLabel(conversation.callback_status)) }) }}</span>
           <span v-if="conversation.callback_mobile">{{ conversation.callback_mobile }}</span>
         </div>
         <form v-else-if="callbackOpen && status.requestCallEnabled" class="chat-callback-panel" @submit.prevent="requestCallback">
-          <p v-if="callbackNumber">We’ll call {{ callbackNumber }}.</p>
-          <label v-else for="chat-callback-mobile">Mobile number</label>
+          <p v-if="callbackNumber">{{ $t('common.weLlCallValue', { value0: (callbackNumber) }) }}</p>
+          <label v-else for="chat-callback-mobile">{{ $t('common.mobileNumber') }}</label>
           <input v-if="!callbackNumber" id="chat-callback-mobile" v-model="callbackMobile" type="tel"
-            autocomplete="tel" maxlength="30" placeholder="Your mobile number" required />
+            autocomplete="tel" maxlength="30" :placeholder="$t('common.yourMobileNumber')" required />
           <div class="chat-callback-actions">
-            <button type="button" @click="callbackOpen = false">Cancel</button>
-            <button type="submit" class="primary" :disabled="callbackBusy">{{ callbackBusy ? 'Sending…' : 'Request call' }}</button>
+            <button type="button" @click="callbackOpen = false">{{ $t('common.cancel') }}</button>
+            <button type="submit" class="primary" :disabled="callbackBusy">{{ callbackBusy ? $t('common.sending') : $t('common.requestCall') }}</button>
           </div>
         </form>
         <div v-if="actor?.kind === 'customer' && conversation.status !== 'closed' && !conversation.ticket_id" class="chat-order-panel">
           <button type="button" class="chat-order-summary" :aria-expanded="orderToolsOpen" @click="orderToolsOpen = !orderToolsOpen">
-            <span>{{ orderPanelLabel }}</span>
+            <span>{{ $uiLabel(orderPanelLabel) }}</span>
             <Icon :name="orderToolsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="15" aria-hidden="true" />
           </button>
           <div v-if="orderToolsOpen" class="chat-order-link">
-            <select v-model="selectedOrderId" aria-label="Choose your order"><option value="">Choose an order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+            <select v-model="selectedOrderId" :aria-label="$t('common.chooseYourOrder')"><option value="">{{ $t('common.chooseAnOrder') }}</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ $uiLabel(order.status) }}</option></select>
             <div class="chat-order-actions">
-              <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">Link order</button>
-              <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">Remove</button>
+              <button type="button" :disabled="orderBusy || !selectedOrderId || selectedOrderId === conversation.order_id" @click="setOrder(selectedOrderId)">{{ $t('common.linkOrder') }}</button>
+              <button v-if="conversation.order_id" type="button" :disabled="orderBusy" @click="setOrder(null)">{{ $t('common.remove') }}</button>
             </div>
             <div class="chat-order-search">
-              <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
-              <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+              <input v-model="orderNumber" maxlength="64" :aria-label="$t('common.findOrderNumber')" :placeholder="$t('common.orderNumber')" />
+              <button type="button" :disabled="orderBusy" @click="searchOrders">{{ $t('common.find') }}</button>
             </div>
           </div>
         </div>
-        <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">The related order is now managed on your support ticket.</p>
-        <div ref="messageList" class="chat-scroll chat-messages" role="log" aria-label="Chat messages"
+        <p v-else-if="actor?.kind === 'customer' && conversation.ticket_id" class="chat-intake-note">{{ $t('livechat.Launcher.theRelatedOrderIsNowManagedOnYourSupportTicket') }}</p>
+        <div ref="messageList" class="chat-scroll chat-messages" role="log" :aria-label="$t('common.chatMessages')"
           aria-live="polite" aria-relevant="additions" :aria-busy="loadingOlder" @scroll.passive="markVisibleRead">
           <button v-if="hasOlder" type="button" class="chat-load-more" :disabled="loadingOlder" @click="loadOlder">
-            {{ loadingOlder ? 'Loading…' : 'Load earlier messages' }}
+            {{ loadingOlder ? $t('common.loading') : $t('common.loadEarlierMessages') }}
           </button>
-          <p v-if="conversation.intake_mode === 'offline'" class="chat-intake-note">{{ conversation.ticket_id ? 'Your message is saved as a support ticket.' : 'Your message is saved. Our team will reply when available.' }}</p>
+          <p v-if="conversation.intake_mode === 'offline'" class="chat-intake-note">{{ conversation.ticket_id ? $t('livechat.Launcher.yourMessageIsSavedAsASupportTicket') : $t('livechat.Launcher.yourMessageIsSavedOurTeamWillReplyWhenAvailable') }}</p>
           <article v-for="message in messages" :key="message.id" class="chat-message"
-            :aria-label="`${message.sender_kind === 'staff' ? 'Support' : 'You'}, ${chatDateText(message.created_at)}`"
+            :aria-label="`${message.sender_kind === 'staff' ? $t('common.support') : $t('common.youVariant2')}, ${chatDateText(message.created_at)}`"
             :class="message.sender_kind === 'staff' ? 'from-support' : 'from-customer'">
-            <span class="chat-message-sender">{{ message.sender_kind === 'staff' ? 'Support' : 'You' }}</span>
+            <span class="chat-message-sender">{{ message.sender_kind === 'staff' ? $t('common.support') : $t('common.youVariant2') }}</span>
             <p>{{ message.body }}</p>
             <button v-for="file in message.attachments || []" :key="file.id" type="button"
               class="chat-attachment" @click="downloadFile(file)">
@@ -893,95 +899,95 @@ onBeforeUnmount(() => {
             </button>
             <time :datetime="message.created_at" :title="chatDateTitle(message.created_at)">{{ chatDateText(message.created_at) }}</time>
           </article>
-          <p v-if="!messages.length" class="chat-muted">No messages yet.</p>
+          <p v-if="!messages.length" class="chat-muted">{{ $t('common.noMessagesYet') }}</p>
         </div>
-        <p v-if="staffTyping" class="chat-connection" role="status">Support is typing…</p>
-        <button v-if="newBelow" type="button" class="chat-new-below" @click="scrollBottom">New message ↓</button>
+        <p v-if="staffTyping" class="chat-connection" role="status">{{ $t('common.supportIsTyping') }}</p>
+        <button v-if="newBelow" type="button" class="chat-new-below" @click="scrollBottom">{{ $t('common.newMessage') }}</button>
       </template>
 
       <div v-else class="chat-scroll chat-intro">
-        <h3>{{ status.available ? 'How can we help?' : 'Send us a message' }}</h3>
+        <h3>{{ status.available ? $t('common.howCanWeHelp') : $t('common.sendUsAMessage') }}</h3>
         <p>{{ status.available ? status.welcomeMessage : status.offlineMessage }}</p>
         <div v-if="isGuest" class="chat-contact-fields">
-          <label for="chat-name">Name <span aria-hidden="true">*</span></label>
-          <input id="chat-name" v-model="guestName" autocomplete="name" maxlength="160" placeholder="Your name" required />
-          <label for="chat-email">Email</label>
+          <label for="chat-name">{{ $t('common.name') }} <span aria-hidden="true">*</span></label>
+          <input id="chat-name" v-model="guestName" autocomplete="name" maxlength="160" :placeholder="$t('common.yourName')" required />
+          <label for="chat-email">{{ $t('common.email') }}</label>
           <input id="chat-email" v-model="guestEmail" type="email" autocomplete="email" maxlength="320" placeholder="you@example.com" aria-describedby="chat-contact-help" />
-          <label for="chat-mobile">Mobile</label>
-          <input id="chat-mobile" v-model="guestMobile" type="tel" autocomplete="tel" maxlength="30" placeholder="Your mobile number" aria-describedby="chat-contact-help" />
-          <small v-if="status.guestContactRule === 'both'" id="chat-contact-help">Enter both email and mobile.</small>
-          <small v-else-if="status.guestContactRule === 'email'" id="chat-contact-help">Enter your email.</small>
-          <small v-else-if="status.guestContactRule === 'mobile'" id="chat-contact-help">Enter your mobile number.</small>
-          <small v-else id="chat-contact-help">Enter an email or mobile number.</small>
+          <label for="chat-mobile">{{ $t('common.mobile') }}</label>
+          <input id="chat-mobile" v-model="guestMobile" type="tel" autocomplete="tel" maxlength="30" :placeholder="$t('common.yourMobileNumber')" aria-describedby="chat-contact-help" />
+          <small v-if="status.guestContactRule === 'both'" id="chat-contact-help">{{ $t('livechat.Launcher.enterBothEmailAndMobile') }}</small>
+          <small v-else-if="status.guestContactRule === 'email'" id="chat-contact-help">{{ $t('common.enterYourEmail') }}</small>
+          <small v-else-if="status.guestContactRule === 'mobile'" id="chat-contact-help">{{ $t('livechat.Launcher.enterYourMobileNumber') }}</small>
+          <small v-else id="chat-contact-help">{{ $t('livechat.Launcher.enterAnEmailOrMobileNumber') }}</small>
         </div>
         <div v-if="actor?.kind === 'customer'" class="chat-order-panel chat-order-start">
           <button type="button" class="chat-order-summary" :aria-expanded="orderToolsOpen" @click="orderToolsOpen = !orderToolsOpen">
-            <span>{{ orderPanelLabel }}</span>
+            <span>{{ $uiLabel(orderPanelLabel) }}</span>
             <Icon :name="orderToolsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="15" aria-hidden="true" />
           </button>
           <div v-if="orderToolsOpen" class="chat-order-link">
-            <select id="chat-order-start" v-model="selectedOrderId" aria-label="Choose your order"><option value="">No order</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ order.status }}</option></select>
+            <select id="chat-order-start" v-model="selectedOrderId" :aria-label="$t('common.chooseYourOrder')"><option value="">{{ $t('common.noOrder') }}</option><option v-for="order in orderChoices" :key="order.id" :value="order.id">#{{ order.order_number || order.id.slice(0, 8) }} · {{ $uiLabel(order.status) }}</option></select>
             <div class="chat-order-search">
-              <input v-model="orderNumber" maxlength="64" aria-label="Find order number" placeholder="Order number" />
-              <button type="button" :disabled="orderBusy" @click="searchOrders">Find</button>
+              <input v-model="orderNumber" maxlength="64" :aria-label="$t('common.findOrderNumber')" :placeholder="$t('common.orderNumber')" />
+              <button type="button" :disabled="orderBusy" @click="searchOrders">{{ $t('common.find') }}</button>
             </div>
           </div>
         </div>
       </div>
 
-      <div v-if="errorText" class="chat-error" role="alert">{{ errorText }}</div>
-      <div v-if="showThread && connectionState === 'reconnecting'" class="chat-connection" role="status">Reconnecting. Messages are saved.</div>
+      <div v-if="errorText" class="chat-error" role="alert">{{ $uiMessage(errorText) }}</div>
+      <div v-if="showThread && connectionState === 'reconnecting'" class="chat-connection" role="status">{{ $t('livechat.Launcher.reconnectingMessagesAreSaved') }}</div>
 
       <div v-if="screen !== 'history' && (!conversation || conversation.status !== 'closed')" class="chat-composer">
-        <label for="chat-message" class="sr-only">Your message</label>
+        <label for="chat-message" class="sr-only">{{ $t('common.yourMessage') }}</label>
         <textarea id="chat-message" ref="composer" v-model="draft" rows="2" :maxlength="maxLength"
           :aria-describedby="cooldown ? 'chat-send-status' : undefined"
-          :placeholder="showThread ? 'Write a message…' : 'What can we help with?'"
+          :placeholder="showThread ? $t('common.writeAMessage') : $t('common.whatCanWeHelpWith')"
           @keydown="onComposerKeydown" />
         <div class="chat-composer-bottom">
-          <span v-if="cooldown" id="chat-send-status" role="status">{{ sendWaitText }}</span>
+          <span v-if="cooldown" id="chat-send-status" role="status">{{ $uiLabel(sendWaitText) }}</span>
           <span v-else>{{ draft.length }}/{{ maxLength }}</span>
           <button type="button" class="chat-send" :disabled="!canSend" @click="submitDraft">
-            {{ sending ? 'Sending…' : (showThread ? 'Send' : 'Start chat') }}
+            {{ sending ? $t('common.sending') : (showThread ? $t('common.send') : $t('common.startChat')) }}
           </button>
         </div>
         <label v-if="attachmentPolicy.enabled" class="chat-file-picker">
-          <Icon name="lucide:paperclip" size="14" aria-hidden="true" /> Attach files
+          <Icon name="lucide:paperclip" size="14" aria-hidden="true" /> {{ $t('common.attachFiles') }}
           <input ref="fileInput" type="file" multiple :accept="attachmentAccept"
             :disabled="sending" @change="chooseFiles" />
         </label>
-        <span v-if="attachmentPolicy.enabled && !selectedFiles.length" class="chat-file-limit">{{ attachmentLimitText }}</span>
+        <span v-if="attachmentPolicy.enabled && !selectedFiles.length" class="chat-file-limit">{{ $uiLabel(attachmentLimitText) }}</span>
         <span v-if="selectedFiles.length" class="chat-file-summary">
-          {{ selectedFiles.length }} {{ selectedFiles.length === 1 ? 'file' : 'files' }} selected
-          <button type="button" :disabled="sending" @click="clearFiles">Clear</button>
+          {{ $t('livechat.Launcher.valueValueSelected', { value0: (selectedFiles.length), value1: (selectedFiles.length === 1 ? 'file' : $t('common.files')) }) }}
+          <button type="button" :disabled="sending" @click="clearFiles">{{ $t('common.clear') }}</button>
         </span>
       </div>
       <div v-else-if="conversation?.status === 'closed' && screen === 'thread'" class="chat-closed">
         <template v-if="!conversation.resolution_feedback_at">
-          <strong>Was your issue resolved?</strong>
-          <div class="chat-feedback-choice" role="group" aria-label="Issue resolution">
-            <button type="button" :class="{ selected: feedbackResolved === true }" :aria-pressed="feedbackResolved === true" @click="feedbackResolved = true">Yes</button>
-            <button type="button" :class="{ selected: feedbackResolved === false }" :aria-pressed="feedbackResolved === false" @click="feedbackResolved = false">No</button>
+          <strong>{{ $t('livechat.Launcher.wasYourIssueResolved') }}</strong>
+          <div class="chat-feedback-choice" role="group" :aria-label="$t('common.issueResolution')">
+            <button type="button" :class="{ selected: feedbackResolved === true }" :aria-pressed="feedbackResolved === true" @click="feedbackResolved = true">{{ $t('common.yes') }}</button>
+            <button type="button" :class="{ selected: feedbackResolved === false }" :aria-pressed="feedbackResolved === false" @click="feedbackResolved = false">{{ $t('common.no') }}</button>
           </div>
-          <span>Rate your support</span>
-          <div class="chat-rating" role="group" aria-label="Rate your support from 1 to 5">
+          <span>{{ $t('common.rateYourSupport') }}</span>
+          <div class="chat-rating" role="group" :aria-label="$t('livechat.Launcher.rateYourSupportFrom1To5')">
             <button v-for="rating in 5" :key="rating" type="button"
-              :class="{ selected: feedbackRating >= rating }" :aria-label="`${rating} star${rating === 1 ? '' : 's'}`"
+              :class="{ selected: feedbackRating >= rating }" :aria-label="$t('common.valueStarvalue', { value0: (rating), value1: (rating === 1 ? '' : $uiPluralSuffix('s')) })"
               :aria-pressed="feedbackRating === rating" @click="feedbackRating = rating">★</button>
           </div>
           <button type="button" class="chat-feedback-submit"
             :disabled="feedbackBusy || typeof feedbackResolved !== 'boolean' || !feedbackRating"
-            @click="submitFeedback">{{ feedbackBusy ? 'Saving…' : 'Send feedback' }}</button>
+            @click="submitFeedback">{{ feedbackBusy ? $t('common.saving') : $t('common.sendFeedback') }}</button>
         </template>
         <template v-else>
-          <strong>Thank you for your feedback.</strong>
+          <strong>{{ $t('common.thankYouForYourFeedback') }}</strong>
           <span v-if="conversation.ticket_id && (conversation.resolution_resolved === false || conversation.satisfaction_rating <= 2)">
-            A support ticket was created for follow-up<span v-if="feedbackTicketReference">: #{{ feedbackTicketReference }}</span>.
+            {{ $t('livechat.Launcher.aSupportTicketWasCreatedForFollowUp') }}<span v-if="feedbackTicketReference">: #{{ feedbackTicketReference }}</span>.
           </span>
         </template>
-        <button type="button" class="chat-new-conversation" @click="newConversation">Start a new chat</button>
+        <button type="button" class="chat-new-conversation" @click="newConversation">{{ $t('common.startANewChat') }}</button>
       </div>
-      <div class="chat-footer"><button type="button" @click="goToHelp">Browse the Help Center</button></div>
+      <div class="chat-footer"><button type="button" @click="goToHelp">{{ $t('common.browseTheHelpCenter') }}</button></div>
     </section>
   </div>
 </template>
@@ -998,7 +1004,7 @@ onBeforeUnmount(() => {
 
 .chat-launcher {
   position: fixed;
-  right: 22px;
+  inset-inline-end: 22px;
   bottom: calc(24px + env(safe-area-inset-bottom));
   z-index: 70;
   display: flex;
@@ -1036,7 +1042,7 @@ onBeforeUnmount(() => {
 .chat-badge {
   position: absolute;
   top: -7px;
-  right: -7px;
+  inset-inline-end: -7px;
   display: grid;
   place-items: center;
   min-width: 22px;
@@ -1051,7 +1057,7 @@ onBeforeUnmount(() => {
 
 .chat-panel {
   position: fixed;
-  right: 22px;
+  inset-inline-end: 22px;
   bottom: calc(82px + env(safe-area-inset-bottom));
   z-index: 71;
   display: flex;
@@ -1061,9 +1067,9 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 1px solid var(--chat-line);
   border-radius: 12px;
-  background: white;
+  background: var(--surface);
   box-shadow: 0 16px 40px #08265c29;
-  color: #172842;
+  color: var(--text-primary);
 }
 
 .chat-header {
@@ -1073,7 +1079,7 @@ onBeforeUnmount(() => {
   min-height: 68px;
   padding: 13px 16px;
   border-bottom: 1px solid var(--chat-line);
-  background: white;
+  background: var(--surface);
   color: var(--chat-navy);
 }
 
@@ -1104,7 +1110,7 @@ onBeforeUnmount(() => {
   min-height: 42px;
   padding: 0 16px;
   border-bottom: 1px solid var(--chat-line);
-  background: #f7f9fc;
+  background: var(--surface);
 }
 
 .chat-toolbar-label {
@@ -1140,13 +1146,13 @@ onBeforeUnmount(() => {
   gap: 7px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--chat-line);
-  background: #f7f9fc;
+  background: var(--surface);
   font-size: 11px;
 }
 
 .chat-order-panel {
   border-bottom: 1px solid var(--chat-line);
-  background: #f7f9fc;
+  background: var(--surface);
 }
 
 .chat-order-start {
@@ -1165,7 +1171,7 @@ onBeforeUnmount(() => {
   padding: 7px 14px;
   border: 0;
   background: transparent;
-  color: #344863;
+  color: var(--text-primary);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -1176,7 +1182,7 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 10px 12px;
   border-top: 1px solid var(--chat-line);
-  background: white;
+  background: var(--surface);
 }
 
 .chat-account-link button,
@@ -1197,7 +1203,7 @@ onBeforeUnmount(() => {
   padding: 6px 8px;
   border: 1px solid var(--chat-line);
   border-radius: 7px;
-  background: white;
+  background: var(--surface);
 }
 
 .chat-order-actions { display: flex; align-items: center; gap: 12px; }
@@ -1208,17 +1214,17 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 11px 14px;
   border-bottom: 1px solid var(--chat-line);
-  background: #f7f9fc;
+  background: var(--surface);
   font-size: 12px;
 }
 
-.chat-callback-panel p { margin: 0; color: #344863; }
-.chat-callback-panel label { color: #344863; font-weight: 700; }
-.chat-callback-panel input { width: 100%; min-height: 38px; padding: 7px 9px; border: 1px solid var(--chat-line); border-radius: 7px; background: white; }
+.chat-callback-panel p { margin: 0; color: var(--text-primary); }
+.chat-callback-panel label { color: var(--text-primary); font-weight: 700; }
+.chat-callback-panel input { width: 100%; min-height: 38px; padding: 7px 9px; border: 1px solid var(--chat-line); border-radius: 7px; background: var(--surface); }
 .chat-callback-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .chat-callback-actions button { min-height: 34px; padding: 5px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--chat-blue); font-weight: 700; cursor: pointer; }
 .chat-callback-actions .primary { background: var(--chat-blue); color: white; }
-.chat-callback-status { display: flex; justify-content: space-between; gap: 10px; padding: 7px 14px; border-bottom: 1px solid var(--chat-line); background: #f7f9fc; color: #4e6480; font-size: 11px; text-transform: capitalize; }
+.chat-callback-status { display: flex; justify-content: space-between; gap: 10px; padding: 7px 14px; border-bottom: 1px solid var(--chat-line); background: var(--surface); color: var(--text-secondary); font-size: 11px; text-transform: capitalize; }
 
 .chat-scroll { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 .chat-center { display: grid; place-items: center; flex: 1; color: var(--chat-muted); font-size: 13px; }
@@ -1226,7 +1232,7 @@ onBeforeUnmount(() => {
 .chat-intro h3 { margin: 0 0 7px; color: var(--chat-navy); font-size: 18px; font-weight: 700; }
 .chat-intro > p { margin: 0; color: var(--chat-muted); font-size: 13px; line-height: 1.55; }
 .chat-contact-fields { display: grid; gap: 6px; margin-top: 20px; }
-.chat-contact-fields label { margin-top: 5px; color: #344863; font-size: 12px; font-weight: 700; }
+.chat-contact-fields label { margin-top: 5px; color: var(--text-primary); font-size: 12px; font-weight: 700; }
 
 .chat-contact-fields input {
   width: 100%;
@@ -1234,8 +1240,8 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   border: 1px solid var(--chat-line);
   border-radius: 8px;
-  background: white;
-  color: #172842;
+  background: var(--surface);
+  color: var(--text-primary);
   font-size: 13px;
 }
 
@@ -1250,7 +1256,7 @@ onBeforeUnmount(() => {
   border: 1px solid #dceaff;
   border-radius: 8px;
   background: var(--chat-pale);
-  color: #3e597a;
+  color: var(--text-secondary);
   text-align: center;
   font-size: 11px;
   line-height: 1.4;
@@ -1267,8 +1273,8 @@ onBeforeUnmount(() => {
   padding: 10px 12px;
   border: 1px solid var(--chat-line);
   border-radius: 10px;
-  background: #f7f9fc;
-  color: #172842;
+  background: var(--surface);
+  color: var(--text-primary);
   font-size: 13px;
   line-height: 1.5;
   white-space: pre-wrap;
@@ -1283,7 +1289,7 @@ onBeforeUnmount(() => {
 }
 
 .chat-message.from-support p { border-bottom-left-radius: 3px; }
-.chat-message time { padding: 0 4px; color: #73849a; font-size: 10px; }
+.chat-message time { padding: 0 4px; color: var(--text-secondary); font-size: 10px; }
 
 .chat-load-more {
   align-self: center;
@@ -1304,7 +1310,7 @@ onBeforeUnmount(() => {
   padding: 6px 12px;
   border: 1px solid #b7c8e5;
   border-radius: 8px;
-  background: white;
+  background: var(--surface);
   color: var(--chat-blue);
   font-size: 11px;
   font-weight: 700;
@@ -1320,7 +1326,7 @@ onBeforeUnmount(() => {
   padding: 5px 7px;
   border: 1px solid #b7c8e5;
   border-radius: 7px;
-  background: white;
+  background: var(--surface);
   color: var(--chat-blue);
   font-size: 10px;
   font-weight: 700;
@@ -1330,7 +1336,7 @@ onBeforeUnmount(() => {
 
 .chat-file-picker { display: inline-flex; align-items: center; gap: 5px; margin-top: 7px; color: var(--chat-blue); font-size: 11px; font-weight: 700; cursor: pointer; }
 .chat-file-picker input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.chat-file-limit { margin-left: 8px; color: #718096; font-size: 10px; }
+.chat-file-limit { margin-inline-start: 8px; color: var(--text-secondary); font-size: 10px; }
 .chat-file-summary { display: flex; justify-content: space-between; margin-top: 5px; color: var(--chat-muted); font-size: 10px; }
 .chat-file-summary button { border: 0; background: transparent; color: var(--chat-blue); font-weight: 700; cursor: pointer; }
 .chat-history { padding: 6px 10px; }
@@ -1344,19 +1350,19 @@ onBeforeUnmount(() => {
   padding: 14px 9px;
   border: 0;
   border-bottom: 1px solid var(--chat-line);
-  background: white;
-  text-align: left;
+  background: var(--surface);
+  text-align: start;
   cursor: pointer;
 }
 
-.chat-history-item:hover { background: #f7f9fc; }
+.chat-history-item:hover { background: var(--surface); }
 .chat-history-item span:first-child { display: grid; gap: 4px; }
-.chat-history-item strong { color: #233a56; font-size: 12px; }
-.chat-history-item small { color: #718096; font-size: 11px; }
-.chat-history-status { padding: 4px 7px; border-radius: 6px; background: var(--chat-pale); color: #4e6480; font-size: 10px; text-transform: capitalize; }
-.chat-error { margin: 7px 12px 0; padding: 8px 10px; border-radius: 7px; background: #fff1f2; color: #9d2332; font-size: 11px; }
-.chat-connection { padding: 4px 12px; color: #8a5c08; font-size: 11px; }
-.chat-composer { padding: 10px 12px 8px; border-top: 1px solid var(--chat-line); background: white; }
+.chat-history-item strong { color: var(--text-primary); font-size: 12px; }
+.chat-history-item small { color: var(--text-secondary); font-size: 11px; }
+.chat-history-status { padding: 4px 7px; border-radius: 6px; background: var(--chat-pale); color: var(--text-secondary); font-size: 10px; text-transform: capitalize; }
+.chat-error { margin: 7px 12px 0; padding: 8px 10px; border-radius: 7px; background: var(--surface-muted); color: #9d2332; font-size: 11px; }
+.chat-connection { padding: 4px 12px; color: var(--text-secondary); font-size: 11px; }
+.chat-composer { padding: 10px 12px 8px; border-top: 1px solid var(--chat-line); background: var(--surface); }
 
 .chat-composer textarea {
   display: block;
@@ -1367,14 +1373,14 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   border: 1px solid var(--chat-line);
   border-radius: 8px;
-  background: white;
-  color: #172842;
+  background: var(--surface);
+  color: var(--text-primary);
   font: inherit;
   font-size: 13px;
   line-height: 1.45;
 }
 
-.chat-composer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; color: #6f8094; font-size: 10px; }
+.chat-composer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; color: var(--text-secondary); font-size: 10px; }
 
 .chat-send {
   display: inline-flex;
@@ -1394,10 +1400,10 @@ onBeforeUnmount(() => {
 
 .chat-send:hover:not(:disabled) { background: #0344ba; }
 .chat-send:disabled { cursor: not-allowed; opacity: .5; }
-.chat-closed { display: grid; gap: 10px; padding: 14px; border-top: 1px solid var(--chat-line); color: #61738b; font-size: 12px; }
-.chat-closed strong { color: #233a56; font-size: 13px; }
+.chat-closed { display: grid; gap: 10px; padding: 14px; border-top: 1px solid var(--chat-line); color: var(--text-secondary); font-size: 12px; }
+.chat-closed strong { color: var(--text-primary); font-size: 13px; }
 .chat-feedback-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.chat-feedback-choice button { min-height: 38px; border: 1px solid var(--chat-line); border-radius: 7px; background: white; color: #344863; font-weight: 700; cursor: pointer; }
+.chat-feedback-choice button { min-height: 38px; border: 1px solid var(--chat-line); border-radius: 7px; background: var(--surface); color: var(--text-primary); font-weight: 700; cursor: pointer; }
 .chat-feedback-choice button.selected { border-color: var(--chat-blue); background: var(--chat-pale); color: var(--chat-blue); }
 .chat-rating { display: flex; gap: 4px; }
 .chat-rating button { min-width: 34px; min-height: 34px; border: 0; background: transparent; color: #a0a9b5; font-size: 22px; line-height: 1; cursor: pointer; }
@@ -1410,8 +1416,8 @@ onBeforeUnmount(() => {
 .chat-footer button:hover { color: var(--chat-blue); }
 
 @media (max-width: 640px) {
-  .chat-launcher { right: 15px; bottom: calc(82px + env(safe-area-inset-bottom)); min-height: 46px; padding: 0 14px; }
-  .chat-panel { inset: 0; right: 0; bottom: 0; width: 100vw; height: var(--chat-viewport-height, 100dvh); max-height: none; border: 0; border-radius: 0; box-shadow: none; }
+  .chat-launcher { inset-inline-end: 15px; bottom: calc(82px + env(safe-area-inset-bottom)); min-height: 46px; padding: 0 14px; }
+  .chat-panel { inset: 0; inset-inline-end: 0; bottom: 0; width: 100vw; height: var(--chat-viewport-height, 100dvh); max-height: none; border: 0; border-radius: 0; box-shadow: none; }
   .chat-header { padding-top: max(13px, env(safe-area-inset-top)); }
   .chat-icon-button,
   .chat-panel button { min-height: 44px; }

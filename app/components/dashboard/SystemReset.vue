@@ -2,55 +2,55 @@
   <div class="file-workspace">
     <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
       <Icon name="lucide:shield-alert" size="20" class="shrink-0" />
-      <div><p class="font-semibold">Resets permanently erase data.</p><p class="mt-1 text-xs">Review the scope and export anything you need first.</p></div>
+      <div><p class="font-semibold">{{ $t('dashboard.SystemReset.resetsPermanentlyEraseData') }}</p><p class="mt-1 text-xs">{{ $t('dashboard.SystemReset.reviewTheScopeAndExportAnythingYouNeedFirst') }}</p></div>
     </div>
 
     <div v-if="success" role="status" class="file-surface p-5">
-      <p class="flex items-center gap-2 font-semibold text-green-700"><Icon name="lucide:circle-check" size="19" /> Reset completed</p>
-      <p class="mt-2 text-sm text-gray-500">The completion log records your name and reset scope.</p>
-      <NuxtLink to="/dashboard/settings?tab=logs" class="file-button mt-4" @click="clearCachedData">View activity log <Icon name="lucide:arrow-right" size="15" /></NuxtLink>
+      <p class="flex items-center gap-2 font-semibold text-green-700"><Icon name="lucide:circle-check" size="19" /> {{ $t('common.resetCompleted') }}</p>
+      <p class="mt-2 text-sm text-gray-500">{{ $t('dashboard.SystemReset.theCompletionLogRecordsYourNameAndResetScope') }}</p>
+      <NuxtLinkLocale to="/dashboard/settings?tab=logs" class="file-button mt-4" @click="clearCachedData">{{ $t('common.viewActivityLog') }} <Icon name="lucide:arrow-right" size="15" class="directional-icon" /></NuxtLinkLocale>
     </div>
     <div v-if="pending" class="file-surface border-amber-200 p-5" role="status">
-      <p class="font-semibold">A reset needs to finish.</p>
-      <p class="mt-1 text-sm text-gray-500">Data was erased. Remaining cleanup must finish before another reset.</p>
-      <button v-if="pending.canResume" type="button" class="file-button mt-4" @click="reviewScope(scopes.find(item => item.key === pending.scope), pending.id)">Resume cleanup</button>
-      <p v-else class="mt-2 text-xs text-gray-500">The owner who started this reset must finish it.</p>
+      <p class="font-semibold">{{ $t('dashboard.SystemReset.aResetNeedsToFinish') }}</p>
+      <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.SystemReset.dataWasErasedRemainingCleanupMustFinishBeforeAnotherReset') }}</p>
+      <button v-if="pending.canResume" type="button" class="file-button mt-4" @click="reviewScope(scopes.find(item => item.key === pending.scope), pending.id)">{{ $t('common.resumeCleanup') }}</button>
+      <p v-else class="mt-2 text-xs text-gray-500">{{ $t('dashboard.SystemReset.theOwnerWhoStartedThisResetMustFinishIt') }}</p>
     </div>
-    <div v-if="pageError" role="alert" class="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">{{ pageError }}</div>
-    <div v-if="loading" role="status" class="file-surface p-8 text-center text-sm text-gray-500">Loading reset options…</div>
-    <button v-else-if="!scopes.length" type="button" class="file-button" @click="loadOptions">Retry</button>
+    <div v-if="pageError" role="alert" class="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(pageError) }}</div>
+    <div v-if="loading" role="status" class="file-surface p-8 text-center text-sm text-gray-500">{{ $t('common.loadingResetOptions') }}</div>
+    <button v-else-if="!scopes.length" type="button" class="file-button" @click="loadOptions">{{ $t('common.retry') }}</button>
     <template v-else>
-      <div class="flex items-center justify-between gap-3"><h3 class="text-lg font-semibold">Specific resets</h3><span class="inline-flex items-center gap-1.5 text-xs text-gray-500"><Icon name="lucide:lock-keyhole" size="14" /> Owner only</span></div>
+      <div class="flex items-center justify-between gap-3"><h3 class="text-lg font-semibold">{{ $t('common.specificResets') }}</h3><span class="inline-flex items-center gap-1.5 text-xs text-gray-500"><Icon name="lucide:lock-keyhole" size="14" /> {{ $t('common.ownerOnly') }}</span></div>
       <div class="grid gap-3 md:grid-cols-2">
         <article v-for="scope in specificScopes" :key="scope.key" class="file-surface flex flex-col p-5">
-          <div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500"><Icon :name="scope.icon" size="20" /></span><div><h4 class="text-sm font-semibold">{{ scope.label }}</h4><p class="mt-1.5 text-sm text-gray-500">{{ scope.description }}</p></div></div>
-          <button type="button" class="file-button mt-5 self-start" :disabled="Boolean(pending)" @click="reviewScope(scope)">Review reset <Icon name="lucide:arrow-right" size="14" /></button>
+          <div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500"><Icon :name="scope.icon" size="20" /></span><div><h4 class="text-sm font-semibold">{{ $uiLabel(scope.label) }}</h4><p class="mt-1.5 text-sm text-gray-500">{{ scope.description }}</p></div></div>
+          <button type="button" class="file-button mt-5 self-start" :disabled="Boolean(pending)" @click="reviewScope(scope)">{{ $t('common.reviewReset') }} <Icon name="lucide:arrow-right" size="14" class="directional-icon" /></button>
         </article>
       </div>
       <article v-if="fullScope" class="flex flex-col gap-5 rounded-2xl border border-red-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-start gap-3"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600"><Icon name="lucide:rotate-ccw" size="22" /></span><div><h3 class="font-semibold">Full system reset</h3><p class="mt-1.5 text-sm text-gray-500">Erase website data and start again.</p><p class="mt-1 text-xs text-gray-500">Your current owner login remains.</p></div></div>
-        <button type="button" class="file-button !border-red-200 !text-red-700 hover:!bg-red-50" :disabled="Boolean(pending)" @click="reviewScope(fullScope)">Review full reset</button>
+        <div class="flex items-start gap-3"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600"><Icon name="lucide:rotate-ccw" size="22" /></span><div><h3 class="font-semibold">{{ $t('common.fullSystemReset') }}</h3><p class="mt-1.5 text-sm text-gray-500">{{ $t('dashboard.SystemReset.eraseWebsiteDataAndStartAgain') }}</p><p class="mt-1 text-xs text-gray-500">{{ $t('dashboard.SystemReset.yourCurrentOwnerLoginRemains') }}</p></div></div>
+        <button type="button" class="file-button !border-red-200 !text-red-700 hover:!bg-red-50" :disabled="Boolean(pending)" @click="reviewScope(fullScope)">{{ $t('common.reviewFullReset') }}</button>
       </article>
     </template>
 
     <Teleport to="body">
       <dialog ref="dialog" class="reset-dialog m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl bg-white p-0 shadow-xl backdrop:bg-gray-950/60" aria-labelledby="reset-dialog-title" @keydown.esc="handleCancel" @cancel="handleCancel" @close="clearPassword">
         <form v-if="selectedScope" class="p-5 sm:p-6" @submit.prevent="executeReset">
-          <div class="flex items-center justify-between gap-3"><h3 id="reset-dialog-title" class="text-xl font-semibold">{{ resuming ? 'Finish reset cleanup' : selectedScope.label }}</h3><button type="button" aria-label="Close reset confirmation" class="file-button !min-h-8 !p-2" :disabled="working" @click="closeDialog"><Icon name="lucide:x" size="18" /></button></div>
+          <div class="flex items-center justify-between gap-3"><h3 id="reset-dialog-title" class="text-xl font-semibold">{{ resuming ? $t('common.finishResetCleanup') : selectedScope.label }}</h3><button type="button" :aria-label="$t('dashboard.SystemReset.closeResetConfirmation')" class="file-button !min-h-8 !p-2" :disabled="working" @click="closeDialog"><Icon name="lucide:x" size="18" /></button></div>
           <ul class="mt-4 list-disc space-y-2 ps-5 text-sm text-gray-600"><li v-for="detail in selectedScope.details" :key="detail">{{ detail }}</li></ul>
-          <div v-if="planLoading" role="status" class="mt-5 rounded-xl bg-gray-50 p-4 text-sm text-gray-500">Checking affected records…</div>
+          <div v-if="planLoading" role="status" class="mt-5 rounded-xl bg-gray-50 p-4 text-sm text-gray-500">{{ $t('dashboard.SystemReset.checkingAffectedRecords') }}</div>
           <div v-else-if="plan && !resuming" class="mt-5 rounded-xl border border-gray-200">
-            <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 text-xs"><span class="font-semibold">Records to erase</span><span class="tabular-nums text-gray-500">{{ recordTotal.toLocaleString() }} total</span></div>
-            <dl class="max-h-40 overflow-y-auto px-4 py-2"><div v-for="entry in affectedCounts" :key="entry.table" class="flex justify-between gap-3 py-1.5 text-xs"><dt class="text-gray-500">{{ tableLabel(entry.table) }}</dt><dd class="font-medium tabular-nums">{{ entry.count.toLocaleString() }}</dd></div><div v-if="plan.mediaFiles !== undefined" class="flex justify-between gap-3 py-1.5 text-xs"><dt class="text-gray-500">Uploaded images</dt><dd class="font-medium">{{ plan.mediaFiles }}</dd></div></dl>
+            <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 text-xs"><span class="font-semibold">{{ $t('common.recordsToErase') }}</span><span class="tabular-nums text-gray-500">{{ $t('common.valueTotal', { value0: (recordTotal.toLocaleString()) }) }}</span></div>
+            <dl class="max-h-40 overflow-y-auto px-4 py-2"><div v-for="entry in affectedCounts" :key="entry.table" class="flex justify-between gap-3 py-1.5 text-xs"><dt class="text-gray-500">{{ tableLabel(entry.table) }}</dt><dd class="font-medium tabular-nums">{{ entry.count.toLocaleString() }}</dd></div><div v-if="plan.mediaFiles !== undefined" class="flex justify-between gap-3 py-1.5 text-xs"><dt class="text-gray-500">{{ $t('common.uploadedImages') }}</dt><dd class="font-medium">{{ plan.mediaFiles }}</dd></div></dl>
           </div>
-          <div v-if="plan?.blockers?.length && !resuming" role="alert" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900"><p class="font-semibold">Linked records prevent this reset.</p><p class="mt-1 text-xs">Review a commerce or full reset to include linked data.</p><ul class="mt-2 space-y-1 text-xs"><li v-for="blocker in uniqueBlockers" :key="blocker.table">{{ tableLabel(blocker.table) }}: {{ blocker.count }}</li></ul></div>
-          <div v-if="error" role="alert" class="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{{ error }}</div>
+          <div v-if="plan?.blockers?.length && !resuming" role="alert" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900"><p class="font-semibold">{{ $t('dashboard.SystemReset.linkedRecordsPreventThisReset') }}</p><p class="mt-1 text-xs">{{ $t('dashboard.SystemReset.reviewACommerceOrFullResetToIncludeLinkedData') }}</p><ul class="mt-2 space-y-1 text-xs"><li v-for="blocker in uniqueBlockers" :key="blocker.table">{{ tableLabel(blocker.table) }}: {{ blocker.count }}</li></ul></div>
+          <div v-if="error" role="alert" class="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{{ $uiMessage(error) }}</div>
           <fieldset :disabled="working || planLoading || !canConfirm" class="mt-5 space-y-4 disabled:opacity-50">
-            <label class="block"><span class="mb-1.5 block text-sm font-medium">Type <strong>{{ selectedScope.confirmation }}</strong> to confirm</span><input v-model="confirmation" type="text" autocomplete="off" spellcheck="false" required class="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-700" /></label>
-            <label class="block"><span class="mb-1.5 block text-sm font-medium">Your current owner password</span><input v-model="password" type="password" autocomplete="current-password" maxlength="1024" required class="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-700" /></label>
+            <label class="block"><span class="mb-1.5 block text-sm font-medium">{{ $t('common.type') }} <strong>{{ selectedScope.confirmation }}</strong> {{ $t('common.toConfirm') }}</span><input v-model="confirmation" type="text" autocomplete="off" spellcheck="false" required class="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-700" /></label>
+            <label class="block"><span class="mb-1.5 block text-sm font-medium">{{ $t('dashboard.SystemReset.yourCurrentOwnerPassword') }}</span><input v-model="password" type="password" autocomplete="current-password" maxlength="1024" required class="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-700" /></label>
           </fieldset>
-          <p class="mt-4 text-xs text-gray-500">{{ working ? 'Keep this page open while the reset finishes.' : 'This action cannot be undone.' }}</p>
-          <div class="mt-5 flex justify-end gap-2"><button type="button" class="file-button" :disabled="working" @click="closeDialog">Cancel</button><button type="submit" :disabled="!canConfirm || working || planLoading || confirmation !== selectedScope.confirmation || !password" class="file-button !border-red-600 !bg-red-600 !text-white hover:!bg-red-700"><Icon v-if="working" name="lucide:loader-circle" size="16" class="motion-safe:animate-spin" />{{ working ? 'Resetting…' : resuming ? 'Finish cleanup' : 'Permanently reset' }}</button></div>
+          <p class="mt-4 text-xs text-gray-500">{{ working ? $t('dashboard.SystemReset.keepThisPageOpenWhileTheResetFinishes') : $t('dashboard.SystemReset.thisActionCannotBeUndone') }}</p>
+          <div class="mt-5 flex justify-end gap-2"><button type="button" class="file-button" :disabled="working" @click="closeDialog">{{ $t('common.cancel') }}</button><button type="submit" :disabled="!canConfirm || working || planLoading || confirmation !== selectedScope.confirmation || !password" class="file-button !border-red-600 !bg-red-600 !text-white hover:!bg-red-700"><Icon v-if="working" name="lucide:loader-circle" size="16" class="motion-safe:animate-spin" />{{ working ? $t('common.resetting') : resuming ? $t('common.finishCleanup') : $t('common.permanentlyReset') }}</button></div>
         </form>
       </dialog>
     </Teleport>

@@ -1,22 +1,22 @@
 <template>
-  <section v-if="heroEnabled" class="store-hero" aria-label="Store highlights" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
+  <section v-if="heroEnabled" class="store-hero" :aria-label="$t('common.storeHighlights')" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
     <component :is="currentBannerComponent" v-if="currentBanner" v-bind="currentBannerAttributes" class="store-hero-image-link">
-      <img class="store-hero-image" :alt="currentBanner.alt_text || 'Explore the latest at ' + siteName" :src="currentBannerImageUrl" fetchpriority="high" />
+      <img class="store-hero-image" :alt="currentBanner.alt_text || $t('common.exploreTheLatestAt') + ' ' + siteName" :src="currentBannerImageUrl" fetchpriority="high" />
     </component>
     <div v-else class="store-hero-fallback">
       <img class="store-hero-scene" src="/images/storefront/setup-hero.png" alt="" fetchpriority="high" width="1536" height="1024" />
       <div class="store-hero-copy">
-        <p class="store-eyebrow">For work and play</p>
-        <h1>Keyboards<br /><span>and mice.</span></h1>
-        <p>Headsets, cables and other desk accessories.</p>
-        <NuxtLink to="/search" class="store-button">Shop now <Icon name="lucide:arrow-right" size="16" /></NuxtLink>
+        <p class="store-eyebrow">{{ $t('common.forWorkAndPlay') }}</p>
+        <h1>{{ $t('common.keyboards') }}<br /><span>{{ $t('common.andMice') }}</span></h1>
+        <p>{{ $t('cards.HeroCard.headsetsCablesAndOtherDeskAccessories') }}</p>
+        <NuxtLinkLocale to="/search" class="store-button">{{ $t('common.shopNow') }} <Icon name="lucide:arrow-right" size="16" class="directional-icon" /></NuxtLinkLocale>
       </div>
     </div>
     <div v-if="heroBanners.length > 1" class="store-hero-controls">
-      <button type="button" aria-label="Previous banner" @click="moveBanner(-1)"><Icon name="lucide:chevron-left" size="17" /></button>
+      <button type="button" :aria-label="$t('common.previousBanner')" @click="moveBanner(-1)"><Icon name="lucide:chevron-left" size="17" class="directional-icon" /></button>
       <span>{{ currentBannerIndex + 1 }} / {{ heroBanners.length }}</span>
-      <button type="button" :aria-label="paused ? 'Play banners' : 'Pause banners'" :aria-pressed="paused" @click="paused = !paused"><Icon :name="paused ? 'lucide:play' : 'lucide:pause'" size="14" /></button>
-      <button type="button" aria-label="Next banner" @click="moveBanner(1)"><Icon name="lucide:chevron-right" size="17" /></button>
+      <button type="button" :aria-label="paused ? $t('common.playBanners') : $t('common.pauseBanners')" :aria-pressed="paused" @click="paused = !paused"><Icon :name="paused ? 'lucide:play' : 'lucide:pause'" size="14" /></button>
+      <button type="button" :aria-label="$t('common.nextBanner')" @click="moveBanner(1)"><Icon name="lucide:chevron-right" size="17" class="directional-icon" /></button>
     </div>
   </section>
 </template>
@@ -40,7 +40,7 @@ const currentBanner = computed(() => heroBanners.value[currentBannerIndex.value]
 const currentBannerImageUrl = computed(() => getConfiguredStoreImageUrl(currentBanner.value?.image_url))
 const currentBannerLinkUrl = computed(() => getStoreLinkUrl(currentBanner.value?.link_url))
 const currentBannerExternal = computed(() => isExternalStoreLink(currentBannerLinkUrl.value))
-const nuxtLink = resolveComponent('NuxtLink')
+const nuxtLink = resolveComponent('NuxtLinkLocale')
 const currentBannerComponent = computed(() => {
   if (!currentBannerLinkUrl.value) return 'div'
   return currentBannerExternal.value ? 'a' : nuxtLink

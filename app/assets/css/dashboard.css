@@ -62,8 +62,8 @@
   gap: 0.5rem;
   border: 1px solid var(--dashboard-border);
   border-radius: 0.625rem;
-  background: #fff;
-  color: #344054;
+  background: var(--surface);
+  color: var(--text-primary);
   font-size: 0.8125rem;
   font-weight: 600;
 }
@@ -78,7 +78,7 @@
 }
 
 .dashboard-modern-store-link:hover {
-  border-color: #c7d7fe;
+  border-color: var(--border);
   background: var(--dashboard-accent-soft);
   color: #1d4ed8;
 }

@@ -1,6 +1,9 @@
+import { stripLocalePrefix } from '~/utils/appearance'
 import { getDashboardRouteRequirement } from '~/utils/adminPermissions'
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async (destination) => {
+  const to = { ...destination, path: stripLocalePrefix(destination.path) }
+  const { uiNavigateTo } = useUiNavigation()
   if (!to.path.startsWith('/dashboard') || to.path === '/dashboard/login') {
     return
   }
@@ -17,7 +20,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (adminAccessLoaded.value && !adminUser.value) {
     clearAdminAccess()
-    return navigateTo('/dashboard/login')
+    return uiNavigateTo('/dashboard/login')
   }
 
   const routeRequirement = getDashboardRouteRequirement(to)
@@ -28,7 +31,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!resolvedAdminUser) {
     clearAdminAccess()
-    return navigateTo('/dashboard/login')
+    return uiNavigateTo('/dashboard/login')
   }
 
   if (!resolvedAdminUser.is_active) {
@@ -38,7 +41,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await supabase.auth.signOut()
     }
 
-    return navigateTo({
+    return uiNavigateTo({
       path: '/dashboard/login',
       query: {
         error: 'not-authorized'
@@ -57,22 +60,22 @@ export default defineNuxtRouteMiddleware(async (to) => {
     ).trim().toLowerCase()
 
     if (to.path === '/dashboard/treasury') {
-      return navigateTo('/dashboard/erp', { replace: true })
+      return uiNavigateTo('/dashboard/erp', { replace: true })
     }
 
     if (
       to.path === '/dashboard/commerce'
       && ['', 'procurement', 'sales', 'warehouses'].includes(queryValue('tab'))
     ) {
-      return navigateTo('/dashboard/commerce?tab=returns', { replace: true })
+      return uiNavigateTo('/dashboard/commerce?tab=returns', { replace: true })
     }
 
     if (to.path === '/dashboard/hr' && ['', 'employees'].includes(queryValue('tab'))) {
-      return navigateTo('/dashboard/hr?tab=users', { replace: true })
+      return uiNavigateTo('/dashboard/hr?tab=users', { replace: true })
     }
 
     if (to.path === '/dashboard' && queryValue('view') === 'stock') {
-      return navigateTo('/dashboard/erp?tab=inventory', { replace: true })
+      return uiNavigateTo('/dashboard/erp?tab=inventory', { replace: true })
     }
   }
 
@@ -81,14 +84,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (routeRequirement.role === 'owner' && resolvedAdminUser.role !== 'owner') {
-    return navigateTo('/dashboard')
+    return uiNavigateTo('/dashboard')
   }
 
   if (routeRequirement.permission && !hasPermission(routeRequirement.permission)) {
-    return navigateTo('/dashboard')
+    return uiNavigateTo('/dashboard')
   }
 
   if (routeRequirement.permissionsAny?.length && !hasAnyPermission(routeRequirement.permissionsAny)) {
-    return navigateTo('/dashboard')
+    return uiNavigateTo('/dashboard')
   }
 })

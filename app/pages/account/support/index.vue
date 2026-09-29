@@ -1,10 +1,17 @@
 <script setup>
-import { supportDate, supportReference, supportStatusLabel } from '~/utils/support'
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+const supportDate = value => baseSupportDate(value, intlLocale.value)
+
+const { uiNavigateTo } = useUiNavigation()
+
+import { supportDate as baseSupportDate, supportReference, supportStatusLabel } from '~/utils/support'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
-useHead({ title: 'My Support Tickets' })
+useHead(() => ({ title: uiLabel('My Support Tickets') }))
 
-const route = useRoute()
+const route = useUiRoute()
 const { request, upload, errorText } = useSupportClient()
 const loading = ref(true)
 const saving = ref(false)
@@ -62,7 +69,7 @@ const createTicket = async () => {
       }
     }
     submissionKey = ''
-    await navigateTo({ path: `/account/support/${response.item.id}`, query: notice.value ? { attachment: 'failed' } : {} })
+    await uiNavigateTo({ path: `/account/support/${response.item.id}`, query: notice.value ? { attachment: 'failed' } : {} })
   } catch (cause) { error.value = errorText(cause, 'Could not create ticket.') }
   finally { saving.value = false }
 }
@@ -73,26 +80,26 @@ watch(page, load)
 
 <template>
   <div class="space-y-5">
-      <header class="flex flex-wrap items-end justify-between gap-3"><div><p class="text-sm font-semibold text-blue-700">Your account</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Support</h1><p class="mt-1 text-sm text-slate-600">Ask a question or follow an existing ticket.</p></div><NuxtLink to="/help" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:book-open" size="17" aria-hidden="true" /> Help Center</NuxtLink></header>
-      <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ error }}</p>
-      <p v-if="notice" role="status" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ notice }}</p>
+      <header class="flex flex-wrap items-end justify-between gap-3"><div><p class="text-sm font-semibold text-blue-700">{{ $t('common.yourAccount') }}</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $t('common.support') }}</h1><p class="mt-1 text-sm text-slate-600">{{ $t('account.support.askAQuestionOrFollowAnExistingTicket') }}</p></div><NuxtLinkLocale to="/help" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:book-open" size="17" aria-hidden="true" /> {{ $t('common.helpCenter') }}</NuxtLinkLocale></header>
+      <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(error) }}</p>
+      <p v-if="notice" role="status" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $uiLabel(notice) }}</p>
       <div class="space-y-5">
           <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl font-bold text-gray-900">My tickets</h2><p class="mt-1 text-sm text-gray-500">{{ total }} total</p></div><button type="button" class="min-h-11 rounded-xl bg-blue-600 px-4 font-bold text-white hover:bg-blue-700" @click="showForm = !showForm">{{ showForm ? 'Cancel' : 'Create ticket' }}</button></div>
-            <p v-if="loading" class="py-8 text-sm text-gray-500">Loading tickets...</p>
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl font-bold text-gray-900">{{ $t('common.myTickets') }}</h2><p class="mt-1 text-sm text-gray-500">{{ $t('common.valueTotal', { value0: (total) }) }}</p></div><button type="button" class="min-h-11 rounded-xl bg-blue-600 px-4 font-bold text-white hover:bg-blue-700" @click="showForm = !showForm">{{ showForm ? $t('common.cancel') : $t('common.createTicket') }}</button></div>
+            <p v-if="loading" class="py-8 text-sm text-gray-500">{{ $t('common.loadingTickets') }}</p>
             <div v-else-if="tickets.length" class="mt-5 divide-y divide-gray-100">
-              <NuxtLink v-for="ticket in tickets" :key="ticket.id" :to="`/account/support/${ticket.id}`" class="flex flex-wrap items-center justify-between gap-3 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 hover:text-blue-700"><div class="min-w-0"><p class="text-xs font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><p class="mt-1 font-semibold text-gray-900">{{ ticket.subject }}</p><p class="mt-1 text-xs text-gray-500">Created {{ supportDate(ticket.created_at) }} · Updated {{ supportDate(ticket.updated_at) }}<span v-if="ticket.order_id"> · Order {{ orders.find(order => order.id === ticket.order_id)?.order_number || ticket.order_id.slice(0, 8) }}</span></p></div><span v-if="ticket.unreadReplyCount" class="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-bold text-white">New reply</span><span class="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700">{{ supportStatusLabel(ticket.status) }}</span></NuxtLink>
+              <NuxtLinkLocale v-for="ticket in tickets" :key="ticket.id" :to="`/account/support/${ticket.id}`" class="flex flex-wrap items-center justify-between gap-3 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 hover:text-blue-700"><div class="min-w-0"><p class="text-xs font-bold text-blue-700">{{ supportReference(ticket.reference_number) }}</p><p class="mt-1 font-semibold text-gray-900">{{ ticket.subject }}</p><p class="mt-1 text-xs text-gray-500">{{ $t('account.support.createdValueUpdatedValue', { value0: (supportDate(ticket.created_at)), value1: (supportDate(ticket.updated_at)) }) }}<span v-if="ticket.order_id"> {{ $t('common.orderValue', { value0: (orders.find(order => order.id === ticket.order_id)?.order_number || ticket.order_id.slice(0, 8)) }) }}</span></p></div><span v-if="ticket.unreadReplyCount" class="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-bold text-white">{{ $t('common.newReply') }}</span><span class="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700">{{ $uiLabel(supportStatusLabel(ticket.status)) }}</span></NuxtLinkLocale>
             </div>
-            <p v-else class="mt-5 rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">No tickets yet. Start with the Help Center or create one below.</p>
-            <div v-if="total > 20" class="mt-5 flex items-center justify-between"><button type="button" :disabled="page <= 1" class="text-sm font-semibold text-blue-700 disabled:opacity-40" @click="page--">Previous</button><span class="text-sm text-gray-500">Page {{ page }}</span><button type="button" :disabled="page * 20 >= total" class="text-sm font-semibold text-blue-700 disabled:opacity-40" @click="page++">Next</button></div>
+            <p v-else class="mt-5 rounded-xl bg-gray-50 p-6 text-center text-sm text-gray-500">{{ $t('account.support.noTicketsYetStartWithTheHelpCenterOrCreateOneBelow') }}</p>
+            <div v-if="total > 20" class="mt-5 flex items-center justify-between"><button type="button" :disabled="page <= 1" class="text-sm font-semibold text-blue-700 disabled:opacity-40" @click="page--">{{ $t('common.previous') }}</button><span class="text-sm text-gray-500">{{ $t('common.pageValue', { value0: (page) }) }}</span><button type="button" :disabled="page * 20 >= total" class="text-sm font-semibold text-blue-700 disabled:opacity-40" @click="page++">{{ $t('common.next') }}</button></div>
           </section>
-          <section v-if="showForm" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><h2 class="text-xl font-bold">Create a ticket</h2><p class="mt-1 text-sm text-gray-500">Tell us what happened. We will reply here.</p>
+          <section v-if="showForm" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><h2 class="text-xl font-bold">{{ $t('common.createATicket') }}</h2><p class="mt-1 text-sm text-gray-500">{{ $t('account.support.tellUsWhatHappenedWeWillReplyHere') }}</p>
             <form class="mt-6 space-y-4" @submit.prevent="createTicket">
-              <label class="block text-sm font-semibold text-gray-700">Subject<input v-model="form.subject" required maxlength="160" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3 outline-none focus:border-blue-600" /></label>
-              <div class="grid gap-4 sm:grid-cols-2"><label class="block text-sm font-semibold text-gray-700">Topic<select v-model="form.categoryId" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3"><option value="">Choose a topic (optional)</option><option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option></select></label><label class="block text-sm font-semibold text-gray-700">Related order<select v-model="form.orderId" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3"><option value="">No order</option><option v-for="order in orders" :key="order.id" :value="order.id">{{ order.order_number || order.id.slice(0, 8) }}</option></select></label></div>
-              <label class="block text-sm font-semibold text-gray-700">Message<textarea v-model="form.message" required maxlength="10000" rows="6" class="mt-2 w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label>
-              <label class="block text-sm font-semibold text-gray-700">Attachment (optional)<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">PDF, TXT, JPG, PNG, or WebP. Up to 5 MB.</span></label>
-              <button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? 'Sending...' : 'Send ticket' }}</button>
+              <label class="block text-sm font-semibold text-gray-700">{{ $t('common.subject') }}<input v-model="form.subject" required maxlength="160" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3 outline-none focus:border-blue-600" /></label>
+              <div class="grid gap-4 sm:grid-cols-2"><label class="block text-sm font-semibold text-gray-700">{{ $t('common.topic') }}<select v-model="form.categoryId" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3"><option value="">{{ $t('account.support.chooseATopicOptional') }}</option><option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option></select></label><label class="block text-sm font-semibold text-gray-700">{{ $t('common.relatedOrder') }}<select v-model="form.orderId" class="mt-2 min-h-11 w-full rounded-xl border border-gray-300 px-3"><option value="">{{ $t('common.noOrder') }}</option><option v-for="order in orders" :key="order.id" :value="order.id">{{ order.order_number || order.id.slice(0, 8) }}</option></select></label></div>
+              <label class="block text-sm font-semibold text-gray-700">{{ $t('common.message') }}<textarea v-model="form.message" required maxlength="10000" rows="6" class="mt-2 w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-600" /></label>
+              <label class="block text-sm font-semibold text-gray-700">{{ $t('common.attachmentOptional') }}<input ref="fileInput" type="file" accept=".pdf,.txt,.jpg,.jpeg,.png,.webp" class="mt-2 block w-full text-sm" /><span class="mt-1 block text-xs font-normal text-gray-500">{{ $t('account.support.pdfTxtJpgPngOrWebpUpTo5Mb') }}</span></label>
+              <button type="submit" :disabled="saving" class="min-h-11 rounded-xl bg-blue-600 px-5 font-bold text-white disabled:opacity-50">{{ saving ? $t('common.sending') : $t('common.sendTicket') }}</button>
             </form>
           </section>
         </div>

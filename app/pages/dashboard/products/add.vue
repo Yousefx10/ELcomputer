@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <DashboardPageIntro
-      title="Add New Product"
+      :title="$t('common.addNewProduct')"
       container-class=""
       title-class="my-5 text-center text-4xl font-bold"
     />
@@ -13,15 +13,15 @@
       >
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
-            <p class="text-sm font-semibold text-gray-700">Store Visibility</p>
+            <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
             <p class="text-sm text-gray-500">
-              Choose whether this product should appear on the store after saving
+              {{ $t('dashboard.products.chooseWhetherThisProductShouldAppearOnTheStoreAfterSaving') }}
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <span class="text-sm font-semibold" :class="isPublished ? 'text-green-600' : 'text-gray-500'">
-              {{ isPublished ? 'ON' : 'OFF' }}
+              {{ isPublished ? $t('common.on') : $t('common.off') }}
             </span>
 
             <button
@@ -40,38 +40,38 @@
         </div>
 
         <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Product Details</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.productDetails') }}</h3>
           <p class="text-sm text-gray-500">
-            Save first, then add more images and specifications.
+            {{ $t('dashboard.products.saveFirstThenAddMoreImagesAndSpecifications') }}
           </p>
         </div>
 
         <div class="md:col-span-2 flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p class="font-semibold text-gray-900">Individual item IDs & QR codes</p>
+            <p class="font-semibold text-gray-900">{{ $t('common.individualItemIdsQrCodes') }}</p>
             <p class="mt-1 max-w-3xl text-sm text-gray-600">
-              Add product details and options here. Receive stock through purchasing.
+              {{ $t('dashboard.products.addProductDetailsAndOptionsHereReceiveStockThroughPurchasing') }}
             </p>
           </div>
 
           <span class="inline-flex shrink-0 items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
             <Icon name="lucide:qr-code" size="17" />
-            Always enabled
+            {{ $t('common.alwaysEnabled') }}
           </span>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
           <input
             v-model="title"
             type="text"
-            placeholder="Product title"
+            :placeholder="$t('common.productTitle')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Slug</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.slug') }}</label>
 
           <div class="flex gap-2">
             <input
@@ -86,18 +86,18 @@
               @click="useTitleSlug"
               class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             >
-              Generate
+              {{ $t('common.generate') }}
             </button>
           </div>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Category</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.category') }}</label>
           <select
             v-model="categoryId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Category</option>
+            <option value="">{{ $t('common.noCategory') }}</option>
 
             <option
               v-for="category in categories"
@@ -110,12 +110,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Brand</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.brand') }}</label>
           <select
             v-model="brandId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Brand</option>
+            <option value="">{{ $t('common.noBrand') }}</option>
 
             <option
               v-for="brand in brands"
@@ -128,12 +128,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Preferred Supplier (Optional)</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.preferredSupplierOptional') }}</label>
           <select
             v-model="defaultSupplierId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No preferred supplier</option>
+            <option value="">{{ $t('common.noPreferredSupplier') }}</option>
 
             <option
               v-for="supplier in suppliers"
@@ -144,19 +144,19 @@
             </option>
           </select>
           <p class="mt-2 text-xs text-gray-500">
-            For reference only. Procurement can receive this product from any active supplier.
+            {{ $t('common.forReferenceOnlyProcurementCanReceiveThisProductFromAnyActiveSupplier') }}
           </p>
         </div>
 
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
-            Primary Warehouse *
+            {{ $t('common.primaryWarehouse') }}
           </label>
           <select
             v-model="primaryWarehouseId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Primary Warehouse</option>
+            <option value="">{{ $t('common.noPrimaryWarehouse') }}</option>
 
             <option
               v-for="warehouse in warehouses"
@@ -169,39 +169,39 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Price</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.price') }}</label>
           <input
             v-model="price"
             type="number"
             min="0"
-            placeholder="Price"
+            :placeholder="$t('common.price')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Old Price</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.oldPrice') }}</label>
           <input
             v-model="oldPrice"
             type="number"
             min="0"
-            placeholder="Old price"
+            :placeholder="$t('common.oldPrice')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div class="rounded-xl border border-green-200 bg-green-50 p-4">
-          <p class="text-sm font-semibold text-green-800">Units to create</p>
+          <p class="text-sm font-semibold text-green-800">{{ $t('common.unitsToCreate') }}</p>
           <p class="mt-1 text-3xl font-bold text-green-700">0</p>
           <p class="mt-1 text-xs text-green-700">
-            Add stock through purchasing. Each received item gets a QR code.
+            {{ $t('dashboard.products.addStockThroughPurchasingEachReceivedItemGetsAQrCode') }}
           </p>
         </div>
 
         <div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <p class="text-sm font-semibold text-blue-900">Inventory cost</p>
+          <p class="text-sm font-semibold text-blue-900">{{ $t('common.inventoryCost') }}</p>
           <p class="mt-1 text-sm text-blue-800">
-            Calculated from purchase quantities and supplier prices.
+            {{ $t('dashboard.products.calculatedFromPurchaseQuantitiesAndSupplierPrices') }}
           </p>
         </div>
 
@@ -210,7 +210,7 @@
           <input
             v-model="sku"
             type="text"
-            placeholder="Optional SKU"
+            :placeholder="$t('common.optionalSku')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
@@ -226,35 +226,35 @@
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
-            label="Main Image"
+            :label="$t('common.mainImage')"
             section="products"
             :preview-alt="title || 'Product image'"
-            help-text="Upload the main product image stored on the server host."
+            :help-text="$t('common.uploadTheMainProductImageStoredOnTheServerHost')"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Short Description</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortDescription') }}</label>
           <textarea
             v-model="description"
             rows="4"
-            placeholder="Short product description"
+            :placeholder="$t('common.shortProductDescription')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Long Description</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.longDescription') }}</label>
           <textarea
             v-model="longDescription"
             rows="7"
-            placeholder="Long product description"
+            :placeholder="$t('common.longProductDescription')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
-          {{ actionError }}
+          {{ $uiMessage(actionError) }}
         </p>
 
         <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
@@ -262,15 +262,15 @@
             type="submit"
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
-            {{ saving ? 'Creating...' : 'Create Product' }}
+            {{ saving ? $t('common.creating') : $t('common.createProduct') }}
           </button>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/dashboard/products"
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
-            Back
-          </NuxtLink>
+            {{ $t('common.back') }}
+          </NuxtLinkLocale>
         </div>
       </form>
     </div>
@@ -278,6 +278,8 @@
 </template>
 
 <script setup>
+const { uiNavigateTo } = useUiNavigation()
+
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
 definePageMeta({
   layout: 'dashboard'
@@ -525,7 +527,7 @@ const addProduct = async () => {
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await navigateTo(`/dashboard/products/edit/${data.id}`)
+  await uiNavigateTo(`/dashboard/products/edit/${data.id}`)
 }
 
 onMounted(async () => {

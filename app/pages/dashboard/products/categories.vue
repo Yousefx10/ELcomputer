@@ -1,9 +1,11 @@
 <script setup>
+const { uiNavigateTo } = useUiNavigation()
+
 definePageMeta({
   layout: 'dashboard'
 })
 
-await navigateTo('/dashboard/catalog', {
+await uiNavigateTo('/dashboard/catalog', {
   replace: true
 })
 </script>

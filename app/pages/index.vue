@@ -1,45 +1,45 @@
 <template>
   <div class="store-container store-home">
-    <nav class="store-discovery" aria-label="Explore products">
-      <p class="store-discovery-label">Browse products</p>
+    <nav class="store-discovery" :aria-label="$t('common.exploreProducts')">
+      <p class="store-discovery-label">{{ $t('common.browseProducts') }}</p>
       <div class="store-discovery-links no-scrollbar">
-        <NuxtLink :to="{ path: '/search', query: { sort: 'latest' } }" class="store-chip">New arrivals</NuxtLink>
-        <NuxtLink v-for="category in topCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-chip">{{ category.name }}</NuxtLink>
-        <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }" class="store-chip">In stock now</NuxtLink>
+        <NuxtLinkLocale :to="{ path: '/search', query: { sort: 'latest' } }" class="store-chip">{{ $t('common.newArrivals') }}</NuxtLinkLocale>
+        <NuxtLinkLocale v-for="category in topCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-chip">{{ category.name }}</NuxtLinkLocale>
+        <NuxtLinkLocale :to="{ path: '/search', query: { status: 'instock' } }" class="store-chip">{{ $t('common.inStockNow') }}</NuxtLinkLocale>
       </div>
     </nav>
 
-    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ siteContent?.settings?.site_name || 'ELcomputer' }} — Computer accessories</h1>
+    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueComputerAccessories', { value0: (siteContent?.settings?.site_name || 'ELcomputer') }) }}</h1>
     <div v-if="heroEnabled" class="store-hero-grid">
       <CardsHeroCard />
       <div class="store-hero-side">
-        <NuxtLink v-for="(tile, index) in discoveryTiles" :key="index" :to="tile.to" class="store-promo-tile">
+        <NuxtLinkLocale v-for="(tile, index) in discoveryTiles" :key="index" :to="tile.to" class="store-promo-tile">
           <div class="store-promo-copy">
             <p>{{ tile.eyebrow }}</p>
             <h2>{{ tile.title }}</h2>
-            <span>Shop now <Icon name="lucide:arrow-right" size="14" /></span>
+            <span>{{ $t('common.shopNow') }} <Icon name="lucide:arrow-right" size="14" class="directional-icon" /></span>
           </div>
           <img v-if="tile.image" :src="tile.image" alt="" />
           <Icon v-else :name="tile.icon" />
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
 
-    <nav class="store-service-strip" aria-label="Shopping shortcuts">
-      <NuxtLink :to="{ path: '/search', query: { status: 'instock' } }"><Icon name="lucide:package-check" size="23" /><span>Find in-stock gear</span></NuxtLink>
-      <NuxtLink :to="ordersPath"><Icon name="lucide:truck" size="23" /><span>Track your orders</span></NuxtLink>
-      <NuxtLink to="/contact"><Icon name="lucide:headphones" size="23" /><span>Talk to our team</span></NuxtLink>
+    <nav class="store-service-strip" :aria-label="$t('common.shoppingShortcuts')">
+      <NuxtLinkLocale :to="{ path: '/search', query: { status: 'instock' } }"><Icon name="lucide:package-check" size="23" /><span>{{ $t('common.findInStockGear') }}</span></NuxtLinkLocale>
+      <NuxtLinkLocale :to="ordersPath"><Icon name="lucide:truck" size="23" /><span>{{ $t('common.trackYourOrders') }}</span></NuxtLinkLocale>
+      <NuxtLinkLocale to="/contact"><Icon name="lucide:headphones" size="23" /><span>{{ $t('common.talkToOurTeam') }}</span></NuxtLinkLocale>
     </nav>
 
-    <div v-if="homeError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">We couldn't load products. Please refresh and try again.</div>
-    <LayoutPageLoading v-else-if="homePending" label="Loading products…" class="mt-8" />
+    <div v-if="homeError" class="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">{{ $t('home.weCouldnTLoadProductsPleaseRefreshAndTryAgain') }}</div>
+    <LayoutPageLoading v-else-if="homePending && homeHydrated" :label="$t('common.loadingProducts')" class="mt-8" />
     <TopCategories :categories="topCategories" />
-    <HomeProductSection v-if="featuredProducts.length" title="Store picks" :products="featuredProducts" />
+    <HomeProductSection v-if="featuredProducts.length" :title="$t('common.storePicks')" :products="featuredProducts" />
     <CardsBanner v-if="bannerAds.bannerAd1" v-bind="bannerAds.bannerAd1" />
     <OfferSlider />
-    <HomeProductSection v-if="topSellerProducts.length" title="More products" :products="topSellerProducts" />
+    <HomeProductSection v-if="topSellerProducts.length" :title="$t('common.moreProducts')" :products="topSellerProducts" />
     <CardsBanner v-if="bannerAds.bannerAd2" v-bind="bannerAds.bannerAd2" />
-    <FeaturedBrands v-if="featuredBrands.length" title="Shop by brand" :brands="featuredBrands" />
+    <FeaturedBrands v-if="featuredBrands.length" :title="$t('common.shopByBrand')" :brands="featuredBrands" />
 
     <section v-for="category in categorySections" :key="category.id">
       <HomeProductSection :title="category.name" :products="category.products" :to="{ path: '/search', query: { category: category.slug } }" />
@@ -51,6 +51,8 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
 import { getConfiguredStoreImageUrl, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import FeaturedBrands from '~/components/cards/FeaturedBrands.vue'
 import TopCategories from '~/components/cards/TopCategories.vue'
@@ -58,6 +60,8 @@ import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
+const homeHydrated = ref(false)
+onMounted(() => { homeHydrated.value = true })
 
 const { data: homeData, pending: homePending, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
@@ -162,15 +166,15 @@ const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? 
 const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [
   {
-    eyebrow: 'Shop by category',
-    title: topCategories.value[0]?.name || 'Computer accessories',
+    eyebrow: uiLabel('Shop by category'),
+    title: topCategories.value[0]?.name || uiLabel('Computer accessories'),
     image: topCategories.value[0]?.displayImageUrl,
     icon: getStoreCategoryIcon(topCategories.value[0]?.name),
     to: topCategories.value[0] ? { path: '/search', query: { category: topCategories.value[0].slug } } : '/search'
   },
   {
-    eyebrow: 'New arrivals',
-    title: 'New to the store',
+    eyebrow: uiLabel('New arrivals'),
+    title: uiLabel('New to the store'),
     image: homeData.value?.latestImage || '',
     icon: 'lucide:headphones',
     to: { path: '/search', query: { sort: 'latest' } }

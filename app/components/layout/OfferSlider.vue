@@ -1,10 +1,10 @@
 <template>
   <section v-if="offerCards.length" class="store-section" aria-labelledby="store-offers-title">
     <div class="store-section-header">
-      <h2 id="store-offers-title" class="store-section-title">Store offers</h2>
+      <h2 id="store-offers-title" class="store-section-title">{{ $t('common.storeOffers') }}</h2>
       <div v-if="offerCards.length > 3" class="store-product-actions">
-        <button type="button" class="store-round-button" aria-label="Previous offers" @click="scrollLeft"><Icon name="lucide:chevron-left" size="17" /></button>
-        <button type="button" class="store-round-button" aria-label="More offers" @click="scrollRight"><Icon name="lucide:chevron-right" size="17" /></button>
+        <button type="button" class="store-round-button" :aria-label="$t('common.previousOffers')" @click="scrollLeft"><Icon name="lucide:chevron-left" size="17" class="directional-icon" /></button>
+        <button type="button" class="store-round-button" :aria-label="$t('common.moreOffers')" @click="scrollRight"><Icon name="lucide:chevron-right" size="17" class="directional-icon" /></button>
       </div>
     </div>
     <div ref="slider" class="store-offer-rail no-scrollbar">
@@ -42,14 +42,14 @@ const getOfferCardLink = (offer) => {
 
 const scrollLeft = () => {
   slider.value?.scrollBy({
-    left: -320,
+    left: getComputedStyle(slider.value).direction === 'rtl' ? 320 : -320,
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   })
 }
 
 const scrollRight = () => {
   slider.value?.scrollBy({
-    left: 320,
+    left: getComputedStyle(slider.value).direction === 'rtl' ? -320 : 320,
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   })
 }

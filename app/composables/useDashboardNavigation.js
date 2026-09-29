@@ -7,7 +7,8 @@ import {
 import { dashboardSettingsSections } from '~/utils/dashboardSettings'
 
 export const useDashboardNavigation = () => {
-  const route = useRoute()
+  const { uiLabel } = useUiLocale()
+  const route = useUiRoute()
   const { data: siteContent } = useSiteContent()
   const {
     isOwner,
@@ -75,8 +76,8 @@ export const useDashboardNavigation = () => {
 
   const documentTitle = computed(() => {
     return pageTitle.value === 'Dashboard'
-      ? 'Dashboard'
-      : `Dashboard - ${pageTitle.value}`
+      ? uiLabel('Dashboard')
+      : `${uiLabel('Dashboard')} - ${uiLabel(pageTitle.value)}`
   })
 
   return {

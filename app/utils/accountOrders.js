@@ -10,19 +10,19 @@ export const accountOrderFilters = [
 export const getAccountOrderFilter = value => accountOrderFilters.find(item => item.value === value)
   || accountOrderFilters[0]
 
-export const formatAccountMoney = (value, currency = 'EGP') => {
+export const formatAccountMoney = (value, currency = 'EGP', locale = 'en-US') => {
   const amount = Number(value || 0)
   try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'EGP' }).format(amount)
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: currency || 'EGP' }).format(amount)
   } catch {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP' }).format(amount)
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EGP' }).format(amount)
   }
 }
 
-export const formatAccountDate = (value, withTime = false) => {
+export const formatAccountDate = (value, withTime = false, locale = 'en-US') => {
   const date = new Date(value || '')
   if (Number.isNaN(date.getTime())) return 'Date unavailable'
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium', ...(withTime ? { timeStyle: 'short' } : {})
   }).format(date)
 }

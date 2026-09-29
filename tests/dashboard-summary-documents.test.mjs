@@ -1,8 +1,9 @@
+import { expandUiSource } from './helpers/readUiSource.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
-const readProjectFile = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const readProjectFile = (path) => expandUiSource(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'))
 
 const dashboardPage = readProjectFile('app/pages/dashboard/index.vue')
 const summaryOverview = readProjectFile('app/components/dashboard/SummaryOverview.vue')

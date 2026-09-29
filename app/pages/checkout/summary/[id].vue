@@ -2,31 +2,31 @@
   <div class="min-h-screen bg-gray-100 py-8">
     <div class="mx-auto max-w-6xl px-4 md:px-6">
       <div v-if="pending" class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow">
-        Loading order summary...
+        {{ $t('checkout.summary.loadingOrderSummary') }}
       </div>
 
       <div v-else-if="error" class="rounded-2xl bg-red-50 p-8 text-red-600 shadow">
-        {{ error.message }}
+        {{ $uiMessage(error.message) }}
       </div>
 
       <div v-else-if="!orderData" class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow">
-        Order summary not found.
+        {{ $t('checkout.summary.orderSummaryNotFound') }}
       </div>
 
       <div v-else class="space-y-6">
         <div class="rounded-2xl bg-white p-6 shadow">
           <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-            Order Summary
+            {{ $t('common.orderSummary') }}
           </p>
 
           <h1 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
-            {{ orderData.order.order_number || `Order #${orderData.order.id.slice(0, 8)}` }}
+            {{ orderData.order.order_number || $t('common.orderValueVariant3', { value0: (orderData.order.id.slice(0, 8)) }) }}
           </h1>
 
           <div class="mt-4 flex flex-wrap gap-3">
-            <span v-if="orderData.order.is_preorder" class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">PRE-ORDER</span>
+            <span v-if="orderData.order.is_preorder" class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
             <span class="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">
-              {{ formatStatus(orderData.order.status) }}
+              {{ $uiLabel(formatStatus(orderData.order.status)) }}
             </span>
 
             <span class="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700">
@@ -39,7 +39,7 @@
           <section class="space-y-4">
             <div class="rounded-2xl bg-white p-6 shadow">
               <h2 class="text-2xl font-bold text-gray-900">
-                Delivery Details
+                {{ $t('common.deliveryDetails') }}
               </h2>
 
               <div class="mt-4 space-y-2 text-sm text-gray-600">
@@ -52,19 +52,19 @@
             </div>
 
             <div class="rounded-2xl bg-white p-6 shadow">
-              <h2 class="text-2xl font-bold text-gray-900">Payment</h2>
-              <p v-if="orderData.order.is_preorder" class="mt-2 text-sm text-gray-700">Required now: {{ formatCurrency(orderData.order.initial_amount_due) }}. Verified paid: {{ formatCurrency(orderData.order.amount_paid) }}. The balance remains due when arranged with the store.</p>
-              <p class="mt-3 text-sm font-semibold text-gray-900">{{ getPaymentMethodLabel(orderData.order.payment_method) }}</p>
-              <div v-if="orderData.order.is_preorder" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">The store will verify your bank or InstaPay transfer and record the actual amount paid. Keep your transfer reference.</div>
+              <h2 class="text-2xl font-bold text-gray-900">{{ $t('common.payment') }}</h2>
+              <p v-if="orderData.order.is_preorder" class="mt-2 text-sm text-gray-700">{{ $t('checkout.summary.requiredNowValueVerifiedPaidValueTheBalanceRemainsDueWhenArrangedWithTheStore', { value0: (formatCurrency(orderData.order.initial_amount_due)), value1: (formatCurrency(orderData.order.amount_paid)) }) }}</p>
+              <p class="mt-3 text-sm font-semibold text-gray-900">{{ $uiLabel(getPaymentMethodLabel(orderData.order.payment_method)) }}</p>
+              <div v-if="orderData.order.is_preorder" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{{ $t('checkout.summary.theStoreWillVerifyYourBankOrInstapayTransferAndRecordTheActualAmountPaidKeepYourTransferReference') }}</div>
               <div v-else-if="paymentMethodNeedsProof(orderData.order.payment_method)" class="mt-4 rounded-xl bg-amber-50 p-4">
-                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(orderData.order.payment_proof_status)">{{ paymentProofStatusLabel(orderData.order.payment_proof_status) }}</span>
-                <p class="mt-2 text-sm leading-6 text-amber-900">You can add or retry proof of payment from this order in My Account.</p>
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(orderData.order.payment_proof_status)">{{ $uiLabel(paymentProofStatusLabel(orderData.order.payment_proof_status)) }}</span>
+                <p class="mt-2 text-sm leading-6 text-amber-900">{{ $t('checkout.summary.youCanAddOrRetryProofOfPaymentFromThisOrderInMyAccount') }}</p>
               </div>
             </div>
 
             <div class="rounded-2xl bg-white p-6 shadow">
               <h2 class="text-2xl font-bold text-gray-900">
-                Ordered Items
+                {{ $t('common.orderedItems') }}
               </h2>
 
               <div class="mt-5 space-y-4">
@@ -86,11 +86,11 @@
                     <p class="font-semibold text-gray-900">
                       {{ item.product_title }}
                     </p>
-                    <p v-if="item.is_preorder" class="mt-1 text-xs font-bold text-amber-900">PRE-ORDER · {{ item.preorder_payment_mode === 'deposit' ? `${item.preorder_deposit_percent}% deposit` : 'Full payment' }}</p>
-                    <p v-if="item.expected_availability_date" class="text-xs text-gray-600">Expected {{ expectedAvailabilityLabel(item.expected_availability_date) }}</p>
+                    <p v-if="item.is_preorder" class="mt-1 text-xs font-bold text-amber-900">{{ $t('common.preOrderValue', { value0: (item.preorder_payment_mode === 'deposit' ? $t('preorder.depositPercent', { value0: (item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</p>
+                    <p v-if="item.expected_availability_date" class="text-xs text-gray-600">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(item.expected_availability_date)) }) }}</p>
 
                     <p class="mt-1 text-sm text-gray-500">
-                      Qty {{ item.quantity }}
+                      {{ $t('common.qtyValue', { value0: (item.quantity) }) }}
                     </p>
 
                     <p
@@ -106,9 +106,9 @@
                     </p>
                   </div>
 
-                  <div class="text-right">
+                  <div class="text-end">
                     <p class="text-sm text-gray-500">
-                      {{ formatCurrency(item.unit_price) }} each
+                      {{ $t('common.valueEach', { value0: (formatCurrency(item.unit_price)) }) }}
                     </p>
 
                     <p class="mt-1 font-semibold text-gray-900">
@@ -122,43 +122,43 @@
 
           <aside class="h-fit rounded-2xl bg-white p-6 shadow">
             <h2 class="text-2xl font-bold text-gray-900">
-              Totals
+              {{ $t('common.totals') }}
             </h2>
 
             <div class="mt-5 space-y-3">
               <div class="flex items-center justify-between text-sm text-gray-500">
-                <span>Subtotal</span>
+                <span>{{ $t('common.subtotal') }}</span>
                 <span>{{ formatCurrency(orderData.order.subtotal_amount) }}</span>
               </div>
 
               <div class="flex items-center justify-between text-sm text-gray-500">
-                <span>Coupon</span>
-                <span>{{ orderData.order.coupon_code || 'No coupon' }}</span>
+                <span>{{ $t('common.coupon') }}</span>
+                <span>{{ orderData.order.coupon_code || $t('common.noCoupon') }}</span>
               </div>
 
               <div class="flex items-center justify-between text-sm text-gray-500">
-                <span>Discount</span>
+                <span>{{ $t('common.discount') }}</span>
                 <span>- {{ formatCurrency(orderData.order.discount_amount) }}</span>
               </div>
 
               <div v-if="Number(orderData.order.payment_fee_amount)" class="flex items-center justify-between text-sm text-gray-500">
-                <span>Payment fee</span>
+                <span>{{ $t('common.paymentFee') }}</span>
                 <span>{{ formatCurrency(orderData.order.payment_fee_amount) }}</span>
               </div>
 
               <div class="flex items-center justify-between border-t pt-3 text-lg font-bold text-gray-900">
-                <span>Total</span>
+                <span>{{ $t('common.total') }}</span>
                 <span>{{ formatCurrency(orderData.order.total_amount) }}</span>
               </div>
-              <template v-if="orderData.order.is_preorder"><div class="flex justify-between text-sm font-semibold text-blue-800"><span>Required initial payment</span><span>{{ formatCurrency(orderData.order.initial_amount_due) }}</span></div><div class="flex justify-between text-sm text-gray-700"><span>Balance remaining</span><span>{{ formatCurrency(Number(orderData.order.total_amount) - Number(orderData.order.amount_paid)) }}</span></div></template>
+              <template v-if="orderData.order.is_preorder"><div class="flex justify-between text-sm font-semibold text-blue-800"><span>{{ $t('common.requiredInitialPayment') }}</span><span>{{ formatCurrency(orderData.order.initial_amount_due) }}</span></div><div class="flex justify-between text-sm text-gray-700"><span>{{ $t('common.balanceRemaining') }}</span><span>{{ formatCurrency(Number(orderData.order.total_amount) - Number(orderData.order.amount_paid)) }}</span></div></template>
             </div>
 
-            <NuxtLink
+            <NuxtLinkLocale
               :to="`/account/orders/${orderData.order.id}`"
               class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              View order in My Account
-            </NuxtLink>
+              {{ $t('checkout.summary.viewOrderInMyAccount') }}
+            </NuxtLinkLocale>
           </aside>
         </div>
       </div>
@@ -167,15 +167,19 @@
 </template>
 
 <script setup>
+const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
+
+const { intlLocale } = useUiLocale()
+
 import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
-import { expectedAvailabilityLabel } from '~/utils/preorder'
+import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({
   middleware: 'customer-auth'
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 
 const { data: orderData, pending, error } = await useAsyncData(`checkout-summary-${route.params.id}`, async () => {
   const [orderResult, itemsResult] = await Promise.all([
@@ -210,7 +214,7 @@ const { data: orderData, pending, error } = await useAsyncData(`checkout-summary
 }, { lazy: true })
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(intlLocale.value, {
     style: 'currency',
     currency: 'EGP',
     maximumFractionDigits: 2
@@ -218,7 +222,7 @@ const formatCurrency = (value) => {
 }
 
 const formatDate = (value) => {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(value))

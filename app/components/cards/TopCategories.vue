@@ -1,17 +1,17 @@
 <template>
   <section v-if="categories.length" class="store-section" aria-labelledby="store-categories-title">
     <div class="store-section-header">
-      <h2 id="store-categories-title" class="store-section-title">Shop by category</h2>
-      <NuxtLink to="/search" class="store-text-link">Shop all <Icon name="lucide:arrow-right" size="15" /></NuxtLink>
+      <h2 id="store-categories-title" class="store-section-title">{{ $t('common.shopByCategory') }}</h2>
+      <NuxtLinkLocale to="/search" class="store-text-link">{{ $t('common.shopAll') }} <Icon name="lucide:arrow-right" size="15" class="directional-icon" /></NuxtLinkLocale>
     </div>
     <div class="store-category-grid">
-      <NuxtLink v-for="category in categories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-category-link">
+      <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-category-link">
         <div class="store-category-image">
           <img v-if="getStoreImageUrl(category.displayImageUrl)" :src="category.displayImageUrl" :alt="category.name" loading="lazy" />
           <Icon v-else :name="getStoreCategoryIcon(category.name)" size="48" />
         </div>
         <span>{{ category.name }}</span>
-      </NuxtLink>
+      </NuxtLinkLocale>
     </div>
   </section>
 </template>

@@ -6,9 +6,9 @@
         <p v-if="description" class="store-section-description">{{ description }}</p>
       </div>
       <div class="store-product-actions">
-        <NuxtLink :to="to" class="store-text-link">View all</NuxtLink>
-        <button type="button" class="store-round-button" :aria-label="`Previous ${title}`" :disabled="!canScrollLeft" @click="scroll(-1)"><Icon name="lucide:chevron-left" size="17" /></button>
-        <button type="button" class="store-round-button" :aria-label="`More ${title}`" :disabled="!canScrollRight" @click="scroll(1)"><Icon name="lucide:chevron-right" size="17" /></button>
+        <NuxtLinkLocale :to="to" class="store-text-link">{{ $t('common.viewAll') }}</NuxtLinkLocale>
+        <button type="button" class="store-round-button" :aria-label="$t('common.previousValue', { value0: (title) })" :disabled="!canScrollLeft" @click="scroll(-1)"><Icon name="lucide:chevron-left" size="17" class="directional-icon" /></button>
+        <button type="button" class="store-round-button" :aria-label="$t('common.moreValue', { value0: (title) })" :disabled="!canScrollRight" @click="scroll(1)"><Icon name="lucide:chevron-right" size="17" class="directional-icon" /></button>
       </div>
     </div>
     <div ref="slider" class="store-product-rail no-scrollbar" @scroll.passive="updateScrollState">
@@ -31,12 +31,12 @@ const canScrollRight = ref(false)
 let resizeObserver
 const updateScrollState = () => {
   if (!slider.value) return
-  canScrollLeft.value = slider.value.scrollLeft > 2
-  canScrollRight.value = slider.value.scrollLeft + slider.value.clientWidth < slider.value.scrollWidth - 2
+  canScrollLeft.value = Math.abs(slider.value.scrollLeft) > 2
+  canScrollRight.value = Math.abs(slider.value.scrollLeft) + slider.value.clientWidth < slider.value.scrollWidth - 2
 }
 const scroll = (direction) => {
   slider.value?.scrollBy({
-    left: direction * slider.value.clientWidth * .85,
+    left: direction * slider.value.clientWidth * .85 * (getComputedStyle(slider.value).direction === 'rtl' ? -1 : 1),
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   })
 }

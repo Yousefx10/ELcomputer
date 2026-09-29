@@ -1,3 +1,4 @@
+import { expandUiSource } from './helpers/readUiSource.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -10,7 +11,7 @@ import {
   validatePaymentCard
 } from '../app/utils/paymentMethods.js'
 
-const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const read = path => expandUiSource(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'))
 
 test('payment settings default safely and database applies enabled method fees', async () => {
   const db = await createResetDatabase()

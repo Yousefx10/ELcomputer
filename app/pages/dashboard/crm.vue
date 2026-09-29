@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-6xl space-y-6">
     <DashboardPageIntro
       title="CRM"
-      description="Manage contacts, calls, and customer or supplier tickets."
+      :description="$t('interface.manageContactsCallsAndCustomerOrSupplierTickets')"
     />
 
     <DashboardSecondaryNav :items="secondaryNavItems" />
@@ -19,7 +19,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const route = useRoute()
+const route = useUiRoute()
 
 const activeTab = computed(() => {
   return getDashboardQueryValue(route, 'tab') === 'activities'

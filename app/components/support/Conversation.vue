@@ -1,24 +1,26 @@
 <script setup>
+const { intlLocale } = useUiLocale()
+
 defineProps({
   messages: { type: Array, default: () => [] },
   attachments: { type: Array, default: () => [] },
   currentUserId: { type: String, default: '' }
 })
 defineEmits(['download'])
-const formatDate = value => value ? new Intl.DateTimeFormat('en-US', {
+const formatDate = value => value ? new Intl.DateTimeFormat(intlLocale.value, {
   dateStyle: 'medium', timeStyle: 'short'
 }).format(new Date(value)) : '—'
 </script>
 
 <template>
-  <ol class="space-y-4" aria-label="Ticket conversation">
+  <ol class="space-y-4" :aria-label="$t('common.ticketConversation')">
     <li v-for="message in messages" :key="message.id" class="rounded-2xl border p-4 sm:p-5"
       :class="message.is_internal ? 'border-amber-200 bg-amber-50' : message.sender_type === 'staff' ? 'border-blue-100 bg-blue-50' : 'border-gray-200 bg-white'">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="font-bold text-gray-900">{{ message.sender_id === currentUserId ? 'You' : message.sender_name }}</span>
-          <span v-if="message.is_internal" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">Internal note</span>
-          <span v-else-if="message.sender_type === 'staff'" class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">Support</span>
+          <span class="font-bold text-gray-900">{{ message.sender_id === currentUserId ? $t('common.youVariant2') : message.sender_name }}</span>
+          <span v-if="message.is_internal" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">{{ $t('common.internalNoteVariant2') }}</span>
+          <span v-else-if="message.sender_type === 'staff'" class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800">{{ $t('common.support') }}</span>
         </div>
         <time class="text-xs text-gray-500" :datetime="message.created_at">{{ formatDate(message.created_at) }}</time>
       </div>

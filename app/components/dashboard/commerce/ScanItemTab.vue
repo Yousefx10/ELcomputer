@@ -3,17 +3,17 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Scan Item</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.scanItem') }}</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Scan an item to see its status and movement history.
+            {{ $t('dashboard.commerce.scanAnItemToSeeItsStatusAndMovementHistory') }}
           </p>
         </div>
 
         <div>
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Lookup</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.lookup') }}</p>
             <p class="mt-2 text-lg font-bold text-gray-900">
-              {{ lookupLoading ? 'Searching...' : item ? 'Item Found' : 'Ready' }}
+              {{ lookupLoading ? $t('common.searching') : item ? $t('common.itemFound') : $t('common.ready') }}
             </p>
           </div>
         </div>
@@ -25,7 +25,7 @@
       class="rounded-2xl bg-red-50 p-4 text-sm text-red-700 shadow"
       role="alert"
     >
-      {{ lookupError }}
+      {{ $uiMessage(lookupError) }}
     </div>
 
     <div
@@ -40,15 +40,15 @@
       <div>
         <h4 class="flex items-center gap-2 text-xl font-bold text-gray-900">
           <Icon name="lucide:scan-line" size="24" class="shrink-0 text-gray-500" />
-          Manual Lookup
+          {{ $t('common.manualLookup') }}
         </h4>
         <p class="mt-1 text-sm text-gray-500">
-          Scan a QR code, or paste its code or link.
+          {{ $t('dashboard.commerce.scanAQrCodeOrPasteItsCodeOrLink') }}
         </p>
 
         <form class="mt-4" @submit.prevent="lookupItem(tokenInput)">
           <label for="serialized-token" class="mb-2 block text-sm font-semibold text-gray-700">
-            QR Token or Scan URL
+            {{ $t('common.qrTokenOrScanUrl') }}
           </label>
           <div class="flex flex-col gap-3 sm:flex-row">
             <input
@@ -60,7 +60,7 @@
               autocapitalize="off"
               spellcheck="false"
               autofocus
-              placeholder="Scan or paste token"
+              :placeholder="$t('common.scanOrPasteToken')"
               class="min-w-0 flex-1 rounded-lg border p-3 font-mono text-sm outline-none focus:border-blue-500"
               @focus="$event.currentTarget.select()"
             >
@@ -70,7 +70,7 @@
               class="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-5 py-3 font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Icon name="lucide:search" size="18" />
-              {{ lookupLoading ? 'Looking Up...' : 'Find Item' }}
+              {{ lookupLoading ? $t('common.lookingUp') : $t('common.findItem') }}
             </button>
           </div>
         </form>
@@ -81,7 +81,7 @@
       v-if="lookupLoading"
       class="rounded-2xl bg-white p-8 text-center text-gray-500 shadow"
     >
-      Loading serialized item details...
+      {{ $t('dashboard.commerce.loadingSerializedItemDetails') }}
     </section>
 
     <template v-else-if="item">
@@ -93,16 +93,16 @@
                 class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
                 :class="getSerializedItemStatusClass(item.status)"
               >
-                {{ formatSerializedItemStatus(item.status) }}
+                {{ $uiLabel(formatSerializedItemStatus(item.status)) }}
               </span>
-              <span class="text-xs text-gray-400">Updated {{ formatCommerceDate(item.updatedAt || item.createdAt) }}</span>
+              <span class="text-xs text-gray-400">{{ $t('common.updatedValue', { value0: (formatCommerceDate(item.updatedAt || item.createdAt)) }) }}</span>
             </div>
 
             <h3 class="mt-4 break-words text-3xl font-bold text-gray-900">
               {{ item.product.title }}
             </h3>
             <p class="mt-2 text-lg text-gray-600">
-              {{ item.variant.name || 'Default variant' }}
+              {{ item.variant.name || $t('common.defaultVariant') }}
             </p>
 
             <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500">
@@ -110,7 +110,7 @@
                 SKU <strong class="text-gray-700">{{ item.variant.sku || item.product.sku }}</strong>
               </span>
               <span v-if="item.variant.code">
-                Variant <strong class="text-gray-700">{{ item.variant.code }}</strong>
+                {{ $t('common.variant') }} <strong class="text-gray-700">{{ item.variant.code }}</strong>
               </span>
               <span v-if="item.variant.colorName || item.variant.colorHex" class="inline-flex items-center gap-2">
                 <span
@@ -125,24 +125,24 @@
           </div>
 
           <div class="w-full rounded-2xl bg-gray-950 p-5 text-white lg:max-w-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Unit Code</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">{{ $t('common.unitCode') }}</p>
             <p class="mt-2 break-all font-mono text-xl font-bold">{{ item.unitCode }}</p>
             <dl class="mt-5 space-y-3 text-sm">
               <div class="flex items-start justify-between gap-4">
-                <dt class="text-gray-400">Warehouse</dt>
-                <dd class="text-right font-semibold">{{ item.warehouse.name || 'Not assigned' }}</dd>
+                <dt class="text-gray-400">{{ $t('common.warehouse') }}</dt>
+                <dd class="text-end font-semibold">{{ item.warehouse.name || $t('common.notAssigned') }}</dd>
               </div>
               <div class="flex items-start justify-between gap-4">
-                <dt class="text-gray-400">Created</dt>
-                <dd class="text-right font-semibold">{{ formatCommerceDate(item.createdAt) }}</dd>
+                <dt class="text-gray-400">{{ $t('common.created') }}</dt>
+                <dd class="text-end font-semibold">{{ formatCommerceDate(item.createdAt) }}</dd>
               </div>
               <div v-if="item.soldAt" class="flex items-start justify-between gap-4">
-                <dt class="text-gray-400">Sold</dt>
-                <dd class="text-right font-semibold">{{ formatCommerceDate(item.soldAt) }}</dd>
+                <dt class="text-gray-400">{{ $t('common.sold') }}</dt>
+                <dd class="text-end font-semibold">{{ formatCommerceDate(item.soldAt) }}</dd>
               </div>
               <div v-if="item.returnedAt" class="flex items-start justify-between gap-4">
-                <dt class="text-gray-400">Returned</dt>
-                <dd class="text-right font-semibold">{{ formatCommerceDate(item.returnedAt) }}</dd>
+                <dt class="text-gray-400">{{ $t('common.returned') }}</dt>
+                <dd class="text-end font-semibold">{{ formatCommerceDate(item.returnedAt) }}</dd>
               </div>
             </dl>
           </div>
@@ -156,27 +156,27 @@
               <Icon name="lucide:shopping-bag" size="20" />
             </div>
             <div>
-              <h3 class="text-xl font-bold text-gray-900">Order</h3>
-              <p class="text-sm text-gray-500">The sale linked to this exact unit.</p>
+              <h3 class="text-xl font-bold text-gray-900">{{ $t('common.order') }}</h3>
+              <p class="text-sm text-gray-500">{{ $t('dashboard.commerce.theSaleLinkedToThisExactUnit') }}</p>
             </div>
           </div>
 
           <div v-if="item.order.id || item.order.orderNumber" class="mt-5 space-y-3">
             <div class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Order Number</span>
-              <span class="text-right font-bold text-gray-900">{{ item.order.orderNumber || item.order.id }}</span>
+              <span class="text-sm text-gray-500">{{ $t('common.orderNumber') }}</span>
+              <span class="text-end font-bold text-gray-900">{{ item.order.orderNumber || item.order.id }}</span>
             </div>
             <div v-if="item.order.status" class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Order Status</span>
+              <span class="text-sm text-gray-500">{{ $t('common.orderStatus') }}</span>
               <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                {{ formatPlainLabel(item.order.status) }}
+                {{ $uiLabel(formatPlainLabel(item.order.status)) }}
               </span>
             </div>
             <div v-if="item.order.createdAt" class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Order Date</span>
-              <span class="text-right text-sm font-semibold text-gray-700">{{ formatCommerceDate(item.order.createdAt) }}</span>
+              <span class="text-sm text-gray-500">{{ $t('common.orderDate') }}</span>
+              <span class="text-end text-sm font-semibold text-gray-700">{{ formatCommerceDate(item.order.createdAt) }}</span>
             </div>
-            <NuxtLink
+            <NuxtLinkLocale
               v-if="item.order.orderNumber"
               :to="{
                 path: '/dashboard/orders',
@@ -184,13 +184,13 @@
               }"
               class="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"
             >
-              Open in Orders
+              {{ $t('common.openInOrders') }}
               <Icon name="lucide:arrow-up-right" size="16" />
-            </NuxtLink>
+            </NuxtLinkLocale>
           </div>
 
           <p v-else class="mt-5 rounded-xl border border-dashed p-5 text-sm text-gray-500">
-            This unit is not linked to a customer order.
+            {{ $t('dashboard.commerce.thisUnitIsNotLinkedToACustomerOrder') }}
           </p>
         </section>
 
@@ -200,30 +200,30 @@
               <Icon name="lucide:user-round" size="20" />
             </div>
             <div>
-              <h3 class="text-xl font-bold text-gray-900">Purchaser</h3>
-              <p class="text-sm text-gray-500">Customer details from the linked order.</p>
+              <h3 class="text-xl font-bold text-gray-900">{{ $t('common.purchaser') }}</h3>
+              <p class="text-sm text-gray-500">{{ $t('dashboard.commerce.customerDetailsFromTheLinkedOrder') }}</p>
             </div>
           </div>
 
           <div v-if="hasPurchaser" class="mt-5 space-y-3">
             <div class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Name</span>
-              <span class="text-right font-bold text-gray-900">{{ item.purchaser.name || item.customerName }}</span>
+              <span class="text-sm text-gray-500">{{ $t('common.name') }}</span>
+              <span class="text-end font-bold text-gray-900">{{ item.purchaser.name || item.customerName }}</span>
             </div>
             <div v-if="item.purchaser.email" class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Email</span>
+              <span class="text-sm text-gray-500">{{ $t('common.email') }}</span>
               <a
                 :href="`mailto:${item.purchaser.email}`"
-                class="break-all text-right text-sm font-semibold text-blue-600 hover:text-blue-700"
+                class="break-all text-end text-sm font-semibold text-blue-600 hover:text-blue-700"
               >
                 {{ item.purchaser.email }}
               </a>
             </div>
             <div v-if="item.purchaser.phone" class="flex items-start justify-between gap-4">
-              <span class="text-sm text-gray-500">Phone</span>
+              <span class="text-sm text-gray-500">{{ $t('common.phone') }}</span>
               <a
                 :href="`tel:${item.purchaser.phone}`"
-                class="text-right text-sm font-semibold text-blue-600 hover:text-blue-700"
+                class="text-end text-sm font-semibold text-blue-600 hover:text-blue-700"
               >
                 {{ item.purchaser.phone }}
               </a>
@@ -231,7 +231,7 @@
           </div>
 
           <p v-else class="mt-5 rounded-xl border border-dashed p-5 text-sm text-gray-500">
-            No purchaser is linked to this unit.
+            {{ $t('dashboard.commerce.noPurchaserIsLinkedToThisUnit') }}
           </p>
         </section>
       </div>
@@ -239,9 +239,9 @@
       <section class="rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h3 class="text-2xl font-bold">Return This Unit</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.returnThisUnit') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Choose a warehouse for the returned item.
+              {{ $t('dashboard.commerce.chooseAWarehouseForTheReturnedItem') }}
             </p>
           </div>
 
@@ -251,7 +251,7 @@
             class="shrink-0 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
             @click="openReturnForm"
           >
-            Start Return
+            {{ $t('common.startReturn') }}
           </button>
         </div>
 
@@ -259,23 +259,22 @@
           v-if="item.status !== 'sold'"
           class="mt-5 rounded-xl border border-dashed p-5 text-sm text-gray-500"
         >
-          Return is unavailable because this unit is currently
-          <strong>{{ formatSerializedItemStatus(item.status) }}</strong>.
-          Only sold units can use this action.
+          {{ $t('dashboard.commerce.returnIsUnavailableBecauseThisUnitIsCurrently') }}
+          <strong>{{ $uiLabel(formatSerializedItemStatus(item.status)) }}</strong>{{ $t('dashboard.commerce.onlySoldUnitsCanUseThisAction') }}
         </div>
 
         <form v-else-if="returnFormOpen" class="mt-6" @submit.prevent="submitReturn">
           <div class="grid gap-4 md:grid-cols-2">
             <div>
               <label for="return-warehouse" class="mb-2 block text-sm font-semibold text-gray-700">
-                Receiving Warehouse *
+                {{ $t('common.receivingWarehouseVariant2') }}
               </label>
               <select
                 id="return-warehouse"
                 v-model="returnForm.warehouse_id"
                 class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
               >
-                <option value="">Select warehouse</option>
+                <option value="">{{ $t('common.selectWarehouse') }}</option>
                 <option
                   v-for="warehouse in warehouseOptions"
                   :key="warehouse.id"
@@ -290,35 +289,35 @@
 
             <div>
               <label for="return-reason" class="mb-2 block text-sm font-semibold text-gray-700">
-                Return Reason *
+                {{ $t('common.returnReason') }}
               </label>
               <input
                 id="return-reason"
                 v-model="returnForm.reason"
                 type="text"
                 maxlength="200"
-                placeholder="Customer return, unopened item..."
+                :placeholder="$t('dashboard.commerce.customerReturnUnopenedItem')"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
             </div>
 
             <div class="md:col-span-2">
               <label for="return-notes" class="mb-2 block text-sm font-semibold text-gray-700">
-                Notes
+                {{ $t('common.notes') }}
               </label>
               <textarea
                 id="return-notes"
                 v-model="returnForm.notes"
                 rows="4"
                 maxlength="1000"
-                placeholder="Optional receiving and inspection notes"
+                :placeholder="$t('dashboard.commerce.optionalReceivingAndInspectionNotes')"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               />
             </div>
           </div>
 
           <p v-if="returnError" class="mt-4 text-sm text-red-600" role="alert">
-            {{ returnError }}
+            {{ $uiMessage(returnError) }}
           </p>
 
           <div class="mt-5 flex flex-wrap gap-3">
@@ -327,7 +326,7 @@
               :disabled="returnSaving"
               class="rounded-lg bg-amber-600 px-5 py-3 font-bold text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {{ returnSaving ? 'Recording Return...' : 'Confirm Unit Return' }}
+              {{ returnSaving ? $t('common.recordingReturn') : $t('common.confirmUnitReturn') }}
             </button>
             <button
               type="button"
@@ -335,7 +334,7 @@
               class="rounded-lg border border-gray-300 px-5 py-3 font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-60"
               @click="closeReturnForm"
             >
-              Cancel
+              {{ $t('common.cancel') }}
             </button>
           </div>
         </form>
@@ -344,9 +343,9 @@
       <section class="rounded-2xl bg-white p-6 shadow">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 class="text-2xl font-bold">Movement History</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.movementHistory') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Immutable status and warehouse events for this unit.
+              {{ $t('dashboard.commerce.immutableStatusAndWarehouseEventsForThisUnit') }}
             </p>
           </div>
           <p class="text-sm font-semibold text-gray-500">
@@ -391,15 +390,15 @@
               </p>
 
               <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
-                <span v-if="movement.orderNumber">Order {{ movement.orderNumber }}</span>
-                <span v-if="movement.actorName">By {{ movement.actorName }}</span>
+                <span v-if="movement.orderNumber">{{ $t('common.orderValueVariant2', { value0: (movement.orderNumber) }) }}</span>
+                <span v-if="movement.actorName">{{ $t('common.byValue', { value0: (movement.actorName) }) }}</span>
               </div>
             </div>
           </article>
         </div>
 
         <p v-else class="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-gray-500">
-          No movement events were returned for this item.
+          {{ $t('dashboard.commerce.noMovementEventsWereReturnedForThisItem') }}
         </p>
       </section>
     </template>
@@ -411,17 +410,20 @@
       <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gray-100 text-gray-500">
         <Icon name="lucide:scan-search" size="28" />
       </div>
-      <h3 class="mt-4 text-xl font-bold text-gray-900">Scan a unit to begin</h3>
+      <h3 class="mt-4 text-xl font-bold text-gray-900">{{ $t('common.scanAUnitToBegin') }}</h3>
       <p class="mx-auto mt-2 max-w-md text-sm text-gray-500">
-        Item details remain hidden until an authorized lookup succeeds.
+        {{ $t('dashboard.commerce.itemDetailsRemainHiddenUntilAnAuthorizedLookupSucceeds') }}
       </p>
     </section>
   </div>
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
 import {
-  formatCommerceDate,
+  formatCommerceDate as baseFormatCommerceDate,
   formatSerializedItemStatus,
   getSerializedItemStatusClass
 } from '~/utils/commerce'
@@ -431,7 +433,7 @@ defineOptions({
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const tokenInputElement = ref(null)
 const tokenInput = ref('')
 const item = ref(null)

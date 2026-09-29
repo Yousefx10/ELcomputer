@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <DashboardPageIntro
-      title="Edit Product"
+      :title="$t('common.editProduct')"
       :description="`Product ID: ${id}`"
       container-class=""
       title-class="my-5 text-center text-4xl font-bold"
@@ -9,14 +9,14 @@
     />
 
     <div v-if="pending" class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
-      Loading product...
+      {{ $t('common.loadingProduct') }}
     </div>
 
     <div
       v-else-if="fetchError"
       class="mx-auto max-w-6xl rounded-2xl bg-red-50 p-6 text-center text-red-600 shadow"
     >
-      Error: {{ fetchError.message }}
+      {{ $t('common.errorValue', { value0: (fetchError.message) }) }}
     </div>
 
     <div v-else-if="product" class="mx-auto max-w-6xl space-y-6">
@@ -26,15 +26,15 @@
       >
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
-            <p class="text-sm font-semibold text-gray-700">Store Visibility</p>
+            <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
             <p class="text-sm text-gray-500">
-              Control whether this product is visible on the public store
+              {{ $t('dashboard.products.controlWhetherThisProductIsVisibleOnThePublicStore') }}
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <span class="text-sm font-semibold" :class="isPublished ? 'text-green-600' : 'text-gray-500'">
-              {{ isPublished ? 'ON' : 'OFF' }}
+              {{ isPublished ? $t('common.on') : $t('common.off') }}
             </span>
 
             <button
@@ -53,24 +53,24 @@
         </div>
 
         <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold">Product Details</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.productDetails') }}</h3>
           <p class="text-sm text-gray-500">
-            Update the product data that powers the public product page
+            {{ $t('dashboard.products.updateTheProductDataThatPowersThePublicProductPage') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Title</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
           <input
             v-model="title"
             type="text"
-            placeholder="Product title"
+            :placeholder="$t('common.productTitle')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Slug</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.slug') }}</label>
 
           <div class="flex gap-2">
             <input
@@ -85,18 +85,18 @@
               @click="useTitleSlug"
               class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             >
-              Generate
+              {{ $t('common.generate') }}
             </button>
           </div>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Category</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.category') }}</label>
           <select
             v-model="categoryId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Category</option>
+            <option value="">{{ $t('common.noCategory') }}</option>
 
             <option
               v-for="category in categories"
@@ -109,12 +109,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Brand</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.brand') }}</label>
           <select
             v-model="brandId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No Brand</option>
+            <option value="">{{ $t('common.noBrand') }}</option>
 
             <option
               v-for="brand in brands"
@@ -127,12 +127,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Preferred Supplier (Optional)</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.preferredSupplierOptional') }}</label>
           <select
             v-model="defaultSupplierId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">No preferred supplier</option>
+            <option value="">{{ $t('common.noPreferredSupplier') }}</option>
 
             <option
               v-for="supplier in suppliers"
@@ -143,13 +143,13 @@
             </option>
           </select>
           <p class="mt-2 text-xs text-gray-500">
-            For reference only. Procurement can receive this product from any active supplier.
+            {{ $t('common.forReferenceOnlyProcurementCanReceiveThisProductFromAnyActiveSupplier') }}
           </p>
         </div>
 
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">
-            Primary Warehouse{{ isSerialized ? ' *' : '' }}
+            {{ $t('dashboard.products.primaryWarehousevalue', { value0: (isSerialized ? ' *' : '') }) }}
           </label>
           <select
             v-model="primaryWarehouseId"
@@ -157,7 +157,7 @@
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
             <option value="">
-              {{ isSerialized ? 'Select Primary Warehouse' : 'No Primary Warehouse' }}
+              {{ isSerialized ? $t('dashboard.products.selectPrimaryWarehouse') : $t('common.noPrimaryWarehouse') }}
             </option>
 
             <option
@@ -169,37 +169,37 @@
             </option>
           </select>
           <p v-if="isSerialized && canAssignPrimaryWarehouse" class="mt-2 text-xs text-blue-700">
-            Editable until the first item is received.
+            {{ $t('dashboard.products.editableUntilTheFirstItemIsReceived') }}
           </p>
           <p v-else-if="isSerialized" class="mt-2 text-xs text-gray-500">
-            This warehouse is locked because items have already been received.
+            {{ $t('dashboard.products.thisWarehouseIsLockedBecauseItemsHaveAlreadyBeenReceived') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Price</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.price') }}</label>
           <input
             v-model="price"
             type="number"
             min="0"
-            placeholder="Price"
+            :placeholder="$t('common.price')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Old Price</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.oldPrice') }}</label>
           <input
             v-model="oldPrice"
             type="number"
             min="0"
-            placeholder="Old price"
+            :placeholder="$t('common.oldPrice')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Legacy Aggregate Stock</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.legacyAggregateStock') }}</label>
           <input
             v-model="stockQuantity"
             type="number"
@@ -214,7 +214,7 @@
             v-if="isStockQuantityFocused"
             class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
           >
-            Older stock must have item IDs before receiving more units.
+            {{ $t('dashboard.products.olderStockMustHaveItemIdsBeforeReceivingMoreUnits') }}
           </p>
         </div>
 
@@ -222,10 +222,10 @@
           v-else
           class="rounded-xl border border-green-200 bg-green-50 p-4"
         >
-          <p class="text-sm font-semibold text-green-800">Individually tracked stock</p>
+          <p class="text-sm font-semibold text-green-800">{{ $t('dashboard.products.individuallyTrackedStock') }}</p>
           <p class="mt-1 text-3xl font-bold text-green-700">{{ stockQuantity }}</p>
           <p class="mt-1 text-xs text-green-700">
-            This total is calculated from item IDs and cannot be edited manually.
+            {{ $t('dashboard.products.thisTotalIsCalculatedFromItemIdsAndCannotBeEditedManually') }}
           </p>
         </div>
 
@@ -234,23 +234,23 @@
           <input
             v-model="sku"
             type="text"
-            placeholder="Optional SKU"
+            :placeholder="$t('common.optionalSku')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.colorName') }}</label>
           <input
             v-model="colorName"
             type="text"
-            placeholder="Black"
+            :placeholder="$t('common.black')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div v-if="!isSerialized">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Color Hex</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.colorHex') }}</label>
           <input
             v-model="colorHex"
             type="text"
@@ -265,18 +265,18 @@
         >
           <div class="flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 class="text-lg font-bold text-gray-900">Individual item IDs & QR codes</h3>
+              <h3 class="text-lg font-bold text-gray-900">{{ $t('common.individualItemIdsQrCodes') }}</h3>
               <p class="mt-1 text-sm text-gray-600">
-                Edit product options below. Receive and track items through purchasing.
+                {{ $t('dashboard.products.editProductOptionsBelowReceiveAndTrackItemsThroughPurchasing') }}
               </p>
             </div>
 
-            <NuxtLink
+            <NuxtLinkLocale
               :to="`/dashboard/commerce?tab=serialized&product=${id}`"
               class="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              View Item IDs & QR Codes
-            </NuxtLink>
+              {{ $t('common.viewItemIdsQrCodes') }}
+            </NuxtLinkLocale>
           </div>
 
         <DashboardProductsSellingModeFields v-model="sellingConfig" />
@@ -291,35 +291,35 @@
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
-            label="Main Image"
+            :label="$t('common.mainImage')"
             section="products"
             :preview-alt="title || 'Product image'"
-            help-text="Upload the main product image stored on the server host."
+            :help-text="$t('common.uploadTheMainProductImageStoredOnTheServerHost')"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Short Description</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shortDescription') }}</label>
           <textarea
             v-model="description"
             rows="4"
-            placeholder="Short product description"
+            :placeholder="$t('common.shortProductDescription')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Long Description</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.longDescription') }}</label>
           <textarea
             v-model="longDescription"
             rows="7"
-            placeholder="Long product description"
+            :placeholder="$t('common.longProductDescription')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
-          {{ actionError }}
+          {{ $uiMessage(actionError) }}
         </p>
 
         <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
@@ -327,7 +327,7 @@
             type="submit"
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
-            {{ saving ? 'Saving...' : 'Save Changes' }}
+            {{ saving ? $t('common.saving') : $t('common.saveChanges') }}
           </button>
 
           <button
@@ -336,30 +336,30 @@
             @click="deleteProduct"
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
           >
-            {{ deleting ? 'Deleting...' : 'Delete Product' }}
+            {{ deleting ? $t('common.deleting') : $t('common.deleteProduct') }}
           </button>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/dashboard/products"
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
-            Back
-          </NuxtLink>
+            {{ $t('common.back') }}
+          </NuxtLinkLocale>
 
           <p
             v-if="isSerialized"
             class="w-full text-sm text-gray-500"
           >
-            Products with item history cannot be deleted. Hide them from the store instead.
+            {{ $t('dashboard.products.productsWithItemHistoryCannotBeDeletedHideThemFromTheStoreInstead') }}
           </p>
         </div>
       </form>
 
       <section class="rounded-2xl bg-white p-6 shadow">
         <div class="mb-4">
-          <h3 class="text-2xl font-bold">Extra Images</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.extraImages') }}</h3>
           <p class="text-sm text-gray-500">
-            Add an image for every color, including the main color. Its first image appears in the selector.
+            {{ $t('dashboard.products.addAnImageForEveryColorIncludingTheMainColorItsFirstImageAppearsInTheSelector') }}
           </p>
         </div>
 
@@ -367,7 +367,7 @@
           <div class="min-w-0 space-y-3">
             <div>
               <label for="new-image-variant" class="mb-2 block text-sm font-semibold text-gray-700">
-                Variant *
+                {{ $t('common.variantVariant2') }}
               </label>
               <select
                 id="new-image-variant"
@@ -375,7 +375,7 @@
                 :disabled="!savedVariantOptions.length || galleryLoading"
                 class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
               >
-                <option value="">Select variant</option>
+                <option value="">{{ $t('common.selectVariant') }}</option>
                 <option
                   v-for="variant in savedVariantOptions"
                   :key="variant.id"
@@ -385,23 +385,23 @@
                 </option>
               </select>
               <p v-if="!savedVariantOptions.length" class="mt-2 text-xs text-amber-700">
-                Save at least one product variant before adding gallery images.
+                {{ $t('dashboard.products.saveAtLeastOneProductVariantBeforeAddingGalleryImages') }}
               </p>
             </div>
 
             <DashboardMediaUploadField
               v-model="newImageUrl"
-              label="Extra Image"
+              :label="$t('common.extraImage')"
               section="product_gallery"
               :preview-alt="newImageAlt || title || 'Extra image'"
               preview-height-class="h-32"
-              help-text="Upload an additional image for the product gallery."
+              :help-text="$t('dashboard.products.uploadAnAdditionalImageForTheProductGallery')"
             />
 
             <input
               v-model="newImageAlt"
               type="text"
-              placeholder="Alt text"
+              :placeholder="$t('common.altText')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             />
           </div>
@@ -412,12 +412,12 @@
             :disabled="galleryLoading || !savedVariantOptions.length"
             class="rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {{ galleryLoading ? 'Saving...' : 'Add Image' }}
+            {{ galleryLoading ? $t('common.saving') : $t('common.addImage') }}
           </button>
         </div>
 
         <p v-if="galleryError" class="mb-4 text-sm text-red-600">
-          {{ galleryError }}
+          {{ $uiMessage(galleryError) }}
         </p>
 
         <div v-if="productImages.length" class="space-y-3">
@@ -432,7 +432,7 @@
                   :for="`image-variant-${image.id}`"
                   class="mb-2 block text-sm font-semibold text-gray-700"
                 >
-                  Variant *
+                  {{ $t('common.variantVariant2') }}
                 </label>
                 <select
                   :id="`image-variant-${image.id}`"
@@ -440,7 +440,7 @@
                   :disabled="galleryLoading"
                   class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
                 >
-                  <option value="">Variant assignment required</option>
+                  <option value="">{{ $t('dashboard.products.variantAssignmentRequired') }}</option>
                   <option
                     v-for="variant in savedVariantOptions"
                     :key="variant.id"
@@ -453,7 +453,7 @@
 
               <DashboardMediaUploadField
                 v-model="image.image_url"
-                label="Image"
+                :label="$t('common.image')"
                 section="product_gallery"
                 :preview-alt="image.alt_text || title || 'Extra image'"
                 preview-height-class="h-32"
@@ -462,7 +462,7 @@
               <input
                 v-model="image.alt_text"
                 type="text"
-                placeholder="Alt text"
+                :placeholder="$t('common.altText')"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               />
             </div>
@@ -477,7 +477,7 @@
                   ? 'bg-blue-600 hover:bg-blue-700'
                   : 'cursor-not-allowed bg-gray-300'"
               >
-                Save
+                {{ $t('common.save') }}
               </button>
 
               <button
@@ -485,14 +485,14 @@
                 @click="deleteProductImage(image.id)"
                 class="rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
               >
-                Delete
+                {{ $t('common.delete') }}
               </button>
             </div>
           </div>
         </div>
 
         <p v-else class="text-sm text-gray-500">
-          No extra images added yet.
+          {{ $t('dashboard.products.noExtraImagesAddedYet') }}
         </p>
       </section>
 
@@ -500,12 +500,16 @@
     </div>
 
     <div v-else class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
-      No product found.
+      {{ $t('common.noProductFound') }}
     </div>
   </div>
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
 definePageMeta({
   layout: 'dashboard'
@@ -527,7 +531,7 @@ const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 const PRODUCT_FORM_SUPPLIERS_CACHE_KEY = 'dashboard:product-form:suppliers'
 const PRODUCT_FORM_WAREHOUSES_CACHE_KEY = 'dashboard:product-form:warehouses'
 
-const route = useRoute()
+const route = useUiRoute()
 const id = route.params.id
 
 const title = ref('')
@@ -885,7 +889,7 @@ const updateProduct = async () => {
   slug.value = normalizedSlug
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await navigateTo('/dashboard/products')
+  await uiNavigateTo('/dashboard/products')
 }
 
 const addProductImage = async () => {
@@ -1009,7 +1013,7 @@ const formatVariantOption = (variant) => {
 const deleteProductImage = async (imageId) => {
   galleryError.value = ''
 
-  const confirmDelete = confirm('Delete this extra image?')
+  const confirmDelete = confirm(uiLabel('Delete this extra image?'))
   if (!confirmDelete) {
     return
   }
@@ -1049,7 +1053,7 @@ const deleteProduct = async () => {
     return
   }
 
-  const confirmDelete = confirm('Are you sure you want to delete this product?')
+  const confirmDelete = confirm(uiLabel('Are you sure you want to delete this product?'))
   if (!confirmDelete) {
     return
   }
@@ -1079,6 +1083,6 @@ const deleteProduct = async () => {
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await navigateTo('/dashboard/products')
+  await uiNavigateTo('/dashboard/products')
 }
 </script>

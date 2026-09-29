@@ -3,7 +3,7 @@
     <div class="mx-auto max-w-6xl">
       <DashboardPageIntro
         tag="header"
-        title="Dashboard"
+        :title="$t('common.dashboard')"
         :description="viewDescription"
         container-class="mb-6 rounded-2xl bg-white p-6 shadow"
       />
@@ -15,11 +15,11 @@
 
       <div v-else class="space-y-6">
         <div v-if="loading && !hasSummary" class="rounded-2xl bg-white p-8 text-center text-sm text-gray-500 shadow">
-          Loading summary...
+          {{ $t('common.loadingSummary') }}
         </div>
 
         <div v-if="errorMessage" class="rounded-2xl bg-red-50 p-4 text-sm text-red-600 shadow">
-          {{ errorMessage }}
+          {{ $uiMessage(errorMessage) }}
         </div>
 
         <DashboardSummaryOverview
@@ -33,20 +33,20 @@
         <section v-if="canSeeOrders && currentView !== 'stock'">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Orders</h3>
-              <p class="mt-1 text-sm text-gray-500">Current workload.</p>
+              <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.orders') }}</h3>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('common.currentWorkload') }}</p>
             </div>
 
-            <NuxtLink to="/dashboard/orders" class="text-sm font-semibold text-blue-600 hover:text-blue-700">
-              View orders
-            </NuxtLink>
+            <NuxtLinkLocale to="/dashboard/orders" class="text-sm font-semibold text-blue-600 hover:text-blue-700">
+              {{ $t('common.viewOrders') }}
+            </NuxtLinkLocale>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <DashboardStatCard
               v-for="card in orderCards"
               :key="card.key"
-              :label="card.label"
+              :label="$uiLabel(card.label)"
               :value="card.value"
               :icon="card.icon"
               :tone="card.tone"
@@ -58,24 +58,24 @@
         <section v-if="(canViewProducts || canViewCategories) && currentView !== 'orders'">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Catalog</h3>
-              <p class="mt-1 text-sm text-gray-500">Products and stock.</p>
+              <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.catalog') }}</h3>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('common.productsAndStock') }}</p>
             </div>
 
-            <NuxtLink
+            <NuxtLinkLocale
               v-if="canViewProducts"
               to="/dashboard/products"
               class="text-sm font-semibold text-blue-600 hover:text-blue-700"
             >
-              View products
-            </NuxtLink>
+              {{ $t('common.viewProducts') }}
+            </NuxtLinkLocale>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <DashboardStatCard
               v-for="card in catalogCards"
               :key="card.key"
-              :label="card.label"
+              :label="$uiLabel(card.label)"
               :value="card.value"
               :icon="card.icon"
               :tone="card.tone"
@@ -88,7 +88,7 @@
           v-if="!canSeeOrders && !canViewProducts && !canViewCategories && !errorMessage"
           class="rounded-2xl bg-white p-6 text-sm text-gray-500 shadow"
         >
-          No summary is available for your permissions.
+          {{ $t('dashboard.index.noSummaryIsAvailableForYourPermissions') }}
         </div>
       </div>
     </div>
@@ -104,7 +104,7 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const { getSnapshot, isFresh, setSnapshot } = useDashboardCache()
 const { hasPermission } = useAdminAccess()
 const DASHBOARD_HOME_CACHE_KEY = 'dashboard:home:v2'

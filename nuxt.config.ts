@@ -13,7 +13,26 @@ const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  modules: ['@nuxtjs/supabase','@nuxt/icon'],
+  modules: ['@nuxtjs/supabase', '@nuxt/icon', '@nuxtjs/i18n', '@nuxtjs/color-mode'],
+  i18n: {
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage: false,
+    langDir: 'locales',
+    locales: [
+      { code: 'en', language: 'en-US', name: 'English', dir: 'ltr', file: 'en.json' },
+      { code: 'ar', language: 'ar-EG', name: 'العربية', dir: 'rtl', file: 'ar.json' }
+    ]
+  },
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    classSuffix: '',
+    dataValue: 'theme',
+    storage: 'cookie',
+    storageKey: 'elcomputer-color-mode',
+    cookieAttrs: { maxAge: 31536000, path: '/', sameSite: 'lax' }
+  },
   runtimeConfig: {
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
     daftraAccountUrl: process.env.DAFTRA_ACCOUNT_URL || '',

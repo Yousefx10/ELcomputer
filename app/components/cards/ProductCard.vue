@@ -1,32 +1,36 @@
 <template>
   <article class="store-product-card">
-    <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-image" :aria-label="product.title">
-      <span v-if="hasDiscount" class="store-product-badge">Save {{ discountPercent }}%</span>
-      <span v-else-if="product.is_featured" class="store-product-badge store-product-badge-featured">Featured</span>
+    <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-image" :aria-label="product.title">
+      <span v-if="hasDiscount" class="store-product-badge">{{ $t('common.saveValueVariant2', { value0: (discountPercent) }) }}</span>
+      <span v-else-if="product.is_featured" class="store-product-badge store-product-badge-featured">{{ $t('common.featured') }}</span>
       <img v-if="getStoreImageUrl(product.image_url)" :src="product.image_url" :alt="product.title" loading="lazy" />
       <Icon v-else :name="getStoreCategoryIcon(categoryName)" size="56" class="store-product-placeholder" />
-    </NuxtLink>
+    </NuxtLinkLocale>
     <div class="store-product-info">
       <div class="store-product-price">
         <strong>{{ priceFormatter.format(numericPrice) }} <small>EGP</small></strong>
         <del v-if="hasDiscount">{{ formatPrice(product.old_price) }}</del>
       </div>
       <p v-if="brandName || categoryName" class="store-product-brand">{{ brandName || categoryName }}</p>
-      <NuxtLink :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-title"><h3>{{ product.title }}</h3></NuxtLink>
+      <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-title"><h3>{{ product.title }}</h3></NuxtLinkLocale>
       <p class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
-        {{ isComingSoon ? 'Coming Soon' : isPreorder ? 'Pre-order' : isOutOfStock ? (isPurchasable ? 'Available to order' : 'Out of stock') : 'In stock' }}
+        {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.preOrder') : isOutOfStock ? (isPurchasable ? $t('common.availableToOrder') : $t('common.outOfStock')) : $t('common.inStock') }}
       </p>
-      <button type="button" :disabled="!isPurchasable" :aria-label="requiresOptionSelection ? `Choose options for ${product.title}` : `Add ${product.title} to cart`" class="store-product-add" @click="handleAddToCart">
+      <button type="button" :disabled="!isPurchasable" :aria-label="requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" @click="handleAddToCart">
         <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
-        {{ isComingSoon ? 'Coming Soon' : isPreorder ? 'View pre-order' : !isPurchasable ? 'Out of stock' : (addedToCart ? 'Added' : (requiresOptionSelection ? 'Options' : 'Add to cart')) }}
+        {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
       </button>
-      <span class="sr-only" role="status">{{ cartFeedback }}</span>
+      <span class="sr-only" role="status">{{ $uiMessage(cartFeedback) }}</span>
     </div>
   </article>
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 const props = defineProps({
   product: {
@@ -42,7 +46,7 @@ const cartFeedback = ref('')
 let feedbackTimeout
 onBeforeUnmount(() => clearTimeout(feedbackTimeout))
 
-const priceFormatter = new Intl.NumberFormat('en-US')
+const priceFormatter = computed(() => new Intl.NumberFormat(intlLocale.value))
 
 const numericPrice = computed(() => Number(props.product.price || 0))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
@@ -105,7 +109,7 @@ const discountPercent = computed(() => {
 })
 
 const formatPrice = (value) => {
-  return `${priceFormatter.format(Number(value || 0))} EGP`
+  return `${priceFormatter.value.format(Number(value || 0))} EGP`
 }
 
 const openProductOptions = async () => {
@@ -113,7 +117,7 @@ const openProductOptions = async () => {
     return
   }
 
-  await navigateTo(`/products/${props.product.slug}`)
+  await uiNavigateTo(`/products/${props.product.slug}`)
 }
 
 const handleAddToCart = async () => {

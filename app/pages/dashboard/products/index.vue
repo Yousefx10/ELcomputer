@@ -3,7 +3,7 @@
     <div class="mx-auto max-w-7xl">
       <DashboardPageIntro
         :title="productListTitle"
-        description="Edit product details, prices and availability."
+        :description="$t('interface.editProductDetailsPricesAndAvailability')"
         :show-actions="canAddProduct"
         container-class="mb-6 rounded-2xl bg-white p-6 shadow"
         layout-class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
@@ -11,39 +11,39 @@
         modern-actions-class="mb-6 flex flex-wrap items-center justify-end gap-3"
       >
         <template #actions>
-          <NuxtLink
+          <NuxtLinkLocale
             v-if="canAddProduct"
             to="/dashboard/products/add"
             class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
-            Add New Product
-          </NuxtLink>
+            {{ $t('common.addNewProduct') }}
+          </NuxtLinkLocale>
         </template>
       </DashboardPageIntro>
 
       <DashboardSecondaryNav class="mb-6" />
 
       <div class="mb-6 grid gap-4 md:grid-cols-3">
-        <DashboardStatCard label="Total products" :value="productStats.total" icon="lucide:boxes" tone="blue" />
-        <DashboardStatCard label="Published" :value="productStats.active" icon="lucide:circle-check" tone="emerald" />
-        <DashboardStatCard label="Drafts" :value="productStats.inactive" icon="lucide:file-pen-line" tone="amber" />
+        <DashboardStatCard :label="$t('common.totalProducts')" :value="productStats.total" icon="lucide:boxes" tone="blue" />
+        <DashboardStatCard :label="$t('common.published')" :value="productStats.active" icon="lucide:circle-check" tone="emerald" />
+        <DashboardStatCard :label="$t('common.drafts')" :value="productStats.inactive" icon="lucide:file-pen-line" tone="amber" />
       </div>
 
       <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ errorMessage }}
+        {{ $uiMessage(errorMessage) }}
       </div>
 
       <div class="mb-6 rounded-2xl bg-white p-5 shadow">
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <label for="product-search" class="mb-2 block text-sm font-semibold text-gray-700">
-              Search Products
+              {{ $t('common.searchProducts') }}
             </label>
             <input
               id="product-search"
               v-model="searchQuery"
               type="text"
-              placeholder="Search by product title"
+              :placeholder="$t('common.searchByProductTitle')"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
             >
           </div>
@@ -54,40 +54,40 @@
             @click="clearSearch"
             class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
           >
-            Clear
+            {{ $t('common.clear') }}
           </button>
         </div>
       </div>
 
       <div v-if="loading" class="rounded-2xl bg-white p-8 text-center shadow">
-        Loading products...
+        {{ $t('common.loadingProducts') }}
       </div>
 
       <div v-else-if="!products.length" class="rounded-2xl bg-white p-8 text-center shadow">
         <h3 class="text-2xl font-bold text-gray-900">
-          {{ hasActiveSearch ? 'No matching products' : 'No products yet' }}
+          {{ hasActiveSearch ? $t('common.noMatchingProducts') : $t('common.noProductsYet') }}
         </h3>
         <p class="mt-2 text-gray-500">
-          {{ hasActiveSearch ? 'Try a different search term.' : 'Start by adding your first product.' }}
+          {{ hasActiveSearch ? $t('dashboard.products.tryADifferentSearchTerm') : $t('dashboard.products.startByAddingYourFirstProduct') }}
         </p>
 
-        <NuxtLink
+        <NuxtLinkLocale
           v-if="!hasActiveSearch && canAddProduct"
           to="/dashboard/products/add"
           class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
         >
-          Add Product
-        </NuxtLink>
+          {{ $t('common.addProduct') }}
+        </NuxtLinkLocale>
       </div>
 
       <div v-else>
         <div class="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 shadow">
           <p class="text-sm text-gray-500">
-            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalProducts }} {{ hasActiveSearch ? 'matching products' : 'products' }}
+            {{ $t('common.showingValueValueOfValueValue', { value0: (pageStart), value1: (pageEnd), value2: (totalProducts), value3: (hasActiveSearch ? $t('common.matchingProducts') : $t('common.products')) }) }}
           </p>
 
           <p class="text-sm font-medium text-gray-600">
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
           </p>
         </div>
 
@@ -105,7 +105,7 @@
                 class="h-full w-full object-contain"
               />
 
-              <p v-else class="text-sm text-gray-400">No image available</p>
+              <p v-else class="text-sm text-gray-400">{{ $t('common.noImageAvailable') }}</p>
             </div>
 
             <div class="p-5">
@@ -116,7 +116,7 @@
                   </h3>
 
                   <p class="mt-1 text-sm text-gray-500">
-                    {{ product.category?.name || 'No Category' }}
+                    {{ product.category?.name || $t('common.noCategory') }}
                   </p>
                 </div>
 
@@ -126,39 +126,39 @@
                     ? 'bg-purple-50 text-purple-700'
                     : 'bg-blue-50 text-blue-600'"
                 >
-                  {{ product.is_serialized ? 'QR Tracked' : 'Product' }}
+                  {{ product.is_serialized ? $t('common.qrTracked') : $t('common.product') }}
                 </span>
               </div>
 
               <div class="mb-4">
                 <p class="text-2xl font-bold text-blue-600">
-                  {{ product.price }} EGP
+                  {{ $t('common.valueEgp', { value0: (product.price) }) }}
                 </p>
 
                 <p
                   v-if="product.old_price"
                   class="mt-1 text-sm text-gray-400 line-through"
                 >
-                  {{ product.old_price }} EGP
+                  {{ $t('common.valueEgp', { value0: (product.old_price) }) }}
                 </p>
               </div>
 
               <div class="flex gap-3">
-                <NuxtLink
+                <NuxtLinkLocale
                   v-if="canEditProduct"
                   :to="`/dashboard/products/edit/${product.id}`"
                   class="flex-1 rounded-lg bg-black px-4 py-3 text-center text-sm font-bold text-white hover:bg-gray-800"
                 >
-                  Edit Product
-                </NuxtLink>
+                  {{ $t('common.editProduct') }}
+                </NuxtLinkLocale>
 
-                <NuxtLink
+                <NuxtLinkLocale
                   v-if="canEditProduct && product.is_serialized"
                   :to="`/dashboard/commerce?tab=serialized&product=${product.id}`"
                   class="flex-1 rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-center text-sm font-bold text-purple-700 hover:bg-purple-100"
                 >
-                  Items
-                </NuxtLink>
+                  {{ $t('common.items') }}
+                </NuxtLinkLocale>
               </div>
             </div>
           </div>
@@ -171,11 +171,11 @@
             @click="goToPreviousPage"
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Previous
+            {{ $t('common.previous') }}
           </button>
 
           <p class="text-sm text-gray-500">
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
           </p>
 
           <button
@@ -184,7 +184,7 @@
             @click="goToNextPage"
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Next
+            {{ $t('common.next') }}
           </button>
         </div>
       </div>
@@ -198,7 +198,7 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const publicationFilter = computed(() => {
   const status = String(route.query.status || '')
   return ['published', 'drafts'].includes(status) ? status : 'all'

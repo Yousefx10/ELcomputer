@@ -2,24 +2,24 @@
   <section class="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
     <button
       type="button"
-      class="flex w-full items-center justify-between gap-4 p-6 text-left"
+      class="flex w-full items-center justify-between gap-4 p-6 text-start"
       :aria-expanded="reviewsOpen"
       aria-controls="product-reviews-panel"
       @click="toggleReviews"
     >
       <div>
         <div class="flex flex-wrap items-center gap-3">
-          <h2 class="text-2xl font-bold text-gray-900">Reviews</h2>
+          <h2 class="text-2xl font-bold text-gray-900">{{ $t('common.reviews') }}</h2>
           <span
             v-if="reviewsLoaded"
             class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-600"
           >
-            {{ totalReviews }} {{ totalReviews === 1 ? 'review' : 'reviews' }}
+            {{ totalReviews }} {{ totalReviews === 1 ? $t('common.review') : $t('common.reviews') }}
           </span>
         </div>
 
         <p class="mt-1 text-sm text-gray-500">
-          {{ reviewsOpen ? 'Hide customer feedback' : 'Read reviews or write your own' }}
+          {{ reviewsOpen ? $t('common.hideCustomerFeedback') : $t('product.Reviews.readReviewsOrWriteYourOwn') }}
         </p>
       </div>
 
@@ -41,7 +41,7 @@
         class="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-500"
         aria-live="polite"
       >
-        Loading reviews...
+        {{ $t('common.loadingReviews') }}
       </div>
 
       <div
@@ -49,13 +49,13 @@
         class="rounded-xl border border-red-200 bg-red-50 p-6 text-center"
         role="alert"
       >
-        <p class="text-red-600">{{ loadError }}</p>
+        <p class="text-red-600">{{ $uiMessage(loadError) }}</p>
         <button
           type="button"
           class="mt-4 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
           @click="loadReviews({ page: 1 })"
         >
-          Try Again
+          {{ $t('common.tryAgain') }}
         </button>
       </div>
 
@@ -63,10 +63,9 @@
         <div ref="reviewsList">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900">Current reviews</h3>
+              <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.currentReviews') }}</h3>
               <p v-if="totalReviews" class="mt-2 text-sm text-gray-500">
-                {{ formattedAverageRating }} out of 5 from
-                {{ totalReviews }} {{ totalReviews === 1 ? 'review' : 'reviews' }}
+                {{ $t('product.Reviews.valueOutOf5FromValueValue', { value0: (formattedAverageRating), value1: (totalReviews), value2: (totalReviews === 1 ? $t('common.review') : $t('common.reviews')) }) }}
               </p>
             </div>
 
@@ -74,7 +73,7 @@
               v-if="totalReviews"
               class="flex items-center gap-1"
               role="img"
-              :aria-label="`${formattedAverageRating} out of 5 stars`"
+              :aria-label="$t('common.valueOutOf5Stars', { value0: (formattedAverageRating) })"
             >
               <ReviewsStarIcon
                 v-for="star in starOptions"
@@ -89,7 +88,7 @@
             v-if="!reviews.length"
             class="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-6 text-gray-500"
           >
-            There are no reviews yet.
+            {{ $t('product.Reviews.thereAreNoReviewsYet') }}
           </div>
 
           <div v-else class="mt-6 space-y-4">
@@ -109,7 +108,7 @@
                 <div
                   class="flex items-center gap-0.5"
                   role="img"
-                  :aria-label="`${review.rating} out of 5 stars`"
+                  :aria-label="$t('common.valueOutOf5Stars', { value0: (review.rating) })"
                 >
                   <ReviewsStarIcon
                     v-for="star in starOptions"
@@ -131,7 +130,7 @@
             <nav
               v-if="totalPages > 1"
               class="flex flex-wrap items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white p-3"
-              aria-label="Review pages"
+              :aria-label="$t('common.reviewPages')"
             >
               <button
                 type="button"
@@ -139,7 +138,7 @@
                 class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 @click="goToReviewPage(currentPage - 1)"
               >
-                Previous
+                {{ $t('common.previous') }}
               </button>
 
               <button
@@ -163,7 +162,7 @@
                 class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 @click="goToReviewPage(currentPage + 1)"
               >
-                Next
+                {{ $t('common.next') }}
               </button>
             </nav>
           </div>
@@ -173,7 +172,7 @@
             class="mt-4 text-sm text-red-600"
             role="alert"
           >
-            {{ loadError }}
+            {{ $uiMessage(loadError) }}
           </p>
         </div>
 
@@ -187,17 +186,17 @@
             class="mt-6 rounded-xl border border-blue-100 bg-blue-50 p-6"
           >
             <p class="font-semibold text-gray-900">
-              Please log in to write a review on this product.
+              {{ $t('product.Reviews.pleaseLogInToWriteAReviewOnThisProduct') }}
             </p>
             <p class="mt-2 text-sm text-gray-600">
-              Sign in with your customer account to continue.
+              {{ $t('product.Reviews.signInWithYourCustomerAccountToContinue') }}
             </p>
-            <NuxtLink
+            <NuxtLinkLocale
               :to="loginDestination"
               class="mt-5 inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
             >
-              Login to Review
-            </NuxtLink>
+              {{ $t('common.loginToReview') }}
+            </NuxtLinkLocale>
           </div>
 
           <div
@@ -207,9 +206,9 @@
             <div class="flex items-start gap-3">
               <Icon name="lucide:circle-check" size="22" class="mt-0.5 shrink-0" />
               <div>
-                <p class="font-bold">Thank you for your feedback.</p>
+                <p class="font-bold">{{ $t('common.thankYouForYourFeedback') }}</p>
                 <p class="mt-1 text-sm">
-                  You have already reviewed this product.
+                  {{ $t('product.Reviews.youHaveAlreadyReviewedThisProduct') }}
                 </p>
               </div>
             </div>
@@ -222,7 +221,7 @@
           >
             <div class="flex items-center gap-3">
               <Icon name="lucide:loader-circle" size="22" class="shrink-0 animate-spin" />
-              <p class="font-semibold">Checking review eligibility...</p>
+              <p class="font-semibold">{{ $t('product.Reviews.checkingReviewEligibility') }}</p>
             </div>
           </div>
 
@@ -234,12 +233,12 @@
             <div class="flex items-start gap-3">
               <Icon name="lucide:clock-3" size="22" class="mt-0.5 shrink-0" />
               <div>
-                <p class="font-bold">{{ reviewEligibilityHeading }}</p>
+                <p class="font-bold">{{ $uiLabel(reviewEligibilityHeading) }}</p>
                 <p class="mt-2 text-sm leading-6">
                   {{ reviewEligibility.message }}
                 </p>
                 <p v-if="formattedReviewEligibleAt" class="mt-2 text-sm leading-6">
-                  Your one-hour waiting period ends at {{ formattedReviewEligibleAt }}.
+                  {{ $t('product.Reviews.yourOneHourWaitingPeriodEndsAtValue', { value0: (formattedReviewEligibleAt) }) }}
                 </p>
                 <button
                   type="button"
@@ -247,7 +246,7 @@
                   class="mt-4 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-bold text-amber-950 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
                   @click="loadReviews({ page: currentPage })"
                 >
-                  {{ reviewsLoading ? 'Checking...' : 'Check Again' }}
+                  {{ reviewsLoading ? $t('common.checking') : $t('common.checkAgain') }}
                 </button>
               </div>
             </div>
@@ -255,7 +254,7 @@
 
           <form v-else class="mt-6 space-y-6" @submit.prevent="submitReview">
             <fieldset>
-              <legend class="text-base font-bold text-gray-900">Your rating *</legend>
+              <legend class="text-base font-bold text-gray-900">{{ $t('common.yourRating') }}</legend>
 
               <div
                 class="mt-3 flex w-fit items-center gap-1"
@@ -288,14 +287,14 @@
               </div>
 
               <p v-if="selectedRating" class="mt-2 text-sm text-gray-500">
-                {{ selectedRating }} out of 5 stars
+                {{ $t('common.valueOutOf5Stars', { value0: (selectedRating) }) }}
               </p>
             </fieldset>
 
             <div>
               <div class="mb-2 flex items-center justify-between gap-3">
                 <label for="product-review-text" class="font-bold text-gray-900">
-                  Your review *
+                  {{ $t('common.yourReview') }}
                 </label>
                 <span
                   class="text-xs"
@@ -315,11 +314,11 @@
                 rows="9"
                 dir="auto"
                 required
-                placeholder="Share your experience with this product..."
+                :placeholder="$t('product.Reviews.shareYourExperienceWithThisProduct')"
                 class="w-full resize-y rounded-xl border border-gray-300 bg-white p-4 text-start leading-7 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
               <p class="mt-2 text-xs text-gray-500">
-                Arabic and English text are supported. Maximum 999 characters.
+                {{ $t('product.Reviews.arabicAndEnglishTextAreSupportedMaximum999Characters') }}
               </p>
             </div>
 
@@ -330,9 +329,9 @@
                 class="mt-1 h-4 w-4 rounded border-gray-300"
               >
               <span>
-                <span class="block font-semibold text-gray-900">Display my full name</span>
+                <span class="block font-semibold text-gray-900">{{ $t('common.displayMyFullName') }}</span>
                 <span class="mt-1 block text-sm text-gray-500">
-                  If unchecked, only the first letter of your name will be shown.
+                  {{ $t('product.Reviews.ifUncheckedOnlyTheFirstLetterOfYourNameWillBeShown') }}
                 </span>
               </span>
             </label>
@@ -343,11 +342,11 @@
               class="text-sm text-red-600"
               role="alert"
             >
-              {{ submitError }}
+              {{ $uiMessage(submitError) }}
             </p>
 
             <p v-if="submitSuccess" class="text-sm text-green-700" role="status">
-              {{ submitSuccess }}
+              {{ $uiLabel(submitSuccess) }}
             </p>
 
             <button
@@ -355,7 +354,7 @@
               :disabled="submitting"
               class="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {{ submitting ? 'Submitting...' : 'Submit Review' }}
+              {{ submitting ? $t('common.submitting') : $t('common.submitReview') }}
             </button>
           </form>
         </div>
@@ -365,6 +364,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 const emit = defineEmits(['summary-change'])
 const props = defineProps({
   productId: {
@@ -377,7 +378,7 @@ const props = defineProps({
   }
 })
 
-const route = useRoute()
+const route = useUiRoute()
 const router = useRouter()
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -402,7 +403,7 @@ const createDefaultReviewEligibility = () => ({
 })
 const createUnavailableReviewEligibility = ({
   code = 'eligibility_unavailable',
-  message = 'We could not verify your review eligibility right now. Please try again.'
+  message = 'We could not verify your review eligibility end now. Please try again.'
 } = {}) => ({
   ...createDefaultReviewEligibility(),
   code,
@@ -451,7 +452,7 @@ const formattedReviewEligibleAt = computed(() => {
     return ''
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(eligibleAt)
@@ -523,7 +524,7 @@ const normalizeReviewEligibility = (record) => {
       ? ''
       : String(
           record.message
-          || 'We could not verify your review eligibility right now. Please try again.'
+          || 'We could not verify your review eligibility end now. Please try again.'
         )
   }
 }
@@ -786,7 +787,7 @@ const formatReviewDate = (value) => {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium'
   }).format(new Date(value))
 }

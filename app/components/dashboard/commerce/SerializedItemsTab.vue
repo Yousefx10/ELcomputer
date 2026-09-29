@@ -3,25 +3,25 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Serialized Items</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.serializedItems') }}</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Find received items and print their QR labels.
+            {{ $t('dashboard.commerce.findReceivedItemsAndPrintTheirQrLabels') }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Total Units</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.totalUnits') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ pagination.total }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">This Page</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.thisPage') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ items.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Labels Selected</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.labelsSelected') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ selectedItemCount }}</p>
           </div>
         </div>
@@ -39,28 +39,28 @@
     <section class="rounded-2xl border border-blue-100 bg-blue-50 p-6 shadow">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 class="text-xl font-bold text-gray-900">Stock is created through Procurement</h3>
+          <h3 class="text-xl font-bold text-gray-900">{{ $t('dashboard.commerce.stockIsCreatedThroughProcurement') }}</h3>
           <p class="mt-1 max-w-3xl text-sm text-gray-600">
-            Receive stock through a purchase invoice. Each item gets an ID and QR code.
+            {{ $t('dashboard.commerce.receiveStockThroughAPurchaseInvoiceEachItemGetsAnIdAndQrCode') }}
           </p>
         </div>
 
-        <NuxtLink
+        <NuxtLinkLocale
           to="/dashboard/commerce?tab=procurement"
           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
         >
           <Icon name="lucide:shopping-cart" size="17" />
-          Open Procurement
-        </NuxtLink>
+          {{ $t('common.openProcurement') }}
+        </NuxtLinkLocale>
       </div>
     </section>
 
     <section class="rounded-2xl bg-white p-5 shadow">
       <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">Inventory Units</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.inventoryUnits') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Search by item code or QR code.
+            {{ $t('dashboard.commerce.searchByItemCodeOrQrCode') }}
           </p>
         </div>
 
@@ -73,7 +73,7 @@
             @click="printSelectedLabels"
           >
             <Icon name="lucide:printer" size="17" />
-            {{ printingLabels ? 'Preparing...' : `Print ${selectedItemCount} Labels` }}
+            {{ printingLabels ? $t('common.preparing') : $t('common.printValueLabels', { value0: (selectedItemCount) }) }}
           </button>
 
           <button
@@ -83,13 +83,13 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-60"
             @click="clearSelectedItems"
           >
-            Clear Selection
+            {{ $t('common.clearSelection') }}
           </button>
         </div>
       </div>
 
       <p v-if="printError" class="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">
-        {{ printError }}
+        {{ $uiMessage(printError) }}
       </p>
 
       <form
@@ -98,47 +98,47 @@
       >
         <div>
           <label for="serialized-search" class="mb-2 block text-sm font-semibold text-gray-700">
-            Search Items
+            {{ $t('common.searchItems') }}
           </label>
           <input
             id="serialized-search"
             v-model="filterForm.search"
             type="search"
-            placeholder="Item code or QR token"
+            :placeholder="$t('common.itemCodeOrQrToken')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
           <label for="serialized-status" class="mb-2 block text-sm font-semibold text-gray-700">
-            Status
+            {{ $t('common.status') }}
           </label>
           <select
             id="serialized-status"
             v-model="filterForm.status"
             class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
           >
-            <option value="">All statuses</option>
+            <option value="">{{ $t('common.allStatuses') }}</option>
             <option
               v-for="statusOption in serializedItemStatusOptions"
               :key="statusOption.value"
               :value="statusOption.value"
             >
-              {{ statusOption.label }}
+              {{ $uiLabel(statusOption.label) }}
             </option>
           </select>
         </div>
 
         <div>
           <label for="serialized-product-filter" class="mb-2 block text-sm font-semibold text-gray-700">
-            Product
+            {{ $t('common.product') }}
           </label>
           <select
             id="serialized-product-filter"
             v-model="filterForm.product_id"
             class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
           >
-            <option value="">All products</option>
+            <option value="">{{ $t('common.allProducts') }}</option>
             <option
               v-for="product in productOptions"
               :key="product.id"
@@ -151,14 +151,14 @@
 
         <div>
           <label for="serialized-warehouse-filter" class="mb-2 block text-sm font-semibold text-gray-700">
-            Warehouse
+            {{ $t('common.warehouse') }}
           </label>
           <select
             id="serialized-warehouse-filter"
             v-model="filterForm.warehouse_id"
             class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
           >
-            <option value="">All warehouses</option>
+            <option value="">{{ $t('common.allWarehouses') }}</option>
             <option
               v-for="warehouse in warehouseOptions"
               :key="warehouse.id"
@@ -175,7 +175,7 @@
             :disabled="loading"
             class="flex-1 rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Apply
+            {{ $t('common.apply') }}
           </button>
 
           <button
@@ -185,7 +185,7 @@
             class="flex-1 rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
             @click="clearFilters"
           >
-            Clear
+            {{ $t('common.clear') }}
           </button>
         </div>
       </form>
@@ -194,7 +194,7 @@
         v-if="loading"
         class="rounded-xl border border-dashed p-8 text-center text-gray-500"
       >
-        Loading serialized inventory...
+        {{ $t('dashboard.commerce.loadingSerializedInventory') }}
       </div>
 
       <div
@@ -202,12 +202,12 @@
         class="rounded-xl border border-dashed p-8 text-center"
       >
         <h4 class="text-xl font-bold text-gray-900">
-          {{ hasActiveFilters ? 'No matching units' : 'No serialized units yet' }}
+          {{ hasActiveFilters ? $t('common.noMatchingUnits') : $t('common.noSerializedUnitsYet') }}
         </h4>
         <p class="mt-2 text-sm text-gray-500">
           {{ hasActiveFilters
-            ? 'Try a different search term or status.'
-            : 'Receive a Procurement order to create the first item IDs and QR codes.' }}
+            ? $t('dashboard.commerce.tryADifferentSearchTermOrStatus')
+            : $t('dashboard.commerce.receiveAProcurementOrderToCreateTheFirstItemIdsAndQrCodes') }}
         </p>
       </div>
 
@@ -220,26 +220,25 @@
               class="h-4 w-4 rounded border-gray-300"
               @change="toggleAllPageItems"
             >
-            Select all printable units on this page
+            {{ $t('dashboard.commerce.selectAllPrintableUnitsOnThisPage') }}
           </label>
 
           <p class="text-sm text-gray-500">
-            Showing {{ pageStart }}-{{ pageEnd }} of {{ pagination.total }} ·
-            Page {{ pagination.page }} of {{ pagination.totalPages }}
+            {{ $t('dashboard.commerce.showingValueValueOfValuePageValueOfValue', { value0: (pageStart), value1: (pageEnd), value2: (pagination.total), value3: (pagination.page), value4: (pagination.totalPages) }) }}
           </p>
         </div>
 
         <div class="overflow-x-auto rounded-2xl border">
-          <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+          <table class="min-w-full divide-y divide-gray-200 text-start text-sm">
             <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
               <tr>
-                <th class="w-12 px-4 py-3"><span class="sr-only">Select</span></th>
-                <th class="px-4 py-3 font-semibold">Unit</th>
-                <th class="px-4 py-3 font-semibold">Product / Variant</th>
-                <th class="px-4 py-3 font-semibold">Status</th>
-                <th class="px-4 py-3 font-semibold">Location / Order</th>
-                <th class="px-4 py-3 font-semibold">Dates</th>
-                <th class="px-4 py-3 text-right font-semibold">Action</th>
+                <th class="w-12 px-4 py-3"><span class="sr-only">{{ $t('common.select') }}</span></th>
+                <th class="px-4 py-3 font-semibold">{{ $t('common.unit') }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t('common.productVariant') }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t('common.status') }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t('common.locationOrder') }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t('common.dates') }}</th>
+                <th class="px-4 py-3 text-end font-semibold">{{ $t('common.action') }}</th>
               </tr>
             </thead>
 
@@ -250,7 +249,7 @@
                     type="checkbox"
                     :checked="isItemSelected(item.id)"
                     :disabled="!item.qrToken"
-                    :aria-label="`Select label for ${item.unitCode}`"
+                    :aria-label="$t('dashboard.commerce.selectLabelForValue', { value0: (item.unitCode) })"
                     class="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
                     @change="toggleSelectedItem(item)"
                   >
@@ -259,18 +258,18 @@
                 <td class="px-4 py-4">
                   <p class="font-mono font-bold text-gray-900">{{ item.unitCode }}</p>
                   <p v-if="item.qrToken" class="mt-1 text-xs text-gray-400">
-                    QR {{ getTokenPreview(item.qrToken) }}
+                    {{ $t('common.qrValue', { value0: (getTokenPreview(item.qrToken)) }) }}
                   </p>
-                  <p v-else class="mt-1 text-xs font-medium text-red-500">No QR token</p>
+                  <p v-else class="mt-1 text-xs font-medium text-red-500">{{ $t('common.noQrToken') }}</p>
                 </td>
 
                 <td class="max-w-xs px-4 py-4">
                   <p class="font-bold text-gray-900">{{ item.product.title }}</p>
                   <p class="mt-1 text-gray-600">
-                    {{ item.variant.name || 'Default variant' }}
+                    {{ item.variant.name || $t('common.defaultVariant') }}
                   </p>
                   <p v-if="item.variant.sku || item.product.sku" class="mt-1 text-xs text-gray-400">
-                    SKU {{ item.variant.sku || item.product.sku }}
+                    {{ $t('common.skuValue', { value0: (item.variant.sku || item.product.sku) }) }}
                   </p>
                   <div v-if="item.variant.colorName || item.variant.colorHex" class="mt-2 flex items-center gap-2 text-xs text-gray-500">
                     <span
@@ -288,7 +287,7 @@
                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
                     :class="getSerializedItemStatusClass(item.status)"
                   >
-                    {{ formatSerializedItemStatus(item.status) }}
+                    {{ $uiLabel(formatSerializedItemStatus(item.status)) }}
                   </span>
                   <p v-if="item.customerName" class="mt-2 max-w-40 text-xs text-gray-500">
                     {{ item.customerName }}
@@ -296,21 +295,21 @@
                 </td>
 
                 <td class="px-4 py-4">
-                  <p class="font-medium text-gray-700">{{ item.warehouse.name || 'No warehouse' }}</p>
+                  <p class="font-medium text-gray-700">{{ item.warehouse.name || $t('common.noWarehouse') }}</p>
                   <p v-if="item.order.orderNumber" class="mt-1 text-xs text-gray-500">
                     {{ item.order.orderNumber }}
                   </p>
-                  <p v-else class="mt-1 text-xs text-gray-400">No linked order</p>
+                  <p v-else class="mt-1 text-xs text-gray-400">{{ $t('common.noLinkedOrder') }}</p>
                 </td>
 
                 <td class="whitespace-nowrap px-4 py-4 text-xs text-gray-500">
-                  <p>Created {{ formatCommerceDate(item.createdAt) }}</p>
-                  <p v-if="item.soldAt" class="mt-1">Sold {{ formatCommerceDate(item.soldAt) }}</p>
-                  <p v-if="item.returnedAt" class="mt-1">Returned {{ formatCommerceDate(item.returnedAt) }}</p>
+                  <p>{{ $t('common.createdValue', { value0: (formatCommerceDate(item.createdAt)) }) }}</p>
+                  <p v-if="item.soldAt" class="mt-1">{{ $t('common.soldValue', { value0: (formatCommerceDate(item.soldAt)) }) }}</p>
+                  <p v-if="item.returnedAt" class="mt-1">{{ $t('common.returnedValueVariant2', { value0: (formatCommerceDate(item.returnedAt)) }) }}</p>
                 </td>
 
-                <td class="px-4 py-4 text-right">
-                  <NuxtLink
+                <td class="px-4 py-4 text-end">
+                  <NuxtLinkLocale
                     v-if="item.qrToken"
                     :to="{
                       path: '/dashboard/commerce',
@@ -319,9 +318,9 @@
                     class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
                   >
                     <Icon name="lucide:scan-line" size="16" />
-                    View
-                  </NuxtLink>
-                  <span v-else class="text-xs text-gray-400">Unavailable</span>
+                    {{ $t('common.view') }}
+                  </NuxtLinkLocale>
+                  <span v-else class="text-xs text-gray-400">{{ $t('common.unavailable') }}</span>
                 </td>
               </tr>
             </tbody>
@@ -335,11 +334,11 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="loadItems(pagination.page - 1)"
           >
-            Previous
+            {{ $t('common.previous') }}
           </button>
 
           <p class="text-center text-sm text-gray-500">
-            Page {{ pagination.page }} of {{ pagination.totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (pagination.page), value1: (pagination.totalPages) }) }}
           </p>
 
           <button
@@ -348,7 +347,7 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="loadItems(pagination.page + 1)"
           >
-            Next
+            {{ $t('common.next') }}
           </button>
         </div>
       </div>
@@ -357,8 +356,11 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
 import {
-  formatCommerceDate,
+  formatCommerceDate as baseFormatCommerceDate,
   formatSerializedItemStatus,
   getSerializedItemStatusClass,
   serializedItemStatusOptions
@@ -369,7 +371,7 @@ defineOptions({
 })
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 
 const items = ref([])
 const loading = ref(true)
@@ -751,7 +753,7 @@ const printSelectedLabels = async () => {
             body {
               margin: 0;
               padding: 10mm;
-              color: #111827;
+              color: var(--text-primary);
               font-family: Arial, sans-serif;
             }
             .sheet {
@@ -770,7 +772,7 @@ const printSelectedLabels = async () => {
               break-inside: avoid;
             }
             .qr { display: block; width: 36mm; height: 36mm; }
-            .details { min-width: 0; padding-left: 3mm; }
+            .details { min-width: 0; padding-inline-start: 3mm; }
             h1 {
               margin: 0 0 2mm;
               font-size: 11pt;
@@ -779,13 +781,13 @@ const printSelectedLabels = async () => {
             }
             p {
               margin: 1mm 0;
-              color: #4b5563;
+              color: var(--text-primary);
               font-size: 8.5pt;
               line-height: 1.25;
               overflow-wrap: anywhere;
             }
             .unit {
-              color: #111827;
+              color: var(--text-primary);
               font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
               font-size: 10pt;
               font-weight: 700;

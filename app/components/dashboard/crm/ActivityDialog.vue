@@ -27,7 +27,7 @@
               >
                 {{ dialogTitle }}
               </h3>
-              <p class="mt-1 text-sm text-gray-500">{{ dialogDescription }}</p>
+              <p class="mt-1 text-sm text-gray-500">{{ $uiLabel(dialogDescription) }}</p>
             </div>
           </div>
 
@@ -35,7 +35,7 @@
             ref="closeButton"
             type="button"
             :disabled="saving"
-            aria-label="Close dialog"
+            :aria-label="$t('common.closeDialog')"
             class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
             @click="closeDialog"
           >
@@ -47,7 +47,7 @@
           <div v-if="mode === 'detail'">
             <div v-if="detailLoading" class="py-12 text-center text-gray-500">
               <Icon name="lucide:loader-circle" size="25" class="mx-auto animate-spin" />
-              <p class="mt-3">Loading full activity details...</p>
+              <p class="mt-3">{{ $t('dashboard.crm.loadingFullActivityDetails') }}</p>
             </div>
 
             <p
@@ -55,7 +55,7 @@
               class="rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
               role="alert"
             >
-              {{ detailError }}
+              {{ $uiMessage(detailError) }}
             </p>
 
             <template v-else-if="activity">
@@ -64,31 +64,31 @@
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="getStatusClass(activity.status)"
                 >
-                  {{ getStatusLabel(activity.status) }}
+                  {{ $uiLabel(getStatusLabel(activity.status)) }}
                 </span>
                 <span
                   v-if="activity.priority"
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="getPriorityClass(activity.priority)"
                 >
-                  {{ activity.priority }}
+                  {{ $uiLabel(activity.priority) }}
                 </span>
                 <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-600">
-                  {{ activity.activityType === 'case' ? 'Ticket' : 'Call' }}
+                  {{ activity.activityType === 'case' ? $t('common.ticket') : $t('common.call') }}
                 </span>
               </div>
 
               <dl class="mt-6 grid gap-4 rounded-2xl bg-gray-50 p-5 sm:grid-cols-2">
                 <div>
-                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">CRM Contact</dt>
+                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ $t('common.crmContact') }}</dt>
                   <dd class="mt-1 font-semibold text-gray-900">
-                    {{ activity.contact?.name || 'Deleted CRM contact' }}
+                    {{ activity.contact?.name || $t('common.deletedCrmContact') }}
                   </dd>
                   <dd class="mt-1 text-xs text-gray-500">{{ getContactMeta(activity.contact) }}</dd>
                 </div>
 
                 <div v-if="activity.activityType === 'case'">
-                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">Ticket Number</dt>
+                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ $t('common.ticketNumber') }}</dt>
                   <dd class="mt-1 font-mono text-sm font-semibold text-gray-900">
                     #{{ getTicketNumber(activity.id) }}
                   </dd>
@@ -96,7 +96,7 @@
 
                 <div>
                   <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                    {{ activity.activityType === 'call' ? 'Call Date' : 'Raised Date' }}
+                    {{ activity.activityType === 'call' ? $t('common.callDate') : $t('common.raisedDate') }}
                   </dt>
                   <dd class="mt-1 text-sm text-gray-700">
                     <time :datetime="activity.occurredAt">{{ formatCrmDate(activity.occurredAt) }}</time>
@@ -104,7 +104,7 @@
                 </div>
 
                 <div v-if="activity.closedAt">
-                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">Closed Date</dt>
+                  <dt class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ $t('common.closedDate') }}</dt>
                   <dd class="mt-1 text-sm text-gray-700">
                     <time :datetime="activity.closedAt">{{ formatCrmDate(activity.closedAt) }}</time>
                   </dd>
@@ -113,7 +113,7 @@
 
               <div v-if="activity.notes" class="mt-6">
                 <h4 class="font-bold text-gray-900">
-                  {{ activity.activityType === 'call' ? 'Call Outcome / Notes' : 'Ticket Details' }}
+                  {{ activity.activityType === 'call' ? $t('common.callOutcomeNotes') : $t('common.ticketDetails') }}
                 </h4>
                 <p
                   dir="auto"
@@ -124,7 +124,7 @@
               </div>
 
               <div v-if="activity.resolution" class="mt-6">
-                <h4 class="font-bold text-gray-900">Resolution</h4>
+                <h4 class="font-bold text-gray-900">{{ $t('common.resolution') }}</h4>
                 <p
                   dir="auto"
                   class="mt-2 whitespace-pre-wrap break-words rounded-2xl bg-emerald-50 p-5 text-sm leading-7 text-emerald-800"
@@ -138,7 +138,7 @@
                 class="mt-6 rounded-xl bg-emerald-50 p-4 text-sm font-medium text-emerald-700"
                 role="status"
               >
-                {{ detailSuccess }}
+                {{ $uiLabel(detailSuccess) }}
               </p>
 
               <div
@@ -153,15 +153,15 @@
                   @click="showCloseTicketForm"
                 >
                   <Icon name="lucide:ticket-check" size="18" />
-                  Close Ticket
+                  {{ $t('common.closeTicket') }}
                 </button>
 
                 <form v-else class="rounded-2xl border border-blue-200 bg-blue-50 p-5" @submit.prevent="closeTicket">
                   <div class="flex items-start justify-between gap-4">
                     <div>
-                      <h4 class="font-bold text-gray-900">Close this ticket</h4>
+                      <h4 class="font-bold text-gray-900">{{ $t('common.closeThisTicket') }}</h4>
                       <p class="mt-1 text-sm text-gray-500">
-                        Record when it was closed and how it was resolved.
+                        {{ $t('dashboard.crm.recordWhenItWasClosedAndHowItWasResolved') }}
                       </p>
                     </div>
 
@@ -171,13 +171,13 @@
                       class="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-white"
                       @click="cancelCloseTicket"
                     >
-                      Cancel
+                      {{ $t('common.cancel') }}
                     </button>
                   </div>
 
                   <div class="mt-5">
                     <label for="crm-ticket-closed-at" class="mb-2 block text-sm font-semibold text-gray-700">
-                      Closing Date and Time *
+                      {{ $t('common.closingDateAndTime') }}
                     </label>
                     <input
                       id="crm-ticket-closed-at"
@@ -193,7 +193,7 @@
 
                   <div class="mt-4">
                     <label for="crm-ticket-resolution" class="mb-2 block text-sm font-semibold text-gray-700">
-                      Resolution
+                      {{ $t('common.resolution') }}
                     </label>
                     <textarea
                       id="crm-ticket-resolution"
@@ -201,7 +201,7 @@
                       dir="auto"
                       rows="5"
                       maxlength="5000"
-                      placeholder="Explain how the ticket was resolved."
+                      :placeholder="$t('dashboard.crm.explainHowTheTicketWasResolved')"
                       class="w-full resize-y rounded-xl border bg-white p-3 outline-none focus:border-blue-500"
                     />
                     <p class="mt-1 text-end text-xs text-gray-400">
@@ -214,7 +214,7 @@
                     class="mt-4 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
                     role="alert"
                   >
-                    {{ formError }}
+                    {{ $uiMessage(formError) }}
                   </p>
 
                   <button
@@ -227,7 +227,7 @@
                       size="18"
                       :class="saving ? 'animate-spin' : ''"
                     />
-                    {{ saving ? 'Closing Ticket...' : 'Confirm Close Ticket' }}
+                    {{ saving ? $t('common.closingTicket') : $t('common.confirmCloseTicket') }}
                   </button>
                 </form>
               </div>
@@ -238,14 +238,14 @@
             <DashboardCrmContactPicker
               v-model="createForm.accountId"
               :disabled="saving"
-              :label="mode === 'call' ? 'Who was called?' : 'Who is this ticket for?'"
+              :label="mode === 'call' ? $t('common.whoWasCalled') : $t('common.whoIsThisTicketFor')"
               :required="true"
               input-id="crm-dialog-contact"
             />
 
             <div class="mt-5">
               <label for="crm-dialog-subject" class="mb-2 block text-sm font-semibold text-gray-700">
-                {{ mode === 'call' ? 'Call Subject' : 'Ticket Subject' }} *
+                {{ mode === 'call' ? $t('common.callSubject') : $t('common.ticketSubject') }} *
               </label>
               <input
                 id="crm-dialog-subject"
@@ -253,7 +253,7 @@
                 type="text"
                 maxlength="200"
                 required
-                :placeholder="mode === 'call' ? 'What was the call about?' : 'What is the issue or request?'"
+                :placeholder="mode === 'call' ? $t('dashboard.crm.whatWasTheCallAbout') : $t('dashboard.crm.whatIsTheIssueOrRequest')"
                 class="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
               >
               <p class="mt-1 text-end text-xs text-gray-400">{{ createForm.subject.length }}/200</p>
@@ -262,7 +262,7 @@
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
                 <label for="crm-dialog-occurred-at" class="mb-2 block text-sm font-semibold text-gray-700">
-                  {{ mode === 'call' ? 'Call Date and Time' : 'Raised Date and Time' }} *
+                  {{ mode === 'call' ? $t('common.callDateAndTime') : $t('common.raisedDateAndTime') }} *
                 </label>
                 <input
                   id="crm-dialog-occurred-at"
@@ -277,24 +277,24 @@
 
               <div v-if="mode === 'ticket'">
                 <label for="crm-dialog-priority" class="mb-2 block text-sm font-semibold text-gray-700">
-                  Priority
+                  {{ $t('common.priority') }}
                 </label>
                 <select
                   id="crm-dialog-priority"
                   v-model="createForm.priority"
                   class="w-full rounded-xl border bg-white p-3 outline-none focus:border-blue-500"
                 >
-                  <option value="low">Low</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
+                  <option value="low">{{ $t('common.low') }}</option>
+                  <option value="normal">{{ $t('common.normal') }}</option>
+                  <option value="high">{{ $t('common.high') }}</option>
+                  <option value="urgent">{{ $t('common.urgent') }}</option>
                 </select>
               </div>
             </div>
 
             <div class="mt-5">
               <label for="crm-dialog-notes" class="mb-2 block text-sm font-semibold text-gray-700">
-                {{ mode === 'call' ? 'Call Outcome / Notes' : 'Ticket Details' }}
+                {{ mode === 'call' ? $t('common.callOutcomeNotes') : $t('common.ticketDetails') }}
               </label>
               <textarea
                 id="crm-dialog-notes"
@@ -303,8 +303,8 @@
                 rows="7"
                 maxlength="5000"
                 :placeholder="mode === 'call'
-                  ? 'Record the discussion and outcome.'
-                  : 'Describe the issue, request, or important context.'"
+                  ? $t('dashboard.crm.recordTheDiscussionAndOutcome')
+                  : $t('dashboard.crm.describeTheIssueRequestOrImportantContext')"
                 class="w-full resize-y rounded-xl border p-3 outline-none focus:border-blue-500"
               />
               <p class="mt-1 text-end text-xs text-gray-400">{{ createForm.notes.length }}/5000</p>
@@ -315,7 +315,7 @@
               class="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700"
               role="alert"
             >
-              {{ formError }}
+              {{ $uiMessage(formError) }}
             </p>
 
             <div class="mt-6 flex flex-wrap justify-end gap-3 border-t pt-5">
@@ -325,7 +325,7 @@
                 class="min-h-11 rounded-xl border px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 @click="closeDialog"
               >
-                Cancel
+                {{ $t('common.cancel') }}
               </button>
               <button
                 type="submit"
@@ -337,7 +337,7 @@
                   size="18"
                   :class="saving ? 'animate-spin' : ''"
                 />
-                {{ submitLabel }}
+                {{ $uiLabel(submitLabel) }}
               </button>
             </div>
           </form>
@@ -348,8 +348,12 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+const { intlLocale } = useUiLocale()
+const formatCrmDate = value => baseFormatCrmDate(value, intlLocale.value)
+
 import {
-  formatCrmDate,
+  formatCrmDate as baseFormatCrmDate,
   parseCrmDateTimeInput,
   toCrmDateTimeInputValue
 } from '~/utils/crmDateTime'
@@ -408,9 +412,9 @@ const closeForm = reactive({
 })
 
 const dialogTitle = computed(() => {
-  if (props.mode === 'call') return 'Record Completed Call'
-  if (props.mode === 'ticket') return 'Create Ticket'
-  return activity.value?.subject || 'Activity Details'
+  if (props.mode === 'call') return uiLabel('Record Completed Call')
+  if (props.mode === 'ticket') return uiLabel('Create Ticket')
+  return activity.value?.subject || uiLabel('Activity Details')
 })
 
 const dialogDescription = computed(() => {

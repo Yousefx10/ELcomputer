@@ -3,13 +3,13 @@
     <div ref="pageHeading" class="mx-auto max-w-6xl">
       <div class="rounded-3xl bg-white p-6 shadow-sm md:p-9">
         <p class="text-sm font-bold uppercase tracking-[0.22em] text-amber-600">
-          Customer feedback
+          {{ $t('common.customerFeedback') }}
         </p>
         <h1 class="mt-3 text-4xl font-black tracking-tight text-gray-950 md:text-6xl">
-          All Reviews
+          {{ $t('common.allReviews') }}
         </h1>
         <p class="mt-3 max-w-2xl text-gray-600">
-          See what customers think of our products.
+          {{ $t('reviews.seeWhatCustomersThinkOfOurProducts') }}
         </p>
       </div>
 
@@ -17,15 +17,15 @@
         <div class="mb-5 flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
             <h2 id="reviews-list-title" class="text-2xl font-black text-gray-950">
-              Customer reviews
+              {{ $t('common.customerReviews') }}
             </h2>
             <p class="mt-1 text-sm text-gray-500">
-              {{ totalReviews }} {{ totalReviews === 1 ? 'review' : 'reviews' }}
+              {{ totalReviews }} {{ totalReviews === 1 ? $t('common.review') : $t('common.reviews') }}
             </p>
           </div>
 
           <p v-if="totalReviews" class="text-sm font-semibold text-gray-500">
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
           </p>
         </div>
 
@@ -34,7 +34,7 @@
           class="rounded-2xl border border-dashed border-gray-300 p-12 text-center text-gray-500"
           aria-live="polite"
         >
-          Loading reviews...
+          {{ $t('common.loadingReviews') }}
         </div>
 
         <div
@@ -42,13 +42,13 @@
           class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center"
           role="alert"
         >
-          <p class="text-red-600">{{ loadError }}</p>
+          <p class="text-red-600">{{ $uiMessage(loadError) }}</p>
           <button
             type="button"
             class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             @click="refresh"
           >
-            Try Again
+            {{ $t('common.tryAgain') }}
           </button>
         </div>
 
@@ -56,16 +56,16 @@
           v-else-if="!reviews.length"
           class="rounded-2xl border border-dashed border-gray-300 p-12 text-center"
         >
-          <h2 class="text-2xl font-bold text-gray-900">No reviews yet</h2>
+          <h2 class="text-2xl font-bold text-gray-900">{{ $t('common.noReviewsYet') }}</h2>
           <p class="mt-2 text-gray-500">
-            Customer reviews will appear here after they are submitted.
+            {{ $t('reviews.customerReviewsWillAppearHereAfterTheyAreSubmitted') }}
           </p>
         </div>
 
         <div
           v-else
           ref="reviewsScroller"
-          class="reviews-scrollbar max-h-[70vh] overflow-y-auto overscroll-contain pr-2"
+          class="reviews-scrollbar max-h-[70vh] overflow-y-auto overscroll-contain pe-2"
         >
           <div class="grid gap-5 lg:grid-cols-2">
             <ReviewsCard
@@ -79,7 +79,7 @@
         <nav
           v-if="totalPages > 1"
           class="mt-6 flex flex-wrap items-center justify-center gap-2 border-t border-gray-100 pt-5"
-          aria-label="All reviews pages"
+          :aria-label="$t('common.allReviewsPages')"
         >
           <button
             type="button"
@@ -87,7 +87,7 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
             @click="goToPage(currentPage - 1)"
           >
-            Previous
+            {{ $t('common.previous') }}
           </button>
 
           <button
@@ -111,7 +111,7 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
             @click="goToPage(currentPage + 1)"
           >
-            Next
+            {{ $t('common.next') }}
           </button>
         </nav>
       </section>
@@ -120,7 +120,10 @@
 </template>
 
 <script setup>
-const route = useRoute()
+const { uiLabel } = useUiLocale()
+const { uiRouterPush, uiRouterReplace } = useUiNavigation()
+
+const route = useUiRoute()
 const router = useRouter()
 const { data: siteContent } = await useSiteContent()
 const reviewsScroller = ref(null)
@@ -199,7 +202,7 @@ const goToPage = async (page) => {
 
   shouldResetResultsPosition.value = true
 
-  await router.push({
+  await uiRouterPush({
     path: '/reviews',
     query: nextPage === 1 ? {} : { page: String(nextPage) }
   })
@@ -237,7 +240,7 @@ watch(
       return
     }
 
-    await router.replace({
+    await uiRouterReplace({
       path: '/reviews',
       query: availablePages === 1 ? {} : { page: String(availablePages) }
     })
@@ -248,7 +251,7 @@ watch(
 )
 
 useHead(() => ({
-  title: `Customer Reviews - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`
+  title: `${uiLabel('Customer Reviews')} - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`
 }))
 </script>
 
@@ -265,7 +268,7 @@ useHead(() => ({
 
 .reviews-scrollbar::-webkit-scrollbar-track {
   border-radius: 999px;
-  background: #f3f4f6;
+  background: var(--surface-muted);
 }
 
 .reviews-scrollbar::-webkit-scrollbar-thumb {

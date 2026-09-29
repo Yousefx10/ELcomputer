@@ -2,12 +2,12 @@ export const CRM_TIME_ZONE = 'Asia/Riyadh'
 
 const RIYADH_OFFSET_MILLISECONDS = 3 * 60 * 60 * 1000
 
-export const formatCrmDate = (value) => {
+export const formatCrmDate = (value, locale = 'en-US') => {
   if (!value) {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: CRM_TIME_ZONE

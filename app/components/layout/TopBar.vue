@@ -3,14 +3,17 @@
     <div class="store-container store-topbar-inner">
       <p>{{ currentMessage }}</p>
       <div class="store-topbar-links">
-        <NuxtLink to="/search">Shop all products <Icon name="lucide:arrow-right" size="13" /></NuxtLink>
-        <NuxtLink to="/help">Need help?</NuxtLink>
+        <UiPreferences />
+        <NuxtLinkLocale to="/search">{{ $t('common.shopAllProducts') }} <Icon name="lucide:arrow-right" size="13" class="directional-icon" /></NuxtLinkLocale>
+        <NuxtLinkLocale to="/help">{{ $t('common.needHelp') }}</NuxtLinkLocale>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
 const { data: siteContent } = await useSiteContent()
 
 const currentMessageIndex = ref(0)
@@ -23,7 +26,7 @@ const rotationSeconds = computed(() => {
 
 const currentMessage = computed(() => {
   const message = messages.value[currentMessageIndex.value]?.text
-  return message && message !== 'Pretty Cool Text Around' ? message : 'Keyboards, mice, headsets and accessories.'
+  return message && message !== 'Pretty Cool Text Around' ? message : uiLabel('Keyboards, mice, headsets and accessories.')
 })
 
 const restartTopBarInterval = () => {

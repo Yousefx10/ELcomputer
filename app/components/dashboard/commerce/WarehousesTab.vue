@@ -3,25 +3,25 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Warehouses</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.warehouses') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Manage storage locations, stock transfers, and movement history.
+            {{ $t('dashboard.commerce.manageStorageLocationsStockTransfersAndMovementHistory') }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Warehouses</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.warehouses') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ warehouses.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Inventory Rows</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.inventoryRows') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ inventoryRows.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Recent Movements</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.recentMovements') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ recentMovements.length }}</p>
           </div>
         </div>
@@ -31,20 +31,20 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isWarehouseFormOpen = !isWarehouseFormOpen"
       >
         <div>
           <h3 class="text-2xl font-bold">
-            {{ editingWarehouseId ? 'Edit Warehouse' : 'Add Warehouse' }}
+            {{ editingWarehouseId ? $t('common.editWarehouse') : $t('common.addWarehouse') }}
           </h3>
           <p class="mt-1 text-sm text-gray-500">
-            Add the core details for each physical storage location.
+            {{ $t('dashboard.commerce.addTheCoreDetailsForEachPhysicalStorageLocation') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isWarehouseFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isWarehouseFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -62,43 +62,43 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetWarehouseForm"
           >
-            Cancel Edit
+            {{ $t('common.cancelEdit') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Warehouse Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.warehouseName') }}</label>
           <input
             v-model="warehouseForm.name"
             type="text"
-            placeholder="Main warehouse"
+            :placeholder="$t('common.mainWarehouse')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Code</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.code') }}</label>
           <input
             v-model="warehouseForm.code"
             type="text"
-            placeholder="WH-CAI-01"
+            :placeholder="$t('common.whCai01')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Name</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactName') }}</label>
           <input
             v-model="warehouseForm.contact_name"
             type="text"
-            placeholder="Warehouse manager"
+            :placeholder="$t('common.warehouseManager')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Contact Phone</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.contactPhone') }}</label>
           <input
             v-model="warehouseForm.contact_phone"
             type="text"
@@ -108,41 +108,41 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">City</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.city') }}</label>
           <input
             v-model="warehouseForm.city"
             type="text"
-            placeholder="Cairo"
+            :placeholder="$t('common.cairo')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Country</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.country') }}</label>
           <input
             v-model="warehouseForm.country"
             type="text"
-            placeholder="Egypt"
+            :placeholder="$t('common.egypt')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Address</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.address') }}</label>
           <textarea
             v-model="warehouseForm.address_line_1"
             rows="3"
-            placeholder="Warehouse address"
+            :placeholder="$t('common.warehouseAddress')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="warehouseForm.notes"
             rows="3"
-            placeholder="Optional notes"
+            :placeholder="$t('common.optionalNotes')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
@@ -150,11 +150,11 @@
 
         <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <input v-model="warehouseForm.is_active" type="checkbox">
-          Active
+          {{ $t('common.active') }}
         </label>
 
         <p v-if="warehouseFormError" class="mt-4 text-sm text-red-600">
-          {{ warehouseFormError }}
+          {{ $uiMessage(warehouseFormError) }}
         </p>
 
         <div class="mt-5 flex flex-wrap gap-3">
@@ -164,7 +164,7 @@
             class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="saveWarehouse"
           >
-            {{ savingWarehouse ? 'Saving...' : editingWarehouseId ? 'Save Warehouse' : 'Add Warehouse' }}
+            {{ savingWarehouse ? $t('common.saving') : editingWarehouseId ? $t('common.saveWarehouse') : $t('common.addWarehouse') }}
           </button>
 
           <button
@@ -174,7 +174,7 @@
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
             @click="deleteWarehouse"
           >
-            {{ deletingWarehouse ? 'Deleting...' : 'Delete' }}
+            {{ deletingWarehouse ? $t('common.deleting') : $t('common.delete') }}
           </button>
         </div>
       </div>
@@ -183,18 +183,18 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isTransferFormOpen = !isTransferFormOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">Transfer Stock</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.transferStock') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Move legacy aggregate stock between warehouses.
+            {{ $t('dashboard.commerce.moveLegacyAggregateStockBetweenWarehouses') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isTransferFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isTransferFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -206,8 +206,7 @@
 
       <div v-if="isTransferFormOpen" class="mt-6">
         <div class="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-          Individually tracked items remain tied to their configured warehouse and cannot be moved with a
-          quantity-only transfer. This form lists legacy aggregate-stock products only.
+          {{ $t('dashboard.commerce.individuallyTrackedItemsRemainTiedToTheirConfiguredWarehouseAndCannotBeMovedWithAQuantityOnlyTransferThisFormListsLegacyAggregateStockProductsOnly') }}
         </div>
 
         <div class="flex justify-end">
@@ -216,18 +215,18 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetTransferForm"
           >
-            Reset
+            {{ $t('common.reset') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">From Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.fromWarehouse') }}</label>
           <select
             v-model="transferForm.from_warehouse_id"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select warehouse</option>
+            <option value="">{{ $t('common.selectWarehouse') }}</option>
 
             <option
               v-for="warehouse in activeWarehouses"
@@ -240,12 +239,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">To Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.toWarehouse') }}</label>
           <select
             v-model="transferForm.to_warehouse_id"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select warehouse</option>
+            <option value="">{{ $t('common.selectWarehouse') }}</option>
 
             <option
               v-for="warehouse in activeWarehouses"
@@ -258,22 +257,22 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Reference</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.reference') }}</label>
           <input
             v-model="transferForm.reference_number"
             type="text"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="TRF-20260715..."
+            :placeholder="$t('common.trf20260715')"
           >
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="transferForm.notes"
             rows="3"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="Optional transfer notes"
+            :placeholder="$t('common.optionalTransferNotes')"
           />
         </div>
         </div>
@@ -281,9 +280,9 @@
         <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h4 class="text-lg font-bold text-gray-900">Transfer Items</h4>
+              <h4 class="text-lg font-bold text-gray-900">{{ $t('common.transferItems') }}</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Move quantities from one warehouse to another without changing total product stock.
+                {{ $t('dashboard.commerce.moveQuantitiesFromOneWarehouseToAnotherWithoutChangingTotalProductStock') }}
               </p>
             </div>
 
@@ -292,17 +291,17 @@
               class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
               @click="addTransferItem"
             >
-              Add Product
+              {{ $t('common.addProduct') }}
             </button>
           </div>
 
           <div class="mt-4 max-w-xl">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Search</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productSearch') }}</label>
             <input
               v-model="productSearchQuery"
               type="text"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-              placeholder="Search by title or slug"
+              :placeholder="$t('common.searchByTitleOrSlug')"
             >
           </div>
 
@@ -316,7 +315,7 @@
                 v-model="item.product_id"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
               >
-                <option value="">Select product</option>
+                <option value="">{{ $t('common.selectProduct') }}</option>
 
                 <option
                   v-for="product in productOptions"
@@ -332,7 +331,7 @@
                 type="number"
                 min="1"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                placeholder="Qty"
+                :placeholder="$t('common.qty')"
               >
 
               <button
@@ -341,13 +340,13 @@
                 :disabled="transferForm.items.length === 1"
                 @click="removeTransferItem(index)"
               >
-                Remove
+                {{ $t('common.remove') }}
               </button>
             </div>
           </div>
 
           <p v-if="transferFormError" class="mt-4 text-sm text-red-600">
-            {{ transferFormError }}
+            {{ $uiMessage(transferFormError) }}
           </p>
 
           <div class="mt-5 flex justify-end">
@@ -360,7 +359,7 @@
                 : 'bg-blue-600 hover:bg-blue-700'"
               @click="saveTransfer"
             >
-              {{ savingTransfer ? 'Saving...' : 'Transfer Inventory' }}
+              {{ savingTransfer ? $t('common.saving') : $t('common.transferInventory') }}
             </button>
           </div>
         </div>
@@ -370,9 +369,9 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">Current Inventory</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.currentInventory') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Quick warehouse stock overview.
+            {{ $t('dashboard.commerce.quickWarehouseStockOverview') }}
           </p>
         </div>
 
@@ -381,7 +380,7 @@
             v-model="inventoryWarehouseFilter"
             class="rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">All warehouses</option>
+            <option value="">{{ $t('common.allWarehouses') }}</option>
 
             <option
               v-for="warehouse in warehouses"
@@ -395,22 +394,22 @@
           <input
             v-model="inventorySearchQuery"
             type="text"
-            placeholder="Search product"
+            :placeholder="$t('common.searchProduct')"
             class="rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
       </div>
 
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </p>
 
       <p v-else-if="loadingInventory" class="mt-5 text-sm text-gray-500">
-        Loading inventory...
+        {{ $t('common.loadingInventory') }}
       </p>
 
       <p v-else-if="!inventoryRows.length" class="mt-5 text-sm text-gray-500">
-        No inventory rows found.
+        {{ $t('dashboard.commerce.noInventoryRowsFound') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -422,27 +421,27 @@
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="space-y-2">
               <p class="font-bold text-gray-900">
-                {{ productNameMap[row.product_id] || 'Unknown product' }}
+                {{ productNameMap[row.product_id] || $t('common.unknownProduct') }}
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ warehouseNameMap[row.warehouse_id] || 'Unknown warehouse' }}
+                {{ warehouseNameMap[row.warehouse_id] || $t('common.unknownWarehouse') }}
                 <span v-if="productSlugMap[row.product_id]"> · {{ productSlugMap[row.product_id] }}</span>
               </p>
 
               <p class="text-xs text-gray-400">
-                Updated {{ formatCommerceDate(row.updated_at || row.created_at) }}
+                {{ $t('common.updatedValue', { value0: (formatCommerceDate(row.updated_at || row.created_at)) }) }}
               </p>
             </div>
 
             <div class="flex flex-wrap gap-3 text-sm">
               <div class="rounded-xl bg-gray-100 px-4 py-3">
-                <p class="text-gray-500">Quantity</p>
+                <p class="text-gray-500">{{ $t('common.quantity') }}</p>
                 <p class="mt-1 text-lg font-bold text-gray-900">{{ row.quantity }}</p>
               </div>
 
               <div class="rounded-xl bg-gray-100 px-4 py-3">
-                <p class="text-gray-500">Avg. Cost</p>
+                <p class="text-gray-500">{{ $t('common.avgCost') }}</p>
                 <p class="mt-1 text-lg font-bold text-gray-900">{{ formatCommerceCurrency(row.average_cost) }}</p>
               </div>
             </div>
@@ -455,18 +454,18 @@
       <div class="flex items-center justify-between gap-3">
         <button
           type="button"
-          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-start"
           @click="isMovementsOpen = !isMovementsOpen"
         >
           <div>
-            <h3 class="text-2xl font-bold">Recent Movements</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.recentMovements') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Procurement, transfers, and returns are tracked here.
+              {{ $t('dashboard.commerce.procurementTransfersAndReturnsAreTrackedHere') }}
             </p>
           </div>
 
           <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-            <span>{{ isMovementsOpen ? 'Collapse' : 'Expand' }}</span>
+            <span>{{ isMovementsOpen ? $t('common.collapse') : $t('common.expand') }}</span>
             <Icon
               name="lucide:chevron-down"
               size="18"
@@ -482,17 +481,17 @@
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentMovements"
         >
-          Refresh
+          {{ $t('common.refresh') }}
         </button>
       </div>
 
       <div v-if="isMovementsOpen">
       <p v-if="loadingMovements" class="mt-5 text-sm text-gray-500">
-        Loading movement history...
+        {{ $t('dashboard.commerce.loadingMovementHistory') }}
       </p>
 
       <p v-else-if="!recentMovements.length" class="mt-5 text-sm text-gray-500">
-        No inventory movements found yet.
+        {{ $t('dashboard.commerce.noInventoryMovementsFoundYet') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -505,7 +504,7 @@
             <div class="space-y-2">
               <div class="flex flex-wrap items-center gap-2">
                 <p class="font-bold text-gray-900">
-                  {{ productNameMap[movement.product_id] || 'Unknown product' }}
+                  {{ productNameMap[movement.product_id] || $t('common.unknownProduct') }}
                 </p>
 
                 <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-600">
@@ -514,7 +513,7 @@
               </div>
 
               <p class="text-sm text-gray-500">
-                {{ warehouseNameMap[movement.warehouse_id] || 'Unknown warehouse' }}
+                {{ warehouseNameMap[movement.warehouse_id] || $t('common.unknownWarehouse') }}
               </p>
 
               <p class="text-xs text-gray-400">
@@ -522,7 +521,7 @@
               </p>
             </div>
 
-            <div class="text-left md:text-right">
+            <div class="text-start md:text-end">
               <p
                 class="text-lg font-bold"
                 :class="Number(movement.quantity_change) >= 0 ? 'text-green-700' : 'text-red-700'"
@@ -531,7 +530,7 @@
               </p>
 
               <p class="text-sm text-gray-500">
-                After {{ movement.quantity_after }}
+                {{ $t('common.afterValue', { value0: (movement.quantity_after) }) }}
               </p>
             </div>
           </div>
@@ -543,19 +542,19 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <h3 class="text-2xl font-bold">Warehouse List</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.warehouseList') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Review all defined warehouses and open any one for editing.
+            {{ $t('dashboard.commerce.reviewAllDefinedWarehousesAndOpenAnyOneForEditing') }}
           </p>
         </div>
       </div>
 
       <p v-if="loadingWarehouses" class="mt-5 text-sm text-gray-500">
-        Loading warehouses...
+        {{ $t('common.loadingWarehouses') }}
       </p>
 
       <p v-else-if="!warehouses.length" class="mt-5 text-sm text-gray-500">
-        No warehouses found yet.
+        {{ $t('dashboard.commerce.noWarehousesFoundYet') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -573,17 +572,17 @@
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="warehouse.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'"
                 >
-                  {{ warehouse.is_active ? 'Active' : 'Inactive' }}
+                  {{ warehouse.is_active ? $t('common.active') : $t('common.inactive') }}
                 </span>
               </div>
 
               <p class="text-sm text-gray-500">
-                {{ warehouse.city || 'No city' }}<span v-if="warehouse.country"> · {{ warehouse.country }}</span>
+                {{ warehouse.city || $t('common.noCity') }}<span v-if="warehouse.country"> · {{ warehouse.country }}</span>
                 <span v-if="warehouse.code"> · {{ warehouse.code }}</span>
               </p>
 
               <p class="text-xs text-gray-400">
-                {{ warehouse.contact_name || 'No contact' }}<span v-if="warehouse.contact_phone"> · {{ warehouse.contact_phone }}</span>
+                {{ warehouse.contact_name || $t('common.noContact') }}<span v-if="warehouse.contact_phone"> · {{ warehouse.contact_phone }}</span>
               </p>
             </div>
 
@@ -592,7 +591,7 @@
               class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
               @click="startEditWarehouse(warehouse)"
             >
-              Edit
+              {{ $t('common.edit') }}
             </button>
           </div>
         </div>
@@ -602,11 +601,17 @@
 </template>
 
 <script setup>
+const { uiLabel } = useUiLocale()
+
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
 import {
   buildCommerceReference,
   createEmptyTransferItem,
-  formatCommerceCurrency,
-  formatCommerceDate
+  formatCommerceCurrency as baseFormatCommerceCurrency,
+  formatCommerceDate as baseFormatCommerceDate
 } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
@@ -999,7 +1004,7 @@ const deleteWarehouse = async () => {
     return
   }
 
-  const confirmed = confirm('Delete this warehouse?')
+  const confirmed = confirm(uiLabel('Delete this warehouse?'))
   if (!confirmed) {
     return
   }

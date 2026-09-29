@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./dashboard-files.css";
 @import "./dashboard.css";
+@import "./appearance.css";
 
 @layer base {
   a {

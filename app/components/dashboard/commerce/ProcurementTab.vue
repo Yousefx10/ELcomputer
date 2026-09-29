@@ -3,25 +3,25 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Procurement</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.procurement') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Receive stock and assign each item an ID and QR code.
+            {{ $t('dashboard.commerce.receiveStockAndAssignEachItemAnIdAndQrCode') }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Suppliers</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.suppliers') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ suppliers.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Warehouses</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.warehouses') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ warehouses.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Recent Orders</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.recentOrders') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ recentProcurements.length }}</p>
           </div>
         </div>
@@ -31,18 +31,18 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isFormOpen = !isFormOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">New Procurement Order</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.newProcurementOrder') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Choose a product and option, then enter the received quantity.
+            {{ $t('dashboard.commerce.chooseAProductAndOptionThenEnterTheReceivedQuantity') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -59,12 +59,12 @@
           role="status"
         >
           <span>{{ formMessage }}</span>
-          <NuxtLink
+          <NuxtLinkLocale
             to="/dashboard/commerce?tab=serialized"
             class="shrink-0 font-bold text-green-900 underline"
           >
-            View item IDs & QR codes
-          </NuxtLink>
+            {{ $t('common.viewItemIdsQrCodes') }}
+          </NuxtLinkLocale>
         </div>
 
         <div class="flex justify-end">
@@ -73,18 +73,18 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetForm"
           >
-            Reset
+            {{ $t('common.reset') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Supplier</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.supplier') }}</label>
           <select
             v-model="supplierId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select supplier</option>
+            <option value="">{{ $t('common.selectSupplier') }}</option>
 
             <option
               v-for="supplier in suppliers"
@@ -97,12 +97,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Receiving Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.receivingWarehouse') }}</label>
           <select
             v-model="warehouseId"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select warehouse</option>
+            <option value="">{{ $t('common.selectWarehouse') }}</option>
 
             <option
               v-for="warehouse in warehouses"
@@ -113,27 +113,27 @@
             </option>
           </select>
           <p class="mt-1 text-xs text-gray-500">
-            All product references on this order must use this as their primary warehouse.
+            {{ $t('dashboard.commerce.allProductReferencesOnThisOrderMustUseThisAsTheirPrimaryWarehouse') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Invoice / Reference *</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.invoiceReference') }}</label>
           <input
             v-model="invoiceNumber"
             type="text"
             maxlength="160"
             required
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="PO-20260715..."
+            :placeholder="$t('common.po20260715')"
           >
           <p class="mt-1 text-xs text-gray-500">
-            Required. Retrying the same supplier reference safely returns the original receipt.
+            {{ $t('dashboard.commerce.requiredRetryingTheSameSupplierReferenceSafelyReturnsTheOriginalReceipt') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Amount Paid</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.amountPaid') }}</label>
           <input
             v-model="paidAmount"
             type="number"
@@ -145,12 +145,12 @@
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="notes"
             rows="3"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            placeholder="Optional notes"
+            :placeholder="$t('common.optionalNotes')"
           />
         </div>
         </div>
@@ -158,9 +158,9 @@
         <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h4 class="text-lg font-bold text-gray-900">Products</h4>
+              <h4 class="text-lg font-bold text-gray-900">{{ $t('common.products') }}</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Add products to the catalog before receiving stock. Each received item gets its own QR code.
+                {{ $t('dashboard.commerce.addProductsToTheCatalogBeforeReceivingStockEachReceivedItemGetsItsOwnQrCode') }}
               </p>
             </div>
 
@@ -170,17 +170,17 @@
               class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               @click="addItem"
             >
-              {{ items.length >= MAX_PROCUREMENT_LINES ? '100 Line Limit' : 'Add Product' }}
+              {{ items.length >= MAX_PROCUREMENT_LINES ? $t('common.100LineLimit') : $t('common.addProduct') }}
             </button>
           </div>
 
           <div class="mt-4 max-w-xl">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Product Reference Search</label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.commerce.productReferenceSearch') }}</label>
             <input
               v-model="productSearchQuery"
               type="text"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
-              placeholder="Search by title, SKU, or slug"
+              :placeholder="$t('dashboard.commerce.searchByTitleSkuOrSlug')"
             >
           </div>
 
@@ -192,7 +192,7 @@
             >
               <div>
                 <label :for="`procurement-product-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
-                  Product Reference
+                  {{ $t('common.productReference') }}
                 </label>
                 <select
                   :id="`procurement-product-${index}`"
@@ -200,7 +200,7 @@
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                   @change="handleProductChange(item)"
                 >
-                  <option value="">Select tracked product</option>
+                  <option value="">{{ $t('common.selectTrackedProduct') }}</option>
 
                   <option
                   v-for="product in productOptions"
@@ -217,13 +217,13 @@
                   v-if="isWarehouseMismatch(item)"
                   class="mt-1 text-xs font-medium text-red-600"
                 >
-                  This product belongs to {{ getProductWarehouseName(item) }}.
+                  {{ $t('dashboard.commerce.thisProductBelongsToValue', { value0: (getProductWarehouseName(item)) }) }}
                 </p>
               </div>
 
               <div>
                 <label :for="`procurement-variant-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
-                  Variant Reference
+                  {{ $t('common.variantReference') }}
                 </label>
                 <select
                   :id="`procurement-variant-${index}`"
@@ -233,8 +233,8 @@
                 >
                   <option value="">
                     {{ item.product_id && !variantsForProduct(item.product_id).length
-                      ? 'No active variants available'
-                      : 'Select variant / color' }}
+                      ? $t('dashboard.commerce.noActiveVariantsAvailable')
+                      : $t('common.selectVariantColor') }}
                   </option>
 
                   <option
@@ -246,18 +246,18 @@
                   </option>
                 </select>
 
-                <NuxtLink
+                <NuxtLinkLocale
                   v-if="item.product_id && !variantsForProduct(item.product_id).length"
                   :to="`/dashboard/products/edit/${item.product_id}`"
                   class="mt-1 inline-block text-xs font-bold text-blue-700 underline"
                 >
-                  Define this product’s variant references in Catalog
-                </NuxtLink>
+                  {{ $t('dashboard.commerce.defineThisProductSVariantReferencesInCatalog') }}
+                </NuxtLinkLocale>
               </div>
 
               <div>
                 <label :for="`procurement-quantity-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
-                  Units Received
+                  {{ $t('common.unitsReceived') }}
                 </label>
                 <input
                   :id="`procurement-quantity-${index}`"
@@ -274,7 +274,7 @@
 
               <div>
                 <label :for="`procurement-cost-${index}`" class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">
-                  Unit Cost
+                  {{ $t('common.unitCost') }}
                 </label>
                 <input
                   :id="`procurement-cost-${index}`"
@@ -293,7 +293,7 @@
                 :disabled="items.length === 1"
                 @click="removeItem(index)"
               >
-                Remove
+                {{ $t('common.remove') }}
               </button>
             </div>
           </div>
@@ -301,27 +301,26 @@
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-1">
               <p class="text-sm text-gray-500">
-                Estimated total: <span class="font-semibold text-gray-900">{{ estimatedTotalCost }}</span>
+                {{ $t('common.estimatedTotal') }} <span class="font-semibold text-gray-900">{{ estimatedTotalCost }}</span>
               </p>
 
               <p class="text-sm text-gray-500">
-                Settlement due: <span class="font-semibold text-gray-900">{{ estimatedSettlementDue }}</span>
+                {{ $t('common.settlementDue') }} <span class="font-semibold text-gray-900">{{ estimatedSettlementDue }}</span>
               </p>
 
               <p class="text-sm font-semibold text-blue-700">
-                {{ totalUnitsToReceive }} {{ totalUnitsToReceive === 1 ? 'unit' : 'units' }}
-                = {{ totalUnitsToReceive }} unique item {{ totalUnitsToReceive === 1 ? 'ID' : 'IDs' }} and QR codes
+                {{ $t('dashboard.commerce.valueValueValueUniqueItemValueAndQrCodes', { value0: (totalUnitsToReceive), value1: (totalUnitsToReceive === 1 ? $t('common.unit') : 'units'), value2: (totalUnitsToReceive), value3: (totalUnitsToReceive === 1 ? 'ID' : 'IDs') }) }}
               </p>
 
               <p
                 v-if="totalUnitsToReceive > MAX_PROCUREMENT_UNITS"
                 class="text-sm font-semibold text-red-600"
               >
-                One Procurement receipt can create at most {{ MAX_PROCUREMENT_UNITS.toLocaleString() }} physical items.
+                {{ $t('dashboard.commerce.oneProcurementReceiptCanCreateAtMostValuePhysicalItems', { value0: (MAX_PROCUREMENT_UNITS.toLocaleString()) }) }}
               </p>
 
               <p v-if="formError" class="text-sm text-red-600">
-                {{ formError }}
+                {{ $uiMessage(formError) }}
               </p>
             </div>
 
@@ -335,8 +334,8 @@
               @click="saveProcurement"
             >
               {{ saving
-                ? 'Receiving...'
-                : `Receive ${totalUnitsToReceive || ''} ${totalUnitsToReceive === 1 ? 'Item' : 'Items'}` }}
+                ? $t('common.receiving')
+                : $t('dashboard.commerce.receiveValueValue', { value0: (totalUnitsToReceive || ''), value1: (totalUnitsToReceive === 1 ? 'Item' : 'Items') }) }}
             </button>
           </div>
         </div>
@@ -347,18 +346,18 @@
       <div class="flex items-center justify-between gap-3">
         <button
           type="button"
-          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-start"
           @click="isRecentOrdersOpen = !isRecentOrdersOpen"
         >
           <div>
-            <h3 class="text-2xl font-bold">Recent Procurement Orders</h3>
+            <h3 class="text-2xl font-bold">{{ $t('dashboard.commerce.recentProcurementOrders') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Latest received purchase records.
+              {{ $t('dashboard.commerce.latestReceivedPurchaseRecords') }}
             </p>
           </div>
 
           <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-            <span>{{ isRecentOrdersOpen ? 'Collapse' : 'Expand' }}</span>
+            <span>{{ isRecentOrdersOpen ? $t('common.collapse') : $t('common.expand') }}</span>
             <Icon
               name="lucide:chevron-down"
               size="18"
@@ -374,21 +373,21 @@
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentProcurements"
         >
-          Refresh
+          {{ $t('common.refresh') }}
         </button>
       </div>
 
       <div v-if="isRecentOrdersOpen">
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </p>
 
       <p v-else-if="loading" class="mt-5 text-sm text-gray-500">
-        Loading procurement orders...
+        {{ $t('dashboard.commerce.loadingProcurementOrders') }}
       </p>
 
       <p v-else-if="!recentProcurements.length" class="mt-5 text-sm text-gray-500">
-        No procurement orders created yet.
+        {{ $t('dashboard.commerce.noProcurementOrdersCreatedYet') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -401,22 +400,22 @@
             <div class="space-y-2">
               <div class="flex flex-wrap items-center gap-2">
                 <p class="font-bold text-gray-900">
-                  {{ order.invoice_number || `Procurement #${order.id.slice(0, 8)}` }}
+                  {{ order.invoice_number || $t('common.procurementValue', { value0: (order.id.slice(0, 8)) }) }}
                 </p>
 
                 <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-600">
                   {{ getProcurementLineCount(order.id) }}
-                  {{ getProcurementLineCount(order.id) === 1 ? 'reference' : 'references' }}
+                  {{ getProcurementLineCount(order.id) === 1 ? $t('common.reference') : 'references' }}
                 </span>
 
                 <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase text-blue-700">
                   {{ getProcurementUnitCount(order.id) }}
-                  {{ getProcurementUnitCount(order.id) === 1 ? 'item ID' : 'item IDs' }}
+                  {{ getProcurementUnitCount(order.id) === 1 ? $t('common.itemId') : $t('common.itemIds') }}
                 </span>
               </div>
 
               <p class="text-sm text-gray-600">
-                {{ supplierNameMap[order.supplier_id] || 'Unknown supplier' }}
+                {{ supplierNameMap[order.supplier_id] || $t('common.unknownSupplier') }}
                 <span v-if="warehouseNameMap[order.warehouse_id]"> · {{ warehouseNameMap[order.warehouse_id] }}</span>
               </p>
 
@@ -425,14 +424,14 @@
               </p>
             </div>
 
-            <div class="text-left md:text-right">
-              <p class="text-sm text-gray-500">Total Cost</p>
+            <div class="text-start md:text-end">
+              <p class="text-sm text-gray-500">{{ $t('common.totalCost') }}</p>
               <p class="mt-1 text-xl font-bold text-gray-900">
                 {{ formatCommerceCurrency(order.total_cost) }}
               </p>
 
               <p class="mt-1 text-sm text-gray-500">
-                Due {{ formatCommerceCurrency(Math.max(Number(order.total_cost || 0) - Number(order.paid_amount || 0), 0)) }}
+                {{ $t('common.dueValue', { value0: (formatCommerceCurrency(Math.max(Number(order.total_cost || 0) - Number(order.paid_amount || 0), 0))) }) }}
               </p>
             </div>
           </div>
@@ -444,11 +443,15 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
 import {
   buildCommerceReference,
   createEmptyProcurementItem,
-  formatCommerceCurrency,
-  formatCommerceDate
+  formatCommerceCurrency as baseFormatCommerceCurrency,
+  formatCommerceDate as baseFormatCommerceDate
 } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()

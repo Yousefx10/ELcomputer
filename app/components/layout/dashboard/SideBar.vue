@@ -5,29 +5,23 @@
     :class="{ 'is-open': open }"
   >
     <div class="sidebar-brand relative flex min-h-[76px] items-center border-b border-slate-200/80 px-4">
-      <NuxtLink
+      <NuxtLinkLocale
         to="/dashboard"
         class="sidebar-brand-link flex min-w-0 items-center gap-3 rounded-xl"
         @click="$emit('close')"
       >
         <span class="sidebar-brand-mark" aria-hidden="true">
-          <img
-            v-if="siteLogoUrl"
-            :src="siteLogoUrl"
-            :alt="siteName"
-            class="h-full w-full object-contain"
-          >
-          <span v-else>{{ siteInitial }}</span>
+          <BrandLogo :settings="siteContent?.settings" :alt="siteName" class="h-9 w-9" />
         </span>
         <span class="min-w-0 pe-10 lg:pe-0">
           <span class="block truncate text-[15px] font-bold tracking-[-0.01em] text-slate-950">{{ siteName }}</span>
-          <span class="mt-0.5 block text-[11px] font-medium text-slate-500">Admin workspace</span>
+          <span class="mt-0.5 block text-[11px] font-medium text-slate-500">{{ $t('common.adminWorkspace') }}</span>
         </span>
-      </NuxtLink>
+      </NuxtLinkLocale>
 
       <button
         type="button"
-        aria-label="Close dashboard navigation"
+        :aria-label="$t('common.closeDashboardNavigation')"
         class="sidebar-close absolute top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 lg:hidden"
         @click="$emit('close')"
       >
@@ -41,16 +35,16 @@
         <input
           v-model="navigationSearch"
           type="search"
-          aria-label="Find a dashboard page"
-          placeholder="Find a page"
+          :aria-label="$t('common.findADashboardPage')"
+          :placeholder="$t('common.findAPage')"
           class="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-[13px] text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
         >
       </label>
     </div>
 
-    <nav ref="navigationRoot" class="sidebar-navigation min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3" aria-label="Dashboard navigation">
-      <p class="mb-2 px-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Workspace</p>
-      <p v-if="!filteredGroups.length" class="rounded-xl border border-dashed border-slate-200 px-3 py-5 text-center text-sm text-slate-500">No pages match your search.</p>
+    <nav ref="navigationRoot" class="sidebar-navigation min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3" :aria-label="$t('common.dashboardNavigation')">
+      <p class="mb-2 px-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">{{ $t('common.workspace') }}</p>
+      <p v-if="!filteredGroups.length" class="rounded-xl border border-dashed border-slate-200 px-3 py-5 text-center text-sm text-slate-500">{{ $t('layout.dashboard.noPagesMatchYourSearch') }}</p>
       <ul v-else class="space-y-1">
         <li
           v-for="group in filteredGroups"
@@ -71,7 +65,7 @@
               <Icon :name="group.icon" size="17" />
             </span>
 
-            <span class="min-w-0 flex-1 truncate">{{ group.detailedLabel || group.label }}</span>
+            <span class="min-w-0 flex-1 truncate">{{ $uiLabel(group.detailedLabel || group.label) }}</span>
 
             <Icon
               name="lucide:chevron-down"
@@ -81,7 +75,7 @@
             />
           </button>
 
-          <NuxtLink
+          <NuxtLinkLocale
             v-else
             :to="group.to"
             class="dashboard-nav-row relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-[13px] font-semibold"
@@ -94,8 +88,8 @@
             >
               <Icon :name="group.icon" size="17" />
             </span>
-            <span class="truncate">{{ group.detailedLabel || group.label }}</span>
-          </NuxtLink>
+            <span class="truncate">{{ $uiLabel(group.detailedLabel || group.label) }}</span>
+          </NuxtLinkLocale>
 
           <div
             v-if="group.children.length"
@@ -103,7 +97,7 @@
             :id="`dashboard-navigation-group-${group.key}`"
             class="dashboard-subnav ms-4 my-1.5 space-y-0.5 border-s border-slate-200 ps-4"
           >
-            <NuxtLink
+            <NuxtLinkLocale
               v-for="item in group.children"
               :key="item.key"
               :to="item.to"
@@ -113,8 +107,8 @@
               @click="selectGroup(group.key)"
             >
               <Icon :name="item.icon" size="15" class="shrink-0" />
-              <span class="min-w-0 truncate">{{ item.detailedLabel || item.label }}</span>
-            </NuxtLink>
+              <span class="min-w-0 truncate">{{ $uiLabel(item.detailedLabel || item.label) }}</span>
+            </NuxtLinkLocale>
           </div>
         </li>
       </ul>
@@ -132,13 +126,13 @@
         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white ring-2 ring-white">{{ adminInitials }}</span>
         <span class="min-w-0 flex-1">
           <span class="block truncate text-[13px] font-semibold text-slate-900">{{ adminName }}</span>
-          <span class="mt-0.5 block truncate text-[11px] text-slate-500">{{ adminUser?.email || 'Dashboard user' }}</span>
+          <span class="mt-0.5 block truncate text-[11px] text-slate-500">{{ adminUser?.email || $t('common.dashboardUser') }}</span>
         </span>
         <Icon :name="accountOpen ? 'lucide:chevron-down' : 'lucide:chevron-up'" size="15" class="shrink-0 text-slate-400" />
       </button>
       <div v-if="accountOpen" id="dashboard-account-actions" class="pt-1.5">
         <button type="button" class="sidebar-logout inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-semibold text-slate-700" @click="logout">
-          <Icon name="lucide:log-out" size="16" /> Logout
+          <Icon name="lucide:log-out" size="16" /> {{ $t('common.logout') }}
         </button>
       </div>
     </div>
@@ -207,8 +201,8 @@ const filteredGroups = computed(() => {
   const query = navigationSearch.value.trim().toLowerCase()
   if (!query) return navigationGroups.value
   return navigationGroups.value.flatMap(group => {
-    if (group.label.toLowerCase().includes(query)) return [group]
-    const children = group.children.filter(item => `${item.label} ${item.description || ''}`.toLowerCase().includes(query))
+    if (uiLabel(group.label).toLowerCase().includes(query)) return [group]
+    const children = group.children.filter(item => `${uiLabel(item.label)} ${uiLabel(item.description || '')}`.toLowerCase().includes(query))
     return children.length ? [{ ...group, children }] : []
   })
 })
@@ -281,8 +275,8 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 .detailed-dashboard-sidebar {
   inset-inline-start: 0;
   width: min(18rem, calc(100vw - 1rem));
-  border-inline-end: 1px solid rgb(226 232 240 / 0.9);
-  background: rgb(255 255 255);
+  border-inline-end: 1px solid var(--border);
+  background: var(--surface);
   box-shadow: 18px 0 48px rgb(15 23 42 / 0.14);
   transform: translateX(-100%);
   transition:
@@ -291,7 +285,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
   visibility: hidden;
 }
 
-:global([dir='rtl']) .detailed-dashboard-sidebar {
+:global([dir='rtl'] .detailed-dashboard-sidebar) {
   box-shadow: -18px 0 48px rgb(15 23 42 / 0.14);
   transform: translateX(100%);
 }
@@ -303,7 +297,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .sidebar-brand {
-  background: rgb(255 255 255 / 0.72);
+  background: var(--surface);
 }
 
 .sidebar-brand-link {
@@ -324,11 +318,11 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 1px solid rgb(219 234 254);
+  border: 1px solid var(--brand-soft);
   border-radius: 0.7rem;
-  background: white;
+  background: var(--surface);
   padding: 0.3rem;
-  color: rgb(29 78 216);
+  color: var(--brand-text);
   font-size: 0.8rem;
   font-weight: 800;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
@@ -347,7 +341,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .sidebar-navigation {
-  scrollbar-color: rgb(203 213 225) transparent;
+  scrollbar-color: var(--border) transparent;
   scrollbar-width: thin;
 }
 
@@ -363,7 +357,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .dashboard-nav-row {
-  color: rgb(71 85 105);
+  color: var(--text-secondary);
 }
 
 .dashboard-nav-row::before,
@@ -383,13 +377,13 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .dashboard-nav-row:hover {
-  background: rgb(241 245 249);
-  color: rgb(15 23 42);
+  background: var(--surface-muted);
+  color: var(--text-primary);
 }
 
 .dashboard-nav-row.is-current {
-  background: rgb(239 246 255);
-  color: rgb(15 23 42);
+  background: var(--brand-soft);
+  color: var(--text-primary);
 }
 
 .dashboard-nav-row.is-current::before,
@@ -399,25 +393,25 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .dashboard-nav-icon {
-  background: rgb(241 245 249);
-  color: rgb(100 116 139);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
   transition:
     background-color 150ms ease,
     color 150ms ease;
 }
 
 .dashboard-nav-row:hover .dashboard-nav-icon {
-  background: rgb(226 232 240);
-  color: rgb(51 65 85);
+  background: var(--border);
+  color: var(--text-primary);
 }
 
 .dashboard-nav-row.is-current .dashboard-nav-icon {
-  background: rgb(219 234 254);
+  background: var(--brand-soft);
   color: rgb(37 99 235);
 }
 
 .dashboard-subnav-row {
-  color: rgb(100 116 139);
+  color: var(--text-secondary);
 }
 
 .dashboard-subnav-row::before {
@@ -425,24 +419,24 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
 }
 
 .dashboard-subnav-row:hover {
-  background: rgb(241 245 249);
-  color: rgb(15 23 42);
+  background: var(--surface-muted);
+  color: var(--text-primary);
 }
 
 .dashboard-subnav-row.is-current {
-  background: rgb(239 246 255 / 0.85);
-  color: rgb(29 78 216);
+  background: var(--brand-soft);
+  color: var(--brand-text);
   font-weight: 650;
 }
 
 .sidebar-account {
-  background: rgb(255 255 255 / 0.72);
+  background: var(--surface);
 }
 
 .sidebar-account-button:hover,
 .sidebar-logout:hover {
-  background: rgb(241 245 249);
-  color: rgb(15 23 42);
+  background: var(--surface-muted);
+  color: var(--text-primary);
 }
 
 .sidebar-brand-link:focus-visible,
@@ -460,14 +454,14 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeAccountOu
     inset-inline-start: auto;
     width: 17rem;
     border: 0;
-    border-inline-end: 1px solid rgb(226 232 240 / 0.9);
+    border-inline-end: 1px solid var(--border);
     border-radius: 0;
     box-shadow: none;
     transform: none;
     visibility: visible;
   }
 
-  :global([dir='rtl']) .detailed-dashboard-sidebar {
+  :global([dir='rtl'] .detailed-dashboard-sidebar) {
     box-shadow: none;
     transform: none;
   }

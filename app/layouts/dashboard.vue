@@ -12,7 +12,7 @@
         v-if="dashboardLayout === 'detailed' && detailedSidebarOpen"
         type="button"
         tabindex="-1"
-        aria-label="Close dashboard navigation"
+        :aria-label="$t('common.closeDashboardNavigation')"
         class="fixed inset-0 z-40 bg-black/40 lg:hidden"
         @click="closeDetailedSidebar({ restoreFocus: true })"
       />
@@ -32,15 +32,12 @@
       >
         <template v-if="dashboardLayout === 'standard'">
           <header class="mb-4 flex items-center justify-between rounded-2xl bg-white p-4 shadow">
-            <NuxtLink to="/dashboard" class="flex items-center">
-              <img
-                src="/images/dashboard-logo.png"
-                alt="ELcomputer Dashboard"
-                class="h-10 max-w-48 object-contain"
-              >
-            </NuxtLink>
+            <NuxtLinkLocale to="/dashboard" class="flex items-center">
+              <BrandLogo :settings="siteContent?.settings" alt="ELcomputer" class="h-10 w-44" />
+            </NuxtLinkLocale>
 
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+              <UiPreferences />
               <div class="hidden rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
                 {{ dashboardDateTime }}
               </div>
@@ -50,7 +47,7 @@
                 class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                 @click="logout"
               >
-                Logout
+                {{ $t('common.logout') }}
               </button>
             </div>
           </header>
@@ -66,7 +63,7 @@
               ref="detailedSidebarButton"
               type="button"
               class="dashboard-modern-icon-button inline-flex lg:hidden"
-              aria-label="Open dashboard navigation"
+              :aria-label="$t('layouts.dashboard.openDashboardNavigation')"
               aria-controls="detailed-dashboard-navigation"
               :aria-expanded="detailedSidebarOpen"
               @click="openDetailedSidebar"
@@ -79,30 +76,31 @@
                 v-if="groupTitle"
                 class="dashboard-modern-breadcrumb"
               >
-                {{ groupTitle }}
+                {{ $uiLabel(groupTitle) }}
               </p>
               <h1 class="dashboard-modern-title">
-                {{ pageTitle }}
+                {{ $uiLabel(pageTitle) }}
               </h1>
             </div>
           </div>
 
-          <div class="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
+          <div class="ms-auto flex flex-wrap items-center gap-2 sm:gap-3">
+            <UiPreferences />
             <div class="dashboard-modern-date hidden md:inline-flex">
               <Icon name="lucide:calendar-days" size="16" />
               {{ dashboardDateTime }}
             </div>
 
-            <NuxtLink
+            <NuxtLinkLocale
               to="/"
               target="_blank"
               rel="noopener"
               class="dashboard-modern-store-link inline-flex"
             >
               <Icon name="lucide:external-link" size="16" />
-              <span class="hidden sm:inline">View store</span>
-              <span class="sr-only sm:hidden">View store</span>
-            </NuxtLink>
+              <span class="hidden sm:inline">{{ $t('common.viewStore') }}</span>
+              <span class="sr-only sm:hidden">{{ $t('common.viewStore') }}</span>
+            </NuxtLinkLocale>
           </div>
         </header>
 
@@ -119,8 +117,13 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
+const { uiNavigateTo } = useUiNavigation()
+
+const { uiLabel } = useUiLocale()
 const supabase = useSupabaseClient()
-const route = useRoute()
+const route = useUiRoute()
 const [siteContentResult, dashboardAppearanceResult] = await Promise.all([
   useSiteContent(),
   useDashboardAppearance()
@@ -147,11 +150,11 @@ let dashboardClockInterval
 let authStateSubscription
 
 useHead(() => ({
-  title: documentTitle.value
+  title: uiLabel(documentTitle.value)
 }))
 
 const updateDashboardDateTime = () => {
-  dashboardDateTime.value = new Intl.DateTimeFormat('en-US', {
+  dashboardDateTime.value = new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date())
@@ -217,7 +220,7 @@ const handleDashboardResize = () => {
 const logout = async () => {
   clearAdminAccess()
   await supabase.auth.signOut()
-  await navigateTo('/dashboard/login')
+  await uiNavigateTo('/dashboard/login')
 }
 
 watchEffect(() => {
@@ -245,7 +248,7 @@ watch(detailedSidebarOpen, async (isOpen) => {
 
   if (isOpen) {
     document
-      .querySelector('#detailed-dashboard-navigation [aria-label="Close dashboard navigation"]')
+      .querySelector('#detailed-dashboard-navigation .sidebar-close')
       ?.focus()
   }
 })
@@ -265,7 +268,7 @@ onMounted(() => {
   authStateSubscription = supabase.auth.onAuthStateChange(async (_event, session) => {
     if (!session) {
       clearAdminAccess()
-      await navigateTo('/dashboard/login')
+      await uiNavigateTo('/dashboard/login')
     }
   }).data.subscription
 })

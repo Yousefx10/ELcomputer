@@ -1,9 +1,11 @@
+import { expandUiSource } from './helpers/readUiSource.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
+import { compileStyle, parse } from '@vue/compiler-sfc'
 import { normalizeDashboardLayout } from '../app/composables/useDashboardLayout.js'
 
-const readProjectFile = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const readProjectFile = path => expandUiSource(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'))
 
 const dashboardLayout = readProjectFile('app/layouts/dashboard.vue')
 const dashboardNavigation = readProjectFile('app/composables/useDashboardNavigation.js')
@@ -28,7 +30,7 @@ test('saved dashboard layout values remain backward compatible', () => {
 test('modern dashboard shell provides one compact route-aware page heading', () => {
   assert.match(dashboardLayout, /dashboard-modern-shell min-h-screen/)
   assert.equal((dashboardLayout.match(/<slot \/>/g) || []).length, 1)
-  assert.match(dashboardLayout, /<h1 class="dashboard-modern-title">[\s\S]*?\{\{ pageTitle \}\}/)
+  assert.match(dashboardLayout, /<h1 class="dashboard-modern-title">[\s\S]*?\{\{ (?:\$uiLabel\()?pageTitle\)? \}\}/)
   assert.match(dashboardLayout, /v-if="groupTitle"/)
   assert.match(dashboardNavigation, /dashboardSettingsSections\.find/)
   assert.match(dashboardLayout, /View store/)
@@ -44,7 +46,10 @@ test('modern sidebar stays permission-driven and clone friendly', () => {
   assert.match(dashboardSidebar, /siteContent\.value\?\.settings\?\.site_name/)
   assert.match(dashboardSidebar, /getConfiguredStoreImageUrl/)
   assert.match(dashboardSidebar, /aria-current=/)
-  assert.match(dashboardSidebar, /:global\(\[dir='rtl'\]\)/)
+  const { descriptor } = parse(dashboardSidebar)
+  const css = compileStyle({ source: descriptor.styles[0].content, filename: 'SideBar.vue', id: 'rtl-sidebar', scoped: true }).code
+  assert.match(css, /\[dir='rtl'\] \.detailed-dashboard-sidebar\s*\{[^}]*transform: translateX\(100%\)/)
+  assert.doesNotMatch(css, /\[dir='rtl'\]\s*\{[^}]*transform:/)
 })
 
 test('shared page intro preserves Classic headings and removes duplicate Modern headings', () => {

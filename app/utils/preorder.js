@@ -34,8 +34,8 @@ export const calculatePreorderAmounts = (price, quantity, paymentMode, percent) 
   return { total: Number(lineCents) / 100, due: Number(dueCents) / 100, balance: Number(lineCents - dueCents) / 100 }
 }
 
-export const expectedAvailabilityLabel = value => {
+export const expectedAvailabilityLabel = (value, locale = 'en-US') => {
   if (!value) return ''
   const date = new Date(`${String(value).slice(0, 10)}T12:00:00Z`)
-  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date)
+  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date)
 }

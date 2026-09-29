@@ -28,7 +28,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const route = useRoute()
+const route = useUiRoute()
 const { activeGroup } = useDashboardNavigation()
 const sectionDescription = computed(() => ({
   purchasing: 'Record and review supplier invoices.',

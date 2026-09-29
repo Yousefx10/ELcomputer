@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <DashboardPageIntro
-      title="Reviews"
-      description="Read customer feedback and remove reviews that should no longer be displayed."
+      :title="$t('common.reviews')"
+      :description="$t('interface.readCustomerFeedbackAndRemoveReviewsThatShouldNoLongerBeDisplayed')"
       container-class="rounded-2xl bg-gray-200 p-6 shadow"
     />
 
@@ -11,20 +11,20 @@
       class="rounded-2xl bg-red-50 p-4 text-red-600 shadow"
       role="alert"
     >
-      {{ pageError }}
+      {{ $uiMessage(pageError) }}
     </div>
 
     <section class="rounded-2xl bg-white p-5 shadow">
       <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 class="text-2xl font-bold">All Reviews</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.allReviews') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Search by product, reviewer, email, or review text.
+            {{ $t('dashboard.catalog.searchByProductReviewerEmailOrReviewText') }}
           </p>
         </div>
 
         <p class="shrink-0 text-sm text-gray-500">
-          {{ totalReviews }} {{ hasActiveFilters ? 'matching' : 'total' }}
+          {{ totalReviews }} {{ hasActiveFilters ? $t('common.matching') : $t('common.total') }}
         </p>
       </div>
 
@@ -34,27 +34,27 @@
       >
         <div>
           <label for="review-search" class="mb-2 block text-sm font-semibold text-gray-700">
-            Search Reviews
+            {{ $t('common.searchReviews') }}
           </label>
           <input
             id="review-search"
             v-model="searchQuery"
             type="search"
-            placeholder="Search reviews"
+            :placeholder="$t('common.searchReviews')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
           <label for="review-rating" class="mb-2 block text-sm font-semibold text-gray-700">
-            Rating
+            {{ $t('common.rating') }}
           </label>
           <select
             id="review-rating"
             v-model="selectedRating"
             class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
           >
-            <option value="">All ratings</option>
+            <option value="">{{ $t('common.allRatings') }}</option>
             <option
               v-for="ratingOption in ratingOptions"
               :key="ratingOption"
@@ -71,7 +71,7 @@
             :disabled="loading"
             class="flex-1 rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Apply
+            {{ $t('common.apply') }}
           </button>
 
           <button
@@ -81,7 +81,7 @@
             class="flex-1 rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
             @click="clearFilters"
           >
-            Clear
+            {{ $t('common.clear') }}
           </button>
         </div>
       </form>
@@ -90,7 +90,7 @@
         v-if="loading"
         class="rounded-xl border border-dashed p-8 text-center text-gray-500"
       >
-        Loading reviews...
+        {{ $t('common.loadingReviews') }}
       </div>
 
       <div
@@ -98,24 +98,23 @@
         class="rounded-xl border border-dashed p-8 text-center"
       >
         <h4 class="text-xl font-bold text-gray-900">
-          {{ hasActiveFilters ? 'No matching reviews' : 'No reviews yet' }}
+          {{ hasActiveFilters ? $t('common.noMatchingReviews') : $t('common.noReviewsYet') }}
         </h4>
         <p class="mt-2 text-sm text-gray-500">
           {{ hasActiveFilters
-            ? 'Try a different search term or rating.'
-            : 'Submitted product reviews will appear here.' }}
+            ? $t('dashboard.catalog.tryADifferentSearchTermOrRating')
+            : $t('dashboard.catalog.submittedProductReviewsWillAppearHere') }}
         </p>
       </div>
 
       <div v-else>
         <div class="mb-4 flex flex-col gap-2 rounded-xl border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p class="text-sm text-gray-500">
-            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalReviews }}
-            {{ hasActiveFilters ? 'matching reviews' : 'reviews' }}
+            {{ $t('common.showingValueValueOfValueValue', { value0: (pageStart), value1: (pageEnd), value2: (totalReviews), value3: (hasActiveFilters ? $t('common.matchingReviews') : $t('common.reviews')) }) }}
           </p>
 
           <p class="text-sm font-medium text-gray-600">
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
           </p>
         </div>
 
@@ -131,7 +130,7 @@
                   <div
                     class="flex items-center gap-0.5"
                     role="img"
-                    :aria-label="`${review.rating} out of 5 stars`"
+                    :aria-label="$t('common.valueOutOf5Stars', { value0: (review.rating) })"
                   >
                     <ReviewsStarIcon
                       v-for="star in ratingOptions"
@@ -151,12 +150,12 @@
                       ? 'bg-green-100 text-green-700'
                       : 'bg-gray-100 text-gray-600'"
                   >
-                    {{ review.displayFullName ? 'Full name shown publicly' : 'Name masked publicly' }}
+                    {{ review.displayFullName ? $t('dashboard.catalog.fullNameShownPublicly') : $t('common.nameMaskedPublicly') }}
                   </span>
                 </div>
 
                 <div>
-                  <NuxtLink
+                  <NuxtLinkLocale
                     v-if="review.productSlug"
                     :to="`/products/${review.productSlug}`"
                     target="_blank"
@@ -165,7 +164,7 @@
                   >
                     <span class="truncate">{{ review.productTitle }}</span>
                     <Icon name="lucide:external-link" size="15" class="shrink-0" />
-                  </NuxtLink>
+                  </NuxtLinkLocale>
 
                   <p v-else class="font-bold text-gray-900">
                     {{ review.productTitle }}
@@ -181,7 +180,7 @@
                   </div>
 
                   <p class="mt-1 text-xs text-gray-400">
-                    Submitted {{ formatDate(review.createdAt) }}
+                    {{ $t('common.submittedValue', { value0: (formatDate(review.createdAt)) }) }}
                   </p>
                 </div>
               </div>
@@ -192,7 +191,7 @@
                 class="shrink-0 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                 @click="deleteReview(review)"
               >
-                {{ deletingReviewId === review.id ? 'Deleting...' : 'Delete' }}
+                {{ deletingReviewId === review.id ? $t('common.deleting') : $t('common.delete') }}
               </button>
             </div>
 
@@ -214,11 +213,11 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToPreviousPage"
           >
-            Previous
+            {{ $t('common.previous') }}
           </button>
 
           <p class="text-center text-sm text-gray-500">
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
           </p>
 
           <button
@@ -227,7 +226,7 @@
             class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToNextPage"
           >
-            Next
+            {{ $t('common.next') }}
           </button>
         </div>
       </div>
@@ -236,6 +235,8 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+
 defineOptions({
   name: 'DashboardCatalogReviewsTab'
 })
@@ -296,7 +297,7 @@ const formatDate = (value) => {
     return 'recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(intlLocale.value, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(date)

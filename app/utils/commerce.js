@@ -57,20 +57,20 @@ export const getSerializedItemStatusClass = (value) => {
   return 'bg-gray-100 text-gray-600'
 }
 
-export const formatCommerceCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
+export const formatCommerceCurrency = (value, locale = 'en-US') => {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'EGP',
     maximumFractionDigits: 2
   }).format(Number(value || 0))
 }
 
-export const formatCommerceDate = (value) => {
+export const formatCommerceDate = (value, locale = 'en-US') => {
   if (!value) {
     return 'Recently'
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(value))

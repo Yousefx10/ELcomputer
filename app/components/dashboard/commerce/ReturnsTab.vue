@@ -3,25 +3,25 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
-          <h3 class="text-2xl font-bold">Returns</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.returns') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Record returned items and send them back to the selected warehouse.
+            {{ $t('dashboard.commerce.recordReturnedItemsAndSendThemBackToTheSelectedWarehouse') }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Warehouses</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.warehouses') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ warehouses.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Recent Returns</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.recentReturns') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ recentReturns.length }}</p>
           </div>
 
           <div class="rounded-2xl bg-gray-100 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Eligible Orders</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">{{ $t('common.eligibleOrders') }}</p>
             <p class="mt-2 text-2xl font-bold text-gray-900">{{ orderOptions.length }}</p>
           </div>
         </div>
@@ -31,18 +31,18 @@
     <section class="rounded-2xl bg-white p-6 shadow">
       <button
         type="button"
-        class="flex w-full items-start justify-between gap-4 text-left"
+        class="flex w-full items-start justify-between gap-4 text-start"
         @click="isFormOpen = !isFormOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">Create Return</h3>
+          <h3 class="text-2xl font-bold">{{ $t('common.createReturn') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Choose an order and the items returned to stock.
+            {{ $t('dashboard.commerce.chooseAnOrderAndTheItemsReturnedToStock') }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-          <span>{{ isFormOpen ? 'Collapse' : 'Expand' }}</span>
+          <span>{{ isFormOpen ? $t('common.collapse') : $t('common.expand') }}</span>
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -59,28 +59,28 @@
             class="rounded-lg bg-gray-200 px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-300"
             @click="resetReturnForm"
           >
-            Reset
+            {{ $t('common.reset') }}
           </button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Search Order</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.searchOrder') }}</label>
           <input
             v-model="orderSearchQuery"
             type="text"
-            placeholder="Order number, customer, phone, email"
+            :placeholder="$t('dashboard.commerce.orderNumberCustomerPhoneEmail')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Order</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.order') }}</label>
           <select
             v-model="returnForm.order_id"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select order</option>
+            <option value="">{{ $t('common.selectOrder') }}</option>
 
             <option
               v-for="order in orderOptions"
@@ -93,12 +93,12 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Warehouse</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.warehouse') }}</label>
           <select
             v-model="returnForm.warehouse_id"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
-            <option value="">Select warehouse</option>
+            <option value="">{{ $t('common.selectWarehouse') }}</option>
 
             <option
               v-for="warehouse in activeWarehouses"
@@ -111,21 +111,21 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Reason</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.reason') }}</label>
           <input
             v-model="returnForm.reason"
             type="text"
-            placeholder="Damaged box, wrong item, customer return..."
+            :placeholder="$t('dashboard.commerce.damagedBoxWrongItemCustomerReturn')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Notes</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.notes') }}</label>
           <textarea
             v-model="returnForm.notes"
             rows="3"
-            placeholder="Optional return notes"
+            :placeholder="$t('common.optionalReturnNotes')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
         </div>
@@ -138,32 +138,32 @@
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="space-y-2">
               <p class="text-lg font-bold text-gray-900">
-                {{ selectedOrder.order_number || `Order #${selectedOrder.id.slice(0, 8)}` }}
+                {{ selectedOrder.order_number || $t('common.orderValueVariant3', { value0: (selectedOrder.id.slice(0, 8)) }) }}
               </p>
 
               <p class="text-sm text-gray-600">
-                {{ selectedOrder.first_name || 'Customer' }}<span v-if="selectedOrder.last_name"> {{ selectedOrder.last_name }}</span>
+                {{ selectedOrder.first_name || $t('common.customer') }}<span v-if="selectedOrder.last_name"> {{ selectedOrder.last_name }}</span>
                 <span v-if="selectedOrder.phone"> · {{ selectedOrder.phone }}</span>
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ selectedOrder.city || 'No city' }}<span v-if="selectedOrder.governorate">, {{ selectedOrder.governorate }}</span>
+                {{ selectedOrder.city || $t('common.noCity') }}<span v-if="selectedOrder.governorate">, {{ selectedOrder.governorate }}</span>
               </p>
             </div>
 
             <div class="flex flex-wrap gap-3 text-sm">
               <div class="rounded-xl bg-white px-4 py-3">
-                <p class="text-gray-500">Status</p>
+                <p class="text-gray-500">{{ $t('common.status') }}</p>
                 <span
                   class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="getCustomerOrderStatusClass(selectedOrder.status)"
                 >
-                  {{ formatCustomerOrderStatus(selectedOrder.status) }}
+                  {{ $uiLabel(formatCustomerOrderStatus(selectedOrder.status)) }}
                 </span>
               </div>
 
               <div class="rounded-xl bg-white px-4 py-3">
-                <p class="text-gray-500">Total</p>
+                <p class="text-gray-500">{{ $t('common.total') }}</p>
                 <p class="mt-1 text-lg font-bold text-gray-900">{{ formatCommerceCurrency(selectedOrder.total_amount) }}</p>
               </div>
             </div>
@@ -173,39 +173,39 @@
         <div class="mt-6 rounded-2xl border bg-gray-50 p-4">
           <div class="flex items-center justify-between gap-3">
             <div>
-              <h4 class="text-lg font-bold text-gray-900">Returned Items</h4>
+              <h4 class="text-lg font-bold text-gray-900">{{ $t('common.returnedItems') }}</h4>
               <p class="mt-1 text-sm text-gray-500">
-                Enter quantities only for legacy aggregate inventory.
+                {{ $t('dashboard.commerce.enterQuantitiesOnlyForLegacyAggregateInventory') }}
               </p>
             </div>
           </div>
 
           <div class="mt-4 flex flex-col gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-sm text-blue-900">
-              QR-tracked products are returned one physical item at a time by scanning the exact item's QR code.
+              {{ $t('dashboard.commerce.qrTrackedProductsAreReturnedOnePhysicalItemAtATimeByScanningTheExactItemSQrCode') }}
               <span v-if="trackedOrderItemCount">
-                This order has {{ trackedOrderItemCount }} tracked line{{ trackedOrderItemCount === 1 ? '' : 's' }}, hidden from this quantity form.
+                {{ $t('dashboard.commerce.thisOrderHasValueTrackedLinevalueHiddenFromThisQuantityForm', { value0: (trackedOrderItemCount), value1: (trackedOrderItemCount === 1 ? '' : $uiPluralSuffix('s')) }) }}
               </span>
             </p>
 
-            <NuxtLink
+            <NuxtLinkLocale
               to="/dashboard/commerce?tab=scan"
               class="shrink-0 text-sm font-bold text-blue-700 hover:text-blue-900 hover:underline"
             >
-              Scan item QR
-            </NuxtLink>
+              {{ $t('common.scanItemQr') }}
+            </NuxtLinkLocale>
           </div>
 
           <p v-if="loadingOrderItems" class="mt-4 text-sm text-gray-500">
-            Loading order items...
+            {{ $t('common.loadingOrderItems') }}
           </p>
 
           <p v-else-if="returnForm.order_id && !returnItems.length" class="mt-4 text-sm text-gray-500">
-            This order does not have returnable legacy inventory items.
+            {{ $t('dashboard.commerce.thisOrderDoesNotHaveReturnableLegacyInventoryItems') }}
           </p>
 
           <p v-else-if="!returnForm.order_id" class="mt-4 text-sm text-gray-500">
-            Select an order first.
+            {{ $t('common.selectAnOrderFirst') }}
           </p>
 
           <div v-else class="mt-4 space-y-3">
@@ -217,18 +217,18 @@
               <div>
                 <p class="font-bold text-gray-900">{{ item.product_title }}</p>
                 <p class="mt-1 text-sm text-gray-500">
-                  Ordered {{ item.purchased_quantity }}
-                  <span v-if="item.already_returned_quantity"> · Returned {{ item.already_returned_quantity }}</span>
+                  {{ $t('common.orderedValue', { value0: (item.purchased_quantity) }) }}
+                  <span v-if="item.already_returned_quantity"> {{ $t('common.returnedValue', { value0: (item.already_returned_quantity) }) }}</span>
                 </p>
               </div>
 
               <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
-                <p class="text-gray-500">Available</p>
+                <p class="text-gray-500">{{ $t('common.available') }}</p>
                 <p class="mt-1 font-bold text-gray-900">{{ item.remaining_quantity }}</p>
               </div>
 
               <div class="rounded-xl bg-gray-50 px-3 py-3 text-sm">
-                <p class="text-gray-500">Price</p>
+                <p class="text-gray-500">{{ $t('common.price') }}</p>
                 <p class="mt-1 font-bold text-gray-900">{{ formatCommerceCurrency(item.unit_price) }}</p>
               </div>
 
@@ -238,13 +238,13 @@
                 min="0"
                 :max="item.remaining_quantity"
                 class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-                placeholder="Return qty"
+                :placeholder="$t('common.returnQty')"
               >
             </div>
           </div>
 
           <p v-if="formError" class="mt-4 text-sm text-red-600">
-            {{ formError }}
+            {{ $uiMessage(formError) }}
           </p>
 
           <div class="mt-5 flex justify-end">
@@ -257,7 +257,7 @@
                 : 'bg-blue-600 hover:bg-blue-700'"
               @click="saveReturn"
             >
-              {{ saving ? 'Saving...' : 'Receive Return' }}
+              {{ saving ? $t('common.saving') : $t('common.receiveReturn') }}
             </button>
           </div>
         </div>
@@ -268,18 +268,18 @@
       <div class="flex items-center justify-between gap-3">
         <button
           type="button"
-          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+          class="flex min-w-0 flex-1 items-start justify-between gap-4 text-start"
           @click="isRecentReturnsOpen = !isRecentReturnsOpen"
         >
           <div>
-            <h3 class="text-2xl font-bold">Recent Returns</h3>
+            <h3 class="text-2xl font-bold">{{ $t('common.recentReturns') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Latest recorded returns across the system.
+              {{ $t('dashboard.commerce.latestRecordedReturnsAcrossTheSystem') }}
             </p>
           </div>
 
           <div class="flex items-center gap-2 pt-1 text-sm font-medium text-gray-500">
-            <span>{{ isRecentReturnsOpen ? 'Collapse' : 'Expand' }}</span>
+            <span>{{ isRecentReturnsOpen ? $t('common.collapse') : $t('common.expand') }}</span>
             <Icon
               name="lucide:chevron-down"
               size="18"
@@ -295,21 +295,21 @@
           class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
           @click="loadRecentReturns"
         >
-          Refresh
+          {{ $t('common.refresh') }}
         </button>
       </div>
 
       <div v-if="isRecentReturnsOpen">
       <p v-if="pageError" class="mt-5 text-sm text-red-600">
-        {{ pageError }}
+        {{ $uiMessage(pageError) }}
       </p>
 
       <p v-else-if="loadingReturns" class="mt-5 text-sm text-gray-500">
-        Loading returns...
+        {{ $t('common.loadingReturns') }}
       </p>
 
       <p v-else-if="!recentReturns.length" class="mt-5 text-sm text-gray-500">
-        No returns recorded yet.
+        {{ $t('dashboard.commerce.noReturnsRecordedYet') }}
       </p>
 
       <div v-else class="mt-6 space-y-3">
@@ -321,11 +321,11 @@
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="space-y-2">
               <p class="font-bold text-gray-900">
-                {{ orderNameMap[returnRecord.order_id] || `Order #${String(returnRecord.order_id || '').slice(0, 8)}` }}
+                {{ orderNameMap[returnRecord.order_id] || $t('common.orderValueVariant3', { value0: (String(returnRecord.order_id || '').slice(0, 8)) }) }}
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ warehouseNameMap[returnRecord.warehouse_id] || 'Unknown warehouse' }}
+                {{ warehouseNameMap[returnRecord.warehouse_id] || $t('common.unknownWarehouse') }}
               </p>
 
               <p class="text-xs text-gray-400">
@@ -333,13 +333,13 @@
               </p>
             </div>
 
-            <div class="text-left md:text-right">
+            <div class="text-start md:text-end">
               <p class="text-lg font-bold text-gray-900">
-                {{ returnRecord.total_items }} item{{ returnRecord.total_items === 1 ? '' : 's' }}
+                {{ $t('common.valueItemvalue', { value0: (returnRecord.total_items), value1: (returnRecord.total_items === 1 ? '' : $uiPluralSuffix('s')) }) }}
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ returnRecord.reason || 'No reason provided' }}
+                {{ returnRecord.reason || $t('common.noReasonProvided') }}
               </p>
             </div>
           </div>
@@ -351,8 +351,12 @@
 </template>
 
 <script setup>
+const { intlLocale } = useUiLocale()
+const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
+const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
+
 import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/orderStatus'
-import { formatCommerceCurrency, formatCommerceDate } from '~/utils/commerce'
+import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
