@@ -82,6 +82,12 @@ html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[autocomplete^=
 .ui-preferences { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
 .ui-preferences label { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border: 1px solid currentColor; border-radius: 7px; }
 .ui-preferences select { max-width: 100px; min-height: 30px; padding-inline: 2px; background: transparent; cursor: pointer; }
+.ui-theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border: 1px solid currentColor; border-radius: 7px; background: transparent; color: inherit; cursor: pointer; }
+.ui-theme-toggle:hover { background: var(--brand-soft); color: var(--brand-text); }
+.ui-theme-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.ui-theme-toggle .ui-theme-dark-icon { display: none; }
+html.dark .ui-theme-toggle .ui-theme-light-icon { display: none; }
+html.dark .ui-theme-toggle .ui-theme-dark-icon { display: inline-block; }
 .brand-logo { display: inline-flex; width: 100%; height: 100%; align-items: center; justify-content: center; }
 .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .brand-logo .brand-logo-dark, .storefront .brand-logo .brand-logo-dark { display: none; }
@@ -112,6 +118,7 @@ html.dark :is(.bg-blue-600,.bg-blue-700,.bg-blue-800,.bg-red-600,.bg-green-600) 
 html.dark :is(.bg-\[\#f7f9fc\],.bg-\[\#f5f7fb\]) { background: var(--background); }
 html.dark :is(dialog,.media-preview) { background: var(--surface); color: var(--text-primary); }
 @media (max-width: 640px) {
+  .ui-theme-toggle { width: 44px; height: 44px; }
   .storefront .store-topbar-inner { flex-wrap: wrap; gap: 5px; padding-block: 5px; }
   .storefront .store-topbar-links { display: flex; gap: 9px; flex-wrap: wrap; }
   .storefront .store-topbar .store-topbar-links > a { display: none; }

@@ -563,7 +563,7 @@
     "employeeCode": "Employee Code",
     "employees": "Employees",
     "employmentStatus": "Employment Status",
-    "en": "EN",
+    "en": "English",
     "enableLiveChat": "Enable Live Chat",
     "enableLiveRequests": "Enable live requests",
     "enableUser": "Enable User",
@@ -2950,6 +2950,7 @@
     "tooManyRequestsPleaseTryAgainLater": "Too many requests. Please try again later.",
     "language": "Language",
     "theme": "Theme",
+    "toggleTheme": "Toggle light and dark theme",
     "system": "System",
     "light": "Light",
     "dark": "Dark"

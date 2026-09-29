@@ -563,7 +563,7 @@
     "employeeCode": "رمز الموظف",
     "employees": "الموظفون",
     "employmentStatus": "الحالة الوظيفية",
-    "en": "EN",
+    "en": "English",
     "enableLiveChat": "تفعيل المحادثة المباشرة",
     "enableLiveRequests": "تفعيل الطلبات الفعلية",
     "enableUser": "تفعيل المستخدم",
@@ -2950,6 +2950,7 @@
     "tooManyRequestsPleaseTryAgainLater": "طلبات كثيرة. أعد المحاولة لاحقًا.",
     "language": "اللغة",
     "theme": "المظهر",
+    "toggleTheme": "التبديل بين المظهر الفاتح والداكن",
     "system": "النظام",
     "light": "فاتح",
     "dark": "داكن"

@@ -1,7 +1,9 @@
 <script setup>
 const { locale, setLocale } = useI18n()
 const choice = useCookie('elcomputer-locale', { maxAge: 31536000, path: '/', sameSite: 'lax' })
-const { preference, setTheme } = useUiPreferences()
+const { setTheme } = useUiPreferences()
+const colorMode = useColorMode()
+const toggleTheme = () => setTheme(colorMode.value === 'dark' ? 'light' : 'dark')
 const switchLanguage = async event => {
   const next = event.target.value === 'ar' ? 'ar' : 'en'
   choice.value = next
@@ -19,14 +21,15 @@ const switchLanguage = async event => {
         <option value="ar" lang="ar">العربية</option>
       </select>
     </label>
-    <label>
-      <span class="sr-only">{{ $t('preferences.theme') }}</span>
-      <Icon name="lucide:monitor" size="16" aria-hidden="true" />
-      <select :value="preference" :aria-label="$t('preferences.theme')" @change="setTheme($event.target.value)">
-        <option value="system">{{ $t('preferences.system') }}</option>
-        <option value="light">{{ $t('preferences.light') }}</option>
-        <option value="dark">{{ $t('preferences.dark') }}</option>
-      </select>
-    </label>
+    <button
+      type="button"
+      class="ui-theme-toggle"
+      :aria-label="$t('preferences.toggleTheme')"
+      :title="$t('preferences.toggleTheme')"
+      @click="toggleTheme"
+    >
+      <Icon class="ui-theme-light-icon" name="lucide:sun" size="20" aria-hidden="true" />
+      <Icon class="ui-theme-dark-icon" name="lucide:moon" size="20" aria-hidden="true" />
+    </button>
   </div>
 </template>
