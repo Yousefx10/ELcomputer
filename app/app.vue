@@ -13,9 +13,8 @@ watch(
   () => normalizeTheme(themeChoice.value || siteContent.value?.settings?.site_theme_default),
   value => { effectiveTheme.value = value; colorMode.preference = value }
 )
-const localeHead = useLocaleHead({ seo: false })
 useHead(() => ({
-  htmlAttrs: { ...localeHead.value.htmlAttrs, lang: locale.value, dir: locale.value === 'ar' ? 'rtl' : 'ltr' }
+  htmlAttrs: { lang: locale.value, dir: locale.value === 'ar' ? 'rtl' : 'ltr' }
 }))
 </script>
 
