@@ -1,6 +1,6 @@
 # UI localization and appearance
 
-Date: 2026-09-28. Scope: application interface only. **Local implementation; not deployed.**
+Date: 2026-09-29. Scope: application interface only. **Deployed** to `https://new.elcomputer.net`, final application commit `6b6d8f2d2ce5d07733454240c8ab641f6c69f161`. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260929-163821-3434`.
 
 ## Architecture and audit
 
@@ -14,6 +14,7 @@ The audit identified locale prefixes in auth/permission checks, client-only home
 - `i18n/locales/en.json` and `i18n/locales/ar.json`; exactly `en` and `ar`.
 - English is the default. Browser/geography detection is disabled.
 - Existing English routes remain unprefixed. Arabic uses `/ar`, including product, custom CMS, account, auth, and dashboard routes.
+- The language selector displays **English** and `العربية` in both locales.
 - `UiPreferences` uses the module's `setLocale`, preserving the route, query, and hash. `elcomputer-locale` remembers manual choice for one year.
 - Shared route/navigation adapters normalize prefixes for existing comparisons, permissions and redirects. API/upload/image paths and external links retain their destinations.
 - `<html lang>` and `dir` follow the active locale. Existing static document titles are localized; stored product/CMS titles remain stored content.
@@ -40,7 +41,7 @@ The existing styles use logical spacing, borders, positioning and start/end alig
 
 ## Theme and persistence
 
-`@nuxtjs/color-mode` 4.0.1 owns the shared Light/Dark/System mechanism for the storefront and dashboard. System is the default and responds to OS changes.
+`@nuxtjs/color-mode` 4.0.1 owns the shared Light/Dark/System mechanism for the storefront and dashboard. System is the default and responds to OS changes until a manual override. The shared theme dropdown is now one sun/moon button: sun in Light, moon in Dark. Clicking persists the opposite theme. Icons use CSS visibility, and the button has a localized accessible label, tooltip and keyboard focus style. The site default selector retains System/Light/Dark; the compact visitor control has no System menu.
 
 - `elcomputer-theme-choice`: manual choice; one year, root path, SameSite Lax.
 - `elcomputer-color-mode`: effective preference consumed by the standard prepaint bootstrap.
@@ -61,13 +62,21 @@ The additive migration is `supabase/migrations/20260928130000_ui_appearance.sql`
 | `site_logo_dark_url` | Optional dark logo |
 | `site_theme_default` | `system`, `light`, or `dark`; default `system` |
 
-No new settings/media table, storage system, catalog columns, enum changes, or destructive migration. **The migration has not been applied remotely.**
+No new settings/media table, storage system, catalog columns, enum changes, or destructive migration. **Applied to the linked production Supabase project on 2026-09-29; all 51 migrations match.** Existing settings values and checked business counts were preserved.
 
 Light falls back to the existing site logo and then the bundled logo. Dark falls back to Light. Failed image loads fall back to Light and then the bundled logo. Header, footer and dashboard share `BrandLogo`; theme changes select the appropriate asset live. Existing paper/packing branding retains its existing configured logo.
 
-## Verification
+## Current release verification — 2026-09-29
 
-All results below were obtained after the final application edits. `PROJECT_STATE.md` and `CODEX_HANDOFF.md` record the same final state.
+- Final application commit: `6b6d8f2d2ce5d07733454240c8ab641f6c69f161`; catalogs contain **3,131 matching keys**. The redundant i18n head helper was removed after a production warning; explicit HTML lang/dir remains.
+- Fresh `node --test tests/*.test.mjs`: **172 passed**; Nuxt typecheck/build and `git diff --check`: passed.
+- Local Chrome: **30 checks passed**, including 24 storefront/search/dashboard-fixture cases across 1440/390px, English/Arabic and Light/Dark, plus default System behavior, toggle/reload persistence. Zero exceptions, application console errors or hydration warnings. Fixture-only fixes handled cancelled CDP requests and authenticated page readiness.
+- The branding migration is applied; all 51 migrations match. Checked counts and existing settings fingerprints were preserved; new fields are System and null logos.
+- Guarded deployment passed preflight/postflight, rebuilt without local app secrets, scanned output for local secrets, packaged only `.output`, and restarted PM2 `new-elcomputer` at its expected cwd/entry. **Nine public routes returned 200**, and **22/22 live Chrome checks passed** across English/Arabic, Light/Dark and 1440/390px. No overflow, exceptions, console errors or hydration warnings. The final PM2 error log stayed unchanged during the live smoke. Current evidence lives under `/tmp/elcomputer-theme-release/`; authenticated settings/upload acceptance remains pending.
+
+## Historical baseline verification — 2026-09-28
+
+The results below were obtained after the original localization edits, before the sun/moon follow-up. They are historical evidence; the fresh control checks are listed above.
 
 | Final check | Result |
 | --- | --- |
@@ -81,7 +90,7 @@ All results below were obtained after the final application edits. `PROJECT_STAT
 | Preference/branding/RTL interactions | 36/36 passed; 0 exceptions, console errors or hydration warnings |
 | Public-output secret scan | 102 text assets checked; 0 exposures of the configured server-only secret |
 
-Git remains on `main` at `64767bb3dbffa8ef0e3ac5512427c8a6794ae1b4`. The phase is uncommitted: 131 modified tracked files and 20 new files. No server business/security file was modified. Existing build warnings concern Tailwind sourcemaps and the prior preorder BigInt code targeting ES2019; the verified browser is current Chrome. Older-browser compatibility is not established by this matrix.
+At the original verification, Git was on `main` at `64767bb3dbffa8ef0e3ac5512427c8a6794ae1b4`. The original phase was uncommitted: 131 modified tracked files and 20 new files. No server business/security file was modified. Existing build warnings concern Tailwind sourcemaps and the prior preorder BigInt code targeting ES2019; the verified browser is current Chrome. Older-browser compatibility is not established by this matrix.
 
 Browser checks run against a local production preview. Public catalog reads are anonymous. Customer/admin screens use browser-only fixtures; database and API writes are intercepted. These checks establish rendered interface behavior, not real authenticated backend acceptance. No production Auth identity, order, catalog/settings row or uploaded asset is created for this phase.
 
@@ -91,7 +100,7 @@ The final harness verifies component readiness, protected account/checkout fixtu
 
 Final-validation application fixes restored sidebar leaf links, corrected a product-card formatter exception, preserved the sidebar-only RTL transform, improved dark link/action contrast, and localized transient feedback and mobile header behavior. Harness readiness/fixture corrections were handled separately.
 
-Evidence is retained under `/tmp/elcomputer-localization/`: `matrix-complete.log`, `visual/results.json`, `interactions.json`, `tests-complete.log`, `final-focused-tests.log`, `typecheck-complete.log`, `build-complete.log`, `audit-final.log`, `translation-audit.json`, `secret-scan.json`, and the current screenshots. These temporary artifacts are not committed.
+Original evidence was recorded under `/tmp/elcomputer-localization/` (these temporary files were cleared before the follow-up): `matrix-complete.log`, `visual/results.json`, `interactions.json`, `tests-complete.log`, `final-focused-tests.log`, `typecheck-complete.log`, `build-complete.log`, `audit-final.log`, `translation-audit.json`, `secret-scan.json`, and the current screenshots. These temporary artifacts are not committed.
 
 Existing sample upload URLs may show the application's blank fallback in a local preview because VPS files are not present locally. Brand checks therefore use explicit local image fixtures. Authenticated logo persistence, real uploads, and end-to-end customer/backend acceptance remain pending on an isolated database with the migration applied.
 
@@ -112,13 +121,13 @@ Review each in English and with `/ar` prefixed, in Light and Dark:
 | Appearance / branding | `/dashboard/settings?tab=general` → Appearance and branding |
 | Specialized Arabic wording | `/dashboard/commerce?tab=procurement`, `/dashboard/orders/confirm`, `/dashboard/live-chat` |
 
-At 390px, open/close the dashboard sidebar and check the Arabic edge. In Appearance and branding, select/upload/remove both logos, verify their preview backgrounds, and test System plus manual overrides. Real save/upload acceptance needs an isolated backend with the unapplied migration; browser fixtures do not establish backend persistence.
+At 390px, open/close the dashboard sidebar and check the Arabic edge. In Appearance and branding, select/upload/remove both logos, verify their preview backgrounds, and test System plus manual overrides. Real save/upload acceptance needs an isolated test backend with the applied migration; browser fixtures do not establish backend persistence.
 
 ## Completion report
 
 1. **Existing architecture:** Nuxt 4, Supabase, singleton settings, one configured logo, reusable media/settings controls; no previous language/color-mode system.
 2. **i18n choice:** standard Nuxt i18n with composition-mode Vue I18n.
-3. **Catalogs:** shared English/Arabic JSON files with 3,130 matching semantic domain keys.
+3. **Catalogs:** shared English/Arabic JSON files with 3,131 matching semantic domain keys.
 4. **Translated areas:** storefront and dashboard interface, validation/messages/statuses, support/chat/account/auth and print labels.
 5. **Exclusions:** all stored catalog, customer, review, message, order-note and CMS content.
 6. **Arabic RTL:** HTML direction, logical CSS, directional icons, carousels, forms and shared layouts.
@@ -128,12 +137,12 @@ At 390px, open/close the dashboard sidebar and check the Arabic edge. In Appeara
 10. **SSR/persistence:** cookie-backed choice, standard prepaint bootstrap, live OS changes; corrected client-only loader hydration.
 11. **Logos:** separate optional Light/Dark assets, appropriate previews and safe fallbacks.
 12. **Reuse:** existing singleton, settings save flow, media component/library and authenticated upload API.
-13. **Schema:** three additive settings columns; local migration only.
+13. **Schema:** three additive settings columns; applied during the authorized 2026-09-29 release.
 14. **Fallback:** English for missing Arabic, guarded optional keys, generic localized unknown errors, catalog consistency gates.
 15. **Build gates:** 172 repository tests and 14 focused checks passed; Nuxt typecheck/build and whitespace checks passed; public-output scan found zero secret exposures.
 16. **Visual checks:** 208 matrix screens and 36 preference/branding/RTL interactions passed without overflow, exceptions, console errors or hydration warnings; fixtures are distinguished from backend acceptance.
 17. **Wording review:** ask Arabic-speaking store staff to review specialized ERP/accounting, serialized inventory, procurement, callbacks, payment-proof and preorder terms. Initial wording is Modern Standard Arabic.
 18. **Remaining English:** intentional technical identifiers, examples and stored content. Unrecognized future enum/error labels require a catalog mapping; framework startup failures before i18n initialization may use Nuxt's emergency UI.
-19. **Future work:** isolated authenticated acceptance, approved migration/release, and staff wording review. Product/CMS content localization would be a separate authorized phase with an explicit content model.
+19. **Future work:** isolated authenticated acceptance and staff wording review. Product/CMS content localization would be a separate authorized phase with an explicit content model.
 
-This phase stops here. No deployment or additional client feature is authorized by this request.
+The 2026-09-29 request authorizes this deployment. No additional client feature is part of the release.

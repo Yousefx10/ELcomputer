@@ -1,8 +1,18 @@
-# Project state — 2026-09-28
+# Project state — 2026-09-29
 
-## English/Arabic UI and appearance — local, 2026-09-28
+## Sun/moon theme control and authorized release — 2026-09-29
 
-**Status:** Implemented locally. **Not deployed.** Migration `20260928130000_ui_appearance.sql` has not been applied to remote Supabase. This request expressly prohibits deployment and product/customer/CMS translation.
+**Status:** Deployed at `https://new.elcomputer.net` through the guarded release script. The user explicitly authorized this VPS release. Final application commit: `6b6d8f2d2ce5d07733454240c8ab641f6c69f161` (includes toggle commit `ff4029d` and localization base `c139700`). Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260929-163821-3434`.
+
+- Shared storefront/dashboard preferences now have one accessible sun/moon button: sun in Light, moon in Dark; clicking chooses and persists the opposite theme. CSS selects icons without a System-dependent hydration branch. System remains the site default until a manual override. The language selector displays **English** in both locales; Arabic remains `العربية`.
+- Catalogs now contain **3,131 matching EN/AR keys**. No stored catalog/customer/chat/review/CMS content was translated.
+- Applied only `20260928130000_ui_appearance.sql` to Supabase project `zsqhuwgoasrexdnamlks`. All **51 migrations match**. Existing settings fingerprint and checked business counts were preserved: 91 products, 91 variants, 8 orders, 12 items, 3 customer profiles. New defaults are System and null Light/Dark logo URLs. The optional local Docker catalog-cache warning was followed by successful ledger and direct database checks.
+- Fresh gates: **172 tests passed**, typecheck/build and `git diff --check` passed. **30 local Chrome checks passed**: 24 storefront/search/dashboard-fixture width/locale/theme cases plus default theme, switching and reload persistence checks, with zero exceptions, application console errors or hydration warnings. The final source also removes the redundant i18n head helper that emitted a base-URL warning; HTML language and direction remain explicitly set. Dashboard fixture readiness corrections required no application fixes.
+- Guarded deployment built without local app secrets, checked the output for local secrets, packaged only `.output`, restarted only PM2 `new-elcomputer` and passed preflight/postflight. The final PM2 app is online at the expected cwd/entry. Nine public English/Arabic home, search, product, dashboard-login and chat-status routes returned 200. **22/22 live Chrome checks passed** with no overflow, exceptions, console errors or hydration warnings. The error log did not grow during the final smoke; a single base-URL warning appeared during the release transition. Evidence: `/tmp/elcomputer-theme-release/`. Authenticated logo/settings persistence and uploads still require staff acceptance; no production test identity/order/upload was created.
+
+## English/Arabic UI and appearance — historical local verification, 2026-09-28
+
+**Status:** Implemented locally. **Not deployed.** Migration `20260928130000_ui_appearance.sql` has not been applied to remote Supabase. The original verification request prohibited deployment and product/customer/CMS translation; the authorized release above supersedes that deployment restriction.
 
 - Added standard Nuxt i18n (English default, Arabic `/ar/...`, no browser/geography detection) and shared Nuxt color mode (Light/Dark/System). Accessible public/dashboard selectors persist manual choices in cookies. Existing English URLs, normalized auth/permission checks, cart/session state and business enums retain their behavior.
 - English/Arabic locale catalogs contain 3,130 matching semantic keys for storefront, auth/account/checkout/help/support/review/chat, dashboard controls/metadata/messages, and packing labels. Stored catalog/specification/brand/model/SKU, customer/review/message/order-note and CMS content is preserved. Locale formatting keeps EGP and Latin digits in Arabic.
