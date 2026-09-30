@@ -1,4 +1,14 @@
-# Codex handoff — Sun/moon toggle and authorized VPS release, 2026-09-29
+# Codex handoff — customer authentication page, 2026-09-30
+
+**Current auth phase status: LOCAL ONLY.** The customer login/signup redesign, dashboard Authentication page controls and optional Facebook Supabase OAuth call are implemented. No deployment or database migration occurred. The prior Sun/moon release below remains the live version.
+
+- Read `docs/authentication-page.md` for the exact additive migration, media/settings reuse, fixed app redirect allowlist, Google and Facebook setup, and manual acceptance list. Facebook stays hidden until `auth_facebook_enabled` is saved after external setup.
+- The existing Supabase Auth Site URL was last documented as `http://localhost:3000`; check the current dashboard before changing it. Apply `20260930120000_auth_page_appearance.sql` before testing saves. Verify real email, OAuth, disabled-account, profile, reset and upload flows with isolated identities. Browser-only/anonymous checks do not verify those flows.
+- Local gates: 174 tests, Nuxt typecheck/build, `git diff --check`, PGlite migration check, and seven anonymous Chrome layouts passed. Linked migration list shows the new migration pending. The local uploaded logo is a blank fixture, so real branding still needs inspection.
+
+---
+
+## Previous release — Sun/moon toggle, 2026-09-29
 
 **Current status: DEPLOYED.** The user authorized this VPS release. Final application commit `6b6d8f2d2ce5d07733454240c8ab641f6c69f161` includes toggle commit `ff4029d` and localization base `c139700`. PM2 `new-elcomputer` serves `https://new.elcomputer.net`; backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260929-163821-3434`.
 

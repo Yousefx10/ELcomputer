@@ -1,4 +1,13 @@
-# Project state — 2026-09-29
+# Project state — 2026-09-30
+
+## Customer authentication page — local, 2026-09-30
+
+**Status:** Implemented locally. No migration was applied, and no deployment was performed. See `docs/authentication-page.md` for architecture, setup and acceptance details.
+
+- `/login` and `/login?mode=signup` now share a focused split surface. Store → Authentication page settings choose split, centered or reversed layout, separate Light/Dark images, focal position, short text and Facebook visibility. The existing `site_settings` row, dashboard media library/upload API, EN/AR locale catalogs, theme logo and color mode are reused. Migration `20260930120000_auth_page_appearance.sql` adds only the needed settings columns and remains local.
+- Email/password, signup and Google still use Supabase Auth. A Facebook OAuth button uses the same provider call and is hidden by default until Meta/Supabase configuration and staff enablement. OAuth callbacks use fixed app URLs and validate the saved return path. A missing profile is created from the verified Auth user; disabled accounts are signed out. Password reset and email confirmation use fixed same-origin app redirects.
+- Project notes last observed Supabase Auth Site URL as `http://localhost:3000`; this was not rechecked or changed. Before release, inspect Site URL and Redirect URLs, apply the migration, configure the Meta app and Supabase Facebook provider, and validate real customer/staff flows. Static tests and local anonymous rendering do not establish provider, profile, upload or disabled-account behavior.
+- Local validation: 174 tests, Nuxt typecheck/build, `git diff --check`, PGlite migration defaults/constraints, and seven anonymous Chrome EN/AR Light/Dark desktop/tablet/mobile screens passed. No horizontal overflow or browser console exceptions occurred. The linked migration list confirms the new migration is pending. The local uploaded logo is a blank fixture; real branding and authenticated acceptance remain pending.
 
 ## Sun/moon theme control and authorized release — 2026-09-29
 

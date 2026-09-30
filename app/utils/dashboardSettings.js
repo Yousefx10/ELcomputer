@@ -11,6 +11,7 @@ export const dashboardSettingsSections = [
   { key: 'footer-links', section: 'footerLinks', label: 'Footer links', group: 'Navigation & footer', icon: 'lucide:link', description: 'Organize the links at the bottom of the store.' },
   { key: 'layout', section: 'dashboardLayout', label: 'Dashboard appearance', group: 'Administration', icon: 'lucide:panel-right', description: 'Switch between the Classic and Modern dashboard.' },
   { key: 'account-dashboard', section: 'accountDashboard', label: 'Customer account', group: 'Store', icon: 'lucide:user-round-cog', description: 'Choose the customer account layout.' },
+  { key: 'authentication', section: 'authPage', label: 'Authentication page', group: 'Store', icon: 'lucide:log-in', description: 'Set login and signup layout, images and text.' },
   { key: 'live-chat', section: 'liveChat', label: 'Live Chat', group: 'Administration', icon: 'lucide:messages-square', description: 'Set availability, hours, messages and workflow.' },
   { key: 'erp', label: 'ERP connection', group: 'Administration', icon: 'lucide:cloud-cog', description: 'Use the built-in tools or connect Daftra.' },
   { key: 'gallery', label: 'Media library', group: 'Store', icon: 'lucide:images', description: 'Browse and remove uploaded images.' },

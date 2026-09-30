@@ -1844,6 +1844,43 @@
         </div>
       </section>
 
+      <section v-show="activeSettingsSection?.section === 'authPage'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <div class="border-b p-6">
+          <h3 class="text-2xl font-bold">{{ $t('authPage.settingsTitle') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('authPage.settingsDescription') }}</p>
+        </div>
+        <div class="space-y-7 p-6">
+          <fieldset>
+            <legend class="mb-3 font-semibold">{{ $t('authPage.layout') }}</legend>
+            <div class="grid gap-3 sm:grid-cols-3">
+              <label v-for="layout in authPageLayoutOptions" :key="layout.value" class="flex cursor-pointer items-center gap-2 rounded-xl border p-4 focus-within:ring-2 focus-within:ring-blue-500" :class="siteSettings.auth_page_layout === layout.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
+                <input v-model="siteSettings.auth_page_layout" type="radio" name="auth-page-layout" :value="layout.value">
+                <span>{{ $t(layout.label) }}</span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="grid gap-5 md:grid-cols-2">
+            <DashboardMediaUploadField v-model="siteSettings.auth_image_light_url" section="auth_page" preview-theme="light" :label="$t('authPage.lightImage')" :preview-alt="$t('authPage.lightImage')" preview-image-class="object-cover" preview-height-class="h-32" :help-text="$t('authPage.imageHelp')" />
+            <DashboardMediaUploadField v-model="siteSettings.auth_image_dark_url" section="auth_page" preview-theme="dark" :label="$t('authPage.darkImage')" :preview-alt="$t('authPage.darkImage')" preview-image-class="object-cover" preview-height-class="h-32" :help-text="$t('authPage.darkImageHelp')" />
+          </div>
+          <label class="block max-w-xs text-sm font-semibold">{{ $t('authPage.imagePosition') }}
+            <select v-model="siteSettings.auth_image_position" class="mt-2 block w-full rounded-lg border p-3">
+              <option v-for="position in authImagePositionOptions" :key="position.value" :value="position.value">{{ $t(position.label) }}</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-3"><input v-model="siteSettings.auth_show_visual_text" type="checkbox" class="h-4 w-4">{{ $t('authPage.showVisualText') }}</label>
+          <div class="grid gap-5 md:grid-cols-2">
+            <label v-for="field in authPageTextFields" :key="field.key" class="block text-sm font-semibold" :class="field.wide ? 'md:col-span-2' : ''">{{ $t(field.label) }}
+              <input v-model="siteSettings[field.key]" type="text" :maxlength="field.max" :placeholder="$t(field.placeholder)" class="mt-2 block w-full rounded-lg border p-3">
+            </label>
+          </div>
+          <label class="flex items-start gap-3"><input v-model="siteSettings.auth_facebook_enabled" type="checkbox" class="mt-1 h-4 w-4"><span><span class="block font-semibold">{{ $t('authPage.showFacebook') }}</span><span class="block text-sm text-gray-500">{{ $t('authPage.facebookHelp') }}</span></span></label>
+          <p v-if="settingsErrorSection === 'authPage' && settingsError" role="alert" class="text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
+          <p v-if="settingsSuccessSection === 'authPage' && settingsSuccess" role="status" class="text-sm text-green-700">{{ settingsSuccess }}</p>
+          <div class="flex justify-end"><button type="button" :disabled="!isSettingsSectionDirty('authPage') || settingsLoading" class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50" @click="saveSiteSettings('authPage')">{{ settingsLoadingSection === 'authPage' ? $t('common.saving') : $t('authPage.saveSettings') }}</button></div>
+        </div>
+      </section>
+
       <DashboardLiveChatSettings
         v-if="activeSettingsSection?.section === 'liveChat'"
         :can-edit="canEditSettings"
@@ -2300,6 +2337,19 @@ const defaultSiteSettings = {
   site_logo_light_url: '',
   site_logo_dark_url: '',
   site_theme_default: 'system',
+  auth_page_layout: 'split',
+  auth_image_light_url: '',
+  auth_image_dark_url: '',
+  auth_image_position: 'center',
+  auth_show_visual_text: true,
+  auth_visual_eyebrow: '',
+  auth_visual_headline: '',
+  auth_visual_supporting_text: '',
+  auth_login_heading: '',
+  auth_login_supporting_text: '',
+  auth_signup_heading: '',
+  auth_signup_supporting_text: '',
+  auth_facebook_enabled: false,
   site_background_color: '#f3f4f6',
   landing_page_title: 'ELcomputer',
   dashboard_layout: 'standard',
@@ -2449,6 +2499,25 @@ const accountDashboardOptions = [
   { value: 'classic', label: 'Classic', description: 'Keep the current account sidebar and summary cards.' },
   { value: 'modern', label: 'Modern', description: 'Grouped account navigation with focused order, wallet and profile sections.' }
 ]
+const authPageLayoutOptions = [
+  { value: 'split', label: 'authPage.split' },
+  { value: 'centered', label: 'authPage.centered' },
+  { value: 'reversed', label: 'authPage.reversed' }
+]
+const authImagePositionOptions = [
+  { value: 'left', label: 'authPage.left' },
+  { value: 'center', label: 'authPage.center' },
+  { value: 'right', label: 'authPage.right' }
+]
+const authPageTextFields = [
+  { key: 'auth_login_heading', label: 'authPage.loginHeading', placeholder: 'authPage.defaultLoginHeading', max: 80 },
+  { key: 'auth_login_supporting_text', label: 'authPage.loginSupporting', placeholder: 'authPage.defaultLoginSupporting', max: 160 },
+  { key: 'auth_signup_heading', label: 'authPage.signupHeading', placeholder: 'authPage.defaultSignupHeading', max: 80 },
+  { key: 'auth_signup_supporting_text', label: 'authPage.signupSupporting', placeholder: 'authPage.defaultSignupSupporting', max: 160 },
+  { key: 'auth_visual_eyebrow', label: 'authPage.visualEyebrow', placeholder: 'authPage.defaultVisualEyebrow', max: 80 },
+  { key: 'auth_visual_headline', label: 'authPage.visualHeadline', placeholder: 'authPage.defaultVisualHeadline', max: 120 },
+  { key: 'auth_visual_supporting_text', label: 'authPage.visualSupporting', placeholder: 'authPage.defaultVisualSupporting', max: 180, wide: true }
+]
 const footerStyleOptions = [
   { value: 'classic', label: 'Classic', description: 'Shows contact details, links, and the footer call to action.' },
   { value: 'modern', label: 'Modern', description: 'Shows a card layout with a banner and contact details.' }
@@ -2464,6 +2533,7 @@ const openSections = reactive({
   generalSettings: true,
   dashboardLayout: true,
   accountDashboard: true,
+  authPage: true,
   homepageReviews: false,
   bannerAds: false,
   paymentSettings: false,
@@ -2548,6 +2618,12 @@ const siteSettingsSectionFields = {
   accountDashboard: [
     'account_dashboard_style'
   ],
+  authPage: [
+    'auth_page_layout', 'auth_image_light_url', 'auth_image_dark_url', 'auth_image_position',
+    'auth_show_visual_text', 'auth_visual_eyebrow', 'auth_visual_headline', 'auth_visual_supporting_text',
+    'auth_login_heading', 'auth_login_supporting_text', 'auth_signup_heading', 'auth_signup_supporting_text',
+    'auth_facebook_enabled'
+  ],
   homepageReviews: [
     'homepage_reviews_enabled',
     'homepage_reviews_view_all_enabled'
@@ -2614,6 +2690,7 @@ const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
   dashboardLayout: 'Dashboard appearance',
   accountDashboard: 'Customer account layout',
+  authPage: 'Authentication page',
   homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
   topBarSettings: 'Top bar timing',
@@ -2894,6 +2971,19 @@ const normalizeSiteSettings = (source = {}) => ({
   site_logo_light_url: String(source.site_logo_light_url || '').trim(),
   site_logo_dark_url: String(source.site_logo_dark_url || '').trim(),
   site_theme_default: ['system', 'light', 'dark'].includes(source.site_theme_default) ? source.site_theme_default : 'system',
+  auth_page_layout: ['split', 'centered', 'reversed'].includes(source.auth_page_layout) ? source.auth_page_layout : 'split',
+  auth_image_light_url: String(source.auth_image_light_url || '').trim(),
+  auth_image_dark_url: String(source.auth_image_dark_url || '').trim(),
+  auth_image_position: ['left', 'center', 'right'].includes(source.auth_image_position) ? source.auth_image_position : 'center',
+  auth_show_visual_text: source.auth_show_visual_text ?? true,
+  auth_visual_eyebrow: String(source.auth_visual_eyebrow || '').trim().slice(0, 80),
+  auth_visual_headline: String(source.auth_visual_headline || '').trim().slice(0, 120),
+  auth_visual_supporting_text: String(source.auth_visual_supporting_text || '').trim().slice(0, 180),
+  auth_login_heading: String(source.auth_login_heading || '').trim().slice(0, 80),
+  auth_login_supporting_text: String(source.auth_login_supporting_text || '').trim().slice(0, 160),
+  auth_signup_heading: String(source.auth_signup_heading || '').trim().slice(0, 80),
+  auth_signup_supporting_text: String(source.auth_signup_supporting_text || '').trim().slice(0, 160),
+  auth_facebook_enabled: source.auth_facebook_enabled === true,
   site_background_color: String(source.site_background_color || '').trim() || defaultSiteSettings.site_background_color,
   landing_page_title: String(source.landing_page_title || '').trim() || defaultSiteSettings.landing_page_title,
   dashboard_layout: String(source.dashboard_layout || '').trim().toLowerCase() === 'detailed'
@@ -3051,6 +3141,10 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_background_color',
       'landing_page_title',
       'account_dashboard_style',
+      'auth_page_layout',
+      'auth_image_position',
+      'auth_show_visual_text',
+      'auth_facebook_enabled',
       'footer_style',
       'allow_out_of_stock_purchases',
       'homepage_reviews_enabled',

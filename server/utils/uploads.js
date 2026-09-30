@@ -59,6 +59,11 @@ const UPLOAD_SECTION_DEFINITIONS = {
     directory: 'settings/site-logo',
     permissions: ['settings.edit']
   },
+  auth_page: {
+    label: 'Authentication Page',
+    directory: 'settings/auth-page',
+    permissions: ['settings.edit']
+  },
   hero_banners: {
     label: 'Hero Banners',
     directory: 'settings/hero-banners',

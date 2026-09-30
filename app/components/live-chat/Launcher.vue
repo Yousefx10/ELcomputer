@@ -58,7 +58,7 @@ const panel = ref(null)
 const closeButton = ref(null)
 const messageList = ref(null)
 const composer = ref(null)
-const visible = computed(() => status.value.enabled && !route.path.startsWith('/checkout'))
+const visible = computed(() => status.value.enabled && !route.path.startsWith('/checkout') && !/^\/(?:ar\/)?login(?:\/|$)/.test(route.path))
 const isGuest = computed(() => actor.value?.kind !== 'customer')
 const cooldown = computed(() => Math.max(
   chatSecondsRemaining(lastOwnSentAt.value, status.value.cooldownSeconds, clock.value),
