@@ -1,10 +1,10 @@
 # Codex handoff — customer authentication page, 2026-09-30
 
-**Current auth phase status: LOCAL ONLY.** The customer login/signup redesign, dashboard Authentication page controls and optional Facebook Supabase OAuth call are implemented. No deployment or database migration occurred. The prior Sun/moon release below remains the live version.
+**Current auth phase status: DEPLOYED.** Migration `20260930120000_auth_page_appearance.sql` is applied to Supabase project `zsqhuwgoasrexdnamlks`; all 52 migration versions match. Application commit `23b083f` (auth implementation `41aee51`) was deployed through `npm run deploy` to PM2 `new-elcomputer` at `https://new.elcomputer.net`. Final VPS backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20260930-140828-9990`. Guarded postflight and public endpoint checks passed.
 
-- Read `docs/authentication-page.md` for the exact additive migration, media/settings reuse, fixed app redirect allowlist, Google and Facebook setup, and manual acceptance list. Facebook stays hidden until `auth_facebook_enabled` is saved after external setup.
-- The existing Supabase Auth Site URL was last documented as `http://localhost:3000`; check the current dashboard before changing it. Apply `20260930120000_auth_page_appearance.sql` before testing saves. Verify real email, OAuth, disabled-account, profile, reset and upload flows with isolated identities. Browser-only/anonymous checks do not verify those flows.
-- Local gates: 174 tests, Nuxt typecheck/build, `git diff --check`, PGlite migration check, and seven anonymous Chrome layouts passed. Linked migration list shows the new migration pending. The local uploaded logo is a blank fixture, so real branding still needs inspection.
+- Read `docs/authentication-page.md` for the additive migration, media/settings reuse, fixed app redirects, provider setup and manual acceptance. Both Google and Facebook are disabled in the production Supabase Auth settings as of release. The login page reads provider availability and hides unavailable buttons; Facebook also requires `auth_facebook_enabled` in store settings.
+- The Supabase Auth Site URL was last documented as `http://localhost:3000` and has not been rechecked. Confirm Site URL and Redirect URLs in the Supabase dashboard before relying on email confirmation, password reset or OAuth. Configure provider credentials separately and verify real email, OAuth, disabled-account, profile, reset and dashboard upload/save flows with isolated identities.
+- Fresh gates: 174 tests, Nuxt typecheck/build, `git diff --check`, guarded preflight and postflight passed. Migration list has full parity. Seven anonymous live Chrome layouts passed with real branding and no overflow or browser issues. Anonymous checks do not verify authenticated workflows.
 
 ---
 
