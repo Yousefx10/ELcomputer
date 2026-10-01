@@ -297,6 +297,7 @@
 </template>
 
 <script setup>
+import { searchSeoPolicy, publicSiteUrl, breadcrumbs, catalogSeoFields } from '~/utils/seo'
 const { uiNavigateTo } = useUiNavigation()
 
 const { uiText, uiLabel, intlLocale } = useUiLocale()
@@ -498,12 +499,12 @@ const getSearchMetadata = async (signal) => {
   const [categoriesResult, brandsResult, minPriceResult, maxPriceResult] = await Promise.all([
     supabase
       .from('categories')
-      .select('id, name, slug')
+      .select('*')
       .order('name')
       .abortSignal(signal),
     supabase
       .from('brands')
-      .select('id, name, slug, logo_url')
+      .select('*')
       .order('name')
       .abortSignal(signal),
     supabase
@@ -1136,9 +1137,20 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(Number(value || 0))
 }
 
-useHead(() => ({
-  title: pageTitle.value
-}))
+const { data: seoContent } = useSiteContent()
+const { locale: seoLocale } = useI18n()
+const seoConfig = useRuntimeConfig()
+usePageSeo(() => {
+  const policy = searchSeoPolicy(route.query, categories.value, brands.value, searchPageData.value?.totalCount)
+  const record = policy.record
+  const settings = seoContent.value?.settings || {}
+  const base = publicSiteUrl(settings, seoConfig.public.siteUrl)
+  return {
+    ...(record ? catalogSeoFields(record, settings, seoLocale.value) : { title: uiLabel('Search') }),
+    query: policy.query, index: policy.index,
+    structuredData: record ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: record.name, path: '/search', query: policy.query }], base, seoLocale.value)] : []
+  }
+})
 
 onMounted(() => {
   updatePriceSliderTrackWidth()

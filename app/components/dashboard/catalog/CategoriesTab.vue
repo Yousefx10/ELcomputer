@@ -35,6 +35,8 @@
           {{ $t('common.slugPreviewValue', { value0: (slugPreview || '-') }) }}
         </p>
 
+        <DashboardSeoFields v-model="seo" catalog :fallback-title="name" :fallback-image="imageUrl" section="categories" :disabled="editingId ? !canEditCategory : !canAddCategory" />
+
         <p v-if="errorMessage" class="text-red-600">
           {{ $uiMessage(errorMessage) }}
         </p>
@@ -212,6 +214,7 @@ const buildCategoriesCacheKey = (page = currentPage.value) => {
 }
 
 const categories = ref([])
+const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const name = ref('')
 const imageUrl = ref('')
 const categoryFormRef = ref(null)
@@ -259,6 +262,7 @@ const slugPreview = computed(() => makeSlug(name.value))
 
 const resetForm = () => {
   name.value = ''
+  seo.value = { seo_title: '', seo_description: '', seo_image_url: '' }
   imageUrl.value = ''
   editingId.value = null
   errorMessage.value = ''
@@ -361,6 +365,7 @@ const saveCategory = async () => {
     response = await supabase
       .from('categories')
       .update({
+        ...seo.value,
         name: name.value.trim(),
         slug,
         image_url: imageUrl.value.trim() || null
@@ -370,6 +375,7 @@ const saveCategory = async () => {
     response = await supabase
       .from('categories')
       .insert({
+        ...seo.value,
         name: name.value.trim(),
         slug,
         image_url: imageUrl.value.trim() || null
@@ -408,6 +414,7 @@ const startEdit = (category) => {
   }
 
   name.value = category.name
+  seo.value = { seo_title: category.seo_title || '', seo_description: category.seo_description || '', seo_image_url: category.seo_image_url || '' }
   imageUrl.value = category.image_url || ''
   editingId.value = category.id
   errorMessage.value = ''

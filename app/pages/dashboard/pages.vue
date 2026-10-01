@@ -46,6 +46,8 @@
                   <label class="page-toggle-card"><span><strong>{{ $t('common.showInNavbar') }}</strong><small>{{ $t('dashboard.pages.addTheTitleToNavigation') }}</small></span><input v-model="draft.show_in_navbar" type="checkbox" /></label>
                 </div>
 
+                <DashboardSeoFields :model-value="draft" :fallback-title="draft.title" :fallback-description="draft.content_markdown" section="site_pages" :disabled="!canEdit" class="mt-5" @update:model-value="Object.assign(draft, $event)" />
+                <label class="mt-4 flex items-center gap-3 text-sm"><input v-model="draft.seo_noindex" type="checkbox" :disabled="!canEdit" />{{ $t('seo.noindex') }}</label>
                 <div class="mt-6"><div class="mb-2 flex flex-wrap items-center justify-between gap-2"><span class="text-xs font-bold text-gray-600">{{ $t('common.markdownContent') }}</span><a href="https://www.markdownguide.org/basic-syntax/" target="_blank" rel="noreferrer" class="text-xs font-semibold text-blue-600">{{ $t('common.markdownHelp') }}</a></div><div class="flex flex-wrap gap-1 rounded-t-xl border border-b-0 border-gray-200 bg-gray-50 p-2" role="toolbar" :aria-label="$t('common.markdownFormatting')"><button v-for="tool in markdownTools" :key="tool.label" type="button" class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-900" :title="tool.label" @click="insertMarkdown(tool)"><Icon :name="tool.icon" size="15" /><span class="sr-only">{{ $uiLabel(tool.label) }}</span></button></div><textarea ref="contentInput" v-model="draft.content_markdown" rows="18" :placeholder="$t('interface.pageHeadingWriteYourContentHere')" class="h-[540px] w-full resize-none rounded-b-xl border border-gray-200 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-500" :dir="draft.text_direction" /></div>
               </div>
 
@@ -78,7 +80,7 @@ const searchQuery = ref('')
 const pagesListCollapsed = ref(false)
 const contentInput = ref(null)
 const pathEdited = ref(false)
-const emptyDraft = () => ({ id: '', title: '', path: '', content_markdown: '', text_direction: 'auto', is_published: false, show_in_navbar: false, created_at: '', updated_at: '' })
+const emptyDraft = () => ({ seo_title: '', seo_description: '', seo_image_url: '', seo_noindex: false, id: '', title: '', path: '', content_markdown: '', text_direction: 'auto', is_published: false, show_in_navbar: false, created_at: '', updated_at: '' })
 const draft = reactive(emptyDraft())
 const original = ref(JSON.stringify(emptyDraft()))
 const textDirections = [
@@ -103,6 +105,7 @@ const filteredPages = computed(() => {
 })
 const previewHtml = computed(() => renderSafeMarkdown(draft.content_markdown))
 const normalizedDraft = computed(() => JSON.stringify({
+  seo_title: draft.seo_title, seo_description: draft.seo_description, seo_image_url: draft.seo_image_url, seo_noindex: draft.seo_noindex,
   id: draft.id,
   title: draft.title,
   path: draft.path,
@@ -177,6 +180,7 @@ const savePage = async () => {
       method: draft.id ? 'PATCH' : 'POST',
       headers: await getAuthHeaders(),
       body: {
+        seo_title: draft.seo_title, seo_description: draft.seo_description, seo_image_url: draft.seo_image_url, seo_noindex: draft.seo_noindex,
         title: draft.title,
         path: draft.path,
         content_markdown: draft.content_markdown,

@@ -1,4 +1,5 @@
 <script setup>
+import { breadcrumbs, publicSiteUrl } from '~/utils/seo'
 const { uiLabel } = useUiLocale()
 import { renderSafeMarkdown } from '~/utils/markdown'
 
@@ -8,7 +9,16 @@ if (error.value?.statusCode === 404) throw createError({ statusCode: 404, status
 const article = computed(() => data.value?.article)
 const category = computed(() => data.value?.category)
 const rendered = computed(() => renderSafeMarkdown(article.value?.content_markdown || ''))
-useHead(() => ({ title: article.value ? `${article.value.title} | ${uiLabel('Help Center')}` : uiLabel('Help Center') }))
+if (error.value) throw createError({ statusCode: error.value.statusCode || 503, statusMessage: error.value.statusCode === 404 ? 'Article not found.' : 'Could not load article.' })
+const { data: seoContent } = useSiteContent()
+const { locale: seoLocale } = useI18n()
+const seoConfig = useRuntimeConfig()
+usePageSeo(() => ({
+  title: article.value?.title || uiLabel('Help Center'),
+  description: article.value?.summary || article.value?.content_markdown,
+  index: !!article.value,
+  structuredData: article.value ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: uiLabel('Help Center'), path: '/help' }, { name: article.value.title, path: route.path }], publicSiteUrl(seoContent.value?.settings || {}, seoConfig.public.siteUrl), seoLocale.value)] : []
+}))
 </script>
 
 <template>

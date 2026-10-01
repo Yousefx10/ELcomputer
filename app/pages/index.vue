@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { siteSchema, publicSiteUrl } from '~/utils/seo'
 const { uiLabel } = useUiLocale()
 
 import { getConfiguredStoreImageUrl, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
@@ -214,7 +215,9 @@ const bannerAds = computed(() => {
   }
 })
 
-useHead(() => ({
-  title: siteContent.value?.settings?.landing_page_title || siteContent.value?.settings?.site_name || 'ELcomputer'
+const seoConfig = useRuntimeConfig()
+usePageSeo(() => ({
+  index: true,
+  structuredData: siteSchema(siteContent.value?.settings || {}, publicSiteUrl(siteContent.value?.settings || {}, seoConfig.public.siteUrl))
 }))
 </script>

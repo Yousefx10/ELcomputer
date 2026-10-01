@@ -1,4 +1,5 @@
 import process from 'node:process'
+import { DEFAULT_SITE_URL } from './app/utils/seo.js'
 import tailwindcss from "@tailwindcss/vite";
 
 const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
@@ -44,6 +45,7 @@ export default defineNuxtConfig({
     shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',
     public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
       supabaseUrl,
       supabase: {
         url: supabaseUrl,

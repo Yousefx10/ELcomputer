@@ -3377,5 +3377,24 @@
   },
   "preorder": {
     "depositPercent": "{value0}% deposit"
+  },
+  "seo": {
+    "heading": "Search engines",
+    "automatic": "Leave fields blank to use automatic values.",
+    "title": "SEO title",
+    "description": "Meta description",
+    "socialImage": "Social sharing image",
+    "imageFallback": "Uses the page image, then the global sharing image.",
+    "preview": "Search preview",
+    "titleRecommendation": "Around 70 characters works best. You can still save.",
+    "descriptionRecommendation": "Around 160 characters works best. You can still save.",
+    "siteTitle": "Default site title",
+    "siteDescription": "Default meta description",
+    "siteUrl": "Website address",
+    "urlHelp": "Use the public website address, without a path.",
+    "organization": "Organization name uses your store name in Store details.",
+    "noindex": "Hide this page from search results",
+    "invalidUrl": "Enter a complete website address without a path.",
+    "settingsDescription": "Set search titles, descriptions and sharing images."
   }
 }

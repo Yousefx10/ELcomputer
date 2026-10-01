@@ -1,10 +1,11 @@
 import { createError } from 'h3'
+import { normalizeSeoFields } from './seoFields.js'
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const PATH_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/
 const RESERVED_ROOTS = new Set([
   'account', 'api', 'cart', 'checkout', 'dashboard', 'login', 'products',
-  'reviews', 'search', 'signup', 'uploads', 'help', '_nuxt'
+  'reviews', 'search', 'signup', 'uploads', 'help', '_nuxt', 'ar', 'robots.txt', 'sitemap.xml', 'sitemap-pages'
 ])
 
 export const normalizeSitePageId = (value) => {
@@ -53,6 +54,8 @@ export const normalizeSitePagePayload = (body = {}) => {
     : 'auto'
 
   return {
+    ...normalizeSeoFields(body),
+    ...(Object.hasOwn(body, 'seo_noindex') ? { seo_noindex: body.seo_noindex === true } : {}),
     title,
     path: normalizeSitePagePath(body.path),
     content_markdown: content,
@@ -72,4 +75,4 @@ export const throwSitePageError = (error, fallback = 'Could not save the page.')
   throw createError({ statusCode: 500, statusMessage: error?.message || fallback })
 }
 
-export const sitePageSelect = 'id, title, path, content_markdown, text_direction, is_published, show_in_navbar, created_by, updated_by, created_at, updated_at'
+export const sitePageSelect = 'seo_title, seo_description, seo_image_url, seo_noindex, id, title, path, content_markdown, text_direction, is_published, show_in_navbar, created_by, updated_by, created_at, updated_at'

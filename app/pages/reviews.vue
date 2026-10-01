@@ -250,9 +250,7 @@ watch(
   }
 )
 
-useHead(() => ({
-  title: `${uiLabel('Customer Reviews')} - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`
-}))
+usePageSeo(() => ({ title: uiLabel('Customer Reviews'), index: currentPage.value === 1, query: currentPage.value > 1 ? { page: currentPage.value } : {} }))
 </script>
 
 <style scoped>

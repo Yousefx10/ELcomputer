@@ -20,6 +20,8 @@
 </template>
 
 <script setup>
+import { selectWithSeo } from '~/utils/seoQuery'
+import { publicSiteUrl, breadcrumbs } from '~/utils/seo'
 const { uiLabel } = useUiLocale()
 import { renderSafeMarkdown } from '~/utils/markdown'
 
@@ -33,12 +35,9 @@ const pagePath = computed(() => {
 const { data: pageResult } = await useAsyncData(
   () => `site-page:${pagePath.value}`,
   async () => {
-    const { data, error } = await supabase
-      .from('site_pages')
-      .select('id, title, path, content_markdown, text_direction, updated_at')
-      .eq('path', pagePath.value)
-      .eq('is_published', true)
-      .maybeSingle()
+    const { data, error } = await selectWithSeo(fields => supabase.from('site_pages').select(fields)
+      .eq('path', pagePath.value).eq('is_published', true).maybeSingle(),
+      'id,title,path,content_markdown,text_direction,updated_at', 'seo_title,seo_description,seo_image_url,seo_noindex')
 
     if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load this page.' })
     return { item: data || null }
@@ -55,11 +54,15 @@ if (!page.value) {
 const renderedContent = computed(() => renderSafeMarkdown(page.value?.content_markdown || ''))
 const { data: siteContent } = await useSiteContent()
 
-useSeoMeta({
-  title: () => `${page.value?.title || uiLabel('Page not found')} - ${siteContent.value?.settings?.site_name || 'ELcomputer'}`,
-  description: () => String(page.value?.content_markdown || '').replace(/[#*_>`\[\]]/g, '').slice(0, 155),
-  robots: () => page.value ? 'index, follow' : 'noindex, nofollow'
-})
+const { locale: seoLocale } = useI18n()
+const seoConfig = useRuntimeConfig()
+usePageSeo(() => ({
+  title: page.value?.seo_title || page.value?.title || uiLabel('Page not found'),
+  description: page.value?.seo_description || page.value?.content_markdown,
+  image: page.value?.seo_image_url,
+  index: !!page.value && page.value.seo_noindex !== true,
+  structuredData: page.value ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: page.value.title, path: `/${page.value.path}` }], publicSiteUrl(siteContent.value?.settings || {}, seoConfig.public.siteUrl), seoLocale.value)] : []
+}))
 </script>
 
 <style scoped>

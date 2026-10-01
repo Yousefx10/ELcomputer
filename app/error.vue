@@ -4,7 +4,7 @@ const props = defineProps({ error: { type: Object, default: () => ({}) } })
 const { locale } = useI18n()
 const { uiLabel } = useUiLocale()
 const title = computed(() => uiLabel(Number(props.error.statusCode) === 404 ? 'Page not found' : 'Something went wrong.'))
-useHead(() => ({ title: title.value, htmlAttrs: { lang: locale.value, dir: locale.value === 'ar' ? 'rtl' : 'ltr' } }))
+useHead(() => ({ title: title.value, meta: [{ key: 'robots', name: 'robots', content: 'noindex,follow' }], htmlAttrs: { lang: locale.value, dir: locale.value === 'ar' ? 'rtl' : 'ltr' } }))
 const returnHome = () => clearError({ redirect: localizedPath('/', locale.value) })
 </script>
 

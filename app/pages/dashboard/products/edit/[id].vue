@@ -353,6 +353,7 @@
             {{ $t('dashboard.products.productsWithItemHistoryCannotBeDeletedHideThemFromTheStoreInstead') }}
           </p>
         </div>
+        <DashboardSeoFields v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
       </form>
 
       <section class="rounded-2xl bg-white p-6 shadow">
@@ -534,6 +535,7 @@ const PRODUCT_FORM_WAREHOUSES_CACHE_KEY = 'dashboard:product-form:warehouses'
 const route = useUiRoute()
 const id = route.params.id
 
+const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const title = ref('')
 const slug = ref('')
 const description = ref('')
@@ -774,6 +776,7 @@ watchEffect(() => {
     price.value = product.value.price ?? ''
     oldPrice.value = product.value.old_price ?? ''
     imageUrl.value = product.value.image_url || ''
+    seo.value = { seo_title: product.value.seo_title || '', seo_description: product.value.seo_description || '', seo_image_url: product.value.seo_image_url || '' }
     categoryId.value = product.value.category_id || ''
     brandId.value = product.value.brand_id || ''
     defaultSupplierId.value = product.value.default_supplier_id || ''
@@ -854,6 +857,7 @@ const updateProduct = async () => {
         price: price.value,
         old_price: oldPrice.value,
         image_url: imageUrl.value,
+        ...seo.value,
         category_id: categoryId.value,
         brand_id: brandId.value,
         default_supplier_id: defaultSupplierId.value,

@@ -34,6 +34,8 @@
           {{ $t('common.slugPreviewValue', { value0: (slugPreview || '-') }) }}
         </p>
 
+        <DashboardSeoFields v-model="seo" catalog :fallback-title="name" :fallback-image="logoUrl" section="brands" :disabled="editingId ? !canEditBrand : !canAddBrand" />
+
         <p v-if="errorMessage" class="text-red-600">
           {{ $uiMessage(errorMessage) }}
         </p>
@@ -209,6 +211,7 @@ const buildBrandsCacheKey = (page = currentPage.value) => {
 }
 
 const brands = ref([])
+const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const name = ref('')
 const logoUrl = ref('')
 const saving = ref(false)
@@ -254,6 +257,7 @@ const slugPreview = computed(() => makeSlug(name.value))
 
 const resetForm = () => {
   name.value = ''
+  seo.value = { seo_title: '', seo_description: '', seo_image_url: '' }
   logoUrl.value = ''
   editingId.value = null
   errorMessage.value = ''
@@ -356,6 +360,7 @@ const saveBrand = async () => {
     response = await supabase
       .from('brands')
       .update({
+        ...seo.value,
         name: name.value.trim(),
         slug,
         logo_url: logoUrl.value.trim() || null
@@ -365,6 +370,7 @@ const saveBrand = async () => {
     response = await supabase
       .from('brands')
       .insert({
+        ...seo.value,
         name: name.value.trim(),
         slug,
         logo_url: logoUrl.value.trim() || null
@@ -400,6 +406,7 @@ const startEdit = (brand) => {
   }
 
   name.value = brand.name
+  seo.value = { seo_title: brand.seo_title || '', seo_description: brand.seo_description || '', seo_image_url: brand.seo_image_url || '' }
   logoUrl.value = brand.logo_url || ''
   editingId.value = brand.id
   errorMessage.value = ''

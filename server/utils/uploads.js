@@ -54,6 +54,9 @@ const UPLOAD_SECTION_DEFINITIONS = {
     directory: 'brands',
     permissions: ['brands.add', 'brands.edit']
   },
+  site_pages: {
+    label: 'Pages', directory: 'pages', permissions: ['pages.edit']
+  },
   site_logo: {
     label: 'Site Logo',
     directory: 'settings/site-logo',

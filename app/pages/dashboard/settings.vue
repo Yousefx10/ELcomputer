@@ -54,6 +54,20 @@
       </div>
 
       <fieldset v-if="activeSettingsView === 'general'" :disabled="!canEditSettings" class="min-w-0 space-y-4">
+        <section v-show="activeSettingsSection?.section === 'seoSettings'" class="space-y-5 rounded-2xl bg-white p-6 shadow">
+          <h3 class="text-2xl font-bold">{{ $t('seo.heading') }}</h3>
+          <p class="text-sm text-gray-500">{{ $t('seo.organization') }}</p>
+          <label class="block text-sm font-semibold">{{ $t('seo.siteTitle') }}<input v-model="siteSettings.seo_site_title" type="text" :placeholder="siteSettings.site_name" class="mt-2 w-full rounded-lg border p-3" /></label>
+          <p v-if="siteSettings.seo_site_title.length > 70" class="text-xs text-amber-700">{{ $t('seo.titleRecommendation') }}</p>
+          <label class="block text-sm font-semibold">{{ $t('seo.siteDescription') }}<textarea v-model="siteSettings.seo_default_description" rows="3" class="mt-2 w-full rounded-lg border p-3" /></label>
+          <p v-if="siteSettings.seo_default_description.length > 160" class="text-xs text-amber-700">{{ $t('seo.descriptionRecommendation') }}</p>
+          <DashboardMediaUploadField v-model="siteSettings.seo_social_image_url" :label="$t('seo.socialImage')" section="site_logo" :preview-alt="$t('seo.socialImage')" :disabled="!canEditSettings" />
+          <label class="block text-sm font-semibold">{{ $t('seo.siteUrl') }}<input v-model="siteSettings.seo_site_url" type="url" :placeholder="seoSiteUrlPlaceholder" dir="ltr" class="mt-2 w-full rounded-lg border p-3" /></label>
+          <p class="text-sm text-gray-500">{{ $t('seo.urlHelp') }}</p>
+          <p v-if="settingsErrorSection === 'seoSettings'" class="text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
+          <p v-if="settingsSuccessSection === 'seoSettings'" class="text-sm text-green-600">{{ $uiMessage(settingsSuccess) }}</p>
+          <button type="button" :disabled="!canEditSettings || settingsLoading || !isSettingsSectionDirty('seoSettings')" class="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white disabled:opacity-50" @click="saveSiteSettings('seoSettings')">{{ $t('common.save') }}</button>
+        </section>
         <section v-show="activeSettingsSection?.section === 'generalSettings'" class="overflow-hidden rounded-2xl bg-white shadow">
           <button :aria-expanded="openSections.generalSettings"
             type="button"
@@ -2275,6 +2289,7 @@
 </template>
 
 <script setup>
+const seoSiteUrlPlaceholder = useRuntimeConfig().public.siteUrl
 const { uiLabel } = useUiLocale()
 
 const { intlLocale } = useUiLocale()
@@ -2332,6 +2347,7 @@ const canViewLogs = computed(() => hasPermission('settings.view'))
 
 const defaultSiteSettings = {
   key: 'default',
+  seo_site_title: '', seo_default_description: '', seo_social_image_url: '', seo_site_url: '',
   site_name: 'ELcomputer',
   site_logo_url: '',
   site_logo_light_url: '',
@@ -2530,6 +2546,7 @@ const paymentSettingCards = [
   { value: 'cash', label: 'Cash', description: 'Collect cash when the order is delivered.', icon: 'lucide:banknote', enabledField: 'payment_cash_enabled', feeField: 'payment_cash_fee' }
 ]
 const openSections = reactive({
+  seoSettings: true,
   generalSettings: true,
   dashboardLayout: true,
   accountDashboard: true,
@@ -2602,6 +2619,7 @@ watch(activeSettingsSection, (item) => {
 }, { immediate: true })
 
 const siteSettingsSectionFields = {
+  seoSettings: ['seo_site_title', 'seo_default_description', 'seo_social_image_url', 'seo_site_url'],
   generalSettings: [
     'site_name',
     'site_logo_url',
@@ -2687,6 +2705,7 @@ const siteSettingsSectionFields = {
 }
 
 const siteSettingsSectionLabels = {
+  seoSettings: 'Search engines',
   generalSettings: 'General settings',
   dashboardLayout: 'Dashboard appearance',
   accountDashboard: 'Customer account layout',
@@ -2966,6 +2985,10 @@ const mapCoupon = (coupon) => {
 }
 
 const normalizeSiteSettings = (source = {}) => ({
+  seo_site_title: String(source.seo_site_title || '').trim(),
+  seo_default_description: String(source.seo_default_description || '').trim(),
+  seo_social_image_url: String(source.seo_social_image_url || '').trim(),
+  seo_site_url: String(source.seo_site_url || '').trim(),
   site_name: String(source.site_name || '').trim() || defaultSiteSettings.site_name,
   site_logo_url: String(source.site_logo_url || '').trim(),
   site_logo_light_url: String(source.site_logo_light_url || '').trim(),
@@ -3475,6 +3498,16 @@ const saveSiteSettings = async (sectionName) => {
     return
   }
 
+  if (sectionName === 'seoSettings' && siteSettings.seo_site_url) {
+    try {
+      const url = new URL(siteSettings.seo_site_url)
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new Error('invalid')
+    } catch {
+      settingsError.value = useNuxtApp().$i18n.t('seo.invalidUrl')
+      settingsErrorSection.value = 'seoSettings'
+      return
+    }
+  }
   const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
 
   settingsError.value = ''

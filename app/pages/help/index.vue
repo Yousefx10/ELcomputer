@@ -17,7 +17,7 @@ const selectedCategory = computed(() => categories.value.find(item => item.slug 
 const submitSearch = () => uiNavigateTo({ path: '/help', query: { ...(categoryQuery.value ? { category: categoryQuery.value } : {}), ...(searchInput.value.trim() ? { q: searchInput.value.trim() } : {}) } })
 const categoryUrl = slug => ({ path: '/help', query: { ...(slug ? { category: slug } : {}), ...(searchQuery.value ? { q: searchQuery.value } : {}) } })
 const articleUrl = article => `/help/${categories.value.find(item => item.id === article.category_id)?.slug || 'other'}/${article.slug}`
-useHead(() => ({ title: uiLabel('Help Center') }))
+usePageSeo(() => ({ title: uiLabel('Help Center'), index: !Object.keys(route.query).some(key => !/^(utm_.+|gclid|fbclid)$/.test(key)) }))
 </script>
 
 <template>

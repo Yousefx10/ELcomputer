@@ -125,9 +125,11 @@
   </div>
 </template>
 <script setup>
+import { selectWithSeo } from '~/utils/seoQuery'
+import { productSeoFields, productSchema, publicSiteUrl, breadcrumbs } from '~/utils/seo'
 const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
 
-const { intlLocale } = useUiLocale()
+const { intlLocale, uiLabel } = useUiLocale()
 
 import { buildProductGallery, hasDistinctColorVariants, selectProductGalleryImages, shouldIncludeMainProductImage, variantPreviewImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
 import { groupProductSpecifications, productHighlights, descriptionBlocks } from '~/utils/specificationLibrary'
@@ -140,9 +142,8 @@ const { data: siteContent } = useSiteContent()
 const { addItem } = useCart()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
-  const { data: productData, error: productError } = await supabase
-    .from('products')
-    .select(`
+  const { data: productData, error: productError } = await selectWithSeo(fields => supabase
+    .from('products').select(fields).eq('slug', slug).eq('is_published', true).maybeSingle(), `
       id,
       title,
       slug,
@@ -186,13 +187,8 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
         logo_url
       )
     `)
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
-
-  if (productError) {
-    throw productError
-  }
+  if (productError) throw createError({ statusCode: 503, statusMessage: 'Could not load this product.' })
+  if (!productData) throw createError({ statusCode: 404, statusMessage: 'Product not found.' })
 
   const [imagesResult, specificationsResult, variantsResult, reviewsResult, relatedResult, featuresResult] = await Promise.all([
     supabase
@@ -259,23 +255,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     reviewAverage: reviewsResult ? Number(reviewsResult.averageRating || 0) : null,
     related: relatedResult.error ? [] : (relatedResult.data || [])
   }
-}, { lazy: true })
-
-const storeName = computed(() => {
-  return String(siteContent.value?.settings?.site_name || '').trim() || 'ELcomputer'
 })
-
-const productPageTitle = computed(() => {
-  const productName = String(product.value?.title || '').trim()
-
-  return productName
-    ? `${productName} - ${storeName.value}`
-    : `Product - ${storeName.value}`
-})
-
-useHead(() => ({
-  title: productPageTitle.value
-}))
 
 useProductEngagement(product)
 
@@ -296,6 +276,18 @@ const { data: preorderAvailability, refresh: refreshPreorderAvailability } = awa
   if (!product.value || product.value.selling_mode !== 'preorder') return null
   return $fetch(`/api/preorders/${product.value.id}`)
 }, { watch: [product] })
+if (error.value) throw error.value
+const seoConfig = useRuntimeConfig()
+usePageSeo(() => {
+  const settings = siteContent.value?.settings || {}
+  const base = publicSiteUrl(settings, seoConfig.public.siteUrl)
+  const item = product.value
+  const trail = [{ name: uiLabel('Home'), path: '/' }]
+  if (item?.category?.slug) trail.push({ name: item.category.name, path: '/search', query: { category: item.category.slug } })
+  if (item) trail.push({ name: item.title, path: `/products/${item.slug}` })
+  const schema = productSchema(item, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en', preorderAvailability.value, settings)
+  return { ...productSeoFields(item || {}), index: !!item, type: 'product', structuredData: schema ? [schema, breadcrumbs(trail, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en')] : [] }
+})
 const preorderAmounts = computed(() => calculatePreorderAmounts(product.value?.price || 0, selectedQuantity.value, product.value?.preorder_payment_mode, product.value?.preorder_deposit_percent))
 const selectedVariantId = ref('')
 const cartMessage = ref('')

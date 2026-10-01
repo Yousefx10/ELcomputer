@@ -1,6 +1,8 @@
 import { createError } from 'h3'
+import { normalizeSeoFields } from './seoFields.js'
 
 const PRODUCT_MUTABLE_FIELDS = [
+  'seo_title', 'seo_description', 'seo_image_url',
   'title',
   'slug',
   'description',
@@ -262,6 +264,7 @@ export const normalizeAdminProductPayload = (body = {}, {
   if (availabilityMessage?.length > 500) throw createError({ statusCode: 400, statusMessage: 'Customer message must be 500 characters or fewer.' })
 
   return {
+    ...normalizeSeoFields(body),
     title,
     slug,
     description: normalizeText(body?.description),

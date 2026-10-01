@@ -2888,5 +2888,7 @@
   "delivery": "common.delivery",
   "in_stock": "common.inStock",
   "Other": "common.other",
-  "We’ll reply when available.": "livechat.Launcher.replyWhenAvailable"
+  "We’ll reply when available.": "livechat.Launcher.replyWhenAvailable",
+  "Search engines": "seo.heading",
+  "Set search titles, descriptions and sharing images.": "seo.settingsDescription"
 }

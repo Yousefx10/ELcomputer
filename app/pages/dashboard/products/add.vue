@@ -272,6 +272,7 @@
             {{ $t('common.back') }}
           </NuxtLinkLocale>
         </div>
+        <DashboardSeoFields v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
       </form>
     </div>
   </div>
@@ -301,6 +302,7 @@ const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 const PRODUCT_FORM_SUPPLIERS_CACHE_KEY = 'dashboard:product-form:suppliers'
 const PRODUCT_FORM_WAREHOUSES_CACHE_KEY = 'dashboard:product-form:warehouses'
 
+const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const title = ref('')
 const slug = ref('')
 const description = ref('')
@@ -493,6 +495,7 @@ const addProduct = async () => {
         price: price.value,
         old_price: oldPrice.value,
         image_url: imageUrl.value,
+        ...seo.value,
         category_id: categoryId.value,
         brand_id: brandId.value,
         default_supplier_id: defaultSupplierId.value,

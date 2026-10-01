@@ -3,6 +3,10 @@ import { buildOrderedHeaderLinks, defaultHeaderLinkDefinitions } from '~/utils/s
 const defaultSiteSettings = {
   key: 'default',
   site_name: 'ELcomputer',
+  seo_site_title: '',
+  seo_default_description: '',
+  seo_social_image_url: '',
+  seo_site_url: '',
   site_logo_url: '',
   site_logo_light_url: '',
   site_logo_dark_url: '',
