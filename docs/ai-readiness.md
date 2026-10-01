@@ -6,7 +6,7 @@ AI readiness exposes the store's existing **public, authoritative content** in a
 
 `GET /llms.txt` returns UTF-8 `text/markdown`. It enriches the **same filtered records and 60-second discovery cache used by the sitemap**; there is no second catalog crawler. Its bounded sections contain at most eight product examples and twenty entries per other group. Optional links point to the complete public HTML sitemap and Arabic overview. Empty groups are omitted. Required discovery failures return 503 with `no-store`, rather than an incomplete authoritative guide.
 
-Explicit, reusable Markdown endpoints avoid changing HTML responses based on `Accept`, user agents or cookies:
+Explicit, reusable Markdown endpoints remain available alongside opt-in content negotiation on supported public HTML URLs:
 
 | Public content | Markdown URL |
 | --- | --- |
@@ -20,7 +20,17 @@ Explicit, reusable Markdown endpoints avoid changing HTML responses based on `Ac
 
 Arabic counterparts prefix these paths with `/ar`. The AI namespace is reserved from future CMS paths. Arbitrary resources and malformed/private paths return 404; query parameters return 400. No general-purpose table or file export is provided. `llms-full.txt` is deliberately omitted: agents use targeted, current product requests instead of downloading a stale full catalog.
 
-Indexable HTML carries one `rel="describedby"` link to the guide and, when supported, one `rel="alternate" type="text/markdown"` link. Markdown responses include HTTP canonical/describedby relationships, `nosniff`, and `X-Robots-Tag: noindex,follow` to keep HTML as the search representation. Existing canonical/meta/schema and locale relations are preserved. No experimental content-negotiation or Content Signals headers are shipped.
+Indexable HTML carries one `rel="describedby"` link to the guide and, when supported, one `rel="alternate" type="text/markdown"` link. Successful public HTML also advertises the same relationships in HTTP `Link` headers. `usePageSeo` supplies the final publication/noindex-aware relationships to a Nitro response hook; no second content query or canonical rule is introduced. Missing, unpublished, private and noindex HTML has no AI discovery header. Public reviews can advertise the guide without claiming a nonexistent Markdown alternate. Existing Link values are retained; no additional HTML canonical header is added.
+
+Explicit and negotiated Markdown responses retain canonical/describedby HTTP relationships, `nosniff`, and `X-Robots-Tag: noindex,follow` to keep HTML as the search representation. Existing canonical/meta/schema and locale relations are preserved.
+
+### Accept negotiation and caching
+
+For GET/HEAD on supported homepage, product, single populated category/brand, CMS and Help URLs, `Accept: text/markdown` invokes **the same `servePublicAiResource` reader and renderer** as the explicit route. There is no redirect, internal request forwarding, second serializer or duplicated business logic. Normal browser requests, absent Accept and generic wildcards retain HTML. Explicit media qualities are respected; equal explicit HTML/Markdown qualities prefer HTML. Explicit Markdown can win an equal generic wildcard. HEAD returns the corresponding headers without a response body.
+
+Both representations carry `Vary: Accept` on candidate routes, including failed negotiated requests. Product Markdown stays no-store; stable public Markdown retains max-age=60. HTML retains its existing cookies/cache behavior. Nginx may additionally append Accept-Encoding; multiple Vary tokens are valid. The application does not alter Nginx or configure an external CDN. Any future cache must honor Vary and no-store. Verification alternates HTML → Markdown → HTML on the same URLs, comparing each negotiated body with the explicit renderer.
+
+Only clean resource URLs and the exact single `category` or `brand` identity are supported. Additional query parameters, including tracking, pagination or unexpected names, return generic 400/no-store for Markdown requests. Combined filters/arbitrary searches have no negotiation capability. Private/account/cart/checkout/auth/support/API/upload/asset routes never negotiate Markdown. Fresh publication/active/noindex guards still yield 404, and failed discovery yields generic 503/no-store. English and Arabic resolve through the existing locale helpers; cookies, user agents, scanner identity and request Host never determine the Markdown facts or canonical origin.
 
 Product rendering selects customer-visible parent price in EGP, SKU, brand, descriptions, visible specifications, features and availability from existing public product data. Reviews retain only the public aggregate and count from the existing public review API; response items, bodies and identities are discarded. Direct anonymous review-table reads are denied in production and are not introduced. Optional review failures omit the aggregate. Availability follows existing storefront stock/active-variant and backorder rules; Coming Soon is not purchasable. Preorder checks the existing authoritative public availability API and fails safely if that check fails. It never exports the RPC's order/allocation details. Existing commerce and SEO schema logic are unchanged.
 
@@ -44,7 +54,7 @@ Defaults preserve existing public access: **search/assistants allowed; training 
 | `NUXT_AI_SEARCH_ALLOWED` | `true` | OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User |
 | `NUXT_AI_TRAINING_ALLOWED` | `true` | GPTBot, ClaudeBot, Google-Extended |
 
-Set a value to `false` to emit `Disallow: /` for its group. No environment changes were necessary for the default release. Normal `User-agent: *` and sitemap rules remain unchanged. Allowed specific AI groups repeat private restrictions because specific groups do not inherit the wildcard rules. Cart/checkout/auth/support paths are additionally excluded from AI groups. Other bots, including mixed-purpose Meta/Common Crawl agents, retain the existing wildcard policy rather than receiving an invented classification.
+Set a value to `false` to emit `Disallow: /` for its group. No environment changes were necessary for the default release. Normal wildcard crawling restrictions and sitemap rules remain unchanged; the Content Signals extension is additive. Allowed specific AI groups repeat private restrictions because specific groups do not inherit the wildcard rules. Cart/checkout/auth/support paths are additionally excluded from AI groups. Other bots, including mixed-purpose Meta/Common Crawl agents, retain the existing wildcard policy rather than receiving an invented classification.
 
 **Robots is a voluntary preference, not a firewall or authorization mechanism.** Providers describe user-triggered fetchers differently; ChatGPT-User and Perplexity-User may fetch on a user's request despite robots preferences. A training opt-out is not a universal guarantee about every model or historical use.
 
@@ -58,7 +68,22 @@ The repository contains no authorized Cloudflare AI integration. Release HTTP re
 
 If Cloudflare is used later, optionally enable AI Crawl Control monitoring and review crawler traffic/robots violations first. Apply selected enforcement rules only after reviewing search, assistant and training effects. Cloudflare-managed robots can prepend its own training policy; check the final public `/robots.txt` for conflicts with this application's defaults. Enforcement rules are separate from voluntary robots text and may block user fetchers too.
 
-Cloudflare's emerging Content Signals vocabulary (`search`, `ai-input`, `ai-train`) is provider-specific policy signalling. This task documents it without blindly shipping headers/directives or claiming universal recognition. The llms v2 document is a proposal, not proof that every AI service discovers or consumes the guide.
+### Content Signals
+
+The follow-up emits the documented `Content-signal` robots directive, reusing the two existing settings. With default policy:
+
+```text
+User-agent: *
+Content-signal: search=yes, ai-input=yes, ai-train=yes
+```
+
+`ai-input` follows AI search/assistant policy; `ai-train` follows training policy. Wildcard `search=yes` preserves ordinary search permission because this provider's search category includes normal indexing. Within existing specific AI groups, `search` follows AI search policy too. Their Allow/Disallow behavior remains unchanged; Googlebot remains wildcard, Google-Extended remains in its existing training group. This is a use preference, not enforcement or universal crawler support. Experimental content-use extensions are omitted.
+
+Cloudflare account configuration remains unverified/unchanged. If managed robots is enabled later, inspect the **final public robots.txt** for prepended signals/rules and conflicts. No external enforcement is claimed. See the [provider documentation](https://developers.cloudflare.com/bots/additional-configurations/managed-robots-txt/) for semantics. The llms v2 document remains a proposal, not proof that every AI service consumes the guide.
+
+### Intentionally unsupported protocols
+
+No MCP/WebMCP, Agent Skills/ARD, API Catalog, OAuth/OIDC discovery, Protected Resource, auth.md, DNS-AID, Web Bot Auth, x402/MPP/UCP/ACP, chatbot or model integration is advertised. These require actual supported services, authorization or transaction architecture and belong to a separate future task. Passing a scanner is not a reason to publish false capability documents.
 
 ## Sources checked for this implementation
 
@@ -69,7 +94,11 @@ Cloudflare's emerging Content Signals vocabulary (`search`, `ai-input`, `ai-trai
 - [Google common crawlers / Google-Extended](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers): AI purposes independent of Googlebot.
 - [Cloudflare AI Crawl Control](https://developers.cloudflare.com/ai-crawl-control/), [robots monitoring](https://developers.cloudflare.com/ai-crawl-control/features/track-robots-txt/) and [managed robots / Content Signals](https://developers.cloudflare.com/bots/additional-configurations/managed-robots-txt/).
 
-## Verification and review
+## Follow-up verification
+
+Fresh final application gates passed: **204/204 tests**, including **30 focused AI/SEO tests**; Nuxt typecheck/build and git diff --check passed. The current production build passed **97 fixture HTTP requests / 16 exact negotiated-explicit matches**, **56 real-catalog HTTP requests / 11 exact matches**, and **32 SSR pages / 142 localized sitemap URLs / 426 alternates**. Policy opt-outs, GET/HEAD, strict raw query-name rejection, generic failure responses, private/draft/noindex exclusions and HTML/Markdown cache separation were verified. Public-output scan: **108 files / one configured server-secret type / zero matches**. Guarded deployment preflight passed; production release/acceptance is pending. Temporary artifacts are under `/tmp/elcomputer-ai-followup/`. Final production evidence will be recorded at the top of PROJECT_STATE.md and CODEX_HANDOFF.md. The initial release evidence below is historical.
+
+## Initial release verification and review
 
 Focused tests cover bounded discovery, public projections, sentinels for private data, draft/noindex/active guards, Markdown escaping, minimal products, availability, locale paths, independent policies, Googlebot preservation and unchanged SEO output. Released application SHA `2e5d8f9e362f7ffcd49dcd490607ab5a6a9e3185`; backup `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-105644-19040`. Fresh final checks passed 200 tests, typecheck/build/diff, 27 fixture HTTP cases and 44 real-catalog HTTP resources locally. Production passed 44 AI HTTP resources, 32 SSR pages, 40 storefront screens and four authenticated dashboard screens. Sitemap matches 142 localized URLs/426 alternates; Live Chat status/open-close and protected redirects passed. Public-output secret scan passed on both local and guarded release builds (108 files, one secret type, zero matches). No new application exceptions were found; authenticated SSR emitted the existing SDK session-user warning. Nginx adds its existing nosniff header alongside the app header; equivalent combined tokens were verified. Database counts and catalog/CMS/settings fingerprints are unchanged. Detailed evidence is under `/tmp/elcomputer-ai/` and in `PROJECT_STATE.md` / `CODEX_HANDOFF.md`.
 

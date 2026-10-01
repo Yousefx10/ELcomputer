@@ -1,4 +1,4 @@
-import { canonicalUrl, isPrivateSeoPath, robotsText, seoPlainText, seoText, unlocalizedPath, validCmsPath, validPublicSlug } from './seo.js'
+import { canonicalUrl, isPrivateSeoPath, robotsText, seoLocalizedPath, seoPlainText, seoText, unlocalizedPath, validCmsPath, validPublicSlug } from './seo.js'
 import { visibleProductSpecifications } from './productDetail.js'
 
 // These groups describe documented purposes, not a bot firewall.
@@ -9,10 +9,13 @@ export const aiPolicy = config => ({ search: enabled(config?.aiSearchAllowed), t
 
 export function aiRobotsText(base, config = {}) {
   const policy = aiPolicy(config)
+  const signals = search => `Content-signal: search=${search ? 'yes' : 'no'}, ai-input=${policy.search ? 'yes' : 'no'}, ai-train=${policy.training ? 'yes' : 'no'}`
   const inherited = robotsText(base).split('\n').filter(line => line.startsWith('Disallow:'))
   const privateRules = [...new Set([...inherited, ...['cart', 'checkout', 'login', 'signup', 'support'].flatMap(path => [`Disallow: /${path}`, `Disallow: /ar/${path}`])])]
-  return robotsText(base) + '\n' + [[AI_SEARCH_AGENTS, policy.search], [AI_TRAINING_AGENTS, policy.training]]
-    .map(([agents, allow]) => `${agents.map(agent => `User-agent: ${agent}`).join('\n')}\n${(allow ? privateRules : ['Disallow: /']).join('\n')}\n`).join('\n')
+  // The provider's search signal includes ordinary indexing. Keep it allowed
+  // for wildcard/Googlebot; AI-specific search preferences stay scoped.
+  return robotsText(base).replace('User-agent: *\n', `User-agent: *\n${signals(true)}\n`) + '\n' + [[AI_SEARCH_AGENTS, policy.search], [AI_TRAINING_AGENTS, policy.training]]
+    .map(([agents, allow]) => `${agents.map(agent => `User-agent: ${agent}`).join('\n')}\n${signals(policy.search)}\n${(allow ? privateRules : ['Disallow: /']).join('\n')}\n`).join('\n')
 }
 
 // Escape stored copy as data. Authored links/images are not an attachment gateway.
@@ -90,6 +93,45 @@ export function aiDiscoveryLinks(seo) {
   const markdown = aiMarkdownPath(canonical.pathname, query)
   return [{ key: 'ai-describedby', rel: 'describedby', type: 'text/markdown', href: `${canonical.origin}/llms.txt` },
     ...(markdown ? [{ key: 'ai-markdown', rel: 'alternate', type: 'text/markdown', href: canonicalUrl(canonical.origin, markdown, seo.locale) }] : [])]
+}
+
+export const aiLinkHeader = links => links.map(link => `<${link.href}>; rel="${link.rel}"; type="text/markdown"`).join(', ')
+
+// Only an explicit Markdown media range opts into negotiation. Browsers and
+// generic */* clients retain HTML; equal explicit qualities prefer HTML.
+export function prefersAiMarkdown(accept = '') {
+  const ranges = String(accept).split(',').map(part => {
+    const [type, ...parameters] = part.trim().toLowerCase().split(';').map(value => value.trim())
+    const q = parameters.find(value => /^q\s*=/.test(value))?.split('=')[1]?.trim()
+    return { type, quality: q === undefined ? 1 : /^(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/.test(q) ? Number(q) : 0 }
+  })
+  const markdown = Math.max(0, ...ranges.filter(item => item.type === 'text/markdown').map(item => item.quality))
+  if (!markdown) return false
+  for (const type of ['text/html', 'text/*', '*/*']) {
+    const matches = ranges.filter(item => item.type === type)
+    if (matches.length) {
+      const html = Math.max(...matches.map(item => item.quality))
+      return markdown > html || markdown === html && type !== 'text/html'
+    }
+  }
+  return true
+}
+
+export function aiHtmlResource(path, query = {}, queryKeys = Object.keys(query)) {
+  const locale = /^\/ar(?:\/|$)/.test(path) ? 'ar' : 'en'
+  const clean = unlocalizedPath(path)
+  let identity = {}
+  if (clean === '/search') {
+    const keys = ['category', 'brand'].filter(key => validPublicSlug(query[key]))
+    if (keys.length !== 1) return null
+    identity = { [keys[0]]: query[keys[0]] }
+  }
+  const markdown = aiMarkdownPath(clean, identity)
+  if (!markdown) return null
+  return {
+    resource: resolveAiResource(seoLocalizedPath(markdown, locale)),
+    invalidQuery: queryKeys.some(key => !Object.hasOwn(identity, key))
+  }
 }
 
 const link = (title, url) => `[${aiText(title, 120)}](${url})`

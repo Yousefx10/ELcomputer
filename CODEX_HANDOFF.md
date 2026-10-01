@@ -1,4 +1,17 @@
-# Codex handoff — public AI readiness, 2026-10-01
+# Codex handoff — AI-readiness HTTP follow-up, 2026-10-01
+
+**Status: LOCAL VALIDATION PASSED / RELEASE PENDING.** Scope is only Link headers, Accept negotiation and Content Signals; guarded deployment is authorized after fresh gates. No migration, Nginx/firewall/external Cloudflare, private-data, commerce or protocol change is needed. See `docs/ai-readiness.md` and evidence under `/tmp/elcomputer-ai-followup/`.
+
+- Existing `usePageSeo` relationships feed `server/plugins/aiDiscovery.js` after successful HTML SSR. Publication/noindex and locale decisions are shared with the head. Existing Link values are preserved; no extra HTML canonical is advertised.
+- `server/middleware/aiNegotiation.js` uses pure route/Accept helpers and `servePublicAiResource`. Explicit and negotiated Markdown have the same readers, projections, guards, pricing/availability, escaping and canonical data. GET/HEAD only; normal browser/wildcard Accept stays HTML. Candidate routes vary on Accept; product Markdown no-store, stable Markdown max-age=60. Extra query names are rejected using own-property and raw URL query-name validation; H3 sanitization cannot silently discard disallowed names. Private/asset/API routes are outside negotiation.
+- Robots adds documented Content-signal directives using existing AI search/training settings. Wildcard search=yes preserves normal search; ai-input/training follow runtime policy, and specific AI search is scoped. Existing Google-Extended/training behavior and all private Disallows/sitemap remain. No content-use extension, scanner special case or external configuration is added.
+- Fresh final application gates passed: **204/204 tests**, including **30 focused AI/SEO tests**; Nuxt typecheck/build and git diff --check passed. The current production build passed **97 fixture HTTP requests / 16 exact negotiated-explicit matches**, **56 real-catalog HTTP requests / 11 exact matches**, and **32 SSR pages / 142 localized sitemap URLs / 426 alternates**. Policy opt-outs, GET/HEAD, strict raw query-name rejection, generic failure responses, private/draft/noindex exclusions and HTML/Markdown cache separation were verified. Public-output scan: **108 files / one configured server-secret type / zero matches**. Guarded deployment preflight passed; production release/acceptance is pending. Existing initial-release evidence below is historical. Finish only this follow-up and stop; no MCP/OAuth/agentic-commerce expansion.
+
+---
+
+# Codex handoff — initial public AI readiness, 2026-10-01
+
+Historical initial release. The follow-up entry above supersedes its omitted negotiation/Content Signals and prior stop instruction.
 
 **Current AI status: DEPLOYED / PRODUCTION ACCEPTANCE PASSED.** Application SHA `2e5d8f9e362f7ffcd49dcd490607ab5a6a9e3185` was released through the guarded deployment script to `https://new.elcomputer.net`, PM2 `new-elcomputer`, fixed site cwd/entry and port 3001. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-105644-19040`. This task is explicitly authorized through production deployment and acceptance. No migration is needed. Read `docs/ai-readiness.md` and the top section of `PROJECT_STATE.md`.
 

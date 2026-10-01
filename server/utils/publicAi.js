@@ -1,4 +1,4 @@
-import { createError, getQuery, getRequestURL, setHeader, setResponseStatus } from 'h3'
+import { createError, getRequestURL, setHeader, setResponseStatus } from 'h3'
 import { aiBody, aiMarkdownPath, aiText, finishAiMarkdown, llmsText, productAiMarkdown, resolveAiResource } from '../../app/utils/aiReadiness.js'
 import { canonicalUrl, seoPlainText, validPublicSlug } from '../../app/utils/seo.js'
 import { publicSeoClient, readPublicSeoDiscovery, readSeoSettings } from './publicSeo.js'
@@ -112,7 +112,13 @@ export async function serveAiMarkdown(event) {
   setHeader(event, 'Cache-Control', 'no-store')
   const resource = resolveAiResource(getRequestURL(event).pathname)
   if (!resource) throw missing()
-  if (Object.keys(getQuery(event)).length) throw createError({ statusCode: 400, statusMessage: 'Query parameters are not supported.' })
+  if (getRequestURL(event).search) throw createError({ statusCode: 400, statusMessage: 'Query parameters are not supported.' })
+  return servePublicAiResource(event, resource)
+}
+
+// Explicit URLs and HTML negotiation use this exact same reader/renderer.
+export async function servePublicAiResource(event, resource) {
+  setHeader(event, 'Cache-Control', 'no-store')
   const discovery = await readPublicSeoDiscovery()
   const { client } = publicSeoClient(event)
   const settings = await readSeoSettings(client)
@@ -132,7 +138,7 @@ export async function serveAiMarkdown(event) {
 
 export async function serveLlms(event) {
   setHeader(event, 'Cache-Control', 'no-store')
-  if (Object.keys(getQuery(event)).length) throw createError({ statusCode: 400, statusMessage: 'Query parameters are not supported.' })
+  if (getRequestURL(event).search) throw createError({ statusCode: 400, statusMessage: 'Query parameters are not supported.' })
   const discovery = await readPublicSeoDiscovery()
   setHeader(event, 'Content-Type', 'text/markdown; charset=utf-8')
   setHeader(event, 'X-Content-Type-Options', 'nosniff')

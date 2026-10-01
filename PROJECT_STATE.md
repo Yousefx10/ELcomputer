@@ -1,6 +1,17 @@
 # Project state — 2026-10-01
 
-## Public AI readiness — deployed and verified, 2026-10-01
+## AI-readiness follow-up — locally validated, release pending, 2026-10-01
+
+Scope is limited to HTTP Link discovery, opt-in Markdown negotiation and documented Content Signals. The user authorized guarded deployment after fresh validation. No migration, external Cloudflare, Nginx, firewall, authentication/RLS, commerce or protocol expansion belongs to this task. Read `docs/ai-readiness.md` for architecture; final follow-up evidence is under `/tmp/elcomputer-ai-followup/`.
+
+- `usePageSeo` supplies existing publication-aware relationships to a Nitro response hook for public HTML Link headers. Missing/private/noindex HTML gets none; no duplicate canonical rule/query is added.
+- A scoped GET/HEAD middleware respects explicit Accept qualities and reuses the same public Markdown reader/renderer as existing /ai and /ar/ai URLs. Both variants use Vary: Accept. Products remain no-store, stable Markdown max-age=60, HTML cache/cookie behavior retained. Additional queries fail 400 for negotiated resources; private routes never negotiate. Host, cookies and bot identity do not influence public facts or canonical origin.
+- Content-signal uses the existing runtime preferences: wildcard search=yes preserves ordinary indexing; ai-input tracks AI search, ai-train tracks training, specific AI groups scope their search preference. Existing private Disallows/sitemap/bot groups remain intact. No experimental content-use extension or external Cloudflare enforcement is added.
+- Fresh final application gates passed: **204/204 tests**, including **30 focused AI/SEO tests**; Nuxt typecheck/build and git diff --check passed. The current production build passed **97 fixture HTTP requests / 16 exact negotiated-explicit matches**, **56 real-catalog HTTP requests / 11 exact matches**, and **32 SSR pages / 142 localized sitemap URLs / 426 alternates**. Policy opt-outs, GET/HEAD, strict raw query-name rejection, generic failure responses, private/draft/noindex exclusions and HTML/Markdown cache separation were verified. Public-output scan: **108 files / one configured server-secret type / zero matches**. Guarded deployment preflight passed; production release/acceptance is pending. Earlier release results below are historical.
+
+## Public AI readiness — initial release, 2026-10-01
+
+Historical initial implementation. Current follow-up above supersedes its statements about absent negotiation/Content Signals.
 
 The user authorized one complete public AI-readiness task and its guarded VPS release after validation. Application commit `2e5d8f9e362f7ffcd49dcd490607ab5a6a9e3185` is deployed to `https://new.elcomputer.net`. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-105644-19040`. Read `docs/ai-readiness.md`. No database migration, RLS/grant change, dashboard policy panel or external Cloudflare modification is needed.
 
