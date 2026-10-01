@@ -2,7 +2,7 @@
 export const DEFAULT_SITE_URL = 'https://new.elcomputer.net'
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
 const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'api', 'uploads', '_nuxt'])
-const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'products', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
+const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'products', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export function seoPlainText(value) {

@@ -1,4 +1,19 @@
-# Codex handoff — public SEO, 2026-10-01
+# Codex handoff — public AI readiness, 2026-10-01
+
+**Current AI status: VALIDATED LOCALLY / GUARDED RELEASE PENDING.** This task is explicitly authorized through production deployment and acceptance. No migration is needed. Read `docs/ai-readiness.md` and the top section of `PROJECT_STATE.md`.
+
+- Reuse native SEO/discovery/canonical/locale utilities. New pure `app/utils/aiReadiness.js`, public anon renderer `server/utils/publicAi.js`, and thin `/llms.txt`, `/ai/[...resource]`, `/ar/ai/[...resource]` GET routes. Existing usePageSeo adds only Markdown alternate/describedby links; AI is reserved from future CMS paths.
+- Store/product/category/brand/CMS/help Markdown uses explicit public projections, current publication guards and fixed canonical links. No private paths, IDs, costs, credentials, review identities/bodies or storage URLs are serialized. Preorders and review aggregates reuse existing public APIs via global Nitro fetch without visitor headers/context. Products are no-store; stable bodies/discovery use 60 seconds. Errors are generic, no-store and fail closed.
+- Separate runtime crawler preferences default to allow search/assistants and training. No dashboard policy settings or DB columns were added. Google-Extended is independent of Googlebot; its grounding/training scope and user-fetch limitations are documented. Cloudflare/Content Signals are documentation only, with no external configuration claim.
+- Fresh final gates: 200 tests (12 AI, 14 SEO), typecheck/build, diff check and preflight passed; public secret scan 108 files / one secret type / zero matches. Actual fixture HTTP: 27 routes plus policy/failure/HTML checks. Actual configured-catalog preview: 44 Markdown/discovery HTTP resources and 32 SSR pages / exact 142 localized sitemap URLs. Final actual-catalog Markdown and production evidence belongs in `/tmp/elcomputer-ai/`, not historical SEO release artifacts.
+- All 53 migrations match remotely. Read-only before-release fingerprints preserve 91 products, 91 variants, 8 orders, 12 order items, 3 profiles. No new production records/settings/uploads are necessary. Existing staff Chrome authentication can verify dashboard rendering without another sign-in request.
+- Finish the established `npm run deploy` release only after current HTTP Markdown checks pass. Record deployed SHA/backup, repeat actual AI/SEO/EN/AR/storefront/Live Chat/dashboard and sanitized server-log checks, then update this status and stop. Do not begin another feature. Published Help/preorder/Coming Soon examples are absent in production and remain fixture-verified only.
+
+---
+
+# Codex handoff — earlier public SEO release, 2026-10-01
+
+Historical SEO-only release record. The current AI-readiness entry above supersedes the statements about absent AI files/policy and the prior stop instruction.
 
 **Current SEO status: DEPLOYED / PRODUCTION ACCEPTANCE PASSED.** Application SHA `e4fb685f4441326f7999a1954b5710928531789c` was already committed/pushed when the user explicitly authorized this SEO-only release. `npm run deploy` released it to `https://new.elcomputer.net`, PM2 `new-elcomputer`, fixed site path and port 3001. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-043139-15337`. This handoff update is documentation only; no new application feature or AI work belongs to this release.
 

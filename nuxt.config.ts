@@ -35,6 +35,8 @@ export default defineNuxtConfig({
     cookieAttrs: { maxAge: 31536000, path: '/', sameSite: 'lax' }
   },
   runtimeConfig: {
+    aiSearchAllowed: true,
+    aiTrainingAllowed: true,
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
     daftraAccountUrl: process.env.DAFTRA_ACCOUNT_URL || '',
     daftraApiKey: process.env.DAFTRA_API_KEY || '',

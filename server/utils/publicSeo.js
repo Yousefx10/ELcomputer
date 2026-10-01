@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createError } from 'h3'
 import { discoverPublicPages, publicSiteUrl, sitemapXml, seoXmlEscape } from '../../app/utils/seo.js'
 import { selectWithSeo } from '../../app/utils/seoQuery.js'
+import { publicAiEntries } from '../../app/utils/aiReadiness.js'
 
 export function publicSeoClient(event) {
   const config = useRuntimeConfig(event)
@@ -45,11 +46,13 @@ export const readPublicSeoDiscovery = defineCachedFunction(async () => {
     readPublicRows(client, 'products', 'id,title,slug,category_id,brand_id,is_published', { is_published: true }),
     readPublicRows(client, 'categories', 'id,name,slug', {}),
     readPublicRows(client, 'brands', 'id,name,slug', {}),
-    readPublicRows(client, 'site_pages', 'id,path,is_published,updated_at', { is_published: true }, 'seo_noindex'),
+    readPublicRows(client, 'site_pages', 'id,title,path,is_published,updated_at', { is_published: true }, 'seo_noindex'),
     readPublicRows(client, 'help_categories', 'id,slug,is_active', { is_active: true }),
-    readPublicRows(client, 'help_articles', 'id,slug,category_id,status,published_at,updated_at', { status: 'published' })
+    readPublicRows(client, 'help_articles', 'id,title,slug,category_id,status,published_at,updated_at', { status: 'published' })
   ])
-  return { base: publicSiteUrl(settings, config.public.siteUrl), routes: discoverPublicPages({ products, categories, brands, pages, helpCategories, helpArticles }) }
+  const records = { products, categories, brands, pages, helpCategories, helpArticles }
+  const routes = discoverPublicPages(records)
+  return { base: publicSiteUrl(settings, config.public.siteUrl), routes, storeName: settings.site_name || 'ELcomputer', aiEntries: publicAiEntries(routes, records) }
 }, { name: 'public-seo-discovery', maxAge: 60, swr: false })
 
 // Conservative chunks keep both URL count and XML byte size below sitemap limits.

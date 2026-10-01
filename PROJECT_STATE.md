@@ -1,6 +1,20 @@
 # Project state — 2026-10-01
 
-## Public SEO — deployed and verified, 2026-10-01
+## Public AI readiness — validated locally, release pending, 2026-10-01
+
+The user authorized one complete public AI-readiness task and its guarded VPS release after validation. Read `docs/ai-readiness.md`. No database migration, RLS/grant change, dashboard policy panel or external Cloudflare modification is needed.
+
+- Dynamic `/llms.txt` reuses the sitemap's filtered public discovery and 60-second cache. Bounded groups link important public Markdown and canonical HTML; no full-catalog `llms-full.txt` is generated. Discovery failures return generic 503/no-store.
+- Shared rendering serves explicit `/ai/…` and `/ar/ai/…` Markdown for store, products, populated categories/brands, published indexable CMS and active/published Help. Indexable HTML gains alternate text/markdown and describedby links; canonical/meta/schema/hreflang remain unchanged. English is default, Arabic uses `/ar`; saved catalog/CMS/help text is not translated.
+- Products read current public parent EGP price, actual descriptions/specifications/features and storefront availability. Coming Soon is not purchasable; preorders reuse the authoritative public availability API. Existing public review API supplies only retained count/aggregate; bodies/identities are discarded. Global Nitro fetch forwards no visitor auth/cookies. Products use no-store; stable resources use max-age=60 and publication guards. Private/invalid/noindex paths never become public AI resources.
+- Robots preserves the wildcard/search-engine policy and sitemap. Separate private runtime `NUXT_AI_SEARCH_ALLOWED` / `NUXT_AI_TRAINING_ALLOWED` settings default to true, preserving existing public access. Supported specific groups repeat private exclusions. Google-Extended is separate from Googlebot but includes some Google AI grounding. Robots expresses preference, not enforcement; user-triggered fetchers may ignore it. Content Signals are documented rather than shipped experimentally.
+- Fresh checks after the final application edits: **200/200 tests**, including 12 AI and 14 SEO tests; Nuxt typecheck/build and git diff --check passed. Actual fixture HTTP passed 27 route cases plus HTML/schema/sitemap, independent training opt-out and generic discovery-failure 503 checks. The configured-catalog preview passed 44 actual Markdown/discovery HTTP resources and 32 SSR pages and exact 142 EN/AR sitemap URLs. Build public-output scan: 108 files, one configured server-secret type, zero matches. Full release evidence is under `/tmp/elcomputer-ai/`.
+- Guarded deployment preflight passed for only user newelcomputer, PM2 new-elcomputer, fixed site path and port 3001. All 53 existing local/remote migration versions match. No remote migration or configuration write is required. Production acceptance is pending this release; earlier SEO results below do not substitute for it.
+- Production has no published Help articles or preorder/Coming Soon catalog examples. Those branches are checked with isolated, read-only fixtures; no production identities/orders/messages/uploads/content are created by this task.
+
+## Public SEO — earlier release, 2026-10-01
+
+This section records the earlier SEO-only release. Current AI additions and verification are recorded above and supersede its statements about absent AI files/policy.
 
 **Status:** Released to `https://new.elcomputer.net` as application commit `e4fb685f4441326f7999a1954b5710928531789c` (`SEO and indexing`), which was already committed and aligned with `origin/main` when release work began. The user explicitly authorized this SEO migration, guarded VPS release and production acceptance. Backup: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-043139-15337`. No new application feature or AI-readiness work was performed. Read `docs/seo.md` for architecture and review paths.
 

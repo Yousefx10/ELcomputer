@@ -1,4 +1,5 @@
 import { buildSeo, seoHead, privateSeoLabel } from '~/utils/seo'
+import { aiDiscoveryLinks } from '~/utils/aiReadiness'
 
 export function usePageSeo(options = () => ({})) {
   const route = useRoute()
@@ -10,6 +11,9 @@ export function usePageSeo(options = () => ({})) {
     settings: content.value?.settings || {}, siteUrl: config.public.siteUrl,
     path: route.path, locale: locale.value, privateTitle: uiLabel(privateSeoLabel(route.path)), ...toValue(options)
   }))
-  useHead(() => seoHead(seo.value))
+  useHead(() => {
+    const head = seoHead(seo.value)
+    return { ...head, link: [...head.link, ...aiDiscoveryLinks(seo.value)] }
+  })
   return seo
 }
