@@ -1,6 +1,8 @@
 # Public SEO
 
-Implemented locally on 2026-10-01. No deployment or remote migration was performed.
+Released and verified on 2026-10-01 at `https://new.elcomputer.net`. Application SHA: `e4fb685f4441326f7999a1954b5710928531789c`. The existing implementation was already committed/pushed; this task applied its authorized migration and released it without new application features.
+
+Rollback output: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261001-043139-15337`. Use the established scoped rollback instructions in `docs/DEPLOYMENT.md`; no rollback was needed. PM2 `new-elcomputer` remains on port 3001 at the locked site path.
 
 ## Audit
 
@@ -17,7 +19,7 @@ Previously, public pages mostly supplied titles. CMS pages also supplied descrip
 
 ## Migration and settings
 
-`supabase/migrations/20261001120000_public_seo.sql` is additive. It has only been applied to isolated in-memory PostgreSQL during tests.
+`supabase/migrations/20261001120000_public_seo.sql` is additive and applied to linked Supabase project `zsqhuwgoasrexdnamlks`. All 53 migration versions match. The release dry run listed only this migration. An optional local Docker catalog-cache warning was followed by successful remote ledger and column checks.
 
 | Existing table | Added optional fields |
 | --- | --- |
@@ -25,7 +27,7 @@ Previously, public pages mostly supplied titles. CMS pages also supplied descrip
 | `products`, `categories`, `brands` | `seo_title`, `seo_description`, `seo_image_url` |
 | `site_pages` | Same three overrides plus `seo_noindex`, default false |
 
-Existing rows, catalog/CMS text and RLS policies are preserved. Overrides are nullable. Existing public reads tolerate unapplied columns and use automatic values. Saving new SEO fields requires the migration to be installed later through a separately authorized release.
+Existing rows, catalog/CMS text and RLS policies are preserved. Overrides are nullable. Existing public reads still tolerate unapplied columns and use automatic values. Production editor persistence is verified against the installed migration.
 
 Dashboard → Settings → **Search engines** (`/dashboard/settings?tab=seo`) uses the existing singleton settings, section-specific saves and dirty-state tracking. Organization name reuses **Store details → Store name**. The global sharing image uses the existing library/upload component and permission checks.
 
@@ -81,15 +83,21 @@ Robots blocks internal API/media, account and dashboard paths, including Arabic 
 
 ## Validation
 
-Final gate results are recorded in `PROJECT_STATE.md` and `CODEX_HANDOFF.md` after completion. Temporary reproducible fixture/browser scripts, logs, screenshots and results are under `/tmp/elcomputer-seo/`.
+Fresh release results are recorded in `PROJECT_STATE.md` and `CODEX_HANDOFF.md`. Evidence is under `/tmp/elcomputer-seo-release/`. The deployed application passed 188 tests, typecheck, build, whitespace check and deployment preflight. Guarded deployment rebuilt with an empty dotenv file; the final public-output scan checked 108 files with zero configured server-secret matches.
+
+Live verification passed 32 SSR routes; the sitemap exactly matches 71 published/public route identities, 142 EN/AR URLs and 426 reciprocal alternate links. Chunk 1 matches the sitemap, invalid chunk 2 returns 404, robots references the production sitemap without AI-specific rules, and private headers/authentication redirects passed. Deployed sitemap/robots server-file hashes match the local deployment output.
+
+The 64 storefront browser screens and four authenticated dashboard screens passed without overflow, exceptions, application console errors/warnings or hydration warnings. They cover EN/AR, Light/Dark and desktop/mobile. Staff tests saved/reloaded all four global fields, selected/removed existing media, and restored the original null values. A controlled published noindex CMS page verified optional title/description/image persistence, SSR, cleared title/content fallback, and exclusion from a fresh sitemap after the discovery cache expired. The controlled page was deleted and existing settings/catalog/CMS fingerprints and business counts remained unchanged.
+
+PM2 is online at its fixed cwd/entry/port. Signed-in SSR emits an existing Supabase SDK session-user warning; 465 matching warnings were already in the pre-release log. No new application exceptions appeared. A real stocked product added to cart and survived reload; checkout still required authentication. Actual fresh file upload, customer password/OAuth, signed-in order/payment submission and chat messages were not performed. Live Chat status and launcher open/close were checked without sending messages.
 
 The browser fixture uses local, read-only Supabase responses. Analytics requests are fulfilled locally in the browser to prevent unrelated fixture writes; analytics code is unchanged. Fixture/browser results do not establish authenticated production editor saves or media upload acceptance.
 
 ## Manual review
 
-The final local preview is running at `http://127.0.0.1:4182`. Restart it later with `DEBUG='' NITRO_HOST=127.0.0.1 NITRO_PORT=4182 node .output/server/index.mjs`. The read-only fixture preview and headless Chrome were stopped after verification.
+Review the released site at `https://new.elcomputer.net`. Earlier local preview results and scripts under `/tmp/elcomputer-seo/` are historical evidence; rebuilding `.output` means an older local preview process should be restarted before reuse.
 
-Review the local production preview. The following are real public catalog/CMS paths read during this task; none was created as SEO sample data. Replace the origin with your local preview address. Production has not received these changes.
+The following are real public catalog/CMS paths for production review; none was created as SEO sample catalog data. Use the production origin above.
 
 | Review | Path |
 | --- | --- |
@@ -107,7 +115,7 @@ Review the local production preview. The following are real public catalog/CMS p
 | Category/brand controls | Dashboard → Catalog → Categories/Brands → Search engines |
 | CMS controls | `/dashboard/pages` → Search engines / Hide from search results |
 
-After the migration is separately authorized/applied, verify optional-field save/reload, image library select/upload/remove, automatic fallback after clearing fields, and CMS noindex sitemap exclusion with a signed-in staff account. Confirm the configured public website address before any later release.
+Authenticated production optional-field save/reload, existing library select/remove, cleared fallback and CMS noindex sitemap exclusion passed. Fresh upload remains untested. Original global SEO values were restored to null; no test-specific website address or metadata was left configured. Discovery may take up to 60 seconds to reflect later changes.
 
 Minimal fixtures additionally cover a product without description, image, brand, SKU or reviews; Coming Soon; open preorder; noindex CMS; missing/unpublished records; EN/AR and private redirects.
 
