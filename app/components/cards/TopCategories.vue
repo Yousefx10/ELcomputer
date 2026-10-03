@@ -7,16 +7,18 @@
     <div class="store-category-grid">
       <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-category-link">
         <div class="store-category-image">
-          <img v-if="getStoreImageUrl(category.displayImageUrl)" :src="category.displayImageUrl" :alt="category.name" loading="lazy" />
+          <img v-if="getStoreImageUrl(category.displayImageUrl)" :src="category.displayImageUrl" :alt="categoryName(category)" loading="lazy" />
           <Icon v-else :name="getStoreCategoryIcon(category.name)" size="48" />
         </div>
-        <span>{{ category.name }}</span>
+        <span>{{ categoryName(category) }}</span>
       </NuxtLinkLocale>
     </div>
   </section>
 </template>
 
 <script setup>
+const { categoryName } = useCategoryLocale()
+
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 defineProps({ categories: { type: Array, default: () => [] } })
 </script>

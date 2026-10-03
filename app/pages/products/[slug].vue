@@ -7,7 +7,7 @@
     <main v-else class="mx-auto max-w-7xl">
       <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-slate-500" :aria-label="$t('common.productLocation')">
         <NuxtLinkLocale to="/" class="hover:text-blue-700">{{ $t('common.home') }}</NuxtLinkLocale><span aria-hidden="true">/</span>
-        <NuxtLinkLocale v-if="product.category" :to="{ path: '/search', query: { category: product.category.slug } }" class="hover:text-blue-700">{{ product.category.name }}</NuxtLinkLocale>
+        <NuxtLinkLocale v-if="product.category" :to="{ path: '/search', query: { category: product.category.slug } }" class="hover:text-blue-700">{{ categoryName(product.category) }}</NuxtLinkLocale>
         <span v-else>{{ $t('common.products') }}</span>
       </nav>
 
@@ -125,6 +125,8 @@
   </div>
 </template>
 <script setup>
+const { categoryName } = useCategoryLocale()
+
 import { selectWithSeo } from '~/utils/seoQuery'
 import { productSeoFields, productSchema, publicSiteUrl, breadcrumbs } from '~/utils/seo'
 const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
@@ -178,6 +180,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       category:categories (
         id,
         name,
+        name_ar,
         slug
       ),
       brand:brands (
@@ -217,7 +220,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     $fetch('/api/product-reviews', { query: { productId: productData.id, page: 1, pageSize: 1 } }).catch(() => null),
     productData.category_id || productData.brand_id
       ? supabase.from('storefront_products')
-          .select('id, title, slug, price, old_price, image_url, stock_quantity, is_serialized, selling_mode, preorder_active, is_featured, is_top_seller, popularity_score, category_id, brand_id, category:categories(id, name), brand:brands(id, name)')
+          .select('id, title, slug, price, old_price, image_url, stock_quantity, is_serialized, selling_mode, preorder_active, is_featured, is_top_seller, popularity_score, category_id, brand_id, category:categories(id, name, name_ar), brand:brands(id, name)')
           .eq('is_published', true)
           .neq('id', productData.id)
           .or([productData.category_id && `category_id.eq.${productData.category_id}`, productData.brand_id && `brand_id.eq.${productData.brand_id}`].filter(Boolean).join(','))
@@ -283,7 +286,7 @@ usePageSeo(() => {
   const base = publicSiteUrl(settings, seoConfig.public.siteUrl)
   const item = product.value
   const trail = [{ name: uiLabel('Home'), path: '/' }]
-  if (item?.category?.slug) trail.push({ name: item.category.name, path: '/search', query: { category: item.category.slug } })
+  if (item?.category?.slug) trail.push({ name: categoryName(item.category), path: '/search', query: { category: item.category.slug } })
   if (item) trail.push({ name: item.title, path: `/products/${item.slug}` })
   const schema = productSchema(item, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en', preorderAvailability.value, settings)
   return { ...productSeoFields(item || {}), index: !!item, type: 'product', structuredData: schema ? [schema, breadcrumbs(trail, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en')] : [] }

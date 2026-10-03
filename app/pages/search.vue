@@ -21,7 +21,7 @@
 
       <nav v-if="categories.length" class="mt-6 flex gap-2 overflow-x-auto pb-2" :aria-label="$t('common.browseCategories')">
         <NuxtLinkLocale :to="categoryLink('')" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="!filters.category ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ $t('common.allCategories') }}</NuxtLinkLocale>
-        <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ category.name }}</NuxtLinkLocale>
+        <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ categoryName(category) }}</NuxtLinkLocale>
       </nav>
 
       <div class="mt-6 grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
@@ -130,7 +130,7 @@
                   :key="category.id"
                   :value="category.slug"
                 >
-                  {{ category.name }}
+                  {{ categoryName(category) }}
                 </option>
               </select>
             </div>
@@ -297,6 +297,9 @@
 </template>
 
 <script setup>
+const { categoryName } = useCategoryLocale()
+
+import { categoryMatchesSearch } from '~/utils/categoryLocale'
 import { searchSeoPolicy, publicSiteUrl, breadcrumbs, catalogSeoFields } from '~/utils/seo'
 const { uiNavigateTo } = useUiNavigation()
 
@@ -574,7 +577,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     const normalizedPriceRange = normalizePriceRange(routeQuery.min, routeQuery.max, priceBounds)
     const normalizedSearchQuery = searchQuery.toLocaleLowerCase()
     const matchingCategoryIds = searchQuery
-      ? categories.filter(category => String(category.name || '').toLocaleLowerCase().includes(normalizedSearchQuery)).map(category => category.id)
+      ? categories.filter(category => categoryMatchesSearch(category, normalizedSearchQuery)).map(category => category.id)
       : []
     const matchingBrandIds = searchQuery
       ? brands.filter(brand => String(brand.name || '').toLocaleLowerCase().includes(normalizedSearchQuery)).map(brand => brand.id)
@@ -601,6 +604,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       categories${categoryJoin} (
         id,
         name,
+        name_ar,
         slug
       ),
       brands${brandJoin} (
@@ -832,11 +836,11 @@ const pageTitle = computed(() => {
   }
 
   if (currentCategory.value && currentBrand.value) {
-    return `${currentCategory.value.name} / ${currentBrand.value.name}`
+    return `${categoryName(currentCategory.value)} / ${currentBrand.value.name}`
   }
 
   if (currentCategory.value) {
-    return currentCategory.value.name
+    return categoryName(currentCategory.value)
   }
 
   if (currentBrand.value) {
@@ -866,7 +870,7 @@ const activeFilterChips = computed(() => {
   }
 
   if (currentCategory.value) {
-    chips.push(`${uiLabel('Category')}: ${currentCategory.value.name}`)
+    chips.push(`${uiLabel('Category')}: ${categoryName(currentCategory.value)}`)
   }
 
   if (currentBrand.value) {
@@ -1148,7 +1152,7 @@ usePageSeo(() => {
   return {
     ...(record ? catalogSeoFields(record, settings, seoLocale.value) : { title: uiLabel('Search') }),
     query: policy.query, index: policy.index,
-    structuredData: record ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: record.name, path: '/search', query: policy.query }], base, seoLocale.value)] : []
+    structuredData: record ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: policy.query.category ? categoryName(record) : record.name, path: '/search', query: policy.query }], base, seoLocale.value)] : []
   }
 })
 

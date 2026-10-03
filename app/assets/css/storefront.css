@@ -241,7 +241,7 @@
 @media (min-width: 1600px) { .storefront .store-product-card { flex-basis: calc((100% - 90px) / 6); } }
 @media (max-width: 1199px) {
   .storefront .store-header-main { gap: 24px; }
-  .storefront .store-orders-action { display: none; }
+  .storefront .store-orders-action > .store-action-copy { display: none; }
   .storefront .store-header-actions { gap: 24px; }
   .storefront .store-hero-fallback { padding: 32px; }
   .storefront .store-hero-copy h1 { font-size: 45px; }
@@ -298,7 +298,7 @@
   .storefront .store-logo { width: 140px; height: 50px; padding: 5px 8px; }
 
 
-  .storefront .store-header-actions { grid-column: 2; grid-row: 1; gap: 23px; padding-inline-end: 6px; }
+  .storefront .store-header-actions { grid-column: 2; grid-row: 1; gap: 2px; }
   .storefront .store-search-wrap { grid-row: 2; grid-column: 1 / -1; }
   .storefront .store-search { height: 44px; }
   .storefront .store-search input { padding-inline-start: 15px; font-size: 13px; }
@@ -376,4 +376,34 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .storefront *, .storefront *::before, .storefront *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Preserve the header hierarchy while giving every icon a comfortable target. */
+.storefront .store-header-action { min-height: 44px; min-width: 44px; justify-content: center; }
+.storefront .store-topbar-inner > p { min-width: 0; overflow-wrap: anywhere; }
+.storefront .store-department-nav { min-width: 0; }
+.storefront .store-department-item > .iconify { flex-shrink: 0; }
+.storefront .store-department-item span:nth-child(2) { min-width: 0; overflow-wrap: anywhere; }
+.storefront .store-departments-heading button { width: 44px; height: 44px; flex-shrink: 0; }
+.storefront .store-search-category-suggestion span { min-width: 0; overflow-wrap: anywhere; }
+.storefront .store-topbar-links { align-items: center; }
+.storefront .store-topbar .ui-preferences { flex-wrap: nowrap; gap: 2px; flex-shrink: 0; }
+.storefront .store-topbar .ui-preferences label { position: relative; padding: 0 8px; gap: 5px; min-height: 44px; border: 0; border-radius: 8px; }
+.storefront .store-topbar .ui-preferences select { min-height: 44px; padding-inline: 0; max-width: 82px; font-weight: 600; }
+.storefront .store-topbar .ui-theme-toggle { width: 44px; height: 44px; border: 0; border-radius: 8px; flex-shrink: 0; }
+.storefront .store-topbar .ui-preferences label:hover, .storefront .store-topbar .ui-theme-toggle:hover { background: #ffffff18; color: white; }
+@media (min-width: 701px) and (max-width: 1199px) {
+  .storefront .store-header-main { gap: 18px; }
+  .storefront .store-header-actions { gap: 12px; }
+}
+@media (max-width: 700px) {
+  .storefront .store-header-main { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .storefront .store-header-main > .store-logo { width: min(140px, 100%); }
+  .storefront .store-topbar .store-topbar-links { display: flex; gap: 4px; }
+  .storefront .store-topbar .store-topbar-links > a { display: none; }
+  .storefront .store-topbar-inner { justify-content: space-between; gap: 8px; text-align: start; padding-block: 2px; }
+  .storefront .store-topbar-inner > p { flex: 1; font-size: 10px; }
+  .storefront .store-search button { width: 44px; height: 44px; }
+  .storefront .store-search { height: 50px; }
+  .storefront .store-nav-link { min-height: 44px; }
 }

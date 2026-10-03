@@ -41,7 +41,7 @@
             @click="closeSuggestions"
           >
             <Icon name="lucide:layout-grid" size="17" />
-            <span>{{ category.name }}</span>
+            <span>{{ categoryName(category) }}</span>
             <small>{{ $t('common.category') }}</small>
           </NuxtLinkLocale>
         </div>
@@ -86,7 +86,7 @@
             </span>
             <span class="store-search-suggestion-copy">
               <strong>{{ product.title }}</strong>
-              <small>{{ product.brand?.name || product.category?.name || $t('common.storeProduct') }}</small>
+              <small>{{ product.brand?.name || categoryName(product.category) || $t('common.storeProduct') }}</small>
             </span>
             <span class="store-search-suggestion-price">{{ formatPrice(product.price) }}</span>
           </NuxtLinkLocale>
@@ -104,6 +104,10 @@
 </template>
 
 <script setup>
+const { categoryName } = useCategoryLocale()
+
+import { categoryMatchesSearch } from '~/utils/categoryLocale'
+
 const { intlLocale } = useUiLocale()
 
 const { uiNavigateTo } = useUiNavigation()
@@ -130,7 +134,7 @@ const categorySuggestions = computed(() => {
   if (!hasSearchTerm.value) return []
   const query = normalizedQuery.value.toLocaleLowerCase()
   return (siteContent.value?.navbarCategories || [])
-    .filter(category => String(category.name || '').toLocaleLowerCase().includes(query))
+    .filter(category => categoryMatchesSearch(category, query))
     .slice(0, 3)
 })
 const suggestionItems = computed(() => [
@@ -203,7 +207,7 @@ const loadSuggestions = async () => {
         image_url,
         price,
         stock_quantity,
-        category:categories (id, name, slug),
+        category:categories (id, name, name_ar, slug),
         brand:brands (id, name, slug)
       `)
       .eq('is_published', true)

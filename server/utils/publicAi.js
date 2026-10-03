@@ -1,3 +1,4 @@
+import { getLocalizedCategoryName } from '../../app/utils/categoryLocale.js'
 import { createError, getRequestURL, setHeader, setResponseStatus } from 'h3'
 import { aiBody, aiMarkdownPath, aiText, finishAiMarkdown, llmsText, productAiMarkdown, resolveAiResource } from '../../app/utils/aiReadiness.js'
 import { canonicalUrl, seoPlainText, validPublicSlug } from '../../app/utils/seo.js'
@@ -67,7 +68,7 @@ export async function readAiProduct(client, slug, fetchPreorder, fetchReviews) {
 
 async function publicCatalog(client, resource) {
   const category = resource.kind === 'category'
-  const record = await one(client.from(category ? 'categories' : 'brands').select('id,name,slug').eq('slug', resource.slug))
+  const record = await one(client.from(category ? 'categories' : 'brands').select(category ? 'id,name,name_ar,slug' : 'id,name,slug').eq('slug', resource.slug))
   const { rows, count } = await many(client.from('storefront_products').select('title,slug,price,selling_mode', { count: 'exact' })
     .eq(category ? 'category_id' : 'brand_id', record.id).eq('is_published', true).order('title').limit(25))
   const publicRows = rows.filter(item => validPublicSlug(item.slug) && seoPlainText(item.title))
@@ -93,7 +94,7 @@ export async function publicAiMarkdown(client, resource, discovery, settings, fe
     lines = [`# ${aiText(article.title, 500)}`, '', ...(article.summary ? [aiText(article.summary, 5000), ''] : []), aiBody(article.content_markdown)]
   } else if (resource.kind === 'category' || resource.kind === 'brand') {
     const { record, rows, count } = await publicCatalog(client, resource)
-    lines = [`# ${aiText(record.name, 500)}`, '', `Published products: ${count ?? rows.length}.`, '', '## Products', '', ...rows.map(item => {
+    lines = [`# ${aiText(getLocalizedCategoryName(record, resource.locale), 500)}`, '', `Published products: ${count ?? rows.length}.`, '', '## Products', '', ...rows.map(item => {
       const markdown = canonicalUrl(base, aiMarkdownPath(`/products/${item.slug}`), resource.locale)
       return `- [${aiText(item.title, 120)}](${markdown})`
     }), '', 'This list contains up to 25 products. Open each product for current prices and availability.']

@@ -1,3 +1,5 @@
+import { getLocalizedCategoryName } from './categoryLocale.js'
+
 // Shared by SSR pages, dashboard previews and public discovery. No browser dependencies.
 export const DEFAULT_SITE_URL = 'https://new.elcomputer.net'
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
@@ -127,7 +129,7 @@ export function siteSchema(settings, base) {
 
 export function catalogSeoFields(record = {}, settings = {}, locale = 'en') {
   const store = seoText(settings.site_name) || 'ELcomputer'
-  const name = seoText(record.name)
+  const name = seoText(getLocalizedCategoryName(record, locale))
   return { title: record.seo_title || name,
     description: record.seo_description || settings.seo_default_description || (name ? locale === 'ar' ? `تصفح منتجات ${name} لدى ${store}.` : `Browse ${name} products at ${store}.` : ''),
     image: record.seo_image_url || record.image_url || record.logo_url }

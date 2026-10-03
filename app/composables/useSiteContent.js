@@ -165,7 +165,7 @@ export const useSiteContent = () => {
             .order('created_at'),
           supabase
             .from('categories')
-            .select('id, name, slug')
+            .select('id, name, name_ar, slug')
             .order('name')
         ])
 

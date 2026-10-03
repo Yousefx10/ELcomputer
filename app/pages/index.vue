@@ -84,6 +84,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
         category:categories (
           id,
           name,
+          name_ar,
           slug
         ),
         brand:brands (
@@ -97,7 +98,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
       .order('created_at', { ascending: false }),
     supabase
       .from('categories')
-      .select('id, name, slug, image_url')
+      .select('id, name, name_ar, slug, image_url')
       .order('name'),
     supabase
       .from('brands')

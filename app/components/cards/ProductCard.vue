@@ -4,7 +4,7 @@
       <span v-if="hasDiscount" class="store-product-badge">{{ $t('common.saveValueVariant2', { value0: (discountPercent) }) }}</span>
       <span v-else-if="product.is_featured" class="store-product-badge store-product-badge-featured">{{ $t('common.featured') }}</span>
       <img v-if="getStoreImageUrl(product.image_url)" :src="product.image_url" :alt="product.title" loading="lazy" />
-      <Icon v-else :name="getStoreCategoryIcon(categoryName)" size="56" class="store-product-placeholder" />
+      <Icon v-else :name="getStoreCategoryIcon(product.category?.name)" size="56" class="store-product-placeholder" />
     </NuxtLinkLocale>
     <div class="store-product-info">
       <div class="store-product-price">
@@ -27,6 +27,8 @@
 </template>
 
 <script setup>
+const { categoryName: localizedCategoryName } = useCategoryLocale()
+
 const { intlLocale } = useUiLocale()
 
 const { uiNavigateTo } = useUiNavigation()
@@ -51,7 +53,7 @@ const priceFormatter = computed(() => new Intl.NumberFormat(intlLocale.value))
 const numericPrice = computed(() => Number(props.product.price || 0))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
 const brandName = computed(() => String(props.product.brand?.name || '').trim())
-const categoryName = computed(() => String(props.product.category?.name || '').trim())
+const categoryName = computed(() => localizedCategoryName(props.product.category))
 const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
 const isPreorder = computed(() => props.product.selling_mode === 'preorder')
 const isComingSoon = computed(() => props.product.selling_mode === 'coming_soon')

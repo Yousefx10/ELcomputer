@@ -1,18 +1,18 @@
 <template>
   <section
     v-if="isReady && audienceEligible && (submitted || !cooldownActive)"
-    class="mx-4 my-12 overflow-hidden rounded-[2rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-indigo-50 shadow-sm md:mx-10"
+    class="nps-survey shadow-sm"
     aria-labelledby="nps-survey-title"
   >
-    <div class="grid gap-8 p-6 md:p-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center">
+    <div class="nps-survey-content">
       <div>
         <p class="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
           {{ $t('common.helpUsImprove') }}
         </p>
-        <h2 id="nps-survey-title" class="mt-3 text-3xl font-black tracking-tight text-gray-950 md:text-4xl">
+        <h2 id="nps-survey-title" class="nps-survey-question font-black tracking-tight text-gray-950">
           {{ $t('nps.Survey.howLikelyAreYouToRecommendValue', { value0: (storeName) }) }}
         </h2>
-        <p class="mt-4 max-w-xl text-base leading-7 text-gray-600">
+        <p class="mt-2 max-w-xl text-sm leading-6 text-gray-600">
           {{ $t('common.tellUsHowWeDid') }}
         </p>
       </div>
@@ -34,19 +34,19 @@
         </div>
       </div>
 
-      <form v-else class="rounded-3xl bg-white p-5 shadow-sm md:p-7" @submit.prevent="submitSurvey">
-        <fieldset>
+      <form v-else class="nps-survey-form" @submit.prevent="submitSurvey">
+        <fieldset aria-describedby="nps-scale-help">
           <legend class="text-base font-bold text-gray-900">
             {{ $t('nps.Survey.selectAScoreFrom0To10') }}
           </legend>
 
-          <div class="mt-4 grid grid-cols-6 gap-2 sm:grid-cols-11" role="radiogroup" aria-describedby="nps-scale-help">
+          <div class="nps-score-grid" aria-describedby="nps-scale-help">
             <label
               v-for="rating in ratings"
               :key="rating"
-              class="flex cursor-pointer items-center justify-center rounded-xl border py-3 text-sm font-bold transition focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
+              class="flex cursor-pointer items-center justify-center nps-score rounded-xl border text-sm font-bold transition focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
               :class="score === rating
-                ? 'border-blue-600 bg-blue-600 text-white shadow-sm'
+                ? 'nps-score-selected border-blue-600 bg-blue-600 text-white shadow-sm'
                 : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'"
             >
               <input
@@ -80,7 +80,7 @@
             id="nps-feedback"
             v-model="feedback"
             dir="auto"
-            rows="5"
+            rows="3"
             maxlength="999"
             aria-describedby="nps-feedback-count"
             class="mt-3 w-full resize-y rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
@@ -102,7 +102,7 @@
         <button
           type="submit"
           :disabled="submitting"
-          class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300 sm:w-auto"
+          class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300 sm:w-auto"
         >
           <Icon
             v-if="submitting"
@@ -277,3 +277,28 @@ onBeforeUnmount(() => {
   submissionController?.abort()
 })
 </script>
+
+<style scoped>
+.nps-survey { background: var(--store-pale, var(--brand-soft)); border: 1px solid var(--border); width: min(100%, 1200px); margin: 32px auto; border-radius: 20px; }
+.nps-survey-content { display: grid; gap: 20px; padding: 16px; min-width: 0; }
+.nps-survey-question { margin-top: 8px; font-size: 22px; line-height: 1.3; overflow-wrap: anywhere; }
+.nps-survey-form { min-width: 0; container-type: inline-size; }
+.nps-survey-form fieldset { min-width: 0; }
+.nps-score-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.nps-score { min-height: 44px; min-width: 0; background: var(--surface); color: var(--text-primary); border-color: var(--border); }
+.nps-score-selected { background: #0654e9; color: #fff; border-color: #0654e9; }
+.nps-survey-question, .nps-survey-form legend { color: var(--text-primary); }
+.nps-survey-content > div > p, #nps-scale-help { color: var(--text-secondary); }
+.nps-survey-content > div > p:first-child { color: var(--brand-text); }
+@container (min-width: 544px) {
+  .nps-score-grid { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+}
+@media (min-width: 640px) {
+  .nps-survey-content { padding: 24px; gap: 24px; }
+  .nps-survey-question { font-size: 28px; }
+  .nps-survey-form { background: var(--surface); padding: 16px; border-radius: 16px; }
+}
+@media (min-width: 1100px) {
+  .nps-survey-content { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: center; }
+}
+</style>

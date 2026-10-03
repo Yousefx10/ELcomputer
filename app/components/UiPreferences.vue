@@ -28,8 +28,8 @@ const switchLanguage = async event => {
       :title="$t('preferences.toggleTheme')"
       @click="toggleTheme"
     >
-      <Icon class="ui-theme-light-icon" name="lucide:sun" size="20" aria-hidden="true" />
-      <Icon class="ui-theme-dark-icon" name="lucide:moon" size="20" aria-hidden="true" />
+      <Icon class="ui-theme-light-icon" name="lucide:sun" size="17" aria-hidden="true" />
+      <Icon class="ui-theme-dark-icon" name="lucide:moon" size="17" aria-hidden="true" />
     </button>
   </div>
 </template>

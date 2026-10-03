@@ -13,7 +13,11 @@
         @submit.prevent="saveCategory"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
       >
+        <label for="category-name-en" class="block text-sm font-semibold">{{ $t('categoryLocale.englishName') }}</label>
         <input
+          id="category-name-en"
+          dir="ltr"
+          required
           ref="nameInputRef"
           v-model="name"
           type="text"
@@ -21,6 +25,12 @@
           :disabled="editingId ? !canEditCategory : !canAddCategory"
           class="w-full rounded-lg border p-3"
         />
+
+        <label for="category-name-ar" class="block text-sm font-semibold">{{ $t('categoryLocale.arabicName') }}</label>
+        <input id="category-name-ar" v-model="nameAr" type="text" dir="rtl" lang="ar"
+          :disabled="editingId ? !canEditCategory : !canAddCategory"
+          aria-describedby="category-translation-help" class="w-full rounded-lg border p-3" />
+        <p id="category-translation-help" class="text-sm text-gray-500">{{ $t('categoryLocale.translationHelp') }}</p>
 
         <DashboardMediaUploadField
           v-model="imageUrl"
@@ -35,7 +45,9 @@
           {{ $t('common.slugPreviewValue', { value0: (slugPreview || '-') }) }}
         </p>
 
-        <DashboardSeoFields v-model="seo" catalog :fallback-title="name" :fallback-image="imageUrl" section="categories" :disabled="editingId ? !canEditCategory : !canAddCategory" />
+        <p class="text-sm text-gray-500">{{ $t('categoryLocale.slugHelp') }}</p>
+
+        <DashboardSeoFields v-model="seo" catalog :fallback-title="categoryName({ name, name_ar: nameAr })" :fallback-image="imageUrl" section="categories" :disabled="editingId ? !canEditCategory : !canAddCategory" />
 
         <p v-if="errorMessage" class="text-red-600">
           {{ $uiMessage(errorMessage) }}
@@ -142,6 +154,7 @@
 
                 <div>
                   <p class="font-bold">{{ category.name }}</p>
+                  <p v-if="category.name_ar" lang="ar" dir="rtl" class="text-sm">{{ category.name_ar }}</p>
                   <p class="text-sm text-gray-500">{{ category.slug }}</p>
                 </div>
               </div>
@@ -196,7 +209,10 @@
 </template>
 
 <script setup>
+import { categoryNameFields, categorySlug } from '~/utils/categoryLocale'
+
 const { uiLabel } = useUiLocale()
+const { categoryName } = useCategoryLocale()
 
 const supabase = useSupabaseClient()
 const {
@@ -216,6 +232,8 @@ const buildCategoriesCacheKey = (page = currentPage.value) => {
 const categories = ref([])
 const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const name = ref('')
+const nameAr = ref('')
+const existingSlug = ref('')
 const imageUrl = ref('')
 const categoryFormRef = ref(null)
 const nameInputRef = ref(null)
@@ -250,18 +268,12 @@ const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalCategories.value)
 })
 
-const makeSlug = (value) => {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-}
-
-const slugPreview = computed(() => makeSlug(name.value))
+const slugPreview = computed(() => categorySlug(name.value, existingSlug.value))
 
 const resetForm = () => {
   name.value = ''
+  nameAr.value = ''
+  existingSlug.value = ''
   seo.value = { seo_title: '', seo_description: '', seo_image_url: '' }
   imageUrl.value = ''
   editingId.value = null
@@ -350,7 +362,8 @@ const saveCategory = async () => {
     return
   }
 
-  const slug = makeSlug(name.value)
+  const names = categoryNameFields(name.value, nameAr.value, existingSlug.value)
+  const slug = names.slug
 
   if (!slug) {
     errorMessage.value = 'Slug could not be generated'
@@ -366,8 +379,7 @@ const saveCategory = async () => {
       .from('categories')
       .update({
         ...seo.value,
-        name: name.value.trim(),
-        slug,
+        ...names,
         image_url: imageUrl.value.trim() || null
       })
       .eq('id', editingId.value)
@@ -376,8 +388,7 @@ const saveCategory = async () => {
       .from('categories')
       .insert({
         ...seo.value,
-        name: name.value.trim(),
-        slug,
+        ...names,
         image_url: imageUrl.value.trim() || null
       })
   }
@@ -414,6 +425,8 @@ const startEdit = (category) => {
   }
 
   name.value = category.name
+  nameAr.value = category.name_ar || ''
+  existingSlug.value = category.slug
   seo.value = { seo_title: category.seo_title || '', seo_description: category.seo_description || '', seo_image_url: category.seo_image_url || '' }
   imageUrl.value = category.image_url || ''
   editingId.value = category.id

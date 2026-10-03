@@ -1,3 +1,12 @@
+# Navigation and Arabic categories — deployed, 2026-10-03
+
+The existing storefront header, department popover and mobile search row are preserved. Orders remain visible with 44px icon targets; theme/language controls are compact. NPS has readable phone/tablet grids, unchanged 0–10 data and submission logic, and readable dark-mode contrast.
+
+- `categories.name_ar` is optional and staff-authored. The shared helper falls back to English. The editor provides both names and a localized SEO preview; existing slugs remain fixed on edits. URLs remain `/search?category=<English slug>` and `/ar/search?category=<same slug>`.
+- Additive migration `20261003140000_category_arabic_name.sql` is applied; all 55 migration versions match. Existing category/product hashes and business counts are unchanged. No production translations or feedback records were fabricated.
+- 240 tests, typecheck, build, diff check and guarded deployment passed. See `docs/navigation-localization-audit.md` and `docs/navigation-localization-report.md` for files, scope, browser evidence and release identity.
+- Production acceptance passed 1,027 browser assertions across 108 screens at all nine requested widths, EN/AR and Light/Dark, with no detected errors or page overflow. Final bundle hashes, PM2 health, unchanged database fingerprints, SEO/AI discovery, cart persistence and checkout protection passed. Translated/long labels and editor saves are verified with isolated component fixtures; a live authenticated staff save, signed-in customer account acceptance and a valid live NPS record creation are not claimed.
+
 # Project state — ERP ownership cleanup, 2026-10-03
 
 Local implementation only. The user explicitly required stopping before deployment. No production migration or deployment was performed.

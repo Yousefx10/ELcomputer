@@ -30,7 +30,7 @@ export default defineCachedEventHandler(async (event) => {
     supabase.from('site_links').select('*').order('location').order('section_title').order('sort_order').order('created_at'),
     supabase.from('site_offer_cards').select('*').order('sort_order').order('created_at'),
     supabase.from('site_pages').select('id, title, path').eq('is_published', true).eq('show_in_navbar', true).order('created_at'),
-    supabase.from('categories').select('id, name, slug').order('name')
+    supabase.from('categories').select('id, name, name_ar, slug').order('name')
   ])
 
   return results.map(publicResult)

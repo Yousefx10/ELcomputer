@@ -8,7 +8,7 @@
       <LayoutSearchBar />
 
       <nav class="store-header-actions" :aria-label="$t('common.yourShopping')">
-        <NuxtLinkLocale :to="ordersPath" class="store-header-action store-orders-action">
+        <NuxtLinkLocale :to="ordersPath" class="store-header-action store-orders-action" :aria-label="$t('common.myOrders')">
           <Icon name="lucide:package" size="25" />
           <span class="store-action-copy"><small>{{ $t('common.trackManage') }}</small><strong>{{ $t('common.myOrders') }}</strong></span>
         </NuxtLinkLocale>
@@ -39,7 +39,7 @@
           <NuxtLinkLocale to="/search" class="store-nav-link store-nav-link-bold" :class="{ 'store-nav-link-active': isShopAllActive }" :aria-current="isShopAllActive ? 'page' : false">{{ $t('common.shopAll') }}</NuxtLinkLocale>
           <NuxtLinkLocale :to="{ path: '/search', query: { sort: 'latest' } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.sort === 'latest' }" :aria-current="route.path === '/search' && route.query.sort === 'latest' ? 'page' : false">{{ $t('common.newArrivals') }}</NuxtLinkLocale>
           <NuxtLinkLocale v-for="category in headerCategories.slice(0, 5)" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.category === category.slug }" :aria-current="route.path === '/search' && route.query.category === category.slug ? 'page' : false">
-            {{ category.name }}
+            {{ categoryName(category) }}
           </NuxtLinkLocale>
           <template v-for="link in extraHeaderLinks" :key="link.id">
             <a v-if="isExternalUrl(link.url)" :href="link.url" target="_blank" rel="noreferrer" class="store-nav-link">{{ link.is_default ? $uiLabel(link.label) : link.label }}</a>
@@ -52,7 +52,7 @@
           <div class="store-departments-heading"><strong>{{ $t('common.shopByDepartment') }}</strong><button type="button" :aria-label="$t('common.closeDepartments')" @click="closeDepartments(true)"><Icon name="lucide:x" size="20" /></button></div>
           <NuxtLinkLocale to="/search" class="store-department-item" @click="closeDepartments()"><Icon name="lucide:layout-grid" size="20" /><span>{{ $t('common.allProducts') }}</span><Icon name="lucide:arrow-right" size="17" class="directional-icon" /></NuxtLinkLocale>
           <NuxtLinkLocale v-for="category in headerCategories" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-department-item" @click="closeDepartments()">
-            <Icon :name="getStoreCategoryIcon(category.name)" size="19" /><span>{{ category.name }}</span><Icon name="lucide:chevron-right" size="16" class="directional-icon" />
+            <Icon :name="getStoreCategoryIcon(category.name)" size="19" /><span>{{ categoryName(category) }}</span><Icon name="lucide:chevron-right" size="16" class="directional-icon" />
           </NuxtLinkLocale>
           <p v-if="!headerCategories.length" class="store-department-empty">{{ $t('layout.NavBar.seeAllProductsInTheStore') }}</p>
         </div>
@@ -62,6 +62,8 @@
 </template>
 
 <script setup>
+const { categoryName } = useCategoryLocale()
+
 const { intlLocale } = useUiLocale()
 
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'

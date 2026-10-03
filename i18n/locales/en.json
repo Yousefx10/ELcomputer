@@ -3473,5 +3473,11 @@
     "supported": "Supported",
     "physicalRegistry": "Physical item registry. Manage ERP stock in Daftra.",
     "loadBeforeActions": "ERP settings are unavailable. Reload before ERP changes."
+  },
+  "categoryLocale": {
+    "englishName": "English name",
+    "arabicName": "Arabic name (optional)",
+    "translationHelp": "Display translation only. URLs stay unchanged.",
+    "slugHelp": "Existing slugs are preserved. New slugs use the English name."
   }
 }
