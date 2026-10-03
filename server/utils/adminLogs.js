@@ -36,6 +36,7 @@ const cleanupAdminLogs = async ({ supabaseAdmin, adminUserId, authorEmail }) => 
   let cleanupQuery = supabaseAdmin
     .from(ADMIN_LOGS_TABLE)
     .select('id')
+    .or('action_key.is.null,action_key.neq.settings.erp.mode-update')
     .order('created_at', { ascending: false })
     .order('id', { ascending: false })
     .range(ADMIN_LOG_LIMIT_PER_USER, ADMIN_LOG_LIMIT_PER_USER + 5000)

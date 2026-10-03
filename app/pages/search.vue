@@ -508,7 +508,7 @@ const getSearchMetadata = async (signal) => {
       .order('name')
       .abortSignal(signal),
     supabase
-      .from('products')
+      .from('storefront_products')
       .select('price')
       .eq('is_published', true)
       .order('price', { ascending: true })
@@ -516,7 +516,7 @@ const getSearchMetadata = async (signal) => {
       .abortSignal(signal)
       .maybeSingle(),
     supabase
-      .from('products')
+      .from('storefront_products')
       .select('price')
       .eq('is_published', true)
       .order('price', { ascending: false })
@@ -613,7 +613,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
 
     const buildBaseQuery = (withCount = false) => {
       let query = supabase
-        .from('products')
+        .from('storefront_products')
         .select(selectFields, withCount ? { count: 'exact' } : undefined)
         .eq('is_published', true)
         .abortSignal(signal)

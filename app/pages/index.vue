@@ -67,7 +67,7 @@ onMounted(() => { homeHydrated.value = true })
 const { data: homeData, pending: homePending, error: homeError } = await useAsyncData('store-home', async () => {
   const [productsResult, categoriesResult, brandsResult] = await Promise.all([
     supabase
-      .from('products')
+      .from('storefront_products')
       .select(`
         id,
         title,

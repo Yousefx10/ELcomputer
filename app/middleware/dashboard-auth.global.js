@@ -1,3 +1,4 @@
+import { getErpOwnershipRedirect } from '~/utils/erpState'
 import { stripLocalePrefix } from '~/utils/appearance'
 import { getDashboardRouteRequirement } from '~/utils/adminPermissions'
 
@@ -49,35 +50,11 @@ export default defineNuxtRouteMiddleware(async (destination) => {
     })
   }
 
-  const { data: siteContent } = await useSiteContent()
-  const settings = siteContent.value?.settings || {}
-  const externalErpActive = settings.erp_mode === 'daftra'
-    && settings.daftra_connection_status === 'connected'
-
-  if (externalErpActive) {
-    const queryValue = (key) => String(
-      Array.isArray(to.query?.[key]) ? to.query[key][0] : to.query?.[key] || ''
-    ).trim().toLowerCase()
-
-    if (to.path === '/dashboard/treasury') {
-      return uiNavigateTo('/dashboard/erp', { replace: true })
-    }
-
-    if (
-      to.path === '/dashboard/commerce'
-      && ['', 'procurement', 'sales', 'warehouses'].includes(queryValue('tab'))
-    ) {
-      return uiNavigateTo('/dashboard/commerce?tab=returns', { replace: true })
-    }
-
-    if (to.path === '/dashboard/hr' && ['', 'employees'].includes(queryValue('tab'))) {
-      return uiNavigateTo('/dashboard/hr?tab=users', { replace: true })
-    }
-
-    if (to.path === '/dashboard' && queryValue('view') === 'stock') {
-      return uiNavigateTo('/dashboard/erp?tab=inventory', { replace: true })
-    }
-  }
+  const cachedErpState = useNuxtData('active-erp').data.value
+  const { data: erpState, error: erpError, refresh: refreshErpState } = await useActiveErp()
+  if (cachedErpState) await refreshErpState()
+  const erpRedirect=getErpOwnershipRedirect(to,erpError.value ? null:erpState.value,hasPermission('dashboard.analysis'))
+  if (erpRedirect) return uiNavigateTo(erpRedirect,{replace:true})
 
   if (!routeRequirement) {
     return

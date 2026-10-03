@@ -31,7 +31,7 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await db.query("select set_config('request.jwt.claim.role', 'service_role', true)")
     await db.query(`insert into auth.users(id,email) values($1,'pre-buyer@example.com'),($2,'pre-admin@example.com')`, [customer, admin])
     await db.query(`insert into public.admin_users(id,email,role) values($1,'pre-admin@example.com','owner')`, [admin])
-    await db.query(`insert into public.site_settings(key,payment_bank_transfer_enabled,payment_bank_transfer_fee,erp_mode,daftra_connection_status) values('default',true,12.50,'daftra','connected') on conflict(key) do update set payment_bank_transfer_enabled=true,payment_bank_transfer_fee=12.50,erp_mode='daftra',daftra_connection_status='connected'`)
+    await db.query(`insert into public.site_settings(key,payment_bank_transfer_enabled,payment_bank_transfer_fee,erp_mode,daftra_connection_status) values('default',true,12.50,'built_in','disconnected') on conflict(key) do update set payment_bank_transfer_enabled=true,payment_bank_transfer_fee=12.50,erp_mode='built_in',daftra_connection_status='disconnected'`)
     await db.query(`update public.shipping_provider_settings set is_enabled=true,auto_create_labels=true where id='pdc'`)
     await db.query("select set_config('app.serialized_inventory_write', 'on', true)")
     await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode,preorder_payment_mode,preorder_deposit_percent,preorder_total_limit,preorder_customer_limit) values($1,'Upcoming GPU',($1::uuid)::text,10000,0,false,'preorder','deposit',25,3,2)`, [product])
@@ -46,6 +46,7 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await fails(() => db.query(`select public.commerce_create_customer_order($1,$2::jsonb,$3::jsonb,false,$4)`, [customer, JSON.stringify(orderPayload('pre')), JSON.stringify(item(product)), randomUUID()]), /not available for normal checkout/)
 
     const cart = randomUUID()
+    await db.query(`update public.site_settings set erp_mode='daftra',daftra_connection_status='error' where key='default'`)
     const first = await checkout(product, cart, 2)
     assert.equal(first.created, true)
     assert.equal(Number(first.order.subtotal_amount), 20000)
@@ -99,6 +100,8 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await fails(() => db.query(`update public.products set preorder_payment_mode='deposit',preorder_deposit_percent=100 where id=$1`, [product]), /products_preorder_payment_check/)
     await fails(() => db.query(`update public.products set price=0 where id=$1`, [product]), /products_preorder_price_check/)
     await db.query(`select public.commerce_record_preorder_payment($1,$2,$3,'STANDARD-PAID-123')`, [full.order.id, admin, Number(full.order.total_amount)])
+    await fails(() => db.query(`select public.commerce_release_preorder($1,$2)`, [full.order.id, admin]), /managed in Daftra/)
+    await db.query(`update public.site_settings set erp_mode='built_in' where key='default'`)
     await fails(() => db.query(`select public.commerce_release_preorder($1,$2)`, [full.order.id, admin]), /Physical product stock has not arrived/)
     await db.query(`update public.products set stock_quantity=1 where id=$1`, [product])
     const standardRelease = (await db.query(`select public.commerce_release_preorder($1,$2) as value`, [full.order.id, admin])).rows[0].value

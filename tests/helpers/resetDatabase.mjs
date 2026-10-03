@@ -2,7 +2,7 @@ import { PGlite } from '@electric-sql/pglite'
 import { readFile, readdir } from 'node:fs/promises'
 
 // Real application schema and migrations, isolated in an in-memory PostgreSQL engine.
-export const createResetDatabase = async () => {
+export const createResetDatabase = async ({ stopBefore = null } = {}) => {
   const db = new PGlite()
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
@@ -28,6 +28,7 @@ export const createResetDatabase = async () => {
   await db.exec(await readFile(new URL('../../supabase/backups/schema.sql', import.meta.url), 'utf8'))
   const migrations = new URL('../../supabase/migrations/', import.meta.url)
   for (const name of (await readdir(migrations)).filter(name => name.endsWith('.sql')).sort()) {
+    if (stopBefore && name >= stopBefore) break
     await db.exec(await readFile(new URL(name, migrations), 'utf8'))
   }
   return db

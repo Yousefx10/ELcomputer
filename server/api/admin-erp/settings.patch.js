@@ -1,47 +1,19 @@
 import { createError, readBody } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
-import { recordAdminActivity } from '../../utils/adminLogs'
-import { getErpSettings, testAndRecordDaftraConnection } from '../../utils/daftraSync'
+import { getDaftraConfigSummary } from '../../utils/daftra'
 
-export default defineEventHandler(async (event) => {
-  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
-    permission: 'settings.edit'
-  })
+export default defineEventHandler(async event => {
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, { permission:'settings.edit' })
   const body = await readBody(event)
-  const mode = String(body?.mode || '').trim()
-
-  if (!['built_in', 'daftra'].includes(mode)) {
-    throw createError({ statusCode: 400, statusMessage: 'Choose a valid ERP mode.' })
+  if (body?.confirmed !== true || !['built_in','daftra'].includes(body.mode)
+    || !Number.isSafeInteger(body.stateVersion)) throw createError({ statusCode:400,statusMessage:'Confirm the reviewed ERP transition.' })
+  if (body.mode==='daftra' && !(await getDaftraConfigSummary(supabaseAdmin)).configured) {
+    throw createError({statusCode:409,statusMessage:'Save and test Daftra credentials first.'})
   }
-
-  const currentSettings = await getErpSettings(supabaseAdmin)
-
-  if (currentSettings.migrationRequired) {
-    throw createError({ statusCode: 500, statusMessage: 'Run the Daftra ERP migration first.' })
-  }
-
-  let connection = null
-
-  if (mode === 'daftra') {
-    connection = await testAndRecordDaftraConnection(supabaseAdmin)
-  }
-
-  const { error } = await supabaseAdmin
-    .from('site_settings')
-    .update({ erp_mode: mode, updated_at: new Date().toISOString() })
-    .eq('key', 'default')
-
-  if (error) {
-    throw createError({ statusCode: 500, statusMessage: error.message })
-  }
-
-  await recordAdminActivity({
-    supabaseAdmin,
-    adminUser,
-    actionKey: 'settings.erp.mode-update',
-    description: `Changed ERP mode to ${mode === 'daftra' ? 'Daftra' : 'built-in'}.`,
-    metadata: { previousMode: currentSettings.erp_mode, mode }
+  const { data,error } = await supabaseAdmin.rpc('erp_change_mode',{
+    p_admin_id:adminUser.id,p_mode:body.mode,p_expected_version:body.stateVersion,
+    p_choice:body.choice,p_review_id:body.reviewId || null
   })
-
-  return { mode, connection }
+  if (error) throw createError({statusCode:409,statusMessage:'ERP transition could not complete. Reload, test and review again.'})
+  return data
 })

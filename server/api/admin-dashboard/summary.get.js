@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
 
     return configure(
       supabaseAdmin
-        .from('products')
+        .from('storefront_products')
         .select('*', { count: 'exact', head: true })
     )
   }

@@ -11,7 +11,7 @@ export const useReorder = () => {
 
     const productIds = [...new Set(requestedItems.map(item => item.product_id))]
     const { data, error } = await supabase
-      .from('products')
+      .from('storefront_products')
       .select(`
         id,
         title,
@@ -24,7 +24,7 @@ export const useReorder = () => {
         is_published,
         category:categories (id, name, slug),
         brand:brands (id, name, slug),
-        product_variants (id, name, code, sku, color_name, color_hex, price, stock_quantity, is_active)
+        product_variants:storefront_product_variants (id, name, code, sku, color_name, color_hex, price, stock_quantity, is_active)
       `)
       .in('id', productIds)
       .eq('is_published', true)

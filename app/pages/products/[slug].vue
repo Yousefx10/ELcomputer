@@ -143,7 +143,7 @@ const { addItem } = useCart()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
   const { data: productData, error: productError } = await selectWithSeo(fields => supabase
-    .from('products').select(fields).eq('slug', slug).eq('is_published', true).maybeSingle(), `
+    .from('storefront_products').select(fields).eq('slug', slug).eq('is_published', true).maybeSingle(), `
       id,
       title,
       slug,
@@ -205,7 +205,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       .order('created_at'),
     productData.is_serialized
       ? supabase
-          .from('product_variants')
+          .from('storefront_product_variants')
           .select('id, product_id, name, code, sku, color_name, color_hex, stock_quantity, is_active')
           .eq('product_id', productData.id)
           .eq('is_active', true)
@@ -216,7 +216,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
         }),
     $fetch('/api/product-reviews', { query: { productId: productData.id, page: 1, pageSize: 1 } }).catch(() => null),
     productData.category_id || productData.brand_id
-      ? supabase.from('products')
+      ? supabase.from('storefront_products')
           .select('id, title, slug, price, old_price, image_url, stock_quantity, is_serialized, selling_mode, preorder_active, is_featured, is_top_seller, popularity_score, category_id, brand_id, category:categories(id, name), brand:brands(id, name)')
           .eq('is_published', true)
           .neq('id', productData.id)

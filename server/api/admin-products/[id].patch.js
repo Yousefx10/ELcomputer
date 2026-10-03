@@ -1,3 +1,4 @@
+import { getErpSettings } from '../../utils/erpOwnership'
 import { createError } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import {
@@ -37,6 +38,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const externalErp = (await getErpSettings(supabaseAdmin)).erp_mode === 'daftra'
+  if (externalErp && ['stock_quantity', 'cost_price', 'primary_warehouse_id', 'default_supplier_id'].some(key =>
+    Object.hasOwn(body || {}, key) && String(body[key] ?? '') !== String(previousProduct[key] ?? ''))) {
+    throw createError({ statusCode: 409, statusMessage: 'Inventory quantity, cost and warehouse are managed in Daftra.' })
+  }
   const wasSerialized = Boolean(previousProduct.is_serialized)
   const normalizedPayload = normalizeAdminProductPayload(body, {
     catalogDefinitionsOnly: wasSerialized
@@ -154,7 +160,7 @@ export default defineEventHandler(async (event) => {
       if (variantDefinitionsError) {
         throw variantDefinitionsError
       }
-    } else {
+    } else if (!externalErp) {
       await syncPrimaryWarehouseInventoryForProductUpdate({
         supabaseAdmin,
         productId,

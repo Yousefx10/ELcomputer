@@ -328,7 +328,7 @@ const getProductsList = async (page = currentPage.value, { force = false } = {})
   const to = from + pageSize - 1
 
   let query = supabase
-    .from('products')
+    .from('storefront_products')
     .select(`
       *,
       category:categories (

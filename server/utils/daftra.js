@@ -38,7 +38,7 @@ export const normalizeDaftraAccountUrl = (value) => {
     })
   }
 
-  if (url.protocol !== 'https:' || !ALLOWED_DAFTRA_HOST.test(url.hostname)) {
+  if (url.protocol !== 'https:' || !ALLOWED_DAFTRA_HOST.test(url.hostname) || url.username || url.password || url.port || url.search || url.hash) {
     throw createError({
       statusCode: 500,
       statusMessage: 'The Daftra account URL must use an official HTTPS domain.'
@@ -65,7 +65,7 @@ const getEnvironmentDaftraConfig = () => {
 const getStoredDaftraSettings = async (supabaseAdmin = getSupabaseAdminClient()) => {
   const { data, error } = await supabaseAdmin
     .from('erp_provider_settings')
-    .select('account_url, api_key_encrypted, client_id_encrypted, updated_at')
+    .select('account_url, api_key_encrypted, client_id_encrypted, updated_at, credential_revision')
     .eq('id', 'daftra')
     .maybeSingle()
 
@@ -74,7 +74,7 @@ const getStoredDaftraSettings = async (supabaseAdmin = getSupabaseAdminClient())
       return { data: null, storageReady: false }
     }
 
-    throw createError({ statusCode: 500, statusMessage: error.message })
+    throw createError({ statusCode: 503, statusMessage: 'Daftra credential storage is unavailable.' })
   }
 
   return { data: data || null, storageReady: true }
@@ -102,6 +102,7 @@ const loadDaftraConfig = async () => {
     clientId,
     configured: Boolean(accountUrl && apiKey),
     source: 'database',
+    revision: storedSettings.data.credential_revision,
     storageReady: true
   }
 }
@@ -144,11 +145,13 @@ export const getDaftraConfigSummary = async (supabaseAdmin) => {
       accountUrl,
       accountHost: accountUrl ? new URL(accountUrl).hostname : '',
       apiKeyConfigured,
+      credentialsSaved: Boolean(accountUrl && apiKeyConfigured),
       clientIdConfigured: Boolean(storedSettings.data.client_id_encrypted),
       configured: Boolean(accountUrl && apiKeyConfigured && encryptionReady),
       encryptionReady,
       source: 'database',
       storageReady: true,
+      revision: storedSettings.data.credential_revision,
       updatedAt: storedSettings.data.updated_at || null
     }
   }
@@ -161,23 +164,20 @@ export const getDaftraConfigSummary = async (supabaseAdmin) => {
     apiKeyConfigured: Boolean(environmentConfig.apiKey),
     clientIdConfigured: Boolean(environmentConfig.clientId),
     configured: environmentConfig.configured,
+    credentialsSaved: environmentConfig.configured,
     encryptionReady,
     source: environmentConfig.source,
     storageReady: storedSettings.storageReady,
+    revision: 0,
     updatedAt: null
   }
 }
 
-const getDaftraErrorMessage = (error) => {
-  const data = error?.data || error?.response?._data || {}
-
-  return cleanText(
-    data.message
-    || data.error
-    || data.statusMessage
-    || error?.statusMessage
-    || error?.message
-  ) || 'Daftra could not complete the request.'
+const getDaftraErrorMessage = error => {
+  const status = Number(error?.statusCode || error?.response?.status || 502)
+  if (status === 401 || status === 403) return 'Daftra rejected the account permissions or credentials.'
+  if (status === 429) return 'Daftra rate limit reached. Try again later.'
+  return 'Daftra could not complete the request.'
 }
 
 export const daftraRequest = async (path, options = {}) => {
@@ -193,17 +193,23 @@ export const daftraRequest = async (path, options = {}) => {
   const normalizedPath = `/${cleanText(path).replace(/^\/+/, '')}`
 
   try {
-    return await $fetch(`${config.accountUrl}/api2${normalizedPath}`, {
+    const response = await $fetch(`${config.accountUrl}/api2${normalizedPath}`, {
       method: options.method || 'GET',
       query: options.query,
       body: options.body,
       timeout: options.timeout || DAFTRA_TIMEOUT_MS,
+      retry: 0,
+      redirect: 'error',
       headers: {
         accept: 'application/json',
         apikey: config.apiKey,
         ...(options.body ? { 'content-type': 'application/json' } : {})
       }
     })
+    if (response?.result !== 'successful' || ![200, 202].includes(Number(response?.code))) {
+      throw createError({ statusCode: 502, statusMessage: 'Daftra returned an unsuccessful response.' })
+    }
+    return response
   } catch (error) {
     const statusCode = Number(error?.statusCode || error?.response?.status || 502)
 
@@ -214,33 +220,22 @@ export const daftraRequest = async (path, options = {}) => {
   }
 }
 
-export const getDaftraConnectionSummary = async () => {
-  const config = await getDaftraConfig()
+export const getDaftraConnectionSummary = async (config = null) => {
+  config ||= await getDaftraConfig()
   const response = await daftraRequest('/clients.json', {
     query: { limit: 1, page: 1 },
     config
   })
 
   return {
-    connected: response?.result === 'successful' || Number(response?.code) === 200,
+    connected: response?.result === 'successful' && Number(response?.code) === 200 && Array.isArray(response?.data),
     accountHost: config.accountUrl ? new URL(config.accountUrl).hostname : '',
     clientCount: Number(response?.pagination?.total_results || 0)
   }
 }
 
 export const getDaftraList = async (resource, query = {}) => {
-  const allowedResources = new Set([
-    'clients',
-    'expenses',
-    'invoice_payments',
-    'invoices',
-    'products',
-    'purchase_invoices',
-    'stock_transactions',
-    'stores',
-    'suppliers',
-    'treasuries'
-  ])
+  const allowedResources = new Set(['clients', 'products', 'invoices', 'stores'])
 
   if (!allowedResources.has(resource)) {
     throw createError({
@@ -281,7 +276,6 @@ export const unwrapDaftraRecord = (entry, wrapperName) => {
     return {}
   }
 
-  return entry[wrapperName]
-    || entry[Object.keys(entry)[0]]
-    || entry
+  if (Array.isArray(entry)) return unwrapDaftraRecord(entry[0], wrapperName)
+  return entry[wrapperName] || entry
 }

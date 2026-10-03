@@ -108,3 +108,12 @@ test('external ERP mode hides built-in ERP entry points', () => {
   assert.equal(groups.find(group => group.key === 'hr').children.some(item => item.key === 'employees'), false)
   assert.equal(groups.find(group => group.key === 'dashboard').children.some(item => item.key === 'stock-summary'), false)
 })
+
+test('built-in ERP keeps its operational navigation and platform destinations',()=>{
+  const groups=buildDashboardNavigation({}, {externalErpActive:false})
+  const keys=groups.map(group=>group.key)
+  assert.equal(keys.includes('daftra'),false)
+  for(const key of ['purchasing','treasury','sales','inventory','hr','orders','products','shipping','support']) assert.equal(keys.includes(key),true,key)
+  assert.equal(groups.find(group=>group.key==='hr').children.some(item=>item.key==='employees'),true)
+  assert.equal(groups.find(group=>group.key==='inventory').children.some(item=>item.key==='warehouses'),true)
+})

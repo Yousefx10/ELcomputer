@@ -1,3 +1,4 @@
+import { getErpSettings } from '../../../../utils/erpOwnership'
 import { createError } from 'h3'
 import { requireAdminRequest } from '../../../../utils/adminRequest'
 import {
@@ -29,8 +30,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const externalErp = (await getErpSettings(supabaseAdmin)).erp_mode === 'daftra'
   const { data, error } = await supabaseAdmin.rpc(
-    'commerce_return_serialized_unit',
+    externalErp ? 'erp_record_external_unit_return' : 'commerce_return_serialized_unit',
     {
       p_unit_id: unitId,
       p_warehouse_id: warehouseId,
@@ -50,7 +52,8 @@ export default defineEventHandler(async (event) => {
 
   return {
     itemId: result?.item_id || result?.itemId || unitId,
-    status: result?.status || 'in_stock',
+    manualRequired: externalErp,
+    status: externalErp ? 'sold' : result?.status || 'in_stock',
     returnId: result?.return_id || result?.returnId || (
       typeof result === 'string'
         ? result

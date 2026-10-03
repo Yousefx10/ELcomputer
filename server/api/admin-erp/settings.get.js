@@ -1,43 +1,20 @@
+import { createError } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { getDaftraConfigSummary } from '../../utils/daftra'
-import { getErpSettings } from '../../utils/daftraSync'
+import { getErpSettings } from '../../utils/erpOwnership'
+import { resolveErpState } from '../../../app/utils/erpState'
 
-export default defineEventHandler(async (event) => {
-  const { supabaseAdmin } = await requireAdminRequest(event, {
-    permission: 'settings.view'
-  })
-  const settings = await getErpSettings(supabaseAdmin)
-  const config = await getDaftraConfigSummary(supabaseAdmin)
-  let jobCounts = { pending: 0, processing: 0, failed: 0 }
-
-  if (!settings.migrationRequired) {
-    const { data } = await supabaseAdmin
-      .from('erp_sync_jobs')
-      .select('status')
-      .in('status', ['pending', 'processing', 'failed'])
-
-    jobCounts = (data || []).reduce((counts, job) => {
-      counts[job.status] = Number(counts[job.status] || 0) + 1
-      return counts
-    }, jobCounts)
-  }
-
-  return {
-    settings: {
-      mode: settings.erp_mode,
-      connectionStatus: settings.daftra_connection_status,
-      lastCheckedAt: settings.daftra_last_checked_at,
-      connectedAt: settings.daftra_connected_at,
-      connectionError: settings.daftra_connection_error,
-      configured: config.configured,
-      accountUrl: config.accountUrl,
-      accountHost: config.accountHost,
-      apiKeyConfigured: config.apiKeyConfigured,
-      clientIdConfigured: config.clientIdConfigured,
-      credentialsSource: config.source,
-      encryptionReady: config.encryptionReady,
-      migrationRequired: settings.migrationRequired || !config.storageReady,
-      jobCounts
-    }
-  }
+export default defineEventHandler(async event => {
+  const {supabaseAdmin}=await requireAdminRequest(event,{permission:'settings.view'})
+  const [settings,config]=await Promise.all([getErpSettings(supabaseAdmin),getDaftraConfigSummary(supabaseAdmin)])
+  const statuses=['pending','processing','failed']
+  const counts=await Promise.all(statuses.map(status=>supabaseAdmin.from('erp_sync_jobs').select('id',{count:'exact',head:true}).eq('provider','daftra').eq('status',status)))
+  if(counts.some(result=>result.error)) throw createError({statusCode:503,statusMessage:'Could not load ERP job status.'})
+  const state=resolveErpState(settings,config)
+  return {settings:{...state,stateVersion:settings.erp_state_version,
+    lastCheckedAt:settings.daftra_last_checked_at,connectedAt:settings.daftra_connected_at,connectionError:settings.daftra_connection_error,
+    configured:config.configured,accountUrl:config.accountUrl,accountHost:config.accountHost,
+    apiKeyConfigured:config.apiKeyConfigured,clientIdConfigured:config.clientIdConfigured,credentialsSource:config.source,
+    encryptionReady:config.encryptionReady,migrationRequired:!config.storageReady,
+    jobCounts:Object.fromEntries(statuses.map((status,i)=>[status,counts[i].count||0]))}}
 })

@@ -5,7 +5,6 @@ import {
   isStoreAnalyticsUuid,
   recordStoreOrderCreated
 } from '../../utils/storeAnalytics'
-import { getErpSettings, processNextDaftraJob } from '../../utils/daftraSync'
 import { normalizePaymentMethod } from '~/utils/paymentMethods'
 
 const PHONE_PATTERN = /^01\d{9}$/
@@ -393,31 +392,6 @@ export default defineEventHandler(async (event) => {
       })
     } catch {
       console.error('Could not record checkout analytics.')
-    }
-
-    const processDaftraInBackground = async () => {
-      if (isPreorder) return
-      try {
-        const erpSettings = await getErpSettings(supabaseAdmin)
-
-        if (
-          erpSettings.erp_mode === 'daftra'
-          && erpSettings.daftra_connection_status === 'connected'
-        ) {
-          await processNextDaftraJob(supabaseAdmin)
-        }
-      } catch (error) {
-        console.error(
-          'Daftra background sync failed:',
-          error?.statusMessage || error?.message || 'unknown error'
-        )
-      }
-    }
-
-    const backgroundTask = processDaftraInBackground()
-
-    if (typeof event.waitUntil === 'function') {
-      event.waitUntil(backgroundTask)
     }
   }
 

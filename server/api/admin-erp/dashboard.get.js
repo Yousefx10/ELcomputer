@@ -1,7 +1,7 @@
 import { createError, getQuery } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { getDaftraList, getDaftraOverview, unwrapDaftraRecord } from '../../utils/daftra'
-import { getErpSettings } from '../../utils/daftraSync'
+import { assertExternalErpDomain } from '../../utils/erpOwnership'
 
 const normalizePage = (value) => Math.max(1, Number(value) || 1)
 
@@ -35,9 +35,9 @@ const normalizeProduct = (entry) => {
     code: product.product_code || '',
     barcode: product.barcode || '',
     price: Number(product.unit_price || 0),
-    cost: Number(product.buy_price || product.average_price || 0),
-    stock: Number(product.stock_balance || 0),
-    active: Number(product.deactivate ?? 0) === 0
+    cost: product.buy_price == null && product.average_price == null ? null : Number(product.buy_price ?? product.average_price),
+    stock: product.stock_balance == null ? null : Number(product.stock_balance),
+    active: Number(product.status) === 0
   }
 }
 
@@ -45,11 +45,7 @@ export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'dashboard.analysis'
   })
-  const settings = await getErpSettings(supabaseAdmin)
-
-  if (settings.erp_mode !== 'daftra' || settings.daftra_connection_status !== 'connected') {
-    throw createError({ statusCode: 409, statusMessage: 'Daftra ERP is not active and connected.' })
-  }
+  await assertExternalErpDomain(supabaseAdmin)
 
   const query = getQuery(event)
   const tab = String(query.tab || 'overview').trim().toLowerCase()
@@ -58,10 +54,11 @@ export default defineEventHandler(async (event) => {
   if (tab === 'overview') {
     const [overview, pendingResult, failedResult] = await Promise.all([
       getDaftraOverview(),
-      supabaseAdmin.from('erp_sync_jobs').select('*', { count: 'exact', head: true }).in('status', ['pending', 'processing']),
-      supabaseAdmin.from('erp_sync_jobs').select('*', { count: 'exact', head: true }).eq('status', 'failed')
+      supabaseAdmin.from('erp_sync_jobs').select('*', { count: 'exact', head: true }).eq('provider', 'daftra').in('status', ['pending', 'processing']),
+      supabaseAdmin.from('erp_sync_jobs').select('*', { count: 'exact', head: true }).eq('provider', 'daftra').eq('status', 'failed')
     ])
 
+    if (pendingResult.error || failedResult.error) throw createError({ statusCode: 503, statusMessage: 'Could not load ERP job status.' })
     return {
       tab,
       overview,
@@ -89,14 +86,23 @@ export default defineEventHandler(async (event) => {
   }
 
   if (tab === 'inventory') {
+    let remoteError=null
     const response = await getDaftraList('products', {
       page,
       limit: 20,
       with_images: 0
-    })
+    }).catch(()=>{remoteError='Daftra stock is unavailable. Cached stock remains in use.';return null})
 
+    const { data: lastJob, error: statusError } = await supabaseAdmin.from('erp_sync_jobs')
+      .select('id,status,completed_at,last_error,result,updated_at').eq('operation','inventory.import').order('created_at',{ascending:false}).limit(1).maybeSingle()
+    const { data: lastSuccess, error: successError } = await supabaseAdmin.from('erp_sync_jobs')
+      .select('completed_at').eq('operation','inventory.import').eq('status','completed').order('completed_at',{ascending:false}).limit(1).maybeSingle()
+    if(statusError || successError) throw createError({statusCode:503,statusMessage:'Could not load stock refresh status.'})
     return {
       tab,
+      inventorySync: { ...lastJob, lastSuccessfulAt:lastSuccess?.completed_at || null },
+      remoteAvailable: !remoteError,
+      remoteError,
       items: (response?.data || []).map(normalizeProduct),
       pagination: response?.pagination || {}
     }

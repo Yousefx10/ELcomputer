@@ -195,7 +195,7 @@ const loadSuggestions = async () => {
       ...matchingBrands.map(brand => `brand_id.eq.${brand.id}`)
     ]
     const { data, error } = await supabase
-      .from('products')
+      .from('storefront_products')
       .select(`
         id,
         title,

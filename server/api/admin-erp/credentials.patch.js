@@ -3,6 +3,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 import { recordAdminActivity } from '../../utils/adminLogs'
 import {
   clearDaftraConfigCache,
+  getDaftraConfigSummary,
   normalizeDaftraAccountUrl
 } from '../../utils/daftra'
 import {
@@ -51,12 +52,20 @@ export default defineEventHandler(async (event) => {
   if (currentError) {
     const message = MISSING_SETTINGS_CODES.has(currentError.code)
       ? 'Run the latest database migration first.'
-      : currentError.message
+      : 'Daftra credential storage is unavailable.'
     throw createError({ statusCode: 500, statusMessage: message })
   }
 
   if (!suppliedApiKey && !currentSettings?.api_key_encrypted) {
     throw createError({ statusCode: 400, statusMessage: 'Daftra API key is required.' })
+  }
+
+  const currentConfig=await getDaftraConfigSummary(supabaseAdmin)
+  if (currentConfig.source==='environment' && currentConfig.accountUrl!==accountUrl) {
+    const counts=await Promise.all(['erp_entity_links','erp_remote_writes'].map(table=>
+      supabaseAdmin.from(table).select('*',{count:'exact',head:true})))
+    if(counts.some(result=>result.error)) throw createError({statusCode:503,statusMessage:'Could not review the ERP account mappings.'})
+    if(counts.some(result=>result.count>0)) throw createError({statusCode:409,statusMessage:'Account changes require manual mapping reconciliation.'})
   }
 
   const updatePayload = {
@@ -72,31 +81,11 @@ export default defineEventHandler(async (event) => {
     updated_at: new Date().toISOString()
   }
 
-  const { error: connectionStatusError } = await supabaseAdmin
-    .from('site_settings')
-    .update({
-      daftra_connection_status: 'disconnected',
-      daftra_connection_error: null,
-      updated_at: new Date().toISOString()
-    })
-    .eq('key', 'default')
-
-  if (connectionStatusError) {
-    throw createError({ statusCode: 500, statusMessage: connectionStatusError.message })
-  }
-
-  const { data, error } = await supabaseAdmin
-    .from('erp_provider_settings')
-    .upsert(updatePayload, { onConflict: 'id' })
-    .select('account_url, api_key_encrypted, client_id_encrypted, updated_at')
-    .single()
-
-  if (error) {
-    const message = MISSING_SETTINGS_CODES.has(error.code)
-      ? 'Run the latest database migration first.'
-      : error.message
-    throw createError({ statusCode: 500, statusMessage: message })
-  }
+  const { error } = await supabaseAdmin.rpc('erp_save_daftra_credentials', {
+    p_admin_id: adminUser.id, p_url: updatePayload.account_url,
+    p_key: updatePayload.api_key_encrypted, p_client: updatePayload.client_id_encrypted
+  })
+  if (error) throw createError({ statusCode: 409, statusMessage: 'Could not save credentials. Finish active jobs and review account mappings.' })
 
   clearDaftraConfigCache()
 
@@ -114,10 +103,10 @@ export default defineEventHandler(async (event) => {
 
   return {
     saved: true,
-    accountUrl: data.account_url,
-    accountHost: new URL(data.account_url).hostname,
-    apiKeyConfigured: Boolean(data.api_key_encrypted),
-    clientIdConfigured: Boolean(data.client_id_encrypted),
-    updatedAt: data.updated_at
+    accountUrl: updatePayload.account_url,
+    accountHost: new URL(updatePayload.account_url).hostname,
+    apiKeyConfigured: Boolean(updatePayload.api_key_encrypted),
+    clientIdConfigured: Boolean(updatePayload.client_id_encrypted),
+    updatedAt: updatePayload.updated_at
   }
 })

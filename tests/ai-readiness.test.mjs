@@ -143,7 +143,7 @@ test('public readers recheck publication/noindex, select only public fields and 
 })
 
 test('product read uses aggregate-only reviews and authoritative preorder API, failing safely when unavailable', async () => {
-  const db = fakeClient({ products: [{ ...product, selling_mode: 'preorder', average_rating: 4.5 }], product_reviews: [{ product_id: product.id, rating: 4, ...privateValues }] })
+  const db = fakeClient({ storefront_products: [{ ...product, selling_mode: 'preorder', average_rating: 4.5 }], product_reviews: [{ product_id: product.id, rating: 4, ...privateValues }] })
   let calledId
   const value = await readAiProduct(db, 'mouse', async id => { calledId = id; return { available: true, order_id: 'PRIVATE_ORDER_321' } }, async () => ({ total: 1, items: [privateValues] }))
   assert.equal(calledId, product.id); assert.deepEqual(value.availability, { available: true })

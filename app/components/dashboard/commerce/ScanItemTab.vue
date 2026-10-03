@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-6">
+    <p v-if="externalErp" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('erp.manualAccounting') }}</p>
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
@@ -326,7 +327,7 @@
               :disabled="returnSaving"
               class="rounded-lg bg-amber-600 px-5 py-3 font-bold text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {{ returnSaving ? $t('common.recordingReturn') : $t('common.confirmUnitReturn') }}
+              {{ returnSaving ? $t('common.recordingReturn') : $t(externalErp ? 'erp.returnRequest' : 'common.confirmUnitReturn') }}
             </button>
             <button
               type="button"
@@ -419,6 +420,9 @@
 </template>
 
 <script setup>
+const { data: erpState } = useNuxtData('active-erp')
+const externalErp = computed(() => erpState.value?.mode === 'daftra')
+
 const { intlLocale } = useUiLocale()
 const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
 
@@ -791,7 +795,7 @@ const submitReturn = async () => {
       ? ` Return reference: ${payload.returnId}.`
       : ''
 
-    returnMessage.value = `Unit ${item.value.unitCode} was returned to ${receivingWarehouse?.name || 'inventory'}.${returnReference}`
+    returnMessage.value = payload.manualRequired ? uiLabel('Return recorded. Complete inventory and refund actions in Daftra.') : `Unit ${item.value.unitCode} was returned to ${receivingWarehouse?.name || 'inventory'}.${returnReference}`
     returnFormOpen.value = false
     await lookupItem(lastLookupToken.value, {
       preserveMessage: true

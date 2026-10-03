@@ -22,7 +22,8 @@ definePageMeta({
 const route = useUiRoute()
 const { hasPermission } = useAdminAccess()
 
-const canViewEmployees = computed(() => hasPermission('hr.view'))
+const { data: erpState } = useNuxtData('active-erp')
+const canViewEmployees = computed(() => erpState.value?.mode === 'built_in' && hasPermission('hr.view'))
 const canViewUsers = computed(() => hasPermission('users.view'))
 
 const activeTab = computed(() => {

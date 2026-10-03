@@ -1,3 +1,15 @@
+# Project state — ERP ownership cleanup, 2026-10-03
+
+Local implementation only. The user explicitly required stopping before deployment. No production migration or deployment was performed.
+
+- Audit: `docs/erp-ownership-audit.md`. Final 22-point report: `docs/erp-ownership-report.md`. API capability matrix and operating rules: `docs/daftra-erp.md`.
+- ERP mode, saved credentials, revision-specific connection test and activation are separate. Dashboard headers name the active provider. Saving/testing never changes ownership; outages never reopen built-in ERP.
+- Database and API guards protect local ERP mutations. Platform checkout, orders, packing, chat, shipping/PDC and product content remain available. External returns and serialized accounting require manual Daftra completion.
+- Checkout queues durable work without remote requests. Leases, bounded retries and durable POST intents protect remote creation. Stock imports update private caches and mappings, preserving built-in quantities/costs/history. Stock transaction evidence controls reservation release.
+- Unapplied migration: `supabase/migrations/20261003120000_erp_ownership.sql`. Release the application and migration together only after user review. No live ERP scheduler is installed; the authenticated internal worker endpoint is prepared.
+- Validation: 234 tests passed; typecheck, build and diff check passed. Actual settings/badge components passed mocked Chrome checks in English/Arabic, mobile and dark mode. PostgreSQL tests used isolated PGlite, including populated migration preservation; live PostgREST schema-cache and Daftra account behavior still need staging review.
+- Local evidence: `/tmp/elcomputer-erp-audit/`. Do not treat these local changes as deployed.
+
 # Project state — 2026-10-01
 
 ## AI-readiness follow-up — deployed and verified, 2026-10-01

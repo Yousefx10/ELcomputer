@@ -1,3 +1,4 @@
+import { isDaftraErp } from '~/utils/erpState'
 import {
   buildDashboardNavigation,
   getDashboardQueryValue,
@@ -9,7 +10,7 @@ import { dashboardSettingsSections } from '~/utils/dashboardSettings'
 export const useDashboardNavigation = () => {
   const { uiLabel } = useUiLocale()
   const route = useUiRoute()
-  const { data: siteContent } = useSiteContent()
+  const { data: erpState } = useNuxtData('active-erp')
   const {
     isOwner,
     hasAnyPermission,
@@ -17,9 +18,8 @@ export const useDashboardNavigation = () => {
   } = useAdminAccess()
 
   const navigationGroups = computed(() => {
-    const settings = siteContent.value?.settings || {}
-    const externalErpActive = settings.erp_mode === 'daftra'
-      && settings.daftra_connection_status === 'connected'
+    const settings = erpState.value || {}
+    const externalErpActive = !erpState.value || isDaftraErp(settings)
 
     return buildDashboardNavigation({
       isOwner: isOwner.value,

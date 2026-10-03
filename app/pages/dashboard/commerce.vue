@@ -29,7 +29,7 @@ definePageMeta({
 })
 
 const route = useUiRoute()
-const { activeGroup } = useDashboardNavigation()
+const { activeGroup, navigationGroups } = useDashboardNavigation()
 const sectionDescription = computed(() => ({
   purchasing: 'Record and review supplier invoices.',
   sales: 'Review sales invoices and customer returns.',
@@ -45,7 +45,7 @@ const activeTab = computed(() => {
 })
 
 const secondaryNavItems = computed(() => {
-  return commerceTabs.map((tab) => ({
+  return navigationGroups.value.filter(group => ['purchasing','sales','inventory','shipping'].includes(group.key)).flatMap(group => group.children?.length ? group.children : [group]).map((tab) => ({
     label: tab.label,
     to: tab.to,
     active: activeTab.value === tab.key

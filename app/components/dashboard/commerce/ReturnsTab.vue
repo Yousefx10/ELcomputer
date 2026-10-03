@@ -1,11 +1,12 @@
 <template>
   <div class="space-y-6">
+    <p v-if="externalErp" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('erp.manualAccounting') }}</p>
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="dashboard-page-summary-copy">
           <h3 class="text-2xl font-bold">{{ $t('common.returns') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            {{ $t('dashboard.commerce.recordReturnedItemsAndSendThemBackToTheSelectedWarehouse') }}
+            {{ $t(externalErp ? 'erp.manualAccounting' : 'dashboard.commerce.recordReturnedItemsAndSendThemBackToTheSelectedWarehouse') }}
           </p>
         </div>
 
@@ -35,9 +36,9 @@
         @click="isFormOpen = !isFormOpen"
       >
         <div>
-          <h3 class="text-2xl font-bold">{{ $t('common.createReturn') }}</h3>
+          <h3 class="text-2xl font-bold">{{ $t(externalErp ? 'erp.returnRequest' : 'common.createReturn') }}</h3>
           <p class="mt-1 text-sm text-gray-500">
-            {{ $t('dashboard.commerce.chooseAnOrderAndTheItemsReturnedToStock') }}
+            {{ $t(externalErp ? 'erp.returnRequest' : 'dashboard.commerce.chooseAnOrderAndTheItemsReturnedToStock') }}
           </p>
         </div>
 
@@ -340,6 +341,7 @@
 
               <p class="text-sm text-gray-500">
                 {{ returnRecord.reason || $t('common.noReasonProvided') }}
+                <span v-if="returnRecord.erp_action_status === 'manual_required'" class="mt-1 block text-amber-700">{{ $t('erp.manualAccounting') }}</span>
               </p>
             </div>
           </div>
@@ -351,6 +353,9 @@
 </template>
 
 <script setup>
+const { data: erpState } = useNuxtData('active-erp')
+const externalErp = computed(() => erpState.value?.mode === 'daftra')
+
 const { intlLocale } = useUiLocale()
 const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
 const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)

@@ -50,7 +50,10 @@ beforeEach(async () => {
 })
 afterEach(async () => { await db.exec('rollback') })
 
-test('create resumes one open conversation, preserves retry key and rejects wrong actor identity', async () => {
+for (const mode of ['built_in','daftra']) test(`chat resumes one open conversation and preserves actor boundaries in ${mode} mode`, async () => {
+  await query(`select set_config('request.jwt.claim.role','service_role',true)`)
+  await query(`insert into public.site_settings(key,erp_mode,daftra_connection_status) values('default',$1,'error') on conflict(key) do update set erp_mode=excluded.erp_mode,daftra_connection_status='error'`,[mode])
+  await query(`select set_config('request.jwt.claim.role','',true)`)
   const key = randomUUID()
   const chat = await create(customerA, false, key)
   assert.equal(await create(customerA, false, key), chat)

@@ -19,7 +19,7 @@ after(async () => {
   await db?.close()
 })
 
-test('packing requires an operator session and a video covering every scan', async () => {
+for (const mode of ['built_in','daftra']) test(`packing requires an operator session and a video covering every scan in ${mode} mode`, async () => {
   const adminId = randomUUID()
   const customerId = randomUUID()
   const productId = randomUUID()
@@ -30,6 +30,7 @@ test('packing requires an operator session and a video covering every scan', asy
 
   await db.exec('begin')
   await db.query(`select set_config('request.jwt.claim.role', 'service_role', true)`)
+  await db.query(`insert into public.site_settings(key,erp_mode,daftra_connection_status) values('default',$1,'error') on conflict(key) do update set erp_mode=excluded.erp_mode,daftra_connection_status='error'`,[mode])
   await db.query(
     `insert into auth.users(id,email) values($1,'packer@test.invalid'),($2,'buyer@test.invalid')`,
     [adminId, customerId]

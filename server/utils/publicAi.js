@@ -34,13 +34,13 @@ const byPosition = rows => [...(rows || [])].sort((a, b) => Number(a.sort_order 
 
 // Public anon projections only. The existing preorder API supplies its public RPC result.
 export async function readAiProduct(client, slug, fetchPreorder, fetchReviews) {
-  const product = await one(client.from('products').select(`
+  const product = await one(client.from('storefront_products').select(`
     id,title,slug,description,long_description,price,sku,is_published,is_serialized,
     stock_quantity,selling_mode,expected_availability_date,availability_message,average_rating,
     brand:brands(name),
     specifications:product_specifications(label,value,sort_order),
     features:product_features(body,sort_order),
-    variants:product_variants(name,sku,stock_quantity,is_active,color_name)
+    variants:storefront_product_variants(name,sku,stock_quantity,is_active,color_name)
   `).eq('slug', slug).eq('is_published', true))
   // Reviews are not directly readable by anon in production. Reuse the public
   // review endpoint, retaining only its count and never its items/identities.
@@ -68,7 +68,7 @@ export async function readAiProduct(client, slug, fetchPreorder, fetchReviews) {
 async function publicCatalog(client, resource) {
   const category = resource.kind === 'category'
   const record = await one(client.from(category ? 'categories' : 'brands').select('id,name,slug').eq('slug', resource.slug))
-  const { rows, count } = await many(client.from('products').select('title,slug,price,selling_mode', { count: 'exact' })
+  const { rows, count } = await many(client.from('storefront_products').select('title,slug,price,selling_mode', { count: 'exact' })
     .eq(category ? 'category_id' : 'brand_id', record.id).eq('is_published', true).order('title').limit(25))
   const publicRows = rows.filter(item => validPublicSlug(item.slug) && seoPlainText(item.title))
   if (!publicRows.length || !String(record.name || '').trim()) throw missing()

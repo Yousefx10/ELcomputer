@@ -94,7 +94,7 @@ const loadRecommendations = async () => {
   recommendationsLoading.value = true
   try {
     const { data, error } = await supabase
-      .from('products')
+      .from('storefront_products')
       .select(`
         id,
         title,
@@ -111,7 +111,7 @@ const loadRecommendations = async () => {
         popularity_score,
         category:categories (id, name, slug),
         brand:brands (id, name, slug),
-        product_variants (id, is_active)
+        product_variants:storefront_product_variants (id, is_active)
       `)
       .eq('is_published', true)
       .order('is_top_seller', { ascending: false })

@@ -18,6 +18,7 @@ test('payment settings default safely and database applies enabled method fees',
 
   try {
     await db.exec(`
+      select set_config('request.jwt.claim.role','service_role',false);
       insert into public.site_settings (key)
       values ('default')
       on conflict (key) do update set key = excluded.key;

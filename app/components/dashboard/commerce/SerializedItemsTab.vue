@@ -36,7 +36,8 @@
       {{ pageError || optionsError }}
     </div>
 
-    <section class="rounded-2xl border border-blue-100 bg-blue-50 p-6 shadow">
+    <p v-if="externalErp" class="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">{{ $t('erp.physicalRegistry') }}</p>
+    <section v-else class="rounded-2xl border border-blue-100 bg-blue-50 p-6 shadow">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 class="text-xl font-bold text-gray-900">{{ $t('dashboard.commerce.stockIsCreatedThroughProcurement') }}</h3>
@@ -372,6 +373,8 @@ defineOptions({
 
 const supabase = useSupabaseClient()
 const route = useUiRoute()
+const { data: erpState } = useNuxtData('active-erp')
+const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
 const items = ref([])
 const loading = ref(true)

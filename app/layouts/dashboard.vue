@@ -37,6 +37,7 @@
             </NuxtLinkLocale>
 
             <div class="flex flex-wrap items-center gap-3">
+              <DashboardErpProviderBadge />
               <UiPreferences />
               <div class="hidden rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 sm:block">
                 {{ dashboardDateTime }}
@@ -85,7 +86,8 @@
           </div>
 
           <div class="ms-auto flex flex-wrap items-center gap-2 sm:gap-3">
-            <UiPreferences />
+            <DashboardErpProviderBadge />
+              <UiPreferences />
             <div class="dashboard-modern-date hidden md:inline-flex">
               <Icon name="lucide:calendar-days" size="16" />
               {{ dashboardDateTime }}
@@ -109,6 +111,8 @@
           class="min-w-0"
           :class="dashboardLayout === 'detailed' ? 'dashboard-modern-page' : ''"
         >
+          <p v-if="route.query.blocked === 'built_in'" class="mb-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800" role="alert">{{ $t('erp.blockedLocal') }}</p>
+          <p v-if="erpError" class="mb-5 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">{{ $t('erp.loadBeforeActions') }}</p>
           <slot />
         </main>
       </div>
@@ -124,6 +128,7 @@ const { uiNavigateTo } = useUiNavigation()
 const { uiLabel } = useUiLocale()
 const supabase = useSupabaseClient()
 const route = useUiRoute()
+const { error: erpError } = await useActiveErp()
 const [siteContentResult, dashboardAppearanceResult] = await Promise.all([
   useSiteContent(),
   useDashboardAppearance()

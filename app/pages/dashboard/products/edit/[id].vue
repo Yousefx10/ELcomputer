@@ -1,5 +1,6 @@
 <template>
   <div class="">
+    <p v-if="externalErp" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('erp.localInventoryRetained') }}</p>
     <DashboardPageIntro
       :title="$t('common.editProduct')"
       :description="`Product ID: ${id}`"
@@ -130,6 +131,7 @@
           <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.preferredSupplierOptional') }}</label>
           <select
             v-model="defaultSupplierId"
+            :disabled="externalErp"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           >
             <option value="">{{ $t('common.noPreferredSupplier') }}</option>
@@ -153,7 +155,7 @@
           </label>
           <select
             v-model="primaryWarehouseId"
-            :disabled="isSerialized && !canAssignPrimaryWarehouse"
+            :disabled="externalErp || isSerialized && !canAssignPrimaryWarehouse"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
             <option value="">
@@ -202,6 +204,7 @@
           <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.legacyAggregateStock') }}</label>
           <input
             v-model="stockQuantity"
+            :disabled="externalErp"
             type="number"
             min="0"
             placeholder="0"
@@ -507,6 +510,9 @@
 </template>
 
 <script setup>
+const { data: erpState } = useNuxtData('active-erp')
+const externalErp = computed(() => erpState.value?.mode === 'daftra')
+
 const { uiLabel } = useUiLocale()
 
 const { uiNavigateTo } = useUiNavigation()
@@ -565,7 +571,8 @@ const productVariants = ref([])
 
 const canAssignPrimaryWarehouse = computed(() => {
   return Boolean(
-    isSerialized.value
+    !externalErp.value
+    && isSerialized.value
     && Number(product.value?.stock_quantity || 0) === 0
   )
 })
