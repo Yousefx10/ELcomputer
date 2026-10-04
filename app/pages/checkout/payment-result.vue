@@ -13,6 +13,8 @@
   </div>
 </template>
 <script setup>
+// Query-only navigation must dispose the old poller and its order selector.
+definePageMeta({ key: route => route.fullPath })
 const route = useRoute()
 const router = useRouter()
 const supabase = useSupabaseClient()
@@ -32,7 +34,7 @@ const refresh = async () => {
   try {
     const { data } = await supabase.auth.getSession()
     if (!selector || !data.session?.access_token) throw new Error('Status unavailable')
-    const result = await $fetch('/api/payments/status', { headers: { authorization: `Bearer ${data.session.access_token}` }, query: selector })
+    const result = await $fetch('/api/payments/status', { headers: { authorization: `Bearer ${data.session.access_token}` }, query: selector, timeout: 10000 })
     if (disposed) return
     state.value = result.status; mode.value = result.mode; orderId.value = result.orderId
     if (['initiated','pending','not_started','processing'].includes(result.status) && ++refreshes < 10) timer = setTimeout(refresh, 3000)

@@ -1,13 +1,14 @@
-import { createError, getQuery, readRawBody } from 'h3'
+import { createError, getQuery } from 'h3'
 import { getSupabaseAdminClient } from '../../../utils/supabaseAdmin'
 import { getPaymobConfig, normalizePaymobCallback, verifyPaymobHmac } from '../../../utils/payments/paymob.js'
 import { paymentHandler, paymentNoStore, throwPaymentError } from '../../../utils/payments/index.js'
+import { readPaymentCallbackBody } from '../../../utils/payments/body.js'
 export default paymentHandler(async event => {
   paymentNoStore(event)
   let config
   try { config = getPaymobConfig(useRuntimeConfig(event)) } catch (error) { throwPaymentError(error) }
-  const raw = await readRawBody(event, 'utf8')
-  if (!raw || Buffer.byteLength(raw) > 65536) throw createError({ statusCode: 413, statusMessage: 'Invalid callback.' })
+  const raw = await readPaymentCallbackBody(event)
+  if (!raw) throw createError({ statusCode: 400, statusMessage: 'Invalid callback.' })
   let body
   try { body = JSON.parse(raw) } catch { throw createError({ statusCode: 400, statusMessage: 'Invalid callback.' }) }
   if (body?.type !== 'TRANSACTION' || !verifyPaymobHmac(body.obj, getQuery(event).hmac, config.hmacSecret)) {

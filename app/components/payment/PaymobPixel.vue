@@ -20,9 +20,14 @@ const sdkBase = 'https://cdn.jsdelivr.net/npm/paymob-pixel@1.2.8/'
 const loadSdk = () => new Promise((resolve, reject) => {
   if (window.Pixel) return resolve()
   let script = document.querySelector('script[data-paymob-sdk]')
-  const timeout = setTimeout(() => reject(new Error('SDK unavailable')), 15000)
-  const ready = () => { clearTimeout(timeout); window.Pixel ? resolve() : reject(new Error('SDK unavailable')) }
-  const failed = () => { clearTimeout(timeout); script?.remove(); reject(new Error('SDK unavailable')) }
+  const cleanup = () => {
+    clearTimeout(timeout)
+    script?.removeEventListener('load', ready)
+    script?.removeEventListener('error', failed)
+  }
+  const ready = () => { cleanup(); window.Pixel ? resolve() : failed() }
+  const failed = () => { cleanup(); script?.remove(); reject(new Error('SDK unavailable')) }
+  const timeout = setTimeout(failed, 15000)
   if (!script) {
     for (const file of ['styles.css', 'main.css']) {
       if (!document.querySelector(`link[href="${sdkBase + file}"]`)) {

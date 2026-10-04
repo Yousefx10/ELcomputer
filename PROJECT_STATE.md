@@ -1,3 +1,11 @@
+# Paymob security review — local only, 2026-10-04
+
+- Verdict: SAFE TO PROCEED TO STAGING REVIEW; production release/activation remains blocked. See the review section in `docs/paymob-report.md` for findings, severity, evidence and acceptance limits.
+- Fixed normalized Card gate bypass, webhook buffering before size checks, historical Card edit/refund regression, query-only result-page stale state and SDK timeout retry cleanup. No new payment feature or provider activation.
+- The unapplied migration still isolates TEST successes from commerce payment/fulfillment. Actual full TEST commerce acceptance requires a later staging-only policy restricted to an isolated database; no production override was added.
+- Validation: 287 full-suite tests and 41 focused Paymob tests passed, including opt-in native PostgreSQL races using independent sessions/observed lock barriers; typecheck/build/diff check passed. Browser: 373 assertions with mocked Pixel, including changed-query/stale-response behavior; local HTTP: 16 checks. Public bundle/HTML/payload/API scans found no private-secret exposure.
+- Native tests create/destroy their own disposable local cluster; no database URL is accepted. No production migration, deployment, settings/dashboard change or real Paymob API/payment occurred. REAL PAYMOB TRANSACTION TESTED: NO; LIVE PAYMOB ENABLED: NO; PRODUCTION DEPLOYED: NO.
+
 # Paymob foundation — local only, 2026-10-04
 
 - First foundation phase implemented; no external Paymob transaction, live processing, production migration/deployment or merchant dashboard change. Default gateway off; live initiation is hard-blocked.

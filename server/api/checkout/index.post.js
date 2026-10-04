@@ -192,7 +192,8 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  if (body?.payment_method === 'card') {
+  const paymentMethod = normalizePaymentMethod(body?.payment_method)
+  if (paymentMethod === 'card') {
     try { getPaymobConfig(useRuntimeConfig(event)) }
     catch { throw createError({ statusCode: 400, statusMessage: 'The selected payment method is not available.' }) }
   }
@@ -215,7 +216,6 @@ export default defineEventHandler(async (event) => {
   const phone = normalizeRequiredText(body?.address?.phone, 'Phone')
   const email = normalizeRequiredText(body?.address?.email || authUser.email, 'Email')
   const shippingMethod = normalizeOptionalText(body?.shipping_method)
-  const paymentMethod = normalizePaymentMethod(body?.payment_method)
   const couponCode = String(body?.coupon_code || '').trim().toUpperCase()
 
   if (!PHONE_PATTERN.test(phone)) {

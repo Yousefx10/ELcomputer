@@ -156,7 +156,11 @@ begin
       and (new.payment_status='paid' or new.status not in ('pending_payment','on_hold','cancelled')) then
       raise exception 'Test gateway payments cannot fulfill commerce orders.';
     end if;
-    if new.payment_status<>'paid' and new.status not in ('pending_payment','on_hold','cancelled') then
+    -- Preserve unrelated edits to historical orders and the existing refund lifecycle.
+    -- Reject new fulfillment transitions; a historical status is not payment proof.
+    if new.payment_status<>'paid' and new.status not in ('pending_payment','on_hold','cancelled','refunded')
+      and (new.status is distinct from old.status or new.payment_status is distinct from old.payment_status
+        or new.payment_method is distinct from old.payment_method) then
       raise exception 'Card payment must be confirmed before fulfillment.';
     end if;
   end if;

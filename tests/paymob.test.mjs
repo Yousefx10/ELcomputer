@@ -93,6 +93,13 @@ test('HMAC uses official independent known field concatenation and timing-safe S
   for (const signature of ['bad', '0'.repeat(128), ['0'.repeat(128)], null]) assert.equal(verifyPaymobHmac(tx, signature, runtime.paymobHmacSecret), false)
   assert.equal(verifyPaymobHmac({ ...tx, amount_cents: 1 }, sign(tx), runtime.paymobHmacSecret), false)
   assert.equal(verifyPaymobHmac({ ...tx, success: undefined }, sign(tx), runtime.paymobHmacSecret), false)
+  for (const field of ['amount_cents','created_at','currency','error_occured','has_parent_transaction','id','integration_id','is_3d_secure','is_auth','is_capture','is_refunded','is_standalone_payment','is_voided','order','owner','pending','source_data','success']) {
+    const missing = { ...tx, [field]: null }
+    assert.equal(verifyPaymobHmac(missing, signature, runtime.paymobHmacSecret), false, field)
+  }
+  assert.equal(verifyPaymobHmac({ ...tx, source_data: { ...tx.source_data, pan: {} } }, signature, runtime.paymobHmacSecret), false)
+  assert.equal(verifyPaymobHmac(tx, signature.toUpperCase(), runtime.paymobHmacSecret), true)
+  assert.equal(verifyPaymobHmac(tx, signature, 'different-secret'), false)
 })
 test('verified callback is normalized without card data, unsigned reference or provider body', () => {
   const value = normalizePaymobCallback({ ...tx, data: { card_num: 'must-not-persist' }, is_live: true, merchant_order_id: 'wrong-order' }, config)
@@ -181,12 +188,20 @@ test('real PostgreSQL ledger preserves authoritative checkout, idempotency, RLS 
       await db.exec("update public.site_settings set payment_card_enabled=true where key='default'")
     })
     let a
-    await t.test('simultaneous claims serialize to exactly one attempt', async () => {
+    await t.test('repeated claims reuse one attempt in the single-connection engine', async () => {
       const values = await Promise.all([claim(first.order.id), claim(first.order.id), claim(first.order.id)])
       assert.equal(values.filter(x => x.created).length, 1); a = values[0].attempt
       assert.equal(new Set(values.map(x => x.attempt.id)).size, 1); assert.equal(Number(a.amount_minor), 11250)
       await store(a)
       await assert.rejects(() => store(a), /already recorded/)
+    })
+    await t.test('historical unpaid card metadata/refunds remain editable while new fulfillment is rejected', async () => {
+      const historical = (await db.query("insert into public.customer_orders(user_id,first_name,phone,street_address,city,governorate,payment_method,total_amount,status) values($1,'Historical','01000000000','Street','Cairo','Cairo','card',100,'processing') returning id", [customer])).rows[0].id
+      await db.query("update public.customer_orders set first_name='Updated' where id=$1", [historical])
+      await assert.rejects(() => db.query("update public.customer_orders set status='being_shipped' where id=$1", [historical]), /confirmed before fulfillment/)
+      await db.query("update public.customer_orders set status='refunded',payment_status='refunded' where id=$1", [historical])
+      await db.query("update public.customer_orders set first_name='Refunded historical' where id=$1", [historical])
+      await assert.rejects(() => db.query("update public.customer_orders set status='processing' where id=$1", [first.order.id]), /confirmed before fulfillment|Test gateway/)
     })
     await t.test('wrong amount/currency/integration/mode and unknown provider order reject', async () => {
       for (const change of [{ amount_minor: 1 }, { currency: 'USD' }, { integration_id: 2 }, { mode: 'live' }, { provider_order_id: 'unknown' }]) await assert.rejects(() => reconcile(change), /mismatch|Invalid transaction|not persisted/)

@@ -4,6 +4,12 @@ import { readFile, readdir } from 'node:fs/promises'
 // Real application schema and migrations, isolated in an in-memory PostgreSQL engine.
 export const createResetDatabase = async ({ stopBefore = null } = {}) => {
   const db = new PGlite()
+  await prepareResetDatabase(db, { stopBefore })
+  return db
+}
+
+// Also used by the opt-in, disposable native PostgreSQL concurrency review.
+export const prepareResetDatabase = async (db, { stopBefore = null } = {}) => {
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create schema storage; create schema realtime;
@@ -31,5 +37,4 @@ export const createResetDatabase = async ({ stopBefore = null } = {}) => {
     if (stopBefore && name >= stopBefore) break
     await db.exec(await readFile(new URL(name, migrations), 'utf8'))
   }
-  return db
 }
