@@ -46,6 +46,7 @@ export function publicAiEntries(routes, records = {}) {
     else if (route.path === '/help') { kind = 'help-index'; title = 'Help Center' }
     else if (route.path.startsWith('/products/')) { kind = 'product'; title = products.find(item => item.slug === route.path.slice(10) && item.is_published === true)?.title }
     else if (route.path === '/search' && validPublicSlug(route.query?.category)) { kind = 'category'; title = categories.find(item => item.slug === route.query.category)?.name }
+    else if (/^\/brand\/[^/]+$/.test(route.path) && validPublicSlug(route.path.slice(7))) { kind = 'brand'; title = brands.find(item => item.slug === route.path.slice(7))?.name }
     else if (route.path === '/search' && validPublicSlug(route.query?.brand)) { kind = 'brand'; title = brands.find(item => item.slug === route.query.brand)?.name }
     else if (route.path.startsWith('/help/')) {
       const [, , category, slug] = route.path.split('/')
@@ -63,6 +64,7 @@ export function aiMarkdownPath(path, query = {}) {
   if (path === '/') return '/ai/index.md'
   if (path === '/help') return '/ai/help/index.md'
   if (/^\/products\/[^/]+$/.test(path) && validPublicSlug(path.slice(10))) return `/ai${path}.md`
+  if (/^\/brand\/[^/]+$/.test(path) && validPublicSlug(path.slice(7))) return `/ai/brands/${path.slice(7)}.md`
   if (path === '/search' && Object.keys(query).length === 1) {
     if (validPublicSlug(query.category)) return `/ai/categories/${query.category}.md`
     if (validPublicSlug(query.brand)) return `/ai/brands/${query.brand}.md`
@@ -78,7 +80,7 @@ export function resolveAiResource(path) {
   if (clean === '/ai/index.md') return { kind: 'store', path: '/', locale, query: {} }
   if (clean === '/ai/help/index.md') return { kind: 'help-index', path: '/help', locale, query: {} }
   const match = clean.match(/^\/ai\/(products|categories|brands)\/([^/]+)\.md$/)
-  if (match && validPublicSlug(match[2])) return { kind: { products: 'product', categories: 'category', brands: 'brand' }[match[1]], slug: match[2], path: match[1] === 'products' ? `/products/${match[2]}` : '/search', query: match[1] === 'categories' ? { category: match[2] } : match[1] === 'brands' ? { brand: match[2] } : {}, locale }
+  if (match && validPublicSlug(match[2])) return { kind: { products: 'product', categories: 'category', brands: 'brand' }[match[1]], slug: match[2], path: match[1] === 'products' ? `/products/${match[2]}` : match[1] === 'brands' ? `/brand/${match[2]}` : '/search', query: match[1] === 'categories' ? { category: match[2] } : {}, locale }
   const help = clean.match(/^\/ai\/help\/([^/]+)\/([^/]+)\.md$/)
   if (help && help.slice(1).every(validPublicSlug)) return { kind: 'help', category: help[1], slug: help[2], path: `/help/${help[1]}/${help[2]}`, query: {}, locale }
   const page = clean.match(/^\/ai\/pages\/(.+)\/index\.md$/)

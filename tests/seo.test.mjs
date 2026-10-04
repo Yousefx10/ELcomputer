@@ -69,7 +69,8 @@ test('category and brand identity survives canonical cleanup; combinations, sort
   assert.equal(seo.title, 'Mice | ELcomputer')
   for (const query of [{}, { q: 'mouse' }, { category: 'mice', sort: 'price-asc' }, { category: 'mice', min: '20' }, { category: 'mice', brand: 'example' }, { category: 'invalid' }, { category: 'mice', page: '2' }]) assert.equal(searchSeoPolicy(query, categories, brands, 2).index, false)
   assert.deepEqual(searchSeoPolicy({ category: 'mice', page: '2' }, categories, brands, 2).query, { category: 'mice', page: 2 })
-  assert.equal(searchSeoPolicy({ brand: 'example' }, categories, brands, 1).index, true)
+  assert.equal(searchSeoPolicy({ brand: 'example' }, categories, brands, 1).index, false)
+  assert.equal(searchSeoPolicy({ brand: 'example' }, categories, brands, 1).path, '/brand/example')
   assert.equal(searchSeoPolicy({ category: 'mice' }, categories, brands, 0).index, false)
 })
 
@@ -86,7 +87,7 @@ test('discovery excludes unpublished, empty, invalid, noindex, private and inact
   const routes = discoverPublicPages({ products: [{ ...product, category_id: 'c', brand_id: 'b' }, { ...product, slug: 'hidden', is_published: false }], categories: [{ id: 'c', slug: 'mice', name: 'Mice' }, { id: 'empty', slug: 'empty', name: 'Empty' }], brands: [{ id: 'b', slug: 'example', name: 'Example' }], pages: [{ path: 'about', is_published: true }, { path: 'hidden', is_published: false }, { path: 'secret', is_published: true, seo_noindex: true }, { path: 'account/orders', is_published: true }, { path: 'ar/fake', is_published: true }, { path: '../bad', is_published: true }], helpCategories: [{ id: 'hc', slug: 'orders', is_active: true }, { id: 'inactive', slug: 'old', is_active: false }], helpArticles: [{ slug: 'delivery', category_id: 'hc', status: 'published' }, { slug: 'draft', category_id: 'hc', status: 'draft' }, { slug: 'old', category_id: 'inactive', status: 'published' }] })
   assert.ok(routes.some(item => item.path === '/products/test-mouse'))
   assert.ok(routes.some(item => item.query?.category === 'mice'))
-  assert.ok(routes.some(item => item.query?.brand === 'example'))
+  assert.ok(routes.some(item => item.path === '/brand/example'))
   assert.ok(routes.some(item => item.path === '/about'))
   assert.ok(routes.some(item => item.path === '/help/orders/delivery'))
   assert.equal(routes.length, 8)

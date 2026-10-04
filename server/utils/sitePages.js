@@ -4,7 +4,7 @@ import { normalizeSeoFields } from './seoFields.js'
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const PATH_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/
 const RESERVED_ROOTS = new Set([
-  'account', 'api', 'cart', 'checkout', 'dashboard', 'login', 'products',
+  'account', 'api', 'cart', 'checkout', 'dashboard', 'login', 'products', 'brand',
   'reviews', 'search', 'signup', 'uploads', 'help', '_nuxt', 'ar', 'ai', 'robots.txt', 'sitemap.xml', 'sitemap-pages'
 ])
 

@@ -1,10 +1,11 @@
+import { normalizeBrandPage } from './brandPage.js'
 import { getLocalizedCategoryName } from './categoryLocale.js'
 
 // Shared by SSR pages, dashboard previews and public discovery. No browser dependencies.
 export const DEFAULT_SITE_URL = 'https://new.elcomputer.net'
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
 const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'api', 'uploads', '_nuxt'])
-const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'products', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
+const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'products', 'brand', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export function seoPlainText(value) {
@@ -135,6 +136,14 @@ export function catalogSeoFields(record = {}, settings = {}, locale = 'en') {
     image: record.seo_image_url || record.image_url || record.logo_url }
 }
 
+export function brandSeoFields(record = {}, settings = {}, locale = 'en') {
+  const page = normalizeBrandPage(record.brand_page)
+  const fallback = catalogSeoFields(record, settings, locale)
+  return { title: record.seo_title || record.name,
+    description: record.seo_description || page.story.content || page.story.supporting || page.hero.text || fallback.description,
+    image: record.seo_image_url || page.hero.image || record.logo_url }
+}
+
 export function productSeoFields(product = {}) {
   return { title: product.seo_title || product.title, description: product.seo_description || product.description || product.long_description, image: product.seo_image_url || product.image_url }
 }
@@ -170,17 +179,17 @@ export function searchSeoPolicy(query = {}, categories = [], brands = [], totalC
   const record = identity.category ? category : identity.brand ? brand : null
   const extra = Object.keys(query).some(key => !['category', 'brand', 'page'].includes(key) && !/^(utm_.+|gclid|fbclid|msclkid)$/.test(key))
   const page = typeof query.page === 'string' && /^[1-9]\d*$/.test(query.page) ? Number(query.page) : 1
+  if (identity.brand) return { record, path: `/brand/${brand.slug}`, query: {}, index: false }
   return { record, query: { ...identity, ...(record && page > 1 ? { page } : {}) }, index: Boolean(record && !extra && page === 1 && Number(totalCount) > 0) }
 }
 
 export function discoverPublicPages({ products = [], categories = [], brands = [], pages = [], helpCategories = [], helpArticles = [] } = {}) {
   const published = products.filter(item => item.is_published === true && validPublicSlug(item.slug) && seoText(item.title))
   const categoryIds = new Set(published.map(item => item.category_id))
-  const brandIds = new Set(published.map(item => item.brand_id))
   const routes = [{ path: '/' }, { path: '/help' }, { path: '/reviews' }]
   published.forEach(item => routes.push({ path: `/products/${item.slug}`, updated: item.updated_at }))
   categories.filter(item => categoryIds.has(item.id) && validPublicSlug(item.slug) && seoText(item.name)).forEach(item => routes.push({ path: '/search', query: { category: item.slug } }))
-  brands.filter(item => brandIds.has(item.id) && validPublicSlug(item.slug) && seoText(item.name)).forEach(item => routes.push({ path: '/search', query: { brand: item.slug } }))
+  brands.filter(item => validPublicSlug(item.slug) && seoText(item.name)).forEach(item => routes.push({ path: `/brand/${item.slug}` }))
   pages.filter(item => item.is_published === true && item.seo_noindex !== true && validCmsPath(item.path)).forEach(item => routes.push({ path: `/${item.path}`, updated: item.updated_at }))
   helpArticles.filter(item => item.status === 'published' && validPublicSlug(item.slug)).forEach(item => {
     const category = helpCategories.find(category => category.id === item.category_id && category.is_active === true && validPublicSlug(category.slug))

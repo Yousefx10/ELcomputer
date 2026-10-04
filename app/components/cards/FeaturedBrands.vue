@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="store-brand-grid">
-      <NuxtLinkLocale v-for="brand in brands" :key="brand.id" :to="{ path: '/search', query: { brand: brand.slug } }" class="store-brand-link">
+      <NuxtLinkLocale v-for="brand in brands" :key="brand.id" :to="`/brand/${brand.slug}`" class="store-brand-link">
         <img v-if="getStoreImageUrl(brand.logo_url)" :src="brand.logo_url" :alt="brand.name" loading="lazy" />
         <span v-else>{{ brand.name }}</span>
       </NuxtLinkLocale>

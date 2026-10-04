@@ -1,3 +1,12 @@
+# Brand landing pages — deployed, 2026-10-03
+
+- Dedicated `/brand/{English slug}` and `/ar/brand/{same slug}` SSR pages preserve the storefront shell and existing product cards. Optional hero/mobile hero, wallpaper/color, safe Markdown story and stable one-/two-media rows extend the existing brands editor and Media Library.
+- Bounded public `brands.brand_page` JSONB saves atomically under existing add/edit permissions; existing slugs stay fixed. Controlled video URLs/embeds, optional provider posters, lazy non-hero assets and published-only paginated products are included.
+- Homepage Shop by Brand uses landing URLs. Legacy brand-only search filters are noindex with landing canonicals; sitemap/llms discovery and existing brand Markdown endpoints share the new identity. Category/commerce/ERP/chat infrastructure is unchanged.
+- 246 tests, typecheck, build and diff check pass. Migration `20261003160000_brand_landing_pages.sql` is applied; all 56 versions match. Guarded deployment passed with one scoped restart; all 680 output files match, and error logs did not grow. See `docs/brand-pages.md`, `docs/brand-pages-audit.md` and `docs/brand-pages-report.md`.
+- Final public production acceptance passed 655 assertions over 72 screens at all nine widths in EN/AR and Light/Dark. All 26 brand APIs, 182 sitemap URLs (52 brand landing URLs), canonical/hreflang/AI/private-route guards, real brand-card/cart persistence and checkout protection passed. Existing database fingerprints/counts and slugs are unchanged.
+- Complete/partial pages passed 935 fixture assertions; the actual editor + authenticated API save/reload and 16 dashboard screens use isolated fixtures. No real brand content is fabricated; staff production save and third-party playback are not claimed.
+
 # Navigation and Arabic categories — deployed, 2026-10-03
 
 The existing storefront header, department popover and mobile search row are preserved. Orders remain visible with 44px icon targets; theme/language controls are compact. NPS has readable phone/tablet grids, unchanged 0–10 data and submission logic, and readable dark-mode contrast.

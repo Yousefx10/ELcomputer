@@ -1,3 +1,4 @@
+import { normalizeBrandPage } from '../../app/utils/brandPage.js'
 import { getLocalizedCategoryName } from '../../app/utils/categoryLocale.js'
 import { createError, getRequestURL, setHeader, setResponseStatus } from 'h3'
 import { aiBody, aiMarkdownPath, aiText, finishAiMarkdown, llmsText, productAiMarkdown, resolveAiResource } from '../../app/utils/aiReadiness.js'
@@ -68,12 +69,28 @@ export async function readAiProduct(client, slug, fetchPreorder, fetchReviews) {
 
 async function publicCatalog(client, resource) {
   const category = resource.kind === 'category'
-  const record = await one(client.from(category ? 'categories' : 'brands').select(category ? 'id,name,name_ar,slug' : 'id,name,slug').eq('slug', resource.slug))
+  const record = await one(client.from(category ? 'categories' : 'brands').select(category ? 'id,name,name_ar,slug' : 'id,name,slug,brand_page').eq('slug', resource.slug))
   const { rows, count } = await many(client.from('storefront_products').select('title,slug,price,selling_mode', { count: 'exact' })
     .eq(category ? 'category_id' : 'brand_id', record.id).eq('is_published', true).order('title').limit(25))
   const publicRows = rows.filter(item => validPublicSlug(item.slug) && seoPlainText(item.title))
-  if (!publicRows.length || !String(record.name || '').trim()) throw missing()
+  if (category && !publicRows.length || !String(record.name || '').trim()) throw missing()
   return { record, rows: publicRows, count }
+}
+
+function brandStoryMarkdown(value) {
+  const page = normalizeBrandPage(value)
+  const lines = []
+  if (page.hero.title) lines.push(`## ${aiText(page.hero.title, 200)}`, '')
+  if (page.hero.text) lines.push(aiText(page.hero.text, 600), '')
+  if (page.story.content || page.story.supporting) {
+    lines.push(`## ${aiText(page.story.title || 'Brand story', 200)}`, '')
+    if (page.story.content) lines.push(aiBody(page.story.content), '')
+    if (page.story.supporting) lines.push(aiText(page.story.supporting, 2000), '')
+  }
+  // Copy only. Media URLs, IDs, upload metadata and embed configuration stay out.
+  const captions = page.rows.flatMap(row => row.items).filter(item => item.url && item.caption).map(item => aiText(item.caption, 1000))
+  if (captions.length) lines.push('## Media captions', '', ...captions.map(caption => `- ${caption}`), '')
+  return lines
 }
 
 export async function publicAiMarkdown(client, resource, discovery, settings, fetchPreorder, fetchReviews) {
@@ -94,7 +111,7 @@ export async function publicAiMarkdown(client, resource, discovery, settings, fe
     lines = [`# ${aiText(article.title, 500)}`, '', ...(article.summary ? [aiText(article.summary, 5000), ''] : []), aiBody(article.content_markdown)]
   } else if (resource.kind === 'category' || resource.kind === 'brand') {
     const { record, rows, count } = await publicCatalog(client, resource)
-    lines = [`# ${aiText(getLocalizedCategoryName(record, resource.locale), 500)}`, '', `Published products: ${count ?? rows.length}.`, '', '## Products', '', ...rows.map(item => {
+    lines = [`# ${aiText(getLocalizedCategoryName(record, resource.locale), 500)}`, '', ...(resource.kind === 'brand' ? brandStoryMarkdown(record.brand_page) : []), `Published products: ${count ?? rows.length}.`, '', '## Products', '', ...rows.map(item => {
       const markdown = canonicalUrl(base, aiMarkdownPath(`/products/${item.slug}`), resource.locale)
       return `- [${aiText(item.title, 120)}](${markdown})`
     }), '', 'This list contains up to 25 products. Open each product for current prices and availability.']

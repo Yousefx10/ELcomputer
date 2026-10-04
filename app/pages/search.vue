@@ -1151,7 +1151,7 @@ usePageSeo(() => {
   const base = publicSiteUrl(settings, seoConfig.public.siteUrl)
   return {
     ...(record ? catalogSeoFields(record, settings, seoLocale.value) : { title: uiLabel('Search') }),
-    query: policy.query, index: policy.index,
+    path: policy.path || route.path, query: policy.query, index: policy.index,
     structuredData: record ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: policy.query.category ? categoryName(record) : record.name, path: '/search', query: policy.query }], base, seoLocale.value)] : []
   }
 })

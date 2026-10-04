@@ -12,8 +12,12 @@
         @submit.prevent="saveBrand"
         class="mb-8 space-y-3 rounded-2xl bg-white p-5 shadow"
       >
+        <label for="brand-name" class="block text-sm font-semibold">{{ $t('common.brandName') }}</label>
         <input
+          id="brand-name"
           v-model="name"
+          required
+          maxlength="200"
           type="text"
           :placeholder="$t('common.brandName')"
           :disabled="editingId ? !canEditBrand : !canAddBrand"
@@ -34,7 +38,11 @@
           {{ $t('common.slugPreviewValue', { value0: (slugPreview || '-') }) }}
         </p>
 
-        <DashboardSeoFields v-model="seo" catalog :fallback-title="name" :fallback-image="logoUrl" section="brands" :disabled="editingId ? !canEditBrand : !canAddBrand" />
+        <p class="text-sm text-gray-500">{{ $t('brandPages.slugHelp') }}</p>
+        <NuxtLinkLocale v-if="editingId" :to="`/brand/${existingSlug}`" target="_blank" class="inline-flex min-h-11 items-center text-sm font-semibold underline">{{ $t('brandPages.viewPage') }}</NuxtLinkLocale>
+        <DashboardCatalogBrandPageEditor v-model="brandPage" :disabled="saving || (editingId ? !canEditBrand : !canAddBrand)" />
+
+        <DashboardSeoFields v-model="seo" catalog :fallback-title="name" :fallback-description="brandPage.story.content || brandPage.hero.text" :fallback-image="brandPage.hero.image || logoUrl" section="brands" :disabled="editingId ? !canEditBrand : !canAddBrand" />
 
         <p v-if="errorMessage" class="text-red-600">
           {{ $uiMessage(errorMessage) }}
@@ -123,7 +131,7 @@
             <div
               v-for="brand in brands"
               :key="brand.id"
-              class="flex items-center justify-between gap-4 rounded-xl border p-4"
+              class="flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4"
             >
               <div class="flex items-center gap-4">
                 <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-50 p-2">
@@ -193,6 +201,7 @@
 </template>
 
 <script setup>
+import { brandSlug, normalizeBrandPage } from '~/utils/brandPage'
 const { uiLabel } = useUiLocale()
 
 const supabase = useSupabaseClient()
@@ -205,7 +214,7 @@ const {
 const {
   hasPermission
 } = useAdminAccess()
-const { recordAdminLog } = useAdminLogs()
+const { recordAdminLog, getAdminAuthHeaders } = useAdminLogs()
 const buildBrandsCacheKey = (page = currentPage.value) => {
   return `dashboard:brands:list:${page}:${trimmedSearchQuery.value.toLowerCase()}`
 }
@@ -214,6 +223,8 @@ const brands = ref([])
 const seo = ref({ seo_title: '', seo_description: '', seo_image_url: '' })
 const name = ref('')
 const logoUrl = ref('')
+const existingSlug = ref('')
+const brandPage = ref(normalizeBrandPage())
 const saving = ref(false)
 const loading = ref(true)
 const errorMessage = ref('')
@@ -245,20 +256,14 @@ const pageEnd = computed(() => {
   return Math.min(currentPage.value * pageSize, totalBrands.value)
 })
 
-const makeSlug = (value) => {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-}
-
-const slugPreview = computed(() => makeSlug(name.value))
+const slugPreview = computed(() => brandSlug(name.value, existingSlug.value))
 
 const resetForm = () => {
   name.value = ''
   seo.value = { seo_title: '', seo_description: '', seo_image_url: '' }
   logoUrl.value = ''
+  existingSlug.value = ''
+  brandPage.value = normalizeBrandPage()
   editingId.value = null
   errorMessage.value = ''
 }
@@ -328,7 +333,6 @@ const getBrandsList = async (page = currentPage.value, { force = false } = {}) =
 
 const saveBrand = async () => {
   errorMessage.value = ''
-  const isEditing = Boolean(editingId.value)
 
   if (editingId.value && !canEditBrand.value) {
     errorMessage.value = 'You do not have permission to edit brands.'
@@ -345,7 +349,7 @@ const saveBrand = async () => {
     return
   }
 
-  const slug = makeSlug(name.value)
+  const slug = brandSlug(name.value, existingSlug.value)
 
   if (!slug) {
     errorMessage.value = 'Slug could not be generated'
@@ -354,45 +358,18 @@ const saveBrand = async () => {
 
   saving.value = true
 
-  let response
-
-  if (editingId.value) {
-    response = await supabase
-      .from('brands')
-      .update({
-        ...seo.value,
-        name: name.value.trim(),
-        slug,
-        logo_url: logoUrl.value.trim() || null
-      })
-      .eq('id', editingId.value)
-  } else {
-    response = await supabase
-      .from('brands')
-      .insert({
-        ...seo.value,
-        name: name.value.trim(),
-        slug,
-        logo_url: logoUrl.value.trim() || null
-      })
-  }
-
-  saving.value = false
-
-  if (response.error) {
-    errorMessage.value = response.error.message
+  try {
+    await $fetch(editingId.value ? `/api/admin-brands/${editingId.value}` : '/api/admin-brands', {
+      method: editingId.value ? 'PATCH' : 'POST',
+      headers: await getAdminAuthHeaders(),
+      body: { ...seo.value, name: name.value.trim(), logo_url: logoUrl.value.trim() || null, brand_page: brandPage.value }
+    })
+  } catch (error) {
+    errorMessage.value = error?.data?.statusMessage || 'Could not save the brand.'
     return
+  } finally {
+    saving.value = false
   }
-
-  await recordAdminLog({
-    actionKey: isEditing ? 'brands.update' : 'brands.create',
-    description: `${isEditing ? 'Updated' : 'Added'} brand ${name.value.trim()}.`,
-    metadata: {
-      brand_id: editingId.value || null,
-      brand_name: name.value.trim(),
-      brand_slug: slug
-    }
-  })
 
   resetForm()
   invalidate('dashboard:brands:')
@@ -406,6 +383,8 @@ const startEdit = (brand) => {
   }
 
   name.value = brand.name
+  existingSlug.value = brand.slug
+  brandPage.value = normalizeBrandPage(brand.brand_page)
   seo.value = { seo_title: brand.seo_title || '', seo_description: brand.seo_description || '', seo_image_url: brand.seo_image_url || '' }
   logoUrl.value = brand.logo_url || ''
   editingId.value = brand.id
