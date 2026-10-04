@@ -1132,7 +1132,7 @@
               <div class="flex items-start justify-between gap-4">
                 <div class="flex items-start gap-3">
                   <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700"><Icon :name="method.icon" size="20" /></span>
-                  <div><h4 class="font-bold text-gray-900">{{ $uiLabel(method.label) }}</h4><p class="mt-1 text-sm text-gray-500">{{ method.description }}</p></div>
+                  <div><h4 class="font-bold text-gray-900">{{ $uiLabel(method.label) }}</h4><p class="mt-1 text-sm text-gray-500">{{ $uiLabel(method.description) }}</p></div>
                 </div>
                 <button type="button" :aria-pressed="siteSettings[method.enabledField]" class="relative inline-flex h-7 w-14 shrink-0 items-center rounded-full transition" :class="siteSettings[method.enabledField] ? 'bg-green-600' : 'bg-gray-300'" @click="siteSettings[method.enabledField] = !siteSettings[method.enabledField]">
                   <span class="inline-block h-5 w-5 rounded-full bg-white transition" :class="siteSettings[method.enabledField] ? 'translate-x-8' : 'translate-x-1'" />
@@ -2539,7 +2539,7 @@ const footerStyleOptions = [
   { value: 'modern', label: 'Modern', description: 'Shows a card layout with a banner and contact details.' }
 ]
 const paymentSettingCards = [
-  { value: 'card', label: 'Credit or debit card', description: 'Card-entry checkout and saved-card previews.', icon: 'lucide:credit-card', enabledField: 'payment_card_enabled', feeField: 'payment_card_fee' },
+  { value: 'card', label: 'Credit or debit card', description: 'Secure Paymob checkout requires server configuration.', icon: 'lucide:credit-card', enabledField: 'payment_card_enabled', feeField: 'payment_card_fee' },
   { value: 'bank_transfer', label: 'Bank transfer', description: 'Manual transfer with proof of payment.', icon: 'lucide:landmark', enabledField: 'payment_bank_transfer_enabled', feeField: 'payment_bank_transfer_fee', instructionsField: 'payment_bank_transfer_instructions' },
   { value: 'instapay', label: 'InstaPay', description: 'Manual InstaPay transfer with proof of payment.', icon: 'lucide:smartphone', enabledField: 'payment_instapay_enabled', feeField: 'payment_instapay_fee', instructionsField: 'payment_instapay_instructions' },
   { value: 'paypal', label: 'PayPal', description: 'PayPal checkout when its provider is connected.', icon: 'lucide:badge-dollar-sign', enabledField: 'payment_paypal_enabled', feeField: 'payment_paypal_fee' },

@@ -2955,5 +2955,6 @@
   "Built-in balances are retained. Daftra manages current stock and cost.": "erp.localInventoryRetained",
   "Preorder ERP release requires manual Daftra reconciliation.": "erp.preorderManual",
   "Stock and SKU mapping refresh": "erp.stockJob",
-  "Website order invoice export": "erp.orderJob"
+  "Website order invoice export": "erp.orderJob",
+  "Secure Paymob checkout requires server configuration.": "paymob.adminNotice"
 }

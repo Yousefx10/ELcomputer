@@ -70,25 +70,15 @@
                 <label v-for="method in availablePaymentMethods" :key="method.value" class="flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition" :class="selectedPaymentMethod === method.value ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-300'">
                   <input v-model="selectedPaymentMethod" type="radio" name="payment-method" :value="method.value" class="mt-1">
                   <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm"><Icon :name="method.icon" size="21" aria-hidden="true" /></span>
-                  <span class="min-w-0"><strong class="block text-sm text-slate-900">{{ $uiLabel(method.label) }}</strong><span class="mt-1 block text-xs leading-5 text-slate-600">{{ method.description }}</span><span v-if="getMethodFee(method.value)" class="mt-2 block text-xs font-semibold text-amber-700">{{ $t('common.valueFee', { value0: (formatCurrency(getMethodFee(method.value))) }) }}</span></span>
+                  <span class="min-w-0"><strong class="block text-sm text-slate-900">{{ $uiLabel(method.label) }}</strong><span class="mt-1 block text-xs leading-5 text-slate-600">{{ $uiLabel(method.description) }}</span><span v-if="getMethodFee(method.value)" class="mt-2 block text-xs font-semibold text-amber-700">{{ $t('common.valueFee', { value0: (formatCurrency(getMethodFee(method.value))) }) }}</span></span>
                 </label>
               </div>
               <p v-else class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('checkout.noPaymentMethodIsAvailablePleaseContactTheStore') }}</p>
 
-              <div v-if="selectedPaymentMethod === 'card'" class="mt-6 border-t border-slate-200 pt-6">
-                <div class="flex flex-wrap items-end justify-between gap-3"><div><h3 class="font-bold text-slate-950">{{ $t('common.savedCards') }}</h3><p class="mt-1 text-sm text-slate-600">{{ $t('checkout.illustrativePreviewsUntilSecureCardVaultingIsConnected') }}</p></div><span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{ $t('common.previewOnly') }}</span></div>
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div v-for="savedCard in savedCardPreviews" :key="savedCard.lastFour" class="relative overflow-hidden rounded-2xl p-4 text-white shadow-sm" :class="savedCard.className"><div class="flex items-center justify-between"><Icon name="lucide:credit-card" size="22" aria-hidden="true" /><span class="text-xs font-bold uppercase tracking-wider">{{ savedCard.brand }}</span></div><p class="mt-8 font-mono text-lg tracking-[0.18em]">•••• {{ savedCard.lastFour }}</p><p class="mt-2 text-xs text-white/80">{{ $t('common.illustrativeSavedCard') }}</p></div>
-                </div>
-
-                <h3 class="mt-6 font-bold text-slate-950">{{ $t('common.useAnotherCard') }}</h3>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                  <label class="block sm:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.nameOnCard') }}</span><input v-model="card.cardholder" autocomplete="cc-name" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
-                  <label class="block sm:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.cardNumber') }}</span><div class="relative"><Icon name="lucide:credit-card" size="19" class="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" /><input :value="card.number" autocomplete="cc-number" inputmode="numeric" type="text" placeholder="0000 0000 0000 0000" class="w-full rounded-xl border border-slate-300 py-3 ps-11 pe-3 outline-none focus:border-blue-600" @input="updateCardNumber"></div></label>
-                  <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.expiry') }}</span><input :value="card.expiry" autocomplete="cc-exp" inputmode="numeric" type="text" placeholder="MM/YY" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600" @input="updateCardExpiry"></label>
-                  <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.securityCode') }}</span><input v-model="card.securityCode" autocomplete="cc-csc" inputmode="numeric" type="password" maxlength="4" :placeholder="$t('common.cvv')" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
-                </div>
-                <p class="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500"><Icon name="lucide:shield-check" size="16" class="mt-0.5 shrink-0" aria-hidden="true" /> {{ $t('checkout.cardValuesStayInThisPageOnlyAndAreNeverSentToTheCurrentOrderApi') }}</p>
+              <div v-if="selectedPaymentMethod === 'card'" class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                <h3 class="font-bold text-slate-950">{{ $t('paymob.secureCard') }}</h3>
+                <p class="mt-2 text-sm text-slate-600">{{ $t('paymob.startAfterOrder') }}</p>
+                <p v-if="paymentCapabilities?.card?.mode === 'test'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('paymob.testOnly') }}</p>
               </div>
 
               <div v-else-if="paymentMethodNeedsProof(selectedPaymentMethod)" class="mt-6 space-y-4 border-t border-slate-200 pt-6">
@@ -129,7 +119,7 @@ const { intlLocale } = useUiLocale()
 const { uiNavigateTo } = useUiNavigation()
 
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
-import { formatCardNumber, getAvailablePaymentMethods, getPaymentMethodFee, paymentMethodNeedsProof, validatePaymentCard } from '~/utils/paymentMethods'
+import { getAvailablePaymentMethods, getPaymentMethodFee, paymentMethodNeedsProof } from '~/utils/paymentMethods'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({ middleware: 'customer-auth' })
@@ -138,6 +128,7 @@ const PHONE_PATTERN = /^01\d{9}$/
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
+const { data: paymentCapabilities } = await useFetch('/api/payments/capabilities')
 const { items, cartId, itemCount, subtotal, isEmpty, appliedCoupon, clearCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
@@ -156,15 +147,10 @@ const quoteError = ref('')
 let checkoutStartedTracked = false
 
 const address = reactive({ first_name: '', last_name: '', street_address: '', city: '', phone: '', email: '', governorate: '' })
-const card = reactive({ cardholder: '', number: '', expiry: '', securityCode: '' })
-const savedCardPreviews = [
-  { brand: 'Visa', lastFour: '4242', className: 'bg-gradient-to-br from-blue-950 to-blue-600' },
-  { brand: 'Mastercard', lastFour: '1881', className: 'bg-gradient-to-br from-slate-900 to-rose-700' }
-]
 
 const settings = computed(() => siteContent.value?.settings || {})
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
-const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value).filter(method => !isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value)))
+const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value).filter(method => (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))))
 const discountAmount = computed(() => Number(appliedCoupon.value?.discountAmount || 0))
 const paymentFee = computed(() => isPreorderCart.value && quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
 const totalAmount = computed(() => Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
@@ -242,15 +228,8 @@ const continueToPayment = async () => {
   nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
 }
 
-const updateCardNumber = event => { card.number = formatCardNumber(event.target.value) }
-const updateCardExpiry = event => {
-  const digits = String(event.target.value || '').replace(/\D/g, '').slice(0, 4)
-  card.expiry = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits
-}
-
 const validatePayment = () => {
   if (!availablePaymentMethods.value.some(method => method.value === selectedPaymentMethod.value)) return 'Choose an available payment method.'
-  if (selectedPaymentMethod.value === 'card') return validatePaymentCard(card)
   return ''
 }
 
@@ -289,7 +268,7 @@ const placeOrder = async () => {
       }
     })
     clearCart({ reason: 'converted', track: false })
-    await uiNavigateTo(`/checkout/summary/${response.order.id}`)
+    await uiNavigateTo(response.order.paymentMethod === 'card' ? `/checkout/payment/${response.order.id}` : `/checkout/summary/${response.order.id}`)
   } catch (error) { orderError.value = error?.data?.statusMessage || error?.message || 'Could not place the order.' } finally { placingOrder.value = false }
 }
 

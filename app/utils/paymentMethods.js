@@ -30,55 +30,6 @@ export const paymentMethodNeedsProof = value => {
   return ['bank_transfer', 'instapay'].includes(normalizePaymentMethod(value))
 }
 
-export const normalizeCardNumber = value => String(value || '').replace(/\D/g, '').slice(0, 19)
-
-export const formatCardNumber = value => normalizeCardNumber(value).replace(/(.{4})/g, '$1 ').trim()
-
-export const getCardBrand = value => {
-  const number = normalizeCardNumber(value)
-  if (/^4/.test(number)) return 'Visa'
-  if (/^(5[1-5]|2[2-7])/.test(number)) return 'Mastercard'
-  if (/^3[47]/.test(number)) return 'American Express'
-  return 'Card'
-}
-
-const passesLuhnCheck = value => {
-  const digits = normalizeCardNumber(value)
-  if (digits.length < 12) return false
-
-  let sum = 0
-  let doubleDigit = false
-
-  for (let index = digits.length - 1; index >= 0; index -= 1) {
-    let digit = Number(digits[index])
-    if (doubleDigit) {
-      digit *= 2
-      if (digit > 9) digit -= 9
-    }
-    sum += digit
-    doubleDigit = !doubleDigit
-  }
-
-  return sum % 10 === 0
-}
-
-export const validatePaymentCard = (card = {}, now = new Date()) => {
-  if (!String(card.cardholder || '').trim()) return 'Enter the name shown on the card.'
-  if (!passesLuhnCheck(card.number)) return 'Enter a valid card number.'
-
-  const expiryMatch = String(card.expiry || '').trim().match(/^(0[1-9]|1[0-2])\s*\/\s*(\d{2})$/)
-  if (!expiryMatch) return 'Enter expiry as MM/YY.'
-
-  const expiryMonth = Number(expiryMatch[1])
-  const expiryYear = 2000 + Number(expiryMatch[2])
-  const expiryBoundary = new Date(expiryYear, expiryMonth, 1)
-  const currentBoundary = new Date(now.getFullYear(), now.getMonth(), 1)
-  if (expiryBoundary <= currentBoundary) return 'The card has expired.'
-
-  if (!/^\d{3,4}$/.test(String(card.securityCode || '').trim())) return 'Enter a valid security code.'
-  return ''
-}
-
 export const paymentProofStatusLabel = value => ({
   pending_upload: 'Proof needed',
   under_review: 'Payment under review',

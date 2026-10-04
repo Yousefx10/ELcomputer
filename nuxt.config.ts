@@ -35,6 +35,14 @@ export default defineNuxtConfig({
     cookieAttrs: { maxAge: 31536000, path: '/', sameSite: 'lax' }
   },
   runtimeConfig: {
+    paymobEnabled: false,
+    paymobMode: 'test',
+    paymobSecretKey: '',
+    paymobPublicKey: '',
+    paymobHmacSecret: '',
+    paymobCardIntegrationId: '',
+    paymobCardIntegrationMode: 'test',
+    paymobIntegrationIds: '{}',
     aiSearchAllowed: true,
     aiTrainingAllowed: true,
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',

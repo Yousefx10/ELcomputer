@@ -3543,5 +3543,28 @@
     "slugHelp": "The English URL stays fixed when you edit this brand.",
     "viewPage": "View saved brand page",
     "watchVideo": "Watch video"
+  },
+  "paymob": {
+    "secureCard": "Secure card payment",
+    "startAfterOrder": "Confirm your order, then open secure card payment.",
+    "testOnly": "Test mode only. No real payment or order fulfillment.",
+    "secureFields": "Paymob securely handles your card details.",
+    "loading": "Loading secure payment…",
+    "unavailable": "Card payment is unavailable. Check your order or contact the store.",
+    "openSecure": "Open secure payment",
+    "viewOrder": "View your order",
+    "viewOrders": "View your orders",
+    "resultTitle": "Payment result",
+    "resultNotice": "Payment confirmation comes from the store’s verified payment records.",
+    "result": {
+      "paid": "Payment confirmed",
+      "processing": "Confirming your payment…",
+      "failed": "Payment failed",
+      "cancelled": "Payment cancelled",
+      "expired": "Payment session expired",
+      "test_succeeded": "Test payment confirmed",
+      "unable": "Unable to confirm payment"
+    },
+    "adminNotice": "Secure Paymob checkout requires server configuration."
   }
 }

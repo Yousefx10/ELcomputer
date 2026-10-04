@@ -146,3 +146,7 @@ curl -fsS http://127.0.0.1:3001/ >/dev/null
 ```
 
 Do not use `--update-env` unless you intentionally changed the PM2 environment.
+
+## Paymob foundation — not authorized for release
+
+The 2026-10-04 payment foundation is local only. Read [Paymob setup/security/manual callback steps](paymob.md) and [the report](paymob-report.md). Do not deploy it or apply `20261004120000_paymob_foundation.sql` without later user review/authorization. Paymob defaults disabled, and live mode remains hard-blocked. Provision only private `NUXT_PAYMOB_*` PM2 runtime overrides in an authorized later environment; no local dotenv or secret values belong in public bundles or ordinary settings tables. The existing Card toggle also must be deliberately reviewed. Keep callback handling/ledger history available when stopping new in-flight payments. Review migration parity and other pending migrations before a scoped release; this task ran no production migration/deployment or Paymob dashboard change.

@@ -4,11 +4,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createResetDatabase } from './helpers/resetDatabase.mjs'
 import {
-  formatCardNumber,
   getAvailablePaymentMethods,
   getPaymentMethodFee,
-  paymentMethodNeedsProof,
-  validatePaymentCard
+  paymentMethodNeedsProof
 } from '../app/utils/paymentMethods.js'
 
 const read = path => expandUiSource(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'))
@@ -104,7 +102,7 @@ test('payment settings default safely and database applies enabled method fees',
   }
 })
 
-test('payment utilities expose enabled methods, fees, proof rules, and local card validation', () => {
+test('payment utilities expose enabled methods, fees, and proof rules', () => {
   const settings = {
     payment_card_enabled: true,
     payment_card_fee: '4.50',
@@ -116,13 +114,11 @@ test('payment utilities expose enabled methods, fees, proof rules, and local car
   assert.equal(getPaymentMethodFee(settings, 'card'), 4.5)
   assert.equal(paymentMethodNeedsProof('bank_transfer'), true)
   assert.equal(paymentMethodNeedsProof('cash'), false)
-  assert.equal(formatCardNumber('4242424242424242'), '4242 4242 4242 4242')
-  assert.equal(validatePaymentCard({ cardholder: 'Test User', number: '4242 4242 4242 4242', expiry: '12/30', securityCode: '123' }, new Date('2026-09-23')), '')
-  assert.match(validatePaymentCard({ cardholder: 'Test User', number: '123', expiry: '12/30', securityCode: '123' }), /valid card number/)
+
 })
 
-test('checkout keeps raw card values client-side and provides proof continuation UI', () => {
-  const checkout = read('app/pages/checkout.vue')
+test('checkout delegates card fields to Paymob and provides proof continuation UI', () => {
+  const checkout = read('app/pages/checkout/index.vue')
   const checkoutServer = read('server/api/checkout/index.post.js')
   const orderPage = read('app/pages/account/orders/[id].vue')
   const settings = read('app/pages/dashboard/settings.vue')
@@ -130,7 +126,8 @@ test('checkout keeps raw card values client-side and provides proof continuation
 
   assert.match(checkout, /checkoutStep === 'shipping'/)
   assert.match(checkout, /Choose a payment method/)
-  assert.match(checkout, /savedCardPreviews/)
+  assert.doesNotMatch(checkout, /savedCardPreviews|autocomplete="cc-|card\.securityCode/)
+  assert.match(checkout, /api\/payments\/capabilities/)
   assert.match(checkout, /PaymentProofUpload/)
   assert.match(checkout, /payment_method: selectedPaymentMethod\.value/)
   assert.doesNotMatch(checkoutServer, /card_number|securityCode|security_code/)

@@ -1,3 +1,14 @@
+# Paymob foundation — local only, 2026-10-04
+
+- First foundation phase implemented; no external Paymob transaction, live processing, production migration/deployment or merchant dashboard change. Default gateway off; live initiation is hard-blocked.
+- Read `docs/paymob-audit.md`, `docs/paymob.md` and the 20-point `docs/paymob-report.md`. Existing customer auth, transactional checkout/cart UUID/stock/serialized guarantees, settings fee trigger, manual workflows and locale/theme shell are reused.
+- Modern server Intention API/provider boundary, private attempts/transactions, exact documented HMAC, ownership/amount/currency/integration/mode checks, replay protection, bounded status refresh, pinned secure Pixel mount and separate result page are implemented. Test success cannot mark a commerce order paid or fulfill it. Dormant live settlement is tested only in isolated fixtures.
+- Raw merchant card fields, local card validation and fictitious saved-card previews are removed. `/checkout` entry moves to `checkout/index.vue` for independent payment/result/summary sibling routing. Manual proof upload remains incomplete; Apple Pay/Google Pay/wallets are configurable registry entries but unavailable.
+- Unapplied additive migration: `supabase/migrations/20261004120000_paymob_foundation.sql`; private RLS/service-role RPCs, unpaid/test card fulfillment guards and reset-list awareness. No historical order rewrite or production secrets change.
+- Public settings read-only observation: Cash and Card flags are enabled, but existing Card is not a processor; Bank Transfer/InstaPay/PayPal disabled and transfer instructions empty. New Card also requires valid explicit gateway config.
+- Validation: 272 repository tests, 26 Paymob tests, typecheck/build/diff check passed. Automated local Chrome: 370 assertions, EN/AR × 1440/390px × Light/Dark plus System change, mocked Pixel only, no Paymob network/payment. Final local HTTP: 16 route checks; public bundle secret scan: 115 files, one configured private secret type, zero matches. Real provider/3DS/callback delivery, wallet capability and authenticated production commerce acceptance remain NOT VERIFIED.
+- Future webhook: `https://new.elcomputer.net/api/payments/paymob/webhook`; customer redirect: `https://new.elcomputer.net/checkout/payment-result` (Arabic intentions use `/ar`). Merchant must update old WooCommerce URLs manually after later review/deployment and staging acceptance. STOP after this phase.
+
 # Brand landing pages — deployed, 2026-10-03
 
 - Dedicated `/brand/{English slug}` and `/ar/brand/{same slug}` SSR pages preserve the storefront shell and existing product cards. Optional hero/mobile hero, wallpaper/color, safe Markdown story and stable one-/two-media rows extend the existing brands editor and Media Library.

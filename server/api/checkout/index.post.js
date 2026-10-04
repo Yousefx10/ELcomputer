@@ -5,6 +5,7 @@ import {
   isStoreAnalyticsUuid,
   recordStoreOrderCreated
 } from '../../utils/storeAnalytics'
+import { getPaymobConfig } from '../../utils/payments/paymob.js'
 import { normalizePaymentMethod } from '~/utils/paymentMethods'
 
 const PHONE_PATTERN = /^01\d{9}$/
@@ -189,6 +190,11 @@ export default defineEventHandler(async (event) => {
         coupon: null
       }
     }
+  }
+
+  if (body?.payment_method === 'card') {
+    try { getPaymobConfig(useRuntimeConfig(event)) }
+    catch { throw createError({ statusCode: 400, statusMessage: 'The selected payment method is not available.' }) }
   }
 
   const orderItems = normalizeOrderItems(body?.items)
