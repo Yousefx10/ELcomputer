@@ -1,3 +1,12 @@
+# PDC dormant deployment attempt — blocked, 2026-10-05
+
+- Authorized candidate: `96f8bc316326db059cb68bfc951fc235607f10b9`, the reviewed 33-file implementation, clean before validation. No application feature or mapping guess was added.
+- Node 22.23.3: 323 full-suite passes/one existing optional skip, 42 focused PDC passes; typecheck/build/diff check passed. Required `deploy:check` stopped because `.deploy.env` is missing. No saved deployment configuration or local SSH identity/configuration was found; the SSH agent has no identities. Restore approved configuration/access before rerunning the guarded release.
+- Read-only linked database: 57 previous migrations align; only `20261005120000_pdc_customer_tracking.sql` is pending. Reviewed SHA-256: `6a84752937b1d6e9da1410fdd1d609e2ca8c2312dd2acde310a9f9574552c94f`. No migration was applied while application release was blocked.
+- Current read-only PDC configuration: intended URL/company/product match, provider and auto-labels off, credentials unconfigured, 382 city mappings/32 statuses, zero jobs/events. No configuration write, upload, PM2 restart, PDC call/shipment, webhook registration or secret sharing occurred. Runtime live-call state and actual production version/logs were not inspected without SSH.
+- This attempt did not deploy PDC tracking. Production authenticated UI/provider/Broadcast acceptance remains pending. Existing documented backups were not reverified; no new backup or rollback was needed. See the 16-point deployment attempt in `docs/pdc-tracking-report.md` and evidence in `/tmp/elcomputer-pdc-deploy-20261005/`.
+- Deployment remains authorized by the user; external activation remains forbidden. Stop at this access/preflight blocker, preserve configuration and ambiguities, and do not start another feature.
+
 # PDC customer shipment tracking — local only, 2026-10-05
 
 - Existing PDC settings, 382 city aliases, 32 status mappings, jobs, creation/labels and webhook history were audited and reused. All five supplied files/all sheets were read. Read-only configured database checks match the supplied production URL/company/product; PDC and auto-labels remain disabled.

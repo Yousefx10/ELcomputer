@@ -1,3 +1,39 @@
+# Dormant production deployment attempt — blocked, 2026-10-05
+
+The user authorized the reviewed tracking code and migration with PDC activation dormant. Deployment stopped at the required guarded preflight. No migration, upload, PM2 restart, production configuration write, provider operation or registration occurred. This deployment attempt does not change the historical implementation results below.
+
+1. **Pre-deployment validation:** Reviewed AGENTS, PROJECT_STATE, CODEX_HANDOFF, the audit/report and clean Git state. Commit `96f8bc316326db059cb68bfc951fc235607f10b9` contains exactly the reviewed 33-file implementation. Node 22.23.3 full suite: 323 passed, one existing optional native PostgreSQL test skipped, zero failures/cancellations; focused PDC: 42/42. Typecheck, build and diff check passed. Full tests use the documented keep-alive preload. `npm run deploy:check` failed because `.deploy.env` is missing. No deployment configuration was found; the SSH agent has no identities and the local SSH directory contains no identity/configuration files. No SSH authentication attempt or fallback workflow was used.
+2. **Migration:** Reviewed only `20261005120000_pdc_customer_tracking.sql`, SHA-256 `6a84752937b1d6e9da1410fdd1d609e2ca8c2312dd2acde310a9f9574552c94f`. It extends existing tables, preserves historical rows, seeds only new mapping presentation fields, retains legacy duplicates, adds partial uniqueness/history indexes and service-only RPCs/private owner Broadcast authorization. The replaced URL constraint and nullable numeric event ID are intentional reviewed compatibility changes. Linked read-only listing confirms 57 previous versions align and only this migration is pending. It was not applied because release preflight failed.
+3. **Production commit/version:** Candidate is `96f8bc316326db059cb68bfc951fc235607f10b9`; this attempt did not deploy it. The currently running production version was not inspected through SSH. Documentation updates are local only.
+4. **Deployment result:** BLOCKED before upload. Missing deployment configuration and available SSH identity must be restored before rerunning the guarded workflow. The user authorized deployment; no further release approval is requested, but required access/setup is absent. Do not apply the migration while application release access is unavailable.
+5. **Existing shipping regression:** Repository regressions passed. Production shipping configuration/data were queried read-only: 382 cities, 32 statuses, zero PDC jobs and zero courier-history events. No production checkout/order/packing/label acceptance was performed during this blocked attempt.
+6. **PDC settings:** Read-only configured Supabase observation confirms intended production URL and supplied Company/Product IDs; provider enablement and auto-labels remain false. Token and webhook secret are currently unconfigured. No dashboard/provider setting was changed. Server PM2 live-call configuration could not be inspected without SSH.
+7. **Secret exposure:** Existing AES-256-GCM architecture remains unchanged; stored-secret fields are empty. Local settings masking/encryption tests passed. No credential value was printed, committed or uploaded. Post-release production HTML/payload/bundle/browser-response scans were not performed because no release occurred.
+8. **My Account tracking:** Focused owner/projection/fallback/unknown-state and EN/AR timeline tests passed. Historical implementation browser results below remain fixture evidence. Production authenticated Orders/Details/Progress/Delivery acceptance was not performed in this attempt.
+9. **Ownership/RLS:** Reviewed migration and 42 focused checks preserve owner-scoped reads, private shipping tables and service-only RPCs. Live customer/cross-customer/private-Broadcast acceptance awaits deployment and an isolated authenticated session. No fake production history/account was inserted.
+10. **Webhook:** Planned endpoint remains `https://new.elcomputer.net/api/webhooks/pdc`. No registration/change/secret sharing occurred. No callback request was sent to production; the new route is not deployed by this attempt. Current database courier-event count is zero.
+11. **PDC external API calls:** NONE. Only linked Supabase migration listing and read-only settings/count queries were made. No GetCities/GetProducts/GetShipmentsStatus/SaveShipmentEx/ExportPDF request was issued to PDC.
+12. **Shipments/AWBs:** NONE created. No pickup, COD, label workflow or courier operation was triggered.
+13. **Errors/warnings:** Required preflight error: missing `.deploy.env`. Existing build warnings remain: ERP duplicate import, source maps, chunk size and preorder BigInt target. Production PM2/error logs were not inspected without SSH; no claim of production error-log stability is made.
+14. **Rollback:** No production change occurred, so rollback is unnecessary. No new release backup was created. Previous documented backups remain historical information; their current existence was not verified. Existing guarded backup/health/rollback tooling is unchanged.
+15. **Remaining steps:** Restore the approved deployment configuration and SSH access, rerun required preflight, verify runtime/configuration/data baselines, apply only the reviewed migration, deploy through existing safeguards and complete safe production verification. Keep provider/auto-label/live-call configuration unchanged. Resolve mappings/timezone/protocol gaps and obtain separate activation authorization before provider registration or real calls.
+16. **Provide to PDC later:** HTTPS endpoint; independently generated minimum-32-character webhook secret through a secure channel; reviewed mapping CSV; merchant identity through existing onboarding. Confirm REF/toRef format, actual IDs including 97 and PDF/sheet conflicts, repeated-status identity, timezone and reconciliation response/pagination. Nothing was shared with PDC and no ambiguity was guessed.
+
+```text
+PDC TRACKING CODE DEPLOYED: NO
+PDC TRACKING MIGRATION APPLIED: NO
+PDC CONFIGURATION DASHBOARD-MANAGED: YES
+PDC SECRETS REMAIN ENCRYPTED: YES (architecture preserved; credentials are unconfigured)
+PDC LIVE CALLS ENABLED/CHANGED: NO (no change made; server runtime state not inspected)
+PDC WEBHOOK REGISTERED WITH PROVIDER: NO
+REAL PDC SHIPMENT CREATED: NO
+REAL PDC WEBHOOK RECEIVED: NO
+```
+
+Evidence: `/tmp/elcomputer-pdc-deploy-20261005/` contains validation/preflight logs, read-only migration alignment and database observations. No additional feature was started.
+
+---
+
 # PDC customer tracking — implementation report
 
 2026-10-05. Local implementation complete. Production database observation was read-only. No PDC API request, shipment creation, webhook registration, migration application or deployment occurred.
