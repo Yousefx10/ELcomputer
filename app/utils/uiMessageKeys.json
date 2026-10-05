@@ -2956,5 +2956,18 @@
   "Preorder ERP release requires manual Daftra reconciliation.": "erp.preorderManual",
   "Stock and SKU mapping refresh": "erp.stockJob",
   "Website order invoice export": "erp.orderJob",
-  "Secure Paymob checkout requires server configuration.": "paymob.adminNotice"
+  "Secure Paymob checkout requires server configuration.": "paymob.adminNotice",
+  "SMS": "sms.title",
+  "Provider settings": "sms.settings",
+  "SMS templates": "sms.templates",
+  "Send SMS": "sms.send",
+  "SMS history": "sms.history",
+  "SMS Access": "sms.title",
+  "View SMS settings": "sms.settings",
+  "Manage SMS settings": "sms.settings",
+  "View SMS templates": "sms.templates",
+  "Manage SMS templates": "sms.templates",
+  "View SMS history": "sms.history",
+  "Send notification SMS": "sms.notification",
+  "Send campaign SMS": "sms.campaign"
 }

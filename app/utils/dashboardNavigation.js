@@ -128,6 +128,12 @@ export const dashboardNavigationGroups = [
     { ...child('support-tickets', 'Tickets', 'ticket', '/dashboard/support', null, [], 'support.view'), match: { paths: ['/dashboard/support'], prefixes: ['/dashboard/support/'] } },
     child('live-chat', 'Live Chat', 'messages-square', '/dashboard/live-chat', null, [], 'support.view')
   ], { permission: 'support.view' }),
+  group('sms', 'SMS', 'message-square', { paths: ['/dashboard/sms'] }, [
+    child('sms-settings', 'Provider settings', 'settings', '/dashboard/sms', 'tab', ['', 'settings'], 'sms.settings.view'),
+    child('sms-templates', 'SMS templates', 'file-text', '/dashboard/sms', 'tab', ['templates'], 'sms.templates.view'),
+    { ...child('sms-send', 'Send SMS', 'send', '/dashboard/sms', 'tab', ['send']), permissionsAny: ['sms.notification.send', 'sms.campaign.send'] },
+    child('sms-history', 'SMS history', 'history', '/dashboard/sms', 'tab', ['history'], 'sms.history.view')
+  ], { permission: 'sms.view' }),
   group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
     child('settings-overview', 'Store settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
     ...dashboardSettingsSections.filter(item => primarySettingsKeys.has(item.key)).map(item => ({

@@ -10,7 +10,8 @@ export const resetTableGroups = {
   documents: ['document_file_tags', 'document_folder_tags', 'document_tags', 'document_quick_access', 'document_recent_items', 'document_folder_permissions', 'documents', 'document_folders'],
   content: ['help_articles', 'help_categories', 'site_pages', 'site_hero_banners', 'site_top_bar_messages', 'site_offer_cards', 'site_links', 'site_settings'],
   analytics: ['store_analytics_events', 'store_analytics_sessions', 'nps_responses'],
-  other: ['commerce_crm_activities', 'commerce_crm_accounts', 'commerce_shipping_companies', 'commerce_warehouses', 'hr_employees', 'site_coupons', 'customer_profiles', 'shipping_city_mappings', 'shipping_status_mappings', 'shipping_provider_settings', 'store_analytics_internal_carts', 'store_analytics_internal_users', 'admin_activity_logs']
+  other: ['commerce_crm_activities', 'commerce_crm_accounts', 'commerce_shipping_companies', 'commerce_warehouses', 'hr_employees', 'site_coupons', 'customer_profiles', 'shipping_city_mappings', 'shipping_status_mappings', 'shipping_provider_settings', 'store_analytics_internal_carts', 'store_analytics_internal_users', 'admin_activity_logs'],
+  sms: ['sms_attempts', 'sms_messages', 'sms_batches', 'sms_templates', 'sms_provider_settings']
 }
 
 const specificationResetTables = ['product_features', 'category_specification_templates', 'specification_definitions']

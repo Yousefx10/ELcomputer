@@ -2,6 +2,19 @@ import { normalizeDashboardQueryValue } from './dashboardNavigation.js'
 
 export const adminPermissionGroups = [
   {
+    key: 'sms', title: 'SMS',
+    accessPermission: { key: 'sms.view', label: 'SMS Access' },
+    permissions: [
+      { key: 'sms.settings.view', label: 'View SMS settings' },
+      { key: 'sms.settings.manage', label: 'Manage SMS settings' },
+      { key: 'sms.templates.view', label: 'View SMS templates' },
+      { key: 'sms.templates.manage', label: 'Manage SMS templates' },
+      { key: 'sms.history.view', label: 'View SMS history' },
+      { key: 'sms.notification.send', label: 'Send notification SMS' },
+      { key: 'sms.campaign.send', label: 'Send campaign SMS' }
+    ]
+  },
+  {
     key: 'dashboard',
     title: 'Dashboard',
     accessPermission: { key: 'dashboard.view', label: 'Dashboard Access' },
@@ -113,6 +126,9 @@ export const adminPermissionKeys = adminPermissionDefinitions.map((permission) =
 })
 
 export const adminPermissionDependencies = {
+  'sms.view': ['sms.settings.view', 'sms.settings.manage', 'sms.templates.view', 'sms.templates.manage', 'sms.history.view', 'sms.notification.send', 'sms.campaign.send'],
+  'sms.settings.view': ['sms.settings.manage'],
+  'sms.templates.view': ['sms.templates.manage'],
   'dashboard.view': ['dashboard.analysis', 'dashboard.orders'],
   'products.view': ['products.add', 'products.edit'],
   'categories.view': ['categories.add', 'categories.edit'],
@@ -190,6 +206,12 @@ export const getDashboardRouteRequirement = (route = '') => {
   const query = typeof route === 'string' ? {} : route?.query || {}
   const tab = normalizeDashboardQueryValue(query.tab)
   const view = normalizeDashboardQueryValue(query.view)
+
+  if (path === '/dashboard/sms') {
+    const permissions = { settings: 'sms.settings.view', templates: 'sms.templates.view', history: 'sms.history.view' }
+    if (tab === 'send') return { permissionsAny: ['sms.notification.send', 'sms.campaign.send'] }
+    return { permission: permissions[tab || 'settings'] || 'sms.view' }
+  }
 
   if (path === '/dashboard/users') {
     return {
