@@ -1,4 +1,57 @@
-# Order SMS notifications — local implementation, 2026-10-05
+# Order SMS notifications — dormant production deployment, 2026-10-06
+
+The requested implementation is deployed without further application-code changes. All four events, seeded templates and Vodafone remain disabled. This record supersedes the historical local-only release status below. Date: Asia/Riyadh; guarded backup timestamps use UTC.
+
+1. **Synced branch and HEAD:** clean `main`, `e0d0de12d16efdc182891ee92e0bc74b9d3df9b9`. Normal fetch/fast-forward verification matched `origin/main` without a reset or loss of later legitimate deployment documentation. Subsequent documentation-only commits are separate from deployed application identity.
+2. **Feature contained:** the deployed HEAD is the requested `e0d0de12d16efdc182891ee92e0bc74b9d3df9b9`; its ancestry includes the earlier SMS deployment and production-infrastructure records.
+3. **Pre-deployment validation:** Node 24.16.0; 401 full-suite passes, zero failures, one existing optional native Paymob skip; all 78 focused Order SMS/SMS passes, including Vodafone literal-key fixtures. Typecheck/build/diff check/preflight passed. Actual Vue/preferences/checkout/order fixtures: 432 assertions/72 screenshots/no errors/external requests. Built-local HTTP/SSR/artifacts: 948 assertions/16 requests/115 public files/seven fictional private types/zero exposures. Existing duplicate ERP import/sourcemap/chunk warnings remain; no code fix was required.
+4. **Migration applied:** only `20261006100000_order_sms_notifications.sql`, reviewed SHA-256 `988c6fb47ad1547081f8e938316d91aee517b1e4738a6287e61460f2737274b0`. Adds a default English order locale, two private event/settings tables, four disabled central bilingual Notification templates, transaction/queue wrappers and existing full-reset awareness. No reset, historical replay or message backfill occurred.
+5. **Migration alignment:** all 60 local/remote migrations align; no expected migration is pending. The non-fatal Docker catalog-cache warning was followed by successful native history/schema/security/data verification.
+6. **Two-computer consistency:** compared every repository version/name against native `supabase_migrations.schema_migrations`, before and after push. Before: 59 matching identities and only the intended Order SMS migration pending. After: all 60 exact version/name matches, no missing, remote-only or unexplained identity. Prerequisite checkout/preorder/SMS/reset signatures exist.
+7. **Guarded release:** `env -u DEBUG npm run deploy` completed preflight, fresh secret-free build, `.output`-only upload, backup, scoped restart and internal/public health. No dotenv upload, networking/server configuration or unrelated site/process change. All 712 deployed entries match local output; manifest digest `d6fe58ed9fb8a618212fa782012fca1900bbcc513d7dd75737a58296a32c7e73`.
+8. **Deployed commit:** `e0d0de12d16efdc182891ee92e0bc74b9d3df9b9`. The reviewed feature was not reimplemented or redesigned; only release documentation changed afterward.
+9. **PM2/health:** `new-elcomputer` online, `/home/newelcomputer/htdocs/new.elcomputer.net`, `.output/server/index.mjs`, port 3001 and expected Node 22.23.1 interpreter. One restart, 39 → 40. Error-log bytes/hash are unchanged through final acceptance.
+10. **Dashboard Order SMS:** actual component fixtures verified four controls, EN/AR bindings, default-off state, permission/read-only behavior, templates/history and masking. Live private database reads confirm matching bindings and disabled templates; production Orders/SMS routes enforce Dashboard login. This does not establish signed-in production UI acceptance.
+11. **Authenticated acceptance:** **NOT VERIFIED**. No established authorized production test session/account workflow was available. No account was created/impersonated, credentials sought or real order modified. Staff settings save/reload and live role behavior require separately authorized authenticated acceptance.
+12. **Event states:** Order confirmed **OFF**, Payment confirmed **OFF**, Processing **OFF**, Cancelled **OFF**; config revisions remain zero. All four seeded bilingual Notification templates remain disabled. Vodafone stays disabled; no sender or merchant value was configured.
+13. **Queue/backlog:** zero `sms_order_events`, batches, messages and attempts at final read. No historical order produced a sendable intent or future-activation backlog. Disabled capture creates terminal suppression in actual isolated SQL tests; live trigger/function guards were inspected without order mutation.
+14. **Historical safety:** 22 business/settings fingerprints match the pre-release baseline, ignoring only the new locale column. Eight orders/twelve items, 91 products/91 variants, customer/staff/settings/shipping/payment/ERP/chat/NPS rows are unchanged. Existing orders safely default to English; no status/payment/cancellation event was manufactured. Provider settings fingerprint is unchanged.
+15. **Database idempotency/atomicity:** live unique constraints cover `idempotency_key` and `(order_id,event_type)`, plus one linked batch per intent. The transition trigger captures committed inserts/paid/processing/cancelled changes, and `sms_enqueue_order_event` links/completes through the central enqueue in one SQL transaction. Repeated saves/re-entry/replays, locale/contact/money snapshots, Cash versus paid, preparation retries, revisions/expiry/final dispatch and downstream failure isolation passed actual isolated migration tests. Original six checkout/preorder/queue/reset implementation bodies retain their pre-migration hashes.
+16. **Native concurrency:** **NOT VERIFIED** for independent native PostgreSQL Order SMS sessions. Current focused concurrency/lease checks use disposable PGlite application-schema databases. The optional native harness requires local binary/driver configuration and remains the existing skip; no isolated native Order SMS harness was configured. No artificial production order/customer/race mutation was performed. Uniqueness/atomicity inspection above is separate evidence.
+17. **RBAC/RLS:** both new tables have RLS, no browser policies and no anon/authenticated SELECT/INSERT/UPDATE/DELETE grants. All 19 reviewed helpers/wrappers deny browser execution, including renamed implementation functions. APIs retain existing `sms.settings.view/manage`, `sms.templates.view/manage` and `sms.history.view`. Anonymous event settings GET/PATCH, SMS settings/templates/history/send and worker access fail closed/private,no-store. Restricted/customer identities pass isolated handler/SQL tests; real signed-in role acceptance is unverified.
+18. **Secrets/privacy:** encryption/worker infrastructure remains ready with persisted secrets unchanged. Scan of 118 public files against three distinct running-process private values, 20 server responses and logs found zero infrastructure exposure. Eight real orders supplied only in-memory ID/number/unpublished-phone candidates for 118 files/nine anonymous response scans; zero exposures and no values printed. All 2798 browser response scans and local fictional-secret/privacy tests passed. History selects masked phone/safe diagnostics, excluding intent payload, customer name, message/template body and credential ciphertext. No fake production history/message was inserted for testing.
+19. **Regression checks:** 161 HTTP assertions/38 requests and 594 browser assertions/84 page states passed. Homepage, real product, local cart persistence, checkout/login/account protection, Orders/SMS Dashboard/tab protection, templates/history API guards, Live Chat open/close, EN/AR/RTL, desktop/mobile Light/Dark/System all passed without browser errors/provider requests/commerce writes. Authenticated checkout/account/chat messaging interiors remain outside verified acceptance.
+20. **Vodafone enabled:** **NO**. Disabled guards remain effective; actual provider settings and encrypted credential-presence state are unchanged.
+21. **Vodafone credentials changed:** **NO**. Account/password/hash secret, host/port/senders remain empty. Existing server master/worker secrets were neither regenerated nor altered by this release.
+22. **Real Vodafone request:** **NO**. No connectivity test, provider registration, trusted-IP operation or real transport was invoked. Tests use mocked transport; production worker authentication checks use deliberately malformed JSON after successful auth so preparation and central queue processing cannot execute.
+23. **Real SMS:** **NO**. No manual send, campaign, valid queue-processing request or real order event was performed. No scheduler was installed/changed. Missing/invalid worker secrets return 401; valid authentication reaches malformed-body validation and returns 400 without processing. Existing encryption/worker readiness remains true.
+24. **Rollback backup:** `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261005-221154-51073`; all 710 files/symlinks match the pre-release production manifest. Backup readable, rollback unused. Use the existing guarded rollback contract and retain the additive migration if reverting application output.
+25. **Remaining activation requirements:** separately authorized signed-in staff/customer acceptance, native concurrency acceptance where a safe isolated harness is provided, merchant credentials/modern-TLS endpoints/approved senders/trusted outbound IP/account provisioning, approved EN/AR Notification templates and order snapshot phone/locale review. Keep all events/Vodafone off until explicit activation authorization. No PDC/OTP/NPS/returns/warranty/pickup or another consumer begins here.
+
+```text
+ORDER SMS CODE DEPLOYED: YES
+ORDER SMS MIGRATION APPLIED: YES
+LOCAL/REMOTE SUPABASE MIGRATIONS ALIGNED: YES
+ORDER CONFIRMED SMS ENABLED: NO
+PAYMENT CONFIRMED SMS ENABLED: NO
+ORDER PROCESSING SMS ENABLED: NO
+ORDER CANCELLED SMS ENABLED: NO
+HISTORICAL SENDABLE SMS BACKLOG CREATED: NO
+VODAFONE ENABLED: NO
+VODAFONE CREDENTIALS CHANGED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+PDC SMS CONNECTED: NO
+OTP CONNECTED: NO
+NPS CONNECTED: NO
+RETURNS/WARRANTY SMS CONNECTED: NO
+AUTHENTICATED PRODUCTION INTERIORS: NOT VERIFIED
+NATIVE INDEPENDENT-SESSION ORDER SMS RACES: NOT VERIFIED
+```
+
+Evidence: `/tmp/elcomputer-order-sms-deploy-20261006/` contains validation, preflight/deploy logs, identity/security/data checks, source/output/rollback fingerprints, production HTTP/browser reports and isolated screenshots. Documentation is committed/pushed separately; no secret or real customer value is recorded. STOP after this release and verification.
+
+## Historical local implementation — 2026-10-05
 
 This feature connects website order transitions to the existing central SMS foundation. It is implemented and validated locally. The development computer intentionally has no production access; no production credentials were sought, copied, inferred, generated or changed. Production infrastructure readiness is taken from the user's request and the committed readiness record, not a new live inspection.
 

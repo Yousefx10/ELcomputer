@@ -1,8 +1,16 @@
-# Central SMS report — 2026-10-05
+# Central SMS report — 2026-10-06
 
-The foundation has a committed dormant production deployment/infrastructure record. Order notifications are now implemented locally and await their own migration/release. Prior foundation-only records below remain historical. Vodafone remains disabled; no real SMS/provider call occurred.
+The foundation has a committed dormant production deployment/infrastructure record. Order notifications are now deployed with all four events OFF; the new release record below supersedes the local-only status. Prior foundation-only records below remain historical. Vodafone remains disabled; no real SMS/provider call occurred.
 
-## Order SMS notifications — local implementation
+## Order SMS dormant production release — 2026-10-06
+
+Deployed `e0d0de12d16efdc182891ee92e0bc74b9d3df9b9` on clean synced `main`; applied only `20261006100000_order_sms_notifications.sql`. All **60** migration versions/names align, with no pending/remote-only identity. Four event controls and seeded central bilingual Notification templates remain OFF; Vodafone/credentials/settings unchanged. Final intent/batch/message/attempt counts are zero, with no historical replay or sendable backlog.
+
+Fresh validation: 401 full-suite passes/one optional skip, 78 focused passes, typecheck/build/diff/preflight; 432 component assertions/72 screenshots and 948 local HTTP/SSR/artifact assertions. Production: 161 HTTP and 594 browser assertions/84 states, no errors/provider calls/private exposures/commerce writes. Live RLS/function/unique-constraint/atomicity checks passed. All 22 business/configuration fingerprints and original six implementation bodies are preserved; existing order locales default English. Authenticated production interiors and native independent-session races remain **NOT VERIFIED**.
+
+Only `new-elcomputer` restarted once, 39 → 40; health passed, error log unchanged, 712 output entries match local. Existing encryption/worker secrets remain ready and unchanged; no scheduler or valid processing request was installed/invoked. Rollback available and unused: `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261005-221154-51073`, verified against all 710 prior output entries. Full requested 25-point result/status/activation record: [order-sms.md](order-sms.md). No real Vodafone call/SMS or PDC/OTP/NPS/returns/warranty consumer; STOP after dormant release.
+
+## Historical Order SMS notifications — local implementation
 
 Full requested 28-point report: [order-sms.md](order-sms.md). Successful order insertion maps to Order confirmed; authoritative payment transition to `paid` maps to Payment confirmed; actual `processing` and `cancelled` transitions map to their respective events. Cash, verified preorder receipt/release, Paymob TEST/live/replay/cancellation guards and ERP ownership are preserved. No frontend decides or sends an order SMS.
 
