@@ -10,6 +10,7 @@ import { formatCustomerOrderStatus, getCustomerOrderStatusClass } from '~/utils/
 import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
+import { shipmentStateKey } from '~/utils/shipmentTracking'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 const route = useUiRoute()
@@ -24,15 +25,15 @@ const reorderMessage = ref('')
 const { addOrderToCart } = useReorder()
 let loadVersion = 0
 
-const load = async () => {
+const load = async (quiet = false) => {
   const version = ++loadVersion
-  loading.value = true
+  if (!quiet) loading.value = true
   error.value = ''
   try {
     const result = await request(`/api/account/orders/${encodeURIComponent(String(route.params.id))}`)
     if (version === loadVersion) detail.value = result
   } catch (cause) {
-    if (version === loadVersion) { detail.value = null; error.value = errorText(cause, 'Could not load this order.') }
+    if (version === loadVersion) { if (!quiet || cause?.statusCode === 401 || cause?.statusCode === 403) detail.value = null; error.value = errorText(cause, 'Could not load this order.') }
   } finally {
     if (version === loadVersion) loading.value = false
   }
@@ -58,8 +59,10 @@ const reorder = async () => {
   }
 }
 
-watch(() => route.params.id, load)
-onMounted(load)
+watch(() => route.params.id, () => load())
+onMounted(() => load())
+onBeforeUnmount(() => { loadVersion++ })
+useShipmentUpdates(computed(() => String(route.params.id || '')), () => load(true))
 useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.order.order_number} | ${uiLabel('Your Orders')}` : uiLabel('Order Details') }))
 </script>
 
@@ -115,7 +118,23 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
             <NuxtLinkLocale v-if="!detail.order.is_preorder && detail.order.payment_method === 'card' && ['pending', 'failed'].includes(detail.order.payment_status) && ['pending_payment', 'on_hold'].includes(detail.order.status)" :to="`/checkout/payment/${detail.order.id}`" class="mt-4 inline-flex min-h-11 items-center rounded-full bg-blue-600 px-5 text-sm font-semibold text-white">{{ $t('paymob.openSecure') }}</NuxtLinkLocale>
             <div class="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm"><div class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.subtotal') }}</span><span>{{ formatAccountMoney(detail.order.subtotal_amount, detail.order.currency) }}</span></div><div v-if="Number(detail.order.discount_amount)" class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.discount') }}</span><span>-{{ formatAccountMoney(detail.order.discount_amount, detail.order.currency) }}</span></div><div v-if="Number(detail.order.payment_fee_amount)" class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.paymentFee') }}</span><span>{{ formatAccountMoney(detail.order.payment_fee_amount, detail.order.currency) }}</span></div><div class="flex justify-between gap-3 border-t border-slate-100 pt-2 font-bold"><span>{{ $t('common.total') }}</span><span>{{ formatAccountMoney(detail.order.total_amount, detail.order.currency) }}</span></div></div>
           </section>
-          <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="shipping-title"><h2 id="shipping-title" class="font-bold text-slate-900">{{ $t('common.delivery') }}</h2><p v-if="detail.order.shipping_method" class="mt-2 text-sm capitalize text-slate-600">{{ $uiLabel(detail.order.shipping_method) }}</p><p v-if="detail.order.shipping_review_status === 'required'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('account.orders.deliveryDetailsAreUnderReview') }}</p><p v-if="detail.order.shipping_review_status === 'rejected'" class="mt-2 text-sm font-semibold text-red-700">{{ $t('account.orders.deliveryDetailsNeedAttentionContactSupport') }}</p><p v-if="detail.shipping?.awb" class="mt-2 break-all text-sm text-slate-700">{{ $t('common.courierReference') }} <strong>{{ detail.shipping.awb }}</strong></p><p v-if="detail.shipping?.provider_status_name" class="mt-2 text-sm text-slate-700">{{ $t('common.latestUpdateValue', { value0: (detail.shipping.provider_status_name) }) }}</p><p v-else class="mt-2 text-sm text-slate-600">{{ $t('account.orders.noCourierUpdateIsAvailableYet') }}</p><p class="mt-3 text-sm text-slate-600">{{ detail.order.street_address }}, {{ detail.order.city }}, {{ detail.order.governorate }}</p><p class="mt-3 text-xs text-slate-500">{{ $t('account.orders.aDeliveryEstimateIsNotAvailable') }}</p></section>
+          <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="shipping-title">
+            <h2 id="shipping-title" class="font-bold text-slate-900">{{ $t('common.delivery') }}</h2>
+            <p v-if="detail.shipping?.provider === 'pdc'" class="mt-2 text-sm text-slate-600">PDC</p>
+            <p v-else-if="detail.order.shipping_method" class="mt-2 text-sm capitalize text-slate-600">{{ $uiLabel(detail.order.shipping_method) }}</p>
+            <p v-if="detail.order.shipping_review_status === 'required'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('account.orders.deliveryDetailsAreUnderReview') }}</p>
+            <p v-if="detail.order.shipping_review_status === 'rejected'" class="mt-2 text-sm font-semibold text-red-700">{{ $t('account.orders.deliveryDetailsNeedAttentionContactSupport') }}</p>
+            <p v-if="detail.shipping?.awb" class="mt-2 break-all text-sm text-slate-700">{{ $t('common.courierReference') }} <strong dir="ltr">{{ detail.shipping.awb }}</strong></p>
+            <div v-if="detail.shipping?.has_update" class="mt-3 text-sm text-slate-700" aria-live="polite">
+              <p class="font-semibold">{{ $t(shipmentStateKey(detail.shipping.current_state)) }}</p>
+              <p v-if="detail.shipping.reason_key" class="mt-1">{{ $t(detail.shipping.reason_key) }}</p>
+              <p v-if="detail.shipping.status_at" class="mt-1">{{ $t('shipment.lastUpdate') }} <time :datetime="detail.shipping.status_at">{{ formatAccountDate(detail.shipping.status_at, true) }}</time></p>
+              <p v-else-if="detail.shipping.observed_at" class="mt-1">{{ $t('shipment.checkedAt') }} <time :datetime="detail.shipping.observed_at">{{ formatAccountDate(detail.shipping.observed_at, true) }}</time></p>
+            </div>
+            <p v-else class="mt-2 text-sm text-slate-600">{{ $t('account.orders.noCourierUpdateIsAvailableYet') }}</p>
+            <button type="button" class="mt-3 min-h-11 rounded-lg px-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" @click="load(true)">{{ $t('shipment.refresh') }}</button>
+            <p class="mt-3 text-sm text-slate-600">{{ detail.order.street_address }}, {{ detail.order.city }}, {{ detail.order.governorate }}</p>
+          </section>
         </div>
       </div>
     </template>

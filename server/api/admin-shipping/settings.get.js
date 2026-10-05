@@ -1,9 +1,10 @@
-import { createError } from 'h3'
+import { createError, setHeader } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { getPdcSettings } from '../../utils/pdcShipping'
 import { isShippingEncryptionReady } from '../../utils/shippingSecrets'
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'Cache-Control', 'private, no-store')
   const { supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'settings.edit'
   })
@@ -23,15 +24,25 @@ export default defineEventHandler(async (event) => {
   if (encounteredError) {
     throw createError({
       statusCode: 500,
-      statusMessage: encounteredError.message
+      statusMessage: 'Courier settings are unavailable.'
     })
   }
 
+  const { data: mappings, error: mappingError } = await supabaseAdmin.from('shipping_status_mappings')
+    .select('provider_status_id, provider_label, normalized_state, provider_aliases').eq('provider', 'pdc').order('provider_status_id')
+  if (mappingError) throw createError({ statusCode: 503, statusMessage: 'Courier mappings are unavailable.' })
   return {
+    mappings: mappings || [],
     settings: {
       id: settings.id,
       display_name: settings.display_name,
       base_url: settings.base_url,
+      api_mode: settings.api_mode,
+      status_timezone: settings.status_timezone,
+      cities_cache: settings.cities_cache || [],
+      products_cache: settings.products_cache || [],
+      cities_synced_at: settings.cities_synced_at,
+      products_synced_at: settings.products_synced_at,
       company_id: settings.company_id,
       product_id: Number(settings.product_id),
       origin_city_id: settings.origin_city_id ? Number(settings.origin_city_id) : null,

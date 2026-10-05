@@ -149,6 +149,7 @@
                   <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
                     {{ $uiLabel(shippingDetail.state) }}
                   </span>
+                  <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
                   <button
                     v-if="shippingDetail.label_ready"
                     type="button"
@@ -160,6 +161,15 @@
                   </button>
                 </div>
               </div>
+              <p v-if="courierNotice" role="status" class="mt-3 text-sm text-gray-600">{{ $t(courierNotice) }}</p>
+              <details v-if="shippingDetail.events?.length" class="mt-4 rounded-lg border p-3">
+                <summary class="cursor-pointer text-sm font-semibold">{{ $t('shipment.history') }}</summary>
+                <ol class="mt-3 space-y-3"><li v-for="event in shippingDetail.events" :key="event.id" class="text-sm">
+                  <p class="font-semibold">{{ event.provider_status_name || $t('shipment.states.unknown') }}<span v-if="event.provider_status_id"> ({{ event.provider_status_id }})</span></p>
+                  <p v-if="event.reason_name">{{ event.reason_name }}</p>
+                  <p class="text-xs text-gray-500">{{ formatCommerceDate(event.status_date || event.received_at) }}</p>
+                </li></ol>
+              </details>
             </section>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
@@ -364,6 +374,8 @@ const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
 const statusLoading = ref(false)
 const labelLoading = ref(false)
+const courierChecking = ref(false)
+const courierNotice = ref('')
 const errorMessage = ref('')
 const statusMessage = ref('')
 const statusPanelOpen = ref(false)
@@ -600,6 +612,16 @@ const resetDialogState = () => {
 
 const closeDialog = () => {
   emit('update:open', false)
+}
+
+const refreshCourierStatus = async () => {
+  if (courierChecking.value || !props.orderId) return
+  courierChecking.value = true; courierNotice.value = ''
+  try {
+    await $fetch(`/api/admin-shipping/orders/${props.orderId}/refresh`, { method: 'POST', headers: await getAuthHeaders() })
+    await loadOrderDetails()
+    courierNotice.value = 'shipment.reconciled'
+  } catch { courierNotice.value = 'shipment.actionFailed' } finally { courierChecking.value = false }
 }
 
 const downloadShippingLabel = async () => {

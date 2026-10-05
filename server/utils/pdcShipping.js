@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { decryptShippingSecret } from './shippingSecrets'
+import { decryptShippingSecret } from './shippingSecrets.js'
 
 export const PDC_PROVIDER_ID = 'pdc'
 export const PDC_PRODUCTION_BASE_URL = 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/'
@@ -26,13 +26,13 @@ const getPdcHeaders = (settings) => ({
   Accept: 'application/json'
 })
 
-const getPdcEndpointUrl = (baseUrl, endpoint) => {
-  if (baseUrl !== PDC_PRODUCTION_BASE_URL) {
-    throw new ShippingPreparationError('The courier production URL is invalid.')
-  }
-
-  return new URL(endpoint, baseUrl).toString()
+export const PDC_TEST_BASE_URL = 'https://clientsapi-test.pdc-eg.com/api/ClientUsers/V6/'
+export const validatePdcBaseUrl = (baseUrl, mode = 'production') => {
+  const expected = mode === 'test' ? PDC_TEST_BASE_URL : mode === 'production' ? PDC_PRODUCTION_BASE_URL : null
+  if (!expected || baseUrl !== expected) throw createError({ statusCode: 400, statusMessage: 'Courier URL does not match its mode.' })
+  return baseUrl
 }
+const getPdcEndpointUrl = (baseUrl, endpoint, mode = 'production') => new URL(endpoint, validatePdcBaseUrl(baseUrl, mode)).toString()
 
 const readPdcJsonResponse = async (response) => {
   const responseText = await response.text()
@@ -49,10 +49,11 @@ const readPdcJsonResponse = async (response) => {
 }
 
 const requestPdcJson = async ({ settings, endpoint, body }) => {
-  const response = await fetch(getPdcEndpointUrl(settings.base_url, endpoint), {
+  const response = await fetch(getPdcEndpointUrl(settings.base_url, endpoint, settings.api_mode), {
     method: 'POST',
     headers: getPdcHeaders(settings),
     body: JSON.stringify(body),
+    redirect: 'error',
     signal: AbortSignal.timeout(15000)
   })
   const responseBody = await readPdcJsonResponse(response)
@@ -68,13 +69,14 @@ const requestPdcJson = async ({ settings, endpoint, body }) => {
 }
 
 const requestPdcLabel = async ({ settings, awb }) => {
-  const response = await fetch(getPdcEndpointUrl(settings.base_url, PDC_ENDPOINTS.exportLabel), {
+  const response = await fetch(getPdcEndpointUrl(settings.base_url, PDC_ENDPOINTS.exportLabel, settings.api_mode), {
     method: 'POST',
     headers: getPdcHeaders(settings),
     body: JSON.stringify({
       templateID: Number(settings.label_template_id),
       awBs: [awb]
     }),
+    redirect: 'error',
     signal: AbortSignal.timeout(20000)
   })
 
@@ -92,20 +94,18 @@ const requestPdcLabel = async ({ settings, awb }) => {
   return labelData
 }
 
-const findShipmentResult = (responseBody, orderReference) => {
+export const findShipmentResult = (responseBody, orderReference) => {
   const successResponses = Array.isArray(responseBody?.successResponses)
     ? responseBody.successResponses
     : Array.isArray(responseBody?.SuccessResponses)
       ? responseBody.SuccessResponses
       : []
   const matchingResponse = successResponses.find((item) => {
-    return cleanText(item?.ref || item?.Ref) === orderReference
-  }) || successResponses[0]
+    return cleanText(item?.ref || item?.Ref) === orderReference && item?.success !== false
+  })
   const awb = cleanText(
     matchingResponse?.awb
     || matchingResponse?.AWB
-    || responseBody?.awb
-    || responseBody?.AWB
   )
 
   if (awb) {
@@ -129,17 +129,17 @@ const findShipmentResult = (responseBody, orderReference) => {
   throw new Error(errorMessage || 'The courier did not create the shipment.')
 }
 
-export const getPdcSettings = async (supabaseAdmin) => {
+export const getPdcSettings = async (supabaseAdmin, signal = AbortSignal.timeout(4000)) => {
   const { data, error } = await supabaseAdmin
     .from('shipping_provider_settings')
     .select('*')
     .eq('id', PDC_PROVIDER_ID)
-    .maybeSingle()
+    .maybeSingle().abortSignal(signal)
 
   if (error) {
     throw createError({
       statusCode: 500,
-      statusMessage: error.message
+      statusMessage: 'Courier settings are unavailable.'
     })
   }
 

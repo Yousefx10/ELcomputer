@@ -125,6 +125,10 @@ export default defineEventHandler(async (event) => {
     .select(`
       id,
       provider,
+      to_ref,
+      normalized_state,
+      provider_status_source,
+      provider_status_observed_at,
       state,
       awb,
       provider_status_id,
@@ -151,6 +155,13 @@ export default defineEventHandler(async (event) => {
       ...shippingJob,
       label_ready: Boolean(shippingJob.label_storage_path)
     }
+    const { data: courierEvents, error: eventError } = await supabaseAdmin.from('shipping_webhook_events')
+      .select('id,provider_status_id,provider_status_name,status_date,reason_name,normalized_state,source,received_at')
+      .eq('provider', shippingJob.provider).eq('order_ref', shippingJob.to_ref).eq('awb', shippingJob.awb || '')
+      .not('processed_at', 'is', null).order('received_at', { ascending: false }).limit(200)
+    if (eventError) throw createError({ statusCode: 503, statusMessage: 'Courier history is unavailable.' })
+    shipping.events = courierEvents || []
+    delete shipping.to_ref
     delete shipping.label_storage_path
   }
 

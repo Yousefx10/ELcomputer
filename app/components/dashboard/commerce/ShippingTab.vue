@@ -20,7 +20,7 @@
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h3 class="text-2xl font-bold">{{ $t('common.pdcApi') }}</h3>
-          <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.commerce.prepareAutomaticLabelsHere') }}</p>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('shipment.settingsIntro') }}</p>
         </div>
 
         <div class="flex flex-wrap gap-2 text-xs font-semibold">
@@ -50,19 +50,31 @@
 
       <form v-else class="mt-6 space-y-5" @submit.prevent="savePdcSettings">
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <label class="block text-sm font-semibold text-gray-700">{{ $t('shipment.mode') }}
+            <select v-model="pdcSettings.api_mode" class="mt-2 w-full rounded-lg border bg-white p-3">
+              <option value="production">{{ $t('shipment.production') }}</option><option value="test">{{ $t('shipment.test') }}</option>
+            </select>
+          </label>
+          <label class="block text-sm font-semibold text-gray-700">{{ $t('shipment.timezone') }}
+            <input v-model="pdcSettings.status_timezone" type="text" class="mt-2 w-full rounded-lg border p-3" placeholder="Africa/Cairo">
+          </label>
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.apiUrl') }}</label>
+            <label for="pdc-api-url" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.apiUrl') }}</label>
             <input
-              :value="pdcSettings.base_url"
-              type="text"
-              readonly
-              class="w-full rounded-lg border bg-gray-50 p-3 text-sm text-gray-600"
+              id="pdc-api-url"
+              v-model="pdcSettings.base_url"
+              type="url"
+              dir="ltr"
+              class="w-full rounded-lg border bg-white p-3 text-sm text-gray-700"
             >
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.companyId') }}</label>
+            <label for="pdc-company-id" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.companyId') }}</label>
             <input
+              id="pdc-company-id"
+              inputmode="numeric"
+              dir="ltr"
               v-model="pdcSettings.company_id"
               type="text"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -70,19 +82,20 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productId') }}</label>
-            <input
-              v-model="pdcSettings.product_id"
-              type="number"
-              min="1"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
+            <label for="pdc-product" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.productId') }}</label>
+            <select v-if="pdcSettings.products_cache.length" id="pdc-product" v-model="pdcSettings.product_id" class="w-full rounded-lg border bg-white p-3" :aria-label="$t('common.productId')">
+              <option v-if="!pdcSettings.products_cache.some(item => item.id === Number(pdcSettings.product_id))" :value="pdcSettings.product_id">{{ pdcSettings.product_id }} — {{ $t('shipment.savedProduct') }}</option>
+              <option v-for="product in pdcSettings.products_cache" :key="product.id" :value="product.id">{{ product.name }} ({{ product.id }})</option>
+            </select>
+            <input v-else id="pdc-product" v-model="pdcSettings.product_id" type="number" min="1" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupCityId') }}</label>
+            <label for="pdc-pickup-city" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupCityId') }}</label>
             <input
+              id="pdc-pickup-city"
               v-model="pdcSettings.origin_city_id"
+              list="pdc-city-options"
               type="number"
               min="1"
               :placeholder="$t('common.requiredBeforeLaunch')"
@@ -91,8 +104,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupContact') }}</label>
+            <label for="pdc-pickup-contact" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupContact') }}</label>
             <input
+              id="pdc-pickup-contact"
               v-model="pdcSettings.origin_contact_name"
               type="text"
               :placeholder="$t('common.storeName')"
@@ -101,8 +115,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupPhone') }}</label>
+            <label for="pdc-pickup-phone" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupPhone') }}</label>
             <input
+              id="pdc-pickup-phone"
               v-model="pdcSettings.origin_phone"
               type="tel"
               inputmode="numeric"
@@ -112,8 +127,9 @@
           </div>
 
           <div class="md:col-span-2 xl:col-span-3">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupAddress') }}</label>
+            <label for="pdc-pickup-address" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupAddress') }}</label>
             <input
+              id="pdc-pickup-address"
               v-model="pdcSettings.origin_address"
               type="text"
               :placeholder="$t('common.fullPickupAddress')"
@@ -122,8 +138,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.defaultWeightKg') }}</label>
+            <label for="pdc-weight" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.defaultWeightKg') }}</label>
             <input
+              id="pdc-weight"
               v-model="pdcSettings.default_weight_kg"
               type="number"
               min="0.001"
@@ -133,8 +150,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shipmentType') }}</label>
+            <label for="pdc-shipment-type" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.shipmentType') }}</label>
             <select
+              id="pdc-shipment-type"
               v-model="pdcSettings.shipment_type_id"
               class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"
             >
@@ -145,8 +163,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.labelTemplateId') }}</label>
+            <label for="pdc-label-template" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.labelTemplateId') }}</label>
             <input
+              id="pdc-label-template"
               v-model="pdcSettings.label_template_id"
               type="number"
               min="1"
@@ -155,8 +174,10 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.accessToken') }}</label>
+            <label for="pdc-access-token" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.accessToken') }}</label>
             <input
+              id="pdc-access-token"
+              dir="ltr"
               v-model="pdcSettings.access_token"
               type="password"
               autocomplete="new-password"
@@ -166,8 +187,10 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.webhookSecret') }}</label>
+            <label for="pdc-webhook-secret" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.webhookSecret') }}</label>
             <input
+              id="pdc-webhook-secret"
+              dir="ltr"
               v-model="pdcSettings.webhook_secret"
               type="password"
               autocomplete="new-password"
@@ -190,7 +213,7 @@
             <input v-model="pdcSettings.allow_open_shipment" type="checkbox">
             {{ $t('common.allowPackageOpening') }}
           </label>
-          <label v-if="pdcSettings.live_requests_enabled" class="flex items-center gap-2 text-sm text-gray-700">
+          <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.is_enabled" type="checkbox">
             {{ $t('common.enableLiveRequests') }}
           </label>
@@ -210,6 +233,41 @@
           {{ pdcSaving ? $t('common.saving') : $t('common.savePdcSettings') }}
         </button>
       </form>
+      <datalist id="pdc-city-options"><option v-for="city in pdcSettings.cities_cache" :key="city.id" :value="city.id">{{ city.name }}</option></datalist>
+      <div v-if="!pdcPageError && !pdcLoading" class="mt-6 space-y-4 border-t pt-5">
+        <p class="text-sm text-gray-600">{{ $t('shipment.lookupCounts', { value0: pdcSettings.cities_cache.length, value1: pdcSettings.products_cache.length }) }}</p>
+        <p v-if="pdcSettings.cities_synced_at" class="text-xs text-gray-500">{{ $t('shipment.citiesSynced') }} {{ formatCommerceDate(pdcSettings.cities_synced_at) }}</p>
+        <p v-if="pdcSettings.products_synced_at" class="text-xs text-gray-500">{{ $t('shipment.productsSynced') }} {{ formatCommerceDate(pdcSettings.products_synced_at) }}</p>
+        <div class="flex flex-wrap gap-3">
+          <button type="button" :disabled="pdcActionBusy || !pdcSettings.live_requests_enabled || !pdcSettings.is_enabled || !pdcSettings.access_token_configured" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runPdcLookup('test')">{{ $t('shipment.testConnection') }}</button>
+          <button type="button" :disabled="pdcActionBusy || !pdcSettings.live_requests_enabled || !pdcSettings.is_enabled || !pdcSettings.access_token_configured" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runPdcLookup('sync')">{{ $t('shipment.syncLookups') }}</button>
+        </div>
+        <p v-if="pdcActionMessage" role="status" class="text-sm text-green-700">{{ $t(pdcActionMessage) }}</p>
+        <p v-if="pdcActionError" role="alert" class="text-sm text-red-700">{{ $t('shipment.actionFailed') }}</p>
+        <details class="rounded-xl border p-4">
+          <summary class="flex min-h-11 cursor-pointer items-center text-sm font-semibold">{{ $t('shipment.statusMappings') }}</summary>
+          <p class="mt-3 text-sm text-gray-600">{{ $t('shipment.mappingNote') }}</p>
+          <p class="mt-2 text-sm text-amber-800">{{ $t('shipment.ambiguous97') }}</p>
+          <div class="mt-4 space-y-3">
+            <div v-for="mapping in pdcMappings" :key="mapping.provider_status_id" class="flex flex-wrap items-end gap-3 rounded-lg bg-gray-50 p-3">
+              <p class="w-full text-sm font-semibold">{{ mapping.provider_status_id }} · {{ mapping.provider_label }}</p>
+              <label class="min-w-0 flex-1 text-xs font-semibold">{{ $t('shipment.customerState') }}
+                <select v-model="mapping.normalized_state" class="mt-1 min-h-11 w-full rounded-lg border bg-white p-2"><option v-for="state in shippingStates" :key="state" :value="state">{{ $t(shipmentStateKey(state)) }}</option></select>
+              </label>
+              <label class="w-full text-xs font-semibold">{{ $t('shipment.aliases') }}<input :value="mapping.provider_aliases.join('|')" type="text" class="mt-1 w-full rounded-lg border p-2" @input="mapping.provider_aliases = $event.target.value.split('|').map(a => a.trim()).filter(Boolean)"></label>
+              <button type="button" :disabled="pdcActionBusy" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="savePdcMapping(mapping)">{{ $t('shipment.saveMapping') }}</button>
+            </div>
+          </div>
+          <form class="mt-4 grid gap-3 border-t pt-4 sm:grid-cols-2" @submit.prevent="savePdcMapping(pdcNewMapping)">
+            <label class="text-sm font-semibold">{{ $t('shipment.statusId') }}<input v-model="pdcNewMapping.provider_status_id" type="number" min="1" required class="mt-1 w-full rounded-lg border p-3"></label>
+            <label class="text-sm font-semibold">{{ $t('shipment.providerLabel') }}<input v-model="pdcNewMapping.provider_label" type="text" maxlength="200" required class="mt-1 w-full rounded-lg border p-3"></label>
+            <label class="text-sm font-semibold">{{ $t('shipment.customerState') }}<select v-model="pdcNewMapping.normalized_state" class="mt-1 w-full rounded-lg border bg-white p-3"><option v-for="state in shippingStates" :key="state" :value="state">{{ $t(shipmentStateKey(state)) }}</option></select></label>
+            <label class="text-sm font-semibold">{{ $t('shipment.aliases') }}<input v-model="pdcNewAliases" type="text" class="mt-1 w-full rounded-lg border p-3"></label>
+            <button type="submit" :disabled="pdcActionBusy" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50">{{ $t('shipment.saveMapping') }}</button>
+          </form>
+        </details>
+      </div>
+
     </section>
 
     <section class="rounded-2xl bg-white p-6 shadow">
@@ -434,6 +492,7 @@ const { intlLocale } = useUiLocale()
 const formatCommerceCurrency = value => baseFormatCommerceCurrency(value, intlLocale.value)
 const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.value)
 
+import { shippingStates, shipmentStateKey } from '~/utils/shipmentTracking'
 import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
@@ -461,8 +520,14 @@ const canConfigureShipping = computed(() => hasPermission('settings.edit'))
 const createEmptyPdcSettings = () => ({
   display_name: 'PDC Courier',
   base_url: 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/',
-  company_id: '280533',
-  product_id: 40,
+  api_mode: 'production',
+  status_timezone: 'Africa/Cairo',
+  cities_cache: [],
+  products_cache: [],
+  cities_synced_at: null,
+  products_synced_at: null,
+  company_id: '',
+  product_id: '',
   origin_city_id: '',
   origin_address: '',
   origin_phone: '',
@@ -483,6 +548,13 @@ const createEmptyPdcSettings = () => ({
   city_mapping_count: 0,
   pending_job_count: 0
 })
+
+const pdcMappings = ref([])
+const pdcActionBusy = ref(false)
+const pdcActionError = ref('')
+const pdcActionMessage = ref('')
+const pdcNewMapping = reactive({ provider_status_id: '', provider_label: '', normalized_state: 'unknown', provider_aliases: [] })
+const pdcNewAliases = ref('')
 
 const pdcSettings = reactive(createEmptyPdcSettings())
 
@@ -512,11 +584,34 @@ const loadPdcSettings = async () => {
     })
 
     Object.assign(pdcSettings, createEmptyPdcSettings(), response.settings || {})
+    pdcMappings.value = response.mappings || []
   } catch (error) {
     pdcPageError.value = error?.data?.statusMessage || error?.message || 'Could not load PDC settings.'
   } finally {
     pdcLoading.value = false
   }
+}
+
+const runPdcLookup = async action => {
+  if (pdcActionBusy.value) return
+  pdcActionBusy.value = true; pdcActionError.value = ''; pdcActionMessage.value = ''
+  try {
+    await $fetch('/api/admin-shipping/lookups', { method: 'POST', headers: await getAuthHeaders(), body: { action } })
+    if (action === 'sync') await loadPdcSettings()
+    pdcActionMessage.value = action === 'sync' ? 'shipment.lookupsSynced' : 'shipment.connected'
+  } catch { pdcActionError.value = 'failed' } finally { pdcActionBusy.value = false }
+}
+
+const savePdcMapping = async mapping => {
+  if (pdcActionBusy.value) return
+  pdcActionBusy.value = true; pdcActionError.value = ''; pdcActionMessage.value = ''
+  try {
+    await $fetch('/api/admin-shipping/mappings', { method: 'PATCH', headers: await getAuthHeaders(), body: {
+      ...mapping, provider_aliases: mapping === pdcNewMapping ? pdcNewAliases.value.split('|').map(a => a.trim()).filter(Boolean) : mapping.provider_aliases
+    } })
+    await loadPdcSettings()
+    pdcActionMessage.value = 'shipment.mappingSaved'
+  } catch { pdcActionError.value = 'failed' } finally { pdcActionBusy.value = false }
 }
 
 const savePdcSettings = async () => {
@@ -530,6 +625,9 @@ const savePdcSettings = async () => {
       headers: await getAuthHeaders(),
       body: {
         display_name: pdcSettings.display_name,
+        base_url: pdcSettings.base_url,
+        api_mode: pdcSettings.api_mode,
+        status_timezone: pdcSettings.status_timezone,
         company_id: pdcSettings.company_id,
         product_id: pdcSettings.product_id,
         origin_city_id: pdcSettings.origin_city_id,
@@ -548,6 +646,8 @@ const savePdcSettings = async () => {
       }
     })
 
+    pdcSettings.access_token = ''
+    pdcSettings.webhook_secret = ''
     const liveCallsOff = !pdcSettings.live_requests_enabled
     await loadPdcSettings()
     pdcSavedMessage.value = liveCallsOff
