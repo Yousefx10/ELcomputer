@@ -1,10 +1,27 @@
 # Vodafone SMS security and architecture review — 2026-10-05
 
+## Provider-confirmed SecureHash correction — INC000081856720
+
+After this audit, the user supplied Vodafone's official support clarification **INC000081856720**: the production service uses the Secure Hash Secret as the **literal uppercase hexadecimal string when calculating HMAC-SHA256**, without HEX decoding. This authoritative clarification supersedes the contradictory written PDF sentence and the previous local decoded-key interpretation. The code now passes the literal string directly to HMAC; exact field/SMSList ordering, UTF-8 input and uppercase hexadecimal output remain. There is no compatibility fallback.
+
+Dashboard/server validation accepts only nonempty uppercase `0-9A-F` strings, bounded to 512 characters. It rejects lowercase, padding, prefixes and non-string values without normalizing them. Since the key is literal text, there is no decoded-byte minimum or even-length restriction; the provider's `A1B2C3D4E5F6` example and odd-length uppercase text are supported. Blank replacement preserves the saved encrypted value. No secret is returned to the browser. Protocol-confirmation copy now describes literal uppercase keys; defaults and explicit activation controls remain intact.
+
+The hash ambiguity is resolved. No real activation, deployment, production migration, Vodafone contact or SMS was authorized or performed. The correction changes only hashing, corresponding validation/copy/tests and documentation; the audited queue, RBAC/RLS and XML/transport architecture remain intact. Prior audit results retain their historical context.
+
+### Fresh correction validation
+
+- Node **24.16.0**. Full suite: **375 passed, zero failed, one existing optional native Paymob test skipped** (376 total). Focused SMS suite: **52 passed, zero failed or skipped**. All prior queue/RBAC/XML/transport regressions still pass.
+- `npm run typecheck`, `npm run build`, `git diff --check`: **passed**. Build/typecheck used `env -u DEBUG`; existing duplicate ERP import, sourcemap and chunk-size warnings remain.
+- Actual hash function reproduces both PDF digests and deterministic omitted/present-empty ExternalTrxId outputs. Negative tests distinguish decoded bytes, reversed parameters and reversed SMSList; Arabic/UTF-8 and uppercase output are retained.
+- Settings/H3 tests reject lowercase, padding, prefixes, overlong and non-string replacements without changing saved settings or exposing rejected input. Valid literal values round-trip exactly through AES-256-GCM and never return plaintext/ciphertext. Mocked manual XML digests use literal keys; key/hash input/generated digest are absent from history, worker responses, audits and attempts. Source contains no SMS credential/hash-source logging.
+- Actual Vue fixture browser checks: **338 assertions, 48 screenshots, zero errors/external requests**, including EN/AR literal-key input validity, blank preservation and masking. Built-local HTTP/SSR/public scans: **801 assertions, 14 requests, 115 public files/six fictional private types, zero exposures**. Temporary server stopped.
+- Evidence: `/tmp/elcomputer-sms-literal-*.log` and `/tmp/elcomputer-sms-review/`. No native independent-session race, authenticated production/staging, scheduling, actual provider/TLS acceptance, real submission or billing verification was performed. No real merchant credentials were configured.
+
 ## 1. Overall verdict
 
 **SAFE TO PROCEED TO DORMANT PRODUCTION DEPLOYMENT.**
 
-This verdict applies to the reviewed foundation with the fixes below and disabled Vodafone settings. It authorizes no deployment, migration, activation or provider test. This review performed none of those actions. Real activation remains blocked by Vodafone's SecureHash contradiction and outstanding external provisioning/acceptance.
+This verdict applies to the reviewed foundation with the audit fixes and provider-confirmed correction above, and disabled Vodafone settings. It authorizes no deployment, migration, activation or provider test. Neither this audit nor the correction performed those actions. The former SecureHash ambiguity is resolved by INC000081856720; external provisioning/acceptance and separately authorized activation remain outstanding.
 
 Reviewed `AGENTS.md`, `PROJECT_STATE.md`, `CODEX_HANDOFF.md`, `docs/sms-report.md`, all pages of the original supplied January 2026 V5 PDF, the complete implementation, and committed diff `c29fb09^..c29fb09` (38 files, 2,217 insertions, two deletions), followed by the audit changes. The working tree was initially clean. The PDF was treated as protocol evidence; the user's pasted review request controls task scope.
 
@@ -17,7 +34,7 @@ Reviewed `AGENTS.md`, `PROJECT_STATE.md`, `CODEX_HANDOFF.md`, `docs/sms-report.m
 | Medium | IPv6 filtering used string prefixes and accepted expanded documentation addresses, special-purpose ranges and 6to4; IPv4 filtering also overblocked ordinary addresses. | The public-destination safety check was incomplete and spelling-dependent; legitimate public destinations could also be rejected. | Numeric CIDR filtering with conservative special-purpose exclusions, applied to literal hosts and every DNS result. |
 | Low | Multipart count used only division of units by capacity. | 153 GSM extension symbols (306 units) or 67 emoji (134 UTF-16 units) displayed two segments when preserving character boundaries needs three. | Pack complete GSM escape/surrogate pairs within 153/67-unit segment capacities. |
 
-Four new regressions failed against the original implementation in `/tmp/elcomputer-sms-audit-before.log`. All pass after fixes. No unresolved code defect was identified that blocks a dormant release. The external hash ambiguity is an activation blocker, not a claimed implementation defect.
+Four new regressions failed against the original implementation in `/tmp/elcomputer-sms-audit-before.log`. All pass after fixes. No unresolved code defect was identified that blocks a dormant release. The external hash ambiguity was an activation blocker at audit time; it is resolved by the provider-confirmed correction above.
 
 The address policy was checked against the primary [IANA IPv6 registry](https://www.iana.org/assignments/iana-ipv6-special-registry) and [IANA IPv4 registry](https://www.iana.org/assignments/iana-ipv4-special-registry). It conservatively excludes IPv6 protocol-assignment and transition ranges rather than assuming they are ordinary merchant HTTPS destinations. It does not require an online registry lookup during dispatch.
 
@@ -34,26 +51,26 @@ Only the original, still-unapplied SMS migration was adjusted. No second SMS sys
 
 ## 4. SecureHash implementation review
 
-HMAC-SHA256 uses `Buffer.from(secret, 'hex')`, UTF-8 input and uppercase hexadecimal output. Key validation rejects invalid/odd hexadecimal values. Fields are concatenated as literal ordered name/value pairs: AccountId, Password, each SMS's SenderName/ReceiverMSISDN/SMSText in recipient order, then ExternalTrxId when present. The SMSList wrapper and SecureHash field are excluded. Omitted ExternalTrxId differs from present-empty. No URL encoding or XML escaping occurs before hashing. XML escaping occurs afterward and preserves carriage returns with character references.
+The provider-confirmed production behavior is **HMAC-SHA256 with the literal uppercase hexadecimal Secure Hash Secret string as key bytes** (`createHmac('sha256', secret)`), UTF-8 input and uppercase hexadecimal output. Key validation rejects non-uppercase-HEX values without transforming them. Fields are concatenated as literal ordered name/value pairs: AccountId, Password, each SMS's SenderName/ReceiverMSISDN/SMSText in recipient order, then ExternalTrxId when present. The SMSList wrapper and SecureHash field are excluded. Omitted ExternalTrxId differs from present-empty. No URL encoding or XML escaping occurs before hashing. XML escaping occurs afterward and preserves carriage returns with character references.
 
-The implementation follows the written requirement. It deliberately does not match the contradictory printed hashes. No provider behavior was confirmed; no automatic second-key interpretation exists.
+The implementation follows Vodafone clarification **INC000081856720** and now matches both printed PDF hashes. The former decoded-key behavior is removed. A negative test computes a decoded-key digest only to prove it differs; that interpretation is not an operational mode or fallback.
 
-## 5. Exact PDF contradiction
+## 5. Exact PDF contradiction and provider resolution
 
 V5 section 5, step 3, requires the **hex decoded value** of the activation secret. The fictional example secret `0BAF4EACBFB84A1A87574DFEFC41525F` is 16 bytes after HEX decoding but 32 bytes as textual UTF-8/ASCII. Holding the complete ordered request string, including `ExternalTrxId=2025-01-18 15:44:00`, constant produces:
 
-| Example | Printed PDF digest, independently reproduced with textual key | Digest using the required HEX-decoded key |
+| Example | Printed PDF digest and current provider-confirmed literal-key result | Discarded HEX-decoded comparison (historical only) |
 | --- | --- | --- |
 | One SMS | `70A7BE2DBCAF15C1544E4CD9EC520FC91426C06C1EF0B87D68EFF8BB0A56268D` | `6F37744E74B3C2381CB53FE8557140570E7AC4B8A81EE25A7C4EA5D584043518` |
 | Three ordered SMS | `60A7042DE62B10D268C516A575301959011EBEF8C6DB4AC67AFB314BE86C7BCD` | `7674D561C77824EC3B0B3381A2E229899ED52028C17C5C343801F3C054B1AD53` |
 
-This review independently recomputed both with Python `hmac`/`hashlib` against the original PDF and reran the Node crypto fixtures. Both printed outputs match textual keys; neither matches HEX-decoded keys. These are public fictional fixtures, never saved merchant settings.
+The audit independently recomputed both interpretations with Python `hmac`/`hashlib` against the original PDF. Vodafone subsequently confirmed the textual/literal interpretation in INC000081856720. Both printed hashes are now assertions against the actual `vodafoneHash` implementation. These are public fictional fixtures, never saved merchant settings. Literal-key fixtures also cover ExternalTrxId omitted (`2B26B16FB32F2F2EC78BB95525B9A122C5DD45DB73F21DFACC010159C5E2D736`) and present-empty (`B4333E0ADC6F8FDDC0C2AC74086A59FAC23E8E4F6B683E96C84A3B99F815C8FB`).
 
 ## 6. Dormant deployment versus activation
 
-The contradiction **does not block dormant foundation deployment**. Defaults remain disabled, merchant values empty, confirmations false, and no scheduler or valid worker secret is installed by the migration. Saving credentials does not enable sending. Runtime worker authentication is separately required.
+The former contradiction did not block dormant foundation deployment and is now resolved by INC000081856720. Defaults remain disabled, merchant values empty, confirmations false, and no scheduler or valid worker secret is installed by the migration. Saving credentials does not enable sending. Runtime worker authentication is separately required.
 
-The contradiction **blocks real Vodafone activation**. Do not attest `hash_protocol_confirmed` until Vodafone confirms the actual service expects HEX-decoded keys. If Vodafone confirms textual keys, keep disabled pending a separately reviewed explicit change and deterministic provider-confirmed vectors. Never retry authentication with both interpretations.
+Key interpretation no longer blocks activation: Vodafone confirmed literal uppercase hexadecimal keys and the local correction implements that behavior. This does not activate the provider or authorize a live test. Existing Dashboard protocol/trusted-IP/account confirmations, infrastructure readiness, provisioning and separate activation authorization remain required. This correction does not set any confirmation flag or enablement state. There is no retry using both key interpretations.
 
 ## 7. Dashboard configuration and encryption
 
@@ -100,7 +117,7 @@ The additive migration creates SMS schema/constraints/indexes and expands defaul
 - New `sms-transport.test.mjs`: mixed DNS blocked, sanitized preflight errors, callback ordering/cancellation, address pinning/TLS/headers/UTF-8 body, response size, abort/disconnect/timeout uncertainty, no redirect following. DNS/HTTPS are stubbed; no sockets exist.
 - Browser: actual EN/AR segment preview checks for 153 extension characters and 67 emoji.
 
-## 13. Final validation
+## 13. Original audit validation (before provider correction)
 
 - Node **24.16.0**.
 - `node --test tests/*.test.mjs`: **373 passed, zero failed, one existing optional native Paymob test skipped** (374 total).
@@ -117,13 +134,17 @@ Build/typecheck used `env -u DEBUG` to suppress inherited hook timing output. Ex
 
 Limits: no authenticated production/staging session, native PostgreSQL independent-session SMS race test, real worker scheduling/infrastructure acceptance, live Vodafone/TLS acceptance, real submission, handset delivery or merchant billing was exercised. PGlite verifies actual SQL transitions/RLS but does not establish native multi-session acceptance. Evidence is local and ephemeral under `/tmp/elcomputer-sms-audit-*.log` and `/tmp/elcomputer-sms-review/`.
 
-## 14. Vodafone clarification still required
+## 14. Provider clarification received; remaining external acceptance
 
-Obtain provider confirmation of the actual production HMAC key interpretation, a corrected authoritative example and ideally deterministic account-specific test vectors. Also confirm provisioned Account ID/password/secret, approved senders, actual Notification/Campaign host/port/paths, supported modern TLS, registered outbound IP/account/interface activation, quotas/rates/international eligibility and the meaning/limits of ExternalTrxId. Do not assume handset delivery receipts or a status inquiry endpoint from this PDF. No Vodafone contact is authorized in this review.
+The actual production HMAC interpretation is confirmed by **INC000081856720**, as supplied by the user. Both published deterministic examples match it. Remaining external acceptance concerns provisioned Account ID/password/secret, approved senders, actual Notification/Campaign host/port/paths, supported modern TLS, registered outbound IP/account/interface activation, quotas/rates/international eligibility and the meaning/limits of ExternalTrxId. Do not assume handset delivery receipts or a status inquiry endpoint from this PDF. No Vodafone contact or real test is authorized in this correction.
 
 ```text
 SMS FOUNDATION AUDITED: YES
-VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: NO
+VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: YES
+SECUREHASH USES LITERAL SECRET STRING: YES
+SECUREHASH HEX-DECODED: NO
+DOCUMENTED VODAFONE HASH FIXTURES PASS: YES
+FULL TEST SUITE PASSED: YES
 REAL VODAFONE API CALLED: NO
 REAL SMS SENT: NO
 PRODUCTION MIGRATION APPLIED: NO

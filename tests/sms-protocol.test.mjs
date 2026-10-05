@@ -16,24 +16,33 @@ const messages = [
 const fixture = { accountId: '1', password: 'password', messages, externalTrxId: '2025-01-18 15:44:00' }
 const response = (statuses, result = 'SUCCESS', code = null) => `<SubmitSMSResponse xmlns="${VODAFONE_NAMESPACE}">${statuses.map(status => `<SMSStatus>${status}</SMSStatus>`).join('')}<ResultStatus>${result}</ResultStatus>${code ? `<Description>${code}</Description>` : ''}</SubmitSMSResponse>`
 
-test('V5 single and multiple SMS fixtures use HEX-decoded key, exact field/object ordering and UTF-8', () => {
-  assert.equal(vodafoneHash({ ...fixture, messages: messages.slice(0, 1) }, secret), '6F37744E74B3C2381CB53FE8557140570E7AC4B8A81EE25A7C4EA5D584043518')
-  assert.equal(vodafoneHash(fixture, secret), '7674D561C77824EC3B0B3381A2E229899ED52028C17C5C343801F3C054B1AD53')
+// Vodafone support INC000081856720 confirms literal uppercase HEX string keys.
+test('provider-confirmed literal key reproduces the one-message and multi-message PDF hashes', () => {
+  assert.equal(vodafoneHash({ ...fixture, messages: messages.slice(0, 1) }, secret), '70A7BE2DBCAF15C1544E4CD9EC520FC91426C06C1EF0B87D68EFF8BB0A56268D')
+  assert.equal(vodafoneHash(fixture, secret), '60A7042DE62B10D268C516A575301959011EBEF8C6DB4AC67AFB314BE86C7BCD')
   assert.notEqual(vodafoneHash({ ...fixture, messages: [...messages].reverse() }, secret), vodafoneHash(fixture, secret))
   const arabic = { accountId: '42', password: 'p', messages: [{ sender: 'Brand', recipient: '201000000000', text: 'مرحبا & = €' }] }
-  const expected = createHmac('sha256', Buffer.from(secret, 'hex')).update('AccountId=42&Password=p&SenderName=Brand&ReceiverMSISDN=201000000000&SMSText=مرحبا & = €', 'utf8').digest('hex').toUpperCase()
+  const expected = createHmac('sha256', secret).update('AccountId=42&Password=p&SenderName=Brand&ReceiverMSISDN=201000000000&SMSText=مرحبا & = €', 'utf8').digest('hex').toUpperCase()
   assert.equal(vodafoneHash(arabic, secret), expected)
 })
-test('printed Vodafone hashes demonstrably use textual key bytes, conflicting with HEX requirement', () => {
-  const input = count => 'AccountId=1&Password=password&' + messages.slice(0, count).map(m => `SenderName=${m.sender}&ReceiverMSISDN=${m.recipient}&SMSText=${m.text}`).join('&') + '&ExternalTrxId=2025-01-18 15:44:00'
-  assert.equal(createHmac('sha256', secret).update(input(1)).digest('hex').toUpperCase(), '70A7BE2DBCAF15C1544E4CD9EC520FC91426C06C1EF0B87D68EFF8BB0A56268D')
-  assert.equal(createHmac('sha256', secret).update(input(3)).digest('hex').toUpperCase(), '60A7042DE62B10D268C516A575301959011EBEF8C6DB4AC67AFB314BE86C7BCD')
+test('literal string bytes are used directly, never HEX-decoded, with exact field and SMSList order', () => {
+  const input = 'AccountId=1&Password=password&SenderName=sender1&ReceiverMSISDN=201000000000&SMSText=text1&SenderName=sender2&ReceiverMSISDN=201100000000&SMSText=text2&SenderName=sender3&ReceiverMSISDN=201500000000&SMSText=text3&ExternalTrxId=2025-01-18 15:44:00'
+  assert.equal(vodafoneHash(fixture, secret), createHmac('sha256', secret).update(input, 'utf8').digest('hex').toUpperCase())
+  assert.notEqual(vodafoneHash(fixture, secret), createHmac('sha256', Buffer.from(secret, 'hex')).update(input, 'utf8').digest('hex').toUpperCase())
+  assert.notEqual(vodafoneHash(fixture, secret), createHmac('sha256', secret).update(input.replace('AccountId=1&Password=password', 'Password=password&AccountId=1'), 'utf8').digest('hex').toUpperCase())
+  const exampleSecret = 'A1B2C3D4E5F6'
+  assert.equal(vodafoneHash(fixture, exampleSecret), createHmac('sha256', exampleSecret).update(input, 'utf8').digest('hex').toUpperCase())
 })
-test('ExternalTrxId omitted differs from present/empty, and invalid HEX keys fail', () => {
+test('ExternalTrxId omitted differs from present/empty, and invalid literal keys fail', () => {
   const { externalTrxId, ...without } = fixture
-  assert.equal(vodafoneHash(without, secret), '19EA57F33BA179E4C389D2E3DD8B348279CAC72A9443022538E5C9B6FFCD785A')
+  const input = 'AccountId=1&Password=password&' + messages.map(m => `SenderName=${m.sender}&ReceiverMSISDN=${m.recipient}&SMSText=${m.text}`).join('&')
+  assert.equal(vodafoneHash(without, secret), createHmac('sha256', secret).update(input, 'utf8').digest('hex').toUpperCase())
+  assert.equal(vodafoneHash(without, secret), '2B26B16FB32F2F2EC78BB95525B9A122C5DD45DB73F21DFACC010159C5E2D736')
+  assert.equal(vodafoneHash({ ...without, externalTrxId: '' }, secret), createHmac('sha256', secret).update(input + '&ExternalTrxId=', 'utf8').digest('hex').toUpperCase())
+  assert.equal(vodafoneHash({ ...without, externalTrxId: '' }, secret), 'B4333E0ADC6F8FDDC0C2AC74086A59FAC23E8E4F6B683E96C84A3B99F815C8FB')
   assert.notEqual(vodafoneHash(without, secret), vodafoneHash({ ...without, externalTrxId: '' }, secret))
-  for (const bad of ['z'.repeat(32), 'a'.repeat(31), '']) assert.throws(() => vodafoneHash(fixture, bad))
+  for (const bad of [secret.toLowerCase(), 'A1B2g3', ' A1B2', 'A1B2 ', 'A1B2\n', '0xA1B2', 'A'.repeat(513), '', null, 123]) assert.throws(() => vodafoneHash(fixture, bad), /Invalid Secure Hash Secret/)
+  for (const valid of ['A1B2C3D4E5F6', 'ABC', 'A'.repeat(512)]) assert.match(vodafoneHash(fixture, valid), /^[0-9A-F]{64}$/)
 })
 test('serializer uses exact namespace/order and escapes text after hashing, preserving carriage returns', () => {
   const request = { ...fixture, messages: [{ ...messages[0], text: '<node>" & \'\rمرحبا' }] }

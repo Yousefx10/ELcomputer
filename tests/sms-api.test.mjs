@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHmac } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { resolve, dirname } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -68,13 +68,14 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       assert.equal((await db.query('select count(*)::int n from public.sms_batches')).rows[0].n, 0)
     })
     await t.test('settings write uses encrypted replace-only secrets, revision guard and sanitized audit', async () => {
-      const patch = { config_revision: 0, base_url: 'https://sms.example.invalid', sender_names: ['APP'], default_sender: 'APP', expected_outbound_ip: '8.8.8.8', account_id: 'api-account-fixture', password: 'api-password-fixture', hash_secret: 'cd'.repeat(16) }
+      const patch = { config_revision: 0, base_url: 'https://sms.example.invalid', sender_names: ['APP'], default_sender: 'APP', expected_outbound_ip: '8.8.8.8', account_id: 'api-account-fixture', password: 'api-password-fixture', hash_secret: 'CD'.repeat(16) }
       const result = await call('settings', { method: 'PATCH', body: patch })
       assert.equal(result.response.status, 200)
       assert.equal(result.body.settings.account_id_configured, true)
       for (const secret of [patch.account_id, patch.password, patch.hash_secret]) assert.ok(!JSON.stringify(result.body).includes(secret))
       const stored = (await db.query('select * from public.sms_provider_settings')).rows[0]
       assert.equal(decryptCredentialSecret(stored.account_id_encrypted, 'Vodafone'), patch.account_id)
+      assert.equal(decryptCredentialSecret(stored.hash_secret_encrypted, 'Vodafone'), patch.hash_secret)
       assert.equal((await call('settings', { method: 'PATCH', body: patch })).response.status, 409)
       assert.equal((await call('settings', { actor: 'viewer', method: 'PATCH', body: { config_revision: 1 } })).response.status, 403)
       const replaced = await call('settings', { method: 'PATCH', body: { config_revision: 1, password: 'replacement-fixture' } })
@@ -83,6 +84,17 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       assert.equal(audit.password_changed, true); assert.ok(!JSON.stringify(audit).includes('replacement-fixture'))
       const enabled = await call('settings', { method: 'PATCH', body: { config_revision: 2, trusted_ip_confirmed: true, activation_confirmed: true, hash_protocol_confirmed: true, is_enabled: true } })
       assert.equal(enabled.response.status, 200); assert.equal(enabled.body.settings.is_enabled, true)
+    })
+    await t.test('invalid hash replacements are rejected without changing configuration or exposing input', async () => {
+      const before = (await db.query('select * from public.sms_provider_settings')).rows[0]
+      for (const value of ['cd'.repeat(16), ' CD' + 'CD'.repeat(15), 'CD'.repeat(16) + '\n', '0xCDCD', null, 0]) {
+        const result = await call('settings', { method: 'PATCH', body: { config_revision: before.config_revision, hash_secret: value } })
+        assert.equal(result.response.status, 400)
+        if (typeof value === 'string') assert.ok(!JSON.stringify(result.body).includes(value.trim()))
+      }
+      assert.deepEqual((await db.query('select * from public.sms_provider_settings')).rows[0], before)
+      const audit = JSON.stringify((await db.query("select metadata from public.admin_activity_logs where action_key like 'sms.%'")).rows)
+      for (const value of ['CD'.repeat(16), 'api-account-fixture', 'api-password-fixture', 'replacement-fixture']) assert.ok(!audit.includes(value))
     })
     await t.test('notification/campaign server permissions, confirmation and bulk limits enforced', async () => {
       const input = { trafficType: 'notification', recipients: ['01012345678'], text: 'Manual fixture', sender: 'APP', idempotencyKey: randomUUID() }
@@ -99,21 +111,32 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       assert.equal(duplicateCampaign.response.status, 429)
     })
     await t.test('manual H3 Notification and Campaign both reach mocked Vodafone through the same queue', async () => {
-      const paths = []
+      const paths = [], privateHashValues = []
       const provider = { submit: (settings, credentials, batch, messages, _transport, beforeDispatch) => vodafoneProvider.submit(settings, credentials, batch, messages, async (url, xml, _timeout, beforePost) => {
         await beforePost()
         paths.push(url.pathname)
         assert.ok(xml.includes('<AccountId>api-account-fixture</AccountId>'))
         assert.ok(xml.includes('<ExternalTrxId>' + batch.external_trx_id + '</ExternalTrxId>'))
+        const fields = [`AccountId=${credentials.accountId}`, `Password=${credentials.password}`]
+        for (const message of messages) fields.push(`SenderName=${message.sender}`, `ReceiverMSISDN=${message.recipient.slice(1)}`, `SMSText=${message.body}`)
+        fields.push(`ExternalTrxId=${batch.external_trx_id}`)
+        const hashInput = fields.join('&'), digest = createHmac('sha256', credentials.hashSecret).update(hashInput, 'utf8').digest('hex').toUpperCase()
+        assert.ok(xml.includes('<SecureHash>' + digest + '</SecureHash>'))
+        privateHashValues.push(credentials.hashSecret, hashInput, digest)
         return { status: 200, body: `<SubmitSMSResponse xmlns="${VODAFONE_NAMESPACE}">${messages.map(() => '<SMSStatus>SUBMITTED</SMSStatus>').join('')}<ResultStatus>SUCCESS</ResultStatus></SubmitSMSResponse>` }
       }, beforeDispatch) }
       for (let index = 0; index < 2; index++) {
         await db.query('update public.sms_provider_settings set next_request_at=null')
         const result = await processSmsQueue(client, { provider })
         assert.equal(result.processed[0].status, 'submitted')
+        for (const value of privateHashValues) assert.ok(!JSON.stringify(result).includes(value))
       }
       assert.deepEqual(paths, ['/web2sms/sms/submit/Notification', '/web2sms/sms/submit'])
       assert.equal((await db.query("select count(*)::int n from public.sms_batches where trigger_source='dashboard_manual' and status='submitted'")).rows[0].n, 2)
+      const observable = JSON.stringify({ history: (await call('history')).body,
+        attempts: (await db.query('select * from public.sms_attempts')).rows,
+        audit: (await db.query("select metadata from public.admin_activity_logs where action_key like 'sms.%'")).rows })
+      for (const value of privateHashValues) assert.ok(!observable.includes(value))
     })
     await t.test('history masks phones and excludes bodies, secrets and credential ciphertext', async () => {
       const result = await call('history', { actor: 'viewer' })

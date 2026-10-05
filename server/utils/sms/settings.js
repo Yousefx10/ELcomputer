@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import { encryptCredentialSecret, decryptCredentialSecret, isCredentialEncryptionReady } from '../credentialSecrets.js'
 import { validateSmsBaseUrl } from './transport.js'
-import { validVodafonePaths } from './vodafone.js'
+import { validVodafonePaths, isVodafoneHashSecret } from './vodafone.js'
 
 export const smsDefaults = Object.freeze({ id: 'vodafone', is_enabled: false, api_mode: 'production', base_url: '', port: null,
   notification_path: '/web2sms/sms/submit/Notification', campaign_path: '/web2sms/sms/submit', sender_names: [], default_sender: '',
@@ -53,9 +53,10 @@ export const validateSmsSettings = (body, current) => {
     if (!Array.isArray(body.sender_names) || body.sender_names.length > 20 || body.sender_names.some(sender => typeof sender !== 'string' || !/^[a-zA-Z0-9 ]{1,50}$/.test(sender) || sender !== sender.trim())) fail()
     update.sender_names = [...new Set(body.sender_names)]
   }
+  if (body.hash_secret !== undefined && typeof body.hash_secret !== 'string') fail()
   for (const [input, column] of [['account_id', 'account_id_encrypted'], ['password', 'password_encrypted'], ['hash_secret', 'hash_secret_encrypted']]) if (body[input]) {
     const value = body[input]
-    if (typeof value !== 'string' || value.length > 1024 || value !== value.trim() || /[\x00-\x1f\x7f]/.test(value) || input === 'hash_secret' && !/^(?:[a-fA-F0-9]{2}){16,256}$/.test(value)) fail()
+    if (typeof value !== 'string' || value.length > 1024 || value !== value.trim() || /[\x00-\x1f\x7f]/.test(value) || input === 'hash_secret' && !isVodafoneHashSecret(value)) fail()
     update[column] = encryptCredentialSecret(value, 'Vodafone')
   }
   const merged = { ...current, ...update }

@@ -11,10 +11,10 @@ Scope: local implementation only. No production migration, deployment, real prov
 - Dashboard uses EN/AR JSON locales, locale-aware routing, shared light/dark/system preferences and logical spacing. SMS uses that shell and one navigation group with four tabs.
 - Existing tests use Node's runner, isolated PGlite application migrations, and actual Vue component browser fixtures. Reuse these; never point tests at the linked production database.
 
-## Protocol discrepancy: activation must wait for clarification
+## Historical protocol discrepancy — resolved by INC000081856720
 
 The supplied V5 section 5 explicitly requires HEX-decoding the secret. Both printed example hashes instead match HMAC with the textual secret as UTF-8 bytes. Independent Node crypto and Python hashlib calculations reproduce this conflict.
 
-Implementation follows the explicit user requirement and written algorithm: HEX-decoded key, UTF-8 ordered fields, uppercase hexadecimal output. Focused tests prove the correct outputs and reproduce the document's contradictory outputs only as evidence. The examples cannot honestly be marked as matching the required algorithm. An explicit Dashboard confirmation of Vodafone's resolution is required before enablement; no fictional provider confirmation is seeded.
+The original implementation followed the then-explicit user requirement and written algorithm with a decoded key. This interpretation is superseded: the user supplied official Vodafone support clarification **INC000081856720** on 2026-10-05. The current implementation uses **HMAC-SHA256 with the literal uppercase hexadecimal Secure Hash Secret string as key bytes**, preserving UTF-8 ordered input and uppercase output. Both printed examples now pass as deterministic fixtures. There is no HEX decoding or fallback. Validation rejects lowercase or padded secrets without normalization, and secrets remain encrypted/replace-only. This correction resolves the key-interpretation blocker; no activation, production migration/deployment, Vodafone call or real SMS occurred.
 
 The PDF mentions legacy SSL/TLS versions. Keep Node's secure TLS defaults (TLS 1.2 minimum); obtain a supported endpoint/certificate from Vodafone rather than downgrade TLS. The API specifies submission, not handset delivery, and no usable status inquiry or guaranteed ExternalTrxId deduplication contract is supplied.

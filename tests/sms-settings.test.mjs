@@ -8,8 +8,8 @@ globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-test-only-
 
 test('SMS defaults off, Dashboard credentials encrypted, no plaintext read-back', () => {
   assert.equal(smsDefaults.is_enabled, false)
-  const update = validateSmsSettings({ account_id: 'account-fixture', password: 'private-password-fixture', hash_secret: 'ab'.repeat(16) }, smsDefaults)
-  for (const [field, value] of [['account_id', 'account-fixture'], ['password', 'private-password-fixture'], ['hash_secret', 'ab'.repeat(16)]]) {
+  const update = validateSmsSettings({ account_id: 'account-fixture', password: 'private-password-fixture', hash_secret: 'AB'.repeat(16) }, smsDefaults)
+  for (const [field, value] of [['account_id', 'account-fixture'], ['password', 'private-password-fixture'], ['hash_secret', 'AB'.repeat(16)]]) {
     assert.match(update[field + '_encrypted'], /^v1\./); assert.equal(decryptCredentialSecret(update[field + '_encrypted'], 'Vodafone'), value)
     assert.ok(!JSON.stringify(publicSmsSettings({ ...smsDefaults, ...update })).includes(value))
   }
@@ -23,13 +23,23 @@ test('blank secrets preserve saved values; replacement invalidates activation an
   assert.equal(update.is_enabled, false); assert.equal(update.hash_protocol_confirmed, false)
   assert.equal(decryptCredentialSecret(update.password_encrypted, 'Vodafone'), 'second-value')
 })
-test('readiness requires provisioned secrets, approved sender, trusted IP and hash clarification', () => {
+test('readiness requires provisioned secrets, approved sender, trusted IP and protocol confirmation', () => {
   assert.equal(smsReadiness(smsDefaults).ready, false)
   assert.throws(() => validateSmsSettings({ is_enabled: true }, smsDefaults), /Complete SMS activation/)
   assert.throws(() => validateSmsSettings({ sender_names: ['APP'], default_sender: 'OTHER' }, smsDefaults))
   assert.throws(() => validateSmsSettings({ notification_path: '//evil.invalid' }, smsDefaults))
   assert.throws(() => validateSmsSettings({ batch_size: 1000 }, smsDefaults))
   assert.throws(() => validateSmsSettings({ api_mode: 'sandbox' }, smsDefaults))
+})
+test('Dashboard hash secret requires literal uppercase HEX without normalization or byte-pair restrictions', () => {
+  for (const value of ['A1B2C3D4E5F6', 'ABC', 'A'.repeat(512)]) {
+    const update = validateSmsSettings({ hash_secret: value }, smsDefaults)
+    assert.equal(decryptCredentialSecret(update.hash_secret_encrypted, 'Vodafone'), value)
+    const readBack = JSON.stringify(publicSmsSettings({ ...smsDefaults, ...update }))
+    assert.ok(!readBack.includes(value)); assert.ok(!readBack.includes(update.hash_secret_encrypted))
+  }
+  for (const value of ['ab'.repeat(16), 'Ab12', 'A1B2g3', ' A1B2', 'A1B2 ', 'A1B2\n', '0xA1B2', 'A'.repeat(513), null, 0, false, [], {}]) assert.throws(() => validateSmsSettings({ hash_secret: value }, smsDefaults), /Invalid SMS settings/)
+  assert.deepEqual(validateSmsSettings({ hash_secret: '' }, smsDefaults), {})
 })
 test('disabled service blocks immediately; notification cannot accidentally carry a campaign', () => {
   assert.throws(() => prepareSmsSend(smsDefaults, {}, 'notification'), /disabled/)

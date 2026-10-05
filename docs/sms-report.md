@@ -2,17 +2,49 @@
 
 Implementation is local and dormant. No production migration/deployment, Vodafone contact, real provider call, SMS or real Vodafone credentials occurred. Scope stops at the reusable SMS foundation.
 
+## Provider-confirmed SecureHash correction — INC000081856720
+
+The user supplied official Vodafone support clarification **INC000081856720** after the audit. Provider-confirmed production behavior is **HMAC-SHA256 with the literal uppercase hexadecimal Secure Hash Secret string as key bytes**, without HEX decoding. This overrides the contradictory written sentence in the PDF. The local implementation now follows this behavior; exact parameter/SMSList ordering, UTF-8 input, optional ExternalTrxId semantics and uppercase output remain. Both one-message and multi-message printed PDF hashes pass as deterministic regression fixtures. There is no decoded-key mode or automatic fallback.
+
+Dashboard/server validation accepts only nonempty uppercase `0-9A-F` strings bounded to 512 characters, without trimming/uppercasing arbitrary input or requiring decoded-byte pairs. Vodafone's `A1B2C3D4E5F6` example is accepted literally. Blank input preserves the encrypted value; secret read-back remains presence-only. EN/AR labels and protocol confirmation now describe literal uppercase keys and reference the support ticket. No enablement or confirmation flag was changed automatically.
+
+The former hash activation blocker is resolved. External provisioning, readiness, acceptance and separately authorized activation remain required. This focused correction performs no deployment, production migration, Vodafone contact or real SMS and changes no queue, traffic, RBAC/RLS or XML/transport architecture. The prior audit and implementation validation below remain historical evidence.
+
+### Correction validation
+
+- Node **24.16.0**; `node --test tests/*.test.mjs`: **375 passed, zero failed, one existing optional native Paymob test skipped** (376 total).
+- `node --test tests/sms-*.test.mjs`: **52 passed, zero failed or skipped**, including all prior queue/RBAC/XML/transport regressions.
+- `npm run typecheck`, `npm run build`, `git diff --check`: **passed**. Build/typecheck used `env -u DEBUG`; existing duplicate ERP import, sourcemap and chunk-size warnings remain.
+- Tests verify actual one-/three-message PDF outputs, direct literal key versus decoded bytes, exact parameter/SMSList order, included/omitted/present-empty ExternalTrxId, Arabic/UTF-8, uppercase output, rejection without normalization and exact encrypted replacement. Actual H3 manual Notification/Campaign XML uses the literal-key digest; settings/history/worker responses, audits and attempt records expose neither the key, hash input nor generated digest.
+- Browser: **338 assertions, 48 screenshots, zero console/runtime errors or external requests**. Actual Vue EN/AR fixtures verify literal-key validation, lowercase denial, blank preservation, masking and existing functionality across desktop/mobile/Light/Dark/System.
+- Built localhost HTTP/SSR/artifact scan: **801 assertions, 14 requests, 115 public files, six fictional private value types, zero exposures**. Temporary server stopped. Source review confirms no credential/hash-source logging in the SMS server implementation. No real merchant credentials were configured.
+- Evidence: `/tmp/elcomputer-sms-literal-{before,focused,suite,typecheck,build,browser,http}.log` and `/tmp/elcomputer-sms-review/`. Native PostgreSQL independent-session races, authenticated production/staging sessions, scheduling and live provider acceptance remain unexercised.
+
+```text
+VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: YES
+SECUREHASH USES LITERAL SECRET STRING: YES
+SECUREHASH HEX-DECODED: NO
+DOCUMENTED VODAFONE HASH FIXTURES PASS: YES
+FULL TEST SUITE PASSED: YES
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+PRODUCTION MIGRATION APPLIED: NO
+PRODUCTION DEPLOYED: NO
+```
+
 ## Subsequent security review — 2026-10-05
 
 **SAFE TO PROCEED TO DORMANT PRODUCTION DEPLOYMENT**, including the audit fixes. Full 14-point review: [`sms-security-review.md`](sms-security-review.md). Do not release the original `c29fb09` implementation without these fixes.
 
-Reproduced and fixed four defects: high-severity stale-worker POST authorization, medium-severity swappable traffic paths, medium-severity IPv6/public-destination filtering and low-severity multipart character-boundary undercounts. The existing unapplied migration now constrains traffic endpoints and adds the service-only final dispatch authorization RPC. Merchant settings/encryption/RBAC/RLS remain private and Dashboard-managed. HEX-decoded HMAC remains unchanged; both fictional PDF examples independently match textual key bytes. This ambiguity blocks **activation**, not dormant deployment.
+Reproduced and fixed four defects: high-severity stale-worker POST authorization, medium-severity swappable traffic paths, medium-severity IPv6/public-destination filtering and low-severity multipart character-boundary undercounts. The existing unapplied migration now constrains traffic endpoints and adds the service-only final dispatch authorization RPC. Merchant settings/encryption/RBAC/RLS remain private and Dashboard-managed. At audit time the original decoded-key implementation conflicted with the printed textual-key examples and blocked activation. That issue is now resolved by **INC000081856720** and the focused literal-key correction above.
 
 Fresh results: **373 full-suite passes/one existing optional native skip; 50 focused SMS passes; typecheck/build/diff check passed** on Node 24.16.0. Actual local Vue fixtures: **330 assertions/48 screenshots**, zero errors/external requests. Built localhost SSR/API/artifacts: **801 assertions/14 requests/115 public files/six fictional private value types**, zero exposures. Native PostgreSQL independent-session races and authenticated production/staging/provider acceptance remain unexercised. Evidence: `/tmp/elcomputer-sms-audit-*.log` and `/tmp/elcomputer-sms-review/`. No deployment, production migration, Vodafone call or real SMS occurred. The numbered implementation report and original validation below are historical evidence from before this review.
 
 ```text
 SMS FOUNDATION AUDITED: YES
-VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: NO
+VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: YES
+SECUREHASH USES LITERAL SECRET STRING: YES
+SECUREHASH HEX-DECODED: NO
 REAL VODAFONE API CALLED: NO
 REAL SMS SENT: NO
 PRODUCTION MIGRATION APPLIED: NO
@@ -30,8 +62,8 @@ PRODUCTION DEPLOYED: NO
 7. **Dashboard:** one SMS navigation group, four tabs, shared preferences and route protection, responsive EN/AR and logical RTL spacing.
 8. **Dashboard-managed settings:** enablement/mode/server/port/credentials/senders/paths/IP/activation/notes/timeouts/preflight retry/batch/pacing/country/international behavior. No merchant environment variables or fabricated account/server data.
 9. **Encryption:** existing server master key encrypts Account ID, password and hash secret. Replace-only fields expose presence flags; no plaintext/ciphertext read-back, SSR persistence or audit values.
-10. **SecureHash:** HMAC-SHA256, HEX-decoded key, UTF-8 ordered pairs, repeated message ordering, optional ExternalTrxId last; uppercase hexadecimal, server-only.
-11. **Document verification:** **printed examples do not match the document's own HEX algorithm.** Both instead match textual UTF-8 keys. Tests and independent Python/Node calculations establish the discrepancy. Implementation follows the user's explicit HEX requirement. Vodafone clarification is required and Dashboard confirmation defaults false. Exact printed-fixture verification must be reported **NO**, not asserted falsely.
+10. **SecureHash:** the original implementation used a decoded key. This is superseded by **INC000081856720**: current behavior is HMAC-SHA256 with the literal uppercase hexadecimal secret string, UTF-8 ordered pairs, repeated message ordering, optional ExternalTrxId last and uppercase output, server-only.
+11. **Document verification:** the printed examples contradict the PDF's decoded-key sentence. Vodafone has confirmed that the examples' literal-key interpretation is the actual production behavior, ref. **INC000081856720**. The current implementation reproduces both printed hashes, and exact printed-fixture verification is now **YES**. Dashboard confirmations still default false; this correction does not activate the provider.
 12. **Notification:** exactly one normalized recipient; its own permission and published Notification path.
 13. **Campaign:** explicitly selected path/permission, bounded recipient list and count confirmation; persistent manual quota. No segmentation CRM, automation or Notification fallback.
 14. **XML security:** escaped serializer/valid code points/CR preservation; strict bounded namespace/status/count parsing; DTD/XXE rejection. DNS destination checks/pinning, modern TLS, no redirects, bounded headers/time/response.
@@ -49,9 +81,9 @@ PRODUCTION DEPLOYED: NO
 26. **Browser:** actual SMS Vue page and shared preference component under isolated API/auth fixtures; all four tabs, EN/AR × desktop/mobile × Light/Dark/System, masking/replacement, previews, manual Notification/Campaign, template save, masked diagnostics and restricted staff. Screenshots inspected; dark-mode scoped selector behavior corrected. Authenticated production acceptance is not claimed.
 27. **Real Vodafone API:** none; provider tests inject transport and browser blocks external network.
 28. **Real SMS:** none.
-29. **Before production:** review code/schema/hash conflict, authorize dormant release/migration, configure infrastructure encryption/worker/scheduler, complete authenticated staging acceptance and then separately authorize provider tests/activation. No deployment was attempted.
-30. **Vodafone requirements:** provision Account ID/password/HEX secret, approved senders, real HTTPS host/port, modern TLS certificate, account/interface activation, registered outbound IP(s), quotas/rates/international eligibility and correction/clarification of hash examples.
-31. **Activation sequence:** review → authorized dormant release/migration → infrastructure → Vodafone provisioning/clarification → Dashboard save disabled → external confirmations → explicit enablement → separately authorized single test → separately authorized bounded Campaign test → reporting/uncertain-result review.
+29. **Before production:** review code/schema and the provider-confirmed correction, authorize dormant release/migration, configure infrastructure encryption/worker/scheduler, complete authenticated staging acceptance and then separately authorize provider tests/activation. No deployment was attempted.
+30. **Vodafone requirements:** provision Account ID/password/literal uppercase HEX secret, approved senders, real HTTPS host/port, modern TLS certificate, account/interface activation, registered outbound IP(s) and quotas/rates/international eligibility. Hash key interpretation is resolved by **INC000081856720**.
+31. **Activation sequence:** review corrected literal-key implementation → authorized dormant release/migration → infrastructure → Vodafone provisioning → Dashboard save disabled → external confirmations → explicit enablement → separately authorized single test → separately authorized bounded Campaign test → reporting/uncertain-result review.
 32. **Recommended next consumer:** separately scoped order confirmation after durable local order creation. OTP needs its own security design; no consumer implementation began here.
 
 ## Original implementation validation
@@ -61,7 +93,7 @@ PRODUCTION DEPLOYED: NO
 - `npm run typecheck`, `npm run build`, `git diff --check`: **passed**, Node **24.16.0**. Build/typecheck ran with the inherited DEBUG variable removed to suppress hook timing noise. Existing duplicate ERP import, sourcemap and bundle-size warnings remain; no unrelated fix was made.
 - `scripts/sms-browser.mjs`: **326 assertions, 48 screenshots, zero runtime/console errors, zero external requests**. Actual SMS page/shared preferences, isolated staff/API fixtures, EN/AR, RTL, 1440/390px, Light/Dark/System, all four tabs, disabled sends, secret masking/replacement, template save, normalized Unicode preview, both traffic paths/count confirmation, masked history and restricted permissions. Dark-mode screenshots were visually inspected after the CSS fix.
 - `scripts/sms-http.mjs`: **801 assertions, 14 local built-server requests, 115 public files scanned against six fictional private value types, zero detected exposures**. Anonymous staff/worker denial, all EN/AR SMS tab login guards, HTML/SSR/error responses and public artifacts. No real Vodafone credentials existed to scan.
-- Independent Python hashlib and Node crypto: both printed document hashes match textual key bytes; neither matches HEX-decoded key bytes. Required HEX implementation's ordered deterministic fixtures pass. Printed hash matching remains **NO**.
+- Historical Python hashlib and Node crypto verification proved both printed hashes match textual key bytes and not decoded bytes. The then-active decoded-key implementation did not match them; that behavior is superseded by INC000081856720. Current literal-key fixture matching is **YES**.
 - Actual isolated SQL validates defaults/encryption storage access, transaction-bound idempotency, stable transaction IDs, mocked queue submission, preflight retry bounds, stale/uncertain behavior, expiry/priority/revision checks, active-worker full-reset denial and recreation of absent disabled configuration. Actual H3 handlers verify permissions, audit flags, quotas, secret-safe read-back/history, bounded bodies and sanitized unexpected errors with mocked identity verification. Both actual manual H3 traffic paths reach mocked Vodafone XML submission through the same central queue.
 - **Not verified:** authenticated production/staging staff sessions, native PostgreSQL independent-session SMS races, actual worker scheduling/production infrastructure, provider network/TLS acceptance, live submissions/handset delivery or merchant billing. Existing optional native test skip is not claimed as a pass. PGlite tests verify real application SQL but do not establish multi-session concurrency acceptance.
 
@@ -69,7 +101,7 @@ Evidence logs and screenshots are under `/tmp/elcomputer-sms-*.log` and `/tmp/el
 
 Using only the document's fictional fixtures, including its ExternalTrxId:
 
-| SMS count | Printed V5 result (text-key bytes) | Result with required HEX-decoded key |
+| SMS count | Printed V5 result and current provider-confirmed literal-key output | Discarded HEX-decoded comparison (historical only) |
 | --- | --- | --- |
 | 1 | `70A7BE2DBCAF15C1544E4CD9EC520FC91426C06C1EF0B87D68EFF8BB0A56268D` | `6F37744E74B3C2381CB53FE8557140570E7AC4B8A81EE25A7C4EA5D584043518` |
 | 3 | `60A7042DE62B10D268C516A575301959011EBEF8C6DB4AC67AFB314BE86C7BCD` | `7674D561C77824EC3B0B3381A2E229899ED52028C17C5C343801F3C054B1AD53` |
@@ -91,7 +123,7 @@ EXISTING SMS SYSTEM AUDITED: YES
 PARALLEL SMS SYSTEM CREATED: NO
 SMS CONFIGURATION DASHBOARD-MANAGED: YES
 VODAFONE SECRETS STORED ENCRYPTED: YES
-VODAFONE SECUREHASH VERIFIED AGAINST DOCUMENT: NO — document examples conflict with required HEX decoding
+VODAFONE SECUREHASH VERIFIED AGAINST DOCUMENT: YES — printed fixtures match literal-key behavior confirmed by INC000081856720
 NOTIFICATION/CAMPAIGN SEPARATED: YES
 REAL VODAFONE API CALLED: NO
 REAL SMS SENT: NO

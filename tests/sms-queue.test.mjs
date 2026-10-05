@@ -34,7 +34,7 @@ test('real isolated SMS migration, service, ledger, submission and conservative 
         await db.exec('reset role')
       }
     })
-    const secrets = validateSmsSettings({ account_id: 'fixture-account', password: 'fixture-password', hash_secret: 'ab'.repeat(16) }, smsDefaults)
+    const secrets = validateSmsSettings({ account_id: 'fixture-account', password: 'fixture-password', hash_secret: 'AB'.repeat(16) }, smsDefaults)
     await client.from('sms_provider_settings').update({ ...secrets, base_url: 'https://sms.example.invalid', sender_names: ['APP'], default_sender: 'APP', expected_outbound_ip: '8.8.8.8', trusted_ip_confirmed: true, activation_confirmed: true, hash_protocol_confirmed: true, is_enabled: true }).eq('id', 'vodafone')
     const ready = async () => db.query("update public.sms_provider_settings set next_request_at=null")
     const batch = async id => (await db.query('select * from public.sms_batches where id=$1', [id])).rows[0]

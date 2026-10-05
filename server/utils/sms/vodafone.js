@@ -7,12 +7,14 @@ export const VODAFONE_NAMESPACE = 'http://www.edafa.com/web2sms/sms/model/'
 export const validVodafonePaths = ({ notification_path, campaign_path }) =>
   [notification_path, campaign_path].every(path => typeof path === 'string' && /^\/[a-zA-Z0-9/_-]{1,199}$/.test(path) && !path.includes('//'))
   && campaign_path.endsWith('/sms/submit') && notification_path === campaign_path + '/Notification'
+export const isVodafoneHashSecret = secret => typeof secret === 'string' && secret.length >= 1 && secret.length <= 512 && !/[^0-9A-F]/.test(secret)
 export const vodafoneHash = ({ accountId, password, messages, externalTrxId }, secret) => {
-  if (typeof secret !== 'string' || !/^(?:[a-fA-F0-9]{2}){16,256}$/.test(secret)) throw new Error('Invalid Secure Hash Secret.')
+  if (!isVodafoneHashSecret(secret)) throw new Error('Invalid Secure Hash Secret.')
   const fields = [`AccountId=${accountId}`, `Password=${password}`]
   for (const message of messages) fields.push(`SenderName=${message.sender}`, `ReceiverMSISDN=${message.recipient}`, `SMSText=${message.text}`)
   if (externalTrxId !== undefined) fields.push(`ExternalTrxId=${externalTrxId}`)
-  return createHmac('sha256', Buffer.from(secret, 'hex')).update(fields.join('&'), 'utf8').digest('hex').toUpperCase()
+  // Vodafone INC000081856720: literal uppercase HEX string bytes, no HEX decoding.
+  return createHmac('sha256', secret).update(fields.join('&'), 'utf8').digest('hex').toUpperCase()
 }
 export const escapeSmsXml = value => {
   const text = String(value)
