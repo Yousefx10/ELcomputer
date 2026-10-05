@@ -1,3 +1,18 @@
+# Vodafone SMS production infrastructure readiness — 2026-10-05
+
+The existing production PM2 environment now supplies `NUXT_CREDENTIALS_ENCRYPTION_KEY` and `NUXT_SMS_WORKER_SECRET`. Configuration was persisted with `pm2 save` and owner-only saved-environment permissions; no repository environment file was uploaded.
+
+The pre-existing `CREDENTIALS_ENCRYPTION_KEY` was reused through the documented Nuxt runtime override. SMS and Daftra retain the existing shared AES-256-GCM helper; PDC's separate shipping-key configuration is unchanged. Only the missing worker secret was securely generated server-side with Node cryptographic randomness. No secret value is recorded here.
+
+```text
+MASTER ENCRYPTION INFRASTRUCTURE READY: YES
+SMS WORKER INFRASTRUCTURE READY: YES
+VODAFONE ENABLED: NO
+VODAFONE CREDENTIALS CONFIGURED: NO
+```
+
+Earlier infrastructure readiness blockers below describe the deployment-time state and are superseded by this completed readiness task.
+
 # Vodafone SMS foundation — dormant production deployment, 2026-10-05
 
 - Deployed clean synced `main` commit `39c5c9ea5689c68efa572edcc5933780d94f7193` through `env -u DEBUG npm run deploy`. It includes the audit fixes and provider-confirmed SecureHash correction. Previous local-only SMS notes below are historical; no application feature was added during this release.
