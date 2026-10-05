@@ -22,10 +22,15 @@ test('real isolated SMS migration, service, ledger, submission and conservative 
       assert.deepEqual((await db.query("select * from public.shipping_provider_settings where id='pdc'")).rows, original)
       assert.equal((await db.query("select is_enabled from public.sms_provider_settings")).rows[0].is_enabled, false)
       await assert.rejects(() => sms.sendNotification(input()), /disabled/)
+      await assert.rejects(() => db.query("update public.sms_provider_settings set notification_path='/web2sms/sms/submit',campaign_path='/web2sms/sms/submit/Notification'"), /check constraint/)
       for (const role of ['anon', 'authenticated']) {
         await db.exec('set role ' + role)
-        for (const table of ['sms_provider_settings', 'sms_templates', 'sms_batches', 'sms_messages', 'sms_attempts']) await assert.rejects(() => db.query('select * from public.' + table), /permission denied/)
+        for (const table of ['sms_provider_settings', 'sms_templates', 'sms_batches', 'sms_messages', 'sms_attempts']) {
+          await assert.rejects(() => db.query('select * from public.' + table), /permission denied/)
+          await assert.rejects(() => db.query('insert into public.' + table + ' default values'), /permission denied/)
+        }
         await assert.rejects(() => db.query('select public.sms_claim()'), /permission denied/)
+        await assert.rejects(() => db.query('select public.sms_check_dispatch($1,$2,0)', [randomUUID(), randomUUID()]), /permission denied/)
         await db.exec('reset role')
       }
     })
@@ -34,10 +39,11 @@ test('real isolated SMS migration, service, ledger, submission and conservative 
     const ready = async () => db.query("update public.sms_provider_settings set next_request_at=null")
     const batch = async id => (await db.query('select * from public.sms_batches where id=$1', [id])).rows[0]
     const xmlCalls = []
-    const mockedProvider = { submit: (s, c, b, m) => vodafoneProvider.submit(s, c, b, m, async (url, xml) => {
+    const mockedProvider = { submit: (s, c, b, m, _transport, beforeDispatch) => vodafoneProvider.submit(s, c, b, m, async (url, xml, _timeout, beforePost) => {
+      await beforePost()
       xmlCalls.push({ path: url.pathname, xml })
       return { status: 200, body: `<SubmitSMSResponse xmlns="${VODAFONE_NAMESPACE}">${m.map(() => '<SMSStatus>SUBMITTED</SMSStatus>').join('')}<ResultStatus>SUCCESS</ResultStatus></SubmitSMSResponse>` }
-    }) }
+    }, beforeDispatch) }
     await t.test('content-bound idempotency persists one logical batch and unique transaction IDs', async () => {
       const request = input()
       const first = await sms.sendNotification(request), second = await sms.sendNotification(request)
@@ -86,6 +92,51 @@ test('real isolated SMS migration, service, ledger, submission and conservative 
       await db.query("update public.sms_batches set locked_at=now()-interval '3 minutes' where id=$1", [queued.id])
       await ready(); await client.rpc('sms_claim')
       assert.equal((await batch(queued.id)).status, 'uncertain')
+    })
+    await t.test('a worker resumed after stale-lease recovery cannot POST', async () => {
+      const queued = await sms.sendNotification(input())
+      let calls = 0
+      const provider = { submit: async (_settings, _credentials, job, _messages, _transport, beforeDispatch) => {
+        await db.query("update public.sms_batches set locked_at=now()-interval '3 minutes' where id=$1", [job.id])
+        await ready(); await client.rpc('sms_claim')
+        await beforeDispatch()
+        calls++
+        return { messages: [{ status: 'submitted' }] }
+      } }
+      await ready()
+      const result = await processSmsQueue(client, { provider })
+      assert.equal(calls, 0)
+      assert.equal(result.processed[0].status, 'uncertain')
+      assert.equal((await batch(queued.id)).status, 'uncertain')
+      assert.equal((await db.query('select status from public.sms_attempts where batch_id=$1', [queued.id])).rows[0].status, 'uncertain')
+    })
+    await t.test('a dispatch cannot begin twice with the same lease', async () => {
+      const queued = await sms.sendNotification(input())
+      await ready(); const claim = (await client.rpc('sms_claim')).data
+      const args = { p_id: queued.id, p_token: claim.lease_token, p_revision: 0 }
+      assert.equal((await client.rpc('sms_begin_dispatch', args)).data, true)
+      assert.match((await client.rpc('sms_begin_dispatch', args)).error.message, /lease lost/)
+      assert.equal((await db.query('select count(*)::int n from public.sms_attempts where batch_id=$1', [queued.id])).rows[0].n, 1)
+      await client.rpc('sms_finish', { p_id: queued.id, p_token: claim.lease_token, p_result: { status: 'uncertain' } })
+    })
+    await t.test('disablement, revision changes, expiry and unrecovered stale leases cancel before POST', async () => {
+      for (const mutation of [
+        "update public.sms_provider_settings set is_enabled=false",
+        "update public.sms_provider_settings set config_revision=config_revision+1",
+        "update public.sms_batches set expires_at=now()-interval '1 second' where status='processing'",
+        "update public.sms_batches set locked_at=now()-interval '3 minutes' where status='processing'"
+      ]) {
+        const queued = await sms.sendNotification(input())
+        let calls = 0
+        const provider = { submit: async (_s, _c, _b, _m, _transport, beforeDispatch) => {
+          await db.query(mutation); await beforeDispatch(); calls++
+          return { messages: [{ status: 'submitted' }] }
+        } }
+        await ready(); await processSmsQueue(client, { provider })
+        assert.equal(calls, 0)
+        assert.equal((await batch(queued.id)).status, 'failed')
+        await db.query('update public.sms_provider_settings set is_enabled=true,config_revision=0')
+      }
     })
     await t.test('expiry, priority, pacing, late disable and config revision are checked atomically', async () => {
       const low = await sms.sendNotification(input({ priority: 1 })), high = await sms.sendNotification(input({ priority: 90 }))

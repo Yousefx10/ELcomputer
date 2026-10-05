@@ -34,7 +34,8 @@ create table public.sms_provider_settings (
   allow_international boolean not null default false,
   config_revision integer not null default 0, next_request_at timestamptz,
   updated_by uuid references public.admin_users(id) on delete set null, updated_at timestamptz not null default now(),
-  check (notification_path <> campaign_path),
+  check (campaign_path ~ '^/[a-zA-Z0-9/_-]{1,199}$' and campaign_path !~ '//' and campaign_path ~ '/sms/submit$'
+    and notification_path = campaign_path || '/Notification' and length(notification_path) <= 200),
   check (not is_enabled or (base_url <> '' and account_id_encrypted is not null and password_encrypted is not null
     and hash_secret_encrypted is not null and default_sender = any(sender_names) and expected_outbound_ip <> ''
     and trusted_ip_confirmed and activation_confirmed and hash_protocol_confirmed))
@@ -178,6 +179,20 @@ begin
   return true;
 end $$;
 
+-- Revalidate the lease after DNS/preflight, immediately before the HTTP POST.
+-- NULL means another worker already recovered the lease; false proves cancellation.
+create function public.sms_check_dispatch(p_id uuid,p_token uuid,p_revision integer) returns boolean
+language plpgsql security definer set search_path = public,pg_temp as $$
+declare config public.sms_provider_settings%rowtype; job public.sms_batches%rowtype;
+begin
+  select * into config from public.sms_provider_settings where id='vodafone' for update;
+  select * into job from public.sms_batches where id=p_id for update;
+  if not found or job.status<>'processing' or job.lease_token is distinct from p_token or job.dispatch_started_at is null then return null; end if;
+  return config.is_enabled and config.config_revision=p_revision
+    and job.locked_at>clock_timestamp()-interval '2 minutes'
+    and (job.expires_at is null or job.expires_at>clock_timestamp());
+end $$;
+
 create function public.sms_finish(p_id uuid,p_token uuid,p_result jsonb) returns void
 language plpgsql security definer set search_path = public,pg_temp as $$
 declare job public.sms_batches%rowtype; state text:=p_result->>'status'; msg jsonb; i integer:=0; max_retry integer;
@@ -206,8 +221,8 @@ begin
   end if;
 end $$;
 
-revoke all on function public.sms_enqueue(jsonb,jsonb),public.sms_claim(),public.sms_begin_dispatch(uuid,uuid,integer),public.sms_finish(uuid,uuid,jsonb) from public,anon,authenticated;
-grant execute on function public.sms_enqueue(jsonb,jsonb),public.sms_claim(),public.sms_begin_dispatch(uuid,uuid,integer),public.sms_finish(uuid,uuid,jsonb) to service_role;
+revoke all on function public.sms_enqueue(jsonb,jsonb),public.sms_claim(),public.sms_begin_dispatch(uuid,uuid,integer),public.sms_check_dispatch(uuid,uuid,integer),public.sms_finish(uuid,uuid,jsonb) from public,anon,authenticated;
+grant execute on function public.sms_enqueue(jsonb,jsonb),public.sms_claim(),public.sms_begin_dispatch(uuid,uuid,integer),public.sms_check_dispatch(uuid,uuid,integer),public.sms_finish(uuid,uuid,jsonb) to service_role;
 
 -- Preserve the existing explicit full-reset contract. Partial resets leave SMS
 -- history/settings alone. No reset is performed by applying this migration.

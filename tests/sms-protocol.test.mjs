@@ -66,6 +66,17 @@ test('provider routes Notification and Campaign separately through mocked XML PO
   for (const traffic_type of ['notification', 'campaign']) await vodafoneProvider.submit(settings, { accountId: '1', password: 'password', hashSecret: secret }, { traffic_type, external_trx_id: 'fixture-uuid' }, [{ sender: 'sender1', recipient: '+201000000000', body: 'text1' }], transport)
   assert.deepEqual(paths, ['/web2sms/sms/submit/Notification', '/web2sms/sms/submit'])
 })
+test('provider rejects unknown traffic, bulk Notification and swapped paths before transport', async () => {
+  const settings = { base_url: 'https://sms.example.invalid', notification_path: '/web2sms/sms/submit/Notification', campaign_path: '/web2sms/sms/submit' }
+  const credentials = { accountId: '1', password: 'password', hashSecret: secret }
+  const message = { sender: 'sender1', recipient: '+201000000000', body: 'text1' }
+  let calls = 0
+  const transport = async () => { calls++; throw Error('Transport must not run') }
+  await assert.rejects(() => vodafoneProvider.submit(settings, credentials, { traffic_type: 'unknown' }, [message], transport), { smsNotSent: true })
+  await assert.rejects(() => vodafoneProvider.submit(settings, credentials, { traffic_type: 'notification' }, [message, message], transport), { smsNotSent: true })
+  await assert.rejects(() => vodafoneProvider.submit({ ...settings, campaign_path: settings.notification_path, notification_path: settings.campaign_path }, credentials, { traffic_type: 'campaign' }, [message], transport), { smsNotSent: true })
+  assert.equal(calls, 0)
+})
 test('Egyptian 10/11/12/15 formats normalize without changing historical data', () => {
   for (const prefix of ['10', '11', '12', '15']) for (const country of ['0020', '+20', '20', '0', '']) assert.equal(normalizeSmsPhone(country + prefix + '12345678'), '+20' + prefix + '12345678')
   assert.equal(normalizeSmsPhone('010 1234-5678'), '+201012345678')
@@ -79,6 +90,12 @@ test('GSM extensions, Arabic UTF-16 and multipart boundary estimates', () => {
   assert.equal(estimateSmsSegments('€{}[]\\|~^\f').units, 20); assert.equal(estimateSmsSegments('').segments, 0)
   assert.equal(estimateSmsSegments('èéùìò').encoding, 'gsm7')
 })
+test('multipart estimates never split GSM escape pairs or Unicode surrogate pairs', () => {
+  assert.equal(estimateSmsSegments('^'.repeat(153)).segments, 3)
+  assert.equal(estimateSmsSegments('😀'.repeat(67)).segments, 3)
+  assert.equal(estimateSmsSegments('a'.repeat(152) + '^' + 'a'.repeat(152)).segments, 3)
+  assert.equal(estimateSmsSegments('ب'.repeat(66) + '😀' + 'ب'.repeat(66)).segments, 3)
+})
 test('template substitution treats code as text and fails on missing/unknown placeholders', () => {
   assert.deepEqual(smsTemplateVariables('Hi {{ customer_name }}, {{order_number}}'), ['customer_name', 'order_number'])
   assert.equal(renderSmsTemplate('Hi {{name}}', { name: '${process.exit()}' }), 'Hi ${process.exit()}')
@@ -89,4 +106,8 @@ test('SSRF guards reject non-public IPs, credentials, ports, redirects paths and
   for (const address of ['127.0.0.1', '10.1.2.3', '169.254.169.254', '192.168.1.1', '172.31.1.1', '::1', '::ffff:127.0.0.1', 'fc00::1', '2001:db8::1']) assert.equal(isPublicSmsAddress(address), false)
   for (const url of ['http://sms.example.invalid', 'https://localhost', 'https://127.0.0.1', 'https://[::1]', 'https://user:pass@sms.example.invalid', 'https://sms.example.invalid:8443', 'https://sms.example.invalid/path', 'https://sms.example.invalid?query=1']) assert.throws(() => validateSmsBaseUrl(url))
   assert.equal(validateSmsBaseUrl('https://sms.example.invalid'), 'https://sms.example.invalid')
+})
+test('SSRF guards compare IPv6 ranges numerically, including expanded and special-purpose addresses', () => {
+  for (const address of ['2001:0db8:0:0:0:0:0:1', '2001:2::1', '2001::1', '2002:a00:1::1', '3fff::1', '3fff:fff:ffff::1', '192.88.99.1']) assert.equal(isPublicSmsAddress(address), false, address)
+  for (const address of ['8.8.8.8', '192.0.3.1', '198.51.101.1', '2001:4860:4860::8888', '2606:4700:4700::1111']) assert.equal(isPublicSmsAddress(address), true, address)
 })

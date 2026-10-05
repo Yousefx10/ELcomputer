@@ -1,9 +1,12 @@
 import { createHmac } from 'node:crypto'
 import sax from 'sax'
 import { normalizeVodafoneError } from './errors.js'
-import { postSmsXml } from './transport.js'
+import { postSmsXml, validateSmsBaseUrl } from './transport.js'
 
 export const VODAFONE_NAMESPACE = 'http://www.edafa.com/web2sms/sms/model/'
+export const validVodafonePaths = ({ notification_path, campaign_path }) =>
+  [notification_path, campaign_path].every(path => typeof path === 'string' && /^\/[a-zA-Z0-9/_-]{1,199}$/.test(path) && !path.includes('//'))
+  && campaign_path.endsWith('/sms/submit') && notification_path === campaign_path + '/Notification'
 export const vodafoneHash = ({ accountId, password, messages, externalTrxId }, secret) => {
   if (typeof secret !== 'string' || !/^(?:[a-fA-F0-9]{2}){16,256}$/.test(secret)) throw new Error('Invalid Secure Hash Secret.')
   const fields = [`AccountId=${accountId}`, `Password=${password}`]
@@ -73,6 +76,10 @@ export const parseVodafoneXml = (xml, count) => {
 
 export const vodafoneProvider = {
   async submit(settings, credentials, batch, messages, transport = postSmsXml, beforeDispatch) {
+    if (!['notification', 'campaign'].includes(batch.traffic_type) || !validVodafonePaths(settings) || !messages.length || batch.traffic_type === 'notification' && messages.length !== 1) {
+      throw Object.assign(new Error('Invalid SMS dispatch configuration.'), { smsNotSent: true })
+    }
+    validateSmsBaseUrl(settings.base_url)
     const request = { accountId: credentials.accountId, password: credentials.password, externalTrxId: batch.external_trx_id,
       messages: messages.map(message => ({ sender: message.sender, recipient: message.recipient.slice(1), text: message.body })) }
     const xml = buildVodafoneXml(request, credentials.hashSecret)

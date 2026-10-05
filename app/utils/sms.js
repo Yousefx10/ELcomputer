@@ -8,7 +8,17 @@ export const estimateSmsSegments = (text = '') => {
   const units = gsm ? characters.reduce((count, character) => count + (gsmExtension.has(character) ? 2 : 1), 0) : text.length
   const single = gsm ? 160 : 70
   const multipart = gsm ? 153 : 67
-  return { characters: characters.length, units, encoding: gsm ? 'gsm7' : 'utf16', segments: units === 0 ? 0 : units <= single ? 1 : Math.ceil(units / multipart) }
+  let segments = units ? 1 : 0
+  if (units > single) {
+    let used = 0
+    for (const character of characters) {
+      const width = gsm ? gsmExtension.has(character) ? 2 : 1 : character.length
+      // Keep GSM escape sequences and UTF-16 surrogate pairs in one segment.
+      if (used + width > multipart) { segments++; used = 0 }
+      used += width
+    }
+  }
+  return { characters: characters.length, units, encoding: gsm ? 'gsm7' : 'utf16', segments }
 }
 
 export const normalizeSmsPhone = (value, { defaultCountry = 'EG', allowInternational = false } = {}) => {

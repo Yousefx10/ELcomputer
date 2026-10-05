@@ -125,6 +125,10 @@ try {
     await goto('send')
     await page.locator('select').filter({ has: page.locator('option[value=notification]') }).selectOption('notification')
     await page.locator('label:has(textarea)').first().locator('textarea').fill('01012345678')
+    for (const text of ['^'.repeat(153), '😀'.repeat(67)]) {
+      await page.locator('label:has(textarea)').last().locator('textarea').fill(text)
+      check((await page.locator('main').innerText()).includes(labels.segments.replace('{count}', '3')), 'Multipart preview preserves character boundaries')
+    }
     await page.locator('label:has(textarea)').last().locator('textarea').fill('مرحبا')
     check((await page.locator('main').innerText()).includes(labels.utf16), 'Arabic Unicode preview')
     check((await page.locator('main').innerText()).includes('+201012345678'), 'Normalized number preview')

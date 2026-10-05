@@ -2,6 +2,25 @@
 
 Implementation is local and dormant. No production migration/deployment, Vodafone contact, real provider call, SMS or real Vodafone credentials occurred. Scope stops at the reusable SMS foundation.
 
+## Subsequent security review — 2026-10-05
+
+**SAFE TO PROCEED TO DORMANT PRODUCTION DEPLOYMENT**, including the audit fixes. Full 14-point review: [`sms-security-review.md`](sms-security-review.md). Do not release the original `c29fb09` implementation without these fixes.
+
+Reproduced and fixed four defects: high-severity stale-worker POST authorization, medium-severity swappable traffic paths, medium-severity IPv6/public-destination filtering and low-severity multipart character-boundary undercounts. The existing unapplied migration now constrains traffic endpoints and adds the service-only final dispatch authorization RPC. Merchant settings/encryption/RBAC/RLS remain private and Dashboard-managed. HEX-decoded HMAC remains unchanged; both fictional PDF examples independently match textual key bytes. This ambiguity blocks **activation**, not dormant deployment.
+
+Fresh results: **373 full-suite passes/one existing optional native skip; 50 focused SMS passes; typecheck/build/diff check passed** on Node 24.16.0. Actual local Vue fixtures: **330 assertions/48 screenshots**, zero errors/external requests. Built localhost SSR/API/artifacts: **801 assertions/14 requests/115 public files/six fictional private value types**, zero exposures. Native PostgreSQL independent-session races and authenticated production/staging/provider acceptance remain unexercised. Evidence: `/tmp/elcomputer-sms-audit-*.log` and `/tmp/elcomputer-sms-review/`. No deployment, production migration, Vodafone call or real SMS occurred. The numbered implementation report and original validation below are historical evidence from before this review.
+
+```text
+SMS FOUNDATION AUDITED: YES
+VODAFONE SECUREHASH PROVIDER BEHAVIOR CONFIRMED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+PRODUCTION MIGRATION APPLIED: NO
+PRODUCTION DEPLOYED: NO
+```
+
+## Original implementation report
+
 1. **Audit findings:** all supplied PDF pages and project instructions/state/handoff reviewed. Searches found no existing outbound SMS subsystem; existing messages are in-app chat/support/order content. See `sms-audit.md`.
 2. **Reused architecture:** AES-256-GCM credential helpers, staff auth/RBAC, service-role database client, bounded body reading, activity audits, private SQL leases/jobs, authenticated internal worker and shared Dashboard locale/theme/navigation.
 3. **Files changed:** Dashboard SMS page; shared SMS preview/template utility; permission/navigation/localization definitions; server SMS settings, errors, transport, Vodafone protocol, service and API helpers; seven staff API routes and one internal worker; server-only worker runtime key; reset allowlist; one migration; four focused test files and SQL adapter; browser/HTTP acceptance scripts; this report, audit/usage docs and both project handoff/state files. Exact file list follows below.
@@ -35,7 +54,7 @@ Implementation is local and dormant. No production migration/deployment, Vodafon
 31. **Activation sequence:** review → authorized dormant release/migration → infrastructure → Vodafone provisioning/clarification → Dashboard save disabled → external confirmations → explicit enablement → separately authorized single test → separately authorized bounded Campaign test → reporting/uncertain-result review.
 32. **Recommended next consumer:** separately scoped order confirmation after durable local order creation. OTP needs its own security design; no consumer implementation began here.
 
-## Validation
+## Original implementation validation
 
 - `node --test tests/*.test.mjs`: **359 passed, 0 failed, 1 existing optional native test skipped** (360 total).
 - `node --test tests/sms-*.test.mjs`: **36 passed, 0 failed**.

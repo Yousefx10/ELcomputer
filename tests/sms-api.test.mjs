@@ -100,12 +100,13 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
     })
     await t.test('manual H3 Notification and Campaign both reach mocked Vodafone through the same queue', async () => {
       const paths = []
-      const provider = { submit: (settings, credentials, batch, messages) => vodafoneProvider.submit(settings, credentials, batch, messages, async (url, xml) => {
+      const provider = { submit: (settings, credentials, batch, messages, _transport, beforeDispatch) => vodafoneProvider.submit(settings, credentials, batch, messages, async (url, xml, _timeout, beforePost) => {
+        await beforePost()
         paths.push(url.pathname)
         assert.ok(xml.includes('<AccountId>api-account-fixture</AccountId>'))
         assert.ok(xml.includes('<ExternalTrxId>' + batch.external_trx_id + '</ExternalTrxId>'))
         return { status: 200, body: `<SubmitSMSResponse xmlns="${VODAFONE_NAMESPACE}">${messages.map(() => '<SMSStatus>SUBMITTED</SMSStatus>').join('')}<ResultStatus>SUCCESS</ResultStatus></SubmitSMSResponse>` }
-      }) }
+      }, beforeDispatch) }
       for (let index = 0; index < 2; index++) {
         await db.query('update public.sms_provider_settings set next_request_at=null')
         const result = await processSmsQueue(client, { provider })

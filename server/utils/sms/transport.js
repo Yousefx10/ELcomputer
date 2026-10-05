@@ -1,15 +1,20 @@
 import { lookup } from 'node:dns/promises'
-import { isIP } from 'node:net'
+import { BlockList, isIP } from 'node:net'
 import { request as httpsRequest } from 'node:https'
 
+// Numeric CIDR checks also cover alternate IPv6 spellings. Conservatively exclude
+// IANA special-purpose and transition ranges from merchant-configured destinations.
+const blocked = new BlockList()
+for (const [address, prefix] of [['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8], ['169.254.0.0', 16], ['172.16.0.0', 12], ['192.0.0.0', 24], ['192.0.2.0', 24], ['192.88.99.0', 24], ['192.168.0.0', 16], ['198.18.0.0', 15], ['198.51.100.0', 24], ['203.0.113.0', 24], ['224.0.0.0', 4], ['240.0.0.0', 4]]) blocked.addSubnet(address, prefix, 'ipv4')
+for (const [address, prefix] of [['2001::', 23], ['2001:db8::', 32], ['2002::', 16], ['3fff::', 20]]) blocked.addSubnet(address, prefix, 'ipv6')
+const globalV6 = new BlockList()
+globalV6.addSubnet('2000::', 3, 'ipv6')
 export const isPublicSmsAddress = raw => {
+  if (typeof raw !== 'string') return false
   const address = raw.toLowerCase().replace(/^\[|\]$/g, '')
-  if (isIP(address) === 4) {
-    const [a, b, c] = address.split('.').map(Number)
-    return !(a === 0 || a === 10 || a === 127 || a >= 224 || a === 169 && b === 254 || a === 172 && b >= 16 && b <= 31 || a === 192 && b === 168 || a === 100 && b >= 64 && b <= 127 || a === 192 && b === 0 || a === 192 && b === 0 && c === 2 || a === 198 && [18, 19, 51].includes(b) || a === 203 && b === 0 && c === 113)
-  }
-  // Only global-unicast IPv6; reject IPv4-mapped, local, multicast and documentation.
-  return isIP(address) === 6 && /^[23][0-9a-f]{3}:/.test(address) && !address.startsWith('2001:db8:')
+  const family = isIP(address)
+  if (family === 4) return !blocked.check(address, 'ipv4')
+  return family === 6 && globalV6.check(address, 'ipv6') && !blocked.check(address, 'ipv6')
 }
 export const validateSmsBaseUrl = value => {
   if (value === '') return ''

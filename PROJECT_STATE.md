@@ -1,4 +1,12 @@
-# Vodafone SMS foundation — local only, 2026-10-05
+# Vodafone SMS security review — local only, 2026-10-05
+
+- Verdict: **SAFE TO PROCEED TO DORMANT PRODUCTION DEPLOYMENT**, with the audit fixes included. No deployment or production migration occurred. Do not release the original `c29fb09` implementation alone. Full review: `docs/sms-security-review.md`; original report now links the review.
+- Four reproduced defects fixed: stale-worker dispatch after lease recovery (high), swappable Notification/Campaign paths (medium), incomplete numeric IPv6/public-destination filtering (medium), multipart escape/surrogate boundary undercounts (low). The original unapplied migration now constrains endpoint pairing and adds a service-only atomic check of lease/config/expiry after DNS before POST. No redesign or business integration.
+- Written HEX-decoded HMAC stays unchanged. Fresh independent original-PDF Python verification and Node fixtures reproduce both contradictory textual-key hashes. Vodafone behavior remains unconfirmed. This blocks real activation, not disabled foundation deployment; keep confirmations/provider disabled pending Vodafone's answer. No fallback or external contact.
+- Fresh validation: Node 24.16.0; 373 full-suite passes/one existing optional native skip, 50 focused SMS passes, typecheck/build/diff check passed. Browser actual component/preferences fixtures: 330 assertions/48 screenshots, zero errors/external requests. Built localhost HTTP/SSR/public scans: 801 assertions/14 requests/115 files/six fictional private value types/zero exposures; temporary server stopped. Native independent-session PostgreSQL races, authenticated production/staging, scheduling and live provider acceptance remain unexercised.
+- All merchant settings remain Dashboard/database-managed, credentials AES-256-GCM with replace/presence semantics, staff authorization and service-only RLS retained. No Vodafone API call, real SMS, production migration/deploy, OTP, NPS, orders, PDC, returns, warranty or pickup integration. STOP after audit.
+
+# Original Vodafone SMS foundation — local only, 2026-10-05
 
 - Audited existing messages/notifications, encrypted PDC/Daftra settings, permissions, audits, jobs, schema and all supplied Vodafone V5 PDF pages. No outbound SMS subsystem existed; added one central Notification/Campaign service using existing security and Dashboard patterns.
 - Dashboard `/dashboard/sms` has settings, bilingual templates, controlled manual send and masked history. All Vodafone merchant settings are database/Dashboard-managed; Account ID/password/HEX secret use existing AES-256-GCM. Stored values never return to browsers. Provider starts disabled; no real merchant values are configured.

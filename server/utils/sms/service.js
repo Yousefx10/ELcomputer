@@ -81,16 +81,18 @@ export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvid
     let result
     try {
       result = await provider.submit(settings, credentials, job, messages, undefined, async () => {
-        const latest = await getSmsSettings(db)
-        if (!latest.is_enabled || latest.config_revision !== settings.config_revision || job.expires_at && Date.parse(job.expires_at) <= Date.now()) {
+        const authorized = check(await db.rpc('sms_check_dispatch', { p_id: job.id, p_token: job.lease_token, p_revision: settings.config_revision }))
+        if (authorized !== true) {
           const error = new Error('SMS dispatch cancelled.')
-          error.smsNotSent = true
+          if (authorized === null) error.smsLeaseLost = true
+          else error.smsNotSent = true
           throw error
         }
       })
       const submitted = result.messages.filter(message => message.status === 'submitted').length
       result = { ...result, status: submitted === messages.length ? 'submitted' : submitted ? 'partial' : 'failed' }
     } catch (error) {
+      if (error.smsLeaseLost === true) { processed.push({ id: job.id, status: 'uncertain' }); continue }
       // Only a known preflight failure proves POST was never dispatched.
       result = error.smsNotSent === true ? { status: 'failed', category: 'configuration' } : { status: error.smsPreflight === true ? 'preflight_failed' : 'uncertain', category: error.smsPreflight === true ? 'connection_preflight' : 'provider_result_unknown' }
     }

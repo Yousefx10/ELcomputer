@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import { encryptCredentialSecret, decryptCredentialSecret, isCredentialEncryptionReady } from '../credentialSecrets.js'
 import { validateSmsBaseUrl } from './transport.js'
+import { validVodafonePaths } from './vodafone.js'
 
 export const smsDefaults = Object.freeze({ id: 'vodafone', is_enabled: false, api_mode: 'production', base_url: '', port: null,
   notification_path: '/web2sms/sms/submit/Notification', campaign_path: '/web2sms/sms/submit', sender_names: [], default_sender: '',
@@ -15,6 +16,7 @@ export const smsReadiness = settings => {
   const missing = []
   for (const field of ['base_url', 'account_id_encrypted', 'password_encrypted', 'hash_secret_encrypted', 'default_sender', 'expected_outbound_ip']) if (!settings[field]) missing.push(field.replace('_encrypted', ''))
   if (!settings.sender_names?.includes(settings.default_sender)) missing.push('approved_sender')
+  if (!validVodafonePaths(settings)) missing.push('endpoint_paths')
   for (const field of ['trusted_ip_confirmed', 'activation_confirmed', 'hash_protocol_confirmed']) if (!settings[field]) missing.push(field)
   if (!isCredentialEncryptionReady()) missing.push('encryption')
   return { ready: !missing.length, missing }
@@ -58,10 +60,9 @@ export const validateSmsSettings = (body, current) => {
   }
   const merged = { ...current, ...update }
   try { merged.base_url = validateSmsBaseUrl(merged.base_url); if (update.base_url !== undefined) update.base_url = merged.base_url } catch { fail() }
-  for (const path of [merged.notification_path, merged.campaign_path]) if (!/^\/[a-zA-Z0-9/_-]{1,199}$/.test(path) || path.startsWith('//') || path.includes('..')) fail()
-  if (merged.notification_path === merged.campaign_path || merged.default_sender && !merged.sender_names.includes(merged.default_sender)) fail()
+  if (!validVodafonePaths(merged) || merged.default_sender && !merged.sender_names.includes(merged.default_sender)) fail()
   // A changed account, destination or credentials requires fresh external confirmations.
-  if (['base_url', 'port', 'account_id_encrypted', 'password_encrypted', 'hash_secret_encrypted'].some(key => update[key] !== undefined && update[key] !== current[key])) {
+  if (['base_url', 'port', 'notification_path', 'campaign_path', 'account_id_encrypted', 'password_encrypted', 'hash_secret_encrypted'].some(key => update[key] !== undefined && update[key] !== current[key])) {
     Object.assign(update, { is_enabled: false, trusted_ip_confirmed: false, activation_confirmed: false, hash_protocol_confirmed: false })
   }
   if (update.expected_outbound_ip !== undefined && update.expected_outbound_ip !== current.expected_outbound_ip) Object.assign(update, { is_enabled: false, trusted_ip_confirmed: false })

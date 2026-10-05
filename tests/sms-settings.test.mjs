@@ -46,3 +46,13 @@ test('new staff permissions default off, route/action rights separated and depen
   assert.equal(normalizeAdminPermissions({ 'sms.settings.manage': true })['sms.settings.manage'], false)
   assert.deepEqual(getDashboardRouteRequirement({ path: '/dashboard/sms', query: { tab: 'history' } }), { permission: 'sms.history.view' })
 })
+test('traffic endpoint paths cannot be swapped or independently repointed', () => {
+  for (const body of [
+    { notification_path: smsDefaults.campaign_path, campaign_path: smsDefaults.notification_path },
+    { campaign_path: '/custom/Notification' }, { notification_path: '/custom/submit' }
+  ]) assert.throws(() => validateSmsSettings(body, smsDefaults), /Invalid SMS settings/)
+  const current = { ...smsDefaults, is_enabled: true, trusted_ip_confirmed: true, activation_confirmed: true, hash_protocol_confirmed: true }
+  const update = validateSmsSettings({ campaign_path: '/gateway/sms/submit', notification_path: '/gateway/sms/submit/Notification' }, current)
+  assert.equal(update.is_enabled, false)
+  assert.equal(update.activation_confirmed, false)
+})
