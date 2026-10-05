@@ -13,7 +13,8 @@ import { decryptCredentialSecret } from '../server/utils/credentialSecrets.js'
 import { smsHandler } from '../server/utils/sms/admin.js'
 import { processSmsQueue } from '../server/utils/sms/service.js'
 import { vodafoneProvider, VODAFONE_NAMESPACE } from '../server/utils/sms/vodafone.js'
-globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-api-test-master-key-at-least-32-characters' })
+const workerSecret = 'sms-api-test-worker-key-at-least-32-characters'
+globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-api-test-master-key-at-least-32-characters', smsWorkerSecret: workerSecret })
 
 test('actual SMS H3 routes with isolated SQL and mocked authenticated staff identities', async t => {
   const db = await createResetDatabase()
@@ -34,7 +35,7 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
   globalThis.defineEventHandler = handler => handler
   const app = createApp()
   app.use('/api/admin-sms/unavailable', smsHandler(async () => { throw Error('PRIVATE_CREDENTIAL_FIXTURE') }))
-  for (const name of ['settings.get', 'settings.patch', 'capabilities.get', 'send.post', 'templates.get', 'templates.post', 'history.get']) {
+  for (const name of ['settings.get', 'settings.patch', 'capabilities.get', 'send.post', 'templates.get', 'templates.post', 'history.get', 'order-events.get', 'order-events.patch']) {
     const file = resolve('server/api/admin-sms/' + name + '.js')
     let source = await readFile(file, 'utf8')
     source = source.replace(/from '([^']+)'/g, (all, specifier) => {
@@ -47,6 +48,24 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
     app.use('/api/admin-sms/' + route, event => event.method.toLowerCase() === method ? handler(event) : undefined)
   }
   const server = createServer(toNodeListener(app))
+  globalThis.smsTestAdminDb = () => client
+  globalThis.smsTestProcessQueue = (db, options) => processSmsQueue(db, { ...options, provider: {
+    submit: async (_settings,_credentials,_job,messages,_transport,beforePost) => {
+      await beforePost()
+      return { result_status:'SUCCESS',messages:messages.map(()=>({status:'submitted',provider_status:'SUBMITTED'})) }
+    }
+  } })
+  {
+    const file = resolve('server/api/internal/sms/process.post.js')
+    let source = await readFile(file,'utf8')
+    source = source.replace(/from '([^']+)'/g, (_all,specifier) => {
+      if (specifier.endsWith('/supabaseAdmin')) return "from 'data:text/javascript,export const getSupabaseAdminClient=globalThis.smsTestAdminDb'"
+      if (specifier.endsWith('/sms/service.js')) return "from 'data:text/javascript,export const processSmsQueue=globalThis.smsTestProcessQueue'"
+      if (!specifier.startsWith('.')) return `from '${import.meta.resolve(specifier)}'`
+      return `from '${pathToFileURL(resolve(dirname(file),specifier)).href}'`
+    })
+    app.use('/api/internal/sms/process',(await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'))).default)
+  }
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   const call = async (path, { actor = 'owner', method = 'GET', body, raw } = {}) => {
     const response = await fetch(`http://127.0.0.1:${server.address().port}/api/admin-sms/${path}`, { method,
@@ -66,6 +85,22 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       const blocked = await call('send', { method: 'POST', body: { trafficType: 'notification', recipients: ['01012345678'], text: 'Fixture', idempotencyKey: randomUUID() } })
       assert.equal(blocked.response.status, 503)
       assert.equal((await db.query('select count(*)::int n from public.sms_batches')).rows[0].n, 0)
+    })
+    await t.test('order event controls reuse settings permissions, Notification bindings and revision guards', async () => {
+      assert.equal((await call('order-events', { actor:null })).response.status,401)
+      assert.equal((await call('order-events', { actor:'sender' })).response.status,403)
+      const result=await call('order-events',{actor:'viewer'})
+      assert.equal(result.response.status,200);assert.equal(result.body.events.length,4)
+      const item=result.body.events[0]
+      assert.equal(item.is_enabled,false)
+      assert.equal((await call('order-events',{actor:'viewer',method:'PATCH',body:item})).response.status,403)
+      assert.equal((await call('order-events',{method:'PATCH',body:{...item,is_enabled:true}})).response.status,400)
+      const saved=await call('order-events',{method:'PATCH',body:{...item,template_ar_id:null}})
+      assert.equal(saved.response.status,200);assert.equal(saved.body.event.config_revision,1)
+      assert.equal((await call('order-events',{method:'PATCH',body:item})).response.status,409)
+      const audit=(await db.query("select metadata from public.admin_activity_logs where action_key='sms.order_event.update'")).rows[0].metadata
+      assert.equal(audit.enabled,false);assert.equal(audit.event_type,item.event_type)
+      assert.ok(!JSON.stringify(result.body).includes('template_text'))
     })
     await t.test('settings write uses encrypted replace-only secrets, revision guard and sanitized audit', async () => {
       const patch = { config_revision: 0, base_url: 'https://sms.example.invalid', sender_names: ['APP'], default_sender: 'APP', expected_outbound_ip: '8.8.8.8', account_id: 'api-account-fixture', password: 'api-password-fixture', hash_secret: 'CD'.repeat(16) }
@@ -145,6 +180,27 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       for (const sensitive of ['01012345678', '+201012345678', 'Manual fixture', 'api-account-fixture', 'replacement-fixture', 'account_id_encrypted']) assert.ok(!text.includes(sensitive))
       assert.ok(text.includes('••••••'))
       assert.equal((await call('history', { actor: 'sender' })).response.status, 403)
+    })
+    await t.test('order intent history exposes reference/locale and masked recipient without private snapshots', async () => {
+      const id=randomUUID()
+      await db.query("insert into public.customer_orders(id,user_id,order_number,first_name,phone,street_address,city,governorate,payment_method) values($1,$2,'ORDER-PRIVATE-HISTORY','PRIVATE_NAME_FIXTURE','01012345678','Street','Cairo','Cairo','cash')",[id,ownerId])
+      const result=await call('history',{actor:'viewer'})
+      assert.equal(result.response.status,200)
+      const event=result.body.orderEvents.find(row=>row.order_number==='ORDER-PRIVATE-HISTORY')
+      assert.equal(event.event_type,'order_confirmed');assert.equal(event.status,'suppressed')
+      assert.equal(event.recipient_masked,'••••••678');assert.equal(event.locale,'en')
+      assert.equal(event.payload,undefined);assert.equal(event.template_text,undefined)
+      for(const value of ['PRIVATE_NAME_FIXTURE','01012345678','sms-api-test-master-key-at-least-32-characters',workerSecret]) assert.ok(!JSON.stringify(result.body).includes(value))
+    })
+    await t.test('existing authenticated worker prepares order intents only after secret validation and never returns it', async () => {
+      for(const supplied of ['', 'invalid-worker-fixture',workerSecret]) {
+        const response=await fetch(`http://127.0.0.1:${server.address().port}/api/internal/sms/process`,{method:'POST',headers:{'content-type':'application/json',...(supplied?{'x-sms-worker-secret':supplied}:{})},body:'{}'})
+        const body=await response.json()
+        assert.equal(response.status,supplied===workerSecret?200:401)
+        assert.equal(response.headers.get('cache-control'),'private, no-store')
+        assert.ok(!JSON.stringify(body).includes(workerSecret))
+        if(supplied===workerSecret)assert.ok(Array.isArray(body.orderEvents.processed))
+      }
     })
     await t.test('template authoring safe variables, distinct permissions and bounded request body', async () => {
       const template = { code: 'manual_fixture', name: 'Fixture', category: 'manual', text_en: 'Hi {{name}}', text_ar: '', traffic_type: 'notification', sender: 'APP', is_enabled: false }

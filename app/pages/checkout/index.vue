@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+const { locale } = useI18n()
 const { uiLabel } = useUiLocale()
 
 const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
@@ -264,7 +265,8 @@ const placeOrder = async () => {
         coupon_code: appliedCoupon.value?.code || '',
         address: { ...address, email: address.email.trim() || user.value?.email || '' },
         shipping_method: 'shipping',
-        payment_method: selectedPaymentMethod.value
+        payment_method: selectedPaymentMethod.value,
+        locale: locale.value
       }
     })
     clearCart({ reason: 'converted', track: false })

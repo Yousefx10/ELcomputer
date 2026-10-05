@@ -193,6 +193,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const paymentMethod = normalizePaymentMethod(body?.payment_method)
+  if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) {
+    throw createError({ statusCode: 400, statusMessage: 'Choose a supported checkout language.' })
+  }
   if (paymentMethod === 'card') {
     try { getPaymobConfig(useRuntimeConfig(event)) }
     catch { throw createError({ statusCode: 400, statusMessage: 'The selected payment method is not available.' }) }
@@ -296,7 +299,8 @@ export default defineEventHandler(async (event) => {
     city,
     governorate,
     shipping_method: shippingMethod,
-    payment_method: paymentMethod
+    payment_method: paymentMethod,
+    locale: body?.locale === 'ar' ? 'ar' : 'en'
   }
 
   const { data: orderResult, error: orderError } = await supabaseAdmin.rpc(

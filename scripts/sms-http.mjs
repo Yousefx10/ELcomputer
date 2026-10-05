@@ -7,6 +7,7 @@ assert.ok(origin.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(ori
 const forbidden = [
   'sms-local-http-master-fixture-at-least-32-characters',
   'sms-local-http-worker-fixture-at-least-32-characters',
+  'sms-local-http-service-role-fixture',
   'api-account-fixture', 'api-password-fixture', 'replacement-fixture',
   '0BAF4EACBFB84A1A87574DFEFC41525F'
 ]
@@ -21,7 +22,7 @@ const walk = async dir => {
   }
 }
 await walk(resolve('.output/public'))
-for (const path of ['settings', 'capabilities', 'templates', 'history', 'send']) {
+for (const path of ['settings', 'capabilities', 'templates', 'history', 'order-events', 'send']) {
   const response = await fetch(new URL('/api/admin-sms/' + path, origin), { method: path === 'send' ? 'POST' : 'GET' })
   requests++
   check(response.status === 401, 'Anonymous SMS API denied')
@@ -32,6 +33,11 @@ const worker = await fetch(new URL('/api/internal/sms/process', origin), { metho
 requests++
 check(worker.status === 401, 'Anonymous worker denied')
 scan(await worker.text(), 'worker error')
+const invalidWorker = await fetch(new URL('/api/internal/sms/process', origin), { method: 'POST', headers: { 'content-type': 'application/json', 'x-sms-worker-secret': 'invalid-worker-fixture' }, body: '{}' })
+requests++
+check(invalidWorker.status === 401, 'Invalid worker secret denied')
+check(invalidWorker.headers.get('cache-control') === 'private, no-store', 'Worker errors no-store')
+scan(await invalidWorker.text(), 'invalid worker error')
 for (const prefix of ['', '/ar']) for (const tab of ['settings', 'templates', 'send', 'history']) {
   const response = await fetch(new URL(prefix + '/dashboard/sms?tab=' + tab, origin))
   requests++

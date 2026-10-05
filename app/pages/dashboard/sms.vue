@@ -39,6 +39,23 @@
           <span class="self-center text-xs text-gray-500">{{ $t('sms.localValidation') }}</span>
         </div>
       </form>
+      <div class="mt-8 border-t pt-5" :aria-label="$t('sms.orderNotifications')">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-lg font-semibold">{{ $t('sms.orderNotifications') }}</h3>
+          <NuxtLinkLocale v-if="can('sms.templates.view')" class="sms-secondary" to="/dashboard/sms?tab=templates">{{ $t('sms.editOrderTemplates') }}</NuxtLinkLocale>
+        </div>
+        <p class="my-3 text-sm text-gray-500 dark:text-gray-400">{{ $t('sms.orderNoBacklog') }}</p>
+        <form v-for="item in orderEvents" :key="item.event_type" :data-order-event="item.event_type" class="mb-4 rounded-lg border p-4" @submit.prevent="saveOrderEvent(item)">
+          <h4 class="mb-3 font-semibold">{{ $t(`sms.orderEventNames.${item.event_type}`) }}</h4>
+          <fieldset :disabled="!can('sms.settings.manage') || busy" class="grid gap-3 md:grid-cols-3">
+            <label class="sms-check"><input v-model="item.is_enabled" type="checkbox" />{{ $t(item.is_enabled ? 'sms.enabled' : 'sms.disabled') }}</label>
+            <label class="sms-field">{{ $t('sms.orderEnglishTemplate') }}<select v-model="item.template_en_id"><option :value="null">{{ $t('sms.choose') }}</option><option v-for="option in orderTemplates" :key="option.id" :value="option.id">{{ option.name }} · {{ $t(option.is_enabled ? 'sms.enabled' : 'sms.disabled') }}</option></select></label>
+            <label class="sms-field">{{ $t('sms.orderArabicTemplate') }}<select v-model="item.template_ar_id"><option :value="null">{{ $t('sms.choose') }}</option><option v-for="option in orderTemplates" :key="option.id" :value="option.id">{{ option.name }} · {{ $t(option.is_enabled ? 'sms.enabled' : 'sms.disabled') }}</option></select></label>
+          </fieldset>
+          <button v-if="can('sms.settings.manage')" class="sms-secondary mt-3" type="submit" :disabled="busy">{{ $t('sms.saveOrderEvent') }}</button>
+        </form>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $t('sms.orderVariables') }}: <span dir="ltr">{{ orderSmsVariables.join(', ') }}</span></p>
+      </div>
     </section>
 
     <section v-else-if="tab === 'templates' && can('sms.templates.view')" class="sms-panel">
@@ -91,7 +108,22 @@
     <section v-else-if="tab === 'history' && can('sms.history.view')" class="sms-panel">
       <div class="mb-4 flex items-center justify-between"><h3 class="text-lg font-semibold">{{ $t('sms.history') }}</h3><button class="sms-secondary" @click="loadTab">{{ $t('sms.refresh') }}</button></div>
       <p class="mb-4 text-sm text-gray-500">{{ $t('sms.submissionOnly') }}</p>
-      <p v-if="!history.batches.length" class="text-sm">{{ $t('sms.noHistory') }}</p>
+      <h4 v-if="history.orderEvents.length" class="mb-3 font-semibold">{{ $t('sms.orderNotifications') }}</h4>
+      <details v-for="item in history.orderEvents" :key="item.id" class="mb-3 rounded-lg border p-3" data-order-history>
+        <summary class="cursor-pointer text-sm">{{ item.order_number || '—' }} · {{ $t(`sms.orderEventNames.${item.event_type}`) }} · {{ $t(`sms.statuses.${item.sms_batches?.status || item.status}`) }}</summary>
+        <p v-if="item.reason" class="mt-3 text-sm">{{ $t(`sms.orderReasons.${item.reason}`) }}</p>
+        <dl class="my-3 grid gap-3 text-sm md:grid-cols-2">
+          <div><dt class="text-gray-500">{{ $t('sms.recipient') }}</dt><dd dir="ltr">{{ item.recipient_masked || '—' }}</dd></div>
+          <div><dt class="text-gray-500">{{ $t('sms.language') }}</dt><dd>{{ item.locale === 'ar' ? 'العربية' : 'English' }}</dd></div>
+          <div><dt class="text-gray-500">{{ $t('sms.template') }}</dt><dd>{{ templates.find(template => template.id === item.template_id)?.name || item.template_id || '—' }}</dd></div>
+          <div><dt class="text-gray-500">{{ $t('sms.sender') }}</dt><dd>{{ item.sender || '—' }} · {{ $t('sms.notification') }}</dd></div>
+          <div><dt class="text-gray-500">ExternalTrxId</dt><dd class="break-all" dir="ltr">{{ item.sms_batches?.external_trx_id || '—' }}</dd></div>
+          <div><dt class="text-gray-500">{{ $t('sms.createdAt') }}</dt><dd>{{ date(item.created_at) }}</dd></div>
+        </dl>
+        <p v-if="item.sms_batches?.failure_category || item.sms_batches?.error_code" class="text-sm">{{ diagnostic(item.sms_batches) }}</p>
+        <p v-for="(message, index) in item.sms_batches?.sms_messages || []" :key="index" class="mt-2 text-sm">{{ $t(`sms.${message.encoding}`) }} · {{ $t('sms.units', { count: message.units }) }} · {{ $t('sms.segments', { count: message.segments }) }} · {{ message.provider_status || '—' }} · {{ message.error_code || '—' }}</p>
+      </details>
+      <p v-if="!history.batches.length && !history.orderEvents.length" class="text-sm">{{ $t('sms.noHistory') }}</p>
       <details v-for="batch in history.batches" :key="batch.id" class="mb-3 rounded-lg border p-3">
         <summary class="cursor-pointer text-sm"><span>{{ $t(`sms.${batch.traffic_type}`) }} · {{ $t(`sms.statuses.${batch.status}`) }}</span><span class="ms-3">{{ date(batch.created_at) }}</span><span class="ms-3">{{ $t('sms.attempts', { count: batch.attempts }) }}</span></summary>
         <dl class="my-3 grid gap-3 text-sm md:grid-cols-2"><div><dt class="text-gray-500">{{ $t('sms.trigger') }}</dt><dd class="break-all">{{ batch.trigger_source }} · {{ batch.triggered_by || '—' }}</dd></div><div><dt class="text-gray-500">ExternalTrxId</dt><dd class="break-all" dir="ltr">{{ batch.external_trx_id }}</dd></div><div><dt class="text-gray-500">{{ $t('sms.template') }}</dt><dd class="break-all">{{ batch.template_id || '—' }}</dd></div><div><dt class="text-gray-500">{{ $t('sms.submittedAt') }}</dt><dd>{{ date(batch.submitted_at) }}</dd></div></dl>
@@ -99,7 +131,7 @@
         <div class="overflow-x-auto"><table class="w-full text-start text-sm"><thead><tr><th>{{ $t('sms.recipient') }}</th><th>{{ $t('sms.sender') }}</th><th>{{ $t('sms.status') }}</th><th>{{ $t('sms.providerStatus') }}</th><th>{{ $t('sms.errorCode') }}</th></tr></thead><tbody><tr v-for="message in batch.sms_messages" :key="message.id"><td dir="ltr">{{ message.recipient }}</td><td>{{ message.sender }}</td><td>{{ $t(`sms.statuses.${message.status}`) }}</td><td dir="ltr">{{ message.provider_status || '—' }}</td><td>{{ message.error_code || '—' }}</td></tr></tbody></table></div>
         <p v-for="attempt in batch.sms_attempts" :key="attempt.attempt_number" class="mt-3 text-xs">{{ $t('sms.attempts', { count: attempt.attempt_number }) }} · {{ $t(`sms.statuses.${attempt.status}`) }} · {{ date(attempt.started_at) }} · {{ diagnostic(attempt) }}</p>
       </details>
-      <div class="mt-4 flex gap-3"><button class="sms-secondary" :disabled="history.page <= 1" @click="history.page--; loadTab()">{{ $t('sms.previous') }}</button><button class="sms-secondary" :disabled="history.page * 25 >= history.total" @click="history.page++; loadTab()">{{ $t('sms.next') }}</button></div>
+      <div class="mt-4 flex gap-3"><button class="sms-secondary" :disabled="history.page <= 1" @click="history.page--; loadTab()">{{ $t('sms.previous') }}</button><button class="sms-secondary" :disabled="history.page * 25 >= Math.max(history.total, history.orderTotal)" @click="history.page++; loadTab()">{{ $t('sms.next') }}</button></div>
     </section>
     <p v-else>{{ $t('sms.noAccess') }}</p>
   </div>
@@ -107,6 +139,7 @@
 
 <script setup>
 import { estimateSmsSegments, normalizeSmsPhone, renderSmsTemplate } from '~/utils/sms.js'
+import { orderSmsVariables } from '~/utils/orderSms.js'
 definePageMeta({ layout: 'dashboard' })
 const { t, locale, te } = useI18n()
 const { uiMessage } = useUiLocale()
@@ -116,7 +149,8 @@ const client = useSupportClient()
 const loading = ref(true), busy = ref(false), error = ref(''), notice = ref('')
 const capabilities = ref({ enabled: false, ready: false, sender_names: [], default_sender: '', batch_size: 50, default_country: 'EG', allow_international: false })
 const settings = ref({}), senderNames = ref(''), secrets = reactive({ account_id: '', password: '', hash_secret: '' })
-const templates = ref([]), history = reactive({ page: 1, total: 0, batches: [] })
+const templates = ref([]), orderEvents = ref([]), history = reactive({ page: 1, total: 0, batches: [], orderTotal: 0, orderEvents: [] })
+const orderTemplates = computed(() => templates.value.filter(item => item.traffic_type === 'notification'))
 const blankTemplate = () => ({ code: '', name: '', category: 'manual', text_en: '', text_ar: '', traffic_type: 'notification', sender: '', is_enabled: false, variables: [] })
 const template = ref(blankTemplate())
 const send = reactive({ trafficType: can('sms.notification.send') ? 'notification' : 'campaign', recipients: '', sender: '', text: '', templateCode: '', locale: locale.value, variablesJson: '{}', campaignConfirmed: false })
@@ -166,6 +200,9 @@ const loadTab = async () => {
       const result = await client.request('/api/admin-sms/settings')
       if (version !== loadVersion) return
       settings.value = result.settings; senderNames.value = result.settings.sender_names.join('\n')
+      const events = await client.request('/api/admin-sms/order-events')
+      if (version !== loadVersion) return
+      orderEvents.value = events.events
     }
     if (tab.value === 'history' && can('sms.history.view')) {
       const result = await client.request('/api/admin-sms/history', { query: { page: history.page } })
@@ -187,6 +224,14 @@ const saveSettings = async (overrides = {}) => {
   finally { busy.value = false }
 }
 const newTemplate = () => { template.value = blankTemplate() }
+const saveOrderEvent = async item => {
+  busy.value = true; error.value = ''; notice.value = ''
+  try {
+    const result = await client.request('/api/admin-sms/order-events', { method: 'PATCH', body: { ...item } })
+    Object.assign(item, result.event); notice.value = t('sms.saved')
+  } catch (failure) { report(failure) }
+  finally { busy.value = false }
+}
 const editTemplate = item => { template.value = { ...item } }
 const saveTemplate = async () => {
   busy.value = true; error.value = ''; notice.value = ''

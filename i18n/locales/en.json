@@ -3755,7 +3755,10 @@
       "partial": "Partially submitted",
       "failed": "Failed",
       "uncertain": "Uncertain; review before resending",
-      "preflight_failed": "Connection preflight failed"
+      "preflight_failed": "Connection preflight failed",
+      "pending": "Awaiting preparation",
+      "preparing": "Preparing",
+      "suppressed": "Skipped"
     },
     "categories": {
       "trusted_ip": "Source IP is not trusted.",
@@ -3787,7 +3790,37 @@
       "report_rate": "Provider report rate exceeded.",
       "inquiry": "Provider inquiry failed.",
       "provider_logs": "Provider logs are unavailable.",
-      "invalid_action": "Invalid provider action."
+      "invalid_action": "Invalid provider action.",
+      "order_event_suppressed": "Order notification is no longer eligible."
+    },
+    "orderNotifications": "Order notifications",
+    "editOrderTemplates": "Edit templates",
+    "orderNoBacklog": "Disabled notifications are skipped and never sent later.",
+    "orderEnglishTemplate": "English template",
+    "orderArabicTemplate": "Arabic template",
+    "saveOrderEvent": "Save event",
+    "orderVariables": "Order variables",
+    "createdAt": "Created time",
+    "units": "Units: {count}",
+    "orderEventNames": {
+      "order_confirmed": "Order confirmed",
+      "payment_confirmed": "Payment confirmed",
+      "processing": "Order processing",
+      "cancelled": "Order cancelled"
+    },
+    "orderReasons": {
+      "provider_disabled": "Vodafone was disabled.",
+      "provider_not_ready": "Vodafone was not ready.",
+      "event_disabled": "This notification was disabled.",
+      "configuration_changed": "Notification settings changed.",
+      "template_unavailable": "The template was unavailable.",
+      "order_removed": "The order was removed.",
+      "expired": "The notification expired.",
+      "invalid_phone": "The order phone is missing or invalid.",
+      "invalid_template": "The template could not be rendered.",
+      "segment_limit": "The message exceeds ten segments.",
+      "storage_error": "The notification could not be queued.",
+      "capture_failed": "The notification could not be recorded."
     }
   }
 }

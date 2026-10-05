@@ -17,7 +17,8 @@ export const smsDatabaseClient = db => {
       async then(resolve, reject) {
         try {
           let columns = state.columns
-          if (columns.includes('sms_messages(')) columns = "id,traffic_type,triggered_by,trigger_source,template_id,external_trx_id,status,attempts,result_status,error_code,failure_category,created_at,submitted_at,(select coalesce(jsonb_agg(to_jsonb(m)-'body'),'[]') from public.sms_messages m where m.batch_id=sms_batches.id) sms_messages,(select coalesce(jsonb_agg(to_jsonb(a)),'[]') from public.sms_attempts a where a.batch_id=sms_batches.id) sms_attempts"
+          if (table === 'sms_order_events' && columns.includes('sms_batches(')) columns = "id,order_number,event_type,locale,template_id,sender,recipient_masked,status,reason,batch_id,created_at,updated_at,(select jsonb_build_object('id',b.id,'external_trx_id',b.external_trx_id,'status',b.status,'attempts',b.attempts,'result_status',b.result_status,'error_code',b.error_code,'failure_category',b.failure_category,'submitted_at',b.submitted_at,'sms_messages',(select coalesce(jsonb_agg(jsonb_build_object('encoding',m.encoding,'units',m.units,'segments',m.segments,'provider_status',m.provider_status,'error_code',m.error_code)),'[]') from public.sms_messages m where m.batch_id=b.id)) from public.sms_batches b where b.id=sms_order_events.batch_id) sms_batches"
+          else if (columns.includes('sms_messages(')) columns = "id,traffic_type,triggered_by,trigger_source,template_id,external_trx_id,status,attempts,result_status,error_code,failure_category,created_at,submitted_at,(select coalesce(jsonb_agg(to_jsonb(m)-'body'),'[]') from public.sms_messages m where m.batch_id=sms_batches.id) sms_messages,(select coalesce(jsonb_agg(to_jsonb(a)),'[]') from public.sms_attempts a where a.batch_id=sms_batches.id) sms_attempts"
           const where = state.filters.length ? ' where ' + state.filters.join(' and ') : ''
           let sql
           if (state.action === 'update') sql = `update public.${table} set ` + Object.entries(state.data).map(([key, value]) => `${key}=${parameter(value)}`).join(',') + where + ' returning *'
@@ -36,7 +37,7 @@ export const smsDatabaseClient = db => {
       const parameters = Object.keys(args).map((key, index) => `${key} => $${index + 1}`)
       const values = Object.values(args).map(value => typeof value === 'object' && value !== null ? JSON.stringify(value) : value)
       const call = `public.${name}(${parameters.join(',')})`
-      return { data: (await db.query(`select ${name === 'sms_claim' ? `to_jsonb(${call})` : call} as value`, values)).rows[0].value, error: null }
+      return { data: (await db.query(`select ${['sms_claim', 'sms_claim_order_event'].includes(name) ? `to_jsonb(${call})` : call} as value`, values)).rows[0].value, error: null }
     } catch (error) { return { data: null, error: { code: error.code, message: error.message } } }
   } }
 }

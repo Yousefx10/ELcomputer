@@ -1,6 +1,6 @@
 # Central SMS service
 
-This foundation is local only. Vodafone defaults disabled. No business event, authentication, email, PDC, survey, return, warranty or pickup flow calls it.
+The central foundation and its infrastructure have a committed dormant production readiness record. Order notifications are now implemented locally and await their own migration/deployment. Vodafone remains disabled; no PDC, OTP, survey, return, warranty, pickup or marketing consumer is connected. Read [order SMS behavior and release boundaries](order-sms.md).
 
 ## Reused architecture
 
@@ -10,11 +10,13 @@ See `sms-audit.md`. SMS reuses credential AES-256-GCM envelopes, the server serv
 
 `/dashboard/sms` has Provider settings, Templates, Send SMS and SMS history tabs. Settings store enabled state, explicit production mode, HTTPS server, optional port, Notification/Campaign paths, encrypted Account ID/password/HEX secret, approved/default senders, outbound-IP information, external activation/trusted-IP/hash confirmations, notes, timeout, safe preflight retry limit, campaign batch bound, request pacing and phone behavior.
 
+Local order notification controls extend Provider settings with four default-off events and EN/AR central-template bindings. The existing History tab includes masked order intents, terminal skipped reasons and linked batch diagnostics. Templates remain in `sms_templates`; no order API/component hardcodes final customer SMS copy. Settings/template/history permissions remain separate.
+
 No merchant values come from `.env` or source defaults. Server hostname and credentials start empty. The paths alone default to the published protocol paths. Dashboard paths must preserve the documented relationship: Campaign ends in `/sms/submit`, and Notification is that path plus `/Notification`. A different gateway prefix remains configurable; swapping traffic endpoints is rejected by settings, SQL and the provider adapter. Vodafone does not document a sandbox here, so no sandbox is invented. Test adapters are injected in isolated tests and are never a Dashboard delivery mode.
 
 The API returns only credential presence flags. Even staff with settings management cannot retrieve plaintext or ciphertext. Secret inputs are temporary replacement buffers; they clear after successful save and are never SSR state, cookies or persistent browser storage. Blank input keeps the saved value. The existing encryption helper trims secrets, so surrounding whitespace is rejected rather than silently changing the merchant password. Encryption infrastructure must be ready before storing replacements. Config revisions prevent stale saves. Account, credentials, destination or outbound-IP changes disable sending and clear the relevant external confirmations; saving does not activate the provider.
 
-The only new environment value is `NUXT_SMS_WORKER_SECRET`, an infrastructure authentication secret of at least 32 characters. Reuse the existing server-only `NUXT_CREDENTIALS_ENCRYPTION_KEY` master key. Neither goes in public runtime configuration. No master key or worker secret was configured in production by this task.
+The foundation's infrastructure authentication value is `NUXT_SMS_WORKER_SECRET`, at least 32 characters. Reuse the existing server-only `NUXT_CREDENTIALS_ENCRYPTION_KEY` master key. Neither goes in public runtime configuration. The separate completed production-readiness task configured them through PM2; the local order feature changes no environment secret.
 
 ## Server API for later features
 
@@ -35,7 +37,7 @@ await sms.sendNotification({
 
 Calls return the persisted batch ID, queue state, provider ExternalTrxId and whether the same logical request was reused. They never wait on Vodafone. Disabled/unready settings return a controlled 503. Callers must authorize the business action before using this server-only service. Future OTP must separately add abuse/rate/resend/verification rules and short expiry; no OTP state exists here.
 
-Template sends accept `templateCode`, `locale` (`en` or `ar`) and string `variables`. The service reads the enabled matching traffic template, requires that translation, validates known supplied variables and snapshots the resulting text/sender into the queue. It does not evaluate JavaScript or access customer data implicitly. Templates have codes, purpose, both languages, traffic, approved/default sender, enabled state, derived placeholders and creator/updater timestamps. No speculative templates are seeded.
+Template sends accept `templateCode`, `locale` (`en` or `ar`) and string `variables`. The service reads the enabled matching traffic template, requires that translation, validates known supplied variables and snapshots the resulting text/sender into the queue. It does not evaluate JavaScript or access customer data implicitly. Templates have codes, purpose, both languages, traffic, approved/default sender, enabled state, derived placeholders and creator/updater timestamps. The local order migration seeds only its four disabled transactional templates, without replacing existing matching codes.
 
 ## Vodafone protocol and hashing
 
@@ -71,7 +73,7 @@ The supplied API does not establish a supported inquiry endpoint or ExternalTrxI
 
 History uses 25-batch pages, masked phones, actor/source/template references, sender, created/submitted time, attempts, transaction ID, ordered SMS statuses and numeric codes. It excludes message bodies and credential material. The body snapshot remains private for queue execution; define retention/redaction before security-sensitive OTP integration. Existing admin audits retain their existing per-user limit; durable SMS ledgers are separate.
 
-The owner-only existing full reset explicitly includes the five SMS tables and refuses to run while a worker is processing. Partial resets preserve SMS. A completed full reset leaves absent configuration equivalent to disabled defaults; a later Dashboard save can recreate the disabled provider singleton. Applying the migration performs no reset.
+The owner-only existing full reset includes the five foundation tables and, after the local order migration, the two private order SMS tables. It refuses to run while a provider worker is processing. Partial resets preserve SMS history; deleted orders cannot send retained intents. A completed full reset leaves absent provider/event configuration equivalent to disabled defaults; a later Dashboard save can recreate it. Applying either migration performs no reset.
 
 ## Permissions and deployment acceptance
 
@@ -79,8 +81,8 @@ The owner-only existing full reset explicitly includes the five SMS tables and r
 
 The provider error mapping covers all 34 documented V5 codes, including 9013 source IP, 9014 password, 9021 SecureHash, 9023 MSISDN and 9034 sender. Codes mentioning reports do not imply implemented report endpoints. No raw provider bodies or errors are logged.
 
-Before production: review the provider-confirmed correction and code/schema, authorize a dormant migration/release, configure infrastructure secrets/worker scheduling, complete authenticated staging staff acceptance, and obtain Vodafone credentials, correct endpoint/port/certificate, approved senders, trusted-IP activation, account quotas/rates and international eligibility. SecureHash key interpretation is resolved by INC000081856720. Confirm no legacy TLS downgrade is required. Then Dashboard-save while disabled, validate locally, record external confirmations, explicitly enable, and separately authorize a small real Notification test followed by a bounded Campaign test. Observe provider submissions and reporting before attaching a separately scoped business consumer.
+The foundation/infrastructure readiness is already recorded separately. For the local order feature, review the new migration and matching code, then perform the dormant migration/guarded release later from the authorized deployment computer. Keep provider/events off and complete authenticated staff acceptance. Scheduling and Vodafone provisioning (credentials, endpoint/port/certificate, approved senders, trusted IP, quotas/rates and international eligibility) remain separately authorized work. SecureHash key interpretation is resolved by INC000081856720. Only later explicit authorization permits provider/event enablement or any real Notification/Campaign test. Future consumers require their own scope.
 
 ## Local validation commands
 
-Run the Node suite, focused `tests/sms-*.test.mjs`, typecheck, build and diff check. `scripts/sms-browser.mjs` uses local Chrome and Playwright; set `SMS_REVIEW_PLAYWRIGHT` to an installed Playwright `index.mjs` if the package is outside this checkout. Set `SMS_REVIEW_CHROME` if Chrome uses another path. It compiles the actual Vue page/preferences with isolated API fixtures and refuses external browser requests. `scripts/sms-http.mjs` accepts only an already running localhost built server (`SMS_REVIEW_LOCAL_URL`, default port 3187); it performs anonymous read-only guards and public artifact scans. All merchant/provider tests remain mocked; neither script can authorize a real Vodafone send.
+Run the Node suite, focused `tests/order-sms.test.mjs tests/sms-*.test.mjs`, typecheck, build and diff check. `scripts/sms-browser.mjs` uses local Chrome and Playwright; set `SMS_REVIEW_PLAYWRIGHT` to an installed Playwright `index.mjs` if the package is outside this checkout. Set `SMS_REVIEW_CHROME` if Chrome uses another path. It compiles the actual Vue page/preferences with isolated API fixtures and refuses external browser requests. `scripts/sms-http.mjs` accepts only an already running localhost built server (`SMS_REVIEW_LOCAL_URL`, default port 3187); it performs anonymous read-only guards and public artifact scans. All merchant/provider tests remain mocked; neither script can authorize a real Vodafone send.

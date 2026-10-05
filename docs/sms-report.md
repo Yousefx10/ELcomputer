@@ -1,6 +1,46 @@
-# Vodafone SMS foundation report — 2026-10-05
+# Central SMS report — 2026-10-05
 
-The foundation is now deployed to production in a dormant state. The current deployment record is below; previous implementation/audit/correction evidence remains historical. No Vodafone call, SMS or real credentials were authorized/configured, and scope stops at the reusable foundation.
+The foundation has a committed dormant production deployment/infrastructure record. Order notifications are now implemented locally and await their own migration/release. Prior foundation-only records below remain historical. Vodafone remains disabled; no real SMS/provider call occurred.
+
+## Order SMS notifications — local implementation
+
+Full requested 28-point report: [order-sms.md](order-sms.md). Successful order insertion maps to Order confirmed; authoritative payment transition to `paid` maps to Payment confirmed; actual `processing` and `cancelled` transitions map to their respective events. Cash, verified preorder receipt/release, Paymob TEST/live/replay/cancellation guards and ERP ownership are preserved. No frontend decides or sends an order SMS.
+
+Unapplied additive migration `20261006100000_order_sms_notifications.sql` adds order locale, private event bindings and durable transition intents. All events and four seeded central bilingual templates default off. Existing Dashboard settings/templates/history, Notification service/queue/worker, permissions/encryption and normalization/segmentation are reused. Sender stays centrally configured. Only the order phone snapshot is used; language is validated checkout EN/AR or English fallback. Safe variables use committed order amounts/status/payment labels.
+
+Unique order/event identities prevent repeated saves, re-entry, payment replays and worker retries from creating another message. Business transactions capture intents; the existing authenticated worker atomically enqueues/completes them in the central queue. Disabled/unconfigured events produce terminal history, never future-sendable batches. Captured revisions/template timestamp, ten-minute expiry and final post-DNS checks prevent stale activation. SMS failure cannot change commerce; total intent-storage failure may lose even the safe fallback audit, as documented. No historical replay.
+
+### Final local validation
+
+- Node **24.16.0**; `node --test tests/*.test.mjs`: **401 passed, zero failed, one existing optional native Paymob skip** (402 total).
+- `node --test tests/order-sms.test.mjs tests/sms-*.test.mjs`: **78 passed, zero failed/skipped**, including both Vodafone PDF literal-key fixtures and all foundation queue/RBAC/XML/security regressions.
+- `npm run typecheck`, `npm run build`, `git diff --check`: **passed**. Nuxt checks used `env -u DEBUG`; existing ERP duplicate-import/sourcemap/chunk warnings remain.
+- Actual-schema SQL tests cover rollback, paid/partial/Cash, processing/cancellation/re-entry, Paymob TEST/live fixture replay/late cancellation, defaults/no replay, disabled/no backlog, revision/expiry/post-DNS guards, contact/locale/money/variables, Notification-only routing, Unicode limits, atomic enqueue/lease/retry/concurrent preparation and downstream failure safety. Actual H3 tests cover event controls, settings/templates/history permissions, masked history and worker authentication. Independent native PostgreSQL sessions are not claimed.
+- Actual local Vue/browser fixtures: **432 assertions, 72 screenshots, zero console/runtime errors or external requests**. EN/AR/RTL, desktop/mobile, Light/Dark/System, event controls/bindings/save/reload/read-only access, templates/history, Cash checkout metadata and order Dashboard processing/cancellation. Arabic mobile Dark settings/history screenshots inspected. Fixture acceptance does not establish authenticated production acceptance.
+- Built localhost HTTP/SSR/public artifacts: **948 assertions, 16 requests, 115 public files, seven fictional private value types, zero exposures**. Anonymous controls, absent/invalid worker secrets and EN/AR login guards denied safely. Temporary local servers stopped after validation.
+- Evidence: `/tmp/elcomputer-order-sms-{focused,suite,typecheck,build,browser,http}.log` and `/tmp/elcomputer-order-sms-review/browser/`. Provider transport is mocked; all local credential fixtures are fictional.
+
+```text
+ORDER SMS FOUNDATION IMPLEMENTED: YES
+ORDER CONFIRMED SMS CONNECTED: YES
+PAYMENT CONFIRMED SMS CONNECTED: YES
+ORDER PROCESSING SMS CONNECTED: YES
+ORDER CANCELLED SMS CONNECTED: YES
+ORDER SMS CONFIGURATION DASHBOARD-MANAGED: YES
+ORDER SMS IDEMPOTENCY DATABASE-BACKED: YES
+DISABLED EVENTS CREATE FUTURE-SENDABLE BACKLOG: NO
+VODAFONE ENABLED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+PDC SMS CONNECTED: NO
+OTP CONNECTED: NO
+NPS CONNECTED: NO
+RETURNS/WARRANTY SMS CONNECTED: NO
+PRODUCTION MIGRATION APPLIED: NO
+PRODUCTION DEPLOYED: NO
+```
+
+“Connected” describes local code, not a production release or active messaging. This development computer intentionally has no production credentials; none were obtained/recreated/copied/inferred/modified, and no production connection was attempted. Prior production readiness is inherited from the user and committed record, not live-reverified. Transfer committed/pushed work to the authorized deployment computer for reviewed migration and guarded release with provider/events off. Authenticated acceptance and activation/testing remain separate. PDC → SMS is a future separate consumer after order-feature acceptance. STOP after this feature.
 
 ## Production infrastructure readiness — 2026-10-05
 

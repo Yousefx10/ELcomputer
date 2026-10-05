@@ -27,12 +27,12 @@ export const prepareSmsSend = (settings, input, trafficType) => {
   return recipients.map(recipient => ({ recipient, sender, body: input.text, encoding: estimate.encoding, units: estimate.units, segments: estimate.segments }))
 }
 
-// Future server features choose the traffic path explicitly and provide their own
-// authorization/abuse controls. No feature integration is installed by this task.
+// Server consumers provide authorization and a durable logical event identity.
 export const createSmsService = db => {
   const enqueue = async (trafficType, input) => {
     const settings = await getSmsSettings(db)
-    let templateId = null
+    if (input.orderEvent && trafficType !== 'notification') fail(400, 'Order SMS requires Notification traffic.')
+    let templateId = input.orderEvent?.templateId || null
     if (input.templateCode) {
       const template = check(await db.from('sms_templates').select('*').eq('code', input.templateCode).maybeSingle())
       if (!template?.is_enabled || template.traffic_type !== trafficType || !['en', 'ar'].includes(input.locale)) fail(400, 'SMS template is unavailable for this traffic.')
@@ -45,7 +45,8 @@ export const createSmsService = db => {
     const triggerSource = input.triggerSource || 'internal'
     if (typeof triggerSource !== 'string' || !/^[a-zA-Z0-9:_-]{1,80}$/.test(triggerSource)) fail(400, 'Invalid SMS source.')
     const fingerprint = createHash('sha256').update(JSON.stringify({ trafficType, templateId, messages, actor: input.triggeredBy || null, triggerSource, priority: input.priority ?? 10, expiresAt: input.expiresAt || null })).digest('hex')
-    const { data, error } = await db.rpc('sms_enqueue', {
+    const { data, error } = await db.rpc(input.orderEvent ? 'sms_enqueue_order_event' : 'sms_enqueue', {
+      ...(input.orderEvent ? { p_id: input.orderEvent.id, p_token: input.orderEvent.token } : {}),
       p_batch: { idempotency_key: input.idempotencyKey, fingerprint, traffic_type: trafficType, template_id: templateId,
         triggered_by: input.triggeredBy || null, trigger_source: triggerSource, priority: input.priority ?? 10, expires_at: input.expiresAt || null }, p_messages: messages
     })
