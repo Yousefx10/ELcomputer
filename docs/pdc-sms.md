@@ -1,4 +1,65 @@
-# PDC → SMS customer notifications — local implementation, 2026-10-06
+# PDC → SMS notifications — dormant production deployment, 2026-10-06
+
+Reviewed implementation and single migration are deployed. Three PDC and four Order SMS controls remain OFF; PDC external configuration and Vodafone remain unchanged/dormant. This record supersedes the historical local-only status below.
+
+1. **Synced branch/HEAD:** clean `main`, matching fetched `origin/main` at `76ce7837d608028c5c4ad257552e7e8c39031ad6` before release. No reset; subsequent documentation-only commit is separate.
+2. **Required feature:** `76ce7837d608028c5c4ad257552e7e8c39031ad6` is the deployed HEAD; legitimate earlier release/infrastructure documentation retained in ancestry.
+3. **Pre-deployment validation:** Node 24.16.0; 432 full-suite passes, zero failures, one existing optional native Paymob skip; 151 focused passes. Typecheck/build/diff/preflight passed. SMS/checkout/Orders/Live Chat fixtures 543 assertions/96 screenshots; PDC/account fixtures 495 assertions/48 screenshots, eight scenarios. Local HTTP/SSR/artifacts 980 assertions/20 requests/115 files/seven fictional private types/zero exposures. Existing ERP import, sourcemap/chunk and preorder target warnings remain; no deployment-blocking defect found.
+4. **Migration:** only `20261006120000_pdc_sms_notifications.sql`, SHA-256 `072cef061294dc23518658cff405ecf7dbd3df4757502096814fbcb5da4e6f58`. Additive table/column/template/index/wrapper extension; equivalent Order SMS uniqueness replaces its old constraint. No business-row deletion, historical event mutation, history reset or backfill.
+5. **Migration alignment:** 61 local/remote versions match; none pending. Docker catalog-cache warning was non-fatal after native schema/history/security and data verification passed.
+6. **Two-computer consistency:** every repository version/name compared with native `supabase_migrations.schema_migrations`. Before: 60 exact identities and only this feature pending. After: 61 exact matches, zero missing/remote-only/name mismatch; expected prerequisite signatures present.
+7. **Deployment:** existing `env -u DEBUG npm run deploy` completed guarded secret-free build, `.output`-only upload, backup, scoped restart and health loop. All 712 deployed entries match local, manifest digest `b767046c5fc17d51c4a076facf24e18205b443eae6fcadd03d2eda12083e517c`. No dotenv upload/server networking/unrelated site/process changes.
+8. **Deployed commit:** `76ce7837d608028c5c4ad257552e7e8c39031ad6`; no reimplementation/redesign or application-code fix. Subsequent documentation commit does not change running app identity.
+9. **PM2/health:** `new-elcomputer` online, `/home/newelcomputer/htdocs/new.elcomputer.net`, `.output/server/index.mjs`, expected Node 22.23.1 and port 3001; one restart 40 → 41. Initial startup connection retry recovered through existing loop. Internal/public health passed; error-log bytes/hash unchanged from this task baseline.
+10. **PDC SMS Dashboard:** actual Vue fixtures verify three controls/defaults, bilingual Notification bindings, central sender, masked history/provider-time/AWB, local save/reload and permissions. Private live DB confirms three disabled controls/templates/correct EN/AR bindings; production Dashboard PDC/SMS routes require login. This is separate from authenticated production UI acceptance.
+11. **Authenticated acceptance:** **NOT VERIFIED**. No safe established authorized admin/customer test session/workflow was available. No account/session/credential was manufactured or real order edited. Staff save/reload/role behavior, customer tracking and private Broadcast remain pending.
+12. **Three production controls:** Out for Delivery **OFF**, Delivery Exception **OFF**, Delivered **OFF**. Config revisions zero; all new templates disabled Notification traffic. Four Order SMS controls remain OFF.
+13. **Historical backlog:** zero PDC intents and zero sendable intents/batches/messages/attempts. Existing 1 terminal suppressed Order SMS intent predates this release and remains unchanged. No historical OFD/attempt/delivered observation/shipment was converted, scanned for replay or queued.
+14. **PDC historical integrity:** all 22 historical business/configuration fingerprints unchanged, including 9 orders/13 items, full PDC settings, 382 cities/32 mappings and zero jobs/history. Existing references/order snapshot phone/locale preserved. No real shipment/order/event mutation.
+15. **Webhook/reconciliation deduplication:** both retain the same `shipping_record_pdc_event` canonical RPC; original body preserved. Row locking, original duplicate/stale outcomes, genuine normalized transitions and unique shipment/AWB/event identity prevent overlap/re-entry/retry duplicates. Actual disposable SQL/H3 tests pass; no synthetic production webhook sent.
+16. **Stale/out-of-order protection:** original provider/query-start chronology, durable delivered-history stop, feature/configuration cutoffs, unknown/future-time terminal suppression, ten-minute expiry and final shipment/AWB/current-state/current-resolver checks verified in deployed definitions and isolated tests. No obsolete OFD/attempt after durable delivery. Delivery Exception conservatively once per shipment/AWB.
+17. **Idempotency/constraints:** live unique global logical key, batch link, shipment job/AWB/event index and equivalent four-event Order SMS partial unique index verified. Preparation/central enqueue/link remains one SQL transaction; all 12 original reviewed bodies match pre-migration hashes. No new queue/worker framework.
+18. **Native concurrency:** **NOT VERIFIED** for independent native PostgreSQL PDC/SMS sessions. Existing optional native binary/driver harness unconfigured; disposable PGlite asynchronous lifecycle/lease/dedup tests passed. No production concurrency fixtures/order/shipment mutations.
+19. **Existing PDC tracking:** 495 actual component assertions/48 screenshots cover eight scenarios, timeline/Delivery/ownership/no-courier-update/reconciliation/exception/unknown/order chronology, EN/AR/RTL/mobile/themes. Actual read-only owned-order lookup and shipment reader pass for all 9 real orders, each safely returning no-shipment projection. Signed-in production tracking/refresh/private Broadcast **NOT VERIFIED**.
+20. **Order SMS regression:** all four settings, templates and existing intent fingerprints preserved; controls OFF. Original capture/locale/checkout/preorder/eligibility/queue/reset bodies unchanged; normal Order SMS tests still pass, including paid versus Cash, authoritative snapshots, replay, failure/expiry and Notification guards.
+21. **RBAC/RLS:** all 12 reviewed SMS/PDC tables retain RLS, no browser policies or anon/authenticated table grants; 23 reviewed functions deny anon/authenticated execution. Renamed PDC/eligibility implementations are owner-only; public wrappers service-only. Existing settings/templates/history permissions/audits retained. SMS errors are private,no-store; PDC/customer GET projections retain privacy headers. Existing PDC mutation handlers deny anonymous 401 without a uniform cache header; the HTTP probe was corrected to reflect unchanged handler behavior, not an application modification. Real signed-in roles remain unverified.
+22. **Secrets/privacy:** 118 public files against three distinct private runtime values, 22 server responses and application logs: zero infrastructure exposures. 9 orders provided private ID/number/unpublished-phone candidates only on server for 118 files/nine response scans/two application logs: zero exposures and no values printed. All 3054 browser scans and fictional local secret tests pass. History keeps phones masked and excludes raw reason/status/payload/customer name/message bodies/credential ciphertext/internal shipment/event links. Reasons use existing controlled catalog or neutral translation.
+23. **Queue/worker:** encryption and worker infrastructure ready, persisted secrets unchanged; missing/invalid secret 401, valid secret plus deliberately malformed JSON 400 before processing. Zero PDC/sendable backlog, central dispatch ledgers empty, existing suppressed Order SMS history intact. No valid processing request, scheduler or provider traffic. PDC built/runtime live-call gate false; separate shipping encryption readiness false unchanged.
+24. **Site regressions:** 185 HTTP assertions/46 requests and 650 browser assertions/92 page states pass. Homepage/real product/local cart persistence, checkout/login/account/order-detail protection, Orders/PDC/SMS Dashboard and templates/history guards, Live Chat launcher/open/close, EN/AR/RTL/desktop/mobile/Light/Dark/System; no browser errors/provider requests/commerce writes. Authenticated interiors and chat messaging are not claimed.
+25. **Real PDC production call:** **NO**. No lookup, GetShipmentsStatus, shipment/label, provider registration or manufactured webhook. PDC credentials/external configuration/live-call state unchanged.
+26. **Vodafone enabled:** **NO**; provider disabled, credentials/hostname/port/senders empty and settings unchanged.
+27. **Vodafone request:** **NO**; no real connectivity/provider transport, provisioning or trusted-IP operation.
+28. **Real SMS:** **NO**; no manual send/campaign/valid worker processing or customer communication.
+29. **Rollback:** `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261006-190825-55276` retained/readable; all 712 entries match prior production manifest. Unused; preserve additive migration if reverting app output through existing guarded workflow.
+30. **Remaining activation:** separately authorized signed-in staff/customer/private Broadcast acceptance and safe native concurrency acceptance; PDC-specific encryption readiness/credentials/webhook provisioning and vendor normalization/97/timezone/DST/reconciliation-envelope/repeated-attempt identity confirmation; Vodafone credentials/modern TLS/approved senders/trusted IP/account readiness; approved EN/AR templates/contact policy; explicit activation and provider-test authorization. Keep all events/providers OFF. No OTP/NPS/returns/warranty/pickup or another feature begins.
+
+```text
+PDC SMS CODE DEPLOYED: YES
+PDC SMS MIGRATION APPLIED: YES
+LOCAL/REMOTE SUPABASE MIGRATIONS ALIGNED: YES
+OUT FOR DELIVERY SMS ENABLED: NO
+DELIVERY EXCEPTION SMS ENABLED: NO
+DELIVERED SMS ENABLED: NO
+HISTORICAL PDC EVENTS BACKFILLED INTO SMS: NO
+HISTORICAL SENDABLE PDC SMS BACKLOG CREATED: NO
+WEBHOOK/RECONCILIATION DUPLICATES PREVENTED: YES
+ORDER SMS REGRESSED: NO
+PDC EXTERNAL CONFIGURATION CHANGED: NO
+VODAFONE ENABLED: NO
+VODAFONE CREDENTIALS CHANGED: NO
+REAL PDC PRODUCTION API CALLED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+OTP CONNECTED: NO
+NPS CONNECTED: NO
+RETURNS/WARRANTY SMS CONNECTED: NO
+AUTHENTICATED PRODUCTION INTERIORS: NOT VERIFIED
+NATIVE INDEPENDENT-SESSION CONCURRENCY: NOT VERIFIED
+```
+
+Evidence: `/tmp/elcomputer-pdc-sms-deploy-20261006/` contains fresh validation, migration identity/schema/security/data checks, guarded release/output/backup fingerprints, production HTTP/browser/runtime/privacy results and isolated screenshots. Documentation is committed/pushed separately; no secret or real customer value recorded. **STOP after deployment/verification.**
+
+## Historical local implementation — 2026-10-06
 
 This feature connects the existing normalized PDC tracking layer to the existing central Notification service. It introduces no PDC provider, message queue or history system. All three controls and new templates default off. No production access, provider activation, credential provisioning, webhook registration, migration, deployment, courier request, shipment or SMS occurred.
 

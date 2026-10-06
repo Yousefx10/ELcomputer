@@ -1,4 +1,14 @@
-# PDC → SMS notifications — local integration, 2026-10-06
+# PDC customer tracking report — 2026-10-06
+
+## PDC → SMS dormant production release — 2026-10-06
+
+Deployed reviewed `76ce7837d608028c5c4ad257552e7e8c39031ad6`; applied only `20261006120000_pdc_sms_notifications.sql`. All **61** migration versions/names match, no missing/remote-only/pending identity. Three PDC controls and four existing Order SMS controls remain **OFF**; seven disabled bilingual central Notification templates have correct bindings. Zero PDC/sendable intents/batches/messages/attempts; 1 preexisting suppressed Order SMS intent preserved. All 22 business/PDC and original Order SMS data fingerprints preserved (9 orders/13 items, zero PDC jobs/history); original 12 reviewed function bodies retained.
+
+Fresh validation: 432 full passes/one existing optional skip, 151 focused passes, typecheck/build/diff/preflight; 543 SMS/regression + 495 tracking browser assertions/144 screenshots; local HTTP/artifacts 980 assertions. Production 185 HTTP assertions/46 requests and 650 browser assertions/92 states/3054 response scans passed, no errors/private exposures/provider calls/commerce writes. Actual historical order/no-shipment reader checks pass for all 9. Native independent sessions and authenticated production interiors/tracking/Broadcast remain **NOT VERIFIED**.
+
+Only `new-elcomputer` restarted once 40 → 41; health passed, error log unchanged, 712 output entries match local. Rollback `/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261006-190825-55276` matches all 712 prior entries and is unused. PDC external/live-call/credential state unchanged; Vodafone disabled/unconfigured; SMS encryption/worker readiness retained with unchanged secrets; PDC-specific shipping encryption remains unready/unchanged. No scheduler, synthetic webhook, shipment, PDC/Vodafone API or real SMS; no OTP/NPS/returns/warranty/other consumer. Full requested 30-point acceptance/status/activation record: [pdc-sms.md](pdc-sms.md). **STOP after dormant release.**
+
+## Historical PDC → SMS local integration, 2026-10-06
 
 The existing normalized PDC tracking layer now feeds the existing central SMS intents/Notification queue in local code. Three default-off controls/bilingual bindings cover `out_for_delivery`, `delivery_attempted`, `delivered`. No mapping/raw-ID interpretation, webhook authentication, provider API, customer tracking UI, REF/AWB identity or historical PDC data was changed. No dispatch or raw-update notification.
 
