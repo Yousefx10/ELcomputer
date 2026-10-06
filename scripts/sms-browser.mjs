@@ -12,18 +12,19 @@ const base = resolve(new URL('..', import.meta.url).pathname)
 const dir = process.env.SMS_REVIEW_ARTIFACTS || '/tmp/elcomputer-sms-review/browser'
 await mkdir(dir, { recursive: true })
 let pageStyle = ''
-for (const [name, file] of Object.entries({ Sms: 'app/pages/dashboard/sms.vue', Preferences: 'app/components/UiPreferences.vue', OrderList: 'app/pages/dashboard/orders/index.vue', OrderDialog: 'app/components/dashboard/OrderDetailsDialog.vue', Checkout: 'app/pages/checkout/index.vue', PageIntro: 'app/components/dashboard/PageIntro.vue', SecondaryNav: 'app/components/dashboard/SecondaryNav.vue', StatCard: 'app/components/dashboard/StatCard.vue' })) {
+for (const [name, file] of Object.entries({ Sms: 'app/pages/dashboard/sms.vue', Launcher: 'app/components/live-chat/Launcher.vue', Preferences: 'app/components/UiPreferences.vue', OrderList: 'app/pages/dashboard/orders/index.vue', OrderDialog: 'app/components/dashboard/OrderDetailsDialog.vue', Checkout: 'app/pages/checkout/index.vue', PageIntro: 'app/components/dashboard/PageIntro.vue', SecondaryNav: 'app/components/dashboard/SecondaryNav.vue', StatCard: 'app/components/dashboard/StatCard.vue' })) {
   const { descriptor } = parse(await readFile(join(base, file), 'utf8'))
   await writeFile(join(dir, name + '.js'), compileScript(descriptor, { id: 'sms-' + name, inlineTemplate: true }).content)
   for (const style of descriptor.styles) pageStyle += compileStyle({ source: style.content, filename: file, id: 'data-v-sms-' + name, scoped: style.scoped }).code
 }
 await writeFile(join(dir, 'entry.js'), `
-import { createApp,h,ref,reactive,computed,onMounted,watch,nextTick,Suspense,resolveComponent } from '${base}/node_modules/vue/dist/vue.esm-bundler.js'
+import { createApp,h,ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,nextTick,Suspense,resolveComponent } from '${base}/node_modules/vue/dist/vue.esm-bundler.js'
 import { createI18n } from '${base}/node_modules/vue-i18n/dist/vue-i18n.mjs'
 import { useUiLocale } from '${base}/app/composables/useUiLocale.js'
 import en from '${base}/i18n/locales/en.json'
 import ar from '${base}/i18n/locales/ar.json'
 import Sms from './Sms.js'
+import Launcher from './Launcher.js'
 import Preferences from './Preferences.js'
 import OrderList from './OrderList.js'
 import OrderDialog from './OrderDialog.js'
@@ -42,11 +43,16 @@ const settings=reactive({id:'vodafone',is_enabled:false,api_mode:'production',ba
 const templates=reactive([{id:'template-fixture',code:'manual_fixture',name:'Manual fixture',category:'manual',text_en:'Hello {{name}}',text_ar:'مرحبا {{name}}',traffic_type:'notification',sender:'APP',is_enabled:true,variables:['name']}])
 const orderEvents=reactive(['order_confirmed','payment_confirmed','processing','cancelled'].map((event_type,index)=>({event_type,is_enabled:false,template_en_id:'order-template-'+index,template_ar_id:'order-template-'+index,config_revision:0})))
 templates.push(...orderEvents.map(item=>({id:item.template_en_id,code:'order_'+item.event_type,name:item.event_type,category:'orders',text_en:'Order {{order_number}}.',text_ar:'الطلب {{order_number}}.',traffic_type:'notification',sender:'APP',is_enabled:true,variables:['order_number']})))
+const pdcEvents=reactive(['pdc_out_for_delivery','pdc_delivery_exception','pdc_delivered'].map((event_type,index)=>({event_type,is_enabled:false,template_en_id:'pdc-template-'+index,template_ar_id:'pdc-template-'+index,config_revision:0})))
+orderEvents.push(...pdcEvents)
+templates.push(...pdcEvents.map(item=>({id:item.template_en_id,code:item.event_type,name:item.event_type,category:'pdc',text_en:'PDC {{order_number}} {{awb}}.',text_ar:'PDC الطلب {{order_number}} {{awb}}.',traffic_type:'notification',sender:'APP',is_enabled:true,variables:['order_number','awb']})))
 const orderHistory=[{id:'order-event-skipped',order_number:'ORD-BROWSER-SKIPPED',event_type:'order_confirmed',locale:'ar',template_id:'order-template-0',sender:'APP',recipient_masked:'••••••678',status:'suppressed',reason:'provider_disabled',created_at:'2026-10-05T08:00:00Z',sms_batches:null},{id:'order-event-submitted',order_number:'ORD-BROWSER-SUBMITTED',event_type:'processing',locale:'en',template_id:'order-template-2',sender:'APP',recipient_masked:'+201••••••678',status:'queued',reason:null,created_at:'2026-10-05T08:00:00Z',sms_batches:{id:'linked-batch',status:'submitted',external_trx_id:'ELC-order-browser-fixture',attempts:1,sms_messages:[{encoding:'utf16',units:50,segments:1,provider_status:'SUBMITTED'}]}}]
+orderHistory.push({id:'pdc-event-skipped',order_number:'ORD-PDC-BROWSER-SKIPPED',shipment_awb:'AWB-BROWSER-SKIPPED',provider_event_at:'2026-10-06T08:00:00Z',event_type:'pdc_out_for_delivery',locale:'ar',template_id:'pdc-template-0',sender:'APP',recipient_masked:'••••••678',status:'suppressed',reason:'provider_disabled',created_at:'2026-10-06T08:00:01Z',sms_batches:null},{id:'pdc-event-submitted',order_number:'ORD-PDC-BROWSER-SUBMITTED',shipment_awb:'AWB-BROWSER-DELIVERED',provider_event_at:'2026-10-06T09:00:00Z',event_type:'pdc_delivered',locale:'en',template_id:'pdc-template-2',sender:'APP',recipient_masked:'+201••••••678',status:'queued',reason:null,created_at:'2026-10-06T09:00:01Z',sms_batches:{id:'pdc-linked-batch',status:'submitted',external_trx_id:'ELC-pdc-browser-fixture',attempts:1,sms_messages:[{encoding:'utf16',units:50,segments:1,provider_status:'SUBMITTED'}]}})
 const history=[{id:'batch-fixture',traffic_type:'notification',triggered_by:'staff-fixture',trigger_source:'dashboard_manual',template_id:null,external_trx_id:'ELC-browser-fixture',status:'uncertain',attempts:1,created_at:'2026-10-05T08:00:00Z',submitted_at:null,error_code:9013,failure_category:'trusted_ip',sms_messages:[{id:'message-fixture',recipient:'+201••••••678',sender:'APP',status:'uncertain',provider_status:null,error_code:9013}],sms_attempts:[{attempt_number:1,status:'uncertain',failure_category:'provider_result_unknown',started_at:'2026-10-05T08:00:01Z'}]}]
 const can=permission=>fixture.permissions===null||fixture.permissions.includes(permission)
 const fetcher=async(path,options={})=>{
  fixture.requests.push({path,method:options.method||'GET',body:options.body})
+ if(path==='/api/chat/status')return {enabled:true,available:true,cooldownSeconds:0,maxMessageLength:4000,attachmentPolicy:{enabled:false}}
  if(path==='/api/admin-orders')return {stats:{total:1,today:1,week:1,month:1},total:1,items:[{...fixture.order}],recentOrders:[{...fixture.order}]}
  if(path==='/api/admin-orders/'+fixture.order.id){if(options.method==='PATCH')fixture.order.status=options.body.status;return {order:{...fixture.order},items:[],customer:null,shipping:null}}
  if(path==='/api/checkout/quote')return {orderValue:100,requiredNow:100,paymentFee:0,lines:[{title:'Cart fixture',total:100}]}
@@ -82,13 +88,15 @@ const applyAppearance=()=>{
 }
 watch(()=>[mode.preference,i18n.global.locale.value],applyAppearance)
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyAppearance)
-Object.assign(globalThis,{ref,reactive,computed,onMounted,watch,useUiLocale,useUiRoute:()=>route,useI18n:()=>({...i18n.global,setLocale:async value=>{i18n.global.locale.value=value}}),useNuxtApp:()=>({$i18n:i18n.global}),useAdminAccess:()=>({hasPermission:can}),useSupportClient:()=>({request:fetcher,errorText:(error,fallback)=>error.message||fallback}),useCookie:()=>cookie,useUiPreferences:()=>({setTheme:value=>{mode.preference=value}}),useColorMode:()=>mode,definePageMeta(){}})
-Object.assign(globalThis,{$fetch:fetcher,nextTick,resolveComponent,useHead(){},useNuxtData:()=>({data:ref({mode:'built_in'})}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),useDashboardNavigation:()=>({secondaryItems:ref([])}),useDashboardCache:()=>({getSnapshot:()=>null,invalidate(){},isFresh:()=>false,setSnapshot(){}}),useSiteContent:async()=>({data:ref({settings:{payment_cash_enabled:true}})}),useFetch:async()=>({data:ref({card:{available:false}})}),useSupabaseUser:()=>ref({id:'buyer-fixture',email:'buyer@example.invalid'}),useSupabaseClient:()=>({auth:{getSession:async()=>({data:{session:{access_token:'browser-isolated-token'}}})},from:()=>({select(){return this},eq(){return this},maybeSingle:async()=>({data:{full_name:'Buyer Fixture',address_line_1:'Street',city:'Cairo',state:'Cairo',phone:'01012345678',email:'buyer@example.invalid'}})})}),useUiNavigation:()=>({uiNavigateTo:async path=>{fixture.navigation=path}}),useStoreAnalytics:()=>({trackEvent(){}}),useCart:()=>({items:cartItems,cartId:ref('cart-fixture'),itemCount:computed(()=>cartItems.value.length),subtotal:ref(100),isEmpty:computed(()=>!cartItems.value.length),appliedCoupon:ref(null),clearCart(){cartItems.value=[]},setAppliedCoupon(){},resetCoupon(){},loadCart(){}})})
+Object.assign(globalThis,{ref,shallowRef,onBeforeUnmount,reactive,computed,onMounted,watch,useUiLocale,useUiRoute:()=>route,useI18n:()=>({...i18n.global,setLocale:async value=>{i18n.global.locale.value=value}}),useNuxtApp:()=>({$i18n:i18n.global}),useAdminAccess:()=>({hasPermission:can}),useSupportClient:()=>({request:fetcher,errorText:(error,fallback)=>error.message||fallback}),useCookie:()=>cookie,useUiPreferences:()=>({setTheme:value=>{mode.preference=value}}),useColorMode:()=>mode,definePageMeta(){}})
+Object.assign(globalThis,{useLiveChatClient:()=>({resolveActor:async()=>({kind:'guest',session:null}),hasStoredGuestSession:()=>false,request:async()=>({items:[]})}),$fetch:fetcher,nextTick,resolveComponent,useHead(){},useNuxtData:()=>({data:ref({mode:'built_in'})}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),useDashboardNavigation:()=>({secondaryItems:ref([])}),useDashboardCache:()=>({getSnapshot:()=>null,invalidate(){},isFresh:()=>false,setSnapshot(){}}),useSiteContent:async()=>({data:ref({settings:{payment_cash_enabled:true}})}),useFetch:async()=>({data:ref({card:{available:false}})}),useSupabaseUser:()=>ref({id:'buyer-fixture',email:'buyer@example.invalid'}),useSupabaseClient:()=>({auth:{getSession:async()=>({data:{session:{access_token:'browser-isolated-token'}}})},from:()=>({select(){return this},eq(){return this},maybeSingle:async()=>({data:{full_name:'Buyer Fixture',address_line_1:'Street',city:'Cairo',state:'Cairo',phone:'01012345678',email:'buyer@example.invalid'}})})}),useUiNavigation:()=>({uiNavigateTo:async path=>{fixture.navigation=path}}),useStoreAnalytics:()=>({trackEvent(){}}),useCart:()=>({items:cartItems,cartId:ref('cart-fixture'),itemCount:computed(()=>cartItems.value.length),subtotal:ref(100),isEmpty:computed(()=>!cartItems.value.length),appliedCoupon:ref(null),clearCart(){cartItems.value=[]},setAppliedCoupon(){},resetCoupon(){},loadCart(){}})})
 Sms.__scopeId='data-v-sms-Sms'
-const app=createApp({render:()=>h(Suspense,null,{default:()=>h('main',{class:'mx-auto max-w-6xl p-4 text-gray-900 dark:text-gray-100'},[h('header',{class:'mb-4 flex justify-end'},h(Preferences)),h(view.value==='orders'?OrderList:view.value==='checkout'?Checkout:Sms)])})})
+Launcher.__scopeId='data-v-sms-Launcher'
+const app=createApp({render:()=>h(Suspense,null,{default:()=>h('main',{class:'mx-auto max-w-6xl p-4 text-gray-900 dark:text-gray-100'},[h('header',{class:'mb-4 flex justify-end'},h(Preferences)),h(view.value==='orders'?OrderList:view.value==='checkout'?Checkout:view.value==='chat'?Launcher:Sms)])})})
 app.use(i18n)
 app.config.globalProperties.$uiLabel=useUiLocale().uiLabel
 app.config.globalProperties.$uiMessage=useUiLocale().uiMessage
+app.config.globalProperties.$uiPluralSuffix=useUiLocale().uiPluralSuffix
 app.component('DashboardOrderDetailsDialog',OrderDialog)
 app.component('DashboardPageIntro',PageIntro)
 app.component('DashboardSecondaryNav',SecondaryNav)
@@ -97,7 +105,7 @@ app.component('PaymentProofUpload',{render(){return h('span')}})
 app.component('Icon',{render(){return h('span',{'aria-hidden':'true'},'•')}})
 app.component('NuxtLinkLocale',{props:['to'],setup(props,{slots}){return()=>h('a',{href:props.to,onClick:event=>{event.preventDefault();route.query.tab=new URL(props.to,location.origin).searchParams.get('tab')}},slots.default?.())}})
 app.mount('#app');applyAppearance()
-window.smsTest={fixture,settings,templates,orderEvents,orderHistory,view,cartItems,route,mode,locale:i18n.global.locale,nextTick,applyAppearance}
+window.smsTest={fixture,settings,templates,orderEvents,pdcEvents,orderHistory,view,cartItems,route,mode,locale:i18n.global.locale,nextTick,applyAppearance}
 `)
 await build({ entryPoints: [join(dir, 'entry.js')], bundle: true, outfile: join(dir, 'bundle.js'), alias: { '~': join(base, 'app') }, nodePaths: [join(base, 'node_modules')], define: { 'process.env.NODE_ENV': '"test"', '__VUE_OPTIONS_API__': 'true', '__VUE_PROD_DEVTOOLS__': 'false', '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': 'false' } })
 const css = (await Promise.all((await readdir(join(base, '.output/public/_nuxt'))).filter(file => file.endsWith('.css')).map(file => readFile(join(base, '.output/public/_nuxt', file), 'utf8')))).join('\n') + pageStyle
@@ -141,7 +149,22 @@ try {
     await goto('send')
     check(await page.getByRole('button', { name: labels.queueSms, exact: true }).isDisabled(), 'Provider disabled blocks manual sending')
     await goto('settings')
-    check(await page.locator('[data-order-event]').count() === 4,'Four Dashboard-managed order events')
+    check(await page.locator('[data-order-event]:not([data-order-event^=pdc_])').count() === 4,'Four Dashboard-managed order events')
+    check(await page.locator('[data-order-event^=pdc_]').count()===3,'Three separate PDC event controls')
+    for(const form of await page.locator('[data-order-event^=pdc_]').all())check(!await form.locator('input[type=checkbox]').isChecked(),'PDC controls start off')
+    const pdcForm=page.locator('[data-order-event=pdc_out_for_delivery]')
+    const pdcRevision=await page.evaluate(()=>window.smsTest.pdcEvents[0].config_revision)
+    await pdcForm.locator('input[type=checkbox]').check()
+    await pdcForm.locator('select').first().selectOption('pdc-template-1')
+    await pdcForm.locator('select').last().selectOption('pdc-template-2')
+    await pdcForm.getByRole('button',{name:labels.saveOrderEvent,exact:true}).click()
+    await page.waitForFunction(previous=>window.smsTest.pdcEvents[0].config_revision>previous,pdcRevision)
+    check(await page.evaluate(()=>window.smsTest.pdcEvents[0].template_en_id)==='pdc-template-1','PDC English binding saved')
+    check(await page.evaluate(()=>window.smsTest.pdcEvents[0].template_ar_id)==='pdc-template-2','PDC Arabic binding saved')
+    await pdcForm.locator('input[type=checkbox]').uncheck()
+    await pdcForm.getByRole('button',{name:labels.saveOrderEvent,exact:true}).click()
+    await goto('templates');await goto('settings')
+    check(!await pdcForm.locator('input[type=checkbox]').isChecked(),'PDC disable persists after reload')
     const orderForm=page.locator('[data-order-event=order_confirmed]')
     const priorRevision=await page.evaluate(()=>window.smsTest.orderEvents[0].config_revision)
     await orderForm.locator('input[type=checkbox]').check()
@@ -214,9 +237,17 @@ try {
     await page.locator('[data-order-history]').first().waitFor()
     await page.locator('[data-order-history]').first().evaluate(node=>{node.open=true})
     check((await page.locator('main').innerText()).includes(catalog.sms.orderReasons.provider_disabled),'Skipped reason localized in shared history')
-    await page.locator('[data-order-history]').last().evaluate(node=>{node.open=true})
+    await page.locator('[data-order-history]').filter({hasText:'ORD-BROWSER-SUBMITTED'}).evaluate(node=>{node.open=true})
     check((await page.locator('main').innerText()).includes('ELC-order-browser-fixture'),'Linked central transaction visible')
     check(!(await page.locator('main').innerText()).includes('01012345678'),'Order history masks phones')
+    const pdcSkipped=page.locator('[data-order-history]').filter({hasText:'ORD-PDC-BROWSER-SKIPPED'})
+    const pdcSubmitted=page.locator('[data-order-history]').filter({hasText:'ORD-PDC-BROWSER-SUBMITTED'})
+    await pdcSkipped.evaluate(node=>{node.open=true});await pdcSubmitted.evaluate(node=>{node.open=true})
+    check((await pdcSkipped.innerText()).includes(catalog.sms.orderEventNames.pdc_out_for_delivery),'PDC event is localized in shared history')
+    check((await pdcSubmitted.innerText()).includes('AWB-BROWSER-DELIVERED'),'Customer AWB visible in staff history')
+    check((await pdcSubmitted.innerText()).includes('ELC-pdc-browser-fixture'),'PDC links to central transaction diagnostics')
+    check((await pdcSubmitted.innerText()).includes(catalog.sms.pdcEventTime),'Provider time is distinct from ingestion time')
+    await page.screenshot({path:join(dir,language+'-'+width+'-'+theme+'-pdc-history.png'),fullPage:true});screens++
     const manualRequests=await page.evaluate(()=>window.smsTest.fixture.requests.filter(r=>r.path==='/api/admin-sms/send').length)
     await page.evaluate(()=>{const f=window.smsTest;f.fixture.order.status='pending_payment';f.route.query={};f.view.value='orders'})
     const orderButton=page.locator('button:visible').filter({hasText:'ORD-BROWSER-ORDER'}).first()
@@ -240,6 +271,19 @@ try {
     check(checkout.locale===language,'Checkout passes the transaction locale snapshot')
     check(checkout.address.phone==='01012345678','Checkout passes the order contact snapshot')
     check(await page.evaluate(()=>window.smsTest.fixture.requests.filter(r=>r.path==='/api/admin-sms/send').length)===manualRequests,'Disabled-provider checkout has no browser SMS trigger')
+    await page.evaluate(()=>{window.smsTest.route.path='/';window.smsTest.view.value='chat'})
+    await page.getByRole('button',{name:catalog.common.liveSupport,exact:true}).waitFor()
+    await page.getByRole('button',{name:catalog.common.liveSupport,exact:true}).click()
+    const chat=page.locator('#live-chat-panel')
+    await chat.waitFor({state:'visible'})
+    check(await chat.isVisible(),'Actual Live Chat launcher opens')
+    check(await chat.evaluate(node=>getComputedStyle(node).position)==='fixed','Actual Live Chat scoped styles applied')
+    check(!(await chat.innerText()).includes('livechat.'),'Live Chat labels resolve')
+    await page.screenshot({path:join(dir,language+'-'+width+'-'+theme+'-chat.png'),fullPage:true});screens++
+    await chat.locator('button.chat-header-close').click()
+    await chat.waitFor({state:'hidden'})
+    check(!await chat.isVisible(),'Actual Live Chat closes')
+    await page.evaluate(()=>{window.smsTest.route.path='/dashboard/sms'})
     await page.evaluate(()=>{window.smsTest.view.value='sms';window.smsTest.route.query.tab='settings'})
   }
   await page.evaluate(() => { window.smsTest.fixture.permissions = ['sms.view', 'sms.settings.view']; window.smsTest.route.query.tab = 'settings' })
@@ -248,6 +292,7 @@ try {
   check(await page.locator('fieldset input').first().isDisabled(), 'Read-only settings permission')
   check(await page.locator('[data-order-event] button').count()===0,'Settings viewers cannot change automated order events')
   check(await page.locator('[data-order-event] input').first().isDisabled(),'Order event controls respect manage permission')
+  check(await page.locator('[data-order-event^=pdc_] input').first().isDisabled(),'PDC controls respect manage permission')
   await page.evaluate(() => { window.smsTest.mode.preference = 'system'; window.smsTest.applyAppearance() })
   await page.emulateMedia({ colorScheme: 'light' }); await page.waitForTimeout(50)
   check(!await page.evaluate(() => document.documentElement.classList.contains('dark')), 'System switches to light')
@@ -255,7 +300,7 @@ try {
   check(await page.evaluate(() => document.documentElement.classList.contains('dark')), 'System switches to dark')
   check(errors.length === 0, 'No console/runtime errors: ' + JSON.stringify(errors))
   check(external.length === 0, 'No external network')
-  const report = { assertions, screenshots: screens, errors, external, scope: 'actual SMS controls/templates/history, checkout and order Dashboard/dialog; isolated API/auth fixtures; no production acceptance/provider calls' }
+  const report = { assertions, screenshots: screens, errors, external, scope: 'actual order/PDC SMS controls/templates/history, checkout, order Dashboard/dialog and Live Chat launcher; isolated API/auth fixtures; no production acceptance/provider calls' }
   await writeFile(join(dir, 'report.json'), JSON.stringify(report, null, 2))
   console.log(JSON.stringify(report))
 } catch (failure) {

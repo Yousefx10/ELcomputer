@@ -1,6 +1,6 @@
 # PDC shipping and customer tracking
 
-Local implementation only, 2026-10-05. No production migration, deployment, webhook registration or real PDC request/shipment occurred. Read [the audit](pdc-tracking-audit.md) and [the implementation report](pdc-tracking-report.md) before activation.
+Tracking has a committed dormant production release record. PDC → SMS is now implemented locally and awaits its separate migration/release; see [the integration policy](pdc-sms.md). No new production/provider action occurred in that local task. Read [the audit](pdc-tracking-audit.md) and [the implementation report](pdc-tracking-report.md) before activation.
 
 ## Existing system retained
 
@@ -10,7 +10,7 @@ Creation now requires an AWB response with the exact echoed reference; a differe
 
 ## Migration
 
-`supabase/migrations/20261005120000_pdc_customer_tracking.sql` is additive and UNAPPLIED remotely. It extends settings with explicit mode/timezone, lookup caches/sync times and throttling; extends existing mappings with normalized state/aliases; extends jobs with shipment state/source/observation and reconciliation time; extends history with job linkage/source/normalized state. Numeric status IDs become nullable for documented name-only API observations. Existing rows, original mapping labels/order statuses and duplicate legacy history are preserved.
+`supabase/migrations/20261005120000_pdc_customer_tracking.sql` is additive and recorded as applied during the prior dormant tracking release. It extends settings with explicit mode/timezone, lookup caches/sync times and throttling; extends existing mappings with normalized state/aliases; extends jobs with shipment state/source/observation and reconciliation time; extends history with job linkage/source/normalized state. Numeric status IDs become nullable for documented name-only API observations. Existing rows, original mapping labels/order statuses and duplicate legacy history are preserved.
 
 A partial unique index enforces `(provider, AWB, StatusID)` for new numeric events. The existing unique event key also deduplicates name-only observations. History queries have an index. Existing shipping-table RLS and service-only grants remain; service-only transactional functions and a customer-authorized private Broadcast SELECT policy are added. No new table or general order-event ledger is introduced. Keep the additive migration if rolling back application output; do not restore the old unsafe webhook with provider delivery active.
 

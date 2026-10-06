@@ -3791,7 +3791,7 @@
       "inquiry": "فشل استعلام المزود.",
       "provider_logs": "سجلات المزود غير متاحة.",
       "invalid_action": "إجراء المزود غير صالح.",
-      "order_event_suppressed": "لم يعد إشعار الطلب مؤهلاً للإرسال."
+      "order_event_suppressed": "الإشعار لم يعد مؤهلًا للإرسال."
     },
     "orderNotifications": "إشعارات الطلبات",
     "editOrderTemplates": "تعديل القوالب",
@@ -3799,14 +3799,17 @@
     "orderEnglishTemplate": "القالب الإنجليزي",
     "orderArabicTemplate": "القالب العربي",
     "saveOrderEvent": "حفظ الإشعار",
-    "orderVariables": "متغيرات الطلب",
+    "orderVariables": "المتغيرات المسموحة",
     "createdAt": "وقت الإنشاء",
     "units": "الوحدات: {count}",
     "orderEventNames": {
       "order_confirmed": "تأكيد الطلب",
       "payment_confirmed": "تأكيد الدفع",
       "processing": "تجهيز الطلب",
-      "cancelled": "إلغاء الطلب"
+      "cancelled": "إلغاء الطلب",
+      "pdc_out_for_delivery": "PDC: خرج للتسليم",
+      "pdc_delivery_exception": "PDC: تعذر التسليم",
+      "pdc_delivered": "PDC: تم التسليم"
     },
     "orderReasons": {
       "provider_disabled": "كانت فودافون معطلة.",
@@ -3820,7 +3823,15 @@
       "invalid_template": "تعذر إنشاء الرسالة من القالب.",
       "segment_limit": "تتجاوز الرسالة عشرة أجزاء.",
       "storage_error": "تعذر إضافة الإشعار إلى قائمة الانتظار.",
-      "capture_failed": "تعذر تسجيل الإشعار."
-    }
+      "capture_failed": "تعذر تسجيل الإشعار.",
+      "shipment_changed": "تغيرت حالة الشحنة أو إعدادات الربط.",
+      "event_time_unknown": "وقت تحديث شركة الشحن غير متاح.",
+      "stale_event": "وقت تحديث شركة الشحن خارج المدة المسموحة."
+    },
+    "pdcNotifications": "إشعارات PDC",
+    "automatedNotifications": "إشعارات الطلب والشحن",
+    "pdcAwb": "الشحنة / رقم التتبع",
+    "pdcEventTime": "وقت تحديث شركة الشحن",
+    "pdcNeutralReason": "يرجى التواصل معنا للمساعدة"
   }
 }

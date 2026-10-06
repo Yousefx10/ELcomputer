@@ -1,5 +1,7 @@
 # Order SMS notifications — dormant production deployment, 2026-10-06
 
+Local PDC → SMS now extends the same private intent/settings machinery without changing these four order-event semantics. It has a separate unapplied migration/release; see [pdc-sms.md](pdc-sms.md). This Order SMS deployment record remains unchanged historical provenance.
+
 The requested implementation is deployed without further application-code changes. All four events, seeded templates and Vodafone remain disabled. This record supersedes the historical local-only release status below. Date: Asia/Riyadh; guarded backup timestamps use UTC.
 
 1. **Synced branch and HEAD:** clean `main`, `e0d0de12d16efdc182891ee92e0bc74b9d3df9b9`. Normal fetch/fast-forward verification matched `origin/main` without a reset or loss of later legitimate deployment documentation. Subsequent documentation-only commits are separate from deployed application identity.

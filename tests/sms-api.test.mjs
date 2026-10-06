@@ -12,6 +12,7 @@ import { smsDatabaseClient } from './helpers/smsDatabase.mjs'
 import { decryptCredentialSecret } from '../server/utils/credentialSecrets.js'
 import { smsHandler } from '../server/utils/sms/admin.js'
 import { processSmsQueue } from '../server/utils/sms/service.js'
+import { pdcEventKey } from '../server/utils/pdcTracking.js'
 import { vodafoneProvider, VODAFONE_NAMESPACE } from '../server/utils/sms/vodafone.js'
 const workerSecret = 'sms-api-test-worker-key-at-least-32-characters'
 globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-api-test-master-key-at-least-32-characters', smsWorkerSecret: workerSecret })
@@ -90,7 +91,7 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       assert.equal((await call('order-events', { actor:null })).response.status,401)
       assert.equal((await call('order-events', { actor:'sender' })).response.status,403)
       const result=await call('order-events',{actor:'viewer'})
-      assert.equal(result.response.status,200);assert.equal(result.body.events.length,4)
+      assert.equal(result.response.status,200);assert.equal(result.body.events.filter(event=>!event.event_type.startsWith('pdc_')).length,4);assert.equal(result.body.events.filter(event=>event.event_type.startsWith('pdc_')).length,3)
       const item=result.body.events[0]
       assert.equal(item.is_enabled,false)
       assert.equal((await call('order-events',{actor:'viewer',method:'PATCH',body:item})).response.status,403)
@@ -191,6 +192,35 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       assert.equal(event.recipient_masked,'••••••678');assert.equal(event.locale,'en')
       assert.equal(event.payload,undefined);assert.equal(event.template_text,undefined)
       for(const value of ['PRIVATE_NAME_FIXTURE','01012345678','sms-api-test-master-key-at-least-32-characters',workerSecret]) assert.ok(!JSON.stringify(result.body).includes(value))
+    })
+    await t.test('PDC controls reuse settings/template/history permissions, audits and safe masked projections', async () => {
+      const controls=(await call('order-events',{actor:'viewer'})).body.events.filter(item=>item.event_type.startsWith('pdc_'))
+      assert.equal(controls.length,3);assert.ok(controls.every(item=>!item.is_enabled))
+      const item=controls.find(item=>item.event_type==='pdc_delivery_exception')
+      assert.equal((await call('order-events',{actor:'viewer',method:'PATCH',body:item})).response.status,403)
+      assert.equal((await call('order-events',{method:'PATCH',body:{...item,is_enabled:true}})).response.status,400)
+      const template=(await call('templates')).body.templates.find(row=>row.id===item.template_en_id)
+      assert.equal((await call('templates',{actor:'viewer',method:'POST',body:{...template,is_enabled:true}})).response.status,403)
+      assert.equal((await call('templates',{method:'POST',body:{...template,is_enabled:true}})).response.status,200)
+      const saved=await call('order-events',{method:'PATCH',body:{...item,is_enabled:true}})
+      assert.equal(saved.response.status,200);assert.equal(saved.body.event.config_revision,1)
+      assert.equal((await call('order-events',{method:'PATCH',body:item})).response.status,409)
+      assert.equal((await call('order-events',{method:'PATCH',body:{...saved.body.event,is_enabled:false}})).response.status,200)
+      const audit=(await db.query("select metadata from public.admin_activity_logs where action_key='sms.pdc_event.update' order by created_at desc limit 1")).rows[0].metadata
+      assert.equal(audit.event_type,'pdc_delivery_exception');assert.equal(audit.enabled,false)
+      const id=randomUUID(),job=randomUUID(),awb='AWB-HISTORY-FIXTURE',ref='ORDER-PDC-HISTORY'
+      await db.query("select set_config('request.jwt.claim.role','service_role',false)")
+      await db.query("insert into public.customer_orders(id,user_id,order_number,first_name,phone,street_address,city,governorate,sms_locale) values($1,$2,$3,'PRIVATE_PDC_NAME','01012345678','Street','Cairo','Cairo','ar')",[id,ownerId,ref])
+      await db.query('insert into public.shipping_order_jobs(id,order_id,to_ref,awb) values($1,$2,$3,$4)',[job,id,ref,awb])
+      const update={awb,ref,status_id:15,status_name:'PRIVATE_PDC_STATUS',reason:'PRIVATE_PDC_REASON',status_date:new Date(Date.now()+2000).toISOString(),source:'webhook'}
+      await db.query('select public.shipping_record_pdc_event($1::jsonb)',[JSON.stringify({...update,event_key:pdcEventKey(update)})])
+      const history=(await call('history',{actor:'viewer'})).body
+      const intent=history.orderEvents.find(row=>row.event_type==='pdc_delivery_exception')
+      assert.equal(intent.order_number,ref);assert.equal(intent.shipment_awb,awb);assert.equal(intent.reason,'event_disabled')
+      assert.equal(intent.locale,'ar');assert.equal(intent.recipient_masked,'••••••678');assert.ok(intent.provider_event_at)
+      assert.equal(intent.tracking_event_id,undefined);assert.equal(intent.shipment_job_id,undefined)
+      for(const value of ['PRIVATE_PDC_NAME','PRIVATE_PDC_STATUS','PRIVATE_PDC_REASON','01012345678','account_id_encrypted','webhook_secret_encrypted',workerSecret]) assert.ok(!JSON.stringify({history,audit}).includes(value))
+      assert.equal((await call('history',{actor:'sender'})).response.status,403)
     })
     await t.test('existing authenticated worker prepares order intents only after secret validation and never returns it', async () => {
       for(const supplied of ['', 'invalid-worker-fixture',workerSecret]) {

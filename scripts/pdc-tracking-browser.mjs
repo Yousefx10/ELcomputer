@@ -162,9 +162,9 @@ try{
  await page.getByRole('button',{name:'Save mapping',exact:true}).first().click()
  await page.getByText('Courier mapping saved.',{exact:true}).waitFor()
  check(await page.evaluate(()=>window.pdcTest.mappings[0].normalized_state)==='delayed','dashboard mapping saved')
- for(const locale of ['en','ar'])for(const width of [1440,390])for(const theme of ['light','dark']){
+ for(const locale of ['en','ar'])for(const width of [1440,390])for(const theme of ['light','dark','system']){
   await page.setViewportSize({width,height:1000})
-  await page.evaluate(({locale,theme})=>{window.pdcTest.locale.value=locale;document.documentElement.dir=locale==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme==='dark')},{locale,theme})
+  await page.evaluate(({locale,theme})=>{window.pdcTest.locale.value=locale;document.documentElement.dir=locale==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme!=='light')},{locale,theme})
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'settings no overflow')
   await screenshot([locale,width,theme,'settings'].join('-'))
  }

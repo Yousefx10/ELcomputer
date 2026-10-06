@@ -3791,7 +3791,7 @@
       "inquiry": "Provider inquiry failed.",
       "provider_logs": "Provider logs are unavailable.",
       "invalid_action": "Invalid provider action.",
-      "order_event_suppressed": "Order notification is no longer eligible."
+      "order_event_suppressed": "Notification is no longer eligible."
     },
     "orderNotifications": "Order notifications",
     "editOrderTemplates": "Edit templates",
@@ -3799,14 +3799,17 @@
     "orderEnglishTemplate": "English template",
     "orderArabicTemplate": "Arabic template",
     "saveOrderEvent": "Save event",
-    "orderVariables": "Order variables",
+    "orderVariables": "Allowed variables",
     "createdAt": "Created time",
     "units": "Units: {count}",
     "orderEventNames": {
       "order_confirmed": "Order confirmed",
       "payment_confirmed": "Payment confirmed",
       "processing": "Order processing",
-      "cancelled": "Order cancelled"
+      "cancelled": "Order cancelled",
+      "pdc_out_for_delivery": "PDC out for delivery",
+      "pdc_delivery_exception": "PDC delivery exception",
+      "pdc_delivered": "PDC delivered"
     },
     "orderReasons": {
       "provider_disabled": "Vodafone was disabled.",
@@ -3820,7 +3823,15 @@
       "invalid_template": "The template could not be rendered.",
       "segment_limit": "The message exceeds ten segments.",
       "storage_error": "The notification could not be queued.",
-      "capture_failed": "The notification could not be recorded."
-    }
+      "capture_failed": "The notification could not be recorded.",
+      "shipment_changed": "Shipment state or mapping changed.",
+      "event_time_unknown": "Courier event time was unavailable.",
+      "stale_event": "Courier event time is outside the allowed window."
+    },
+    "pdcNotifications": "PDC notifications",
+    "automatedNotifications": "Order and courier notifications",
+    "pdcAwb": "Shipment / AWB",
+    "pdcEventTime": "Courier event time",
+    "pdcNeutralReason": "Please contact us for help"
   }
 }

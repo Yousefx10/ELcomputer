@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { orderSmsEvents, orderSmsVariables, ORDER_SMS_MAX_SEGMENTS } from '../../../app/utils/orderSms.js'
+import { automatedSmsEvents, pdcSmsEvents, smsEventVariables, ORDER_SMS_MAX_SEGMENTS } from '../../../app/utils/orderSms.js'
 import { estimateSmsSegments, normalizeSmsPhone, renderSmsTemplate, smsTemplateVariables } from '../../../app/utils/sms.js'
 import { formatAccountMoney } from '../../../app/utils/accountOrders.js'
 import { formatLocale } from '../../../app/utils/appearance.js'
@@ -7,22 +7,24 @@ import { formatCustomerOrderStatus } from '../../../app/utils/orderStatus.js'
 import { getPaymentMethodLabel } from '../../../app/utils/paymentMethods.js'
 import messageKeys from '../../../app/utils/uiMessageKeys.json' with { type: 'json' }
 import arabic from '../../../i18n/locales/ar.json' with { type: 'json' }
+import english from '../../../i18n/locales/en.json' with { type: 'json' }
+import { shipmentReasonKey } from '../../../app/utils/shipmentTracking.js'
 import { getSmsSettings, smsReadiness } from './settings.js'
 import { createSmsService } from './service.js'
 
 const check = result => {
-  if (result.error) throw createError({ statusCode: 503, statusMessage: 'Order SMS storage is unavailable.' })
+  if (result.error) throw createError({ statusCode: 503, statusMessage: 'SMS intent storage is unavailable.' })
   return result.data
 }
 export const getOrderSmsSettings = async db => {
   const rows = check(await db.from('sms_order_event_settings').select('event_type,is_enabled,template_en_id,template_ar_id,config_revision,updated_at'))
-  return orderSmsEvents.map(event_type => rows.find(row => row.event_type === event_type) || {
+  return automatedSmsEvents.map(event_type => rows.find(row => row.event_type === event_type) || {
     event_type, is_enabled: false, template_en_id: null, template_ar_id: null, config_revision: 0, updated_at: null
   })
 }
 export const validateOrderSmsSetting = async (db, body) => {
-  const invalid = () => { throw createError({ statusCode: 400, statusMessage: 'Invalid order SMS settings.' }) }
-  if (!body || !orderSmsEvents.includes(body.event_type) || typeof body.is_enabled !== 'boolean' || !Number.isInteger(body.config_revision)) invalid()
+  const invalid = () => { throw createError({ statusCode: 400, statusMessage: 'Invalid notification settings.' }) }
+  if (!body || !automatedSmsEvents.includes(body.event_type) || typeof body.is_enabled !== 'boolean' || !Number.isInteger(body.config_revision)) invalid()
   for (const key of ['template_en_id', 'template_ar_id']) {
     if (body[key] !== null && (typeof body[key] !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body[key]))) invalid()
     if (!body[key]) { if (body.is_enabled) invalid(); continue }
@@ -33,7 +35,7 @@ export const validateOrderSmsSetting = async (db, body) => {
     try {
       const text = template[key === 'template_ar_id' ? 'text_ar' : 'text_en']
       if (body.is_enabled && (!template.is_enabled || !text.trim())) invalid()
-      if (smsTemplateVariables(text).some(variable => !orderSmsVariables.includes(variable))) invalid()
+      if (smsTemplateVariables(text).some(variable => !smsEventVariables(body.event_type).includes(variable))) invalid()
     } catch { invalid() }
   }
   return { event_type: body.event_type, is_enabled: body.is_enabled, template_en_id: body.template_en_id, template_ar_id: body.template_ar_id }
@@ -44,10 +46,15 @@ const translatedLabel = (value, locale) => {
   const key = foldedMessageKeys[value.toLowerCase()]
   return key?.split('.').reduce((object, part) => object?.[part], arabic) || value
 }
-export const renderOrderSms = intent => {
+export const renderOrderSms = (intent, reasonKey = null) => {
   const payload = intent.payload
   const text = intent.template_text
-  const known = {
+  const catalog = intent.locale === 'ar' ? arabic : english
+  const reason = /^shipment\.reasons\.r\d+$/.test(reasonKey || '') ? reasonKey.split('.').reduce((object, part) => object?.[part], catalog) : null
+  const known = pdcSmsEvents.includes(intent.event_type) ? {
+    customer_name: String(payload.customer_name || ''), order_number: String(payload.order_number || ''),
+    awb: String(payload.awb || ''), courier_name: 'PDC', delivery_reason: reason || catalog.sms.pdcNeutralReason
+  } : {
     customer_name: String(payload.customer_name || ''), order_number: String(payload.order_number || ''),
     order_total: formatAccountMoney(payload.order_total, payload.currency, formatLocale(intent.locale)),
     currency: String(payload.currency || 'EGP'),
@@ -56,7 +63,7 @@ export const renderOrderSms = intent => {
   }
   const variables = {}
   for (const key of smsTemplateVariables(text)) {
-    if (!orderSmsVariables.includes(key)) throw Error('Unsupported order variable.')
+    if (!smsEventVariables(intent.event_type).includes(key)) throw Error('Unsupported notification variable.')
     variables[key] = known[key]
   }
   return renderSmsTemplate(text, variables)
@@ -75,7 +82,16 @@ export const processOrderSmsEvents = async (db, { limit = 3 } = {}) => {
       reason = 'invalid_phone'
       const recipient = normalizeSmsPhone(intent.payload.phone, { defaultCountry: settings.default_country, allowInternational: settings.allow_international })
       reason = 'invalid_template'
-      const text = renderOrderSms(intent)
+      let reasonKey = null
+      if (pdcSmsEvents.includes(intent.event_type) && smsTemplateVariables(intent.template_text).includes('delivery_reason')) {
+        reason = 'storage_error'
+        const tracking = check(await db.from('shipping_webhook_events').select('reason_name').eq('id', intent.tracking_event_id).eq('shipment_job_id', intent.shipment_job_id).maybeSingle())
+        if (!tracking) throw Error('Tracking event unavailable.')
+        // Existing controlled customer reason categories only; raw text is never rendered/stored in SMS.
+        reasonKey = shipmentReasonKey(tracking.reason_name)
+      }
+      reason = 'invalid_template'
+      const text = renderOrderSms(intent, reasonKey)
       reason = 'segment_limit'
       if (estimateSmsSegments(text).segments > ORDER_SMS_MAX_SEGMENTS) throw Error()
       reason = 'invalid_template'
@@ -83,7 +99,7 @@ export const processOrderSmsEvents = async (db, { limit = 3 } = {}) => {
       reason = 'storage_error'
       const result = await createSmsService(db).sendNotification({
         recipients: [recipient], text, sender: intent.sender, idempotencyKey: intent.idempotency_key,
-        triggerSource: 'order:' + intent.event_type, expiresAt: new Date(intent.expires_at).toISOString(), priority: 20,
+        triggerSource: pdcSmsEvents.includes(intent.event_type) ? 'pdc:' + intent.event_type.slice(4) : 'order:' + intent.event_type, expiresAt: new Date(intent.expires_at).toISOString(), priority: 20,
         orderEvent: { id: intent.id, token: intent.lease_token, templateId: intent.template_id }
       })
       processed.push({ id: intent.id, status: result.status === 'suppressed' ? 'suppressed' : 'queued' })

@@ -29,6 +29,12 @@ for (const path of ['settings', 'capabilities', 'templates', 'history', 'order-e
   check(response.headers.get('cache-control') === 'private, no-store', 'SMS API no-store')
   scan(await response.text(), 'SMS API error')
 }
+for (const [path, method] of [['/api/admin-shipping/settings','GET'],['/api/admin-shipping/mappings','PATCH'],['/api/admin-shipping/orders/11111111-1111-4111-8111-111111111111/refresh','POST'],['/api/webhooks/pdc','POST']]) {
+  const response=await fetch(new URL(path,origin),{method})
+  requests++
+  check(response.status===401,'Anonymous PDC API/unsigned webhook denied')
+  scan(await response.text(),'PDC API error')
+}
 const worker = await fetch(new URL('/api/internal/sms/process', origin), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
 requests++
 check(worker.status === 401, 'Anonymous worker denied')

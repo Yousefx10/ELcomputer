@@ -10,7 +10,7 @@ export default defineEventHandler(smsHandler(async event => {
     .order('created_at', { ascending: false }).range((page - 1) * 25, page * 25 - 1)
   if (error) throw createError({ statusCode: 503, statusMessage: 'SMS history is unavailable.' })
   const { data: orderEvents, error: orderError, count: orderCount } = await supabaseAdmin.from('sms_order_events')
-    .select('id,order_number,event_type,locale,template_id,sender,recipient_masked,status,reason,batch_id,created_at,updated_at,sms_batches(id,external_trx_id,status,attempts,result_status,error_code,failure_category,submitted_at,sms_messages(encoding,units,segments,provider_status,error_code))', { count: 'exact' })
+    .select('id,order_number,shipment_awb,provider_event_at,event_type,locale,template_id,sender,recipient_masked,status,reason,batch_id,created_at,updated_at,sms_batches(id,external_trx_id,status,attempts,result_status,error_code,failure_category,submitted_at,sms_messages(encoding,units,segments,provider_status,error_code))', { count: 'exact' })
     .order('created_at', { ascending: false }).range((page - 1) * 25, page * 25 - 1)
   if (orderError) throw createError({ statusCode: 503, statusMessage: 'SMS history is unavailable.' })
   // History permission allows diagnostics, not retrieval of customer message text.

@@ -27,7 +27,7 @@ export const createOrderSmsFixture = async (options = {}) => {
       sender_names: ['APP'], default_sender: 'APP', expected_outbound_ip: '8.8.8.8', trusted_ip_confirmed: true,
       activation_confirmed: true, hash_protocol_confirmed: true }).eq('id', 'vodafone')
     if (error) throw Error(error.message)
-    await db.exec("update public.sms_templates set is_enabled=true where category='orders'; update public.sms_order_event_settings set is_enabled=true")
+    await db.exec("update public.sms_templates set is_enabled=true where category='orders'; update public.sms_order_event_settings set is_enabled=true where event_type not like 'pdc_%'")
   }
   const events = async id => (await db.query('select * from public.sms_order_events where order_id=$1 order by created_at,id', [id])).rows
   const order = async id => (await db.query('select * from public.customer_orders where id=$1', [id])).rows[0]

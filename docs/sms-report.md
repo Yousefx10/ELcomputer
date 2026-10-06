@@ -1,5 +1,41 @@
 # Central SMS report — 2026-10-06
 
+## PDC → SMS notifications — local integration
+
+PDC courier notifications extend the existing Order SMS intent/configuration architecture in local code and await their reviewed migration/release. Three PDC controls/templates default OFF. The earlier production Foundation/Order SMS records remain historical provenance; no production/provider action occurred here.
+
+Only normalized `out_for_delivery`, `delivery_attempted` and `delivered` transitions map to Notification events. Canonical PDC webhook/reconciliation persistence supplies one trusted source after deduplication/order checks. Stable shipment/AWB/event identity prevents overlap/retries/re-entry. Current PDC identity cannot distinguish independent repeat attempts, so exception is once per shipment/AWB. Same order phone/EN/AR snapshots, controlled reason catalog, segmentation/templates/sender, private worker/central queue and masked History; no raw-status triggers.
+
+Unapplied `20261006120000_pdc_sms_notifications.sql` extends the two private intent/settings tables with three disabled central templates/bindings and shipment/provider-time metadata, equivalent Order SMS uniqueness and canonical/eligibility wrappers. No historical backfill. Disabled/unconfigured/undated/obsolete communications are terminal; pre-feature observations create no intent. Configuration/provider-time cutoffs, ten-minute expiry and final shipment/current mapping checks prevent delayed activation. Capture failure cannot roll back tracking; total intent-storage outage may lose the safe fallback audit. Full 32-point report: [pdc-sms.md](pdc-sms.md).
+
+Local Node 24.16.0 checks: **432 full-suite passes/one existing optional native Paymob skip; 151 focused integration/PDC/Order SMS/SMS passes; typecheck/build/diff check passed**. Actual SMS/checkout/order/Live Chat Vue fixtures **543 assertions/96 screenshots**; existing PDC Dashboard/My Account fixtures **495 assertions/48 screenshots**, EN/AR/RTL/mobile/Light/Dark/System and zero errors/external requests. Built-local HTTP/SSR/public scans **980 assertions/20 requests/115 files/seven fictional private types/zero exposures**. Native independent sessions and authenticated production acceptance are not claimed. Evidence `/tmp/elcomputer-pdc-sms-*.log` and `/tmp/elcomputer-pdc-sms-review/`; temporary servers stopped after validation.
+
+```text
+PDC SMS INTEGRATION IMPLEMENTED: YES
+OUT FOR DELIVERY SMS CONNECTED: YES
+DELIVERY EXCEPTION SMS CONNECTED: YES
+DELIVERED SMS CONNECTED: YES
+PDC SMS CONFIGURATION DASHBOARD-MANAGED: YES
+PDC SMS IDEMPOTENCY DATABASE-BACKED: YES
+WEBHOOK/RECONCILIATION DUPLICATES PREVENTED: YES
+HISTORICAL PDC EVENTS BACKFILLED INTO SMS: NO
+DISABLED EVENTS CREATE FUTURE-SENDABLE BACKLOG: NO
+ORDER SMS REGRESSED: NO
+VODAFONE ENABLED: NO
+REAL PDC PRODUCTION API CALLED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+OTP CONNECTED: NO
+NPS CONNECTED: NO
+RETURNS/WARRANTY SMS CONNECTED: NO
+PRODUCTION MIGRATION APPLIED: NO
+PRODUCTION DEPLOYED: NO
+```
+
+Connected means local code. This dev computer intentionally has no production credentials; none were obtained/inferred/recreated/copied/changed. Future reviewed migration/guarded release uses the authorized deployment computer with provider/events off; authenticated acceptance and activation/tests remain separate. **STOP after PDC → SMS.**
+
+## Prior production and local records
+
 The foundation has a committed dormant production deployment/infrastructure record. Order notifications are now deployed with all four events OFF; the new release record below supersedes the local-only status. Prior foundation-only records below remain historical. Vodafone remains disabled; no real SMS/provider call occurred.
 
 ## Order SMS dormant production release — 2026-10-06

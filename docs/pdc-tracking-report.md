@@ -1,3 +1,15 @@
+# PDC → SMS notifications — local integration, 2026-10-06
+
+The existing normalized PDC tracking layer now feeds the existing central SMS intents/Notification queue in local code. Three default-off controls/bilingual bindings cover `out_for_delivery`, `delivery_attempted`, `delivered`. No mapping/raw-ID interpretation, webhook authentication, provider API, customer tracking UI, REF/AWB identity or historical PDC data was changed. No dispatch or raw-update notification.
+
+Unapplied additive migration `20261006120000_pdc_sms_notifications.sql` extends the two existing SMS intent/settings tables and wraps canonical persistence/eligibility. Webhook and reconciliation share normalized transition capture, PDC deduplication and database shipment/AWB/event uniqueness. No historical backfill or activation backlog. Current AWB + StatusID identity cannot distinguish independent repeat attempts, so exception is once per shipment/AWB. Undated reconciliation stays tracking data with terminal communication history; fresh dated transitions can notify. Existing ordering plus configuration/provider-time cutoffs, ten-minute expiry and final state/mapping checks prevent obsolete communications.
+
+Same order phone/locale snapshots, controlled reason catalog, central Notification sender/queue/worker/security and masked History. SMS failure cannot undo trusted tracking; total intent-storage failure has a documented degraded audit guarantee. Full requested 32-point report and explicit flags: [pdc-sms.md](pdc-sms.md).
+
+Local validation: **432 full-suite passes/one existing optional native Paymob skip; 151 focused integration/PDC/Order SMS/SMS passes; typecheck/build/diff check passed**. Actual Vue fixtures **543 SMS/checkout/order/Live Chat assertions + 495 PDC/account assertions, 144 screenshots**, EN/AR/RTL/mobile/themes, no errors/external requests. Built-local HTTP/artifacts **980 assertions/20 requests/115 files/seven fictional private types/zero exposures**. Native independent sessions/authenticated production acceptance are not claimed.
+
+No production access/credential change/migration/deployment, provider enablement/provisioning/request, real shipment/SMS or external webhook registration. This section is local only; the deployed tracking record below is unchanged historical provenance. **STOP after PDC → SMS integration.**
+
 # Dormant production deployment — completed, 2026-10-05
 
 The authorized master computer resumed the reviewed release. The PDC tracking application and additive migration are deployed at `https://new.elcomputer.net`; PDC remains externally dormant. This section supersedes the blocked attempt and local-only implementation status below. Authenticated production acceptance and provider activation remain separate, unfinished checks.

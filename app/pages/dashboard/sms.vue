@@ -39,13 +39,13 @@
           <span class="self-center text-xs text-gray-500">{{ $t('sms.localValidation') }}</span>
         </div>
       </form>
-      <div class="mt-8 border-t pt-5" :aria-label="$t('sms.orderNotifications')">
+      <div v-for="group in notificationGroups" :key="group.title" class="mt-8 border-t pt-5" :aria-label="$t(group.title)">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h3 class="text-lg font-semibold">{{ $t('sms.orderNotifications') }}</h3>
+          <h3 class="text-lg font-semibold">{{ $t(group.title) }}</h3>
           <NuxtLinkLocale v-if="can('sms.templates.view')" class="sms-secondary" to="/dashboard/sms?tab=templates">{{ $t('sms.editOrderTemplates') }}</NuxtLinkLocale>
         </div>
         <p class="my-3 text-sm text-gray-500 dark:text-gray-400">{{ $t('sms.orderNoBacklog') }}</p>
-        <form v-for="item in orderEvents" :key="item.event_type" :data-order-event="item.event_type" class="mb-4 rounded-lg border p-4" @submit.prevent="saveOrderEvent(item)">
+        <form v-for="item in group.events" :key="item.event_type" :data-order-event="item.event_type" class="mb-4 rounded-lg border p-4" @submit.prevent="saveOrderEvent(item)">
           <h4 class="mb-3 font-semibold">{{ $t(`sms.orderEventNames.${item.event_type}`) }}</h4>
           <fieldset :disabled="!can('sms.settings.manage') || busy" class="grid gap-3 md:grid-cols-3">
             <label class="sms-check"><input v-model="item.is_enabled" type="checkbox" />{{ $t(item.is_enabled ? 'sms.enabled' : 'sms.disabled') }}</label>
@@ -54,7 +54,7 @@
           </fieldset>
           <button v-if="can('sms.settings.manage')" class="sms-secondary mt-3" type="submit" :disabled="busy">{{ $t('sms.saveOrderEvent') }}</button>
         </form>
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $t('sms.orderVariables') }}: <span dir="ltr">{{ orderSmsVariables.join(', ') }}</span></p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $t('sms.orderVariables') }}: <span dir="ltr">{{ group.variables.join(', ') }}</span></p>
       </div>
     </section>
 
@@ -108,7 +108,7 @@
     <section v-else-if="tab === 'history' && can('sms.history.view')" class="sms-panel">
       <div class="mb-4 flex items-center justify-between"><h3 class="text-lg font-semibold">{{ $t('sms.history') }}</h3><button class="sms-secondary" @click="loadTab">{{ $t('sms.refresh') }}</button></div>
       <p class="mb-4 text-sm text-gray-500">{{ $t('sms.submissionOnly') }}</p>
-      <h4 v-if="history.orderEvents.length" class="mb-3 font-semibold">{{ $t('sms.orderNotifications') }}</h4>
+      <h4 v-if="history.orderEvents.length" class="mb-3 font-semibold">{{ $t('sms.automatedNotifications') }}</h4>
       <details v-for="item in history.orderEvents" :key="item.id" class="mb-3 rounded-lg border p-3" data-order-history>
         <summary class="cursor-pointer text-sm">{{ item.order_number || '—' }} · {{ $t(`sms.orderEventNames.${item.event_type}`) }} · {{ $t(`sms.statuses.${item.sms_batches?.status || item.status}`) }}</summary>
         <p v-if="item.reason" class="mt-3 text-sm">{{ $t(`sms.orderReasons.${item.reason}`) }}</p>
@@ -117,6 +117,8 @@
           <div><dt class="text-gray-500">{{ $t('sms.language') }}</dt><dd>{{ item.locale === 'ar' ? 'العربية' : 'English' }}</dd></div>
           <div><dt class="text-gray-500">{{ $t('sms.template') }}</dt><dd>{{ templates.find(template => template.id === item.template_id)?.name || item.template_id || '—' }}</dd></div>
           <div><dt class="text-gray-500">{{ $t('sms.sender') }}</dt><dd>{{ item.sender || '—' }} · {{ $t('sms.notification') }}</dd></div>
+          <div v-if="item.shipment_awb"><dt class="text-gray-500">{{ $t('sms.pdcAwb') }}</dt><dd class="break-all" dir="ltr">{{ item.shipment_awb }}</dd></div>
+          <div v-if="item.provider_event_at"><dt class="text-gray-500">{{ $t('sms.pdcEventTime') }}</dt><dd>{{ date(item.provider_event_at) }}</dd></div>
           <div><dt class="text-gray-500">ExternalTrxId</dt><dd class="break-all" dir="ltr">{{ item.sms_batches?.external_trx_id || '—' }}</dd></div>
           <div><dt class="text-gray-500">{{ $t('sms.createdAt') }}</dt><dd>{{ date(item.created_at) }}</dd></div>
         </dl>
@@ -139,7 +141,7 @@
 
 <script setup>
 import { estimateSmsSegments, normalizeSmsPhone, renderSmsTemplate } from '~/utils/sms.js'
-import { orderSmsVariables } from '~/utils/orderSms.js'
+import { orderSmsVariables, orderSmsEvents, pdcSmsEvents, pdcSmsVariables } from '~/utils/orderSms.js'
 definePageMeta({ layout: 'dashboard' })
 const { t, locale, te } = useI18n()
 const { uiMessage } = useUiLocale()
@@ -150,6 +152,10 @@ const loading = ref(true), busy = ref(false), error = ref(''), notice = ref('')
 const capabilities = ref({ enabled: false, ready: false, sender_names: [], default_sender: '', batch_size: 50, default_country: 'EG', allow_international: false })
 const settings = ref({}), senderNames = ref(''), secrets = reactive({ account_id: '', password: '', hash_secret: '' })
 const templates = ref([]), orderEvents = ref([]), history = reactive({ page: 1, total: 0, batches: [], orderTotal: 0, orderEvents: [] })
+const notificationGroups = computed(() => [
+  { title: 'sms.orderNotifications', events: orderEvents.value.filter(item => orderSmsEvents.includes(item.event_type)), variables: orderSmsVariables },
+  { title: 'sms.pdcNotifications', events: orderEvents.value.filter(item => pdcSmsEvents.includes(item.event_type)), variables: pdcSmsVariables }
+])
 const orderTemplates = computed(() => templates.value.filter(item => item.traffic_type === 'notification'))
 const blankTemplate = () => ({ code: '', name: '', category: 'manual', text_en: '', text_ar: '', traffic_type: 'notification', sender: '', is_enabled: false, variables: [] })
 const template = ref(blankTemplate())

@@ -8,13 +8,13 @@ export default defineEventHandler(smsHandler(async event => {
   const body = await readSmsBody(event, 4096)
   const payload = await validateOrderSmsSetting(supabaseAdmin, body)
   const current = (await getOrderSmsSettings(supabaseAdmin)).find(row => row.event_type === payload.event_type)
-  if (current.config_revision !== body.config_revision) throw createError({ statusCode: 409, statusMessage: 'Reload order SMS settings before saving.' })
+  if (current.config_revision !== body.config_revision) throw createError({ statusCode: 409, statusMessage: 'Reload notification settings before saving.' })
   const query = current.updated_at
     ? supabaseAdmin.from('sms_order_event_settings').update({ ...payload, updated_by: adminUser.id }).eq('event_type', payload.event_type).eq('config_revision', body.config_revision)
     : supabaseAdmin.from('sms_order_event_settings').insert({ ...payload, updated_by: adminUser.id })
   const { data, error } = await query.select('event_type,is_enabled,template_en_id,template_ar_id,config_revision,updated_at').single()
-  if (error) throw createError({ statusCode: 409, statusMessage: 'Order SMS settings could not be saved.' })
-  await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'sms.order_event.update', description: 'Saved order SMS settings.',
+  if (error) throw createError({ statusCode: 409, statusMessage: 'Notification settings could not be saved.' })
+  await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: payload.event_type.startsWith('pdc_') ? 'sms.pdc_event.update' : 'sms.order_event.update', description: 'Saved SMS notification settings.',
     metadata: { event_type: payload.event_type, enabled: payload.is_enabled, template_en_id: payload.template_en_id, template_ar_id: payload.template_ar_id } })
   return { event: data }
 }))
