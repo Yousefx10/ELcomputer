@@ -3833,5 +3833,27 @@
     "pdcAwb": "Shipment / AWB",
     "pdcEventTime": "Courier event time",
     "pdcNeutralReason": "Please contact us for help"
+  },
+  "warranty": {
+    "title": "Warranty",
+    "option": "Coverage",
+    "unconfigured": "Not configured",
+    "none": "No warranty",
+    "included": "Warranty included",
+    "duration": "Duration",
+    "unit": "Unit",
+    "monthsUnit": "Months",
+    "yearsUnit": "Years",
+    "oneMonth": "1 month",
+    "months": "{value} months",
+    "oneYear": "1 year",
+    "years": "{value} years",
+    "unavailable": "Warranty information unavailable for this purchase.",
+    "productHelp": "These terms apply to new purchases.",
+    "specificationHelp": "Warranty specifications are descriptive. Configure purchased coverage here.",
+    "invalidStatus": "Choose a valid warranty option.",
+    "invalidDuration": "Enter 1-120 whole months or 1-10 whole years.",
+    "invalidUnit": "Choose months or years for warranty.",
+    "unexpectedDuration": "Only included warranty can have a duration."
   }
 }

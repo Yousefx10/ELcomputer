@@ -45,7 +45,8 @@ export default defineEventHandler(async (event) => {
   }
   const wasSerialized = Boolean(previousProduct.is_serialized)
   const normalizedPayload = normalizeAdminProductPayload(body, {
-    catalogDefinitionsOnly: wasSerialized
+    catalogDefinitionsOnly: wasSerialized,
+    previousProduct
   })
   const {
     variants,

@@ -11,7 +11,7 @@ const { chromium } = await import(process.env.PDC_REVIEW_PLAYWRIGHT ? pathToFile
 const base = resolve(new URL('..', import.meta.url).pathname)
 const dir = process.env.PDC_REVIEW_ARTIFACTS || '/tmp/elcomputer-pdc-audit/browser'
 await mkdir(dir, { recursive: true })
-for (const [name, file] of Object.entries({ Details: 'app/pages/account/orders/[id].vue', Progress: 'app/components/account/OrderProgress.vue', Card: 'app/components/account/OrderCard.vue', Orders: 'app/pages/account/orders/index.vue', Shipping: 'app/components/dashboard/commerce/ShippingTab.vue' })) {
+for (const [name, file] of Object.entries({ Details: 'app/pages/account/orders/[id].vue', ItemWarranty: 'app/components/account/ItemWarranty.vue', Progress: 'app/components/account/OrderProgress.vue', Card: 'app/components/account/OrderCard.vue', Orders: 'app/pages/account/orders/index.vue', Shipping: 'app/components/dashboard/commerce/ShippingTab.vue' })) {
   const { descriptor } = parse(await readFile(join(base, file), 'utf8'))
   await writeFile(join(dir, name + '.js'), compileScript(descriptor, { id: name, inlineTemplate: true }).content)
 }
@@ -23,6 +23,7 @@ import { useShipmentUpdates } from '${base}/app/composables/useShipmentUpdates.j
 import en from '${base}/i18n/locales/en.json'
 import ar from '${base}/i18n/locales/ar.json'
 import Details from './Details.js'
+import ItemWarranty from './ItemWarranty.js'
 import Progress from './Progress.js'
 import Card from './Card.js'
 import Orders from './Orders.js'
@@ -70,6 +71,7 @@ app.use(i18n)
 app.component('Icon',{props:['name'],render(){return h('span',{'aria-hidden':'true'},'•')}})
 app.component('PaymentProofUpload',{render(){return null}})
 app.component('AccountOrderProgress',Progress);app.component('AccountOrderCard',Card)
+app.component('AccountItemWarranty',ItemWarranty)
 app.component('NuxtLinkLocale',{props:['to'],setup(props,{slots}){return()=>h('a',{href:typeof props.to==='string'?props.to:props.to.path,onClick:event=>{event.preventDefault();const path=typeof props.to==='string'?props.to:props.to.path;route.path=path;route.query=typeof props.to==='object'?props.to.query||{}:{};view.value=/orders\\//.test(path)?'details':'orders'}},slots.default?.())}})
 const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage
 app.mount('#app')

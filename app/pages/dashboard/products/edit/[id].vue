@@ -291,6 +291,8 @@
           />
         </div>
 
+        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || !hasPermission('products.edit')" />
+
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
@@ -518,11 +520,13 @@ const { uiLabel } = useUiLocale()
 const { uiNavigateTo } = useUiNavigation()
 
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
+import { defaultWarrantyConfig, readWarrantyConfig, normalizeProductWarranty } from '~/utils/warranty'
 definePageMeta({
   layout: 'dashboard'
 })
 
 const supabase = useSupabaseClient()
+const { hasPermission } = useAdminAccess()
 const {
   getSnapshot,
   invalidate,
@@ -561,6 +565,7 @@ const colorHex = ref('')
 const isSerialized = ref(false)
 const isPublished = ref(true)
 const sellingConfig = ref(defaultSellingConfig())
+const warrantyConfig = ref(defaultWarrantyConfig())
 
 const categories = ref([])
 const brands = ref([])
@@ -794,6 +799,7 @@ watchEffect(() => {
     colorHex.value = product.value.color_hex || ''
     isSerialized.value = Boolean(product.value.is_serialized)
     isPublished.value = product.value.is_published ?? true
+    warrantyConfig.value = readWarrantyConfig(product.value)
     const localDateTime = value => {
       if (!value) return ''
       const date = new Date(value)
@@ -876,6 +882,7 @@ const updateProduct = async () => {
         is_serialized: isSerialized.value,
         variants: isSerialized.value ? productVariants.value : [],
         ...serializeSellingConfig(sellingConfig.value),
+        ...warrantyConfig.value,
         is_published: isPublished.value
       }
     })
@@ -893,7 +900,9 @@ const updateProduct = async () => {
     metadata: {
       product_id: id,
       product_title: title.value.trim(),
-      product_slug: normalizedSlug
+      product_slug: normalizedSlug,
+      warranty_before: readWarrantyConfig(product.value),
+      warranty_after: normalizeProductWarranty(warrantyConfig.value)
     }
   })
 

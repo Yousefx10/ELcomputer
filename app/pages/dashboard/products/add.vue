@@ -216,6 +216,7 @@
         </div>
 
         <DashboardProductsSellingModeFields v-model="sellingConfig" />
+        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || !hasPermission('products.add')" />
 
         <DashboardProductsVariantsEditor
           v-model="variants"
@@ -282,11 +283,13 @@
 const { uiNavigateTo } = useUiNavigation()
 
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
+import { defaultWarrantyConfig, normalizeProductWarranty } from '~/utils/warranty'
 definePageMeta({
   layout: 'dashboard'
 })
 
 const supabase = useSupabaseClient()
+const { hasPermission } = useAdminAccess()
 const {
   getSnapshot,
   invalidate,
@@ -325,6 +328,7 @@ const variants = ref([{
 }])
 const isPublished = ref(true)
 const sellingConfig = ref(defaultSellingConfig())
+const warrantyConfig = ref(defaultWarrantyConfig())
 
 const categories = ref([])
 const brands = ref([])
@@ -507,6 +511,7 @@ const addProduct = async () => {
         is_serialized: true,
         variants: variants.value,
         ...serializeSellingConfig(sellingConfig.value),
+        ...warrantyConfig.value,
         is_published: isPublished.value
       }
     })
@@ -524,7 +529,8 @@ const addProduct = async () => {
     metadata: {
       product_id: data.id,
       product_title: title.value.trim(),
-      product_slug: normalizedSlug
+      product_slug: normalizedSlug,
+      warranty: normalizeProductWarranty(warrantyConfig.value)
     }
   })
 

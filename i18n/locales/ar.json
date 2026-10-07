@@ -3833,5 +3833,27 @@
     "pdcAwb": "الشحنة / رقم التتبع",
     "pdcEventTime": "وقت تحديث شركة الشحن",
     "pdcNeutralReason": "يرجى التواصل معنا للمساعدة"
+  },
+  "warranty": {
+    "title": "الضمان",
+    "option": "التغطية",
+    "unconfigured": "غير محدد",
+    "none": "بدون ضمان",
+    "included": "يشمل ضمانًا",
+    "duration": "المدة",
+    "unit": "الوحدة",
+    "monthsUnit": "أشهر",
+    "yearsUnit": "سنوات",
+    "oneMonth": "شهر واحد",
+    "months": "{value} شهر",
+    "oneYear": "سنة واحدة",
+    "years": "{value} سنة",
+    "unavailable": "معلومات الضمان غير متاحة لهذا الشراء.",
+    "productHelp": "تطبق هذه الشروط على المشتريات الجديدة.",
+    "specificationHelp": "مواصفات الضمان وصفية. حدد تغطية المشتريات هنا.",
+    "invalidStatus": "اختر خيار ضمان صالحًا.",
+    "invalidDuration": "أدخل مدة صحيحة من 1–120 شهرًا أو 1–10 سنوات.",
+    "invalidUnit": "اختر الأشهر أو السنوات للضمان.",
+    "unexpectedDuration": "تُحدد المدة فقط للمنتجات التي تشمل ضمانًا."
   }
 }

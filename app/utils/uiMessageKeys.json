@@ -2969,5 +2969,9 @@
   "Manage SMS templates": "sms.templates",
   "View SMS history": "sms.history",
   "Send notification SMS": "sms.notification",
-  "Send campaign SMS": "sms.campaign"
+  "Send campaign SMS": "sms.campaign",
+  "Choose a valid warranty option.": "warranty.invalidStatus",
+  "Enter 1-120 whole months or 1-10 whole years.": "warranty.invalidDuration",
+  "Choose months or years for warranty.": "warranty.invalidUnit",
+  "Only included warranty can have a duration.": "warranty.unexpectedDuration"
 }

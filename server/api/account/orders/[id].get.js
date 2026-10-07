@@ -19,7 +19,7 @@ export default defineEventHandler(async event => {
 
   const [itemsResult, shippingResult] = await Promise.all([
     supabaseAdmin.from('customer_order_items')
-      .select('id, product_id, variant_id, variant_name, variant_code, variant_sku, variant_color_name, variant_color_hex, product_title, product_slug, image_url, quantity, unit_price, line_total, is_preorder, preorder_payment_mode, preorder_deposit_percent, expected_availability_date, availability_message, initial_amount_due')
+      .select('id, product_id, variant_id, variant_name, variant_code, variant_sku, variant_color_name, variant_color_hex, product_title, product_slug, image_url, quantity, unit_price, line_total, is_preorder, preorder_payment_mode, preorder_deposit_percent, expected_availability_date, availability_message, initial_amount_due, warranty_status, warranty_duration_value, warranty_duration_unit, warranty_start_basis, warranty_snapshot_at')
       .eq('order_id', order.id).order('created_at'),
     readCustomerShipment(supabaseAdmin, order.id)
   ])

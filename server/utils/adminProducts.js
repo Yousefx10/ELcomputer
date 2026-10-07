@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import { normalizeSeoFields } from './seoFields.js'
+import { normalizeProductWarranty, warrantyFields } from '../../app/utils/warranty.js'
 
 const PRODUCT_MUTABLE_FIELDS = [
   'seo_title', 'seo_description', 'seo_image_url',
@@ -20,6 +21,7 @@ const PRODUCT_MUTABLE_FIELDS = [
   'color_hex',
   'is_serialized',
   'is_published',
+  ...warrantyFields,
   'selling_mode', 'expected_availability_date', 'availability_message',
   'preorder_active', 'preorder_starts_at', 'preorder_ends_at',
   'preorder_payment_mode', 'preorder_deposit_percent',
@@ -169,8 +171,15 @@ export const isMissingSchemaError = (error) => {
 }
 
 export const normalizeAdminProductPayload = (body = {}, {
-  catalogDefinitionsOnly = false
+  catalogDefinitionsOnly = false,
+  previousProduct
 } = {}) => {
+  let warranty
+  try {
+    warranty = normalizeProductWarranty(body, { previous: previousProduct })
+  } catch (error) {
+    throw createError({ statusCode: 400, statusMessage: error.message, data: { warrantyErrorKey: error.warrantyErrorKey } })
+  }
   const title = String(body?.title || '').trim()
   const slug = normalizeSlug(body?.slug || title)
   const price = Number(body?.price)
@@ -264,6 +273,7 @@ export const normalizeAdminProductPayload = (body = {}, {
   if (availabilityMessage?.length > 500) throw createError({ statusCode: 400, statusMessage: 'Customer message must be 500 characters or fewer.' })
 
   return {
+    ...warranty,
     ...normalizeSeoFields(body),
     title,
     slug,
