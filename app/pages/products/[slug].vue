@@ -73,6 +73,8 @@
           </div>
           <p v-else-if="selectedVariant && meaningfulVariantName" class="mt-5 text-sm text-slate-600">{{ $t('common.option') }} <strong class="text-slate-900">{{ selectedVariant.name }}</strong></p>
 
+          <ProductWarranty :product="product" />
+
           <div v-if="!isComingSoon" class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <div class="inline-flex h-12 w-fit items-center overflow-hidden rounded-md border border-slate-300" :aria-label="$t('common.quantity')">
               <button type="button" class="h-12 w-12 text-xl hover:bg-slate-100 disabled:text-slate-300" :aria-label="$t('common.decreaseQuantity')" :disabled="selectedQuantity <= 1" @click="decreaseQuantity">−</button>
@@ -162,6 +164,9 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
       color_name,
       color_hex,
       stock_quantity,
+      warranty_status,
+      warranty_duration_value,
+      warranty_duration_unit,
       is_published,
       sku,
       popularity_score,

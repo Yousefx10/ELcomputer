@@ -292,6 +292,7 @@
         </div>
 
         <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || !hasPermission('products.edit')" />
+        <NuxtLinkLocale v-if="hasPermission('settings.view')" :to="`/dashboard/settings?tab=after-sales&scope=product&id=${route.params.id}`" class="mt-3 inline-block text-sm font-semibold text-blue-700 underline">{{ $t('afterSales.title') }}</NuxtLinkLocale>
 
         <div class="md:col-span-2">
           <DashboardMediaUploadField

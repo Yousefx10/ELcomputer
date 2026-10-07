@@ -2973,5 +2973,11 @@
   "Choose a valid warranty option.": "warranty.invalidStatus",
   "Enter 1-120 whole months or 1-10 whole years.": "warranty.invalidDuration",
   "Choose months or years for warranty.": "warranty.invalidUnit",
-  "Only included warranty can have a duration.": "warranty.unexpectedDuration"
+  "Only included warranty can have a duration.": "warranty.unexpectedDuration",
+  "After-sales policies": "afterSales.title",
+  "Manage warranty and return policies.": "afterSales.intro",
+  "Enter valid after-sales policy values.": "afterSales.error",
+  "After-sales policies are unavailable.": "afterSales.error",
+  "Reload after-sales policies before saving.": "afterSales.stale",
+  "After-sales defaults, reasons and purchased policy archives remain.": "afterSales.resetRetained"
 }

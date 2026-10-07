@@ -159,7 +159,8 @@
                 </div>
               </div>
 
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
+                <NuxtLinkLocale v-if="hasPermission('settings.view')" :to="`/dashboard/settings?tab=after-sales&scope=category&id=${category.id}`" class="rounded-lg border px-3 py-2 text-sm">{{ $t('afterSales.title') }}</NuxtLinkLocale>
                 <button
                   v-if="canEditCategory"
                   @click="startEdit(category)"

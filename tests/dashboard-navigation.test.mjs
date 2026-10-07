@@ -5,7 +5,7 @@ import { dashboardSettingsSections } from '../app/utils/dashboardSettings.js'
 import { commerceTabs } from '../app/utils/commerce.js'
 import { getDashboardRouteRequirement, hasAdminPermission } from '../app/utils/adminPermissions.js'
 
-const primarySettingsKeys = ['settings-overview', 'erp', 'gallery', 'coupons', 'logs', 'reset']
+const primarySettingsKeys = ['settings-overview', 'after-sales', 'erp', 'gallery', 'coupons', 'logs', 'reset']
 
 const routeFor = (to) => {
   const url = new URL(to, 'https://example.test')

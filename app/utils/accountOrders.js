@@ -27,6 +27,13 @@ export const formatAccountDate = (value, withTime = false, locale = 'en-US') => 
   }).format(date)
 }
 
+// SQL returns a policy-local civil date. UTC formatting keeps that date intact
+// for customers browsing from any timezone; no entitlement math runs here.
+export const formatAccountCalendarDate = (value, locale = 'en-US') => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return 'Date unavailable'
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`))
+}
+
 export const paymentStatusLabel = value => ({
   partially_paid: 'Partially paid',
   pending: 'Payment pending', paid: 'Paid', failed: 'Payment failed', refunded: 'Refunded'

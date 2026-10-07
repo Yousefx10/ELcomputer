@@ -1902,6 +1902,8 @@
 
       </fieldset>
 
+      <DashboardAfterSalesPolicies v-else-if="activeSettingsView === 'after-sales'" :can-edit="canEditSettings" />
+
       <DashboardErpSettings
         v-else-if="activeSettingsView === 'erp'"
         :can-edit="canEditSettings"
@@ -2567,6 +2569,8 @@ const activeSettingsView = computed(() => {
   if (requestedTab === 'logs' && canViewLogs.value) {
     return 'logs'
   }
+
+  if (requestedTab === 'after-sales' && canViewGeneralSettings.value) return 'after-sales'
 
   if (requestedTab === 'erp' && canViewGeneralSettings.value) {
     return 'erp'
@@ -4456,7 +4460,7 @@ const handleSystemResetChanged = () => {
 }
 
 const loadActiveSettingsView = async (view = activeSettingsView.value, { force = false } = {}) => {
-  if (view === 'erp') return
+  if (view === 'erp' || view === 'after-sales') return
 
   if (view === 'logs') {
     await loadAdminLogs({ force })

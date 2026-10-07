@@ -51,8 +51,8 @@ export const warrantyEntitlement = (item = {}) => {
     const terms = normalizeProductWarranty(item)
     if (terms.warranty_status === 'unknown') return unknown
     if (terms.warranty_status === 'none') return { ...unknown, hasWarranty: false, status: 'not_applicable', information: 'none' }
-    // No authoritative start policy was found. A future approved policy must
-    // explicitly extend this helper and schema before expiry can be enforced.
+    // Duration remains this immutable foundation snapshot. The account API
+    // supplies policy-derived dates separately from the purchased version.
     if (item.warranty_start_basis !== 'unresolved') return unknown
     return {
       ...unknown, hasWarranty: true, information: 'included', startBasis: 'unresolved',

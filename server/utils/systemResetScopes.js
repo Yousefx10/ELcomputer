@@ -1,4 +1,7 @@
 // Explicit scope lists prevent an unrelated table from being erased implicitly.
+// Explicitly retained by system_reset_plan, including full reset. Catalog
+// overrides cascade with deleted products/categories; globals/reasons/archive stay.
+export const resetRetainedAfterSalesTables = ['after_sales_policies', 'after_sales_return_reasons', 'after_sales_policy_versions']
 export const resetTableGroups = {
   chat: ['chat_attachments', 'chat_read_state', 'chat_events', 'chat_messages', 'chat_agent_availability', 'chat_rate_limits', 'chat_conversations', 'chat_settings'],
   support: ['support_ticket_attachments', 'support_ticket_events', 'support_ticket_messages', 'support_tickets', 'help_articles', 'help_categories'],
@@ -24,7 +27,7 @@ export const systemResetScopes = [
   { key: 'media', label: 'Media library reset', icon: 'lucide:images', description: 'Erase uploaded images and clear their references.', details: ['All images uploaded through this website.', 'Uploaded image references are cleared from products and store content.', 'Products, orders and externally hosted images remain.'], tables: [], mediaFiles: true },
   { key: 'content', label: 'Store content reset', icon: 'lucide:panels-top-left', description: 'Restore store content and layout to their defaults.', details: ['Help articles, help categories, custom pages and store settings.', 'Banners, announcements, offers and navigation links.', 'Products, tickets, orders, coupons and uploaded files remain.'], tables: resetTableGroups.content },
   { key: 'analytics', label: 'Analytics reset', icon: 'lucide:chart-no-axes-combined', description: 'Erase visitor activity and customer feedback history.', details: ['Visitor sessions, events and NPS responses.', 'Orders, product reviews and internal-user exclusions remain.'], tables: resetTableGroups.analytics },
-  { key: 'full', label: 'Full system reset', icon: 'lucide:rotate-ccw', description: 'Erase website data and start again.', details: ['All store data, customers, other admins, documents and uploaded media.', 'Your current owner login and the installed application remain.', 'A new completion log records who performed the reset.'], tables: [...new Set(Object.values(resetTableGroups).flat()), ...specificationResetTables], mediaFiles: true, documentFiles: true, authUsers: true }
+  { key: 'full', label: 'Full system reset', icon: 'lucide:rotate-ccw', description: 'Erase website data and start again.', details: ['All store data, customers, other admins, documents and uploaded media.', 'Your current owner login and the installed application remain.', 'A new completion log records who performed the reset.', 'After-sales defaults, reasons and purchased policy archives remain.'], tables: [...new Set(Object.values(resetTableGroups).flat()), ...specificationResetTables], mediaFiles: true, documentFiles: true, authUsers: true }
 ]
 
 export const getSystemResetScope = (key) => systemResetScopes.find((scope) => scope.key === key)

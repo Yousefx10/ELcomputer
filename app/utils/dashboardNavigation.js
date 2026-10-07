@@ -58,7 +58,7 @@ const group = (key, label, icon, match, children, access = {}) => ({
   key, label, icon: `lucide:${icon}`, match, children, to: children[0]?.to, ...access
 })
 
-const primarySettingsKeys = new Set(['erp', 'gallery', 'coupons', 'logs', 'reset'])
+const primarySettingsKeys = new Set(['erp', 'after-sales', 'gallery', 'coupons', 'logs', 'reset'])
 
 export const dashboardNavigationGroups = [
   group('dashboard', 'Dashboard', 'layout-dashboard', { paths: ['/dashboard'] }, [

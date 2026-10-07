@@ -1,3 +1,9 @@
+# Current extension: after-sales policy foundation, 2026-10-07
+
+The duration/snapshot foundation below is retained as the `abf9347` implementation record. Its earlier “no expiry/start policy” statements describe that checkpoint. The additive local extension now provides Settings-managed warranty/return basis and explicit fallback rules, immutable purchased policy versions, server calendar expiry/eligibility, public structured duration, and My Account dates/status when authoritative. Historical missing policy remains unknown. Both migrations are unapplied and neither feature is deployed.
+
+See [after-sales-policy.md](after-sales-policy.md) for current architecture, date sources/boundaries, RBAC/audits, reset retention, validation and the complete 32-point report. No Claims, PDC reverse shipments, SMS or email work was added.
+
 # Warranty entitlement foundation — local implementation, 2026-10-07
 
 Scope: structured product warranty and immutable purchase snapshots shown in the existing My Account order detail. No Warranty Claims, Returns, reverse shipping, notifications, NPS, OTP, production migration or deployment.

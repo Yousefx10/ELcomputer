@@ -16,7 +16,7 @@ const components = {
   WarrantyFields: 'app/components/dashboard/products/WarrantyFields.vue', ItemWarranty: 'app/components/account/ItemWarranty.vue',
   Details: 'app/pages/account/orders/[id].vue', Orders: 'app/pages/account/orders/index.vue',
   Progress: 'app/components/account/OrderProgress.vue', Card: 'app/components/account/OrderCard.vue',
-  Product: 'app/pages/products/[slug].vue', Checkout: 'app/pages/checkout/index.vue',
+  ProductWarranty: 'app/components/ProductWarranty.vue', Product: 'app/pages/products/[slug].vue', Checkout: 'app/pages/checkout/index.vue',
   Variants: 'app/components/dashboard/products/VariantsEditor.vue', SellingMode: 'app/components/dashboard/products/SellingModeFields.vue',
   PageIntro: 'app/components/dashboard/PageIntro.vue'
 }
@@ -83,7 +83,7 @@ const views={add:Add,edit:Edit,details:Details,orders:Orders,product:Product,che
 const app=createApp({render:()=>h('div',{class:view.value==='add'||view.value==='edit'?'dashboard-modern p-4':'storefront p-4'},h(Suspense,null,{default:()=>h(views[view.value],{key:generation.value})}))})
 app.use(i18n)
 const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage;app.config.globalProperties.$uiPluralSuffix=ui.uiPluralSuffix
-for(const [name,component]of Object.entries({DashboardProductsWarrantyFields:WarrantyFields,AccountItemWarranty:ItemWarranty,AccountOrderProgress:Progress,AccountOrderCard:Card,DashboardProductsVariantsEditor:Variants,DashboardProductsSellingModeFields:SellingMode,DashboardPageIntro:PageIntro}))app.component(name,component)
+for(const [name,component]of Object.entries({ProductWarranty,DashboardProductsWarrantyFields:WarrantyFields,AccountItemWarranty:ItemWarranty,AccountOrderProgress:Progress,AccountOrderCard:Card,DashboardProductsVariantsEditor:Variants,DashboardProductsSellingModeFields:SellingMode,DashboardPageIntro:PageIntro}))app.component(name,component)
 for(const name of ['DashboardSeoFields','DashboardMediaUploadField','DashboardProductsSpecificationEditor','LayoutPageLoading','PaymentProofUpload','ProductReviews','CardsProductCard'])app.component(name,{render(){return null}})
 app.component('Icon',{render(){return h('span',{'aria-hidden':'true'},'•')}})
 app.component('NuxtLinkLocale',{props:['to'],setup(props,{slots}){return()=>h('a',{href:typeof props.to==='string'?props.to:props.to.path,onClick:event=>{event.preventDefault();const path=typeof props.to==='string'?props.to:props.to.path;if(path.startsWith('/account/orders/'))show('details');else if(path==='/account/orders')show('orders')}},slots.default?.())}})
@@ -215,7 +215,7 @@ try {
   await page.evaluate(() => { window.warrantyTest.theme.value = 'system'; window.warrantyTest.appearance() })
   check(await page.evaluate(() => !document.documentElement.classList.contains('dark')), 'System follows OS light')
   await page.emulateMedia({ colorScheme: 'dark' })
-  await page.waitForTimeout(100)
+  await page.waitForFunction(() => document.documentElement.classList.contains('dark'))
   check(await page.evaluate(() => document.documentElement.classList.contains('dark')), 'System follows OS dark')
   check(errors.length === 0, 'No browser errors/warnings: ' + errors.join('; '))
   check(external.length === 0, 'No external requests: ' + external.join('; '))

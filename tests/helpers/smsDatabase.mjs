@@ -9,6 +9,7 @@ export const smsDatabaseClient = db => {
       insert(data) { state.action = 'insert'; state.data = data; return query },
       eq(key, value) { state.filters.push(`${key}=${parameter(value)}`); return query },
       or() { return query },
+      ilike(key, value) { state.filters.push(`${key} ilike ${parameter(value)}`); return query },
       abortSignal() { return query },
       order(key, options = {}) { state.orders.push(`${key} ${options.ascending === false ? 'desc' : 'asc'}`); return query },
       limit(limit) { state.limit = limit; return query },
