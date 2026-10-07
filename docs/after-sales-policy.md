@@ -1,3 +1,69 @@
+# Warranty + after-sales policy foundations — production deployment, 2026-10-07 (verified 2026-10-08)
+
+Deployed source **`73c9e11eed3f1c3fe86d751eb2ae0dc08dd4c520`** from clean synced `main`, containing `abf9347` and `73c9e11`. No feature implementation changes were made during this release. The earlier local-only records below are historical.
+
+- Applied only **`20261007120000_warranty_entitlements.sql`** and **`20261007160000_after_sales_policy.sql`**, in order. All **63** repository/remote versions **and names** match; no pending, remote-only or unexplained migration. Reviewed source SHA-256: warranty `ba999c03204557d1130440ed32dfefeb661d59d0db0df3bbb2ab1973f5343b52`; after-sales `24f40ba0968842fc801e4d7aff2af473c6b958d31b671d6c0c52db8a630a88e5`. The CLI local Docker catalog-cache warning was non-fatal: independent history/schema/data/API verification passed.
+- All **30** business/configuration fingerprints match before migration, after migration and final verification: **91 products/91 variants, 9 orders/13 items**, 3 customer profiles/3 staff, 100 serialized units, 382 cities/32 mappings, and existing payment/ERP/chat/NPS/settings/SMS records. All **13 historical items retain NULL warranty terms/provenance/policy references**. All 91 products remain deliberately **unconfigured**, not fabricated no-warranty. No historical backfill, current order/status/payment change, synthetic order, shipment or messaging record.
+- Production policies remain **draft/unconfigured and disabled**, global revision **1**, delivery basis, empty explicit fallback lists, Cairo timezone, no resolutions. Editable 14-day return seed retained without imposing it on historical purchases. **Seven bilingual reasons**, no category/product overrides, **zero policy versions**. No staff policy save or business-value adjustment was performed. Existing PDC and all seven Order/PDC SMS controls/templates remain OFF; zero sendable intents/batches/messages/attempts, with the one preexisting suppressed Order SMS intent preserved.
+- Native read-only verification: **3 private RLS tables / 18 browser-denied functions / 7 enabled triggers**, validated constraints, service-only canonical checkout and private policy RPCs, 187 preexisting function bodies preserved (checkout/preorder bodies retained under the warranty wrapper names; reset-plan recognition deliberately extended). Existing ERP stock/RLS storefront projection retains public stock and now exposes structured warranty fields. **10** calendar/date cases pass: month-end, leap year, exclusive Cairo boundary, not-started, unavailable invoice/delivery, configured fallback order and DST day windows. No invoice source was invented. All historical eligibility remains unknown.
+- Fresh pre-release validation: **484 full-suite passes / one existing optional native concurrency skip**, **221 focused passes** including the 52 warranty/after-sales cases and account/order/payment/preorder/PDC/SMS regressions; typecheck, build, diff and guarded preflight passed. Existing ERP import/source-map/chunk/BigInt build warnings remain. Local fixture evidence is distinct from production authentication.
+- Released through **`env -u DEBUG npm run deploy`**. Only **`new-elcomputer`** restarted once (**41 → 42**), online under Node **22.23.1**, expected cwd/entry/fork mode/internal **3001**. All **719** output file/symlink entries match the guarded local build. Runtime configuration fingerprint and server error-log bytes/hash are unchanged; **119** public files scanned with zero private-value exposure. No environment upload/change, Nginx/firewall change or unrelated PM2/site action.
+- Rollback backup: **`/home/newelcomputer/htdocs/new.elcomputer.net/.output-deploy-backup-20261007-204401-63723`**, readable; all **712** prior output entries match the pre-release manifest. Backup retained, rollback unused. If application rollback is later required, use the guarded helper and retain these additive migrations; no destructive schema reversal is proposed.
+- Production acceptance: **137 HTTP assertions / 57 requests**, **208 browser matrix states / 25 screenshots**, plus **10 actual-cart/privacy assertions**. Public home/product/warranty/cart, actual local cart persistence, checkout/login/account/orders and Dashboard/product/settings/category/product-policy/PDC/SMS guards, Live Chat open/close without messages, EN/AR/RTL, 1440/390px, Light/Dark/System and OS transitions pass. Browser errors/private JSON exposure/provider attempts/commerce writes: **zero**. Probes were corrected to actual Live Chat selectors, button-label capitalization, Vue mount readiness and asynchronous cart hydration/restoration; the application did not require a code change.
+- **Authenticated production admin/customer interiors and role-specific interactions: NOT VERIFIED.** No safe established session was provided or manufactured. Actual owned-order rendering, foreign-customer access and staff policy save/reload remain separate authenticated acceptance; real invoice/delivery/provider transactions and independent native concurrency are unverified. Anonymous guards, schema/native reads and isolated tests do not substitute for that acceptance.
+- **Warranty Claims: NOT PRESENT. Return Claims: NOT PRESENT. PDC reverse shipping: NOT PRESENT. Claim SMS/email: NOT CONNECTED.** No real PDC/Vodafone call, real SMS, valid worker execution, scheduler/webhook registration or provider activation. Remaining work: approve real business rules/date/serial evidence and authenticated acceptance, then separately authorize Claims lifecycle/uploads/manual review/resolution execution and any later shipping/notifications. **STOP after deployment verification.**
+
+Evidence: `/tmp/elcomputer-warranty-release-20261007/` contains migration identity/source/data/security/calendar checks, fresh validation, guarded release/runtime/output/backup comparisons and production HTTP/browser results. It records hashes/counts/public metadata, not credentials or customer values. Deployment documentation is committed/pushed separately through the established main workflow.
+
+## Production deployment — requested 24-point report
+
+1. Synced branch/HEAD: clean main at 73c9e11; normal fetch/fast-forward workflow.
+2. Warranty commit: abf9347 is an ancestor of the deployed source.
+3. After-sales commit: 73c9e11 is the deployed source.
+4. Pre-deployment validation: 484 full passes/one optional skip, 221 focused, typecheck/build/diff/preflight passed.
+5. Warranty migration: applied successfully, original implementations preserved under wrappers.
+6. Policy migration: applied successfully, constrained private tables/guards/defaults/view/reset integration verified.
+7. Supabase alignment: exactly 63 matching versions and names, zero pending/remote-only.
+8. Two-computer consistency: current main identities match linked history; no reset to an old feature commit.
+9. Historical integrity: all 30 fingerprints preserved; all 13 purchased items still NULL, all 91 products unknown.
+10. Guarded deployment: normal .output-only backup/restart/health workflow succeeded.
+11. Deployed source: 73c9e11eed3f1c3fe86d751eb2ae0dc08dd4c520; later documentation does not imply another app release.
+12. PM2/health: only new-elcomputer restarted 41 → 42; online, expected Node/cwd/entry/3001, error log unchanged.
+13. Product warranty: real EN/AR SSR/browser unconfigured state safely displayed; included/none cases covered by isolated tests, no production catalog edits.
+14. My Account: protection verified; historical SQL unknowns preserved. Signed-in purchased item UI NOT VERIFIED.
+15. After-sales Dashboard: routes/API guards deployed and tested; actual authenticated interiors NOT VERIFIED.
+16. Defaults: global revision 1, both families draft/unconfigured/disabled; seed values unchanged, no overrides/versions.
+17. Dates/expiry: ten native calendar/fallback cases, unavailable invoice retained; no expiry fabricated for history.
+18. Returns: typed model/seven reasons deployed; no customer Claim workflow enabled; staff UI acceptance pending.
+19. RBAC/RLS: 3 private RLS tables, 18 browser-denied functions, real unauthenticated server denials; role-bound authenticated UX pending.
+20. Authenticated acceptance: NOT VERIFIED; no established safe session, no account/order/session manufactured.
+21. Regressions: focused/full order, checkout/payment, preorder, account, PDC, SMS and Live Chat tests pass; anonymous production routes/cart/Live Chat/localization/themes pass.
+22. External APIs: no real PDC/Vodafone calls, SMS or claim-email action; public website/Supabase verification only.
+23. Backup: recorded above, readable and exact prior 712-entry output; rollback unused.
+24. Before Claims: business-rule approval, trusted dates/serial evidence and real authenticated acceptance; separately scoped workflow/integrations.
+
+```text
+WARRANTY FOUNDATION CODE DEPLOYED: YES
+WARRANTY MIGRATION APPLIED: YES
+AFTER SALES POLICY CODE DEPLOYED: YES
+AFTER SALES POLICY MIGRATION APPLIED: YES
+LOCAL/REMOTE SUPABASE MIGRATIONS ALIGNED: YES
+HISTORICAL WARRANTY ENTITLEMENTS FABRICATED: NO
+HISTORICAL POLICY ENTITLEMENTS FABRICATED: NO
+GLOBAL WARRANTY POLICY DASHBOARD-MANAGED: YES
+GLOBAL RETURN POLICY DASHBOARD-MANAGED: YES
+CATEGORY OVERRIDES DEPLOYED: YES
+PRODUCT OVERRIDES DEPLOYED: YES
+WARRANTY CLAIM WORKFLOW IMPLEMENTED: NO
+RETURN CLAIM WORKFLOW IMPLEMENTED: NO
+PDC REVERSE SHIPPING CONNECTED: NO
+CLAIM SMS CONNECTED: NO
+CLAIM EMAIL CONNECTED: NO
+REAL PDC PRODUCTION API CALLED: NO
+REAL VODAFONE API CALLED: NO
+REAL SMS SENT: NO
+```
+
 # After-sales policy foundation — local implementation, 2026-10-07
 
 Extends Warranty Entitlement Foundation `abf9347`. One feature: typed warranty/return policy administration and eligibility preview. No Claims, reverse shipments, uploads, notifications, provider activation, production migration or deployment.
