@@ -55,10 +55,11 @@ const items = [
 ]
 
 const modernGroups = [
-  { label: 'Your activity', items: [items[0], items[1], items[2]] },
+  { label: 'Your activity', items: [items[0], items[1], { label: 'After-Sales', icon: 'lucide:clipboard-check', to: '/account/after-sales' }, items[2]] },
   { label: 'Manage account', items: [items[4], items[5]] },
   { label: 'Get help', items: [items[3], { label: 'Help Center', icon: 'lucide:book-open', to: '/help' }] }
 ]
+items.push({ label: 'After-Sales', icon: 'lucide:clipboard-check', to: '/account/after-sales' })
 const modernItems = [...items, { label: 'Help Center', icon: 'lucide:book-open', to: '/help' }]
 
 const isActive = item => item.exact

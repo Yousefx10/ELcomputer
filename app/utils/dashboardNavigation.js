@@ -124,6 +124,7 @@ export const dashboardNavigationGroups = [
   { key: 'documents', label: 'Documents', icon: 'lucide:folder-closed', to: '/dashboard/documents', permission: 'documents.view', documentTitle: 'Dashboard - Documents', match: { paths: ['/dashboard/documents'] } },
   { key: 'pages', label: 'Pages', icon: 'lucide:file-stack', to: '/dashboard/pages', permission: 'pages.view', documentTitle: 'Dashboard - Pages', match: { paths: ['/dashboard/pages'] } },
   { key: 'help', label: 'Help Center', icon: 'lucide:book-open', to: '/dashboard/help', permission: 'help.view', documentTitle: 'Dashboard - Help Center', match: { paths: ['/dashboard/help'] } },
+  { key: 'claims', label: 'After-Sales Claims', icon: 'lucide:clipboard-check', to: '/dashboard/after-sales', permission: 'claims.view', documentTitle: 'Dashboard - After-Sales Claims', match: { paths: ['/dashboard/after-sales'], prefixes: ['/dashboard/after-sales/'] } },
   group('support', 'Customer Support', 'life-buoy', { paths: ['/dashboard/support', '/dashboard/live-chat'], prefixes: ['/dashboard/support/', '/dashboard/live-chat/'] }, [
     { ...child('support-tickets', 'Tickets', 'ticket', '/dashboard/support', null, [], 'support.view'), match: { paths: ['/dashboard/support'], prefixes: ['/dashboard/support/'] } },
     child('live-chat', 'Live Chat', 'messages-square', '/dashboard/live-chat', null, [], 'support.view')

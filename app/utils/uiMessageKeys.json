@@ -2979,5 +2979,14 @@
   "Enter valid after-sales policy values.": "afterSales.error",
   "After-sales policies are unavailable.": "afterSales.error",
   "Reload after-sales policies before saving.": "afterSales.stale",
-  "After-sales defaults, reasons and purchased policy archives remain.": "afterSales.resetRetained"
+  "After-sales defaults, reasons and purchased policy archives remain.": "afterSales.resetRetained",
+  "After-Sales": "claims.title",
+  "After-Sales Claims": "claims.staffTitle",
+  "View after-sales claims": "claims.permissions.view",
+  "Review claims and request information": "claims.permissions.review",
+  "Manage manual receipt, inspection and cancellation": "claims.permissions.manage",
+  "View claim evidence": "claims.permissions.evidence",
+  "Add private claim notes": "claims.permissions.notes",
+  "Approve or reject claims": "claims.permissions.decide",
+  "Record claim resolutions": "claims.permissions.resolution"
 }

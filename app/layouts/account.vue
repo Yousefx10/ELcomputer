@@ -23,6 +23,7 @@ const memberYear = computed(() => {
   return Number.isNaN(date.getTime()) ? '' : String(date.getFullYear())
 })
 const accountSection = computed(() => {
+  if (route.path.startsWith('/account/after-sales')) return 'After-Sales'
   if (route.path.startsWith('/account/orders')) return 'Orders'
   if (route.path.startsWith('/account/messages')) return 'Messages'
   if (route.path.startsWith('/account/support')) return 'Support'

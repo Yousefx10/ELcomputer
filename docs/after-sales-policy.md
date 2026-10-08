@@ -1,3 +1,9 @@
+# Current local extension: After-Sales Claims Core, 2026-10-08
+
+Stage 1 Claims now consume the retained purchased warranty terms and immutable policy archive, with separate Return/Warranty admission, quantity/duplicate guards, private evidence, review/history and recorded decisions. Historical unknown and purchased draft/disabled policies remain unavailable; no speculative backfill or current-product inference. Customer serials are unverified until audited staff review; no QR/inventory ownership is invented. Current policy edits cannot rewrite prior purchased rights or Claims admission context.
+
+**Local-only/unapplied** `20261008120000_after_sales_claims_core.sql`. No production access/migration/deployment/activation, PDC reverse shipping, Claim SMS/email, financial execution or inventory action. Earlier production/implementation entries below are historical checkpoints. Full audit, schema, workflow, validation and remaining boundaries: [after-sales-claims.md](after-sales-claims.md). STOP at Claims Core.
+
 # Warranty + after-sales policy foundations — production deployment, 2026-10-07 (verified 2026-10-08)
 
 Deployed source **`73c9e11eed3f1c3fe86d751eb2ae0dc08dd4c520`** from clean synced `main`, containing `abf9347` and `73c9e11`. No feature implementation changes were made during this release. The earlier local-only records below are historical.

@@ -69,6 +69,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
 <template>
   <div class="space-y-5">
     <NuxtLinkLocale to="/account/orders" class="inline-flex min-h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"><Icon name="lucide:arrow-left" size="16" aria-hidden="true" class="directional-icon" /> {{ $t('common.allOrders') }}</NuxtLinkLocale>
+    <NuxtLinkLocale v-if="detail?.order" :to="{ path: '/account/after-sales', query: { order: detail.order.id } }" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-blue-700"><Icon name="lucide:clipboard-check" size="16" />{{ $t('claims.title') }}</NuxtLinkLocale>
     <p v-if="error" role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(error) }}</p>
     <p v-if="loading" role="status" class="rounded-2xl bg-white p-8 text-center text-sm text-slate-600">{{ $t('common.loadingOrder') }}</p>
 

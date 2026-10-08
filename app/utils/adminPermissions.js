@@ -2,6 +2,18 @@ import { normalizeDashboardQueryValue } from './dashboardNavigation.js'
 
 export const adminPermissionGroups = [
   {
+    key: 'claims', title: 'After-Sales Claims',
+    accessPermission: { key: 'claims.view', label: 'View after-sales claims' },
+    permissions: [
+      { key: 'claims.review', label: 'Review claims and request information' },
+      { key: 'claims.manage', label: 'Manage manual receipt, inspection and cancellation' },
+      { key: 'claims.evidence', label: 'View claim evidence' },
+      { key: 'claims.notes', label: 'Add private claim notes' },
+      { key: 'claims.decide', label: 'Approve or reject claims' },
+      { key: 'claims.resolution', label: 'Record claim resolutions' }
+    ]
+  },
+  {
     key: 'sms', title: 'SMS',
     accessPermission: { key: 'sms.view', label: 'SMS Access' },
     permissions: [
@@ -139,7 +151,8 @@ export const adminPermissionDependencies = {
   'documents.view': ['documents.manage'],
   'pages.view': ['pages.edit'],
   'help.view': ['help.edit'],
-  'support.view': ['support.reply', 'support.manage']
+  'support.view': ['support.reply', 'support.manage'],
+  'claims.view': ['claims.review', 'claims.manage', 'claims.evidence', 'claims.notes', 'claims.decide', 'claims.resolution']
 }
 
 export const defaultAdminPermissions = Object.fromEntries(
@@ -206,6 +219,8 @@ export const getDashboardRouteRequirement = (route = '') => {
   const query = typeof route === 'string' ? {} : route?.query || {}
   const tab = normalizeDashboardQueryValue(query.tab)
   const view = normalizeDashboardQueryValue(query.view)
+
+  if (path === '/dashboard/after-sales' || path.startsWith('/dashboard/after-sales/')) return { permission: 'claims.view' }
 
   if (path === '/dashboard/sms') {
     const permissions = { settings: 'sms.settings.view', templates: 'sms.templates.view', history: 'sms.history.view' }
