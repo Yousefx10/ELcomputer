@@ -1,3 +1,4 @@
+import { runClaimRpc } from './claimDatabase.js'
 import { createHash } from 'node:crypto'
 import { getHeader, send, setHeader } from 'h3'
 import { requireCustomerRequest } from './customerRequest.js'
@@ -22,23 +23,7 @@ export const readClaimBody = async event => {
   try { return JSON.parse(await readPaymentCallbackBody(event, 32768, 10000)) }
   catch (error) { if ([408, 413].includes(error.statusCode)) throw error; claimError('input') }
 }
-const rpcMessages = {
-  'Claim eligibility denied.': 'eligibility', 'Claim transition denied.': 'transition', 'Claim resolution denied.': 'resolution',
-  'Claim serial review required.': 'serialRequired', 'Claim evidence disabled.': 'evidenceDisabled', 'Claim evidence limit.': 'evidenceLimit',
-  'Claim evidence unavailable.': 'evidence', 'Claim retry conflict.': 'conflict', 'Invalid claim input.': 'input'
-}
-export const claimRpc = async (db, name, args) => {
-  const { data, error } = await db.rpc(name, args)
-  if (error) {
-    if (error.code === 'P0002') claimError('notFound', 404)
-    if (error.code === '42501') claimError('forbidden', 403)
-    if (error.code === '23505') claimError('duplicate', 409)
-    if (error.code === '40001') claimError('conflict', 409)
-    if (rpcMessages[error.message]) claimError(rpcMessages[error.message], error.code === '23514' ? 409 : 400)
-    claimError('unavailable', 503)
-  }
-  return data
-}
+export const claimRpc = runClaimRpc
 export const claimHandler = handler => async event => {
   setHeader(event, 'Cache-Control', 'private, no-store')
   try { return await handler(event) } catch (error) {

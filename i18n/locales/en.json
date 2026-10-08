@@ -4088,7 +4088,15 @@
       "cancel": "Claim cancelled",
       "note": "Internal note",
       "verify_serial": "Serial verification recorded",
-      "evidence_added": "Evidence added"
+      "evidence_added": "Evidence added",
+      "reverse_queued": "Reverse pickup requested",
+      "reverse_created": "Reverse pickup booked",
+      "reverse_failed": "Reverse booking failed",
+      "reverse_uncertain": "Reverse booking needs verification",
+      "reverse_tracking": "Reverse shipment updated",
+      "reverse_received": "PDC confirmed receipt",
+      "reverse_label": "Reverse label updated",
+      "reverse_label_failed": "Reverse label preparation failed"
     },
     "resolutions": {
       "repair": "Repair",
@@ -4124,7 +4132,11 @@
       "evidence": "View claim evidence",
       "notes": "Add private claim notes",
       "decide": "Approve or reject claims",
-      "resolution": "Record claim resolutions"
+      "resolution": "Record claim resolutions",
+      "logisticsView": "View claim reverse logistics",
+      "logisticsCreate": "Schedule claim reverse pickup",
+      "logisticsRetry": "Recover or rebook claim shipments",
+      "logisticsDiagnostics": "View reverse courier diagnostics"
     },
     "errors": {
       "input": "Check the claim details.",
@@ -4141,7 +4153,14 @@
       "conflict": "This claim changed. Refresh before continuing.",
       "duplicate": "An active claim already exists for this item and type.",
       "size": "Choose a file up to 5 MB.",
-      "file": "Use a valid JPG, PNG, WebP or PDF file."
+      "file": "Use a valid JPG, PNG, WebP or PDF file.",
+      "pickup": "Enter valid pickup contact and address details.",
+      "reverseNotReady": "PDC reverse pickups are not ready.",
+      "reverseCity": "Select an existing PDC city mapping.",
+      "reverseConflict": "Refresh the claim before changing its reverse booking.",
+      "reverseReturn": "Confirm an allowed reason for returning the item.",
+      "reverseMatch": "The provider shipment could not be verified.",
+      "reverseThrottle": "Try again in five minutes."
     },
     "availability": {
       "active_claim": "A claim is already open",
@@ -4152,6 +4171,63 @@
       "pending": "Waiting for a confirmed start date",
       "no_reasons": "No return reason is available",
       "unknown": "Eligibility information unavailable"
+    }
+  },
+  "reverse": {
+    "title": "Reverse Logistics",
+    "settingsEnabled": "Enable claim reverse pickups",
+    "settingsType": "Reverse shipment type",
+    "settingsHelp": "Uses the saved store address, product and default weight.",
+    "restricted": "Reverse logistics access is restricted.",
+    "notReady": "PDC reverse pickups are not ready.",
+    "noBooking": "No courier pickup has been requested.",
+    "awb": "AWB",
+    "uncertain": "Booking is uncertain. Recover it before scheduling another pickup.",
+    "recover": "Recover booking",
+    "refresh": "Check courier status",
+    "prepareLabel": "Prepare label",
+    "downloadLabel": "Download label",
+    "rebook": "Rebook pickup",
+    "schedule": "Schedule PDC reverse pickup",
+    "confirmDetails": "Confirm the customer’s current pickup details.",
+    "name": "Pickup contact",
+    "phone": "Pickup phone",
+    "city": "Mapped pickup city",
+    "address": "Pickup address",
+    "handling": "Reason for returning the item",
+    "handlingHelp": "This records logistics context. Staff decide the final resolution later.",
+    "reason": "Confirmation note",
+    "returnRequired": "The item must return to the saved store destination.",
+    "confirmBooking": "Confirm and queue pickup",
+    "queued": "Pickup queued. Booking has not yet been confirmed.",
+    "updated": "Courier status updated.",
+    "labelQueued": "Label preparation queued.",
+    "history": "Reverse shipment history",
+    "providerTime": "Courier event time",
+    "observedTime": "Status checked",
+    "states": {
+      "queued": "Awaiting booking",
+      "creating": "Booking in progress",
+      "created": "Pickup booked",
+      "failed": "Booking failed",
+      "uncertain": "Booking uncertain",
+      "cancelled": "Courier cancelled pickup",
+      "returned": "Returned to pickup sender",
+      "delivered": "Received by ELcomputer"
+    },
+    "diagnostics": {
+      "provider_not_ready": "Provider configuration is not ready.",
+      "configuration_changed": "Configuration changed. Confirm and rebook.",
+      "expired": "Booking authorization expired. Confirm and rebook.",
+      "claim_changed": "Claim no longer permits this booking.",
+      "permission_changed": "The initiating staff member’s permission changed.",
+      "interrupted": "Processing stopped before confirmation. Recover the booking.",
+      "timeout": "Provider response timed out. Recover the booking.",
+      "invalid_response": "Provider response could not be verified.",
+      "ref_mismatch": "Provider reference did not match.",
+      "provider_rejected": "Provider rejected shipment validation.",
+      "provider_unavailable": "Provider response was unavailable. Recover the booking.",
+      "awb_conflict": "AWB persistence could not be confirmed. Recover the booking."
     }
   }
 }

@@ -2988,5 +2988,9 @@
   "View claim evidence": "claims.permissions.evidence",
   "Add private claim notes": "claims.permissions.notes",
   "Approve or reject claims": "claims.permissions.decide",
-  "Record claim resolutions": "claims.permissions.resolution"
+  "Record claim resolutions": "claims.permissions.resolution",
+  "View claim reverse logistics": "claims.permissions.logisticsView",
+  "Schedule claim reverse pickup": "claims.permissions.logisticsCreate",
+  "Recover or rebook claim shipments": "claims.permissions.logisticsRetry",
+  "View reverse courier diagnostics": "claims.permissions.logisticsDiagnostics"
 }

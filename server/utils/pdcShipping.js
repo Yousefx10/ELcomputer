@@ -48,15 +48,15 @@ const readPdcJsonResponse = async (response) => {
   }
 }
 
-const requestPdcJson = async ({ settings, endpoint, body }) => {
-  const response = await fetch(getPdcEndpointUrl(settings.base_url, endpoint, settings.api_mode), {
+export const requestPdcJson = async ({ settings, endpoint, body, fetcher = fetch, bounded = false }) => {
+  const response = await fetcher(getPdcEndpointUrl(settings.base_url, endpoint, settings.api_mode), {
     method: 'POST',
     headers: getPdcHeaders(settings),
     body: JSON.stringify(body),
     redirect: 'error',
     signal: AbortSignal.timeout(15000)
   })
-  const responseBody = await readPdcJsonResponse(response)
+  const responseBody = bounded ? JSON.parse((await readPdcBytes(response, 1048576)).toString('utf8')) : await readPdcJsonResponse(response)
 
   if (!response.ok) {
     throw new Error(
@@ -68,8 +68,16 @@ const requestPdcJson = async ({ settings, endpoint, body }) => {
   return responseBody
 }
 
-const requestPdcLabel = async ({ settings, awb }) => {
-  const response = await fetch(getPdcEndpointUrl(settings.base_url, PDC_ENDPOINTS.exportLabel, settings.api_mode), {
+const readPdcBytes = async (response, maximum) => {
+  if (Number(response.headers.get('content-length')) > maximum || !response.body) throw new Error('Courier response size is invalid.')
+  const reader = response.body.getReader(), chunks = []; let size = 0
+  try {
+    for (;;) { const { value, done } = await reader.read(); if (done) break; size += value.byteLength; if (size > maximum) { await reader.cancel(); throw new Error('Courier response size is invalid.') }; chunks.push(Buffer.from(value)) }
+  } finally { reader.releaseLock() }
+  return Buffer.concat(chunks)
+}
+export const requestPdcLabel = async ({ settings, awb, fetcher = fetch, bounded = false }) => {
+  const response = await fetcher(getPdcEndpointUrl(settings.base_url, PDC_ENDPOINTS.exportLabel, settings.api_mode), {
     method: 'POST',
     headers: getPdcHeaders(settings),
     body: JSON.stringify({
@@ -85,9 +93,9 @@ const requestPdcLabel = async ({ settings, awb }) => {
   }
 
   const contentType = cleanText(response.headers.get('content-type')).toLowerCase()
-  const labelData = Buffer.from(await response.arrayBuffer())
+  const labelData = bounded ? await readPdcBytes(response, 5242880) : Buffer.from(await response.arrayBuffer())
 
-  if (!contentType.includes('application/pdf') || !labelData.length) {
+  if (!contentType.includes('application/pdf') || !labelData.length || (bounded && labelData.subarray(0, 5).toString() !== '%PDF-')) {
     throw new Error('The courier did not return a PDF label.')
   }
 
@@ -408,7 +416,7 @@ const processPdcJob = async ({ supabaseAdmin, settings, job }) => {
   }
 }
 
-export const processPdcShippingQueue = async ({ supabaseAdmin, limit = 10 }) => {
+const processPdcOutboundQueue = async ({ supabaseAdmin, limit = 10 }) => {
   const runtimeConfig = useRuntimeConfig()
 
   if (runtimeConfig.shippingLiveRequestsEnabled !== true) {
@@ -461,4 +469,13 @@ export const processPdcShippingQueue = async ({ supabaseAdmin, limit = 10 }) => 
     active: true,
     processed
   }
+}
+
+// One authenticated shipping worker. Claim jobs remain separate from paid-order
+// jobs and never depend on outbound auto-label enablement.
+export const processPdcShippingQueue = async options => {
+  const outbound = await processPdcOutboundQueue(options)
+  const { processPdcReverseQueue } = await import('./pdcReverseLogistics.js')
+  const reverse = await processPdcReverseQueue(options)
+  return { ...outbound, reverse_active: reverse.active, reverse_processed: reverse.processed }
 }

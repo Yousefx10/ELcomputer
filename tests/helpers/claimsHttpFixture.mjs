@@ -5,12 +5,13 @@ import { readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createServer } from 'node:http'
 import { build } from 'esbuild'
-import { createApp, createRouter, toNodeListener } from 'h3'
+import { createApp, createRouter, toNodeListener, readBody } from 'h3'
 import { createClaimsFixture } from './claimsFixture.mjs'
 
-export const createClaimsHttpFixture = async () => {
+export const createClaimsHttpFixture = async ({ shipping = false } = {}) => {
+  globalThis.useRuntimeConfig ??= () => ({ shippingLiveRequestsEnabled: false })
   const f = await createClaimsFixture(), actors = { buyer: f.customer, owner: f.owner }, objects = new Map(), storageCalls = []
-  const permissions = { viewer: [], reviewer: ['review'], manager: ['manage'], evidence: ['evidence'], notes: ['notes'], decider: ['decide'], resolver: ['resolution'] }
+  const permissions = { viewer: [], reviewer: ['review'], manager: ['manage'], evidence: ['evidence'], notes: ['notes'], decider: ['decide'], resolver: ['resolution'], logisticsViewer: ['logistics.view'], booker: ['logistics.view','logistics.create'], rebooker: ['logistics.view','logistics.create','logistics.retry'], diagnostician: ['logistics.view','logistics.diagnostics'] }
   for (const [name, keys] of Object.entries(permissions)) {
     actors[name] = randomUUID()
     await f.db.query('insert into auth.users(id,email) values($1,$2)', [actors[name], name + '@claims.example.invalid'])
@@ -33,6 +34,7 @@ export const createClaimsHttpFixture = async () => {
   }) }
   const databaseKey = 'claimsFixture_' + randomUUID().replaceAll('-', '')
   globalThis[databaseKey] = f.client; globalThis.defineEventHandler = handler => handler
+  if (shipping) globalThis.readBody = readBody
   const router = createRouter(), routes = []
   const visit = async dir => {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -53,6 +55,7 @@ export const createClaimsHttpFixture = async () => {
     }
   }
   await visit('server/api/account/after-sales'); await visit('server/api/admin-after-sales/claims')
+  if (shipping) { await visit('server/api/webhooks'); await visit('server/api/internal/shipping') }
   const app = createApp().use(router)
   return { ...f, actors, objects, storageCalls, routes, app,
     async start(extraHandler = null) {

@@ -1,3 +1,9 @@
+# Current local extension: Stage 2 PDC reverse logistics, 2026-10-08
+
+Approved Claims now support explicit staff-confirmed PDC reverse pickup through the existing adapter/worker, separate immutable pickup/reference/history, guarded recovery/rebooking, private labels and dated pickup/transit/receipt transitions. Approval alone creates no job. Reverse events never enter normal order PDC SMS; no Claim SMS/email, refund/inventory/replacement-outbound integration.
+
+Both Claims migrations remain **unapplied**: `20261008120000_after_sales_claims_core.sql` then `20261008160000_after_sales_reverse_logistics.sql`. No production access, credentials, migration/deployment or real provider call occurred. Full implementation/validation/limits: [after-sales-reverse-logistics.md](after-sales-reverse-logistics.md). Earlier Stage 1 entries below are historical. **STOP after Stage 2.**
+
 # After-Sales Claims Core — local implementation, 2026-10-08
 
 Stage 1 extends the deployed Warranty Entitlement and After-Sales Policy foundations. Code is local-only until a separately reviewed migration and release. No production connection, credential discovery, data modification, deployment, PDC/Vodafone call, SMS/email, financial execution or inventory action occurred.

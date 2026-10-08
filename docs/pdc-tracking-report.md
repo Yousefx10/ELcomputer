@@ -1,3 +1,9 @@
+# Current local extension: After-Sales Stage 2, 2026-10-08
+
+Claim reverse bookings now use the existing PDC adapter/settings/authenticated worker/webhook/normalization and private-label transport, with separate claim-linked jobs/history and stable `ASREV-` references. Staff explicitly initiate pickup; reverse events route outside the original outbound/SMS persistence path. Original order AWBs/references/history and normal order PDC SMS remain unchanged. No provider cancellation action is invented.
+
+Unapplied local Stage 2 migration `20261008160000_after_sales_reverse_logistics.sql` follows unapplied Claims Core. No production/provider/credential/deployment operation occurred; existing production release sections below are historical. Real provider/authenticated/native concurrency acceptance remains unverified. Full audit, documented V6 semantics, validation and boundaries: [after-sales-reverse-logistics.md](after-sales-reverse-logistics.md). **No Claim communications; STOP after Stage 2.**
+
 # PDC customer tracking report — 2026-10-06
 
 ## PDC → SMS dormant production release — 2026-10-06

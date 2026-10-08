@@ -9,7 +9,7 @@ const api = props.staff ? '/api/admin-after-sales/claims' : '/api/account/after-
 const path = props.staff ? '/dashboard/after-sales' : '/account/after-sales'
 const claim = computed(() => detail.value?.claim)
 const pending = computed(() => detail.value?.information?.find(row => !row.response_at))
-const canCancel = computed(() => !props.staff && ['submitted', 'under_review', 'more_information_required', 'approved'].includes(claim.value?.status))
+const canCancel = computed(() => !props.staff && detail.value?.customer_can_cancel !== false && ['submitted', 'under_review', 'more_information_required', 'approved'].includes(claim.value?.status))
 const canSeeEvidence = computed(() => !props.staff || access?.hasPermission('claims.evidence'))
 let generation = 0
 const load = async () => {
@@ -63,6 +63,7 @@ onBeforeUnmount(() => { generation++ })
             <h2 class="text-lg font-bold">{{ $t(cancellation ? 'claims.cancelClaim' : 'claims.moreInformation') }}</h2><p v-if="!cancellation && pending" class="mt-3 whitespace-pre-wrap break-words text-sm">{{ pending.prompt }}</p>
             <form class="mt-4 space-y-4" @submit.prevent="customerSubmit"><label class="block text-sm font-semibold">{{ $t(cancellation ? 'claims.cancellationReason' : 'claims.yourResponse') }}<textarea v-model="responseText" required maxlength="4000" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900"></textarea></label><AfterSalesEvidencePicker v-if="!cancellation && pending" ref="picker" :key="pending.id" v-model="files" :item-id="detail.item.id" :claim-type="claim.claim_type" :claim-id="claim.id" :mode="detail.evidence" :required="pending.require_evidence" @busy="uploading = $event" /><button type="submit" :disabled="saving || uploading || (!cancellation && pending?.require_evidence && !files.length)" class="min-h-11 rounded-xl bg-blue-700 px-5 font-bold text-white disabled:opacity-50">{{ $t(cancellation ? 'claims.confirmCancellation' : 'claims.sendResponse') }}</button><button v-if="cancellation" type="button" class="ms-3 min-h-11 px-3 text-sm font-semibold" @click="cancellation = false">{{ $t('claims.close') }}</button></form>
           </section>
+          <AfterSalesReverseLogistics :key="`${claim.id}-${claim.revision}`" :claim="claim" :staff="staff" @changed="load" />
           <AfterSalesTimeline :events="detail.events" :more="detail.has_more_events" :loading="loading" @older="older" />
         </div>
         <aside class="min-w-0 space-y-5">

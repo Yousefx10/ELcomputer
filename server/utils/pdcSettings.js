@@ -40,6 +40,11 @@ export const validatePdcSettings = (body, current) => {
     if (typeof body[key] !== 'boolean') fail('Settings')
     update[key] = body[key]
   }
+  if (body.reverse_enabled !== undefined && typeof body.reverse_enabled !== 'boolean') fail('Reverse pickup')
+  const reverseType = body.reverse_shipment_type_id ?? current.reverse_shipment_type_id ?? null
+  if (reverseType !== null && reverseType !== '' && Number(reverseType) !== 3) fail('Reverse shipment type')
+  update.reverse_enabled = body.reverse_enabled ?? current.reverse_enabled ?? false
+  update.reverse_shipment_type_id = reverseType === null || reverseType === '' ? null : 3
   const token = text(body.access_token, 4096, 'Access Token')
   const secret = text(body.webhook_secret, 4096, 'Webhook Secret')
   if (secret && secret.length < 32) fail('Webhook Secret')

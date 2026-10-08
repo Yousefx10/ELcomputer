@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { createOrderSmsFixture } from './orderSmsFixture.mjs'
 
-export const createClaimsFixture = async () => {
-  const f = await createOrderSmsFixture()
+export const createClaimsFixture = async (options = {}) => {
+  const f = await createOrderSmsFixture(options)
   const rpc = async (name, args = {}) => {
     const result = await f.client.rpc(name, args)
     if (result.error) throw Object.assign(Error(result.error.message), { code: result.error.code })

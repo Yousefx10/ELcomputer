@@ -162,6 +162,12 @@
             </select>
           </div>
 
+          <div class="rounded-xl border border-slate-200 p-4">
+            <label class="flex items-center gap-2 text-sm font-semibold"><input v-model="pdcSettings.reverse_enabled" type="checkbox">{{ $t('reverse.settingsEnabled') }}</label>
+            <label class="mt-3 block text-sm font-semibold">{{ $t('reverse.settingsType') }}<select v-model="pdcSettings.reverse_shipment_type_id" class="mt-2 w-full rounded-lg border bg-white p-3"><option :value="null">{{ $t('claims.choose') }}</option><option :value="3">{{ $t('common.reverse') }}</option></select></label>
+            <p class="mt-3 text-xs text-slate-600">{{ $t('reverse.settingsHelp') }}</p>
+          </div>
+
           <div>
             <label for="pdc-label-template" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.labelTemplateId') }}</label>
             <input
@@ -534,6 +540,8 @@ const createEmptyPdcSettings = () => ({
   origin_contact_name: '',
   default_weight_kg: 1,
   shipment_type_id: 1,
+  reverse_enabled: false,
+  reverse_shipment_type_id: null,
   label_template_id: 1,
   allow_open_shipment: false,
   all_must_valid: true,
@@ -636,6 +644,8 @@ const savePdcSettings = async () => {
         origin_contact_name: pdcSettings.origin_contact_name,
         default_weight_kg: pdcSettings.default_weight_kg,
         shipment_type_id: pdcSettings.shipment_type_id,
+        reverse_enabled: pdcSettings.reverse_enabled,
+        reverse_shipment_type_id: pdcSettings.reverse_shipment_type_id,
         label_template_id: pdcSettings.label_template_id,
         allow_open_shipment: pdcSettings.allow_open_shipment,
         all_must_valid: pdcSettings.all_must_valid,

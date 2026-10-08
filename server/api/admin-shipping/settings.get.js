@@ -51,6 +51,8 @@ export default defineEventHandler(async (event) => {
       origin_contact_name: settings.origin_contact_name || '',
       default_weight_kg: Number(settings.default_weight_kg),
       shipment_type_id: Number(settings.shipment_type_id),
+      reverse_enabled: Boolean(settings.reverse_enabled),
+      reverse_shipment_type_id: settings.reverse_shipment_type_id || null,
       label_template_id: Number(settings.label_template_id),
       allow_open_shipment: Boolean(settings.allow_open_shipment),
       all_must_valid: Boolean(settings.all_must_valid),
