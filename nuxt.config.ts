@@ -36,6 +36,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     smsWorkerSecret: '',
+    emailWorkerSecret: '',
     paymobEnabled: false,
     paymobMode: 'test',
     paymobSecretKey: '',

@@ -129,6 +129,14 @@ export const dashboardNavigationGroups = [
     { ...child('support-tickets', 'Tickets', 'ticket', '/dashboard/support', null, [], 'support.view'), match: { paths: ['/dashboard/support'], prefixes: ['/dashboard/support/'] } },
     child('live-chat', 'Live Chat', 'messages-square', '/dashboard/live-chat', null, [], 'support.view')
   ], { permission: 'support.view' }),
+  group('email', 'Email', 'mail', { paths: ['/dashboard/email'] }, [
+    child('email-settings', 'Email settings', 'settings', '/dashboard/email', 'tab', ['', 'settings'], 'email.settings.view'),
+    child('email-templates', 'Email templates', 'file-text', '/dashboard/email', 'tab', ['templates'], 'email.templates.view'),
+    child('email-send', 'Transactional email', 'send', '/dashboard/email', 'tab', ['send'], 'email.transactional.send'),
+    child('email-history', 'Email history', 'history', '/dashboard/email', 'tab', ['history'], 'email.history.view'),
+    child('email-events', 'Delivery events', 'activity', '/dashboard/email', 'tab', ['events'], 'email.history.view'),
+    child('email-preferences', 'Email preferences', 'shield-check', '/dashboard/email', 'tab', ['preferences'], 'email.marketing.manage')
+  ], { permission: 'email.view' }),
   group('sms', 'SMS', 'message-square', { paths: ['/dashboard/sms'] }, [
     child('sms-settings', 'Provider settings', 'settings', '/dashboard/sms', 'tab', ['', 'settings'], 'sms.settings.view'),
     child('sms-templates', 'SMS templates', 'file-text', '/dashboard/sms', 'tab', ['templates'], 'sms.templates.view'),

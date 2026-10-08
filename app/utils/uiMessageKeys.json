@@ -2992,5 +2992,19 @@
   "View claim reverse logistics": "claims.permissions.logisticsView",
   "Schedule claim reverse pickup": "claims.permissions.logisticsCreate",
   "Recover or rebook claim shipments": "claims.permissions.logisticsRetry",
-  "View reverse courier diagnostics": "claims.permissions.logisticsDiagnostics"
+  "View reverse courier diagnostics": "claims.permissions.logisticsDiagnostics",
+  "Email settings": "emailFoundation.settings",
+  "Email templates": "emailFoundation.templates",
+  "Transactional email": "emailFoundation.send",
+  "Email history": "emailFoundation.history",
+  "Delivery events": "emailFoundation.events",
+  "Email preferences": "emailFoundation.preferences",
+  "Email Access": "emailFoundation.permissionAccess",
+  "View email settings": "emailFoundation.permissionSettingsView",
+  "Manage email settings": "emailFoundation.permissionSettingsManage",
+  "View email templates": "emailFoundation.permissionTemplatesView",
+  "Manage email templates": "emailFoundation.permissionTemplatesManage",
+  "Send manual transactional email": "emailFoundation.permissionSend",
+  "View email history and events": "emailFoundation.permissionHistory",
+  "Manage email consent and suppressions": "emailFoundation.permissionPreferences"
 }

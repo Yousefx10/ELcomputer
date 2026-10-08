@@ -1,6 +1,12 @@
 import { normalizeDashboardQueryValue } from './dashboardNavigation.js'
 
 export const adminPermissionGroups = [
+  { key: 'email', title: 'Email', accessPermission: { key: 'email.view', label: 'Email Access' }, permissions: [
+    { key: 'email.settings.view', label: 'View email settings' }, { key: 'email.settings.manage', label: 'Manage email settings' },
+    { key: 'email.templates.view', label: 'View email templates' }, { key: 'email.templates.manage', label: 'Manage email templates' },
+    { key: 'email.transactional.send', label: 'Send manual transactional email' }, { key: 'email.history.view', label: 'View email history and events' },
+    { key: 'email.marketing.manage', label: 'Manage email consent and suppressions' }
+  ] },
   {
     key: 'claims', title: 'After-Sales Claims',
     accessPermission: { key: 'claims.view', label: 'View after-sales claims' },
@@ -142,6 +148,8 @@ export const adminPermissionKeys = adminPermissionDefinitions.map((permission) =
 })
 
 export const adminPermissionDependencies = {
+  'email.view': ['email.settings.view','email.settings.manage','email.templates.view','email.templates.manage','email.transactional.send','email.history.view','email.marketing.manage'],
+  'email.settings.view': ['email.settings.manage'], 'email.templates.view': ['email.templates.manage'],
   'sms.view': ['sms.settings.view', 'sms.settings.manage', 'sms.templates.view', 'sms.templates.manage', 'sms.history.view', 'sms.notification.send', 'sms.campaign.send'],
   'sms.settings.view': ['sms.settings.manage'],
   'sms.templates.view': ['sms.templates.manage'],
@@ -226,6 +234,8 @@ export const getDashboardRouteRequirement = (route = '') => {
   const view = normalizeDashboardQueryValue(query.view)
 
   if (path === '/dashboard/after-sales' || path.startsWith('/dashboard/after-sales/')) return { permission: 'claims.view' }
+
+  if (path === '/dashboard/email') return { permission: ({ settings:'email.settings.view', templates:'email.templates.view', send:'email.transactional.send', history:'email.history.view', events:'email.history.view', preferences:'email.marketing.manage' })[tab || 'settings'] || 'email.view' }
 
   if (path === '/dashboard/sms') {
     const permissions = { settings: 'sms.settings.view', templates: 'sms.templates.view', history: 'sms.history.view' }
