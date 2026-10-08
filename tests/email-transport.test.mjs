@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { postBrevoEmail } from '../server/utils/email/brevo.js'
+import { postBrevoEmail,brevoProvider } from '../server/utils/email/brevo.js'
 const fakeNetwork=(respond=(_req,res)=>{res.statusCode=201;res.headers={};res.emit('data',Buffer.from('{"messageId":"mock@relay.example.invalid"}'));res.emit('end')})=>{
  const calls=[]
  return {calls,lookup:async()=>[{address:'8.8.8.8',family:4}],request:(url,options,listener)=>{
@@ -16,6 +16,9 @@ test('Brevo transport pins checked DNS, uses TLS and exact endpoint with bounded
  await new Promise(done=>call.options.lookup('api.brevo.com',{},(err,address,family)=>{assert.equal(err,null);assert.equal(address,'8.8.8.8');assert.equal(family,4);done()}))
  const redirect=fakeNetwork((_req,res)=>{res.statusCode=302;res.headers={location:'http://localhost/private'};res.emit('end')})
  assert.equal((await postBrevoEmail({},'fixture-key',100,async()=>{},redirect)).status,302);assert.equal(redirect.calls.length,1)
+ const throttled=fakeNetwork((_req,res)=>{res.statusCode=429;res.headers={'x-sib-ratelimit-reset':'120','retry-after':'45'};res.emit('end')})
+ const limited=await postBrevoEmail({},'fixture-key',100,async()=>{},throttled)
+ assert.equal(limited.rateReset,'120');assert.equal(limited.retryAfter,'45')
 })
 test('Brevo DNS/payload preflight and final authorization prevent POST; post-dispatch limits stay ambiguous',async()=>{
  const n=fakeNetwork();let dispatch=0
@@ -27,4 +30,12 @@ test('Brevo DNS/payload preflight and final authorization prevent POST; post-dis
  const oversized=fakeNetwork((req,res)=>{res.statusCode=201;res.headers={};res.emit('data',Buffer.alloc(262145));if(!req.destroyed)res.emit('end')})
  await assert.rejects(()=>postBrevoEmail({},'fixture-key',100,async()=>{},oversized),e=>!e.preflight)
  const timeout=fakeNetwork(()=>{});await assert.rejects(()=>postBrevoEmail({},'fixture-key',10,async()=>{},timeout),/timeout/)
+})
+
+test('network disconnect after submission is uncertain and discards private error text',async()=>{
+ const n=fakeNetwork(req=>req.destroy(Error('PRIVATE_PROVIDER_DISCONNECT')))
+ const message={sender:'store@email.example.invalid',sender_name:'Fixture',recipient:'buyer@email.example.invalid',subject:'Essential',classification:'transactional',html_body:'<p>Fixture</p>',body_format:'html',correlation:'elc-'+'a'.repeat(64)}
+ let authorized=0
+ const result=await brevoProvider.submit({config:{timeout_ms:100}},'fixture-key',message,async()=>{authorized++},(payload,key,timeout,before)=>postBrevoEmail(payload,key,timeout,before,n))
+ assert.equal(authorized,1);assert.equal(n.calls.length,1);assert.equal(result.state,'uncertain');assert.equal(result.error_category,'network_unknown');assert.doesNotMatch(JSON.stringify(result),/PRIVATE_PROVIDER/)
 })

@@ -1,4 +1,114 @@
-# Central Email Foundation — Brevo
+# Independent security and production-readiness audit — 2026-10-09
+
+Reviewed the actual clean `main` implementation at `6ecac1ed31ce7a0b9d9ca1a98c6127eb24da7ff2`, its complete Email code/migration, AGENTS, project/handoff records and relevant SMS, Claims, PDC/reverse, authentication and Live Chat architecture. Refreshed current official Brevo documentation independently. This audit fixes only Email defects; Claims Stage 3 and all business consumers remain absent. No production connection, migration, deployment, credential discovery, real provider request/email/SMS, DNS/Microsoft 365/OneSignal/Auth change or webhook registration occurred.
+
+This is the current audit checkpoint. The implementation record below preserves its earlier validation counts and limitations as historical evidence.
+
+## 1. Overall verdict
+
+**Suitable for a separately reviewed dormant deployment and separately scoped Claims Stage 3 development.** No Critical/High issue was identified or remains in the reviewed code. Five Medium defects and two Low parser defects were fixed. This is not live activation approval or authenticated production/provider acceptance. Free-form manual content remains a documented Medium governance limitation: the application cannot establish that arbitrary staff-written text is essential rather than promotional.
+
+## 2. Findings and severity
+
+| Severity | Reproduced defect | Fix/evidence |
+| --- | --- | --- |
+| Medium | SQL `<>` guards treated missing revisions, template classification/version, fingerprints and lease tokens as unknown rather than refusing them | Null-safe `IS DISTINCT FROM`; original native PostgreSQL reproduction accepted a missing revision/template version/fingerprint and dispatched/finished without a lease; corrected negative tests pass |
+| Medium | An authenticated callback could record events after webhook disablement or token rotation while its body/SQL operation waited | Bind ingress-authenticated settings revision to the atomic event transaction; current webhook enablement/token presence/revision required; actual partial HTTP requests and native lock-barrier revocation tests pass |
+| Medium | Worker secret checked only at ingress, allowing revoked authorization to proceed after body/DNS waits | Recheck current secret before every claim and on both sides of final SQL authorization; known pre-POST revocation suppresses the intent; HTTP/body and mocked preflight tests pass |
+| Medium | Final-dispatch throttle requeues could consume more than three attempts and exceed the three-row attempt view | Terminal failure at the third throttle attempt; claim also retires exhausted queued work; original native reproduction reached attempt four; corrected bounded-attempt tests pass |
+| Medium | 429 handling ignored Brevo's documented reset header, and truncated waits above 300 seconds | Transport projects `x-sib-ratelimit-reset`; use the longer positive numeric reset/Retry-After value; SQL expires waits beyond authorization rather than retrying early; mocked 120/900-second cases pass |
+| Low | Inherited object properties such as `constructor`/`toString` were treated as supported callback names | Own-property/string allowlist; unknown names are ignored after authentication |
+| Low | A malformed object-valued provider error code could throw during property lookup instead of recording a known rejection | Only string codes enter the closed mapping; malformed code tests produce sanitized definite rejection |
+
+Remaining Medium limitation: trusted staff can write promotional prose in custom transactional content or template values. A permission, essential-message declaration or classification tag cannot prove the meaning of that text. No unreliable keyword classifier or replacement campaign system was added. Restrict transactional permissions to trusted staff and approve future business templates/purpose/recipients before activation. Existing activity-log retention and email-body retention also need an explicit operational policy; this audit does not rewrite shared retention behavior.
+
+## 3. Scope of fixes
+
+Changed only the central Email adapter/event parser/worker/service, the still-unapplied 66th Email migration, relevant test fixtures/tests and these three audit documents. Added negative and native concurrency tests without repository dependencies. `email_command` retains the existing provider → recipient → message lock order and canonical service-only write boundary. Email snapshots, API contracts, Dashboard surfaces and adjacent systems retain their existing architecture.
+
+## 4. Brevo API verification
+
+Current official [send reference](https://developers.brevo.com/reference/send-transac-email), [send guide](https://developers.brevo.com/docs/send-a-transactional-email), [HTTP/error concepts](https://developers.brevo.com/docs/how-it-works), [rate limits](https://developers.brevo.com/docs/api-limits) and [reset headers](https://developers.brevo.com/docs/limit-headers) support `api-key`, fixed `/v3/smtp/email`, sender/name, one `to`, optional `replyTo`, one HTML/text body, custom correlation header and 201 `messageId`. A valid identity means acceptance, not delivery. No deduplication guarantee for this single-recipient endpoint is assumed. Rate limits and credit/account approval are separate.
+
+Configured timeout is bounded to 1–30 seconds for DNS and separately for HTTP; the total call can include both waits. TLS certificate/hostname checks, checked public DNS pinning, request/response/header caps and no redirects remain. Only proven preflight failures and explicit 429 rejection retry, within the same intent/expiry/three-attempt cap. 5xx, invalid acceptance, network timeout/disconnect or interrupted results remain uncertain and cannot automatically resend. Numeric reset/Retry-After waits are honored; absent/invalid values fall back to 30 seconds. This is a conservative local policy, not a provider timeout, quota or delivery guarantee.
+
+## 5. Webhook authentication and replay
+
+Independently verified [secured webhooks](https://developers.brevo.com/docs/secured-webhooks), [creation fields](https://developers.brevo.com/reference/create-webhook) and [transactional payloads](https://developers.brevo.com/docs/transactional-webhooks). `auth:{type:'bearer',token:...}` is documented for callback authentication, separate from API-key authentication when creating the webhook. The handler checks the encrypted token in constant time and now binds that authentication to current SQL authorization. Off ingress returns 404, invalid token 401, and a recognized callback whose authorization changes in flight is refused 403 without persistence. Ordinary callers cannot execute the event RPC.
+
+This uses a shared secret over TLS, **not a per-event HMAC/signature**. A compromised token can impersonate a provider; secure ingress/header redaction and later token rotation remain essential. Private event deduplication, exact recipient/normalized provider ID, dispatched nonce for early events, time bounds and ordered observations pass SQL/HTTP/native races. Duplicate/late observations cannot enqueue another email or weaken recipient safety. No registration or actual Brevo callback acceptance was performed; only non-batched transactional email payloads are supported.
+
+## 6. Encryption and secret handling
+
+Reused AES-256-GCM with random 12-byte nonce and authentication tag/server-only master key. Fresh ciphertext, tampering, malformed envelope and wrong-key tests pass. Dashboard returns presence/readiness flags only, blank replacement preserves the secret, and replacement requires fresh activation. No merchant secrets in public runtime configuration. Private no-store API projections exclude ciphertext, bodies, correlation/unsubscribe material and raw provider errors. Fresh public build/SSR/browser canary scans found no exposure. Real credential validity/master-key configuration was not inspected.
+
+## 7. RBAC/RLS
+
+All six private tables retain RLS and no anon/authenticated read/write grants or policies. Email helpers/command deny those roles execution; service-role sessions use SELECT plus canonical RPC rather than direct mutations. Active staff permissions separately govern settings, templates, transactional sending, private history and marketing preferences. Settings/template management also requires corresponding view permission. Database staff/consent/configuration rechecks and atomic audit rollback pass. Native races actually run with service-role worker sessions. Real authenticated Supabase sessions remain untested.
+
+## 8. Transactional/Marketing separation
+
+Separate service entry points, immutable template/intent classification, configured marketing sender and final SQL checks are verified. Ordinary Dashboard attempts to change a saved marketing template into transactional or use it through manual preview are refused. Marketing has no browser send endpoint; marketing-manage is consent administration, not a bulk-send permission. One mailbox per intent, preview-bound confirmation, ten manual sends per staff/minute and global one-second dispatch pacing constrain sending. These are structural/authorization guarantees, **not semantic proof that free-form prose is non-promotional**; the limitation in section 2 applies.
+
+## 9. Consent/unsubscribe safety
+
+Marketing requires recorded opt-in evidence and enabled marketing settings at enqueue and final dispatch. Unknown/unsubscribed recipients are suppressed; recipient-link opt-out suppresses marketing alone, including a waiting processing intent at dispatch. Random 256-bit hashed, recipient-bound, expiring capabilities and explicit POST prevent arbitrary mailbox mutation. Genuine transactional mail remains available after marketing opt-out. Verified [Brevo blocklist behavior](https://help.brevo.com/hc/en-us/articles/209458705-FAQs-What-are-the-different-types-of-blocklisted-contacts) distinguishes promotional opt-out from sender-scoped transactional unsubscribe. Hard bounce/invalid/spam impose conservative local global safety restrictions; softer/provider-blocked observations never invent a resend. No provider unblock/contact synchronization is performed.
+
+## 10. Queue/idempotency/concurrency
+
+**Independent native PostgreSQL verification actually ran on 17.11**, compiled from checksum-verified official release source entirely under a temporary directory. Tests create/destroy fresh loopback-only clusters and accept executable/driver paths, never a database URL/existing cluster. Three independent service-role sessions are demonstrably blocked at provider-row lock barriers before release. Tests verify one concurrent enqueue/lease/attempt/dispatch authorization/event, changed-content conflicts, callback authorization revocation, disabled/staff-revoked/marketing-unsubscribed dispatch refusal and crashed lease recovery with no reclaim/late finish. Ten native Email subtests plus their parent pass; the existing native Paymob concurrency suite also passes. This is local PostgreSQL evidence, not hosted Supabase/provider evidence.
+
+Focused mocked tests additionally cover preflight rejection, 429 caps, acceptance/rejection, ambiguous response, timeout, post-submission transport interruption, duplicate/out-of-order/late/early callbacks and missing/wrong leases. Missing completion/crashed workers become uncertain; no automatic uncertain retry or new retry identity exists. A POST already authorized/in flight cannot be recalled by a later settings/consent change.
+
+## 11. Provider disabled/no backlog
+
+Disabled/unready enqueue returns unavailable without creating an intent. Configuration edits retire queued work, dispatch rechecks current revision/readiness, authorization expires after ten minutes, and re-enable never resurrects suppressed intents. Native disable-before-dispatch and local SQL/HTTP/browser tests pass. No historical email/backfill producer was introduced.
+
+## 12. Migration assessment
+
+Exactly **66 local migration files**. Modified only unapplied `20261008180000_email_foundation.sql` in place; Claims Core 64 and reverse logistics 65 are unchanged prerequisites. Production 63 is the user's recorded checkpoint, not refreshed by this audit. Native tests apply the actual schema and all 66 migrations to fresh disposable databases. The populated 65→66 preservation test proves existing business/SMS/PDC/Claims/payment rows and canonical functions unchanged apart from the documented permission/reset extensions. No destructive changes, seeded credentials/templates/consent/messages or historical sends. Full reset preserves configured/retained Email data and reports its blocker. Later deployment must independently recheck applied migration identities/parity and dormant invariants; do not assume an edited migration can replace an already-applied version.
+
+## 13. Existing systems
+
+Full tests and populated migration checkpoints pass for Auth/support/chat, checkout/payment/My Account, Vodafone/Order/PDC SMS, Claims Stage 1 and reverse Stage 2. No production Auth, Microsoft 365, OneSignal or DNS acceptance is claimed. No changes to those integration/consumer files; no email business producers, financial/inventory actions, scheduler or Claims Stage 3.
+
+## 14. Tests and validation
+
+Final **`node --test tests/*.test.mjs`: 583 passed, zero failed/skipped** with both native binary/driver environments configured. Focused final Email suite: **50 passed, zero failed/skipped**. `env -u DEBUG npm run typecheck`, `env -u DEBUG npm run build` and `git diff --check` pass. Existing ERP duplicate-import, sourcemap/chunk, preorder BigInt and `previousProduct` build warnings remain; build completes successfully. No unrelated warning repairs.
+
+Reproducible native setup uses `EMAIL_REVIEW_PG_BIN`/`EMAIL_REVIEW_PG_DRIVER` for Email and the existing `PAYMOB_REVIEW_PG_BIN`/`PAYMOB_REVIEW_PG_DRIVER` for payment. With no native infrastructure these tests explicitly skip rather than claiming concurrency verification. Source/binary/driver are temporary audit infrastructure; no package/lockfile, global install or installed database service changes. Detailed temporary evidence: `/private/tmp/email-audit-{original-native-repro,rate-before,final-suite,focused-final,native,revocation,typecheck,build,browser,artifacts}.log`.
+
+## 15. Local browser/API verification
+
+Fresh actual styled Vue/H3/RBAC/disposable SQL browser: **867 assertions, 122 states/screenshots, 224 JSON responses, zero errors/external requests, one mocked provider call, zero real calls**. EN/AR/RTL, mobile/desktop, Light/Dark/System, tabs/settings/secret replacement, confirmation, roles/history/consent and unsubscribe pass. Screens/report: `/private/tmp/elcomputer-email-audit-browser/`. Actual HTTP partial-body tests prove webhook disable/token rotation and worker-key revocation, beyond anonymous guards. Fresh artifacts: **130 public files / 4,425,667 bytes, 12 Vue SSR cases, zero private SSR requests/secret canaries**. This is local fixture browser/API acceptance, not production/staging login or real Supabase/provider acceptance.
+
+## 16. Remaining limitations and activation dependencies
+
+Manual content meaning is not mechanically established; trusted staff/content governance remains required. Account/sender verification and activation are merchant attestations, not a real API readiness probe. Real Supabase authenticated roles/persistence, provider approval/quotas/deliverability/callback registration, secure ingress, deployed worker-key rotation/scheduling, private retention and provider blocklist/consent reconciliation remain unverified. An uncertain send requires reviewed reconciliation rather than resend. Shared Bearer authentication has no per-event signature. Event subscriptions/payload spelling differ; early callbacks without the echoed correlation or saved provider ID cannot be safely matched. Existing activity-log cleanup may prune old administrative actions; durable Email ledger is separate.
+
+Later release/activation needs separate authorization and the established guarded migration/deployment review. Configure infrastructure master/worker secrets securely and merchant credentials/verified senders through Dashboard, recheck approval/quotas, deliberately enable only reviewed capabilities, then perform authorized authenticated/provider acceptance. This audit performs none of those actions.
+
+## 17. Claims Stage 3 readiness
+
+**Safe to build a separately authorized Claims communications stage on the corrected foundation.** Its server producer must authorize owned business events, use approved essential templates/recipients and stable event identities, atomically associate its business intent, suppress obsolete/historical events, respect consent/safety and preserve SMS/logistics/financial boundaries. This audit implements no producer or Stage 3. Live communications still require the release/activation/acceptance steps above. Stop after this audit.
+
+```text
+EMAIL FOUNDATION AUDITED: YES
+SAFE TO BUILD CLAIMS STAGE 3: YES
+SAFE FOR FUTURE DORMANT DEPLOYMENT: YES
+CRITICAL/HIGH ISSUES REMAINING: NO
+TRANSACTIONAL/MARKETING SEPARATED: YES
+EMAIL QUEUE IDEMPOTENCY VERIFIED: YES
+WEBHOOK SECURITY VERIFIED: YES
+EMAIL SETTINGS DASHBOARD-MANAGED: YES
+SUPABASE AUTH CHANGED: NO
+REAL BREVO API CALLED: NO
+REAL EMAIL SENT: NO
+PRODUCTION MIGRATION APPLIED: NO
+PRODUCTION DEPLOYED: NO
+```
+
+# Earlier Central Email Foundation implementation record — Brevo
 
 Implemented locally 2026-10-08–09. Brevo, marketing and webhook processing default **OFF**, with no credentials, senders, templates, historical messages or business producers seeded. No production access, credential discovery, migration, deployment, DNS/Microsoft 365/OneSignal/Auth change, webhook registration or real provider/email/SMS operation occurred. Only disposable fixtures contain fake credentials and mocked sends.
 

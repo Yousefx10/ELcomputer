@@ -27,6 +27,9 @@ test('actual Email HTTP handlers enforce RBAC, privacy, confirmations and webhoo
   await t.test('sender sees transactional templates; saved secret is presence-only; preview cannot be tampered',async()=>{
    const settings=(await call('/api/admin-email/settings')).data.settings;assert.equal(settings.api_key_configured,true);assert.equal(settings.encryption_ready,true)
    const templates=(await call('/api/admin-email/templates','sender')).data.templates;assert.equal(templates.length,1);assert.equal(templates[0].classification,'transactional')
+   assert.equal((await call('/api/admin-email/templates','owner','POST',{...f.template('marketing'),version:1,classification:'transactional'})).status,409)
+   assert.equal((await call('/api/admin-email/preview','sender','POST',f.input({template_key:'fixture_marketing',classification:'transactional',values:{reference:'X',customer_name:'Buyer',message:'Fixture'}}))).status,400)
+   assert.equal((await call('/api/admin-email/preview','sender','POST',f.input({recipient:['one@email.example.invalid','two@email.example.invalid']}))).status,400)
    const input=f.input(),preview=await call('/api/admin-email/preview','sender','POST',input);assert.equal(preview.status,200)
    const send={...input,receipt:preview.data.receipt,confirmed:true,essential_confirmed:true}
    assert.equal((await call('/api/admin-email/send','sender','POST',{...send,recipient:'changed@email.example.invalid'})).status,409)

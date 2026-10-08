@@ -44,6 +44,7 @@ test('Brevo contract, message ID and provider errors use mocked transports only'
 
 test('SQL-backed email foundation, private settings, queue and recipient restrictions',async t=>{
  const f=await createEmailFixture(),{db,client,actors}=f,service=createEmailService(client)
+ const recordEvent=async value=>emailRpc(client,'event',{...value,config_revision:(await f.settings()).revision})
  try{
   await t.test('disabled defaults create no backlog; browser roles cannot read or invoke email tables/RPC',async()=>{
    assert.equal((await f.settings()).config.is_enabled,false)
@@ -62,7 +63,7 @@ test('SQL-backed email foundation, private settings, queue and recipient restric
    await assert.rejects(()=>emailRpc(client,'settings',{revision:saved.revision,config:saved.config},actors.customer),/permission/)
   })
   await f.saveTemplate(validateEmailTemplate(f.template()));await f.saveTemplate(validateEmailTemplate(f.template('marketing')))
-  await t.test('native idempotency and immutable snapshots preserve one intent',async()=>{
+  await t.test('SQL idempotency and immutable snapshots preserve one intent',async()=>{
    const input=f.input(),first=await service.sendTransactional(input),second=await service.sendTransactional(input)
    assert.equal(first.id,second.id);assert.equal(second.reused,true)
    await assert.rejects(()=>service.sendTransactional({...input,body:'Different'}),/already used/)
@@ -103,20 +104,20 @@ test('SQL-backed email foundation, private settings, queue and recipient restric
   await t.test('authenticated events deduplicate, match stable IDs, order delivery and persist safety',async()=>{
    const queued=await service.sendTransactional(f.input({recipient:'events@email.example.invalid'}));await f.unthrottle();await processEmailQueue(client,{provider:acceptedProvider});const m=await f.message(queued.id)
    const observation=(event,seconds=0,changes={})=>normalizeBrevoEvent({event,email:m.recipient,'message-id':'<'+m.provider_message_id+'>',ts_event:Math.floor(Date.now()/1000)+seconds,...changes})
-   await emailRpc(client,'event',observation('request'));
-   const delivered=observation('delivered');assert.equal((await emailRpc(client,'event',delivered)).replayed,false);assert.equal((await emailRpc(client,'event',delivered)).replayed,true)
-   await emailRpc(client,'event',observation('request',-1));assert.equal((await f.message(m.id)).delivery_state,'delivered')
-   const deliveryBefore=(await f.message(m.id)).delivery_at;await emailRpc(client,'event',observation('request',3));assert.equal((await f.message(m.id)).delivery_at.valueOf(),deliveryBefore.valueOf())
-   await emailRpc(client,'event',observation('opened',1));assert.ok((await f.message(m.id)).opened_at);assert.equal((await f.message(m.id)).state,'accepted')
-   assert.equal((await emailRpc(client,'event',observation('spam',2,{email:'stranger@email.example.invalid'}))).matched,false)
-   await emailRpc(client,'event',observation('spam',2));assert.equal((await service.sendTransactional(f.input({recipient:m.recipient}))).state,'suppressed')
+   await recordEvent(observation('request'));
+   const delivered=observation('delivered');assert.equal((await recordEvent(delivered)).replayed,false);assert.equal((await recordEvent(delivered)).replayed,true)
+   await recordEvent(observation('request',-1));assert.equal((await f.message(m.id)).delivery_state,'delivered')
+   const deliveryBefore=(await f.message(m.id)).delivery_at;await recordEvent(observation('request',3));assert.equal((await f.message(m.id)).delivery_at.valueOf(),deliveryBefore.valueOf())
+   await recordEvent(observation('opened',1));assert.ok((await f.message(m.id)).opened_at);assert.equal((await f.message(m.id)).state,'accepted')
+   assert.equal((await recordEvent(observation('spam',2,{email:'stranger@email.example.invalid'}))).matched,false)
+   await recordEvent(observation('spam',2));assert.equal((await service.sendTransactional(f.input({recipient:m.recipient}))).state,'suppressed')
    assert.equal(normalizeBrevoEvent({event:'undocumented_event'}),null);assert.throws(()=>normalizeBrevoEvent({event:'delivered',email:m.recipient,'message-id':m.provider_message_id,ts_epoch:Date.now()}))
   })
   await t.test('early provider event matches only dispatched nonce; failed finish preserves ambiguity',async()=>{
    const queued=await service.sendTransactional(f.input({recipient:'early@email.example.invalid'}));await f.unthrottle();const work=await emailRpc(client,'claim')
    const body={event:'delivered',email:work.recipient,'message-id':'early@relay.example.invalid',ts_event:Math.floor(Date.now()/1000),'X-Mailin-custom':work.correlation}
-   assert.equal((await emailRpc(client,'event',normalizeBrevoEvent(body))).matched,false)
-   await emailRpc(client,'dispatch',{id:work.id,work_token:work.work_token});assert.equal((await emailRpc(client,'event',normalizeBrevoEvent(body))).matched,true)
+   assert.equal((await recordEvent(normalizeBrevoEvent(body))).matched,false)
+   await emailRpc(client,'dispatch',{id:work.id,work_token:work.work_token});assert.equal((await recordEvent(normalizeBrevoEvent(body))).matched,true)
    await emailRpc(client,'finish',{id:work.id,work_token:work.work_token,state:'accepted',provider_message_id:'early@relay.example.invalid',http_status:201});assert.equal((await f.message(queued.id)).state,'accepted')
    await assert.rejects(()=>f.fixtureWrite("delete from public.email_events"),/Canonical/)
   })
@@ -152,7 +153,7 @@ test('send authorization rechecks consent, suppression, staff rights; audit erro
   assert.equal((await emailRpc(f.client,'dispatch',{id:work.id,work_token:work.work_token})).allowed,false);assert.equal((await f.message(m.id)).state,'suppressed')
   const fresh=await service.sendTransactional(f.input({recipient:'bounce@email.example.invalid'}));await f.unthrottle();await processEmailQueue(f.client,{provider:acceptedProvider});const accepted=await f.message(fresh.id)
   for(const event of ['deferred','soft_bounce','unsubscribed','invalid_email']){
-   await emailRpc(f.client,'event',normalizeBrevoEvent({event,email:accepted.recipient,'message-id':accepted.provider_message_id,ts_event:Math.floor(Date.now()/1000)+2}))
+   await emailRpc(f.client,'event',{...normalizeBrevoEvent({event,email:accepted.recipient,'message-id':accepted.provider_message_id,ts_event:Math.floor(Date.now()/1000)+2}),config_revision:(await f.settings()).revision})
   }
   const pref=(await f.db.query('select * from public.email_preferences where recipient=$1',[accepted.recipient])).rows[0];assert.equal(pref.global_reason,'invalid_email');assert.deepEqual(pref.blocked_senders,[accepted.sender])
   assert.equal((await service.sendTransactional(f.input({recipient:accepted.recipient}))).state,'suppressed')

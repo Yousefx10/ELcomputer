@@ -94,7 +94,7 @@ begin
  if not found then raise exception 'Email unavailable.' using errcode='55000'; end if;
  if p_action='settings' then
   perform public.email_assert_staff(p_actor,'email.settings.manage');
-  if (p_input->>'revision')::integer<>s.revision then raise exception 'Email revision conflict.' using errcode='40001'; end if;
+  if (p_input->>'revision')::integer is distinct from s.revision then raise exception 'Email revision conflict.' using errcode='40001'; end if;
   update public.email_provider_settings set config=p_input->'config',api_key_encrypted=case when p_input ? 'api_key_encrypted' then p_input->>'api_key_encrypted' else api_key_encrypted end,
    webhook_token_encrypted=case when p_input ? 'webhook_token_encrypted' then p_input->>'webhook_token_encrypted' else webhook_token_encrypted end,revision=revision+1,updated_at=clock_timestamp(),updated_by=p_actor where id='brevo' returning * into s;
   update public.email_messages set state='suppressed',error_category='configuration_changed',updated_at=clock_timestamp() where state='queued';
@@ -103,7 +103,7 @@ begin
  elsif p_action='template' then
   perform public.email_assert_staff(p_actor,'email.templates.manage');
   select * into t from public.email_templates where key=p_input->>'key' for update;
-  if found and (t.version<>(p_input->>'version')::integer or t.classification<>p_input->>'classification') then raise exception 'Email template conflict.' using errcode='40001'; end if;
+  if found and (t.version is distinct from (p_input->>'version')::integer or t.classification is distinct from p_input->>'classification') then raise exception 'Email template conflict.' using errcode='40001'; end if;
   insert into public.email_templates(key,name,category,classification,subject_en,subject_ar,body_en,body_ar,sender,reply_to,is_enabled,updated_by)
    values(p_input->>'key',p_input->>'name',p_input->>'category',p_input->>'classification',p_input->>'subject_en',p_input->>'subject_ar',p_input->>'body_en',p_input->>'body_ar',p_input->>'sender',p_input->>'reply_to',(p_input->>'is_enabled')::boolean,p_actor)
    on conflict(key) do update set name=excluded.name,category=excluded.category,subject_en=excluded.subject_en,subject_ar=excluded.subject_ar,body_en=excluded.body_en,body_ar=excluded.body_ar,sender=excluded.sender,reply_to=excluded.reply_to,is_enabled=excluded.is_enabled,version=email_templates.version+1,updated_at=clock_timestamp(),updated_by=p_actor returning * into t;
@@ -124,16 +124,16 @@ begin
  elsif p_action='enqueue' then
   select * into m from public.email_messages where idempotency_key=(p_input->>'idempotency_key')::uuid;
   if found then
-   if m.fingerprint<>p_input->>'fingerprint' then raise exception 'Email idempotency conflict.' using errcode='23505'; end if;
+   if m.fingerprint is distinct from p_input->>'fingerprint' then raise exception 'Email idempotency conflict.' using errcode='23505'; end if;
    return jsonb_build_object('id',m.id,'state',m.state,'reused',true);
   end if;
-  if not public.email_ready(s) or s.revision<>(p_input->>'config_revision')::integer then raise exception 'Email disabled or unavailable.' using errcode='55000'; end if;
-  if p_actor is not null then perform public.email_assert_staff(p_actor,'email.transactional.send'); if p_input->>'classification'<>'transactional' or p_input->>'source'<>'dashboard_manual' then raise exception 'Invalid manual classification.' using errcode='22023'; end if;
-  elsif p_input->>'source'<>'service' then raise exception 'Invalid email source.' using errcode='22023'; end if;
+  if not public.email_ready(s) or s.revision is distinct from (p_input->>'config_revision')::integer then raise exception 'Email disabled or unavailable.' using errcode='55000'; end if;
+  if p_actor is not null then perform public.email_assert_staff(p_actor,'email.transactional.send'); if p_input->>'classification' is distinct from 'transactional' or p_input->>'source' is distinct from 'dashboard_manual' then raise exception 'Invalid manual classification.' using errcode='22023'; end if;
+  elsif p_input->>'source' is distinct from 'service' then raise exception 'Invalid email source.' using errcode='22023'; end if;
   if not exists(select 1 from jsonb_array_elements(s.config->'approved_senders') x where x->>'email'=p_input->>'sender' and (x->>'verified')::boolean) then raise exception 'Sender unavailable.' using errcode='22023'; end if;
   if p_input->>'template_key' is not null then
    select * into t from public.email_templates where key=p_input->>'template_key';
-   if not found or not t.is_enabled or t.classification<>p_input->>'classification' or t.version<>(p_input->>'template_version')::integer then raise exception 'Template unavailable.' using errcode='22023'; end if;
+   if not found or not t.is_enabled or t.classification is distinct from p_input->>'classification' or t.version is distinct from (p_input->>'template_version')::integer then raise exception 'Template unavailable.' using errcode='22023'; end if;
   end if;
   if p_actor is not null and (select count(*) from public.email_messages where actor_id=p_actor and created_at>clock_timestamp()-interval '1 minute')>=10 then raise exception 'Email rate limit.' using errcode='54000'; end if;
   recipient_value:=p_input->>'recipient'; insert into public.email_preferences(recipient) values(recipient_value) on conflict do nothing;
@@ -147,12 +147,14 @@ begin
   update public.email_attempts a set state='uncertain',error_category='lease_expired',finished_at=clock_timestamp() from public.email_messages j where a.message_id=j.id and a.work_token=j.work_token and j.state='processing' and j.started_at<clock_timestamp()-interval '2 minutes';
   update public.email_messages set state='uncertain',error_category='lease_expired',updated_at=clock_timestamp() where state='processing' and started_at<clock_timestamp()-interval '2 minutes';
   update public.email_messages set state='suppressed',error_category='authorization_expired',updated_at=clock_timestamp() where state='queued' and (expires_at<=clock_timestamp() or config_revision<>s.revision or not public.email_ready(s));
+  update public.email_messages set state='failed',error_category='attempt_limit',updated_at=clock_timestamp() where state='queued' and attempts>=3;
   if not public.email_ready(s) or s.next_dispatch_at>clock_timestamp() then return null; end if;
   select * into m from public.email_messages where state='queued' and next_attempt_at<=clock_timestamp() order by priority desc,created_at for update skip locked limit 1;
   if not found then return null; end if;
   token:=gen_random_uuid(); update public.email_messages set state='processing',work_token=token,started_at=clock_timestamp(),dispatched_at=null,attempts=attempts+1,updated_at=clock_timestamp() where id=m.id returning * into m;
   insert into public.email_attempts(message_id,work_token,attempt_number) values(m.id,token,m.attempts); return to_jsonb(m);
  elsif p_action in ('dispatch','finish','event','unsubscribe') then
+  if p_action='event' and (not coalesce((s.config->>'webhook_enabled')::boolean,false) or s.webhook_token_encrypted is null or s.revision is distinct from (p_input->>'config_revision')::integer) then raise exception 'Email webhook authorization expired.' using errcode='42501'; end if;
   if p_action='unsubscribe' then select * into m from public.email_messages where unsubscribe_hash=p_input->>'token_hash' and unsubscribe_expires_at>clock_timestamp() and classification='marketing';
   elsif p_action='event' then
    select * into m from public.email_messages where recipient=p_input->>'recipient' and (provider_message_id=p_input->>'provider_message_id' or (provider_message_id is null and correlation=p_input->>'correlation' and dispatched_at is not null and state in ('processing','uncertain')));
@@ -164,7 +166,7 @@ begin
    update public.email_preferences set marketing_status='unsubscribed',provenance='recipient_link',updated_by=null,updated_at=clock_timestamp() where email_preferences.recipient=m.recipient;
    update public.email_messages set state='suppressed',error_category='marketing_unsubscribed',updated_at=clock_timestamp() where email_messages.recipient=m.recipient and classification='marketing' and state='queued'; return jsonb_build_object('matched',true);
   elsif p_action='dispatch' then
-   if m.state<>'processing' or m.work_token<>(p_input->>'work_token')::uuid or m.dispatched_at is not null or m.started_at<clock_timestamp()-interval '1 minute' then return jsonb_build_object('allowed',false,'state',m.state); end if;
+   if m.state<>'processing' or m.work_token is distinct from (p_input->>'work_token')::uuid or m.dispatched_at is not null or m.started_at<clock_timestamp()-interval '1 minute' then return jsonb_build_object('allowed',false,'state',m.state); end if;
    reason:=case when not public.email_ready(s) or m.config_revision<>s.revision or m.expires_at<=clock_timestamp() then 'configuration_changed'
     when pref.global_reason is not null then pref.global_reason when m.sender=any(pref.blocked_senders) then 'sender_unsubscribed'
     when m.classification='marketing' and (pref.marketing_status<>'subscribed' or not coalesce((s.config->>'marketing_enabled')::boolean,false) or m.sender<>s.config->>'marketing_sender') then 'marketing_permission'
@@ -174,14 +176,15 @@ begin
     update public.email_attempts set state='suppressed',error_category=reason,finished_at=clock_timestamp() where work_token=m.work_token; return jsonb_build_object('allowed',false,'state','suppressed');
    end if;
    if s.next_dispatch_at>clock_timestamp() then
-    update public.email_messages set state='queued',next_attempt_at=s.next_dispatch_at where id=m.id;
-    update public.email_attempts set state='retry',error_category='dispatch_throttle',finished_at=clock_timestamp() where work_token=m.work_token;
-    return jsonb_build_object('allowed',false,'state','queued');
+    reason:=case when m.attempts>=3 then 'attempt_limit' else 'dispatch_throttle' end;
+    update public.email_messages set state=case when m.attempts>=3 then 'failed' else 'queued' end,error_category=reason,next_attempt_at=s.next_dispatch_at,updated_at=clock_timestamp() where id=m.id returning * into m;
+    update public.email_attempts set state=case when m.state='failed' then 'failed' else 'retry' end,error_category=reason,finished_at=clock_timestamp() where work_token=m.work_token;
+    return jsonb_build_object('allowed',false,'state',m.state);
    end if;
    update public.email_provider_settings set next_dispatch_at=clock_timestamp()+interval '1 second' where id='brevo';
    update public.email_messages set dispatched_at=clock_timestamp() where id=m.id; return jsonb_build_object('allowed',true);
   elsif p_action='finish' then
-   if m.state<>'processing' or m.work_token<>(p_input->>'work_token')::uuid then return jsonb_build_object('matched',false); end if;
+   if m.state<>'processing' or m.work_token is distinct from (p_input->>'work_token')::uuid then return jsonb_build_object('matched',false); end if;
    reason:=p_input->>'error_category'; v:=p_input;
    if v->>'state'='retry' and (m.attempts>=3 or m.expires_at<=clock_timestamp()+make_interval(secs=>(v->>'retry_seconds')::integer)) then v:=jsonb_set(v,'{state}','"failed"'); end if;
    if m.provider_message_id is not null and v->>'provider_message_id' is distinct from m.provider_message_id then v:=jsonb_set(v,'{state}','"uncertain"'); reason:='provider_identity_conflict'; end if;
@@ -191,7 +194,7 @@ begin
    update public.email_attempts set state=v->>'state',http_status=(v->>'http_status')::integer,error_category=reason,provider_message_id=v->>'provider_message_id',finished_at=clock_timestamp() where work_token=m.work_token;
    return jsonb_build_object('matched',true,'state',m.state);
   elsif p_action='event' then
-   if m.provider_message_id is not null and m.provider_message_id<>p_input->>'provider_message_id' then return jsonb_build_object('matched',false); end if;
+   if m.provider_message_id is not null and m.provider_message_id is distinct from p_input->>'provider_message_id' then return jsonb_build_object('matched',false); end if;
    event_at:=(p_input->>'event_at')::timestamptz;
    if event_at<m.created_at-interval '5 minutes' or event_at>clock_timestamp()+interval '5 minutes' then return jsonb_build_object('matched',false); end if;
    insert into public.email_events(event_key,message_id,provider_message_id,event_type,event_at) values(p_input->>'event_key',m.id,p_input->>'provider_message_id',p_input->>'event_type',event_at) on conflict do nothing;

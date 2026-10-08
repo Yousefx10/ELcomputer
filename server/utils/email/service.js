@@ -54,19 +54,22 @@ export const createEmailService = db => {
  }
  return {sendTransactional:(input,{actor=null}={})=>enqueue(input,'transactional',actor),sendMarketing:input=>enqueue(input,'marketing')}
 }
-export const processEmailQueue = async (db,{limit=1,provider=brevoProvider}={}) => {
+export const processEmailQueue = async (db,{limit=1,provider=brevoProvider,authorize=()=>{}}={}) => {
  const results=[]
  for(let i=0;i<Math.min(3,Math.max(1,limit));i++){
+  await authorize()
   const message=await emailRpc(db,'claim');if(!message)break
   let outcome
   try{
    const settings=await getEmailSettings(db)
    if(!settings.config.is_enabled||!emailReadiness(settings).ready)outcome={state:'suppressed',error_category:'provider_unavailable'}
    else outcome=await provider.submit(settings,decryptCredentialSecret(settings.api_key_encrypted,'Email'),message,async()=>{
+    try{await authorize()}catch{throw Object.assign(Error('Email worker revoked.'),{workerRevoked:true})}
     const result=await emailRpc(db,'dispatch',{id:message.id,work_token:message.work_token})
     if(!result.allowed)throw Object.assign(Error('Email dispatch denied.'),{dispatchDenied:true,emailState:result.state||'uncertain'})
+    try{await authorize()}catch{throw Object.assign(Error('Email worker revoked.'),{workerRevoked:true})}
    })
-  }catch(error){if(error.dispatchDenied){results.push({id:message.id,state:error.emailState||'uncertain'});continue}outcome={state:'uncertain',error_category:'worker_unknown'}}
+  }catch(error){if(error.dispatchDenied){results.push({id:message.id,state:error.emailState||'uncertain'});continue}outcome=error.workerRevoked?{state:'suppressed',error_category:'worker_authorization'}:{state:'uncertain',error_category:'worker_unknown'}}
   const finished=await emailRpc(db,'finish',{id:message.id,work_token:message.work_token,...outcome})
   results.push({id:message.id,state:finished.matched?finished.state:'uncertain'})
  }

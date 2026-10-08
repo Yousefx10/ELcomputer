@@ -6,9 +6,9 @@ import { emailRpc } from '../../server/utils/email/core.js'
 export const emailFixtureRuntime={credentialsEncryptionKey:'email-fixture-master-over-32-characters',emailWorkerSecret:'email-fixture-worker-over-32-characters'}
 export const EMAIL_KEY_CANARY='email-fixture-private-api-key-canary-over-32-characters'
 export const WEBHOOK_CANARY='email-fixture-private-webhook-canary-over-32-characters'
-export const createEmailFixture=async()=>{
+export const createEmailFixture=async({database=null}={})=>{
  globalThis.useRuntimeConfig=()=>emailFixtureRuntime
- const db=await createResetDatabase(),client=smsDatabaseClient(db),actors={owner:randomUUID(),customer:randomUUID(),viewer:randomUUID(),manager:randomUUID(),templates:randomUUID(),sender:randomUUID(),history:randomUUID(),preferences:randomUUID(),inactive:randomUUID()}
+ const db=database||await createResetDatabase(),client=smsDatabaseClient(db),actors={owner:randomUUID(),customer:randomUUID(),viewer:randomUUID(),manager:randomUUID(),templates:randomUUID(),sender:randomUUID(),history:randomUUID(),preferences:randomUUID(),inactive:randomUUID()}
  for(const [name,id]of Object.entries(actors)){
   await db.query('insert into auth.users(id,email) values($1,$2)',[id,name+'@email.example.invalid'])
   if(name==='customer')continue

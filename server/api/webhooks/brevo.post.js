@@ -10,6 +10,6 @@ export default defineEventHandler(emailHandler(async event=>{
  const expected='Bearer '+decryptCredentialSecret(settings.webhook_token_encrypted,'Email')
  if(!credentialSecretsMatch(getHeader(event,'authorization'),expected))emailFail('Email webhook authorization required.',401)
  const normalized=normalizeBrevoEvent(await readEmailBody(event,32768))
- if(normalized)await emailRpc(db,'event',normalized)
+ if(normalized)await emailRpc(db,'event',{...normalized,config_revision:settings.revision})
  return {received:true}
 }))

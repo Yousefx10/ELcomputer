@@ -5,7 +5,7 @@ import { validateEmail } from './core.js'
 // Payload names, not create-webhook subscription names. Verified Brevo docs.
 const events={request:'sent',delivered:'delivered',deferred:'deferred',soft_bounce:'soft_bounce',hard_bounce:'hard_bounce',spam:'spam',invalid_email:'invalid_email',blocked:'blocked',error:'error',unsubscribed:'unsubscribed',opened:'opened'}
 export const normalizeBrevoEvent = body => validateEmail(()=>{
- if(!events[body.event])return null
+ if(typeof body.event!=='string'||!Object.hasOwn(events,body.event))return null
  const recipient=emailAddress(body.email),id=brevoMessageId(body['message-id'])
  const seconds=body.ts_event??body.ts
  if(!Number.isSafeInteger(seconds)||seconds<946684800||seconds>Date.now()/1000+300)throw Error('Invalid email event time.')
