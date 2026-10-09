@@ -70,6 +70,7 @@
 </template>
 <script setup>
 import { emailVariables, renderEmailSource, emailLayout } from '~/utils/email.js'
+import { claimCommunicationTemplateDraft } from '~/utils/claimCommunications.js'
 definePageMeta({layout:'dashboard'})
 const {t:translate,locale}=useI18n(),{uiMessage}=useUiLocale(),route=useUiRoute(),client=useSupportClient(),{hasPermission:can}=useAdminAccess()
 const t=key=>translate('emailFoundation.'+key)
@@ -77,7 +78,7 @@ const loading=ref(true),busy=ref(false),error=ref(''),notice=ref(''),capabilitie
 const secrets=reactive({api_key:'',webhook_token:''}),clearSecrets=reactive({api_key:false,webhook_token:false})
 const tab=computed(()=>String(route.query.tab||'settings'))
 const tabs=computed(()=>[{key:'settings',permission:'email.settings.view'},{key:'templates',permission:'email.templates.view'},{key:'send',permission:'email.transactional.send'},{key:'history',permission:'email.history.view'},{key:'events',permission:'email.history.view'},{key:'preferences',permission:'email.marketing.manage'}].filter(x=>can(x.permission)))
-const blankTemplate=()=>({key:'',name:'',category:'manual',classification:'transactional',subject_en:'',subject_ar:'',body_en:'',body_ar:'',sender:'',reply_to:'',is_enabled:false,version:0})
+const blankTemplate=()=>claimCommunicationTemplateDraft(String(route.query.claimPurpose||''),'email')||({key:'',name:'',category:'manual',classification:'transactional',subject_en:'',subject_ar:'',body_en:'',body_ar:'',sender:'',reply_to:'',is_enabled:false,version:0})
 const template=ref(blankTemplate()),templates=ref([]),templatePreview=ref(null),placeholderList=emailVariables.map(x=>'{{'+x+'}}').join(' · ')
 const blankManual=()=>({recipient:'',sender:capabilities.value.default_sender,locale:locale.value==='ar'?'ar':'en',body_format:'html',template_key:'',subject:'',body:'',values:{}})
 const manual=ref(blankManual()),preview=ref(null),essential=ref(false),confirmed=ref(false),sent=ref(null)

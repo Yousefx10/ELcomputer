@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Claims Stage 3 communicates accepted reverse pickups and authoritative Claim receipt separately from outbound PDC SMS. Reverse events never create outbound pdc_* Order SMS intents; verified rebooking uses its own job UUID. Existing courier implementation and outbound history are preserved. No production/provider activation/call. Current local implementation and evidence are in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # Current local extension: After-Sales Stage 2, 2026-10-08
 
 Claim reverse bookings now use the existing PDC adapter/settings/authenticated worker/webhook/normalization and private-label transport, with separate claim-linked jobs/history and stable `ASREV-` references. Staff explicitly initiate pickup; reverse events route outside the original outbound/SMS persistence path. Original order AWBs/references/history and normal order PDC SMS remain unchanged. No provider cancellation action is invented.

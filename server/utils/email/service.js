@@ -10,7 +10,7 @@ const proof = value => {
  if(key.trim().length<32)emailFail('Email encryption is unavailable.',503)
  return createHmac('sha256',key).update('email-manual-preview-v1\0'+JSON.stringify(value)).digest('base64url')
 }
-export const prepareEmail = async (db, input, classification='transactional',actor=null) => {
+export const prepareEmail = async (db, input, classification='transactional',actor=null,{claimCommunication=null}={}) => {
  const s=await getEmailSettings(db),c=s.config
  let template=null
  if(input.template_key){const result=await db.from('email_templates').select('*').eq('key',input.template_key).maybeSingle();if(result.error||!result.data||!result.data.is_enabled||result.data.classification!==classification) emailFail('Choose an enabled template for this email type.');template=result.data}
@@ -23,6 +23,7 @@ export const prepareEmail = async (db, input, classification='transactional',act
   const values=input.values||{},subject=template?renderEmailSource(template['subject_'+input.locale],values,true):emailLine(input.subject),body=template?renderEmailSource(template['body_'+input.locale],values):emailBody(input.body)
   const replyTo=template?.reply_to||c.reply_to
   const content={classification,recipient,sender:senderEmail,sender_name:emailLine(sender.name,100),reply_to:replyTo?emailAddress(replyTo):'',template_key:template?.key||null,template_version:template?.version||null,category:template?.category||'manual',locale:input.locale,subject,body,body_format:input.body_format||'html',source:actor?'dashboard_manual':'service',business_reference:emailLine(input.business_reference||'',120,false),actor_id:actor,priority:Number.isInteger(input.priority)&&input.priority>=0&&input.priority<=10?input.priority:0,config_revision:s.revision,brand:c.brand_name||sender.name}
+  if(claimCommunication)content.action_url=input.values?.claim_url||''
   return {settings:s,content,fingerprint:emailDigest(JSON.stringify(content)),html:emailLayout({...content,locale:input.locale,brand:content.brand}),text:body}
  })
 }
@@ -32,10 +33,11 @@ export const previewManualEmail = async (db,input,actor) => {
  return {receipt:{...receipt,signature:proof(receipt)},subject:prepared.content.subject,recipient:prepared.content.recipient,sender:prepared.content.sender,html:prepared.html,text:prepared.text,enabled:prepared.settings.config.is_enabled&&emailReadiness(prepared.settings).ready}
 }
 export const createEmailService = db => {
- const enqueue=async(input,classification,actor=null)=>{
+ const enqueue=async(input,classification,actor=null,claimCommunication=null)=>{
+  if(claimCommunication&&(actor||classification!=='transactional'))emailFail('Invalid claim communication.')
   const active=await getEmailSettings(db)
   if(!active.config.is_enabled||!emailReadiness(active).ready)emailFail('Email provider is disabled or unavailable.',503)
-  const p=await prepareEmail(db,input,classification,actor)
+  const p=await prepareEmail(db,input,classification,actor,{claimCommunication})
   if(actor){
    const r=input.receipt
    if(input.confirmed!==true||input.essential_confirmed!==true||!r||typeof r.key!=='string'||!Number.isFinite(r.expires)||r.expires<Date.now()||r.expires>Date.now()+10*60000||r.actor!==actor||r.fingerprint!==p.fingerprint||!credentialSecretsMatch(r.signature,proof({key:r.key,expires:r.expires,fingerprint:r.fingerprint,actor:r.actor}))) emailFail('Preview and confirm this transactional email.',409)
@@ -50,9 +52,15 @@ export const createEmailService = db => {
   }
   const html=unsubscribe?emailLayout({...p.content,brand:p.content.brand,unsubscribeUrl:unsubscribe}):p.html
   const text=p.text+(unsubscribe?'\n\n'+(p.content.locale==='ar'?'إلغاء الاشتراك: ':'Unsubscribe: ')+unsubscribe:'')
-  return emailRpc(db,'enqueue',{...p.content,id:randomUUID(),idempotency_key:key,fingerprint:p.fingerprint,html_body:html,text_body:text,unsubscribe_hash:hash,correlation:'elc-'+randomBytes(32).toString('hex')},actor)
+  const payload={...p.content,id:randomUUID(),idempotency_key:key,fingerprint:p.fingerprint,html_body:html,text_body:text,unsubscribe_hash:hash,correlation:'elc-'+randomBytes(32).toString('hex')}
+  if(claimCommunication){
+   const result=await db.rpc('after_sales_communication_enqueue',{p_id:claimCommunication.id,p_token:claimCommunication.token,p_channel:'email',p_payload:payload})
+   if(result.error)emailFail('Claim email storage is unavailable.',503)
+   return result.data
+  }
+  return emailRpc(db,'enqueue',payload,actor)
  }
- return {sendTransactional:(input,{actor=null}={})=>enqueue(input,'transactional',actor),sendMarketing:input=>enqueue(input,'marketing')}
+ return {sendTransactional:(input,{actor=null,claimCommunication=null}={})=>enqueue(input,'transactional',actor,claimCommunication),sendMarketing:input=>enqueue(input,'marketing')}
 }
 export const processEmailQueue = async (db,{limit=1,provider=brevoProvider,authorize=()=>{}}={}) => {
  const results=[]

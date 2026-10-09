@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Claims Stage 3 now captures the seven authoritative milestones into private SMS/Email intents. My Account timeline, actions and ownership remain unchanged; staff detail adds permission-gated masked Communications history. OFF defaults, occurrence identity, atomic outbox tradeoff, recipients, freshness and final-dispatch security are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # Current local extension: Stage 2 PDC reverse logistics, 2026-10-08
 
 Approved Claims now support explicit staff-confirmed PDC reverse pickup through the existing adapter/worker, separate immutable pickup/reference/history, guarded recovery/rebooking, private labels and dated pickup/transit/receipt transitions. Approval alone creates no job. Reverse events never enter normal order PDC SMS; no Claim SMS/email, refund/inventory/replacement-outbound integration.

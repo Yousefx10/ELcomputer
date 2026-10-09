@@ -3006,5 +3006,7 @@
   "Manage email templates": "emailFoundation.permissionTemplatesManage",
   "Send manual transactional email": "emailFoundation.permissionSend",
   "View email history and events": "emailFoundation.permissionHistory",
-  "Manage email consent and suppressions": "emailFoundation.permissionPreferences"
+  "Manage email consent and suppressions": "emailFoundation.permissionPreferences",
+  "View claim communications": "claims.permissions.communicationsView",
+  "Manage claim communications": "claims.permissions.communicationsManage"
 }

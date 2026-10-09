@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Claims Stage 3 reuses central single-recipient Notification SMS, purchased contacts/locale, templates/segments/ExternalTrxId, worker and history. Vodafone SecureHash and adapter are unchanged. Seven separate OFF Claims controls and final-dispatch checks do not alter existing Order/PDC event meanings. Current local scope and validation are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # Central SMS report — 2026-10-06
 
 ## PDC → SMS dormant production release — 2026-10-06

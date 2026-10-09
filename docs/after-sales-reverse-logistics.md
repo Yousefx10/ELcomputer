@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Stage 3 captures verified booking acceptance and canonical Received milestones through existing reverse Claim events. Booking attempts/raw or undated tracking/replay do not send; legitimate new booking UUIDs may notify. PDC implementation, outbound routing/AWB/history and explicit booking semantics remain unchanged. Exact event boundaries and mocked/native evidence are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # After-Sales Stage 2 — PDC reverse logistics, local implementation, 2026-10-08
 
 Extends Claims Core `c43b1f2`. Approval remains **ready for logistics**, with no automatic booking. Authorized staff explicitly confirm an item-return purpose and current pickup details. No production credentials/access/migration/deployment, real PDC/Vodafone request, SMS/email, refund, inventory operation or outbound replacement occurred.

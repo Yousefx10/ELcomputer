@@ -141,6 +141,7 @@
 
 <script setup>
 import { estimateSmsSegments, normalizeSmsPhone, renderSmsTemplate } from '~/utils/sms.js'
+import { claimCommunicationTemplateDraft } from '~/utils/claimCommunications.js'
 import { orderSmsVariables, orderSmsEvents, pdcSmsEvents, pdcSmsVariables } from '~/utils/orderSms.js'
 definePageMeta({ layout: 'dashboard' })
 const { t, locale, te } = useI18n()
@@ -157,7 +158,7 @@ const notificationGroups = computed(() => [
   { title: 'sms.pdcNotifications', events: orderEvents.value.filter(item => pdcSmsEvents.includes(item.event_type)), variables: pdcSmsVariables }
 ])
 const orderTemplates = computed(() => templates.value.filter(item => item.traffic_type === 'notification'))
-const blankTemplate = () => ({ code: '', name: '', category: 'manual', text_en: '', text_ar: '', traffic_type: 'notification', sender: '', is_enabled: false, variables: [] })
+const blankTemplate = () => claimCommunicationTemplateDraft(String(route.query.claimPurpose||''),'sms')||({ code: '', name: '', category: 'manual', text_en: '', text_ar: '', traffic_type: 'notification', sender: '', is_enabled: false, variables: [] })
 const template = ref(blankTemplate())
 const send = reactive({ trafficType: can('sms.notification.send') ? 'notification' : 'campaign', recipients: '', sender: '', text: '', templateCode: '', locale: locale.value, variablesJson: '{}', campaignConfirmed: false })
 const requestKey = ref(''), sent = ref(null)

@@ -4,7 +4,7 @@ import { smsDatabaseClient } from './smsDatabase.mjs'
 import { validateSmsSettings, smsDefaults } from '../../server/utils/sms/settings.js'
 
 export const createOrderSmsFixture = async (options = {}) => {
-  const db = await createResetDatabase(options)
+  const db = options.database || await createResetDatabase(options)
   const client = smsDatabaseClient(db)
   const customer = randomUUID(), owner = randomUUID(), product = randomUUID(), preorderProduct = randomUUID()
   await db.query("select set_config('request.jwt.claim.role','service_role',false)")

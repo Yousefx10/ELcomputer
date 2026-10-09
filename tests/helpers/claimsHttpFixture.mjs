@@ -8,10 +8,10 @@ import { build } from 'esbuild'
 import { createApp, createRouter, toNodeListener, readBody } from 'h3'
 import { createClaimsFixture } from './claimsFixture.mjs'
 
-export const createClaimsHttpFixture = async ({ shipping = false } = {}) => {
+export const createClaimsHttpFixture = async ({ shipping = false,communications=false } = {}) => {
   globalThis.useRuntimeConfig ??= () => ({ shippingLiveRequestsEnabled: false })
   const f = await createClaimsFixture(), actors = { buyer: f.customer, owner: f.owner }, objects = new Map(), storageCalls = []
-  const permissions = { viewer: [], reviewer: ['review'], manager: ['manage'], evidence: ['evidence'], notes: ['notes'], decider: ['decide'], resolver: ['resolution'], logisticsViewer: ['logistics.view'], booker: ['logistics.view','logistics.create'], rebooker: ['logistics.view','logistics.create','logistics.retry'], diagnostician: ['logistics.view','logistics.diagnostics'] }
+  const permissions = { viewer: [], reviewer: ['review'], manager: ['manage'], evidence: ['evidence'], notes: ['notes'], decider: ['decide'], resolver: ['resolution'], logisticsViewer: ['logistics.view'], booker: ['logistics.view','logistics.create'], rebooker: ['logistics.view','logistics.create','logistics.retry'], diagnostician: ['logistics.view','logistics.diagnostics'], communicationsViewer: ['communications.view'], communicationsManager: ['communications.view','communications.manage'] }
   for (const [name, keys] of Object.entries(permissions)) {
     actors[name] = randomUUID()
     await f.db.query('insert into auth.users(id,email) values($1,$2)', [actors[name], name + '@claims.example.invalid'])
@@ -34,7 +34,7 @@ export const createClaimsHttpFixture = async ({ shipping = false } = {}) => {
   }) }
   const databaseKey = 'claimsFixture_' + randomUUID().replaceAll('-', '')
   globalThis[databaseKey] = f.client; globalThis.defineEventHandler = handler => handler
-  if (shipping) globalThis.readBody = readBody
+  if (shipping||communications) globalThis.readBody = readBody
   const router = createRouter(), routes = []
   const visit = async dir => {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -47,6 +47,14 @@ export const createClaimsHttpFixture = async ({ shipping = false } = {}) => {
         const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false, format: 'esm', platform: 'node', alias: { '~': resolve('app') }, plugins: [{ name: 'claims-database-fixture', setup(builder) {
           builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: 'database', namespace: 'claims-fixture' }))
           builder.onLoad({ filter: /.*/, namespace: 'claims-fixture' }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis.${databaseKey}`, loader: 'js' }))
+          if(communications){
+            for(const channel of ['sms','email']){
+              const actual=resolve('server/utils/'+channel+'/service.js')
+              builder.onResolve({filter:new RegExp('/'+channel+'/service\\.js$')},args=>args.path.startsWith('file:')?{path:args.path,external:true}:{path:channel,namespace:'claim-provider-fixture'})
+              builder.onLoad({filter:new RegExp('^'+channel+'$'),namespace:'claim-provider-fixture'},()=>({contents:`import * as service from '${new URL('file://'+actual).href}';export * from '${new URL('file://'+actual).href}';export const process${channel==='sms'?'Sms':'Email'}Queue=(db,options={})=>service.process${channel==='sms'?'Sms':'Email'}Queue(db,{...options,provider:globalThis.${databaseKey+'Providers'}['${channel}']});`,loader:'js'}))
+            }
+          }
+          builder.onResolve({ filter: /^file:/ },args=>({path:args.path,external:true}))
           builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
         } }] })
         router[matched[1]](route, (await import('data:text/javascript;base64,' + Buffer.from(compiled.outputFiles[0].text).toString('base64'))).default)
@@ -55,14 +63,15 @@ export const createClaimsHttpFixture = async ({ shipping = false } = {}) => {
     }
   }
   await visit('server/api/account/after-sales'); await visit('server/api/admin-after-sales/claims')
+  if(communications){await visit('server/api/admin-after-sales/communications');await visit('server/api/internal/sms');await visit('server/api/internal/email')}
   if (shipping) { await visit('server/api/webhooks'); await visit('server/api/internal/shipping') }
   const app = createApp().use(router)
-  return { ...f, actors, objects, storageCalls, routes, app,
+  return { ...f, setCommunicationProviders:providers=>{globalThis[databaseKey+'Providers']=providers}, actors, objects, storageCalls, routes, app,
     async start(extraHandler = null) {
       if (extraHandler) app.use(extraHandler)
       const server = createServer(toNodeListener(app)); await new Promise(done => server.listen(0, '127.0.0.1', done))
       const url = 'http://127.0.0.1:' + server.address().port
-      const close = async () => { await new Promise(done => server.close(done)); delete globalThis[databaseKey]; await f.db.close() }
+      const close = async () => { await new Promise(done => server.close(done)); delete globalThis[databaseKey];delete globalThis[databaseKey+'Providers']; await f.db.close() }
       return { server, url, close }
     }
   }

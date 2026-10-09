@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Claims Stage 3 is now the first scoped automatic business consumer of central Transactional Email. Purpose/category/classification/variable restrictions, approved template fingerprints and a safe account link reduce automated governance risk. No SMTP/Auth/provider adapter replacement or global manual prose classifier was added. Queues/history/safety rules stay central. The independent audit below remains historical foundation evidence; current Claims behavior and final validation are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # Independent security and production-readiness audit — 2026-10-09
 
 Reviewed the actual clean `main` implementation at `6ecac1ed31ce7a0b9d9ca1a98c6127eb24da7ff2`, its complete Email code/migration, AGENTS, project/handoff records and relevant SMS, Claims, PDC/reverse, authentication and Live Chat architecture. Refreshed current official Brevo documentation independently. This audit fixes only Email defects; Claims Stage 3 and all business consumers remain absent. No production connection, migration, deployment, credential discovery, real provider request/email/SMS, DNS/Microsoft 365/OneSignal/Auth change or webhook registration occurred.

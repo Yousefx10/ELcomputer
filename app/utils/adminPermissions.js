@@ -17,6 +17,8 @@ export const adminPermissionGroups = [
       { key: 'claims.notes', label: 'Add private claim notes' },
       { key: 'claims.decide', label: 'Approve or reject claims' },
       { key: 'claims.resolution', label: 'Record claim resolutions' },
+      { key: 'claims.communications.view', label: 'View claim communications' },
+      { key: 'claims.communications.manage', label: 'Manage claim communications' },
       { key: 'claims.logistics.view', label: 'View claim reverse logistics' },
       { key: 'claims.logistics.create', label: 'Schedule claim reverse pickup' },
       { key: 'claims.logistics.retry', label: 'Recover or rebook claim shipments' },
@@ -164,7 +166,8 @@ export const adminPermissionDependencies = {
   'pages.view': ['pages.edit'],
   'help.view': ['help.edit'],
   'support.view': ['support.reply', 'support.manage'],
-  'claims.view': ['claims.review', 'claims.manage', 'claims.evidence', 'claims.notes', 'claims.decide', 'claims.resolution', 'claims.logistics.view', 'claims.logistics.create', 'claims.logistics.retry', 'claims.logistics.diagnostics'],
+  'claims.view': ['claims.review', 'claims.manage', 'claims.evidence', 'claims.notes', 'claims.decide', 'claims.resolution', 'claims.communications.view','claims.communications.manage','claims.logistics.view', 'claims.logistics.create', 'claims.logistics.retry', 'claims.logistics.diagnostics'],
+  'claims.communications.view':['claims.communications.manage'],
   'claims.logistics.view': ['claims.logistics.create', 'claims.logistics.retry', 'claims.logistics.diagnostics']
 }
 

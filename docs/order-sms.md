@@ -1,3 +1,7 @@
+# Current local extension — Claims Communications Stage 3, 2026-10-09
+
+Claims Stage 3 has separate purpose/occurrence/channel intents and OFF controls, while reusing Order SMS purchased contacts/locale and central Notification delivery. The existing SMS worker prepares both existing Order/PDC intents and new Claims intents; their identities and history remain separate. No historical replay or production/provider action. Current details are in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**
+
 # Order SMS notifications — dormant production deployment, 2026-10-06
 
 Local PDC → SMS now extends the same private intent/settings machinery without changing these four order-event semantics. It has a separate unapplied migration/release; see [pdc-sms.md](pdc-sms.md). This Order SMS deployment record remains unchanged historical provenance.
