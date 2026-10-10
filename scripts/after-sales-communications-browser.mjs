@@ -42,9 +42,13 @@ await build({ entryPoints: [join(dir, 'entry.js')], bundle: true, outfile: join(
 const css = (await Promise.all((await readdir(join(base, '.output/public/_nuxt'))).filter(file => file.endsWith('.css')).map(file => readFile(join(base, '.output/public/_nuxt', file), 'utf8')))).join('\n')
 const { url, close } = await f.start(defineEventHandler(async event => { event.node.res.setHeader('content-type', event.path === '/bundle.js' ? 'text/javascript' : 'text/html'); return event.path === '/bundle.js' ? readFile(join(dir, 'bundle.js'), 'utf8') : `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body class="bg-slate-100"><div id="app"></div><script src="/bundle.js"></script></body></html>` }))
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true }), page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }), errors = [], external = [], scans = []
-let assertions=0,states=0,screens=0
+let assertions=0,states=0,screens=0,expectedSettingsOutage=false
+const expectedHttpErrors=[]
 const check=(value,message)=>{assert.ok(value,message);assertions++}
-page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['warning','error'].includes(m.type()))errors.push(m.text())})
+page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['warning','error'].includes(m.type())){
+ if(expectedSettingsOutage&&m.location().url===url+'/api/admin-after-sales/communications'&&/^Failed to load resource:.*503/.test(m.text()))expectedHttpErrors.push({status:503,path:'/api/admin-after-sales/communications'})
+ else errors.push(m.text())
+}})
 await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():(external.push(r.request().url()),r.abort()))
 page.on('response',r=>{if((r.headers()['content-type']||'').includes('json'))scans.push({path:new URL(r.url()).pathname,status:r.status()})})
 const show=async(view,staff=true,id='',actor=staff?'owner':'buyer')=>{
@@ -64,6 +68,7 @@ const inspect=async label=>{
   const fg=luminance(colors(getComputedStyle(node).color)),back=luminance(bg||[255,255,255]);return (Math.max(fg,back)+0.05)/(Math.min(fg,back)+0.05)>=4.5
  }))
  check(contrast,'Readable communication text: '+label)
+ check(await page.locator('main input, main select, main textarea').evaluateAll(nodes=>nodes.every(node=>node.closest('label')||node.getAttribute('aria-label'))),'Form controls have accessible labels: '+label)
  await page.screenshot({path:join(dir,label+'.png'),fullPage:true});states++;screens++
 }
 const staffAction=async(action,text='Browser staff decision',resolution=null)=>{
@@ -86,6 +91,17 @@ try{
  }
  await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>{window.claimsTest.locale.value='en';window.claimsTest.theme.value='system';window.claimsTest.appearance()});await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>!document.documentElement.classList.contains('dark'));check(true,'System follows light');await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.classList.contains('dark'));check(true,'System follows dark')
  await page.evaluate(()=>{window.claimsTest.theme.value='light';window.claimsTest.appearance()});await show('settings')
+ await page.keyboard.press('Tab');check(await page.evaluate(()=>['A','BUTTON','INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)),'Keyboard reaches an interactive control')
+ await page.keyboard.press('Tab')
+ await page.keyboard.press('Shift+Tab');check(await page.evaluate(()=>['A','BUTTON','INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)),'Reverse keyboard traversal works')
+ const settingsUrl=url+'/api/admin-after-sales/communications'
+ let releaseOutage;const pendingOutage=new Promise(resolve=>{releaseOutage=resolve});expectedSettingsOutage=true
+ await page.route(settingsUrl,async route=>{await pendingOutage;await route.fulfill({status:503,contentType:'application/json',body:'{"statusCode":503}'})})
+ await page.evaluate(()=>window.claimsTest.show('settings',true,'','owner'));await page.getByRole('status').filter({hasText:messages.en.claimCommunications.loading}).waitFor();check(true,'Integrated loading state is accessible');releaseOutage()
+ await page.getByRole('alert').waitFor();check((await page.getByRole('alert').innerText()).includes(messages.en.claimCommunications.unavailable),'Integrated settings error is accessible')
+ await page.unroute(settingsUrl);expectedSettingsOutage=false
+ await page.evaluate(()=>window.claimsTest.show('settings',true,'','viewer'));await page.waitForTimeout(100);check(await page.locator('[data-claim-communications]').count()===0,'Unprivileged staff do not fetch or render controls')
+ await show('settings')
  for(const purpose of claimCommunicationPurposes){
   const form=page.locator('[data-purpose="'+purpose+'"]');await form.getByRole('checkbox',{name:messages.en.claimCommunications.eventEnabled,exact:true}).check()
   await form.getByRole('checkbox',{name:messages.en.claimCommunications.smsEnabled,exact:true}).check();await form.getByRole('checkbox',{name:messages.en.claimCommunications.emailEnabled,exact:true}).check()
@@ -109,7 +125,8 @@ try{
  for(const language of ['en','ar']){await page.evaluate(language=>{window.claimsTest.locale.value=language;window.claimsTest.appearance()},language);await page.setViewportSize({width:390,height:1000});await show('detail',true,claim.id);await inspect(language+'-mobile-completed-history')}
  const reference=(await f.detail(claim.id)).claim.reference;check(f.calls.email.filter(m=>m.business_reference===reference).length===6,'All six sequential milestones sent mocked Email');check(f.calls.sms.length===7,'Seven mocked SMS including rejection');check(f.calls.email.length===7,'Seven mocked Email including rejection')
  check(errors.length===0,'No browser errors: '+errors.join('\n'));check(external.length===0,'No external requests')
- const result={assertions,states,screens,responseScans:scans.length,errors,external,smsMockAcceptances:f.calls.sms.length,emailMockAcceptances:f.calls.email.length,authentication:'Fixture only; actual Vue/H3/RBAC/disposable SQL',reverseProvider:'Verified SQL fixture acceptance only',productionAcceptance:false}
+ check(expectedHttpErrors.length===1,'Exactly one deliberately injected settings outage')
+ const result={assertions,states,screens,responseScans:scans.length,errors,external,expectedHttpErrors,smsMockAcceptances:f.calls.sms.length,emailMockAcceptances:f.calls.email.length,authentication:'Fixture only; actual Vue/H3/RBAC/disposable SQL',reverseProvider:'Verified SQL fixture acceptance only',productionAcceptance:false}
  await writeFile(join(dir,'results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result))
 }catch(e){await page.screenshot({path:join(dir,'failure.png'),fullPage:true});await writeFile(join(dir,'failure.json'),JSON.stringify({message:e.message,assertions,states,errors,external},null,2));throw e}
 finally{await browser.close();await close()}

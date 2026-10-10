@@ -1,3 +1,9 @@
+# Final integrated audit — 2026-10-10
+
+Fresh review fixed null/absent AWB/source/operation guards, bound transport configuration to SQL dispatch, checked queued-label requester permissions and repeated current worker-secret authorization before reverse transport. Only still-unapplied65 and existing worker/service corrected. Optional configuration RPC arguments retain old arity; corrected worker always supplies them. Keep reverse/providers OFF during older-code rollback.
+
+Native PG17.11 booking/lease/acceptance/receipt and outbound/reverse AWB races now pass, including outbox rollback/recovery. Actual local booking/tracking/uncertainty/label browser journeys pass with mocked transport. Complete report: [after-sales-final-audit.md](after-sales-final-audit.md). No Critical/High remains; real provider/Auth/Storage acceptance unverified, no production/deployment/activation. **STOP after final audit.** Earlier records are historical.
+
 # Current local extension — Claims Communications Stage 3, 2026-10-09
 
 Stage 3 captures verified booking acceptance and canonical Received milestones through existing reverse Claim events. Booking attempts/raw or undated tracking/replay do not send; legitimate new booking UUIDs may notify. PDC implementation, outbound routing/AWB/history and explicit booking semantics remain unchanged. Exact event boundaries and mocked/native evidence are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**

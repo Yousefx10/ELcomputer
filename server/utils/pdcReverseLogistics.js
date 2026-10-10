@@ -26,11 +26,17 @@ export const verifyReverseResult = (response, reference) => {
 const finishReverse = (db, job, result) => claimRpc(db, 'shipping_claim_finish', {
   p_job: job.id, p_token: job.token, p_state: result.state, p_ref: result.ref || null, p_awb: result.awb || null, p_code: result.code || null
 })
-export const processPdcReverseQueue = async ({ supabaseAdmin: db, limit = 10, fetcher = fetch, runtime = useRuntimeConfig() }) => {
+// Bind the exact transport settings to SQL's final readiness check. A booking
+// captured after this worker's settings read must not use older credentials.
+const dispatchConfiguration = settings => Object.fromEntries(['base_url', 'api_mode', 'company_id', 'access_token_encrypted', 'webhook_secret_encrypted', 'label_template_id'].map(key => [key, settings[key]]))
+export const processPdcReverseQueue = async ({ supabaseAdmin: db, limit = 10, fetcher = fetch, runtime = useRuntimeConfig(), authorize = () => {} }) => {
+  await authorize()
   const settings = await getPdcSettings(db), ready = pdcReverseReady(settings, runtime), processed = []
   const jobs = await claimRpc(db, 'shipping_claim_take', { p_ready: ready, p_limit: Math.min(25, Math.max(1, Number(limit) || 10)) })
   for (const job of jobs) {
-    if (!await claimRpc(db, 'shipping_claim_dispatch', { p_job: job.id, p_token: job.token, p_ready: ready })) { processed.push({ id: job.id, state: 'failed' }); continue }
+    await authorize()
+    if (!await claimRpc(db, 'shipping_claim_dispatch', { p_job: job.id, p_token: job.token, p_ready: ready, p_configuration: dispatchConfiguration(settings) })) { processed.push({ id: job.id, state: 'failed' }); continue }
+    await authorize()
     let result
     try { result = verifyReverseResult(await requestPdcJson({ settings, endpoint: 'SaveShipmentEx', body: job.payload, fetcher, bounded: true }), job.to_ref) }
     catch (error) { result = { state: 'uncertain', code: ['TimeoutError', 'AbortError'].includes(error.name) ? 'timeout' : 'provider_unavailable' } }
@@ -43,8 +49,10 @@ export const processPdcReverseQueue = async ({ supabaseAdmin: db, limit = 10, fe
       } else processed.push({ id: job.id, state: 'uncertain' })
     }
   }
-  const labels = await claimRpc(db, 'shipping_claim_label_take', { p_ready: ready, p_limit: Math.min(25, Math.max(1, Number(limit) || 10)) })
+  await authorize()
+  const labels = await claimRpc(db, 'shipping_claim_label_take', { p_ready: ready, p_limit: Math.min(25, Math.max(1, Number(limit) || 10)), p_configuration: dispatchConfiguration(settings) })
   for (const job of labels) {
+    await authorize()
     let success = false
     try {
       const bytes = await requestPdcLabel({ settings, awb: job.awb, fetcher, bounded: true })

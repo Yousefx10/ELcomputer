@@ -1,3 +1,9 @@
+# Final integrated audit — 2026-10-10
+
+Freshly reviewed all seven milestones with Claims/reverse/central SMS/Email and all four migrations. Native outbox rollback, channel/linkage/dispatch races and new reverse receipt/acceptance races pass. Occurrence/purchase-contact/locale/template approval/no-backlog boundaries hold. Migration67 and provider algorithms unchanged; corrections concern64/65 boundaries.
+
+Integrated browser adds labels, keyboard, loading, intentional error and hidden-role checks: **456 assertions /65 screenshots**, seven mock acceptances per channel, zero unexpected errors/external requests; its intended503 is recorded separately. Complete fresh **641 full /354 focused** results and27-point report: [after-sales-final-audit.md](after-sales-final-audit.md). Real Auth/Storage/provider acceptance unverified; no production migration/deploy/activation/message. **STOP after final audit.** Earlier records are historical architecture/evidence.
+
 # After-Sales Stage 3 — Claims SMS and Email
 
 Implemented locally on 2026-10-09, starting from clean synced `main` at audited Email commit `c1885735799b0943737f8ed02c95fa2322e02c10`. This is one additive communications feature. No production access, deployment, migration application, credential acquisition/configuration, provider activation, real provider request or real message occurred. The user-reported production checkpoint remains 63 migrations and was not refreshed. There are now 67 local migration files; 64–67 require a separate deployment review. Earlier project documentation checkpoints are historical.

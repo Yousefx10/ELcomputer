@@ -185,7 +185,7 @@ begin
   return result;
 end $$;
 
-create function public.shipping_claim_dispatch(p_job uuid,p_token uuid,p_ready boolean) returns boolean
+create function public.shipping_claim_dispatch(p_job uuid,p_token uuid,p_ready boolean,p_configuration jsonb default null) returns boolean
 language plpgsql security definer set search_path='' set statement_timeout='4s' set lock_timeout='2s' as $$
 declare j public.shipping_claim_jobs%rowtype; c public.after_sales_claims%rowtype; s public.shipping_provider_settings%rowtype;
 begin
@@ -195,7 +195,7 @@ begin
   select * into j from public.shipping_claim_jobs where id=p_job for update;
   select * into s from public.shipping_provider_settings where id='pdc' for share;
   if not found or j.state<>'creating' or p_token is null or p_token is distinct from j.work_token then return false; end if;
-  if p_ready is distinct from true or not s.is_enabled or not s.reverse_enabled or md5(to_jsonb(s)::text)<>j.settings_fingerprint or j.expires_at<=clock_timestamp() or c.status not in ('approved','pickup_scheduled','in_transit') or
+  if p_ready is distinct from true or not s.is_enabled or not s.reverse_enabled or md5(to_jsonb(s)::text)<>j.settings_fingerprint or (p_configuration is not null and (to_jsonb(s) @> p_configuration) is distinct from true) or j.expires_at<=clock_timestamp() or c.status not in ('approved','pickup_scheduled','in_transit') or
     exists(select 1 from public.customer_orders o join public.customer_profiles p on p.id=o.user_id where o.id=c.order_id and (not p.is_active or o.status in ('cancelled','refunded') or o.payment_status='refunded')) or
     not exists(select 1 from public.admin_users a where a.id=j.initiated_by and a.is_active and (a.role='owner' or (coalesce((a.permissions->>'claims.view')::boolean,false) and coalesce((a.permissions->>'claims.logistics.view')::boolean,false) and coalesce((a.permissions->>'claims.logistics.create')::boolean,false)))) then
     perform set_config('app.reverse_write','on',true);
@@ -278,7 +278,7 @@ declare j public.shipping_claim_jobs%rowtype;
 begin
   perform public.after_sales_claim_assert_actor(p_admin,'claims.logistics.view');
   perform public.after_sales_claim_assert_actor(p_admin,case when p_action='label' then 'claims.logistics.create' else 'claims.logistics.retry' end);
-  if p_action not in ('refresh','recover','label') then raise exception 'Invalid claim input.' using errcode='22023'; end if;
+  if p_action is null or p_action not in ('refresh','recover','label') then raise exception 'Invalid claim input.' using errcode='22023'; end if;
   perform 1 from public.customer_order_items where id=(select item_id from public.after_sales_claims where id=p_claim) for update;
   perform 1 from public.after_sales_claims where id=p_claim for update;
   select * into j from public.shipping_claim_jobs where id=p_job and claim_id=p_claim for update;
@@ -298,7 +298,7 @@ begin
   return jsonb_build_object('id',j.id,'ref',j.to_ref,'awb',j.awb,'token',j.work_token,'observed_at',clock_timestamp());
 end $$;
 
-create function public.shipping_claim_label_take(p_ready boolean,p_limit integer default 10) returns jsonb
+create function public.shipping_claim_label_take(p_ready boolean,p_limit integer default 10,p_configuration jsonb default null) returns jsonb
 language plpgsql security definer set search_path='' set statement_timeout='4s' set lock_timeout='2s' as $$
 declare j public.shipping_claim_jobs%rowtype; s public.shipping_provider_settings%rowtype; token uuid; result jsonb:='[]';
 begin
@@ -310,7 +310,8 @@ begin
     perform 1 from public.after_sales_claims where id=j.claim_id for update;
     select * into j from public.shipping_claim_jobs where id=j.id for update;
     if j.label_state not in ('queued','creating') or (j.label_state='creating' and j.label_started_at>=clock_timestamp()-interval '2 minutes') then continue; end if;
-    if p_ready is distinct from true or not s.is_enabled or not s.reverse_enabled or j.provider_identity<>jsonb_build_object('company_id',s.company_id,'base_url',s.base_url,'api_mode',s.api_mode) or j.label_state='creating' then
+    if p_ready is distinct from true or not s.is_enabled or not s.reverse_enabled or (p_configuration is not null and (to_jsonb(s) @> p_configuration) is distinct from true) or j.provider_identity<>jsonb_build_object('company_id',s.company_id,'base_url',s.base_url,'api_mode',s.api_mode) or j.label_state='creating' or
+      not exists(select 1 from public.admin_users a where a.id=j.label_requested_by and a.is_active and (a.role='owner' or (coalesce((a.permissions->>'claims.view')::boolean,false) and coalesce((a.permissions->>'claims.logistics.view')::boolean,false) and coalesce((a.permissions->>'claims.logistics.create')::boolean,false)))) then
       update public.shipping_claim_jobs set label_state='failed',updated_at=clock_timestamp() where id=j.id;
       perform public.shipping_claim_emit(j.id,'reverse_label_failed','worker','',false,j.label_requested_by); continue;
     end if;
@@ -356,13 +357,13 @@ declare j public.shipping_claim_jobs%rowtype; c public.after_sales_claims%rowtyp
   state_value text; stale boolean; enriched boolean:=false; next_status text;
 begin
   if auth.role() is distinct from 'service_role' then raise exception 'Service role required.' using errcode='42501'; end if;
-  if source_value not in ('webhook','reconciliation') or nullif(p_update->>'event_key','') is null or (source_value='webhook' and (sid is null or sid<=0 or at_time is null)) then raise exception 'Invalid courier event.'; end if;
+  if source_value is null or source_value not in ('webhook','reconciliation') or nullif(p_update->>'event_key','') is null or (source_value='webhook' and (sid is null or sid<=0 or at_time is null)) then raise exception 'Invalid courier event.'; end if;
   select * into j from public.shipping_claim_jobs where to_ref=p_update->>'ref';
   if not found then return jsonb_build_object('error','unknown_ref'); end if;
   perform 1 from public.customer_order_items where id=(select item_id from public.after_sales_claims where id=j.claim_id) for update;
   select * into c from public.after_sales_claims where id=j.claim_id for update;
   select * into j from public.shipping_claim_jobs where id=j.id for update;
-  if j.awb is null or j.awb<>p_update->>'awb' then return jsonb_build_object('error','awb_mismatch'); end if;
+  if j.awb is null or j.awb is distinct from p_update->>'awb' then return jsonb_build_object('error','awb_mismatch'); end if;
   perform set_config('app.reverse_write','on',true);
   select * into e from public.shipping_webhook_events where claim_shipment_job_id=j.id and processed_at is not null and
     ((sid is not null and provider_status_id=sid) or event_key=p_update->>'event_key') order by received_at,id limit 1;

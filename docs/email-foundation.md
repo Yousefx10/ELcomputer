@@ -1,3 +1,9 @@
+# Final After-Sales integration audit — 2026-10-10
+
+Fresh integrated review verified central Transactional Email, seven Claim purposes, native queue/linkage/dispatch/consent/configuration races, escaped HTML/RTL/text and no historical backlog. Email66/Brevo adapter/communications67 unchanged. Official send/webhook documentation refreshed without a provider API call. Fresh Email browser: **896 assertions /124 screenshots**, one mock acceptance, zero errors/external requests.
+
+Complete migration/data/security/findings/limits, **641 full /354 focused** passes and proposal-only release/rollback: [after-sales-final-audit.md](after-sales-final-audit.md). No Critical/High remains; trusted prose and real Supabase/provider/sender/ingress/retention acceptance precede activation. No credentials configured, real email, production migration/deploy, Auth/DNS change. **STOP after final audit.** Earlier records are historical.
+
 # Current local extension — Claims Communications Stage 3, 2026-10-09
 
 Claims Stage 3 is now the first scoped automatic business consumer of central Transactional Email. Purpose/category/classification/variable restrictions, approved template fingerprints and a safe account link reduce automated governance risk. No SMTP/Auth/provider adapter replacement or global manual prose classifier was added. Queues/history/safety rules stay central. The independent audit below remains historical foundation evidence; current Claims behavior and final validation are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**

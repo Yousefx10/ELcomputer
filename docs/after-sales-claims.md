@@ -1,3 +1,9 @@
+# Final integrated audit — 2026-10-10
+
+Claims, reverse and both message channels were freshly audited together. Corrected service-only SQL null-action rejection so a null request cannot cancel a Resolved case. Combined merchant-edit/product-deletion coverage preserves purchased duration/policy/reason and both types. Native quantity and evidence-removal/submission races and actual customer/staff browser journeys pass. Only still-unapplied Claims migration64 corrected.
+
+Complete four-migration/data/RLS/atomicity/browser findings and **641 full /354 focused** passes: [after-sales-final-audit.md](after-sales-final-audit.md). Physical Supabase Auth/Storage UNVERIFIED; no policy activation, production/provider/financial operation. **Conditionally safe for a separately reviewed dormant release; STOP after final audit.** Earlier records are historical.
+
 # Current local extension — Claims Communications Stage 3, 2026-10-09
 
 Claims Stage 3 now captures the seven authoritative milestones into private SMS/Email intents. My Account timeline, actions and ownership remain unchanged; staff detail adds permission-gated masked Communications history. OFF defaults, occurrence identity, atomic outbox tradeoff, recipients, freshness and final-dispatch security are described in [after-sales-communications.md](after-sales-communications.md). New migration 67 remains unapplied, all controls default OFF. Earlier implementation/audit/deployment records below are historical. **STOP after Stage 3.**

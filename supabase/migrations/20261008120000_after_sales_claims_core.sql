@@ -303,7 +303,7 @@ begin
   select * into c from public.after_sales_claims where id=p_claim and customer_id=p_customer for update;
   if not found then raise exception 'Claim not found.' using errcode='P0002'; end if;
   if p_revision is null or c.revision<>p_revision then raise exception 'Claim retry conflict.' using errcode='40001'; end if;
-  if p_action not in ('respond','cancel') or p_input is null or jsonb_typeof(p_input)<>'object' or exists(select 1 from jsonb_object_keys(p_input) k where k not in ('text','attachment_ids')) then raise exception 'Invalid claim input.' using errcode='22023'; end if;
+  if p_action is null or p_action not in ('respond','cancel') or p_input is null or jsonb_typeof(p_input)<>'object' or exists(select 1 from jsonb_object_keys(p_input) k where k not in ('text','attachment_ids')) then raise exception 'Invalid claim input.' using errcode='22023'; end if;
   text_value:=btrim(coalesce(p_input->>'text',''));if char_length(text_value) not between 1 and 4000 then raise exception 'Invalid claim input.' using errcode='22023'; end if;
   if (p_action='cancel' and c.status not in ('submitted','under_review','more_information_required','approved')) or (p_action='respond' and c.status<>'more_information_required') then raise exception 'Claim transition denied.' using errcode='23514'; end if;
   ids:=array(select jsonb_array_elements_text(coalesce(p_input->'attachment_ids','[]')));
