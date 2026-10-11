@@ -8,6 +8,7 @@ import { attachClaimCommunicationsFixture } from './helpers/claimCommunicationsF
 
 const migrationDirectory=new URL('../supabase/migrations/',import.meta.url)
 const first='20261008120000_after_sales_claims_core.sql'
+const last='20261009120000_after_sales_communications.sql'
 
 test('native populated checkpoint 63 upgrades through all four migrations and preserves old application contracts',{skip:!emailNativeAvailable,timeout:60000},async t=>{
  const db=await createEmailNativeDatabase({stopBefore:first}),f=await createClaimsFixture({database:db})
@@ -29,7 +30,9 @@ test('native populated checkpoint 63 upgrades through all four migrations and pr
   const objectsBefore=(await db.query('select to_jsonb(t) row from storage.objects t order by id')).rows
   const bucketsBefore=(await db.query('select to_jsonb(t) row from storage.buckets t order by id')).rows
   const unvalidatedBefore=(await db.query("select conrelid::regclass::text relation,conname from pg_constraint where connamespace='public'::regnamespace and not convalidated order by relation,conname")).rows
-  const migrations=(await readdir(migrationDirectory)).filter(n=>n.endsWith('.sql')).sort()
+  // This historical acceptance owns exactly 64–67. Later feature migrations
+  // have their own populated upgrade/security checks.
+  const migrations=(await readdir(migrationDirectory)).filter(n=>n.endsWith('.sql')&&n<=last).sort()
   assert.equal(migrations.length,67);assert.equal(migrations.filter(n=>n<first).length,63)
   await t.test('64, 65, 66 and 67 apply in order over populated native data without changing old columns',async()=>{
    for(const name of migrations.filter(n=>n>=first))await db.exec(await readFile(new URL(name,migrationDirectory),'utf8'))

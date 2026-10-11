@@ -280,11 +280,11 @@ const getProductStats = async ({ force = false } = {}) => {
   const [activeProductsResult, inactiveProductsResult] = await Promise.all([
     supabase
       .from('products')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_published', true),
     supabase
       .from('products')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_published', false)
   ])
 

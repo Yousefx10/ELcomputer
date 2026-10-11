@@ -614,7 +614,7 @@ const { data: product, pending, error: fetchError } = await useAsyncData(
   `edit-product-${id}`,
   async () => {
     const { data, error } = await supabase
-      .from('products')
+      .rpc('catalog_staff_products')
       .select('*')
       .eq('id', id)
       .single()
@@ -754,7 +754,7 @@ const getProductImages = async () => {
 
 const getProductVariants = async () => {
   const { data, error } = await supabase
-    .from('product_variants')
+    .rpc('catalog_staff_product_variants')
     .select('*')
     .eq('product_id', id)
     .eq('is_active', true)

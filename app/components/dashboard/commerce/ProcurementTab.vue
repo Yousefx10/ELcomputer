@@ -717,7 +717,7 @@ const loadLookups = async () => {
 
 const loadProductOptions = async () => {
   let query = supabase
-    .from('products')
+    .rpc('catalog_staff_products')
     .select(`
       id,
       title,

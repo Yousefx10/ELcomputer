@@ -18,7 +18,8 @@ const components = {
   Progress: 'app/components/account/OrderProgress.vue', Card: 'app/components/account/OrderCard.vue',
   ProductWarranty: 'app/components/ProductWarranty.vue', Product: 'app/pages/products/[slug].vue', Checkout: 'app/pages/checkout/index.vue',
   Variants: 'app/components/dashboard/products/VariantsEditor.vue', SellingMode: 'app/components/dashboard/products/SellingModeFields.vue',
-  PageIntro: 'app/components/dashboard/PageIntro.vue'
+  PageIntro: 'app/components/dashboard/PageIntro.vue',
+  Procurement: 'app/components/dashboard/commerce/ProcurementTab.vue', Warehouses: 'app/components/dashboard/commerce/WarehousesTab.vue'
 }
 let componentCss = ''
 for (const [name, file] of Object.entries(components)) {
@@ -39,9 +40,9 @@ const view=ref('add'),generation=ref(0),theme=ref('light')
 const productId='11111111-1111-4111-8111-111111111111',variantId='22222222-2222-4222-8222-222222222222',orderId='33333333-3333-4333-8333-333333333333',warehouseId='44444444-4444-4444-8444-444444444444'
 const route=reactive({params:{id:productId,slug:'warranty-fixture'},query:{},path:'/dashboard/products/add'})
 const user=ref({id:'buyer-fixture',email:'buyer@example.invalid'})
-const fixture=reactive({requests:[],logs:[],permissions:null,navigation:'',failSave:false,reorders:0,added:0,
- product:{id:productId,title:'Warranty browser fixture',slug:'warranty-fixture',price:100,stock_quantity:5,is_serialized:true,is_published:true,primary_warehouse_id:warehouseId,selling_mode:'normal',preorder_payment_mode:'full',warranty_status:'included',warranty_duration_value:12,warranty_duration_unit:'months',long_description:'Local catalog fixture.'},
- variants:[{id:variantId,product_id:productId,name:'Default',code:'DEFAULT',sku:'WARRANTY-FIXTURE-SKU',stock_quantity:5,is_active:true}],
+const fixture=reactive({requests:[],catalogReads:[],logs:[],permissions:null,navigation:'',failSave:false,reorders:0,added:0,
+ product:{id:productId,title:'Warranty browser fixture',slug:'warranty-fixture',price:100,cost_price:991.37,default_supplier_id:'66666666-6666-4666-8666-666666666666',stock_quantity:5,is_serialized:true,is_published:true,primary_warehouse_id:warehouseId,selling_mode:'normal',preorder_payment_mode:'full',warranty_status:'included',warranty_duration_value:12,warranty_duration_unit:'months',long_description:'Local catalog fixture.'},
+ variants:[{id:variantId,product_id:productId,name:'Default',code:'DEFAULT',sku:'WARRANTY-FIXTURE-SKU',price:100,cost_price:882.43,stock_quantity:5,is_active:true}],
  order:{id:orderId,order_number:'WARRANTY-ORDER-FIXTURE',status:'pending_payment',payment_status:'pending',payment_method:'cash',currency:'EGP',total_amount:100,subtotal_amount:100,first_name:'Buyer',phone:'01012345678',street_address:'Street',city:'Cairo',governorate:'Cairo',created_at:'2026-10-07T08:00:00Z'},
  items:[{id:'months',order_id:orderId,product_id:productId,variant_id:variantId,product_title:'Purchased month warranty',quantity:1,unit_price:25,line_total:25,warranty_status:'included',warranty_duration_value:12,warranty_duration_unit:'months',warranty_start_basis:'unresolved',warranty_snapshot_at:'2026-10-07T08:00:00Z'},
  {id:'years',order_id:orderId,product_id:productId,product_title:'Purchased year warranty',quantity:1,unit_price:25,line_total:25,warranty_status:'included',warranty_duration_value:3,warranty_duration_unit:'years',warranty_start_basis:'unresolved',warranty_snapshot_at:'2026-10-07T08:00:00Z'},
@@ -49,10 +50,15 @@ const fixture=reactive({requests:[],logs:[],permissions:null,navigation:'',failS
  {id:'history',order_id:orderId,product_id:productId,product_title:'Historical purchase',quantity:1,unit_price:25,line_total:25}]})
 const clone=value=>JSON.parse(JSON.stringify(value))
 const cartItems=ref([{id:productId,title:'Checkout fixture',price:100,quantity:1,selling_mode:'normal'}])
-const supabase={auth:{getSession:async()=>({data:{session:{access_token:'local-fixture-token'}}}),getUser:async()=>({data:{user:user.value}})},from(table){
+const supabase={auth:{getSession:async()=>({data:{session:{access_token:'local-fixture-token'}}}),getUser:async()=>({data:{user:user.value}})},rpc(name){if(!['catalog_staff_products','catalog_staff_product_variants'].includes(name))throw Error('Unexpected catalog RPC '+name);return this.from(name)},from(table){
  let single=false
- const query={select(){return query},eq(){return query},neq(){return query},order(){return query},range(){return query},abortSignal(){return query},in(){return query},or(){return query},limit(){return query},maybeSingle(){single=true;return query},single(){single=true;return query},then(done){
-  const rows=table==='products'||table==='storefront_products'?[clone(fixture.product)]:table==='product_variants'||table==='storefront_product_variants'?clone(fixture.variants):table==='customer_orders'?[clone(fixture.order)]:table==='customer_order_items'?clone(fixture.items):table==='commerce_warehouses'?[{id:warehouseId,name:'Fixture warehouse'}]:table==='customer_profiles'?[{id:user.value.id,full_name:'Buyer Fixture',phone:'01012345678',address_line_1:'Street',city:'Cairo',state:'Cairo',email:'buyer@example.invalid'}]:table==='product_specifications'?[{id:'legacy',label:'Warranty',value:'Legacy descriptive terms',sort_order:0}]:[]
+ let projection=''
+ const query={select(fields){projection=fields;return query},eq(){return query},neq(){return query},order(){return query},range(){return query},abortSignal(){return query},in(){return query},or(){return query},limit(){return query},maybeSingle(){single=true;return query},single(){single=true;return query},then(done){
+  const publicProduct=clone(fixture.product);for(const key of ['cost_price','default_supplier_id','primary_warehouse_id'])delete publicProduct[key]
+  const publicVariants=clone(fixture.variants).map(row=>{delete row.cost_price;return row})
+  if(['products','product_variants'].includes(table)&&(/\\*|cost_price|primary_warehouse_id|default_supplier_id/.test(projection)))throw Error('Unprotected internal catalog read')
+  const rows=table==='catalog_staff_products'?[{...clone(fixture.product),product_variants:publicVariants}]:table==='catalog_staff_product_variants'?clone(fixture.variants):table==='products'||table==='storefront_products'?[publicProduct]:table==='product_variants'||table==='storefront_product_variants'?publicVariants:table==='customer_orders'?[clone(fixture.order)]:table==='customer_order_items'?clone(fixture.items):table==='commerce_warehouses'?[{id:warehouseId,name:'Fixture warehouse',code:'FIXTURE',is_active:true}]:table==='commerce_crm_accounts'?[{id:fixture.product.default_supplier_id,name:'Fixture supplier',account_type:'supplier',is_active:true}]:table==='commerce_warehouse_inventory'?[{id:'inventory-fixture',warehouse_id:warehouseId,product_id:productId,quantity:5,average_cost:991.37,product:{id:productId,title:fixture.product.title},warehouse:{id:warehouseId,name:'Fixture warehouse'}}]:table==='customer_profiles'?[{id:user.value.id,full_name:'Buyer Fixture',phone:'01012345678',address_line_1:'Street',city:'Cairo',state:'Cairo',email:'buyer@example.invalid'}]:table==='product_specifications'?[{id:'legacy',label:'Warranty',value:'Legacy descriptive terms',sort_order:0}]:[]
+  if(['products','product_variants','storefront_products','storefront_product_variants','catalog_staff_products','catalog_staff_product_variants'].includes(table))fixture.catalogReads.push({table,projection,rows:clone(rows)})
   done({data:single?rows[0]||null:rows,count:rows.length,error:null})
  }};return query
 }}
@@ -79,7 +85,7 @@ Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnm
  useSupportClient:()=>({request:fetcher,errorText:(e,f)=>e.message||f}),useShipmentUpdates(){},useReorder:()=>({addOrderToCart:async()=>{fixture.reorders++;return {message:'Products added to cart.'}}}),useStoreAnalytics:()=>({trackEvent(){}}),useUiNavigation:()=>({uiNavigateTo:async path=>{fixture.navigation=path}}),
  useCategoryLocale:()=>({categoryName:item=>item.name}),useProductEngagement(){},usePageSeo(){},useRuntimeConfig:()=>({public:{siteUrl:'https://fixture.example.invalid'}}),createError:error=>error,$fetch:fetcher,
  useCart:()=>({items:cartItems,cartId:ref('55555555-5555-4555-8555-555555555555'),itemCount:computed(()=>cartItems.value.length),subtotal:computed(()=>cartItems.value.reduce((s,i)=>s+i.price*i.quantity,0)),isEmpty:computed(()=>!cartItems.value.length),appliedCoupon:ref(null),addItem(){fixture.added++;return {message:'Product added to cart.'}},clearCart(){cartItems.value=[]},loadCart(){},setAppliedCoupon(){},resetCoupon(){}})})
-const views={add:Add,edit:Edit,details:Details,orders:Orders,product:Product,checkout:Checkout}
+const views={add:Add,edit:Edit,details:Details,orders:Orders,product:Product,checkout:Checkout,procurement:Procurement,warehouses:Warehouses}
 const app=createApp({render:()=>h('div',{class:view.value==='add'||view.value==='edit'?'dashboard-modern p-4':'storefront p-4'},h(Suspense,null,{default:()=>h(views[view.value],{key:generation.value})}))})
 app.use(i18n)
 const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage;app.config.globalProperties.$uiPluralSuffix=ui.uiPluralSuffix
@@ -127,12 +133,14 @@ try {
     await page.setViewportSize({ width, height: 1000 })
     await page.emulateMedia({ colorScheme: theme === 'light' ? 'light' : 'dark' })
     await page.evaluate(({ language, theme }) => { window.warrantyTest.locale.value = language; window.warrantyTest.theme.value = theme; window.warrantyTest.appearance() }, { language, theme })
-    for (const view of ['add', 'edit', 'details', 'orders', 'product', 'checkout']) {
+    for (const view of ['add', 'edit', 'details', 'orders', 'product', 'checkout', 'procurement', 'warehouses']) {
       await show(view)
       const text = await page.locator('body').innerText()
       check(await page.locator('html').getAttribute('dir') === (language === 'ar' ? 'rtl' : 'ltr'), 'EN/AR direction')
       check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'No horizontal overflow: ' + view)
       check(!text.includes('warranty.'), 'Warranty labels resolve')
+      if (view === 'product' || view === 'checkout') check(!text.includes('991.37') && !text.includes('882.43'), 'Public pages never render private cost canaries')
+      if (view === 'procurement' || view === 'warehouses') check(!/Unprotected internal catalog read|Could not load|Run the new commerce SQL/.test(text), 'Inventory/procurement reads remain compatible')
       if (view === 'add' || view === 'edit') {
         check(await page.locator('[data-warranty-status]').inputValue() === (view === 'add' ? 'unknown' : 'included'), 'Create/edit default provenance')
         check(await page.locator('.warranty-fields').innerText().then(text => text.includes(labels[language].warranty.title)), 'Translated warranty editor')
@@ -211,6 +219,12 @@ try {
   check(!!submitted, 'Existing checkout submits')
   check(!JSON.stringify(submitted.body).includes('warranty_'), 'Browser checkout submits no authoritative warranty values')
   check(await page.evaluate(() => window.warrantyTest.fixture.navigation.startsWith('/checkout/summary/')), 'Checkout confirmation navigation preserved')
+  const catalogReads = await page.evaluate(() => window.warrantyTest.fixture.catalogReads)
+  check(catalogReads.some(read => read.table === 'catalog_staff_products' && read.rows[0].primary_warehouse_id), 'Staff product/procurement reads retain warehouse references')
+  check(catalogReads.some(read => read.table === 'catalog_staff_product_variants' && read.rows[0].cost_price === 882.43), 'Staff variant reads retain costs')
+  for (const read of catalogReads.filter(read => !read.table.startsWith('catalog_staff_'))) for (const row of read.rows) {
+    check(!Object.hasOwn(row, 'cost_price') && !Object.hasOwn(row, 'primary_warehouse_id') && !Object.hasOwn(row, 'default_supplier_id'), 'Public catalog fixtures omit internal fields')
+  }
   await page.emulateMedia({ colorScheme: 'light' })
   await page.evaluate(() => { window.warrantyTest.theme.value = 'system'; window.warrantyTest.appearance() })
   check(await page.evaluate(() => !document.documentElement.classList.contains('dark')), 'System follows OS light')
