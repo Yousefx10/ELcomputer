@@ -9,7 +9,7 @@ export const createResetDatabase = async ({ stopBefore = null } = {}) => {
 }
 
 // Also used by the opt-in, disposable native PostgreSQL concurrency review.
-export const prepareResetDatabase = async (db, { stopBefore = null, onMigration = null } = {}) => {
+export const prepareResetDatabase = async (db, { stopBefore = null, onMigration = null, prepareStorage = null, onPlatformReady = null } = {}) => {
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create schema storage; create schema realtime;
@@ -27,10 +27,15 @@ export const prepareResetDatabase = async (db, { stopBefore = null, onMigration 
     grant usage on schema realtime to authenticated, anon;
     grant select, insert on realtime.messages to authenticated, anon;
     grant usage on sequence realtime.messages_id_seq to authenticated, anon;
+  `)
+  if (prepareStorage) await prepareStorage()
+  else await db.exec(`
     create table storage.buckets (id text primary key,name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
     create table storage.objects (id uuid primary key default gen_random_uuid(),bucket_id text,name text,owner uuid);
+    alter table storage.objects enable row level security;
     create function storage.foldername(text) returns text[] language sql as $$ select string_to_array($1,'/') $$;
   `)
+  if (onPlatformReady) await onPlatformReady()
   await db.exec(await readFile(new URL('../../supabase/backups/schema.sql', import.meta.url), 'utf8'))
   const migrations = new URL('../../supabase/migrations/', import.meta.url)
   for (const name of (await readdir(migrations)).filter(name => name.endsWith('.sql')).sort()) {

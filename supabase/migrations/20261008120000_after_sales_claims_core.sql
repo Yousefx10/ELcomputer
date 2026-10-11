@@ -477,9 +477,22 @@ end $$;
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
   values('after-sales-evidence','after-sales-evidence',false,5242880,array['image/jpeg','image/png','image/webp','application/pdf']);
 -- Restrict this bucket even if an existing project has a broad permissive rule.
-alter table storage.objects enable row level security;
 create policy after_sales_evidence_server_boundary on storage.objects as restrictive for all to anon,authenticated
   using(bucket_id<>'after-sales-evidence') with check(bucket_id<>'after-sales-evidence');
+-- Supabase owns Storage RLS; require its enabled baseline without altering it.
+-- CREATE POLICY holds the table DDL lock until this transaction ends.
+do $storage_rls$
+begin
+  if not exists (
+    select 1 from pg_catalog.pg_class as c
+    where c.oid = pg_catalog.to_regclass('storage.objects')
+      and c.relkind = 'r' and c.relrowsecurity
+  ) then
+    raise exception 'Storage objects RLS must already be enabled.'
+      using errcode = '55000';
+  end if;
+end;
+$storage_rls$;
 -- No browser grants to this bucket. Retrieval uses authorized server proxies.
 -- Retain claims/evidence on reset: existing dependency guards block erasing their
 -- linked orders/customers. Empty retained tables do not break other reset scopes.

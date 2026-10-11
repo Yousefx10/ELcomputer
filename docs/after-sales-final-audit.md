@@ -1,5 +1,7 @@
 # Final After-Sales integration and security audit — 2026-10-10
 
+October 11 amendment: the approved still-unapplied migration64 Storage compatibility correction removes the owner-only RLS alteration, retains its exact restrictive policy and adds an atomic enabled-RLS/ordinary-table guard. Real Supautils/non-owner, Storage security and complete64–69/CLI history tests are recorded in [storage-policy-delegation.md](storage-policy-delegation.md). The current64 fingerprint below supersedes the October10 fingerprint `f6bc35160ed6c6d20682c6ad4fb1d2f6554a1b71538b34bd4127ab04be760314`. Other original counts/results below remain historical; production release still requires separate preflight/approval.
+
 **Verdict: suitable for a separately authorized dormant deployment, after the deployment computer verifies the checkpoint, migration identities, backups and OFF controls. No Critical/High code issue remains in this review. Live activation is not accepted.**
 
 Reviewed clean `main` at `8288cb58fc475597af0667db80ea25d0a207a72c`, containing Claims `c43b1f2`, reverse logistics `f13ccf2`, Email `6ecac1e`, Email audit `c188573` and communications `8288cb5`. Normal Git fetch confirmed the starting commit matched `origin/main`. Read project instructions/state/handoff, required feature documents and relevant payment, account/authentication, checkout/preorder, PDC and Support/Live Chat records; traced actual server handlers, components, SQL, grants, workers and tests. Previous reports were context; execution results below are fresh.
@@ -36,7 +38,7 @@ A committed disablement/revocation ahead of the final check prevents a later req
 
 | # | Migration | SHA-256 of reviewed source | Result |
 | --- | --- | --- | --- |
-| 64 | `20261008120000_after_sales_claims_core.sql` | `f6bc35160ed6c6d20682c6ad4fb1d2f6554a1b71538b34bd4127ab04be760314` | Corrected null action; fresh and populated native application passed |
+| 64 | `20261008120000_after_sales_claims_core.sql` | `7db914fecd7be043281f18fe7dbbb0563de8180665634880e9c80e0a581af4cd` | October11 Storage compatibility amendment; see linked real-hook validation |
 | 65 | `20261008160000_after_sales_reverse_logistics.sql` | `833b36b9dcf7acefbc47de95b2f21af64202b94233d73e673328348aaa8942d2` | Corrected reverse authorization/identity; fresh and populated native application passed |
 | 66 | `20261008180000_email_foundation.sql` | `e32c88ad21f6fb971bcf82da293857d10eb6a4f5eb25bcf219392597ab78784d` | Unchanged; fresh and populated native application passed |
 | 67 | `20261009120000_after_sales_communications.sql` | `df83fed86e8cb119a67b12e84974de059c665ea3b449c5d8724f5e35e9543f63` | Unchanged; fresh and populated native application passed |

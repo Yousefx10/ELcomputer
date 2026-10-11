@@ -1,5 +1,7 @@
 # Order amount constraint reconciliation — migration 69
 
+October 11 Storage amendment: the separately approved unapplied migration64 compatibility correction is the sole exception to this report's earlier unchanged1–68 requirement. Migration69 and its supported baselines remain unchanged. Real non-owner Supautils execution of64–69 preserves validated order checks and historical records; updated hash/history evidence is in [storage-policy-delegation.md](storage-policy-delegation.md). Original reconciliation results below remain historical.
+
 Implemented locally on 2026-10-11. This task did not access production. Production checkpoint 63 and the completed corrections below come from the preceding authorized execution evidence, not a new live inspection.
 
 ## Recorded production corrections

@@ -117,7 +117,7 @@ test('archived correction is unchanged; earlier pending migrations retain review
   const hash = file => readFile(new URL(file, import.meta.url)).then(data => createHash('sha256').update(data).digest('hex'))
   assert.equal(await hash('../docs/security/20261010-nine-table-correction.sql'), 'f8e6f35fef987f0ca7a84575d156895aadc47988394b0e0c9990923afdec3e94')
   for (const [name, sha] of [
-    ['20261008120000_after_sales_claims_core.sql', 'f6bc35160ed6c6d20682c6ad4fb1d2f6554a1b71538b34bd4127ab04be760314'],
+    ['20261008120000_after_sales_claims_core.sql', '7db914fecd7be043281f18fe7dbbb0563de8180665634880e9c80e0a581af4cd'],
     ['20261008160000_after_sales_reverse_logistics.sql', '833b36b9dcf7acefbc47de95b2f21af64202b94233d73e673328348aaa8942d2'],
     ['20261008180000_email_foundation.sql', 'e32c88ad21f6fb971bcf82da293857d10eb6a4f5eb25bcf219392597ab78784d'],
     ['20261009120000_after_sales_communications.sql', 'df83fed86e8cb119a67b12e84974de059c665ea3b449c5d8724f5e35e9543f63']

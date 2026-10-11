@@ -1,5 +1,7 @@
 # Catalog data confidentiality — local implementation and security report
 
+October 11 Storage amendment: the separately approved unapplied migration64 correction supersedes this report's earlier requirement to leave64 unchanged. Its restrictive policy remains exact; only the owner-only RLS alteration is replaced by a transactional enabled-RLS/ordinary-table verification. Migration68 and all other migrations remain unchanged. Updated fingerprints, real Supautils/non-owner chain and confidentiality/security validation: [storage-policy-delegation.md](storage-policy-delegation.md). Original catalog implementation results below remain historical.
+
 Completed locally on 2026-10-11 from clean, synchronized `main` at `e7515e6`. This report covers one feature: prevent anonymous visitors and ordinary authenticated customers from reading internal catalog costs and supplier/warehouse references. No production connection, migration, deployment, credential reset, provider activation or real message occurred.
 
 ## Evidence and exact confidential fields
