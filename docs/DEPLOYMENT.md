@@ -1,12 +1,14 @@
 # Deployment
 
-Run one command to build, upload, activate, and verify the site:
+For ordinary schema-compatible releases, run one command to build, upload, activate, and verify the site:
 
 ```bash
 npm run deploy
 ```
 
 The script only deploys `.output`. It never uploads `.env`, source files, Git data, or local `node_modules`.
+
+**The pending migration-68 release requires explicit manual recovery.** Use the commands in [deployment recovery safety](deployment-recovery-safety.md), after separate release authorization and fresh entry checks. Bare `npm run deploy` retains automatic rollback and is unsuitable for that release.
 
 ## First-time setup
 
@@ -88,7 +90,7 @@ The deployment performs these steps:
 9. Renames the current `.output` to a timestamped backup.
 10. Activates the new `.output` and restarts the existing PM2 app.
 11. Checks the local Node endpoint and public HTTPS website.
-12. Removes temporary files and retains the newest five script-created backups.
+12. In ordinary mode, removes temporary files and retains the newest five unprotected script-created backups. Manual mode preserves staging, archives, hashes, diagnostics and all backups.
 
 The script does not use `pm2 --update-env`. Existing PM2 environment variables and server secrets remain unchanged.
 
@@ -109,6 +111,7 @@ Backups are stored beside `.output`:
 ```
 
 Only backups beginning with `.output-deploy-backup-` are included in automatic retention. Existing `.output-backup-*`, `.output-old*`, and other historical folders are untouched.
+Backups associated with a retained manual-recovery staging marker are excluded from later ordinary retention.
 
 ## Status and logs
 
@@ -122,11 +125,15 @@ pm2 logs new-elcomputer --lines 50
 
 ## Automatic rollback
 
-If PM2 restart or the internal HTTP check fails, the remote helper restores the backup, restarts PM2, and verifies the restored version.
+In default, schema-compatible mode, if PM2 restart or the internal HTTP check fails, the remote helper restores the backup, restarts PM2, and verifies the restored version. Errors and signals after backup creation use the same guarded recovery.
 
 If the public HTTPS check fails, the local script requests the same rollback. A failed deployment exits with a non-zero status and reports whether rollback succeeded.
 
+`--manual-recovery` disables every automatic restoration path for that invocation. The helpers stop on failure and retain artifacts; downtime may continue until separately authorized recovery or a compatible forward fix. They perform no database rollback. Read [mode enforcement, artifact locations and failure tests](deployment-recovery-safety.md).
+
 ## Manual rollback
+
+The following example applies only to compatible output with separate recovery authorization. **Do not use it for the migration-68 release.** Old output cannot fully edit products under the new confidentiality grants. Keep the Dashboard editing window closed, preserve security, and obtain review of a compatible forward fix or complete recovery plan. The helper refuses its rollback and cleanup commands for a marked manual-recovery release.
 
 Log in as `newelcomputer`, enter the site directory, and select a script-created backup:
 

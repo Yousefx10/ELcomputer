@@ -92,6 +92,8 @@ To repeat native/API coverage, provide executable paths through `EMAIL_REVIEW_PG
 
 ## Compatibility, proposed deployment and recovery
 
+**2026-10-11 deployment-safety amendment:** the current coordinated release has six pending migrations 64–69. Migration68 requires `env -u DEBUG npm run deploy:check -- --manual-recovery` followed, only after authorized database gates, by `env -u DEBUG npm run deploy -- --manual-recovery`, using the prepared Node22 PATH. See [the safety report](deployment-recovery-safety.md). Automatic fallback to pre-68 output is forbidden; failures can cause downtime and require separate recovery authorization. The original feature-only chronology below remains historical.
+
 Deployment remains **unauthorized**. The exposure remains in production until a separately approved coordinated release applies the privileges and updates staff readers.
 
 For a later approved normal release:

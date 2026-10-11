@@ -22,6 +22,22 @@ REMOTE_INSTALL_STARTED=0
 SSH_TARGET=""
 SSH_ARGS=()
 SCP_ARGS=()
+EVIDENCE_DIR=""
+PHASE="prerequisites"
+MANUAL_COMPLETE=0
+
+record_local_evidence() {
+  node - "$EVIDENCE_DIR" "$PHASE" "$1" "$ARCHIVE_PATH" "$REMOTE_STAGING_NAME" "$REMOTE_SCRIPT" "${BASH_SOURCE[0]}" <<'NODE'
+const fs = require('node:fs'), crypto = require('node:crypto'), path = require('node:path')
+const [directory, phase, status, archive, staging, ...scripts] = process.argv.slice(2)
+const fingerprint = (file) => fs.existsSync(file) ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') : null
+fs.writeFileSync(path.join(directory, 'deployment.json'), JSON.stringify({
+  timestamp: new Date().toISOString(), recoveryMode: 'manual', phase, status,
+  archive, archiveSha256: fingerprint(archive), remoteStaging: staging,
+  scripts: scripts.map(file => ({ file, sha256: fingerprint(file) }))
+}, null, 2) + '\n', { mode: 0o600 })
+NODE
+}
 
 log() {
   printf '\n==> %s\n' "$1"
@@ -38,10 +54,18 @@ die() {
 
 cleanup() {
   local status=$?
-  trap - EXIT
+  trap - EXIT INT TERM HUP
   set +e
 
-  if [[ -n "$ARCHIVE_PATH" && -f "$ARCHIVE_PATH" ]]; then
+  if [[ "${RECOVERY_MODE:-automatic}" == "manual" && "$status" == "0" && "$MANUAL_COMPLETE" != "1" ]]; then
+    status=1
+    warn "Manual-recovery invocation exited before verified completion."
+  fi
+
+  if [[ "${RECOVERY_MODE:-automatic}" == "manual" && -n "$EVIDENCE_DIR" ]]; then
+    record_local_evidence "$status" || warn "Could not update local diagnostic evidence."
+    warn "Manual recovery: local archive and diagnostics retained at $EVIDENCE_DIR (archive: $ARCHIVE_PATH)."
+  elif [[ -n "$ARCHIVE_PATH" && -f "$ARCHIVE_PATH" ]]; then
     rm -f -- "$ARCHIVE_PATH"
   fi
 
@@ -49,24 +73,36 @@ cleanup() {
     rm -f -- "$EMPTY_ENV_FILE"
   fi
 
-  if [[ "$REMOTE_STAGING_CREATED" == "1" && "$REMOTE_INSTALL_STARTED" == "0" && -n "$SSH_TARGET" ]]; then
+  if [[ "${RECOVERY_MODE:-automatic}" != "manual" && "$REMOTE_STAGING_CREATED" == "1" && "$REMOTE_INSTALL_STARTED" == "0" && -n "$SSH_TARGET" ]]; then
     remote_run cleanup "$REMOTE_STAGING_NAME" >/dev/null 2>&1 \
       || warn "Could not remove the remote staging directory."
+  fi
+
+  if [[ "${RECOVERY_MODE:-automatic}" == "manual" && "$status" != "0" ]]; then
+    warn "STOP: automatic output restoration is disabled. Downtime is possible. Recovery or a compatible forward fix requires separate human authorization."
+    [[ -z "$REMOTE_STAGING_NAME" ]] || warn "Preserve remote artifacts: $DEPLOY_PATH/$REMOTE_STAGING_NAME and $DEPLOY_PATH/${BACKUP_NAME:-unknown}."
   fi
 
   exit "$status"
 }
 
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 usage() {
   cat <<'EOF'
 Usage:
   bash scripts/deploy.sh
   bash scripts/deploy.sh --check
+  bash scripts/deploy.sh --manual-recovery
+  bash scripts/deploy.sh --check --manual-recovery
 
 Options:
   --check   Validate local and remote deployment prerequisites only.
+  --manual-recovery  Preserve artifacts; never restore old output automatically.
+                     A failed release may cause downtime pending human recovery.
 EOF
 }
 
@@ -273,9 +309,18 @@ package_output() {
 
 wait_for_public_health() {
   local attempt
+  local health_log=""
+  if [[ "$RECOVERY_MODE" == "manual" ]]; then
+    health_log="$EVIDENCE_DIR/public-health.log"
+    (umask 077; : > "$health_log")
+  fi
 
   for (( attempt = 1; attempt <= DEPLOY_HEALTH_RETRIES; attempt++ )); do
-    if curl -fsS --max-time 10 -o /dev/null "$PUBLIC_HEALTHCHECK_URL"; then
+    if [[ -n "$health_log" ]]; then
+      if curl -fsS --max-time 10 -o /dev/null "$PUBLIC_HEALTHCHECK_URL" 2>>"$health_log"; then
+        return 0
+      fi
+    elif curl -fsS --max-time 10 -o /dev/null "$PUBLIC_HEALTHCHECK_URL"; then
       return 0
     fi
 
@@ -288,12 +333,18 @@ wait_for_public_health() {
 }
 
 MODE="deploy"
-case "${1:-}" in
-  "") ;;
-  --check) MODE="check" ;;
-  -h|--help) usage; exit 0 ;;
-  *) usage >&2; die "Unknown option: $1" ;;
-esac
+RECOVERY_MODE="automatic"
+while (( $# > 0 )); do
+  case "$1" in
+    --check) MODE="check" ;;
+    --manual-recovery) RECOVERY_MODE="manual" ;;
+    -h|--help) MANUAL_COMPLETE=1; usage; exit 0 ;;
+    *) usage >&2; die "Unknown option: $1" ;;
+  esac
+  shift
+done
+# The command line alone selects this mode; configuration cannot change it.
+readonly MODE RECOVERY_MODE
 
 require_command npm
 require_command node
@@ -311,6 +362,9 @@ validate_project
 if grep -Eq '^[[:space:]]*(DEPLOY_USER|DEPLOY_PATH|PM2_APP|REMOTE_HEALTHCHECK_URL|PUBLIC_HEALTHCHECK_URL)[[:space:]]*=' "$CONFIG_FILE"; then
   die ".deploy.env cannot override the locked deployment target. Recopy .deploy.env.example."
 fi
+if grep -Eq '^[[:space:]]*(export[[:space:]]+)?(MODE|RECOVERY_MODE)[[:space:]]*=' "$CONFIG_FILE"; then
+  die ".deploy.env cannot select the deployment or recovery mode. Use command-line options."
+fi
 
 # This file is local, ignored by Git, and must contain variable assignments only.
 # shellcheck disable=SC1090
@@ -326,39 +380,65 @@ validate_configuration
 configure_ssh
 
 log "Checking newelcomputer, the locked site directory, PM2 application, and health endpoint..."
-remote_run check
+if [[ "$RECOVERY_MODE" == "manual" ]]; then
+  CHECK_OUTPUT="$(remote_run check manual)" || die "Remote manual-recovery prerequisite check failed."
+  printf '%s\n' "$CHECK_OUTPUT"
+  printf '%s\n' "$CHECK_OUTPUT" | grep -Fxq 'ELCOMPUTER_RECOVERY_MODE=manual:v1' \
+    || die "Remote helper did not verify manual-recovery mode."
+else
+  remote_run check
+fi
 
 if [[ "$MODE" == "check" ]]; then
+  MANUAL_COMPLETE=1
   printf '\nDeployment preflight successful.\n'
   exit 0
 fi
 
+if [[ "$RECOVERY_MODE" == "manual" ]]; then
+  EVIDENCE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/elcomputer-deploy-evidence.XXXXXX")"
+  chmod 700 "$EVIDENCE_DIR"
+  record_local_evidence pending
+fi
+PHASE="build"
 build_application
+PHASE="package"
 package_output
 
 RELEASE_ID="$(date -u +%Y%m%d-%H%M%S)-$$"
 REMOTE_STAGING_NAME=".deploy-staging-$RELEASE_ID"
 BACKUP_NAME=".output-deploy-backup-$RELEASE_ID"
+if [[ "$RECOVERY_MODE" == "manual" ]]; then
+  record_local_evidence pending
+fi
 
+PHASE="prepare"
 log "Preparing remote staging directory..."
-remote_run prepare "$REMOTE_STAGING_NAME"
+remote_run prepare "$REMOTE_STAGING_NAME" "$RECOVERY_MODE"
 REMOTE_STAGING_CREATED=1
 
 log "Uploading release package..."
+PHASE="upload"
 scp "${SCP_ARGS[@]}" "$ARCHIVE_PATH" "$SSH_TARGET:$DEPLOY_PATH/$REMOTE_STAGING_NAME/release.tar.gz"
 
 log "Creating backup and activating release..."
 REMOTE_INSTALL_STARTED=1
+PHASE="remote-install"
 remote_run deploy \
   "$REMOTE_STAGING_NAME" \
   "$RELEASE_ID" \
   "$DEPLOY_BACKUP_RETENTION" \
   "$DEPLOY_HEALTH_RETRIES" \
-  "$DEPLOY_HEALTH_DELAY"
+  "$DEPLOY_HEALTH_DELAY" \
+  "$RECOVERY_MODE"
 REMOTE_STAGING_CREATED=0
 
 log "Checking public website..."
+PHASE="public-health"
 if ! wait_for_public_health; then
+  if [[ "$RECOVERY_MODE" == "manual" ]]; then
+    die "Public HTTPS health failed. Current output and backups preserved; no rollback attempted."
+  fi
   warn "Public HTTPS health check failed. Restoring the previous release."
   remote_run rollback \
     "$BACKUP_NAME" \
@@ -369,5 +449,7 @@ if ! wait_for_public_health; then
   die "Public health failed. The previous release was restored."
 fi
 
+PHASE="complete"
+MANUAL_COMPLETE=1
 printf '\nDeployment successful: %s\n' "$PUBLIC_HEALTHCHECK_URL"
 printf 'Backup retained on the server: %s/%s\n' "$DEPLOY_PATH" "$BACKUP_NAME"

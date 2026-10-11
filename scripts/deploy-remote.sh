@@ -12,6 +12,43 @@ readonly HEALTHCHECK_URL="http://127.0.0.1:3001/"
 readonly NODE_BIN_DIR="/home/newelcomputer/.nvm/versions/node/v22.23.1/bin"
 readonly NODE_VERSION="v22.23.1"
 readonly NODE_EXECUTABLE="$NODE_BIN_DIR/node"
+phase="prerequisites"
+
+validate_recovery_mode() {
+  [[ "$1" == "automatic" || "$1" == "manual" ]] || die "Invalid recovery mode; refusing deployment."
+}
+
+record_remote_evidence() {
+  node - "$staging_name" "$backup_name" "$phase" "$1" <<'NODE'
+const fs = require('node:fs'), crypto = require('node:crypto'), path = require('node:path')
+const [staging, backup, phase, status] = process.argv.slice(2)
+const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+const inventory = root => {
+  const entries = []
+  const walk = relative => {
+    const file = path.join(root, relative), stat = fs.lstatSync(file)
+    if (stat.isSymbolicLink()) entries.push({ path: relative, link: fs.readlinkSync(file) })
+    else if (stat.isDirectory()) for (const child of fs.readdirSync(file).sort()) walk(path.join(relative, child))
+    else if (stat.isFile()) entries.push({ path: relative, sha256: hash(file), bytes: stat.size })
+    else throw new Error('Unsupported output entry type')
+  }
+  if (fs.existsSync(root)) walk('')
+  return { root, exists: fs.existsSync(root), entries }
+}
+const evidence = { timestamp: new Date().toISOString(), recoveryMode: 'manual', phase, status,
+  archiveSha256: hash(path.join(staging, 'release.tar.gz')),
+  outputs: ['.output', backup, path.join(staging, 'extracted/.output')].map(inventory) }
+// Preserve each phase's evidence rather than overwriting the pre-activation hashes.
+fs.writeFileSync(path.join(staging, `evidence-${phase}.json`), JSON.stringify(evidence, null, 2) + '\n', { mode: 0o600 })
+NODE
+}
+
+report_manual_failure() {
+  record_remote_evidence "$1" || warn "Could not capture final hashes; preserve pre-activation evidence and all artifacts."
+  warn "STOP: manual recovery selected. No old output restored and no recovery restart attempted. Downtime is possible."
+  warn "Preserved: $SITE_PATH/.output, $SITE_PATH/$backup_name, $SITE_PATH/$staging_name."
+  warn "Recovery or a compatible forward fix requires separate human authorization."
+}
 
 log() {
   printf '  - %s\n' "$1"
@@ -157,9 +194,18 @@ wait_for_health() {
   local retries=$1
   local delay=$2
   local attempt
+  local health_log=""
+  if [[ "${RECOVERY_MODE:-automatic}" == "manual" ]]; then
+    health_log="$staging_name/remote-health.log"
+    (umask 077; : > "$health_log")
+  fi
 
   for (( attempt = 1; attempt <= retries; attempt++ )); do
-    if curl -fsS --max-time 10 -o /dev/null "$HEALTHCHECK_URL"; then
+    if [[ -n "$health_log" ]]; then
+      if curl -fsS --max-time 10 -o /dev/null "$HEALTHCHECK_URL" 2>>"$health_log"; then
+        return 0
+      fi
+    elif curl -fsS --max-time 10 -o /dev/null "$HEALTHCHECK_URL"; then
       return 0
     fi
 
@@ -196,6 +242,7 @@ remove_staging_directory() {
   local staging_name=$1
 
   validate_staging_name "$staging_name"
+  [[ ! -e "$staging_name/manual-recovery" ]] || die "Manual-recovery artifacts require separately authorized cleanup."
   if [[ -e "$staging_name" || -L "$staging_name" ]]; then
     [[ -d "$staging_name" && ! -L "$staging_name" ]] \
       || die "Refusing to remove an unsafe staging path."
@@ -219,6 +266,9 @@ rollback_during_deploy() {
   local failed_output="$staging_name/failed-output"
   local rollback_ok=1
 
+  if [[ "$RECOVERY_MODE" == "manual" ]]; then
+    die "New release failed; manual recovery forbids automatic output restoration."
+  fi
   set +e
   trap - EXIT ERR INT TERM HUP
   warn "New release failed. Starting automatic rollback."
@@ -252,8 +302,17 @@ handle_deploy_exit() {
   trap - EXIT ERR INT TERM HUP
   set +e
 
+  if [[ "$RECOVERY_MODE" == "manual" && "$status" == "0" ]]; then
+    status=1
+    warn "Manual-recovery invocation exited before verified completion."
+  fi
   if (( status == 0 )); then
     return 0
+  fi
+
+  if [[ "$RECOVERY_MODE" == "manual" ]]; then
+    report_manual_failure "$status"
+    exit "$status"
   fi
 
   if [[ -d "$backup_name" && ! -L "$backup_name" && "$deployment_confirmed" == "0" ]]; then
@@ -271,21 +330,13 @@ handle_deploy_error() {
   local status=$?
   trap - ERR INT TERM HUP
 
-  if [[ -d "$backup_name" && ! -L "$backup_name" && "$deployment_confirmed" == "0" ]]; then
-    rollback_during_deploy "$backup_name" "$staging_name" "$retries" "$delay"
-  fi
-
+  # EXIT alone decides recovery, including failures before activation.
   exit "$status"
 }
 
 handle_deploy_signal() {
   trap - ERR INT TERM HUP
-
-  if [[ -d "$backup_name" && ! -L "$backup_name" && "$deployment_confirmed" == "0" ]]; then
-    rollback_during_deploy "$backup_name" "$staging_name" "$retries" "$delay"
-  fi
-
-  exit 130
+  exit "$1"
 }
 
 cleanup_old_backups() {
@@ -299,6 +350,8 @@ cleanup_old_backups() {
   done < <(find . -mindepth 1 -maxdepth 1 -type d -name '.output-deploy-backup-*' -print | sort -r)
 
   for backup in "${backups[@]}"; do
+    # Later ordinary releases must not prune a manual-recovery artifact.
+    [[ ! -e ".deploy-staging-${backup#./.output-deploy-backup-}/manual-recovery" ]] || continue
     (( index += 1 ))
     if (( index > retention )); then
       backup="${backup#./}"
@@ -314,7 +367,9 @@ shift || true
 
 case "$command_name" in
   check)
-    [[ $# -eq 0 ]] || die "Invalid check arguments."
+    [[ $# -le 1 ]] || die "Invalid check arguments."
+    readonly RECOVERY_MODE="${1:-automatic}"
+    validate_recovery_mode "$RECOVERY_MODE"
 
     assert_target_context
     configure_runtime_tools
@@ -334,16 +389,24 @@ case "$command_name" in
     log "PM2 application exists: $PM2_APP"
     log "Current production output exists."
     log "Current application health check passed."
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      printf 'ELCOMPUTER_RECOVERY_MODE=manual:v1\n'
+    fi
     ;;
 
   prepare)
-    [[ $# -eq 1 ]] || die "Invalid prepare arguments."
+    [[ $# -eq 1 || $# -eq 2 ]] || die "Invalid prepare arguments."
     staging_name=$1
+    readonly RECOVERY_MODE="${2:-automatic}"
+    validate_recovery_mode "$RECOVERY_MODE"
 
     assert_target_context
     validate_staging_name "$staging_name"
     umask 077
     mkdir -- "$staging_name" || die "Could not create remote staging directory."
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      printf 'manual:v1\n' > "$staging_name/manual-recovery"
+    fi
     log "Remote staging directory created."
     ;;
 
@@ -356,7 +419,9 @@ case "$command_name" in
     ;;
 
   deploy)
-    [[ $# -eq 5 ]] || die "Invalid deploy arguments."
+    [[ $# -eq 5 || $# -eq 6 ]] || die "Invalid deploy arguments."
+    readonly RECOVERY_MODE="${6:-automatic}"
+    validate_recovery_mode "$RECOVERY_MODE"
     staging_name=$1
     release_id=$2
     retention=$3
@@ -381,14 +446,24 @@ case "$command_name" in
     validate_positive_integer "$retries" "Health retries" 60
     validate_positive_integer "$delay" "Health delay" 30
     [[ -d "$staging_name" && ! -L "$staging_name" ]] || die "Remote staging directory is missing or unsafe."
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      [[ -f "$staging_name/manual-recovery" && ! -L "$staging_name/manual-recovery" ]] \
+        && [[ "$(cat "$staging_name/manual-recovery")" == "manual:v1" ]] \
+        || die "Manual-recovery staging marker was not verified."
+    else
+      [[ ! -e "$staging_name/manual-recovery" ]] || die "Cannot activate manual-recovery staging in automatic mode."
+    fi
     [[ -d .output && ! -L .output ]] || die "Current .output directory is missing or unsafe."
     [[ -f .output/server/index.mjs ]] || die "Current production entry point is missing."
     [[ ! -e "$backup_name" && ! -L "$backup_name" ]] || die "Backup name already exists."
 
     trap handle_deploy_exit EXIT
     trap handle_deploy_error ERR
-    trap handle_deploy_signal INT TERM HUP
+    trap 'handle_deploy_signal 130' INT
+    trap 'handle_deploy_signal 143' TERM
+    trap 'handle_deploy_signal 129' HUP
 
+    phase="extract"
     log "Validating uploaded archive."
     validate_archive "$archive_path"
     mkdir -- "$extracted_path"
@@ -396,26 +471,48 @@ case "$command_name" in
     [[ -f "$extracted_path/.output/server/index.mjs" ]] \
       || die "New release entry point is missing."
 
+    phase="pre-activation"
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      record_remote_evidence pending || die "Required manual-recovery hashes could not be recorded."
+    fi
+
+    phase="backup"
     log "Backing up current .output to $backup_name"
     mv -- .output "$backup_name"
 
+    phase="activation"
     log "Activating new .output."
     mv -- "$extracted_path/.output" .output
 
+    phase="restart"
     log "Restarting existing PM2 application: $PM2_APP"
-    if ! pm2 restart "$PM2_APP" >/dev/null 2>&1; then
+    restart_log="/dev/null"
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      umask 077
+      restart_log="$staging_name/pm2-restart.log"
+    fi
+    if ! pm2 restart "$PM2_APP" >"$restart_log" 2>&1; then
       rollback_during_deploy "$backup_name" "$staging_name" "$retries" "$delay"
     fi
 
+    phase="remote-health"
     log "Checking application at $HEALTHCHECK_URL"
     if ! wait_for_health "$retries" "$delay"; then
       rollback_during_deploy "$backup_name" "$staging_name" "$retries" "$delay"
     fi
 
     deployment_confirmed=1
+    phase="server-healthy"
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      record_remote_evidence 0 || die "Could not record manual-recovery completion evidence."
+    fi
     trap - EXIT ERR INT TERM HUP
-    remove_staging_directory "$staging_name" || warn "Could not remove the successful deployment staging directory."
-    cleanup_old_backups "$retention"
+    if [[ "$RECOVERY_MODE" == "manual" ]]; then
+      log "Manual recovery verified: staging, archive, hashes, restart diagnostics and all backups retained."
+    else
+      remove_staging_directory "$staging_name" || warn "Could not remove the successful deployment staging directory."
+      cleanup_old_backups "$retention"
+    fi
     log "Server health check passed."
     ;;
 
@@ -434,6 +531,8 @@ case "$command_name" in
     validate_pm2_app
     validate_backup_name "$backup_name"
     validate_release_id "$release_id"
+    [[ ! -e ".deploy-staging-$release_id/manual-recovery" ]] \
+      || die "This release requires separately reviewed manual recovery; automatic rollback is forbidden."
     validate_positive_integer "$retries" "Health retries" 60
     validate_positive_integer "$delay" "Health delay" 30
     [[ "$failed_name" =~ ^\.output-deploy-failed-[0-9]{8}-[0-9]{6}-[0-9]+$ ]] \
