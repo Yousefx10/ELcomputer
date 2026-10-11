@@ -236,6 +236,8 @@ export const getDashboardRouteRequirement = (route = '') => {
   const tab = normalizeDashboardQueryValue(query.tab)
   const view = normalizeDashboardQueryValue(query.view)
 
+  if (path === '/dashboard/setup' || path.startsWith('/dashboard/setup/')) return { role: 'owner' }
+
   if (path === '/dashboard/after-sales' || path.startsWith('/dashboard/after-sales/')) return { permission: 'claims.view' }
 
   if (path === '/dashboard/email') return { permission: ({ settings:'email.settings.view', templates:'email.templates.view', send:'email.transactional.send', history:'email.history.view', events:'email.history.view', preferences:'email.marketing.manage' })[tab || 'settings'] || 'email.view' }

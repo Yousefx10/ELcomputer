@@ -143,6 +143,7 @@ export const dashboardNavigationGroups = [
     { ...child('sms-send', 'Send SMS', 'send', '/dashboard/sms', 'tab', ['send']), permissionsAny: ['sms.notification.send', 'sms.campaign.send'] },
     child('sms-history', 'SMS history', 'history', '/dashboard/sms', 'tab', ['history'], 'sms.history.view')
   ], { permission: 'sms.view' }),
+  { key: 'setup', label: 'Quick Setup', icon: 'lucide:list-checks', to: '/dashboard/setup', role: 'owner', documentTitle: 'Dashboard - Quick Setup', match: { paths: ['/dashboard/setup'] }, children: [] },
   group('settings', 'Settings', 'settings', { paths: ['/dashboard/settings'] }, [
     child('settings-overview', 'Store settings', 'sliders-horizontal', '/dashboard/settings', 'tab', [''], 'settings.view'),
     ...dashboardSettingsSections.filter(item => primarySettingsKeys.has(item.key)).map(item => ({

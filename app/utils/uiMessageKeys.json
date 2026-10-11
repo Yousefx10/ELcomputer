@@ -3008,5 +3008,7 @@
   "View email history and events": "emailFoundation.permissionHistory",
   "Manage email consent and suppressions": "emailFoundation.permissionPreferences",
   "View claim communications": "claims.permissions.communicationsView",
-  "Manage claim communications": "claims.permissions.communicationsManage"
+  "Manage claim communications": "claims.permissions.communicationsManage",
+  "Quick Setup": "quickSetup.title",
+  "Dashboard - Quick Setup": "quickSetup.title"
 }
