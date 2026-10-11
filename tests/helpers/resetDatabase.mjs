@@ -9,7 +9,7 @@ export const createResetDatabase = async ({ stopBefore = null } = {}) => {
 }
 
 // Also used by the opt-in, disposable native PostgreSQL concurrency review.
-export const prepareResetDatabase = async (db, { stopBefore = null } = {}) => {
+export const prepareResetDatabase = async (db, { stopBefore = null, onMigration = null } = {}) => {
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create schema storage; create schema realtime;
@@ -36,5 +36,6 @@ export const prepareResetDatabase = async (db, { stopBefore = null } = {}) => {
   for (const name of (await readdir(migrations)).filter(name => name.endsWith('.sql')).sort()) {
     if (stopBefore && name >= stopBefore) break
     await db.exec(await readFile(new URL(name, migrations), 'utf8'))
+    if (onMigration) await onMigration(name)
   }
 }

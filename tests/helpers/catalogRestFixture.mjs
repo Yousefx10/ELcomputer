@@ -14,7 +14,7 @@ export const createCatalogRestFixture = async () => {
   const dir = await mkdtemp(join(tmpdir(), 'catalog-rest-'))
   let server, logs = ''
   const close = async () => {
-    if (server && server.exitCode === null) {
+    if (server && server.exitCode === null && server.signalCode === null) {
       const ended = new Promise(resolve => server.once('exit', resolve))
       server.kill('SIGTERM'); await ended
     }
@@ -46,8 +46,8 @@ export const createCatalogRestFixture = async () => {
     const url = `http://127.0.0.1:${restPort}`
     let ready = false
     for (let i = 0; i < 100; i++) {
-      try { if ((await fetch(url + '/storefront_products?select=id')).ok) { ready = true; break } } catch {}
-      if (server.exitCode !== null) throw Error('Disposable PostgREST exited: ' + logs)
+      try { if ((await fetch(url + '/storefront_products?select=id', { signal: AbortSignal.timeout(1000) })).ok) { ready = true; break } } catch {}
+      if (server.exitCode !== null || server.signalCode !== null) throw Error('Disposable PostgREST exited: ' + logs)
       await new Promise(resolve => setTimeout(resolve, 50))
     }
     if (!ready) throw Error('Disposable PostgREST did not become ready: ' + logs)

@@ -13,7 +13,7 @@ export const nativeWaitFor=async predicate=>{
  for(let i=0;i<100;i++){if(await predicate())return;await new Promise(resolve=>setTimeout(resolve,50))}
  throw Error('Native email audit barrier timed out.')
 }
-export const createEmailNativeDatabase=async({stopBefore=null}={})=>{
+export const createEmailNativeDatabase=async({stopBefore=null,onMigration=null}={})=>{
  const {default:pg}=await import(pathToFileURL(process.env.EMAIL_REVIEW_PG_DRIVER).href)
  const directory=await mkdtemp(join(tmpdir(),'email-audit-pg-')),bin=process.env.EMAIL_REVIEW_PG_BIN,clients=[]
  const probe=createServer();await new Promise(resolve=>probe.listen(0,'127.0.0.1',resolve))
@@ -35,7 +35,7 @@ export const createEmailNativeDatabase=async({stopBefore=null}={})=>{
   server=spawn(join(bin,'postgres'),['-D',directory,'-h','127.0.0.1','-p',String(port),'-k',directory],{stdio:['ignore','ignore','pipe']})
   server.stderr.on('data',chunk=>{logs=(logs+chunk).slice(-3000)})
   await nativeWaitFor(async()=>{try{db=await connect();return true}catch{return false}})
-  await prepareResetDatabase({exec:sql=>db.query(sql)},{stopBefore})
+  await prepareResetDatabase({exec:sql=>db.query(sql)},{stopBefore,onMigration})
   return {query:(sql,parameters)=>db.query(sql,parameters),exec:sql=>db.query(sql),connect,close,version:(await db.query('show server_version')).rows[0].server_version}
  }catch(error){if(!db)error.message+='\n'+logs;await close();throw error}
 }
