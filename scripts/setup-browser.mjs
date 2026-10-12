@@ -1,4 +1,4 @@
-// Actual Setup Vue page, application CSS and actual H3/SQL reads. Auth is a
+// Actual Setup Vue page, application CSS and actual H3/SQL commands. Auth is a
 // fixture. All browser traffic is restricted to this owned loopback server.
 import assert from 'node:assert/strict'
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises'
@@ -23,7 +23,7 @@ import en from '${join(base, 'i18n/locales/en.json')}';import ar from '${join(ba
 Setup.__scopeId='data-v-setup-review';
 const i18n=createI18n({legacy:false,locale:'en',messages:{en,ar}}),actor=ref('owner'),generation=ref(0),theme=ref('light'),admins=${JSON.stringify(admins)},requests=[],links=[];
 const appearance=()=>{document.documentElement.lang=i18n.global.locale.value;document.documentElement.dir=i18n.global.locale.value==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme.value==='dark'||theme.value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches)};matchMedia('(prefers-color-scheme:dark)').addEventListener('change',appearance);
-const request=async(path,options={})=>{requests.push({path,method:options.method||'GET'});const response=await fetch(path,{headers:{authorization:'Bearer '+actor.value}});const data=await response.json();if(!response.ok)throw Error('Fixture request rejected');return data};
+const request=async(path,options={})=>{requests.push({path,method:options.method||'GET'});const response=await fetch(path,{method:options.method||'GET',headers:{authorization:'Bearer '+actor.value,'content-type':'application/json'},...(options.body?{body:JSON.stringify(options.body)}:{})});const data=await response.json();if(!response.ok){const error=Error('Fixture request rejected');error.statusCode=response.status;throw error}return data};
 Object.assign(globalThis,{ref,computed,onMounted,watch,nextTick,definePageMeta:()=>{},useHead:()=>{},useI18n:()=>i18n.global,useSupportClient:()=>({request}),useAdminAccess:()=>({isOwner:computed(()=>admins[actor.value]?.role==='owner'),isActiveAdmin:computed(()=>admins[actor.value]?.is_active===true)})});
 const app=createApp({render:()=>h('main',{class:'p-4 mx-auto max-w-7xl'},[h(Setup,{key:generation.value})])});app.use(i18n);
 app.component('Icon',{props:['name'],setup(p,{attrs}){return()=>h('span',{...attrs,style:'display:inline-flex;width:1em;height:1em'},[h('svg',{viewBox:'0 0 24 24',width:'100%',height:'100%',innerHTML:icons.icons[p.name.replace('lucide:','')]?.body||''})])}});
@@ -42,7 +42,7 @@ const errors = [], external = [], scans = [], pending = []
 let assertions = 0, screens = 0
 const check = (value, message) => { assert.ok(value, message); assertions++ }
 page.on('pageerror', e => errors.push(e.message))
-page.on('console', m => { if (['warning', 'error'].includes(m.type())) errors.push(m.text()) })
+page.on('console', m => { if (['warning', 'error'].includes(m.type()) && !/^Failed to load resource: the server responded with a status of 409\b/.test(m.text())) errors.push(m.text()) })
 await page.route('**/*', route => route.request().url().startsWith(url) ? route.continue() : (external.push(route.request().url()), route.abort()))
 page.on('response', response => {
   if ((response.headers()['content-type'] || '').includes('json')) pending.push((async () => {
@@ -62,7 +62,7 @@ const inspect = async name => {
   const text = await page.locator('main').innerText()
   check(!text.includes('quickSetup.'), 'Translated copy: ' + name)
   check(!text.includes(SETUP_CANARY), 'No private rendered data: ' + name)
-  check(await page.locator('form,input,textarea,select').count() === 0, 'Guide has no editable settings: ' + name)
+  check(await page.locator('form,input:not([data-setup-selection]),textarea,select').count() === 0, 'Guide edits only nonsecret setup metadata: ' + name)
   await page.screenshot({ path: join(dir, name + '.png'), fullPage: true }); screens++
 }
 try {
@@ -90,13 +90,79 @@ try {
   check(await page.getByRole('heading', { level: 2 }).innerText() === messages.en.sections.store, 'Keyboard advances the guide')
   await page.getByRole('button', { name: messages.en.previous, exact: true }).click()
   check(await page.getByRole('heading', { level: 2 }).innerText() === messages.en.sections.system, 'Previous step works')
-  await step('payments'); check(await page.locator('[data-setup-item="paypal"] .setup-badge').innerText() === messages.en.states.unsupported, 'PayPal accurately unsupported')
+  await step('payments'); check(await page.locator('[data-setup-item="paypal"] .setup-card-header .setup-badge').innerText() === messages.en.states.unsupported, 'PayPal accurately unsupported')
   await step('messages'); check(await page.locator('[data-setup-item="vodafone"]').innerText().then(t => t.includes(messages.en.disabled)), 'Disabled Vodafone shown')
   await step('readiness'); await page.getByRole('button', { name: messages.en.review, exact: true }).first().click()
   check(await page.getByRole('heading', { level: 2 }).innerText() === messages.en.sections.authentication, 'Readiness blocker opens relevant section')
+  // Deliberate owner metadata writes against real isolated SQL; providers stay OFF.
+  const unchangedProviderState = snapshot => Object.fromEntries(Object.entries(snapshot).filter(([key]) => !key.startsWith('quick_setup_') && key !== 'admin_activity_logs'))
+  const mutationBefore = unchangedProviderState(await f.snapshot())
+  const saved = async revision => {
+    await page.waitForFunction(() => !document.querySelector('[data-setup-selection]:disabled') || !document.querySelector('[data-setup-selection]'))
+    await page.waitForFunction(revision => window.setupTest.requests.filter(r => r.method === 'PATCH').length >= revision, revision)
+    await page.getByText(messages.en.saving, { exact: true }).waitFor({ state: 'hidden' })
+  }
+  await step('messages')
+  const choice = page.locator('[data-integration="vodafone"]')
+  await choice.check(); await saved(1)
+  check(await choice.isChecked(), 'Optional selection saved')
+  check((await page.locator('[data-setup-item="vodafone"]').innerText()).includes(messages.en.disabled), 'Selection never enables Vodafone')
+  await inspect('en-phase2-selected-off')
+  await page.reload(); await wait(); await step('messages')
+  check(await choice.isChecked(), 'Selection persists through reload')
+  await page.locator('[data-evidence-item="vodafone"]').getByRole('button', { name: messages.en.saveCurrentCheck, exact: true }).click()
+  await saved(1)
+  check(await page.locator('[data-evidence-item="vodafone"] .setup-badge').innerText() === messages.en.states.unverified, 'Saving configuration remains unverified')
+  await step('readiness')
+  const authReview = page.locator('[data-acknowledgement="auth"]')
+  await authReview.getByRole('button', { name: messages.en.confirmReview, exact: true }).click(); await saved(2)
+  check((await authReview.innerText()).includes(messages.en.states.acknowledged), 'Owner review is separate from machine verification')
+  check(await page.locator('.setup-history li').count() === 3, 'Immutable history lists owner actions')
+  await inspect('en-phase2-readiness')
+  language = 'ar'; await page.setViewportSize({ width: 390, height: 1000 })
+  await page.evaluate(() => { window.setupTest.locale.value = 'ar'; window.setupTest.appearance() })
+  await inspect('ar-phase2-mobile-readiness')
+  await step('messages'); await inspect('ar-phase2-mobile-evidence')
+  language = 'en'; await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.evaluate(() => { window.setupTest.locale.value = 'en'; window.setupTest.appearance() })
+  f.runtime.smsWorkerSecret += '-rotated'
+  await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait()
+  check(await page.locator('[data-evidence-item="vodafone"] .setup-badge').innerText() === messages.en.states.stale, 'Runtime configuration invalidates saved evidence')
+  await inspect('en-phase2-stale')
+  await step('readiness')
+  await authReview.getByRole('button', { name: messages.en.withdrawAcknowledgement, exact: true }).click(); await saved(3)
+  check((await authReview.innerText()).includes(messages.en.states.revoked), 'Owner can withdraw review without deleting history')
+  // Simulate another owner tab changing the revision immediately before this save.
+  await page.route('**/api/admin-setup/state', async route => {
+    await f.db.query('select public.quick_setup_mutate($1,$2)', [f.actors.owner, { action:'selection', key:'brevo', selected:true, revision:4 }])
+    await route.continue(); await page.unroute('**/api/admin-setup/state')
+  })
+  await authReview.getByRole('button', { name: messages.en.confirmReview, exact: true }).click(); await saved(4)
+  check(await page.getByRole('alert').innerText() === messages.en.saveConflict, 'Conflict is explained without retrying a write')
+  check(await page.locator('.setup-history li').count() === 5, 'Conflicting save adds no history')
+  await inspect('en-phase2-conflict')
+  check(JSON.stringify(unchangedProviderState(await f.snapshot())) === JSON.stringify(mutationBefore), 'Metadata writes leave provider controls, queues and business data unchanged')
+  await f.db.query("insert into public.erp_provider_settings(id,account_url,api_key_encrypted) values('daftra','https://fixture.daftra.com','fixture-encrypted')")
+  await f.db.query("update public.site_settings set daftra_connection_status='connected',daftra_last_checked_at=clock_timestamp(),daftra_tested_revision=1 where key='default'")
+  await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait(); await step('shipping')
+  await page.locator('[data-evidence-item="daftra"]').getByRole('button', { name: messages.en.saveCurrentCheck, exact: true }).click(); await saved(5)
+  check(await page.locator('[data-evidence-item="daftra"] .setup-badge').innerText() === messages.en.states.verified, 'Existing revision-bound Daftra test can be saved as verified')
+  check((await page.locator('[data-setup-item="daftra"]').innerText()).includes(messages.en.builtInActive), 'Verified connection never activates ERP ownership')
+  await inspect('en-phase2-verified-daftra')
+  f.runtime.credentialsEncryptionKey += '-rotated'
+  await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait()
+  await page.locator('[data-evidence-item="daftra"]').getByRole('button', { name: messages.en.saveCurrentCheck, exact: true }).click(); await saved(6)
+  check(await page.locator('[data-evidence-item="daftra"] .setup-badge').innerText() === messages.en.states.stale, 'Saving an unchanged old test cannot renew stale verification')
+  await inspect('en-phase2-old-test-stale')
+  await f.db.exec('alter view public.quick_setup_snapshot rename to unavailable_snapshot')
+  await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait()
+  check(await page.getByText(messages.en.persistenceUnavailable, { exact:true }).isVisible(), 'Missing migration preserves the read-only guide')
+  check(await page.locator('[data-setup-selection],[data-evidence-item],[data-acknowledgement] button').count() === 0, 'Unavailable metadata has no write controls')
+  await inspect('en-phase2-metadata-unavailable')
+  await f.db.exec('alter view public.unavailable_snapshot rename to quick_setup_snapshot')
   // Selected, failed, stale and unavailable states use synthetic local records only.
   await f.db.query("select set_config('request.jwt.claim.role','service_role',false)")
-  await f.db.query("update public.site_settings set erp_mode='daftra',daftra_connection_status='error',daftra_last_checked_at=now(),daftra_tested_revision=0 where key='default'")
+  await f.db.query("update public.site_settings set erp_mode='daftra',daftra_connection_status='error',daftra_last_checked_at=now(),daftra_tested_revision=1 where key='default'")
   f.runtime.daftraAccountUrl = 'https://fixture.daftra.com'
   await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait(); await step('shipping')
   check(await page.locator('[data-setup-item="daftra"]').innerText().then(t => t.includes(messages.en.states.failed)), 'Failed connection remains active Daftra')
@@ -111,7 +177,7 @@ try {
   await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait(); await step('messages')
   for (const id of ['vodafone', 'brevo']) {
     const card = page.locator('[data-setup-item="' + id + '"]')
-    check(await card.locator('.setup-badge').innerText() === messages.en.states.complete, 'Selected provider configuration complete')
+    check(await card.locator('.setup-card-header .setup-badge').innerText() === messages.en.states.complete, 'Selected provider configuration complete')
     check((await card.innerText()).includes(messages.en.states.not_verified), 'Configured provider connection remains unverified')
   }
   await inspect('en-providers-configured')
@@ -120,8 +186,20 @@ try {
   check(JSON.stringify(await f.snapshot()) === JSON.stringify(selectedBefore), 'Selected provider status leaves configuration and queues unchanged')
   await f.db.exec('alter table public.email_provider_settings rename to fixture_unavailable_email_settings')
   await page.getByRole('button', { name: messages.en.refresh, exact: true }).click(); await wait(); await step('messages')
-  check(await page.locator('[data-setup-item="brevo"] .setup-badge').innerText() === messages.en.states.not_verified, 'Unavailable settings shown unverified')
+  check(await page.locator('[data-setup-item="brevo"] .setup-card-header .setup-badge').innerText() === messages.en.states.not_verified, 'Unavailable settings shown unverified')
   await inspect('en-email-unavailable')
+  // A pending owner mutation response must not repopulate a revoked session.
+  await step('payments')
+  await page.route('**/api/admin-setup/state', async route => {
+    const response = await route.fetch(); await new Promise(done => setTimeout(done, 200)); await route.fulfill({ response })
+  })
+  await page.locator('[data-integration="paypal"]').check()
+  await page.evaluate(() => { window.setupTest.actor.value = 'viewer' }); await page.getByRole('alert').waitFor()
+  await page.waitForTimeout(350)
+  check(await page.getByRole('progressbar').count() === 0, 'Late mutation response cannot restore revoked setup data')
+  await inspect('phase2-late-save-revoked')
+  await page.unroute('**/api/admin-setup/state')
+  await page.evaluate(() => window.setupTest.show('owner')); await wait()
   const requestsBefore = await page.evaluate(() => window.setupTest.requests.length)
   for (const actor of ['viewer', 'manager', 'customer', 'inactive']) {
     await page.evaluate(actor => window.setupTest.show(actor), actor)
@@ -143,7 +221,7 @@ try {
   check(await page.getByRole('progressbar').count() === 0, 'Late owner response cannot restore private status after revocation')
   await page.unroute('**/api/admin-setup/status')
   const requests = await page.evaluate(() => window.setupTest.requests)
-  check(requests.every(r => r.path === '/api/admin-setup/status' && r.method === 'GET'), 'Only protected status GETs requested')
+  check(requests.every(r => r.path === '/api/admin-setup/status' && r.method === 'GET' || r.path === '/api/admin-setup/state' && r.method === 'PATCH'), 'Only protected setup reads and deliberate metadata writes requested')
   await Promise.all(pending); check(errors.length === 0, 'No browser errors: ' + errors.join('; ')); check(external.length === 0, 'No external requests')
   const report = { assertions, screenshots: screens, jsonResponses: scans.length, requests, errors, external, realProviderCalls: 0, productionAccess: false, hostedAuthenticatedAcceptance: false }
   await writeFile(join(dir, 'report.json'), JSON.stringify(report, null, 2)); console.log(JSON.stringify({ ...report, requests: requests.length }))

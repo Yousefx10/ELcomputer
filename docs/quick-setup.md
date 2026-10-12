@@ -1,6 +1,6 @@
-# Quick Setup — Phase 1
+# Quick Setup — Phases 1 and 2
 
-Quick Setup is an owner-only, read-only guide at `/dashboard/setup`, also available at `/ar/dashboard/setup`. The existing Dashboard navigation adds **Quick Setup** for active owners. It does not replace any configuration editor.
+Quick Setup is an owner-only guide at `/dashboard/setup`, also available at `/ar/dashboard/setup`. Phase 1 was deployed at `ac30fbe97cf1832a5d6f6a6d7ba312dfd6633d59` and accepted by the owner, including non-owner checks. Phase 2 extends that same guide with private, nonsecret progress metadata. Configuration editors remain authoritative.
 
 ## Supported sections
 
@@ -12,19 +12,19 @@ Quick Setup is an owner-only, read-only guide at `/dashboard/setup`, also availa
 6. Authentication & Integrations: verified owner session; outstanding hosted Auth, Storage, OAuth and Live Chat acceptance.
 7. Launch Readiness: required configuration gaps and separate manual acceptance checklist.
 
-All configuration actions are ordinary links to existing Settings, Shipping, SMS, Email and Claims communication editors. The page contains no editable settings forms, provider test buttons, install/clone/reset commands or launch action. It supports EN/AR, RTL, responsive layouts and the existing Light/Dark/System themes. Step buttons, Previous/Next and readiness review links move focus to the section heading.
+All configuration actions remain links to existing Settings, Shipping, SMS, Email and Claims communication editors. The new checkboxes, Save current check and Confirm review buttons edit setup metadata only. There are no provider test buttons, install/clone/reset commands or launch action. EN/AR, RTL, responsive layouts, Light/Dark/System themes and heading focus navigation are preserved.
 
 ## Status and progress
 
-`GET /api/admin-setup/status` verifies a bearer token and current active owner through `requireAdminRequest`. It then uses `readQuickSetupStatus` in `server/utils/quickSetup.js` to read current configuration. Existing Daftra, SMS, Email, PDC and Paymob configuration/validation helpers remain authoritative; no new provider backend is introduced.
+`GET /api/admin-setup/status` verifies a bearer token and current active owner through `requireAdminRequest`. `readQuickSetupProgress` wraps `readQuickSetupStatus` with a private metadata snapshot. Existing Daftra, SMS, Email, PDC and Paymob configuration/validation helpers remain authoritative; no new provider backend is introduced.
 
-Responses contain only explicit identifiers, booleans, enumerated states and normalized timestamps. No saved store/provider strings, account IDs/URLs, raw diagnostics, plaintext secrets, encrypted values, environment dumps or customer data are returned. The browser fetches only after mounting and active-owner verification. Responses are private/no-store; errors are fixed and do not echo request URLs or database diagnostics. Losing owner/active status clears displayed data and invalidates pending responses.
+Responses contain explicit identifiers, booleans, enumerated states, revision numbers, opaque HMAC bindings and normalized timestamps. No saved store/provider strings, account IDs/URLs, actor identity, raw diagnostics, plaintext secrets, encrypted values, environment dumps or customer data are returned. The browser fetches only after mounting and active-owner verification. Responses are private/no-store; errors are fixed and do not echo request URLs or database diagnostics. Losing owner/active status clears displayed data and invalidates pending read and mutation responses.
 
-Progress counts **required items whose configuration checks are complete / required items**. Requirements follow saved settings, without a new selection/completion database. It is configuration progress, not an operational readiness score. Manual completion, skip decisions and acknowledgements are not persisted.
+Progress counts **required items whose configuration checks are complete / required items**. Requirements follow existing settings plus the owner's optional setup choices. A choice adds requirements and never enables a provider. Exclusion cannot hide an integration required by existing settings. Configuration progress, current verification and owner review counts are displayed separately; no combined operational readiness score is generated.
 
 Required base items are application configuration, infrastructure origin syntax, branding, contact information, checkout methods, shipping and authentication acceptance. Optional services become required when selected in saved configuration: active Daftra ownership, enabled providers, enabled SMS events/Claims communication channels, Email webhook/marketing controls, PDC automatic/reverse controls, enabled policy families, Facebook visibility and enabled Live Chat. Unreadable optional configuration becomes a required unverified gap because its selected state cannot be established. Bounded list reads reject partial results instead of accepting an incomplete scan.
 
-Daftra evidence is verified only for a successful current-credential-revision test with a valid timestamp within 24 hours. Older/future/revision-mismatched evidence is stale; a current failed test is failed. This freshness policy affects this guide only, not existing ERP activation or ownership rules. Built-in mode leaves Daftra optional; outages do not switch ownership. Other provider connections remain **Not verified**, since passive reads cannot establish connectivity.
+Daftra evidence is verified only for an existing successful database-credential-revision test within 24 hours. Environment fallback tests use revision zero and cannot bind credential changes; the guide reports those as unverified. Older/future/revision-mismatched evidence is stale; a current failed test is failed. Once a recorded test is invalidated, saving that same test again cannot renew it, including after an intervening unavailable result. A fresh deliberate test in the existing ERP settings is needed. This policy affects this guide only, not existing ERP activation or ownership. Other provider connections remain **Not verified**.
 
 Specific limitations are shown directly:
 
@@ -36,19 +36,50 @@ Specific limitations are shown directly:
 - A worker secret only establishes authorization configuration, never scheduling or successful dispatch.
 - Hosted Auth URLs/SMTP/OAuth provider state, physical Storage operations/quotas, exact migration history, grants/RLS, TLS/domain ownership, backups/recovery and real end-to-end transactions remain unverified.
 
-`operationalReady` always remains false and operational acceptance remains `not_verified` in Phase 1. Existing Auth/Storage evidence cannot be inferred from table reads. Auth acceptance remains a required unverified gap; the guide therefore does not produce a misleading fully verified launch state.
+`operationalReady` always remains false and operational acceptance remains `not_verified`. Existing Auth/Storage evidence cannot be inferred from table reads or owner acknowledgements. Auth acceptance remains a required unverified configuration gap.
 
 ## Security and scope
 
-Both the existing Dashboard route middleware and backend require owner authorization. Ordinary admins, including administrators with configuration permissions, cannot read setup status. Existing integration permissions are unchanged. Only SELECTs/configuration helpers run after authorization; there are no RPC invocations, provider requests, configuration writes, audits, queues or background processing from Setup reads.
+Both Dashboard middleware and backend require active owner authorization. Ordinary admins with configuration permissions cannot read or mutate setup metadata. Existing integration permissions are unchanged. Refresh runs SELECTs/configuration helpers only; there are no RPC invocations, provider requests, configuration writes, audits, queues or background processing from Setup reads.
 
-Infrastructure credentials are operator-managed. The guide never accepts Supabase administrative credentials, master/worker keys, SSH credentials or VPS configuration. There is no migration, database table, key rotation, production access, deployment, provider activation, message/payment/shipment/reset or Product Manager change in this phase. All 69 migration files stay unchanged.
+Infrastructure credentials remain operator-managed. The guide never accepts Supabase administrative credentials, master/worker keys, SSH credentials or VPS configuration. Phase 2 adds migration 70; all 69 applied migration files remain unchanged. This implementation does not access production, apply SQL, deploy, activate providers, rotate keys, send messages, create payments/labels, or perform a real reset. No installer, cloning or Product Manager feature is included.
+
+## Phase 2 persistence and evidence
+
+Migration `20261012120000_quick_setup_progress.sql` creates:
+
+- `quick_setup_state`: one installation UUID, owner update revision and eight boolean choices: PDC, Daftra, Vodafone, Brevo, Paymob, PayPal, OAuth and Live Chat.
+- `quick_setup_revisions`: monotonically increasing generations for the 17 existing setup items.
+- `quick_setup_events`: immutable selections, verification snapshots and acknowledgements, with an actor UUID, safe result/source enums, numeric dependencies, opaque binding and timestamps. No free text, credentials or provider response is stored.
+- `quick_setup_snapshot`: a private view providing state, all generations, latest events and the latest 50 history entries in one MVCC snapshot.
+
+All three tables have RLS enabled and restrictive deny policies for browser roles. PUBLIC, anon and authenticated have no table/view/function access. Service role has SELECT only; direct mutation, truncation and sequence access are revoked. The only writable API is `PATCH /api/admin-setup/state`, using the service-only `quick_setup_mutate(uuid,jsonb)` command. Security-definer helpers have empty search paths and no public execute grants.
+
+The server authenticates the owner before reading the body. It accepts one selection, capture or acknowledgement command, an expected revision and an opaque binding where required. It rejects client-supplied outcomes, sources, timestamps, dependency revisions, secrets and unknown fields. The database rechecks and locks the active owner, locks installation state and ordered dependency generations, validates the complete dependency set, then commits state, immutable history and `admin_activity_logs` together. Stale versions return 409; excess writes return 429 after 30 owner updates per minute. Audit failure rolls everything back. The UI refreshes after a conflict without retrying the write.
+
+Configuration triggers increment relevant generations on actual changes, insertion, deletion or truncation. Returning values to an earlier configuration does not reuse old evidence. Updated timestamps/actors and Email dispatch scheduling noise are ignored. Provider settings, payment flags/fees, ERP ownership/tests, shipping mappings, policies, notification templates/bindings and chat settings are covered. Changed owner choices also increment the corresponding domain generation. Paymob depends on checkout settings; SMS/email depend on notification configuration. Unrelated branding changes do not invalidate SMS evidence.
+
+Bindings use installation-scoped HMAC-SHA256 with the existing private service-role key. The input includes engine version, action/item, dependency generations, relevant choices and scoped runtime configuration. Private values enter only the HMAC; plaintext hashes and credentials are never stored. Runtime/master/worker-key and gate changes invalidate relevant evidence; service-key rotation invalidates all bindings. No parallel credential store or new encryption key is introduced.
+
+Status reads compare snapshots before and after configuration reads. A changed snapshot retries once; continuing races fail closed with 503. Read refresh never initializes metadata or changes history. Missing metadata/schema preserves the Phase 1 read-only guide, displays an unavailable notice and removes mutation controls; writes fail with 503. Unexpected or malformed metadata also fails closed.
+
+**Save current check** records existing evidence without contacting any provider. Configuration snapshots stay unverified, or unavailable for unsupported/unreadable items. Only the supported, current Daftra database-revision test can be verified; failed and stale tests retain those states. Evidence expires after 24 hours. Explicit live tests remain in existing integration editors under their existing permissions and gates, requiring deliberate action. No new remote test endpoint is added.
+
+The seven acknowledgement categories are Auth, Storage, commerce, providers, workers, backup and migration/security parity. **Confirm review** records an owner report, not independent verification; **Withdraw confirmation** appends a revocation. Reports expire after seven days or relevant configuration changes. History remains immutable. Hosted settings, delivery, scheduling, Storage operations, physical backups/restores and live commerce cannot be established from saved metadata. External changes that the application cannot observe require owner review; expiration supplies a review deadline, not continuous monitoring.
+
+## System Reset policy
+
+Every scope, including full reset, retains installation identity, choices, generations and history. This avoids destroying the installation's review trail or falsely declaring a new installation complete. Actor UUIDs intentionally have no admin FK, allowing other-admin deletion without deleting retained history. Existing full reset still clears general activity logs; the dedicated setup history survives.
+
+The additive migration explicitly adds these tables to the recognized retained list in `system_reset_plan`. An unexpected source anchor stops the migration transaction for review. No table is added to reset deletion manifests. An insert trigger on the existing reset journal increments affected generations in the same transaction as the database reset, before ordinary configuration triggers are suspended. Full reset invalidates all domains; narrower scopes invalidate relevant domains and infrastructure/backup review. Rollback also rolls back invalidation. File/Auth cleanup is still the existing reset workflow. The full-reset description explicitly states that setup history remains and confirmations need review.
 
 ## Validation
 
 `tests/quick-setup.test.mjs` covers real Dashboard middleware, route/navigation boundaries, configured/incomplete/disabled/unavailable selections, stale/failed evidence, credential redaction, capability limits and actual H3 owner authorization. Actual configuration reads use the complete application schema and unchanged migration chain in disposable PGlite; whole-public-table fingerprints and SQL traces prove no writes/RPCs. Auth transport is fixture-only.
 
-`scripts/setup-browser.mjs` compiles the actual Vue page and uses application CSS plus actual H3/SQL status reads. It reviews all seven sections in EN/AR, desktop/tablet/mobile and Light/Dark/System, existing localized links, keyboard/step behavior, real theme surfaces, failed/stale/unavailable states, non-owner rendering and revocation including late requests. Chrome is local and external browser traffic is refused. This is component/browser fixture acceptance, not hosted Supabase sign-in or production Dashboard acceptance.
+`tests/quick-setup-progress.test.mjs` covers the additive 69→70 upgrade, prior public-row fingerprints, provider OFF states, optional choices, immutable audit, acknowledgements/expiry, scoped invalidation/ABA, old-test renewal prevention, snapshot races, all reset manifests/SQL scopes, private grants/RLS, throttling, strict commands and real H3 PATCH authorization. `tests/quick-setup-concurrency.test.mjs` uses independent native PostgreSQL sessions and observed lock barriers to prove exactly one competing save commits, changed configuration and owner revocation reject waiting commands, and audit failure rolls back state/history. Browser roles cannot invoke the command or read its private view; service role cannot write tables directly.
+
+`scripts/setup-browser.mjs` compiles the actual Vue page and uses application CSS plus actual H3/SQL reads and owner metadata commands. It reviews all seven sections in EN/AR, desktop/tablet/mobile and Light/Dark/System, localized links, keyboard/focus, persistence through reload, current/failed/stale/unavailable evidence, reviews/withdrawal/history, conflicts and late read/save revocation. Whole-table fingerprints distinguish allowed metadata/audit writes from provider/business/queue changes. Browser traffic is restricted to loopback. Auth and provider results are synthetic fixtures; this is not hosted sign-in or production Dashboard acceptance.
 
 `scripts/setup-artifacts.mjs` scans public artifacts and renders the actual page through Vue SSR for owner/non-owner/inactive states. It asserts no private Setup fetch, populated integration card or secret canary in SSR. Screenshots and machine-readable reports are written under temporary storage, not committed to application assets.
 
@@ -56,6 +87,7 @@ Commands use the repository's prepared Node 22 environment. Browser/native tests
 
 ```sh
 node --test tests/quick-setup.test.mjs tests/dashboard-navigation.test.mjs
+node --test tests/quick-setup-progress.test.mjs tests/quick-setup-concurrency.test.mjs
 node --test --test-concurrency=2 tests/*.test.mjs
 npm run typecheck
 npm run build
@@ -66,7 +98,18 @@ git diff --check
 
 Provide `SETUP_REVIEW_PLAYWRIGHT` and `SETUP_REVIEW_CHROME` when the default prepared local browser paths are unavailable; `SETUP_REVIEW_ARTIFACTS` overrides the screenshot directory.
 
-## Final local results — 2026-10-11
+## Phase 2 final local results — 2026-10-12
+
+- Full regression: **835 passed, zero failures/skips**, with native PostgreSQL17.11, PostgREST16.4 and actual Supautils enabled. Includes **16 Phase 2 persistence/security tests and six native concurrency results**. Historical Storage/order audits retain their original64→69 boundaries; new tests independently verify69→70.
+- Node22.23.1 typecheck and production build: passed; pre-existing ERP duplicate-import, sourcemap and chunk-size warnings remain. Diff check passed.
+- Actual Vue/H3/SQL browser: **1,171 assertions /146 screenshots /29 JSON responses**, zero unexpected errors/external requests. Expected409 conflict exercised explicitly. EN/AR x desktop/tablet/mobile x Light/Dark/System covered.
+- Public/SSR review: **135 files /eight actual Vue SSR cases**, zero private Setup fetches or exposed secret canaries.
+- All **69 applied migration files are byte-identical** to `ac30fbe97cf1832a5d6f6a6d7ba312dfd6633d59`. Repository now contains70 files. Migration70 SHA-256: `1dff9aac7d94bab1091287b61dac7e86f50fdbe1d803bba2239940f1674f2161`.
+- Full screenshot matrix, reports, migration parity proof and passing logs: `/Users/imac/Documents/ELcomputer/quick-setup-phase2-review-20261012`.
+- Security finding resolved: environment fallback revision0 cannot establish bound Daftra verification; stale saved tests cannot be renewed by recapturing the old result. No secret store, automatic activation or passive provider activity was introduced.
+- Limitations: hosted Nuxt/Supabase owner/non-owner sessions, real provider tests/transactions, hosted Auth/Storage, physical restores and worker scheduling remain separate. Owner reports are not independent evidence. No production connection, schema application, deployment or real reset occurred.
+
+## Phase 1 historical local results — 2026-10-11
 
 - Full regression: **813 passed, zero failures/skips**, with native PostgreSQL17.11, PostgREST16.4 and actual Supautils fixtures enabled.
 - Node22 typecheck and production build: passed; existing ERP duplicate-import, sourcemap and chunk-size warnings remain.
@@ -77,6 +120,6 @@ Provide `SETUP_REVIEW_PLAYWRIGHT` and `SETUP_REVIEW_CHROME` when the default pre
 
 ## Deferred work and production deployment
 
-Phase 2 adds private persistent progress/selections and revision-bound verification evidence, with separately approved explicit provider checks. Phase 3 adds trusted clean installation, baseline/grant initialization, safe draft provider defaults and atomic/resumable first-owner bootstrap. Phase 4 adds controlled import, isolated cloning, file/key recovery and reviewed cutover. Existing migration source must remain unchanged.
+Phase 2 is implemented locally and stops for review after commit/push. Phase3 clean installation, baseline/grant initialization and first-owner bootstrap, and Phase4 controlled import/cloning/recovery remain deferred. Existing applied migration source must remain unchanged.
 
-Production remains at the user-verified deployed `0c702f6` and 69 migrations until a separately authorized application deployment. No migration is needed for Phase 1. Before that release, review current Git/schema parity and dormant controls, backups, compatible output recovery and the locked deployment target. Do not reuse the consumed prior release GO or its checkpoint63 mutation helpers. After deployment, verify the owner-only navigation/page/API with real signed-in owner and non-owner sessions, existing settings links and locale/theme/mobile behavior. Deployment does not authorize provider activation, integration transactions or installer/cloning work.
+Production baseline is the user-accepted Phase1 commit `ac30fbe97cf1832a5d6f6a6d7ba312dfd6633d59` with69 migrations; this task did not connect to production. Phase2 requires separate reviewed authorization for migration70 and guarded application deployment. Before any later release, verify current Git/schema parity, dormant controls/queues, backups/restoration, reset retention, PostgREST cache/grants and the locked target. Migration70 is additive; Phase1 can ignore retained metadata, and application rollback must retain migration70/history. Phase2 code before SQL degrades to read-only safely. Neither SQL nor deployment approval authorizes provider activation, integration transactions, installer/cloning or another feature. Do not reuse the consumed Phase1 deployment GO.

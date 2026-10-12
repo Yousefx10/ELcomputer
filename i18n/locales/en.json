@@ -4483,14 +4483,14 @@
     "progressCount": "{complete} of {total} required items configured",
     "progressHint": "Optional services stay outside this count until selected.",
     "configurationProgress": "Configuration progress",
-    "selectionHint": "Requirements follow saved settings. Nothing changes here.",
+    "selectionHint": "Requirements follow settings and your setup choices.",
     "acceptanceOutstanding": "Operational verification outstanding",
     "acceptanceHint": "Saved settings do not confirm a working store.",
     "steps": "Setup steps",
     "stepOf": "Step {current} of {total}",
     "sectionProgress": "{complete} of {total} configured",
     "optionalSection": "Optional services",
-    "required": "Required for saved configuration",
+    "required": "Required for your setup",
     "optional": "Optional when unused",
     "credentials": "Credentials",
     "saved": "Saved",
@@ -4524,7 +4524,13 @@
       "unsupported": "Unsupported",
       "verified": "Verified for current credentials",
       "failed": "Last check failed",
-      "stale": "Verification needs refreshing"
+      "stale": "Verification needs refreshing",
+      "unverified": "Not verified",
+      "unavailable": "Unavailable",
+      "acknowledged": "Owner confirmed",
+      "revoked": "Confirmation withdrawn",
+      "selected": "Included",
+      "excluded": "Not selected"
     },
     "sections": {
       "system": "System Status",
@@ -4609,11 +4615,14 @@
       "oauth_providers": "OAuth providers verified in Supabase",
       "chat_configuration": "Live Chat settings are accessible",
       "anonymous_auth_realtime": "Guest Auth and private Realtime verified",
-      "pdc_webhook": "PDC webhook secret saved"
+      "pdc_webhook": "PDC webhook secret saved",
+      "selected_card_enabled": "Selected card method enabled",
+      "selected_erp_enabled": "Selected ERP ownership active"
     },
     "notes": {
       "settings_unavailable": "Settings could not be verified. Ask your operator to review.",
       "migration_history_unverified": "Table access does not prove migration history or permissions.",
+      "runtime_connection_unbound": "Runtime credentials lack revision-bound connection evidence.",
       "operator_infrastructure": "VPS, TLS, server keys and SSH belong to your operator.",
       "backup_unverified": "Backup and recovery rehearsals remain unverified.",
       "policy_acceptance": "Review business rules before relying on enabled policies.",
@@ -4668,6 +4677,40 @@
       "workers": "Selected worker schedules and failure recovery",
       "backup": "Protected backups and a successful restore rehearsal",
       "migration_history": "Exact migration parity and security permissions"
+    },
+    "saving": "Saving setup progress…",
+    "persistenceUnavailable": "Saved progress is unavailable. Your operator needs to enable this feature.",
+    "ownerReviewCount": "{complete} of {total} owner reviews recorded",
+    "verificationCount": "{complete} of {total} required items have current verification.",
+    "verificationCountHint": "Configuration and owner reviews remain separate.",
+    "includeIntegration": "Include this integration in my setup",
+    "integrationInUse": "Current settings require this integration.",
+    "integrationUsageUnknown": "Current usage is unavailable. Review the existing settings.",
+    "selectionDoesNotEnable": "This choice never enables the provider.",
+    "recordedVerification": "Saved verification",
+    "recordedAt": "Recorded: {time}",
+    "saveCurrentCheck": "Save current check",
+    "captureHint": "Records existing evidence. No provider request runs.",
+    "acknowledgementHint": "Confirm only checks you completed outside this guide.",
+    "confirmReview": "Confirm review",
+    "withdrawAcknowledgement": "Withdraw confirmation",
+    "historyTitle": "Setup history",
+    "historyHint": "Recent owner actions. Earlier records remain retained.",
+    "historyEmpty": "No setup actions recorded yet.",
+    "saveConflict": "Setup changed. Latest status loaded; review before saving again.",
+    "saveError": "Setup was not confirmed saved. Review the refreshed status.",
+    "pdcIntegration": "PDC shipping",
+    "resetRetained": "Setup history remains; affected confirmations require review.",
+    "sources": {
+      "owner_selection": "Owner setup choice",
+      "existing_check": "Existing connection-test evidence",
+      "configuration_snapshot": "Saved configuration snapshot; connection remains unverified",
+      "owner_report": "Owner confirmation; independently unverified"
+    },
+    "historyActions": {
+      "selection": "Integration choice",
+      "capture": "Verification snapshot",
+      "acknowledge": "Owner review"
     }
   }
 }

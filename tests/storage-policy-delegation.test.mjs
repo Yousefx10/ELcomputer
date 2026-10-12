@@ -11,7 +11,8 @@ import { createCatalogFixture, reproduceCatalogCorrection, catalogDataSnapshot, 
 import { createOrderSmsFixture } from './helpers/orderSmsFixture.mjs'
 
 const directory = new URL('../supabase/migrations/', import.meta.url)
-const files = (await readdir(directory)).filter(name => name.endsWith('.sql')).sort()
+// This audit reproduces the historical 64–69 Storage release boundary.
+const files = (await readdir(directory)).filter(name => name.endsWith('.sql')).sort().slice(0, 69)
 const pending = files.slice(63)
 const sql = await readFile(new URL(pending[0], directory), 'utf8')
 const evidencePolicy = "create policy after_sales_evidence_server_boundary on storage.objects as restrictive for all to anon,authenticated\n  using(bucket_id<>'after-sales-evidence') with check(bucket_id<>'after-sales-evidence');"

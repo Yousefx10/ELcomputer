@@ -11,7 +11,8 @@ const first = '20261008120000_after_sales_claims_core.sql'
 const migration = '20261011140000_order_amount_constraints_reconciliation.sql'
 const sql = await readFile(new URL(migration, directory), 'utf8')
 const targets = ['customer_orders_subtotal_amount_check', 'customer_orders_discount_amount_check']
-const files = (await readdir(directory)).filter(n => n.endsWith('.sql')).sort()
+// Preserve the historical release's exact ordered 64–69 test boundary.
+const files = (await readdir(directory)).filter(n => n.endsWith('.sql')).sort().slice(0, 69)
 const constraints = async db => (await db.query("select oid,conname,convalidated,pg_get_constraintdef(oid,false) definition from pg_constraint where conrelid='public.customer_orders'::regclass and conname=any($1) order by conname", [targets])).rows
 const policies = async db => (await db.query("select oid,polname,polrelid,polqual::text,polwithcheck::text from pg_policy where polrelid in (select oid from pg_class where relnamespace='public'::regnamespace and relname=any($1)) order by oid", [correctedTables])).rows
 const removeChecks = 'alter table public.customer_orders drop constraint customer_orders_subtotal_amount_check, drop constraint customer_orders_discount_amount_check;'

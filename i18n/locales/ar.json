@@ -4483,14 +4483,14 @@
     "progressCount": "تم إعداد {complete} من {total} عناصر مطلوبة",
     "progressHint": "الخدمات الاختيارية لا تدخل في الحساب حتى اختيارها.",
     "configurationProgress": "تقدم إعداد النظام",
-    "selectionHint": "المتطلبات تتبع الإعدادات المحفوظة. لا تتغير أي إعدادات هنا.",
+    "selectionHint": "المتطلبات تتبع الإعدادات واختياراتك في دليل الإعداد.",
     "acceptanceOutstanding": "التحقق التشغيلي لم يكتمل",
     "acceptanceHint": "الإعدادات المحفوظة لا تؤكد جاهزية المتجر للعمل.",
     "steps": "خطوات الإعداد",
     "stepOf": "الخطوة {current} من {total}",
     "sectionProgress": "تم إعداد {complete} من {total}",
     "optionalSection": "خدمات اختيارية",
-    "required": "مطلوب للإعدادات المحفوظة",
+    "required": "مطلوب لإعداد متجرك",
     "optional": "اختياري عند عدم الاستخدام",
     "credentials": "بيانات الاتصال",
     "saved": "محفوظة",
@@ -4524,7 +4524,13 @@
       "unsupported": "غير مدعوم",
       "verified": "تم التحقق لبيانات الاتصال الحالية",
       "failed": "فشل آخر فحص",
-      "stale": "يلزم تحديث التحقق"
+      "stale": "يلزم تحديث التحقق",
+      "unverified": "لم يتم التحقق",
+      "unavailable": "غير متاح",
+      "acknowledged": "أكد المالك",
+      "revoked": "تم سحب التأكيد",
+      "selected": "مضمّن",
+      "excluded": "غير محدد"
     },
     "sections": {
       "system": "حالة النظام",
@@ -4609,10 +4615,13 @@
       "oauth_providers": "تم التحقق من مزوّدي الدخول في Supabase",
       "chat_configuration": "إعدادات المحادثة متاحة",
       "anonymous_auth_realtime": "تم التحقق من مصادقة الضيوف والاتصال الفوري الخاص",
-      "pdc_webhook": "سر استقبال أحداث PDC محفوظ"
+      "pdc_webhook": "سر استقبال أحداث PDC محفوظ",
+      "selected_card_enabled": "طريقة البطاقة المحددة مفعلة",
+      "selected_erp_enabled": "ملكية نظام ERP المحدد نشطة"
     },
     "notes": {
       "settings_unavailable": "تعذر التحقق من الإعدادات. اطلب مراجعة المشغّل.",
+      "runtime_connection_unbound": "بيانات الخادم لا تملك دليل اتصال مرتبطًا بإصدار الإعدادات.",
       "migration_history_unverified": "الوصول للجداول لا يثبت سجل الترحيلات أو الصلاحيات.",
       "operator_infrastructure": "الخادم وTLS ومفاتيح الخادم وSSH مسؤولية المشغّل.",
       "backup_unverified": "النسخ الاحتياطية وتجارب الاستعادة لم يتم التحقق منها.",
@@ -4668,6 +4677,40 @@
       "workers": "جدولة العمال المختارين والتعافي من الأعطال",
       "backup": "نسخ احتياطية محمية وتجربة استعادة ناجحة",
       "migration_history": "تطابق الترحيلات والصلاحيات الأمنية"
+    },
+    "saving": "جارٍ حفظ تقدم الإعداد…",
+    "persistenceUnavailable": "التقدم المحفوظ غير متاح. يحتاج المسؤول التقني إلى تفعيل هذه الميزة.",
+    "ownerReviewCount": "تم تسجيل {complete} من {total} مراجعات للمالك",
+    "verificationCount": "يوجد تحقق حديث لـ {complete} من {total} عناصر مطلوبة.",
+    "verificationCountHint": "الإعداد ومراجعات المالك يظلان منفصلين.",
+    "includeIntegration": "تضمين هذا التكامل في إعدادي",
+    "integrationInUse": "الإعدادات الحالية تتطلب هذا التكامل.",
+    "integrationUsageUnknown": "الاستخدام الحالي غير متاح. راجع الإعدادات الموجودة.",
+    "selectionDoesNotEnable": "هذا الاختيار لا يفعّل مقدم الخدمة.",
+    "recordedVerification": "التحقق المحفوظ",
+    "recordedAt": "تم التسجيل: {time}",
+    "saveCurrentCheck": "حفظ الفحص الحالي",
+    "captureHint": "يسجّل الدليل الموجود دون الاتصال بمقدم الخدمة.",
+    "acknowledgementHint": "أكد فقط الفحوص التي أجريتها خارج هذا الدليل.",
+    "confirmReview": "تأكيد المراجعة",
+    "withdrawAcknowledgement": "سحب التأكيد",
+    "historyTitle": "سجل الإعداد",
+    "historyHint": "أحدث إجراءات المالك. يتم الاحتفاظ بالسجلات السابقة.",
+    "historyEmpty": "لم يتم تسجيل إجراءات إعداد بعد.",
+    "saveConflict": "تغير الإعداد. تم تحديث الحالة؛ راجعها قبل الحفظ مجددًا.",
+    "saveError": "لم يتأكد الحفظ. راجع الحالة المحدثة.",
+    "pdcIntegration": "شحن PDC",
+    "resetRetained": "يظل سجل الإعداد محفوظًا؛ التأكيدات المتأثرة تحتاج إلى مراجعة.",
+    "sources": {
+      "owner_selection": "اختيار إعداد المالك",
+      "existing_check": "دليل اختبار الاتصال الموجود",
+      "configuration_snapshot": "لقطة الإعداد المحفوظ؛ الاتصال لم يتم التحقق منه",
+      "owner_report": "تأكيد المالك؛ لم يتم التحقق منه بشكل مستقل"
+    },
+    "historyActions": {
+      "selection": "اختيار التكامل",
+      "capture": "لقطة التحقق",
+      "acknowledge": "مراجعة المالك"
     }
   }
 }

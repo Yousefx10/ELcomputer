@@ -46,7 +46,7 @@ const readRows = async (db, table, columns) => {
 
 // SELECTs and existing configuration helpers only. No RPCs, writes, provider
 // requests, Auth settings requests, worker invocations or credential decryption.
-export const readQuickSetupStatus = async (db, runtime, now = Date.now()) => {
+export const readQuickSetupStatus = async (db, runtime, now = Date.now(), selections = {}) => {
   const reads = {
     site: () => readRow(db, 'site_settings', 'site_name,site_logo_url,footer_email,footer_phone,footer_address,payment_cash_enabled,payment_card_enabled,payment_bank_transfer_enabled,payment_instapay_enabled,payment_paypal_enabled,payment_bank_transfer_instructions,payment_instapay_instructions,auth_facebook_enabled', 'key', 'default'),
     erp: async () => ({ settings: await getErpSettings(db), credentials: await getDaftraConfigSummary(db) }),
@@ -64,11 +64,11 @@ export const readQuickSetupStatus = async (db, runtime, now = Date.now()) => {
   const results = await Promise.allSettled(keys.map(key => reads[key]()))
   const data = Object.fromEntries(keys.map((key, index) => [key, results[index].status === 'fulfilled' ? results[index].value : null]))
   const available = key => results[keys.indexOf(key)].status === 'fulfilled'
-  return buildQuickSetupStatus(data, runtime, { now, available, encryptionReady: isCredentialEncryptionReady(), shippingEncryptionReady: isShippingEncryptionReady() })
+  return buildQuickSetupStatus(data, runtime, { now, available, selections, encryptionReady: isCredentialEncryptionReady(), shippingEncryptionReady: isShippingEncryptionReady() })
 }
 
 // All responses are constructed explicitly. Never spread database/runtime data.
-export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), available = key => data[key] !== null && data[key] !== undefined, encryptionReady = false, shippingEncryptionReady = false } = {}) => {
+export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), available = key => data[key] !== null && data[key] !== undefined, selections = {}, encryptionReady = false, shippingEncryptionReady = false } = {}) => {
   const items = []
   const site = data.site
   const smsEvents = available('events') ? data.events.filter(s => s.is_enabled === true) : []
@@ -111,16 +111,17 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
   const paymobCredentials = ['paymobSecretKey', 'paymobPublicKey', 'paymobHmacSecret'].every(key => present(runtime[key]))
   let paymobConfigured = false
   try { getPaymobConfig({ ...runtime, paymobEnabled: true }); paymobConfigured = true } catch { /* Safe fixed status only. */ }
-  items.push(item('paymob', cardSelected, [check('payment_credentials', paymobCredentials, 'operator'), check('paymob_test_configuration', paymobConfigured, 'operator')], {
+  items.push(item('paymob', cardSelected || selections.paymob === true, [check('payment_credentials', paymobCredentials, 'operator'), check('paymob_test_configuration', paymobConfigured, 'operator'),
+    ...(selections.paymob === true ? [check('selected_card_enabled', cardSelected, 'operator')] : [])], {
     credentialsSaved: paymobCredentials, connection: 'not_verified', enabled: paymobEnabled,
-    configuration: runtime.paymobMode === 'live' ? 'unsupported' : paymobConfigured ? 'complete' : 'incomplete',
+    configuration: runtime.paymobMode === 'live' ? 'unsupported' : paymobConfigured && (selections.paymob !== true || cardSelected) ? 'complete' : 'incomplete',
     notes: ['operator_paymob', 'paymob_test_only', ...(cardSelected ? ['no_live_payment_path'] : [])]
   }))
-  items.push(item('paypal', site?.payment_paypal_enabled === true, [], { configuration: 'unsupported', enabled: site ? site.payment_paypal_enabled === true : null, notes: ['paypal_unavailable'] }))
+  items.push(item('paypal', site?.payment_paypal_enabled === true || selections.paypal === true, [], { configuration: 'unsupported', enabled: site ? site.payment_paypal_enabled === true : null, notes: ['paypal_unavailable'] }))
   items.push(item('express_payments', false, [], { configuration: 'unsupported', enabled: false, notes: ['express_unavailable'] }))
 
   if (available('pdc') && available('couriers')) {
-    const s = data.pdc, selected = s.is_enabled === true || s.auto_create_labels === true || s.reverse_enabled === true
+    const s = data.pdc, selected = s.is_enabled === true || s.auto_create_labels === true || s.reverse_enabled === true || selections.pdc === true
     let destination = false
     try { validatePdcSettings({ ...s, access_token: '', webhook_secret: '' }, s); destination = true } catch { /* No decryption or raw diagnostics. */ }
     const checks = selected ? [check('pdc_credentials', present(s.access_token_encrypted)), check('shipping_encryption', shippingEncryptionReady, 'operator'),
@@ -139,16 +140,20 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
     const checkedAt = safeDate(s.daftra_last_checked_at)
     const elapsed = checkedAt ? now - Date.parse(checkedAt) : Infinity
     const sameRevision = Number.isSafeInteger(Number(c.revision)) && Number(c.revision) === Number(s.daftra_tested_revision) && s.daftra_tested_revision !== null
-    const connection = !checkedAt ? 'not_verified' : !sameRevision || elapsed < 0 || elapsed > 86400000 ? 'stale'
+    let connection = !checkedAt ? 'not_verified' : !sameRevision || elapsed < 0 || elapsed > 86400000 ? 'stale'
       : state.connectionHealth === 'connected' ? 'verified' : state.connectionHealth === 'failed' ? 'failed' : 'not_verified'
-    items.push(item('daftra', selected, selected ? [check('erp_credentials', c.credentialsSaved === true), check('erp_configuration', c.configured === true),
-      check('erp_connection', connection === 'verified'), check('erp_worker', present(runtime.erpWorkerSecret) && runtime.erpWorkerSecret.trim().length >= 32, 'operator')]
+    // Runtime fallback tests use revision zero; they cannot bind credential edits.
+    if (c.source === 'environment' && connection === 'verified') connection = 'not_verified'
+    items.push(item('daftra', selected || selections.daftra === true, selected || selections.daftra === true ? [check('erp_credentials', c.credentialsSaved === true), check('erp_configuration', c.configured === true),
+      check('erp_connection', connection === 'verified'), check('erp_worker', present(runtime.erpWorkerSecret) && runtime.erpWorkerSecret.trim().length >= 32, 'operator'),
+      ...(selections.daftra === true ? [check('selected_erp_enabled', selected)] : [])]
       : [check('erp_configuration', c.configured === true)], { credentialsSaved: c.credentialsSaved === true, connection, enabled: selected,
-      lastCheckedAt: checkedAt, notes: [selected ? 'daftra_active' : 'built_in_active', 'erp_ownership_separate', ...(selected ? ['worker_schedule_unverified'] : [])] }))
+      connectionRevisionBound: c.source === 'database' && Number(c.revision) > 0,
+      lastCheckedAt: checkedAt, notes: [selected ? 'daftra_active' : 'built_in_active', 'erp_ownership_separate', ...(c.source === 'environment' && checkedAt ? ['runtime_connection_unbound'] : []), ...(selected ? ['worker_schedule_unverified'] : [])] }))
   } else items.push(unavailable('daftra', true))
 
   if (available('sms')) {
-    const s = data.sms, required = s.is_enabled === true || smsSelected
+    const s = data.sms, required = s.is_enabled === true || smsSelected || selections.vodafone === true
     let destination = false
     try { destination = !!validateSmsBaseUrl(s.base_url) } catch { /* No DNS requests. */ }
     items.push(item('vodafone', required, [check('sms_configuration', smsReadiness(s).ready && destination),
@@ -158,7 +163,7 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
   } else items.push(unavailable('vodafone', true))
 
   if (available('email')) {
-    const s = data.email, required = s.config.is_enabled === true || emailSelected || s.config.webhook_enabled === true || s.config.marketing_enabled === true
+    const s = data.email, required = s.config.is_enabled === true || emailSelected || s.config.webhook_enabled === true || s.config.marketing_enabled === true || selections.brevo === true
     items.push(item('brevo', required, [check('email_configuration', emailReadiness(s).ready),
       ...(required ? [check('email_enabled', s.config.is_enabled === true), check('email_worker', present(runtime.emailWorkerSecret) && runtime.emailWorkerSecret.trim().length >= 32, 'operator')] : []),
       ...(s.config.webhook_enabled ? [check('email_webhook', present(s.webhook_token_encrypted) && encryptionReady)] : [])
@@ -175,11 +180,11 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
   } else items.push(unavailable('automation', true))
 
   items.push(item('authentication', true, [check('owner_session', true), check('auth_redirects', null, 'operator'), check('auth_email_delivery', null, 'operator'), check('storage_acceptance', null, 'operator')], { notes: ['auth_operator', 'storage_unverified'] }))
-  items.push(item('oauth', site?.auth_facebook_enabled === true, [check('oauth_providers', null, 'operator')], {
+  items.push(item('oauth', site?.auth_facebook_enabled === true || selections.oauth === true, [check('oauth_providers', null, 'operator')], {
     enabled: null, connection: 'not_verified', notes: ['oauth_operator', 'google_facebook_only', 'oauth_selection_unknown']
   }))
-  items.push(available('chat') ? item('live_chat', data.chat.is_enabled === true, [check('chat_configuration', true),
-    ...(data.chat.is_enabled ? [check('anonymous_auth_realtime', null, 'operator')] : [])], { enabled: data.chat.is_enabled === true, connection: 'not_verified', notes: ['chat_acceptance'] }) : unavailable('live_chat', true))
+  items.push(available('chat') ? item('live_chat', data.chat.is_enabled === true || selections.live_chat === true, [check('chat_configuration', selections.live_chat === true ? data.chat.is_enabled === true : true),
+    ...(data.chat.is_enabled || selections.live_chat === true ? [check('anonymous_auth_realtime', null, 'operator')] : [])], { enabled: data.chat.is_enabled === true, connection: 'not_verified', notes: ['chat_acceptance'] }) : unavailable('live_chat', true))
 
   const required = items.filter(i => i.required), complete = required.filter(i => i.configuration === 'complete').length
   return {
@@ -187,6 +192,12 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
     progress: { complete, total: required.length, percent: Math.round(complete * 100 / required.length) },
     readiness: { configuration: complete === required.length ? 'complete' : 'incomplete', blockers: required.filter(i => i.configuration !== 'complete').map(i => i.id),
       operationalAcceptance: 'not_verified', operationalReady: false },
-    selection: 'saved_configuration'
+    selection: 'saved_configuration',
+    configuredSelections: { pdc: available('pdc') ? data.pdc.is_enabled === true || data.pdc.auto_create_labels === true || data.pdc.reverse_enabled === true : null,
+      daftra: available('erp') ? resolveErpState(data.erp.settings, data.erp.credentials).mode === 'daftra' : null,
+      vodafone: available('sms') && available('events') && available('communications') ? data.sms.is_enabled === true || smsSelected : null,
+      brevo: available('email') && available('communications') ? data.email.config.is_enabled === true || emailSelected || data.email.config.webhook_enabled === true || data.email.config.marketing_enabled === true : null,
+      paymob: site ? cardSelected : null, paypal: site ? site.payment_paypal_enabled === true : null,
+      oauth: site ? site.auth_facebook_enabled === true : null, live_chat: available('chat') ? data.chat.is_enabled === true : null }
   }
 }

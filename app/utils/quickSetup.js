@@ -26,3 +26,17 @@ export const setupLinks = {
   oauth: [{ label: 'authentication', to: '/dashboard/settings?tab=authentication' }],
   live_chat: [{ label: 'live_chat', to: '/dashboard/settings?tab=live-chat' }]
 }
+
+export const setupOptionalIntegrations = ['pdc', 'daftra', 'vodafone', 'brevo', 'paymob', 'paypal', 'oauth', 'live_chat']
+export const setupAcceptanceChecks = ['auth', 'storage', 'commerce', 'providers', 'workers', 'backup', 'migration_history']
+export const setupItemIds = setupSections.flatMap(section => section.items)
+export const setupVerificationDomains = Object.fromEntries(setupItemIds.map(key => [key,
+  key === 'paymob' ? ['paymob', 'payment_methods'] : key === 'vodafone' || key === 'brevo' ? [key, 'automation'] : [key]
+]))
+export const setupAcceptanceDomains = {
+  auth: ['authentication', 'oauth'], storage: ['application', 'authentication', 'infrastructure'],
+  commerce: ['application', 'payment_methods', 'paymob', 'shipping', 'daftra', 'policies'],
+  providers: ['shipping', 'daftra', 'vodafone', 'brevo', 'paymob', 'paypal', 'oauth', 'live_chat', 'automation'],
+  workers: ['shipping', 'daftra', 'vodafone', 'brevo', 'automation'],
+  backup: ['infrastructure'], migration_history: ['application']
+}

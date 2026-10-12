@@ -6,8 +6,8 @@ import { createApp, createRouter, toNodeListener } from 'h3'
 import { createEmailFixture, emailFixtureRuntime } from './emailFixture.mjs'
 
 export const SETUP_CANARY = 'setup-private-value-must-never-reach-browser-123456'
-export const createSetupFixture = async () => {
-  const f = await createEmailFixture()
+export const createSetupFixture = async ({ database = null } = {}) => {
+  const f = await createEmailFixture({ database })
   const runtime = { ...emailFixtureRuntime, shippingCredentialsEncryptionKey: SETUP_CANARY, shippingWorkerSecret: SETUP_CANARY,
     supabaseServiceRoleKey: SETUP_CANARY, daftraApiKey: SETUP_CANARY, daftraAccountUrl: '', paymobEnabled: false, paymobMode: 'test',
     smsWorkerSecret: SETUP_CANARY, emailWorkerSecret: SETUP_CANARY, erpWorkerSecret: SETUP_CANARY,
@@ -15,6 +15,7 @@ export const createSetupFixture = async () => {
   globalThis.useRuntimeConfig = () => runtime
   await f.db.query("insert into public.site_settings(key,site_name,site_logo_url,footer_email,footer_address,payment_cash_enabled) values('default','Fixture Store','/uploads/logo.png','store@example.invalid','Fixture address',true)")
   await f.db.query("insert into public.commerce_shipping_companies(name,is_active) values('Fixture courier',true)")
+  await f.db.query("select set_config('request.jwt.claim.role','service_role',false)")
   const queries = [], originalQuery = f.db.query.bind(f.db)
   f.db.query = async (sql, values) => {
     queries.push(sql)
@@ -25,14 +26,17 @@ export const createSetupFixture = async () => {
   const key = 'setupFixture_' + randomUUID().replaceAll('-', '')
   globalThis[key] = f.client
   globalThis.defineEventHandler = fn => fn
-  const output = await build({ entryPoints: [resolve('server/api/admin-setup/status.get.js')], bundle: true, write: false,
+  const compileHandler = async file => {
+  const output = await build({ entryPoints: [resolve(file)], bundle: true, write: false,
     format: 'esm', platform: 'node', alias: { '~': resolve('app') }, plugins: [{ name: 'isolated-setup-database', setup(builder) {
       builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: 'database', namespace: 'setup-fixture' }))
       builder.onLoad({ filter: /.*/, namespace: 'setup-fixture' }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis.${key}`, loader: 'js' }))
       builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
     } }] })
-  const handler = (await import('data:text/javascript;base64,' + Buffer.from(output.outputFiles[0].text).toString('base64'))).default
-  const router = createRouter().get('/api/admin-setup/status', handler)
+  return (await import('data:text/javascript;base64,' + Buffer.from(output.outputFiles[0].text).toString('base64'))).default
+  }
+  const router = createRouter().get('/api/admin-setup/status', await compileHandler('server/api/admin-setup/status.get.js'))
+    .patch('/api/admin-setup/state', await compileHandler('server/api/admin-setup/state.patch.js'))
   const app = createApp().use(router)
   const snapshot = async () => {
     const tables = (await originalQuery("select tablename from pg_tables where schemaname='public' order by tablename")).rows
