@@ -1,3 +1,12 @@
+# Milestone 3 integration, 2026-10-12
+
+The [operator CLI](installation-cli.md) now calls these unchanged primitives
+after strict target/source verification, leases, history adoption and private
+bucket creation. Local tests use actual Auth Admin HTTP and Storage services,
+including lost responses and promotion recovery. Migration 71 and its frozen
+certificate remain unchanged; no additional SQL migration was needed.
+Hosted and VPS acceptance remains deferred. The Milestone 2 contract follows.
+
 # Phase 3, Milestone 2: portability and first owner
 
 Migration 71 is `20261012160000_quick_setup_installation_bootstrap.sql`.

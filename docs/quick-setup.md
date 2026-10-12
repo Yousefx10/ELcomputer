@@ -1,3 +1,14 @@
+# Phase 3, Milestone 3 local installer
+
+The guarded operator CLI initializes a certified fresh database, private buckets
+and first owner. Read [the runbook](installation-cli.md). It adds no Dashboard
+bootstrap action and leaves the deployed Phases 1/2 guide unchanged.
+
+Production remains owner-reported `ae3a58d7` with 70 migrations. Migration 71
+is unchanged development source and was tested only in owned disposable
+environments. Actual local Auth/Storage acceptance is separate from pending
+hosted/VPS acceptance. Milestone 4 and Phase 4 remain unauthorized.
+
 # Phase 3, Milestone 2 local follow-on
 
 Migration 71 adds neutral configuration and protected first-owner primitives.

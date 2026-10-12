@@ -1,3 +1,11 @@
+# Milestone 3 operator orchestration, 2026-10-12
+
+The [guarded CLI](installation-cli.md) now orchestrates this unchanged source-70
+certificate, exact history adoption and separate unchanged migration 71. Its
+local acceptance uses actual Auth/Storage services in owned TLS laboratories.
+No existing database, production, VPS or hosted project was touched. Earlier
+certificate descriptions below retain their historical scope and hashes.
+
 # Milestone 2 follow-on, 2026-10-12
 
 The certified source-70 `clean-v1` files and hashes below are unchanged.

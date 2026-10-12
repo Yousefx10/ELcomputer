@@ -264,12 +264,21 @@ export async function verifyCleanData(db) {
   return { counts, installation_id: state.installation_id }
 }
 
-export async function applyCandidate(db) {
+export async function applyCandidate(db, { installationId = null, validate = null } = {}) {
   await verifyBundle()
+  if (installationId !== null) assert.match(installationId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'Explicit installation UUID required.')
   try {
     await db.query('BEGIN')
     for (const name of ['schema.sql','permissions.sql','clean-seeds.sql']) await db.query(await readFile(new URL(name, baselineDirectory), 'utf8'))
+    if (installationId !== null) {
+      // Operator initialization inside the same fresh-target transaction. The
+      // certified SQL bytes stay immutable; no owner/evidence/history exists.
+      await db.query("select set_config('app.quick_setup_write','on',true)")
+      await db.query('update public.quick_setup_state set installation_id=$1 where singleton', [installationId])
+      await db.query("select set_config('app.quick_setup_write','',true)")
+    }
     await verifyCleanData(db)
+    if (validate) await validate(db)
     await db.query('COMMIT')
   } catch (error) { await db.query('ROLLBACK'); throw error }
 }

@@ -10,7 +10,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "install:plan": "node scripts/elcomputer-install.mjs plan",
+    "install:check": "node scripts/elcomputer-install.mjs check",
+    "install:apply": "node scripts/elcomputer-install.mjs apply",
+    "install:resume": "node scripts/elcomputer-install.mjs resume",
+    "install:verify": "node scripts/elcomputer-install.mjs verify"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",
@@ -21,6 +26,7 @@
     "@supabase/supabase-js": "^2.108.2",
     "@tailwindcss/vite": "^4.3.1",
     "nuxt": "^4.4.8",
+    "pg": "8.16.3",
     "qrcode": "^1.5.4",
     "sax": "1.6.0",
     "tailwindcss": "^4.3.1",
@@ -30,7 +36,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@types/node": "^22.20.4",
-    "supabase": "^2.109.1",
+    "supabase": "2.109.1",
     "typescript": "~5.9.3",
     "vue-tsc": "^3.3.11"
   }
