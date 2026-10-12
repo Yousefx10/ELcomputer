@@ -15,7 +15,14 @@
     "install:check": "node scripts/elcomputer-install.mjs check",
     "install:apply": "node scripts/elcomputer-install.mjs apply",
     "install:resume": "node scripts/elcomputer-install.mjs resume",
-    "install:verify": "node scripts/elcomputer-install.mjs verify"
+    "install:verify": "node scripts/elcomputer-install.mjs verify",
+    "publish:package": "node scripts/elcomputer-publish.mjs package",
+    "publish:runtime": "node scripts/elcomputer-publish.mjs runtime",
+    "publish:plan": "node scripts/elcomputer-publish.mjs plan",
+    "publish:check": "node scripts/elcomputer-publish.mjs check",
+    "publish:apply": "node scripts/elcomputer-publish.mjs apply",
+    "publish:resume": "node scripts/elcomputer-publish.mjs resume",
+    "publish:verify": "node scripts/elcomputer-publish.mjs verify"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",

@@ -1,3 +1,13 @@
+# Phase 3, Milestone 4 publication integration
+
+The separate [fresh application publisher](application-publication.md) now
+provides guarded package/runtime/plan/check/apply/resume/verify operations for
+an already completed M3 installation. Production, migrations 1–71, certified
+bundles and production deployment helpers remain unchanged. Local actual
+Nuxt/PM2/Auth/Storage tests use explicitly declared Linux/SSH/ingress fixtures;
+real Linux/hosted/reboot acceptance remains pending. STOP for M4 review.
+The milestone notes below retain their original historical boundaries.
+
 # Phase 3, Milestone 3 local installer
 
 The guarded operator CLI initializes a certified fresh database, private buckets

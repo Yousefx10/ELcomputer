@@ -17,12 +17,12 @@ const freePort=async()=>{const server=tcpServer();await new Promise(resolve=>ser
 const node=process.env.INSTALLER_REVIEW_NODE_BIN || '/private/tmp/elcomputer-preflight-20261010/node22/node-v22.23.1-darwin-x64/bin/node'
 export const installerEnvironment={PATH:dirname(node)+':/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin',LANG:'C',DYLD_LIBRARY_PATH:process.env.DYLD_LIBRARY_PATH || ''}
 export const installerNativeAvailable=!!process.env.EMAIL_REVIEW_PG_BIN&&!!process.env.SUPAUTILS_REVIEW_LIBRARY
-export async function installerSourceCopy() {
+export async function installerSourceCopy({extraFiles=[]}={}) {
   const directory=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-install-source-')))
   const {stdout}=await run('git',['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
   const names=stdout.split('\0').filter(Boolean)
   const newNames=['scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
-  for(const name of new Set([...names,...newNames])){
+  for(const name of new Set([...names,...newNames,...extraFiles])){
     const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
   }
   await symlink(join(sourceRoot,'node_modules'),join(directory,'node_modules'))
