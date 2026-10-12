@@ -11,10 +11,10 @@ dependency lock remain byte-identical to the base.
 
 | Check | Current result | Evidence boundary |
 | --- | --- | --- |
-| Full regression | **905 passed; 0 failures, skips or cancellations** | Node test runner, concurrency 2, isolated native fixtures |
+| Full regression | **905 passed; 0 failures, skips or cancellations** | Node test runner, concurrency 3, isolated native fixtures |
 | Focused publisher | **24 passed; 0 failures or skips** | 7 contract/CLI checks plus native protocol parent and 16 scenarios |
 | Production deployment regression | **42 passed; 0 failures or skips** | Existing safety/recovery helpers exercised through their disposable mocks; no live deploy/check |
-| Typecheck | Pass | Node 22.23.1; existing duplicated `getErpSettings` warning |
+| Typecheck | Pass | Node 22.23.1; expected empty-key notice and existing duplicated `getErpSettings` warning |
 | Production build/package | Pass | Actual Nuxt production build in clean unlinked source mirror, empty dotenv, minimal environment |
 | Output inventory | **1,042 entries: 786 files, 253 directories, 3 links** | Full bytes/modes/link hashes; uploaded/extracted/staged inventory checked |
 | Actual Nuxt browser | **52 assertions, 9 screenshots** | Real local Node/Nuxt/PM2/Auth/PostgREST/Storage/PG; new owner login, non-owner 403, anonymous dashboard denial, neutral catalog, EN/AR, RTL, desktop/mobile, light/dark, unchanged Phase 2 revisions |
@@ -27,7 +27,9 @@ The focused and full runs include `NODE_OPTIONS` test preloading. An initial
 full run caught PM2 inheriting the preload into the application. The publisher
 now starts its daemon in a minimal environment, explicitly filters process
 inheritance and fixes Node arguments. The complete rerun passed all 905 checks;
-the initial failing run is not counted as acceptance. Private `umask 077`
+the initial failing run is not counted as acceptance. A final exclusion-registry
+type review added fail-closed checks for malformed ports, fingerprints, project
+references and paths; both contract and complete regression runs were repeated. Private `umask 077`
 extraction/mode preservation, relative symlink copying and browser hydration
 were also corrected before final acceptance.
 

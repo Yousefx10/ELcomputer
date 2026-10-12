@@ -13,6 +13,7 @@ const target=()=>({format:1,publication_id:randomUUID(),installation_id:randomUU
 test('publication requires a production exclusion registry and explicit fresh bindings',()=>{
   assert.ok(validateTarget(target(),validateRegistry(registry())))
   assert.throws(()=>validateRegistry({...registry(),production:{...registry().production,ssh_hosts:[]}}))
+  for(const[key,values]of[['ports',['3042']],['ports',[0]],['ssh_hosts',[123]],['ssh_fingerprints',['wrong']],['project_refs',['wrong']],['paths',['relative']]])assert.throws(()=>validateRegistry({...registry(),reserved:{...registry().reserved,[key]:values}}))
   for(const change of [t=>t.ssh.host='reserved.example.invalid',t=>t.ssh.host_key_sha256='SHA256:'+'A'.repeat(43),t=>t.project_ref='zsqhuwgoasrexdnamlks',t=>t.site_origin='https://new.elcomputer.net',t=>t.ssh.user='newelcomputer',t=>t.site.pm2_name='new-elcomputer',t=>t.site.port=3001]){const value=target();change(value);assert.throws(()=>validateTarget(value,registry()))}
 })
 test('publication rejects root, paths outside the prepared home, shell syntax and forced targets',()=>{

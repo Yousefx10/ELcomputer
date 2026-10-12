@@ -23,7 +23,12 @@ export function validateRegistry(registry){
   object(registry.production,['project_refs','ssh_hosts','ssh_fingerprints','domains','users','paths','pm2_names','ports'])
   object(registry.reserved,Object.keys(registry.production))
   ensure(registry.format===1)
-  for(const group of[registry.production,registry.reserved])for(const list of Object.values(group))ensure(Array.isArray(list)&&list.every(value=>typeof value==='string'||Number.isInteger(value)))
+  for(const group of[registry.production,registry.reserved])for(const[key,list]of Object.entries(group)){
+    ensure(Array.isArray(list)&&list.every(value=>key==='ports'?Number.isInteger(value)&&value>=1&&value<=65535:typeof value==='string'&&value.length>0&&!/[\x00-\x20\x7f]/.test(value)))
+    if(key==='ssh_fingerprints')ensure(list.every(fingerprint))
+    if(key==='project_refs')ensure(list.every(value=>/^[a-z0-9]{20}$/.test(value)))
+    if(key==='paths')ensure(list.every(canonical))
+  }
   ensure(registry.production.project_refs.includes(protectedProjectRefs[0])&&registry.production.ssh_hosts.length>0&&registry.production.ssh_fingerprints.length>0&&registry.production.ssh_fingerprints.every(fingerprint),'protected_target')
   ensure(registry.production.domains.includes('new.elcomputer.net')&&registry.production.users.includes('newelcomputer')&&registry.production.pm2_names.includes('new-elcomputer')&&registry.production.ports.includes(3001),'protected_target')
   ensure(registry.production.paths.includes('/home/newelcomputer/htdocs/new.elcomputer.net'),'protected_target')
