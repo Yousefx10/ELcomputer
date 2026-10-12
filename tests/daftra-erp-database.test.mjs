@@ -23,8 +23,8 @@ beforeEach(async () => {
   await db.query(`select set_config('app.serialized_inventory_write', 'on', true)`)
   await db.exec(`
     delete from public.erp_sync_jobs;
-    insert into public.site_settings (key, erp_mode, daftra_connection_status)
-    values ('default', 'built_in', 'disconnected')
+    insert into public.site_settings (key, payment_cash_enabled, erp_mode, daftra_connection_status)
+    values ('default', true, 'built_in', 'disconnected')
     on conflict (key) do update set
       erp_mode = excluded.erp_mode,
       daftra_connection_status = excluded.daftra_connection_status;

@@ -13,8 +13,8 @@ test('footer style defaults to Classic and accepts only Classic or Modern', asyn
     const row = (await db.query("insert into public.site_settings(key) values('footer-style-test') returning footer_style, footer_modern_card_title, footer_modern_community_text")).rows[0]
 
     assert.equal(row.footer_style, 'classic')
-    assert.equal(row.footer_modern_card_title, 'Need help choosing?')
-    assert.equal(row.footer_modern_community_text, 'Join our Slack')
+    assert.equal(row.footer_modern_card_title, '')
+    assert.equal(row.footer_modern_community_text, '')
 
     await db.exec("update public.site_settings set footer_style='modern' where key='footer-style-test'")
     assert.equal((await db.query("select footer_style from public.site_settings where key='footer-style-test'")).rows[0].footer_style, 'modern')
@@ -31,7 +31,7 @@ test('footer style defaults to Classic and accepts only Classic or Modern', asyn
 test('modern footer uses saved footer links and exposes editable content', () => {
   const footer = read('app/components/layout/Footer.vue')
   const settings = read('app/pages/dashboard/settings.vue')
-  const content = read('app/composables/useSiteContent.js')
+  const content = read('app/utils/siteContentDefaults.js')
   const uploads = read('server/utils/uploads.js')
 
   assert.match(footer, /v-if="isModern" class="store-footer-modern"/)

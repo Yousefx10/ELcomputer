@@ -11,6 +11,7 @@ const text = (value, limit, label) => {
 }
 const positive = (value, label, optional = false) => {
   if (optional && (value == null || value === '')) return null
+  if (!['string', 'number'].includes(typeof value)) fail(label)
   const number = Number(value)
   if (!Number.isInteger(number) || number <= 0 || number > 2147483647) fail(label)
   return number
@@ -18,8 +19,8 @@ const positive = (value, label, optional = false) => {
 export const validatePdcSettings = (body, current) => {
   if (!body || typeof body !== 'object' || Array.isArray(body)) fail('Settings')
   const api_mode = body.api_mode ?? current.api_mode ?? 'production'
-  const company_id = text(body.company_id, 40, 'Company ID')
-  if (!/^\d+$/.test(company_id)) fail('Company ID')
+  const company_id = text(body.company_id, 40, 'Company ID') || null
+  if (company_id !== null && !/^\d+$/.test(company_id)) fail('Company ID')
   const phone = text(body.origin_phone, 40, 'Pickup phone').replace(/\s+/g, '')
   if (phone && !/^01\d{9}$/.test(phone)) fail('Pickup phone')
   const weight = Number(body.default_weight_kg)
@@ -29,7 +30,7 @@ export const validatePdcSettings = (body, current) => {
   const update = {
     api_mode, base_url: validatePdcBaseUrl(body.base_url ?? current.base_url, api_mode),
     status_timezone: validatePdcTimezone(body.status_timezone ?? current.status_timezone),
-    company_id, product_id: positive(body.product_id, 'Product ID'),
+    company_id, product_id: positive(body.product_id, 'Product ID', true),
     display_name: text(body.display_name, 100, 'Provider name') || 'PDC Courier',
     origin_city_id: positive(body.origin_city_id, 'Pickup city', true), origin_phone: phone || null,
     origin_address: text(body.origin_address, 1000, 'Pickup address') || null,
@@ -45,6 +46,7 @@ export const validatePdcSettings = (body, current) => {
   if (reverseType !== null && reverseType !== '' && Number(reverseType) !== 3) fail('Reverse shipment type')
   update.reverse_enabled = body.reverse_enabled ?? current.reverse_enabled ?? false
   update.reverse_shipment_type_id = reverseType === null || reverseType === '' ? null : 3
+  if ((update.is_enabled || update.auto_create_labels || update.reverse_enabled) && (company_id === null || update.product_id === null)) fail('Merchant identifiers')
   const token = text(body.access_token, 4096, 'Access Token')
   const secret = text(body.webhook_secret, 4096, 'Webhook Secret')
   if (secret && secret.length < 32) fail('Webhook Secret')

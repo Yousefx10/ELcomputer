@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "version": "portability-v1",
+  "base": "clean-v1",
+  "base_manifest_sha256": "93a26458f2ebd7fbe5e38adfdc5cb4f8168f506f12447cf98de5cf18ad0b8be3",
+  "input_commit": "4928dc7e636f8f96dda739401f29767b5e1263df",
+  "migration": {
+    "filename": "20261012160000_quick_setup_installation_bootstrap.sql",
+    "version": "20261012160000",
+    "sha256": "f518219c3fdd0a5d6a934da2bc84caee04d41d97dd5add0bd254ace85d6c0434"
+  },
+  "expected_public_catalog_sha256": "4c76fcdec159dbb9c1474d16e68d2693a0e797498a77c5dbd52afb553e36ba55",
+  "artifacts": {
+    "expected-private-schema.json": "d797fc7462bd5c7449057f4457f2107de7edbbb0da97166e45b5ad076a7ca4ce"
+  },
+  "private_runtime_access": "No schema/table/function rights for anon, authenticated or service_role",
+  "first_owner_authority": "Direct non-superuser postgres operator; no remote route",
+  "hosted_acceptance": "pending Milestone 3; Auth Admin transport contract fixtures only"
+}

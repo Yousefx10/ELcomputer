@@ -40,6 +40,7 @@ test('native PostgreSQL concurrent claims, webhook replay, transaction binding a
     server = spawn(join(bin, 'postgres'), ['-D', directory, '-h', '127.0.0.1', '-p', String(port), '-k', directory], { stdio: ['ignore', 'ignore', 'pipe'] })
     server.stderr.on('data', chunk => { logs = (logs + chunk).slice(-3000) })
     await waitFor(async () => { try { db = await connect(); return true } catch { return false } })
+    await db.query('create role postgres nosuperuser noinherit nologin')
     await prepareResetDatabase({ exec: sql => db.query(sql) })
     const customer = randomUUID(), product = randomUUID(), variant = randomUUID(), warehouse = randomUUID()
     await db.query("insert into auth.users(id,email) values($1,'concurrent@example.invalid')", [customer])

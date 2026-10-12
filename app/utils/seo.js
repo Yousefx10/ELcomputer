@@ -2,7 +2,7 @@ import { normalizeBrandPage } from './brandPage.js'
 import { getLocalizedCategoryName } from './categoryLocale.js'
 
 // Shared by SSR pages, dashboard previews and public discovery. No browser dependencies.
-export const DEFAULT_SITE_URL = 'https://new.elcomputer.net'
+export const DEFAULT_SITE_URL = ''
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
 const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'email', 'api', 'uploads', '_nuxt'])
 const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'products', 'brand', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
@@ -59,6 +59,7 @@ export const validPublicSlug = value => typeof value === 'string' && value.lengt
 export const validCmsPath = value => typeof value === 'string' && value.length <= 160 && value.split('/').every(validPublicSlug) && !RESERVED_ROOTS.has(value.split('/')[0])
 
 export function canonicalUrl(base, path, locale = 'en', query = {}) {
+  if (!publicSiteUrl({}, base)) return ''
   const url = new URL('/' + seoLocalizedPath(path, locale).replace(/^\/+/, '').replace(/\\/g, '%5C'), base)
   // Callers pass only deliberate identity parameters; never copy route.query.
   for (const [key, value] of Object.entries(query)) if (value !== '' && value != null) url.searchParams.set(key, String(value))
@@ -66,7 +67,7 @@ export function canonicalUrl(base, path, locale = 'en', query = {}) {
 }
 
 export function seoTitle(title, store) {
-  const name = seoExcerpt(store || 'ELcomputer', 70, false)
+  const name = seoExcerpt(store || 'Store', 70, false)
   let text = seoPlainText(title) || name
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   text = text.replace(new RegExp(`(?:\\s*[|–—-]\\s*${escaped})+$`, 'i'), '').trim()
@@ -76,10 +77,10 @@ export function seoTitle(title, store) {
 
 export function buildSeo({ settings = {}, siteUrl, path = '/', locale = 'en', title, description, image, index = true, query = {}, type = 'website', structuredData = [], privateTitle } = {}) {
   const base = publicSiteUrl(settings, siteUrl)
-  const store = seoText(settings.site_name) || 'ELcomputer'
+  const store = seoText(settings.site_name) || 'Store'
   const privatePath = isPrivateSeoPath(path)
   const canonical = canonicalUrl(base, privatePath ? '/' + unlocalizedPath(path).split('/')[1] : path, locale, privatePath ? {} : query)
-  const allowed = index && !isPrivateSeoPath(path)
+  const allowed = Boolean(base) && index && !isPrivateSeoPath(path)
   const text = seoExcerpt(seoText(description) || seoText(settings.seo_default_description) || (locale === 'ar' ? `تصفح منتجات ${store} وأسعارها وتوفرها.` : `Browse ${store} products, prices, and availability.`))
   return {
     title: seoTitle(privatePath ? privateTitle || privateSeoLabel(path) : title || settings.seo_site_title || settings.landing_page_title || store, store),
@@ -102,7 +103,7 @@ export function seoHead(seo) {
     meta: [
       { key: 'description', name: 'description', content: seo.description },
       { key: 'robots', name: 'robots', content: seo.robots },
-      meta('og:title', seo.title), meta('og:description', seo.description), meta('og:url', seo.canonical), meta('og:type', seo.type), meta('og:site_name', seo.store),
+      meta('og:title', seo.title), meta('og:description', seo.description), ...(seo.canonical ? [meta('og:url', seo.canonical)] : []), meta('og:type', seo.type), meta('og:site_name', seo.store),
       meta('og:locale', seo.locale === 'ar' ? 'ar_EG' : 'en_US'), meta('og:locale:alternate', seo.locale === 'ar' ? 'en_US' : 'ar_EG'),
       ...(seo.image ? [{ key: 'og:image', property: 'og:image', content: seo.image }] : []),
       { key: 'twitter:card', name: 'twitter:card', content: seo.image ? 'summary_large_image' : 'summary' },
@@ -110,7 +111,7 @@ export function seoHead(seo) {
       { key: 'twitter:description', name: 'twitter:description', content: seo.description },
       ...(seo.image ? [{ key: 'twitter:image', name: 'twitter:image', content: seo.image }] : [])
     ],
-    link: [{ key: 'canonical', rel: 'canonical', href: seo.canonical }, ...seo.alternates.map(item => ({ key: `locale-${item.lang}`, rel: 'alternate', hreflang: item.lang, href: item.href }))],
+    link: [...(seo.canonical ? [{ key: 'canonical', rel: 'canonical', href: seo.canonical }] : []), ...seo.alternates.map(item => ({ key: `locale-${item.lang}`, rel: 'alternate', hreflang: item.lang, href: item.href }))],
     script: seo.structuredData.length ? [{ key: 'public-schema', type: 'application/ld+json', innerHTML: jsonLdString({ '@context': 'https://schema.org', '@graph': seo.structuredData }) }] : []
   }
 }
@@ -120,7 +121,8 @@ export function breadcrumbs(items, base, locale) {
 }
 
 export function siteSchema(settings, base) {
-  const name = seoText(settings.site_name) || 'ELcomputer'
+  if (!publicSiteUrl({}, base)) return []
+  const name = seoText(settings.site_name) || 'Store'
   const logo = seoImage(settings.site_logo_light_url || settings.site_logo_url, base)
   return [
     { '@type': 'Organization', '@id': `${base}/#organization`, name, url: `${base}/`, ...(logo ? { logo } : {}) },
@@ -129,7 +131,7 @@ export function siteSchema(settings, base) {
 }
 
 export function catalogSeoFields(record = {}, settings = {}, locale = 'en') {
-  const store = seoText(settings.site_name) || 'ELcomputer'
+  const store = seoText(settings.site_name) || 'Store'
   const name = seoText(getLocalizedCategoryName(record, locale))
   return { title: record.seo_title || name,
     description: record.seo_description || settings.seo_default_description || (name ? locale === 'ar' ? `تصفح منتجات ${name} لدى ${store}.` : `Browse ${name} products at ${store}.` : ''),
@@ -149,7 +151,7 @@ export function productSeoFields(product = {}) {
 }
 
 export function productSchema(product, base, locale, availability = null, settings = {}) {
-  if (!product || product.is_published !== true || !validPublicSlug(product.slug) || !seoText(product.title)) return null
+  if (!publicSiteUrl({}, base) || !product || product.is_published !== true || !validPublicSlug(product.slug) || !seoText(product.title)) return null
   const url = canonicalUrl(base, `/products/${product.slug}`, locale)
   const image = seoImage(product.image_url, base)
   const description = seoExcerpt(product.description || product.long_description, 5000)
@@ -207,6 +209,7 @@ export function sitemapXml(routes, base) {
 }
 
 export function robotsText(base) {
+  if (!publicSiteUrl({}, base)) return 'User-agent: *\nDisallow: /\n'
   // Allow crawling of UI pages so crawlers can see noindex. Authentication protects private data.
   return `User-agent: *\n${['/api/', '/uploads/', '/dashboard', '/account', '/ar/dashboard', '/ar/account'].map(path => `Disallow: ${path}\n`).join('')}\nSitemap: ${base}/sitemap.xml\n`
 }

@@ -52,7 +52,9 @@ export const readPublicSeoDiscovery = defineCachedFunction(async () => {
   ])
   const records = { products, categories, brands, pages, helpCategories, helpArticles }
   const routes = discoverPublicPages(records)
-  return { base: publicSiteUrl(settings, config.public.siteUrl), routes, storeName: settings.site_name || 'ELcomputer', aiEntries: publicAiEntries(routes, records) }
+  const base = publicSiteUrl(settings, config.public.siteUrl)
+  if (!base) throw createError({ statusCode: 503, statusMessage: 'Site origin is not configured.' })
+  return { base, routes, storeName: settings.site_name || 'Store', aiEntries: publicAiEntries(routes, records) }
 }, { name: 'public-seo-discovery', maxAge: 60, swr: false })
 
 // Conservative chunks keep both URL count and XML byte size below sitemap limits.

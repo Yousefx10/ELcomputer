@@ -25,7 +25,10 @@ export const renderEmailSource = (source, values = {}, subject = false) => {
 }
 export const emailLayout = ({ subject, body, locale, brand, unsubscribeUrl = '',action_url = '' }) => {
  const rtl = locale === 'ar', e = escapeEmailHtml
- if(action_url&&!/^https:\/\/new\.elcomputer\.net\/(?:ar\/)?account\/after-sales\/[a-f0-9-]{36}$/i.test(action_url))throw Error('Invalid claim account link.')
+ if(action_url){
+  const link=new URL(action_url)
+  if(link.protocol!=='https:'||link.username||link.password||link.search||link.hash||!/^\/(?:ar\/)?account\/after-sales\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(link.pathname)||link.href!==action_url)throw Error('Invalid claim account link.')
+ }
  const footer = (action_url?`<p><a href="${e(action_url)}" rel="noreferrer">${rtl?'عرض المطالبة في حسابي':'View claim in My Account'}</a></p>`:'')+(unsubscribeUrl ? `<p><a href="${e(unsubscribeUrl)}">${rtl ? 'إلغاء الاشتراك في الرسائل التسويقية' : 'Unsubscribe from marketing email'}</a></p>` : '')
  return `<!doctype html><html lang="${rtl?'ar':'en'}" dir="${rtl?'rtl':'ltr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>${e(subject)}</title></head><body style="margin:0;background:#f3f4f6;color:#111827;font-family:Arial,sans-serif"><table role="presentation" style="width:100%;border-collapse:collapse"><tr><td style="padding:24px 12px"><table role="presentation" style="width:100%;max-width:600px;margin:auto;background:#fff;border-radius:12px"><tr><td style="padding:24px;border-bottom:1px solid #e5e7eb;font-weight:bold">${e(brand)}</td></tr><tr><td style="padding:24px;line-height:1.7;overflow-wrap:anywhere;text-align:${rtl?'right':'left'}"><h1 style="font-size:22px;margin:0 0 20px">${e(subject)}</h1>${body.split('\n\n').map(p=>`<p style="margin:0 0 16px">${e(p).replace(/\n/g,'<br>')}</p>`).join('')}${footer}</td></tr></table></td></tr></table></body></html>`
 }

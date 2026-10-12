@@ -1,0 +1,205 @@
+{
+  "schema": [
+    {
+      "nspname": "private",
+      "owner": "postgres",
+      "acl": "{postgres=UC/postgres}"
+    }
+  ],
+  "tables": [
+    {
+      "relname": "installation_bootstrap",
+      "owner": "postgres",
+      "rls": true,
+      "force_rls": false,
+      "acl": "{postgres=arwdDxtm/postgres}"
+    }
+  ],
+  "columns": [
+    {
+      "attname": "singleton",
+      "type": "boolean",
+      "not_null": true,
+      "default_expression": "true"
+    },
+    {
+      "attname": "installation_id",
+      "type": "uuid",
+      "not_null": true,
+      "default_expression": null
+    },
+    {
+      "attname": "phase",
+      "type": "text",
+      "not_null": true,
+      "default_expression": null
+    },
+    {
+      "attname": "revision",
+      "type": "bigint",
+      "not_null": true,
+      "default_expression": "0"
+    },
+    {
+      "attname": "binding",
+      "type": "jsonb",
+      "not_null": false,
+      "default_expression": null
+    },
+    {
+      "attname": "registered_at",
+      "type": "timestamp with time zone",
+      "not_null": false,
+      "default_expression": null
+    },
+    {
+      "attname": "auth_subject",
+      "type": "uuid",
+      "not_null": false,
+      "default_expression": null
+    },
+    {
+      "attname": "completed_at",
+      "type": "timestamp with time zone",
+      "not_null": false,
+      "default_expression": null
+    },
+    {
+      "attname": "error_code",
+      "type": "text",
+      "not_null": false,
+      "default_expression": null
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "installation_bootstrap_check",
+      "definition": "CHECK (((phase = ANY (ARRAY['available'::text, 'sealed_existing'::text])) = (binding IS NULL)))"
+    },
+    {
+      "conname": "installation_bootstrap_check1",
+      "definition": "CHECK (((phase = 'complete'::text) = (completed_at IS NOT NULL)))"
+    },
+    {
+      "conname": "installation_bootstrap_check2",
+      "definition": "CHECK (((phase <> 'complete'::text) OR (auth_subject IS NOT NULL)))"
+    },
+    {
+      "conname": "installation_bootstrap_error_code_check",
+      "definition": "CHECK ((error_code = ANY (ARRAY['auth_unresolved'::text, 'identity_conflict'::text, 'promotion_failed'::text])))"
+    },
+    {
+      "conname": "installation_bootstrap_installation_id_key",
+      "definition": "UNIQUE (installation_id)"
+    },
+    {
+      "conname": "installation_bootstrap_phase_check",
+      "definition": "CHECK ((phase = ANY (ARRAY['available'::text, 'registered'::text, 'auth_started'::text, 'complete'::text, 'sealed_existing'::text])))"
+    },
+    {
+      "conname": "installation_bootstrap_pkey",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "conname": "installation_bootstrap_revision_check",
+      "definition": "CHECK ((revision >= 0))"
+    },
+    {
+      "conname": "installation_bootstrap_singleton_check",
+      "definition": "CHECK (singleton)"
+    }
+  ],
+  "functions": [
+    {
+      "signature": "private.installation_assert_empty(uuid)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_assert_empty(p_subject uuid DEFAULT NULL::uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare t text;occupied boolean;\nbegin\n perform private.installation_assert_operator();\n if exists(select 1 from auth.users where p_subject is null or id<>p_subject) or\n    exists(select 1 from public.admin_users) or\n    exists(select 1 from public.customer_profiles where p_subject is null or id<>p_subject) then\n  raise exception 'Installation identity conflict.' using errcode='42501';end if;\n for t in select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','p') and c.relname<>all(array[\n  'after_sales_communication_settings','after_sales_policies','after_sales_return_reasons','chat_settings','email_provider_settings','help_categories','shipping_city_mappings','shipping_status_mappings','sms_provider_settings','sms_templates','sms_order_event_settings','specification_definitions','site_settings','quick_setup_state','quick_setup_revisions','shipping_provider_settings','customer_profiles','admin_users']) loop\n  execute format('select exists(select 1 from public.%I)',t) into occupied;\n  if occupied then raise exception 'Installation contains business history.' using errcode='42501';end if;\n end loop;\n if exists(select 1 from public.shipping_provider_settings where company_id is not null or product_id is not null or is_enabled or auto_create_labels or reverse_enabled or access_token_encrypted is not null or webhook_secret_encrypted is not null or cities_cache<>'[]'::jsonb or products_cache<>'[]'::jsonb) or\n    exists(select 1 from public.sms_provider_settings where is_enabled or account_id_encrypted is not null or password_encrypted is not null or hash_secret_encrypted is not null) or\n    exists(select 1 from public.email_provider_settings where api_key_encrypted is not null or webhook_token_encrypted is not null or coalesce((config->>'is_enabled')::boolean,false)) or\n    exists(select 1 from public.site_settings where payment_cash_enabled or payment_card_enabled or payment_bank_transfer_enabled or payment_instapay_enabled or payment_paypal_enabled or auth_facebook_enabled or erp_mode<>'built_in') or\n    exists(select 1 from public.chat_settings where is_enabled) or\n    exists(select 1 from public.after_sales_policies where warranty_enabled or return_enabled) or\n    exists(select 1 from public.after_sales_communication_settings where is_enabled or sms_enabled or email_enabled) then\n  raise exception 'Installation providers are configured.' using errcode='42501';end if;\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_assert_operator()",
+      "owner": "postgres",
+      "security_definer": false,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_assert_operator()\n RETURNS void\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\nbegin\n if session_user<>'postgres' then raise exception 'Installation operator required.' using errcode='42501';end if;\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_binding(jsonb)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_binding(p_binding jsonb)\n RETURNS private.installation_bootstrap\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare j private.installation_bootstrap;k text;\nbegin\n perform private.installation_assert_operator();\n if p_binding is null or jsonb_typeof(p_binding)<>'object' or p_binding-array['installation_id','request_id','target_digest','project_ref','site_origin','owner_email_digest']<>'{}'::jsonb or (select count(*) from jsonb_object_keys(p_binding))<>6 then raise exception 'Invalid installation binding.' using errcode='22023';end if;\n foreach k in array array['installation_id','request_id','target_digest','project_ref','site_origin','owner_email_digest'] loop\n  if jsonb_typeof(p_binding->k) is distinct from 'string' then raise exception 'Invalid installation binding.' using errcode='22023';end if;\n end loop;\n if p_binding->>'installation_id' !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' or p_binding->>'request_id' !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' or p_binding->>'target_digest' !~ '^[0-9a-f]{64}$' or p_binding->>'owner_email_digest' !~ '^[0-9a-f]{64}$' or p_binding->>'project_ref' !~ '^[a-z0-9]{20}$' or public.installation_https_origin(p_binding->>'site_origin') is null then raise exception 'Invalid installation binding.' using errcode='22023';end if;\n select * into strict j from private.installation_bootstrap where singleton for update;\n if j.installation_id::text is distinct from p_binding->>'installation_id' or j.installation_id is distinct from (select installation_id from public.quick_setup_state where singleton) or j.phase='sealed_existing' or (j.binding is not null and j.binding is distinct from p_binding) then raise exception 'Installation binding conflict.' using errcode='42501';end if;\n return j;\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_journal_guard()",
+      "owner": "postgres",
+      "security_definer": false,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_journal_guard()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\nbegin\n perform private.installation_assert_operator();\n if tg_op in ('DELETE','TRUNCATE') then raise exception 'Installation journal is retained.' using errcode='42501';end if;\n if current_setting('app.installation_write',true) is distinct from 'on' or tg_op<>'UPDATE' then raise exception 'Installation command required.' using errcode='42501';end if;\n if old.phase in ('complete','sealed_existing') or new.singleton is distinct from old.singleton or new.installation_id is distinct from old.installation_id or new.revision<>old.revision+1 or\n    (old.binding is not null and (new.binding is distinct from old.binding or new.registered_at is distinct from old.registered_at)) or\n    (old.auth_subject is not null and new.auth_subject is distinct from old.auth_subject) or\n    not((old.phase='available' and new.phase='registered') or (old.phase='registered' and new.phase='auth_started') or (old.phase='auth_started' and new.phase in ('auth_started','complete'))) then\n  raise exception 'Installation checkpoint is immutable.' using errcode='42501';end if;\n return new;\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_link_owner(jsonb,uuid)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_link_owner(p_binding jsonb, p_subject uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare j private.installation_bootstrap;u auth.users;marker jsonb;permissions_value jsonb;full_name_value text;\nbegin\n j:=private.installation_binding(p_binding);\n if j.phase='complete' then\n  if j.auth_subject is distinct from p_subject then raise exception 'Installation subject conflict.' using errcode='42501';end if;\n  return to_jsonb(j); -- Historical receipt, even after demotion/reset/deletion.\n end if;\n if j.phase<>'auth_started' or p_subject is null then raise exception 'Auth request required.' using errcode='42501';end if;\n lock table auth.users,public.admin_users in share row exclusive mode;\n perform private.installation_assert_empty(p_subject);\n select * into u from auth.users where id=p_subject for update;\n marker:=jsonb_build_object('version',1,'installation_id',p_binding->>'installation_id','request_id',p_binding->>'request_id','target_digest',p_binding->>'target_digest','project_ref',p_binding->>'project_ref');\n if u.id is null or u.is_anonymous or u.email_confirmed_at is null or u.created_at is null or u.created_at<j.registered_at or u.raw_app_meta_data->'elcomputer_bootstrap' is distinct from marker or\n    encode(sha256(convert_to(lower(btrim(u.email)),'UTF8')),'hex') is distinct from p_binding->>'owner_email_digest' then raise exception 'Unverifiable installation identity.' using errcode='42501';end if;\n select jsonb_object_agg(key,true) into permissions_value from jsonb_object_keys(public.default_admin_permissions()) key;\n full_name_value:=left(coalesce(u.raw_user_meta_data->>'full_name',''),120);\n insert into public.admin_users(id,email,full_name,role,permissions,is_active) values(u.id,lower(btrim(u.email)),full_name_value,'owner',permissions_value,true);\n insert into public.admin_activity_logs(admin_user_id,author_name,author_email,author_role,action_key,description,metadata)\n  values(u.id,coalesce(nullif(full_name_value,''),lower(btrim(u.email))),lower(btrim(u.email)),'owner','installation.owner.bootstrap','Created the first installation owner.',jsonb_build_object('installation_id',j.installation_id,'request_id',p_binding->>'request_id','auth_subject',u.id));\n perform set_config('app.installation_write','on',true);\n update private.installation_bootstrap set phase='complete',revision=revision+1,auth_subject=u.id,completed_at=clock_timestamp(),error_code=null where singleton returning * into j;\n perform set_config('app.installation_write','',true);\n return to_jsonb(j);\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_record_error(jsonb,text)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_record_error(p_binding jsonb, p_code text)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare j private.installation_bootstrap;\nbegin\n j:=private.installation_binding(p_binding);\n if j.phase='complete' then return;end if;\n if j.phase<>'auth_started' or p_code is null or p_code not in ('auth_unresolved','identity_conflict','promotion_failed') then raise exception 'Invalid installation error.' using errcode='22023';end if;\n perform set_config('app.installation_write','on',true);\n update private.installation_bootstrap set revision=revision+1,error_code=p_code where singleton;\n perform set_config('app.installation_write','',true);\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_register(jsonb)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_register(p_binding jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare j private.installation_bootstrap;\nbegin\n j:=private.installation_binding(p_binding);\n if j.phase='available' then\n  lock table auth.users,public.admin_users in share row exclusive mode;\n  perform private.installation_assert_empty();\n  perform set_config('app.installation_write','on',true);\n  update private.installation_bootstrap set binding=p_binding,phase='registered',revision=revision+1,registered_at=clock_timestamp() where singleton returning * into j;\n  perform set_config('app.installation_write','',true);\n end if;\n return to_jsonb(j);\nend $function$\n"
+    },
+    {
+      "signature": "private.installation_start_auth(jsonb,bigint)",
+      "owner": "postgres",
+      "security_definer": true,
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition": "CREATE OR REPLACE FUNCTION private.installation_start_auth(p_binding jsonb, p_revision bigint)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare j private.installation_bootstrap;\nbegin\n j:=private.installation_binding(p_binding);\n if j.phase<>'registered' or j.revision is distinct from p_revision then raise exception 'Installation retry conflict.' using errcode='40001';end if;\n perform private.installation_assert_empty();\n perform set_config('app.installation_write','on',true);\n update private.installation_bootstrap set phase='auth_started',revision=revision+1 where singleton returning * into j;\n perform set_config('app.installation_write','',true);\n return to_jsonb(j);\nend $function$\n"
+    }
+  ],
+  "triggers": [
+    {
+      "tgname": "installation_journal_guard",
+      "definition": "CREATE TRIGGER installation_journal_guard BEFORE INSERT OR DELETE OR UPDATE ON private.installation_bootstrap FOR EACH ROW EXECUTE FUNCTION private.installation_journal_guard()"
+    },
+    {
+      "tgname": "installation_journal_truncate",
+      "definition": "CREATE TRIGGER installation_journal_truncate BEFORE TRUNCATE ON private.installation_bootstrap FOR EACH STATEMENT EXECUTE FUNCTION private.installation_journal_guard()"
+    }
+  ],
+  "policies": []
+}

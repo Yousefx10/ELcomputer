@@ -215,7 +215,7 @@ onMounted(() => {
 
       <div class="auth-form-side">
         <div class="auth-form-inner">
-          <div class="auth-logo"><BrandLogo :settings="settings" :alt="settings.site_name || 'ELcomputer'" /></div>
+          <div class="auth-logo"><BrandLogo :settings="settings" :alt="settings.site_name || 'Store'" /></div>
           <div class="auth-intro">
             <p class="auth-kicker">{{ $t('authPage.account') }}</p>
             <h1>{{ authMode === 'forgot' ? $t('authPage.forgotHeading') : authMode === 'recovery' ? $t('authPage.recoveryHeading') : heading }}</h1>

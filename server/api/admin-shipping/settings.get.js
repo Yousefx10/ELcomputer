@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
       cities_synced_at: settings.cities_synced_at,
       products_synced_at: settings.products_synced_at,
       company_id: settings.company_id,
-      product_id: Number(settings.product_id),
+      product_id: settings.product_id == null ? null : Number(settings.product_id),
       origin_city_id: settings.origin_city_id ? Number(settings.origin_city_id) : null,
       origin_address: settings.origin_address || '',
       origin_phone: settings.origin_phone || '',

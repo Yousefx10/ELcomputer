@@ -13,6 +13,7 @@ export const attachClaimCommunicationsFixture=async base=>{
  const f=await attachReverseFixture(base);globalThis.useRuntimeConfig=()=>communicationRuntime
  const emailConfigure=async values=>{const current=await getEmailSettings(f.client);return emailRpc(f.client,'settings',validateEmailSettings({revision:current.revision,...values},current),f.owner)}
  const providers=async()=>{
+  await f.db.query("update public.site_settings set seo_site_url='https://claims.example.invalid' where key='default'")
   globalThis.useRuntimeConfig=()=>communicationRuntime
   await f.db.query("update public.sms_provider_settings set is_enabled=true,base_url='https://sms.example.invalid',sender_names=array['APP'],default_sender='APP',expected_outbound_ip='8.8.8.8',trusted_ip_confirmed=true,activation_confirmed=true,hash_protocol_confirmed=true,account_id_encrypted=$1,password_encrypted=$2,hash_secret_encrypted=$3 where id='vodafone'",[encryptCredentialSecret('fixture-account'),encryptCredentialSecret('fixture-password'),encryptCredentialSecret('AB'.repeat(16))])
   await emailConfigure({api_key:'claims-fixture-private-brevo-key-over-32-characters',approved_senders:[{email:'store@email.example.invalid',name:'ELcomputer Fixture',verified:true}],transactional_sender:'store@email.example.invalid',brand_name:'ELcomputer'})

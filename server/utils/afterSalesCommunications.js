@@ -39,7 +39,9 @@ export const validateClaimCommunicationSetting=async(db,body)=>{
 export const claimCommunicationValues=row=>{
  const catalog=row.locale==='ar'?ar:en,values={}
  for(const key of claimCommunicationVariables(row.purpose))values[key]=String(row.payload[key]||'')
- values.claim_url=claimCommunicationUrl(row.claim_id,row.locale)
+ const captured=new URL(row.payload?.claim_url)
+ values.claim_url=claimCommunicationUrl(row.claim_id,row.locale,captured.origin)
+ if(values.claim_url!==row.payload.claim_url)throw Error('Invalid claim link.')
  values.claim_type=catalog.claims.types?.[row.payload.claim_type]||catalog.claims[row.payload.claim_type]||row.payload.claim_type
  if('resolution' in values)values.resolution=catalog.claims.resolutions[row.payload.resolution]||''
  return values
@@ -52,8 +54,9 @@ export const processClaimCommunications=async(db,{channel,limit=1,authorize=()=>
   const row=check(await db.rpc('after_sales_communication_take',{p_channel:channel}));if(!row)break
   let reason='storage_error'
   try{
-   const context={id:row.id,token:row.work_token},known=claimCommunicationValues(row)
-   reason='invalid_template';validateClaimCommunicationTemplate(row.template_snapshot,row.purpose,channel)
+   const context={id:row.id,token:row.work_token}
+   reason='invalid_template';const known=claimCommunicationValues(row)
+   validateClaimCommunicationTemplate(row.template_snapshot,row.purpose,channel)
    let result
    if(channel==='sms'){
     const settings=await getSmsSettings(db);reason=settings.is_enabled?'provider_not_ready':'provider_disabled';if(!settings.is_enabled||!smsReadiness(settings).ready)throw Error()

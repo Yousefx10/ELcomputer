@@ -9,7 +9,7 @@
       </div>
     </nav>
 
-    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueComputerAccessories', { value0: (siteContent?.settings?.site_name || 'ELcomputer') }) }}</h1>
+    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueComputerAccessories', { value0: (siteContent?.settings?.site_name || 'Store') }) }}</h1>
     <div v-if="heroEnabled" class="store-hero-grid">
       <CardsHeroCard />
       <div class="store-hero-side">
@@ -46,7 +46,7 @@
     </section>
 
     <HomeCustomerReviews v-if="homepageReviewsEnabled" :show-view-all="homepageReviewsViewAllEnabled" />
-    <NpsSurvey source="homepage" :store-name="siteContent?.settings?.site_name || 'ELcomputer'" />
+    <NpsSurvey source="homepage" :store-name="siteContent?.settings?.site_name || 'Store'" />
   </div>
 </template>
 
@@ -164,7 +164,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
 
 const customerUser = useSupabaseUser()
 const ordersPath = computed(() => customerUser.value ? '/account/orders' : { path: '/login', query: { redirect: '/account/orders' } })
-const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
+const heroEnabled = computed(() => (siteContent.value?.settings?.hero_enabled ?? false) && hasCustomHero.value)
 const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [
   {

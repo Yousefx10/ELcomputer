@@ -30,8 +30,8 @@ const hoverPaused = ref(false)
 const focusPaused = ref(false)
 let heroInterval = null
 let motionPreference = null
-const siteName = computed(() => siteContent.value?.settings?.site_name || 'ELcomputer')
-const heroEnabled = computed(() => siteContent.value?.settings?.hero_enabled ?? true)
+const siteName = computed(() => siteContent.value?.settings?.site_name || 'Store')
+const heroEnabled = computed(() => (siteContent.value?.settings?.hero_enabled ?? false) && (siteContent.value?.heroBanners || []).some(banner => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const heroBanners = computed(() => heroEnabled.value
   ? (siteContent.value?.heroBanners || []).filter((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner')
   : [])

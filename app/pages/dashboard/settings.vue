@@ -140,7 +140,7 @@
                 <input
                   v-model="siteSettings.landing_page_title"
                   type="text"
-                  placeholder="ELcomputer"
+                  placeholder="Store name"
                   class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                 >
               </div>
@@ -2291,6 +2291,7 @@
 </template>
 
 <script setup>
+import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 const seoSiteUrlPlaceholder = useRuntimeConfig().public.siteUrl
 const { uiLabel } = useUiLocale()
 
@@ -2347,81 +2348,6 @@ const canAccessCoupons = computed(() => hasPermission('settings.coupons'))
 const canEditSettings = computed(() => hasPermission('settings.edit'))
 const canViewLogs = computed(() => hasPermission('settings.view'))
 
-const defaultSiteSettings = {
-  key: 'default',
-  seo_site_title: '', seo_default_description: '', seo_social_image_url: '', seo_site_url: '',
-  site_name: 'ELcomputer',
-  site_logo_url: '',
-  site_logo_light_url: '',
-  site_logo_dark_url: '',
-  site_theme_default: 'system',
-  auth_page_layout: 'split',
-  auth_image_light_url: '',
-  auth_image_dark_url: '',
-  auth_image_position: 'center',
-  auth_show_visual_text: true,
-  auth_visual_eyebrow: '',
-  auth_visual_headline: '',
-  auth_visual_supporting_text: '',
-  auth_login_heading: '',
-  auth_login_supporting_text: '',
-  auth_signup_heading: '',
-  auth_signup_supporting_text: '',
-  auth_facebook_enabled: false,
-  site_background_color: '#f3f4f6',
-  landing_page_title: 'ELcomputer',
-  dashboard_layout: 'standard',
-  account_dashboard_style: 'modern',
-  allow_out_of_stock_purchases: false,
-  homepage_reviews_enabled: true,
-  homepage_reviews_view_all_enabled: true,
-  hero_enabled: true,
-  hero_rotation_seconds: 5,
-  top_bar_rotation_seconds: 3,
-  banner_ad_1_enabled: true,
-  banner_ad_1_image_url: '',
-  banner_ad_1_link_url: '',
-  banner_ad_2_enabled: true,
-  banner_ad_2_image_url: '',
-  banner_ad_2_link_url: '',
-  payment_card_enabled: false,
-  payment_card_fee: 0,
-  payment_bank_transfer_enabled: false,
-  payment_bank_transfer_fee: 0,
-  payment_bank_transfer_instructions: '',
-  payment_instapay_enabled: false,
-  payment_instapay_fee: 0,
-  payment_instapay_instructions: '',
-  payment_paypal_enabled: false,
-  payment_paypal_fee: 0,
-  payment_cash_enabled: true,
-  payment_cash_fee: 0,
-  footer_cta_title: 'What are you waiting for?',
-  footer_cta_subtitle: 'Purchase your fav gear',
-  footer_cta_button_label: 'Shop Now',
-  footer_cta_button_url: '/',
-  footer_email: 'info@elcomputer.net',
-  footer_phone: '01505121684',
-  footer_address: 'address address',
-  copyright_text: '© 2026 All rights reserved by ELCOMPUTER',
-  footer_style: 'classic',
-  footer_modern_card_image_url: '',
-  footer_modern_card_title: 'Need help choosing?',
-  footer_modern_card_text: 'Our team can help you find the end setup.',
-  footer_modern_card_button_label: 'Contact us',
-  footer_modern_card_button_url: '/help',
-  footer_modern_community_image_url: '',
-  footer_modern_community_text: 'Join our Slack',
-  footer_modern_community_url: '',
-  footer_modern_banner_image_url: '',
-  footer_modern_banner_alt: '',
-  footer_modern_banner_url: '',
-  footer_modern_bottom_left_text: 'Legal',
-  footer_modern_bottom_left_url: '',
-  footer_modern_bottom_center_text: '© 2026 All rights reserved by ELCOMPUTER',
-  footer_modern_bottom_right_title: '',
-  footer_modern_bottom_right_text: ''
-}
 
 const siteSettings = reactive({
   ...defaultSiteSettings
@@ -3002,7 +2928,7 @@ const normalizeSiteSettings = (source = {}) => ({
   auth_image_light_url: String(source.auth_image_light_url || '').trim(),
   auth_image_dark_url: String(source.auth_image_dark_url || '').trim(),
   auth_image_position: ['left', 'center', 'right'].includes(source.auth_image_position) ? source.auth_image_position : 'center',
-  auth_show_visual_text: source.auth_show_visual_text ?? true,
+  auth_show_visual_text: source.auth_show_visual_text ?? false,
   auth_visual_eyebrow: String(source.auth_visual_eyebrow || '').trim().slice(0, 80),
   auth_visual_headline: String(source.auth_visual_headline || '').trim().slice(0, 120),
   auth_visual_supporting_text: String(source.auth_visual_supporting_text || '').trim().slice(0, 180),
@@ -3022,13 +2948,13 @@ const normalizeSiteSettings = (source = {}) => ({
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
-  hero_enabled: source.hero_enabled ?? true,
+  hero_enabled: source.hero_enabled ?? false,
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
-  banner_ad_1_enabled: source.banner_ad_1_enabled ?? true,
+  banner_ad_1_enabled: source.banner_ad_1_enabled ?? false,
   banner_ad_1_image_url: String(source.banner_ad_1_image_url || '').trim(),
   banner_ad_1_link_url: String(source.banner_ad_1_link_url || '').trim(),
-  banner_ad_2_enabled: source.banner_ad_2_enabled ?? true,
+  banner_ad_2_enabled: source.banner_ad_2_enabled ?? false,
   banner_ad_2_image_url: String(source.banner_ad_2_image_url || '').trim(),
   banner_ad_2_link_url: String(source.banner_ad_2_link_url || '').trim(),
   payment_card_enabled: source.payment_card_enabled ?? false,
@@ -3041,7 +2967,7 @@ const normalizeSiteSettings = (source = {}) => ({
   payment_instapay_instructions: String(source.payment_instapay_instructions || '').trim(),
   payment_paypal_enabled: source.payment_paypal_enabled ?? false,
   payment_paypal_fee: Math.max(0, Number(source.payment_paypal_fee) || 0),
-  payment_cash_enabled: source.payment_cash_enabled ?? true,
+  payment_cash_enabled: source.payment_cash_enabled ?? false,
   payment_cash_fee: Math.max(0, Number(source.payment_cash_fee) || 0),
   footer_cta_title: String(source.footer_cta_title || '').trim(),
   footer_cta_subtitle: String(source.footer_cta_subtitle || '').trim(),

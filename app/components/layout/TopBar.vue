@@ -26,7 +26,7 @@ const rotationSeconds = computed(() => {
 
 const currentMessage = computed(() => {
   const message = messages.value[currentMessageIndex.value]?.text
-  return message && message !== 'Pretty Cool Text Around' ? message : uiLabel('Keyboards, mice, headsets and accessories.')
+  return message || ''
 })
 
 const restartTopBarInterval = () => {

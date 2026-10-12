@@ -31,7 +31,7 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await db.query("select set_config('request.jwt.claim.role', 'service_role', true)")
     await db.query(`insert into auth.users(id,email) values($1,'pre-buyer@example.com'),($2,'pre-admin@example.com')`, [customer, admin])
     await db.query(`insert into public.admin_users(id,email,role) values($1,'pre-admin@example.com','owner')`, [admin])
-    await db.query(`insert into public.site_settings(key,payment_bank_transfer_enabled,payment_bank_transfer_fee,erp_mode,daftra_connection_status) values('default',true,12.50,'built_in','disconnected') on conflict(key) do update set payment_bank_transfer_enabled=true,payment_bank_transfer_fee=12.50,erp_mode='built_in',daftra_connection_status='disconnected'`)
+    await db.query(`insert into public.site_settings(key,payment_cash_enabled,payment_bank_transfer_enabled,payment_bank_transfer_fee,erp_mode,daftra_connection_status) values('default',true,true,12.50,'built_in','disconnected') on conflict(key) do update set payment_cash_enabled=true,payment_bank_transfer_enabled=true,payment_bank_transfer_fee=12.50,erp_mode='built_in',daftra_connection_status='disconnected'`)
     await db.query(`update public.shipping_provider_settings set is_enabled=true,auto_create_labels=true where id='pdc'`)
     await db.query("select set_config('app.serialized_inventory_write', 'on', true)")
     await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode,preorder_payment_mode,preorder_deposit_percent,preorder_total_limit,preorder_customer_limit) values($1,'Upcoming GPU',($1::uuid)::text,10000,0,false,'preorder','deposit',25,3,2)`, [product])

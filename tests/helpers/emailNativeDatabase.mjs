@@ -35,6 +35,7 @@ export const createEmailNativeDatabase=async({stopBefore=null,onMigration=null}=
   server=spawn(join(bin,'postgres'),['-D',directory,'-h','127.0.0.1','-p',String(port),'-k',directory],{stdio:['ignore','ignore','pipe']})
   server.stderr.on('data',chunk=>{logs=(logs+chunk).slice(-3000)})
   await nativeWaitFor(async()=>{try{db=await connect();return true}catch{return false}})
+  await db.query('create role postgres nosuperuser noinherit nologin')
   await prepareResetDatabase({exec:sql=>db.query(sql)},{stopBefore,onMigration})
   return {query:(sql,parameters)=>db.query(sql,parameters),exec:sql=>db.query(sql),connect,close,version:(await db.query('show server_version')).rows[0].server_version}
  }catch(error){if(!db)error.message+='\n'+logs;await close();throw error}

@@ -13,7 +13,7 @@ export const prepareResetDatabase = async (db, { stopBefore = null, onMigration 
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create schema storage; create schema realtime;
-    create table auth.users (id uuid primary key default gen_random_uuid(), email text, is_anonymous boolean not null default false, raw_user_meta_data jsonb default '{}', created_at timestamptz default now());
+    create table auth.users (id uuid primary key default gen_random_uuid(), email text, is_anonymous boolean not null default false, raw_app_meta_data jsonb default '{}', email_confirmed_at timestamptz, raw_user_meta_data jsonb default '{}', created_at timestamptz default now());
     create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
     create function auth.role() returns text language sql as $$ select current_setting('request.jwt.claim.role',true) $$;
     create function auth.jwt() returns jsonb language sql as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;

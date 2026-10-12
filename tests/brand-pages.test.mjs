@@ -97,10 +97,10 @@ test('brand route, sitemap and old filter canonical converge on one English iden
   const policy = searchSeoPolicy({ brand: 'example' }, [], [brand], 25)
   assert.equal(policy.path, '/brand/example'); assert.equal(policy.index, false)
   for (const locale of ['en', 'ar']) {
-    const seo = buildSeo({ path: '/brand/example', locale, ...brandSeoFields(brand) })
+    const seo = buildSeo({ siteUrl: 'https://store.example', path: '/brand/example', locale, ...brandSeoFields(brand) })
     assert.ok(seo.canonical.endsWith(`${locale === 'ar' ? '/ar' : ''}/brand/example`))
     assert.equal(seo.alternates.length, 3)
-    assert.equal(seo.image, 'https://new.elcomputer.net/uploads/brands/hero.webp')
+    assert.equal(seo.image, 'https://store.example/uploads/brands/hero.webp')
     assert.match(seo.description, /Real story/)
     assert.ok(aiDiscoveryLinks(seo).some(link => link.href.endsWith('/ai/brands/example.md')))
   }

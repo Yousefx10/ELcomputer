@@ -1,3 +1,15 @@
+# Phase 3, Milestone 2 local follow-on
+
+Migration 71 adds neutral configuration and protected first-owner primitives.
+The Dashboard guide remains owner-only; it exposes no bootstrap operation.
+Missing PDC IDs and empty content remain unconfigured. Provider activation still
+requires the existing editors and gates. [Contract and evidence](installation-bootstrap.md).
+
+Production remains the owner-reported application checkpoint below with 70
+migrations. No production access, deployment or hosted Auth/reset occurred.
+Milestone 3 and Phase 4 have not started. The following guide documents the
+existing deployed Phases 1/2 behavior and its acceptance limits.
+
 # Quick Setup — Phases 1 and 2
 
 Quick Setup is an owner-only guide at `/dashboard/setup`, also available at `/ar/dashboard/setup`. Phases 1 and 2 are deployed at the owner-accepted `ae3a58d7a6e81a00b720bed49d8953aabd3bb160` checkpoint with 70 migrations. Phase 2 extends the same guide with private, nonsecret progress metadata. Configuration editors remain authoritative. The acceptance evidence limits below remain; Phase 3 Milestone 1 did not contact production.

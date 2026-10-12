@@ -34,7 +34,7 @@ test('authoritative Claim milestones connect only through private durable centra
    const rows=await f.intents(claim.id);assert.ok(rows.every(r=>r.status==='queued'))
    assert.equal(f.calls.sms.at(-1).messages[0].recipient,'+201012345678');assert.equal(f.calls.email.at(-1).recipient,'purchase-contact@email.example.invalid')
    assert.equal(f.calls.email.at(-1).locale,'ar');assert.match(f.calls.email.at(-1).html_body,/dir="rtl"/);assert.match(f.calls.email.at(-1).html_body,/&lt;script&gt;/);assert.doesNotMatch(f.calls.email.at(-1).html_body,/<script|PRIVATE-STAFF-NOTE/)
-   assert.match(f.calls.email.at(-1).html_body,/<a href="https:\/\/new.elcomputer.net\/ar\/account\/after-sales\//)
+   assert.match(f.calls.email.at(-1).html_body,/<a href="https:\/\/claims.example.invalid\/ar\/account\/after-sales\//)
    await f.customerAction(claim.id,'respond');assert.equal((await f.intents(claim.id)).length,2)
    await f.action(claim.id,'request_information',{text:'Please provide the second detail.'});const repeated=await f.intents(claim.id)
    assert.equal(repeated.length,4);assert.equal(new Set(repeated.map(r=>r.occurrence_id)).size,2)

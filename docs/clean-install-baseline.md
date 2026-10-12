@@ -1,3 +1,16 @@
+# Milestone 2 follow-on, 2026-10-12
+
+The certified source-70 `clean-v1` files and hashes below are unchanged.
+Migration 71 and `supabase/bootstrap/portability-v1/` are separate follow-on
+artifacts. The compiler/tests explicitly stop the original source reconstruction
+at 70, then independently test the adopted baseline upgrade to 71.
+
+PDC is now a disabled NULL-identifier draft, Claims origins are portable, and
+first-owner linking uses a private permanently consumed operator journal.
+See [the implementation contract](installation-bootstrap.md). Hosted service
+acceptance, installer CLI and VPS publication remain Milestone 3 work.
+The remainder documents the original Milestone 1 certification.
+
 # Clean installation baseline — Phase 3, Milestone 1
 
 Date: 2026-10-12. Scope: local database foundation only.

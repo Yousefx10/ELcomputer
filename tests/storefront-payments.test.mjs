@@ -22,7 +22,8 @@ test('payment settings default safely and database applies enabled method fees',
       on conflict (key) do update set key = excluded.key;
 
       update public.site_settings
-      set payment_bank_transfer_enabled = true,
+      set payment_cash_enabled = true,
+          payment_bank_transfer_enabled = true,
           payment_bank_transfer_fee = 12.50
       where key = 'default';
 

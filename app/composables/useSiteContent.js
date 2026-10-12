@@ -1,125 +1,6 @@
-import { buildOrderedHeaderLinks, defaultHeaderLinkDefinitions } from '~/utils/siteLinks'
+import { defaultSiteSettings, siteContentRows } from '~/utils/siteContentDefaults'
+import { buildOrderedHeaderLinks } from '~/utils/siteLinks'
 
-const defaultSiteSettings = {
-  key: 'default',
-  site_name: 'ELcomputer',
-  seo_site_title: '',
-  seo_default_description: '',
-  seo_social_image_url: '',
-  seo_site_url: '',
-  site_logo_url: '',
-  site_logo_light_url: '',
-  site_logo_dark_url: '',
-  site_theme_default: 'system',
-  auth_page_layout: 'split',
-  auth_image_light_url: '',
-  auth_image_dark_url: '',
-  auth_image_position: 'center',
-  auth_show_visual_text: true,
-  auth_visual_eyebrow: '',
-  auth_visual_headline: '',
-  auth_visual_supporting_text: '',
-  auth_login_heading: '',
-  auth_login_supporting_text: '',
-  auth_signup_heading: '',
-  auth_signup_supporting_text: '',
-  auth_facebook_enabled: false,
-  site_background_color: '#f3f4f6',
-  landing_page_title: 'ELcomputer',
-  dashboard_layout: 'standard',
-  erp_mode: 'built_in',
-  daftra_connection_status: 'disconnected',
-  daftra_last_checked_at: null,
-  daftra_connected_at: null,
-  daftra_connection_error: null,
-  allow_out_of_stock_purchases: false,
-  homepage_reviews_enabled: true,
-  homepage_reviews_view_all_enabled: true,
-  hero_enabled: true,
-  hero_rotation_seconds: 5,
-  top_bar_rotation_seconds: 3,
-  banner_ad_1_enabled: true,
-  banner_ad_1_image_url: '',
-  banner_ad_1_link_url: '',
-  banner_ad_2_enabled: true,
-  banner_ad_2_image_url: '',
-  banner_ad_2_link_url: '',
-  payment_card_enabled: false,
-  payment_card_fee: 0,
-  payment_bank_transfer_enabled: false,
-  payment_bank_transfer_fee: 0,
-  payment_bank_transfer_instructions: '',
-  payment_instapay_enabled: false,
-  payment_instapay_fee: 0,
-  payment_instapay_instructions: '',
-  payment_paypal_enabled: false,
-  payment_paypal_fee: 0,
-  payment_cash_enabled: true,
-  payment_cash_fee: 0,
-  footer_cta_title: 'What are you waiting for?',
-  footer_cta_subtitle: 'Purchase your fav gear',
-  footer_cta_button_label: 'Shop Now',
-  footer_cta_button_url: '/',
-  footer_email: 'info@elcomputer.net',
-  footer_phone: '01505121684',
-  footer_address: 'address address',
-  copyright_text: '© 2026 All rights reserved by ELCOMPUTER',
-  footer_style: 'classic',
-  footer_modern_card_image_url: '',
-  footer_modern_card_title: 'Need help choosing?',
-  footer_modern_card_text: 'Our team can help you find the right setup.',
-  footer_modern_card_button_label: 'Contact us',
-  footer_modern_card_button_url: '/help',
-  footer_modern_community_image_url: '',
-  footer_modern_community_text: 'Join our Slack',
-  footer_modern_community_url: '',
-  footer_modern_banner_image_url: '',
-  footer_modern_banner_alt: '',
-  footer_modern_banner_url: '',
-  footer_modern_bottom_left_text: 'Legal',
-  footer_modern_bottom_left_url: '',
-  footer_modern_bottom_center_text: '© 2026 All rights reserved by ELCOMPUTER',
-  footer_modern_bottom_right_title: '',
-  footer_modern_bottom_right_text: ''
-}
-
-const defaultHeroBanners = [
-  {
-    id: 'default-hero-banner',
-    image_url: 'https://placehold.co/1400x520',
-    link_url: null,
-    is_enabled: true
-  }
-]
-
-const defaultTopBarMessages = [
-  {
-    id: 'default-top-bar-message',
-    text: 'Pretty Cool Text Around',
-    is_enabled: true
-  }
-]
-
-const defaultOfferCards = []
-
-const defaultSiteLinks = [
-  ...defaultHeaderLinkDefinitions.map((definition, index) => ({
-    id: `default-header-${definition.key}`,
-    location: 'header',
-    section_title: null,
-    label: definition.label,
-    url: definition.url,
-    sort_order: index,
-    is_enabled: true
-  })),
-  { id: 'footer-shop-browse', location: 'footer', section_title: 'Shop', label: 'Browse', url: '/', is_enabled: true },
-  { id: 'footer-shop-keyboards', location: 'footer', section_title: 'Shop', label: 'Keyboards', url: '/', is_enabled: true },
-  { id: 'footer-shop-mice', location: 'footer', section_title: 'Shop', label: 'Mice', url: '/', is_enabled: true },
-  { id: 'footer-support-contact', location: 'footer', section_title: 'Support', label: 'Contact us', url: '/', is_enabled: true },
-  { id: 'footer-support-track', location: 'footer', section_title: 'Support', label: 'Track Order', url: '/', is_enabled: true },
-  { id: 'footer-connect-instagram', location: 'footer', section_title: 'Connect', label: 'Instagram', url: '/', is_enabled: true },
-  { id: 'footer-connect-youtube', location: 'footer', section_title: 'Connect', label: 'YouTube', url: '/', is_enabled: true }
-]
 
 const isMissingTableError = (error) => error?.code === '42P01'
 
@@ -176,27 +57,16 @@ export const useSiteContent = () => {
         }
       : defaultSiteSettings
 
-    const heroBanners = heroBannersResult.error && !isMissingTableError(heroBannersResult.error)
-      ? defaultHeroBanners
-      : (heroBannersResult.data?.length ? heroBannersResult.data : defaultHeroBanners)
-
-    const topBarMessages = topBarMessagesResult.error && !isMissingTableError(topBarMessagesResult.error)
-      ? defaultTopBarMessages
-      : (topBarMessagesResult.data?.length ? topBarMessagesResult.data : defaultTopBarMessages)
-
-    const siteLinks = siteLinksResult.error && !isMissingTableError(siteLinksResult.error)
-      ? defaultSiteLinks
-      : (siteLinksResult.data?.length ? siteLinksResult.data : defaultSiteLinks)
-
-    const offerCards = offerCardsResult.error && !isMissingTableError(offerCardsResult.error)
-      ? defaultOfferCards
-      : (offerCardsResult.data || defaultOfferCards)
+    const heroBanners = siteContentRows(heroBannersResult)
+    const topBarMessages = siteContentRows(topBarMessagesResult)
+    const siteLinks = siteContentRows(siteLinksResult)
+    const offerCards = siteContentRows(offerCardsResult)
 
     const customPages = sitePagesResult.error
       ? []
       : (sitePagesResult.data || [])
 
-    const orderedHeaderLinks = buildOrderedHeaderLinks(siteLinks)
+    const orderedHeaderLinks = (siteLinks.length ? buildOrderedHeaderLinks(siteLinks) : [])
       .filter((link) => link.is_enabled ?? true)
 
     return {

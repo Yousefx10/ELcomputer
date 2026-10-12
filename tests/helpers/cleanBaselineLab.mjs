@@ -11,7 +11,7 @@ import { createStorageNativeDatabase } from './storageNativeDatabase.mjs'
 // process. No URL, existing cluster, hosted project or dotenv is accepted.
 export async function createCleanBaselineLab() {
   const executed=[]
-  const source = await createStorageNativeDatabase({ stopBefore: null,onMigration:name=>executed.push(name) })
+  const source = await createStorageNativeDatabase({ stopBefore: '20261012120001',onMigration:name=>executed.push(name) })
   const { default: pg } = await import(pathToFileURL(process.env.EMAIL_REVIEW_PG_DRIVER).href)
   const clients = []
   const connect = async (database, user = 'postgres') => {
@@ -28,7 +28,7 @@ export async function createCleanBaselineLab() {
     const platform = await connect('clean_candidate', 'storage_audit')
     await platform.query(`
       create schema auth; create schema storage; create schema realtime;
-      create table auth.users (id uuid primary key default gen_random_uuid(), email text, is_anonymous boolean not null default false, raw_user_meta_data jsonb default '{}', created_at timestamptz default now());
+      create table auth.users (id uuid primary key default gen_random_uuid(), email text, is_anonymous boolean not null default false, raw_app_meta_data jsonb default '{}', email_confirmed_at timestamptz, raw_user_meta_data jsonb default '{}', created_at timestamptz default now());
       create function auth.uid() returns uuid language sql as $$ select coalesce(nullif(current_setting('request.jwt.claim.sub',true),''),nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid $$;
       create function auth.role() returns text language sql as $$ select coalesce(nullif(current_setting('request.jwt.claim.role',true),''),nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'role') $$;
       create function auth.jwt() returns jsonb language sql as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;

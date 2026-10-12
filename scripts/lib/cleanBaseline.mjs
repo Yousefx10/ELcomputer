@@ -14,7 +14,7 @@ const literal = value => "'" + value.replaceAll("'", "''") + "'"
 export const roles = ['anon', 'authenticated', 'service_role']
 
 export async function migrationInventory(directory = migrationsDirectory) {
-  const names = (await readdir(directory)).filter(n => n.endsWith('.sql')).sort()
+  const names = (await readdir(directory)).filter(n => n.endsWith('.sql') && n.split('_')[0] <= '20261012120000').sort()
   const entries = await Promise.all(names.map(async filename => ({ filename, version: filename.split('_')[0], name: filename.replace(/^\d+_/, '').replace(/\.sql$/, ''), sha256: hash(await readFile(new URL(filename, directory))) })))
   assert.equal(entries.length, 70, 'Frozen baseline requires exactly 70 historical migrations.')
   assert.equal(new Set(entries.map(e => e.version)).size, 70, 'Duplicate migration version.')

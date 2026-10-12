@@ -113,9 +113,9 @@
 
   <footer v-else class="store-footer">
     <div class="store-container">
-      <div class="store-footer-cta">
+      <div v-if="footerCtaTitle || footerCtaSubtitle || footerCtaButtonLabel" class="store-footer-cta">
         <div><h2>{{ footerCtaTitle }}</h2><p>{{ footerCtaSubtitle }}</p></div>
-        <NuxtLinkLocale :to="footerCtaButtonUrl" class="store-button">{{ footerCtaButtonLabel }} <Icon name="lucide:arrow-right" size="16" class="directional-icon" /></NuxtLinkLocale>
+        <NuxtLinkLocale v-if="footerCtaButtonLabel" :to="footerCtaButtonUrl" class="store-button">{{ footerCtaButtonLabel }} <Icon name="lucide:arrow-right" size="16" class="directional-icon" /></NuxtLinkLocale>
       </div>
       <div class="store-footer-main">
         <div class="store-footer-brand">
@@ -162,16 +162,16 @@ const settings = computed(() => siteContent.value?.settings || {})
 const footerLinks = computed(() => siteContent.value?.footerLinks || [])
 
 const isModern = computed(() => settings.value.footer_style === 'modern')
-const siteName = computed(() => settings.value.site_name || 'ELcomputer')
+const siteName = computed(() => settings.value.site_name || 'Store')
 const siteLogoUrl = computed(() => getStoreImageUrl(settings.value.site_logo_url) || '/images/dashboard-logo.png')
-const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? uiLabel('Browse computer accessories') : (settings.value.footer_cta_title || uiLabel('Browse computer accessories')))
-const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? uiLabel('Keyboards, mice, headsets and more.') : (settings.value.footer_cta_subtitle || uiLabel('Keyboards, mice, headsets and more.')))
-const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || uiLabel('Shop Now'))
+const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? uiLabel('Browse computer accessories') : (settings.value.footer_cta_title || ''))
+const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? uiLabel('Keyboards, mice, headsets and more.') : (settings.value.footer_cta_subtitle || ''))
+const footerCtaButtonLabel = computed(() => settings.value.footer_cta_button_label || '')
 const footerCtaButtonUrl = computed(() => settings.value.footer_cta_button_url === '/' ? '/search' : (settings.value.footer_cta_button_url || '/search'))
 const footerEmail = computed(() => settings.value.footer_email || '')
 const footerPhone = computed(() => settings.value.footer_phone || '')
 const footerAddress = computed(() => settings.value.footer_address || '')
-const copyrightText = computed(() => settings.value.copyright_text || '© 2026 All rights reserved by ELCOMPUTER')
+const copyrightText = computed(() => settings.value.copyright_text || '')
 
 const modernCardImageUrl = computed(() => getConfiguredStoreImageUrl(settings.value.footer_modern_card_image_url))
 const modernCardTitle = computed(() => settings.value.footer_modern_card_title || '')
