@@ -1,0 +1,422 @@
+[
+  {
+    "filename": "20260717000000_commerce_manual_sales.sql",
+    "version": "20260717000000",
+    "name": "commerce_manual_sales",
+    "sha256": "111c62fba70e924e0392ffca2edcfa0fbd6f025294dabf410be351173d4bbe62"
+  },
+  {
+    "filename": "20260717010000_hr_treasury.sql",
+    "version": "20260717010000",
+    "name": "hr_treasury",
+    "sha256": "87b3cfbf634ed750c14b3c31aa48404692ecb8faad895ae6f515833c5233f804"
+  },
+  {
+    "filename": "20260718000000_dashboard_analysis.sql",
+    "version": "20260718000000",
+    "name": "dashboard_analysis",
+    "sha256": "3f15b6573dd419432a9049aae0ea8b848e7136bcb94a13610f04644c85c0e2bd"
+  },
+  {
+    "filename": "20260725000000_product_reviews.sql",
+    "version": "20260725000000",
+    "name": "product_reviews",
+    "sha256": "b5b022a98c277905f3b7a23ef45a3afb0186d0fd7d7d5d1d87f8834e7f385d38"
+  },
+  {
+    "filename": "20260725120000_homepage_reviews.sql",
+    "version": "20260725120000",
+    "name": "homepage_reviews",
+    "sha256": "5c154aedabb6386b498bac4c58db783214134b231b5e2b2da98f434e0d47cc64"
+  },
+  {
+    "filename": "20260725130000_nps_customer_analytics.sql",
+    "version": "20260725130000",
+    "name": "nps_customer_analytics",
+    "sha256": "12dff86a8aa1a89e587ef755ffc908787ff820c0a592cb296b11ff1b77873089"
+  },
+  {
+    "filename": "20260725140000_exclude_internal_analytics.sql",
+    "version": "20260725140000",
+    "name": "exclude_internal_analytics",
+    "sha256": "bbdc22a43bbdd93c78d8641329853813aca09e0934bdff9d8b0a9f43b9c79b01"
+  },
+  {
+    "filename": "20260725150000_crm_activities.sql",
+    "version": "20260725150000",
+    "name": "crm_activities",
+    "sha256": "2855500b759c52dbf1d06165ed4577a0ce05e43a6f4e8582d94442ac038e8feb"
+  },
+  {
+    "filename": "20260725160000_live_store_visitors.sql",
+    "version": "20260725160000",
+    "name": "live_store_visitors",
+    "sha256": "4ba9efabab0313e305cffc0c4eab63a6f35c3520c9900bab7f0a84cfffe4e8cd"
+  },
+  {
+    "filename": "20260725170000_product_review_account_age.sql",
+    "version": "20260725170000",
+    "name": "product_review_account_age",
+    "sha256": "02bd3eda0375673bae0742058b1842d2c1aea38338515175a13e9d3c3bf22099"
+  },
+  {
+    "filename": "20260725180000_serialized_inventory.sql",
+    "version": "20260725180000",
+    "name": "serialized_inventory",
+    "sha256": "90bc2dfcf1638142825ddd5eeceadef22ca9667945d0a4917af3dae36898c572"
+  },
+  {
+    "filename": "20260725190000_variant_gallery_cost_projection.sql",
+    "version": "20260725190000",
+    "name": "variant_gallery_cost_projection",
+    "sha256": "063752ffd630aca2903b8654115618a00efc80a871e6f17d2bcb24b4ecc1bbb9"
+  },
+  {
+    "filename": "20260725200000_dashboard_layout.sql",
+    "version": "20260725200000",
+    "name": "dashboard_layout",
+    "sha256": "f54fa387617ca65078c374e679f2d2b87437eaf52230c7fd8f6c740601549d8a"
+  },
+  {
+    "filename": "20260730120000_order_packing.sql",
+    "version": "20260730120000",
+    "name": "order_packing",
+    "sha256": "b6980872f87b6448ae849a6506997adf1340f93a44a7d325ad7f445a0954ba52"
+  },
+  {
+    "filename": "20260730130000_order_problem_conversations.sql",
+    "version": "20260730130000",
+    "name": "order_problem_conversations",
+    "sha256": "1df49245bdc408f899795e426e5189f2d496e9b04f4bf997106c591eaa403c3e"
+  },
+  {
+    "filename": "20260828120000_admin_documents.sql",
+    "version": "20260828120000",
+    "name": "admin_documents",
+    "sha256": "4faf376562c5659bd1490f98a4bfb8492602dd279ed2960d4c8b825b809828a6"
+  },
+  {
+    "filename": "20260828130000_pdc_shipping_preparation.sql",
+    "version": "20260828130000",
+    "name": "pdc_shipping_preparation",
+    "sha256": "b6a25f1859e6357534808e924f918d51b534a981559d5da8f9f7f9f612dc86b3"
+  },
+  {
+    "filename": "20260828131000_pdc_city_mappings.sql",
+    "version": "20260828131000",
+    "name": "pdc_city_mappings",
+    "sha256": "7357382d4274d35d19a6d654d609d59d9ec44dec750e03d23c8964707841d5ec"
+  },
+  {
+    "filename": "20260911090000_owner_system_reset.sql",
+    "version": "20260911090000",
+    "name": "owner_system_reset",
+    "sha256": "bee1cd5a8da8288e1900bd487be9cb1150cf4a55aa1e629ca290a5e7b688c6d7"
+  },
+  {
+    "filename": "20260911110000_daftra_erp_integration.sql",
+    "version": "20260911110000",
+    "name": "daftra_erp_integration",
+    "sha256": "fe10fecb09c738020203c98e0d05522b991d02a3fd44bef4fbbd11572d37fbbe"
+  },
+  {
+    "filename": "20260911120000_daftra_queue_fail_safe.sql",
+    "version": "20260911120000",
+    "name": "daftra_queue_fail_safe",
+    "sha256": "12b4c72559801b618d4ce1c1776962ff0ed82d92c808203aa52da9b35045b78c"
+  },
+  {
+    "filename": "20260911130000_document_workspace.sql",
+    "version": "20260911130000",
+    "name": "document_workspace",
+    "sha256": "733b921f5c3f75eb826d0a0794ee6bc1a45dc4e95d108e5377251dcc3e0555aa"
+  },
+  {
+    "filename": "20260911140000_packing_work_sessions_and_video.sql",
+    "version": "20260911140000",
+    "name": "packing_work_sessions_and_video",
+    "sha256": "e8e806de9b540fa3d376491d5ad440e57f265f78303de186141b3ac7dc43109f"
+  },
+  {
+    "filename": "20260911150000_require_video_scan_coverage.sql",
+    "version": "20260911150000",
+    "name": "require_video_scan_coverage",
+    "sha256": "137ece8f4756429dd6241d50f754d21a575048e03019736006a5fe94dcf490b1"
+  },
+  {
+    "filename": "20260913100000_close_packing_work_session.sql",
+    "version": "20260913100000",
+    "name": "close_packing_work_session",
+    "sha256": "1787851a2df76fe710c87eee4f48ea8fc7875024e5099b0b253c51a069e38502"
+  },
+  {
+    "filename": "20260913110000_document_tags.sql",
+    "version": "20260913110000",
+    "name": "document_tags",
+    "sha256": "75a0f1088ee3ac0ab920b946dacd7ddffeb5b392057e7ccf5c674c03a6f5986e"
+  },
+  {
+    "filename": "20260913120000_custom_site_pages.sql",
+    "version": "20260913120000",
+    "name": "custom_site_pages",
+    "sha256": "dbb185e97f875ebcb385e890257c404aa35a3a1e5a837d798165b7a11d98ea35"
+  },
+  {
+    "filename": "20260913130000_site_page_text_direction.sql",
+    "version": "20260913130000",
+    "name": "site_page_text_direction",
+    "sha256": "e6a8cae3ce60458dd1e38f345baaef78aa09f799dfa2e27765ced9f0ec99366d"
+  },
+  {
+    "filename": "20260913140000_remove_default_return_policy_link.sql",
+    "version": "20260913140000",
+    "name": "remove_default_return_policy_link",
+    "sha256": "34644f13a314b1a93695f02bfed9fa848ffada0fd6772e9ec6e2c64c0c5ef26c"
+  },
+  {
+    "filename": "20260914200000_dashboard_settings_and_erp_credentials.sql",
+    "version": "20260914200000",
+    "name": "dashboard_settings_and_erp_credentials",
+    "sha256": "c3d214d6cbc94f0314352100ef5f4643c82dee40e24ec9673317432c10b037f4"
+  },
+  {
+    "filename": "20260919120000_help_center_support.sql",
+    "version": "20260919120000",
+    "name": "help_center_support",
+    "sha256": "97143b22a29d3b78c39c7b9728f01aed86394c3d3d2f3dcae1719fb1fdd30b2e"
+  },
+  {
+    "filename": "20260920120000_support_unread_replies.sql",
+    "version": "20260920120000",
+    "name": "support_unread_replies",
+    "sha256": "c0f7670401527b1bb780d851fefa79de2d32ea96271b78606373817683455812"
+  },
+  {
+    "filename": "20260920130000_guard_customer_profile_fields.sql",
+    "version": "20260920130000",
+    "name": "guard_customer_profile_fields",
+    "sha256": "a1356de9be6e809350abeaf8e438829c295923aab07d834c3ebe3e8d9a9e4cf2"
+  },
+  {
+    "filename": "20260920140000_customer_account_appearance.sql",
+    "version": "20260920140000",
+    "name": "customer_account_appearance",
+    "sha256": "c8cebe8fd73bb517d12028722e871de60d24f546c0f3ffd611f51f927583b832"
+  },
+  {
+    "filename": "20260920150000_live_chat_foundation.sql",
+    "version": "20260920150000",
+    "name": "live_chat_foundation",
+    "sha256": "1867ced4c1651043986880001c70940539739f48c9da95bb3baa2d98073212fa"
+  },
+  {
+    "filename": "20260920160000_live_chat_transactions.sql",
+    "version": "20260920160000",
+    "name": "live_chat_transactions",
+    "sha256": "e068edf59e3597559662539d3322dba0cda5d67bd30686f65d8a4a3098a0f0fc"
+  },
+  {
+    "filename": "20260920170000_live_chat_customer_intake.sql",
+    "version": "20260920170000",
+    "name": "live_chat_customer_intake",
+    "sha256": "ac918b94a6945126428dd4222bca08bd63df5e788e7d7dd9d2827ba7ff397cbc"
+  },
+  {
+    "filename": "20260921100000_live_chat_assignment_audit.sql",
+    "version": "20260921100000",
+    "name": "live_chat_assignment_audit",
+    "sha256": "2941ef1994573b4e54f5827910ad033fc6a3bb22561b94ec47e30816a36d76ae"
+  },
+  {
+    "filename": "20260921110000_live_chat_read_presence.sql",
+    "version": "20260921110000",
+    "name": "live_chat_read_presence",
+    "sha256": "b8b444e5ad57289110d4704a272dc40f11f7b299faba3033cfd26e5bcf27c8f6"
+  },
+  {
+    "filename": "20260921120000_live_chat_customer_orders.sql",
+    "version": "20260921120000",
+    "name": "live_chat_customer_orders",
+    "sha256": "394f8bbaf0feefad5ce8178ad85285e8e17407811503b599912c2f23c6835ecb"
+  },
+  {
+    "filename": "20260921130000_live_chat_attachments.sql",
+    "version": "20260921130000",
+    "name": "live_chat_attachments",
+    "sha256": "58f61274b91f80a0ef3f22cf99cd9beff939011c0c1e5d78654b16170332c761"
+  },
+  {
+    "filename": "20260921140000_live_chat_ticket_conversion.sql",
+    "version": "20260921140000",
+    "name": "live_chat_ticket_conversion",
+    "sha256": "b8fedefd49938568d43f95f6bb114ced12424e3c51ac5a7dd61c9402cf9e6e63"
+  },
+  {
+    "filename": "20260921150000_live_chat_settings.sql",
+    "version": "20260921150000",
+    "name": "live_chat_settings",
+    "sha256": "f7dd7c88a44db8da4d3db786b33ed04fb307336ede6d56ac9fecdb924288a55c"
+  },
+  {
+    "filename": "20260921160000_live_chat_rate_limits.sql",
+    "version": "20260921160000",
+    "name": "live_chat_rate_limits",
+    "sha256": "ebebb4edc4d181906cd6c79449eacb5fa1f066c51bf35e76bf21b93a0d9b757f"
+  },
+  {
+    "filename": "20260922100000_live_chat_audit_hardening.sql",
+    "version": "20260922100000",
+    "name": "live_chat_audit_hardening",
+    "sha256": "a0a2a0d7e0e7b8673932cae9b4d43feabbad8eb74130f7802c72e0cba434de67"
+  },
+  {
+    "filename": "20260923120000_modern_storefront_footer.sql",
+    "version": "20260923120000",
+    "name": "modern_storefront_footer",
+    "sha256": "05fd4c98ee546f3e0ce059172d7439c5bde31f506f6ea0ab729e4989105572d8"
+  },
+  {
+    "filename": "20260923140000_storefront_payment_methods.sql",
+    "version": "20260923140000",
+    "name": "storefront_payment_methods",
+    "sha256": "63c93b10b3913cbc5fb45962a030188515d31a5d81da2c1d1688b04a2676257f"
+  },
+  {
+    "filename": "20260927120000_product_specification_library.sql",
+    "version": "20260927120000",
+    "name": "product_specification_library",
+    "sha256": "ff7dbdccb6bff898adc9fe5a80e252cc86617ecbc46bf54c581806b3c8e75ff8"
+  },
+  {
+    "filename": "20260927180000_live_chat_resolution_callbacks.sql",
+    "version": "20260927180000",
+    "name": "live_chat_resolution_callbacks",
+    "sha256": "415c4b124a07f9d3920a7a5db4d799753a553e45674590d214b94fe4b41b7af0"
+  },
+  {
+    "filename": "20260928100000_preorders.sql",
+    "version": "20260928100000",
+    "name": "preorders",
+    "sha256": "ff588dbc81b1c6e50fee3c21b764de4081c685cdc98e751c7be6da74e11abb5a"
+  },
+  {
+    "filename": "20260928130000_ui_appearance.sql",
+    "version": "20260928130000",
+    "name": "ui_appearance",
+    "sha256": "5e426c0e6a6e457907c6211835981359905f3adbedeadee4d0b1b8fd761f8d9a"
+  },
+  {
+    "filename": "20260930120000_auth_page_appearance.sql",
+    "version": "20260930120000",
+    "name": "auth_page_appearance",
+    "sha256": "c30ba991fa05d92d05f96a0659fad79f0971e4ec7de62a14f4448213482b0dc6"
+  },
+  {
+    "filename": "20261001120000_public_seo.sql",
+    "version": "20261001120000",
+    "name": "public_seo",
+    "sha256": "bb6b6ed828d06ccf2a873d37f6a3db4dd3cf8537d73aec35f7b99bdbd5888c57"
+  },
+  {
+    "filename": "20261003120000_erp_ownership.sql",
+    "version": "20261003120000",
+    "name": "erp_ownership",
+    "sha256": "a50d901d2c9b685adc3a7367b3c45c25345ad22f83c66257ca0752e1cb6ec743"
+  },
+  {
+    "filename": "20261003140000_category_arabic_name.sql",
+    "version": "20261003140000",
+    "name": "category_arabic_name",
+    "sha256": "bf5080de837e989b4bbdc5787fd9734b8454ab6984328c24765989a069d4e7aa"
+  },
+  {
+    "filename": "20261003160000_brand_landing_pages.sql",
+    "version": "20261003160000",
+    "name": "brand_landing_pages",
+    "sha256": "c26208eecc7202493030382349f6899ea427fba95b6a7bd8c200651e7e641652"
+  },
+  {
+    "filename": "20261004120000_paymob_foundation.sql",
+    "version": "20261004120000",
+    "name": "paymob_foundation",
+    "sha256": "76aea7fffaab72423d8ff62f977f043b88ff3f3183615629e7bbc7f1ea000df0"
+  },
+  {
+    "filename": "20261005120000_pdc_customer_tracking.sql",
+    "version": "20261005120000",
+    "name": "pdc_customer_tracking",
+    "sha256": "6a84752937b1d6e9da1410fdd1d609e2ca8c2312dd2acde310a9f9574552c94f"
+  },
+  {
+    "filename": "20261005160000_vodafone_sms_foundation.sql",
+    "version": "20261005160000",
+    "name": "vodafone_sms_foundation",
+    "sha256": "0a88239aa00db65a17672736f933dc01fc3e4d51d08fd2175bc5dc99ed2ca5ad"
+  },
+  {
+    "filename": "20261006100000_order_sms_notifications.sql",
+    "version": "20261006100000",
+    "name": "order_sms_notifications",
+    "sha256": "988c6fb47ad1547081f8e938316d91aee517b1e4738a6287e61460f2737274b0"
+  },
+  {
+    "filename": "20261006120000_pdc_sms_notifications.sql",
+    "version": "20261006120000",
+    "name": "pdc_sms_notifications",
+    "sha256": "072cef061294dc23518658cff405ecf7dbd3df4757502096814fbcb5da4e6f58"
+  },
+  {
+    "filename": "20261007120000_warranty_entitlements.sql",
+    "version": "20261007120000",
+    "name": "warranty_entitlements",
+    "sha256": "ba999c03204557d1130440ed32dfefeb661d59d0db0df3bbb2ab1973f5343b52"
+  },
+  {
+    "filename": "20261007160000_after_sales_policy.sql",
+    "version": "20261007160000",
+    "name": "after_sales_policy",
+    "sha256": "24f40ba0968842fc801e4d7aff2af473c6b958d31b671d6c0c52db8a630a88e5"
+  },
+  {
+    "filename": "20261008120000_after_sales_claims_core.sql",
+    "version": "20261008120000",
+    "name": "after_sales_claims_core",
+    "sha256": "7db914fecd7be043281f18fe7dbbb0563de8180665634880e9c80e0a581af4cd"
+  },
+  {
+    "filename": "20261008160000_after_sales_reverse_logistics.sql",
+    "version": "20261008160000",
+    "name": "after_sales_reverse_logistics",
+    "sha256": "833b36b9dcf7acefbc47de95b2f21af64202b94233d73e673328348aaa8942d2"
+  },
+  {
+    "filename": "20261008180000_email_foundation.sql",
+    "version": "20261008180000",
+    "name": "email_foundation",
+    "sha256": "e32c88ad21f6fb971bcf82da293857d10eb6a4f5eb25bcf219392597ab78784d"
+  },
+  {
+    "filename": "20261009120000_after_sales_communications.sql",
+    "version": "20261009120000",
+    "name": "after_sales_communications",
+    "sha256": "df83fed86e8cb119a67b12e84974de059c665ea3b449c5d8724f5e35e9543f63"
+  },
+  {
+    "filename": "20261011120000_catalog_confidentiality.sql",
+    "version": "20261011120000",
+    "name": "catalog_confidentiality",
+    "sha256": "e7d9fb35a05f9c8cb2b82c343efdb79e515c607842e0d7f9c5369e4365bb3cae"
+  },
+  {
+    "filename": "20261011140000_order_amount_constraints_reconciliation.sql",
+    "version": "20261011140000",
+    "name": "order_amount_constraints_reconciliation",
+    "sha256": "d2b60fbd08f8d457c9d507737b9f0b6665b34b89b6860214bfc5f5329ce7cf89"
+  },
+  {
+    "filename": "20261012120000_quick_setup_progress.sql",
+    "version": "20261012120000",
+    "name": "quick_setup_progress",
+    "sha256": "1dff9aac7d94bab1091287b61dac7e86f50fdbe1d803bba2239940f1674f2161"
+  }
+]

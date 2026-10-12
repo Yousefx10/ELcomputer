@@ -1,0 +1,4446 @@
+{
+  "after_sales_communication_settings": [
+    {
+      "purpose": "approved",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "more_information",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "pickup_scheduled",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "received",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "rejected",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "resolution_decided",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    },
+    {
+      "purpose": "resolved",
+      "revision": 0,
+      "approvals": {},
+      "is_enabled": false,
+      "sms_sender": "",
+      "updated_by": null,
+      "sms_enabled": false,
+      "email_sender": "",
+      "email_enabled": false,
+      "sms_template_ar": null,
+      "sms_template_en": null,
+      "email_template_ar": null,
+      "email_template_en": null
+    }
+  ],
+  "after_sales_policies": [
+    {
+      "revision": 1,
+      "scope_key": "global",
+      "product_id": null,
+      "updated_by": null,
+      "category_id": null,
+      "return_opened": "manual",
+      "return_enabled": false,
+      "policy_timezone": "Africa/Cairo",
+      "return_evidence": "optional",
+      "return_shipping": "manual",
+      "warranty_serial": "optional",
+      "return_packaging": "preferred",
+      "warranty_enabled": false,
+      "return_configured": false,
+      "warranty_evidence": "optional",
+      "warranty_shipping": "manual",
+      "return_start_basis": "delivery_date",
+      "return_window_days": 14,
+      "warranty_configured": false,
+      "warranty_resolutions": [],
+      "warranty_start_basis": "delivery_date",
+      "return_fallback_bases": [],
+      "warranty_fallback_bases": []
+    }
+  ],
+  "after_sales_return_reasons": [
+    {
+      "key": "changed_mind",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "تغيير الرأي",
+      "label_en": "Changed mind",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 10
+    },
+    {
+      "key": "damaged_arrival",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "تلف عند الاستلام",
+      "label_en": "Damaged on arrival",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 30
+    },
+    {
+      "key": "defective",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "منتج معيب",
+      "label_en": "Defective product",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 40
+    },
+    {
+      "key": "missing_parts",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "نقص أجزاء أو ملحقات",
+      "label_en": "Missing parts or accessories",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 50
+    },
+    {
+      "key": "not_described",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "المنتج لا يطابق الوصف",
+      "label_en": "Product not as described",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 60
+    },
+    {
+      "key": "other",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "سبب آخر",
+      "label_en": "Other",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 70
+    },
+    {
+      "key": "wrong_item",
+      "fault": "neutral",
+      "opened": null,
+      "evidence": null,
+      "label_ar": "استلام منتج خاطئ",
+      "label_en": "Wrong item received",
+      "revision": 1,
+      "shipping": null,
+      "is_enabled": true,
+      "sort_order": 20
+    }
+  ],
+  "chat_settings": [
+    {
+      "singleton": true,
+      "is_enabled": false,
+      "updated_by": null,
+      "weekly_hours": {
+        "0": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "1": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "2": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "5": [],
+        "6": []
+      },
+      "reopen_enabled": true,
+      "offline_message": "Support is currently offline. Leave us a message.",
+      "welcome_message": "Hi! How can we help you today?",
+      "offline_behavior": "conversation",
+      "business_timezone": "Africa/Cairo",
+      "transfers_enabled": true,
+      "guest_contact_rule": "either",
+      "max_message_length": 4000,
+      "attachments_enabled": true,
+      "max_attachment_bytes": 5242880,
+      "request_call_enabled": false,
+      "availability_override": "auto",
+      "auto_assignment_enabled": false,
+      "allowed_attachment_mimes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ],
+      "ticket_conversion_enabled": true,
+      "max_attachments_per_message": 3,
+      "sound_notifications_enabled": true,
+      "customer_send_cooldown_seconds": 4
+    }
+  ],
+  "email_provider_settings": [
+    {
+      "id": "brevo",
+      "config": {
+        "reply_to": "",
+        "is_enabled": false,
+        "timeout_ms": 10000,
+        "webhook_enabled": false,
+        "account_approved": false,
+        "approved_senders": [],
+        "marketing_sender": "",
+        "marketing_enabled": false,
+        "unsubscribe_origin": "",
+        "activation_confirmed": false,
+        "transactional_sender": ""
+      },
+      "revision": 0,
+      "updated_by": null,
+      "next_dispatch_at": null,
+      "api_key_encrypted": null,
+      "webhook_token_encrypted": null
+    }
+  ],
+  "help_categories": [
+    {
+      "id": "2fcdb19d-80f6-5361-a03d-7740526ef261",
+      "name": "Shipping",
+      "slug": "shipping",
+      "is_active": true,
+      "description": "Delivery and tracking help.",
+      "sort_position": 30
+    },
+    {
+      "id": "341444be-3abd-532b-af1b-56bda46aa77f",
+      "name": "Products",
+      "slug": "products",
+      "is_active": true,
+      "description": "Product information and compatibility.",
+      "sort_position": 50
+    },
+    {
+      "id": "69ebd825-d915-53c9-a193-fe6ddcbbd4b7",
+      "name": "Other",
+      "slug": "other",
+      "is_active": true,
+      "description": "Anything else we can help with.",
+      "sort_position": 90
+    },
+    {
+      "id": "7a2ff8b3-1008-5a1f-a96f-2f35f226ba0c",
+      "name": "Technical Support",
+      "slug": "technical-support",
+      "is_active": true,
+      "description": "Troubleshooting your products.",
+      "sort_position": 80
+    },
+    {
+      "id": "b7e96726-e829-5ab2-a1ca-d276483747a2",
+      "name": "Payments",
+      "slug": "payments",
+      "is_active": true,
+      "description": "Payment methods and billing questions.",
+      "sort_position": 20
+    },
+    {
+      "id": "c23c4e14-7cdc-5df6-afeb-a74ecca4af02",
+      "name": "Account",
+      "slug": "account",
+      "is_active": true,
+      "description": "Sign-in and account settings.",
+      "sort_position": 60
+    },
+    {
+      "id": "d0c46fe2-7631-5ad0-afaf-dd0d3211c917",
+      "name": "Warranty",
+      "slug": "warranty",
+      "is_active": true,
+      "description": "Warranty and repairs.",
+      "sort_position": 70
+    },
+    {
+      "id": "e4006c1e-a6fb-508a-a2f1-28d07fd88b0d",
+      "name": "Orders",
+      "slug": "orders",
+      "is_active": true,
+      "description": "Track, change, and understand orders.",
+      "sort_position": 10
+    },
+    {
+      "id": "eb8f12da-0eab-5c83-a3bf-cc4430aef0ae",
+      "name": "Returns & Refunds",
+      "slug": "returns-refunds",
+      "is_active": true,
+      "description": "Returns, exchanges, and refunds.",
+      "sort_position": 40
+    }
+  ],
+  "shipping_city_mappings": [
+    {
+      "id": "00d42ef2-9818-574b-ace9-b55617a0e6d1",
+      "city": "Al bagour",
+      "provider": "pdc",
+      "city_arabic": "الباجور",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 126
+    },
+    {
+      "id": "01121550-872a-5e5d-ab8c-441d60918f4c",
+      "city": "Badr City",
+      "provider": "pdc",
+      "city_arabic": "مدينة بدر",
+      "governorate": "Cairo",
+      "provider_city_id": 49
+    },
+    {
+      "id": "01e64daa-320a-5438-aba3-0aaa203bca41",
+      "city": "Menia Al Qamh",
+      "provider": "pdc",
+      "city_arabic": "منيا القمح",
+      "governorate": "Elsharqia",
+      "provider_city_id": 168
+    },
+    {
+      "id": "023ff28b-7f41-578b-a773-c34ed0d4c9c4",
+      "city": "Samannoud",
+      "provider": "pdc",
+      "city_arabic": "سمنود",
+      "governorate": "Algharbia",
+      "provider_city_id": 130
+    },
+    {
+      "id": "024fa1fc-38ed-5ead-af92-e77059695806",
+      "city": "Tama",
+      "provider": "pdc",
+      "city_arabic": "طما",
+      "governorate": "Sohag",
+      "provider_city_id": 303
+    },
+    {
+      "id": "02d25234-6c54-53b4-a807-eeb4006d0d46",
+      "city": "Badr",
+      "provider": "pdc",
+      "city_arabic": "بدر",
+      "governorate": "Al Behaira",
+      "provider_city_id": 108
+    },
+    {
+      "id": "037764c7-2537-5442-a58d-cf108e0fc1a3",
+      "city": "Nwabea",
+      "provider": "pdc",
+      "city_arabic": "نويبع",
+      "governorate": "South Seina",
+      "provider_city_id": 361
+    },
+    {
+      "id": "037e8fc2-3fad-58e1-a106-1daf768ae67a",
+      "city": "Al sadat",
+      "provider": "pdc",
+      "city_arabic": "السادات",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 125
+    },
+    {
+      "id": "03c3a318-a47e-52e9-a591-95a9e4042eca",
+      "city": "Al hamoul",
+      "provider": "pdc",
+      "city_arabic": "الحامول",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 204
+    },
+    {
+      "id": "03fc37dc-9ad9-5ded-a53c-5e0f9bc1fece",
+      "city": "Al Gomrok",
+      "provider": "pdc",
+      "city_arabic": "الجمرك",
+      "governorate": "Alexandria",
+      "provider_city_id": 88
+    },
+    {
+      "id": "0449e540-74d9-5dd4-a941-cd9bcb4b434f",
+      "city": "Alqarna",
+      "provider": "pdc",
+      "city_arabic": "القرنة",
+      "governorate": "Luxor",
+      "provider_city_id": 282
+    },
+    {
+      "id": "053f07ae-f614-54cb-a428-fa79e6aa00dc",
+      "city": "El Ganayen",
+      "provider": "pdc",
+      "city_arabic": "الجناين",
+      "governorate": "Suez",
+      "provider_city_id": 222
+    },
+    {
+      "id": "05aa8565-df6b-5b2e-af4c-6ca39bd99ae5",
+      "city": "Alex desert road till KM 28",
+      "provider": "pdc",
+      "city_arabic": "طريق إسكندرية الصحراوى حتى ك 28",
+      "governorate": "Giza",
+      "provider_city_id": 70
+    },
+    {
+      "id": "075ab683-8ffe-5c2b-a682-d4a8c1c1d447",
+      "city": "Aga",
+      "provider": "pdc",
+      "city_arabic": "أجا",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 153
+    },
+    {
+      "id": "07ffd0f8-521d-5668-a8b4-893f4039439e",
+      "city": "Aladwa",
+      "provider": "pdc",
+      "city_arabic": "العدوة",
+      "governorate": "El Menia",
+      "provider_city_id": 260
+    },
+    {
+      "id": "081bd165-5d9f-5774-a53b-03bd4f4507fd",
+      "city": "Bani Ebeid",
+      "provider": "pdc",
+      "city_arabic": "بني عبيد",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 145
+    },
+    {
+      "id": "085f488e-8409-5843-abdc-a857ea927bf6",
+      "city": "madinat alfayuwm aljadida",
+      "provider": "pdc",
+      "city_arabic": "مدينة الفيوم الجديدة",
+      "governorate": "Alfayoum",
+      "provider_city_id": 227
+    },
+    {
+      "id": "0940352f-9a43-5ad6-a70b-78f4ee4babb4",
+      "city": "Heliopolis",
+      "provider": "pdc",
+      "city_arabic": "مصر الجديدة",
+      "governorate": "Cairo",
+      "provider_city_id": 20
+    },
+    {
+      "id": "097f0b4d-ffcc-5475-aba4-4f40d2dde023",
+      "city": "Saqalta",
+      "provider": "pdc",
+      "city_arabic": "ساقلتة",
+      "governorate": "Sohag",
+      "provider_city_id": 306
+    },
+    {
+      "id": "0af43ddb-18f8-5da8-a0cf-9552cce44f7d",
+      "city": "Paris",
+      "provider": "pdc",
+      "city_arabic": "باريس",
+      "governorate": "New Valley",
+      "provider_city_id": 315
+    },
+    {
+      "id": "0c18d4b7-74ae-562a-a6b1-ef5e8731e29f",
+      "city": "Abu Sir",
+      "provider": "pdc",
+      "city_arabic": "أبو صوير",
+      "governorate": "Ismalia",
+      "provider_city_id": 191
+    },
+    {
+      "id": "0c3c6347-7778-51cb-a15f-3989a70ad0b4",
+      "city": "Al nakhl",
+      "provider": "pdc",
+      "city_arabic": "النخل",
+      "governorate": "North Seina",
+      "provider_city_id": 352
+    },
+    {
+      "id": "0c5abf2f-4d37-5207-afc5-601954beca61",
+      "city": "Kharja Oases",
+      "provider": "pdc",
+      "city_arabic": "واحة الخارجة",
+      "governorate": "New Valley",
+      "provider_city_id": 321
+    },
+    {
+      "id": "0cbca316-b9a6-5833-a78d-f0a940174e46",
+      "city": "Itsa",
+      "provider": "pdc",
+      "city_arabic": "إطسا",
+      "governorate": "Alfayoum",
+      "provider_city_id": 228
+    },
+    {
+      "id": "0d9d2969-949b-5144-af98-e7c232408825",
+      "city": "Meniat Al Nassr",
+      "provider": "pdc",
+      "city_arabic": "منية النصر",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 137
+    },
+    {
+      "id": "0dc4fd5e-eac1-5198-a30b-d32a3b87b0e1",
+      "city": "Tanta",
+      "provider": "pdc",
+      "city_arabic": "طنطا",
+      "governorate": "Algharbia",
+      "provider_city_id": 128
+    },
+    {
+      "id": "0e93cbe7-4da3-5b98-af6d-afeb6e5221f7",
+      "city": "Old Cairo",
+      "provider": "pdc",
+      "city_arabic": "مصر القديمة",
+      "governorate": "Cairo",
+      "provider_city_id": 17
+    },
+    {
+      "id": "0ea72ee5-04e8-5952-a803-b8626e2133c9",
+      "city": "Mashtoul Alsouk",
+      "provider": "pdc",
+      "city_arabic": "مشتول السوق",
+      "governorate": "Elsharqia",
+      "provider_city_id": 169
+    },
+    {
+      "id": "0ecff7eb-ecd4-517f-a99f-ec658e8be40d",
+      "city": "Matariya",
+      "provider": "pdc",
+      "city_arabic": "المطرية",
+      "governorate": "Cairo",
+      "provider_city_id": 28
+    },
+    {
+      "id": "101c87fd-0102-542c-adab-d728e8db5f1e",
+      "city": "Kafr Al-sheikh",
+      "provider": "pdc",
+      "city_arabic": "كفر الشيخ",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 198
+    },
+    {
+      "id": "1048739a-870a-5880-a797-49f7d2cd95e3",
+      "city": "Hay Gharb",
+      "provider": "pdc",
+      "city_arabic": "حي غرب",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 122
+    },
+    {
+      "id": "10935091-425e-55b2-a695-1acf538c5ac0",
+      "city": "Alghaniem",
+      "provider": "pdc",
+      "city_arabic": "الغنايم",
+      "governorate": "Assiut",
+      "provider_city_id": 239
+    },
+    {
+      "id": "10ee2fb6-d410-5185-a13d-495807a57351",
+      "city": "Al king maryout (Sharq & Gharb)",
+      "provider": "pdc",
+      "city_arabic": "كينج مريوط (شرق وغرب)",
+      "governorate": "Alexandria",
+      "provider_city_id": 92
+    },
+    {
+      "id": "11e3bb81-8b1c-566c-ac7c-86106a20314f",
+      "city": "Kafr Hakeem",
+      "provider": "pdc",
+      "city_arabic": "كفر حكيم",
+      "governorate": "Giza",
+      "provider_city_id": 73
+    },
+    {
+      "id": "124df8a0-1117-5702-a3cf-41128b01e97b",
+      "city": "Akhmiem",
+      "provider": "pdc",
+      "city_arabic": "أخميم",
+      "governorate": "Sohag",
+      "provider_city_id": 314
+    },
+    {
+      "id": "1374ab45-2816-5609-af0c-b39e6c3cfb0c",
+      "city": "Saint Katreen",
+      "provider": "pdc",
+      "city_arabic": "سانت كاترين",
+      "governorate": "South Seina",
+      "provider_city_id": 359
+    },
+    {
+      "id": "143136af-e736-5662-a2e0-e8f161434728",
+      "city": "Halazein",
+      "provider": "pdc",
+      "city_arabic": "الحلازين",
+      "governorate": "Matrouh",
+      "provider_city_id": 328
+    },
+    {
+      "id": "14cf4e72-9e8c-5592-a5fb-d2fc6ce3bf81",
+      "city": "Dar Alsalam",
+      "provider": "pdc",
+      "city_arabic": "دار السلام",
+      "governorate": "Sohag",
+      "provider_city_id": 310
+    },
+    {
+      "id": "150d7727-0e0a-5844-a19f-a100531bd89c",
+      "city": "Ain Shams",
+      "provider": "pdc",
+      "city_arabic": "عين شمس",
+      "governorate": "Cairo",
+      "provider_city_id": 29
+    },
+    {
+      "id": "153ab7b7-96fa-59f7-aa87-fe514fd1af9c",
+      "city": "Edfo",
+      "provider": "pdc",
+      "city_arabic": "إدفو",
+      "governorate": "Aswan",
+      "provider_city_id": 267
+    },
+    {
+      "id": "15aa9cb4-a22a-572a-a2d3-804b7f89b974",
+      "city": "Dammitta",
+      "provider": "pdc",
+      "city_arabic": "دمياط",
+      "governorate": "Dammitta",
+      "provider_city_id": 161
+    },
+    {
+      "id": "15c5c71d-0ebc-562b-a088-a62ec48bffc0",
+      "city": "Hehia",
+      "provider": "pdc",
+      "city_arabic": "ههيا",
+      "governorate": "Elsharqia",
+      "provider_city_id": 171
+    },
+    {
+      "id": "165a1685-f74c-553e-aefa-ff7dfb9f9bfd",
+      "city": "Nasser",
+      "provider": "pdc",
+      "city_arabic": "ناصر",
+      "governorate": "Beni Suef",
+      "provider_city_id": 245
+    },
+    {
+      "id": "1696e997-7d88-5db6-a7b9-79e7b0b87d6c",
+      "city": "Zamalek",
+      "provider": "pdc",
+      "city_arabic": "الزمالك",
+      "governorate": "Cairo",
+      "provider_city_id": 2
+    },
+    {
+      "id": "16a22603-69f8-5ed8-a23c-5211ca78c54a",
+      "city": "Tella",
+      "provider": "pdc",
+      "city_arabic": "تلا",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 116
+    },
+    {
+      "id": "179faf23-a772-567f-a586-15dae2baf433",
+      "city": "Tami Alamdid",
+      "provider": "pdc",
+      "city_arabic": "تمي الأمديد",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 134
+    },
+    {
+      "id": "186bd9d2-037d-5377-a8c6-6892ff22a836",
+      "city": "Alsaff",
+      "provider": "pdc",
+      "city_arabic": "الصف",
+      "governorate": "Giza 2",
+      "provider_city_id": 377
+    },
+    {
+      "id": "19181646-f1e8-5e60-aac5-f377dce924cc",
+      "city": "Kanater Khairia",
+      "provider": "pdc",
+      "city_arabic": "القناطر الخيرية",
+      "governorate": "Qalyubia",
+      "provider_city_id": 213
+    },
+    {
+      "id": "198b2728-b942-58f0-a1d8-e191b6732fe9",
+      "city": "Bab Sharqi",
+      "provider": "pdc",
+      "city_arabic": "باب شرقي",
+      "governorate": "Alexandria",
+      "provider_city_id": 87
+    },
+    {
+      "id": "1990ab5a-c57f-598c-a15c-b9dd2eb8ba3e",
+      "city": "New Aswan City",
+      "provider": "pdc",
+      "city_arabic": "أسوان الجديدة",
+      "governorate": "Aswan",
+      "provider_city_id": 263
+    },
+    {
+      "id": "1af31879-f03e-53e3-acd4-f5ceb65d701b",
+      "city": "Sherbeen",
+      "provider": "pdc",
+      "city_arabic": "شربين",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 136
+    },
+    {
+      "id": "1b029e1d-7d44-5547-a209-259718ab0513",
+      "city": "Masseir",
+      "provider": "pdc",
+      "city_arabic": "مسير",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 196
+    },
+    {
+      "id": "1b50c8fb-a30d-557d-aead-4f94d3ab63af",
+      "city": "Balteem",
+      "provider": "pdc",
+      "city_arabic": "بلطيم",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 202
+    },
+    {
+      "id": "1c2d3c18-0eee-58ef-ad26-315488465c2c",
+      "city": "Faisal",
+      "provider": "pdc",
+      "city_arabic": "فيصل",
+      "governorate": "Giza",
+      "provider_city_id": 62
+    },
+    {
+      "id": "1c834067-3f49-51ab-a959-4f3d19ebfa82",
+      "city": "Fewa",
+      "provider": "pdc",
+      "city_arabic": "فوه",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 199
+    },
+    {
+      "id": "1cfd7b4f-ae8f-58e0-a98a-80d2e3bef532",
+      "city": "Al Aresh",
+      "provider": "pdc",
+      "city_arabic": "العريش",
+      "governorate": "North Seina",
+      "provider_city_id": 354
+    },
+    {
+      "id": "1de916b2-c123-5e6f-afa0-fac52ad80811",
+      "city": "Negela",
+      "provider": "pdc",
+      "city_arabic": "النجيلة",
+      "governorate": "Matrouh",
+      "provider_city_id": 347
+    },
+    {
+      "id": "1e2831f9-8f6e-5c16-a32c-f15e53bec07f",
+      "city": "Shebeen Alkom",
+      "provider": "pdc",
+      "city_arabic": "شبين الكوم",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 117
+    },
+    {
+      "id": "1e91a13d-3e87-5fa3-a533-d6551fada3ee",
+      "city": "Ashmoun",
+      "provider": "pdc",
+      "city_arabic": "أشمون",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 123
+    },
+    {
+      "id": "1f31a072-0c0b-522e-a453-32421ab84b68",
+      "city": "Al Mansoura",
+      "provider": "pdc",
+      "city_arabic": "المنصورة",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 152
+    },
+    {
+      "id": "1fb1398b-3147-564f-ad50-e38463260416",
+      "city": "Red Sea",
+      "provider": "pdc",
+      "city_arabic": "البحر الأحمر",
+      "governorate": "Red Sea",
+      "provider_city_id": 302
+    },
+    {
+      "id": "1ff742b0-31c1-5892-af2a-410665469d28",
+      "city": "Alqaniaat",
+      "provider": "pdc",
+      "city_arabic": "القنايات",
+      "governorate": "Elsharqia",
+      "provider_city_id": 178
+    },
+    {
+      "id": "201694dd-4453-50b7-a301-1736f2e84ce1",
+      "city": "Alfeshin",
+      "provider": "pdc",
+      "city_arabic": "الفشن",
+      "governorate": "Beni Suef",
+      "provider_city_id": 251
+    },
+    {
+      "id": "2046c82f-6647-5e31-aaf6-c7cdf389b4ff",
+      "city": "Hay Alqawssar",
+      "provider": "pdc",
+      "city_arabic": "حي الكوثر",
+      "governorate": "Sohag",
+      "provider_city_id": 307
+    },
+    {
+      "id": "2058ee0a-8335-573c-a69e-d144d191dddb",
+      "city": "Dirmouass",
+      "provider": "pdc",
+      "city_arabic": "ديرمواس",
+      "governorate": "El Menia",
+      "provider_city_id": 258
+    },
+    {
+      "id": "20abb6fb-f574-5032-a27f-33eadcf17865",
+      "city": "Tor Sinai",
+      "provider": "pdc",
+      "city_arabic": "طور سيناء",
+      "governorate": "South Seina",
+      "provider_city_id": 356
+    },
+    {
+      "id": "20d94c71-b500-5a3c-abeb-1c5abc4497f8",
+      "city": "Bani Mazar",
+      "provider": "pdc",
+      "city_arabic": "بني مزار",
+      "governorate": "El Menia",
+      "provider_city_id": 259
+    },
+    {
+      "id": "210aaef8-1722-5e12-a6a1-5eca1297f9fd",
+      "city": "Ameeriya",
+      "provider": "pdc",
+      "city_arabic": "الأميرية",
+      "governorate": "Cairo",
+      "provider_city_id": 27
+    },
+    {
+      "id": "212ec978-d87f-5d60-a752-3b455e6c8497",
+      "city": "Al Daerah Al Gomrokeyah",
+      "provider": "pdc",
+      "city_arabic": "الدائرة الجمركية",
+      "governorate": "Alexandria",
+      "provider_city_id": 97
+    },
+    {
+      "id": "216e1cb4-0044-5d84-aeda-69bc1458931e",
+      "city": "Al barageel",
+      "provider": "pdc",
+      "city_arabic": "البراجيل",
+      "governorate": "Giza 2",
+      "provider_city_id": 382
+    },
+    {
+      "id": "21d392d3-7657-53f0-a600-3e57b4b72dbc",
+      "city": "Al matria",
+      "provider": "pdc",
+      "city_arabic": "المطرية",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 148
+    },
+    {
+      "id": "220ba9e5-bff6-5dbf-a292-b348389f34cb",
+      "city": "Zaytoun",
+      "provider": "pdc",
+      "city_arabic": "الزيتون",
+      "governorate": "Cairo",
+      "provider_city_id": 26
+    },
+    {
+      "id": "223ad6f2-4872-520e-a084-6a81a2b7fff9",
+      "city": "Basyoun",
+      "provider": "pdc",
+      "city_arabic": "بسيون",
+      "governorate": "Algharbia",
+      "provider_city_id": 132
+    },
+    {
+      "id": "226bf40c-8fcd-5e69-a208-12e2f552dcdd",
+      "city": "Al senbelaween",
+      "provider": "pdc",
+      "city_arabic": "السنبلاوين",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 147
+    },
+    {
+      "id": "22a8498c-5ea0-5f44-a12a-4b17be728b1c",
+      "city": "Madinty",
+      "provider": "pdc",
+      "city_arabic": "مدينتى",
+      "governorate": "Cairo",
+      "provider_city_id": 42
+    },
+    {
+      "id": "234fd319-b34c-5654-a0cc-cc718f4a076a",
+      "city": "Alahyaa Alawal Althany - Althaless",
+      "provider": "pdc",
+      "city_arabic": "الأحياء الأول والثاني والثالث",
+      "governorate": "Ismalia",
+      "provider_city_id": 189
+    },
+    {
+      "id": "2353d364-7342-5e5f-a28e-64b2054a3bfc",
+      "city": "Kafr Shoukr",
+      "provider": "pdc",
+      "city_arabic": "كفر شكر",
+      "governorate": "Qalyubia",
+      "provider_city_id": 214
+    },
+    {
+      "id": "258cff38-4c7c-59ab-a736-1a0f46219ded",
+      "city": "Qaft",
+      "provider": "pdc",
+      "city_arabic": "قفط",
+      "governorate": "Qena",
+      "provider_city_id": 288
+    },
+    {
+      "id": "269c1ab5-39d5-5a3a-a80b-932e4a85841d",
+      "city": "Atnouh",
+      "provider": "pdc",
+      "city_arabic": "أتنوح",
+      "governorate": "Matrouh",
+      "provider_city_id": 330
+    },
+    {
+      "id": "27a0b8ae-8caa-53b0-a02d-b9ef1bbfcf4e",
+      "city": "Abu Mareiq",
+      "provider": "pdc",
+      "city_arabic": "أبو مريق",
+      "governorate": "Matrouh",
+      "provider_city_id": 342
+    },
+    {
+      "id": "2852b2b5-8704-5037-a2f6-d88aa899a426",
+      "city": "Belbass",
+      "provider": "pdc",
+      "city_arabic": "بلبيس",
+      "governorate": "Elsharqia",
+      "provider_city_id": 174
+    },
+    {
+      "id": "29b228b4-49b3-555c-accd-3f9671c7bb86",
+      "city": "El Rehab",
+      "provider": "pdc",
+      "city_arabic": "الرحاب",
+      "governorate": "Cairo",
+      "provider_city_id": 41
+    },
+    {
+      "id": "2a8611b5-8b91-5a58-a63f-e7c81c2df515",
+      "city": "Helwan",
+      "provider": "pdc",
+      "city_arabic": "حلوان",
+      "governorate": "Cairo",
+      "provider_city_id": 37
+    },
+    {
+      "id": "2b1ed662-9fe9-54a2-afdf-d402a8d79357",
+      "city": "Sheikh Zayed",
+      "provider": "pdc",
+      "city_arabic": "مدينة الشيخ زايد",
+      "governorate": "Giza",
+      "provider_city_id": 68
+    },
+    {
+      "id": "2c987c2d-55d5-516f-a78c-46dce04fad55",
+      "city": "Boulak abul-Ela",
+      "provider": "pdc",
+      "city_arabic": "بولاق أبو العلا",
+      "governorate": "Cairo",
+      "provider_city_id": 3
+    },
+    {
+      "id": "2d84d703-abea-5ee0-a4d6-19aec1c004d9",
+      "city": "Sharm Alsheikh",
+      "provider": "pdc",
+      "city_arabic": "شرم الشيخ",
+      "governorate": "South Seina",
+      "provider_city_id": 358
+    },
+    {
+      "id": "2dcd4078-6319-5858-a283-f904f22b0e77",
+      "city": "Shoubra Masr",
+      "provider": "pdc",
+      "city_arabic": "شبرا مصر",
+      "governorate": "Cairo",
+      "provider_city_id": 11
+    },
+    {
+      "id": "2e0cecb4-3910-5021-ac40-4c8793e2aa52",
+      "city": "New capital",
+      "provider": "pdc",
+      "city_arabic": "العاصمة الإدارية الجديدة",
+      "governorate": "Cairo 2",
+      "provider_city_id": 367
+    },
+    {
+      "id": "2e2dee1f-0715-5945-aef3-c111f34c2098",
+      "city": "New Borg Al Arab",
+      "provider": "pdc",
+      "city_arabic": "برج العرب الجديدة",
+      "governorate": "Alexandria",
+      "provider_city_id": 90
+    },
+    {
+      "id": "2e369b2e-4bc3-508f-acfd-9dbc16191579",
+      "city": "Marsa Allam",
+      "provider": "pdc",
+      "city_arabic": "مرسى علم",
+      "governorate": "Red Sea",
+      "provider_city_id": 297
+    },
+    {
+      "id": "2f9796a0-6dea-5736-a6a4-536f46d015b5",
+      "city": "Nahiya",
+      "provider": "pdc",
+      "city_arabic": "ناهيا البلد",
+      "governorate": "Giza",
+      "provider_city_id": 72
+    },
+    {
+      "id": "30baa2fc-181f-5dfb-a717-869049a2184e",
+      "city": "Malawy",
+      "provider": "pdc",
+      "city_arabic": "ملوي",
+      "governorate": "El Menia",
+      "provider_city_id": 254
+    },
+    {
+      "id": "30c04805-e541-55ec-acda-402a78408293",
+      "city": "Bashteel",
+      "provider": "pdc",
+      "city_arabic": "بشتيل",
+      "governorate": "Giza",
+      "provider_city_id": 59
+    },
+    {
+      "id": "3151e4a2-01e5-5905-a88a-0ac3d789f83b",
+      "city": "Maghagha",
+      "provider": "pdc",
+      "city_arabic": "مغاغة",
+      "governorate": "El Menia",
+      "provider_city_id": 255
+    },
+    {
+      "id": "31a1a383-bb71-5b20-a4ba-3a26f16f78a1",
+      "city": "Saqqara",
+      "provider": "pdc",
+      "city_arabic": "سقارة",
+      "governorate": "Giza",
+      "provider_city_id": 75
+    },
+    {
+      "id": "31b2ce03-63e6-5963-a0a8-286e3fe30dbc",
+      "city": "Alsabaia",
+      "provider": "pdc",
+      "city_arabic": "السباعية",
+      "governorate": "Aswan",
+      "provider_city_id": 270
+    },
+    {
+      "id": "32685e87-c0e9-5b91-a60a-185e4c62d4ab",
+      "city": "Ahram Gardens",
+      "provider": "pdc",
+      "city_arabic": "حدائق الأهرام",
+      "governorate": "Giza",
+      "provider_city_id": 65
+    },
+    {
+      "id": "33c87c8f-9822-59da-a157-1faa5f1ba623",
+      "city": "Cairo Airport",
+      "provider": "pdc",
+      "city_arabic": "مطار القاهرة",
+      "governorate": "Cairo",
+      "provider_city_id": 43
+    },
+    {
+      "id": "34a91a54-08f6-5fbc-ad33-471664f8d273",
+      "city": "Al badrasheen",
+      "provider": "pdc",
+      "city_arabic": "البدرشين",
+      "governorate": "Giza 2",
+      "provider_city_id": 372
+    },
+    {
+      "id": "34d287ae-8c0f-56d4-a5ae-1510d3fa5ac7",
+      "city": "Ard-el-Lewa",
+      "provider": "pdc",
+      "city_arabic": "ارض اللواء",
+      "governorate": "Giza",
+      "provider_city_id": 54
+    },
+    {
+      "id": "34d3f48b-a068-501b-a0cf-fdaa51a4ed79",
+      "city": "Manfalout",
+      "provider": "pdc",
+      "city_arabic": "منفلوط",
+      "governorate": "Assiut",
+      "provider_city_id": 233
+    },
+    {
+      "id": "3561fbe2-68e2-5c77-a9d6-7e12e4f767a1",
+      "city": "San Al Hagar Alqeblia",
+      "provider": "pdc",
+      "city_arabic": "صان الحجر القبلية",
+      "governorate": "Elsharqia",
+      "provider_city_id": 166
+    },
+    {
+      "id": "35adf6f1-d860-5322-a7a0-a064ad5bd7bf",
+      "city": "Toukh",
+      "provider": "pdc",
+      "city_arabic": "طوخ",
+      "governorate": "Qalyubia",
+      "provider_city_id": 208
+    },
+    {
+      "id": "367ece26-84e0-5eac-a1d1-eb8109d7069e",
+      "city": "Tamiea",
+      "provider": "pdc",
+      "city_arabic": "طامية",
+      "governorate": "Alfayoum",
+      "provider_city_id": 225
+    },
+    {
+      "id": "36d0b598-8b85-54ee-abb2-7555abea9424",
+      "city": "Rafah",
+      "provider": "pdc",
+      "city_arabic": "رفح",
+      "governorate": "North Seina",
+      "provider_city_id": 349
+    },
+    {
+      "id": "36ec43cd-4e92-545e-af27-340b52c88387",
+      "city": "Sarss",
+      "provider": "pdc",
+      "city_arabic": "سرس",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 118
+    },
+    {
+      "id": "373a9481-2413-5722-af91-3bdb15a62463",
+      "city": "Alzaheir Alsahrawy",
+      "provider": "pdc",
+      "city_arabic": "الظهير الصحراوي",
+      "governorate": "Assiut",
+      "provider_city_id": 237
+    },
+    {
+      "id": "37f4b4a8-8a3a-54fd-a538-83985a0f978e",
+      "city": "Al Raml",
+      "provider": "pdc",
+      "city_arabic": "الرمل",
+      "governorate": "Alexandria",
+      "provider_city_id": 81
+    },
+    {
+      "id": "37f4e681-63c1-5c12-ae84-f0f18640e3d3",
+      "city": "Halyeb",
+      "provider": "pdc",
+      "city_arabic": "حلايب",
+      "governorate": "Red Sea",
+      "provider_city_id": 299
+    },
+    {
+      "id": "38a503f6-a705-500c-af88-ca94ad304c2d",
+      "city": "Al zayat",
+      "provider": "pdc",
+      "city_arabic": "الزيات",
+      "governorate": "Matrouh",
+      "provider_city_id": 331
+    },
+    {
+      "id": "39019202-f526-58e9-ae8f-ca33ee969807",
+      "city": "Abu Qorqass",
+      "provider": "pdc",
+      "city_arabic": "أبو قرقاص",
+      "governorate": "El Menia",
+      "provider_city_id": 261
+    },
+    {
+      "id": "398134cb-d6f6-585b-ae31-54a109481af7",
+      "city": "Bella",
+      "provider": "pdc",
+      "city_arabic": "بيلا",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 201
+    },
+    {
+      "id": "3ab9a871-bfd5-523d-aac3-e421d4323c7d",
+      "city": "Awlaad sakr",
+      "provider": "pdc",
+      "city_arabic": "أولاد صقر",
+      "governorate": "Elsharqia",
+      "provider_city_id": 175
+    },
+    {
+      "id": "3b44fc5a-dc4a-5d00-af7d-3c61753b98c8",
+      "city": "Qasr el-Einy",
+      "provider": "pdc",
+      "city_arabic": "القصر العيني",
+      "governorate": "Cairo",
+      "provider_city_id": 8
+    },
+    {
+      "id": "3c0f5c5a-1637-5d51-aed5-c68dd5507403",
+      "city": "Al Herafiyeen",
+      "provider": "pdc",
+      "city_arabic": "الحرفيين",
+      "governorate": "Cairo",
+      "provider_city_id": 1
+    },
+    {
+      "id": "3cb10772-c290-5b13-aa2d-881c81867130",
+      "city": "Dashna",
+      "provider": "pdc",
+      "city_arabic": "دشنا",
+      "governorate": "Qena",
+      "provider_city_id": 292
+    },
+    {
+      "id": "3f12dd51-7c8c-5559-a424-387382b0c24a",
+      "city": "Farshout",
+      "provider": "pdc",
+      "city_arabic": "فرشوط",
+      "governorate": "Qena",
+      "provider_city_id": 291
+    },
+    {
+      "id": "3fdc6e4a-2854-5c1c-a292-10739d580827",
+      "city": "Al qasr",
+      "provider": "pdc",
+      "city_arabic": "القصر",
+      "governorate": "Matrouh",
+      "provider_city_id": 335
+    },
+    {
+      "id": "40963b14-0df6-53c1-a873-7266f3fc0044",
+      "city": "Moharram Bek",
+      "provider": "pdc",
+      "city_arabic": "محرم بك",
+      "governorate": "Alexandria",
+      "provider_city_id": 79
+    },
+    {
+      "id": "40a2a3fd-f9e2-5c62-aed1-6089344e1a41",
+      "city": "Kalabsha",
+      "provider": "pdc",
+      "city_arabic": "كلابشة",
+      "governorate": "Aswan",
+      "provider_city_id": 266
+    },
+    {
+      "id": "41bedd22-b79c-5fe2-af13-b6abc74c8b76",
+      "city": "New Cairo",
+      "provider": "pdc",
+      "city_arabic": "التجمع",
+      "governorate": "Cairo",
+      "provider_city_id": 40
+    },
+    {
+      "id": "42308df7-9161-5ac1-a35f-c0314b4c5c1b",
+      "city": "Kafr Al Dawwar",
+      "provider": "pdc",
+      "city_arabic": "كفر الدوار",
+      "governorate": "Al Behaira",
+      "provider_city_id": 103
+    },
+    {
+      "id": "4258310b-e259-5fc0-a505-d7855ade9e7a",
+      "city": "Port Fouad",
+      "provider": "pdc",
+      "city_arabic": "بورفؤاد",
+      "governorate": "Port Said",
+      "provider_city_id": 206
+    },
+    {
+      "id": "42f2d9b4-1648-5b96-a4b5-98c0ca4a3006",
+      "city": "Luxor",
+      "provider": "pdc",
+      "city_arabic": "الأقصر",
+      "governorate": "Luxor",
+      "provider_city_id": 278
+    },
+    {
+      "id": "44319be5-22a0-535a-adb6-38b9c61bc1ff",
+      "city": "El-Hadaba el-Sofla",
+      "provider": "pdc",
+      "city_arabic": "الهضبة السفلى",
+      "governorate": "Cairo",
+      "provider_city_id": 34
+    },
+    {
+      "id": "44b9546c-0374-5277-a1b1-59518ac3de53",
+      "city": "Abu Zeniema",
+      "provider": "pdc",
+      "city_arabic": "أبو زنيمة",
+      "governorate": "South Seina",
+      "provider_city_id": 363
+    },
+    {
+      "id": "4556f814-f8a8-549b-a786-aec03490e143",
+      "city": "Alkhanka",
+      "provider": "pdc",
+      "city_arabic": "الخانكة",
+      "governorate": "Qalyubia",
+      "provider_city_id": 217
+    },
+    {
+      "id": "45851433-3e1d-53eb-a154-1a2b4b1fc2e8",
+      "city": "Obour Buildings",
+      "provider": "pdc",
+      "city_arabic": "عمارات العبور",
+      "governorate": "Cairo",
+      "provider_city_id": 23
+    },
+    {
+      "id": "46224c5f-21c0-55d3-a710-546a0955fdce",
+      "city": "Smart Village",
+      "provider": "pdc",
+      "city_arabic": "القرية الذكية",
+      "governorate": "Giza",
+      "provider_city_id": 71
+    },
+    {
+      "id": "473be3ac-8a07-5070-a9ce-4f22de991f80",
+      "city": "Shourouq City",
+      "provider": "pdc",
+      "city_arabic": "الشروق",
+      "governorate": "Cairo",
+      "provider_city_id": 50
+    },
+    {
+      "id": "481de9a4-0640-5627-a555-81d98d5173d8",
+      "city": "Alsalhia Algedieda",
+      "provider": "pdc",
+      "city_arabic": "الصالحية الجديدة",
+      "governorate": "Elsharqia",
+      "provider_city_id": 176
+    },
+    {
+      "id": "4a7f7973-c3e2-52dd-a850-409d450ead50",
+      "city": "Ben Suief Algedida",
+      "provider": "pdc",
+      "city_arabic": "بني سويف الجديدة",
+      "governorate": "Beni Suef",
+      "provider_city_id": 247
+    },
+    {
+      "id": "4a9e4d61-fe61-5a57-a7fe-677a4501ed99",
+      "city": "Qeleen",
+      "provider": "pdc",
+      "city_arabic": "قلين",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 194
+    },
+    {
+      "id": "4ae91025-818d-5525-a768-4888c0ae85fc",
+      "city": "Tahtaa",
+      "provider": "pdc",
+      "city_arabic": "طهطا",
+      "governorate": "Sohag",
+      "provider_city_id": 304
+    },
+    {
+      "id": "4aebe261-1b0d-513b-a904-5fc2ddebfbea",
+      "city": "Qena",
+      "provider": "pdc",
+      "city_arabic": "قنا",
+      "governorate": "Qena",
+      "provider_city_id": 287
+    },
+    {
+      "id": "4b1b300c-ab95-51bd-a7f1-6b4ca6a90638",
+      "city": "Borg Al Arab",
+      "provider": "pdc",
+      "city_arabic": "برج العرب",
+      "governorate": "Alexandria",
+      "provider_city_id": 94
+    },
+    {
+      "id": "4b7169d4-d9f4-5ec5-a392-4c6d642f803f",
+      "city": "Hurghada",
+      "provider": "pdc",
+      "city_arabic": "الغردقة",
+      "governorate": "Red Sea",
+      "provider_city_id": 298
+    },
+    {
+      "id": "4cb78527-a8dd-5fca-a296-a7bff360578a",
+      "city": "Um Alrekhim",
+      "provider": "pdc",
+      "city_arabic": "أم الرخم",
+      "governorate": "Matrouh",
+      "provider_city_id": 324
+    },
+    {
+      "id": "4ea4d8a0-93f7-5b73-ad36-f908149693f5",
+      "city": "Attaba",
+      "provider": "pdc",
+      "city_arabic": "العتبه",
+      "governorate": "Cairo",
+      "provider_city_id": 7
+    },
+    {
+      "id": "4ec9fd5e-bfa8-5c8c-a7b7-9582836b2803",
+      "city": "Qetaa at Tarik Al Sahrawi",
+      "provider": "pdc",
+      "city_arabic": "قطاع الطريق الصحراوي",
+      "governorate": "Alexandria",
+      "provider_city_id": 86
+    },
+    {
+      "id": "50f6015f-1a3d-5585-a377-b1e839bf1336",
+      "city": "Suez",
+      "provider": "pdc",
+      "city_arabic": "السويس",
+      "governorate": "Suez",
+      "provider_city_id": 220
+    },
+    {
+      "id": "51bbf0fe-2792-59e1-a7e2-0b78f3e670d5",
+      "city": "Dahab",
+      "provider": "pdc",
+      "city_arabic": "دهب",
+      "governorate": "South Seina",
+      "provider_city_id": 362
+    },
+    {
+      "id": "51efbead-f7f0-510b-a4e3-11bcd5d92206",
+      "city": "Qena Algedida",
+      "provider": "pdc",
+      "city_arabic": "قنا الجديدة",
+      "governorate": "Qena",
+      "provider_city_id": 286
+    },
+    {
+      "id": "526fda6d-d584-5d70-a849-3e1caa059263",
+      "city": "New Maadi",
+      "provider": "pdc",
+      "city_arabic": "المعادي الجديدة",
+      "governorate": "Cairo",
+      "provider_city_id": 30
+    },
+    {
+      "id": "53ab6b3d-64d2-561b-a907-2b8eb00ed412",
+      "city": "Al Mahalla el",
+      "provider": "pdc",
+      "city_arabic": "المحلة",
+      "governorate": "Algharbia",
+      "provider_city_id": 127
+    },
+    {
+      "id": "53e0c999-ab74-5769-aaef-8d1b58d9d672",
+      "city": "Massef Balteem",
+      "provider": "pdc",
+      "city_arabic": "مصيف بلطيم",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 197
+    },
+    {
+      "id": "553ee26e-1d6c-57e5-aecc-d45bb597987e",
+      "city": "Monieb",
+      "provider": "pdc",
+      "city_arabic": "المنيب",
+      "governorate": "Giza",
+      "provider_city_id": 64
+    },
+    {
+      "id": "55ca8c16-a159-578b-ac20-55244f405371",
+      "city": "Al Rahmaniyah",
+      "provider": "pdc",
+      "city_arabic": "الرحمانية",
+      "governorate": "Al Behaira",
+      "provider_city_id": 110
+    },
+    {
+      "id": "55d1b332-2afa-5014-a4c1-f94377b9005a",
+      "city": "Pallat",
+      "provider": "pdc",
+      "city_arabic": "بلاط",
+      "governorate": "New Valley",
+      "provider_city_id": 316
+    },
+    {
+      "id": "5622eb02-f39e-51a7-a340-bc14784af11a",
+      "city": "Manshiat Nasr",
+      "provider": "pdc",
+      "city_arabic": "منشأة ناصر",
+      "governorate": "Cairo 2",
+      "provider_city_id": 368
+    },
+    {
+      "id": "564ccf3d-557a-581b-a206-59a473604ae4",
+      "city": "Kafr Al Zayat",
+      "provider": "pdc",
+      "city_arabic": "كفر الزيات",
+      "governorate": "Algharbia",
+      "provider_city_id": 129
+    },
+    {
+      "id": "56fcf747-fd15-52ee-a882-a5d5c6aaf7cf",
+      "city": "Banbro",
+      "provider": "pdc",
+      "city_arabic": "منية النصر",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 146
+    },
+    {
+      "id": "5714484f-76c6-577f-ac95-14766a9d46bf",
+      "city": "Haram",
+      "provider": "pdc",
+      "city_arabic": "الهرم",
+      "governorate": "Giza",
+      "provider_city_id": 63
+    },
+    {
+      "id": "5774e956-3d8c-5191-a76c-48c482593626",
+      "city": "Qaha",
+      "provider": "pdc",
+      "city_arabic": "قها",
+      "governorate": "Qalyubia",
+      "provider_city_id": 212
+    },
+    {
+      "id": "5791c77c-e7ce-59c3-ad2e-c17da17924c5",
+      "city": "Al Maragha",
+      "provider": "pdc",
+      "city_arabic": "المراغة",
+      "governorate": "Sohag",
+      "provider_city_id": 312
+    },
+    {
+      "id": "590bab1c-0835-5b65-a4fc-b93f1d498835",
+      "city": "Ismalia",
+      "provider": "pdc",
+      "city_arabic": "الإسماعيلية",
+      "governorate": "Ismalia",
+      "provider_city_id": 186
+    },
+    {
+      "id": "596f0ac7-4da7-50d5-a4c0-715df5657517",
+      "city": "Abu Redeis",
+      "provider": "pdc",
+      "city_arabic": "أبو رديس",
+      "governorate": "South Seina",
+      "provider_city_id": 364
+    },
+    {
+      "id": "59f1324e-4112-54d2-a75a-2f4fb8ddba3d",
+      "city": "Dokki",
+      "provider": "pdc",
+      "city_arabic": "الدقي",
+      "governorate": "Giza",
+      "provider_city_id": 51
+    },
+    {
+      "id": "5ac4d758-f56d-5999-af56-4579e1bc0128",
+      "city": "Obour City",
+      "provider": "pdc",
+      "city_arabic": "مدينة العبور",
+      "governorate": "Cairo",
+      "provider_city_id": 45
+    },
+    {
+      "id": "5aef17c7-bc08-549b-a2db-b45af9379440",
+      "city": "Belqass",
+      "provider": "pdc",
+      "city_arabic": "بلقاس",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 144
+    },
+    {
+      "id": "5d06abb3-d476-5dfa-a444-c2721cbbadba",
+      "city": "Al Serou",
+      "provider": "pdc",
+      "city_arabic": "السرو",
+      "governorate": "Dammitta",
+      "provider_city_id": 164
+    },
+    {
+      "id": "5d1c1da9-d347-53f7-abec-86f5e6ecd757",
+      "city": "Monshaet Alqanater",
+      "provider": "pdc",
+      "city_arabic": "منشأة القناطر",
+      "governorate": "Giza 2",
+      "provider_city_id": 378
+    },
+    {
+      "id": "5d9d6312-b8f8-5716-af86-a53c01556947",
+      "city": "Al rawda",
+      "provider": "pdc",
+      "city_arabic": "الروضة",
+      "governorate": "Dammitta",
+      "provider_city_id": 163
+    },
+    {
+      "id": "5e05ef66-caf5-5a9d-a8ab-d63cce1fe311",
+      "city": "Nassr Alnouba",
+      "provider": "pdc",
+      "city_arabic": "نصر النوبة",
+      "governorate": "Aswan",
+      "provider_city_id": 264
+    },
+    {
+      "id": "5e3f8729-2de9-5a72-a4fb-1100abbef737",
+      "city": "Damietta  Al Gedida",
+      "provider": "pdc",
+      "city_arabic": "دمياط الجديدة",
+      "governorate": "Dammitta",
+      "provider_city_id": 160
+    },
+    {
+      "id": "5fa46abc-8d44-57b3-a9fb-6fc264c6dad8",
+      "city": "Issna",
+      "provider": "pdc",
+      "city_arabic": "إسنا",
+      "governorate": "Luxor",
+      "provider_city_id": 279
+    },
+    {
+      "id": "6093f4ea-3802-559c-a025-694514c5536e",
+      "city": "Tibeen",
+      "provider": "pdc",
+      "city_arabic": "التبين",
+      "governorate": "Cairo",
+      "provider_city_id": 47
+    },
+    {
+      "id": "63329868-be04-5555-a4b5-68c2c77d791d",
+      "city": "Mohandiseen",
+      "provider": "pdc",
+      "city_arabic": "المهندسين",
+      "governorate": "Giza",
+      "provider_city_id": 52
+    },
+    {
+      "id": "642d1cde-391e-5806-a582-f216f31afd7a",
+      "city": "Matar Imbaba",
+      "provider": "pdc",
+      "city_arabic": "مطار امبابه",
+      "governorate": "Giza",
+      "provider_city_id": 55
+    },
+    {
+      "id": "643ba05a-f20d-50f5-aec0-f8ec44e75860",
+      "city": "Others",
+      "provider": "pdc",
+      "city_arabic": "أخرى",
+      "governorate": "Cairo 2",
+      "provider_city_id": 366
+    },
+    {
+      "id": "6466e1ec-e888-56bf-ae3b-279e61562d85",
+      "city": "Alexandria Desert",
+      "provider": "pdc",
+      "city_arabic": "الطريق الصحراوي",
+      "governorate": "Alexandria",
+      "provider_city_id": 95
+    },
+    {
+      "id": "64d3c35d-1eb3-582b-a966-741eda2e390e",
+      "city": "10th District",
+      "provider": "pdc",
+      "city_arabic": "الحى العاشر",
+      "governorate": "Cairo",
+      "provider_city_id": 19
+    },
+    {
+      "id": "6843928c-f2c4-5749-aefd-9c6347b9e34c",
+      "city": "Boulak-e-Dakrour",
+      "provider": "pdc",
+      "city_arabic": "بولاق الدكرور",
+      "governorate": "Giza",
+      "provider_city_id": 60
+    },
+    {
+      "id": "6848a5c5-7f66-565b-a466-c742496e2097",
+      "city": "Hadayek el-Qobba",
+      "provider": "pdc",
+      "city_arabic": "حدائق القبة",
+      "governorate": "Cairo",
+      "provider_city_id": 25
+    },
+    {
+      "id": "68e2355d-225c-5758-ac19-a9b378e9ad9a",
+      "city": "El-Manawat",
+      "provider": "pdc",
+      "city_arabic": "المنوات",
+      "governorate": "Giza",
+      "provider_city_id": 77
+    },
+    {
+      "id": "696af29b-2f96-55a0-a704-f88eb2c9d055",
+      "city": "Alqossya",
+      "provider": "pdc",
+      "city_arabic": "القوصية",
+      "governorate": "Assiut",
+      "provider_city_id": 238
+    },
+    {
+      "id": "6a08b5cf-5307-5290-a6bb-394e0be77bdb",
+      "city": "Al zarqa",
+      "provider": "pdc",
+      "city_arabic": "الزرقا",
+      "governorate": "Dammitta",
+      "provider_city_id": 162
+    },
+    {
+      "id": "6aed6080-e06f-50e5-aa87-43ba39d65f3d",
+      "city": "Maadi",
+      "provider": "pdc",
+      "city_arabic": "المعادي",
+      "governorate": "Cairo",
+      "provider_city_id": 32
+    },
+    {
+      "id": "6c0c9062-bee8-5155-a236-7b5a4923fd6e",
+      "city": "Bab el-Shiriya",
+      "provider": "pdc",
+      "city_arabic": "باب الشعرية",
+      "governorate": "Cairo",
+      "provider_city_id": 15
+    },
+    {
+      "id": "6da3a651-0a41-5bb4-afec-985df01a30b0",
+      "city": "Monshaet Abu Omar",
+      "provider": "pdc",
+      "city_arabic": "منشأة أبو عمر",
+      "governorate": "Elsharqia",
+      "provider_city_id": 167
+    },
+    {
+      "id": "6dbbecee-c465-5385-a2f0-ae9da9d92378",
+      "city": "Abu al-Matamir",
+      "provider": "pdc",
+      "city_arabic": "أبو المطامير",
+      "governorate": "Al Behaira",
+      "provider_city_id": 114
+    },
+    {
+      "id": "6dfaf86a-7a91-5f64-ab82-696a8f126f20",
+      "city": "El Menia",
+      "provider": "pdc",
+      "city_arabic": "المنيا",
+      "governorate": "El Menia",
+      "provider_city_id": 257
+    },
+    {
+      "id": "6fcdd447-98bd-5ef9-ad78-fda848c0e34e",
+      "city": "Taba",
+      "provider": "pdc",
+      "city_arabic": "طابا",
+      "governorate": "South Seina",
+      "provider_city_id": 357
+    },
+    {
+      "id": "6ff5da99-826f-51f8-aa62-ea4ae9500654",
+      "city": "Damanhour",
+      "provider": "pdc",
+      "city_arabic": "دمنهور",
+      "governorate": "Al Behaira",
+      "provider_city_id": 107
+    },
+    {
+      "id": "70a29291-2ac1-51e9-ab9b-22392d85e7e9",
+      "city": "Youssef Alsedeik",
+      "provider": "pdc",
+      "city_arabic": "يوسف الصديق",
+      "governorate": "Alfayoum",
+      "provider_city_id": 223
+    },
+    {
+      "id": "70ff926b-32dd-5b98-a538-ade66eccd56c",
+      "city": "Abu Hummus",
+      "provider": "pdc",
+      "city_arabic": "أبو حمص",
+      "governorate": "Al Behaira",
+      "provider_city_id": 113
+    },
+    {
+      "id": "71a250d1-73b5-5961-ab20-e8c673035e70",
+      "city": "Atfeh",
+      "provider": "pdc",
+      "city_arabic": "أطفيح",
+      "governorate": "Giza 2",
+      "provider_city_id": 376
+    },
+    {
+      "id": "72453111-07f9-5711-a905-8eb2cffb3de9",
+      "city": "Alobour",
+      "provider": "pdc",
+      "city_arabic": "العبور",
+      "governorate": "Qalyubia",
+      "provider_city_id": 216
+    },
+    {
+      "id": "72698c84-052e-53e4-a1d9-6eee1735a227",
+      "city": "Al Behaira",
+      "provider": "pdc",
+      "city_arabic": "البحيرة",
+      "governorate": "Al Behaira",
+      "provider_city_id": 112
+    },
+    {
+      "id": "73085208-f4f7-5534-a719-777c0d5fb288",
+      "city": "Abu Kbeir",
+      "provider": "pdc",
+      "city_arabic": "أبو كبير",
+      "governorate": "Elsharqia",
+      "provider_city_id": 181
+    },
+    {
+      "id": "7395dcb1-a50f-5376-a89e-d042f416dbd7",
+      "city": "Al shalatten",
+      "provider": "pdc",
+      "city_arabic": "الشلاتين",
+      "governorate": "Red Sea",
+      "provider_city_id": 301
+    },
+    {
+      "id": "76321451-1006-5749-a37f-61ff200957ee",
+      "city": "Nasr City",
+      "provider": "pdc",
+      "city_arabic": "مدينة نصر",
+      "governorate": "Cairo",
+      "provider_city_id": 18
+    },
+    {
+      "id": "76ab7e8e-d22b-56e1-aa10-adc43ebfb188",
+      "city": "Al shouhdaa",
+      "provider": "pdc",
+      "city_arabic": "الشهداء",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 124
+    },
+    {
+      "id": "76d9cc56-a878-5f12-ab0d-f7da33aafbe6",
+      "city": "Al Wahat city",
+      "provider": "pdc",
+      "city_arabic": "مدينة الواحات",
+      "governorate": "Giza 2",
+      "provider_city_id": 375
+    },
+    {
+      "id": "77f9481e-da2e-559c-a0f9-a81d7e9abe04",
+      "city": "waadi al rayaan",
+      "provider": "pdc",
+      "city_arabic": "وادي الريان",
+      "governorate": "Alfayoum",
+      "provider_city_id": 224
+    },
+    {
+      "id": "79890ff6-7a3e-518e-a1d4-39bbf9b27554",
+      "city": "15th of May City",
+      "provider": "pdc",
+      "city_arabic": "مدينة 15 مايو",
+      "governorate": "Cairo",
+      "provider_city_id": 48
+    },
+    {
+      "id": "7a16af9b-6c17-5b21-a2d2-f98729e277ae",
+      "city": "Naqada",
+      "provider": "pdc",
+      "city_arabic": "نقادة",
+      "governorate": "Qena",
+      "provider_city_id": 289
+    },
+    {
+      "id": "7b2397f4-4ea3-50b2-adfd-dcab0fac1f1e",
+      "city": "Alayaat",
+      "provider": "pdc",
+      "city_arabic": "العياط",
+      "governorate": "Giza 2",
+      "provider_city_id": 379
+    },
+    {
+      "id": "7cfebe52-692a-5eae-a79d-84230099a80b",
+      "city": "Naga Hamadi",
+      "provider": "pdc",
+      "city_arabic": "نجع حمادي",
+      "governorate": "Qena",
+      "provider_city_id": 290
+    },
+    {
+      "id": "7d2e6111-0f0d-57eb-af9f-02e6e1284592",
+      "city": "Al Soukhna",
+      "provider": "pdc",
+      "city_arabic": "السخنة",
+      "governorate": "Suez",
+      "provider_city_id": 221
+    },
+    {
+      "id": "7ec1ab62-b02f-51a8-ac96-3a1b160e3697",
+      "city": "Faraskour",
+      "provider": "pdc",
+      "city_arabic": "فارسكور",
+      "governorate": "Dammitta",
+      "provider_city_id": 158
+    },
+    {
+      "id": "7ef9ee3e-e2e7-59e1-aa84-55682851a182",
+      "city": "Sharq-e-Tafrea'a",
+      "provider": "pdc",
+      "city_arabic": "شرق التفريعة",
+      "governorate": "Port Said",
+      "provider_city_id": 207
+    },
+    {
+      "id": "7fd3db46-c490-542b-a130-d28623310a7b",
+      "city": "Al Nubaria al-gedida",
+      "provider": "pdc",
+      "city_arabic": "النوبارية الجديدة",
+      "governorate": "Al Behaira",
+      "provider_city_id": 111
+    },
+    {
+      "id": "80633351-c036-558c-a34b-44a807897250",
+      "city": "Qalyubia",
+      "provider": "pdc",
+      "city_arabic": "القليوبية",
+      "governorate": "Qalyubia",
+      "provider_city_id": 219
+    },
+    {
+      "id": "812ef729-5040-5e22-a0c4-4c0df01bb851",
+      "city": "Shabrakhit",
+      "provider": "pdc",
+      "city_arabic": "شبراخيت",
+      "governorate": "Al Behaira",
+      "provider_city_id": 99
+    },
+    {
+      "id": "837772e0-9218-541d-ab77-22d9d4f402cc",
+      "city": "Sahel Seleim",
+      "provider": "pdc",
+      "city_arabic": "ساحل سليم",
+      "governorate": "Assiut",
+      "provider_city_id": 231
+    },
+    {
+      "id": "83dae1aa-8f7c-5c36-a03b-62b74e66b0e4",
+      "city": "Ezbat Al Borg",
+      "provider": "pdc",
+      "city_arabic": "عزبة البرج",
+      "governorate": "Dammitta",
+      "provider_city_id": 159
+    },
+    {
+      "id": "861b4d83-4072-51be-ab80-f5e5c53698d3",
+      "city": "Karmouz",
+      "provider": "pdc",
+      "city_arabic": "كرموز",
+      "governorate": "Alexandria",
+      "provider_city_id": 91
+    },
+    {
+      "id": "86428e8e-0c06-568a-a757-37fd627afaef",
+      "city": "Kerdassa",
+      "provider": "pdc",
+      "city_arabic": "كرداسة",
+      "governorate": "Giza 2",
+      "provider_city_id": 373
+    },
+    {
+      "id": "866ee469-38d4-53f7-abee-7ec8e88eb5f8",
+      "city": "Dekhela",
+      "provider": "pdc",
+      "city_arabic": "الدخيلة",
+      "governorate": "Alexandria",
+      "provider_city_id": 93
+    },
+    {
+      "id": "86a6ac40-1fbb-51c7-ae86-5c90187b5ead",
+      "city": "New toushka City",
+      "provider": "pdc",
+      "city_arabic": "توشكى الجديدة",
+      "governorate": "Aswan",
+      "provider_city_id": 262
+    },
+    {
+      "id": "876fdf1a-8aaf-5f9f-ac6a-bfb8a33c82d9",
+      "city": "Mahmoudiyah",
+      "provider": "pdc",
+      "city_arabic": "المحمودية",
+      "governorate": "Al Behaira",
+      "provider_city_id": 101
+    },
+    {
+      "id": "87b21f5b-54b9-55a4-a273-99192aa8e7bb",
+      "city": "Suhag",
+      "provider": "pdc",
+      "city_arabic": "سوهاج",
+      "governorate": "Sohag",
+      "provider_city_id": 305
+    },
+    {
+      "id": "8b713781-11c2-5abb-a7d6-2eca41928e71",
+      "city": "Al salom",
+      "provider": "pdc",
+      "city_arabic": "السلام",
+      "governorate": "Matrouh",
+      "provider_city_id": 333
+    },
+    {
+      "id": "8be0da44-4992-5049-a40f-2bb796cd1f23",
+      "city": "Alwakf",
+      "provider": "pdc",
+      "city_arabic": "الوقف",
+      "governorate": "Qena",
+      "provider_city_id": 293
+    },
+    {
+      "id": "8d8c0776-0bcc-595b-affe-5fd40a6f7b21",
+      "city": "Down Town",
+      "provider": "pdc",
+      "city_arabic": "وسط البلد",
+      "governorate": "Cairo",
+      "provider_city_id": 4
+    },
+    {
+      "id": "8e41161f-c175-5655-ab35-1ef89e19893d",
+      "city": "Warraq",
+      "provider": "pdc",
+      "city_arabic": "الوراق",
+      "governorate": "Giza",
+      "provider_city_id": 58
+    },
+    {
+      "id": "8f2efbd6-e35e-5533-a0e2-e5cf2e352716",
+      "city": "Rimaya",
+      "provider": "pdc",
+      "city_arabic": "الرماية",
+      "governorate": "Giza",
+      "provider_city_id": 66
+    },
+    {
+      "id": "901242bd-cd37-5fae-a2b1-130ceccc1b58",
+      "city": "Al Mansheya",
+      "provider": "pdc",
+      "city_arabic": "المنشية",
+      "governorate": "Alexandria",
+      "provider_city_id": 83
+    },
+    {
+      "id": "901fc36b-229a-587f-a962-ddae2f2c14ec",
+      "city": "Sidi Gaber",
+      "provider": "pdc",
+      "city_arabic": "سيدي جابر",
+      "governorate": "Alexandria",
+      "provider_city_id": 78
+    },
+    {
+      "id": "911ecfb6-b54e-5052-a2ca-452d188d74e3",
+      "city": "Salloum",
+      "provider": "pdc",
+      "city_arabic": "السلوم",
+      "governorate": "Matrouh",
+      "provider_city_id": 348
+    },
+    {
+      "id": "923c5d84-cb0c-50b4-a83a-aa6c7e81d1ea",
+      "city": "Alf Maskan",
+      "provider": "pdc",
+      "city_arabic": "الألف مسكن",
+      "governorate": "Cairo",
+      "provider_city_id": 22
+    },
+    {
+      "id": "92e001fd-ff1b-5f30-a110-e4c59ce39034",
+      "city": "Drawo",
+      "provider": "pdc",
+      "city_arabic": "دراو",
+      "governorate": "Aswan",
+      "provider_city_id": 268
+    },
+    {
+      "id": "9372513b-e750-59f3-afe4-fad1437326bf",
+      "city": "Kafr Sakr",
+      "provider": "pdc",
+      "city_arabic": "كفر صقر",
+      "governorate": "Elsharqia",
+      "provider_city_id": 170
+    },
+    {
+      "id": "956b9a6b-22d2-5ff0-a313-81deb4bac17b",
+      "city": "Abbassiya",
+      "provider": "pdc",
+      "city_arabic": "العباسية",
+      "governorate": "Cairo",
+      "provider_city_id": 13
+    },
+    {
+      "id": "95a1c792-3d6b-5cd6-a8f0-3e5dfe7f5b9e",
+      "city": "Toshka",
+      "provider": "pdc",
+      "city_arabic": "توشكى",
+      "governorate": "Aswan",
+      "provider_city_id": 275
+    },
+    {
+      "id": "96236fa0-982d-550b-a3c1-bd142db74377",
+      "city": "Manial Sheeha",
+      "provider": "pdc",
+      "city_arabic": "منيل شيحة",
+      "governorate": "Giza",
+      "provider_city_id": 76
+    },
+    {
+      "id": "96ef0edd-54e9-5409-a2f6-5f8255455da5",
+      "city": "Smastta",
+      "provider": "pdc",
+      "city_arabic": "سمسطا",
+      "governorate": "Beni Suef",
+      "provider_city_id": 244
+    },
+    {
+      "id": "976b4ef2-f2e2-5620-a71c-2c27a3b4e9fa",
+      "city": "Al Radessa",
+      "provider": "pdc",
+      "city_arabic": "الرديسية",
+      "governorate": "Aswan",
+      "provider_city_id": 272
+    },
+    {
+      "id": "982986d7-4568-5554-a51f-bb75431be80d",
+      "city": "Awssem",
+      "provider": "pdc",
+      "city_arabic": "أوسيم",
+      "governorate": "Giza 2",
+      "provider_city_id": 380
+    },
+    {
+      "id": "988fbf02-1d05-5f6b-a41c-27c40800e04f",
+      "city": "Dekerness",
+      "provider": "pdc",
+      "city_arabic": "دكرنس",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 142
+    },
+    {
+      "id": "9a2e1d73-1659-5401-a2c8-1e890554ff16",
+      "city": "Abuluho Alganouby",
+      "provider": "pdc",
+      "city_arabic": "أبو لحو الجنوبي",
+      "governorate": "Matrouh",
+      "provider_city_id": 340
+    },
+    {
+      "id": "9a949472-92dc-5db1-a04a-1962e796f054",
+      "city": "Gesr el-Suez",
+      "provider": "pdc",
+      "city_arabic": "جسر السويس",
+      "governorate": "Cairo",
+      "provider_city_id": 21
+    },
+    {
+      "id": "9b106430-1f42-5c61-add0-f8ba3302cdc3",
+      "city": "Brani",
+      "provider": "pdc",
+      "city_arabic": "براني",
+      "governorate": "Matrouh",
+      "provider_city_id": 346
+    },
+    {
+      "id": "9bdafea5-314f-567c-a1ef-55eca145ade7",
+      "city": "Tora",
+      "provider": "pdc",
+      "city_arabic": "طرة",
+      "governorate": "Cairo",
+      "provider_city_id": 35
+    },
+    {
+      "id": "9d8db362-e029-511f-aa4f-70f3c9831345",
+      "city": "Al Manzala",
+      "provider": "pdc",
+      "city_arabic": "المنزلة",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 151
+    },
+    {
+      "id": "9db251bb-b29a-5ea8-a539-ca2e5273e7d8",
+      "city": "Salam City",
+      "provider": "pdc",
+      "city_arabic": "مدينة السلام",
+      "governorate": "Cairo",
+      "provider_city_id": 44
+    },
+    {
+      "id": "9e64d9fc-c5c1-5e49-a3bd-c52dad14e864",
+      "city": "Meit Salseil",
+      "provider": "pdc",
+      "city_arabic": "ميت سلسيل",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 139
+    },
+    {
+      "id": "9e6e330a-2ed8-523a-aa5c-993595d5e93f",
+      "city": "Moqattam",
+      "provider": "pdc",
+      "city_arabic": "المقطم",
+      "governorate": "Cairo",
+      "provider_city_id": 33
+    },
+    {
+      "id": "9f36e331-2881-5c05-a454-04ed74da5562",
+      "city": "Al Zeinya",
+      "provider": "pdc",
+      "city_arabic": "الزينية",
+      "governorate": "Luxor",
+      "provider_city_id": 283
+    },
+    {
+      "id": "9f67c6a8-a328-5dec-a6c8-59e9d36e1d23",
+      "city": "Alqussier",
+      "provider": "pdc",
+      "city_arabic": "القصير",
+      "governorate": "Red Sea",
+      "provider_city_id": 300
+    },
+    {
+      "id": "9f6dbf6d-bdea-593e-a6d7-aaffe039ab64",
+      "city": "Mattay",
+      "provider": "pdc",
+      "city_arabic": "مطاي",
+      "governorate": "El Menia",
+      "provider_city_id": 253
+    },
+    {
+      "id": "a026c9a6-9030-5198-a228-2431b5500be5",
+      "city": "Al Marg",
+      "provider": "pdc",
+      "city_arabic": "المرج",
+      "governorate": "Cairo 2",
+      "provider_city_id": 370
+    },
+    {
+      "id": "a16fd802-2b2d-5306-a5ed-433ab7940a02",
+      "city": "Matrouh",
+      "provider": "pdc",
+      "city_arabic": "مطروح",
+      "governorate": "Matrouh",
+      "provider_city_id": 343
+    },
+    {
+      "id": "a2753e08-757f-5677-a076-4b9dc851b83b",
+      "city": "Agouza",
+      "provider": "pdc",
+      "city_arabic": "العجوزة",
+      "governorate": "Giza",
+      "provider_city_id": 53
+    },
+    {
+      "id": "a5b6df8e-cf90-57ef-a9ac-428c010e114e",
+      "city": "Al gamlia",
+      "provider": "pdc",
+      "city_arabic": "الجمالية",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 149
+    },
+    {
+      "id": "a5e8cc26-5dbf-5b59-a19c-8869eb963a21",
+      "city": "Manial",
+      "provider": "pdc",
+      "city_arabic": "المنيل",
+      "governorate": "Cairo",
+      "provider_city_id": 6
+    },
+    {
+      "id": "a5f4dca5-5ae0-5a24-ae14-f74e656d64fb",
+      "city": "Sedi Ghazi",
+      "provider": "pdc",
+      "city_arabic": "سيدي غازي",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 193
+    },
+    {
+      "id": "a7e9f27e-d3d0-5e94-a21d-d8337fd874bb",
+      "city": "Al manshaa",
+      "provider": "pdc",
+      "city_arabic": "المنشأة",
+      "governorate": "Sohag",
+      "provider_city_id": 311
+    },
+    {
+      "id": "a95ba689-396e-5007-a925-3dc54e8196c0",
+      "city": "Gerga",
+      "provider": "pdc",
+      "city_arabic": "جرجا",
+      "governorate": "Sohag",
+      "provider_city_id": 309
+    },
+    {
+      "id": "aa03c85f-5d7f-5987-a098-82a67da6f2d3",
+      "city": "Al grawla",
+      "provider": "pdc",
+      "city_arabic": "الجراولة",
+      "governorate": "Matrouh",
+      "provider_city_id": 338
+    },
+    {
+      "id": "aa8c4bc0-375d-5af7-a065-ed637280efc4",
+      "city": "Edco",
+      "provider": "pdc",
+      "city_arabic": "إدكو",
+      "governorate": "Al Behaira",
+      "provider_city_id": 106
+    },
+    {
+      "id": "acb47134-e604-51ba-abad-086aab8cc0dd",
+      "city": "Altoud",
+      "provider": "pdc",
+      "city_arabic": "الطود",
+      "governorate": "Luxor",
+      "provider_city_id": 281
+    },
+    {
+      "id": "acc144aa-afb6-53df-a36c-1715012e3640",
+      "city": "Meet Abu Ghaleb",
+      "provider": "pdc",
+      "city_arabic": "ميت أبو غالب",
+      "governorate": "Dammitta",
+      "provider_city_id": 155
+    },
+    {
+      "id": "acea134a-099a-5500-aa67-163dd9457d46",
+      "city": "Hay Sharq",
+      "provider": "pdc",
+      "city_arabic": "حي شرق",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 121
+    },
+    {
+      "id": "ad6df390-189c-5310-a3ab-ab557d4fdde3",
+      "city": "Abo AlNomross",
+      "provider": "pdc",
+      "city_arabic": "أبو النمرس",
+      "governorate": "Giza 2",
+      "provider_city_id": 381
+    },
+    {
+      "id": "adbf7401-f9b0-5129-abda-c61a1f17ab7f",
+      "city": "Al Hawamdia",
+      "provider": "pdc",
+      "city_arabic": "الحوامدية",
+      "governorate": "Giza 2",
+      "provider_city_id": 374
+    },
+    {
+      "id": "ae900303-5bcc-520f-adda-2223e5cd04d8",
+      "city": "Kom Hamada",
+      "provider": "pdc",
+      "city_arabic": "كوم حمادة",
+      "governorate": "Al Behaira",
+      "provider_city_id": 102
+    },
+    {
+      "id": "aef75eff-73f1-57f3-a915-cc39dc5e9cdb",
+      "city": "Sayeda Zeinab",
+      "provider": "pdc",
+      "city_arabic": "السيدة زينب",
+      "governorate": "Cairo",
+      "provider_city_id": 16
+    },
+    {
+      "id": "af53449d-df99-59fc-a3f0-372d547cc33a",
+      "city": "Zifta",
+      "provider": "pdc",
+      "city_arabic": "زفتى",
+      "governorate": "Algharbia",
+      "provider_city_id": 131
+    },
+    {
+      "id": "af88ac1d-3f8f-5b4a-ae25-eea9ce348ed6",
+      "city": "Sidi Heneish",
+      "provider": "pdc",
+      "city_arabic": "سيدي حنيش",
+      "governorate": "Matrouh",
+      "provider_city_id": 325
+    },
+    {
+      "id": "afa2519e-528d-5478-a896-1382e61bfd7b",
+      "city": "Albesaila",
+      "provider": "pdc",
+      "city_arabic": "البصيلية",
+      "governorate": "Aswan",
+      "provider_city_id": 271
+    },
+    {
+      "id": "b17bbc54-831e-548d-adcf-333d4e97af68",
+      "city": "Dhaher",
+      "provider": "pdc",
+      "city_arabic": "الظاهر",
+      "governorate": "Cairo",
+      "provider_city_id": 9
+    },
+    {
+      "id": "b1a9b0e2-886c-57c7-a476-74512388d30c",
+      "city": "Abu Hamaad",
+      "provider": "pdc",
+      "city_arabic": "أبو حماد",
+      "governorate": "Elsharqia",
+      "provider_city_id": 182
+    },
+    {
+      "id": "b1f62ff8-0058-5a36-aee0-8fee53c6e7be",
+      "city": "Snourss",
+      "provider": "pdc",
+      "city_arabic": "سنورس",
+      "governorate": "Alfayoum",
+      "provider_city_id": 226
+    },
+    {
+      "id": "b2ba794b-1a76-5455-a830-a508141972a1",
+      "city": "Saft-e-Laban",
+      "provider": "pdc",
+      "city_arabic": "صفط اللبن",
+      "governorate": "Giza",
+      "provider_city_id": 56
+    },
+    {
+      "id": "b30b9fce-2246-54f0-aac1-06a4bb39f4a9",
+      "city": "Abu Sembal",
+      "provider": "pdc",
+      "city_arabic": "أبو سمبل",
+      "governorate": "Aswan",
+      "provider_city_id": 274
+    },
+    {
+      "id": "b33e4ca5-070c-5f31-af40-d6e6b30fae24",
+      "city": "Al almeen",
+      "provider": "pdc",
+      "city_arabic": "العلمين",
+      "governorate": "Matrouh",
+      "provider_city_id": 345
+    },
+    {
+      "id": "b38c4216-bff4-5c93-a46d-9729099f45a6",
+      "city": "Imbaba",
+      "provider": "pdc",
+      "city_arabic": "امبابة",
+      "governorate": "Giza",
+      "provider_city_id": 57
+    },
+    {
+      "id": "b4873539-24bc-5139-ae2b-158175fb1c65",
+      "city": "Menouf",
+      "provider": "pdc",
+      "city_arabic": "منوف",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 120
+    },
+    {
+      "id": "b4d09539-e987-5643-ac28-21e92121fd41",
+      "city": "Al Hussania",
+      "provider": "pdc",
+      "city_arabic": "الحسينية",
+      "governorate": "Elsharqia",
+      "provider_city_id": 180
+    },
+    {
+      "id": "b566d2bb-d7e6-556e-a648-dbc6c68dc5c0",
+      "city": "Armant",
+      "provider": "pdc",
+      "city_arabic": "أرمنت",
+      "governorate": "Luxor",
+      "provider_city_id": 280
+    },
+    {
+      "id": "b5d6eacc-4799-5bd0-a98e-2776fc195792",
+      "city": "Qwessna",
+      "provider": "pdc",
+      "city_arabic": "قويسنا",
+      "governorate": "Al Mounofia",
+      "provider_city_id": 119
+    },
+    {
+      "id": "b6f2c3d9-4c7a-5214-aaad-70749a74c51f",
+      "city": "Al Tall Al Kbier",
+      "provider": "pdc",
+      "city_arabic": "التل الكبير",
+      "governorate": "Ismalia",
+      "provider_city_id": 190
+    },
+    {
+      "id": "b785ffd6-aacc-57b0-a161-e18fb321cf48",
+      "city": "Al Khousoss",
+      "provider": "pdc",
+      "city_arabic": "الخصوص",
+      "governorate": "Qalyubia",
+      "provider_city_id": 218
+    },
+    {
+      "id": "b8584404-be5d-531f-a614-d871a9b8b8bf",
+      "city": "Siwa",
+      "provider": "pdc",
+      "city_arabic": "سيوة",
+      "governorate": "New Valley",
+      "provider_city_id": 320
+    },
+    {
+      "id": "b8b920ce-fe48-557b-a552-cb0660b28380",
+      "city": "Al Zawya Elhamra",
+      "provider": "pdc",
+      "city_arabic": "الزاوية الحمراء",
+      "governorate": "Cairo 2",
+      "provider_city_id": 371
+    },
+    {
+      "id": "b9187aeb-d276-5762-a65f-75d7c979d474",
+      "city": "Borg Al Broloss",
+      "provider": "pdc",
+      "city_arabic": "برج البرلس",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 200
+    },
+    {
+      "id": "b9696c17-c285-5722-a8cb-28798878c9ed",
+      "city": "Giza",
+      "provider": "pdc",
+      "city_arabic": "الجيزة",
+      "governorate": "Giza",
+      "provider_city_id": 61
+    },
+    {
+      "id": "b98e6ec8-424e-56af-a0cd-4e8eed992079",
+      "city": "Al Waily",
+      "provider": "pdc",
+      "city_arabic": "الوايلي",
+      "governorate": "Cairo 2",
+      "provider_city_id": 369
+    },
+    {
+      "id": "b9abdfa0-6f5d-59df-a863-20eeac6d45d2",
+      "city": "Abu Teih",
+      "provider": "pdc",
+      "city_arabic": "أبو تيج",
+      "governorate": "Assiut",
+      "provider_city_id": 242
+    },
+    {
+      "id": "ba059aa8-b8b1-5c42-a77a-0f09c9710eb3",
+      "city": "Banha",
+      "provider": "pdc",
+      "city_arabic": "بنها",
+      "governorate": "Qalyubia",
+      "provider_city_id": 215
+    },
+    {
+      "id": "bae37aae-4dcd-5802-ad75-a6d42cb7c86d",
+      "city": "Abu Sembal Alsayhia",
+      "provider": "pdc",
+      "city_arabic": "أبو سمبل السياحية",
+      "governorate": "Aswan",
+      "provider_city_id": 273
+    },
+    {
+      "id": "bb6629d3-91c1-5651-a232-cc5f8b3ee641",
+      "city": "Ras Gharib",
+      "provider": "pdc",
+      "city_arabic": "رأس غارب",
+      "governorate": "Red Sea",
+      "provider_city_id": 296
+    },
+    {
+      "id": "bc7ee5b7-6e06-5f81-a3e6-31400719b499",
+      "city": "Al sheikh Zwayd",
+      "provider": "pdc",
+      "city_arabic": "الشيخ زويد",
+      "governorate": "North Seina",
+      "provider_city_id": 351
+    },
+    {
+      "id": "bcc5cceb-e41b-581b-a025-a4dbae38e666",
+      "city": "Matobus",
+      "provider": "pdc",
+      "city_arabic": "مطوبس",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 195
+    },
+    {
+      "id": "bdaa1fc7-96dc-5379-ae97-89d6deb18c63",
+      "city": "Albadry",
+      "provider": "pdc",
+      "city_arabic": "البداري",
+      "governorate": "Assiut",
+      "provider_city_id": 241
+    },
+    {
+      "id": "be2ed296-7eca-55bd-ab24-33769d1f7c86",
+      "city": "Abnoob",
+      "provider": "pdc",
+      "city_arabic": "أبنوب",
+      "governorate": "Assiut",
+      "provider_city_id": 243
+    },
+    {
+      "id": "bf503f62-dfdf-57f0-adb9-5063821d504a",
+      "city": "Sadfaa",
+      "provider": "pdc",
+      "city_arabic": "صدفا",
+      "governorate": "Assiut",
+      "provider_city_id": 232
+    },
+    {
+      "id": "bff73ce9-4c72-5e5f-aff2-19ebb97a5ad3",
+      "city": "Rashid",
+      "provider": "pdc",
+      "city_arabic": "رشيد",
+      "governorate": "Al Behaira",
+      "provider_city_id": 100
+    },
+    {
+      "id": "c0d7c4a4-7871-52bd-ae83-e4e0b9218e5d",
+      "city": "Abu tesht",
+      "provider": "pdc",
+      "city_arabic": "أبو تشت",
+      "governorate": "Qena",
+      "provider_city_id": 294
+    },
+    {
+      "id": "c14533b2-5bba-5a1e-ad87-ba743e1c5725",
+      "city": "Kotsica",
+      "provider": "pdc",
+      "city_arabic": "كوتسيكا",
+      "governorate": "Cairo",
+      "provider_city_id": 38
+    },
+    {
+      "id": "c2115ba1-309a-5e9d-a29b-f8b429c3955b",
+      "city": "Talkha",
+      "provider": "pdc",
+      "city_arabic": "طلخا",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 135
+    },
+    {
+      "id": "c3165e55-ee05-54ab-a041-66c3829a2755",
+      "city": "Al reyad",
+      "provider": "pdc",
+      "city_arabic": "الرياض",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 203
+    },
+    {
+      "id": "c4bca3d7-d4f7-50bf-acac-7bc863a2b9da",
+      "city": "Mina El-Basal",
+      "provider": "pdc",
+      "city_arabic": "مينا البصل",
+      "governorate": "Alexandria",
+      "provider_city_id": 80
+    },
+    {
+      "id": "c57ab329-bfda-52cd-aefa-ba602dc5de3f",
+      "city": "Desouk",
+      "provider": "pdc",
+      "city_arabic": "دسوق",
+      "governorate": "Algharbia",
+      "provider_city_id": 133
+    },
+    {
+      "id": "c769b3a0-cfd2-5e52-ac81-926731a396d3",
+      "city": "10th of Ramadan city",
+      "provider": "pdc",
+      "city_arabic": "مدينة العاشر من رمضان",
+      "governorate": "Elsharqia",
+      "provider_city_id": 183
+    },
+    {
+      "id": "c7f597eb-25db-5fc2-a57e-428b842fea0a",
+      "city": "Fayed",
+      "provider": "pdc",
+      "city_arabic": "فايد",
+      "governorate": "Ismalia",
+      "provider_city_id": 187
+    },
+    {
+      "id": "c90807ff-eba7-544f-a8c6-cb3917737407",
+      "city": "Ezbet el-Haganna",
+      "provider": "pdc",
+      "city_arabic": "عزبة الهجانة",
+      "governorate": "Cairo",
+      "provider_city_id": 46
+    },
+    {
+      "id": "c9eda7b6-6cfb-531d-ab3b-6345c15d4b9a",
+      "city": "North Coast",
+      "provider": "pdc",
+      "city_arabic": "الساحل الشمالي",
+      "governorate": "Alexandria 2",
+      "provider_city_id": 98
+    },
+    {
+      "id": "ca0dc387-5604-59a9-a482-68f9a8b3829c",
+      "city": "Alwastta",
+      "provider": "pdc",
+      "city_arabic": "الواسطي",
+      "governorate": "Beni Suef",
+      "provider_city_id": 250
+    },
+    {
+      "id": "ca194a35-949c-50c6-a0c9-db8483d51448",
+      "city": "Dairout",
+      "provider": "pdc",
+      "city_arabic": "ديروط",
+      "governorate": "Assiut",
+      "provider_city_id": 234
+    },
+    {
+      "id": "cb127cd1-7609-56ec-ad46-a3122b5f9ac5",
+      "city": "Wahat Road",
+      "provider": "pdc",
+      "city_arabic": "طريق الواحات",
+      "governorate": "Giza",
+      "provider_city_id": 69
+    },
+    {
+      "id": "cb2f2604-a390-5376-a9af-e89a04ff05d7",
+      "city": "Dakhla Oases",
+      "provider": "pdc",
+      "city_arabic": "واحة الداخلة",
+      "governorate": "New Valley",
+      "provider_city_id": 322
+    },
+    {
+      "id": "cb95c837-6af4-5780-adc9-cd32dad25b65",
+      "city": "Sedi Salem",
+      "provider": "pdc",
+      "city_arabic": "سيدي سالم",
+      "governorate": "kafr Al Sheikh",
+      "provider_city_id": 192
+    },
+    {
+      "id": "cb9f3ff7-ab4c-5e14-a379-4d3a1b920ace",
+      "city": "Al Attarin",
+      "provider": "pdc",
+      "city_arabic": "العطارين",
+      "governorate": "Alexandria",
+      "provider_city_id": 89
+    },
+    {
+      "id": "ccfaca8c-37ad-574a-a769-2c3fe2e1bfe2",
+      "city": "Al bayada",
+      "provider": "pdc",
+      "city_arabic": "البياضية",
+      "governorate": "Luxor",
+      "provider_city_id": 284
+    },
+    {
+      "id": "cdb02a55-ef50-55dc-a4e4-1f8214ca251f",
+      "city": "Al nasr",
+      "provider": "pdc",
+      "city_arabic": "النصر",
+      "governorate": "Matrouh",
+      "provider_city_id": 337
+    },
+    {
+      "id": "cdd79f55-4372-5c76-ac5c-15142e5fed26",
+      "city": "Al delengaat",
+      "provider": "pdc",
+      "city_arabic": "الدلنجات",
+      "governorate": "Al Behaira",
+      "provider_city_id": 109
+    },
+    {
+      "id": "ce1c2a8d-9a54-5a2b-ae63-41d59ca98f42",
+      "city": "Al Ballena",
+      "provider": "pdc",
+      "city_arabic": "البلينا",
+      "governorate": "Sohag",
+      "provider_city_id": 313
+    },
+    {
+      "id": "cea1cd37-0631-5649-a19a-b53346fecd03",
+      "city": "Rass Sudr",
+      "provider": "pdc",
+      "city_arabic": "رأس سدر",
+      "governorate": "South Seina",
+      "provider_city_id": 360
+    },
+    {
+      "id": "cebc5a32-7ad6-59ec-a834-05c28e9732d0",
+      "city": "Qetaa Maryout",
+      "provider": "pdc",
+      "city_arabic": "قطاع مريوط",
+      "governorate": "Alexandria",
+      "provider_city_id": 85
+    },
+    {
+      "id": "cef42fb6-3ed7-5302-ac08-a40b9450dd76",
+      "city": "Shoubra Alkhaima",
+      "provider": "pdc",
+      "city_arabic": "شبرا الخيمة",
+      "governorate": "Qalyubia",
+      "provider_city_id": 209
+    },
+    {
+      "id": "cf522311-3be2-5093-ad10-66d899b80569",
+      "city": "Assiut Algedida",
+      "provider": "pdc",
+      "city_arabic": "أسيوط الجديدة",
+      "governorate": "Assiut",
+      "provider_city_id": 235
+    },
+    {
+      "id": "d04b31e2-fac5-5179-a802-ba484c4cd56f",
+      "city": "Al Qourdi",
+      "provider": "pdc",
+      "city_arabic": "الكردي",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 150
+    },
+    {
+      "id": "d0d2678c-449f-520b-af6a-33f0ab129cc3",
+      "city": "Al qawasim",
+      "provider": "pdc",
+      "city_arabic": "القواسم",
+      "governorate": "Matrouh",
+      "provider_city_id": 334
+    },
+    {
+      "id": "d23de5be-9d46-53ba-a18e-1b54b211008f",
+      "city": "Rass Al Bar",
+      "provider": "pdc",
+      "city_arabic": "رأس البر",
+      "governorate": "Dammitta",
+      "provider_city_id": 154
+    },
+    {
+      "id": "d26e5ae7-37ec-52cc-a478-4b898a4b52c3",
+      "city": "Assiut",
+      "provider": "pdc",
+      "city_arabic": "أسيوط",
+      "governorate": "Assiut",
+      "provider_city_id": 236
+    },
+    {
+      "id": "d2724816-f512-5dc2-a447-b58bfc1a7e94",
+      "city": "Ramses",
+      "provider": "pdc",
+      "city_arabic": "رمسيس",
+      "governorate": "Cairo",
+      "provider_city_id": 10
+    },
+    {
+      "id": "d27b2344-9bd8-5b0c-a9fa-7f5b4f9dc85e",
+      "city": "Abuluho Albahri",
+      "provider": "pdc",
+      "city_arabic": "أبو لحو البحري",
+      "governorate": "Matrouh",
+      "provider_city_id": 341
+    },
+    {
+      "id": "d298f13f-27ae-5a3f-a2e6-565c2721fb56",
+      "city": "Al Farafra",
+      "provider": "pdc",
+      "city_arabic": "الفرافرة",
+      "governorate": "New Valley",
+      "provider_city_id": 319
+    },
+    {
+      "id": "d2bfe627-c0d3-588d-af89-26c844415b39",
+      "city": "Derb Negm",
+      "provider": "pdc",
+      "city_arabic": "ديرب نجم",
+      "governorate": "Elsharqia",
+      "provider_city_id": 173
+    },
+    {
+      "id": "d40de13b-aa94-54b1-a193-51e8e90bdbd0",
+      "city": "Aswan",
+      "provider": "pdc",
+      "city_arabic": "أسوان",
+      "governorate": "Aswan",
+      "provider_city_id": 269
+    },
+    {
+      "id": "d451901a-c24a-57d9-a6cf-1401618f99e0",
+      "city": "Bir Alabd",
+      "provider": "pdc",
+      "city_arabic": "بئر العبد",
+      "governorate": "North Seina",
+      "provider_city_id": 350
+    },
+    {
+      "id": "d53a4a16-6f3f-5933-a7d8-1763cfb91395",
+      "city": "6th of October",
+      "provider": "pdc",
+      "city_arabic": "مدينة 6 أكتوبر",
+      "governorate": "Giza",
+      "provider_city_id": 67
+    },
+    {
+      "id": "d56caaaa-866e-5fbb-a10d-5b8e80c08543",
+      "city": "Hosh Issa",
+      "provider": "pdc",
+      "city_arabic": "حوش عيسى",
+      "governorate": "Al Behaira",
+      "provider_city_id": 105
+    },
+    {
+      "id": "d6146945-af24-5e9c-aef9-152083093b8f",
+      "city": "Itay Al Baroud",
+      "provider": "pdc",
+      "city_arabic": "إيتاي البارود",
+      "governorate": "Al Behaira",
+      "provider_city_id": 104
+    },
+    {
+      "id": "d6a17795-5f90-59be-a309-ee6aa608ae19",
+      "city": "North Coast Above 90Km",
+      "provider": "pdc",
+      "city_arabic": "الساحل الشمالي فوق 90 كم",
+      "governorate": "Matrouh",
+      "provider_city_id": 323
+    },
+    {
+      "id": "d728c0ea-5c9f-5d45-aca9-c0537025d085",
+      "city": "Kom Ambo",
+      "provider": "pdc",
+      "city_arabic": "كوم أمبو",
+      "governorate": "Aswan",
+      "provider_city_id": 265
+    },
+    {
+      "id": "d767c0e5-cedf-5cc5-a91a-f7741fcbf3f9",
+      "city": "Garden City",
+      "provider": "pdc",
+      "city_arabic": "جاردن سيتي",
+      "governorate": "Cairo",
+      "provider_city_id": 5
+    },
+    {
+      "id": "d895cad7-2fbf-55d4-ad79-af29983cf8cb",
+      "city": "Kashuk Emaara",
+      "provider": "pdc",
+      "city_arabic": "كشك عمارة",
+      "governorate": "Matrouh",
+      "provider_city_id": 327
+    },
+    {
+      "id": "d89bdcff-ea08-5ed6-a118-2a1110499369",
+      "city": "Darb el-Ahmar",
+      "provider": "pdc",
+      "city_arabic": "الدرب الأحمر",
+      "governorate": "Cairo",
+      "provider_city_id": 14
+    },
+    {
+      "id": "d8fe2095-1b94-5d0c-a20d-ca237d7f390f",
+      "city": "Al dakhla",
+      "provider": "pdc",
+      "city_arabic": "الداخلة",
+      "governorate": "Matrouh",
+      "provider_city_id": 339
+    },
+    {
+      "id": "d970f441-8d10-5350-a1ea-005a570a1dca",
+      "city": "Abu Rawash",
+      "provider": "pdc",
+      "city_arabic": "أبو رواش",
+      "governorate": "Giza",
+      "provider_city_id": 74
+    },
+    {
+      "id": "da5770a6-a28d-58c9-a076-ded4b5fa60cd",
+      "city": "North Sinai",
+      "provider": "pdc",
+      "city_arabic": "شمال سيناء",
+      "governorate": "North Seina",
+      "provider_city_id": 355
+    },
+    {
+      "id": "dc4c225c-ca64-560f-a791-d78ed92df6cb",
+      "city": "Dakhahlia",
+      "provider": "pdc",
+      "city_arabic": "الدقهلية",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 143
+    },
+    {
+      "id": "dc4ff2af-b638-5a0e-aa90-b44a4309a889",
+      "city": "Al Hammam",
+      "provider": "pdc",
+      "city_arabic": "الحمام",
+      "governorate": "Matrouh",
+      "provider_city_id": 344
+    },
+    {
+      "id": "dda7fdbf-5304-5453-a7e9-f39c2cf8af5c",
+      "city": "Al Ibrahemia",
+      "provider": "pdc",
+      "city_arabic": "الإبراهيمية",
+      "governorate": "Elsharqia",
+      "provider_city_id": 179
+    },
+    {
+      "id": "df3ecf81-02b8-5eb7-a473-b5189e2d0a44",
+      "city": "Port Said",
+      "provider": "pdc",
+      "city_arabic": "بورسعيد",
+      "governorate": "Port Said",
+      "provider_city_id": 205
+    },
+    {
+      "id": "df43fbc6-66d3-52d2-a325-a7ebe4b59d04",
+      "city": "Al Montaza",
+      "provider": "pdc",
+      "city_arabic": "المنتزه",
+      "governorate": "Alexandria",
+      "provider_city_id": 82
+    },
+    {
+      "id": "e10cbd82-bc02-510d-a050-04ac061c5cf2",
+      "city": "Alfath",
+      "provider": "pdc",
+      "city_arabic": "الفتح",
+      "governorate": "Assiut",
+      "provider_city_id": 240
+    },
+    {
+      "id": "e1b08e64-0454-550b-a5f5-2b013a72ac84",
+      "city": "Alfayoum",
+      "provider": "pdc",
+      "city_arabic": "الفيوم",
+      "governorate": "Alfayoum",
+      "provider_city_id": 230
+    },
+    {
+      "id": "e23f8703-6d4f-593c-ad47-e06a5464045d",
+      "city": "Al suynat",
+      "provider": "pdc",
+      "city_arabic": "السوينات",
+      "governorate": "Matrouh",
+      "provider_city_id": 332
+    },
+    {
+      "id": "e36fdd05-c2fd-53bf-ab26-e25c9df3b4f7",
+      "city": "Mahla Demna",
+      "provider": "pdc",
+      "city_arabic": "محلة دمنة",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 140
+    },
+    {
+      "id": "e3bcac36-b88f-554a-a63a-ffd261838784",
+      "city": "Qantara Sharq",
+      "provider": "pdc",
+      "city_arabic": "القنطرة شرق",
+      "governorate": "Ismalia",
+      "provider_city_id": 185
+    },
+    {
+      "id": "e4b4379f-ef44-536b-a591-b63248a53c1f",
+      "city": "Darrasa",
+      "provider": "pdc",
+      "city_arabic": "الدراسة",
+      "governorate": "Cairo",
+      "provider_city_id": 12
+    },
+    {
+      "id": "e4fe36f9-6519-52fc-a288-2b66e25d6c9c",
+      "city": "Al oush",
+      "provider": "pdc",
+      "city_arabic": "العوش",
+      "governorate": "Matrouh",
+      "provider_city_id": 336
+    },
+    {
+      "id": "e5f1b95a-a350-51e7-ae90-de6749d54505",
+      "city": "Quoss",
+      "provider": "pdc",
+      "city_arabic": "قوص",
+      "governorate": "Qena",
+      "provider_city_id": 285
+    },
+    {
+      "id": "e6e0450a-ccb5-5262-a4ff-f042c58413e1",
+      "city": "Wadi",
+      "provider": "pdc",
+      "city_arabic": "وادي",
+      "governorate": "Al Behaira",
+      "provider_city_id": 115
+    },
+    {
+      "id": "e7057251-ebbf-5239-ac87-5d2d10964a34",
+      "city": "Al hassana",
+      "provider": "pdc",
+      "city_arabic": "الحسنة",
+      "governorate": "North Seina",
+      "provider_city_id": 353
+    },
+    {
+      "id": "e7813043-8ca7-5cd8-a22d-e0025e33d11d",
+      "city": "Teiba Algedida",
+      "provider": "pdc",
+      "city_arabic": "طيبة الجديدة",
+      "governorate": "Luxor",
+      "provider_city_id": 276
+    },
+    {
+      "id": "e79e5f21-e29a-54fa-ad12-b1f088f8a7ad",
+      "city": "faqouss",
+      "provider": "pdc",
+      "city_arabic": "فاقوس",
+      "governorate": "Elsharqia",
+      "provider_city_id": 172
+    },
+    {
+      "id": "ec7ac3e4-e0f8-534b-a51f-cbf61185a92b",
+      "city": "Gamassa",
+      "provider": "pdc",
+      "city_arabic": "جمصة",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 141
+    },
+    {
+      "id": "eccced6d-b2f2-5500-a622-86cd3cf503e0",
+      "city": "Al Labban",
+      "provider": "pdc",
+      "city_arabic": "اللبان",
+      "governorate": "Alexandria",
+      "provider_city_id": 84
+    },
+    {
+      "id": "ee025bde-13ce-5a7e-a100-33ca91ca96ab",
+      "city": "Dar el-Salam",
+      "provider": "pdc",
+      "city_arabic": "دار السلام",
+      "governorate": "Cairo",
+      "provider_city_id": 31
+    },
+    {
+      "id": "ef169c95-e3f4-595d-ad96-d285ef214d32",
+      "city": "South Sinai",
+      "provider": "pdc",
+      "city_arabic": "جنوب سيناء",
+      "governorate": "South Seina",
+      "provider_city_id": 365
+    },
+    {
+      "id": "ef80cf44-d1e9-597a-ab48-e8b6d364cf84",
+      "city": "Maasara",
+      "provider": "pdc",
+      "city_arabic": "المعصرة",
+      "governorate": "Cairo",
+      "provider_city_id": 36
+    },
+    {
+      "id": "eff2fba8-94a3-5f1a-a22a-7ebce158bafa",
+      "city": "Biba",
+      "provider": "pdc",
+      "city_arabic": "ببا",
+      "governorate": "Beni Suef",
+      "provider_city_id": 249
+    },
+    {
+      "id": "f0d0e186-61bc-51f7-af9a-7518944e755e",
+      "city": "Kafr Saad",
+      "provider": "pdc",
+      "city_arabic": "كفر سعد",
+      "governorate": "Dammitta",
+      "provider_city_id": 156
+    },
+    {
+      "id": "f1091500-8176-586d-abee-39308c13a866",
+      "city": "alqasaasayn",
+      "provider": "pdc",
+      "city_arabic": "القصاصين",
+      "governorate": "Ismalia",
+      "provider_city_id": 188
+    },
+    {
+      "id": "f29e2a0e-d1e1-5a35-aa9a-174811c0f06a",
+      "city": "Gouhaina",
+      "provider": "pdc",
+      "city_arabic": "جهينة",
+      "governorate": "Sohag",
+      "provider_city_id": 308
+    },
+    {
+      "id": "f2e9df2d-4243-5c71-a853-183d5f7a512a",
+      "city": "Qaliub",
+      "provider": "pdc",
+      "city_arabic": "قليوب",
+      "governorate": "Qalyubia",
+      "provider_city_id": 211
+    },
+    {
+      "id": "f580acbc-5690-569c-a88a-8ab705671861",
+      "city": "Abshuaa",
+      "provider": "pdc",
+      "city_arabic": "إبشواي",
+      "governorate": "Alfayoum",
+      "provider_city_id": 229
+    },
+    {
+      "id": "f625a982-a1f9-5924-a256-41974e0b3ae8",
+      "city": "Mout",
+      "provider": "pdc",
+      "city_arabic": "موط",
+      "governorate": "New Valley",
+      "provider_city_id": 317
+    },
+    {
+      "id": "f695f8b0-0633-5036-a3e7-b06572de1109",
+      "city": "Samalout",
+      "provider": "pdc",
+      "city_arabic": "سمالوط",
+      "governorate": "El Menia",
+      "provider_city_id": 252
+    },
+    {
+      "id": "f73cfae9-b8df-51ad-ad8e-b4721f3418cc",
+      "city": "Al Amaria First",
+      "provider": "pdc",
+      "city_arabic": "العامرية أول",
+      "governorate": "Alexandria",
+      "provider_city_id": 96
+    },
+    {
+      "id": "f78f72df-97aa-5664-a093-1ea00fa912bf",
+      "city": "Meit Ghamr",
+      "provider": "pdc",
+      "city_arabic": "ميت غمر",
+      "governorate": "Dakhahlia",
+      "provider_city_id": 138
+    },
+    {
+      "id": "f9751e77-218d-59a1-a2d9-bce1b04bff1a",
+      "city": "Alqarein",
+      "provider": "pdc",
+      "city_arabic": "القرين",
+      "governorate": "Elsharqia",
+      "provider_city_id": 177
+    },
+    {
+      "id": "f9b86f6b-9e8b-596d-aded-d892827a5a36",
+      "city": "Al kharga",
+      "provider": "pdc",
+      "city_arabic": "الخارجة",
+      "governorate": "New Valley",
+      "provider_city_id": 318
+    },
+    {
+      "id": "fb52076a-895a-5bd3-a51a-c02cd965bc60",
+      "city": "Shebeen Alqanater",
+      "provider": "pdc",
+      "city_arabic": "شبين القناطر",
+      "governorate": "Qalyubia",
+      "provider_city_id": 210
+    },
+    {
+      "id": "fb696170-bb37-5008-a947-2ce4eb026677",
+      "city": "El Menia  Algedida",
+      "provider": "pdc",
+      "city_arabic": "المنيا الجديدة",
+      "governorate": "El Menia",
+      "provider_city_id": 256
+    },
+    {
+      "id": "fb8265d1-828d-547d-a479-8629ccf9a84d",
+      "city": "Ben Suief",
+      "provider": "pdc",
+      "city_arabic": "بني سويف",
+      "governorate": "Beni Suef",
+      "provider_city_id": 248
+    },
+    {
+      "id": "fc075c79-4d1b-5f97-ae38-6445a01f0898",
+      "city": "Safaja",
+      "provider": "pdc",
+      "city_arabic": "سفاجا",
+      "governorate": "Red Sea",
+      "provider_city_id": 295
+    },
+    {
+      "id": "fd1b23d5-f118-54ef-a0cf-e6bb5af95844",
+      "city": "Awlad Marii",
+      "provider": "pdc",
+      "city_arabic": "أولاد مري",
+      "governorate": "Matrouh",
+      "provider_city_id": 329
+    },
+    {
+      "id": "fd3dd10e-a91e-5470-a262-7f129c29953b",
+      "city": "Ras Alhikma",
+      "provider": "pdc",
+      "city_arabic": "رأس الحكمة",
+      "governorate": "Matrouh",
+      "provider_city_id": 326
+    },
+    {
+      "id": "fd87cc44-0063-5920-aa00-a66ab74d46e5",
+      "city": "Zaqazeq",
+      "provider": "pdc",
+      "city_arabic": "الزقازيق",
+      "governorate": "Elsharqia",
+      "provider_city_id": 165
+    },
+    {
+      "id": "fe8e11bb-e614-5719-af5d-f5816cbe396e",
+      "city": "Qattamiya",
+      "provider": "pdc",
+      "city_arabic": "القطامية",
+      "governorate": "Cairo",
+      "provider_city_id": 39
+    },
+    {
+      "id": "fe9055c3-d1da-53aa-a0a7-4cb93704a23d",
+      "city": "Ihnassya",
+      "provider": "pdc",
+      "city_arabic": "إهناسيا",
+      "governorate": "Beni Suef",
+      "provider_city_id": 246
+    },
+    {
+      "id": "fe9ea9bb-9ba5-5877-ac5b-ac1e82ec0eec",
+      "city": "Kafr Albatekh",
+      "provider": "pdc",
+      "city_arabic": "كفر البطيخ",
+      "governorate": "Dammitta",
+      "provider_city_id": 157
+    },
+    {
+      "id": "fea6dfbb-400f-5fd9-ab52-261167894f64",
+      "city": "Elsharqia",
+      "provider": "pdc",
+      "city_arabic": "الشرقية",
+      "governorate": "Elsharqia",
+      "provider_city_id": 184
+    },
+    {
+      "id": "feb31f0f-023d-5d3a-a84f-1addde347d9a",
+      "city": "Ard el-Golf",
+      "provider": "pdc",
+      "city_arabic": "ارض الجولف",
+      "governorate": "Cairo",
+      "provider_city_id": 24
+    },
+    {
+      "id": "ff46fbf2-0d19-50b3-aa84-beab2bef67ef",
+      "city": "Luxor Algedida",
+      "provider": "pdc",
+      "city_arabic": "الأقصر الجديدة",
+      "governorate": "Luxor",
+      "provider_city_id": 277
+    }
+  ],
+  "shipping_status_mappings": [
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "3PL International Shipment",
+      "normalized_state": "in_transit",
+      "provider_aliases": [
+        "In transit",
+        "3PL International Shipment"
+      ],
+      "provider_status_id": 93
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "In Transit To Destination Hub",
+      "normalized_state": "in_transit",
+      "provider_aliases": [
+        "In transit",
+        "In Transit to Destination Hub",
+        "In Transit"
+      ],
+      "provider_status_id": 88
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "In Transit",
+      "normalized_state": "in_transit",
+      "provider_aliases": [
+        "In transit",
+        "In Transit"
+      ],
+      "provider_status_id": 82
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "On The Way To Destination Hub",
+      "normalized_state": "in_transit",
+      "provider_aliases": [
+        "In transit",
+        "Recieved",
+        "on the way to Destination Hub"
+      ],
+      "provider_status_id": 83
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Picked Up",
+      "normalized_state": "picked_up",
+      "provider_aliases": [
+        "Picked Up",
+        "Handed to courier",
+        "Collected"
+      ],
+      "provider_status_id": 12
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Received At Branch",
+      "normalized_state": "arrived_at_hub",
+      "provider_aliases": [
+        "Arrived at hub",
+        "Received At Branch",
+        "In Transit-Arrived"
+      ],
+      "provider_status_id": 3
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Received At Destination Hub",
+      "normalized_state": "arrived_at_hub",
+      "provider_aliases": [
+        "Arrived at hub",
+        "Received At Destination Hub",
+        "In Transit"
+      ],
+      "provider_status_id": 85
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Received At Hub",
+      "normalized_state": "arrived_at_hub",
+      "provider_aliases": [
+        "Arrived at hub",
+        "Recived At Hub",
+        "Received"
+      ],
+      "provider_status_id": 84
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Received At Hub",
+      "normalized_state": "arrived_at_hub",
+      "provider_aliases": [
+        "Arrived at hub",
+        "Recived At Hub"
+      ],
+      "provider_status_id": 98
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Received At Hub",
+      "normalized_state": "unknown",
+      "provider_aliases": [
+        "Received At Hub",
+        "Received From Courier after attempt",
+        "Recived At Hub"
+      ],
+      "provider_status_id": 97
+    },
+    {
+      "provider": "pdc",
+      "order_status": "being_shipped",
+      "provider_label": "Transfer To Branch",
+      "normalized_state": "in_transit",
+      "provider_aliases": [
+        "In transit",
+        "In Transit-Departed",
+        "Transfer To Branch"
+      ],
+      "provider_status_id": 2
+    },
+    {
+      "provider": "pdc",
+      "order_status": "cancelled",
+      "provider_label": "Returned To Shipper",
+      "normalized_state": "returned",
+      "provider_aliases": [
+        "Returned To Shipper",
+        "Returned"
+      ],
+      "provider_status_id": 8
+    },
+    {
+      "provider": "pdc",
+      "order_status": "delivered",
+      "provider_label": "Shipment Delivered",
+      "normalized_state": "delivered",
+      "provider_aliases": [
+        "shipment Delivered",
+        "Shipment Delivered",
+        "Delivered"
+      ],
+      "provider_status_id": 5
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Hold At Warehouse",
+      "normalized_state": "held",
+      "provider_aliases": [
+        "Hold At Warehouse",
+        "Shipment held"
+      ],
+      "provider_status_id": 94
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Hold For Update",
+      "normalized_state": "held",
+      "provider_aliases": [
+        "Hold for Update",
+        "Shipment held"
+      ],
+      "provider_status_id": 96
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "In Transit - Undelivered",
+      "normalized_state": "delivery_attempted",
+      "provider_aliases": [
+        "Delivery attempted",
+        "In Transit - Undelivered"
+      ],
+      "provider_status_id": 87
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "In Transit - Undelivered",
+      "normalized_state": "delivery_attempted",
+      "provider_aliases": [
+        "Delivery attempted",
+        "In Transit - Undelivered"
+      ],
+      "provider_status_id": 89
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "In Transit - Undelivered",
+      "normalized_state": "delivery_attempted",
+      "provider_aliases": [
+        "Delivery attempted",
+        "In Transit - Undelivered"
+      ],
+      "provider_status_id": 90
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Not Delivered",
+      "normalized_state": "delivery_attempted",
+      "provider_aliases": [
+        "Delivery attempted",
+        "Not Delivered"
+      ],
+      "provider_status_id": 15
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "On Hold",
+      "normalized_state": "held",
+      "provider_aliases": [
+        "Packaging and extra weights",
+        "On Hold",
+        "Shipment held"
+      ],
+      "provider_status_id": 95
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Package Issue",
+      "normalized_state": "damaged",
+      "provider_aliases": [
+        "Package issue",
+        "Damaged",
+        "Shipment damaged"
+      ],
+      "provider_status_id": 10
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Partial Delivery",
+      "normalized_state": "partial_delivery",
+      "provider_aliases": [
+        "Partially delivered",
+        "Partial Delivery"
+      ],
+      "provider_status_id": 24
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Postponed",
+      "normalized_state": "delayed",
+      "provider_aliases": [
+        "Delivery delayed",
+        "Postponed"
+      ],
+      "provider_status_id": 14
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Reschedule",
+      "normalized_state": "rescheduled",
+      "provider_aliases": [
+        "Reschedule",
+        "Delivery rescheduled"
+      ],
+      "provider_status_id": 19
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Shipment Lost",
+      "normalized_state": "lost",
+      "provider_aliases": [
+        "Shipment lost",
+        "Lost",
+        "Shipment Lost"
+      ],
+      "provider_status_id": 9
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "To Be Returned",
+      "normalized_state": "returning",
+      "provider_aliases": [
+        "To Be Returned",
+        "Returning to sender"
+      ],
+      "provider_status_id": 7
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Unclear Address",
+      "normalized_state": "held",
+      "provider_aliases": [
+        "Unclear Address",
+        "Shipment held"
+      ],
+      "provider_status_id": 92
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Under Return Process",
+      "normalized_state": "returning",
+      "provider_aliases": [
+        "Returning to sender",
+        "Under Return Process",
+        "In Transit - Undelivered"
+      ],
+      "provider_status_id": 77
+    },
+    {
+      "provider": "pdc",
+      "order_status": "on_hold",
+      "provider_label": "Wrong Sort",
+      "normalized_state": "delayed",
+      "provider_aliases": [
+        "Delivery delayed",
+        "Wrong Sort"
+      ],
+      "provider_status_id": 91
+    },
+    {
+      "provider": "pdc",
+      "order_status": "out_for_delivery",
+      "provider_label": "Out For Delivery",
+      "normalized_state": "out_for_delivery",
+      "provider_aliases": [
+        "Out For Delivery",
+        "Out for delivery"
+      ],
+      "provider_status_id": 4
+    },
+    {
+      "provider": "pdc",
+      "order_status": "processing",
+      "provider_label": "New Pickup",
+      "normalized_state": "registered",
+      "provider_aliases": [
+        "Shipment registered",
+        "New Pickup"
+      ],
+      "provider_status_id": 13
+    },
+    {
+      "provider": "pdc",
+      "order_status": "processing",
+      "provider_label": "Re-Operate",
+      "normalized_state": "unknown",
+      "provider_aliases": [
+        "Reoperate",
+        "Re-Operate"
+      ],
+      "provider_status_id": 11
+    }
+  ],
+  "sms_provider_settings": [
+    {
+      "id": "vodafone",
+      "port": null,
+      "api_mode": "production",
+      "base_url": "",
+      "batch_size": 50,
+      "is_enabled": false,
+      "timeout_ms": 10000,
+      "updated_by": null,
+      "sender_names": [],
+      "campaign_path": "/web2sms/sms/submit",
+      "default_sender": "",
+      "config_revision": 0,
+      "default_country": "EG",
+      "next_request_at": null,
+      "activation_notes": "",
+      "notification_path": "/web2sms/sms/submit/Notification",
+      "password_encrypted": null,
+      "allow_international": false,
+      "request_interval_ms": 1000,
+      "account_id_encrypted": null,
+      "activation_confirmed": false,
+      "expected_outbound_ip": "",
+      "trusted_ip_confirmed": false,
+      "hash_secret_encrypted": null,
+      "preflight_retry_limit": 2,
+      "hash_protocol_confirmed": false
+    }
+  ],
+  "sms_templates": [
+    {
+      "id": "03d71b5e-0268-522c-a175-a69d9b6a021c",
+      "code": "order_payment_confirmed",
+      "name": "Payment confirmed",
+      "sender": "",
+      "text_ar": "تم استلام دفعة الطلب {{order_number}}.",
+      "text_en": "Payment received for order {{order_number}}.",
+      "category": "orders",
+      "variables": [
+        "order_number"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "061b06c9-f3d5-5c05-a2e3-342fe27a5826",
+      "code": "pdc_delivered",
+      "name": "PDC delivered",
+      "sender": "",
+      "text_ar": "تم تسليم الطلب {{order_number}} بواسطة PDC. رقم التتبع: {{awb}}.",
+      "text_en": "PDC delivered order {{order_number}}. Tracking: {{awb}}.",
+      "category": "pdc",
+      "variables": [
+        "order_number",
+        "awb"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "5b0f25f6-0eee-5cee-a9d6-b76e9737b748",
+      "code": "order_processing",
+      "name": "Order processing",
+      "sender": "",
+      "text_ar": "جارٍ تجهيز الطلب {{order_number}}.",
+      "text_en": "Order {{order_number}} is being prepared.",
+      "category": "orders",
+      "variables": [
+        "order_number"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "7d8d4151-52d0-5c88-a31a-1756dbeed63c",
+      "code": "order_confirmed",
+      "name": "Order confirmed",
+      "sender": "",
+      "text_ar": "تم تأكيد الطلب {{order_number}}. الإجمالي: {{order_total}}.",
+      "text_en": "Order {{order_number}} is confirmed. Total: {{order_total}}.",
+      "category": "orders",
+      "variables": [
+        "order_number",
+        "order_total"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "a486750d-47ea-5700-add5-7db7729902c5",
+      "code": "order_cancelled",
+      "name": "Order cancelled",
+      "sender": "",
+      "text_ar": "تم إلغاء الطلب {{order_number}}.",
+      "text_en": "Order {{order_number}} has been cancelled.",
+      "category": "orders",
+      "variables": [
+        "order_number"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "cb6dfbef-9248-5f55-a6aa-f31443a646e5",
+      "code": "pdc_delivery_exception",
+      "name": "PDC delivery exception",
+      "sender": "",
+      "text_ar": "تعذر على PDC تسليم الطلب {{order_number}}. {{delivery_reason}}. رقم التتبع: {{awb}}.",
+      "text_en": "PDC could not deliver order {{order_number}}. {{delivery_reason}}. Tracking: {{awb}}.",
+      "category": "pdc",
+      "variables": [
+        "order_number",
+        "delivery_reason",
+        "awb"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    },
+    {
+      "id": "d241602b-be57-5fa6-aa5c-faa9a01dec32",
+      "code": "pdc_out_for_delivery",
+      "name": "PDC out for delivery",
+      "sender": "",
+      "text_ar": "الطلب {{order_number}} خرج للتسليم. رقم تتبع PDC: {{awb}}.",
+      "text_en": "Order {{order_number}} is out for delivery. PDC tracking: {{awb}}.",
+      "category": "pdc",
+      "variables": [
+        "order_number",
+        "awb"
+      ],
+      "created_by": null,
+      "is_enabled": false,
+      "updated_by": null,
+      "traffic_type": "notification"
+    }
+  ],
+  "sms_order_event_settings": [
+    {
+      "event_type": "cancelled",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "a486750d-47ea-5700-add5-7db7729902c5",
+      "template_en_id": "a486750d-47ea-5700-add5-7db7729902c5",
+      "config_revision": 0
+    },
+    {
+      "event_type": "order_confirmed",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "7d8d4151-52d0-5c88-a31a-1756dbeed63c",
+      "template_en_id": "7d8d4151-52d0-5c88-a31a-1756dbeed63c",
+      "config_revision": 0
+    },
+    {
+      "event_type": "payment_confirmed",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "03d71b5e-0268-522c-a175-a69d9b6a021c",
+      "template_en_id": "03d71b5e-0268-522c-a175-a69d9b6a021c",
+      "config_revision": 0
+    },
+    {
+      "event_type": "pdc_delivered",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "061b06c9-f3d5-5c05-a2e3-342fe27a5826",
+      "template_en_id": "061b06c9-f3d5-5c05-a2e3-342fe27a5826",
+      "config_revision": 0
+    },
+    {
+      "event_type": "pdc_delivery_exception",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "cb6dfbef-9248-5f55-a6aa-f31443a646e5",
+      "template_en_id": "cb6dfbef-9248-5f55-a6aa-f31443a646e5",
+      "config_revision": 0
+    },
+    {
+      "event_type": "pdc_out_for_delivery",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "d241602b-be57-5fa6-aa5c-faa9a01dec32",
+      "template_en_id": "d241602b-be57-5fa6-aa5c-faa9a01dec32",
+      "config_revision": 0
+    },
+    {
+      "event_type": "processing",
+      "is_enabled": false,
+      "updated_by": null,
+      "template_ar_id": "5b0f25f6-0eee-5cee-a9d6-b76e9737b748",
+      "template_en_id": "5b0f25f6-0eee-5cee-a9d6-b76e9737b748",
+      "config_revision": 0
+    }
+  ],
+  "specification_definitions": [
+    {
+      "id": "064d58ca-1fed-5656-a7a2-d88674e6753c",
+      "key": "keyboard-type",
+      "name": "Keyboard Type",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 150,
+      "default_highlight": false
+    },
+    {
+      "id": "08b4e2a2-2ab8-5295-a983-1b9b994b1daa",
+      "key": "model",
+      "name": "Model",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "General",
+      "sort_order": 20,
+      "default_highlight": false
+    },
+    {
+      "id": "0c7d7cd4-27fd-5c8f-a7ea-c4a694b8cdde",
+      "key": "weight",
+      "name": "Weight",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Physical",
+      "sort_order": 40,
+      "default_highlight": false
+    },
+    {
+      "id": "1c53ffc9-7612-583d-a18d-977fbe579d35",
+      "key": "warranty",
+      "name": "Warranty",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "General",
+      "sort_order": 60,
+      "default_highlight": false
+    },
+    {
+      "id": "22ffdb86-7c8c-5115-aad5-9cea7fc3a223",
+      "key": "screen-resolution",
+      "name": "Screen Resolution",
+      "aliases": [
+        "Display Resolution"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Display",
+      "sort_order": 250,
+      "default_highlight": true
+    },
+    {
+      "id": "24b5f65b-1a02-50c7-a57e-ea520a42401d",
+      "key": "gpu",
+      "name": "GPU",
+      "aliases": [
+        "Graphics Card"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Performance",
+      "sort_order": 230,
+      "default_highlight": true
+    },
+    {
+      "id": "3ce8d7fe-4704-5fea-acdc-864ff79aff93",
+      "key": "layout",
+      "name": "Layout",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 130,
+      "default_highlight": false
+    },
+    {
+      "id": "421f9840-ef22-5ecd-ae68-1a6c67f64749",
+      "key": "screen-size",
+      "name": "Screen Size",
+      "aliases": [
+        "Display Size"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Display",
+      "sort_order": 240,
+      "default_highlight": true
+    },
+    {
+      "id": "51f58ba6-3453-5060-aa5d-fa25107deb59",
+      "key": "operating-system",
+      "name": "Operating System",
+      "aliases": [
+        "OS"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Software",
+      "sort_order": 270,
+      "default_highlight": false
+    },
+    {
+      "id": "634323b6-60f9-57d5-a317-7be9f26f8dcd",
+      "key": "polling-rate",
+      "name": "Polling Rate",
+      "aliases": [
+        "Report Rate"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Performance",
+      "sort_order": 80,
+      "default_highlight": true
+    },
+    {
+      "id": "642f0ff0-20ca-5f75-aa1f-0a3ea5ed4402",
+      "key": "battery",
+      "name": "Battery",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Power",
+      "sort_order": 280,
+      "default_highlight": false
+    },
+    {
+      "id": "80d64e11-d303-5b4a-aaef-afd30b4735e8",
+      "key": "cable-length",
+      "name": "Cable Length",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Connectivity",
+      "sort_order": 120,
+      "default_highlight": false
+    },
+    {
+      "id": "8735ea97-2862-54fc-a9b7-c7adaf9d6ddd",
+      "key": "dimensions",
+      "name": "Dimensions",
+      "aliases": [
+        "Size"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Physical",
+      "sort_order": 50,
+      "default_highlight": false
+    },
+    {
+      "id": "8f7a6968-8cf0-5a70-a774-9deb7d83ae75",
+      "key": "display-type",
+      "name": "Display Type",
+      "aliases": [
+        "Panel Type"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Display",
+      "sort_order": 260,
+      "default_highlight": false
+    },
+    {
+      "id": "957edff3-9889-53db-af4f-a01602325772",
+      "key": "switch",
+      "name": "Switch",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 160,
+      "default_highlight": false
+    },
+    {
+      "id": "986fc9c2-0e23-5087-a1de-0a3761fb3def",
+      "key": "backlight",
+      "name": "Backlight",
+      "aliases": [
+        "Lighting"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Display",
+      "sort_order": 190,
+      "default_highlight": true
+    },
+    {
+      "id": "a101fb44-edda-5bee-a34d-4b2b2fb74a3a",
+      "key": "brand",
+      "name": "Brand",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "General",
+      "sort_order": 10,
+      "default_highlight": false
+    },
+    {
+      "id": "a547f523-4718-5482-acfe-228cfa184dca",
+      "key": "processor",
+      "name": "Processor",
+      "aliases": [
+        "CPU"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Performance",
+      "sort_order": 200,
+      "default_highlight": true
+    },
+    {
+      "id": "a5c9cde8-8cba-5e46-a499-6a5571e65297",
+      "key": "dpi",
+      "name": "DPI",
+      "aliases": [
+        "Dots Per Inch"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Performance",
+      "sort_order": 70,
+      "default_highlight": true
+    },
+    {
+      "id": "ac4f4d16-00af-5fdd-a5d4-af9d455607ef",
+      "key": "sensor-type",
+      "name": "Sensor Type",
+      "aliases": [
+        "Sensor"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Performance",
+      "sort_order": 90,
+      "default_highlight": true
+    },
+    {
+      "id": "b03e0136-12ce-59c5-acb7-5efd8ea9e8fd",
+      "key": "buttons",
+      "name": "Buttons",
+      "aliases": [
+        "Number of Buttons"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 100,
+      "default_highlight": true
+    },
+    {
+      "id": "bc75ed25-b0da-5c64-a977-66c8cf0fc124",
+      "key": "switch-type",
+      "name": "Switch Type",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 170,
+      "default_highlight": false
+    },
+    {
+      "id": "c509e6d6-058a-5d63-a7e1-04a0909f2760",
+      "key": "sim",
+      "name": "SIM",
+      "aliases": [
+        "SIM Type"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Connectivity",
+      "sort_order": 310,
+      "default_highlight": false
+    },
+    {
+      "id": "c7850818-999e-5946-ab81-08f54c7c5375",
+      "key": "number-of-keys",
+      "name": "Number of Keys",
+      "aliases": [
+        "Keys"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Controls",
+      "sort_order": 180,
+      "default_highlight": false
+    },
+    {
+      "id": "d2b2ed36-171f-58e0-a71f-7f77e7361467",
+      "key": "connection-type",
+      "name": "Connection Type",
+      "aliases": [
+        "Connection",
+        "Connectivity"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Connectivity",
+      "sort_order": 110,
+      "default_highlight": true
+    },
+    {
+      "id": "dd93bb1b-e350-5c9c-a4c6-037887adf343",
+      "key": "battery-capacity",
+      "name": "Battery Capacity",
+      "aliases": [],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Power",
+      "sort_order": 290,
+      "default_highlight": true
+    },
+    {
+      "id": "df7438a4-feed-50bc-a3c4-209a9e47e37a",
+      "key": "color",
+      "name": "Color",
+      "aliases": [
+        "Colour",
+        "Product Color",
+        "Product Colour"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Physical",
+      "sort_order": 30,
+      "default_highlight": false
+    },
+    {
+      "id": "e27301dc-ec6e-5e3a-a231-1ab4e066b25f",
+      "key": "storage",
+      "name": "Storage",
+      "aliases": [
+        "Capacity"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Memory & Storage",
+      "sort_order": 220,
+      "default_highlight": true
+    },
+    {
+      "id": "e791259a-813c-579b-a86b-2a204172e75c",
+      "key": "ram",
+      "name": "RAM",
+      "aliases": [
+        "Memory"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Memory & Storage",
+      "sort_order": 210,
+      "default_highlight": true
+    },
+    {
+      "id": "ee02e674-06e4-54d6-a6b3-fbf35c771326",
+      "key": "cameras",
+      "name": "Cameras",
+      "aliases": [
+        "Camera"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Imaging",
+      "sort_order": 300,
+      "default_highlight": true
+    },
+    {
+      "id": "f6a62e10-a74f-58d6-a386-d9d3c540e0eb",
+      "key": "format",
+      "name": "Format",
+      "aliases": [
+        "Form Factor"
+      ],
+      "help_text": "",
+      "is_active": true,
+      "group_name": "Physical",
+      "sort_order": 140,
+      "default_highlight": false
+    }
+  ],
+  "site_settings": [
+    {
+      "key": "default",
+      "site_name": "",
+      "landing_page_title": "",
+      "hero_enabled": false,
+      "banner_ad_1_enabled": false,
+      "banner_ad_2_enabled": false,
+      "homepage_reviews_enabled": false,
+      "homepage_reviews_view_all_enabled": false,
+      "payment_cash_enabled": false,
+      "payment_card_enabled": false,
+      "payment_bank_transfer_enabled": false,
+      "payment_instapay_enabled": false,
+      "payment_paypal_enabled": false,
+      "footer_cta_title": "",
+      "footer_cta_subtitle": "",
+      "footer_cta_button_label": "",
+      "footer_cta_button_url": "",
+      "footer_email": "",
+      "footer_phone": "",
+      "footer_address": "",
+      "copyright_text": "",
+      "footer_modern_card_title": "",
+      "footer_modern_card_text": "",
+      "footer_modern_card_button_label": "",
+      "footer_modern_card_button_url": "",
+      "footer_modern_community_text": "",
+      "footer_modern_bottom_left_text": "",
+      "footer_modern_bottom_center_text": "",
+      "auth_show_visual_text": false
+    }
+  ],
+  "quick_setup_state": [
+    {
+      "singleton": true,
+      "revision": 0,
+      "selections": {},
+      "installation_id": "generated-per-installation"
+    }
+  ],
+  "quick_setup_revisions": {
+    "count": 17,
+    "revision": 0
+  }
+}

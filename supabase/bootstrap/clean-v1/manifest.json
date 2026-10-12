@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "baseline": "clean-v1",
+  "source_commit": "ae3a58d7a6e81a00b720bed49d8953aabd3bb160",
+  "migration_inventory_sha256": "0bebb93ecc0a4a7cc3d73d587aed0df5e752eca769410b38e12ae08208e1e7db",
+  "source_schema_sha256": "c45588387105d146ba4c3824ea56d01e5a3f207e7840d6955720f28e5b6126a8",
+  "checkpoint": "20261012120000",
+  "covered_versions": 70,
+  "cli_version": "2.109.1",
+  "database_profile": "PostgreSQL 17; actual Supautils policy delegation; modern no-default-table-grants",
+  "managed_platform_proof": "Native contract fixtures; hosted/full-stack acceptance remains pending",
+  "status": "local-foundation; requires Milestone 2 before merchant installation",
+  "artifacts": {
+    "schema.sql": "26570dc9989fa3e1610bb8ea13460fcb768251af298c473480f2faafbaec0719",
+    "permissions.sql": "b7fa9cd108748c9df82beb528663ced22ef5e9cc529af80a434f7e68efae29bd",
+    "clean-seeds.sql": "7ac025a61a66854f82566fa3d8d31e68be402dda04ecccb58888ebe9ee351dd1",
+    "expected-schema.json": "7fdb874b46594ee7c84b57fb657112df3cd1a96f4c84496c7e0fab836b5186f3",
+    "permissions-manifest.json": "d1131cb5996dd2aa7b42a8909a6975f6080083a7eca322d1cc99e710b846b2a0",
+    "seed-manifest.json": "9306e3a479d6f2801db81f23d45e9772ce25d7d16a058b5a93c44af25d048f91",
+    "storage.json": "2c3acabcd5dc6bbcf2af893ad61b0d638ffd0ea6c361db9ec58177697e9dba40",
+    "covered-migrations.json": "c54cee9297988bdaf06061b7b5f536323ab17a0c8519e7812179a7514b1e943e"
+  },
+  "known_dependencies": [
+    "Nullable unconfigured PDC singleton in migration 71",
+    "Portable Claims origin and neutral application fallbacks",
+    "Trusted owner bootstrap and journal",
+    "Guarded remote installer and publication",
+    "Separately authorized hosted Auth/Storage/Realtime acceptance"
+  ]
+}

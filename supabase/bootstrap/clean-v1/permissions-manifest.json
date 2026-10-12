@@ -1,0 +1,4659 @@
+{
+  "relations": [
+    {
+      "name": "admin_activity_logs",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "INSERT",
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "admin_users",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_claim_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_claim_evidence",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_claim_information",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_claims",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_communication_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_communications",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_policies",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_policy_versions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "after_sales_return_reasons",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "brands",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "categories",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "category_specification_templates",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_agent_availability",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_attachments",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_conversations",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_messages",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_rate_limits",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_read_state",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "chat_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "commerce_crm_accounts",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_crm_activities",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "commerce_inventory_movements",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_order_return_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_order_returns",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_procurement_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_procurement_orders",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_sales_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_sales_orders",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_serialized_inventory_batches",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_serialized_unit_movements",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_serialized_units",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_shipping_companies",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_warehouse_inventory",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_warehouse_transfer_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_warehouse_transfers",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "commerce_warehouses",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "customer_order_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "customer_order_messages",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "customer_orders",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "customer_profiles",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_file_tags",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_folder_permissions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_folder_tags",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_folders",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_quick_access",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_recent_items",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "document_tags",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "documents",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "email_attempts",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "email_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "email_messages",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "email_preferences",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "email_provider_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "email_templates",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "erp_entity_links",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_inventory_cache",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_provider_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_remote_writes",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_stock_reservations",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_sync_jobs",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_sync_runs",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "erp_worker_leases",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "help_articles",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "help_categories",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "hr_employees",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "nps_responses",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "order_packing_scans",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "order_packing_sessions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "order_packing_videos",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "order_packing_work_sessions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "payment_attempts",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "payment_transactions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "preorder_payments",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "product_features",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "product_images",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "product_reviews",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "product_specifications",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "product_variants",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "products",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "quick_setup_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "quick_setup_revisions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "quick_setup_snapshot",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "quick_setup_state",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "shipping_city_mappings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "shipping_claim_jobs",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "shipping_order_jobs",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "shipping_provider_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "shipping_status_mappings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "shipping_webhook_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "site_coupons",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "site_hero_banners",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "site_links",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "site_offer_cards",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "site_pages",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "site_settings",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "site_top_bar_messages",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "sms_attempts",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_batches",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_messages",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_order_event_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_order_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_provider_settings",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "sms_templates",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "specification_definitions",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "store_analytics_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "store_analytics_internal_carts",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "store_analytics_internal_users",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "INSERT",
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "store_analytics_sessions",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "storefront_product_variants",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "storefront_products",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "support_ticket_attachments",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "support_ticket_events",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "support_ticket_messages",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "support_tickets",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    },
+    {
+      "name": "system_reset_attempts",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": []
+      }
+    },
+    {
+      "name": "system_reset_runs",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "name": "treasury_transactions",
+      "grants": {
+        "anon": [],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    }
+  ],
+  "columns": [
+    {
+      "relation": "product_variants",
+      "name": "id",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "product_id",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "name",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "code",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "sku",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "color_name",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "color_hex",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "price",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "stock_quantity",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "is_active",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "created_at",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "product_variants",
+      "name": "updated_at",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT"
+        ]
+      }
+    },
+    {
+      "relation": "products",
+      "name": "id",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "title",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "description",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "price",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "old_price",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "image_url",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "is_top_seller",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "is_featured",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "created_at",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "category_id",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "slug",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "brand_id",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "long_description",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "color_name",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "color_hex",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "stock_quantity",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "is_published",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "sku",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "popularity_score",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "average_rating",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "is_serialized",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "selling_mode",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "expected_availability_date",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "availability_message",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_active",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_starts_at",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_ends_at",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_payment_mode",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_deposit_percent",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_total_limit",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "preorder_customer_limit",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "seo_title",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "seo_description",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "seo_image_url",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "warranty_status",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "warranty_duration_value",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    },
+    {
+      "relation": "products",
+      "name": "warranty_duration_unit",
+      "grants": {
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ],
+        "service_role": []
+      }
+    }
+  ],
+  "functions": [
+    {
+      "signature": "public.after_sales_capture_communication()",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_capture_purchase()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_action_permission(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_actions(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_actions_before_reverse(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_assert_actor(uuid,text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_context(uuid,uuid,text,jsonb,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_create(uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_customer_action(uuid,uuid,integer,text,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_customer_action_before_reverse(uuid,uuid,integer,text,jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_detail(uuid,uuid,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_detail_before_reverse(uuid,uuid,boolean,uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_emit(uuid,uuid,text,text,text,boolean)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_finish_evidence(uuid,uuid,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_guard()",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_items(uuid,integer,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_list(uuid,boolean,text,text,text,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_next(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_next_before_reverse(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_preview(uuid,uuid,text,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_read_evidence(uuid,uuid,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_reserve_evidence(uuid,uuid,text,uuid,text,uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_staff_action(uuid,uuid,integer,text,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_claim_staff_action_before_reverse(uuid,uuid,integer,text,jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_claim_staged_evidence(uuid,uuid,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_configure(uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_enqueue(uuid,uuid,text,jsonb,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_fingerprint(jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_communication_finish(uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_guard()",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_communication_history(uuid,uuid,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_reason(public.after_sales_communications)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_communication_take(text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_communication_template(text,text,text)",
+      "grants": []
+    },
+    {
+      "signature": "public.after_sales_guard_policy()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_guard_purchase()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_immutable_version()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_item_eligibility(uuid,jsonb,timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_order_dates(uuid,timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_order_entitlements(uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_period(text,text[],jsonb,integer,text,text,timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_resolve_policy(uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_save_policy(uuid,text,text,integer,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_save_reason(uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.after_sales_valid_list(text[],text[])",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.apply_store_analytics_internal_user()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.assert_built_in_erp()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.capture_order_sms_events()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.catalog_staff_product_variants()",
+      "grants": [
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.catalog_staff_products()",
+      "grants": [
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_availability_details(timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_can_receive_topic(text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.chat_complete_attachment(uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_consume_limit(text,text,integer,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_consume_network_limits(text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_consume_network_limits_unless_retry(text,text,text,uuid,text,uuid,uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_create_or_resume(uuid,boolean,text,text,text,uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_create_ticket(uuid,uuid,text,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_event_name(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_guard_conversation()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_identify_guest(uuid,uuid,uuid,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_live_available()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_mark_read(uuid,uuid,text,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_preserve_ticket_order()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_request_callback(uuid,uuid,boolean,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_reserve_attachment(uuid,uuid,uuid,uuid,text,text,text,text,integer,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_reset_manifest()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_send_message(uuid,uuid,text,text,text,uuid,text,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_set_agent_availability(uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_set_callback_status(uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_set_intake_mode()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_set_order(uuid,uuid,text,uuid,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_signal_attachment()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_signal_conversation()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_signal_message()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_snapshot_event()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_start_with_message(uuid,boolean,text,text,text,uuid,uuid,text,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_submit_resolution_feedback(uuid,uuid,boolean,boolean,smallint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_transition(uuid,uuid,text,uuid,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_unread_summary(uuid,text,uuid[])",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_update_settings(uuid,timestamp with time zone,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.chat_validate_message_actor()",
+      "grants": []
+    },
+    {
+      "signature": "public.chat_validate_settings()",
+      "grants": []
+    },
+    {
+      "signature": "public.claim_daftra_sync_job(uuid,text[])",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.close_order_packing_work_session(uuid,uuid,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_claim_payment_attempt(uuid,uuid,text,bigint)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_builtin_customer_order(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_builtin_order_return(uuid,uuid,text,text,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_customer_order(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_customer_order_before_order_sms(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_customer_order_before_warranty(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_create_default_product_variant()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_create_normal_customer_order(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_order_return(uuid,uuid,text,text,jsonb)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_preorder(uuid,jsonb,jsonb,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_preorder_before_order_sms(uuid,jsonb,jsonb,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_preorder_before_warranty(uuid,jsonb,jsonb,uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_create_procurement_order(uuid,uuid,text,text,numeric,jsonb)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.commerce_create_sales_order(uuid,uuid,text,text,numeric,jsonb)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_crm_get_activity_stats()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_define_product_variants(uuid,jsonb,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_get_crm_account_summary(uuid)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_guard_inventory_cost_projection()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_guard_item_warranty()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_guard_received_procurement_order()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_guard_serialized_procurement_item()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_keep_image_variant_active()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_preorder_availability(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_reconcile_payment_transaction(jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_record_preorder_payment(uuid,uuid,numeric,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_reject_serialized_movement_mutation()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_reject_serialized_stock_write()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_release_preorder(uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_require_active_product_variant()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_return_serialized_unit(uuid,uuid,text,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_snapshot_item_warranty()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_store_payment_intention(uuid,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_transfer_inventory(uuid,uuid,text,text,jsonb)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.commerce_validate_order_return_item()",
+      "grants": []
+    },
+    {
+      "signature": "public.commerce_validate_product_image_variant()",
+      "grants": []
+    },
+    {
+      "signature": "public.complete_order_packing_session(uuid,uuid,text,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.dashboard_get_analysis_chart(date,date,text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.dashboard_get_analysis_overview()",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.default_admin_permissions()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.default_admin_permissions_before_claim_communications()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.default_admin_permissions_before_claims()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.default_admin_permissions_before_email()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.default_admin_permissions_before_reverse()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.document_set_item_tags(text,uuid,uuid[],uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_assert_staff(uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_audit(uuid,text,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_command(text,jsonb,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_command_before_claim_communications(text,jsonb,uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.email_event_rank(text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_ready(public.email_provider_settings)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.email_write_guard()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enforce_commerce_crm_activity_transition()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enforce_customer_profile_internal_identity()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enforce_nps_response_cooldown()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enforce_nps_response_internal_identity()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enforce_product_review_account_eligibility()",
+      "grants": []
+    },
+    {
+      "signature": "public.enforce_store_analytics_session_internal_identity()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.enqueue_daftra_order_sync()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_apply_inventory_cache(jsonb,timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_change_mode(uuid,text,bigint,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_create_external_customer_order(uuid,jsonb,jsonb,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_finalize_inventory_cache(text[],timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_finish_daftra_job(uuid,uuid,boolean,jsonb,text,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_catalog_inventory()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_local_mutation()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_physical_units()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_provider_state()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_return_state()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_guard_supplier()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_queue_inventory_refresh()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_record_daftra_test(bigint,boolean,timestamp with time zone)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_record_external_unit_return(uuid,uuid,text,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_retry_daftra_job(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_save_daftra_credentials(uuid,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_stamp_order_owner()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_storefront_stock(text,uuid,integer)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.erp_validate_worker_lease(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.get_active_erp_mode()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.guard_card_order_progress()",
+      "grants": []
+    },
+    {
+      "signature": "public.guard_customer_profile_protected_fields()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.guard_order_packing_scan_mutation()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.guard_order_packing_session_mutation()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.guard_unpaid_card_packing()",
+      "grants": []
+    },
+    {
+      "signature": "public.handle_new_customer_profile()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.has_admin_permission(text)",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.is_active_admin()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.is_owner()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.maintain_order_problem_hold()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.mark_admin_as_store_analytics_internal()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.preorder_add_initial_payment_fee()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.preorder_guard_fulfillment()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.preorder_guard_packing()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.preorder_guard_shipping_job()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.prevent_store_analytics_ledger_mutation()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.queue_eligible_paid_orders_for_shipping()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.queue_paid_order_for_shipping()",
+      "grants": []
+    },
+    {
+      "signature": "public.quick_setup_configuration_changed()",
+      "grants": []
+    },
+    {
+      "signature": "public.quick_setup_domains(text,text)",
+      "grants": []
+    },
+    {
+      "signature": "public.quick_setup_guard_write()",
+      "grants": []
+    },
+    {
+      "signature": "public.quick_setup_mutate(uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.quick_setup_reset_invalidation()",
+      "grants": []
+    },
+    {
+      "signature": "public.reply_to_order_message(uuid,uuid,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.report_order_packing_problem(uuid,uuid,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.require_order_packing_video()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.require_order_packing_work_session()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.serialize_store_analytics_internal_user_insert()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_can_receive_topic(text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_dispatch(uuid,uuid,boolean,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_emit(uuid,text,text,text,boolean,uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_claim_event_guard()",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_claim_finish(uuid,uuid,text,text,text,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_guard()",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_claim_label_finish(uuid,uuid,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_label_take(boolean,integer,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_operation(uuid,uuid,uuid,text,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_pdc_lookup()",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_claim_pdc_refresh(uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_claim_read_label(uuid,uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_schedule(uuid,uuid,integer,uuid,jsonb,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_take(boolean,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_claim_view(uuid,uuid,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_pdc_identity_guard()",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_record_claim_pdc_event(jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_record_pdc_event(jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_record_pdc_event_before_sms(jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_record_pdc_event_outbound(jsonb)",
+      "grants": []
+    },
+    {
+      "signature": "public.shipping_resolve_pdc_state(integer,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.shipping_valid_state(text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_begin_dispatch(uuid,uuid,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_begin_dispatch_before_order_sms(uuid,uuid,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_check_dispatch(uuid,uuid,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_check_dispatch_before_claim_communications(uuid,uuid,integer)",
+      "grants": []
+    },
+    {
+      "signature": "public.sms_check_dispatch_before_order_sms(uuid,uuid,integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_claim()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_claim_before_order_sms()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_claim_order_event()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_enqueue(jsonb,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_enqueue_order_event(uuid,uuid,jsonb,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_finish(uuid,uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_finish_order_event(uuid,uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_order_event_reason(public.sms_order_events)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_order_event_reason_before_pdc_sms(public.sms_order_events)",
+      "grants": []
+    },
+    {
+      "signature": "public.sms_order_setting_revision()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sms_snapshot_order_locale()",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.snapshot_customer_order_item_product_sku()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_get_customer_behavior(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_get_live_visitors(integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_get_snapshot(integer)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_is_internal_user(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_mark_internal_cart(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.store_analytics_mark_internal_session_carts(uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.storefront_prepare_order_payment()",
+      "grants": []
+    },
+    {
+      "signature": "public.support_add_message(uuid,uuid,text,text,text,boolean,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_create_ticket(uuid,uuid,uuid,text,text,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_customer_unread_counts(uuid,uuid[])",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_customer_unread_ticket_count(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_reset_manifest()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_ticket_audit_update()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_ticket_before_update()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_ticket_snapshot_actor()",
+      "grants": []
+    },
+    {
+      "signature": "public.support_touch_updated_at()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.support_update_ticket(uuid,uuid,text,text,text,uuid,boolean)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.sync_product_average_rating()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_assert_owner(uuid)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_begin(uuid,text,uuid,jsonb)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_check_attempt(uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_finish(uuid,uuid)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_plan(uuid,text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_tables(text)",
+      "grants": [
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.system_reset_tables_before_chat(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_erp_ownership(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_order_sms(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_paymob(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_preorders(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_sms(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_specifications(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.system_reset_tables_before_support(text)",
+      "grants": []
+    },
+    {
+      "signature": "public.treasury_get_outstanding_customer_invoices()",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.treasury_get_outstanding_supplier_invoices()",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.treasury_record_customer_receipt(uuid,numeric,date,text,text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.treasury_record_salary_payment(uuid,numeric,date,date,text,text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.treasury_record_supplier_payment(uuid,numeric,date,text,text)",
+      "grants": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "public.validate_customer_order_message()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.validate_order_packing_scan()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.validate_order_packing_session_insert()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "signature": "public.validate_order_packing_work_session()",
+      "grants": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    }
+  ],
+  "sequences": [
+    {
+      "name": "chat_conversations_reference_number_seq",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT",
+          "USAGE"
+        ]
+      }
+    },
+    {
+      "name": "chat_messages_sequence_number_seq",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT",
+          "USAGE"
+        ]
+      }
+    },
+    {
+      "name": "commerce_serialized_unit_code_seq",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": []
+      }
+    },
+    {
+      "name": "quick_setup_events_id_seq",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": []
+      }
+    },
+    {
+      "name": "support_tickets_reference_number_seq",
+      "grants": {
+        "anon": [],
+        "authenticated": [],
+        "service_role": [
+          "SELECT",
+          "USAGE"
+        ]
+      }
+    }
+  ],
+  "differences": [
+    {
+      "kind": "table",
+      "object": "admin_activity_logs",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "admin_activity_logs",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "INSERT",
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "admin_users",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "admin_users",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "brands",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "categories",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_crm_accounts",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_crm_accounts",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_inventory_movements",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_inventory_movements",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_order_return_items",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_order_return_items",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_order_returns",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_order_returns",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_procurement_items",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_procurement_items",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_procurement_orders",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_procurement_orders",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_sales_items",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_sales_items",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_sales_orders",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_sales_orders",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_shipping_companies",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_shipping_companies",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_inventory",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_inventory",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_transfer_items",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_transfer_items",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_transfers",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouse_transfers",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouses",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "commerce_warehouses",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_order_items",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_order_items",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_orders",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_orders",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_profiles",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "customer_profiles",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "hr_employees",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "hr_employees",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "product_images",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "product_reviews",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "product_specifications",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "products",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_coupons",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_coupons",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_hero_banners",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_links",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_offer_cards",
+      "role": "anon",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_offer_cards",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_offer_cards",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_settings",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "site_top_bar_messages",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "treasury_transactions",
+      "role": "authenticated",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing permissive RLS policy; missing base grant"
+    },
+    {
+      "kind": "table",
+      "object": "treasury_transactions",
+      "role": "service_role",
+      "before": [],
+      "after": [
+        "SELECT"
+      ],
+      "reason": "Existing server read/write contract; missing base grant"
+    }
+  ]
+}

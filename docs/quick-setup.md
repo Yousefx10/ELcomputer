@@ -1,6 +1,6 @@
 # Quick Setup — Phases 1 and 2
 
-Quick Setup is an owner-only guide at `/dashboard/setup`, also available at `/ar/dashboard/setup`. Phase 1 was deployed at `ac30fbe97cf1832a5d6f6a6d7ba312dfd6633d59` and accepted by the owner, including non-owner checks. Phase 2 extends that same guide with private, nonsecret progress metadata. Configuration editors remain authoritative.
+Quick Setup is an owner-only guide at `/dashboard/setup`, also available at `/ar/dashboard/setup`. Phases 1 and 2 are deployed at the owner-accepted `ae3a58d7a6e81a00b720bed49d8953aabd3bb160` checkpoint with 70 migrations. Phase 2 extends the same guide with private, nonsecret progress metadata. Configuration editors remain authoritative. The acceptance evidence limits below remain; Phase 3 Milestone 1 did not contact production.
 
 ## Supported sections
 
@@ -120,6 +120,6 @@ Provide `SETUP_REVIEW_PLAYWRIGHT` and `SETUP_REVIEW_CHROME` when the default pre
 
 ## Deferred work and production deployment
 
-Phase 2 is implemented locally and stops for review after commit/push. Phase3 clean installation, baseline/grant initialization and first-owner bootstrap, and Phase4 controlled import/cloning/recovery remain deferred. Existing applied migration source must remain unchanged.
+Phase 2 is deployed. Phase 3 Milestone 1 adds the local clean schema/seed/permission foundation and tested history-adoption strategy; read [clean-install-baseline.md](clean-install-baseline.md). Migration 71 portability, first-owner bootstrap, remote installer, locks/checkpoints, VPS publication and hosted installation acceptance remain later milestones. Phase 4 controlled import/cloning/recovery remains deferred. Existing applied migration source stays unchanged.
 
-Production baseline is the user-accepted Phase1 commit `ac30fbe97cf1832a5d6f6a6d7ba312dfd6633d59` with69 migrations; this task did not connect to production. Phase2 requires separate reviewed authorization for migration70 and guarded application deployment. Before any later release, verify current Git/schema parity, dormant controls/queues, backups/restoration, reset retention, PostgREST cache/grants and the locked target. Migration70 is additive; Phase1 can ignore retained metadata, and application rollback must retain migration70/history. Phase2 code before SQL degrades to read-only safely. Neither SQL nor deployment approval authorizes provider activation, integration transactions, installer/cloning or another feature. Do not reuse the consumed Phase1 deployment GO.
+Production baseline is the user-accepted Phase 2 commit `ae3a58d7a6e81a00b720bed49d8953aabd3bb160` with 70 applied migrations, supplied by the handoff and owner rather than refreshed here. The final hosted snapshot independently recorded selections but no captures/acknowledgements or Branding generation change; controlled hosted acceptance for those paths remains open. Before any separately authorized release, verify current parity, dormant controls/queues, recovery, reset retention, cache/grants and the locked target. Retain migration70/history on application rollback. Local baseline certification grants no production, provider, reset, installation or cloning authorization.
