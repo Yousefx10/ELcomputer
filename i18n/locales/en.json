@@ -4738,8 +4738,39 @@
       "duplicate": "This SKU or product URL is already used.",
       "schema": "Product saving is unavailable. Contact the store administrator.",
       "session": "Your session expired. Please sign in again.",
-      "unconfirmed": "Save result is unknown. Retry to check it."
+      "unconfirmed": "Save result is unknown. Retry to check it.",
+      "media": "This image is unavailable. Choose another image."
     },
     "discard": "Reload this product and discard your edits?"
+  },
+  "mediaSafety": {
+    "inUse": "This image is in use. Remove its references first.",
+    "unavailable": "This image is unavailable. Choose another image.",
+    "invalid": "The file is not a valid supported image.",
+    "svg": "SVG uploads are not supported. Use PNG or WebP.",
+    "size": "Image size must be 8 MB or smaller.",
+    "path": "Invalid image path.",
+    "pending": "Deletion was not confirmed. Refresh and retry.",
+    "changed": "The image changed. Refresh and retry.",
+    "permission": "You do not have permission to manage these images.",
+    "session": "Your session expired. Sign in again.",
+    "load": "Could not load images.",
+    "upload": "Could not upload the image. Try again.",
+    "delete": "Could not delete the image. Refresh and retry.",
+    "confirmDelete": "Delete image {name}?",
+    "sections": {
+      "products": "Products",
+      "productGallery": "Product Gallery",
+      "categories": "Categories",
+      "brands": "Brands",
+      "pages": "Pages",
+      "siteLogo": "Site Logo",
+      "authPage": "Authentication Page",
+      "heroBanners": "Hero Banners",
+      "bannerAds": "Banner Ads",
+      "footer": "Footer",
+      "offerCards": "Offer Cards",
+      "images": "Images"
+    }
   }
 }

@@ -3,7 +3,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 import { deleteUploadedImageByPublicPath } from '../../utils/uploads'
 
 export default defineEventHandler(async (event) => {
-  await requireAdminRequest(event, {
+  const { adminUser, supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'settings.edit'
   })
 
@@ -17,5 +17,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return await deleteUploadedImageByPublicPath(publicPath)
+  return await deleteUploadedImageByPublicPath(publicPath, { adminUser, supabaseAdmin })
 })

@@ -1,3 +1,4 @@
+import { throwUnavailableMediaReference } from './mediaReferenceError.js'
 import { createError } from 'h3'
 import { normalizeSeoFields } from './seoFields.js'
 
@@ -66,6 +67,7 @@ export const normalizeSitePagePayload = (body = {}) => {
 }
 
 export const throwSitePageError = (error, fallback = 'Could not save the page.') => {
+  throwUnavailableMediaReference(error)
   if (error?.code === '23505') {
     throw createError({ statusCode: 409, statusMessage: 'Another page uses that URL.' })
   }

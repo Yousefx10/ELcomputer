@@ -35,7 +35,7 @@ One resolver supplies the public origin everywhere: valid `site_settings.seo_sit
 
 ## Editor controls and fallbacks
 
-Products, categories, brands and CMS pages have optional title, description and sharing-image fields. A shared editor displays automatic title/description previews. Length recommendations do not block normal saves; server input limits protect against excessively large payloads. Existing uploads/library selection/removal are reused. CMS sharing uploads use a `site_pages` section with `pages.edit` permission. Library selection retains the existing `settings.view` requirement; section edit permissions govern uploads.
+Products, categories, brands and CMS pages have optional title, description and sharing-image fields. A shared editor displays automatic title/description previews. Length recommendations do not block normal saves; server input limits protect against excessively large payloads. Existing uploads/library selection/removal are reused. CMS sharing uploads use a `site_pages` section with `pages.edit` permission. Library selection now uses scoped product/category/brand/page edit permissions; Settings viewers retain supported public images. Section edit permissions govern uploads. See [media safety](media-safety.md) for reference guards and deletion recovery.
 
 | Page | Title | Description | Sharing image |
 | --- | --- | --- | --- |

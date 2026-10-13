@@ -2293,7 +2293,7 @@
 <script setup>
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 const seoSiteUrlPlaceholder = useRuntimeConfig().public.siteUrl
-const { uiLabel } = useUiLocale()
+const { uiLabel, uiText } = useUiLocale()
 
 const { intlLocale } = useUiLocale()
 
@@ -2339,6 +2339,7 @@ const {
 } = useAdminUploads()
 const SETTINGS_GENERAL_CACHE_KEY = 'dashboard:settings:general'
 const SETTINGS_COUPONS_CACHE_KEY = 'dashboard:settings:coupons'
+const { mediaErrorMessage } = useMediaErrors()
 const SETTINGS_GALLERY_CACHE_KEY = 'dashboard:settings:gallery'
 
 const pageError = ref('')
@@ -3416,7 +3417,7 @@ const loadGalleryImages = async ({ force = false } = {}) => {
     })
     syncGalleryCache()
   } catch (error) {
-    galleryError.value = error?.data?.statusMessage || error?.message || 'Could not load gallery images.'
+    galleryError.value = mediaErrorMessage(error, 'load')
   } finally {
     galleryLoading.value = false
   }
@@ -3503,11 +3504,11 @@ const saveSiteSettings = async (sectionName) => {
 
 
 const removeGalleryImage = async (image) => {
-  if (!image?.publicPath) {
+  if (!image?.publicPath || galleryDeleting.value) {
     return
   }
 
-  if (!confirm(`Delete image ${image.name}?`)) {
+  if (!confirm(uiText('mediaSafety.confirmDelete', { name: image.name }))) {
     return
   }
 
@@ -3528,7 +3529,7 @@ const removeGalleryImage = async (image) => {
     closeGalleryImage()
     await loadGalleryImages({ force: true })
   } catch (error) {
-    galleryError.value = error?.data?.statusMessage || error?.message || 'Could not delete this image.'
+    galleryError.value = mediaErrorMessage(error, 'delete')
   } finally {
     galleryDeleting.value = false
   }

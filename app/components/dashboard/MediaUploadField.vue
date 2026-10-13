@@ -54,7 +54,7 @@
             </button>
           </div>
 
-          <p v-if="errorMessage" class="text-sm text-red-600">
+          <p v-if="errorMessage" role="alert" class="text-sm text-red-600">
             {{ $uiMessage(errorMessage) }}
           </p>
 
@@ -68,7 +68,7 @@
     <input
       ref="fileInputRef"
       type="file"
-      accept="image/*"
+      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
       class="hidden"
       :disabled="disabled || uploading"
       @change="handleFileChange"
@@ -81,7 +81,7 @@
         </header>
         <DashboardMediaLibrary v-model:search="librarySearch" v-model:selected-image="librarySelection" :images="libraryImages" :total-items="libraryTotal" :total-sections="librarySections" :total-pages="libraryPages" :page="libraryPage" :loaded="libraryLoaded" :loading="libraryLoading" :error="libraryError" @refresh="loadLibrary" @page="changeLibraryPage" />
         <footer class="sticky bottom-0 mt-4 flex justify-end rounded-lg bg-white p-3">
-          <button type="button" :disabled="!librarySelection || disabled" class="min-h-11 rounded-lg bg-blue-600 px-4 font-semibold text-white disabled:opacity-50" @click="chooseLibraryImage">{{ $t('common.useImage') }}</button>
+          <button type="button" :disabled="!librarySelection || disabled || libraryLoading || !!libraryError" class="min-h-11 rounded-lg bg-blue-600 px-4 font-semibold text-white disabled:opacity-50" @click="chooseLibraryImage">{{ $t('common.useImage') }}</button>
         </footer>
       </dialog>
     </Teleport>
@@ -148,7 +148,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'uploaded'])
 
 const { uploadImage, fetchGalleryImages } = useAdminUploads()
-const { uiMessage } = useUiLocale()
+const { mediaErrorMessage } = useMediaErrors()
 const libraryTitleId = useId()
 const libraryDialog = ref(null)
 const librarySearch = ref('')
@@ -168,15 +168,20 @@ const loadLibrary = async () => {
   libraryLoading.value = true
   libraryError.value = ''
   try {
-    const result = await fetchGalleryImages({ q: librarySearch.value || undefined, page: libraryPage.value, limit: 24 })
+    const result = await fetchGalleryImages({ section: props.section, q: librarySearch.value || undefined, page: libraryPage.value, limit: 24 })
     if (request !== libraryRequest) return
     libraryImages.value = result.items || []
+    if (!libraryImages.value.some(image => image.publicPath === librarySelection.value?.publicPath)) librarySelection.value = null
     libraryTotal.value = result.pagination?.totalItems || 0
     librarySections.value = result.summary?.totalSections ?? result.totalSections ?? new Set(libraryImages.value.map(image => image.section)).size
     libraryPages.value = result.pagination?.totalPages || 1
     libraryLoaded.value = true
-  } catch {
-    if (request === libraryRequest) libraryError.value = uiMessage('Could not load images.')
+  } catch (error) {
+    if (request === libraryRequest) {
+      libraryError.value = mediaErrorMessage(error, 'load')
+      libraryImages.value = []
+      librarySelection.value = null
+    }
   } finally {
     if (request === libraryRequest) libraryLoading.value = false
   }
@@ -189,7 +194,7 @@ const openLibrary = async () => {
 }
 const changeLibraryPage = page => { libraryPage.value = page; loadLibrary() }
 const chooseLibraryImage = () => {
-  if (!librarySelection.value || props.disabled) return
+  if (!librarySelection.value || props.disabled || libraryLoading.value || libraryError.value || !libraryImages.value.some(image => image.publicPath === librarySelection.value.publicPath)) return
   emit('update:modelValue', librarySelection.value.publicPath)
   libraryDialog.value?.close()
 }
@@ -212,6 +217,7 @@ const openFilePicker = () => {
 }
 
 const clearImage = () => {
+  if (props.disabled || uploading.value) return
   errorMessage.value = ''
   emit('update:modelValue', '')
 }
@@ -224,6 +230,8 @@ const handleFileChange = async (event) => {
     return
   }
 
+  if (props.disabled || uploading.value) { input.value = ''; return }
+
   uploading.value = true
   errorMessage.value = ''
 
@@ -232,7 +240,7 @@ const handleFileChange = async (event) => {
     emit('update:modelValue', response.publicPath || '')
     emit('uploaded', response)
   } catch (error) {
-    errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not upload image.'
+    errorMessage.value = mediaErrorMessage(error, 'upload')
   } finally {
     uploading.value = false
 

@@ -18,3 +18,6 @@
   controls; a wider redesign needs its own authorization.
 - Follow [Product save safety](docs/product-save-safety.md) for the transaction,
   revision, retry, audit, inventory and confidentiality contracts.
+- Follow [Media safety](docs/media-safety.md) for scoped public-image access,
+  reference guards, deletion recovery and content validation. Extend reference
+  coverage when adding media-bearing tables; keep private Storage separate.

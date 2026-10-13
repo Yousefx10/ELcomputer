@@ -1,38 +1,11 @@
 import { randomBytes } from 'node:crypto'
-import { promises as fs } from 'node:fs'
-import { createReadStream } from 'node:fs'
-import { basename, extname, join, relative, resolve, sep } from 'node:path'
+import { promises as fs, constants } from 'node:fs'
+import { basename, extname, join, relative, resolve } from 'node:path'
 import { createError } from 'h3'
 import { hasAdminPermission } from '~/utils/adminPermissions'
+import { validateImageContent, MAX_IMAGE_BYTES } from './imageContent'
 
-const IMAGE_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'image/svg+xml',
-  'image/avif'
-])
-
-const MIME_EXTENSION_MAP = {
-  'image/jpeg': '.jpg',
-  'image/png': '.png',
-  'image/webp': '.webp',
-  'image/gif': '.gif',
-  'image/svg+xml': '.svg',
-  'image/avif': '.avif'
-}
-
-const EXTENSION_CONTENT_TYPE_MAP = {
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.png': 'image/png',
-  '.webp': 'image/webp',
-  '.gif': 'image/gif',
-  '.svg': 'image/svg+xml',
-  '.avif': 'image/avif'
-}
-
+const EXTENSION_CONTENT_TYPE_MAP = { '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.gif':'image/gif', '.avif':'image/avif', '.svg':'image/svg+xml' }
 const UPLOAD_SECTION_DEFINITIONS = {
   products: {
     label: 'Products',
@@ -94,291 +67,171 @@ const BLANK_IMAGE_SVG = `<?xml version="1.0" encoding="UTF-8"?>
   <rect width="1200" height="1200" fill="white"/>
 </svg>`
 
-const sanitizeRelativePath = (value = '') => {
-  const normalizedPath = String(value || '')
-    .replace(/^\/+/, '')
-    .replace(/\\/g, '/')
-    .split('/')
-    .filter(Boolean)
-    .join('/')
-
-  if (!normalizedPath || normalizedPath.includes('..')) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid upload path.'
-    })
+const fail = (statusCode, statusMessage, code) => { throw createError({ statusCode, statusMessage, data: { code } }) }
+const sanitizeRelativePath = value => {
+  if (typeof value !== 'string' || !value || value.length > 500 || !/^[A-Za-z0-9_./-]+$/.test(value)
+      || value.startsWith('/') || value.includes('//') || value.split('/').some(x => x === '.' || x === '..' || !x)) {
+    fail(400, 'Invalid image path.', 'MEDIA_PATH_INVALID')
   }
-
-  return normalizedPath
+  return value
 }
-
-const getRandomSuffix = () => {
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz'
-  const bytes = randomBytes(4)
-
-  return Array.from(bytes)
-    .map((value) => alphabet[value % alphabet.length])
-    .join('')
-}
-
-const buildUploadFilename = ({ filename = '', mimeType = '' } = {}) => {
-  const now = new Date()
-  const day = String(now.getDate()).padStart(2, '0')
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const year = String(now.getFullYear())
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
-  const seconds = String(now.getSeconds()).padStart(2, '0')
-  const originalExtension = extname(String(filename || '')).toLowerCase()
-  const mimeExtension = MIME_EXTENSION_MAP[mimeType] || ''
-  const fileExtension = mimeExtension || originalExtension || '.jpg'
-
-  return `${day}${month}${year}-${hours}${minutes}${seconds}-${getRandomSuffix()}${fileExtension}`
-}
-
-const getSectionDefinitionFromRelativePath = (relativePath = '') => {
-  const normalizedPath = sanitizeRelativePath(relativePath)
-
-  return Object.values(UPLOAD_SECTION_DEFINITIONS).find((definition) => {
-    return normalizedPath === definition.directory || normalizedPath.startsWith(`${definition.directory}/`)
-  }) || {
-    label: 'Uploads',
-    directory: normalizedPath.split('/')[0] || 'uploads',
-    permissions: []
-  }
-}
-
 export const getUploadsRootDirectory = () => {
-  const config = useRuntimeConfig()
-  return resolve(process.cwd(), config.uploadsDir || 'storage/uploads')
+  const app=process.cwd(), root=resolve(app,useRuntimeConfig().uploadsDir||'storage/uploads')
+  if(root==='/' || root===app || app.startsWith(root+'/')) fail(400,'The upload directory is not safe.','MEDIA_PATH_INVALID')
+  return root
 }
-
-export const getUploadSectionDefinition = (sectionKey = '') => {
-  const matchedDefinition = UPLOAD_SECTION_DEFINITIONS[String(sectionKey || '').trim()]
-
-  if (!matchedDefinition) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Unsupported upload section.'
-    })
-  }
-
-  return matchedDefinition
+export const getUploadSectionDefinition = key => {
+  const definition = Object.hasOwn(UPLOAD_SECTION_DEFINITIONS,key) ? UPLOAD_SECTION_DEFINITIONS[key] : null
+  if (!definition) fail(400, 'Unsupported upload section.', 'MEDIA_SECTION_INVALID')
+  return definition
 }
-
-export const ensureAdminUploadPermission = (adminUser, sectionKey = '') => {
-  const sectionDefinition = getUploadSectionDefinition(sectionKey)
-  const hasRequiredPermission = sectionDefinition.permissions.some((permissionKey) => {
-    return hasAdminPermission(adminUser, permissionKey)
-  })
-
-  if (!hasRequiredPermission) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'You do not have permission to upload images here.'
-    })
-  }
-
-  return sectionDefinition
+const sectionForPath = path => Object.entries(UPLOAD_SECTION_DEFINITIONS)
+  .sort((a,b) => b[1].directory.length-a[1].directory.length)
+  .find(([,d]) => path.startsWith(d.directory + '/') && !path.slice(d.directory.length + 1).includes('/'))
+const isImagePath = path => Object.hasOwn(EXTENSION_CONTENT_TYPE_MAP, extname(path).toLowerCase())
+const isPublicImagePath = path => isImagePath(path) && (sectionForPath(path) || !path.includes('/'))
+export const ensureAdminUploadPermission = (adminUser, section) => {
+  const definition = getUploadSectionDefinition(section)
+  if (!definition.permissions.some(p => hasAdminPermission(adminUser,p))) fail(403, 'You do not have permission to manage these images.', 'MEDIA_FORBIDDEN')
+  return definition
 }
-
-export const getPublicUploadPath = (relativePath = '') => {
-  return `/uploads/${sanitizeRelativePath(relativePath)}`
+export const getAllowedMediaSections = (adminUser, requestedSection) => {
+  if (requestedSection) ensureAdminUploadPermission(adminUser, requestedSection)
+  // Settings viewers retain the existing public image library, never other files.
+  const settings = hasAdminPermission(adminUser,'settings.view')
+  const keys = Object.keys(UPLOAD_SECTION_DEFINITIONS).filter(key => settings || UPLOAD_SECTION_DEFINITIONS[key].permissions.some(p => hasAdminPermission(adminUser,p)))
+  if (!keys.length) fail(403, 'You do not have permission to browse images.', 'MEDIA_FORBIDDEN')
+  return { keys, legacy: settings }
 }
-
-export const getRelativeUploadPathFromPublicPath = (publicPath = '') => {
-  const normalizedPath = String(publicPath || '').trim()
-
-  if (!normalizedPath.startsWith('/uploads/')) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Only host-uploaded images can be managed from the gallery.'
-    })
-  }
-
-  return sanitizeRelativePath(normalizedPath.slice('/uploads/'.length))
+export const getPublicUploadPath = path => '/uploads/' + sanitizeRelativePath(path)
+export const getRelativeUploadPathFromPublicPath = path => {
+  if (typeof path !== 'string' || !path.startsWith('/uploads/')) fail(400, 'Invalid image path.', 'MEDIA_PATH_INVALID')
+  return sanitizeRelativePath(path.slice(9))
 }
+export const getAbsoluteUploadPathFromRelativePath = path => resolve(getUploadsRootDirectory(),sanitizeRelativePath(path))
 
-export const getAbsoluteUploadPathFromRelativePath = (relativePath = '') => {
-  const uploadsRootDirectory = getUploadsRootDirectory()
-  const sanitizedRelativePath = sanitizeRelativePath(relativePath)
-  const absolutePath = resolve(uploadsRootDirectory, sanitizedRelativePath)
-  const relativeToRoot = relative(uploadsRootDirectory, absolutePath)
-
-  if (!relativeToRoot || relativeToRoot.startsWith('..') || relativeToRoot.includes(`..${sep}`)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid upload path.'
-    })
-  }
-
-  return absolutePath
-}
-
-export const saveUploadedImageFile = async (file, sectionKey = '') => {
-  if (!file?.data?.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Choose an image file first.'
-    })
-  }
-
-  if (!IMAGE_MIME_TYPES.has(file.type)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Only image uploads are allowed.'
-    })
-  }
-
-  const maxFileSizeInBytes = 8 * 1024 * 1024
-
-  if (file.data.length > maxFileSizeInBytes) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Image size must be 8 MB or smaller.'
-    })
-  }
-
-  const sectionDefinition = getUploadSectionDefinition(sectionKey)
-  const uploadsRootDirectory = getUploadsRootDirectory()
-  const targetDirectory = resolve(uploadsRootDirectory, sectionDefinition.directory)
-  const filename = buildUploadFilename({
-    filename: file.filename,
-    mimeType: file.type
-  })
-  const absoluteFilePath = resolve(targetDirectory, filename)
-  const relativeFilePath = sanitizeRelativePath(`${sectionDefinition.directory}/${filename}`)
-
-  await fs.mkdir(targetDirectory, { recursive: true })
-  await fs.writeFile(absoluteFilePath, file.data)
-
-  return {
-    filename,
-    section: sectionDefinition.label,
-    relativePath: relativeFilePath,
-    publicPath: getPublicUploadPath(relativeFilePath)
-  }
-}
-
-const walkUploadDirectory = async (directoryPath, rootDirectory) => {
-  let entries = []
-
+// Do not follow links in the root, any ancestor, directories or individual files.
+export const assertSafeUploadPath = async (path, { directory = false, missing = false } = {}) => {
+  const root=getUploadsRootDirectory(), absolute=getAbsoluteUploadPathFromRelativePath(path)
+  if (!isPublicImagePath(path) && !directory) fail(404,'Image not found.','MEDIA_NOT_FOUND')
   try {
-    entries = await fs.readdir(directoryPath, { withFileTypes: true })
-  } catch (error) {
-    if (error?.code === 'ENOENT') {
-      return []
-    }
-
-    throw error
-  }
-
-  const nestedEntries = await Promise.all(entries.map(async (entry) => {
-    const absoluteEntryPath = join(directoryPath, entry.name)
-
-    if (entry.isDirectory()) {
-      return await walkUploadDirectory(absoluteEntryPath, rootDirectory)
-    }
-
-    const extension = extname(entry.name).toLowerCase()
-
-    if (!Object.hasOwn(EXTENSION_CONTENT_TYPE_MAP, extension)) {
-      return []
-    }
-
-    const stats = await fs.stat(absoluteEntryPath)
-    const relativeEntryPath = sanitizeRelativePath(relative(rootDirectory, absoluteEntryPath))
-    const sectionDefinition = getSectionDefinitionFromRelativePath(relativeEntryPath)
-
-    return [{
-      name: basename(entry.name),
-      relativePath: relativeEntryPath,
-      publicPath: getPublicUploadPath(relativeEntryPath),
-      section: sectionDefinition.label,
-      directory: sectionDefinition.directory,
-      size: stats.size,
-      updated_at: stats.mtime.toISOString()
-    }]
-  }))
-
-  return nestedEntries.flat()
+    if (await fs.realpath(root) !== root) fail(400,'The image path is not safe.','MEDIA_PATH_INVALID')
+    const parent=directory ? absolute : resolve(absolute,'..')
+    if (await fs.realpath(parent) !== parent) fail(400,'The image path is not safe.','MEDIA_PATH_INVALID')
+    const stat=await fs.lstat(absolute)
+    if (stat.isSymbolicLink() || !(directory ? stat.isDirectory() : stat.isFile())) fail(400,'The image path is not safe.','MEDIA_PATH_INVALID')
+    return { absolute, stat }
+  } catch(error) { if (missing && error.code==='ENOENT') return {absolute,stat:null}; throw error }
 }
-
-const normalizePositiveInteger = (value, fallbackValue) => {
-  const parsedValue = Number.parseInt(String(value ?? ''), 10)
-
-  if (!Number.isFinite(parsedValue) || parsedValue < 1) {
-    return fallbackValue
+const ensureDirectory = async directory => {
+  const root=getUploadsRootDirectory()
+  // Check each existing ancestor before mkdir; never create through a symlink.
+  let current=root
+  const pending=[]
+  while (true) {
+    try { if (await fs.realpath(current)!==current) fail(400,'The image path is not safe.','MEDIA_PATH_INVALID'); break }
+    catch(error) { if(error.code!=='ENOENT') throw error; pending.push(current); const parent=resolve(current,'..'); if(parent===current) throw error; current=parent }
   }
-
-  return parsedValue
+  for(const path of pending.reverse()) {
+    await fs.mkdir(path,{mode:0o750})
+    await syncDirectory(resolve(path,'..'))
+  }
+  current=root
+  for(const part of directory.split('/')) {
+    current=join(current,part)
+    try { await fs.mkdir(current,{mode:0o750}); await syncDirectory(resolve(current,'..')) } catch(error) { if(error.code!=='EEXIST') throw error }
+    if(await fs.realpath(current)!==current || !(await fs.lstat(current)).isDirectory()) fail(400,'The image path is not safe.','MEDIA_PATH_INVALID')
+  }
+  return current
 }
-
-export const listUploadedImages = async (searchTerm = '', options = {}) => {
-  const uploadsRootDirectory = getUploadsRootDirectory()
-  const normalizedSearchTerm = String(searchTerm || '').trim().toLowerCase()
-  const requestedPage = normalizePositiveInteger(options.page, 1)
-  const pageSize = Math.min(60, normalizePositiveInteger(options.limit, 24))
-  const files = await walkUploadDirectory(uploadsRootDirectory, uploadsRootDirectory)
-
-  const filteredFiles = files
-    .filter((file) => {
-      if (!normalizedSearchTerm) {
-        return true
+const syncDirectory = async path => {
+  const handle=await fs.open(path,constants.O_RDONLY|constants.O_NOFOLLOW)
+  try { await handle.sync() } finally { await handle.close() }
+}
+export const saveUploadedImageFile = async (file, section) => {
+  const {extension}=validateImageContent(file?.data,file?.type)
+  const definition=getUploadSectionDefinition(section), target=await ensureDirectory(definition.directory)
+  const filename=Date.now()+'-'+randomBytes(16).toString('hex')+extension
+  const absolute=join(target,filename), relativePath=definition.directory+'/'+filename
+  const staging=join(target,'.'+filename+'.pending')
+  let handle, published=false
+  try {
+    handle=await fs.open(staging,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o640)
+    await handle.writeFile(file.data); await handle.sync()
+    // Publish complete bytes atomically without overwriting another file.
+    // After publication, preserve the valid file even if acknowledgement fails.
+    await fs.link(staging,absolute); published=true
+    await fs.unlink(staging); await syncDirectory(target)
+  } catch(error) { if(handle && !published) await fs.unlink(staging).catch(()=>{}); throw error }
+  finally { await handle?.close() }
+  return { filename,section:definition.label,relativePath,publicPath:getPublicUploadPath(relativePath) }
+}
+const walk = async (directory, root, allowed) => {
+  let entries
+  try { if(await fs.realpath(directory)!==directory) return []; entries=await fs.readdir(directory,{withFileTypes:true}) }
+  catch(error) { if(error.code==='ENOENT') return []; throw error }
+  const files=[]
+  for(const entry of entries) {
+    if(entry.isSymbolicLink()) continue
+    const absolute=join(directory,entry.name), path=relative(root,absolute)
+    if(entry.isDirectory()) {
+      if(allowed.keys.some(key => {const d=UPLOAD_SECTION_DEFINITIONS[key].directory;return d===path||d.startsWith(path+'/')||path.startsWith(d+'/')})) files.push(...await walk(absolute,root,allowed))
+      continue
+    }
+    if(!entry.isFile() || !isImagePath(path)) continue
+    try { sanitizeRelativePath(path) } catch { continue }
+    const match=sectionForPath(path)
+    if(match ? !allowed.keys.includes(match[0]) : !(allowed.legacy&&!path.includes('/'))) continue
+    const {stat}=await assertSafeUploadPath(path)
+    files.push({ name:basename(path),relativePath:path,publicPath:getPublicUploadPath(path),section:match?.[1].label||'Images',directory:match?.[1].directory||'',size:stat.size,updated_at:stat.mtime.toISOString() })
+  }
+  return files
+}
+export const listUploadedImages = async (search='',options={}) => {
+  const allowed=getAllowedMediaSections(options.adminUser,options.section)
+  const files=(await walk(getUploadsRootDirectory(),getUploadsRootDirectory(),allowed)).filter(f=>f.name.toLowerCase().includes(String(search).trim().toLowerCase())).sort((a,b)=>b.updated_at.localeCompare(a.updated_at))
+  const limit=Math.min(60,Math.max(1,Number.isSafeInteger(options.limit)?options.limit:24)), totalItems=files.length,totalPages=Math.max(1,Math.ceil(totalItems/limit)),page=Math.min(totalPages,Math.max(1,Number.isSafeInteger(options.page)?options.page:1))
+  return {items:files.slice((page-1)*limit,page*limit),pagination:{page,pageSize:limit,totalItems,totalPages},totalSections:new Set(files.map(f=>f.section)).size}
+}
+const deleteCommand = async (client,adminUser,path,finish=false) => {
+  const {data,error}=await client.rpc('catalog_media_delete',{p_admin_id:adminUser.id,p_path:path,p_finish:finish})
+  if(error) {
+    const reason=error.message||''
+    if(reason.includes('MEDIA_REFERENCED')) fail(409,'This image is in use. Remove its references first.','MEDIA_REFERENCED')
+    if(reason.includes('MEDIA_FORBIDDEN')) fail(403,'You do not have permission to delete images.','MEDIA_FORBIDDEN')
+    if(reason.includes('MEDIA_PATH_INVALID')) fail(400,'Invalid image path.','MEDIA_PATH_INVALID')
+    fail(503,'Deletion was not confirmed. Refresh and retry.','MEDIA_DELETE_PENDING')
+  }
+  if(!data?.state) fail(503,'Deletion was not confirmed. Refresh and retry.','MEDIA_DELETE_PENDING')
+  return data
+}
+export const deleteUploadedImageByPublicPath = async (path,{supabaseAdmin,adminUser}) => {
+  const relativePath=getRelativeUploadPathFromPublicPath(path)
+  if(!isPublicImagePath(relativePath)) fail(400,'Invalid image path.','MEDIA_PATH_INVALID')
+  const {absolute,stat}=await assertSafeUploadPath(relativePath,{missing:true})
+  // Persist the reservation before filesystem changes. Never cancel after uncertainty.
+  const result=await deleteCommand(supabaseAdmin,adminUser,path)
+  if(result.state!=='deleted') {
+    try {
+      if(stat) {
+        const fresh=await assertSafeUploadPath(relativePath,{missing:true})
+        if(fresh.stat && (fresh.stat.ino!==stat.ino||fresh.stat.size!==stat.size||fresh.stat.mtimeMs!==stat.mtimeMs)) fail(409,'The image changed. Refresh and retry.','MEDIA_CHANGED')
+        await fs.unlink(absolute).catch(error=>{if(error.code!=='ENOENT')throw error})
+        await syncDirectory(resolve(absolute,'..'))
       }
-
-      return file.name.toLowerCase().includes(normalizedSearchTerm)
-    })
-    .sort((firstFile, secondFile) => {
-      return new Date(secondFile.updated_at).getTime() - new Date(firstFile.updated_at).getTime()
-    })
-
-  const totalItems = filteredFiles.length
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
-  const currentPage = Math.min(requestedPage, totalPages)
-  const startIndex = (currentPage - 1) * pageSize
-  const endIndex = startIndex + pageSize
-
-  return {
-    items: filteredFiles.slice(startIndex, endIndex),
-    pagination: {
-      page: currentPage,
-      pageSize,
-      totalItems,
-      totalPages
-    },
-    totalSections: new Set(filteredFiles.map((file) => file.section)).size
+    } catch(error) { if(error.statusCode) throw error; fail(503,'Could not delete the image. Refresh and retry.','MEDIA_DELETE_PENDING') }
+    await deleteCommand(supabaseAdmin,adminUser,path,true)
   }
+  return {relativePath,publicPath:path}
 }
-
-export const deleteUploadedImageByPublicPath = async (publicPath = '') => {
-  const relativePath = getRelativeUploadPathFromPublicPath(publicPath)
-  const absolutePath = getAbsoluteUploadPathFromRelativePath(relativePath)
-
+export const openUploadImage = async path => {
+  await assertSafeUploadPath(path)
+  const handle=await fs.open(getAbsoluteUploadPathFromRelativePath(path),constants.O_RDONLY|constants.O_NOFOLLOW)
   try {
-    await fs.unlink(absolutePath)
-  } catch (error) {
-    if (error?.code !== 'ENOENT') {
-      throw error
-    }
-  }
-
-  return {
-    relativePath,
-    publicPath: getPublicUploadPath(relativePath)
-  }
+    const stat=await handle.stat()
+    if(!stat.isFile()||stat.size>MAX_IMAGE_BYTES) fail(404,'Image not found.','MEDIA_NOT_FOUND')
+    return {handle,stat}
+  } catch(error) { await handle.close(); throw error }
 }
-
-export const getUploadContentType = (filePath = '') => {
-  const extension = extname(String(filePath || '')).toLowerCase()
-  return EXTENSION_CONTENT_TYPE_MAP[extension] || 'application/octet-stream'
-}
-
-export const createUploadReadStream = (relativePath = '') => {
-  const absolutePath = getAbsoluteUploadPathFromRelativePath(relativePath)
-  return createReadStream(absolutePath)
-}
-
-export const getBlankImageSvg = () => {
-  return BLANK_IMAGE_SVG
-}
+export const getUploadContentType = path => EXTENSION_CONTENT_TYPE_MAP[extname(path).toLowerCase()]||'application/octet-stream'
+export const getBlankImageSvg = () => BLANK_IMAGE_SVG

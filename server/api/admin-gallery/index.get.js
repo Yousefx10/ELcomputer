@@ -1,11 +1,11 @@
-import { getQuery } from 'h3'
+import { getQuery, setHeader } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { listUploadedImages } from '../../utils/uploads'
 
 export default defineEventHandler(async (event) => {
-  await requireAdminRequest(event, {
-    permission: 'settings.view'
-  })
+  const { adminUser } = await requireAdminRequest(event)
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'X-Content-Type-Options', 'nosniff')
 
   const query = getQuery(event)
   const searchTerm = String(query.q || '').trim()
@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
   const limit = Number.parseInt(String(query.limit || '24'), 10)
   const result = await listUploadedImages(searchTerm, {
     page,
-    limit
+    limit,
+    adminUser,
+    section: query.section
   })
 
   return result

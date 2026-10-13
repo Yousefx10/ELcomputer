@@ -12,6 +12,8 @@ export const useAdminUploads = () => {
 
     return await $fetch('/api/admin-uploads', {
       method: 'POST',
+      retry: 0,
+      timeout: 30000,
       headers: await getAdminAuthHeaders(),
       body: formData
     })
@@ -19,6 +21,8 @@ export const useAdminUploads = () => {
 
   const fetchGalleryImages = async (query = {}) => {
     return await $fetch('/api/admin-gallery', {
+      retry: 0,
+      timeout: 30000,
       query,
       headers: await getAdminAuthHeaders()
     })
@@ -27,6 +31,8 @@ export const useAdminUploads = () => {
   const deleteGalleryImage = async (path) => {
     return await $fetch('/api/admin-gallery', {
       method: 'DELETE',
+      retry: 0,
+      timeout: 30000,
       headers: await getAdminAuthHeaders(),
       body: {
         path

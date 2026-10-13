@@ -1,3 +1,4 @@
+import { throwUnavailableMediaReference } from './mediaReferenceError.js'
 import { createError } from 'h3'
 import { normalizeBrandPage, brandSlug, brandUrl, brandVideo, BRAND_ROW_LIMIT } from '../../app/utils/brandPage.js'
 import { validPublicSlug } from '../../app/utils/seo.js'
@@ -40,6 +41,7 @@ export function normalizeBrandPayload(body = {}, existingSlug = '') {
 }
 
 export function throwBrandError(error) {
+  throwUnavailableMediaReference(error)
   if (error?.code === '23505') throw createError({ statusCode: 409, statusMessage: 'Another brand uses that URL.' })
   throw createError({ statusCode: 500, statusMessage: 'Could not save the brand.' })
 }

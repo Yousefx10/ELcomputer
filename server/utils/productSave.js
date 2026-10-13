@@ -55,8 +55,9 @@ export function prepareProductSave(body, operation) {
 }
 
 export function throwProductSaveError(error) {
-  const key = error?.message?.match(/^catalog:([a-z_]+)$/)?.[1]
+  const key = error?.message === 'This image is unavailable. Choose another image.' ? 'media' : error?.message?.match(/^catalog:([a-z_]+)$/)?.[1]
   const messages = {
+    media: [400, 'This image is unavailable. Choose another image.'],
     conflict: [409, 'This product changed. Reload before saving.'],
     request_reused: [409, 'This save request was already used. Reload the form.'],
     unavailable: [409, 'The saved product is no longer available.'],

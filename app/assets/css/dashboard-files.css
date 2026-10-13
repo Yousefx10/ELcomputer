@@ -75,3 +75,9 @@
   .documents-topnav { @apply order-3 w-full; }
   .documents-topnav button { @apply flex-1 justify-center; }
 }
+
+@layer components {
+/* Public media surfaces retain the existing Dashboard dark palette. */
+html.dark .media-library :is(.file-stat, .file-surface, .file-card, .file-button, .file-search) { background-color: var(--surface); }
+html.dark .media-library :is(.file-button-primary, .file-stat:first-child) { background-color: #263e61 !important; color: #fff; }
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="file-workspace">
+  <div class="file-workspace media-library">
     <div class="grid gap-3 sm:grid-cols-3" :aria-label="$t('common.mediaSummary')">
       <div class="file-stat !border-gray-950 !bg-gray-950 text-white">
         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-gray-300"><Icon name="lucide:images" size="22" /></span>
@@ -27,8 +27,8 @@
           <div v-if="loading" class="file-item-grid p-5" role="status"><span class="sr-only">{{ $t('common.loadingMedia') }}</span><div v-for="n in 8" :key="n" class="h-48 rounded-xl bg-gray-100 motion-safe:animate-pulse" aria-hidden="true" /></div>
           <div v-else-if="!images.length" class="file-empty"><span class="mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400"><Icon :name="error ? 'lucide:cloud-off' : 'lucide:image'" size="27" /></span><h4 class="text-sm font-semibold">{{ error ? $t('common.imagesCouldNotLoad') : search.trim() ? $t('common.noMatchingImages') : $t('common.yourLibraryIsEmpty') }}</h4><p class="text-sm text-gray-500">{{ error ? $t('dashboard.MediaLibrary.tryRefreshingTheLibrary') : search.trim() ? $t('common.tryAnotherFileName') : $t('dashboard.MediaLibrary.imagesUploadedAcrossYourStoreAppearHere') }}</p></div>
           <div v-else-if="viewMode === 'grid'" class="space-y-6 p-5">
-            <section v-for="group in imageGroups" :key="group.name" :aria-label="group.name">
-              <div class="mb-3 flex items-center gap-2"><Icon name="lucide:folder" size="16" class="text-gray-400" /><h4 class="text-sm font-semibold">{{ group.name }}</h4><span class="file-label">{{ group.images.length }}</span></div>
+            <section v-for="group in imageGroups" :key="group.name" :aria-label="$uiLabel(group.name)">
+              <div class="mb-3 flex items-center gap-2"><Icon name="lucide:folder" size="16" class="text-gray-400" /><h4 class="text-sm font-semibold">{{ $uiLabel(group.name) }}</h4><span class="file-label">{{ group.images.length }}</span></div>
               <div class="file-item-grid">
                 <button v-for="image in group.images" :key="image.publicPath" type="button" class="file-card group" :aria-pressed="selectedImage?.publicPath === image.publicPath" :aria-label="$t('common.detailsForValue', { value0: (image.name) })" @click="selectedImage = image" @dblclick="openPreview(image)">
                   <div class="file-thumbnail relative !h-40 !p-4">
@@ -45,7 +45,7 @@
             <table class="file-table"><caption class="sr-only">{{ $t('dashboard.MediaLibrary.uploadedImagesSelectAnImageToViewDetails') }}</caption><thead><tr><th scope="col">{{ $t('common.name') }}</th><th scope="col">{{ $t('common.section') }}</th><th scope="col">{{ $t('common.size') }}</th><th scope="col">{{ $t('common.modified') }}</th><th scope="col"><span class="sr-only">{{ $t('common.preview') }}</span></th></tr></thead>
               <tbody><tr v-for="image in images" :key="image.publicPath" :aria-selected="selectedImage?.publicPath === image.publicPath">
                 <td><button type="button" class="flex max-w-64 items-center gap-3 rounded text-start" :aria-label="$t('common.detailsForValue', { value0: (image.name) })" @click="selectedImage = image"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-100 bg-gray-50 p-1"><Icon v-if="failedImages[image.publicPath]" name="lucide:image-off" size="20" class="text-gray-400" /><img v-else :src="image.publicPath" alt="" loading="lazy" class="h-full w-full object-contain" @error="failedImages[image.publicPath] = true" /></span><span class="truncate text-xs font-semibold" :title="image.name">{{ image.name }}</span></button></td>
-                <td class="text-xs text-gray-500">{{ image.section }}</td><td class="whitespace-nowrap text-xs text-gray-500">{{ formatSize(image.size) }}</td><td class="whitespace-nowrap text-xs text-gray-500">{{ formatDate(image.updated_at) }}</td><td><button type="button" class="file-button !min-h-8 !p-2" :aria-label="$t('common.previewValue', { value0: (image.name) })" @click="openPreview(image)"><Icon name="lucide:expand" size="15" /></button></td>
+                <td class="text-xs text-gray-500">{{ $uiLabel(image.section) }}</td><td class="whitespace-nowrap text-xs text-gray-500">{{ formatSize(image.size) }}</td><td class="whitespace-nowrap text-xs text-gray-500">{{ formatDate(image.updated_at) }}</td><td><button type="button" class="file-button !min-h-8 !p-2" :aria-label="$t('common.previewValue', { value0: (image.name) })" @click="openPreview(image)"><Icon name="lucide:expand" size="15" /></button></td>
               </tr></tbody>
             </table>
           </div>
@@ -53,7 +53,7 @@
 
         <DashboardFileDetailsPanel v-if="selectedImage" :key="selectedImage.publicPath" :title="$t('common.imageDetails')" @close="selectedImage = null">
           <button type="button" class="file-thumbnail mb-4 w-full rounded-xl border border-gray-200" :aria-label="$t('common.expandImagePreview')" @click="openPreview(selectedImage)"><Icon v-if="failedImages[selectedImage.publicPath]" name="lucide:image-off" size="30" class="text-gray-400" /><img v-else :src="selectedImage.publicPath" :alt="selectedImage.name" class="h-full w-full object-contain" @error="failedImages[selectedImage.publicPath] = true" /></button>
-          <h4 class="break-words text-sm font-semibold">{{ selectedImage.name }}</h4><p class="mt-1 text-xs text-gray-500">{{ selectedImage.section }}</p>
+          <h4 class="break-words text-sm font-semibold">{{ selectedImage.name }}</h4><p class="mt-1 text-xs text-gray-500">{{ $uiLabel(selectedImage.section) }}</p>
           <dl class="my-5 space-y-3 border-y border-gray-200 py-5 text-xs"><div class="flex justify-between gap-3"><dt class="text-gray-500">{{ $t('common.format') }}</dt><dd>{{ fileType(selectedImage) }}</dd></div><div class="flex justify-between gap-3"><dt class="text-gray-500">{{ $t('common.size') }}</dt><dd>{{ formatSize(selectedImage.size) }}</dd></div><div class="flex justify-between gap-3"><dt class="text-gray-500">{{ $t('common.modified') }}</dt><dd>{{ formatDate(selectedImage.updated_at) }}</dd></div></dl>
           <div class="flex flex-col gap-2"><button type="button" class="file-button file-button-primary" @click="openPreview(selectedImage)"><Icon name="lucide:expand" size="15" /> {{ $t('common.previewImage') }}</button><a :href="downloadUrl(selectedImage)" :download="selectedImage.name" class="file-button"><Icon name="lucide:download" size="16" /> {{ $t('common.download') }}</a><button v-if="canEdit" type="button" class="file-button !border-transparent !bg-transparent !text-red-600 hover:!bg-red-50" :disabled="deleting" @click="$emit('delete', selectedImage)"><Icon name="lucide:trash-2" size="15" /> {{ deleting ? $t('common.deleting') : $t('common.deleteImage') }}</button></div>
         </DashboardFileDetailsPanel>
@@ -69,7 +69,7 @@
         <template v-if="previewImage">
           <div class="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4"><h3 id="media-preview-title" class="min-w-0 truncate text-sm font-semibold">{{ previewImage.name }}</h3><button type="button" class="file-button !px-2.5" :aria-label="$t('common.closeImagePreview')" autofocus @click="previewDialog?.close()"><Icon name="lucide:x" size="17" /></button></div>
           <div class="flex h-[60vh] items-center justify-center bg-gray-50 p-6"><Icon v-if="failedImages[previewImage.publicPath]" name="lucide:image-off" size="40" class="text-gray-400" /><img v-else :src="previewImage.publicPath" :alt="previewImage.name" class="h-full w-full object-contain" @error="failedImages[previewImage.publicPath] = true" /></div>
-          <div class="flex items-center justify-between gap-3 px-5 py-4"><span class="text-xs text-gray-500">{{ previewImage.section }} · {{ formatSize(previewImage.size) }}</span><a :href="downloadUrl(previewImage)" :download="previewImage.name" class="file-button file-button-primary"><Icon name="lucide:download" size="16" /> {{ $t('common.download') }}</a></div>
+          <div class="flex items-center justify-between gap-3 px-5 py-4"><span class="text-xs text-gray-500">{{ $uiLabel(previewImage.section) }} · {{ formatSize(previewImage.size) }}</span><a :href="downloadUrl(previewImage)" :download="previewImage.name" class="file-button file-button-primary"><Icon name="lucide:download" size="16" /> {{ $t('common.download') }}</a></div>
         </template>
       </dialog>
     </Teleport>
