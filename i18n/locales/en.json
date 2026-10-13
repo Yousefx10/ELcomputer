@@ -2650,6 +2650,7 @@
   },
   "home": {
     "valueComputerAccessories": "{value0} — Computer accessories",
+    "valueStorefront": "{value0} — Products",
     "weCouldnTLoadProductsPleaseRefreshAndTryAgain": "We couldn't load products. Please refresh and try again.",
     "CustomerReviews": {
       "couldNotLoadCustomerReviews": "Could not load customer reviews.",

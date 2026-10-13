@@ -5,12 +5,13 @@ import { constants } from 'node:fs'
 import { InstallationError, ensure, fail, safeEnvironment, validateTarget, validateCredentials, validateOwner } from './install/contracts.mjs'
 import { readProtected, privateDirectory, writeAtomic, checkpointRead } from './install/files.mjs'
 import { planInstallation, readOnlyInstallation, executeInstallation, validatePlan } from './install/workflow.mjs'
+import { bindPolicy } from './lib/targetPolicy.mjs'
 
 const usage='node scripts/elcomputer-install.mjs <plan|check|apply|resume|verify> --target FILE --out DIRECTORY | --plan FILE | --receipt FILE; --credentials-file FILE; apply/resume --confirm REF:UUID:DIGEST --owner-file FILE or --owner-fd 3'
 function argumentsFor(argv) {
   const [command,...rest]=argv
   ensure(['plan','check','apply','resume','verify'].includes(command))
-  const accepted=['--target','--out','--plan','--receipt','--credentials-file','--owner-file','--owner-fd','--confirm','--json'],options={}
+  const accepted=['--target','--out','--plan','--receipt','--credentials-file','--owner-file','--owner-fd','--confirm','--json','--policy'],options={}
   for(let index=0;index<rest.length;index++){
     const key=rest[index];ensure(accepted.includes(key)&&!Object.hasOwn(options,key))
     if(key==='--json'){options[key]=true;continue}
@@ -21,6 +22,7 @@ function argumentsFor(argv) {
   else ensure(!options['--target']&&!options['--out']&&Boolean(options['--plan'])!==Boolean(options['--receipt']))
   if(['check','verify'].includes(command))ensure(!options['--confirm']&&!options['--owner-file']&&!options['--owner-fd'])
   ensure(!(options['--owner-file']&&options['--owner-fd']))
+  ensure(!options['--policy']||command==='plan')
   return {command,options}
 }
 async function ownerInput(options) {
@@ -47,7 +49,9 @@ try{
   ensure(process.versions.node==='22.23.1','platform_unavailable')
   let plan,target
   if(command==='plan'){
-    target=validateTarget(await readProtected(options['--target']))
+    target=await readProtected(options['--target'])
+    if(options['--policy'])target.reservation_policy=await bindPolicy(options['--policy'])
+    target=validateTarget(target)
     directory=options['--out']
   }else{
     const input=options['--plan']||options['--receipt'];directory=dirname(input)
@@ -72,7 +76,7 @@ try{
   await writeAtomic(directory,'result.json',result)
   process.stdout.write(JSON.stringify(result)+'\n')
 }catch(error){
-  const known=error instanceof InstallationError?error:new InstallationError('stage_uncertain')
+  const known=error instanceof InstallationError?error:new InstallationError(error?.code)
   const result={ok:false,command,code:known.code,message:known.message}
   if(directory)try{await writeAtomic(directory,'result.json',result)}catch{}
   process.stdout.write(JSON.stringify(result)+'\n')

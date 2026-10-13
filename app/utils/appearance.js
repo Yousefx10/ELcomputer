@@ -15,8 +15,8 @@ export const resolveThemeLogos = settings => {
     const url = String(value || '').trim()
     return /^(\/[^/]|https?:\/\/)/i.test(url) ? url : ''
   }
-  const legacy = clean(settings?.site_logo_url) || '/images/dashboard-logo.png'
-  const light = clean(settings?.site_logo_light_url) || legacy
+  const legacy = clean(settings?.site_logo_url)
+  const light = clean(settings?.site_logo_light_url) || legacy || clean(settings?.site_logo_dark_url)
   return { light, dark: clean(settings?.site_logo_dark_url) || light, fallback: legacy }
 }
 export const formatLocale = locale => locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US'

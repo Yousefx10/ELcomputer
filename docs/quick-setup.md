@@ -1,3 +1,12 @@
+# Guided fresh installation handoff
+
+The [operator coordinator](guided-installation.md) completes fresh installation
+verification before returning `/dashboard/setup` or `/ar/dashboard/setup`.
+This guide and its existing settings editors remain authoritative. No bootstrap
+web route, duplicate configuration interface, provider activation or fabricated
+owner evidence is added. Legacy production exclusions remain intact alongside
+the new additional reservation policy. Hosted acceptance remains pending.
+
 # Phase 3, Milestone 4 publication integration
 
 The separate [fresh application publisher](application-publication.md) now

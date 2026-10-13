@@ -9,7 +9,7 @@
       </div>
     </nav>
 
-    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueComputerAccessories', { value0: (siteContent?.settings?.site_name || 'Store') }) }}</h1>
+    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueStorefront', { value0: (siteContent?.settings?.site_name || 'Store') }) }}</h1>
     <div v-if="heroEnabled" class="store-hero-grid">
       <CardsHeroCard />
       <div class="store-hero-side">

@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir, lstat, readlink, realpath, mkdir, cp, symlink, chmod } from 'node:fs/promises'
+import { readFile, writeFile, readdir, lstat, readlink, realpath, mkdir, cp, symlink, chmod, unlink } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
 import { resolve, join, dirname, relative } from 'node:path'
 import { execFile } from 'node:child_process'
@@ -24,7 +24,10 @@ export async function buildPackage({directory,secrets=[],sourceReader=frozenSour
   const empty=join(directory,'empty.env');await writeFile(empty,'',{mode:0o600})
   await run(process.execPath,[resolve(sourceRoot,'node_modules/nuxt/bin/nuxt.mjs'),'build','--dotenv',empty],{cwd:buildRoot,env:{PATH:dirname(process.execPath)+':/usr/bin:/bin',LANG:'C',NODE_ENV:'production'},maxBuffer:8*1024*1024})
   ensure(digest(await sourceReader())===digest(source),'source_changed')
-  const output=join(buildRoot,'.output'),entries=await inventory(output,{secrets}),archive=join(directory,'release.tar.gz')
+  const output=join(buildRoot,'.output')
+  // Fresh publisher only: a legacy merchant wordmark is not release media.
+  for(const legacyAsset of ['images/dashboard-logo.png','images/storefront/setup-hero.png','favicon.ico'])await unlink(join(output,'public',legacyAsset)).catch(error=>{if(error.code!=='ENOENT')throw error})
+  const entries=await inventory(output,{secrets}),archive=join(directory,'release.tar.gz')
   await tarCreate({cwd:buildRoot,file:archive,gzip:true,portable:true,noMtime:true,follow:false},['.output'])
   await chmod(archive,0o600)
   const body={format:1,kind:'elcomputer-output',source,archive_sha256:hash(await readFile(archive)),inventory_sha256:digest(entries),entries,node:'22.23.1',content:'output only; no runtime secrets, source or merchant uploads'}

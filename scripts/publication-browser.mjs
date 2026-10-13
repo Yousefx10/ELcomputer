@@ -5,14 +5,30 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 import { connectPlatform } from './install/platform.mjs'
 import { createPublicationFixture } from '../tests/helpers/publicationPlatform.mjs'
+import { fixturePolicy } from '../tests/helpers/reservationPolicy.mjs'
 const {chromium}=await import(pathToFileURL('/private/tmp/elcomputer-final-browser-tools/node_modules/playwright/index.mjs'))
 const directory=process.env.PUBLICATION_REVIEW_ARTIFACTS||'/private/tmp/elcomputer-publication-browser'
 await mkdir(directory,{recursive:true,mode:0o700})
-const fixture=await createPublicationFixture(),external=[],errors=[]
+const guided=process.env.GUIDED_REVIEW==='true'
+const fixture=await createPublicationFixture({initialize:!guided,siteOrigin:guided?'https://independent-brand.example.invalid':'https://fresh.example.invalid'}),external=[],errors=[]
 let browser,assertions=0,screenshots=0
 const check=(value,message)=>{assert.ok(value,message);assertions++}
 try{
-  const site=await fixture.site('browser');await site.apply();await site.verify()
+  let site
+  if(guided){
+    const preparedSite=await fixture.site('guided-browser',{guided:true}),root=preparedSite.root,workspace=root+'/guided'
+    const manifest={format:1,database_target_file:fixture.lab.targetFile,publication_target_file:root+'/target.json',legacy_registry_file:root+'/registry.fixture.json',reservation_policy_file:root+'/additional-policy.json',credentials_file:fixture.lab.credentialsFile,owner_file:fixture.lab.ownerFile,key_record_directory:root+'/keys',locale:'en'}
+    for(const[file,value]of[['target.json',{...preparedSite.target,release_sha256:null}],['registry.fixture.json',preparedSite.registry],['additional-policy.json',fixturePolicy()],['manifest.json',manifest]])await writeFile(root+'/'+file,JSON.stringify(value),{mode:0o600})
+    const workflow=await import(pathToFileURL(fixture.source.directory+'/scripts/guided/workflow.mjs')),contracts=await import(pathToFileURL(fixture.source.directory+'/scripts/publish/contracts.mjs'))
+    const{cp}=await import('node:fs/promises')
+    const overrides={publicationTarget:(target,registry)=>contracts.validateTarget(target,registry,{laboratory:true}),remoteFactory:preparedSite.remoteFactory,ingressCheck:preparedSite.ingressCheck,buildPackage:({directory})=>cp(fixture.directory+'/bundle',directory,{recursive:true,verbatimSymlinks:true})}
+    const planned=await workflow.prepareGuided({manifestFile:root+'/manifest.json',directory:workspace,overrides})
+    const publication=await workflow.runGuided({command:'apply',directory:workspace,confirmDatabase:planned.confirmation,overrides})
+    const completed=await workflow.runGuided({command:'apply',directory:workspace,confirmPublication:publication.confirmation,overrides})
+    check(completed.complete&&completed.hosted_accepted===false,'guided final verification completed before browser traffic')
+    check((await workflow.runGuided({command:'verify',directory:workspace,overrides})).complete,'guided original receipts verified')
+    site={...preparedSite,runtimeFile:workspace+'/runtime/runtime.json'}
+  }else{site=await fixture.site('browser');await site.apply();await site.verify()}
   browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true})
   const context=await browser.newContext({ignoreHTTPSErrors:true}) // owned lab CA only
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():(external.push(new URL(route.request().url()).origin),route.abort()))
@@ -24,6 +40,8 @@ try{
     check(await page.locator('html').getAttribute('dir')===(locale==='ar'?'rtl':'ltr'),'locale direction')
     await page.locator('main').waitFor();check(await page.locator('main').count()>0,'storefront rendered')
     check(await page.locator('[src*="placehold"],[src*="setup-hero"]').count()===0,'no demo hero')
+    check(!/Computer accessories|ملحقات الكمبيوتر/.test(await page.locator('h1').first().textContent()),'brand-independent homepage heading')
+    check(await page.locator('link[rel=icon]').getAttribute('href')==='/favicon.svg','neutral favicon')
     check(!await page.locator('[href^="/products/"]').count(),'empty product catalog')
     check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'responsive overflow')
     await page.screenshot({path:directory+'/'+locale+'-'+width+'-'+theme+'.png',fullPage:true});screenshots++
@@ -54,6 +72,6 @@ try{
   check((await fixture.lab.db.query('select count(*)::int n from public.products')).rows[0].n===0,'catalog remains empty')
   check((await fixture.lab.db.query('select count(*)::int n from public.quick_setup_revisions where revision<>0')).rows[0].n===0,'Phase 2 metadata remains neutral')
   check(external.length===0,'no unexpected external browser requests');check(errors.length===0,'no page errors')
-  await writeFile(directory+'/results.json',JSON.stringify({ok:true,assertions,screenshots,page_errors:errors,external_requests:external,actual:['Node22','Nuxt production','PM2 isolated','Auth','PostgREST','Storage','PG17/Supautils','owner login'],fixtures:['macOS target','SSH','Linux/Nginx/TLS ingress'],hosted_acceptance:false},null,2)+'\n',{mode:0o600})
+  await writeFile(directory+'/results.json',JSON.stringify({ok:true,assertions,screenshots,page_errors:errors,external_requests:external,actual:[...(guided?['guided coordinator']:[]),'Node22','Nuxt production','PM2 isolated','Auth','PostgREST','Storage','PG17/Supautils','owner login'],fixtures:['macOS target','SSH','Linux/Nginx/TLS ingress'],hosted_acceptance:false},null,2)+'\n',{mode:0o600})
   console.log(JSON.stringify({ok:true,assertions,screenshots,external_requests:external.length,page_errors:errors.length}))
 }finally{await browser?.close();await fixture.close()}

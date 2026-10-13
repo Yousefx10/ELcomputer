@@ -4,7 +4,8 @@ import { applyCandidate, verifyBundle } from '../lib/cleanBaseline.mjs'
 import { bootstrapFirstOwner, ownerBinding } from '../lib/installationBootstrap.mjs'
 import { connectPlatform } from './platform.mjs'
 import { ensure, fail, digest, object, frozenSource, validateTarget } from './contracts.mjs'
-import { createWorkspace, writeAtomic, checkpointWrite, checkpointRead, workspaceLock, settledCliJobs } from './files.mjs'
+import { createWorkspace, writeAtomic, checkpointWrite, checkpointRead, workspaceLock, settledCliJobs, receipt } from './files.mjs'
+import { refreshPolicy } from '../lib/targetPolicy.mjs'
 import { assertFresh, verifySchema, verifyBaseline, readHistory, validateHistory, readJournal, assertJournal, verifyInstalledData, verifyBuckets, pendingIdentity, buckets } from './verify.mjs'
 
 export const stages=['baseline','history','migration71','database','storage','owner','complete']
@@ -18,6 +19,7 @@ export function validatePlan(plan) {
   return plan
 }
 async function unchangedSource(plan) {
+  await refreshPolicy(plan.target)
   try{assert.deepEqual(await frozenSource(),plan.source)}catch{fail('source_changed')}
 }
 function unchangedTarget(platform,plan) {
@@ -90,11 +92,18 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     platform=await platformFactory(plan.target,credentials,{mutating:true});unchangedTarget(platform,plan)
     const {inventory}=await verifyBundle()
     const mark=async(stage,status,evidence={})=>{
+      await refreshPolicy(plan.target)
       platform.lease();checkpoint=await checkpointWrite(directory,plan,checkpoint,stage,status,evidence)
       progress({stage,status})
     }
     const authorized=stage=>chain.some(item=>item.stage===stage&&item.status==='pending')||checkpoint.stage===stage&&checkpoint.status==='pending'
-    if(checkpoint.status==='complete')return {ok:true,command,...await observeInstallation(platform,plan,inventory,{complete:true}),plan_digest:plan.plan_digest}
+    if(checkpoint.status==='complete'){
+      const observed=await observeInstallation(platform,plan,inventory,{complete:true})
+      // The original engine re-publishes only its derived pointer after exact
+      // live verification. No SQL, buckets, owner or checkpoints are replayed.
+      await writeAtomic(directory,'receipt.json',receipt(plan,checkpoint))
+      return {ok:true,command,...observed,plan_digest:plan.plan_digest}
+    }
     ensure(owner,'invalid_input')
     let journal=await readJournal(platform.db)
     let baselinePresent=(await platform.db.query("select to_regclass('public.quick_setup_state') present")).rows[0].present

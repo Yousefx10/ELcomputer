@@ -1,23 +1,22 @@
 <script setup>
 import { resolveThemeLogos } from '~/utils/appearance'
 const props = defineProps({ settings: { type: Object, default: () => ({}) }, alt: { type: String, default: 'Store' } })
-const configured = computed(() => [props.settings.site_logo_url, props.settings.site_logo_light_url, props.settings.site_logo_dark_url].some(value => typeof value === 'string' && /^(\/[^/]|https?:\/\/)/i.test(value)))
-const branded = computed(() => configured.value)
 const logos = computed(() => resolveThemeLogos(props.settings))
 const failed = ref(new Set())
-const image = theme => failed.value.has(logos.value[theme]) ? (failed.value.has(logos.value.light) ? '/images/dashboard-logo.png' : logos.value.light) : logos.value[theme]
-const markFailed = (event, url) => {
-  if (event.target.getAttribute('src') === '/images/dashboard-logo.png') return
-  failed.value = new Set([...failed.value, url, event.target.getAttribute('src')])
+const image = theme => [logos.value[theme],logos.value.light,logos.value.dark,logos.value.fallback].find(url => url && !failed.value.has(url)) || ''
+const markFailed = event => {
+  failed.value = new Set([...failed.value, event.target.getAttribute('src')])
 }
 </script>
 
 <template>
   <span class="brand-logo">
-    <span v-if="!branded">{{ alt }}</span>
-    <template v-else>
-    <img class="brand-logo-light" :class="{ 'brand-logo-default': image('light') === '/images/dashboard-logo.png' }" :src="image('light')" :alt="alt" @error="markFailed($event, logos.light)">
-    <img class="brand-logo-dark" :class="{ 'brand-logo-default': image('dark') === '/images/dashboard-logo.png' }" :src="image('dark')" :alt="alt" @error="markFailed($event, logos.dark)">
+    <template v-if="image('light') || image('dark')">
+      <img v-if="image('light')" class="brand-logo-light" :class="{ 'brand-logo-default': image('light') === '/images/dashboard-logo.png' }" :src="image('light')" :alt="alt" @error="markFailed">
+      <span v-else class="brand-logo-light">{{ alt }}</span>
+      <img v-if="image('dark')" class="brand-logo-dark" :class="{ 'brand-logo-default': image('dark') === '/images/dashboard-logo.png' }" :src="image('dark')" :alt="alt" @error="markFailed">
+      <span v-else class="brand-logo-dark">{{ alt }}</span>
     </template>
+    <span v-else>{{ alt }}</span>
   </span>
 </template>

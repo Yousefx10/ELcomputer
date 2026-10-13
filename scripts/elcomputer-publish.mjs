@@ -8,14 +8,15 @@ import { buildPackage } from './publish/bundle.mjs'
 import { prepareRuntime } from './publish/runtime.mjs'
 import { planPublication, executePublication, readOnlyPublication, validatePlan } from './publish/workflow.mjs'
 import { readChain, receipt as publicationReceipt } from './publish/state.mjs'
+import { bindPolicy } from './lib/targetPolicy.mjs'
 
 function parse(argv){
-  const[command,...rest]=argv,flags={},accepted=['--out','--target','--registry','--installation-receipt','--credentials-file','--bundle','--runtime-file','--key-record-dir','--plan','--receipt','--owner-file','--confirm','--json']
+  const[command,...rest]=argv,flags={},accepted=['--out','--target','--registry','--installation-receipt','--credentials-file','--bundle','--runtime-file','--key-record-dir','--plan','--receipt','--owner-file','--confirm','--json','--policy']
   ensure(['package','runtime','plan','check','apply','resume','verify'].includes(command))
   for(let index=0;index<rest.length;index++){const key=rest[index];ensure(accepted.includes(key)&&!Object.hasOwn(flags,key));if(key==='--json')flags[key]=true;else{const value=rest[++index];ensure(typeof value==='string'&&!value.startsWith('--'));flags[key]=value}}
   const required={package:['--out'],runtime:['--target','--registry','--installation-receipt','--credentials-file','--out','--key-record-dir'],plan:['--target','--registry','--installation-receipt','--credentials-file','--bundle','--runtime-file','--out'],check:['--credentials-file'],apply:['--credentials-file','--runtime-file','--owner-file','--confirm'],resume:['--credentials-file','--runtime-file','--owner-file','--confirm'],verify:['--credentials-file','--owner-file']}[command]
   ensure(required.every(key=>flags[key]))
-  const allowed=[...required,'--json',...(['check','apply','resume','verify'].includes(command)?['--plan','--receipt']:[])]
+  const allowed=[...required,'--json',...(['check','apply','resume','verify'].includes(command)?['--plan','--receipt']:[]),...(['runtime','plan'].includes(command)?['--policy']:[])]
   ensure(Object.keys(flags).every(key=>allowed.includes(key)))
   if(['check','apply','resume','verify'].includes(command))ensure(Boolean(flags['--plan'])!==Boolean(flags['--receipt']))
   return{command,flags}
@@ -26,7 +27,10 @@ try{
   let result
   if(command==='package'){directory=flags['--out'];result=await buildPackage({directory})}
   else if(['runtime','plan'].includes(command)){
-    const registry=validateRegistry(await readProtected(flags['--registry'])),target=validateTarget(await readProtected(flags['--target']),registry),installation=await completedInstallation(flags['--installation-receipt'])
+    const registry=validateRegistry(await readProtected(flags['--registry'])),input=await readProtected(flags['--target'])
+    if(flags['--policy'])input.reservation_policy=await bindPolicy(flags['--policy'])
+    const target=validateTarget(input,registry),installation=await completedInstallation(flags['--installation-receipt'])
+    ensure(digest(target.reservation_policy||null)===digest(installation.plan.target.reservation_policy||null),'receipt_unverified')
     ensure(target.project_ref===installation.plan.target.project_ref&&target.installation_id===installation.plan.target.installation_id&&target.site_origin===installation.plan.target.site_origin,'receipt_unverified')
     const credentials=validateCredentials(await readProtected(flags['--credentials-file']),installation.plan.target);directory=flags['--out']
     if(command==='runtime'){

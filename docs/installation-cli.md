@@ -1,3 +1,13 @@
+# Guided fresh installation integration
+
+Use [the guided entry point](guided-installation.md) for a new store's complete
+journey. It delegates to this engine and M4, preserves all legacy hardcoded
+exclusions, and adds one shared protected additional-only policy. M3 `plan`
+also accepts `--policy FILE`; its binding stays frozen through check/apply/
+resume/verify. Completed resume can re-publish the engine's derived receipt
+after exact live verification, without replaying resources or checkpoints.
+The historical milestone boundaries below remain unchanged.
+
 # Phase 3, Milestone 4 publication integration
 
 The separate [fresh application publisher](application-publication.md) now

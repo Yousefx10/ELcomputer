@@ -18,6 +18,7 @@ const seoRoute = useRoute()
 const { uiLabel } = useUiLocale()
 usePageSeo(() => ({ index: false }))
 useHead(() => ({
+  link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
   // Private titles stay generic, including order and ticket detail pages.
   titleTemplate: title => isPrivateSeoPath(seoRoute.path)
     ? seoTitle(uiLabel(privateSeoLabel(seoRoute.path)), siteContent.value?.settings?.site_name)

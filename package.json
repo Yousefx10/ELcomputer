@@ -22,7 +22,12 @@
     "publish:check": "node scripts/elcomputer-publish.mjs check",
     "publish:apply": "node scripts/elcomputer-publish.mjs apply",
     "publish:resume": "node scripts/elcomputer-publish.mjs resume",
-    "publish:verify": "node scripts/elcomputer-publish.mjs verify"
+    "publish:verify": "node scripts/elcomputer-publish.mjs verify",
+    "setup:plan": "node scripts/elcomputer-setup.mjs plan",
+    "setup:check": "node scripts/elcomputer-setup.mjs check",
+    "setup:apply": "node scripts/elcomputer-setup.mjs apply",
+    "setup:resume": "node scripts/elcomputer-setup.mjs resume",
+    "setup:verify": "node scripts/elcomputer-setup.mjs verify"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",

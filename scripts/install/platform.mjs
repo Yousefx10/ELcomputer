@@ -13,6 +13,7 @@ import { createClient } from '@supabase/supabase-js'
 import { hash } from '../lib/cleanBaseline.mjs'
 import { ensure, fail, sourceRoot, cliVersion, migration71 } from './contracts.mjs'
 import { readProtected, validateLaboratory, privateDirectory, writeAtomic } from './files.mjs'
+import { refreshPolicy } from '../lib/targetPolicy.mjs'
 
 async function binaryHash(path){const digest=createHash('sha256');for await(const bytes of createReadStream(path))digest.update(bytes);return digest.digest('hex')}
 async function pinnedBinary(){
@@ -27,6 +28,7 @@ async function pinnedBinary(){
 }
 
 export async function connectPlatform(target,credentials,{mutating=false}={}) {
+  await refreshPolicy(target)
   await validateLaboratory(target)
   const ca=await readProtected(target.database.ca_file,{json:false,privateMode:false}),apiCa=target.api_ca_file?await readProtected(target.api_ca_file,{json:false,privateMode:false}):undefined
   const controller=new AbortController()
@@ -59,6 +61,7 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     ensure((await db.query(`select ${method}(hashtextextended($1,0)) acquired`,['elcomputer-install:'+target.installation_id])).rows[0].acquired,'lock_busy')
     const base=new URL(target.api_url)
     const transport=async(input,options={})=>{
+      await refreshPolicy(target)
       lease()
       const url=new URL(typeof input==='string'?input:input.url)
       ensure(url.origin===base.origin && url.pathname.startsWith(base.pathname.replace(/\/$/,'')+'/') && /^\/(?:projects\/[a-z0-9]{20}\/)?(?:auth\/v1|storage\/v1|rest\/v1)(?:\/|$)/.test(url.pathname),'target_changed')
@@ -101,6 +104,7 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     identity.cli_binary_sha256=toolHash
     return {db,client,anon,identity,lease,transport,async close(){controller.abort();if(locked&&!closed)try{await db.query('select pg_advisory_unlock_all()')}catch{}await db.end().catch(()=>{})},
       async cli(workspace,inventory,{repairVersions=null,dryRun=false,migrationHash}={}) {
+        await refreshPolicy(target)
         lease();ensure(mutating || dryRun,'invalid_input');await privateDirectory(workspace)
         const known=new Set(inventory.map(row=>row.version))
         if(repairVersions)ensure(repairVersions.length>0&&repairVersions.length<=70&&new Set(repairVersions).size===repairVersions.length&&repairVersions.every(version=>known.has(version)),'history_uncertain')

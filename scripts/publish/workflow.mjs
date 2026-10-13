@@ -9,11 +9,12 @@ import { loadBundle } from './bundle.mjs'
 import { validateRuntime } from './runtime.mjs'
 import { openSsh, ingress, agentSource } from './ssh.mjs'
 import { checkpoint, readChain, receipt, lock } from './state.mjs'
+import { refreshPolicy, assertPolicyTarget } from '../lib/targetPolicy.mjs'
 
 export const confirmation=plan=>`${plan.target.project_ref}:${new URL(plan.target.site_origin).hostname}:${plan.target.ssh.host_key_sha256}:${plan.plan_digest}`
 export function validatePlan(plan){object(plan,['format','kind','created_at','target','registry','installation','bundle','runtime_id','remote','ssh_identity','ingress','launcher_sha256','agent_sha256','plan_digest']);const{plan_digest,...content}=plan;ensure(plan.format===1&&plan.kind==='elcomputer-first-publication'&&digest(content)===plan_digest,'checkpoint_changed');return plan}
 async function sourceUnchanged(bundle,sourceReader){ensure(digest(await sourceReader())===digest(bundle.source),'source_changed')}
-function installationBinding(target,installation){ensure(target.installation_id===installation.plan.target.installation_id&&target.project_ref===installation.plan.target.project_ref&&target.site_origin===installation.plan.target.site_origin,'receipt_unverified')}
+function installationBinding(target,installation){ensure(target.installation_id===installation.plan.target.installation_id&&target.project_ref===installation.plan.target.project_ref&&target.site_origin===installation.plan.target.site_origin,'receipt_unverified');ensure(digest(target.reservation_policy||null)===digest(installation.plan.target.reservation_policy||null),'receipt_unverified')}
 async function originalInstallation(plan){const installation=await completedInstallation(plan.installation.receipt_file);ensure(installation.receipt_digest===plan.installation.receipt_digest&&installation.plan.plan_digest===plan.installation.plan_digest,'receipt_unverified');return installation}
 async function login(verified,installation,owner){
   ensure(owner&&typeof owner.email==='string'&&typeof owner.password==='string','invalid_input')
@@ -23,6 +24,7 @@ async function login(verified,installation,owner){
   return result.data.session.access_token
 }
 export async function planPublication({target,registry,receiptFile,bundleFile,runtimeFile,credentials,directory,sourceReader=frozenSource,remoteFactory=openSsh,ingressCheck=ingress,installationVerifier=verifyInstallation}){
+  assertPolicyTarget(target);await refreshPolicy(target,{resolveAddresses:false})
   const installation=await completedInstallation(receiptFile);installationBinding(target,installation);validateCredentials(credentials,installation.plan.target)
   const runtime=await validateRuntime(await readProtected(runtimeFile),target,installation,credentials),bundle=await loadBundle(bundleFile,{secrets:[...Object.values(runtime.env),...Object.values(credentials)]})
   ensure(bundle.manifest.release_sha256===target.release_sha256,'source_changed');await sourceUnchanged(bundle.manifest,sourceReader)
@@ -40,6 +42,7 @@ export async function planPublication({target,registry,receiptFile,bundleFile,ru
   }finally{await remote?.close();await verified?.close()}
 }
 export async function executePublication({command,plan,directory,credentials,runtimeFile,owner,confirm,progress=()=>{},sourceReader=frozenSource,remoteFactory=openSsh,ingressCheck=ingress,installationVerifier=verifyInstallation}){
+  assertPolicyTarget(plan.target);await refreshPolicy(plan.target,{resolveAddresses:false})
   validatePlan(plan);await sourceUnchanged(plan.bundle,sourceReader)
   ensure(confirm===confirmation(plan),'confirmation_required')
   const installation=await originalInstallation(plan);installationBinding(plan.target,installation);validateCredentials(credentials,installation.plan.target)
@@ -56,6 +59,7 @@ export async function executePublication({command,plan,directory,credentials,run
     remote=await remoteFactory(plan.target,plan.registry,{expectedIdentity:plan.ssh_identity})
     ensure(remote.agent_sha256===plan.agent_sha256,'source_changed')
     await ingressCheck(plan.target,{expected:plan.ingress,before:current.stage==='planned',pending:command==='resume'&&current.status!=='complete'})
+    await refreshPolicy(plan.target,{resolveAddresses:false})
     const state=await remote.call('claim',{plan,resume:command==='resume'})
     if(current.status==='complete'){
       ensure(state.complete,'checkpoint_changed');await remote.call('audit',{runtime});const health=await remote.call('health',{token,verifyOnly:true});await ingressCheck(plan.target,{expected:plan.ingress,token});await writeAtomic(directory,'receipt.json',receipt(plan,current));return{ok:true,command,publication_id:plan.target.publication_id,complete:true,health}
@@ -64,6 +68,7 @@ export async function executePublication({command,plan,directory,credentials,run
     const stages=[['transfer',{base64:bundle.bytes.toString('base64')}],['artifact',{}],['runtime',{runtime,launcher:await readFile(resolve(sourceRoot,'scripts/publish/launcher.mjs'),'utf8'),extraCa:installation.plan.target.api_ca_file?await readProtected(installation.plan.target.api_ca_file,{json:false,privateMode:false}):null}],['staging',{}],['activation',{}],['process',{}],['health',{token}]]
     let health
     for(const[stage,payload]of stages){
+      await refreshPolicy(plan.target,{resolveAddresses:false})
       await sourceUnchanged(plan.bundle,sourceReader);await mark(stage,'pending')
       const result=await remote.call(stage,payload)
       if(stage==='health'){health=result;await ingressCheck(plan.target,{expected:plan.ingress,token})}
@@ -83,6 +88,7 @@ export async function executePublication({command,plan,directory,credentials,run
   }finally{await remote?.close();await verified?.close();await release()}
 }
 export async function readOnlyPublication({command,plan,directory,credentials,owner=null,sourceReader=frozenSource,remoteFactory=openSsh,ingressCheck=ingress,installationVerifier=verifyInstallation}){
+  assertPolicyTarget(plan.target);await refreshPolicy(plan.target,{resolveAddresses:false})
   validatePlan(plan);await sourceUnchanged(plan.bundle,sourceReader)
   const installation=await originalInstallation(plan),chain=await readChain(directory,plan),latest=chain.at(-1),release=await lock(directory,plan)
   let verified,remote

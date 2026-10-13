@@ -20,7 +20,7 @@ const i18n=createI18n({legacy:false,locale:'en',messages:{en,ar}}),scenario=ref(
 const saved={key:'default',site_name:'Saved Merchant',site_logo_url:'/fixture-logo.svg',footer_email:'saved@merchant.example',footer_phone:'01000000001',footer_address:'Saved address',footer_cta_title:'Saved promotion',footer_cta_subtitle:'Saved supporting text',footer_cta_button_label:'Saved button',footer_cta_button_url:'/search',hero_enabled:true,seo_site_url:'https://saved.example'};
 const results=table=>{
  if(scenario.value==='error')return {data:null,error:{code:'503'}};
- if(table==='site_settings')return {data:scenario.value==='saved'?saved:scenario.value==='empty'?{...saved,site_name:'Fresh Store',site_logo_url:'',footer_email:'',footer_phone:'',footer_address:'',footer_cta_title:'',footer_cta_subtitle:'',footer_cta_button_label:'',hero_enabled:true}:null,error:null};
+ if(table==='site_settings')return {data:scenario.value==='broken'?{...saved,site_name:'Independent Brand',site_logo_url:'/broken-logo.svg'}:scenario.value==='dark-logo'?{...saved,site_name:'Independent Brand',site_logo_url:'',site_logo_dark_url:'/fixture-dark-logo.svg'}:scenario.value==='saved'?saved:scenario.value==='empty'?{...saved,site_name:'Fresh Store',site_logo_url:'',footer_email:'',footer_phone:'',footer_address:'',footer_cta_title:'',footer_cta_subtitle:'',footer_cta_button_label:'',hero_enabled:true}:null,error:null};
  const rows=scenario.value==='saved'?({site_hero_banners:[{id:'saved-hero',image_url:'/fixture-hero.svg',is_enabled:true}],site_top_bar_messages:[{id:'saved-message',text:'Saved announcement',is_enabled:true}],site_links:[{id:'saved-link',location:'footer',section_title:'Saved group',label:'Saved link',url:'/help',is_enabled:true}]}[table]||[]):[];
  return {data:rows,error:null};
 };
@@ -38,10 +38,11 @@ app.mount('#app');
 window.neutralTest={calls,show:async(value,page='home')=>{scenario.value=value;screen.value=page;cache.clear();generation.value++;await nextTick()},appearance:(locale,color)=>{i18n.global.locale.value=locale;theme.value=color;document.documentElement.lang=locale;document.documentElement.dir=locale==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',color==='dark')}};
 `)
 await build({entryPoints:[join(dir,'entry.js')],bundle:true,outfile:join(dir,'bundle.js'),alias:{'~':join(base,'app')},nodePaths:[join(base,'node_modules')],define:{'import.meta.server':'false','import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'actual-vue',setup(builder){builder.onLoad({filter:/\.vue$/},async({path})=>{const {descriptor}=parse(await readFile(path,'utf8'),{filename:path});return{contents:compileScript(descriptor,{id:path,inlineTemplate:true}).content,loader:'js',resolveDir:dirname(path)}})}}]})
-const css=(await Promise.all((await readdir('.output/public/_nuxt')).filter(file=>file.endsWith('.css')).map(file=>readFile(join('.output/public/_nuxt',file),'utf8')))).join('\n')
+const cssRoot=join(process.env.PUBLICATION_REVIEW_OUTPUT||'.output','public/_nuxt')
+const css=(await Promise.all((await readdir(cssRoot)).filter(file=>file.endsWith('.css')).map(file=>readFile(join(cssRoot,file),'utf8')))).join('\n')
 const server=createServer(async(req,res)=>{
  if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}
- else if(req.url?.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520"><rect width="1400" height="520" fill="#ccc"/></svg>')}
+ else if(req.url?.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end(req.url==='/broken-logo.svg'?'invalid image':'<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520"><rect width="1400" height="520" fill="#ccc"/></svg>')}
  else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script src="/bundle.js"></script></body></html>')}
 })
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve))
@@ -67,6 +68,14 @@ try{
  for(const locale of ['en','ar']){
   await page.evaluate(locale=>{window.neutralTest.appearance(locale,'light');return window.neutralTest.show('absent','login')},locale)
   await page.locator('.auth-page').waitFor();check(await page.locator('[src*="dashboard-logo"]').count()===0,'Neutral login branding')
+ }
+ for(const locale of ['en','ar'])for(const color of ['light','dark'])for(const scenario of ['broken','dark-logo']){
+  await page.evaluate(({locale,color,scenario})=>{window.neutralTest.appearance(locale,color);return window.neutralTest.show(scenario)},{locale,color,scenario})
+  await page.locator('footer').waitFor()
+  if(scenario==='broken')await page.waitForFunction(()=>[...document.querySelectorAll('.brand-logo')].every(node=>node.textContent.includes('Independent Brand')))
+  else await page.waitForFunction(()=>document.querySelector('.brand-logo img')?.getAttribute('src')==='/fixture-dark-logo.svg')
+  check(await page.locator('[src*="dashboard-logo"]').count()===0,'Failed/missing theme logos never select the legacy wordmark')
+  check(!/Computer accessories|ملحقات الكمبيوتر/.test(await page.locator('h1').first().textContent()),'Neutral accessible heading')
  }
  check(errors.length===0,'No browser errors: '+errors.join('; '));check(external.length===0,'No external traffic')
  const calls=await page.evaluate(()=>window.neutralTest.calls)

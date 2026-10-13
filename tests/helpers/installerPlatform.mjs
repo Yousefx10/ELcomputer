@@ -21,7 +21,7 @@ export async function installerSourceCopy({extraFiles=[]}={}) {
   const directory=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-install-source-')))
   const {stdout}=await run('git',['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
   const names=stdout.split('\0').filter(Boolean)
-  const newNames=['scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
+  const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
   for(const name of new Set([...names,...newNames,...extraFiles])){
     const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
   }
@@ -34,7 +34,7 @@ export async function installerSourceCopy({extraFiles=[]}={}) {
     catch(error){return {stdout:error.stdout||'',stderr:error.stderr||'',code:error.code,result:JSON.parse((error.stdout||'').trim().split('\n').at(-1)||'{}')}}
   }}
 }
-export async function createInstallerPlatform() {
+export async function createInstallerPlatform({siteOrigin='https://fresh.example.invalid'}={}) {
   const directory=await realpath(await mkdtemp('/tmp/elcomputer-install-lab-'))
   await chmod(directory,0o700)
   const projectRef=randomBytes(10).toString('hex'),instanceId=randomUUID(),databasePort=await freePort(),authPort=await freePort(),storagePort=await freePort(),storageAdminPort=await freePort(),restPort=await freePort(),apiPort=await freePort()
@@ -88,7 +88,7 @@ export async function createInstallerPlatform() {
       grant select,insert on realtime.messages to anon,authenticated;grant usage on sequence realtime.messages_id_seq to anon,authenticated;
     `)
     const dbUrl=user=>`postgresql://${user}:${password}@127.0.0.1:${databasePort}/postgres?sslmode=verify-full&sslrootcert=${encodeURIComponent(ca)}`
-    start('auth',join(tools,'auth-server'),[],{GOTRUE_API_HOST:'127.0.0.1',GOTRUE_API_PORT:String(authPort),API_EXTERNAL_URL:apiUrl+'/auth/v1',GOTRUE_DB_DRIVER:'postgres',GOTRUE_DB_DATABASE_URL:dbUrl('supabase_auth_admin'),GOTRUE_DB_NAMESPACE:'auth',GOTRUE_SITE_URL:'https://fresh.example.invalid',GOTRUE_JWT_SECRET:jwtSecret,GOTRUE_JWT_AUD:'authenticated',GOTRUE_JWT_DEFAULT_GROUP_NAME:'authenticated',GOTRUE_JWT_ADMIN_ROLES:'service_role',GOTRUE_DISABLE_SIGNUP:'true',GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED:'false',GOTRUE_EXTERNAL_EMAIL_ENABLED:'true',GOTRUE_MAILER_AUTOCONFIRM:'false',GOTRUE_LOG_LEVEL:'error'})
+    start('auth',join(tools,'auth-server'),[],{GOTRUE_API_HOST:'127.0.0.1',GOTRUE_API_PORT:String(authPort),API_EXTERNAL_URL:apiUrl+'/auth/v1',GOTRUE_DB_DRIVER:'postgres',GOTRUE_DB_DATABASE_URL:dbUrl('supabase_auth_admin'),GOTRUE_DB_NAMESPACE:'auth',GOTRUE_SITE_URL:siteOrigin,GOTRUE_JWT_SECRET:jwtSecret,GOTRUE_JWT_AUD:'authenticated',GOTRUE_JWT_DEFAULT_GROUP_NAME:'authenticated',GOTRUE_JWT_ADMIN_ROLES:'service_role',GOTRUE_DISABLE_SIGNUP:'true',GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED:'false',GOTRUE_EXTERNAL_EMAIL_ENABLED:'true',GOTRUE_MAILER_AUTOCONFIRM:'false',GOTRUE_LOG_LEVEL:'error'})
     await wait(async()=>{const response=await fetch(`http://127.0.0.1:${authPort}/health`);return response.ok},'Auth')
     await root.query('grant all on all tables in schema auth to postgres;grant usage on all sequences in schema auth to postgres;')
     start('storage',node,[join(tools,'storage-1.28.0/dist/start/server.js')],{SERVER_HOST:'127.0.0.1',SERVER_PORT:String(storagePort),SERVER_ADMIN_PORT:String(storageAdminPort),SERVER_REGION:'local',DATABASE_URL:dbUrl('supabase_storage_admin'),DATABASE_SSL_ROOT_CERT:await readFile(ca,'utf8'),DATABASE_MAX_CONNECTIONS:'4',DB_INSTALL_ROLES:'false',DB_SUPER_USER:'supabase_storage_admin',DB_ALLOW_MIGRATION_REFRESH:'false',AUTH_JWT_SECRET:jwtSecret,AUTH_JWT_ALGORITHM:'HS256',ANON_KEY:credentials.anon_key,SERVICE_KEY:credentials.service_role_key,TENANT_ID:projectRef,STORAGE_BACKEND:'file',STORAGE_FILE_BACKEND_PATH:join(directory,'objects'),PG_QUEUE_ENABLE:'false',LOG_LEVEL:'error',S3_PROTOCOL_ACCESS_KEY_ID:'fixture',S3_PROTOCOL_ACCESS_KEY_SECRET:'fixture-only-no-network',GLOBAL_S3_BUCKET:'fixture',SERVER_ADMIN_API_KEYS:'fixture-only'})
@@ -112,7 +112,7 @@ export async function createInstallerPlatform() {
     })
     await new Promise(resolve=>gateway.listen(apiPort,'127.0.0.1',resolve))
     postgres=await connect('postgres');await postgres.query("select set_config('request.jwt.claim.role','service_role',false)")
-    const target={format:1,profile:'owned-laboratory',installation_id:randomUUID(),project_ref:projectRef,api_url:apiUrl,site_origin:'https://fresh.example.invalid',database:{host:'127.0.0.1',port:databasePort,name:'postgres',user:'postgres',ca_file:ca},api_ca_file:ca,excluded_project_refs:[],laboratory:{instance_id:instanceId,identity_file:join(directory,'identity.json')}}
+    const target={format:1,profile:'owned-laboratory',installation_id:randomUUID(),project_ref:projectRef,api_url:apiUrl,site_origin:siteOrigin,database:{host:'127.0.0.1',port:databasePort,name:'postgres',user:'postgres',ca_file:ca},api_ca_file:ca,excluded_project_refs:[],laboratory:{instance_id:instanceId,identity_file:join(directory,'identity.json')}}
     await writeFile(target.laboratory.identity_file,JSON.stringify({instance_id:instanceId,pid:process.pid,project_ref:projectRef,api_url:apiUrl,database_port:databasePort}),{mode:0o600})
     const targetFile=join(directory,'target.json'),credentialsFile=join(directory,'credentials.json'),ownerFile=join(directory,'owner.json')
     const owner={email:'owner@'+projectRef+'.example.invalid',password:'OWNER-SECRET-CANARY-'+randomBytes(16).toString('hex'),full_name:'Fresh Owner'}

@@ -1,3 +1,15 @@
+# Guided fresh publication integration
+
+The [guided coordinator](guided-installation.md) now packages and preflights
+before database mutation, delegates original M3/M4 operations, retains separate
+confirmations and journals component boundaries. Its additional reservation
+policy is mandatory and cannot override legacy exclusions or this engine's
+registry/identity checks. Standalone `runtime`/`plan` can bind `--policy FILE`
+only when it matches the original installation binding. Fresh packages omit
+the legacy wordmark, demo hero and old favicon; neutral branding remains.
+Real Linux/hosted acceptance and independently reviewed production inventory
+are still unapproved. The original M4 requirements and recovery rules follow.
+
 # Phase 3, Milestone 4: first application publication
 
 The separate `scripts/elcomputer-publish.mjs` publisher prepares one fresh

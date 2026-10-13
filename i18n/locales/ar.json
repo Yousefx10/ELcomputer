@@ -2650,6 +2650,7 @@
   },
   "home": {
     "valueComputerAccessories": "{value0} — ملحقات الكمبيوتر",
+    "valueStorefront": "{value0} — المنتجات",
     "weCouldnTLoadProductsPleaseRefreshAndTryAgain": "تعذر تحميل المنتجات. حدّث الصفحة وأعد المحاولة.",
     "CustomerReviews": {
       "couldNotLoadCustomerReviews": "تعذر تحميل تقييمات العملاء.",

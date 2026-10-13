@@ -1,10 +1,12 @@
 import { createHash } from 'node:crypto'
 import { resolve, isAbsolute } from 'node:path'
 import { hostname, userInfo } from 'node:os'
+import { assertPolicyTarget } from '../lib/targetPolicy.mjs'
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
 const protectedProjectRefs=['zsqhuwgoasrexdnamlks']
 
 const messages={invalid_input:'Use the strict publication manifest and documented options.',protected_target:'This infrastructure is reserved. Use a separately prepared fresh target.',receipt_unverified:'The completed fresh-installation receipt cannot be verified.',source_changed:'The frozen release source or output changed. Preserve the evidence.',target_changed:'The approved host, domain or process identity changed.',unsafe_file:'Use canonical owned paths and private files without symlink escapes.',occupied_target:'The application, port or process target is occupied.',runtime_changed:'The private approved runtime configuration does not match.',prerequisite_missing:'The approved Linux, Node, PM2, restricted ingress or startup prerequisite is missing.',confirmation_required:'Confirm the exact project, domain, SSH host key and publication digest.',lock_busy:'Another publication holds this target or workspace.',checkpoint_changed:'The publication checkpoint chain is invalid.',stage_uncertain:'The publication outcome is uncertain. Preserve evidence and reconcile the exact plan.',health_failed:'Application acceptance failed. The new site remains restricted.',already_complete:'Publication is complete. Use verify; apply cannot run again.'}
+Object.assign(messages,{policy_invalid:'Supply the protected additional reservation policy and review record.',policy_changed:'The approved additional policy changed. Preserve the frozen publication.'})
 export class PublicationError extends Error{constructor(code){const safe=Object.hasOwn(messages,code)?code:'stage_uncertain';super(messages[safe]);this.code=safe}}
 export const fail=code=>{throw new PublicationError(code)}
 export const ensure=(value,code='invalid_input')=>{if(!value)fail(code)}
@@ -35,7 +37,7 @@ export function validateRegistry(registry){
   return registry
 }
 export function validateTarget(target,registry,{laboratory=false}={}){
-  object(target,['format','publication_id','installation_id','project_ref','site_origin','release_sha256','ssh','site','runtime','ingress'])
+  object(target,['format','publication_id','installation_id','project_ref','site_origin','release_sha256','ssh','site','runtime','ingress','reservation_policy'],['format','publication_id','installation_id','project_ref','site_origin','release_sha256','ssh','site','runtime','ingress'])
   ensure(target.format===1&&uuid.test(target.publication_id)&&uuid.test(target.installation_id)&&/^[a-z0-9]{20}$/.test(target.project_ref)&&sha(target.release_sha256))
   let origin;try{origin=new URL(target.site_origin)}catch{fail('invalid_input')}
   ensure(origin.origin===target.site_origin&&origin.protocol==='https:'&&!origin.username&&!origin.password&&origin.pathname==='/'&&!origin.search&&!origin.hash&&!origin.port&&/^[a-z0-9][a-z0-9.-]*[a-z0-9]$/.test(origin.hostname))
@@ -57,6 +59,7 @@ export function validateTarget(target,registry,{laboratory=false}={}){
   const exclusions=key=>[...registry.production[key],...registry.reserved[key]]
   ensure(!protectedProjectRefs.includes(target.project_ref)&&!exclusions('project_refs').includes(target.project_ref)&&!/(^|\.)elcomputer\.net$/.test(origin.hostname),'protected_target')
   for(const[key,value]of[['ssh_hosts',target.ssh.host],['ssh_fingerprints',target.ssh.host_key_sha256],['domains',origin.hostname],['users',target.ssh.user],['paths',target.site.app_path],['pm2_names',target.site.pm2_name],['ports',target.site.port]])ensure(!exclusions(key).includes(value),'protected_target')
+  assertPolicyTarget(target)
   return target
 }
 

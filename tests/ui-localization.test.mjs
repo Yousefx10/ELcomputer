@@ -55,7 +55,7 @@ test('theme branding has deterministic safe fallbacks and no mirrored images', (
   assert.equal(normalizeTheme('dark'), 'dark')
   assert.deepEqual(resolveThemeLogos({ site_logo_url: '/uploads/old.png', site_logo_light_url: '/uploads/light.png', site_logo_dark_url: '/uploads/dark.png' }), { light: '/uploads/light.png', dark: '/uploads/dark.png', fallback: '/uploads/old.png' })
   assert.equal(resolveThemeLogos({ site_logo_light_url: '/uploads/light.png' }).dark, '/uploads/light.png')
-  assert.equal(resolveThemeLogos({ site_logo_dark_url: 'javascript:alert(1)' }).dark, '/images/dashboard-logo.png')
+  assert.equal(resolveThemeLogos({ site_logo_dark_url: 'javascript:alert(1)' }).dark, '')
   assert.doesNotMatch(read('app/components/BrandLogo.vue'), /scaleX|useColorMode/)
 })
 

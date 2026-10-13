@@ -9,10 +9,12 @@ import https from 'node:https'
 import { readProtected } from '../install/files.mjs'
 import { sourceRoot } from '../install/contracts.mjs'
 import { ensure, fail, hash, PublicationError } from './contracts.mjs'
+import { refreshPolicy, assertPolicyAddresses } from '../lib/targetPolicy.mjs'
 
 export const quote=value=>"'"+String(value).replaceAll("'","'\\''")+"'"
 export async function agentSource(){const result=await build({entryPoints:[resolve(sourceRoot,'scripts/publish/agent.mjs')],bundle:true,platform:'node',target:'node22',format:'esm',write:false,banner:{js:"import { createRequire as __publisherRequire } from 'node:module'; const require = __publisherRequire(import.meta.url);"}});return result.outputFiles[0].text}
 export async function sshIdentity(target,registry){
+  await refreshPolicy(target,{resolveAddresses:false})
   const known=await readProtected(target.ssh.known_hosts_file,{json:false}),lines=known.trim().split('\n')
   const host=target.ssh.port===22?target.ssh.host:`[${target.ssh.host}]:${target.ssh.port}`
   ensure(lines.length===1&&lines[0].split(/\s+/)[0]===host&&lines[0].split(/\s+/)[1]==='ssh-ed25519','target_changed')
@@ -23,6 +25,7 @@ export async function sshIdentity(target,registry){
   const domainAddresses=[...new Set((await lookup(new URL(target.site_origin).hostname,{all:true})).map(row=>row.address))].sort()
   ensure(addresses.length>0&&JSON.stringify(addresses)===JSON.stringify(domainAddresses),'target_changed')
   ensure(addresses.every(address=>![...registry.production.ssh_hosts,...registry.reserved.ssh_hosts].includes(address)),'protected_target')
+  assertPolicyAddresses(target,addresses)
   return{host_key_sha256:target.ssh.host_key_sha256,known_hosts_sha256:hash(known),addresses}
 }
 export async function openSsh(target,registry,{expectedIdentity=null}={}){

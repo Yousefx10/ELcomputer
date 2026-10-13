@@ -13,16 +13,18 @@ import { writeAtomic } from '../../scripts/install/files.mjs'
 import { PublicationSession } from '../../scripts/publish/remote.mjs'
 
 const port=async()=>{const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const value=server.address().port;await new Promise(resolve=>server.close(resolve));return value}
-export async function createPublicationFixture({compiledOutput=process.env.PUBLICATION_REVIEW_OUTPUT||'/private/tmp/elcomputer-m4-reviewed-package/build-source/.output'}={}){
+export async function createPublicationFixture({compiledOutput=process.env.PUBLICATION_REVIEW_OUTPUT||'/private/tmp/elcomputer-m4-reviewed-package/build-source/.output',initialize=true,siteOrigin='https://fresh.example.invalid'}={}){
   const directory=await realpath(await mkdtemp('/tmp/elcomputer-publication-lab-'));await chmod(directory,0o700)
   let source,lab
   try{
   const extraFiles=['scripts/elcomputer-publish.mjs',...(await readdir(resolve(sourceRoot,'scripts/publish'))).map(name=>'scripts/publish/'+name)]
-  source=await installerSourceCopy({extraFiles});lab=await createInstallerPlatform();const installDir=join(lab.directory,'installation')
+  source=await installerSourceCopy({extraFiles});lab=await createInstallerPlatform({siteOrigin});const installDir=join(lab.directory,'installation')
+  if(initialize){
   const prepared=await source.cli(['plan','--target',lab.targetFile,'--out',installDir,'--credentials-file',lab.credentialsFile])
   if(prepared.code!==0)throw Error(JSON.stringify(prepared.result))
   const installed=await source.cli(['apply','--plan',join(installDir,'plan.json'),'--credentials-file',lab.credentialsFile,'--owner-file',lab.ownerFile,'--confirm',prepared.result.confirmation])
   if(installed.code!==0)throw Error(JSON.stringify(installed.result))
+  }
   const mod=async path=>import(pathToFileURL(join(source.directory,path)))
   const workflow=await mod('scripts/publish/workflow.mjs'),runtimeModule=await mod('scripts/publish/runtime.mjs'),installationModule=await mod('scripts/publish/installation.mjs'),{frozenSource}=await mod('scripts/install/contracts.mjs'),{agentSource}=await mod('scripts/publish/ssh.mjs')
   const build=join(directory,'bundle'),output=join(build,'build-source/.output');await mkdir(dirname(output),{recursive:true,mode:0o700});await cp(compiledOutput,output,{recursive:true,verbatimSymlinks:true})
@@ -37,13 +39,12 @@ export async function createPublicationFixture({compiledOutput=process.env.PUBLI
   const body={format:1,kind:'elcomputer-output',source:await frozenSource(),archive_sha256:hash(await readFile(archive)),inventory_sha256:digest(entries),entries,node:'22.23.1',content:'output only; no runtime secrets, source or merchant uploads'},bundle={...body,release_sha256:digest(body)};await writeAtomic(build,'bundle.json',bundle)
   const registry=validateRegistry({format:1,production:{project_refs:['zsqhuwgoasrexdnamlks'],ssh_hosts:['reserved.example.invalid'],ssh_fingerprints:['SHA256:'+'A'.repeat(43)],domains:['new.elcomputer.net'],users:['newelcomputer'],paths:['/home/newelcomputer/htdocs/new.elcomputer.net'],pm2_names:['new-elcomputer'],ports:[3001]},reserved:{project_refs:[],ssh_hosts:[],ssh_fingerprints:[],domains:[],users:[],paths:[],pm2_names:[],ports:[]}})
   const sessions=[],originalPm2=process.env.PM2_HOME;process.env.PM2_PROGRAMMATIC='true';process.env.PM2_NO_INTERACTION='true'
-  async function site(label){
-    const root=join(directory,label),siteHome=join(root,'site-home'),app=join(siteHome,'htdocs/fresh.example.invalid'),uploads=join(siteHome,'data/fresh.example.invalid/uploads')
+  async function site(label,{guided=false}={}){
+    const domain=new URL(lab.target.site_origin).hostname
+    const root=join(directory,label),siteHome=join(root,'site-home'),app=join(siteHome,'htdocs/'+domain),uploads=join(siteHome,'data/'+domain+'/uploads')
     for(const folder of [root,siteHome,dirname(app),dirname(dirname(uploads)),dirname(uploads)])await mkdir(folder,{recursive:true,mode:0o700})
-    const target=validateTarget({format:1,publication_id:randomUUID(),installation_id:lab.target.installation_id,project_ref:lab.target.project_ref,site_origin:lab.target.site_origin,release_sha256:bundle.release_sha256,ssh:{host:'fresh.example.invalid',port:22222,user:userInfo().username,host_key_sha256:'SHA256:'+'B'.repeat(43),known_hosts_file:join(root,'known-hosts'),identity_file:join(root,'key'),machine_id:randomBytes(16).toString('hex')},site:{app_path:app,uploads_path:uploads,pm2_home:join(siteHome,'.elcomputer-pm2'),pm2_name:'fresh-'+label,port:await port()},runtime:{node_path:source.node,pm2_package:process.env.PUBLICATION_REVIEW_PM2_PACKAGE||'/private/tmp/elcomputer-publication-tools/node_modules/pm2'},ingress:{nginx_file:'/fixture/nginx.conf',certificate_file:'/fixture/site.pem',certificate_key_file:'/fixture/site.key',operator_ipv4:'192.0.2.100',startup_unit:'pm2-'+userInfo().username+'.service'}},registry,{laboratory:true})
-    const installation=await installationModule.completedInstallation(join(installDir,'receipt.json'))
-    const prepared=await runtimeModule.prepareRuntime({target,installation,credentials:lab.credentials,directory:join(root,'private'),keyRecordDirectory:join(root,'key-record')})
-    const runtimeFile=prepared.runtime_file,publishDir=join(root,'publication'),identity={host_key_sha256:target.ssh.host_key_sha256,known_hosts_sha256:'c'.repeat(64),addresses:['127.0.0.1']}
+    const target=validateTarget({format:1,publication_id:randomUUID(),installation_id:lab.target.installation_id,project_ref:lab.target.project_ref,site_origin:lab.target.site_origin,release_sha256:bundle.release_sha256,ssh:{host:domain,port:22222,user:userInfo().username,host_key_sha256:'SHA256:'+randomBytes(32).toString('base64').replace(/=$/,''),known_hosts_file:join(root,'known-hosts'),identity_file:join(root,'key'),machine_id:randomBytes(16).toString('hex')},site:{app_path:app,uploads_path:uploads,pm2_home:join(siteHome,'.elcomputer-pm2'),pm2_name:'fresh-'+label,port:await port()},runtime:{node_path:source.node,pm2_package:process.env.PUBLICATION_REVIEW_PM2_PACKAGE||'/private/tmp/elcomputer-publication-tools/node_modules/pm2'},ingress:{nginx_file:'/fixture/nginx.conf',certificate_file:'/fixture/site.pem',certificate_key_file:'/fixture/site.key',operator_ipv4:'192.0.2.100',startup_unit:'pm2-'+userInfo().username+'.service'}},registry,{laboratory:true})
+    const identity={host_key_sha256:target.ssh.host_key_sha256,known_hosts_sha256:'c'.repeat(64),addresses:['127.0.0.1']}
     const remoteFactory=async()=>{
       const session=new PublicationSession({laboratory:{directory,pid:process.pid,machine_id:target.ssh.machine_id}});sessions.push(session)
       return{session,identity,agent_sha256:hash(await agentSource()),async call(action,p={}){
@@ -62,6 +63,10 @@ export async function createPublicationFixture({compiledOutput=process.env.PUBLI
       },close:()=>session.close()}
     }
     const ingressCheck=async()=>({certificate_sha256:'d'.repeat(64),ca_sha256:null,acceptance:'TLS/Nginx fixture only'})
+    if(guided)return{target,root,registry,remoteFactory,ingressCheck}
+    const installation=await installationModule.completedInstallation(join(installDir,'receipt.json'))
+    const prepared=await runtimeModule.prepareRuntime({target,installation,credentials:lab.credentials,directory:join(root,'private'),keyRecordDirectory:join(root,'key-record')})
+    const runtimeFile=prepared.runtime_file,publishDir=join(root,'publication')
     const options={target,registry,receiptFile:join(installDir,'receipt.json'),bundleFile:join(build,'bundle.json'),runtimeFile,credentials:lab.credentials,directory:publishDir,remoteFactory,ingressCheck}
     const planned=await workflow.planPublication(options),plan=JSON.parse(await readFile(join(publishDir,'plan.json')))
     const execute={plan,directory:publishDir,credentials:lab.credentials,runtimeFile,owner:lab.owner,confirm:planned.confirmation,remoteFactory,ingressCheck}

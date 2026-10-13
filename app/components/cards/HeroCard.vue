@@ -1,17 +1,8 @@
 <template>
-  <section v-if="heroEnabled" class="store-hero" :aria-label="$t('common.storeHighlights')" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
+  <section v-if="heroEnabled && currentBanner" class="store-hero" :aria-label="$t('common.storeHighlights')" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
     <component :is="currentBannerComponent" v-if="currentBanner" v-bind="currentBannerAttributes" class="store-hero-image-link">
       <img class="store-hero-image" :alt="currentBanner.alt_text || $t('common.exploreTheLatestAt') + ' ' + siteName" :src="currentBannerImageUrl" fetchpriority="high" />
     </component>
-    <div v-else class="store-hero-fallback">
-      <img class="store-hero-scene" src="/images/storefront/setup-hero.png" alt="" fetchpriority="high" width="1536" height="1024" />
-      <div class="store-hero-copy">
-        <p class="store-eyebrow">{{ $t('common.forWorkAndPlay') }}</p>
-        <h1>{{ $t('common.keyboards') }}<br /><span>{{ $t('common.andMice') }}</span></h1>
-        <p>{{ $t('cards.HeroCard.headsetsCablesAndOtherDeskAccessories') }}</p>
-        <NuxtLinkLocale to="/search" class="store-button">{{ $t('common.shopNow') }} <Icon name="lucide:arrow-right" size="16" class="directional-icon" /></NuxtLinkLocale>
-      </div>
-    </div>
     <div v-if="heroBanners.length > 1" class="store-hero-controls">
       <button type="button" :aria-label="$t('common.previousBanner')" @click="moveBanner(-1)"><Icon name="lucide:chevron-left" size="17" class="directional-icon" /></button>
       <span>{{ currentBannerIndex + 1 }} / {{ heroBanners.length }}</span>

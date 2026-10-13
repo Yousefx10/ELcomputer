@@ -5,6 +5,7 @@ import { promisify } from 'node:util'
 import { resolve, relative, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { verifyBundle, hash, json } from '../lib/cleanBaseline.mjs'
+import { assertPolicyTarget } from '../lib/targetPolicy.mjs'
 
 export const sourceRoot = fileURLToPath(new URL('../../', import.meta.url))
 export const migration71 = '20261012160000_quick_setup_installation_bootstrap.sql'
@@ -13,6 +14,8 @@ export const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
 // Public references, already recorded in PROJECT_STATE and the staging runner.
 export const protectedProjectRefs = ['zsqhuwgoasrexdnamlks']
 const messages = {
+  policy_invalid: 'Supply the protected additional reservation policy and review record.',
+  policy_changed: 'The approved additional policy changed. Preserve the frozen installation.',
   invalid_input: 'Use the documented strict manifest and command options.',
   protected_target: 'This target is excluded. Select a genuinely new project.',
   ambient_credentials: 'Use a clean environment; provide credentials through a protected file.',
@@ -32,7 +35,7 @@ const messages = {
   owner_unavailable: 'The accepted owner is unavailable. Bootstrap remains permanently sealed.'
 }
 export class InstallationError extends Error {
-  constructor(code) { super(messages[code] || messages.stage_uncertain); this.code = code }
+  constructor(code) { const safe=Object.hasOwn(messages,code)?code:'stage_uncertain';super(messages[safe]);this.code = safe }
 }
 export const fail = code => { throw new InstallationError(code) }
 export const ensure = (condition, code = 'invalid_input') => { if (!condition) fail(code) }
@@ -45,7 +48,7 @@ export function safeEnvironment(environment = process.env) {
   ensure(!Object.keys(environment).some(key => /^(PG[A-Z_]*|DATABASE_URL|SUPABASE(?:_.*)?|NUXT_.*(?:KEY|SECRET|TOKEN|PASSWORD)|NODE_OPTIONS|NODE_TLS_REJECT_UNAUTHORIZED|NODE_EXTRA_CA_CERTS|SSLKEYLOGFILE)$/.test(key) && environment[key]),'ambient_credentials')
 }
 export function validateTarget(target) {
-  object(target,['format','profile','installation_id','project_ref','api_url','site_origin','database','api_ca_file','excluded_project_refs','laboratory'],['format','profile','installation_id','project_ref','api_url','site_origin','database','excluded_project_refs'])
+  object(target,['format','profile','installation_id','project_ref','api_url','site_origin','database','api_ca_file','excluded_project_refs','laboratory','reservation_policy'],['format','profile','installation_id','project_ref','api_url','site_origin','database','excluded_project_refs'])
   ensure(target.format===1 && ['supabase-direct','owned-laboratory'].includes(target.profile))
   ensure(uuid.test(target.installation_id) && /^[a-z0-9]{20}$/.test(target.project_ref))
   ensure(Array.isArray(target.excluded_project_refs) && target.excluded_project_refs.every(ref=>/^[a-z0-9]{20}$/.test(ref)))
@@ -68,6 +71,7 @@ export function validateTarget(target) {
     ensure(api.hostname==='127.0.0.1' && api.port && api.pathname===`/projects/${target.project_ref}`)
     ensure(target.database.host==='127.0.0.1' && Number.isInteger(target.database.port) && target.database.port>=1024 && target.database.port<=65535 && target.api_ca_file)
   }
+  assertPolicyTarget(target)
   return target
 }
 export function validateCredentials(credentials,target) {

@@ -1,0 +1,5 @@
+import { randomUUID } from 'node:crypto'
+import { policyDigest } from '../../scripts/lib/targetPolicy.mjs'
+// Independently controlled disposable test inputs, never production approval.
+export const fixturePolicy=()=>{const reservations={project_refs:[],domains:[],domain_suffixes:[],hosts:[],addresses:[],ssh_fingerprints:[],machine_ids:[],users:[],paths:[],pm2_names:[],ports:[]};return{format:1,policy_id:randomUUID(),revision:1,scope:'additional_exclusions_only',reservations,review:{operator:'Synthetic disposable operator',reviewed_at:new Date().toISOString(),provenance:'Independently owned test targets only',reservations_sha256:policyDigest(reservations)}}}
+export const fixtureRegistry=()=>({format:1,production:{project_refs:['zsqhuwgoasrexdnamlks'],ssh_hosts:['reserved.example.invalid'],ssh_fingerprints:['SHA256:'+'A'.repeat(43)],domains:['new.elcomputer.net'],users:['newelcomputer'],paths:['/home/newelcomputer/htdocs/new.elcomputer.net'],pm2_names:['new-elcomputer'],ports:[3001]},reserved:{project_refs:[],ssh_hosts:[],ssh_fingerprints:[],domains:[],users:[],paths:[],pm2_names:[],ports:[]}})
