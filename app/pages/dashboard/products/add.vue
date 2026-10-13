@@ -11,6 +11,7 @@
         @submit.prevent="addProduct"
         class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
       >
+        <fieldset :disabled="saving || saveUnconfirmed || !hasPermission('products.add')" class="contents">
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
             <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
@@ -173,6 +174,7 @@
           <input
             v-model="price"
             type="number"
+            step="0.01"
             min="0"
             :placeholder="$t('common.price')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -184,6 +186,7 @@
           <input
             v-model="oldPrice"
             type="number"
+            step="0.01"
             min="0"
             :placeholder="$t('common.oldPrice')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -216,17 +219,18 @@
         </div>
 
         <DashboardProductsSellingModeFields v-model="sellingConfig" />
-        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || !hasPermission('products.add')" />
+        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || saveUnconfirmed || !hasPermission('products.add')" />
 
         <DashboardProductsVariantsEditor
           v-model="variants"
-          :disabled="saving"
+          :disabled="saving || saveUnconfirmed"
           class="md:col-span-2"
         />
 
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
+            :disabled="saving || saveUnconfirmed"
             :label="$t('common.mainImage')"
             section="products"
             :preview-alt="title || 'Product image'"
@@ -254,17 +258,24 @@
           />
         </div>
 
-        <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
-          {{ $uiMessage(actionError) }}
+        </fieldset>
+        <p v-if="actionError || saveError" role="alert" class="md:col-span-2 text-sm text-red-600">
+          {{ actionError ? $uiMessage(actionError) : saveError }}
         </p>
 
         <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
-            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+            :disabled="saving || saveConflict || formLoading || !hasPermission('products.add')"
+            class="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
-            {{ saving ? $t('common.creating') : $t('common.createProduct') }}
+            {{ saving ? $t('common.saving') : saveUnconfirmed ? $t('productSave.retry') : $t('common.createProduct') }}
           </button>
+          <button v-if="saveUnconfirmed || saveConflict" type="button" :disabled="saving"
+            @click="checkProductSave" class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium">
+            {{ $t('productSave.checkSave') }}
+          </button>
+
 
           <NuxtLinkLocale
             to="/dashboard/products"
@@ -273,7 +284,7 @@
             {{ $t('common.back') }}
           </NuxtLinkLocale>
         </div>
-        <DashboardSeoFields v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
+        <DashboardSeoFields :disabled="saving || saveUnconfirmed" v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
       </form>
     </div>
   </div>
@@ -283,7 +294,7 @@
 const { uiNavigateTo } = useUiNavigation()
 
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
-import { defaultWarrantyConfig, normalizeProductWarranty } from '~/utils/warranty'
+import { defaultWarrantyConfig } from '~/utils/warranty'
 definePageMeta({
   layout: 'dashboard'
 })
@@ -296,10 +307,6 @@ const {
   isFresh,
   setSnapshot
 } = useDashboardCache()
-const {
-  getAdminAuthHeaders,
-  recordAdminLog
-} = useAdminLogs()
 const PRODUCT_FORM_CATEGORIES_CACHE_KEY = 'dashboard:product-form:categories'
 const PRODUCT_FORM_BRANDS_CACHE_KEY = 'dashboard:product-form:brands'
 const PRODUCT_FORM_SUPPLIERS_CACHE_KEY = 'dashboard:product-form:suppliers'
@@ -335,7 +342,9 @@ const brands = ref([])
 const suppliers = ref([])
 const warehouses = ref([])
 
-const saving = ref(false)
+const { saving, error: saveError, conflict: saveConflict, unconfirmed: saveUnconfirmed,
+  submit: submitProduct, recover: recoverProductSave, resetConflict: resetSaveConflict } = useProductSave('/api/admin-products', 'POST')
+const formLoading = ref(true)
 const actionError = ref('')
 
 const makeSlug = (value) => {
@@ -454,9 +463,10 @@ const getWarehousesList = async () => {
 }
 
 const addProduct = async () => {
+  if (saving.value || saveConflict.value || formLoading.value) return
   actionError.value = ''
 
-  const normalizedSlug = makeSlug(slug.value || title.value)
+  const normalizedSlug = slug.value.trim() || makeSlug(title.value)
 
   if (!title.value.trim()) {
     actionError.value = 'Title is required'
@@ -483,60 +493,39 @@ const addProduct = async () => {
     return
   }
 
-  saving.value = true
-
-  let data
-
-  try {
-    data = await $fetch('/api/admin-products', {
-      method: 'POST',
-      headers: await getAdminAuthHeaders(),
-      body: {
-        title: title.value,
-        slug: normalizedSlug,
-        description: description.value,
-        long_description: longDescription.value,
-        price: price.value,
-        old_price: oldPrice.value,
-        image_url: imageUrl.value,
-        ...seo.value,
-        category_id: categoryId.value,
-        brand_id: brandId.value,
-        default_supplier_id: defaultSupplierId.value,
-        primary_warehouse_id: primaryWarehouseId.value,
-        sku: sku.value,
-        stock_quantity: 0,
-        color_name: '',
-        color_hex: '',
-        is_serialized: true,
-        variants: variants.value,
-        ...serializeSellingConfig(sellingConfig.value),
-        ...warrantyConfig.value,
-        is_published: isPublished.value
-      }
-    })
-  } catch (error) {
-    saving.value = false
-    actionError.value = error?.data?.statusMessage || error?.message || 'Could not create this product.'
-    return
-  }
-
-  saving.value = false
-
-  await recordAdminLog({
-    actionKey: 'products.create',
-    description: `Added product ${title.value.trim()}.`,
-    metadata: {
-      product_id: data.id,
-      product_title: title.value.trim(),
-      product_slug: normalizedSlug,
-      warranty: normalizeProductWarranty(warrantyConfig.value)
-    }
+  const data = await submitProduct({
+    title: title.value,
+    slug: normalizedSlug,
+    description: description.value,
+    long_description: longDescription.value,
+    price: price.value,
+    old_price: oldPrice.value,
+    image_url: imageUrl.value,
+    ...seo.value,
+    category_id: categoryId.value,
+    brand_id: brandId.value,
+    default_supplier_id: defaultSupplierId.value,
+    primary_warehouse_id: primaryWarehouseId.value,
+    sku: sku.value,
+    stock_quantity: 0,
+    color_name: '',
+    color_hex: '',
+    is_serialized: true,
+    variants: variants.value,
+    ...serializeSellingConfig(sellingConfig.value),
+    ...warrantyConfig.value,
+    is_published: isPublished.value
   })
+  if (!data) return
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await uiNavigateTo(`/dashboard/products/edit/${data.id}`)
+  await uiNavigateTo(hasPermission('products.edit') ? `/dashboard/products/edit/${data.id}` : '/dashboard/products')
+}
+
+const checkProductSave = async () => {
+  const result = await recoverProductSave()
+  if (result) await uiNavigateTo(hasPermission('products.edit') ? `/dashboard/products/edit/${result.id}` : '/dashboard/products')
 }
 
 onMounted(async () => {
@@ -546,5 +535,7 @@ onMounted(async () => {
     getSuppliersList(),
     getWarehousesList()
   ])
+  await checkProductSave()
+  formLoading.value = false
 })
 </script>

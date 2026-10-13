@@ -25,6 +25,7 @@
         @submit.prevent="updateProduct"
         class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
       >
+        <fieldset :disabled="saving || saveUnconfirmed || !hasPermission('products.edit')" class="contents">
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
             <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
@@ -183,6 +184,7 @@
           <input
             v-model="price"
             type="number"
+            step="0.01"
             min="0"
             :placeholder="$t('common.price')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -194,6 +196,7 @@
           <input
             v-model="oldPrice"
             type="number"
+            step="0.01"
             min="0"
             :placeholder="$t('common.oldPrice')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -286,17 +289,18 @@
 
         <DashboardProductsVariantsEditor
             v-model="productVariants"
-            :disabled="saving"
+            :disabled="saving || saveUnconfirmed"
             existing-mode
           />
         </div>
 
-        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || !hasPermission('products.edit')" />
+        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || saveUnconfirmed || !hasPermission('products.edit')" />
         <NuxtLinkLocale v-if="hasPermission('settings.view')" :to="`/dashboard/settings?tab=after-sales&scope=product&id=${route.params.id}`" class="mt-3 inline-block text-sm font-semibold text-blue-700 underline">{{ $t('afterSales.title') }}</NuxtLinkLocale>
 
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
+            :disabled="saving || saveUnconfirmed"
             :label="$t('common.mainImage')"
             section="products"
             :preview-alt="title || 'Product image'"
@@ -324,21 +328,33 @@
           />
         </div>
 
-        <p v-if="actionError" class="md:col-span-2 text-sm text-red-600">
-          {{ $uiMessage(actionError) }}
+        </fieldset>
+        <p v-if="actionError || saveError" role="alert" class="md:col-span-2 text-sm text-red-600">
+          {{ actionError ? $uiMessage(actionError) : saveError }}
         </p>
 
         <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
-            class="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
+            :disabled="saving || saveConflict || formLoading || !hasPermission('products.edit')"
+            class="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
-            {{ saving ? $t('common.saving') : $t('common.saveChanges') }}
+            {{ saving ? $t('common.saving') : saveUnconfirmed ? $t('productSave.retry') : $t('common.saveChanges') }}
           </button>
+          <button v-if="saveUnconfirmed || saveConflict" type="button" :disabled="saving"
+            @click="checkProductSave" class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium">
+            {{ $t('productSave.checkSave') }}
+          </button>
+          <button v-if="saveConflict && !saveUnconfirmed" type="button" :disabled="saving"
+            @click="reloadProduct" class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium">
+            {{ $t('productSave.reload') }}
+          </button>
+
 
           <button
             v-if="!isSerialized"
             type="button"
+            :disabled="saving || deleting || saveUnconfirmed"
             @click="deleteProduct"
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
           >
@@ -359,7 +375,7 @@
             {{ $t('dashboard.products.productsWithItemHistoryCannotBeDeletedHideThemFromTheStoreInstead') }}
           </p>
         </div>
-        <DashboardSeoFields v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
+        <DashboardSeoFields :disabled="saving || saveUnconfirmed" v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
       </form>
 
       <section class="rounded-2xl bg-white p-6 shadow">
@@ -517,11 +533,12 @@ const { data: erpState } = useNuxtData('active-erp')
 const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
 const { uiLabel } = useUiLocale()
+const { t } = useI18n()
 
 const { uiNavigateTo } = useUiNavigation()
 
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
-import { defaultWarrantyConfig, readWarrantyConfig, normalizeProductWarranty } from '~/utils/warranty'
+import { defaultWarrantyConfig, readWarrantyConfig } from '~/utils/warranty'
 definePageMeta({
   layout: 'dashboard'
 })
@@ -592,7 +609,9 @@ const newImageUrl = ref('')
 const newImageAlt = ref('')
 const newImageVariantId = ref('')
 
-const saving = ref(false)
+const { saving, error: saveError, conflict: saveConflict, unconfirmed: saveUnconfirmed,
+  submit: submitProduct, recover: recoverProductSave, resetConflict: resetSaveConflict } = useProductSave(`/api/admin-products/${id}`, 'PATCH')
+const formLoading = ref(true)
 const deleting = ref(false)
 const galleryLoading = ref(false)
 const actionError = ref('')
@@ -610,22 +629,13 @@ const useTitleSlug = () => {
   slug.value = makeSlug(title.value)
 }
 
-const { data: product, pending, error: fetchError } = await useAsyncData(
+const { data: editorSnapshot, pending, error: fetchError, refresh: refreshProduct } = await useAsyncData(
   `edit-product-${id}`,
-  async () => {
-    const { data, error } = await supabase
-      .rpc('catalog_staff_products')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error) {
-      throw error
-    }
-
-    return data
-  }
+  async () => $fetch(`/api/admin-products/${id}`, { headers: await getAdminAuthHeaders(), retry: 0 }),
+  { server: false }
 )
+const product = computed(() => editorSnapshot.value?.product || null)
+const editorRevision = computed(() => editorSnapshot.value?.revision)
 
 const getCategoriesList = async () => {
   const cachedSnapshot = getSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY)
@@ -752,22 +762,6 @@ const getProductImages = async () => {
   }))
 }
 
-const getProductVariants = async () => {
-  const { data, error } = await supabase
-    .rpc('catalog_staff_product_variants')
-    .select('*')
-    .eq('product_id', id)
-    .eq('is_active', true)
-    .order('name', { ascending: true })
-    .order('id', { ascending: true })
-
-  if (error) {
-    actionError.value = error.message
-    return
-  }
-
-  productVariants.value = data || []
-}
 
 onMounted(async () => {
   await Promise.all([
@@ -775,13 +769,15 @@ onMounted(async () => {
     getBrandsList(),
     getSuppliersList(),
     getWarehousesList(),
-    getProductImages(),
-    getProductVariants()
+    getProductImages()
   ])
+  await checkProductSave()
+  formLoading.value = false
 })
 
 watchEffect(() => {
   if (product.value) {
+    productVariants.value = JSON.parse(JSON.stringify(editorSnapshot.value.variants || []))
     title.value = product.value.title || ''
     slug.value = product.value.slug || makeSlug(product.value.title || '')
     description.value = product.value.description || ''
@@ -822,10 +818,21 @@ watchEffect(() => {
   }
 })
 
+const checkProductSave = async () => {
+  const result = await recoverProductSave()
+  if (result) await uiNavigateTo('/dashboard/products')
+}
+const reloadProduct = async () => {
+  if (saving.value || !confirm(t('productSave.discard'))) return
+  await refreshProduct()
+  if (!fetchError.value) { actionError.value = ''; resetSaveConflict() }
+}
+
 const updateProduct = async () => {
+  if (saving.value || saveConflict.value || formLoading.value) return
   actionError.value = ''
 
-  const normalizedSlug = makeSlug(slug.value || title.value)
+  const normalizedSlug = slug.value.trim() || makeSlug(title.value)
 
   if (!title.value.trim()) {
     actionError.value = 'Title is required'
@@ -857,55 +864,31 @@ const updateProduct = async () => {
     return
   }
 
-  saving.value = true
-
-  try {
-    await $fetch(`/api/admin-products/${id}`, {
-      method: 'PATCH',
-      headers: await getAdminAuthHeaders(),
-      body: {
-        title: title.value,
-        slug: normalizedSlug,
-        description: description.value,
-        long_description: longDescription.value,
-        price: price.value,
-        old_price: oldPrice.value,
-        image_url: imageUrl.value,
-        ...seo.value,
-        category_id: categoryId.value,
-        brand_id: brandId.value,
-        default_supplier_id: defaultSupplierId.value,
-        primary_warehouse_id: primaryWarehouseId.value,
-        sku: sku.value,
-        stock_quantity: stockQuantity.value,
-        color_name: colorName.value,
-        color_hex: colorHex.value,
-        is_serialized: isSerialized.value,
-        variants: isSerialized.value ? productVariants.value : [],
-        ...serializeSellingConfig(sellingConfig.value),
-        ...warrantyConfig.value,
-        is_published: isPublished.value
-      }
-    })
-  } catch (error) {
-    saving.value = false
-    actionError.value = error?.data?.statusMessage || error?.message || 'Could not save this product.'
-    return
-  }
-
-  saving.value = false
-
-  await recordAdminLog({
-    actionKey: 'products.update',
-    description: `Updated product ${title.value.trim()}.`,
-    metadata: {
-      product_id: id,
-      product_title: title.value.trim(),
-      product_slug: normalizedSlug,
-      warranty_before: readWarrantyConfig(product.value),
-      warranty_after: normalizeProductWarranty(warrantyConfig.value)
-    }
+  const result = await submitProduct({
+    expected_revision: editorRevision.value,
+    title: title.value,
+    slug: normalizedSlug,
+    description: description.value,
+    long_description: longDescription.value,
+    price: price.value,
+    old_price: oldPrice.value,
+    image_url: imageUrl.value,
+    ...seo.value,
+    category_id: categoryId.value,
+    brand_id: brandId.value,
+    default_supplier_id: defaultSupplierId.value,
+    primary_warehouse_id: primaryWarehouseId.value,
+    sku: sku.value,
+    ...(!isSerialized.value ? { stock_quantity: stockQuantity.value } : {}),
+    color_name: colorName.value,
+    color_hex: colorHex.value,
+    is_serialized: isSerialized.value,
+    variants: isSerialized.value ? productVariants.value : [],
+    ...serializeSellingConfig(sellingConfig.value),
+    ...warrantyConfig.value,
+    is_published: isPublished.value
   })
+  if (!result) return
 
   slug.value = normalizedSlug
   invalidate('dashboard:products:')

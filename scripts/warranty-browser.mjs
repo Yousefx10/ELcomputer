@@ -32,6 +32,7 @@ import {createApp,h,ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,w
 import {createI18n} from '${base}/node_modules/vue-i18n/dist/vue-i18n.mjs'
 import {useUiLocale} from '${base}/app/composables/useUiLocale.js'
 import {normalizeProductWarranty} from '${base}/app/utils/warranty.js'
+import {useProductSave} from '${base}/app/composables/useProductSave.js'
 import en from '${base}/i18n/locales/en.json'
 import ar from '${base}/i18n/locales/ar.json'
 ${Object.keys(components).map(name => `import ${name} from './${name}.js'`).join('\n')}
@@ -65,9 +66,14 @@ const supabase={auth:{getSession:async()=>({data:{session:{access_token:'local-f
 const fetcher=async(path,options={})=>{
  fixture.requests.push({path,method:options.method||'GET',body:clone(options.body||{})})
  if(path==='/api/admin-products'||path==='/api/admin-products/'+productId){
+  if(!options.method){
+   if(path==='/api/admin-products')return {result:null}
+   fixture.catalogReads.push({table:'catalog_editor_snapshot',rows:clone(fixture.variants)})
+   return {product:clone(fixture.product),variants:clone(fixture.variants),revision:fixture.revision||0}
+  }
   if(fixture.failSave)throw {data:{statusMessage:'Choose a valid warranty option.'}}
   const terms=normalizeProductWarranty(options.body,{previous:fixture.product})
-  Object.assign(fixture.product,clone(options.body),terms,{id:productId});return {id:productId}
+  Object.assign(fixture.product,clone(options.body),terms,{id:productId});fixture.revision=(fixture.revision||0)+1;return {id:productId,revision:fixture.revision}
  }
  if(path==='/api/account/orders/'+orderId)return {order:clone(fixture.order),items:clone(fixture.items),shipping:null}
  if(path==='/api/product-reviews')return {total:0,averageRating:0}
@@ -78,8 +84,8 @@ const fetcher=async(path,options={})=>{
 const show=async name=>{view.value=name;route.params.id=name==='details'?orderId:productId;route.path=name==='add'?'/dashboard/products/add':name==='edit'?'/dashboard/products/edit/'+productId:name==='product'?'/products/warranty-fixture':name==='checkout'?'/checkout':'/account/orders'+(name==='details'?'/'+orderId:'');route.query={};generation.value++;await nextTick()}
 const appearance=()=>{document.documentElement.lang=i18n.global.locale.value;document.documentElement.dir=i18n.global.locale.value==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme.value==='dark'||theme.value==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 watch([theme,i18n.global.locale],appearance);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',appearance)
-Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,definePageMeta(){},useHead(){},useUiLocale,useNuxtApp:()=>({$i18n:i18n.global}),useI18n:()=>i18n.global,useUiRoute:()=>route,useSupabaseClient:()=>supabase,useSupabaseUser:()=>user,
- useAdminAccess:()=>({hasPermission:key=>fixture.permissions===null||fixture.permissions.includes(key)}),useAdminLogs:()=>({getAdminAuthHeaders:async()=>({authorization:'Bearer local-fixture-token'}),recordAdminLog:async log=>fixture.logs.push(clone(log))}),
+Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,definePageMeta(){},useHead(){},useUiLocale,useProductSave,useNuxtApp:()=>({$i18n:i18n.global}),useI18n:()=>i18n.global,useUiRoute:()=>route,useSupabaseClient:()=>supabase,useSupabaseUser:()=>user,
+ useAdminAccess:()=>({adminUser:ref({id:'77777777-7777-4777-8777-777777777777'}),hasPermission:key=>fixture.permissions===null||fixture.permissions.includes(key)}),useAdminLogs:()=>({getAdminAuthHeaders:async()=>({authorization:'Bearer local-fixture-token'}),recordAdminLog:async log=>fixture.logs.push(clone(log))}),
  useDashboardCache:()=>({getSnapshot:()=>null,invalidate(){},isFresh:()=>false,setSnapshot(){}}),useNuxtData:()=>({data:ref({mode:'built_in'})}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),
  useAsyncData:async(_key,loader)=>({data:ref(await loader()),pending:ref(false),error:ref(null),refresh:async()=>{}}),useSiteContent:()=>({data:ref({settings:{payment_cash_enabled:true}})}),useFetch:async()=>({data:ref({card:{available:false}})}),
  useSupportClient:()=>({request:fetcher,errorText:(e,f)=>e.message||f}),useShipmentUpdates(){},useReorder:()=>({addOrderToCart:async()=>{fixture.reorders++;return {message:'Products added to cart.'}}}),useStoreAnalytics:()=>({trackEvent(){}}),useUiNavigation:()=>({uiNavigateTo:async path=>{fixture.navigation=path}}),
@@ -173,15 +179,15 @@ try {
   await page.getByRole('button', { name: labels.en.common.createProduct, exact: true }).click()
   await page.waitForTimeout(100)
   check(await page.evaluate(() => window.warrantyTest.fixture.product.warranty_duration_value) === 12, 'Create saves structured duration')
-  check(await page.evaluate(() => window.warrantyTest.fixture.logs.at(-1)?.metadata.warranty.warranty_duration_value) === 12, 'Create audit includes warranty')
+  check(await page.evaluate(() => window.warrantyTest.fixture.logs.length) === 0, 'Create audit is owned by the server transaction')
   await show('edit')
   check(await page.locator('[data-warranty-duration]').inputValue() === '12', 'Reload restores created duration')
   await page.locator('[data-warranty-duration]').fill('24')
   await page.getByRole('button', { name: labels.en.common.saveChanges, exact: true }).click()
   await page.waitForTimeout(100)
   check(await page.evaluate(() => window.warrantyTest.fixture.product.warranty_duration_value) === 24, 'Edit saves duration')
-  check(await page.evaluate(() => window.warrantyTest.fixture.logs.at(-1)?.metadata.warranty_before.warranty_duration_value) === 12, 'Edit audit records prior duration')
-  check(await page.evaluate(() => window.warrantyTest.fixture.logs.at(-1)?.metadata.warranty_after.warranty_duration_value) === 24, 'Edit audit records new duration')
+  check(await page.evaluate(() => window.warrantyTest.fixture.requests.at(-1)?.body.expected_revision) === 1, 'Edit uses its loaded revision')
+  check(await page.evaluate(() => window.warrantyTest.fixture.logs.length) === 0, 'Edit does not duplicate transactional audit')
   await show('edit')
   check(await page.locator('[data-warranty-duration]').inputValue() === '24', 'Saved edit reloads')
   await show('details')
@@ -221,8 +227,8 @@ try {
   check(await page.evaluate(() => window.warrantyTest.fixture.navigation.startsWith('/checkout/summary/')), 'Checkout confirmation navigation preserved')
   const catalogReads = await page.evaluate(() => window.warrantyTest.fixture.catalogReads)
   check(catalogReads.some(read => read.table === 'catalog_staff_products' && read.rows[0].primary_warehouse_id), 'Staff product/procurement reads retain warehouse references')
-  check(catalogReads.some(read => read.table === 'catalog_staff_product_variants' && read.rows[0].cost_price === 882.43), 'Staff variant reads retain costs')
-  for (const read of catalogReads.filter(read => !read.table.startsWith('catalog_staff_'))) for (const row of read.rows) {
+  check(catalogReads.some(read => ['catalog_staff_product_variants', 'catalog_editor_snapshot'].includes(read.table) && read.rows[0].cost_price === 882.43), 'Staff variant reads retain costs through the editor snapshot')
+  for (const read of catalogReads.filter(read => !read.table.startsWith('catalog_staff_') && read.table !== 'catalog_editor_snapshot')) for (const row of read.rows) {
     check(!Object.hasOwn(row, 'cost_price') && !Object.hasOwn(row, 'primary_warehouse_id') && !Object.hasOwn(row, 'default_supplier_id'), 'Public catalog fixtures omit internal fields')
   }
   await page.emulateMedia({ colorScheme: 'light' })

@@ -41,6 +41,13 @@ test('warranty HTTP routes enforce staff permissions and customer ownership usin
   const server = createServer(toNodeListener(app))
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   const call = async (path, { actor = 'owner', method = 'GET', body } = {}) => {
+    if (path.startsWith('/api/admin-products') && body) {
+      body = { ...body, request_id: randomUUID() }
+      if (method === 'PATCH') {
+        const id = path.split('/').pop()
+        body.expected_revision = (await db.query('select revision from catalog_private.product_revisions where product_id=$1', [id])).rows[0]?.revision ?? 0
+      }
+    }
     const response = await fetch(`http://127.0.0.1:${server.address().port}${path}`, { method, headers: { authorization: actor ? 'Bearer ' + actor : '', 'content-type': 'application/json' }, ...(body ? { body: JSON.stringify(body) } : {}) })
     return { response, body: await response.json() }
   }

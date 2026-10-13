@@ -28,8 +28,18 @@ const PRODUCT_MUTABLE_FIELDS = [
   'preorder_total_limit', 'preorder_customer_limit'
 ]
 
-const normalizeText = (value) => {
-  const normalizedValue = String(value || '').trim()
+export const productValidationError = (message, field = '') => {
+  throw createError({ statusCode: 400, statusMessage: message, data: { productSaveError: 'validation', field } })
+}
+
+const normalizeText = (value, maximum = 100000, field = '') => {
+  if (value !== undefined && value !== null && typeof value !== 'string') {
+    productValidationError('Enter text for this field.', field)
+  }
+  const normalizedValue = (value || '').trim()
+  if (normalizedValue.length > maximum || normalizedValue.includes('\u0000')) {
+    productValidationError('This field is too long or contains invalid characters.', field)
+  }
   return normalizedValue || null
 }
 
@@ -42,24 +52,45 @@ const normalizeSlug = (value) => {
 }
 
 const normalizeUuid = (value) => {
-  const normalizedValue = String(value || '').trim()
+  if (value === undefined || value === null || value === '') return null
+  if (typeof value !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
+    productValidationError('Choose a valid reference.', 'reference')
+  }
+  const normalizedValue = value.toLowerCase()
   return normalizedValue || null
 }
 
 const normalizeBoolean = (value) => {
-  if (typeof value === 'string') {
-    return value.trim().toLowerCase() === 'true'
-  }
+  if (value === undefined) return false
+  if (typeof value !== 'boolean') productValidationError('Choose a valid option.')
+  return value
+}
 
-  return value === true || value === 1
+export const normalizeProductMoney = (value, field, { optional = false } = {}) => {
+  if (optional && (value === '' || value === null || value === undefined)) return null
+  if (!['string', 'number'].includes(typeof value) || !/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(String(value))) {
+    productValidationError('Enter a price with up to two decimal places.', field)
+  }
+  return Number(value)
+}
+
+const normalizeProductQuantity = (value, field) => {
+  if (!['string', 'number'].includes(typeof value) || !/^\d+$/.test(String(value)) || !Number.isSafeInteger(Number(value)) || Number(value) > 2147483647) {
+    productValidationError('Enter a valid whole stock quantity.', field)
+  }
+  return Number(value)
+}
+
+const normalizeSku = (value, field) => {
+  if (typeof value === 'string' && /[\u0000-\u001f\u007f]/.test(value)) productValidationError('SKU contains invalid characters.', field)
+  const sku = normalizeText(value, 120, field)
+  return sku
 }
 
 const normalizeVariantCode = (value) => {
-  return String(value || '')
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^A-Z0-9_-]/g, '')
+  const code = normalizeText(value, 80, 'variants')?.toUpperCase() || ''
+  if (code && !/^[A-Z0-9_-]+$/.test(code)) productValidationError('Use letters, numbers, underscores or hyphens for option codes.', 'variants')
+  return code
 }
 
 export const normalizeSerializedVariants = (variants = [], {
@@ -87,9 +118,11 @@ export const normalizeSerializedVariants = (variants = [], {
   }
 
   const normalizedVariants = variants.map((variant, index) => {
-    const name = String(variant?.name || '').trim()
-    const code = normalizeVariantCode(variant?.code || name)
-    const quantity = includeQuantity ? Number(variant?.quantity) : 0
+    if (!variant || typeof variant !== 'object' || Array.isArray(variant)) productValidationError('Choose valid product options.', 'variants')
+    const name = normalizeText(variant?.name, 120, 'variants') || ''
+    const code = normalizeVariantCode(variant.code == null || variant.code === '' ? name : variant.code)
+    const quantity = includeQuantity ? normalizeProductQuantity(variant?.quantity, 'variants') : 0
+    if (!includeQuantity && Object.hasOwn(variant, 'quantity')) productValidationError('Receive stock through Procurement.', 'variants')
     const colorHex = normalizeText(variant?.color_hex)
 
     if (!name) {
@@ -127,8 +160,8 @@ export const normalizeSerializedVariants = (variants = [], {
       id: normalizeUuid(variant?.id),
       name,
       code,
-      sku: normalizeText(variant?.sku),
-      color_name: normalizeText(variant?.color_name) || name,
+      sku: normalizeSku(variant?.sku, 'variants'),
+      color_name: normalizeText(variant?.color_name, 120, 'variants') || name,
       color_hex: colorHex
     }
 
@@ -174,18 +207,28 @@ export const normalizeAdminProductPayload = (body = {}, {
   catalogDefinitionsOnly = false,
   previousProduct
 } = {}) => {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) productValidationError('Product details are invalid.')
   let warranty
   try {
     warranty = normalizeProductWarranty(body, { previous: previousProduct })
   } catch (error) {
     throw createError({ statusCode: 400, statusMessage: error.message, data: { warrantyErrorKey: error.warrantyErrorKey } })
   }
-  const title = String(body?.title || '').trim()
+  const title = normalizeText(body?.title, 500, 'title') || ''
+  if (body.slug !== undefined && (typeof body.slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.slug) || body.slug.length > 200)) {
+    productValidationError('Use a valid English product URL.', 'slug')
+  }
   const slug = normalizeSlug(body?.slug || title)
-  const price = Number(body?.price)
-  const stockQuantity = Number.parseInt(body?.stock_quantity, 10)
-  const oldPriceValue = String(body?.old_price ?? '').trim()
-  const oldPrice = oldPriceValue ? Number(oldPriceValue) : null
+  const price = normalizeProductMoney(body?.price, 'price')
+  const stockQuantity = Object.hasOwn(body, 'stock_quantity') ? normalizeProductQuantity(body.stock_quantity, 'stock_quantity') : null
+  const oldPrice = normalizeProductMoney(body?.old_price, 'old_price', { optional: true })
+  for (const field of ['image_url', 'seo_image_url']) {
+    const value = normalizeText(body[field], 2048, field)
+    if (value && !/^(https?:\/\/|\/(?!\/))[^\s<>"']+$/i.test(value)) productValidationError('Choose a valid product image.', field)
+  }
+  const productColor = normalizeText(body.color_hex, 7, 'color_hex')
+  if (productColor && !/^#[0-9a-f]{6}$/i.test(productColor)) productValidationError('Choose a valid product color.', 'color_hex')
+  if (Object.hasOwn(body, 'is_serialized')) normalizeBoolean(body.is_serialized)
   const isSerialized = catalogDefinitionsOnly
     ? true
     : normalizeBoolean(body?.is_serialized)
@@ -277,7 +320,7 @@ export const normalizeAdminProductPayload = (body = {}, {
     ...normalizeSeoFields(body),
     title,
     slug,
-    description: normalizeText(body?.description),
+    description: normalizeText(body?.description, 10000, 'description'),
     long_description: normalizeText(body?.long_description),
     price,
     old_price: oldPrice,
@@ -286,14 +329,14 @@ export const normalizeAdminProductPayload = (body = {}, {
     brand_id: normalizeUuid(body?.brand_id),
     default_supplier_id: normalizeUuid(body?.default_supplier_id),
     primary_warehouse_id: normalizeUuid(body?.primary_warehouse_id),
-    sku: normalizeText(body?.sku),
+    sku: normalizeSku(body?.sku, 'sku'),
     stock_quantity: catalogDefinitionsOnly
       ? 0
       : isSerialized
         ? variants.reduce((total, variant) => total + variant.quantity, 0)
         : stockQuantity,
-    color_name: normalizeText(body?.color_name),
-    color_hex: normalizeText(body?.color_hex),
+    color_name: normalizeText(body?.color_name, 120, 'color_name'),
+    color_hex: productColor,
     is_serialized: isSerialized,
     variants,
     is_published: normalizeBoolean(body?.is_published),

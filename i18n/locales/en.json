@@ -4713,5 +4713,33 @@
       "capture": "Verification snapshot",
       "acknowledge": "Owner review"
     }
+  },
+  "productSave": {
+    "retry": "Retry save",
+    "checkSave": "Check save",
+    "reload": "Reload product",
+    "price": "Enter a price with up to two decimal places.",
+    "old_price": "Enter a comparison price with up to two decimal places.",
+    "sku": "Check the SKU format and length.",
+    "stock_quantity": "Enter a valid whole stock quantity.",
+    "errors": {
+      "conflict": "This product changed. Reload before saving.",
+      "request_reused": "This save request was already used. Check the previous save.",
+      "unavailable": "The saved product is no longer available.",
+      "not_found": "Product not found.",
+      "permission": "You do not have permission to save this product.",
+      "validation": "Check the product details and try again.",
+      "invalid": "Check the product details and try again.",
+      "reference": "A selected reference is no longer available.",
+      "stock": "Use inventory tools to change stock or warehouse.",
+      "tracking": "Inventory tracking mode cannot be changed.",
+      "variants": "Check the product options and try again.",
+      "erp": "Inventory fields are managed in Daftra.",
+      "duplicate": "This SKU or product URL is already used.",
+      "schema": "Product saving is unavailable. Contact the store administrator.",
+      "session": "Your session expired. Please sign in again.",
+      "unconfirmed": "Save result is unknown. Retry to check it."
+    },
+    "discard": "Reload this product and discard your edits?"
   }
 }
