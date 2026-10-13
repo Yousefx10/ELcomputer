@@ -25,3 +25,7 @@
   dirty-state navigation, independent section saves and in-memory draft retention.
   Keep creation Draft-first; never weaken required fields or claim one transaction
   across product details, gallery and specifications.
+- Follow [Product listing](docs/product-listing.md) for bounded server search,
+  named Products permissions, confidential projections, available-stock meaning
+  and URL/editor return continuity. Preserve compact desktop/mobile rows and
+  distinguish failed requests from empty catalogs. Never add catalog demo data.

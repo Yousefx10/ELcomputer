@@ -1,9 +1,10 @@
 import { PGlite } from '@electric-sql/pglite'
+import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm'
 import { readFile, readdir } from 'node:fs/promises'
 
 // Real application schema and migrations, isolated in an in-memory PostgreSQL engine.
 export const createResetDatabase = async ({ stopBefore = null } = {}) => {
-  const db = new PGlite()
+  const db = new PGlite({ extensions: { pg_trgm } })
   await prepareResetDatabase(db, { stopBefore })
   return db
 }

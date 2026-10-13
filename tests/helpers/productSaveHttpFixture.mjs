@@ -20,10 +20,14 @@ export async function createProductSaveHttpFixture(options = {}) {
   const controls = { loseResponse: false, delay: 0, writes: 0 }
   const rpc = fixture.client.rpc
   controls.rpcErrors = []
-  fixture.client.rpc = async (name, args) => {
-    const result = await rpc(name, args)
-    if (result.error) controls.rpcErrors.push({ name, error: result.error })
-    return result
+  fixture.client.rpc = (name, args) => {
+    const underlying = rpc(name, args)
+    const request = underlying.then(result => {
+      if (result.error) controls.rpcErrors.push({ name, error: result.error })
+      return result
+    })
+    request.abortSignal = signal => { underlying.abortSignal?.(signal); return request }
+    return request
   }
   let server
   const close = async () => {
@@ -39,6 +43,8 @@ export async function createProductSaveHttpFixture(options = {}) {
       ['post', '/api/admin-products', 'server/api/admin-products/index.post.js'],
       ['patch', '/api/admin-products/:id', 'server/api/admin-products/[id].patch.js'],
       ['get', '/api/admin-products', 'server/api/admin-products/index.get.js'],
+      ['get', '/api/admin-products/list', 'server/api/admin-products/list.get.js'],
+      ['get', '/api/admin-products/filter-options', 'server/api/admin-products/filter-options.get.js'],
       ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js']
     ]) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false,

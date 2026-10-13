@@ -302,7 +302,7 @@
           </button>
 
           <NuxtLinkLocale
-            to="/dashboard/products"
+            :to="returnToProducts"
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
             {{ $t('common.back') }}
@@ -315,6 +315,8 @@
 </template>
 
 <script setup>
+import { useProductListNavigation } from '~/composables/useProductListNavigation'
+const { returnToProducts, productEditorLink } = useProductListNavigation()
 const { uiNavigateTo } = useUiNavigation()
 
 import { productEditorErrors } from '~/utils/productEditor'
@@ -531,13 +533,13 @@ const addProduct = async () => {
   markMainSaved(); mainSaved.value = true
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await uiNavigateTo(hasPermission('products.edit') ? `/dashboard/products/edit/${data.id}` : '/dashboard/products')
+  await uiNavigateTo(hasPermission('products.edit') ? productEditorLink(data.id) : returnToProducts.value)
 }
 
 const checkProductSave = async () => {
   if (mainUploadsActive.value) return
   const result = await recoverProductSave()
-  if (result) { markMainSaved(); await uiNavigateTo(hasPermission('products.edit') ? `/dashboard/products/edit/${result.id}` : '/dashboard/products') }
+  if (result) { markMainSaved(); await uiNavigateTo(hasPermission('products.edit') ? productEditorLink(result.id) : returnToProducts.value) }
 }
 
 onMounted(async () => {

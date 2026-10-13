@@ -411,7 +411,7 @@
           </button>
 
           <NuxtLinkLocale
-            to="/dashboard/products"
+            :to="returnToProducts"
             class="rounded-lg bg-gray-200 px-5 py-3 font-bold text-gray-800 hover:bg-gray-300"
           >
             {{ $t('common.back') }}
@@ -587,6 +587,8 @@
 </template>
 
 <script setup>
+import { useProductListNavigation } from '~/composables/useProductListNavigation'
+const { returnToProducts } = useProductListNavigation()
 const { data: erpState } = useNuxtData('active-erp')
 const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
@@ -1136,6 +1138,6 @@ const deleteProduct = async () => {
 
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await uiNavigateTo('/dashboard/products')
+  await uiNavigateTo(returnToProducts.value)
 }
 </script>

@@ -1,433 +1,122 @@
 <template>
-  <div class="">
-    <div class="mx-auto max-w-7xl">
-      <DashboardPageIntro
-        :title="productListTitle"
-        :description="$t('interface.editProductDetailsPricesAndAvailability')"
-        :show-actions="canAddProduct"
-        container-class="mb-6 rounded-2xl bg-white p-6 shadow"
-        layout-class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-        title-class="text-4xl font-bold text-gray-900"
-        modern-actions-class="mb-6 flex flex-wrap items-center justify-end gap-3"
-      >
-        <template #actions>
-          <NuxtLinkLocale
-            v-if="canAddProduct"
-            to="/dashboard/products/add"
-            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-          >
-            {{ $t('common.addNewProduct') }}
-          </NuxtLinkLocale>
-        </template>
-      </DashboardPageIntro>
-
-      <DashboardSecondaryNav class="mb-6" />
-
-      <div class="mb-6 grid gap-4 md:grid-cols-3">
-        <DashboardStatCard :label="$t('common.totalProducts')" :value="productStats.total" icon="lucide:boxes" tone="blue" />
-        <DashboardStatCard :label="$t('common.published')" :value="productStats.active" icon="lucide:circle-check" tone="emerald" />
-        <DashboardStatCard :label="$t('common.drafts')" :value="productStats.inactive" icon="lucide:file-pen-line" tone="amber" />
-      </div>
-
-      <div v-if="errorMessage" class="mb-6 rounded-2xl bg-red-50 p-4 text-red-600 shadow">
-        {{ $uiMessage(errorMessage) }}
-      </div>
-
-      <div class="mb-6 rounded-2xl bg-white p-5 shadow">
-        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div class="flex-1">
-            <label for="product-search" class="mb-2 block text-sm font-semibold text-gray-700">
-              {{ $t('common.searchProducts') }}
-            </label>
-            <input
-              id="product-search"
-              v-model="searchQuery"
-              type="text"
-              :placeholder="$t('common.searchByProductTitle')"
-              class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
-            >
-          </div>
-
-          <button
-            v-if="searchQuery"
-            type="button"
-            @click="clearSearch"
-            class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
-          >
-            {{ $t('common.clear') }}
-          </button>
+  <div class="mx-auto max-w-7xl">
+    <DashboardPageIntro :title="$t('productList.title')" :show-actions="canAdd" container-class="mb-4 rounded-2xl bg-white p-5 shadow" layout-class="flex flex-wrap items-center justify-between gap-3" title-class="text-2xl font-bold text-gray-900" modern-actions-class="mb-4 flex justify-end">
+      <template #actions><NuxtLinkLocale :to="editorLink()" class="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">{{ $t('common.addProduct') }}</NuxtLinkLocale></template>
+    </DashboardPageIntro>
+    <DashboardSecondaryNav class="mb-4" />
+    <div class="mb-4 rounded-2xl bg-white p-4 shadow">
+      <div class="mb-3 grid gap-3 sm:grid-cols-[1fr_13rem]">
+        <div>
+          <label for="product-search" class="mb-1 block text-xs font-semibold text-gray-700">{{ $t('common.searchProducts') }}</label>
+          <input id="product-search" v-model="search" type="search" maxlength="120" :placeholder="$t('productList.searchPlaceholder')" class="w-full rounded-lg border bg-white p-2 text-sm text-gray-900 outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label for="product-sort" class="mb-1 block text-xs font-semibold text-gray-700">{{ $t('productList.sort') }}</label>
+          <select id="product-sort" :value="state.sort" class="w-full rounded-lg border bg-white p-2 text-sm text-gray-900" @change="update({ sort: $event.target.value })">
+            <option value="newest">{{ $t('productList.newest') }}</option><option value="oldest">{{ $t('productList.oldest') }}</option>
+            <option value="title_asc">{{ $t('productList.titleAsc') }}</option><option value="title_desc">{{ $t('productList.titleDesc') }}</option>
+            <option value="price_asc">{{ $t('productList.priceAsc') }}</option><option value="price_desc">{{ $t('productList.priceDesc') }}</option>
+          </select>
         </div>
       </div>
-
-      <div v-if="loading" class="rounded-2xl bg-white p-8 text-center shadow">
-        {{ $t('common.loadingProducts') }}
-      </div>
-
-      <div v-else-if="!products.length" class="rounded-2xl bg-white p-8 text-center shadow">
-        <h3 class="text-2xl font-bold text-gray-900">
-          {{ hasActiveSearch ? $t('common.noMatchingProducts') : $t('common.noProductsYet') }}
-        </h3>
-        <p class="mt-2 text-gray-500">
-          {{ hasActiveSearch ? $t('dashboard.products.tryADifferentSearchTerm') : $t('dashboard.products.startByAddingYourFirstProduct') }}
-        </p>
-
-        <NuxtLinkLocale
-          v-if="!hasActiveSearch && canAddProduct"
-          to="/dashboard/products/add"
-          class="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-        >
-          {{ $t('common.addProduct') }}
-        </NuxtLinkLocale>
-      </div>
-
-      <div v-else>
-        <div class="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 shadow">
-          <p class="text-sm text-gray-500">
-            {{ $t('common.showingValueValueOfValueValue', { value0: (pageStart), value1: (pageEnd), value2: (totalProducts), value3: (hasActiveSearch ? $t('common.matchingProducts') : $t('common.products')) }) }}
-          </p>
-
-          <p class="text-sm font-medium text-gray-600">
-            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
-          </p>
+      <div class="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <div>
+          <label for="product-status" class="mb-1 block text-xs font-semibold text-gray-700">{{ $t('productList.publication') }}</label>
+          <select id="product-status" :value="state.status" class="w-full rounded-lg border bg-white p-2 text-sm text-gray-900" @change="update({ status: $event.target.value })">
+            <option value="all">{{ $t('productList.all') }}</option><option value="published">{{ $t('common.published') }}</option><option value="drafts">{{ $t('productEditor.draft') }}</option>
+          </select>
         </div>
-
-        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          <div
-            v-for="product in products"
-            :key="product.id"
-            class="overflow-hidden rounded-2xl bg-white shadow transition hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div class="flex h-52 items-center justify-center bg-gray-100 p-4">
-              <img
-                v-if="product.image_url"
-                :src="product.image_url"
-                :alt="product.title"
-                class="h-full w-full object-contain"
-              />
-
-              <p v-else class="text-sm text-gray-400">{{ $t('common.noImageAvailable') }}</p>
-            </div>
-
-            <div class="p-5">
-              <div class="mb-3 flex items-start justify-between gap-3">
-                <div>
-                  <h3 class="line-clamp-2 text-xl font-bold text-gray-900">
-                    {{ product.title }}
-                  </h3>
-
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ product.category?.name || $t('common.noCategory') }}
-                  </p>
-                </div>
-
-                <span
-                  class="rounded-full px-3 py-1 text-xs font-semibold"
-                  :class="product.is_serialized
-                    ? 'bg-purple-50 text-purple-700'
-                    : 'bg-blue-50 text-blue-600'"
-                >
-                  {{ product.is_serialized ? $t('common.qrTracked') : $t('common.product') }}
-                </span>
-              </div>
-
-              <div class="mb-4">
-                <p class="text-2xl font-bold text-blue-600">
-                  {{ $t('common.valueEgp', { value0: (product.price) }) }}
-                </p>
-
-                <p
-                  v-if="product.old_price"
-                  class="mt-1 text-sm text-gray-400 line-through"
-                >
-                  {{ $t('common.valueEgp', { value0: (product.old_price) }) }}
-                </p>
-              </div>
-
-              <div class="flex gap-3">
-                <NuxtLinkLocale
-                  v-if="canEditProduct"
-                  :to="`/dashboard/products/edit/${product.id}`"
-                  class="flex-1 rounded-lg bg-black px-4 py-3 text-center text-sm font-bold text-white hover:bg-gray-800"
-                >
-                  {{ $t('common.editProduct') }}
-                </NuxtLinkLocale>
-
-                <NuxtLinkLocale
-                  v-if="canEditProduct && product.is_serialized"
-                  :to="`/dashboard/commerce?tab=serialized&product=${product.id}`"
-                  class="flex-1 rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-center text-sm font-bold text-purple-700 hover:bg-purple-100"
-                >
-                  {{ $t('common.items') }}
-                </NuxtLinkLocale>
-              </div>
-            </div>
-          </div>
+        <ListFilter kind="category" :label="$t('productList.category')" :search-label="$t('productList.searchCategories')" :model-value="state.category" @update:model-value="update({ category: $event })" />
+        <ListFilter kind="brand" :label="$t('productList.brand')" :search-label="$t('productList.searchBrands')" :model-value="state.brand" @update:model-value="update({ brand: $event })" />
+        <div>
+          <label for="product-mode" class="mb-1 block text-xs font-semibold text-gray-700">{{ $t('productList.sellingMode') }}</label>
+          <select id="product-mode" :value="state.mode" class="w-full rounded-lg border bg-white p-2 text-sm text-gray-900" @change="update({ mode: $event.target.value })">
+            <option value="all">{{ $t('productList.all') }}</option><option value="normal">{{ $t('productList.normal') }}</option><option value="coming_soon">{{ $t('productList.comingSoon') }}</option><option value="preorder">{{ $t('productList.preorder') }}</option>
+          </select>
         </div>
-
-        <div class="mt-6 flex items-center justify-between rounded-2xl bg-white px-5 py-4 shadow">
-          <button
-            type="button"
-            :disabled="currentPage === 1 || loading"
-            @click="goToPreviousPage"
-            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {{ $t('common.previous') }}
-          </button>
-
-          <p class="text-sm text-gray-500">
-            {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
-          </p>
-
-          <button
-            type="button"
-            :disabled="currentPage === totalPages || loading"
-            @click="goToNextPage"
-            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {{ $t('common.next') }}
-          </button>
+        <div>
+          <label for="product-stock" class="mb-1 block text-xs font-semibold text-gray-700">{{ $t('productList.stock') }}</label>
+          <select id="product-stock" :value="state.stock" class="w-full rounded-lg border bg-white p-2 text-sm text-gray-900" @change="update({ stock: $event.target.value })">
+            <option value="all">{{ $t('productList.all') }}</option><option value="in_stock">{{ $t('productList.inStock') }}</option><option value="out_of_stock">{{ $t('productList.outOfStock') }}</option>
+          </select>
         </div>
       </div>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
+        <p>{{ $t('productList.stockHelp') }}</p>
+        <div class="flex gap-3"><button v-if="hasFilters || state.q || state.sort !== 'newest'" type="button" class="font-semibold text-blue-700" @click="reset">{{ $t('productList.clearFilters') }}</button><button type="button" :disabled="loading" class="font-semibold text-gray-700 disabled:opacity-50" @click="load">{{ $t('productList.refresh') }}</button></div>
+      </div>
+    </div>
+    <div :aria-busy="loading" class="overflow-hidden rounded-2xl bg-white shadow">
+      <p v-if="loading" role="status" class="p-6 text-center text-sm text-gray-500">{{ $t('common.loadingProducts') }}</p>
+      <div v-else-if="error" role="alert" class="p-6 text-center">
+        <p class="text-sm text-red-600">{{ error === 'permission' ? $t('productList.permission') : $t('productList.loadFailed') }}</p><button v-if="error !== 'permission'" type="button" class="mt-3 rounded-lg border px-4 py-2 text-sm text-gray-700" @click="load">{{ $t('productList.retry') }}</button>
+      </div>
+      <div v-else-if="!result?.items.length" class="p-6 text-center">
+        <h2 class="text-lg font-semibold text-gray-900">{{ emptyTitle }}</h2><p class="mt-1 text-sm text-gray-500">{{ emptyHelp }}</p>
+        <div class="mt-4 flex flex-wrap justify-center gap-3"><button v-if="state.q || hasFilters" type="button" class="rounded-lg border px-4 py-2 text-sm text-gray-700" @click="reset">{{ $t('productList.clearFilters') }}</button><NuxtLinkLocale v-if="canAdd" :to="editorLink()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">{{ $t('common.addProduct') }}</NuxtLinkLocale></div>
+      </div>
+      <template v-else>
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 text-xs text-gray-500" role="status"><p>{{ $t('productList.results', { start: (result.page - 1) * 25 + 1, end: Math.min(result.page * 25, result.total), total: result.total }) }}</p><p>{{ $t('productList.page', { page: result.page, pages: pages }) }}</p></div>
+        <table class="product-list-table w-full text-start text-sm">
+          <thead class="bg-gray-50 text-xs text-gray-600"><tr>
+            <th scope="col">{{ $t('productList.product') }}</th><th scope="col">{{ $t('productList.categoryBrand') }}</th><th scope="col">{{ $t('productList.price') }}</th><th scope="col">{{ $t('productList.publication') }}</th><th scope="col">{{ $t('productList.stock') }}</th><th scope="col">{{ $t('productList.options') }}</th><th scope="col">{{ $t('productList.actions') }}</th>
+          </tr></thead>
+          <tbody>
+            <tr v-for="product in result.items" :key="product.id" :data-product-id="product.id">
+              <td class="product-cell"><div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gray-50"><img v-if="product.image_url" :src="product.image_url" alt="" loading="lazy" class="h-10 w-10 object-contain"><span v-else class="text-gray-400" aria-hidden="true">—</span></div>
+                <div class="min-w-0"><NuxtLinkLocale v-if="canEdit" :to="editorLink(product.id)" class="block break-words font-semibold text-gray-900 hover:text-blue-700">{{ product.title }}</NuxtLinkLocale><p v-else class="break-words font-semibold text-gray-900">{{ product.title }}</p><p class="mt-1 break-all text-xs text-gray-500" dir="auto">{{ product.sku || $t('productList.noSku') }}</p><p class="mt-1 break-words text-xs text-gray-500 lg:hidden">{{ [categoryName(product.category), product.brand?.name].filter(Boolean).join(' · ') || '—' }}</p></div>
+              </div></td>
+              <td class="category-cell"><p class="break-words text-gray-700">{{ categoryName(product.category) || '—' }}</p><p class="mt-1 break-words text-xs text-gray-500">{{ product.brand?.name || '—' }}</p></td>
+              <td class="price-cell whitespace-nowrap font-semibold text-gray-900">{{ price(product.price) }}</td>
+              <td class="publication-cell"><p class="text-xs font-semibold" :class="product.is_published ? 'text-green-700' : 'text-gray-600'">{{ product.is_published ? $t('common.published') : $t('productEditor.draft') }}</p><p class="mt-1 text-xs text-gray-500">{{ modeLabel(product.selling_mode) }}</p></td>
+              <td class="stock-cell text-xs text-gray-700">{{ stockLabel(product.available_quantity) }}</td>
+              <td class="options-cell text-xs text-gray-700"><span class="lg:hidden">{{ $t('productList.optionCount', { count: product.option_count }) }}</span><span class="hidden lg:inline">{{ product.option_count }}</span></td>
+              <td class="actions-cell"><div v-if="canEdit" class="flex flex-wrap items-center gap-4 text-xs font-semibold"><NuxtLinkLocale :to="editorLink(product.id)" class="py-1 text-blue-700 hover:underline">{{ $t('productList.edit') }}</NuxtLinkLocale><NuxtLinkLocale v-if="product.is_serialized" :to="`/dashboard/commerce?tab=serialized&product=${product.id}`" class="py-1 text-gray-600 hover:underline">{{ $t('common.items') }}</NuxtLinkLocale></div><span v-else class="hidden text-gray-400 lg:inline">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <nav :aria-label="$t('productList.pagination')" class="flex items-center justify-between gap-3 border-t px-4 py-3">
+          <button type="button" :disabled="result.page <= 1" class="rounded-lg border px-3 py-2 text-sm text-gray-700 disabled:opacity-50" @click="update({ page: result.page - 1 })">{{ $t('common.previous') }}</button><p class="text-xs text-gray-500">{{ $t('productList.page', { page: result.page, pages: pages }) }}</p><button type="button" :disabled="result.page >= pages" class="rounded-lg border px-3 py-2 text-sm text-gray-700 disabled:opacity-50" @click="update({ page: result.page + 1 })">{{ $t('common.next') }}</button>
+        </nav>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const supabase = useSupabaseClient()
-const route = useUiRoute()
-const publicationFilter = computed(() => {
-  const status = String(route.query.status || '')
-  return ['published', 'drafts'].includes(status) ? status : 'all'
-})
-const productListTitle = computed(() => ({ all: 'Products', published: 'Published products', drafts: 'Draft products' })[publicationFilter.value])
-let productRequestId = 0
-const {
-  getSnapshot,
-  isFresh,
-  setSnapshot
-} = useDashboardCache()
-const {
-  hasPermission
-} = useAdminAccess()
-const PRODUCT_STATS_CACHE_KEY = 'dashboard:products:stats'
-
-const products = ref([])
-const loading = ref(true)
-const errorMessage = ref('')
-const currentPage = ref(1)
-const pageSize = 9
-const totalProducts = ref(0)
-const productStats = reactive({
-  total: 0,
-  active: 0,
-  inactive: 0
-})
-const searchQuery = ref('')
-let searchTimeoutId = null
-
-const trimmedSearchQuery = computed(() => searchQuery.value.trim())
-const hasActiveSearch = computed(() => Boolean(trimmedSearchQuery.value))
-const canAddProduct = computed(() => hasPermission('products.add'))
-const canEditProduct = computed(() => hasPermission('products.edit'))
-
-const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(totalProducts.value / pageSize))
-})
-
-const pageStart = computed(() => {
-  if (!totalProducts.value) {
-    return 0
-  }
-
-  return (currentPage.value - 1) * pageSize + 1
-})
-
-const pageEnd = computed(() => {
-  return Math.min(currentPage.value * pageSize, totalProducts.value)
-})
-
-const buildProductsListCacheKey = (page = currentPage.value) => {
-  return `dashboard:products:list:${publicationFilter.value}:${page}:${trimmedSearchQuery.value.toLowerCase()}`
-}
-
-const applyProductStatsSnapshot = (snapshot) => {
-  productStats.active = snapshot?.active || 0
-  productStats.inactive = snapshot?.inactive || 0
-  productStats.total = snapshot?.total || 0
-}
-
-const applyProductsListSnapshot = (snapshot) => {
-  currentPage.value = snapshot?.page || 1
-  totalProducts.value = snapshot?.totalProducts || 0
-  products.value = snapshot?.items || []
-}
-
-const getProductStats = async ({ force = false } = {}) => {
-  const cachedSnapshot = getSnapshot(PRODUCT_STATS_CACHE_KEY)
-
-  if (cachedSnapshot) {
-    applyProductStatsSnapshot(cachedSnapshot)
-  }
-
-  if (!force && cachedSnapshot && isFresh(PRODUCT_STATS_CACHE_KEY)) {
-    return
-  }
-
-  const [activeProductsResult, inactiveProductsResult] = await Promise.all([
-    supabase
-      .from('products')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_published', true),
-    supabase
-      .from('products')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_published', false)
-  ])
-
-  if (activeProductsResult.error) {
-    throw activeProductsResult.error
-  }
-
-  if (inactiveProductsResult.error) {
-    throw inactiveProductsResult.error
-  }
-
-  const snapshot = {
-    active: activeProductsResult.count || 0,
-    inactive: inactiveProductsResult.count || 0,
-    total: (activeProductsResult.count || 0) + (inactiveProductsResult.count || 0)
-  }
-
-  applyProductStatsSnapshot(snapshot)
-  setSnapshot(PRODUCT_STATS_CACHE_KEY, snapshot)
-}
-
-const getProductsList = async (page = currentPage.value, { force = false } = {}) => {
-  const requestId = ++productRequestId
-  currentPage.value = page
-  const cacheKey = buildProductsListCacheKey(page)
-  const cachedSnapshot = getSnapshot(cacheKey)
-
-  if (cachedSnapshot) {
-    applyProductsListSnapshot(cachedSnapshot)
-  }
-
-  if (!force && cachedSnapshot && isFresh(cacheKey)) {
-    loading.value = false
-    return
-  }
-
-  loading.value = true
-  errorMessage.value = ''
-
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
-
-  let query = supabase
-    .from('storefront_products')
-    .select(`
-      *,
-      category:categories (
-        id,
-        name,
-        slug
-      )
-    `, { count: 'exact' })
-
-  if (publicationFilter.value !== 'all') {
-    query = query.eq('is_published', publicationFilter.value === 'published')
-  }
-
-  if (trimmedSearchQuery.value) {
-    query = query.ilike('title', `%${trimmedSearchQuery.value}%`)
-  }
-
-  const { data, error, count } = await query
-    .order('created_at', { ascending: false })
-    .range(from, to)
-
-  if (requestId !== productRequestId) return
-
-  if (error) {
-    loading.value = false
-    errorMessage.value = error.message
-    return
-  }
-
-  totalProducts.value = count || 0
-
-  if (currentPage.value > totalPages.value) {
-    loading.value = false
-    await getProductsList(totalPages.value, { force })
-    return
-  }
-
-  const snapshot = {
-    page,
-    totalProducts: count || 0,
-    items: data || []
-  }
-
-  applyProductsListSnapshot(snapshot)
-  setSnapshot(cacheKey, snapshot)
-  loading.value = false
-}
-
-const goToPreviousPage = async () => {
-  if (currentPage.value === 1) {
-    return
-  }
-
-  await getProductsList(currentPage.value - 1)
-}
-
-const goToNextPage = async () => {
-  if (currentPage.value === totalPages.value) {
-    return
-  }
-
-  await getProductsList(currentPage.value + 1)
-}
-
-const clearSearch = () => {
-  searchQuery.value = ''
-}
-
-watch(publicationFilter, () => {
-  clearTimeout(searchTimeoutId)
-  getProductsList(1)
-})
-
-watch(searchQuery, () => {
-  if (searchTimeoutId) {
-    clearTimeout(searchTimeoutId)
-  }
-
-  searchTimeoutId = setTimeout(() => {
-    getProductsList(1)
-  }, 300)
-})
-
-onBeforeUnmount(() => {
-  productRequestId += 1
-  if (searchTimeoutId) {
-    clearTimeout(searchTimeoutId)
-  }
-})
-
-onMounted(async () => {
-  try {
-    await Promise.all([
-      getProductStats(),
-      getProductsList()
-    ])
-  } catch (error) {
-    errorMessage.value = error.message || 'Could not load product stats.'
-    loading.value = false
-  }
-})
+import ListFilter from '~/components/dashboard/products/ListFilter.vue'
+import { useProductListing } from '~/composables/useProductListing'
+import { getLocalizedCategoryName } from '~/utils/categoryLocale'
+definePageMeta({ layout: 'dashboard', key: route => route.path })
+const { t, locale } = useI18n()
+const { intlLocale } = useUiLocale()
+const { state, search, result, loading, error, canAdd, canEdit, update, load, reset, editorLink, hasFilters } = useProductListing()
+const pages = computed(() => Math.max(1, Math.ceil((result.value?.total || 0) / 25)))
+const categoryName = category => getLocalizedCategoryName(category, locale.value)
+const price = amount => amount == null ? '—' : t('common.valueEgp', { value0: new Intl.NumberFormat(intlLocale.value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(amount)) })
+const modeLabel = mode => mode === 'preorder' ? t('productList.preorder') : mode === 'coming_soon' ? t('productList.comingSoon') : t('productList.normal')
+const stockLabel = quantity => quantity > 0 ? t('productList.available', { count: quantity }) : t('productList.outOfStock')
+const emptyTitle = computed(() => result.value?.catalog_total === 0 ? t('common.noProductsYet') : state.value.q ? t('productList.noSearch') : t('productList.noFilters'))
+const emptyHelp = computed(() => result.value?.catalog_total === 0 ? t('productList.firstProduct') : state.value.q ? t('productList.trySearch') : t('productList.tryFilters'))
 </script>
+
+<style scoped>
+.product-list-table { table-layout: fixed; }
+.product-list-table th { padding: .75rem; text-align: start; font-weight: 600; }
+.product-list-table td { padding: .75rem; vertical-align: top; }
+.product-list-table tbody tr { border-bottom: 1px solid var(--border, #f3f4f6); }
+.product-list-table th:first-child { width: 30%; }
+.product-list-table th:nth-child(2) { width: 16%; }
+.product-list-table th:nth-child(6) { width: 7%; }
+@media (max-width: 1023px) {
+  .product-list-table, .product-list-table tbody { display: block; }
+  .product-list-table thead, .product-list-table .category-cell { display: none; }
+  .product-list-table tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem 1rem; padding: 1rem; }
+  .product-list-table td { display: block; padding: 0; }
+  .product-list-table .product-cell { grid-column: 1 / -1; margin-bottom: .25rem; }
+  .product-list-table .publication-cell, .product-list-table .options-cell { text-align: end; }
+  .product-list-table .actions-cell { grid-column: 1 / -1; margin-top: .25rem; }
+  .product-list-table .actions-cell > div { justify-content: flex-end; }
+}
+</style>
