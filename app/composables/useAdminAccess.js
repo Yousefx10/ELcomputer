@@ -71,6 +71,7 @@ export const useAdminAccess = () => {
   }
 
   const clearAdminAccess = () => {
+    useState('product-editor-drafts', () => ({})).value = {}
     adminUser.value = null
     adminAccessLoaded.value = false
     adminAccessPending.value = false

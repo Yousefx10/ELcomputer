@@ -145,7 +145,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'uploaded'])
+const emit = defineEmits(['update:modelValue', 'uploaded', 'busy'])
 
 const { uploadImage, fetchGalleryImages } = useAdminUploads()
 const { mediaErrorMessage } = useMediaErrors()
@@ -202,7 +202,7 @@ watch(librarySearch, () => {
   clearTimeout(librarySearchTimeout)
   librarySearchTimeout = setTimeout(() => { libraryPage.value = 1; loadLibrary() }, 250)
 })
-onBeforeUnmount(() => { clearTimeout(librarySearchTimeout); libraryRequest++ })
+onBeforeUnmount(() => { clearTimeout(librarySearchTimeout); libraryRequest++; emit('busy', false) })
 
 const fileInputRef = ref(null)
 const uploading = ref(false)
@@ -233,6 +233,7 @@ const handleFileChange = async (event) => {
   if (props.disabled || uploading.value) { input.value = ''; return }
 
   uploading.value = true
+  emit('busy', true)
   errorMessage.value = ''
 
   try {
@@ -243,6 +244,7 @@ const handleFileChange = async (event) => {
     errorMessage.value = mediaErrorMessage(error, 'upload')
   } finally {
     uploading.value = false
+    emit('busy', false)
 
     if (input) {
       input.value = ''

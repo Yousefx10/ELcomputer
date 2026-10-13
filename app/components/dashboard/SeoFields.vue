@@ -10,7 +10,7 @@
       <textarea :value="modelValue.seo_description || ''" rows="3" :disabled="disabled" :placeholder="preview.description" class="mt-2 w-full rounded-lg border p-3" @input="update('seo_description', $event.target.value)" />
     </label>
     <p v-if="(modelValue.seo_description || '').length > 160" class="text-xs text-amber-700">{{ $t('seo.descriptionRecommendation') }}</p>
-    <DashboardMediaUploadField :model-value="modelValue.seo_image_url || ''" :label="$t('seo.socialImage')" :section="section" :disabled="disabled" :preview-alt="$t('seo.socialImage')" :help-text="$t('seo.imageFallback')" @update:model-value="update('seo_image_url', $event)" />
+    <DashboardMediaUploadField :model-value="modelValue.seo_image_url || ''" :label="$t('seo.socialImage')" :section="section" :disabled="disabled" :preview-alt="$t('seo.socialImage')" :help-text="$t('seo.imageFallback')" @update:model-value="update('seo_image_url', $event)" @busy="emit('busy', $event)" />
     <div class="break-words rounded-lg bg-gray-50 p-4" :aria-label="$t('seo.preview')">
       <p class="text-xs text-gray-500">{{ $t('seo.preview') }}</p>
       <p class="mt-2 font-medium text-blue-700">{{ preview.title }}</p>
@@ -30,7 +30,7 @@ const props = defineProps({
   catalog: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false }
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'busy'])
 const { data: content } = useSiteContent()
 const { locale } = useI18n()
 const config = useRuntimeConfig()

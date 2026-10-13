@@ -21,3 +21,7 @@
 - Follow [Media safety](docs/media-safety.md) for scoped public-image access,
   reference guards, deletion recovery and content validation. Extend reference
   coverage when adding media-bearing tables; keep private Storage separate.
+- Follow [Product editor safety](docs/product-editor-safety.md) for draft defaults,
+  dirty-state navigation, independent section saves and in-memory draft retention.
+  Keep creation Draft-first; never weaken required fields or claim one transaction
+  across product details, gallery and specifications.

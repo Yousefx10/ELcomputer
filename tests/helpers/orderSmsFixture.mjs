@@ -12,7 +12,7 @@ export const createOrderSmsFixture = async (options = {}) => {
   await db.query("insert into public.admin_users(id,email,role) values($1,'order-owner@example.invalid','owner')", [owner])
   await db.exec("insert into public.site_settings(key,payment_cash_enabled,payment_card_enabled,payment_bank_transfer_enabled,payment_cash_fee,payment_bank_transfer_fee,erp_mode) values('default',true,true,true,5,5,'built_in') on conflict(key) do update set payment_cash_enabled=true,payment_card_enabled=true,payment_bank_transfer_enabled=true,payment_cash_fee=5,payment_bank_transfer_fee=5,erp_mode='built_in'")
   await db.query("select set_config('app.serialized_inventory_write','on',false)")
-  await db.query("insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode,preorder_payment_mode) values($1,'Order fixture',($1::uuid)::text,125.50,100,false,'normal','full'),($2,'Preorder fixture',($2::uuid)::text,125.50,0,false,'preorder','full')", [product, preorderProduct])
+  await db.query("insert into public.products(id,title,slug,price,stock_quantity,is_serialized,is_published,selling_mode,preorder_payment_mode) values($1,'Order fixture',($1::uuid)::text,125.50,100,false,true,'normal','full'),($2,'Preorder fixture',($2::uuid)::text,125.50,0,false,true,'preorder','full')", [product, preorderProduct])
   await db.query("select set_config('app.serialized_inventory_write','off',false)")
   const checkout = async ({ locale = 'en', method = 'cash', cart = randomUUID(), preorder = false } = {}) => {
     const order = { order_number: 'ORD-' + cart, first_name: 'Buyer', last_name: 'Fixture', phone: '01012345678', street_address: 'Street', city: 'Cairo', governorate: 'Cairo', payment_method: method, locale }

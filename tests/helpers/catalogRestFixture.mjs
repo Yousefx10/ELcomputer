@@ -63,6 +63,6 @@ export const createCatalogRestFixture = async () => {
       const text = await response.text()
       return { status: response.status, body: text ? JSON.parse(text) : null }
     }
-    return { ...fixture, db, request, close, url }
+    return { ...fixture, db, request, token, close, url }
   } catch (error) { await close(); throw error }
 }

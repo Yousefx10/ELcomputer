@@ -168,7 +168,7 @@ test('real PostgreSQL ledger preserves authoritative checkout, idempotency, RLS 
     await db.query("insert into auth.users(id,email) values($1,'buyer@example.invalid'),($2,'other@example.invalid')", [customer, other])
     await db.exec("insert into public.site_settings(key,payment_card_enabled,payment_card_fee) values('default',true,12.50) on conflict(key) do update set payment_card_enabled=true,payment_card_fee=12.50")
     await db.exec("select set_config('app.serialized_inventory_write','on',false)")
-    await db.query("insert into public.products(id,title,slug,price,stock_quantity,is_serialized) values($1,'Fixture',($1::uuid)::text,100,5,false)", [product])
+    await db.query("insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized) values(true,$1,'Fixture',($1::uuid)::text,100,5,false)", [product])
     await db.exec("select set_config('app.serialized_inventory_write','off',false)")
     const args = [customer, JSON.stringify({ order_number: 'PAY-TEST', first_name: 'Buyer', phone: '01000000000', street_address: 'Street', city: 'Cairo', governorate: 'Cairo', payment_method: 'card', total_amount: 1 }), JSON.stringify([{ product_id: product, quantity: 1, price: 1 }]), cart]
     const checkout = async () => (await db.query('select public.commerce_create_customer_order($1,$2::jsonb,$3::jsonb,false,$4) as result', args)).rows[0].result

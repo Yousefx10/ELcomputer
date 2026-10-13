@@ -18,13 +18,13 @@ export const pngImage = () => {
 // Actual media routes, authorization, filesystem and SQL. Hosted Auth and
 // Supabase transport are fixtures; the root and database are newly owned.
 export async function createMediaFixture(options={}) {
-  const f=await createProductSaveFixture(options), root=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-media-')))
+  const f=options.fixture || await createProductSaveFixture(options), root=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-media-')))
   const key='__mediaFixture'+randomUUID().replaceAll('-','')
   f.client.auth={getUser:async token=>({data:{user:f.actors[token]?{id:f.actors[token]}:null},error:null})}
   globalThis[key]={client:f.client,root}
   globalThis.defineEventHandler=h=>h
   let server
-  const close=async()=>{if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}delete globalThis[key];await f.db.close();await rm(root,{recursive:true,force:true})}
+  const close=async()=>{if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}delete globalThis[key];if(!options.fixture)await f.db.close();await rm(root,{recursive:true,force:true})}
   const router=createRouter()
   try {
     for(const[method,path,file]of[

@@ -97,7 +97,7 @@ test('real migration and authoritative normal/preorder transactions preserve imm
     const secondProduct = randomUUID(), thirdProduct = randomUUID()
     await t.test('multiple normal items capture different month/year/none terms independently', async () => {
       await sql("select set_config('app.serialized_inventory_write','on',false)")
-      await sql("insert into public.products(id,title,slug,price,stock_quantity,is_serialized,warranty_status,warranty_duration_value,warranty_duration_unit) values($1,'Months',($1::uuid)::text,50,10,false,'included',18,'months'),($2,'None',($2::uuid)::text,50,10,false,'none',null,null)", [secondProduct, thirdProduct])
+      await sql("insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized,warranty_status,warranty_duration_value,warranty_duration_unit) values(true,$1,'Months',($1::uuid)::text,50,10,false,'included',18,'months'),(true,$2,'None',($2::uuid)::text,50,10,false,'none',null,null)", [secondProduct, thirdProduct])
       await sql("select set_config('app.serialized_inventory_write','off',false)")
       const mixed = (await checkout([f.product, secondProduct, thirdProduct].map(product_id => ({ product_id, quantity: 1 })))).order
       const list = await items(mixed)
@@ -120,7 +120,7 @@ test('real migration and authoritative normal/preorder transactions preserve imm
       const product = randomUUID(), variant = randomUUID(), warehouse = randomUUID(), unit = randomUUID()
       await sql("insert into public.commerce_warehouses(id,name) values($1,'Serialized warranty fixture')", [warehouse])
       await sql("select set_config('app.serialized_inventory_write','on',false)")
-      await sql("insert into public.products(id,title,slug,price,stock_quantity,is_serialized,primary_warehouse_id,warranty_status,warranty_duration_value,warranty_duration_unit) values($1,'Serialized warranty',($1::uuid)::text,100,1,true,$2,'included',18,'months')", [product, warehouse])
+      await sql("insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized,primary_warehouse_id,warranty_status,warranty_duration_value,warranty_duration_unit) values(true,$1,'Serialized warranty',($1::uuid)::text,100,1,true,$2,'included',18,'months')", [product, warehouse])
       await sql("insert into public.product_variants(id,product_id,name,code,sku,price,stock_quantity) values($1,$2,'Blue','BLUE','WARRANTY-BLUE',999,1)", [variant, product])
       await sql("insert into public.commerce_serialized_units(id,unit_code,product_id,variant_id,warehouse_id) values($1,'WARRANTY-UNIT',$2,$3,$4)", [unit, product, variant, warehouse])
       await sql('insert into public.commerce_warehouse_inventory(warehouse_id,product_id,quantity) values($1,$2,1)', [warehouse, product])

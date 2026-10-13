@@ -48,7 +48,7 @@ test('native PostgreSQL concurrent claims, webhook replay, transaction binding a
     await db.query("update public.shipping_provider_settings set is_enabled=true,auto_create_labels=true where id='pdc'")
     await db.query("select set_config('app.serialized_inventory_write','on',false)")
     await db.query("insert into public.commerce_warehouses(id,name) values($1,'Concurrency fixture')", [warehouse])
-    await db.query("insert into public.products(id,title,slug,price,stock_quantity,is_serialized,primary_warehouse_id) values($1,'Serialized fixture',($1::uuid)::text,100,5,true,$2)", [product, warehouse])
+    await db.query("insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized,primary_warehouse_id) values(true,$1,'Serialized fixture',($1::uuid)::text,100,5,true,$2)", [product, warehouse])
     await db.query("insert into public.product_variants(id,product_id,name,code,price,stock_quantity) values($1,$2,'Fixture','FIXTURE',1,5)", [variant, product])
     await db.query("insert into public.commerce_warehouse_inventory(warehouse_id,product_id,quantity) values($1,$2,5)", [warehouse, product])
     for (let i = 0; i < 5; i++) await db.query("insert into public.commerce_serialized_units(unit_code,product_id,variant_id,warehouse_id) values($1,$2,$3,$4)", ['REVIEW-' + i, product, variant, warehouse])

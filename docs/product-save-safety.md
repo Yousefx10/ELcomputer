@@ -111,7 +111,8 @@ Validation and authorization errors retain that UUID until a completed receipt i
 confirmed. An expired session after a lost response cannot start a second create.
 After reload the form checks for a completed receipt. A conflict keeps entered
 values visible until the administrator explicitly reloads. Price controls accept
-cents. Existing visibility defaults and all other management layouts stay intact.
+cents. Task 3 supersedes the creation visibility default with Draft; existing published
+products retain their state. See [Product editor safety](product-editor-safety.md).
 
 The transaction covers the core product and variant definitions. Existing media
 uploads, gallery and specification operations have their own save flows; they

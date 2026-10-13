@@ -41,7 +41,7 @@ for (const mode of ['built_in','daftra']) test(`packing requires an operator ses
   )
   await db.query(`select set_config('app.serialized_inventory_write', 'on', true)`)
   await db.query(
-    `insert into public.products(id,title,slug,sku,is_serialized) values($1,'Mouse',$2,'MOUSE-1',false)`,
+    `insert into public.products(is_published,id,title,slug,sku,is_serialized) values(true,$1,'Mouse',$2,'MOUSE-1',false)`,
     [productId, productId]
   )
   await db.query(`select set_config('app.serialized_inventory_write', 'off', true)`)

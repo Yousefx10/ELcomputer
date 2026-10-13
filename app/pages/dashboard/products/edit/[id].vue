@@ -9,39 +9,41 @@
       description-class="mb-6 text-center text-sm text-gray-500"
     />
 
-    <div v-if="pending" class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
+    <div v-if="pending && !product" class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
       {{ $t('common.loadingProduct') }}
     </div>
 
     <div
-      v-else-if="fetchError"
+      v-else-if="fetchError && !product"
       class="mx-auto max-w-6xl rounded-2xl bg-red-50 p-6 text-center text-red-600 shadow"
     >
       {{ $t('common.errorValue', { value0: (fetchError.message) }) }}
     </div>
 
     <div v-else-if="product" class="mx-auto max-w-6xl space-y-6">
+      <p v-if="refreshRequired" role="alert" class="text-sm text-red-600">{{ $t('productEditor.refreshFailed') }}</p>
       <form
         @submit.prevent="updateProduct"
         class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
       >
-        <fieldset :disabled="saving || saveUnconfirmed || !hasPermission('products.edit')" class="contents">
+        <fieldset :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')" class="contents">
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
             <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
             <p class="text-sm text-gray-500">
-              {{ $t('dashboard.products.controlWhetherThisProductIsVisibleOnThePublicStore') }}
+              {{ $t('productEditor.visibilityHelp') }}
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <span class="text-sm font-semibold" :class="isPublished ? 'text-green-600' : 'text-gray-500'">
-              {{ isPublished ? $t('common.on') : $t('common.off') }}
+              {{ isPublished ? $t('productEditor.published') : $t('productEditor.draft') }}
             </span>
 
             <button
               type="button"
               :aria-pressed="isPublished"
+              :aria-label="$t('common.storeVisibility')"
               @click="isPublished = !isPublished"
               class="relative inline-flex h-7 w-14 items-center rounded-full transition"
               :class="isPublished ? 'bg-green-600' : 'bg-gray-300'"
@@ -57,26 +59,33 @@
         <div class="md:col-span-2">
           <h3 class="text-2xl font-bold">{{ $t('common.productDetails') }}</h3>
           <p class="text-sm text-gray-500">
-            {{ $t('dashboard.products.updateTheProductDataThatPowersThePublicProductPage') }}
+            {{ $t('productEditor.separate') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
+          <label for="product-title" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
           <input
             v-model="title"
+            id="product-title"
+            :aria-invalid="Boolean(fieldErrors.title || saveField === 'title')"
+            :aria-describedby="fieldErrors.title || saveField === 'title' ? 'product-title-error' : undefined"
             type="text"
             :placeholder="$t('common.productTitle')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
+          <p v-if="fieldErrors.title || saveField === 'title'" id="product-title-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.title ? $t('productEditor.field.title') : saveError }}</p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.slug') }}</label>
+          <label for="product-slug" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.slug') }}</label>
 
           <div class="flex gap-2">
             <input
               v-model="slug"
+            id="product-slug"
+            :aria-invalid="Boolean(fieldErrors.slug || saveField === 'slug')"
+            :aria-describedby="fieldErrors.slug || saveField === 'slug' ? 'product-slug-error' : undefined"
               type="text"
               placeholder="product-slug"
               class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
@@ -90,6 +99,7 @@
               {{ $t('common.generate') }}
             </button>
           </div>
+          <p v-if="fieldErrors.slug || saveField === 'slug'" id="product-slug-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.slug ? $t('productEditor.field.slug') : saveError }}</p>
         </div>
 
         <div>
@@ -108,6 +118,10 @@
               {{ category.name }}
             </option>
           </select>
+          <p v-if="!formLoading && !lookupFailures.categories && !categories.length" class="mt-2 text-xs text-gray-500">
+            {{ $t('productEditor.noCategories') }}
+            <NuxtLinkLocale v-if="hasPermission('categories.add') && true" to="/dashboard/products/categories" @click.prevent="openPrerequisite('/dashboard/products/categories')" class="ms-1 text-blue-700 underline">{{ $t('productEditor.createCategory') }}</NuxtLinkLocale>
+          </p>
         </div>
 
         <div>
@@ -126,6 +140,10 @@
               {{ brand.name }}
             </option>
           </select>
+          <p v-if="!formLoading && !lookupFailures.brands && !brands.length" class="mt-2 text-xs text-gray-500">
+            {{ $t('productEditor.noBrands') }}
+            <NuxtLinkLocale v-if="hasPermission('brands.add') && true" to="/dashboard/products/brands" @click.prevent="openPrerequisite('/dashboard/products/brands')" class="ms-1 text-blue-700 underline">{{ $t('productEditor.createBrand') }}</NuxtLinkLocale>
+          </p>
         </div>
 
         <div>
@@ -145,17 +163,24 @@
               {{ supplier.name }}
             </option>
           </select>
+          <p v-if="!formLoading && !lookupFailures.suppliers && !suppliers.length" class="mt-2 text-xs text-gray-500">
+            {{ $t('productEditor.noSuppliers') }}
+            <NuxtLinkLocale v-if="(hasPermission('products.add') || hasPermission('products.edit')) && !externalErp" to="/dashboard/crm" @click.prevent="openPrerequisite('/dashboard/crm')" class="ms-1 text-blue-700 underline">{{ $t('productEditor.manageSuppliers') }}</NuxtLinkLocale>
+          </p>
           <p class="mt-2 text-xs text-gray-500">
             {{ $t('common.forReferenceOnlyProcurementCanReceiveThisProductFromAnyActiveSupplier') }}
           </p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">
+          <label for="product-primary_warehouse_id" class="mb-2 block text-sm font-semibold text-gray-700">
             {{ $t('dashboard.products.primaryWarehousevalue', { value0: (isSerialized ? ' *' : '') }) }}
           </label>
           <select
             v-model="primaryWarehouseId"
+            id="product-primary_warehouse_id"
+            :aria-invalid="Boolean(fieldErrors.primary_warehouse_id || saveField === 'primary_warehouse_id')"
+            :aria-describedby="fieldErrors.primary_warehouse_id || saveField === 'primary_warehouse_id' ? 'product-primary_warehouse_id-error' : undefined"
             :disabled="externalErp || isSerialized && !canAssignPrimaryWarehouse"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
@@ -171,6 +196,11 @@
               {{ warehouse.name }}
             </option>
           </select>
+          <p v-if="!formLoading && !lookupFailures.warehouses && !warehouses.length" class="mt-2 text-xs text-amber-700">
+            {{ $t(externalErp ? 'productEditor.daftraWarehouse' : (hasPermission('products.add') || hasPermission('products.edit')) ? 'productEditor.noWarehouse' : 'productEditor.warehouseAccess') }}
+            <NuxtLinkLocale v-if="!externalErp && (hasPermission('products.add') || hasPermission('products.edit'))" to="/dashboard/commerce?tab=warehouses" @click.prevent="openPrerequisite('/dashboard/commerce?tab=warehouses')" class="ms-1 text-blue-700 underline">{{ $t('productEditor.createWarehouse') }}</NuxtLinkLocale>
+          </p>
+          <p v-if="fieldErrors.primary_warehouse_id || saveField === 'primary_warehouse_id'" id="product-primary_warehouse_id-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.primary_warehouse_id ? $t('productEditor.field.warehouse') : saveError }}</p>
           <p v-if="isSerialized && canAssignPrimaryWarehouse" class="mt-2 text-xs text-blue-700">
             {{ $t('dashboard.products.editableUntilTheFirstItemIsReceived') }}
           </p>
@@ -180,27 +210,35 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.price') }}</label>
+          <label for="product-price" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.price') }}</label>
           <input
             v-model="price"
+            id="product-price"
+            :aria-invalid="Boolean(fieldErrors.price || saveField === 'price')"
+            :aria-describedby="fieldErrors.price || saveField === 'price' ? 'product-price-error' : undefined"
             type="number"
             step="0.01"
             min="0"
             :placeholder="$t('common.price')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
+          <p v-if="fieldErrors.price || saveField === 'price'" id="product-price-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.price ? $t('productEditor.field.price') : saveError }}</p>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.oldPrice') }}</label>
+          <label for="product-old_price" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.oldPrice') }}</label>
           <input
             v-model="oldPrice"
+            id="product-old_price"
+            :aria-invalid="Boolean(fieldErrors.old_price || saveField === 'old_price')"
+            :aria-describedby="fieldErrors.old_price || saveField === 'old_price' ? 'product-old_price-error' : undefined"
             type="number"
             step="0.01"
             min="0"
             :placeholder="$t('common.oldPrice')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
+          <p v-if="fieldErrors.old_price || saveField === 'old_price'" id="product-old_price-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.old_price ? $t('productEditor.field.old_price') : saveError }}</p>
         </div>
 
         <div v-if="!isSerialized">
@@ -236,13 +274,17 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">SKU</label>
+          <label for="product-sku" class="mb-2 block text-sm font-semibold text-gray-700">SKU</label>
           <input
             v-model="sku"
+            id="product-sku"
+            :aria-invalid="Boolean(fieldErrors.sku || saveField === 'sku')"
+            :aria-describedby="fieldErrors.sku || saveField === 'sku' ? 'product-sku-error' : undefined"
             type="text"
             :placeholder="$t('common.optionalSku')"
             class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
           />
+          <p v-if="fieldErrors.sku || saveField === 'sku'" id="product-sku-error" role="alert" class="mt-2 text-xs text-red-600">{{ fieldErrors.sku ? $t('productEditor.field.sku') : saveError }}</p>
         </div>
 
         <div v-if="!isSerialized">
@@ -289,18 +331,19 @@
 
         <DashboardProductsVariantsEditor
             v-model="productVariants"
-            :disabled="saving || saveUnconfirmed"
+            :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')"
             existing-mode
           />
         </div>
 
-        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="saving || saveUnconfirmed || !hasPermission('products.edit')" />
+        <DashboardProductsWarrantyFields v-model="warrantyConfig" :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')" />
         <NuxtLinkLocale v-if="hasPermission('settings.view')" :to="`/dashboard/settings?tab=after-sales&scope=product&id=${route.params.id}`" class="mt-3 inline-block text-sm font-semibold text-blue-700 underline">{{ $t('afterSales.title') }}</NuxtLinkLocale>
 
         <div class="md:col-span-2">
           <DashboardMediaUploadField
             v-model="imageUrl"
-            :disabled="saving || saveUnconfirmed"
+            @busy="mainUploads.image = $event"
+            :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')"
             :label="$t('common.mainImage')"
             section="products"
             :preview-alt="title || 'Product image'"
@@ -328,33 +371,39 @@
           />
         </div>
 
+        <p v-if="fieldErrors.variants" role="alert" class="md:col-span-2 text-sm text-red-600">{{ $t('productEditor.field.variants') }}</p>
         </fieldset>
+        <p v-if="Object.values(lookupFailures).some(Boolean)" role="alert" class="md:col-span-2 text-sm text-red-600">{{ $t('productEditor.lookupFailed') }}</p>
         <p v-if="actionError || saveError" role="alert" class="md:col-span-2 text-sm text-red-600">
           {{ actionError ? $uiMessage(actionError) : saveError }}
         </p>
 
+        <p class="md:col-span-2 text-sm text-gray-500" role="status" data-product-save-state>
+          {{ $t('productEditor.details') }}: {{ saving ? $t('common.saving') : actionError || saveError ? $t('productEditor.failed') : mainDirty ? $t('productEditor.unsaved') : mainSaved ? $t('productEditor.saved') : $t('productEditor.ready') }}.
+          {{ $t('productEditor.separate') }}
+        </p>
+        <p v-if="restoredDraft" class="md:col-span-2 text-xs text-gray-500">{{ $t('productEditor.retained') }}</p>
         <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
-            :disabled="saving || saveConflict || formLoading || !hasPermission('products.edit')"
+            :disabled="mainUploadsActive || pending || saving || saveConflict || refreshRequired || formLoading || !hasPermission('products.edit')"
             class="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
             {{ saving ? $t('common.saving') : saveUnconfirmed ? $t('productSave.retry') : $t('common.saveChanges') }}
           </button>
-          <button v-if="saveUnconfirmed || saveConflict" type="button" :disabled="saving"
+          <button v-if="saveUnconfirmed || saveConflict" type="button" :disabled="saving || mainUploadsActive"
             @click="checkProductSave" class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium">
             {{ $t('productSave.checkSave') }}
           </button>
-          <button v-if="saveConflict && !saveUnconfirmed" type="button" :disabled="saving"
+          <button v-if="(saveConflict || refreshRequired) && !saveUnconfirmed" type="button" :disabled="saving || mainUploadsActive"
             @click="reloadProduct" class="rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium">
             {{ $t('productSave.reload') }}
           </button>
 
-
           <button
             v-if="!isSerialized"
             type="button"
-            :disabled="saving || deleting || saveUnconfirmed"
+            :disabled="editorBusy || deleting || saveUnconfirmed || !hasPermission('products.edit')"
             @click="deleteProduct"
             class="rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
           >
@@ -375,7 +424,7 @@
             {{ $t('dashboard.products.productsWithItemHistoryCannotBeDeletedHideThemFromTheStoreInstead') }}
           </p>
         </div>
-        <DashboardSeoFields :disabled="saving || saveUnconfirmed" v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
+        <DashboardSeoFields @busy="mainUploads.seo = $event" :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')" v-model="seo" :fallback-title="title" :fallback-description="description || longDescription" :fallback-image="imageUrl" section="products" class="md:col-span-2" />
       </form>
 
       <section class="rounded-2xl bg-white p-6 shadow">
@@ -386,6 +435,10 @@
           </p>
         </div>
 
+        <p role="status" class="mb-4 text-sm text-gray-500" data-gallery-save-state>{{ $t('productEditor.gallery') }}: {{ galleryLoading ? $t('common.saving') : galleryStatus === 'refresh_failed' ? $t('productEditor.saved') : gallerySaveError || galleryError ? $t('productEditor.failed') : galleryDirty ? $t('productEditor.unsaved') : galleryStatus === 'saved' ? $t('productEditor.saved') : $t('productEditor.ready') }}. {{ $t('productEditor.separate') }}</p>
+        <p v-if="gallerySaveError" role="alert" class="mb-4 text-sm text-red-600">{{ gallerySaveError }}</p>
+        <button v-if="galleryStatus === 'unknown' || galleryStatus === 'conflict' || galleryStatus === 'refresh_failed'" type="button" @click="reloadGallery" class="mb-4 rounded-lg border border-gray-300 px-4 py-2 text-sm">{{ $t('productSave.reload') }}</button>
+        <fieldset :disabled="galleryLoading || galleryStatus === 'unknown' || !hasPermission('products.edit')" class="contents">
         <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
           <div class="min-w-0 space-y-3">
             <div>
@@ -414,8 +467,10 @@
 
             <DashboardMediaUploadField
               v-model="newImageUrl"
+              @busy="galleryUploads.new = $event"
               :label="$t('common.extraImage')"
               section="product_gallery"
+              :disabled="galleryLoading || galleryStatus === 'unknown' || !hasPermission('products.edit')"
               :preview-alt="newImageAlt || title || 'Extra image'"
               preview-height-class="h-32"
               :help-text="$t('dashboard.products.uploadAnAdditionalImageForTheProductGallery')"
@@ -476,8 +531,10 @@
 
               <DashboardMediaUploadField
                 v-model="image.image_url"
+                @busy="galleryUploads[image.id] = $event"
                 :label="$t('common.image')"
                 section="product_gallery"
+              :disabled="galleryLoading || galleryStatus === 'unknown' || !hasPermission('products.edit')"
                 :preview-alt="image.alt_text || title || 'Extra image'"
                 preview-height-class="h-32"
               />
@@ -517,9 +574,10 @@
         <p v-else class="text-sm text-gray-500">
           {{ $t('dashboard.products.noExtraImagesAddedYet') }}
         </p>
+        </fieldset>
       </section>
 
-      <DashboardProductsSpecificationEditor :product-id="id" :product-title="title" :category-id="categoryId" />
+      <DashboardProductsSpecificationEditor :product-id="id" :product-title="product.title" :category-id="product.category_id || ''" @state="specificationState = $event" />
     </div>
 
     <div v-else class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
@@ -537,10 +595,13 @@ const { t } = useI18n()
 
 const { uiNavigateTo } = useUiNavigation()
 
+import { matchOriginal, requireSavedRow, mergeSectionRows } from '~/utils/productSection'
+import { productEditorErrors } from '~/utils/productEditor'
 import { defaultSellingConfig, serializeSellingConfig } from '~/utils/preorder'
 import { defaultWarrantyConfig, readWarrantyConfig } from '~/utils/warranty'
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  key: route => route.path
 })
 
 const supabase = useSupabaseClient()
@@ -548,7 +609,6 @@ const { hasPermission } = useAdminAccess()
 const {
   getSnapshot,
   invalidate,
-  isFresh,
   setSnapshot
 } = useDashboardCache()
 const {
@@ -589,6 +649,9 @@ const categories = ref([])
 const brands = ref([])
 const suppliers = ref([])
 const warehouses = ref([])
+const mainUploads = reactive({ image: false, seo: false })
+const mainUploadsActive = computed(() => Object.values(mainUploads).some(Boolean))
+const lookupFailures = reactive({ categories: false, brands: false, suppliers: false, warehouses: false })
 const productImages = ref([])
 const productVariants = ref([])
 
@@ -600,7 +663,7 @@ const canAssignPrimaryWarehouse = computed(() => {
   )
 })
 const savedVariantOptions = computed(() => {
-  return productVariants.value.filter((variant) => {
+  return (editorSnapshot.value?.variants || []).filter((variant) => {
     return Boolean(String(variant?.id || '').trim())
   })
 })
@@ -609,11 +672,17 @@ const newImageUrl = ref('')
 const newImageAlt = ref('')
 const newImageVariantId = ref('')
 
-const { saving, error: saveError, conflict: saveConflict, unconfirmed: saveUnconfirmed,
+const { saving, error: saveError, errorField: saveField, conflict: saveConflict, unconfirmed: saveUnconfirmed,
   submit: submitProduct, recover: recoverProductSave, resetConflict: resetSaveConflict } = useProductSave(`/api/admin-products/${id}`, 'PATCH')
 const formLoading = ref(true)
 const deleting = ref(false)
-const galleryLoading = ref(false)
+const productDeleted = ref(false)
+const galleryUploads = reactive({})
+const galleryUploadsActive = computed(() => Object.values(galleryUploads).some(Boolean))
+const galleryReading = ref(false)
+const { running: galleryRunning, status: galleryStatus, error: gallerySaveError, run: runGallery, reset: resetGallery, markSaved: markGallerySaved } = useProductSection()
+const galleryLoading = computed(() => galleryRunning.value || galleryReading.value || galleryUploadsActive.value)
+const saveGallery = operation => galleryUploadsActive.value ? null : runGallery(operation)
 const actionError = ref('')
 const galleryError = ref('')
 
@@ -635,7 +704,24 @@ const { data: editorSnapshot, pending, error: fetchError, refresh: refreshProduc
   { server: false }
 )
 const product = computed(() => editorSnapshot.value?.product || null)
-const editorRevision = computed(() => editorSnapshot.value?.revision)
+const editorRevision = ref(null)
+
+const validationAttempted = ref(false)
+const mainSaved = ref(false)
+const refreshRequired = ref(false)
+const restoredDraft = ref(false)
+const specificationState = ref({ dirty: false, saving: false })
+const galleryDirty = computed(() => Boolean(newImageUrl.value || newImageAlt.value || newImageVariantId.value) || productImages.value.some(image => image.image_url !== image.original_image_url || (image.alt_text || '') !== image.original_alt_text || (image.variant_id || '') !== image.original_variant_id))
+const legacyStockQuantity = computed({ get: () => isSerialized.value ? undefined : stockQuantity.value,
+  set: value => { if (!isSerialized.value) stockQuantity.value = value } })
+const editorBusy = computed(() => mainUploadsActive.value || pending.value || saving.value || galleryLoading.value || specificationState.value.saving || deleting.value)
+const { dirty: mainDirty, markSaved: markMainSaved, restore: restoreDraft, visitPrerequisite } = useProductEditor(`edit:${id}`, { seo, title, slug, description, longDescription, price, oldPrice, imageUrl, categoryId, brandId, defaultSupplierId, primaryWarehouseId, sku, sellingConfig, warrantyConfig, isPublished, productVariants, stockQuantity: legacyStockQuantity, colorName, colorHex, isSerialized }, { busy: editorBusy, revision: editorRevision, extraDirty: computed(() => !productDeleted.value && (saveUnconfirmed.value || galleryStatus.value === 'unknown' || galleryDirty.value || specificationState.value.dirty)) })
+const fieldErrors = computed(() => validationAttempted.value ? productEditorErrors({
+  title: title.value, slug: slug.value.trim() || makeSlug(title.value), price: price.value,
+  old_price: oldPrice.value, sku: sku.value, primary_warehouse_id: primaryWarehouseId.value,
+  is_serialized: isSerialized.value, variants: productVariants.value, stock_quantity: stockQuantity.value
+}) : {})
+const openPrerequisite = to => visitPrerequisite(() => uiNavigateTo(to))
 
 const getCategoriesList = async () => {
   const cachedSnapshot = getSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY)
@@ -644,20 +730,17 @@ const getCategoriesList = async () => {
     categories.value = cachedSnapshot
   }
 
-  if (cachedSnapshot && isFresh(PRODUCT_FORM_CATEGORIES_CACHE_KEY)) {
-    return
-  }
-
   const { data, error } = await supabase
     .from('categories')
     .select('id, name')
     .order('name')
 
   if (error) {
-    actionError.value = error.message
+    lookupFailures.categories = true
     return
   }
 
+  lookupFailures.categories = false
   categories.value = data || []
   setSnapshot(PRODUCT_FORM_CATEGORIES_CACHE_KEY, categories.value)
 }
@@ -669,20 +752,17 @@ const getBrandsList = async () => {
     brands.value = cachedSnapshot
   }
 
-  if (cachedSnapshot && isFresh(PRODUCT_FORM_BRANDS_CACHE_KEY)) {
-    return
-  }
-
   const { data, error } = await supabase
     .from('brands')
     .select('id, name')
     .order('name')
 
   if (error) {
-    actionError.value = error.message
+    lookupFailures.brands = true
     return
   }
 
+  lookupFailures.brands = false
   brands.value = data || []
   setSnapshot(PRODUCT_FORM_BRANDS_CACHE_KEY, brands.value)
 }
@@ -694,10 +774,6 @@ const getSuppliersList = async () => {
     suppliers.value = cachedSnapshot
   }
 
-  if (cachedSnapshot && isFresh(PRODUCT_FORM_SUPPLIERS_CACHE_KEY)) {
-    return
-  }
-
   const { data, error } = await supabase
     .from('commerce_crm_accounts')
     .select('id, name')
@@ -706,10 +782,11 @@ const getSuppliersList = async () => {
     .order('name')
 
   if (error) {
-    actionError.value = error.message
+    lookupFailures.suppliers = true
     return
   }
 
+  lookupFailures.suppliers = false
   suppliers.value = data || []
   setSnapshot(PRODUCT_FORM_SUPPLIERS_CACHE_KEY, suppliers.value)
 }
@@ -721,10 +798,6 @@ const getWarehousesList = async () => {
     warehouses.value = cachedSnapshot
   }
 
-  if (cachedSnapshot && isFresh(PRODUCT_FORM_WAREHOUSES_CACHE_KEY)) {
-    return
-  }
-
   const { data, error } = await supabase
     .from('commerce_warehouses')
     .select('id, name')
@@ -732,15 +805,16 @@ const getWarehousesList = async () => {
     .order('name')
 
   if (error) {
-    actionError.value = error.message
+    lookupFailures.warehouses = true
     return
   }
 
+  lookupFailures.warehouses = false
   warehouses.value = data || []
   setSnapshot(PRODUCT_FORM_WAREHOUSES_CACHE_KEY, warehouses.value)
 }
 
-const getProductImages = async () => {
+const getProductImages = async (discard = false) => {
   const { data, error } = await supabase
     .from('product_images')
     .select('*')
@@ -749,19 +823,17 @@ const getProductImages = async () => {
     .order('created_at')
 
   if (error) {
-    galleryError.value = error.message
-    return
+    galleryError.value = t('productEditor.sectionFailed')
+    return false
   }
 
-  productImages.value = (data || []).map((image) => ({
-    ...image,
-    variant_id: image.variant_id || '',
-    original_image_url: image.image_url || '',
-    original_alt_text: image.alt_text || '',
-    original_variant_id: image.variant_id || ''
+  productImages.value = mergeSectionRows(data || [], discard ? [] : productImages.value, isProductImageDirty, image => ({
+    ...image, variant_id: image.variant_id || '',
+    original: { variant_id: image.variant_id, image_url: image.image_url, alt_text: image.alt_text, sort_order: image.sort_order },
+    original_image_url: image.image_url || '', original_alt_text: image.alt_text || '', original_variant_id: image.variant_id || ''
   }))
+  return true
 }
-
 
 onMounted(async () => {
   await Promise.all([
@@ -775,8 +847,11 @@ onMounted(async () => {
   formLoading.value = false
 })
 
-watchEffect(() => {
-  if (product.value) {
+let restoredOnce = false
+let replaceCore = false
+watch(editorSnapshot, () => {
+  if (product.value && (!mainDirty.value || replaceCore)) {
+    editorRevision.value = editorSnapshot.value.revision
     productVariants.value = JSON.parse(JSON.stringify(editorSnapshot.value.variants || []))
     title.value = product.value.title || ''
     slug.value = product.value.slug || makeSlug(product.value.title || '')
@@ -815,54 +890,31 @@ watchEffect(() => {
       preorder_total_limit: product.value.preorder_total_limit ?? '',
       preorder_customer_limit: product.value.preorder_customer_limit ?? ''
     }
+    markMainSaved({ forgetDraft: false })
+    if (!restoredOnce) { restoredDraft.value = restoreDraft(); restoredOnce = true }
   }
-})
+}, { immediate: true })
 
 const checkProductSave = async () => {
+  if (mainUploadsActive.value) return
   const result = await recoverProductSave()
-  if (result) await uiNavigateTo('/dashboard/products')
+  if (result) { markMainSaved(); mainSaved.value = true; editorRevision.value = result.revision; await refreshProduct(); refreshRequired.value = Boolean(fetchError.value) }
 }
 const reloadProduct = async () => {
-  if (saving.value || !confirm(t('productSave.discard'))) return
-  await refreshProduct()
-  if (!fetchError.value) { actionError.value = ''; resetSaveConflict() }
+  if (mainUploadsActive.value || saving.value || !confirm(t('productSave.discard'))) return
+  replaceCore = true
+  try { await refreshProduct() } finally { replaceCore = false }
+  if (!fetchError.value) { actionError.value = ''; refreshRequired.value = false; resetSaveConflict() }
 }
 
 const updateProduct = async () => {
-  if (saving.value || saveConflict.value || formLoading.value) return
+  if (mainUploadsActive.value || pending.value || saving.value || saveConflict.value || refreshRequired.value || formLoading.value) return
   actionError.value = ''
 
   const normalizedSlug = slug.value.trim() || makeSlug(title.value)
 
-  if (!title.value.trim()) {
-    actionError.value = 'Title is required'
-    return
-  }
-
-  if (!normalizedSlug) {
-    actionError.value = 'Slug is required'
-    return
-  }
-
-  if (price.value === '' || price.value === null) {
-    actionError.value = 'Price is required'
-    return
-  }
-
-  if (!isSerialized.value && Number(stockQuantity.value) < 0) {
-    actionError.value = 'Stock quantity cannot be negative'
-    return
-  }
-
-  if (isSerialized.value && !productVariants.value.length) {
-    actionError.value = 'Add at least one product option reference. Use Default when the product has no model or color options.'
-    return
-  }
-
-  if (isSerialized.value && !primaryWarehouseId.value) {
-    actionError.value = 'Assign a primary warehouse before saving this tracked product.'
-    return
-  }
+  validationAttempted.value = true
+  if (!saveUnconfirmed.value && Object.keys(fieldErrors.value).length) return
 
   const result = await submitProduct({
     expected_revision: editorRevision.value,
@@ -891,30 +943,31 @@ const updateProduct = async () => {
   if (!result) return
 
   slug.value = normalizedSlug
+  markMainSaved(); mainSaved.value = true; validationAttempted.value = false
   invalidate('dashboard:products:')
   invalidate('dashboard:home')
-  await uiNavigateTo('/dashboard/products')
+  editorRevision.value = result.revision
+  await refreshProduct()
+  refreshRequired.value = Boolean(fetchError.value)
 }
 
-const addProductImage = async () => {
+const addProductImage = () => saveGallery(async () => {
   galleryError.value = ''
 
   if (!newImageVariantId.value) {
-    galleryError.value = 'Select a variant for this image'
+    galleryStatus.value = 'failed'; galleryError.value = 'Select a variant for this image'
     return
   }
 
   if (!savedVariantOptions.value.some((variant) => variant.id === newImageVariantId.value)) {
-    galleryError.value = 'Select a saved active variant for this image'
+    galleryStatus.value = 'failed'; galleryError.value = 'Select a saved active variant for this image'
     return
   }
 
   if (!newImageUrl.value.trim()) {
-    galleryError.value = 'Image is required'
+    galleryStatus.value = 'failed'; galleryError.value = 'Image is required'
     return
   }
-
-  galleryLoading.value = true
 
   const { error } = await supabase
     .from('product_images')
@@ -925,13 +978,11 @@ const addProductImage = async () => {
       alt_text: newImageAlt.value.trim() || null
     })
 
-  galleryLoading.value = false
-
   if (error) {
-    galleryError.value = error.message
-    return
+    throw error
   }
 
+  markGallerySaved()
   await recordAdminLog({
     actionKey: 'products.images.create',
     description: `Added an extra image to product ${title.value.trim()}.`,
@@ -945,8 +996,8 @@ const addProductImage = async () => {
   newImageUrl.value = ''
   newImageAlt.value = ''
   newImageVariantId.value = ''
-  await getProductImages()
-}
+  if (!await getProductImages()) galleryStatus.value = 'refresh_failed'
+})
 
 const isProductImageDirty = (image) => {
   return image.image_url !== image.original_image_url ||
@@ -954,21 +1005,21 @@ const isProductImageDirty = (image) => {
     (image.variant_id || '') !== image.original_variant_id
 }
 
-const saveProductImage = async (image) => {
+const saveProductImage = (image) => saveGallery(async () => {
   galleryError.value = ''
 
   if (!image.variant_id) {
-    galleryError.value = 'Select a variant for this image'
+    galleryStatus.value = 'failed'; galleryError.value = 'Select a variant for this image'
     return
   }
 
   if (!savedVariantOptions.value.some((variant) => variant.id === image.variant_id)) {
-    galleryError.value = 'Select a saved active variant for this image'
+    galleryStatus.value = 'failed'; galleryError.value = 'Select a saved active variant for this image'
     return
   }
 
   if (!image.image_url?.trim()) {
-    galleryError.value = 'Image is required'
+    galleryStatus.value = 'failed'; galleryError.value = 'Image is required'
     return
   }
 
@@ -976,24 +1027,14 @@ const saveProductImage = async (image) => {
     return
   }
 
-  galleryLoading.value = true
+  const savedImage = requireSavedRow(await matchOriginal(supabase
+    .from('product_images').update({ variant_id: image.variant_id, image_url: image.image_url.trim(), alt_text: image.alt_text?.trim() || null })
+    .eq('id', image.id).eq('product_id', id), image.original).select('*'))
+  Object.assign(image, { ...savedImage,
+    original: { variant_id: savedImage.variant_id, image_url: savedImage.image_url, alt_text: savedImage.alt_text, sort_order: savedImage.sort_order },
+    original_image_url: savedImage.image_url || '', original_alt_text: savedImage.alt_text || '', original_variant_id: savedImage.variant_id || '' })
 
-  const { error } = await supabase
-    .from('product_images')
-    .update({
-      variant_id: image.variant_id,
-      image_url: image.image_url.trim(),
-      alt_text: image.alt_text?.trim() || null
-    })
-    .eq('id', image.id)
-
-  galleryLoading.value = false
-
-  if (error) {
-    galleryError.value = error.message
-    return
-  }
-
+  markGallerySaved()
   await recordAdminLog({
     actionKey: 'products.images.update',
     description: `Updated an extra image for product ${title.value.trim()}.`,
@@ -1005,8 +1046,8 @@ const saveProductImage = async (image) => {
     }
   })
 
-  await getProductImages()
-}
+  if (!await getProductImages()) galleryStatus.value = 'refresh_failed'
+})
 
 const formatVariantOption = (variant) => {
   const name = String(variant?.name || 'Unnamed variant').trim()
@@ -1014,7 +1055,7 @@ const formatVariantOption = (variant) => {
   return code ? `${name} (${code})` : name
 }
 
-const deleteProductImage = async (imageId) => {
+const deleteProductImage = (imageId) => saveGallery(async () => {
   galleryError.value = ''
 
   const confirmDelete = confirm(uiLabel('Delete this extra image?'))
@@ -1022,20 +1063,12 @@ const deleteProductImage = async (imageId) => {
     return
   }
 
-  galleryLoading.value = true
+  const image = productImages.value.find(row => row.id === imageId)
+  if (!image) return
+  requireSavedRow(await matchOriginal(supabase.from('product_images').delete().eq('id', imageId).eq('product_id', id), image.original).select('id'))
+  productImages.value = productImages.value.filter(row => row.id !== imageId)
 
-  const { error } = await supabase
-    .from('product_images')
-    .delete()
-    .eq('id', imageId)
-
-  galleryLoading.value = false
-
-  if (error) {
-    galleryError.value = error.message
-    return
-  }
-
+  markGallerySaved()
   await recordAdminLog({
     actionKey: 'products.images.delete',
     description: `Deleted an extra image from product ${title.value.trim()}.`,
@@ -1046,10 +1079,23 @@ const deleteProductImage = async (imageId) => {
     }
   })
 
-  await getProductImages()
+  if (!await getProductImages()) galleryStatus.value = 'refresh_failed'
+})
+
+const reloadGallery = async () => {
+  if (galleryLoading.value || galleryDirty.value && !confirm(t('productEditor.discard'))) return
+  galleryReading.value = true
+  galleryError.value = ''
+  try {
+    if (!await getProductImages(true)) return
+    newImageUrl.value = ''; newImageAlt.value = ''; newImageVariantId.value = ''
+    resetGallery()
+  } catch { galleryError.value = t('productEditor.sectionFailed') }
+  finally { galleryReading.value = false }
 }
 
 const deleteProduct = async () => {
+  if (editorBusy.value || !hasPermission('products.edit')) return
   actionError.value = ''
 
   if (isSerialized.value) {
@@ -1064,18 +1110,21 @@ const deleteProduct = async () => {
 
   deleting.value = true
 
-  const { error } = await supabase
+  const { data: removedProducts, error } = await supabase
     .from('products')
     .delete()
     .eq('id', id)
+    .select('id')
 
   deleting.value = false
 
-  if (error) {
-    actionError.value = error.message
+  if (error || removedProducts?.length !== 1) {
+    actionError.value = t('productEditor.deleteFailed')
     return
   }
 
+  productDeleted.value = true
+  markMainSaved()
   await recordAdminLog({
     actionKey: 'products.delete',
     description: `Deleted product ${title.value.trim()}.`,

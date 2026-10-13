@@ -34,9 +34,9 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
     await db.query(`insert into public.site_settings(key,payment_cash_enabled,payment_bank_transfer_enabled,payment_bank_transfer_fee,erp_mode,daftra_connection_status) values('default',true,true,12.50,'built_in','disconnected') on conflict(key) do update set payment_cash_enabled=true,payment_bank_transfer_enabled=true,payment_bank_transfer_fee=12.50,erp_mode='built_in',daftra_connection_status='disconnected'`)
     await db.query(`update public.shipping_provider_settings set is_enabled=true,auto_create_labels=true where id='pdc'`)
     await db.query("select set_config('app.serialized_inventory_write', 'on', true)")
-    await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode,preorder_payment_mode,preorder_deposit_percent,preorder_total_limit,preorder_customer_limit) values($1,'Upcoming GPU',($1::uuid)::text,10000,0,false,'preorder','deposit',25,3,2)`, [product])
-    await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized) values($1,'Normal',($1::uuid)::text,100,5,false)`, [normalProduct])
-    await db.query(`insert into public.products(id,title,slug,price,stock_quantity,is_serialized,selling_mode) values($1,'Soon',($1::uuid)::text,100,0,false,'coming_soon')`, [soonProduct])
+    await db.query(`insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized,selling_mode,preorder_payment_mode,preorder_deposit_percent,preorder_total_limit,preorder_customer_limit) values(true,$1,'Upcoming GPU',($1::uuid)::text,10000,0,false,'preorder','deposit',25,3,2)`, [product])
+    await db.query(`insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized) values(true,$1,'Normal',($1::uuid)::text,100,5,false)`, [normalProduct])
+    await db.query(`insert into public.products(is_published,id,title,slug,price,stock_quantity,is_serialized,selling_mode) values(true,$1,'Soon',($1::uuid)::text,100,0,false,'coming_soon')`, [soonProduct])
     await db.query("select set_config('app.serialized_inventory_write', 'off', true)")
 
     await fails(() => db.query(`update public.products set preorder_deposit_percent=null where id=$1`, [product]), /products_preorder_payment_check/)
@@ -115,7 +115,7 @@ test('preorders preserve financial snapshots, limits, idempotency and fulfillmen
 
     await db.query("select set_config('app.serialized_inventory_write', 'on', true)")
     await db.query(`insert into public.commerce_warehouses(id,name) values($1,'Preorder warehouse')`, [warehouseId])
-    await db.query(`insert into public.products(id,title,slug,price,is_serialized,primary_warehouse_id,selling_mode) values($1,'New phone',($1::uuid)::text,1234.56,true,$2,'preorder')`, [variantProduct, warehouseId])
+    await db.query(`insert into public.products(is_published,id,title,slug,price,is_serialized,primary_warehouse_id,selling_mode) values(true,$1,'New phone',($1::uuid)::text,1234.56,true,$2,'preorder')`, [variantProduct, warehouseId])
     await db.query(`insert into public.product_variants(id,product_id,name,code,price,stock_quantity) values($1,$2,'Blue','BLUE',1,0)`, [variantId, variantProduct])
     await db.query("select set_config('app.serialized_inventory_write', 'off', true)")
     const variantOrder = (await db.query(`select public.commerce_create_preorder($1,$2::jsonb,$3::jsonb,$4) as value`, [customer, JSON.stringify(orderPayload('variant')), JSON.stringify([{ product_id: variantProduct, variant_id: variantId, quantity: 1 }]), randomUUID()])).rows[0].value

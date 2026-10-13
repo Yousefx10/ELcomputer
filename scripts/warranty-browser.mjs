@@ -32,11 +32,15 @@ import {createApp,h,ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,w
 import {createI18n} from '${base}/node_modules/vue-i18n/dist/vue-i18n.mjs'
 import {useUiLocale} from '${base}/app/composables/useUiLocale.js'
 import {normalizeProductWarranty} from '${base}/app/utils/warranty.js'
+import {matchedRouteKey} from 'vue-router'
+import {useProductEditor} from '${base}/app/composables/useProductEditor.js'
+import {useProductSection} from '${base}/app/composables/useProductSection.js'
 import {useProductSave} from '${base}/app/composables/useProductSave.js'
 import en from '${base}/i18n/locales/en.json'
 import ar from '${base}/i18n/locales/ar.json'
 ${Object.keys(components).map(name => `import ${name} from './${name}.js'`).join('\n')}
 const i18n=createI18n({legacy:false,locale:'en',fallbackLocale:'en',messages:{en,ar}})
+const state=new Map(),useState=(key,create)=>{if(!state.has(key))state.set(key,ref(create()));return state.get(key)}
 const view=ref('add'),generation=ref(0),theme=ref('light')
 const productId='11111111-1111-4111-8111-111111111111',variantId='22222222-2222-4222-8222-222222222222',orderId='33333333-3333-4333-8333-333333333333',warehouseId='44444444-4444-4444-8444-444444444444'
 const route=reactive({params:{id:productId,slug:'warranty-fixture'},query:{},path:'/dashboard/products/add'})
@@ -84,7 +88,7 @@ const fetcher=async(path,options={})=>{
 const show=async name=>{view.value=name;route.params.id=name==='details'?orderId:productId;route.path=name==='add'?'/dashboard/products/add':name==='edit'?'/dashboard/products/edit/'+productId:name==='product'?'/products/warranty-fixture':name==='checkout'?'/checkout':'/account/orders'+(name==='details'?'/'+orderId:'');route.query={};generation.value++;await nextTick()}
 const appearance=()=>{document.documentElement.lang=i18n.global.locale.value;document.documentElement.dir=i18n.global.locale.value==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme.value==='dark'||theme.value==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 watch([theme,i18n.global.locale],appearance);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',appearance)
-Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,definePageMeta(){},useHead(){},useUiLocale,useProductSave,useNuxtApp:()=>({$i18n:i18n.global}),useI18n:()=>i18n.global,useUiRoute:()=>route,useSupabaseClient:()=>supabase,useSupabaseUser:()=>user,
+Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,definePageMeta(){},useHead(){},useUiLocale,useProductSave,useProductEditor,useProductSection,useState,useNuxtApp:()=>({$i18n:i18n.global}),useI18n:()=>i18n.global,useUiRoute:()=>route,useSupabaseClient:()=>supabase,useSupabaseUser:()=>user,
  useAdminAccess:()=>({adminUser:ref({id:'77777777-7777-4777-8777-777777777777'}),hasPermission:key=>fixture.permissions===null||fixture.permissions.includes(key)}),useAdminLogs:()=>({getAdminAuthHeaders:async()=>({authorization:'Bearer local-fixture-token'}),recordAdminLog:async log=>fixture.logs.push(clone(log))}),
  useDashboardCache:()=>({getSnapshot:()=>null,invalidate(){},isFresh:()=>false,setSnapshot(){}}),useNuxtData:()=>({data:ref({mode:'built_in'})}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),
  useAsyncData:async(_key,loader)=>({data:ref(await loader()),pending:ref(false),error:ref(null),refresh:async()=>{}}),useSiteContent:()=>({data:ref({settings:{payment_cash_enabled:true}})}),useFetch:async()=>({data:ref({card:{available:false}})}),
@@ -93,6 +97,8 @@ Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnm
  useCart:()=>({items:cartItems,cartId:ref('55555555-5555-4555-8555-555555555555'),itemCount:computed(()=>cartItems.value.length),subtotal:computed(()=>cartItems.value.reduce((s,i)=>s+i.price*i.quantity,0)),isEmpty:computed(()=>!cartItems.value.length),appliedCoupon:ref(null),addItem(){fixture.added++;return {message:'Product added to cart.'}},clearCart(){cartItems.value=[]},loadCart(){},setAppliedCoupon(){},resetCoupon(){}})})
 const views={add:Add,edit:Edit,details:Details,orders:Orders,product:Product,checkout:Checkout,procurement:Procurement,warehouses:Warehouses}
 const app=createApp({render:()=>h('div',{class:view.value==='add'||view.value==='edit'?'dashboard-modern p-4':'storefront p-4'},h(Suspense,null,{default:()=>h(views[view.value],{key:generation.value})}))})
+// Isolated shell route record; navigation is covered by product-editor-browser.
+app.provide(matchedRouteKey,ref({leaveGuards:new Set(),updateGuards:new Set()}))
 app.use(i18n)
 const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage;app.config.globalProperties.$uiPluralSuffix=ui.uiPluralSuffix
 for(const [name,component]of Object.entries({ProductWarranty,DashboardProductsWarrantyFields:WarrantyFields,AccountItemWarranty:ItemWarranty,AccountOrderProgress:Progress,AccountOrderCard:Card,DashboardProductsVariantsEditor:Variants,DashboardProductsSellingModeFields:SellingMode,DashboardPageIntro:PageIntro}))app.component(name,component)
@@ -176,7 +182,7 @@ try {
   await page.locator('select').filter({ has: page.locator('option[value="44444444-4444-4444-8444-444444444444"]') }).selectOption('44444444-4444-4444-8444-444444444444')
   await page.locator('[data-warranty-status]').selectOption('included')
   await page.locator('[data-warranty-duration]').fill('12')
-  await page.getByRole('button', { name: labels.en.common.createProduct, exact: true }).click()
+  await page.getByRole('button', { name: labels.en.productEditor.createDraft, exact: true }).click()
   await page.waitForTimeout(100)
   check(await page.evaluate(() => window.warrantyTest.fixture.product.warranty_duration_value) === 12, 'Create saves structured duration')
   check(await page.evaluate(() => window.warrantyTest.fixture.logs.length) === 0, 'Create audit is owned by the server transaction')

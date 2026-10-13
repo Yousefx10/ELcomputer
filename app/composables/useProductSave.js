@@ -11,6 +11,7 @@ export const useProductSave = (url, method) => {
   const saving = ref(false)
   const error = ref('')
   const errorKey = ref('')
+  const errorField = ref('')
   const conflict = ref(false)
   const unconfirmed = ref(false)
   let pending = null
@@ -32,6 +33,7 @@ export const useProductSave = (url, method) => {
     conflict.value = ['conflict', 'request_reused', 'unavailable'].includes(reason)
     const status = failure?.statusCode || failure?.status || failure?.response?.status
     const field = failure?.data?.data?.field || failure?.data?.field
+    errorField.value = field || ''
     const warranty = failure?.data?.data?.warrantyErrorKey || failure?.data?.warrantyErrorKey
     const messageKey = warranty && te(`warranty.${warranty}`) ? `warranty.${warranty}`
       : reason === 'validation' && ['price', 'old_price', 'sku', 'stock_quantity'].includes(field) ? `productSave.${field}`
@@ -49,7 +51,7 @@ export const useProductSave = (url, method) => {
   const submit = async body => {
     if (saving.value || conflict.value) return null
     saving.value = true
-    error.value = ''; errorKey.value = ''
+    error.value = ''; errorKey.value = ''; errorField.value = ''
     try {
       if (!pending) {
         const request = readRequest() || crypto.randomUUID()
@@ -88,7 +90,7 @@ export const useProductSave = (url, method) => {
   }
   const resetConflict = () => {
     clearRequest()
-    conflict.value = false; error.value = ''; errorKey.value = ''; unconfirmed.value = false
+    conflict.value = false; error.value = ''; errorKey.value = ''; errorField.value = ''; unconfirmed.value = false
   }
-  return { saving, error, errorKey, conflict, unconfirmed, submit, recover, resetConflict }
+  return { saving, error, errorKey, errorField, conflict, unconfirmed, submit, recover, resetConflict }
 }

@@ -32,7 +32,7 @@ export async function createProductSaveHttpFixture(options = {}) {
       await new Promise(resolve => server.close(resolve))
     }
     delete globalThis[key]
-    await fixture.db.close()
+    if (options.closeDatabase !== false) await fixture.db.close()
   }
   try {
     for (const [method, path, file] of [

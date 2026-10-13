@@ -140,7 +140,7 @@ test('leases block switching, recover stale jobs, and reject duplicate finishing
 test('local ERP writes are blocked at database and RPC level while platform content remains editable',async()=>{
   const id=await owner(),product=randomUUID(),warehouse=randomUUID()
   await db.query(`insert into public.commerce_warehouses(id,name) values($1,'Retained warehouse')`,[warehouse])
-  await db.query(`insert into public.products(id,title,slug,is_serialized,stock_quantity,cost_price,price) values($1,'Local title',($1::uuid)::text,false,7,40,100)`,[product])
+  await db.query(`insert into public.products(is_published,id,title,slug,is_serialized,stock_quantity,cost_price,price) values(true,$1,'Local title',($1::uuid)::text,false,7,40,100)`,[product])
   await db.query(`update public.site_settings set erp_mode='daftra',daftra_connection_status='error' where key='default'`)
   await fails(()=>db.query(`update public.products set stock_quantity=9 where id=$1`,[product]),/managed in Daftra/)
   await fails(()=>db.query(`update public.products set cost_price=50 where id=$1`,[product]),/managed in Daftra/)
@@ -173,9 +173,9 @@ test('authorized built-in procurement, stock, sales and treasury continue to wor
   const product=randomUUID(),variant=randomUUID(),saleProduct=randomUUID(),warehouse=randomUUID(),supplier=randomUUID(),customer=randomUUID()
   await db.query(`insert into public.commerce_warehouses(id,name) values($1,'Built-in warehouse')`,[warehouse])
   await db.query(`insert into public.commerce_crm_accounts(id,account_type,name) values($1,'supplier','Local supplier'),($2,'customer','Local customer')`,[supplier,customer])
-  await db.query(`insert into public.products(id,title,slug,is_serialized,price,primary_warehouse_id) values($1,'Local product',($1::uuid)::text,true,100,$2)`,[product,warehouse])
+  await db.query(`insert into public.products(is_published,id,title,slug,is_serialized,price,primary_warehouse_id) values(true,$1,'Local product',($1::uuid)::text,true,100,$2)`,[product,warehouse])
   await db.query(`insert into public.product_variants(id,product_id,name,code) values($1,$2,'Local model','LOCAL')`,[variant,product])
-  await db.query(`insert into public.products(id,title,slug,is_serialized,price,stock_quantity) values($1,'Legacy product',($1::uuid)::text,false,100,2)`,[saleProduct])
+  await db.query(`insert into public.products(is_published,id,title,slug,is_serialized,price,stock_quantity) values(true,$1,'Legacy product',($1::uuid)::text,false,100,2)`,[saleProduct])
   await db.query(`insert into public.commerce_warehouse_inventory(warehouse_id,product_id,quantity,average_cost) values($1,$2,2,40)`,[warehouse,saleProduct])
   const receipt=(await db.query(`select public.commerce_create_procurement_order($1,$2,'LOCAL-PURCHASE',null,0,$3::jsonb) as id`,[supplier,warehouse,JSON.stringify([{product_id:product,variant_id:variant,quantity:2,unit_cost:40}])])).rows[0].id
   assert.equal((await db.query(`select stock_quantity from public.products where id=$1`,[product])).rows[0].stock_quantity,2)
@@ -199,7 +199,7 @@ const cache=async(product,quantity,cost=60,variant=null)=>db.query(`select publi
 test('outage checkout commits once, reserves remote stock and never posts to built-in balances',async()=>{
   const user=await owner(),product=randomUUID(),cart=randomUUID(),warehouse=randomUUID()
   await db.query(`insert into public.commerce_warehouses(id,name) values($1,'Return destination')`,[warehouse])
-  await db.query(`insert into public.products(id,title,slug,sku,is_serialized,stock_quantity,cost_price,price) values($1,'Website product',($1::uuid)::text,'SKU-TEST',false,7,40,100)`,[product])
+  await db.query(`insert into public.products(is_published,id,title,slug,sku,is_serialized,stock_quantity,cost_price,price) values(true,$1,'Website product',($1::uuid)::text,'SKU-TEST',false,7,40,100)`,[product])
   await db.query(`update public.shipping_provider_settings set is_enabled=true,auto_create_labels=true where id='pdc'`)
   await db.query(`update public.site_settings set erp_mode='daftra',daftra_connection_status='error' where key='default'`)
   await cache(product,3,0)
@@ -237,7 +237,7 @@ test('serialized checkout assigns physical QR units without changing retained st
   const user=await owner(),product=randomUUID(),variant=randomUUID(),warehouse=randomUUID(),unit=randomUUID()
   await db.query(`select set_config('app.serialized_inventory_write','on',true)`)
   await db.query(`insert into public.commerce_warehouses(id,name) values($1,'Physical warehouse')`,[warehouse])
-  await db.query(`insert into public.products(id,title,slug,is_serialized,primary_warehouse_id,stock_quantity,cost_price,price) values($1,'Phone',($1::uuid)::text,true,$2,1,40,100)`,[product,warehouse])
+  await db.query(`insert into public.products(is_published,id,title,slug,is_serialized,primary_warehouse_id,stock_quantity,cost_price,price) values(true,$1,'Phone',($1::uuid)::text,true,$2,1,40,100)`,[product,warehouse])
   await db.query(`insert into public.product_variants(id,product_id,name,code,sku,stock_quantity,cost_price,price) values($1,$2,'Blue','BLUE','SKU-TEST',1,40,999)`,[variant,product])
   await db.query(`insert into public.commerce_warehouse_inventory(warehouse_id,product_id,quantity,average_cost) values($1,$2,1,40)`,[warehouse,product])
   await db.query(`insert into public.commerce_serialized_units(id,unit_code,product_id,variant_id,warehouse_id,unit_cost) values($1,'QR-TEST-1',$2,$3,$4,40)`,[unit,product,variant,warehouse])

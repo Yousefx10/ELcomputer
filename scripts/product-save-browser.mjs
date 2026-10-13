@@ -36,12 +36,16 @@ import {createApp,h,ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,w
 import {createI18n} from '${base}/node_modules/vue-i18n/dist/vue-i18n.mjs'
 import {ofetch} from '${base}/node_modules/ofetch/dist/index.mjs'
 import {useUiLocale} from '${base}/app/composables/useUiLocale.js'
+import {matchedRouteKey} from 'vue-router'
+import {useProductEditor} from '${base}/app/composables/useProductEditor.js'
+import {useProductSection} from '${base}/app/composables/useProductSection.js'
 import {useProductSave} from '${base}/app/composables/useProductSave.js'
 import en from '${base}/i18n/locales/en.json'
 import ar from '${base}/i18n/locales/ar.json'
 ${Object.keys(components).map(name => `import ${name} from './${name}.js'`).join('\n')}
 const config=${JSON.stringify({ url: f.url, actors: f.actors, warehouse: f.warehouse, supplier: f.supplier, category: f.category, brand: f.brand, product: seed.id })}
 const i18n=createI18n({legacy:false,locale:'en',fallbackLocale:'en',messages:{en,ar}})
+const state=new Map();const useState=(key,create)=>{if(!state.has(key))state.set(key,ref(create()));return state.get(key)}
 const view=ref('add'),generation=ref(0),theme=ref('light'),actor=ref('owner'),navigation=ref(''),invalidations=[]
 const adminUser=computed(()=>({id:config.actors[actor.value]}))
 const route=reactive({params:{id:config.product},query:{},path:'/dashboard/products/add'})
@@ -49,13 +53,15 @@ const lookups={categories:[{id:config.category,name:'Category fixture'}],brands:
 const supabase={from(table){const q={select(){return q},eq(){return q},in(){return q},order(){return q},then(done){done({data:lookups[table]||[],error:null})}};return q}}
 const appearance=()=>{document.documentElement.lang=i18n.global.locale.value;document.documentElement.dir=i18n.global.locale.value==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme.value==='dark'||theme.value==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 watch([theme,i18n.global.locale],appearance);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',appearance)
-Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,useUiLocale,useProductSave,definePageMeta(){},useI18n:()=>i18n.global,useNuxtApp:()=>({$i18n:i18n.global}),useUiRoute:()=>route,useSupabaseClient:()=>supabase,
+Object.assign(globalThis,{ref,shallowRef,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,useUiLocale,useProductSave,useProductEditor,useProductSection,useState,definePageMeta(){},useI18n:()=>i18n.global,useNuxtApp:()=>({$i18n:i18n.global}),useUiRoute:()=>route,useSupabaseClient:()=>supabase,
  useAdminAccess:()=>({adminUser,hasPermission:key=>actor.value==='owner'||actor.value==='editor'||key==='products.view'}),
  useAdminLogs:()=>({getAdminAuthHeaders:async()=>({authorization:'Bearer '+actor.value}),recordAdminLog:async()=>{throw Error('Product save must not write a browser audit')}}),
  useDashboardCache:()=>({getSnapshot:()=>null,invalidate:prefix=>invalidations.push(prefix),isFresh:()=>false,setSnapshot(){}}),useNuxtData:()=>({data:ref({mode:'built_in'})}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),
  useAsyncData:async(_key,loader)=>{const data=ref(null),error=ref(null),pending=ref(false);const refresh=async()=>{pending.value=true;try{data.value=await loader();error.value=null}catch(e){error.value=e}finally{pending.value=false}};await refresh();return {data,error,pending,refresh}},
  useUiNavigation:()=>({uiNavigateTo:async path=>{navigation.value=path}}),$fetch:(path,options)=>ofetch(config.url+path,{...options,retry:0})})
 const app=createApp({render:()=>h('div',{class:'dashboard-modern p-4'},h(Suspense,null,{default:()=>h(view.value==='add'?Add:Edit,{key:generation.value})}))})
+// This established isolated shell provides a route record; actual navigation is covered separately.
+app.provide(matchedRouteKey,ref({leaveGuards:new Set(),updateGuards:new Set()}))
 app.use(i18n);const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage
 for(const [name,component]of Object.entries({DashboardProductsVariantsEditor:Variants,DashboardProductsSellingModeFields:SellingMode,DashboardProductsWarrantyFields:Warranty,DashboardPageIntro:PageIntro}))app.component(name,component)
 for(const name of ['DashboardSeoFields','DashboardMediaUploadField','DashboardProductsSpecificationEditor','LayoutPageLoading'])app.component(name,{render(){return null}})
@@ -101,7 +107,7 @@ window.productSaveTest={config,actor,navigation,theme,invalidations,locale:i18n.
     await page.waitForFunction(() => !!document.querySelector('form button[type=submit]:not(:disabled)'))
   }
   const saved = async () => {
-    try { await page.waitForFunction(() => !!window.productSaveTest.navigation.value, null, { timeout: 10000 }) }
+    try { await page.waitForFunction(() => !!window.productSaveTest.navigation.value || document.querySelector('[data-product-save-state]')?.innerText.includes(window.productSaveTest.locale.value==='ar'?'تم الحفظ':'Saved'), null, { timeout: 10000 }) }
     catch (error) {
       const state = await page.evaluate(() => ({ alert: document.querySelector('[role=alert]')?.innerText,
         invalid: [...document.querySelectorAll('form input,form select')].filter(n => !n.checkValidity()).map(n => ({id:n.id,value:n.value,message:n.validationMessage})) }))
@@ -150,7 +156,7 @@ window.productSaveTest={config,actor,navigation,theme,invalidations,locale:i18n.
     await page.getByPlaceholder(labels[language].common.oldPrice, { exact: true }).fill('12.345')
     await page.locator('form').evaluate(form => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })))
     await page.getByRole('alert').waitFor()
-    check((await page.getByRole('alert').innerText()) === labels[language].productSave.old_price, 'Strict validation has a translated field message')
+    check((await page.getByRole('alert').innerText()) === labels[language].productEditor.field.old_price, 'Strict validation has a translated field message')
   }
   await page.evaluate(() => {window.productSaveTest.locale.value='en';window.productSaveTest.actor.value='owner'})
   await show('add'); await populate('en')

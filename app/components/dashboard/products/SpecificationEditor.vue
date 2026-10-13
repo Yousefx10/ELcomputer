@@ -11,6 +11,10 @@
     <p v-if="error" class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(error) }}</p>
     <p v-if="notice" class="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">{{ $uiMessage(notice) }}</p>
 
+    <p role="status" data-specification-save-state class="mt-4 text-sm text-gray-500">{{ $t('productEditor.specifications') }}: {{ saving ? $t('common.saving') : sectionStatus === 'refresh_failed' ? $t('productEditor.saved') : saveError || error ? $t('productEditor.failed') : sectionDirty ? $t('productEditor.unsaved') : sectionStatus === 'saved' ? $t('productEditor.saved') : $t('productEditor.ready') }}. {{ $t('productEditor.separate') }}</p>
+    <p v-if="saveError" role="alert" class="mt-4 text-sm text-red-600">{{ saveError }}</p>
+    <button v-if="sectionStatus === 'unknown' || sectionStatus === 'conflict' || sectionStatus === 'refresh_failed'" type="button" @click="reloadSection" class="mt-4 rounded-md border border-gray-300 px-3 py-2 text-sm">{{ $t('productSave.reload') }}</button>
+    <fieldset :disabled="saving || sectionStatus === 'unknown' || !hasPermission('products.edit')" class="contents">
     <div v-if="libraryReady" class="mt-6 space-y-8">
       <div v-if="categoryId" class="rounded-md bg-blue-50 p-4">
         <div class="flex flex-wrap items-baseline justify-between gap-2">
@@ -99,12 +103,14 @@
         <div v-if="features.length" class="mt-3 space-y-2"><div v-for="feature in features" :key="feature.id" class="flex flex-wrap gap-2"><input v-model="feature.body" maxlength="500" :aria-label="$t('common.featureValue', { value0: (feature.id) })" class="min-w-0 flex-1 rounded-md border p-2.5 text-sm"><button type="button" :disabled="saving || feature.body === feature.originalBody" class="rounded-md border border-blue-300 px-3 py-2 text-sm font-semibold text-blue-800 disabled:opacity-40" @click="saveFeature(feature)">{{ $t('common.save') }}</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteFeature(feature)">{{ $t('common.delete') }}</button></div></div>
       </div>
     </div>
+    </fieldset>
   </section>
 </template>
 
 <script setup>
 const { uiLabel } = useUiLocale()
 
+import { matchOriginal, requireSavedRow, mergeSectionRows } from '~/utils/productSection'
 import { duplicateSpecificationCandidates, matchSpecificationDefinitions, parsePastedSpecifications, parseSpecificationAliases, specificationKey } from '~/utils/specificationLibrary'
 
 const props = defineProps({
@@ -112,6 +118,9 @@ const props = defineProps({
   productTitle: { type: String, default: '' },
   categoryId: { type: String, default: '' }
 })
+const emit = defineEmits(['state'])
+const { t } = useI18n()
+const { hasPermission } = useAdminAccess()
 const supabase = useSupabaseClient()
 const { recordAdminLog } = useAdminLogs()
 const definitions = ref([])
@@ -121,7 +130,14 @@ const features = ref([])
 const libraryReady = ref(false)
 const error = ref('')
 const notice = ref('')
-const saving = ref(false)
+const reading = ref(false)
+const { running: sectionRunning, status: sectionStatus, error: saveError, run: runSection, reset: resetSection, markSaved: markSectionSaved } = useProductSection()
+const saving = computed(() => sectionRunning.value || reading.value)
+const saveSection = operation => runSection(async () => {
+  if (reading.value || !hasPermission('products.edit')) return
+  error.value = ''; notice.value = ''
+  await operation()
+})
 const search = ref('')
 const selectedDefinitionId = ref('')
 const draftValue = ref('')
@@ -154,7 +170,7 @@ const availableTemplateDefinitions = computed(() => definitions.value.filter((it
   && !templates.value.some((entry) => entry.definition_id === item.id)))
 const definitionById = (id) => definitions.value.find((item) => item.id === id) || null
 const nextOrder = (items) => Math.max(-1, ...items.map((item) => Number(item.sort_order) || 0)) + 1
-const setError = (message) => { error.value = message; notice.value = '' }
+const setError = (message) => { error.value = message; notice.value = ''; sectionStatus.value = 'failed' }
 const setNotice = (message) => { notice.value = message; error.value = '' }
 const logChange = (actionKey, description, extra = {}) => recordAdminLog({
   actionKey, description, metadata: { product_id: props.productId, product_title: props.productTitle, ...extra }
@@ -165,19 +181,22 @@ const loadDefinitions = async () => {
   if (queryError) throw queryError
   definitions.value = data || []
 }
-const loadRows = async () => {
+const rowDirty = (row) => row.definition_id !== row.original.definition_id || row.value !== row.original.value
+  || Boolean(row.is_highlight) !== row.original.is_highlight
+const loadRows = async (discard = false) => {
   const { data, error: queryError } = await supabase.from('product_specifications').select('*')
     .eq('product_id', props.productId).order('sort_order').order('created_at')
   if (queryError) throw queryError
-  rows.value = (data || []).map((row) => ({ ...row, definition_id: row.definition_id || '', original: {
-    definition_id: row.definition_id || '', value: row.value, is_highlight: Boolean(row.is_highlight)
-  } }))
+  rows.value = mergeSectionRows(data || [], discard ? [] : rows.value, rowDirty, row => ({ ...row, definition_id: row.definition_id || '',
+    originalData: { definition_id: row.definition_id, label: row.label, value: row.value, is_highlight: row.is_highlight, sort_order: row.sort_order },
+    original: { definition_id: row.definition_id || '', value: row.value, is_highlight: Boolean(row.is_highlight) }
+  }))
 }
-const loadFeatures = async () => {
+const loadFeatures = async (discard = false) => {
   const { data, error: queryError } = await supabase.from('product_features').select('*')
     .eq('product_id', props.productId).order('sort_order').order('created_at')
   if (queryError) throw queryError
-  features.value = (data || []).map((item) => ({ ...item, originalBody: item.body }))
+  features.value = mergeSectionRows(data || [], discard ? [] : features.value, feature => feature.body !== feature.originalBody, item => ({ ...item, originalBody: item.body }))
 }
 const loadTemplates = async (categoryId = props.categoryId) => {
   if (!categoryId || !libraryReady.value) { templates.value = []; return }
@@ -206,7 +225,40 @@ watch(selectedDefinitionId, (id) => {
   draftHighlight.value = templates.value.find((entry) => entry.definition_id === id)?.highlight_default ?? item.default_highlight
 })
 
+const definitionDirty = computed(() => {
+  const item = selectedDefinition.value
+  return item && (definitionDraft.name !== item.name || definitionDraft.group_name !== (item.group_name || '')
+    || definitionDraft.aliases !== (item.aliases || []).join(', ') || definitionDraft.help_text !== (item.help_text || '')
+    || definitionDraft.is_active !== item.is_active)
+})
+const sectionDirty = computed(() => sectionStatus.value === 'unknown' || rows.value.some(rowDirty) || features.value.some(item => item.body !== item.originalBody)
+  || Boolean(draftValue.value || newFeature.value || pasteText.value || pasteRows.value.length || definitionDirty.value)
+  || creatingDefinition.value && Boolean(newName.value || newGroup.value || newAliases.value || newHelp.value))
+watch([sectionDirty, saving, sectionStatus], () => emit('state', { dirty: sectionDirty.value, saving: saving.value }), { immediate: true })
+const reloadSection = async () => {
+  if (saving.value || sectionDirty.value && !confirm(t('productEditor.discard'))) return
+  reading.value = true
+  try {
+    // Keep existing drafts intact if fetching fails; discard only after all reads succeed.
+    const oldRows = rows.value, oldFeatures = features.value
+    const oldDefinitions = definitions.value
+    try {
+      const results = await Promise.allSettled([loadDefinitions(), loadRows(true), loadFeatures(true)])
+      const failed = results.find(result => result.status === 'rejected')
+      if (failed) throw failed.reason
+    } catch (failure) { rows.value = oldRows; features.value = oldFeatures; definitions.value = oldDefinitions; throw failure }
+    rows.value = rows.value.map(row => ({ ...row, definition_id: row.originalData.definition_id || '',
+      value: row.originalData.value, is_highlight: row.originalData.is_highlight }))
+    features.value = features.value.map(item => ({ ...item, body: item.originalBody }))
+    draftValue.value = ''; newFeature.value = ''; pasteText.value = ''; pasteRows.value = []
+    selectedDefinitionId.value = ''; creatingDefinition.value = false
+    error.value = ''; notice.value = ''; resetSection()
+  } catch { setError(t('productEditor.sectionFailed')) }
+  finally { reading.value = false }
+}
+
 const chooseDefinition = async (id) => {
+  if ((definitionDirty.value || creatingDefinition.value && Boolean(newName.value || newGroup.value || newAliases.value || newHelp.value)) && !confirm(t('productEditor.discard'))) return
   selectedDefinitionId.value = id
   search.value = ''
   creatingDefinition.value = false
@@ -222,7 +274,7 @@ const openCreateDefinition = () => {
   confirmNewName.value = false
   creatingDefinition.value = true
 }
-const createDefinition = async () => {
+const createDefinition = () => saveSection(async () => {
   const name = newName.value.trim()
   const key = specificationKey(name)
   if (!name || !key || !confirmNewName.value) return
@@ -231,12 +283,14 @@ const createDefinition = async () => {
   if (aliases.some((alias) => duplicateSpecificationCandidates(definitions.value, alias).some((match) => match.exact))) {
     setError('An alias already belongs to another shared name.'); return
   }
-  saving.value = true
+
   const { data, error: queryError } = await supabase.from('specification_definitions').insert({
     key, name, group_name: newGroup.value.trim(), aliases, help_text: newHelp.value.trim(),
     sort_order: nextOrder(definitions.value)
   }).select('*').single()
-  if (queryError) { saving.value = false; setError(queryError.message); return }
+  if (queryError) throw queryError
+  markSectionSaved()
+  creatingDefinition.value = false
   await loadDefinitions()
   if (props.categoryId && suggestNewForCategory.value) {
     const { error: templateError } = await supabase.from('category_specification_templates').insert({
@@ -246,12 +300,13 @@ const createDefinition = async () => {
     else await loadTemplates()
   }
   await logChange('products.specifications.create', `Created shared specification name ${name}.`, { definition_id: data.id })
-  saving.value = false
+
   creatingDefinition.value = false
   await chooseDefinition(data.id)
   if (!error.value) setNotice(`Created ${name}. Enter its value for this product.`)
-}
-const saveDefinition = async () => {
+})
+
+const saveDefinition = () => saveSection(async () => {
   if (!selectedDefinition.value) return
   const name = definitionDraft.name.trim()
   if (!name) { setError('Enter a shared display name.'); return }
@@ -262,129 +317,144 @@ const saveDefinition = async () => {
   if (aliases.some((alias) => duplicateSpecificationCandidates(definitions.value.filter((item) => item.id !== selectedDefinitionId.value), alias).some((match) => match.exact))) {
     setError('An alias already belongs to another shared name.'); return
   }
-  saving.value = true
-  const { error: queryError } = await supabase.from('specification_definitions').update({
-    name, group_name: definitionDraft.group_name.trim(),
-    aliases,
+
+  const savedDefinition = requireSavedRow(await matchOriginal(supabase.from('specification_definitions').update({
+    name, group_name: definitionDraft.group_name.trim(), aliases,
     help_text: definitionDraft.help_text.trim(), is_active: definitionDraft.is_active
-  }).eq('id', selectedDefinitionId.value)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+  }).eq('id', selectedDefinitionId.value), {
+    name: selectedDefinition.value.name, group_name: selectedDefinition.value.group_name,
+    help_text: selectedDefinition.value.help_text, is_active: selectedDefinition.value.is_active,
+    aliases: selectedDefinition.value.aliases
+  }).select('*'))
+  Object.assign(definitionDraft, { name: savedDefinition.name, group_name: savedDefinition.group_name,
+    aliases: savedDefinition.aliases.join(', '), help_text: savedDefinition.help_text, is_active: savedDefinition.is_active })
+  markSectionSaved()
   await loadDefinitions()
   await logChange('products.specifications.update', `Updated shared specification name ${name}.`, { definition_id: selectedDefinitionId.value })
   setNotice('Shared name saved.')
-}
-const addSpecification = async () => {
+})
+
+const addSpecification = () => saveSection(async () => {
   const definition = selectedDefinition.value
   const value = draftValue.value.trim()
-  if (!definition || !value || saving.value) return
+  if (!definition || !value) return
+  if (definitionDirty.value) { setError(t('productEditor.sharedNamePending')); return }
   if (usedDefinitionIds.value.has(definition.id)) { setError('This product already has that specification. Edit its value below.'); return }
-  saving.value = true
+
   const { error: queryError } = await supabase.from('product_specifications').insert({
     product_id: props.productId, definition_id: definition.id, label: definition.name, value,
     is_highlight: draftHighlight.value, sort_order: nextOrder(rows.value)
   })
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  if (queryError) throw queryError
+  markSectionSaved()
+  draftValue.value = ''; selectedDefinitionId.value = ''
   await loadRows()
   await logChange('products.specifications.create', `Added ${definition.name} to product ${props.productTitle}.`, { definition_id: definition.id })
   draftValue.value = ''
   selectedDefinitionId.value = ''
   setNotice(`${definition.name} added.`)
-}
-const rowDirty = (row) => row.definition_id !== row.original.definition_id || row.value !== row.original.value
-  || Boolean(row.is_highlight) !== row.original.is_highlight
-const saveRow = async (row) => {
+})
+
+const saveRow = (row) => saveSection(async () => {
   const value = row.value.trim()
   const definition = definitionById(row.definition_id)
   if (!value || (row.definition_id && !definition)) { setError('Choose a name and enter a value.'); return }
-  saving.value = true
-  const { error: queryError } = await supabase.from('product_specifications').update({
+
+  const saved = requireSavedRow(await matchOriginal(supabase.from('product_specifications').update({
     definition_id: definition?.id || null, label: definition?.name || row.label,
     value, is_highlight: Boolean(row.is_highlight)
-  }).eq('id', row.id).eq('product_id', props.productId)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+  }).eq('id', row.id).eq('product_id', props.productId), row.originalData).select('*'))
+  Object.assign(row, saved, { definition_id: saved.definition_id || '',
+    originalData: { definition_id: saved.definition_id, label: saved.label, value: saved.value, is_highlight: saved.is_highlight, sort_order: saved.sort_order },
+    original: { definition_id: saved.definition_id || '', value: saved.value, is_highlight: Boolean(saved.is_highlight) } })
+  markSectionSaved()
   await loadRows()
   await logChange('products.specifications.update', `Updated a specification for product ${props.productTitle}.`, { specification_id: row.id })
   setNotice('Specification saved.')
-}
-const deleteRow = async (row) => {
-  if (!confirm(`Delete ${definitionById(row.definition_id)?.name || row.label}?`)) return
-  saving.value = true
-  const { error: queryError } = await supabase.from('product_specifications').delete().eq('id', row.id).eq('product_id', props.productId)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+})
+
+const deleteRow = (row) => saveSection(async () => {
+  if (!confirm(t('productEditor.deleteSpecification', { name: definitionById(row.definition_id)?.name || row.label }))) return
+
+  requireSavedRow(await matchOriginal(supabase.from('product_specifications').delete().eq('id', row.id).eq('product_id', props.productId), row.originalData).select('id'))
+  rows.value = rows.value.filter(item => item.id !== row.id)
+  markSectionSaved()
   await loadRows()
   await logChange('products.specifications.delete', `Deleted a specification from product ${props.productTitle}.`, { specification_id: row.id })
   setNotice('Specification removed.')
-}
-const moveRow = async (index, direction) => {
+})
+
+const moveRow = (index, direction) => saveSection(async () => {
   if (rows.value.some(rowDirty)) { setError('Save edited values before changing the order.'); return }
   const target = index + direction
   if (target < 0 || target >= rows.value.length) return
   const reordered = [...rows.value]
   ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-  saving.value = true
+
   try {
     for (const [position, item] of reordered.entries()) {
-      const { error: queryError } = await supabase.from('product_specifications').update({ sort_order: position }).eq('id', item.id).eq('product_id', props.productId)
-      if (queryError) throw queryError
+      requireSavedRow(await matchOriginal(supabase.from('product_specifications').update({ sort_order: position }).eq('id', item.id).eq('product_id', props.productId), item.originalData).select('id'))
     }
+    markSectionSaved()
     await logChange('products.specifications.update', `Reordered specifications for product ${props.productTitle}.`)
     setNotice('Order saved.')
-  } catch (queryError) { setError(queryError.message) }
-  finally { saving.value = false; await loadRows() }
-}
-const addTemplateSuggestion = async () => {
+  } catch (queryError) { throw queryError }
+  finally { await loadRows() }
+})
+
+const addTemplateSuggestion = () => saveSection(async () => {
   if (!props.categoryId || !templateDefinitionId.value) return
-  saving.value = true
+
   const { error: queryError } = await supabase.from('category_specification_templates').insert({
     category_id: props.categoryId, definition_id: templateDefinitionId.value, sort_order: nextOrder(templates.value)
   })
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  if (queryError) throw queryError
+  markSectionSaved()
   templateDefinitionId.value = ''
   await loadTemplates()
   await logChange('products.specifications.update', 'Added a category specification suggestion.', { category_id: props.categoryId })
   setNotice('Category suggestion added.')
-}
-const removeTemplateSuggestion = async (item) => {
-  saving.value = true
-  const { error: queryError } = await supabase.from('category_specification_templates').delete()
-    .eq('category_id', props.categoryId).eq('definition_id', item.definition_id)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+})
+
+const removeTemplateSuggestion = (item) => saveSection(async () => {
+
+  requireSavedRow(await matchOriginal(supabase.from('category_specification_templates').delete()
+    .eq('category_id', props.categoryId).eq('definition_id', item.definition_id), { sort_order: item.sort_order, highlight_default: item.highlight_default }).select('definition_id'))
+  markSectionSaved()
   await loadTemplates()
   await logChange('products.specifications.update', 'Removed a category specification suggestion.', { category_id: props.categoryId, definition_id: item.definition_id })
   setNotice('Category suggestion removed.')
-}
-const setTemplateHighlight = async (item, checked) => {
-  saving.value = true
-  const { error: queryError } = await supabase.from('category_specification_templates').update({ highlight_default: checked })
-    .eq('category_id', props.categoryId).eq('definition_id', item.definition_id)
-  saving.value = false
-  if (queryError) setError(queryError.message)
-  else await logChange('products.specifications.update', 'Changed a category highlight suggestion.', { category_id: props.categoryId, definition_id: item.definition_id, highlight_default: checked })
+})
+
+const setTemplateHighlight = (item, checked) => saveSection(async () => {
+
+  requireSavedRow(await matchOriginal(supabase.from('category_specification_templates').update({ highlight_default: checked })
+    .eq('category_id', props.categoryId).eq('definition_id', item.definition_id), { sort_order: item.sort_order, highlight_default: item.highlight_default }).select('definition_id'))
+  markSectionSaved()
+  await logChange('products.specifications.update', 'Changed a category highlight suggestion.', { category_id: props.categoryId, definition_id: item.definition_id, highlight_default: checked })
   await loadTemplates()
-}
-const moveTemplate = async (index, direction) => {
+})
+
+const moveTemplate = (index, direction) => saveSection(async () => {
   const target = index + direction
   if (target < 0 || target >= templates.value.length) return
   const reordered = [...templates.value]
   ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-  saving.value = true
+
   try {
     for (const [position, item] of reordered.entries()) {
-      const { error: queryError } = await supabase.from('category_specification_templates').update({ sort_order: position })
-        .eq('category_id', props.categoryId).eq('definition_id', item.definition_id)
-      if (queryError) throw queryError
+      requireSavedRow(await matchOriginal(supabase.from('category_specification_templates').update({ sort_order: position })
+        .eq('category_id', props.categoryId).eq('definition_id', item.definition_id), { sort_order: item.sort_order, highlight_default: item.highlight_default }).select('definition_id'))
     }
+    markSectionSaved()
     await logChange('products.specifications.update', 'Reordered category specification suggestions.', { category_id: props.categoryId })
     setNotice('Suggestion order saved.')
-  } catch (queryError) { setError(queryError.message) }
-  finally { saving.value = false; await loadTemplates() }
-}
+  } catch (queryError) { throw queryError }
+  finally { await loadTemplates() }
+})
+
 const reviewPaste = () => {
   pasteRows.value = parsePastedSpecifications(pasteText.value).map((item) => {
     const match = matchSpecificationDefinitions(definitions.value, item.label, { limit: 1 })[0]
@@ -393,7 +463,7 @@ const reviewPaste = () => {
   if (!pasteRows.value.length) setError('No Name: Value lines found. Check the separators and try again.')
   else setNotice(`Review ${pasteRows.value.length} line${pasteRows.value.length === 1 ? '' : 's'} before importing.`)
 }
-const importPaste = async () => {
+const importPaste = () => saveSection(async () => {
   const selected = pasteRows.value.filter((item) => item.include)
   if (!selected.length) { setError('Choose at least one line to import.'); return }
   if (selected.some((item) => !item.definition_id || !item.value.trim())) { setError('Choose a canonical name and value for each selected line.'); return }
@@ -408,48 +478,56 @@ const importPaste = async () => {
       value: item.value.trim(), sort_order: start + index,
       is_highlight: templates.value.find((entry) => entry.definition_id === definition.id)?.highlight_default ?? definition.default_highlight }
   })
-  saving.value = true
+
   const { error: queryError } = await supabase.from('product_specifications').insert(inserts)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  if (queryError) throw queryError
+  markSectionSaved()
+  pasteRows.value = []; pasteText.value = ''
   await loadRows()
   await logChange('products.specifications.create', `Imported ${inserts.length} specifications for product ${props.productTitle}.`)
   pasteRows.value = []
   pasteText.value = ''
   setNotice(`${inserts.length} specifications imported.`)
-}
-const addFeature = async () => {
+})
+
+const addFeature = () => saveSection(async () => {
   const body = newFeature.value.trim()
   if (!body) return
-  saving.value = true
+
   const { error: queryError } = await supabase.from('product_features').insert({ product_id: props.productId, body, sort_order: nextOrder(features.value) })
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  if (queryError) throw queryError
+  markSectionSaved()
+  newFeature.value = ''
   await loadFeatures()
   await logChange('products.specifications.create', `Added a feature for product ${props.productTitle}.`)
   newFeature.value = ''
   setNotice('Feature added.')
-}
-const saveFeature = async (feature) => {
+})
+
+const saveFeature = (feature) => saveSection(async () => {
   const body = feature.body.trim()
   if (!body) { setError('Feature text cannot be empty.'); return }
-  saving.value = true
-  const { error: queryError } = await supabase.from('product_features').update({ body })
-    .eq('id', feature.id).eq('product_id', props.productId)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  const saved = requireSavedRow(await supabase.from('product_features').update({ body })
+    .eq('id', feature.id).eq('product_id', props.productId).eq('body', feature.originalBody).select('*'))
+  Object.assign(feature, saved, { originalBody: saved.body })
+  markSectionSaved()
   await loadFeatures()
   await logChange('products.specifications.update', `Updated a feature for product ${props.productTitle}.`)
   setNotice('Feature saved.')
-}
-const deleteFeature = async (feature) => {
+})
+
+const deleteFeature = (feature) => saveSection(async () => {
   if (!confirm(uiLabel('Delete this product feature?'))) return
-  saving.value = true
-  const { error: queryError } = await supabase.from('product_features').delete().eq('id', feature.id).eq('product_id', props.productId)
-  saving.value = false
-  if (queryError) { setError(queryError.message); return }
+
+  requireSavedRow(await supabase.from('product_features').delete().eq('id', feature.id).eq('product_id', props.productId).eq('body', feature.originalBody).select('id'))
+  features.value = features.value.filter(item => item.id !== feature.id)
+  markSectionSaved()
   await loadFeatures()
   await logChange('products.specifications.delete', `Deleted a feature from product ${props.productTitle}.`)
   setNotice('Feature removed.')
-}
+})
+
 </script>
