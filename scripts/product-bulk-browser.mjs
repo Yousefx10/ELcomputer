@@ -1,0 +1,157 @@
+// Actual Vue Router transitions, product/specification/media components, product
+// HTTP commands, PostgREST RLS, filesystem and native disposable SQL. Auth is synthetic.
+import assert from 'node:assert/strict'
+import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises'
+import {createServer,request as httpRequest} from 'node:http'
+import {resolve,join} from 'node:path'
+import {pathToFileURL} from 'node:url'
+import {parse,compileScript,compileStyle} from '@vue/compiler-sfc'
+import {build} from 'esbuild'
+import {createCatalogRestFixture} from '../tests/helpers/catalogRestFixture.mjs'
+import {createProductSaveHttpFixture} from '../tests/helpers/productSaveHttpFixture.mjs'
+import {createMediaFixture,pngImage} from '../tests/helpers/mediaFixture.mjs'
+import {seedListing} from '../tests/helpers/productListFixture.mjs'
+import {nativeWaitFor} from '../tests/helpers/emailNativeDatabase.mjs'
+const base=resolve(new URL('..',import.meta.url).pathname)
+const dir=process.env.PRODUCT_BULK_REVIEW_ARTIFACTS||'/private/tmp/elcomputer-product-bulk-browser'
+await mkdir(dir,{recursive:true})
+const {chromium}=await import(pathToFileURL(process.env.PRODUCT_SAVE_REVIEW_PLAYWRIGHT||'/private/tmp/elcomputer-final-browser-tools/node_modules/playwright/index.mjs').href)
+const rest=await createCatalogRestFixture();let f,media,browser,server,empty,reviewPage
+try{
+ const migrationDir=join(base,'supabase/migrations');for(const name of(await readdir(migrationDir)).filter(n=>n.endsWith('.sql')&&n>'20261011120000_catalog_confidentiality.sql').sort())await rest.db.exec(await readFile(join(migrationDir,name),'utf8'))
+ // Schema reference omits hosted baseline grants; match certified fixture table access.
+ await rest.db.exec('grant select on public.commerce_warehouses,public.commerce_crm_accounts to authenticated')
+ f=await createProductSaveHttpFixture({database:rest.db,closeDatabase:false});Object.assign(rest.actors,f.actors)
+ media=await createMediaFixture({fixture:f})
+ empty=await createProductSaveHttpFixture();await empty.db.exec('delete from public.categories;delete from public.brands')
+ await nativeWaitFor(async()=>(await rest.request('/specification_definitions?select=id',{actor:'owner'})).status===200)
+ const seed=await f.save(f.body({title:'Authored product',is_published:false}));const snapshot=await f.snapshot(seed.id)
+ const definitions=(await rest.db.query('select id from public.specification_definitions order by name limit 2')).rows
+ assert.equal(definitions.length,2)
+ const specs=[];for(let i=0;i<2;i++)specs.push((await rest.db.query("insert into public.product_specifications(product_id,definition_id,label,value,sort_order) select $1,id,name,$2,$3 from public.specification_definitions where id=$4 returning id",[seed.id,'Known value '+i,i,definitions[i].id])).rows[0].id)
+ const gallery=[];for(let i=0;i<2;i++){await media.addFile('products/gallery/saved-'+i+'.png');gallery.push((await rest.db.query("insert into public.product_images(product_id,variant_id,image_url,alt_text,sort_order) values($1,$2,$3,$4,$5) returning id",[seed.id,snapshot.variants[0].id,'/uploads/products/gallery/saved-'+i+'.png','Known alt '+i,i])).rows[0].id)}
+ const listingSeed=await seedListing(f,60)
+ await media.addFile('products/list-thumbnail.png');await rest.db.query("update public.products set image_url='/uploads/products/list-thumbnail.png' where title like 'Listing product %'")
+ const components={Listing:'app/pages/dashboard/products/index.vue',ListFilter:'app/components/dashboard/products/ListFilter.vue',Add:'app/pages/dashboard/products/add.vue',Edit:'app/pages/dashboard/products/edit/[id].vue',Variants:'app/components/dashboard/products/VariantsEditor.vue',SellingMode:'app/components/dashboard/products/SellingModeFields.vue',Warranty:'app/components/dashboard/products/WarrantyFields.vue',Specifications:'app/components/dashboard/products/SpecificationEditor.vue',Seo:'app/components/dashboard/SeoFields.vue',PageIntro:'app/components/dashboard/PageIntro.vue',MediaField:'app/components/dashboard/MediaUploadField.vue',MediaLibrary:'app/components/dashboard/MediaLibrary.vue'}
+ let componentCss='';for(const[name,file]of Object.entries(components)){const{descriptor}=parse(await readFile(join(base,file),'utf8'));await writeFile(join(dir,name+'.js'),compileScript(descriptor,{id:'editor-'+name,inlineTemplate:true}).content);for(const style of descriptor.styles)componentCss+=compileStyle({source:style.content,filename:file,id:'data-v-editor-'+name,scoped:style.scoped}).code}
+ const config={url:f.url,emptyUrl:empty.url,media:media.url,rest:rest.url,actors:f.actors,tokens:Object.fromEntries(['owner','editor','viewer','disabled','customer'].map(a=>[a,rest.token(a)])),product:seed.id,warehouse:f.warehouse,gallery,specs,category:f.category,brand:f.brand,listingRows:listingSeed.rows.map(p=>({id:p.id,title:p.title,sku:p.sku}))}
+ await writeFile(join(dir,'entry.js'),`
+import {createApp,h,ref,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,Suspense,resolveComponent,useId} from '${base}/node_modules/vue/dist/vue.esm-bundler.js'
+import {createRouter,createWebHistory,RouterView,useRoute,useRouter} from '${base}/node_modules/vue-router/dist/vue-router.esm-bundler.js'
+import {createI18n} from '${base}/node_modules/vue-i18n/dist/vue-i18n.mjs'
+import {PostgrestClient} from '${base}/node_modules/@supabase/postgrest-js/dist/index.mjs'
+import {ofetch} from '${base}/node_modules/ofetch/dist/index.mjs'
+import {localizedPath} from '${base}/app/utils/appearance.js'
+import {useUiLocale} from '${base}/app/composables/useUiLocale.js'
+import {useProductSave} from '${base}/app/composables/useProductSave.js'
+import {useProductEditor} from '${base}/app/composables/useProductEditor.js'
+import {useProductSection} from '${base}/app/composables/useProductSection.js'
+import {useAdminUploads} from '${base}/app/composables/useAdminUploads.js'
+import {useMediaErrors} from '${base}/app/composables/useMediaErrors.js'
+import en from '${base}/i18n/locales/en.json'
+import ar from '${base}/i18n/locales/ar.json'
+${Object.keys(components).map(name=>"import "+name+" from './"+name+".js'").join('\n')}
+Listing.__scopeId='data-v-editor-Listing'
+const config=${JSON.stringify(config)}
+const state=new Map(),useState=(key,create)=>{if(!state.has(key))state.set(key,ref(create()));return state.get(key)}
+const i18n=createI18n({legacy:false,locale:'en',fallbackLocale:'en',messages:{en,ar}}),actor=ref('owner'),theme=ref('light'),erp=ref({mode:'built_in'}),generation=ref(0),invalidations=[]
+const adminUser=computed(()=>({id:config.actors[actor.value]}))
+const permissions=key=>actor.value==='owner'||actor.value==='editor'&&['products.view','products.add','products.edit'].includes(key)||actor.value==='viewer'&&key==='products.view'
+let failSpecification=false,failLookup=false,delayedList=false,emptyMode=false
+const supabase={from(table){return new PostgrestClient(config.rest,{headers:{Authorization:'Bearer '+config.tokens[actor.value]},fetch:async(...args)=>{if(failSpecification&&table==='product_specifications'&&args[1]?.method==='PATCH'){failSpecification=false;return new Response(JSON.stringify({code:'23514',message:'Fixture validation failure'}),{status:400,headers:{'content-type':'application/json'}})}if(failLookup&&table==='commerce_warehouses')return new Response(JSON.stringify({code:'PGRST',message:'Fixture lookup failure'}),{status:503,headers:{'content-type':'application/json'}});return fetch(...args)}}).from(table)}}
+const Dummy={render:()=>h('div',{'data-prerequisite':true},[h('p','Existing management route fixture'),h('a',{href:'/dashboard/products/add',onClick:e=>{e.preventDefault();router.push('/dashboard/products/add')}},'Return to product')])}
+const router=createRouter({history:createWebHistory(),routes:[{path:'/dashboard/products',component:Listing},{path:'/ar/dashboard/products',component:Listing},{path:'/dashboard/products/add',component:Add},{path:'/dashboard/products/edit/:id',component:Edit},{path:'/ar/dashboard/products/add',component:Add},{path:'/ar/dashboard/products/edit/:id',component:Edit},{path:'/:pathMatch(.*)*',component:Dummy}]})
+const appearance=()=>{document.documentElement.lang=i18n.global.locale.value;document.documentElement.dir=i18n.global.locale.value==='ar'?'rtl':'ltr';document.documentElement.classList.toggle('dark',theme.value==='dark'||theme.value==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+watch([theme,i18n.global.locale],appearance);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',appearance)
+Object.assign(globalThis,{ref,reactive,computed,onMounted,onBeforeUnmount,watch,watchEffect,nextTick,resolveComponent,useId,useState,useUiLocale,useProductSave,useProductEditor,useProductSection,useAdminUploads,useMediaErrors,definePageMeta(){},useI18n:()=>i18n.global,useNuxtApp:()=>({$i18n:i18n.global}),useUiRoute:()=>useRoute(),useRouter,useSupabaseClient:()=>supabase,useNuxtData:()=>({data:erp}),useSiteContent:()=>({data:ref({settings:{}})}),useRuntimeConfig:()=>({public:{siteUrl:'https://fixture.example.invalid'}}),useDashboardLayout:()=>({dashboardLayout:ref('standard')}),
+ useAdminAccess:()=>({adminUser,hasPermission:permissions}),useAdminLogs:()=>({getAdminAuthHeaders:async()=>({authorization:'Bearer '+actor.value}),recordAdminLog:async()=>{}}),
+ useDashboardCache:()=>({getSnapshot:()=>null,isFresh:()=>false,setSnapshot(){},invalidate:p=>invalidations.push(p)}),
+ useAsyncData:async(_key,loader)=>{const data=ref(null),error=ref(null),pending=ref(false);const refresh=async()=>{pending.value=true;try{data.value=await loader();error.value=null}catch(e){error.value=e}finally{pending.value=false}};await refresh();return{data,error,pending,refresh}},
+ useUiNavigation:()=>({uiNavigateTo:to=>router.push(localizedPath(to,i18n.global.locale.value)),uiRouterPush:to=>router.push(localizedPath(to,i18n.global.locale.value)),uiRouterReplace:to=>router.replace(localizedPath(to,i18n.global.locale.value))}),$fetch:async(path,options)=>{if(delayedList&&path==='/api/admin-products/list'){delayedList=false;const result=await ofetch(config.url+path,{...options,signal:undefined,retry:0});await new Promise(resolve=>window.releaseStaleList=resolve);return result}return ofetch((path.startsWith('/api/admin-gallery')||path.startsWith('/api/admin-uploads')?'':emptyMode?config.emptyUrl:config.url)+path,{...options,retry:0})}})
+const app=createApp({render:()=>h('div',{class:'dashboard-modern p-4'},h(RouterView,null,{default:({Component,route})=>h(Suspense,null,{default:()=>h(Component,{key:route.path+generation.value})})}))})
+app.use(i18n);app.use(router);const ui=useUiLocale();app.config.globalProperties.$uiLabel=ui.uiLabel;app.config.globalProperties.$uiMessage=ui.uiMessage
+for(const[name,component]of Object.entries({DashboardProductsVariantsEditor:Variants,DashboardProductsSellingModeFields:SellingMode,DashboardProductsWarrantyFields:Warranty,DashboardProductsSpecificationEditor:Specifications,DashboardPageIntro:PageIntro,DashboardSeoFields:Seo,DashboardMediaUploadField:MediaField,DashboardMediaLibrary:MediaLibrary}))app.component(name,component)
+app.component('DashboardSecondaryNav',{render(){return null}})
+app.component('Icon',{render(){return h('span',{'aria-hidden':'true'})}})
+app.component('NuxtLinkLocale',{props:['to'],setup(props,{slots,attrs}){return()=>h('a',{...attrs,href:router.resolve(localizedPath(props.to,i18n.global.locale.value)).href,onClick:e=>{if(attrs.onClick)attrs.onClick(e);if(!e.defaultPrevented){e.preventDefault();router.push(localizedPath(props.to,i18n.global.locale.value))}}},slots.default?.())}})
+router.isReady().then(()=>{app.mount('#app');appearance()})
+window.editorTest={config,invalidations,actor,theme,erp,locale:i18n.global.locale,state,router,appearance,failSpecification:()=>failSpecification=true,failLookup:value=>failLookup=value,holdNextList:()=>delayedList=true,emptyMode:value=>emptyMode=value,async show(path){await router.push(path);generation.value++;await nextTick()}}
+`)
+ await build({entryPoints:[join(dir,'entry.js')],bundle:true,outfile:join(dir,'bundle.js'),alias:{'~':join(base,'app')},nodePaths:[join(base,'node_modules')],plugins:[{name:'compiled-list-filter',setup(b){b.onResolve({filter:/ListFilter\.vue$/},()=>({path:join(dir,'ListFilter.js')}))}}],define:{'process.env.NODE_ENV':'"test"','import.meta.client':'true','__VUE_OPTIONS_API__':'true','__VUE_PROD_DEVTOOLS__':'false','__VUE_PROD_HYDRATION_MISMATCH_DETAILS__':'false'}})
+ const css=(await Promise.all((await readdir(join(base,'.output/public/_nuxt'))).filter(n=>n.endsWith('.css')).map(n=>readFile(join(base,'.output/public/_nuxt',n),'utf8')))).join('\n')+componentCss
+ server=createServer(async(req,res)=>{if(req.url.startsWith('/api/admin-gallery')||req.url.startsWith('/api/admin-uploads')){const proxy=httpRequest(media.url+req.url,{method:req.method,headers:{...req.headers,host:new URL(media.url).host}},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res)});proxy.on('error',()=>{res.statusCode=503;res.end()});req.pipe(proxy);return}if(req.url.startsWith('/uploads/')){const response=await fetch(media.url+req.url);res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));return}res.setHeader('content-type',req.url==='/bundle.js'?'text/javascript':'text/html');res.end(req.url==='/bundle.js'?await readFile(join(dir,'bundle.js')):'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="bg-slate-100"><div id="app"></div><script src="/bundle.js"></script></body></html>')})
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port
+ browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true})
+ const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[],external=[];let assertions=0,screens=0,failList=false,oversizeList=false,expectedLostResponses=0,loseBrowserResponse=false
+ reviewPage=page
+ const check=(value,message)=>{assert.ok(value,message);assertions++}
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/ERR_EMPTY_RESPONSE|ERR_FAILED/.test(m.text())){expectedLostResponses++;return}if(m.type()==='error'&&!/server responded with a status of (400|401|403|409|503)\b/.test(m.text()))errors.push(m.text())})
+ const listRequests=[];page.on('request',r=>{if(r.url().startsWith(f.url+'/api/admin-products/list'))listRequests.push(r.url())})
+ await page.route('**/*',async route=>{
+  if(![url,f.url,rest.url,media.url,empty.url].some(origin=>route.request().url().startsWith(origin+'/'))){external.push(route.request().url());await route.abort();return}
+  if(route.request().url().startsWith(f.url+'/api/admin-products/list')&&failList){failList=false;await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({statusCode:503,statusMessage:'Fixture listing outage'})});return}
+  if(route.request().url().startsWith(f.url+'/api/admin-products/list')&&oversizeList){oversizeList=false;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:Array.from({length:26},(_,i)=>({id:String(i)})),total:26,page:1,page_size:25,catalog_total:26})});return}
+  if(loseBrowserResponse&&route.request().url().startsWith(f.url+'/api/admin-products/bulk')&&route.request().method()==='POST'){loseBrowserResponse=false;await route.fetch();await route.abort('failed');return}
+  await route.continue()
+ })
+ const labels=Object.fromEntries(await Promise.all(['en','ar'].map(async l=>[l,JSON.parse(await readFile(join(base,'i18n/locales/'+l+'.json'),'utf8'))])))
+ const waitList=async()=>{try{await page.locator('table tbody tr').first().waitFor();await page.waitForFunction(()=>document.querySelector('[aria-busy]')?.getAttribute('aria-busy')==='false')}catch(error){await writeFile(join(dir,'failure.json'),JSON.stringify({url:page.url(),body:await page.locator('body').innerText(),errors,requests:listRequests,rpcErrors:f.controls.rpcErrors},null,2));await page.screenshot({path:join(dir,'failure.png')});throw error}}
+ const show=async path=>{await page.evaluate(path=>window.editorTest.show(path),path);await waitList()}
+ const screenshot=async name=>{await page.screenshot({path:join(dir,name+'.png'),fullPage:true});screens++}
+ await page.goto(url+'/dashboard/products?q=Listing+product');await page.waitForFunction(()=>!!window.editorTest);await waitList()
+ const rowBoxes=()=>page.locator('table tbody input[type=checkbox]')
+ const controls=page.locator('[data-bulk-controls]')
+ const countText=async(language,n)=>{const text=labels[language].productBulk.selected.replace('{count}',String(n));await controls.getByText(text,{exact:true}).waitFor();check(true,'Exact selected count '+n)}
+ const selectOne=async()=>{await rowBoxes().first().check();await countText('en',1);return page.locator('table tbody tr').first().getAttribute('data-product-id')}
+ const review=async(language='en')=>{await controls.getByRole('button',{name:labels[language].productBulk.review,exact:true}).click();await controls.getByRole('button',{name:labels[language].productBulk.apply,exact:true}).waitFor()}
+ const apply=async(language='en')=>{await review(language);await controls.getByRole('button',{name:labels[language].productBulk.apply,exact:true}).click();await page.locator('[data-bulk-results]').waitFor();await waitList()}
+ for(const language of ['en','ar'])for(const width of [390,768,1440])for(const theme of ['light','dark','system']){
+  await page.setViewportSize({width,height:1000});await page.emulateMedia({colorScheme:theme==='light'?'light':'dark'})
+  await page.evaluate(({language,theme})=>{const s=window.editorTest;s.locale.value=language;s.theme.value=theme;s.appearance()},{language,theme})
+  await show((language==='ar'?'/ar':'')+'/dashboard/products?q=Listing+product')
+  await controls.getByRole('checkbox',{name:labels[language].productBulk.selectPage,exact:true}).check();await countText(language,25)
+  check(await rowBoxes().count()===25,'Current page bounded at 25');check(await rowBoxes().evaluateAll(nodes=>nodes.every(n=>n.checked)),'All visible rows selected')
+  await review(language);check(await page.locator('#product-search').isDisabled(),'Filters disabled during confirmation')
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow')
+  check(await page.locator('html').getAttribute('dir')===(language==='ar'?'rtl':'ltr'),'Correct direction')
+  await screenshot(language+'-'+width+'-'+theme+'-confirmation');if(width!==768&&theme==='light'){await page.screenshot({path:join(dir,language+'-'+width+'-'+theme+'-viewport.png')});screens++}
+  await controls.getByRole('button',{name:labels[language].common.cancel,exact:true}).click();check(await page.locator('#product-search').isEnabled(),'Cancel unlocks filters')
+  await controls.getByRole('checkbox',{name:labels[language].productBulk.selectPage,exact:true}).uncheck();await countText(language,0)
+ }
+ await page.evaluate(()=>{const s=window.editorTest;s.locale.value='en';s.theme.value='light';s.appearance()});await page.setViewportSize({width:1440,height:1000});await show('/dashboard/products?q=Listing+product')
+ await selectOne();await page.getByRole('button',{name:labels.en.common.next,exact:true}).click();await waitList();await countText('en',0)
+ check(new URL(page.url()).searchParams.get('page')==='2','Pagination remains URL based')
+ await selectOne();await page.goBack();await waitList();await countText('en',0)
+ await selectOne();await page.locator('#product-sort').selectOption('title_asc');await waitList();await countText('en',0)
+ await selectOne();await page.locator('#product-status').selectOption('drafts');await waitList();await countText('en',0)
+ await selectOne();await page.getByRole('button',{name:labels.en.productList.refresh,exact:true}).click();await waitList();await countText('en',0)
+ await selectOne();await page.locator('#product-search').fill('VARIANT-SKU-11');await waitList();await countText('en',0)
+ check(await rowBoxes().count()===1,'Search selection affects matching visible row only')
+ await show('/dashboard/products?q=VARIANT-SKU-11');
+ const temporaryCategory=(await rest.db.query("insert into public.categories(name,slug) values('Temporary bulk category','temporary-bulk-category') returning id")).rows[0].id;
+ const selectedId=await selectOne();const beforeWrites=f.controls.writes;await review();await controls.getByRole('button',{name:labels.en.common.cancel,exact:true}).click();check(f.controls.writes===beforeWrites,'Cancel before submission performs no write')
+ f.controls.delay=350;await review();await controls.getByRole('button',{name:labels.en.productBulk.apply,exact:true}).evaluate(button=>{button.click();button.click()});await page.locator('[data-bulk-results]').waitFor();await waitList();f.controls.delay=0
+ check(f.controls.writes===beforeWrites+1,'Duplicate confirm sends one command');check((await f.snapshot(selectedId)).product.is_published===true,'Real publish committed');check(await page.evaluate(()=>window.editorTest.invalidations.includes('dashboard:products:')&&window.editorTest.invalidations.includes('dashboard:home')),'Existing Dashboard caches invalidated after acknowledgement');await screenshot('en-1440-publish-results')
+ await selectOne();await page.locator('#product-bulk-action').selectOption('draft');await apply();check((await f.snapshot(selectedId)).product.is_published===false,'Real draft committed')
+ for(const kind of ['category','brand']){await selectOne();await page.locator('#product-bulk-action').selectOption(kind);check(await controls.getByRole('button',{name:labels.en.productBulk.review,exact:true}).isDisabled(),'Assignment requires explicit existing choice');await page.locator('#product-bulk-'+kind).selectOption(f[kind]);await page.waitForFunction(()=>!document.querySelector('[data-bulk-controls] button')?.disabled);await controls.getByRole('button',{name:labels.en.productBulk.review,exact:true}).waitFor();await apply();check((await f.snapshot(selectedId)).product[kind+'_id']===f[kind],'Real '+kind+' assignment preserved selected reference')}
+ await selectOne();await page.locator('#product-bulk-action').selectOption('category');await page.locator('#product-bulk-category').selectOption(temporaryCategory);await review();await rest.db.query('delete from public.categories where id=$1',[temporaryCategory]);const referenceRequest=page.waitForRequest(request=>request.url().includes('/api/admin-products/bulk')&&request.method()==='POST');const referenceResponse=page.waitForResponse(response=>response.url().includes('/api/admin-products/bulk')&&response.request().method()==='POST');await controls.getByRole('button',{name:labels.en.productBulk.apply,exact:true}).click();await page.locator('[data-bulk-results]').waitFor();await waitList();const terminal=await(await referenceResponse).json();check(terminal.failed===1&&terminal.items[0].reason==='reference','Deleted assignment reference has a terminal failed receipt');check((await f.snapshot(selectedId)).product.category_id===f.category,'Failed assignment preserves category');check(await page.locator('#product-search').isEnabled(),'Verified terminal reference failure unlocks controls');await page.locator('[data-bulk-results] summary').click();await page.locator('[data-bulk-results]').getByText(labels.en.productBulk.referenceError,{exact:true}).waitFor();await page.setViewportSize({width:390,height:1000});await screenshot('en-390-reference-results');await page.setViewportSize({width:1440,height:1000});await rest.db.query("insert into public.categories(id,name,slug) values($1,'Restored bulk category','restored-bulk-category')",[temporaryCategory]);const replay=await f.call('/api/admin-products/bulk',{method:'POST',body:(await referenceRequest).postDataJSON()});check(replay.body.replayed&&replay.body.failed===1&&(await f.snapshot(selectedId)).product.category_id===f.category,'Restored reference cannot turn the failed retry into a write')
+ await selectOne();await page.locator('#product-bulk-action').selectOption('publish');await rest.db.query("update public.products set title=title||' newer' where id=$1",[selectedId]);await apply();check((await page.locator('[data-bulk-results]').innerText()).includes('1 conflicts'),'Concurrent edit reported accurately');check((await f.snapshot(selectedId)).product.is_published===false,'Newer revision protected');await screenshot('en-1440-conflict-results')
+ await selectOne();const auditBefore=(await f.counts()).audits;loseBrowserResponse=true;await review();await controls.getByRole('button',{name:labels.en.productBulk.apply,exact:true}).click();await controls.getByRole('alert').filter({hasText:labels.en.productBulk.unknown}).waitFor();check(await page.locator('#product-search').isDisabled(),'Unknown response keeps batch locked')
+ const stored=await page.evaluate(()=>Object.values(sessionStorage).map(value=>JSON.parse(value)));check(stored.length===1&&Object.keys(stored[0]).sort().join(',')==='items,operation,reference_id,request_id','Recovery stores only safe command metadata')
+ page.once('dialog',dialog=>dialog.accept());await page.reload();await waitList();await controls.getByRole('button',{name:labels.en.productBulk.check,exact:true}).waitFor();await controls.getByRole('button',{name:labels.en.productBulk.check,exact:true}).click();await page.locator('[data-bulk-results]').waitFor();await waitList();check((await f.counts()).audits===auditBefore+1,'Reload status recovery does not repeat commit');check(await page.evaluate(()=>sessionStorage.length)===0,'Confirmed recovery clears command');await screenshot('en-1440-recovered-results')
+ await selectOne();await page.locator('#product-bulk-action').selectOption('draft');let blockedPost=true
+ await page.route('**/api/admin-products/bulk',async route=>{if(blockedPost&&route.request().method()==='POST'){blockedPost=false;await route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({statusCode:400,data:{productBulkError:'invalid'}})})}else await route.continue()})
+ await review();await controls.getByRole('button',{name:labels.en.productBulk.apply,exact:true}).click();await controls.getByRole('button',{name:labels.en.productBulk.check,exact:true}).waitFor();await controls.getByRole('button',{name:labels.en.productBulk.check,exact:true}).click();await controls.getByRole('alert').filter({hasText:labels.en.productBulk.unknown}).waitFor();check(await page.locator('#product-search').isDisabled(),'Missing receipt never releases an unknown command')
+ const priorUrl=page.url();await page.locator('table a').first().click();await controls.getByRole('alert').filter({hasText:labels.en.productBulk.leave}).waitFor();check(page.url()===priorUrl,'Pending batch blocks navigation');await controls.getByRole('button',{name:labels.en.productBulk.retry,exact:true}).click();await page.locator('[data-bulk-results]').waitFor();await waitList();check((await f.snapshot(selectedId)).product.is_published===false,'Exact pending retry committed')
+ await page.setViewportSize({width:390,height:1000});
+ const invalid=await f.save(f.body({title:'Incomplete bulk product'}));await rest.db.query("update public.products set slug='bad_slug' where id=$1",[invalid.id]);await show('/dashboard/products?q=Incomplete+bulk+product');await selectOne();await page.locator('#product-bulk-action').selectOption('publish');await apply();check((await page.locator('[data-bulk-results]').innerText()).includes('1 failed'),'Incomplete product rejected');check((await f.snapshot(invalid.id)).product.is_published===false,'Incomplete product remains draft');await screenshot('en-390-incomplete-results')
+ const mixed=await f.save(f.body({title:'Listing product incomplete'}));await rest.db.query("update public.products set slug='mixed_bad_slug' where id=$1",[mixed.id]);await show('/dashboard/products?q=Listing+product');await controls.getByRole('checkbox',{name:labels.en.productBulk.selectPage,exact:true}).check();await countText('en',25)
+ const different=(await page.locator('table tbody tr').evaluateAll(rows=>rows.map(row=>row.dataset.productId))).find(id=>id!==mixed.id);await rest.db.query("update public.products set title=title||' reviewed' where id=$1",[different]);const batchResponse=page.waitForResponse(response=>response.url().includes('/api/admin-products/bulk')&&response.request().method()==='POST');await apply();const partial=await(await batchResponse).json();check(partial.succeeded>0&&partial.unchanged>0&&partial.conflicted===1&&partial.failed===1,'One batch reports all four outcomes');check(partial.succeeded+partial.unchanged+partial.conflicted+partial.failed===25,'Exact partial counts total the selected page');await screenshot('en-390-partial-results')
+ await page.setViewportSize({width:1440,height:1000});
+ await page.evaluate(()=>{const s=window.editorTest;s.locale.value='ar';s.actor.value='editor';s.appearance()});await show('/ar/dashboard/products?q=VARIANT-SKU-13');await rowBoxes().first().check();await countText('ar',1);await apply('ar');check((await page.locator('[data-bulk-results]').innerText()).includes(labels.ar.productBulk.results.split('{')[0]),'Arabic final result');await screenshot('ar-1440-results')
+ await page.evaluate(()=>window.editorTest.actor.value='viewer');await waitList();check(await rowBoxes().count()===0,'Viewer cannot select');check(await controls.count()===0,'Viewer has no bulk controls')
+ await page.evaluate(()=>window.editorTest.actor.value='editor');await waitList();await rowBoxes().first().check();await review('ar');await rest.db.query('update public.admin_users set is_active=false where id=$1',[f.actors.editor]);await controls.getByRole('button',{name:labels.ar.productBulk.apply,exact:true}).click();await controls.getByRole('alert').filter({hasText:labels.ar.productBulk.permission}).waitFor();check(true,'Revoked staff cannot commit');await page.setViewportSize({width:390,height:1000});await screenshot('ar-390-revoked')
+ check(expectedLostResponses===1,'One deliberately dropped acknowledgement');check(errors.length===0,'No unexpected browser errors: '+errors.join(';'));check(external.length===0,'No external requests')
+ const report={assertions,screenshots:screens,errors,external,expectedLostResponses,database:'Owned native PostgreSQL, PostgREST, real bulk/list/product/media HTTP handlers',limits:'Synthetic Auth verification, JWTs and Nuxt shell. Real components, Vue Router, browser storage and Chrome. Local acceptance only; no hosted or production access.'}
+ await writeFile(join(dir,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report))
+}catch(error){if(reviewPage){await writeFile(join(dir,'failure.json'),JSON.stringify({error:error.message,body:await reviewPage.locator('body').innerText(),storage:await reviewPage.evaluate(()=>Object.entries(sessionStorage)),writes:f?.controls.writes,rpcErrors:f?.controls.rpcErrors},null,2));await reviewPage.screenshot({path:join(dir,'failure.png'),fullPage:true})}throw error}finally{await browser?.close();if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}await empty?.close();await media?.close();await f?.close();await rest.close()}

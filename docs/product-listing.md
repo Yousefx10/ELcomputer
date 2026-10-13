@@ -122,3 +122,7 @@ certificates and frozen deployment artifacts are unchanged. This task applies SQ
 only to disposable local databases and performs no production/hosted/VPS access.
 
 Stop after Task 4 commit/push for review; do not begin Task 5.
+
+Task 5 adds current-page bulk controls and same-snapshot revision metadata. See
+[Product bulk operations](product-bulk-operations.md); the Task 4 paging, stock,
+confidentiality, localization and editor-return contracts remain in force.

@@ -2,7 +2,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { productListState, productListParams, productListPath } from '~/utils/productList'
 
-export const useProductListing = () => {
+export const useProductListing = ({ locked } = {}) => {
   const route = useUiRoute()
   const { uiRouterPush, uiRouterReplace } = useUiNavigation()
   const { adminUser, hasPermission } = useAdminAccess()
@@ -18,11 +18,13 @@ export const useProductListing = () => {
   let requestId = 0, controller, timer, synchronizing = false, mounted = false
   const cancel = () => { requestId++; controller?.abort(); clearTimeout(timer) }
   const update = (changes, { replace = false } = {}) => {
+    if (locked?.value) return
     clearTimeout(timer)
     const next = { ...state.value, q: search.value.trim(), page: 1, ...changes }
     return (replace ? uiRouterReplace : uiRouterPush)({ path: '/dashboard/products', query: productListParams(next) })
   }
   const load = async () => {
+    if (locked?.value) return
     const id = ++requestId
     controller?.abort(); controller = new AbortController()
     const signal = controller.signal
@@ -65,7 +67,7 @@ export const useProductListing = () => {
     if (mounted) load()
   })
   onMounted(() => { mounted = true; load() })
-  onBeforeRouteLeave(() => { cancel() })
+  onBeforeRouteLeave(() => { if (!locked?.value) cancel() })
   onBeforeUnmount(() => { mounted = false; cancel() })
   const editorLink = id => ({ path: id ? `/dashboard/products/edit/${id}` : '/dashboard/products/add', query: { returnTo: context.value } })
   const hasFilters = computed(() => ['status','mode','stock'].some(key => state.value[key] !== 'all') || Boolean(state.value.category || state.value.brand))

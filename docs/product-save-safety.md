@@ -146,3 +146,8 @@ unrelated media/SEO controls are fixtures. External browser requests are blocked
 Native independent-session and local browser evidence do not certify hosted
 Supabase Auth, production accounts, real provider flows or a deployed migration.
 Hosted acceptance and any deployment require separate authorization.
+
+Task 5 sparse bulk commands reuse editorial revisions and transactional audits
+without passing omitted fields through the full-form normalizer. See
+[Product bulk operations](product-bulk-operations.md). Bulk retry receipts retain
+terminal partial results; failed items need fresh selection after review.

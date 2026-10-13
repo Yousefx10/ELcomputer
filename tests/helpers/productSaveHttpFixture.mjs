@@ -45,6 +45,8 @@ export async function createProductSaveHttpFixture(options = {}) {
       ['get', '/api/admin-products', 'server/api/admin-products/index.get.js'],
       ['get', '/api/admin-products/list', 'server/api/admin-products/list.get.js'],
       ['get', '/api/admin-products/filter-options', 'server/api/admin-products/filter-options.get.js'],
+      ['post', '/api/admin-products/bulk', 'server/api/admin-products/bulk.post.js'],
+      ['get', '/api/admin-products/bulk', 'server/api/admin-products/bulk.get.js'],
       ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js']
     ]) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false,

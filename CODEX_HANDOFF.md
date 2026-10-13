@@ -1,3 +1,13 @@
+# Product Manager Task 5 — safe bulk operations, 2026-10-13
+
+- Authorized baseline `07f4aaa8c54e907b2bc4252d15bf311f864dbcef`. Supports only Publish, Move to Draft and explicit assignment to an existing category/brand. No clearing, deletion, price/stock/cost/warehouse/variant/supplier/ERP/import/export operations.
+- Existing listing identity, EN/AR/RTL/themes and responsive rows remain. Current-page checkboxes are bounded at 25; any list change clears selection. Compact confirmation, cancellation before submission, progress and exact per-product results reuse existing controls. [Contract](docs/product-bulk-operations.md).
+- Sparse service commands recheck named Products permissions and revisions under commit-held locks; each product and audit is atomic. Private receipts retain exact partial results for immutable retries/status. Unknown acknowledgements block further submission/navigation; tab-local, actor-scoped recovery stores only command UUIDs/revisions/operation.
+- Additive migration **76**, `20261013200000_product_bulk_operations.sql`, adds private receipts/helpers and service-only bulk/status RPCs, and adds same-snapshot revision metadata to the existing list RPC. **Migrations1–75 remain byte-identical**. No inventory/media/ERP rewrites, business-table grant/RLS changes or new dependencies.
+- Validation: **1,018/1,018 regression pass**, no skips/cancellations; **22 focused bulk checks**; Node 22 typecheck/build pass; **572 compiled input hashes** match. Browser acceptance: **1,551 assertions / 261 screenshots**, no unexpected errors/external requests. Native 10,000-product batch updates exactly 25 in **36 ms** (local fixture only). [Validation](docs/product-bulk-validation.md). Evidence: `/Users/imac/Documents/ELcomputer/product-manager-task5-review-20261013`.
+- Production/hosted/VPS/provider settings, Quick Setup and frozen installer artifacts are untouched. The installer is certified through **1–71**; development **72–76** needs separate certification. Only disposable local databases are used. Local synthetic Auth/native/browser evidence is not hosted acceptance.
+- **STOP after Task 5 commit/push for review. Do not begin Task 6.**
+
 # Product Manager Task 4 — listing, filters and navigation, 2026-10-13
 
 - Authorized baseline `338f41752d8638b5ba61de8326778b78540f34be`. The existing Products route now has a compact desktop table and readable mobile rows: thumbnail, authored title/SKU, stored category/brand, selling price, Draft/Published state, selling mode, available stock, active option count and existing actions. Existing Dashboard identity, EN/AR, RTL and themes remain; no statistics cards, charts, bulk controls or invented content. [Contract](docs/product-listing.md).

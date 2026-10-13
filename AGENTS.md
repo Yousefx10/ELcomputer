@@ -29,3 +29,7 @@
   named Products permissions, confidential projections, available-stock meaning
   and URL/editor return continuity. Preserve compact desktop/mobile rows and
   distinguish failed requests from empty catalogs. Never add catalog demo data.
+- Follow [Product bulk operations](docs/product-bulk-operations.md) for current-page
+  selection, sparse commands, confirmation, revision checks and receipt recovery.
+  Keep assignment explicit; never infer clearing or select all matching products.
+  Retain unresolved batch commands and report partial results accurately.
