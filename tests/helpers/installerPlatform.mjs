@@ -23,9 +23,11 @@ export async function installerSourceCopy({extraFiles=[],release79=false}={}) {
   // Regression fixtures exercise the frozen, certified 1-71 installer.
   // Release79 tests opt into the separate certificate. Historical fixtures
   // continue exercising the unchanged 1-71 source membership and authority.
+  // These are historical certificate fixtures, not certification of later SQL.
+  const lastMigration=release79?'20261014200000_system_reset_compatibility.sql':'20261012160000_quick_setup_installation_bootstrap.sql'
   const names=stdout.split('\0').filter(name=>name &&
-    !( !release79 && name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
-      name>'supabase/migrations/20261012160000_quick_setup_installation_bootstrap.sql'))
+    !(name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
+      name>'supabase/migrations/'+lastMigration))
   const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
   for(const name of new Set([...names,...newNames,...extraFiles])){
     const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)

@@ -1,3 +1,12 @@
+# BETA Gate 2 H1 — packing scan correction, 2026-10-14
+
+- Authorized baseline `a811b05fe5daa0739b913f1bd4847f6adc26da21`; feature development remains frozen. H1 only. H2/H3 remain unresolved BETA blockers.
+- Additive migration **80**, `20261014220000_packing_scan_authorization.sql`, corrects the existing invoker trigger's `FOR SHARE` permission failure. The existing trigger becomes a constrained SECURITY DEFINER with fixed search path, exact trigger/table/operation binding, commit-held active named-staff checks and existing order/unit/quantity guards. Direct EXECUTE is revoked from PUBLIC, anon, authenticated and service_role. No inventory UPDATE grant, RLS change, generic RPC or physical/financial writer is added.
+- [Authorization and locking contract](docs/packing-scan-authorization.md). **1,160/1,160 complete regression passes**, zero failures/skips/cancellations; **14 focused native checks**; typecheck/build exit0; **72 EN/AR desktop/mobile/theme route combinations**. Actual owner→Draft→Procurement→COD→packing/private-video/completion and post-Full repetition pass, including authorization/concurrency/lost-response/replay checks. All226 foreign keys and physical stock balances are consistent. Native services versus generated camera/ingress/Realtime/platform fixtures and retained diagnostics: `/Users/imac/Documents/ELcomputer/beta-gate2-h1-20261014/REPORT.md`.
+- Migrations1–79, release-79-v1 and all historical installer/certificate artifacts remain byte-identical. Historical installer regression fixtures select their certified71/79 ranges; this does **not** certify80. The corrected source requires separately authorized release/installation recertification before hosted deployment. No recertification is performed by H1.
+- Production remains owner-reported70, without access or verification. No production SQL, deployment, VPS/WordPress/domain change, provider activation, H2 or H3 work is authorized.
+- **STOP after H1 validation, commit/push and review.** Do not automatically begin another Gate2 task, recertification or deployment. Historical task stops below are superseded only within H1 authorization.
+
 # BETA Gate 1B — guided fresh release79, 2026-10-14
 
 - Authorized baseline `5b056d512b4897e1c3daa3805830617109abb4e3`. Product Manager remains frozen. No application/UI or migration change.
