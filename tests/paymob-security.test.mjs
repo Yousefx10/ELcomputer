@@ -28,19 +28,20 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
       then(resolve) { resolve({ data: [{ id: body.items[0].id, selling_mode: 'normal' }] }) },
       async upsert() { return {} }
     } },
-    async rpc(name, args) { writes.push({ name, args }); return { data: { created: true, order: { id, order_number: 'FIXTURE', total_amount: 112.5, payment_method: 'card' } } } }
+    async rpc(name, args) { writes.push({ name, args }); return { data: { created: !existing, order: existing || { id, order_number: 'FIXTURE', total_amount: 112.5, payment_method: 'card' } } } }
   }
+  const commandSource = read('server/utils/checkoutCommand.js').replace(/import[^\n]+\n/g, '').replaceAll('export const ', 'const ')
   const source = read('server/api/checkout/index.post.js').replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '').replace('export default defineEventHandler', 'captureHandler')
-  runInNewContext(source, {
+  runInNewContext(commandSource + '\n' + source, {
     captureHandler: fn => { handler = fn }, defineEventHandler: fn => fn,
     createError, randomUUID, normalizePaymentMethod, getPaymobConfig,
-    readBody: async () => body, useRuntimeConfig: () => ({ ...runtime, paymobEnabled: enabled }),
+    readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, paymobEnabled: enabled }),
     requireCustomerRequest: async () => ({ authUser: { id: user, email: 'fixture@example.invalid' }, supabaseAdmin: db }),
     isStoreAnalyticsUuid: value => /^[0-9a-f-]{36}$/i.test(value), recordStoreOrderCreated: async () => {}, console
   })
   return { run: () => handler({}), writes }
 }
-const checkoutBody = () => ({ cart_id: randomUUID(), items: [{ id: randomUUID(), quantity: 1 }], payment_method: 'card', address: { first_name: 'Buyer', phone: '01000000000', street_address: 'Street', city: 'Cairo', governorate: 'Cairo' } })
+const checkoutBody = () => ({ cart_id: randomUUID(), quote_id: randomUUID(), items: [{ id: randomUUID(), quantity: 1 }], payment_method: 'card', address: { first_name: 'Buyer', phone: '01000000000', street_address: 'Street', city: 'Cairo', governorate: 'Cairo' } })
 
 test('Nuxt defaults stay private/disabled and private environment canaries cannot enter public config', () => {
   let config
@@ -53,24 +54,32 @@ test('Nuxt defaults stay private/disabled and private environment canaries canno
   assert.equal(Object.keys(config.runtimeConfig.public).some(key => /paymob|secret|hmac|serviceRole/i.test(key)), false)
 })
 
-test('disabled gateway rejects every normalized card spelling before order/stock writes, preserving cart retries', async () => {
+test('disabled gateway rejects normalized card spellings and delegates committed retries to the guarded receipt RPC', async () => {
   for (const payment_method of ['card', 'CARD', ' Card ']) {
     const fixture = checkoutHarness({ ...checkoutBody(), payment_method })
     await assert.rejects(fixture.run, error => error.statusCode === 400 && /not available/.test(error.statusMessage))
     assert.equal(fixture.writes.length, 0)
   }
   const saved = { id: randomUUID(), order_number: 'EXISTING', payment_method: 'card', total_amount: 100 }
-  const retry = checkoutHarness(checkoutBody(), false, saved)
+  const body = checkoutBody(), retry = checkoutHarness(body, false, saved)
   assert.equal((await retry.run()).order.id, saved.id)
-  assert.equal(retry.writes.length, 0)
+  assert.equal(retry.writes.length, 1)
+  assert.equal(retry.writes[0].name, 'commerce_checkout_command')
+  assert.equal(retry.writes[0].args.p_cart_id, body.cart_id)
+  assert.equal(retry.writes[0].args.p_quote_id, body.quote_id)
 })
 
-test('checkout forwards no client financial/currency fields and rejects forged item prices', async () => {
-  const body = { ...checkoutBody(), price: 1, subtotal_amount: 1, discount_amount: 1000, payment_fee_amount: 0, shipping_amount: 0, tax_amount: 0, total_amount: 1, currency: 'USD', amount_paid: 1000 }
+test('checkout rejects client financial/currency fields and forged item prices before RPC writes', async () => {
+  const body = checkoutBody()
   const fixture = checkoutHarness(body, true)
   await fixture.run()
   const args = fixture.writes[0].args
-  for (const key of ['price','subtotal_amount','discount_amount','payment_fee_amount','shipping_amount','tax_amount','total_amount','currency','amount_paid']) assert.equal(Object.hasOwn(args.p_order, key), false, key)
+  for (const key of ['price','subtotal_amount','discount_amount','payment_fee_amount','shipping_amount','tax_amount','total_amount','currency','amount_paid']) {
+    assert.equal(Object.hasOwn(args.p_order, key), false, key)
+    const forged = checkoutHarness({ ...body, [key]: key === 'currency' ? 'USD' : 1 }, true)
+    await assert.rejects(forged.run, error => error.statusCode === 400)
+    assert.equal(forged.writes.length, 0)
+  }
   assert.deepEqual(Object.keys(args.p_items[0]).sort(), ['product_id','quantity','variant_id'])
   for (const key of ['price','unit_price','line_total','total_amount']) {
     const forged = checkoutHarness({ ...body, items: [{ ...body.items[0], [key]: 1 }] }, true)

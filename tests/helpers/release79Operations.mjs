@@ -16,8 +16,9 @@ const foreignKeys=async f=>{
  for(const k of keys){const where=k.src.map(x=>'c."'+x+'" is not null').join(' and '),join=k.src.map((x,i)=>'c."'+x+'"=p."'+k.dst[i]+'"').join(' and ');assert.equal(await scalar(f,'select count(*)::int value from '+k.child+' c where '+where+' and not exists(select 1 from '+k.parent+' p where '+join+')'),0,k.conname)}
 }
 const rpc=async(f,name,args)=>{const r=await f.service.rpc(name,args);assert.equal(r.error,null,JSON.stringify(r.error));return r.data}
-export async function exerciseInstalledRelease79(lab,t){
- const f=await createResetPlatform({installedLab:lab}),warehouse=randomUUID(),results=[]
+export async function exerciseInstalledRelease79(lab,t,applicationSource){
+ assert.ok(applicationSource,'Exact release79 application source required')
+ const f=await createResetPlatform({installedLab:lab,applicationSource}),warehouse=randomUUID(),results=[]
  const seal=await scalar(f,'select to_jsonb(s) value from private.installation_bootstrap s'),schema=await releaseApplicationCatalog(f.db),managed=await managedSecurity(f),history=(await f.db.query('select * from supabase_migrations.schema_migrations order by version')).rows
  const tables=()=>{const x={...Object.fromEntries(Object.keys(TABLES).map(k=>[k,[]])),Guide:guideRows()};x.Products.push({product_key:'new1',title:'Owned post-install fixture',slug:'owned-'+randomUUID(),price:'10.00',selling_mode:'normal'});x.Variants.push({product_key:'new1',entity_key:'v1',name:'Default',code:'DEFAULT',is_active:true});return x}
  const stage=async(format='csv')=>{

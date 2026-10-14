@@ -13,7 +13,7 @@ import { applyCandidate, catalog, assertCatalogEquivalent } from '../../scripts/
 import { bootstrapFirstOwner } from '../../scripts/lib/installationBootstrap.mjs'
 export { installerNativeAvailable as resetPlatformAvailable }
 
-export async function createResetPlatform({installedLab=null}={}) {
+export async function createResetPlatform({installedLab=null,applicationSource=null}={}) {
  const lab=installedLab||await createInstallerPlatform(),directory=await realpath(await mkdtemp('/tmp/elcomputer-reset-platform-'))
  const uploads=directory+'/uploads',key='__resetPlatform_'+randomUUID().replaceAll('-',''),root=resolve('.'),db=lab.db
  await mkdir(uploads)
@@ -60,6 +60,7 @@ export async function createResetPlatform({installedLab=null}={}) {
   globalThis[key]={service,transport,config:{public:{supabaseUrl:lab.target.api_url},supabaseServiceRoleKey:lab.credentials.service_role_key,uploadsDir:uploads,shippingLiveRequestsEnabled:false,paymobEnabled:false,smsLiveRequestsEnabled:false}}
   globalThis.defineEventHandler=h=>h;globalThis.readBody=readBody;globalThis.setHeader=setHeader
   const router=createRouter()
+  const handlerRoot=resolve(applicationSource||root)
   const routes=[
    ['post','/api/admin-treasury/salary-payment','server/api/admin-treasury/salary-payment.post.js'],
    ['post','/api/admin-logs','server/api/admin-logs/index.post.js'],
@@ -72,11 +73,15 @@ export async function createResetPlatform({installedLab=null}={}) {
    ['get','/api/admin-products/list','server/api/admin-products/list.get.js'],
    ['post','/api/admin-products/transfer/export','server/api/admin-products/transfer/export.post.js'],['post','/api/admin-products/transfer/preview','server/api/admin-products/transfer/preview.post.js'],
    ['post','/api/checkout/quote','server/api/checkout/quote.post.js'],
+   ['post','/api/checkout','server/api/checkout/index.post.js'],
    ['post','/api/admin-products/transfer/import','server/api/admin-products/transfer/import/index.post.js'],['post','/api/admin-products/transfer/import/approve','server/api/admin-products/transfer/import/approve.post.js'],
    ['post','/api/admin-products/transfer/import/apply','server/api/admin-products/transfer/import/apply.post.js'],['get','/api/admin-products/transfer/import','server/api/admin-products/transfer/import/index.get.js']
   ]
   for(const [method,path,file]of routes){
-   const compiled=await build({entryPoints:[root+'/'+file],bundle:true,write:false,format:'esm',platform:'node',alias:{'~':root+'/app'},banner:{js:'const useRuntimeConfig=()=>globalThis['+JSON.stringify(key)+'].config;'},plugins:[{name:key,setup(b){
+   // The frozen79 checkout contract must execute its frozen79 handlers. Salary
+   // commands were added in81 and have no route in that historical package.
+   if(applicationSource&&file==='server/api/admin-treasury/salary-payment.post.js')continue
+   const compiled=await build({entryPoints:[handlerRoot+'/'+file],bundle:true,write:false,format:'esm',platform:'node',alias:{'~':handlerRoot+'/app'},banner:{js:'const useRuntimeConfig=()=>globalThis['+JSON.stringify(key)+'].config;'},plugins:[{name:key,setup(b){
     b.onResolve({filter:/\/supabaseAdmin$/},()=>({path:key,namespace:key}));b.onLoad({filter:/.*/,namespace:key},()=>({contents:'export const getSupabaseAdminClient=()=>globalThis['+JSON.stringify(key)+'].service',loader:'js'}));
     b.onResolve({filter:/^@supabase\/supabase-js$/},()=>({path:key+'Sdk',namespace:key+'Sdk'}));b.onLoad({filter:/.*/,namespace:key+'Sdk'},()=>({contents:'import {createClient as actual} from '+JSON.stringify(import.meta.resolve('@supabase/supabase-js'))+';export const createClient=(url,key,options)=>actual(url,key,{...options,global:{fetch:globalThis['+JSON.stringify(key)+'].transport}})',loader:'js'}));
     b.onResolve({filter:/^h3$/},()=>({path:import.meta.resolve('h3'),external:true}))

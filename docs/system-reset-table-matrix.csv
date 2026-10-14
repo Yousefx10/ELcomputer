@@ -124,3 +124,5 @@ public.system_reset_attempts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RE
 public.system_reset_runs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current journal and minimal completed request tombstones
 public.treasury_transactions,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
 private.salary_payment_commands,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone
+private.checkout_quotes,RETAIN retired quote,RETAIN retired quote,RETAIN retired quote,RETAIN subject to expiry,RETAIN subject to expiry,RETAIN retired quote,RETAIN subject to expiry,RETAIN retired quote
+private.checkout_commands,RETAIN live receipt,RETAIN retired tombstone,RETAIN retired tombstone,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone

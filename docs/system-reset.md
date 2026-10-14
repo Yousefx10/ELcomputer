@@ -80,6 +80,8 @@ SQL erasure requires recovery restore to undo. Application rollback cannot undo 
 
 Salary retry protection requires additive migration81 and matching application code. See [salary-payment safety](salary-payment-safety.md).
 
+Checkout retry protection requires additive migration82 and matching application code. All scopes retain private checkout quote/command hashes. Products, Orders, Commerce, Store Content and Full retire quotes; Orders, Commerce and Full also retire commands. See [checkout identity and recovery](checkout-command-safety.md).
+
 ## Local certification
 
 Read [validation and evidence boundaries](system-reset-validation.md). Tests include actual disposable PostgreSQL, PostgREST, Auth, Storage and files, synthetic failure fixtures, full regression and browser checks. No production credentials, merchant data, providers or deployment are used. Hosted platform/workload/durability and real BETA acceptance remain separately authorized work.

@@ -1,328 +1,33 @@
-import { createError } from 'h3'
 import { randomUUID } from 'node:crypto'
+import { createError } from 'h3'
 import { requireCustomerRequest } from '../../utils/customerRequest'
-import {
-  isStoreAnalyticsUuid,
-  recordStoreOrderCreated
-} from '../../utils/storeAnalytics'
+import { isStoreAnalyticsUuid, recordStoreOrderCreated } from '../../utils/storeAnalytics'
+import { normalizeCheckoutCommand, throwCheckoutError } from '../../utils/checkoutCommand'
 import { getPaymobConfig } from '../../utils/payments/paymob.js'
-import { normalizePaymentMethod } from '~/utils/paymentMethods'
 
-const PHONE_PATTERN = /^01\d{9}$/
-const MAX_ORDER_ITEMS = 100
-
-const normalizeRequiredText = (value, fieldLabel) => {
-  const normalizedValue = String(value || '').trim()
-
-  if (!normalizedValue) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `${fieldLabel} is required.`
-    })
-  }
-
-  return normalizedValue
-}
-
-const normalizeOptionalText = (value) => {
-  const normalizedValue = String(value || '').trim()
-  return normalizedValue || null
-}
-
-const normalizeOrderItems = (items) => {
-  if (!Array.isArray(items) || !items.length) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Your cart is empty.'
-    })
-  }
-
-  if (items.length > MAX_ORDER_ITEMS) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `An order cannot contain more than ${MAX_ORDER_ITEMS} cart lines.`
-    })
-  }
-
-  const aggregatedItems = new Map()
-
-  items.forEach((item) => {
-    const productId = String(item?.id || item?.product_id || '').trim().toLowerCase()
-    const normalizedVariantId = String(item?.variant_id || '').trim().toLowerCase()
-    const variantId = normalizedVariantId || null
-    const quantity = Number(item?.quantity)
-
-    if (
-      !isStoreAnalyticsUuid(productId) ||
-      (variantId && !isStoreAnalyticsUuid(variantId)) ||
-      !Number.isInteger(quantity) ||
-      quantity < 1 ||
-      quantity > 99
-    ) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'A valid product and quantity are required.'
-      })
-    }
-
-    const key = `${productId}:${variantId || 'default'}`
-    const previousItem = aggregatedItems.get(key)
-
-    const aggregatedQuantity = Number(previousItem?.quantity || 0) + quantity
-
-    if (aggregatedQuantity > 99) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'A product option cannot have a quantity greater than 99.'
-      })
-    }
-
-    aggregatedItems.set(key, {
-      product_id: productId,
-      variant_id: variantId,
-      quantity: aggregatedQuantity
-    })
-  })
-
-  return [...aggregatedItems.values()]
-}
-
-const generateOrderNumber = () => {
-  const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-  const randomPart = randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()
-  return `ORD-${datePart}-${randomPart}`
-}
-
-const isMissingSchemaError = (error) => {
-  return error?.code === '42P01' ||
-    error?.code === '42703' ||
-    error?.code === '42883' ||
-    error?.code === 'PGRST202' ||
-    error?.code === 'PGRST204' ||
-    error?.code === 'PGRST205'
-}
-
-const throwCheckoutDatabaseError = (error) => {
-  const message = String(error?.message || '').replace(/^.*ERROR:\s*/i, '').trim()
-  const isConflict = /stock|available|serialized unit|variant|already|cart/i.test(message)
-
-  if (isMissingSchemaError(error)) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Apply the latest checkout database migrations, then try again.'
-    })
-  }
-
-  if (error?.code === '23505') {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'The order could not be finalized because of a conflict. Please try again.'
-    })
-  }
-
-  if (error?.code !== 'P0001') {
-    console.error('Checkout transaction failed:', error?.code || 'unknown')
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Could not create this order. Please try again.'
-    })
-  }
-
-  throw createError({
-    statusCode: isConflict ? 409 : 400,
-    statusMessage: message || 'Could not create this order.'
-  })
-}
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
-  const requestedCartId = String(body?.cart_id || '').trim()
-  const cartId = isStoreAnalyticsUuid(requestedCartId)
-    ? requestedCartId.toLowerCase()
-    : null
-
-  if (!cartId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'A valid cart ID is required to place an order.'
-    })
-  }
-
-  const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
-    .from('customer_orders')
-    .select('id, order_number, subtotal_amount, discount_amount, payment_fee_amount, total_amount, payment_method, payment_proof_status, is_preorder, initial_amount_due, amount_paid')
-    .eq('user_id', authUser.id)
-    .eq('checkout_cart_id', cartId)
-    .maybeSingle()
-
-  if (existingOrderError) {
-    if (!isMissingSchemaError(existingOrderError)) {
-      console.error(
-        'Could not check checkout idempotency:',
-        existingOrderError.code || 'unknown'
-      )
-    }
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: isMissingSchemaError(existingOrderError)
-        ? 'Apply the latest checkout database migrations, then try again.'
-        : 'Could not verify this cart. Please try again.'
-    })
-  }
-
-  if (existingOrder) {
-    return {
-      order: {
-        id: existingOrder.id,
-        orderNumber: existingOrder.order_number,
-        subtotalAmount: Number(existingOrder.subtotal_amount || 0),
-        discountAmount: Number(existingOrder.discount_amount || 0),
-        paymentFeeAmount: Number(existingOrder.payment_fee_amount || 0),
-        totalAmount: Number(existingOrder.total_amount || 0),
-        paymentMethod: existingOrder.payment_method,
-        paymentProofStatus: existingOrder.payment_proof_status,
-        isPreorder: existingOrder.is_preorder,
-        initialAmountDue: Number(existingOrder.initial_amount_due || 0),
-        amountPaid: Number(existingOrder.amount_paid || 0),
-        coupon: null
-      }
-    }
-  }
-
-  const paymentMethod = normalizePaymentMethod(body?.payment_method)
-  if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) {
-    throw createError({ statusCode: 400, statusMessage: 'Choose a supported checkout language.' })
-  }
-  if (paymentMethod === 'card') {
+  const { cartId, order: orderPayload, items: orderItems } = normalizeCheckoutCommand(body, authUser)
+  const quoteId = String(body?.quote_id || '').trim().toLowerCase()
+  if (!isStoreAnalyticsUuid(quoteId)) throw createError({ statusCode: 409, statusMessage: 'Review checkout before confirming.', data: { code: 'checkout:quote' } })
+  if (orderPayload.payment_method === 'card') {
     try { getPaymobConfig(useRuntimeConfig(event)) }
-    catch { throw createError({ statusCode: 400, statusMessage: 'The selected payment method is not available.' }) }
-  }
-
-  const orderItems = normalizeOrderItems(body?.items)
-  if (body?.items?.some(item => [
-    'price', 'unit_price', 'line_total', 'total_amount', 'preorder_price',
-    'deposit_percent', 'preorder_deposit_percent', 'preorder_payment_mode',
-    'amount_due', 'initial_amount_due', 'required_now', 'amount_paid',
-    'remaining_balance', 'balance_remaining', 'selling_mode',
-    'preorder_total_limit', 'preorder_customer_limit'
-  ].some(key => Object.hasOwn(item || {}, key)))) {
-    throw createError({ statusCode: 400, statusMessage: 'Cart financial values must come from the store.' })
-  }
-  const firstName = normalizeRequiredText(body?.address?.first_name, 'First name')
-  const lastName = String(body?.address?.last_name || '').trim()
-  const streetAddress = normalizeRequiredText(body?.address?.street_address, 'Street address')
-  const city = normalizeRequiredText(body?.address?.city, 'City')
-  const governorate = normalizeRequiredText(body?.address?.governorate, 'Governorate')
-  const phone = normalizeRequiredText(body?.address?.phone, 'Phone')
-  const email = normalizeRequiredText(body?.address?.email || authUser.email, 'Email')
-  const shippingMethod = normalizeOptionalText(body?.shipping_method)
-  const couponCode = String(body?.coupon_code || '').trim().toUpperCase()
-
-  if (!PHONE_PATTERN.test(phone)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Phone number must start with 01 and contain 11 digits.'
-    })
-  }
-
-  if (!paymentMethod) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Choose a valid payment method.'
-    })
-  }
-
-  const { data: siteSettings, error: siteSettingsError } = await supabaseAdmin
-    .from('site_settings')
-    .select('allow_out_of_stock_purchases, payment_card_enabled, payment_bank_transfer_enabled, payment_instapay_enabled, payment_paypal_enabled, payment_cash_enabled')
-    .eq('key', 'default')
-    .maybeSingle()
-
-  if (siteSettingsError) {
-    console.error(
-      'Could not load checkout settings:',
-      siteSettingsError.code || 'unknown'
-    )
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: isMissingSchemaError(siteSettingsError)
-        ? 'Apply the latest payment-method migration, then try again.'
-        : 'Could not load the checkout settings. Please try again.'
-    })
-  }
-
-  const allowOutOfStockPurchases = Boolean(siteSettings?.allow_out_of_stock_purchases)
-  const paymentEnabled = Boolean(siteSettings?.[`payment_${paymentMethod}_enabled`])
-
-  if (!paymentEnabled) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'The selected payment method is not available.'
-    })
-  }
-  const { data: purchaseProducts, error: purchaseProductsError } = await supabaseAdmin
-    .from('products')
-    .select('id, selling_mode')
-    .in('id', [...new Set(orderItems.map(item => item.product_id))])
-
-  if (purchaseProductsError || purchaseProducts?.length !== new Set(orderItems.map(item => item.product_id)).size) {
-    throw createError({ statusCode: 409, statusMessage: 'One or more products are unavailable. Refresh your cart.' })
-  }
-
-  const sellingModes = new Set(purchaseProducts.map(product => product.selling_mode))
-  if (sellingModes.has('coming_soon')) {
-    throw createError({ statusCode: 409, statusMessage: 'Coming Soon products cannot be ordered yet.' })
-  }
-  if (sellingModes.size > 1) {
-    throw createError({ statusCode: 409, statusMessage: 'Place preorder and ready-to-ship products in separate orders.' })
-  }
-  const isPreorder = sellingModes.has('preorder')
-  if (isPreorder && couponCode) {
-    throw createError({ statusCode: 400, statusMessage: 'Coupons are not available for preorders.' })
-  }
-  if (isPreorder && !['bank_transfer', 'instapay'].includes(paymentMethod)) {
-    throw createError({ statusCode: 400, statusMessage: 'Preorders currently use bank transfer or InstaPay.' })
-  }
-  const fullName = [firstName, lastName].filter(Boolean).join(' ')
-  const orderPayload = {
-    order_number: generateOrderNumber(),
-    coupon_code: couponCode || null,
-    first_name: firstName,
-    last_name: lastName || null,
-    email,
-    phone,
-    street_address: streetAddress,
-    city,
-    governorate,
-    shipping_method: shippingMethod,
-    payment_method: paymentMethod,
-    locale: body?.locale === 'ar' ? 'ar' : 'en'
-  }
-
-  const { data: orderResult, error: orderError } = await supabaseAdmin.rpc(
-    isPreorder ? 'commerce_create_preorder' : 'commerce_create_customer_order',
-    isPreorder ? {
-      p_user_id: authUser.id,
-      p_order: orderPayload,
-      p_items: orderItems,
-      p_cart_id: cartId
-    } : {
-      p_user_id: authUser.id,
-      p_order: orderPayload,
-      p_items: orderItems,
-      p_allow_out_of_stock: allowOutOfStockPurchases,
-      p_cart_id: cartId
+    catch {
+      // A disabled gateway may recover a committed command. Only the guarded
+      // RPC can verify its content; this lookup never returns an order itself.
+      const existing = await supabaseAdmin.from('customer_orders').select('id').eq('user_id', authUser.id).eq('checkout_cart_id', cartId).maybeSingle()
+      if (existing.error || !existing.data) throw createError({ statusCode: 400, statusMessage: 'The selected payment method is not available.' })
     }
-  )
-
-  if (orderError) {
-    throwCheckoutDatabaseError(orderError)
   }
-
+  orderPayload.order_number = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  const { data: orderResult, error: orderError } = await supabaseAdmin.rpc('commerce_checkout_command', {
+    p_user_id: authUser.id, p_cart_id: cartId, p_quote_id: quoteId, p_order: orderPayload, p_items: orderItems
+  })
+  if (orderError) throwCheckoutError(orderError)
+  const { first_name: firstName, last_name: lastName, email, phone, street_address: streetAddress, city, governorate } = orderPayload
+  const fullName = [firstName, lastName].filter(Boolean).join(' ')
   const rpcResult = Array.isArray(orderResult)
     ? orderResult[0]
     : orderResult || {}
@@ -362,6 +67,7 @@ export default defineEventHandler(async (event) => {
     orderRecord = storedOrder
   }
 
+  const isPreorder = Boolean(orderRecord.is_preorder)
   const wasCreated = rpcResult.created !== false &&
     rpcResult.was_created !== false &&
     rpcResult.wasCreated !== false

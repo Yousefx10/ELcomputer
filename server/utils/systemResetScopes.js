@@ -6,7 +6,7 @@ export const resetRetainedAfterSalesTables = ['after_sales_policies', 'after_sal
 export const resetRetainedSetupTables = ['quick_setup_state', 'quick_setup_revisions', 'quick_setup_events']
 // Metadata tombstones survive. Only Products/Full close pending import authority.
 export const resetRetainedPrivateTables = {
-  private: ['installation_bootstrap', 'salary_payment_commands'],
+  private: ['installation_bootstrap', 'salary_payment_commands', 'checkout_quotes', 'checkout_commands'],
   catalog_private: ['product_revisions', 'product_save_receipts', 'media_paths', 'product_bulk_receipts', 'import_jobs', 'import_items']
 }
 export const resetTableGroups = {

@@ -115,7 +115,7 @@ test('two migration79 guided fresh brands with actual SQL/Auth/Storage/Nuxt/PM2;
         assert.equal(f.lab.requests.filter(r=>r.method==='POST'&&r.path==='/auth/v1/admin/users').length,1)
         assert.equal((await readdir(join(directory,'database'))).filter(name=>name.startsWith('cli-')).length,10)
       })
-      await exerciseInstalledRelease79(f.lab,t)
+      await exerciseInstalledRelease79(f.lab,t,f.source.directory)
     }finally{await f.close()}
   }
   assert.equal(completed.length,2)

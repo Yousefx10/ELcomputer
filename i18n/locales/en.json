@@ -5051,5 +5051,30 @@
     "message19": "Storage cleanup is pending.",
     "message20": "Account cleanup is pending.",
     "message21": "Cleanup does not match this reset."
+  },
+  "checkoutRecovery": {
+    "pending": "Recover this checkout before starting another.",
+    "recover": "Recover checkout",
+    "history": "View order history",
+    "review": "Review cart",
+    "changed": "Checkout changed. Review the updated summary, then continue.",
+    "cartChanged": "Checkout changed. Review your cart and delivery details.",
+    "reviewFirst": "Review checkout before confirming.",
+    "conflict": "This checkout changed. Review your cart before ordering.",
+    "legacy": "Review this order in My Account before ordering again.",
+    "retired": "This checkout was reset. Start a new cart.",
+    "quote": "This quote expired or changed. Review checkout again.",
+    "unavailable": "A product is no longer available. Refresh your cart.",
+    "uncertain": "Could not confirm checkout. Retry the same request.",
+    "recoverSame": "Could not confirm checkout. Recover the same request.",
+    "storage": "Could not retain checkout. Please try again.",
+    "busy": "Checkout is busy. Retry the same request.",
+    "delivery": "Choose an available delivery method.",
+    "complete": "Complete your delivery details.",
+    "refresh": "Refresh your cart before checkout.",
+    "financial": "Cart financial values must come from the store.",
+    "preorder": "Preorders use bank transfer or InstaPay without coupons.",
+    "invalidRequest": "A valid checkout request is required.",
+    "invalidCart": "A valid cart is required."
   }
 }

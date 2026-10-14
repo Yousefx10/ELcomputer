@@ -1,3 +1,6 @@
+import { acknowledgeCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
+
+const CART_STATE_KEY = 'elcomputer-cart-state-v2'
 const CART_STORAGE_KEY = 'elcomputer-cart'
 const CART_COUPON_STORAGE_KEY = 'elcomputer-cart-coupon'
 const CART_ID_STORAGE_KEY = 'elcomputer-cart-id'
@@ -124,6 +127,7 @@ export const useCart = () => {
   const items = useState('cart-items', () => [])
   const appliedCoupon = useState('cart-applied-coupon', () => null)
   const cartId = useState('cart-id', () => '')
+  const revision = useState('cart-revision', () => '')
   const isReady = useState('cart-is-ready', () => false)
   const syncStarted = useState('cart-sync-started', () => false)
   const { trackEvent } = useStoreAnalytics()
@@ -134,6 +138,7 @@ export const useCart = () => {
     }
 
     try {
+      window.localStorage.setItem(CART_STATE_KEY, JSON.stringify({ version: 2, id: cartId.value, revision: revision.value, items: items.value, coupon: appliedCoupon.value }))
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
 
       if (items.value.length && cartId.value) {
@@ -152,44 +157,62 @@ export const useCart = () => {
     }
   }
 
-  const loadCart = () => {
-    if (!import.meta.client || isReady.value) {
-      return
-    }
-
+  const syncCart = () => {
+    if (!import.meta.client) return
     try {
-      const storedItems = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]')
-      const storedCoupon = JSON.parse(window.localStorage.getItem(CART_COUPON_STORAGE_KEY) || 'null')
-      const storedCartId = String(window.localStorage.getItem(CART_ID_STORAGE_KEY) || '').trim()
-
-      items.value = Array.isArray(storedItems)
-        ? storedItems.map(normalizeCartItem).filter(Boolean)
-        : []
-      appliedCoupon.value = normalizeAppliedCoupon(storedCoupon)
-      cartId.value = items.value.length
-        ? (UUID_PATTERN.test(storedCartId) ? storedCartId : createCartIdentifier())
-        : ''
-    } catch {
-      items.value = []
-      appliedCoupon.value = null
-      cartId.value = ''
+      const raw = window.localStorage.getItem(CART_STATE_KEY)
+      const stored = raw ? JSON.parse(raw) : null
+      const storedItems = stored?.version === 2 ? stored.items : JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]')
+      const storedCoupon = stored?.version === 2 ? stored.coupon : JSON.parse(window.localStorage.getItem(CART_COUPON_STORAGE_KEY) || 'null')
+      const storedId = stored?.version === 2 ? stored.id : window.localStorage.getItem(CART_ID_STORAGE_KEY)
+      const restored = restoreCart(window.localStorage, {
+        id: Array.isArray(storedItems) && storedItems.length ? (UUID_PATTERN.test(storedId || '') ? storedId : createCartIdentifier()) : '',
+        revision: stored?.revision || createCartIdentifier(),
+        items: Array.isArray(storedItems) ? storedItems.map(normalizeCartItem).filter(Boolean) : [],
+        coupon: normalizeAppliedCoupon(storedCoupon)
+      })
+      items.value = restored.items
+      appliedCoupon.value = restored.coupon
+      cartId.value = restored.id
+      revision.value = restored.revision
+    } catch { /* Preserve the current cart when browser storage is unavailable. */ }
+  }
+  const commitCart = () => {
+    // An acknowledgement may arrive while this tab is editing in memory.
+    // Fork the committed identity without replacing those edited items.
+    if (import.meta.client && cartId.value) {
+      try { cartId.value = restoreCart(window.localStorage, { id: cartId.value, revision: createCartIdentifier() }).id }
+      catch { /* Server receipts still reject incompatible command reuse. */ }
     }
-
-    isReady.value = true
+    revision.value = createCartIdentifier()
     persistCart()
   }
-
+  const loadCart = () => {
+    if (!import.meta.client || isReady.value) return
+    syncCart()
+    isReady.value = true
+    try { if (!window.localStorage.getItem(CART_STATE_KEY)) persistCart() }
+    catch { /* Keep the in-memory cart usable without browser storage. */ }
+  }
   if (import.meta.client) {
-    // Match the server's initial cart before restoring browser storage.
     onMounted(loadCart)
-
     if (!syncStarted.value) {
       syncStarted.value = true
-
-      watch(items, persistCart, { deep: true })
-      watch(appliedCoupon, persistCart, { deep: true })
-      watch(cartId, persistCart)
+      window.addEventListener('storage', event => {
+        if (event.key === CART_STATE_KEY || event.key?.startsWith(cartCompletionPrefix) || event.key === null) syncCart()
+      })
+      window.addEventListener('focus', syncCart)
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) syncCart() })
     }
+  }
+  const renewCart = () => {
+    syncCart()
+    cartId.value = items.value.length ? createCartIdentifier() : ''
+    commitCart()
+  }
+  const completeCart = snapshot => {
+    acknowledgeCart(window.localStorage, snapshot, createCartIdentifier())
+    syncCart()
   }
 
   const ensureCartId = () => {
@@ -215,15 +238,20 @@ export const useCart = () => {
     }
   }
 
-  const resetCoupon = () => {
+  const resetCoupon = (persist = true) => {
+    if (persist) syncCart()
     appliedCoupon.value = null
+    if (persist) commitCart()
   }
 
   const setAppliedCoupon = (coupon) => {
+    syncCart()
     appliedCoupon.value = normalizeAppliedCoupon(coupon)
+    commitCart()
   }
 
   const clearCart = (options = {}) => {
+    syncCart()
     const previousCartId = cartId.value
     const previousQuantity = items.value.reduce((total, item) => {
       return total + normalizePositiveInteger(item.quantity, 1)
@@ -240,11 +268,13 @@ export const useCart = () => {
     }
 
     items.value = []
-    resetCoupon()
+    resetCoupon(false)
     cartId.value = ''
+    commitCart()
   }
 
   const removeItem = (cartKey, options = {}) => {
+    syncCart()
     const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
@@ -253,7 +283,7 @@ export const useCart = () => {
 
     const previousCartId = cartId.value
     items.value = items.value.filter((item) => item.cart_key !== existingItem.cart_key)
-    resetCoupon()
+    resetCoupon(false)
 
     trackCartEvent('remove_from_cart', {
       productId: existingItem.id,
@@ -268,9 +298,11 @@ export const useCart = () => {
     if (!items.value.length) {
       cartId.value = ''
     }
+    commitCart()
   }
 
   const setQuantity = (cartKey, nextQuantity, options = {}) => {
+    syncCart()
     const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
@@ -300,7 +332,7 @@ export const useCart = () => {
       }
     })
 
-    resetCoupon()
+    resetCoupon(false)
     trackCartEvent('cart_quantity_changed', {
       productId: existingItem.id,
       variantId: existingItem.variant_id,
@@ -310,9 +342,11 @@ export const useCart = () => {
       resultingQuantity: normalizedQuantity,
       source: String(options?.source || 'cart')
     })
+    commitCart()
   }
 
   const incrementItem = (cartKey, options = {}) => {
+    syncCart()
     const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
@@ -323,6 +357,7 @@ export const useCart = () => {
   }
 
   const decrementItem = (cartKey, options = {}) => {
+    syncCart()
     const existingItem = findCartItem(cartKey)
 
     if (!existingItem) {
@@ -338,6 +373,7 @@ export const useCart = () => {
   }
 
   const addItem = (product, quantity = 1, options = {}) => {
+    syncCart()
     const normalizedProduct = normalizeCartItem({
       ...product,
       quantity
@@ -384,7 +420,7 @@ export const useCart = () => {
           quantity: nextQuantity
         }
       })
-      resetCoupon()
+      resetCoupon(false)
 
       if (addedQuantity > 0) {
         trackCartEvent('add_to_cart', {
@@ -398,6 +434,7 @@ export const useCart = () => {
         })
       }
 
+      commitCart()
       return {
         success: true,
         message: 'Cart updated.'
@@ -406,7 +443,7 @@ export const useCart = () => {
 
     const nextCartId = ensureCartId()
     items.value = [...items.value, normalizedProduct]
-    resetCoupon()
+    resetCoupon(false)
     trackCartEvent('add_to_cart', {
       productId: normalizedProduct.id,
       variantId: normalizedProduct.variant_id,
@@ -417,6 +454,7 @@ export const useCart = () => {
       source: String(options?.source || 'storefront')
     })
 
+    commitCart()
     return {
       success: true,
       message: 'Added to cart.'
@@ -440,6 +478,10 @@ export const useCart = () => {
     items,
     appliedCoupon,
     cartId,
+    revision,
+    syncCart,
+    renewCart,
+    completeCart,
     isReady,
     itemCount,
     distinctItemsCount,

@@ -21,6 +21,19 @@
         </ol>
       </header>
 
+      <section v-if="pendingCheckout" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200" aria-live="polite">
+        <p class="font-semibold text-slate-900">{{ $t('checkoutRecovery.pending') }}</p>
+        <p class="mt-2 text-sm text-slate-700">{{ pendingCheckout.body.address.street_address }}, {{ pendingCheckout.body.address.city }} · {{ $uiLabel(getPaymentMethodLabel(pendingCheckout.body.payment_method)) }}</p>
+        <p v-for="line in pendingCheckout.review.lines" :key="`${line.productId}:${line.variantId}`" class="mt-2 text-sm text-slate-700">{{ line.title }} {{ line.variantName }} · {{ $t('common.qtyValue', { value0: line.quantity }) }}</p>
+        <p class="mt-2 font-semibold text-slate-900">{{ formatCurrency(pendingCheckout.review.totalAmount) }}</p>
+        <button type="button" :disabled="placingOrder" class="mt-4 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white disabled:bg-slate-400" @click="recoverCheckout">{{ $t('checkoutRecovery.recover') }}</button>
+        <p v-if="orderError" role="alert" class="mt-3 text-sm text-red-700">{{ $uiMessage(orderError) }}</p>
+      </section>
+      <section v-if="reviewRequired" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200">
+        <p role="alert" class="text-sm text-slate-800">{{ $uiMessage(orderError) }}</p>
+        <NuxtLinkLocale to="/account/orders" class="me-4 mt-3 inline-flex text-sm font-semibold text-blue-700">{{ $t('checkoutRecovery.history') }}</NuxtLinkLocale>
+        <button type="button" class="mt-3 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white" @click="reviewCart">{{ $t('checkoutRecovery.review') }}</button>
+      </section>
       <div v-if="isEmpty" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
         <p class="text-lg font-semibold text-slate-900">{{ $t('common.yourCartIsEmpty') }}</p>
         <p class="mt-2 text-sm text-slate-600">{{ $t('checkout.addProductsFirstThenReturnHereToCheckout') }}</p>
@@ -96,12 +109,12 @@
         <aside class="h-fit rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:sticky lg:top-40">
           <h2 class="text-xl font-bold text-slate-950">{{ $t('common.orderSummary') }}</h2>
           <div class="mt-4 max-h-64 space-y-3 overflow-y-auto pe-1">
-            <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ quoteLine(item)?.title || item.title }}</p><p v-if="item.selling_mode === 'preorder'" class="text-xs font-bold text-amber-800">{{ $t('common.preOrderValue', { value0: ((quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? $t('preorder.depositPercent', { value0: (quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</p><p v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="text-xs text-slate-600">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date)) }) }}</p><p class="mt-1 text-xs text-slate-500">{{ $t('common.qtyValue', { value0: (item.quantity) }) }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</p></article>
+            <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ quoteLine(item)?.title || item.title }}</p><p v-if="quoteLine(item)?.variantName || item.variant_name" class="text-xs text-slate-600">{{ quoteLine(item)?.variantName || item.variant_name }}</p><p v-if="item.selling_mode === 'preorder'" class="text-xs font-bold text-amber-800">{{ $t('common.preOrderValue', { value0: ((quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? $t('preorder.depositPercent', { value0: (quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</p><p v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="text-xs text-slate-600">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date)) }) }}</p><p class="mt-1 text-xs text-slate-500">{{ $t('common.qtyValue', { value0: (item.quantity) }) }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</p></article>
           </div>
           <p v-if="quoteError" class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(quoteError) }}</p>
           <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? $t('common.preorderMerchandise') : $t('common.subtotal') }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount)}` : '—' }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
-          <button v-else type="button" :disabled="placingOrder || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : $t('common.confirmCheckout') }}</button>
+          <button v-else type="button" :disabled="placingOrder || !quote || !!pendingCheckout || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
         </aside>
       </div>
@@ -119,8 +132,9 @@ const { intlLocale } = useUiLocale()
 
 const { uiNavigateTo } = useUiNavigation()
 
+import { readPendingCheckout, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
-import { getAvailablePaymentMethods, getPaymentMethodFee, paymentMethodNeedsProof } from '~/utils/paymentMethods'
+import { getAvailablePaymentMethods, getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 
 definePageMeta({ middleware: 'customer-auth' })
@@ -130,7 +144,7 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
 const { data: paymentCapabilities } = await useFetch('/api/payments/capabilities')
-const { items, cartId, itemCount, subtotal, isEmpty, appliedCoupon, clearCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
+const { items, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
 const checkoutStep = ref('shipping')
@@ -145,6 +159,11 @@ const selectedPaymentMethod = ref('')
 const proofFile = ref(null)
 const quote = ref(null)
 const quoteError = ref('')
+const pendingCheckout = ref(null)
+const reviewRequired = ref('')
+const customerId = ref('')
+let quoteSequence = 0
+const readPending = () => { pendingCheckout.value = readPendingCheckout(window.localStorage, customerId.value) }
 let checkoutStartedTracked = false
 
 const address = reactive({ first_name: '', last_name: '', street_address: '', city: '', phone: '', email: '', governorate: '' })
@@ -152,41 +171,63 @@ const address = reactive({ first_name: '', last_name: '', street_address: '', ci
 const settings = computed(() => siteContent.value?.settings || {})
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
 const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value).filter(method => (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))))
-const discountAmount = computed(() => Number(appliedCoupon.value?.discountAmount || 0))
-const paymentFee = computed(() => isPreorderCart.value && quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
-const totalAmount = computed(() => Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
+const discountAmount = computed(() => Number(quote.value?.discountAmount ?? appliedCoupon.value?.discountAmount ?? 0))
+const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
+const totalAmount = computed(() => quote.value?.totalAmount ?? Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
 const quoteLine = item => quote.value?.lines?.find(line => line.productId === item.id && line.variantId === (item.variant_id || null))
 
+const checkoutBody = () => ({
+  items: items.value.map(item => ({ id: item.id, variant_id: item.variant_id || null, quantity: item.quantity })),
+  cart_id: cartId.value || null, coupon_code: isPreorderCart.value ? '' : appliedCoupon.value?.code || '',
+  address: { ...address, email: address.email.trim() || user.value?.email || '' },
+  shipping_method: 'shipping', payment_method: selectedPaymentMethod.value, locale: locale.value
+})
 const refreshQuote = async () => {
+  syncCart()
   if (!items.value.length) { quote.value = null; return false }
+  const sequence = ++quoteSequence, body = checkoutBody(), identity = JSON.stringify(body)
+  const previous = quote.value
   try {
     const { data } = await supabase.auth.getSession()
     if (!data.session?.access_token) return false
-    const previousQuote = quote.value
-    const nextQuote = await $fetch('/api/checkout/quote', { method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: {
-      items: items.value.map(item => ({ id: item.id, variant_id: item.variant_id || null, quantity: item.quantity })),
-      coupon_code: isPreorderCart.value ? '' : appliedCoupon.value?.code || '',
-      payment_method: selectedPaymentMethod.value
-    } })
-    quote.value = nextQuote
-    if (previousQuote && (previousQuote.orderValue !== nextQuote.orderValue || previousQuote.requiredNow !== nextQuote.requiredNow || JSON.stringify(previousQuote.lines) !== JSON.stringify(nextQuote.lines))) {
-      quoteError.value = 'The current price or required payment changed. Review the updated summary, then continue.'
+    const next = await $fetch('/api/checkout/quote', { method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body })
+    syncCart()
+    if (sequence !== quoteSequence || identity !== JSON.stringify(checkoutBody())) return false
+    quote.value = next
+    if (previous && JSON.stringify([previous.totalAmount, previous.requiredNow, previous.lines]) !== JSON.stringify([next.totalAmount, next.requiredNow, next.lines])) {
+      quoteError.value = 'Checkout changed. Review the updated summary, then continue.'
       return false
     }
     quoteError.value = ''
     return true
   } catch (error) {
-    quoteError.value = error?.data?.statusMessage || 'Could not refresh current prices and availability.'
+    if (sequence === quoteSequence) {
+      quote.value = null
+      quoteError.value = error?.data?.statusMessage || 'Could not refresh current prices and availability.'
+    }
     return false
   }
 }
+watch([revision, address, locale], () => {
+  ++quoteSequence
+  quote.value = null
+  if (checkoutStep.value === 'payment') {
+    checkoutStep.value = 'shipping'
+    quoteError.value = 'Checkout changed. Review your cart and delivery details.'
+  }
+}, { deep: true, flush: 'sync' })
+watch(selectedPaymentMethod, () => {
+  ++quoteSequence
+  quote.value = null
+  if (checkoutStep.value === 'payment') refreshQuote()
+}, { flush: 'sync' })
 const hasSavedAddress = computed(() => Boolean(address.street_address && address.city && address.governorate))
 const paymentInstructions = computed(() => selectedPaymentMethod.value === 'bank_transfer' ? settings.value.payment_bank_transfer_instructions : settings.value.payment_instapay_instructions)
 
 watch(availablePaymentMethods, methods => {
   if (!methods.some(method => method.value === selectedPaymentMethod.value)) selectedPaymentMethod.value = methods[0]?.value || ''
 }, { immediate: true })
-watch(selectedPaymentMethod, () => { if (checkoutStep.value === 'payment') refreshQuote() })
+
 
 const formatCurrency = value => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
 const getMethodFee = method => getPaymentMethodFee(settings.value, method)
@@ -246,36 +287,85 @@ const applyCoupon = async () => {
 
 const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = '' }
 
-const placeOrder = async () => {
-  orderError.value = ''
-  if (!validateAddress()) { checkoutStep.value = 'shipping'; return }
-  const paymentError = validatePayment()
-  if (paymentError) { orderError.value = paymentError; return }
-  if (!await refreshQuote()) return
-  placingOrder.value = true
+const sendCommand = async command => {
+  pendingCheckout.value = command
   try {
-    const { data: sessionData } = await supabase.auth.getSession()
-    if (!sessionData.session?.access_token) throw new Error('Your session expired. Please log in again.')
+    const { data } = await supabase.auth.getSession()
+    if (!data.session?.access_token || data.session.user.id !== command.userId) throw new Error('Your session expired. Please log in again.')
     const response = await $fetch('/api/checkout', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${sessionData.session.access_token}` },
-      body: {
-        items: items.value.map(item => ({ id: item.id, variant_id: item.variant_id || null, quantity: item.quantity })),
-        cart_id: cartId.value || null,
-        coupon_code: appliedCoupon.value?.code || '',
-        address: { ...address, email: address.email.trim() || user.value?.email || '' },
-        shipping_method: 'shipping',
-        payment_method: selectedPaymentMethod.value,
-        locale: locale.value
-      }
+      method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: command.body, retry: 0
     })
-    clearCart({ reason: 'converted', track: false })
+    const current = (await supabase.auth.getSession()).data.session
+    if (current?.user.id === command.userId) completeCart(command.cart)
+    removePendingCheckout(window.localStorage, command)
+    readPending()
+    if (current?.user.id !== command.userId) {
+      orderError.value = 'Your session expired. Please log in again.'
+      return
+    }
     await uiNavigateTo(response.order.paymentMethod === 'card' ? `/checkout/payment/${response.order.id}` : `/checkout/summary/${response.order.id}`)
-  } catch (error) { orderError.value = error?.data?.statusMessage || error?.message || 'Could not place the order.' } finally { placingOrder.value = false }
+  } catch (error) {
+    orderError.value = error?.data?.statusMessage || error?.message || 'Could not confirm checkout. Recover the same request.'
+    const code = error?.data?.data?.code
+    if (['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon'].includes(code)) {
+      removePendingCheckout(window.localStorage, command)
+      readPending()
+      reviewRequired.value = code
+      quote.value = null
+    }
+  }
 }
+const placeOrder = async () => {
+  if (placingOrder.value || pendingCheckout.value || reviewRequired.value) return
+  placingOrder.value = true
+  orderError.value = ''
+  try {
+    const reviewed = quote.value
+    syncCart()
+    if (!validateAddress()) { checkoutStep.value = 'shipping'; return }
+    const paymentError = validatePayment()
+    if (paymentError) { orderError.value = paymentError; return }
+    if (!reviewed || quote.value !== reviewed || new Date(reviewed.expiresAt) <= new Date()) {
+      await refreshQuote()
+      quoteError.value = 'Review checkout before confirming.'
+      return
+    }
+    if (!await refreshQuote()) return
+    await checkoutLock(customerId.value, async () => {
+      readPending()
+      if (pendingCheckout.value) return
+      if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
+      const command = JSON.parse(JSON.stringify({ version: 1, userId: customerId.value,
+        body: { ...checkoutBody(), quote_id: quote.value.quoteId }, cart: { id: cartId.value, revision: revision.value }, review: quote.value }))
+      // Persist before sending; an uncertain acknowledgement keeps this exact request.
+      savePendingCheckout(window.localStorage, command)
+      await sendCommand(command)
+    })
+  } catch (error) { orderError.value = error?.message || 'Could not retain checkout. Please try again.' }
+  finally { placingOrder.value = false }
+}
+const recoverCheckout = async () => {
+  if (placingOrder.value) return
+  placingOrder.value = true
+  try { await checkoutLock(customerId.value, async () => { readPending(); if (pendingCheckout.value) await sendCommand(pendingCheckout.value) }) }
+  finally { placingOrder.value = false }
+}
+const reviewCart = () => {
+  if (['checkout:conflict', 'checkout:legacy', 'checkout:retired'].includes(reviewRequired.value)) renewCart()
+  reviewRequired.value = ''
+  orderError.value = ''
+  quote.value = null
+  checkoutStep.value = 'shipping'
+}
+const storageChanged = () => { readPending() }
+onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
 
 onMounted(async () => {
-  loadCart(); couponCode.value = appliedCoupon.value?.code || ''
+  loadCart()
+  customerId.value = (await supabase.auth.getUser()).data.user?.id || ''
+  readPending()
+  window.addEventListener('storage', storageChanged)
+  couponCode.value = appliedCoupon.value?.code || ''
   if (isPreorderCart.value && appliedCoupon.value) resetCoupon()
   await refreshQuote()
   if (!checkoutStartedTracked && !isEmpty.value && cartId.value) { checkoutStartedTracked = true; trackEvent('checkout_started', { cartId: cartId.value, quantity: itemCount.value, source: 'checkout_page' }) }

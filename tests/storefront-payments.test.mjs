@@ -132,7 +132,7 @@ test('checkout delegates card fields to Paymob and provides proof continuation U
   assert.match(checkout, /PaymentProofUpload/)
   assert.match(checkout, /payment_method: selectedPaymentMethod\.value/)
   assert.doesNotMatch(checkoutServer, /card_number|securityCode|security_code/)
-  assert.match(checkoutServer, /payment_\$\{paymentMethod\}_enabled/)
+  assert.match(checkoutServer, /getPaymobConfig/)
   assert.match(orderPage, /Proof of payment/)
   assert.match(orderPage, /Secure file submission is intentionally waiting/)
   assert.match(settings, /section === 'paymentSettings'/)
