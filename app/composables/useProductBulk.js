@@ -2,7 +2,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { productBulkCommand, productBulkResult } from '~/utils/productBulk'
 
-export function useProductBulk({ result, loading, context, canEdit, load }) {
+export function useProductBulk({ result, loading, context, canEdit, canSelect = canEdit, externalLocked = ref(false), load }) {
   const { adminUser } = useAdminAccess()
   const { getAdminAuthHeaders } = useAdminLogs()
   const { invalidate } = useDashboardCache()
@@ -16,15 +16,15 @@ export function useProductBulk({ result, loading, context, canEdit, load }) {
   const allSelected = computed(() => pageItems.value.length > 0 && selected.value.length === pageItems.value.length)
   const isSelected = id => selected.value.some(item => item.id === id)
   const toggle = product => {
-    if (locked.value || loading.value || !canEdit.value || !selectable(product)) return
+    if (locked.value || externalLocked.value || loading.value || !canSelect.value || !selectable(product)) return
     selected.value = isSelected(product.id) ? selected.value.filter(item => item.id !== product.id) :
       [...selected.value, { id: product.id, expected_revision: product.revision, title: product.title }]
   }
   const togglePage = () => {
-    if (locked.value || loading.value || !canEdit.value) return
+    if (locked.value || externalLocked.value || loading.value || !canSelect.value) return
     selected.value = allSelected.value ? [] : pageItems.value.map(product => ({ id: product.id, expected_revision: product.revision, title: product.title }))
   }
-  const ready = computed(() => canEdit.value && !loading.value && count.value > 0 &&
+  const ready = computed(() => canEdit.value && !externalLocked.value && !loading.value && count.value > 0 &&
     (!['category','brand'].includes(operation.value) || Boolean(reference.value && referenceName.value)))
   const review = () => { if (ready.value && !locked.value) { reviewing.value = true; error.value = ''; outcome.value = null } }
   const cancel = () => { if (!pending.value && !busy.value) reviewing.value = false }

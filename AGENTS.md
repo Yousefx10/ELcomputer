@@ -33,3 +33,7 @@
   selection, sparse commands, confirmation, revision checks and receipt recovery.
   Keep assignment explicit; never infer clearing or select all matching products.
   Retain unresolved batch commands and report partial results accurately.
+- Follow [Catalog transfer](docs/catalog-transfer.md) for versioned merchandising
+  exports, exact matching and private bounded preview. Preview never applies changes.
+  Preserve omitted versus cleared values and confidential inventory/ERP boundaries.
+  Task 6B requires separate authorization, transactional revalidation and receipts.
