@@ -7,18 +7,18 @@ import { createServer } from 'node:http'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
 import { build } from 'esbuild'
-import { createApp, createRouter, toNodeListener, readBody } from 'h3'
+import { createApp, createRouter, toNodeListener, readBody, setHeader } from 'h3'
 import { createInstallerPlatform, installerNativeAvailable } from './installerPlatform.mjs'
 import { applyCandidate, catalog, assertCatalogEquivalent } from '../../scripts/lib/cleanBaseline.mjs'
 import { bootstrapFirstOwner } from '../../scripts/lib/installationBootstrap.mjs'
 export { installerNativeAvailable as resetPlatformAvailable }
 
-export async function createResetPlatform() {
- const lab=await createInstallerPlatform(),directory=await realpath(await mkdtemp('/tmp/elcomputer-reset-platform-'))
+export async function createResetPlatform({installedLab=null}={}) {
+ const lab=installedLab||await createInstallerPlatform(),directory=await realpath(await mkdtemp('/tmp/elcomputer-reset-platform-'))
  const uploads=directory+'/uploads',key='__resetPlatform_'+randomUUID().replaceAll('-',''),root=resolve('.'),db=lab.db
  await mkdir(uploads)
  let server
- const close=async()=>{if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}delete globalThis[key];await lab.close();await rm(directory,{recursive:true,force:true})}
+ const close=async()=>{if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}delete globalThis[key];if(!installedLab)await lab.close();await rm(directory,{recursive:true,force:true})}
  try{
   const ca=await readFile(lab.target.api_ca_file),base=new URL(lab.target.api_url)
   const transport=async(input,options={})=>{
@@ -32,12 +32,19 @@ export async function createResetPlatform() {
   }
   const authClient=()=>createClient(lab.target.api_url,lab.credentials.anon_key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},global:{fetch:transport}})
   const service=createClient(lab.target.api_url,lab.credentials.service_role_key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},global:{fetch:transport}})
+  let journal
+  if(!installedLab){
   await applyCandidate(db,{installationId:lab.target.installation_id,validate:async d=>assertCatalogEquivalent(await catalog(d),JSON.parse(await readFile(root+'/supabase/bootstrap/clean-v1/expected-schema.json')))})
   await db.query(await readFile(root+'/supabase/migrations/20261012160000_quick_setup_installation_bootstrap.sql','utf8'))
-  const journal=await bootstrapFirstOwner({db,authAdmin:service.auth.admin,target:{installation_id:lab.target.installation_id,request_id:randomUUID(),target_digest:createHash('sha256').update('owned-reset-platform').digest('hex'),project_ref:lab.target.project_ref,site_origin:lab.target.site_origin},email:lab.owner.email,password:lab.owner.password,fullName:lab.owner.full_name,confirmOwner:true})
+  journal=await bootstrapFirstOwner({db,authAdmin:service.auth.admin,target:{installation_id:lab.target.installation_id,request_id:randomUUID(),target_digest:createHash('sha256').update('owned-reset-platform').digest('hex'),project_ref:lab.target.project_ref,site_origin:lab.target.site_origin},email:lab.owner.email,password:lab.owner.password,fullName:lab.owner.full_name,confirmOwner:true})
   for(const name of (await readdir(root+'/supabase/migrations')).filter(n=>n.endsWith('.sql')&&n>'20261012160000_quick_setup_installation_bootstrap.sql').sort())await db.query(await readFile(root+'/supabase/migrations/'+name,'utf8'))
   const buckets=JSON.parse(await readFile(root+'/supabase/bootstrap/clean-v1/storage.json'))
   for(const b of buckets){const r=await service.storage.createBucket(b.id,{public:false,fileSizeLimit:Number(b.file_size_limit),allowedMimeTypes:b.allowed_mime_types});if(r.error)throw Error(r.error.message)}
+  }else{
+   if((await db.query("select count(*)::int n from supabase_migrations.schema_migrations")).rows[0]?.n!==79)throw Error('Uncertified attached fixture')
+   journal=(await db.query('select auth_subject,phase from private.installation_bootstrap')).rows[0]
+   if(journal?.phase!=='complete')throw Error('Unsealed attached fixture')
+  }
   await db.query("notify pgrst,'reload schema'");await new Promise(r=>setTimeout(r,1200))
   const tokens={},actors={owner:journal.auth_subject},browser=authClient()
   const signed=await browser.auth.signInWithPassword({email:lab.owner.email,password:lab.owner.password});if(signed.error)throw Error(signed.error.message);tokens.owner=signed.data.session.access_token
@@ -51,7 +58,7 @@ export async function createResetPlatform() {
   // managed service object ownership is changed by application migration79.
   await lab.root.query('grant insert on realtime.messages to postgres;grant usage on sequence realtime.messages_id_seq to postgres')
   globalThis[key]={service,transport,config:{public:{supabaseUrl:lab.target.api_url},supabaseServiceRoleKey:lab.credentials.service_role_key,uploadsDir:uploads,shippingLiveRequestsEnabled:false,paymobEnabled:false,smsLiveRequestsEnabled:false}}
-  globalThis.defineEventHandler=h=>h;globalThis.readBody=readBody
+  globalThis.defineEventHandler=h=>h;globalThis.readBody=readBody;globalThis.setHeader=setHeader
   const router=createRouter()
   const routes=[
    ['get','/api/admin-system-reset','server/api/admin-system-reset/index.get.js'],['post','/api/admin-system-reset','server/api/admin-system-reset/index.post.js'],
@@ -59,6 +66,10 @@ export async function createResetPlatform() {
    ['get','/api/admin-shipping/settings','server/api/admin-shipping/settings.get.js'],['patch','/api/admin-shipping/settings','server/api/admin-shipping/settings.patch.js'],
    ['post','/api/analytics/events','server/api/analytics/events.post.js'],
    ['post','/api/admin-products','server/api/admin-products/index.post.js'],['get','/api/admin-products/:id','server/api/admin-products/[id].get.js'],['patch','/api/admin-products/:id','server/api/admin-products/[id].patch.js'],
+   ['get','/api/admin-products','server/api/admin-products/index.get.js'],['post','/api/admin-products/bulk','server/api/admin-products/bulk.post.js'],
+   ['get','/api/admin-products/list','server/api/admin-products/list.get.js'],
+   ['post','/api/admin-products/transfer/export','server/api/admin-products/transfer/export.post.js'],['post','/api/admin-products/transfer/preview','server/api/admin-products/transfer/preview.post.js'],
+   ['post','/api/checkout/quote','server/api/checkout/quote.post.js'],
    ['post','/api/admin-products/transfer/import','server/api/admin-products/transfer/import/index.post.js'],['post','/api/admin-products/transfer/import/approve','server/api/admin-products/transfer/import/approve.post.js'],
    ['post','/api/admin-products/transfer/import/apply','server/api/admin-products/transfer/import/apply.post.js'],['get','/api/admin-products/transfer/import','server/api/admin-products/transfer/import/index.get.js']
   ]
@@ -74,7 +85,7 @@ export async function createResetPlatform() {
   }
   server=createServer(toNodeListener(createApp({debug:false}).use(router)));await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port
   const call=async(path,{method='GET',actor='owner',body,headers={}}={})=>{
-   const response=await fetch(url+path,{method,headers:{...(actor?{authorization:'Bearer '+tokens[actor]}:{}),...(body?{'content-type':'application/json'}:{}),...headers},...(body?{body:typeof body==='string'||body instanceof Uint8Array?body:JSON.stringify(body)}:{})});return{response,body:await response.json()}
+   const response=await fetch(url+path,{method,headers:{...(actor?{authorization:'Bearer '+tokens[actor]}:{}),...(body?{'content-type':'application/json'}:{}),...headers},...(body?{body:typeof body==='string'||body instanceof Uint8Array?body:JSON.stringify(body)}:{})});return{response,body:response.headers.get('content-type')?.includes('application/json')?await response.json():new Uint8Array(await response.arrayBuffer())}
   }
   const reset=async(scope,{id=randomUUID(),password=lab.owner.password,actor='owner'}={})=>call('/api/admin-system-reset',{method:'POST',actor,body:{scope,operationId:id,password,confirmation:'RESET '+scope.toUpperCase()}})
   return{lab,db,service,browser,authClient,transport,actors,tokens,url,directory,uploads,call,reset,createActor,close}

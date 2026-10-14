@@ -14,6 +14,7 @@ import { hash } from '../lib/cleanBaseline.mjs'
 import { ensure, fail, sourceRoot, cliVersion, migration71 } from './contracts.mjs'
 import { readProtected, validateLaboratory, privateDirectory, writeAtomic } from './files.mjs'
 import { refreshPolicy } from '../lib/targetPolicy.mjs'
+import {loadRelease79,release79Descriptor} from '../lib/release79Certification.mjs'
 
 async function binaryHash(path){const digest=createHash('sha256');for await(const bytes of createReadStream(path))digest.update(bytes);return digest.digest('hex')}
 async function pinnedBinary(){
@@ -51,10 +52,14 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     ensure(platformExtensions.every(extension=>['extensions','vault','pg_catalog','graphql'].includes(extension.schema)),'platform_unavailable')
     const supautils=(await db.query("select setting,context from pg_settings where name='supautils.policy_grants'")).rows[0]
     ensure(supautils?.context==='sighup','platform_unavailable')
-    const managed=(await db.query("select n.nspname schema,c.relname name,pg_get_userbyid(c.relowner) owner,c.relrowsecurity rls,c.relforcerowsecurity force_rls,pg_has_role(current_user,c.relowner,'MEMBER') operator_member from pg_class c join pg_namespace n on n.oid=c.relnamespace where (n.nspname,c.relname) in (('auth','users'),('storage','objects'),('storage','buckets'),('realtime','messages')) order by 1,2")).rows
+    const managed=(await db.query("select n.nspname schema,c.relname name,pg_get_userbyid(c.relowner) owner,c.relacl::text acl,c.relrowsecurity rls,c.relforcerowsecurity force_rls,pg_has_role(current_user,c.relowner,'MEMBER') operator_member from pg_class c join pg_namespace n on n.oid=c.relnamespace where (n.nspname,c.relname) in (('auth','users'),('storage','objects'),('storage','buckets'),('realtime','messages')) order by 1,2")).rows
     ensure(managed.length===4 && managed.every(row=>row.owner!=='postgres'&&!row.operator_member) && managed.find(row=>row.schema==='storage'&&row.name==='objects')?.rls && managed.find(row=>row.schema==='realtime')?.rls,'platform_unavailable')
     if(target.profile==='owned-laboratory')ensure((await db.query("select current_setting('elcomputer.laboratory_id',true) id")).rows[0].id===target.laboratory.instance_id,'target_changed')
-    identity={...metadata,operator_role_flags:role,managed_objects:managed,tls_peer_sha256:hash(peer.raw),database_ca_sha256:hash(ca),api_ca_sha256:apiCa?hash(apiCa):null,platform_extensions:platformExtensions,supautils_policy_grants:supautils.setting}
+    const publicNamespace=(await db.query("select pg_get_userbyid(nspowner) owner,nspacl::text acl from pg_namespace where nspname='public'")).rows[0]
+    // Keep the historical identity format byte-compatible. New release plans
+    // separately freeze namespace and managed ACLs as additional evidence.
+    const securityIdentity={public_namespace:publicNamespace,managed_acls:managed.map(({schema,name,acl})=>({schema,name,acl}))}
+    identity={...metadata,operator_role_flags:role,managed_objects:managed.map(({acl,...row})=>row),tls_peer_sha256:hash(peer.raw),database_ca_sha256:hash(ca),api_ca_sha256:apiCa?hash(apiCa):null,platform_extensions:platformExtensions,supautils_policy_grants:supautils.setting}
     const method=mutating?'pg_try_advisory_lock':'pg_try_advisory_lock_shared'
     const result=(await db.query(`select ${method}(hashtextextended('elcomputer-install:database',0)) acquired`)).rows[0]
     ensure(result.acquired,'lock_busy');locked=true
@@ -102,18 +107,25 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     const childEnv={PATH:process.env.PATH,LANG:'C',DO_NOT_TRACK:'1',DYLD_LIBRARY_PATH:process.env.DYLD_LIBRARY_PATH||''}
     ensure((await promisify(execFile)(cli,['--version'],{env:childEnv,cwd:dirnameForSource()})).stdout.trim()===cliVersion,'source_changed')
     identity.cli_binary_sha256=toolHash
-    return {db,client,anon,identity,lease,transport,async close(){controller.abort();if(locked&&!closed)try{await db.query('select pg_advisory_unlock_all()')}catch{}await db.end().catch(()=>{})},
-      async cli(workspace,inventory,{repairVersions=null,dryRun=false,migrationHash}={}) {
+    return {db,client,anon,identity,securityIdentity,lease,transport,async close(){controller.abort();if(locked&&!closed)try{await db.query('select pg_advisory_unlock_all()')}catch{}await db.end().catch(()=>{})},
+      async cli(workspace,inventory,{repairVersions=null,dryRun=false,migrationHash,followOn=[]}={}) {
         await refreshPolicy(target)
         lease();ensure(mutating || dryRun,'invalid_input');await privateDirectory(workspace)
         const known=new Set(inventory.map(row=>row.version))
         if(repairVersions)ensure(repairVersions.length>0&&repairVersions.length<=70&&new Set(repairVersions).size===repairVersions.length&&repairVersions.every(version=>known.has(version)),'history_uncertain')
+        if(followOn.length){
+          ensure(!repairVersions&&followOn.length<=8,'history_uncertain')
+          const approved=release79Descriptor(await loadRelease79()).normal_migrations.slice(1,followOn.length+1)
+          ensure(JSON.stringify(followOn)===JSON.stringify(approved),'source_changed')
+          const plan=await readProtected(join(workspace,'plan.json'))
+          ensure(plan.engine===2&&JSON.stringify(plan.source.release)===JSON.stringify(release79Descriptor(await loadRelease79())),'source_changed')
+        }
         const directory=join(workspace,'cli-'+randomUUID()),migrations=join(directory,'supabase/migrations')
         await mkdir(migrations,{recursive:true,mode:0o700})
         await writeFile(join(directory,'supabase/config.toml'),'project_id = "elcomputer-fresh-install"\n',{mode:0o600})
-        for(const name of [...inventory.map(row=>row.filename),migration71]){
+        for(const name of [...inventory.map(row=>row.filename),migration71,...followOn.map(r=>r.filename)]){
           const bytes=await readFile(resolve(sourceRoot,'supabase/migrations',name))
-          ensure(hash(bytes)===(name===migration71?migrationHash:inventory.find(row=>row.filename===name)?.sha256),'source_changed')
+          ensure(hash(bytes)===(name===migration71?migrationHash:inventory.find(row=>row.filename===name)?.sha256||followOn.find(row=>row.filename===name)?.sha256),'source_changed')
           await writeFile(join(migrations,name),bytes,{mode:0o600})
         }
         const passfile=join(directory,'database.pgpass')

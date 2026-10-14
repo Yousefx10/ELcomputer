@@ -6,6 +6,7 @@ import { resolve, relative, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { verifyBundle, hash, json } from '../lib/cleanBaseline.mjs'
 import { assertPolicyTarget } from '../lib/targetPolicy.mjs'
+import {loadRelease79,release79Descriptor} from '../lib/release79Certification.mjs'
 
 export const sourceRoot = fileURLToPath(new URL('../../', import.meta.url))
 export const migration71 = '20261012160000_quick_setup_installation_bootstrap.sql'
@@ -111,8 +112,11 @@ export async function frozenSource() {
   }
   const {manifest,inventory}=await verifyBundle(),follow=JSON.parse(await readFile(new URL('../../supabase/bootstrap/portability-v1/manifest.json',import.meta.url)))
   const migration=await readFile(new URL('../../supabase/migrations/'+migration71,import.meta.url))
-  ensure(JSON.stringify((await readdir(new URL('../../supabase/migrations/',import.meta.url))).filter(name=>name.endsWith('.sql')).sort())===JSON.stringify([...inventory.map(row=>row.filename),migration71].sort()),'source_changed')
+  const versions=(await readdir(new URL('../../supabase/migrations/',import.meta.url))).filter(name=>name.endsWith('.sql')).sort()
+  const historical=JSON.stringify(versions)===JSON.stringify([...inventory.map(row=>row.filename),migration71].sort())
+  let release
+  if(!historical){try{release=release79Descriptor(await loadRelease79({sourceNames:names}))}catch{fail('source_changed')}}
   ensure(follow.migration.sha256===hash(migration),'source_changed')
   for(const [name,expected] of Object.entries(follow.artifacts)) ensure(hash(await readFile(new URL('../../supabase/bootstrap/portability-v1/'+name,import.meta.url)))===expected,'source_changed')
-  return {commit,tree_sha256:tree.digest('hex'),baseline_manifest_sha256:hash(json(manifest)),baseline_inventory_sha256:manifest.migration_inventory_sha256,migration71_sha256:hash(migration),follow_on_manifest_sha256:hash(json(follow)),covered_versions:inventory.map(row=>row.version),cli_version:cliVersion}
+  return {commit,tree_sha256:tree.digest('hex'),baseline_manifest_sha256:hash(json(manifest)),baseline_inventory_sha256:manifest.migration_inventory_sha256,migration71_sha256:hash(migration),follow_on_manifest_sha256:hash(json(follow)),covered_versions:inventory.map(row=>row.version),cli_version:cliVersion,...(release?{release}:{})}
 }

@@ -1,3 +1,15 @@
+# BETA Gate 1B — guided fresh release79, 2026-10-14
+
+- Authorized baseline `5b056d512b4897e1c3daa3805830617109abb4e3`. Product Manager remains frozen. No application/UI or migration change.
+- Separate certificate **release-79-v1**; manifest SHA-256 `84a020efb402f6a60e4b53c033cfebf01cc2f132cc28d8c1725f76e438ddbc3f`; final schema SHA-256 `26f64aaae03d2c4f0c0fd19dd763cc8ce7c84171e9c0a346147eaab4bd2ec3c0`. [Path and security](docs/installation-release79.md), [validation and limits](docs/installation-release79-validation.md).
+- Migrations1–79 and all13 historical clean/portability certificate files are byte-identical. Original engine1/receipt1 authority remains; this release uses engine2/receipt2. Legacy exclusions and deployment helpers are preserved.
+- Supported path: genuinely empty approved target → certified source70 baseline → exact70 baseline-only adoption → normal71 → six private buckets and securely sealed first owner → normal72–79, one step per verified push → exact schema/security/history/data proof → matching guided publication. Never repair failed upgrades or adopt unexpected history.
+- New stages freeze full private/public catalogs, triggers, grants, RLS, Storage policies, statement digests, managed ownership/ACLs and known pg_trgm1.6 dependency. Source/certificate drift fails closed. Recorded stage intents and exact reconciliation prevent duplicate owners, buckets and migrations; component receipts remain immutable.
+- Two independent native guided brands and Chrome owner logins pass. All eight reset scopes pass on both installed targets. Both compiled Nuxt publications also complete Full Reset, local/private cleanup, owner reinitialization and post-reset Draft creation. All providers/workers remain OFF; merchant fixtures begin only after empty installation acceptance.
+- Validation: **1,145 full regression passes**, zero failures/skips/cancellations; **31 release-focused passes**, **10 final native CLI/operation passes**, Node22.23.1 typecheck/build and **592 compiled input hashes** pass. Browser **2,018 assertions /354 screenshots**, zero unexpected errors/external requests. Evidence: `/Users/imac/Documents/ELcomputer/beta-gate1b-installation79-20261014`.
+- Native PostgreSQL/Auth/Storage/PostgREST/Supautils/TLS/Nuxt/PM2 are actual local services. Realtime, Linux/site-user, SSH and ingress are explicit fixtures. Hosted catalog/delegation/Auth/Storage/Realtime, Linux/reboot/ingress and backup restore acceptance remain pending. Production is owner-reported70 and was not accessed.
+- **STOP after this task's successful validation, commit/push and review.** No production/hosted execution, provider activation, WordPress/domain transition or BETA Gate2 is authorized. Historical stops below are superseded only within this Gate1B scope.
+
 # BETA Gate 1 — System Reset compatibility, 2026-10-14
 
 - Authorized corrective baseline `9c5ebd0140cf7172a63078e028ef517df492b579`. Product Manager Tasks1–6B remain frozen. This change addresses System Reset safety only.

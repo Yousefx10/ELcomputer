@@ -7,12 +7,18 @@ import { ensure, fail, digest, object, frozenSource, validateTarget } from './co
 import { createWorkspace, writeAtomic, checkpointWrite, checkpointRead, workspaceLock, settledCliJobs, receipt } from './files.mjs'
 import { refreshPolicy } from '../lib/targetPolicy.mjs'
 import { assertFresh, verifySchema, verifyBaseline, readHistory, validateHistory, readJournal, assertJournal, verifyInstalledData, verifyBuckets, pendingIdentity, buckets } from './verify.mjs'
+import { assertRelease79Source } from '../lib/release79Certification.mjs'
+import { release79Plan, release79Stages, releaseObservation, assertFresh79, releaseHistory, verifyReleaseSchema, matchReleaseTarget, observeReleaseOwner } from './release79.mjs'
 
 export const stages=['baseline','history','migration71','database','storage','owner','complete']
+const stagesFor=source=>source.release?[...stages.slice(0,-1),...release79Stages,'complete']:stages
 export const confirmation=plan=>`${plan.target.project_ref}:${plan.target.installation_id}:${plan.plan_digest}`
 export function validatePlan(plan) {
   object(plan,['format','engine','created_at','target','source','observation','owner_request_id','stages','plan_digest'])
-  ensure(plan.format===1 && plan.engine===1 && Array.isArray(plan.stages) && JSON.stringify(plan.stages)===JSON.stringify(stages),'checkpoint_changed')
+  ensure(plan.format===1 && [1,2].includes(plan.engine) && Array.isArray(plan.stages),'checkpoint_changed')
+  if(plan.engine===2){try{assertRelease79Source(plan.source)}catch{fail('checkpoint_changed')}}
+  else ensure(!plan.source.release,'checkpoint_changed')
+  ensure(JSON.stringify(plan.stages)===JSON.stringify(stagesFor(plan.source)),'checkpoint_changed')
   validateTarget(plan.target)
   const {plan_digest,...content}=plan
   ensure(/^[0-9a-f]{64}$/.test(plan_digest) && digest(content)===plan_digest,'checkpoint_changed')
@@ -22,8 +28,8 @@ async function unchangedSource(plan) {
   await refreshPolicy(plan.target)
   try{assert.deepEqual(await frozenSource(),plan.source)}catch{fail('source_changed')}
 }
-function unchangedTarget(platform,plan) {
-  try{assert.deepEqual(platform.identity,plan.observation)}catch{fail('target_changed')}
+async function unchangedTarget(platform,plan) {
+  try{await matchReleaseTarget(platform,plan)}catch{fail('target_changed')}
 }
 export async function planInstallation({target,credentials,directory,platformFactory=connectPlatform}) {
   validateTarget(target)
@@ -33,11 +39,13 @@ export async function planInstallation({target,credentials,directory,platformFac
   const platform=await platformFactory(target,credentials)
   try{
     await assertFresh(platform)
-    const content={format:1,engine:1,created_at:new Date().toISOString(),target,source,observation:platform.identity,owner_request_id:randomUUID(),stages}
+    if(source.release)await assertFresh79(platform)
+    const releaseStages=stagesFor(source)
+    const content={format:1,engine:source.release?2:1,created_at:new Date().toISOString(),target,source,observation:source.release?releaseObservation(platform):platform.identity,owner_request_id:randomUUID(),stages:releaseStages}
     const plan={...content,plan_digest:digest(content)}
     await writeAtomic(directory,'plan.json',plan,{exclusive:true})
     await checkpointWrite(directory,plan,null,'planned','ready',{fresh_target:true})
-    return {ok:true,command:'plan',plan_digest:plan.plan_digest,installation_id:target.installation_id,project_ref:target.project_ref,confirmation:confirmation(plan),stages}
+    return {ok:true,command:'plan',plan_digest:plan.plan_digest,installation_id:target.installation_id,project_ref:target.project_ref,confirmation:confirmation(plan),stages:releaseStages}
   }finally{await platform.close()}
 }
 export async function observeInstallation(platform,plan,inventory,{complete=false}={}) {
@@ -46,11 +54,14 @@ export async function observeInstallation(platform,plan,inventory,{complete=fals
     const installed=(await platform.db.query("select to_regclass('public.quick_setup_state') present")).rows[0].present
     if(!installed){await assertFresh(platform);ensure(!complete,'bootstrap_uncertain');return {stage:'planned',status:'ready'}}
     await verifyBaseline(platform,plan)
-    if(history.length)validateHistory(history,inventory,{partial:true})
+    if(history.length){validateHistory(history,inventory,{partial:true});if(release79Plan(plan))await releaseHistory(plan,history,{partial:true})}
     ensure(!complete,'bootstrap_uncertain')
     return {stage:history.length===70?'history':'baseline',status:'verified',covered_versions:history.length}
   }
-  await verifySchema(platform,71);assertJournal(journal,plan)
+  if(journal.phase==='complete'&&release79Plan(plan))return observeReleaseOwner(platform,plan,{complete})
+  if(release79Plan(plan)){await verifyReleaseSchema(platform,plan,71);await releaseHistory(plan,history)}
+  else await verifySchema(platform,71)
+  assertJournal(journal,plan)
   validateHistory(history,inventory,{allow71:true})
   if(journal.phase==='complete') {
     const proof=await verifyInstalledData(platform,plan,{owner:journal.auth_subject,storage:true})
@@ -72,11 +83,13 @@ export async function readOnlyInstallation({command,plan,directory,credentials,p
   try{
     await settledCliJobs(directory,plan)
     platform=await platformFactory(plan.target,credentials)
-    unchangedTarget(platform,plan)
+    await unchangedTarget(platform,plan)
     const {inventory}=await verifyBundle()
     const observation=await observeInstallation(platform,plan,inventory,{complete:command==='verify'&&latest.status==='complete'})
     if(command==='check'&&latest.stage==='planned')ensure(observation.stage==='planned','target_occupied')
     if(observation.stage!=='planned')ensure(chain.some(item=>item.stage==='baseline'&&item.status==='pending'),'checkpoint_changed')
+    if(release79Plan(plan)&&['baseline','history'].includes(observation.stage)&&observation.covered_versions)ensure(chain.some(item=>item.stage==='history'&&item.status==='pending'),'checkpoint_changed')
+    if(release79Plan(plan)&&observation.last_migration>71)for(let version=72;version<=observation.last_migration;version++)ensure(chain.some(item=>item.stage==='migration'+version&&item.status==='pending'),'checkpoint_changed')
     return {ok:true,command,plan_digest:plan.plan_digest,installation_id:plan.target.installation_id,project_ref:plan.target.project_ref,observation,mutated:false}
   }finally{await platform?.close();await release()}
 }
@@ -89,15 +102,42 @@ export async function executeInstallation({command,plan,directory,credentials,ow
   let platform
   try{
     await settledCliJobs(directory,plan)
-    platform=await platformFactory(plan.target,credentials,{mutating:true});unchangedTarget(platform,plan)
+    platform=await platformFactory(plan.target,credentials,{mutating:true});await unchangedTarget(platform,plan)
     const {inventory}=await verifyBundle()
     const mark=async(stage,status,evidence={})=>{
       await refreshPolicy(plan.target)
-      platform.lease();checkpoint=await checkpointWrite(directory,plan,checkpoint,stage,status,evidence)
+      platform.lease();checkpoint=await checkpointWrite(directory,plan,checkpoint,stage,status,evidence);chain.push(checkpoint)
       progress({stage,status})
     }
     const authorized=stage=>chain.some(item=>item.stage===stage&&item.status==='pending')||checkpoint.stage===stage&&checkpoint.status==='pending'
+    const finishRelease=async()=>{
+      // Every successful stage must have its original intent in this chain.
+      // Live schema/history are checked before any new intent or SQL execution.
+      for(const stage of stages.slice(0,-1))ensure(authorized(stage),'checkpoint_changed')
+      let observed=await observeReleaseOwner(platform,plan)
+      for(let version=72;version<=observed.last_migration;version++)ensure(authorized('migration'+version),'checkpoint_changed')
+      if(!chain.some(item=>item.stage==='owner'&&item.status==='verified'))await mark('owner','verified',observed)
+      for(let version=72;version<=79;version++){
+        const stage='migration'+version
+        if(observed.last_migration>=version){
+          ensure(authorized(stage),'checkpoint_changed')
+          if(!chain.some(item=>item.stage===stage&&item.status==='verified'))await mark(stage,'verified',{...observed,reconciled:true})
+          continue
+        }
+        ensure(observed.last_migration===version-1,'history_uncertain')
+        await mark(stage,'pending',{last_migration:version-1,normal_versions:observed.normal_versions})
+        await unchangedSource(plan);platform.lease()
+        await platform.cli(directory,inventory,{migrationHash:plan.source.migration71_sha256,followOn:plan.source.release.normal_migrations.slice(1,version-70)})
+        observed=await observeReleaseOwner(platform,plan)
+        ensure(observed.last_migration===version,'history_uncertain')
+        await mark(stage,'verified',observed)
+      }
+      const proof=await observeReleaseOwner(platform,plan,{complete:true})
+      await mark('complete','complete',proof)
+      return {ok:true,command,plan_digest:plan.plan_digest,...proof}
+    }
     if(checkpoint.status==='complete'){
+      if(release79Plan(plan))for(const stage of plan.stages.filter(stage=>stage!=='complete'))ensure(authorized(stage),'checkpoint_changed')
       const observed=await observeInstallation(platform,plan,inventory,{complete:true})
       // The original engine re-publishes only its derived pointer after exact
       // live verification. No SQL, buckets, owner or checkpoints are replayed.
@@ -107,8 +147,13 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     ensure(owner,'invalid_input')
     let journal=await readJournal(platform.db)
     let baselinePresent=(await platform.db.query("select to_regclass('public.quick_setup_state') present")).rows[0].present
+    if(baselinePresent&&journal?.phase==='complete'&&release79Plan(plan)){
+      ensure(command==='resume','target_occupied');assertJournal(journal,plan,{complete:true})
+      return await finishRelease()
+    }
     if(!baselinePresent) {
       await assertFresh(platform)
+      if(release79Plan(plan))await assertFresh79(platform)
       if(command==='resume')ensure(checkpoint.stage==='planned'||authorized('baseline'),'checkpoint_changed')
       await mark('baseline','pending')
       await unchangedSource(plan)
@@ -128,6 +173,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     if(!journal) {
       await verifyBaseline(platform,plan)
       const missing=history.length?validateHistory(history,inventory,{partial:true}):inventory.map(item=>item.version)
+      if(release79Plan(plan)&&history.length){ensure(authorized('history'),'history_uncertain');await releaseHistory(plan,history,{partial:true})}
       if(history.length&&missing.length)ensure(authorized('history'),'history_uncertain')
       if(missing.length){
         await mark('history','pending')
@@ -136,6 +182,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
         history=await readHistory(platform.db)
       }
       validateHistory(history,inventory)
+      if(release79Plan(plan))await releaseHistory(plan,history,{partial:true})
       await verifyBaseline(platform,plan)
       await mark('history','verified',{covered_versions:70,historical_sql_executed:0})
       await mark('migration71','pending',{covered_versions:70})
@@ -147,7 +194,9 @@ export async function executeInstallation({command,plan,directory,credentials,ow
       // Schema 71 without its ledger entry is uncertain, never auto-repaired.
       validateHistory(history,inventory,{allow71:true})
     }
-    await verifySchema(platform,71);assertJournal(journal,plan)
+    if(release79Plan(plan)){await verifyReleaseSchema(platform,plan,71);await releaseHistory(plan,await readHistory(platform.db))}
+    else await verifySchema(platform,71)
+    assertJournal(journal,plan)
     validateHistory(await readHistory(platform.db),inventory,{allow71:true})
     if(journal.phase!=='available')ensure(authorized('database'),'checkpoint_changed')
     if(['auth_started','complete'].includes(journal.phase))ensure(authorized('owner'),'checkpoint_changed')
@@ -157,6 +206,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     await verifyInstalledData(platform,plan,{owner:journal.phase==='complete'?journal.auth_subject:null,pendingSubject:existingSubject,storage:'partial'})
     await mark('migration71','verified',{covered_versions:70,migration71:true})
     if(journal.phase==='complete'){
+      if(release79Plan(plan))return await finishRelease()
       const proof=await observeInstallation(platform,plan,inventory,{complete:true})
       await mark('complete','complete',proof)
       return {ok:true,command,plan_digest:plan.plan_digest,...proof}
@@ -201,6 +251,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     try{
       await bootstrapFirstOwner({db:platform.db,authAdmin:platform.client.auth.admin,target:{installation_id:plan.target.installation_id,request_id:plan.owner_request_id,target_digest:plan.plan_digest,project_ref:plan.target.project_ref,site_origin:plan.target.site_origin},email:owner.email,password:owner.password,fullName:owner.full_name||'',confirmOwner:true})
     }catch{fail('bootstrap_uncertain')}
+    if(release79Plan(plan))return await finishRelease()
     const proof=await observeInstallation(platform,plan,inventory,{complete:true})
     await mark('owner','verified',proof)
     await mark('complete','complete',proof)

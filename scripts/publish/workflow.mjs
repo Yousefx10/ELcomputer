@@ -15,7 +15,7 @@ export const confirmation=plan=>`${plan.target.project_ref}:${new URL(plan.targe
 export function validatePlan(plan){object(plan,['format','kind','created_at','target','registry','installation','bundle','runtime_id','remote','ssh_identity','ingress','launcher_sha256','agent_sha256','plan_digest']);const{plan_digest,...content}=plan;ensure(plan.format===1&&plan.kind==='elcomputer-first-publication'&&digest(content)===plan_digest,'checkpoint_changed');return plan}
 async function sourceUnchanged(bundle,sourceReader){ensure(digest(await sourceReader())===digest(bundle.source),'source_changed')}
 function installationBinding(target,installation){ensure(target.installation_id===installation.plan.target.installation_id&&target.project_ref===installation.plan.target.project_ref&&target.site_origin===installation.plan.target.site_origin,'receipt_unverified');ensure(digest(target.reservation_policy||null)===digest(installation.plan.target.reservation_policy||null),'receipt_unverified')}
-async function originalInstallation(plan){const installation=await completedInstallation(plan.installation.receipt_file);ensure(installation.receipt_digest===plan.installation.receipt_digest&&installation.plan.plan_digest===plan.installation.plan_digest,'receipt_unverified');return installation}
+async function originalInstallation(plan){const installation=await completedInstallation(plan.installation.receipt_file);ensure(installation.receipt_digest===plan.installation.receipt_digest&&installation.plan.plan_digest===plan.installation.plan_digest,'receipt_unverified');ensure(digest(plan.bundle.source)===digest(installation.plan.source),'source_changed');return installation}
 async function login(verified,installation,owner){
   ensure(owner&&typeof owner.email==='string'&&typeof owner.password==='string','invalid_input')
   const result=await verified.platform.anon.auth.signInWithPassword({email:owner.email,password:owner.password})
@@ -28,6 +28,7 @@ export async function planPublication({target,registry,receiptFile,bundleFile,ru
   const installation=await completedInstallation(receiptFile);installationBinding(target,installation);validateCredentials(credentials,installation.plan.target)
   const runtime=await validateRuntime(await readProtected(runtimeFile),target,installation,credentials),bundle=await loadBundle(bundleFile,{secrets:[...Object.values(runtime.env),...Object.values(credentials)]})
   ensure(bundle.manifest.release_sha256===target.release_sha256,'source_changed');await sourceUnchanged(bundle.manifest,sourceReader)
+  ensure(digest(bundle.manifest.source)===digest(installation.plan.source),'source_changed')
   await createWorkspace(directory)
   let verified,remote
   try{

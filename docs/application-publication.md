@@ -1,3 +1,11 @@
+# BETA Gate 1B release extension
+
+The current separate [migration-79 certificate](installation-release79.md)
+extends the guided fresh path through79 and binds publication to its exact
+installation source. Historical milestone boundaries below remain evidence
+for their original releases. Local certification does not establish hosted
+acceptance.
+
 # Guided fresh publication integration
 
 The [guided coordinator](guided-installation.md) now packages and preflights

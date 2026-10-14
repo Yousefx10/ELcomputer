@@ -4,6 +4,7 @@ import { resolve, dirname, basename, isAbsolute } from 'node:path'
 import { hostname } from 'node:os'
 import { randomUUID } from 'node:crypto'
 import { ensure, fail, digest, object, sourceRoot } from './contracts.mjs'
+import {release79Stages} from '../lib/release79Certification.mjs'
 
 export async function canonicalPath(path) {
   ensure(typeof path==='string' && isAbsolute(path) && resolve(path)===path,'unsafe_file')
@@ -60,7 +61,7 @@ export async function validateLaboratory(target) {
   try{process.kill(identity.pid,0)}catch{fail('target_changed')}
 }
 export function receipt(plan,checkpoint) {
-  return {format:1,installation_id:plan.target.installation_id,project_ref:plan.target.project_ref,site_origin:plan.target.site_origin,plan_digest:plan.plan_digest,source:plan.source,status:checkpoint.status,stage:checkpoint.stage,revision:checkpoint.revision,checkpoint_digest:checkpoint.checkpoint_digest,baseline_covered:checkpoint.evidence?.covered_versions===70?70:0,later_migrations:checkpoint.evidence?.migration71===true?['20261012160000']:[],owner_created:checkpoint.evidence?.owner_created===true,pending:['VPS publication','hosted end-to-end acceptance','backup/recovery acceptance','commerce/provider acceptance']}
+  return {format:plan.engine===2?2:1,installation_id:plan.target.installation_id,project_ref:plan.target.project_ref,site_origin:plan.target.site_origin,plan_digest:plan.plan_digest,source:plan.source,status:checkpoint.status,stage:checkpoint.stage,revision:checkpoint.revision,checkpoint_digest:checkpoint.checkpoint_digest,baseline_covered:checkpoint.evidence?.covered_versions===70?70:0,later_migrations:plan.engine===2?(checkpoint.evidence?.normal_versions||[]):checkpoint.evidence?.migration71===true?['20261012160000']:[],owner_created:checkpoint.evidence?.owner_created===true,...(plan.engine===2?{release_certificate_sha256:plan.source.release.certificate_sha256,last_migration:checkpoint.evidence?.last_migration||0}:{}),pending:['VPS publication','hosted end-to-end acceptance','backup/recovery acceptance','commerce/provider acceptance']}
 }
 export async function checkpointRead(directory,plan) {
   await privateDirectory(directory)
@@ -74,7 +75,7 @@ export async function checkpointRead(directory,plan) {
     object(checkpoint,['format','plan_digest','installation_id','revision','previous_digest','stage','status','at','evidence','checkpoint_digest'])
     const {checkpoint_digest,...content}=checkpoint
     ensure(checkpoint.format===1 && checkpoint.plan_digest===plan.plan_digest && checkpoint.installation_id===plan.target.installation_id && checkpoint.revision===index && checkpoint.previous_digest===previous && digest(content)===checkpoint_digest,'checkpoint_changed')
-    ensure(['ready','pending','verified','complete'].includes(checkpoint.status) && ['planned','baseline','history','migration71','database','storage','owner','complete'].includes(checkpoint.stage),'checkpoint_changed')
+    ensure(['ready','pending','verified','complete'].includes(checkpoint.status) && ['planned','baseline','history','migration71','database','storage','owner','complete',...(plan.engine===2?release79Stages:[])].includes(checkpoint.stage),'checkpoint_changed')
     previous=checkpoint_digest;chain.push(checkpoint)
   }
   return chain
