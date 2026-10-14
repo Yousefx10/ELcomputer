@@ -4,15 +4,15 @@ import { readProtected, checkpointRead, receipt as installationReceipt, workspac
 import { validatePlan, observeInstallation } from '../install/workflow.mjs'
 import { connectPlatform } from '../install/platform.mjs'
 import { verifyBundle } from '../lib/cleanBaseline.mjs'
-import { matchReleaseTarget } from '../install/release79.mjs'
+import { matchReleaseTarget, releasePlan } from '../install/releases.mjs'
 import { ensure, digest, fail } from './contracts.mjs'
 
 export async function completedInstallation(file){
   try{
     const directory=dirname(file);ensure(file===resolve(directory,'receipt.json'),'receipt_unverified')
     const plan=validatePlan(await readProtected(resolve(directory,'plan.json'))),chain=await checkpointRead(directory,plan),latest=chain.at(-1),receipt=await readProtected(file)
-    const normal=plan.engine===2?plan.source.release.normal_migrations.map(row=>row.version):['20261012160000']
-    if(plan.engine===2)for(const stage of plan.stages.filter(stage=>stage!=='complete'))ensure(chain.some(row=>row.stage===stage&&row.status==='pending'),'receipt_unverified')
+    const normal=releasePlan(plan)?plan.source.release.normal_migrations.map(row=>row.version):['20261012160000']
+    if(releasePlan(plan))for(const stage of plan.stages.filter(stage=>stage!=='complete'))ensure(chain.some(row=>row.stage===stage&&row.status==='pending'),'receipt_unverified')
     ensure(latest.stage==='complete'&&latest.status==='complete'&&receipt.owner_created===true&&receipt.baseline_covered===70,'receipt_unverified')
     assert.deepEqual(receipt.later_migrations,normal)
     assert.deepEqual(receipt,installationReceipt(plan,latest))

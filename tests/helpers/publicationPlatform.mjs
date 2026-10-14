@@ -14,7 +14,7 @@ import { writeAtomic } from '../../scripts/install/files.mjs'
 import { PublicationSession } from '../../scripts/publish/remote.mjs'
 
 const port=async()=>{const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const value=server.address().port;await new Promise(resolve=>server.close(resolve));return value}
-export async function createPublicationFixture({compiledOutput=process.env.PUBLICATION_REVIEW_OUTPUT||'/private/tmp/elcomputer-m4-reviewed-package/build-source/.output',initialize=true,siteOrigin='https://fresh.example.invalid',release79=false}={}){
+export async function createPublicationFixture({compiledOutput=process.env.PUBLICATION_REVIEW_OUTPUT||'/private/tmp/elcomputer-m4-reviewed-package/build-source/.output',initialize=true,siteOrigin='https://fresh.example.invalid',release79=false,release82=false}={}){
   if(release79){
     if(!process.env.RELEASE79_REVIEW_OUTPUT)throw Error('Exact historical release79 compiled fixture required.')
     compiledOutput=process.env.RELEASE79_REVIEW_OUTPUT
@@ -23,7 +23,7 @@ export async function createPublicationFixture({compiledOutput=process.env.PUBLI
   let source,lab
   try{
   const extraFiles=['scripts/elcomputer-publish.mjs',...(await readdir(resolve(sourceRoot,'scripts/publish'))).map(name=>'scripts/publish/'+name)]
-  source=await installerSourceCopy({extraFiles,release79});lab=await createInstallerPlatform({siteOrigin});const installDir=join(lab.directory,'installation')
+  source=await installerSourceCopy({extraFiles,release79,release82});lab=await createInstallerPlatform({siteOrigin});const installDir=join(lab.directory,'installation')
   if(initialize){
   const prepared=await source.cli(['plan','--target',lab.targetFile,'--out',installDir,'--credentials-file',lab.credentialsFile])
   if(prepared.code!==0)throw Error(JSON.stringify(prepared.result))

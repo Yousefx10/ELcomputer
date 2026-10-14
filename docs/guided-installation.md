@@ -1,3 +1,10 @@
+# BETA Gate 2B release extension
+
+The separate [migration-82 certificate](installation-release82.md) now extends
+the guarded fresh path through82 and binds publication to the corrected H1/H2/H3
+application inputs. Historical71/79 certificates and receipts remain unchanged.
+This is local authority only; hosted staging requires separate authorization.
+
 # BETA Gate 1B release extension
 
 The current separate [migration-79 certificate](installation-release79.md)

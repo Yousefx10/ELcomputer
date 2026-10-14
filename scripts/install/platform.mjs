@@ -15,6 +15,7 @@ import { ensure, fail, sourceRoot, cliVersion, migration71 } from './contracts.m
 import { readProtected, validateLaboratory, privateDirectory, writeAtomic } from './files.mjs'
 import { refreshPolicy } from '../lib/targetPolicy.mjs'
 import {loadRelease79,release79Descriptor} from '../lib/release79Certification.mjs'
+import {loadRelease82,release82Descriptor} from '../lib/release82Certification.mjs'
 
 async function binaryHash(path){const digest=createHash('sha256');for await(const bytes of createReadStream(path))digest.update(bytes);return digest.digest('hex')}
 async function pinnedBinary(){
@@ -114,11 +115,13 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
         const known=new Set(inventory.map(row=>row.version))
         if(repairVersions)ensure(repairVersions.length>0&&repairVersions.length<=70&&new Set(repairVersions).size===repairVersions.length&&repairVersions.every(version=>known.has(version)),'history_uncertain')
         if(followOn.length){
-          ensure(!repairVersions&&followOn.length<=8,'history_uncertain')
-          const approved=release79Descriptor(await loadRelease79()).normal_migrations.slice(1,followOn.length+1)
-          ensure(JSON.stringify(followOn)===JSON.stringify(approved),'source_changed')
           const plan=await readProtected(join(workspace,'plan.json'))
-          ensure(plan.engine===2&&JSON.stringify(plan.source.release)===JSON.stringify(release79Descriptor(await loadRelease79())),'source_changed')
+          ensure([2,3].includes(plan.engine)&&!repairVersions,'history_uncertain')
+          const certificate=plan.engine===3?release82Descriptor(await loadRelease82()):release79Descriptor(await loadRelease79())
+          ensure(followOn.length<certificate.normal_migrations.length,'history_uncertain')
+          const approved=certificate.normal_migrations.slice(1,followOn.length+1)
+          ensure(JSON.stringify(followOn)===JSON.stringify(approved),'source_changed')
+          ensure(JSON.stringify(plan.source.release)===JSON.stringify(certificate),'source_changed')
         }
         const directory=join(workspace,'cli-'+randomUUID()),migrations=join(directory,'supabase/migrations')
         await mkdir(migrations,{recursive:true,mode:0o700})

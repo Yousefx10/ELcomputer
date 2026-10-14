@@ -17,7 +17,7 @@ const freePort=async()=>{const server=tcpServer();await new Promise(resolve=>ser
 const node=process.env.INSTALLER_REVIEW_NODE_BIN || '/private/tmp/elcomputer-preflight-20261010/node22/node-v22.23.1-darwin-x64/bin/node'
 export const installerEnvironment={PATH:dirname(node)+':/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin',LANG:'C',DYLD_LIBRARY_PATH:process.env.DYLD_LIBRARY_PATH || ''}
 export const installerNativeAvailable=!!process.env.EMAIL_REVIEW_PG_BIN&&!!process.env.SUPAUTILS_REVIEW_LIBRARY
-export async function installerSourceCopy({extraFiles=[],release79=false}={}) {
+export async function installerSourceCopy({extraFiles=[],release79=false,release82=false}={}) {
   const directory=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-install-source-')))
   if(release79){
     // The release79 certificate freezes application inputs as well as SQL.
@@ -25,16 +25,23 @@ export async function installerSourceCopy({extraFiles=[],release79=false}={}) {
     await run('git',['clone','--quiet','--no-hardlinks','--no-local',sourceRoot,directory],{env:installerEnvironment})
     await run('git',['checkout','--quiet','--detach','a811b05fe5daa0739b913f1bd4847f6adc26da21'],{cwd:directory,env:installerEnvironment})
   }else{
-    const {stdout}=await run('git',['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
+    const {stdout}=await run('git',release82?['ls-files','--cached','--others','--exclude-standard','-z']:['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
     // Regression fixtures exercise the frozen, certified 1-71 installer.
     // This default fixture retains its unchanged 1-71 SQL authority.
     const lastMigration='20261012160000_quick_setup_installation_bootstrap.sql'
     const names=stdout.split('\0').filter(name=>name &&
-      !(name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
+      !(!release82 && name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
         name>'supabase/migrations/'+lastMigration))
     const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
     for(const name of new Set([...names,...newNames,...extraFiles])){
       const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
+    }
+    if(!release82){
+      // Historical engine1 protocol fixtures retain their original71 source
+      // validator. They do not certify the current application against71.
+      // The current public validator requires a complete application certificate.
+      const original=await run('git',['show','ecc31985836a1e5dc81d3213d43d55da1fb69f64:scripts/install/contracts.mjs'],{cwd:sourceRoot,env:installerEnvironment})
+      await writeFile(join(directory,'scripts/install/contracts.mjs'),original.stdout)
     }
     await run('git',['init','-q'],{cwd:directory,env:installerEnvironment})
     await run('git',['add','.'],{cwd:directory,env:installerEnvironment})
@@ -103,7 +110,7 @@ export async function createInstallerPlatform({siteOrigin='https://fresh.example
     start('auth',join(tools,'auth-server'),[],{GOTRUE_API_HOST:'127.0.0.1',GOTRUE_API_PORT:String(authPort),API_EXTERNAL_URL:apiUrl+'/auth/v1',GOTRUE_DB_DRIVER:'postgres',GOTRUE_DB_DATABASE_URL:dbUrl('supabase_auth_admin'),GOTRUE_DB_NAMESPACE:'auth',GOTRUE_SITE_URL:siteOrigin,GOTRUE_JWT_SECRET:jwtSecret,GOTRUE_JWT_AUD:'authenticated',GOTRUE_JWT_DEFAULT_GROUP_NAME:'authenticated',GOTRUE_JWT_ADMIN_ROLES:'service_role',GOTRUE_DISABLE_SIGNUP:'true',GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED:'false',GOTRUE_EXTERNAL_EMAIL_ENABLED:'true',GOTRUE_MAILER_AUTOCONFIRM:'false',GOTRUE_LOG_LEVEL:'error'})
     await wait(async()=>{const response=await fetch(`http://127.0.0.1:${authPort}/health`);return response.ok},'Auth')
     await root.query('grant all on all tables in schema auth to postgres;grant usage on all sequences in schema auth to postgres;')
-    start('storage',node,[join(tools,'storage-1.28.0/dist/start/server.js')],{SERVER_HOST:'127.0.0.1',SERVER_PORT:String(storagePort),SERVER_ADMIN_PORT:String(storageAdminPort),SERVER_REGION:'local',DATABASE_URL:dbUrl('supabase_storage_admin'),DATABASE_SSL_ROOT_CERT:await readFile(ca,'utf8'),DATABASE_MAX_CONNECTIONS:'4',DB_INSTALL_ROLES:'false',DB_SUPER_USER:'supabase_storage_admin',DB_ALLOW_MIGRATION_REFRESH:'false',AUTH_JWT_SECRET:jwtSecret,AUTH_JWT_ALGORITHM:'HS256',ANON_KEY:credentials.anon_key,SERVICE_KEY:credentials.service_role_key,TENANT_ID:projectRef,STORAGE_BACKEND:'file',STORAGE_FILE_BACKEND_PATH:join(directory,'objects'),PG_QUEUE_ENABLE:'false',LOG_LEVEL:'error',S3_PROTOCOL_ACCESS_KEY_ID:'fixture',S3_PROTOCOL_ACCESS_KEY_SECRET:'fixture-only-no-network',GLOBAL_S3_BUCKET:'fixture',SERVER_ADMIN_API_KEYS:'fixture-only'})
+    start('storage',node,[join(tools,'storage-1.28.0/dist/start/server.js')],{SERVER_HOST:'127.0.0.1',SERVER_PORT:String(storagePort),SERVER_ADMIN_PORT:String(storageAdminPort),SERVER_REGION:'local',FILE_SIZE_LIMIT:'524288000',FILE_SIZE_LIMIT_STANDARD_UPLOAD:'524288000',DATABASE_URL:dbUrl('supabase_storage_admin'),DATABASE_SSL_ROOT_CERT:await readFile(ca,'utf8'),DATABASE_MAX_CONNECTIONS:'4',DB_INSTALL_ROLES:'false',DB_SUPER_USER:'supabase_storage_admin',DB_ALLOW_MIGRATION_REFRESH:'false',AUTH_JWT_SECRET:jwtSecret,AUTH_JWT_ALGORITHM:'HS256',ANON_KEY:credentials.anon_key,SERVICE_KEY:credentials.service_role_key,TENANT_ID:projectRef,STORAGE_BACKEND:'file',STORAGE_FILE_BACKEND_PATH:join(directory,'objects'),PG_QUEUE_ENABLE:'false',LOG_LEVEL:'error',S3_PROTOCOL_ACCESS_KEY_ID:'fixture',S3_PROTOCOL_ACCESS_KEY_SECRET:'fixture-only-no-network',GLOBAL_S3_BUCKET:'fixture',SERVER_ADMIN_API_KEYS:'fixture-only'})
     await wait(async()=>{const response=await fetch(`http://127.0.0.1:${storagePort}/status`);return response.ok},'Storage')
     await root.query('grant all on all tables in schema storage to postgres,anon,authenticated,service_role;grant usage on all sequences in schema storage to postgres,anon,authenticated,service_role;grant execute on all functions in schema storage to postgres,anon,authenticated,service_role;')
     const restConfig=join(directory,'postgrest.conf')
