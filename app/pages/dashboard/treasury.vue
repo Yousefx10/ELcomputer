@@ -101,6 +101,7 @@
           <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.treasury.recordASalaryPaymentForAnHrEmployeeAndPeriod') }}</p>
         </div>
 
+        <fieldset class="contents" :disabled="salaryPayment.locked.value">
         <div>
           <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.employee') }}</label>
           <select v-model="salaryForm.employee_id" required class="w-full rounded-lg border p-3 outline-none focus:border-amber-500">
@@ -122,11 +123,17 @@
           v-model:reference-number="salaryForm.reference_number"
           v-model:notes="salaryForm.notes"
         />
+        </fieldset>
 
         <p v-if="formError" class="md:col-span-2 text-sm text-red-600">{{ $uiMessage(formError) }}</p>
+        <p v-if="salaryPayment.error.value" role="alert" class="md:col-span-2 text-sm text-red-600">{{ $t(`dashboard.treasury.salaryCommand.${salaryPayment.error.value}`) }}</p>
+        <p v-if="salaryPayment.outcome.value?.status === 'committed'" role="status" class="md:col-span-2 text-sm text-green-700">{{ $t('dashboard.treasury.salaryCommand.committed') }}</p>
 
-        <button type="submit" :disabled="saving" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400 disabled:opacity-60">
-          {{ saving ? $t('common.recording') : $t('common.recordSalaryPayment') }}
+        <button v-if="!salaryPayment.outcome.value" :type="salaryPayment.command.value ? 'button' : 'submit'" :disabled="salaryPayment.busy.value || salaryPayment.error.value === 'storage'" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400 disabled:opacity-60" @click="salaryPayment.command.value && recordSalaryPayment()">
+          {{ salaryPayment.busy.value ? $t('common.recording') : salaryPayment.command.value ? $t('dashboard.treasury.salaryCommand.retry') : $t('common.recordSalaryPayment') }}
+        </button>
+        <button v-else type="button" class="w-fit rounded-lg bg-amber-500 px-5 py-3 font-bold text-amber-950 hover:bg-amber-400" @click="salaryPayment.newPayment()">
+          {{ $t('dashboard.treasury.salaryCommand.newPayment') }}
         </button>
       </form>
     </section>
@@ -215,6 +222,8 @@ const customerForm = reactive(createPaymentForm())
 const salaryForm = reactive({ employee_id: '', salary_period: currentMonth, amount: '', paid_at: today, reference_number: '', notes: '' })
 
 const canEditTreasury = computed(() => hasPermission('treasury.edit'))
+const salaryPayment = useSalaryPayment({ form: salaryForm, canEdit: canEditTreasury,
+  reset: () => Object.assign(salaryForm, { employee_id: '', salary_period: currentMonth, amount: '', paid_at: today, reference_number: '', notes: '' }) })
 const selectedSupplierInvoice = computed(() => supplierInvoices.value.find((invoice) => invoice.id === supplierForm.invoice_id))
 const selectedCustomerInvoice = computed(() => customerInvoices.value.find((invoice) => invoice.id === customerForm.invoice_id))
 
@@ -317,32 +326,19 @@ const recordCustomerReceipt = async () => {
 }
 
 const recordSalaryPayment = async () => {
-  if (!salaryForm.employee_id || !salaryForm.salary_period) return
-  const employee = employees.value.find((item) => item.id === salaryForm.employee_id)
-
-  let amount
-
-  try {
-    amount = validateAmount(salaryForm)
-  } catch (error) {
-    formError.value = error.message
-    return
+  if (!salaryPayment.command.value) {
+    if (!salaryForm.employee_id || !salaryForm.salary_period) return
+    try {
+      validateAmount(salaryForm)
+    } catch (error) {
+      formError.value = error.message
+      return
+    }
   }
 
-  await recordTransaction({
-    rpc: 'treasury_record_salary_payment',
-    params: {
-      p_employee_id: salaryForm.employee_id,
-      p_amount: amount,
-      p_salary_period: `${salaryForm.salary_period}-01`,
-      p_paid_at: salaryForm.paid_at,
-      p_reference_number: salaryForm.reference_number || null,
-      p_notes: salaryForm.notes || null
-    },
-    description: `Recorded salary payment for ${employee ? `${employee.first_name} ${employee.last_name || ''}`.trim() : 'employee'}.`,
-    actionKey: 'treasury.salary_payment.created',
-    reset: () => Object.assign(salaryForm, { employee_id: '', salary_period: currentMonth, amount: '', paid_at: today, reference_number: '', notes: '' })
-  })
+  formError.value = ''
+  await salaryPayment.submit()
+  if (salaryPayment.outcome.value?.status === 'committed') await loadTreasury()
 }
 
 const recordTransaction = async ({ rpc, params, description, actionKey, reset }) => {

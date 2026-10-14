@@ -1964,7 +1964,19 @@
       "selectAnUnpaidOrPartiallyPaidProcurementInvoice": "Select an unpaid or partially paid procurement invoice.",
       "settleAnUnpaidOrPartiallyPaidManualSalesInvoice": "Settle an unpaid or partially paid manual sales invoice.",
       "theAmountCannotBeGreaterThanTheOutstandingBalance": "The amount cannot be greater than the outstanding balance.",
-      "thisAccountCanViewTreasuryRecordsButCannotRecordTransactions": "This account can view Treasury records but cannot record transactions."
+      "thisAccountCanViewTreasuryRecordsButCannotRecordTransactions": "This account can view Treasury records but cannot record transactions.",
+      "salaryCommand": {
+        "committed": "Salary payment recorded.",
+        "retry": "Check or retry payment",
+        "newPayment": "Record another salary payment",
+        "unknown": "Payment result unknown. Retry the same payment.",
+        "permission": "You cannot record or check salary payments.",
+        "invalid": "Check the salary payment details.",
+        "reused": "This payment command has different details.",
+        "reset": "System Reset cleared this payment. Start another payment deliberately.",
+        "employee": "The employee no longer exists.",
+        "storage": "Allow tab storage before recording salary payments."
+      }
     },
     "erp": {
       "valueAttemptValueValue": "{value0} · Attempt {value1}/{value2}",

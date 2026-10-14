@@ -1964,7 +1964,19 @@
       "selectAnUnpaidOrPartiallyPaidProcurementInvoice": "اختر فاتورة شراء غير مدفوعة أو مدفوعة جزئيًا.",
       "settleAnUnpaidOrPartiallyPaidManualSalesInvoice": "تسوية فاتورة بيع يدوي غير مدفوعة أو مدفوعة جزئيًا.",
       "theAmountCannotBeGreaterThanTheOutstandingBalance": "لا يمكن أن يتجاوز المبلغ الرصيد المستحق.",
-      "thisAccountCanViewTreasuryRecordsButCannotRecordTransactions": "يمكن للحساب عرض سجلات الخزينة دون تسجيل معاملات."
+      "thisAccountCanViewTreasuryRecordsButCannotRecordTransactions": "يمكن للحساب عرض سجلات الخزينة دون تسجيل معاملات.",
+      "salaryCommand": {
+        "committed": "تم تسجيل دفع الراتب.",
+        "retry": "تحقق من الدفع أو أعد المحاولة",
+        "newPayment": "تسجيل دفعة راتب أخرى",
+        "unknown": "نتيجة الدفع غير معروفة. أعد محاولة الدفع نفسه.",
+        "permission": "ليس لديك صلاحية تسجيل دفعات الرواتب أو التحقق منها.",
+        "invalid": "تحقق من تفاصيل دفع الراتب.",
+        "reused": "تفاصيل أمر الدفع هذا مختلفة.",
+        "reset": "حذف إعادة ضبط النظام هذه الدفعة. ابدأ دفعة أخرى بشكل صريح.",
+        "employee": "الموظف لم يعد موجودًا.",
+        "storage": "اسمح بتخزين بيانات علامة التبويب قبل تسجيل الرواتب."
+      }
     },
     "erp": {
       "valueAttemptValueValue": "{value0} · المحاولة {value1}/{value2}",

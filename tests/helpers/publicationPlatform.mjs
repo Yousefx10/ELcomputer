@@ -6,6 +6,7 @@ import { userInfo } from 'node:os'
 import { createServer } from 'node:net'
 import { create as tarCreate } from 'tar'
 import { installerSourceCopy, createInstallerPlatform } from './installerPlatform.mjs'
+import { isApplicationInput } from '../../scripts/lib/release79Certification.mjs'
 import { sourceRoot } from '../../scripts/install/contracts.mjs'
 import { inventory } from '../../scripts/publish/inventory.mjs'
 import { hash, digest, validateRegistry, validateTarget } from '../../scripts/publish/contracts.mjs'
@@ -14,6 +15,10 @@ import { PublicationSession } from '../../scripts/publish/remote.mjs'
 
 const port=async()=>{const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const value=server.address().port;await new Promise(resolve=>server.close(resolve));return value}
 export async function createPublicationFixture({compiledOutput=process.env.PUBLICATION_REVIEW_OUTPUT||'/private/tmp/elcomputer-m4-reviewed-package/build-source/.output',initialize=true,siteOrigin='https://fresh.example.invalid',release79=false}={}){
+  if(release79){
+    if(!process.env.RELEASE79_REVIEW_OUTPUT)throw Error('Exact historical release79 compiled fixture required.')
+    compiledOutput=process.env.RELEASE79_REVIEW_OUTPUT
+  }
   const directory=await realpath(await mkdtemp('/tmp/elcomputer-publication-lab-'));await chmod(directory,0o700)
   let source,lab
   try{
@@ -28,13 +33,14 @@ export async function createPublicationFixture({compiledOutput=process.env.PUBLI
   const mod=async path=>import(pathToFileURL(join(source.directory,path)))
   const workflow=await mod('scripts/publish/workflow.mjs'),runtimeModule=await mod('scripts/publish/runtime.mjs'),installationModule=await mod('scripts/publish/installation.mjs'),{frozenSource}=await mod('scripts/install/contracts.mjs'),{agentSource}=await mod('scripts/publish/ssh.mjs')
   const build=join(directory,'bundle'),output=join(build,'build-source/.output');await mkdir(dirname(output),{recursive:true,mode:0o700});await cp(compiledOutput,output,{recursive:true,verbatimSymlinks:true})
+  // Historical79 compares its frozen package against its frozen source.
   // Only software source paths enter the compiled fixture. Assert its actual
   // application inputs match the current checkout; publisher-only edits do
   // not become a claim that a new merchant build was performed.
-  const original=dirname(compiledOutput)
+  const original=dirname(compiledOutput),inputRoot=release79?source.directory:sourceRoot
   const {execFile}=await import('node:child_process'),{promisify}=await import('node:util')
-  const names=(await promisify(execFile)('git',['ls-files','-z'],{cwd:sourceRoot})).stdout.split('\0').filter(name=>/^(app\/|server\/|shared\/|i18n\/|public\/|nuxt\.config\.ts$|package-lock\.json$)/.test(name))
-  for(const file of names)if(hash(await readFile(join(original,file)))!==hash(await readFile(resolve(sourceRoot,file))))throw Error('Compiled app source drift')
+  const names=(await promisify(execFile)('git',['ls-files','-z'],{cwd:inputRoot})).stdout.split('\0').filter(isApplicationInput)
+  for(const file of names)if(hash(await readFile(join(original,file)))!==hash(await readFile(resolve(inputRoot,file))))throw Error('Compiled app source drift')
   const entries=await inventory(output),archive=join(build,'release.tar.gz');await tarCreate({file:archive,cwd:join(build,'build-source'),gzip:true,portable:true,noMtime:true},['.output']);await chmod(archive,0o600)
   const body={format:1,kind:'elcomputer-output',source:await frozenSource(),archive_sha256:hash(await readFile(archive)),inventory_sha256:digest(entries),entries,node:'22.23.1',content:'output only; no runtime secrets, source or merchant uploads'},bundle={...body,release_sha256:digest(body)};await writeAtomic(build,'bundle.json',bundle)
   const registry=validateRegistry({format:1,production:{project_refs:['zsqhuwgoasrexdnamlks'],ssh_hosts:['reserved.example.invalid'],ssh_fingerprints:['SHA256:'+'A'.repeat(43)],domains:['new.elcomputer.net'],users:['newelcomputer'],paths:['/home/newelcomputer/htdocs/new.elcomputer.net'],pm2_names:['new-elcomputer'],ports:[3001]},reserved:{project_refs:[],ssh_hosts:[],ssh_fingerprints:[],domains:[],users:[],paths:[],pm2_names:[],ports:[]}})

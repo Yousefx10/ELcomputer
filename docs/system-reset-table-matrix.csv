@@ -123,3 +123,4 @@ public.support_tickets,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
 public.system_reset_attempts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current owner attempts only
 public.system_reset_runs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current journal and minimal completed request tombstones
 public.treasury_transactions,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+private.salary_payment_commands,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone

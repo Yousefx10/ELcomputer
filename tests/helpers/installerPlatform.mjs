@@ -19,23 +19,28 @@ export const installerEnvironment={PATH:dirname(node)+':/usr/local/bin:/usr/bin:
 export const installerNativeAvailable=!!process.env.EMAIL_REVIEW_PG_BIN&&!!process.env.SUPAUTILS_REVIEW_LIBRARY
 export async function installerSourceCopy({extraFiles=[],release79=false}={}) {
   const directory=await realpath(await mkdtemp(join(tmpdir(),'elcomputer-install-source-')))
-  const {stdout}=await run('git',['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
-  // Regression fixtures exercise the frozen, certified 1-71 installer.
-  // Release79 tests opt into the separate certificate. Historical fixtures
-  // continue exercising the unchanged 1-71 source membership and authority.
-  // These are historical certificate fixtures, not certification of later SQL.
-  const lastMigration=release79?'20261014200000_system_reset_compatibility.sql':'20261012160000_quick_setup_installation_bootstrap.sql'
-  const names=stdout.split('\0').filter(name=>name &&
-    !(name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
-      name>'supabase/migrations/'+lastMigration))
-  const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
-  for(const name of new Set([...names,...newNames,...extraFiles])){
-    const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
+  if(release79){
+    // The release79 certificate freezes application inputs as well as SQL.
+    // Exercise its exact approved source; never substitute corrective app code.
+    await run('git',['clone','--quiet','--no-hardlinks','--no-local',sourceRoot,directory],{env:installerEnvironment})
+    await run('git',['checkout','--quiet','--detach','a811b05fe5daa0739b913f1bd4847f6adc26da21'],{cwd:directory,env:installerEnvironment})
+  }else{
+    const {stdout}=await run('git',['ls-files','-z'],{cwd:sourceRoot,env:installerEnvironment,maxBuffer:2*1024*1024})
+    // Regression fixtures exercise the frozen, certified 1-71 installer.
+    // This default fixture retains its unchanged 1-71 SQL authority.
+    const lastMigration='20261012160000_quick_setup_installation_bootstrap.sql'
+    const names=stdout.split('\0').filter(name=>name &&
+      !(name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
+        name>'supabase/migrations/'+lastMigration))
+    const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
+    for(const name of new Set([...names,...newNames,...extraFiles])){
+      const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
+    }
+    await run('git',['init','-q'],{cwd:directory,env:installerEnvironment})
+    await run('git',['add','.'],{cwd:directory,env:installerEnvironment})
+    await run('git',['-c','user.name=Installer Fixture','-c','user.email=fixture@example.invalid','commit','-qm','Owned installer source fixture'],{cwd:directory,env:installerEnvironment})
   }
   await symlink(join(sourceRoot,'node_modules'),join(directory,'node_modules'))
-  await run('git',['init','-q'],{cwd:directory,env:installerEnvironment})
-  await run('git',['add','.'],{cwd:directory,env:installerEnvironment})
-  await run('git',['-c','user.name=Installer Fixture','-c','user.email=fixture@example.invalid','commit','-qm','Owned installer source fixture'],{cwd:directory,env:installerEnvironment})
   return {directory,node,env:installerEnvironment,close:()=>rm(directory,{recursive:true,force:true}),async cli(args,options={}){
     try{const result=await run(node,[join(directory,'scripts/elcomputer-install.mjs'),...args],{cwd:directory,env:{...installerEnvironment,...options.env},maxBuffer:2*1024*1024,timeout:120000});return {...result,code:0,result:JSON.parse(result.stdout.trim().split('\n').at(-1))}}
     catch(error){return {stdout:error.stdout||'',stderr:error.stderr||'',code:error.code,result:JSON.parse((error.stdout||'').trim().split('\n').at(-1)||'{}')}}

@@ -31,6 +31,7 @@ The explicit table policies are in `server/utils/systemResetScopes.js` and SQL `
 
 | Table | All-scope policy |
 | --- | --- |
+| private.salary_payment_commands | Retain minimal salary receipts; Commerce/Full retire them before financial erasure. Old commands cannot repost. |
 | private.installation_bootstrap | Permanent journal/seal stays unchanged; reset cannot create another first owner. |
 | catalog_private.product_revisions | Cascade only with deleted products; Media advances affected surviving products. |
 | catalog_private.product_save_receipts | Retain terminal retry/conflict metadata; replay cannot recreate deleted products. |
@@ -76,6 +77,8 @@ Reset advances relevant domain generations while retaining choices, installation
 Five password/reset attempts per owner are allowed in15 minutes. Passwords/tokens never enter journals/logs. Pending cleanup blocks another reset. Current owner authorization must remain valid to resume.
 
 SQL erasure requires recovery restore to undo. Application rollback cannot undo deleted data or migration79. A later authorized release must check pending journals, verify fresh recovery and apply79 before enabling these reset routes. Stop on lock/checkpoint/role/policy/manifest mismatch. Migration-history repair is unsupported.
+
+Salary retry protection requires additive migration81 and matching application code. See [salary-payment safety](salary-payment-safety.md).
 
 ## Local certification
 

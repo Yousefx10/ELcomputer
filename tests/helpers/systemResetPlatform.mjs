@@ -61,6 +61,8 @@ export async function createResetPlatform({installedLab=null}={}) {
   globalThis.defineEventHandler=h=>h;globalThis.readBody=readBody;globalThis.setHeader=setHeader
   const router=createRouter()
   const routes=[
+   ['post','/api/admin-treasury/salary-payment','server/api/admin-treasury/salary-payment.post.js'],
+   ['post','/api/admin-logs','server/api/admin-logs/index.post.js'],
    ['get','/api/admin-system-reset','server/api/admin-system-reset/index.get.js'],['post','/api/admin-system-reset','server/api/admin-system-reset/index.post.js'],
    ['get','/api/chat/status','server/api/chat/status.get.js'],['get','/api/admin-chat/settings','server/api/admin-chat/settings.get.js'],['put','/api/admin-chat/settings','server/api/admin-chat/settings.put.js'],
    ['get','/api/admin-shipping/settings','server/api/admin-shipping/settings.get.js'],['patch','/api/admin-shipping/settings','server/api/admin-shipping/settings.patch.js'],
