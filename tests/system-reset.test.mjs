@@ -45,13 +45,13 @@ test('completion logging occurs only after document and account cleanup', async 
     auth:{admin:{deleteUser:async id=>{calls.push(['account',id]);return {error:null}}}},
     rpc:async(name)=>{calls.push(['rpc',name]);return {data:{status:'completed'},error:null}}
   }
-  const run={id:randomUUID(),status:'cleanup_pending',manifest:{documents:['root/example.pdf'],users:['customer']}}
+  const run={id:randomUUID(),status:'cleanup_pending',manifest:{format:2,documents:['root/example.pdf'],users:['customer']}}
   await finishResetCleanup({supabaseAdmin,run,ownerId:'owner',uploadsRoot:'/tmp/elcomputer-empty-uploads'})
-  assert.deepEqual(calls,[['documents',['root/example.pdf']],['account','customer'],['rpc','system_reset_finish']])
+  assert.deepEqual(calls,[['documents',['root/example.pdf']],['rpc','system_reset_cleanup_checkpoint'],['account','customer'],['rpc','system_reset_cleanup_checkpoint'],['rpc','system_reset_finish']])
   calls.length=0
   supabaseAdmin.auth.admin.deleteUser=async()=>({error:{status:500}})
   await assert.rejects(()=>finishResetCleanup({supabaseAdmin,run,ownerId:'owner',uploadsRoot:'/tmp/elcomputer-empty-uploads'}),/Account cleanup failed/)
-  assert.equal(calls.some(([kind])=>kind==='rpc'),false)
+  assert.equal(calls.some(([kind,name])=>kind==='rpc'&&name==='system_reset_finish'),false)
 })
 
 test('full reset removes only captured private support and chat attachments', async () => {
@@ -63,7 +63,7 @@ test('full reset removes only captured private support and chat attachments', as
   }
   await finishResetCleanup({
     supabaseAdmin,
-    run: { id: randomUUID(), scope: 'full', status: 'cleanup_pending', manifest: {
+    run: { id: randomUUID(), scope: 'full', status: 'cleanup_pending', manifest: {format:2,
       support: ['ticket/old.pdf'], chat: ['chat/old.pdf']
     } },
     ownerId: 'owner', uploadsRoot: '/tmp/elcomputer-empty-uploads'
@@ -81,7 +81,7 @@ test('a completed request never deletes files or accounts again', async () => {
 
 test('cleanup never deletes the surviving owner account', async () => {
   let deleted=false
-  await assert.rejects(()=>finishResetCleanup({supabaseAdmin:{auth:{admin:{deleteUser:async()=>{deleted=true}}}},run:{id:randomUUID(),manifest:{users:['owner']}},ownerId:'owner',uploadsRoot:'/tmp/elcomputer-empty-uploads'}),/cannot delete the current owner/)
+  await assert.rejects(()=>finishResetCleanup({supabaseAdmin:{auth:{admin:{deleteUser:async()=>{deleted=true}}}},run:{id:randomUUID(),manifest:{format:2,users:['owner']}},ownerId:'owner',uploadsRoot:'/tmp/elcomputer-empty-uploads'}),/cannot delete the current owner/)
   assert.equal(deleted,false)
 })
 

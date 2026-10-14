@@ -51,30 +51,40 @@ export const verifyResetPassword = async ({ authUser, password, config, createAu
 export const finishResetCleanup = async ({ supabaseAdmin, run, ownerId, uploadsRoot }) => {
   if (run.status === 'completed') return { id: run.id, scope: run.scope, status: run.status, completed_at: run.completed_at }
   const manifest = run.manifest || {}
-  const documents = manifest.documents || []
-  for (let offset = 0; offset < documents.length; offset += 100) {
-    const { error } = await supabaseAdmin.storage.from('admin-documents').remove(documents.slice(offset, offset + 100))
-    if (error) throw new Error('Document cleanup failed. Retry to finish the reset.')
-  }
-  const supportFiles = manifest.support || []
-  for (let offset = 0; offset < supportFiles.length; offset += 100) {
-    const { error } = await supabaseAdmin.storage.from('support-attachments')
-      .remove(supportFiles.slice(offset, offset + 100))
-    if (error) throw new Error('Support attachment cleanup failed. Retry to finish the reset.')
-  }
-  const chatFiles = manifest.chat || []
-  for (let offset = 0; offset < chatFiles.length; offset += 100) {
-    const { error } = await supabaseAdmin.storage.from('chat-attachments')
-      .remove(chatFiles.slice(offset, offset + 100))
-    if (error) throw new Error('Chat attachment cleanup failed. Retry to finish the reset.')
-  }
-  await removeResetMediaFiles(uploadsRoot, manifest.media || [])
-  for (const userId of manifest.users || []) {
-    if (userId === ownerId) throw new Error('The reset cannot delete the current owner.')
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId)
-    if (error && error.status !== 404 && error.code !== 'user_not_found') {
-      throw new Error('Account cleanup failed. Retry to finish the reset.')
+  if (manifest.format !== 2) throw new Error('This earlier reset needs operator review.')
+  const progress = run.cleanup_progress || {}
+  const pending = (kind, key = item => item) => (manifest[kind] || []).filter(item => !(progress[kind] || []).includes(key(item)))
+  const checkpoint = (kind, items) => resetRpc(supabaseAdmin, 'system_reset_cleanup_checkpoint', {
+    p_owner: ownerId, p_id: run.id, p_kind: kind, p_items: items
+  })
+  for (const [kind, bucket] of [
+    ['documents', 'admin-documents'], ['support', 'support-attachments'], ['chat', 'chat-attachments'],
+    ['packing', 'order-packing-videos'], ['labels', 'shipping-labels'], ['evidence', 'after-sales-evidence']
+  ]) {
+    const files = pending(kind)
+    for (let offset = 0; offset < files.length; offset += 100) {
+      const batch = files.slice(offset, offset + 100)
+      const { error } = await supabaseAdmin.storage.from(bucket).remove(batch)
+      if (error) throw new Error('File cleanup failed. Retry to finish the reset.')
+      await checkpoint(kind, batch)
     }
+  }
+  const media = pending('media', file => file.path)
+  for (let offset = 0; offset < media.length; offset += 100) {
+    const batch = media.slice(offset, offset + 100)
+    await removeResetMediaFiles(uploadsRoot, batch)
+    // SQL confirms the existing reservations and retains deleted tombstones.
+    await checkpoint('media', batch.map(file => file.path))
+  }
+  const users = pending('users')
+  for (let offset = 0; offset < users.length; offset += 100) {
+    const batch = users.slice(offset, offset + 100)
+    for (const userId of batch) {
+      if (userId === ownerId) throw new Error('The reset cannot delete the current owner.')
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(userId)
+      if (error && error.status !== 404 && error.code !== 'user_not_found') throw new Error('Account cleanup failed. Retry to finish the reset.')
+    }
+    await checkpoint('users', batch)
   }
   return await resetRpc(supabaseAdmin, 'system_reset_finish', { p_owner: ownerId, p_id: run.id })
 }

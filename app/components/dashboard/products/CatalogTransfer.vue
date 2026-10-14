@@ -456,6 +456,7 @@ const importMessage = (code) =>
       ([
         'cancelled',
         'expired',
+        'reset',
         'conflict',
         'identifier',
         'reference',

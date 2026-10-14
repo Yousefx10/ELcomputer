@@ -23,6 +23,11 @@ export default defineEventHandler(async (event) => {
   const scope = getSystemResetScope(query.scope)
   if (!scope) throw createError({ statusCode: 400, statusMessage: 'Unsupported reset option.' })
   response.plan = await resetRpc(supabaseAdmin, 'system_reset_plan', { p_owner: adminUser.id, p_scope: scope.key })
-  if (scope.mediaFiles) response.plan.mediaFiles = (await listResetMediaFiles(getUploadsRootDirectory())).length
+  if (scope.mediaFiles) {
+    const files = await listResetMediaFiles(getUploadsRootDirectory())
+    const media = await resetRpc(supabaseAdmin, 'system_reset_media_plan', { p_owner: adminUser.id, p_files: files, p_scope: scope.key })
+    response.plan.mediaFiles = media.mediaFiles
+    response.plan.blockers = [...response.plan.blockers, ...media.blockers]
+  }
   return response
 })

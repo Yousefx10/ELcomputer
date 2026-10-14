@@ -6,7 +6,7 @@ import { systemResetScopes } from '../server/utils/systemResetScopes.js'
 
 let db, owner, customer
 const value = async (sql, args = []) => (await db.query(sql, args)).rows[0]?.value
-const beginReset = (scope, id = randomUUID()) => value('select public.system_reset_begin($1,$2,$3) as value', [owner, scope, id])
+const beginReset = (scope, id = randomUUID(), files = []) => value('select public.system_reset_begin($1,$2,$3,$4::jsonb) as value', [owner, scope, id, JSON.stringify(files)])
 const finishReset = (id) => value('select public.system_reset_finish($1,$2) as value', [owner, id])
 const count = (table) => value(`select count(*)::int as value from public.${table}`)
 const fails = async (action, pattern) => {
@@ -147,12 +147,16 @@ test('product reset preserves historical order snapshots and clears the catalog'
 
 test('media reset clears uploaded references but preserves external images and products', async () => {
   const product=await seedProduct()
+  const order=await seedOrder(product)
+  const before=await value('select to_jsonb(i) as value from public.customer_order_items i where id=$1',[order.itemId])
   const external=await seedProduct()
   await db.query(`update public.products set image_url='https://example.test/image.png' where id=$1`,[external])
-  await beginReset('media')
+  await beginReset('media',randomUUID(),[{path:'products/keyboard.png',root:'/tmp/owned-reset-fixture',size:0,modifiedAt:0}])
   assert.equal(await count('products'),2)
   assert.equal(await value('select image_url as value from public.products where id=$1',[product]),'')
   assert.equal(await value('select image_url as value from public.products where id=$1',[external]),'https://example.test/image.png')
+  const after=await value('select to_jsonb(i) as value from public.customer_order_items i where id=$1',[order.itemId])
+  assert.equal(after.image_url,'');assert.deepEqual({...after,image_url:before.image_url},before)
 })
 
 test('documents reset clears quick access and recent files', async () => {
@@ -267,7 +271,12 @@ test('full reset preserves only the current owner; the new log survives', async 
   assert.equal(await count('admin_activity_logs'),0)
   assert.deepEqual(run.manifest.users,[customer])
   assert.deepEqual(run.manifest.documents,['root/test.pdf'])
-  // Auth and object bytes are removed through their APIs before the server calls finish.
+  // This synthetic platform test models the API's acknowledged cleanup. Actual
+  // Auth/Storage API and byte deletion are covered by the native platform suite.
+  await db.query('delete from auth.users where id=$1',[customer])
+  await db.query("delete from storage.objects where bucket_id='admin-documents' and name='root/test.pdf'")
+  await value('select public.system_reset_cleanup_checkpoint($1,$2,$3,$4::jsonb) as value',[owner,run.id,'users',JSON.stringify(run.manifest.users)])
+  await value('select public.system_reset_cleanup_checkpoint($1,$2,$3,$4::jsonb) as value',[owner,run.id,'documents',JSON.stringify(run.manifest.documents)])
   await finishReset(run.id)
   assert.equal(await count('admin_activity_logs'),1)
   assert.equal(await value(`select metadata->>'scope' as value from public.admin_activity_logs`),'full')

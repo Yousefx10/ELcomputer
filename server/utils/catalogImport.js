@@ -22,7 +22,7 @@ export function importError(code = 'unavailable') {
       ? 403
       : code === 'missing'
         ? 404
-        : ['stale', 'reused', 'source', 'expired'].includes(code)
+        : ['stale', 'reused', 'source', 'expired', 'reset'].includes(code)
           ? 409
           : code === 'unavailable'
             ? 503

@@ -4996,6 +4996,7 @@
     "messages": {
       "cancelled": "Remaining products cancelled. Committed changes are saved.",
       "expired": "Review expired. Review pending products again.",
+      "reset": "The catalog was reset. Preview and approve again.",
       "conflict": "Product changed. Export and review it again.",
       "identifier": "An identifier is already in use.",
       "reference": "A referenced record is unavailable.",
@@ -5015,5 +5016,28 @@
       "publication": "Confirm publication for the products specified."
     },
     "unconfirmed": "Result unconfirmed. Check results before continuing."
+  },
+  "systemReset": {
+    "message1": "Pending imports close. Saved receipts remain.",
+    "message2": "Captured packing videos and outbound labels are removed.",
+    "message3": "Linked serialized inventory or Claims may block this reset.",
+    "message4": "Clear uploaded image links and remove their files.",
+    "message5": "Captured public images and direct image fields are cleared.",
+    "message6": "Image links in authored content block this reset.",
+    "message7": "Products, orders, external images and unrelated files remain.",
+    "message8": "Store data, other accounts and captured application files are erased.",
+    "message9": "Protected Claims or communications can block this reset.",
+    "message10": "Chat and courier settings restart disabled.",
+    "message11": "Images remain in authored content. Remove those references first.",
+    "message12": "Unrecognized tables found. Review the reset policy first.",
+    "message13": "Another reset or catalog operation is running.",
+    "message14": "Finish pending packing or shipping work before resetting.",
+    "message15": "Too many cleanup items. Reset a smaller scope first.",
+    "message16": "Too many files. Reset a smaller scope first.",
+    "message17": "This earlier reset needs operator review.",
+    "message18": "Reset cleanup is still pending.",
+    "message19": "Storage cleanup is pending.",
+    "message20": "Account cleanup is pending.",
+    "message21": "Cleanup does not match this reset."
   }
 }

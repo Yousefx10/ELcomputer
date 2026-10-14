@@ -1,3 +1,12 @@
+# BETA Gate 1 — System Reset compatibility, 2026-10-14
+
+- Authorized corrective baseline `9c5ebd0140cf7172a63078e028ef517df492b579`. Product Manager Tasks1–6B remain frozen. This change addresses System Reset safety only.
+- Additive migration **79**, `20261014200000_system_reset_compatibility.sql`; SHA-256 `c7173c3e2a67e1d9fb3c1356ab27d9ed5d9bf0b21261dd48a078a7de8645ca11`. **Migrations1–78, frozen installer/certificates and deployment helpers remain unchanged.**
+- Media uses reference guards, revisions, reservations and recoverable filesystem checkpoints. Unresolved authored links block deletion. Products/Full close pending imports; receipts and minimal consumed reset-ID tombstones remain. Six private buckets have explicit bounded cleanup/retention policies. Full recreates disabled Chat and courier singletons. All public/private application tables require an explicit reset policy.
+- [Eight-scope policy](docs/system-reset.md), [124-table matrix](docs/system-reset-table-matrix.csv), [validation and limits](docs/system-reset-validation.md). Actual disposable Auth/Storage/PostgREST/PostgreSQL, physical bytes, login, reinitialization and failure/concurrency/retry tests pass. Browser evidence: **1,842 assertions /330 screenshots**, no unexpected errors/external requests. Secret-free Node22 typecheck/build and **592 compiled input hashes** pass. **1,114 complete regression passes**, zero failures/skips/cancellations; **43 focused checks** and **13 actual-platform checks** pass.
+- Evidence: `/Users/imac/Documents/ELcomputer/beta-gate1-corrective-20261014`. Production remains owner-reported at70; no production/hosted access, deployment, provider activation, VPS/domain/WordPress transition or unrelated features occurred. Old format-1 pending resets require operator review. Installer certification remains through71; separate72–79 recertification and hosted BETA acceptance remain outstanding.
+- **STOP after this corrective commit/push for review.** Do not begin installer recertification or BETA Gate2 automatically.
+
 # Product Manager Task 6B — approved catalog import, 2026-10-14
 
 - Authorized baseline `d112639662366e89f405b03f4ad993419dc1426c`. Reuses Task 6A parsing/export/preview with explicit review, approval and safe reupload. [Contract](docs/catalog-import.md), [validation](docs/catalog-import-validation.md).

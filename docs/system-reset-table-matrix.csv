@@ -1,0 +1,125 @@
+table,products,orders,commerce,documents,media,content,analytics,full
+catalog_private.import_items,CLOSE pending authority/items; RETAIN terminal receipts,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,CLOSE pending authority/items; RETAIN terminal receipts
+catalog_private.import_jobs,CLOSE pending authority/items; RETAIN terminal receipts,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,RETAIN approval subject to original expiry/permissions,CLOSE pending authority/items; RETAIN terminal receipts
+catalog_private.media_paths,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RESERVE captured paths; FINALIZE permanent tombstones,RETAIN terminal metadata,RETAIN terminal metadata,RESERVE captured paths; FINALIZE permanent tombstones
+catalog_private.product_bulk_receipts,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata
+catalog_private.product_revisions,CASCADE deleted products,RETAIN,RETAIN,RETAIN,ADVANCE affected products,RETAIN,RETAIN,CASCADE deleted products
+catalog_private.product_save_receipts,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata,RETAIN terminal metadata
+private.installation_bootstrap,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged,RETAIN permanent seal/journal unchanged
+public.admin_activity_logs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.admin_users,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current owner only
+public.after_sales_claim_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_claim_evidence,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_claim_information,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_claims,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_communication_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_communications,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_policies,RETAIN global; CASCADE removed product/category overrides,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN global; CASCADE removed product/category overrides
+public.after_sales_policy_versions,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.after_sales_return_reasons,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.brands,DELETE,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,RETAIN,RETAIN,DELETE
+public.categories,DELETE,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,RETAIN,RETAIN,DELETE
+public.category_specification_templates,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_agent_availability,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_attachments,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_conversations,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_messages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_rate_limits,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_read_state,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.chat_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,CLEAR; RECREATE neutral disabled singleton
+public.commerce_crm_accounts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_crm_activities,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_inventory_movements,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_order_return_items,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_order_returns,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_procurement_items,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_procurement_orders,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_sales_items,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_sales_orders,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_serialized_inventory_batches,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_serialized_unit_movements,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_serialized_units,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_shipping_companies,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_warehouse_inventory,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_warehouse_transfer_items,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_warehouse_transfers,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.commerce_warehouses,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.customer_order_items,RETAIN snapshots; SET NULL deleted product/variant links,DELETE,DELETE,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,RETAIN,RETAIN,DELETE
+public.customer_order_messages,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.customer_orders,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.customer_profiles,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.document_file_tags,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_folder_permissions,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_folder_tags,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_folders,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_quick_access,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_recent_items,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.document_tags,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.documents,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,DELETE
+public.email_attempts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.email_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.email_messages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.email_preferences,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.email_provider_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.email_templates,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.erp_entity_links,DELETE product/variant entries only,DELETE customer_order entries only,DELETE customer_order entries only,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_inventory_cache,DELETE,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_provider_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_remote_writes,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_stock_reservations,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_sync_jobs,RETAIN,DELETE customer_order entries only,DELETE customer_order entries only,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_sync_runs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.erp_worker_leases,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.help_articles,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.help_categories,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE,RETAIN,DELETE
+public.hr_employees,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.nps_responses,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE,DELETE
+public.order_packing_scans,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.order_packing_sessions,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.order_packing_videos,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.order_packing_work_sessions,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.payment_attempts,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.payment_transactions,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.preorder_payments,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.product_features,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.product_images,DELETE,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK; ADVANCE affected product revisions,RETAIN,RETAIN,DELETE
+public.product_reviews,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.product_specifications,DELETE,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,RETAIN,RETAIN,DELETE
+public.product_variants,DELETE,RETAIN,RETAIN; ZERO stock/cost projections,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK; ADVANCE affected product revisions,RETAIN,RETAIN,DELETE
+public.products,DELETE,RETAIN,RETAIN; ZERO stock/cost projections,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK; ADVANCE affected product revisions,RETAIN,RETAIN,DELETE
+public.quick_setup_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.quick_setup_revisions,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE scoped generations,INVALIDATE all domain generations once
+public.quick_setup_state,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.shipping_city_mappings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.shipping_claim_jobs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN
+public.shipping_order_jobs,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.shipping_provider_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,CLEAR; RECREATE neutral disabled singleton
+public.shipping_status_mappings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.shipping_webhook_events,RETAIN,DELETE,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.site_coupons,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.site_hero_banners,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.site_links,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.site_offer_cards,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.site_pages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.site_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.site_top_bar_messages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN; CLEAR captured scalar image fields only; unresolved authored refs BLOCK,DELETE,RETAIN,DELETE
+public.sms_attempts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_batches,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_messages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_order_event_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_order_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_provider_settings,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.sms_templates,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.specification_definitions,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.store_analytics_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE,DELETE
+public.store_analytics_internal_carts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.store_analytics_internal_users,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,REBUILD current owner exclusion
+public.store_analytics_sessions,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE,DELETE
+public.support_ticket_attachments,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.support_ticket_events,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.support_ticket_messages,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.support_tickets,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
+public.system_reset_attempts,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current owner attempts only
+public.system_reset_runs,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN current journal and minimal completed request tombstones
+public.treasury_transactions,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DELETE
