@@ -213,7 +213,7 @@ export async function validateTransferMedia(tables, snapshot) {
   }
   return invalid
 }
-export async function transferPreview(client, admin, tables) {
+export async function transferPreviewContext(client, admin, tables) {
   const media = Object.fromEntries(
     ['Products', 'Variants', 'Specifications', 'Images'].map((name) => [
       name,
@@ -230,5 +230,8 @@ export async function transferPreview(client, admin, tables) {
   const result = previewCatalog(tables, snapshot, { invalidMedia })
   if (Buffer.byteLength(JSON.stringify(result)) > L.output)
     throwTransfer({ catalogTransfer: 'limit' })
-  return result
+  return { result, snapshot }
+}
+export async function transferPreview(client, admin, tables) {
+  return (await transferPreviewContext(client, admin, tables)).result
 }

@@ -1,7 +1,10 @@
 # Catalog transfer validation — 2026-10-14
 
 Authorized baseline: `4297aef6869ca05953214aa8bbc7a0b9e0fc3f74`.
-Contract and Task 6B boundary: [Catalog transfer](catalog-transfer.md).
+Historical Task 6A evidence. Authorized Task 6B application and current acceptance
+are documented in [Approved catalog import](catalog-import.md) and
+[Task 6B validation](catalog-import-validation.md).
+Contract: [Catalog transfer](catalog-transfer.md).
 Evidence: `/Users/imac/Documents/ELcomputer/product-manager-task6a-review-20261014`.
 Only accepted final logs/reports count. Earlier diagnostics and stopped regression
 runs before the database/parser review are excluded.

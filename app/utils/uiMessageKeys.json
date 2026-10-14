@@ -3026,5 +3026,6 @@
   "Product Gallery": "mediaSafety.sections.productGallery",
   "Authentication Page": "mediaSafety.sections.authPage",
   "Footer": "mediaSafety.sections.footer",
-  "Images": "mediaSafety.sections.images"
+  "Images": "mediaSafety.sections.images",
+  "Import / Export": "catalogImport.open"
 }

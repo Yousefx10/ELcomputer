@@ -378,7 +378,7 @@ export const getDashboardRouteRequirement = (route = '') => {
     }
   }
 
-  if (path === '/dashboard/products') {
+  if (path === '/dashboard/products' || path === '/dashboard/products/transfer') {
     return {
       permission: 'products.view'
     }

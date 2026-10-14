@@ -50,6 +50,11 @@ export async function createProductSaveHttpFixture(options = {}) {
       ['post', '/api/admin-products/transfer/export', 'server/api/admin-products/transfer/export.post.js'],
       ['get', '/api/admin-products/transfer/template', 'server/api/admin-products/transfer/template.get.js'],
       ['post', '/api/admin-products/transfer/preview', 'server/api/admin-products/transfer/preview.post.js'],
+      ['post', '/api/admin-products/transfer/import', 'server/api/admin-products/transfer/import/index.post.js'],
+      ['get', '/api/admin-products/transfer/import', 'server/api/admin-products/transfer/import/index.get.js'],
+      ['post', '/api/admin-products/transfer/import/approve', 'server/api/admin-products/transfer/import/approve.post.js'],
+      ['post', '/api/admin-products/transfer/import/apply', 'server/api/admin-products/transfer/import/apply.post.js'],
+      ['post', '/api/admin-products/transfer/import/cancel', 'server/api/admin-products/transfer/import/cancel.post.js'],
       ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js']
     ]) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false,

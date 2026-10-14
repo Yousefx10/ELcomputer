@@ -36,4 +36,6 @@
 - Follow [Catalog transfer](docs/catalog-transfer.md) for versioned merchandising
   exports, exact matching and private bounded preview. Preview never applies changes.
   Preserve omitted versus cleared values and confidential inventory/ERP boundaries.
-  Task 6B requires separate authorization, transactional revalidation and receipts.
+  Follow [Approved catalog import](docs/catalog-import.md) for explicit approval,
+  safe reupload, per-product transactions and durable partial-result receipts.
+  Keep source files private and ephemeral; preserve inventory and ERP ownership.

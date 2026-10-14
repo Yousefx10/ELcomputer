@@ -1,4 +1,4 @@
-// v1 is a sparse merchandising contract. No write command consumes this file.
+// v1 is a sparse merchandising contract. Applying requires a separately approved review.
 export const CATALOG_VERSION = 'elcomputer_catalog_1'
 export const TRANSFER_LIMITS = {
   upload: 4 * 1024 * 1024,
@@ -107,8 +107,8 @@ export const guideRows = () => [
     schema_version: CATALOG_VERSION,
     field: '$contract',
     required: 'yes',
-    en: 'Preview only. No changes are applied.',
-    ar: 'معاينة فقط. لا تُطبق أي تغييرات.',
+    en: 'Review first. Applying requires explicit approval.',
+    ar: 'راجع أولًا. التطبيق يتطلب موافقة صريحة.',
   },
   {
     field: 'matching',
@@ -127,9 +127,9 @@ export const guideRows = () => [
   },
   {
     field: 'new_products',
-    required: 'title,slug,price,selling_mode,is_published,product_key',
-    en: 'New products need active options and an explicit warehouse choice before applying.',
-    ar: 'المنتج الجديد يحتاج خيارات نشطة واختيار مستودع صريح قبل التطبيق.',
+    required: 'title,slug,price,selling_mode,product_key',
+    en: 'New products default to Draft. Active options and an explicit warehouse choice are required.',
+    ar: 'المنتج الجديد مسودة افتراضيًا. يجب تحديد خيارات نشطة ومستودع صريح.',
   },
   {
     field: 'existing_products',

@@ -4912,7 +4912,7 @@
     "pending": "Pending batch: {count} products."
   },
   "catalogTransfer": {
-    "title": "Export and import preview",
+    "title": "Import / Export",
     "readOnly": "Export files or check changes. Preview saves nothing.",
     "format": "Format",
     "scope": "Export scope",
@@ -4930,7 +4930,7 @@
     "rowResults": "{count} rows · {invalid} invalid · {conflicted} conflicts · {missing} missing references · {duplicates} duplicates · {references} valid references",
     "matchHelp": "Existing products match by product_id only; revisions must match.",
     "omitHelp": "Blank omits a field. #CLEAR clears it; #EMPTY sets empty text.",
-    "warehouseHelp": "New products need an active warehouse. Assignment requires Task 6B.",
+    "warehouseHelp": "Warehouse selection applies to new products only.",
     "row": "Table / row",
     "result": "Result",
     "fields": "{count} fields",
@@ -4967,5 +4967,53 @@
     "missingRecord": "Record does not belong to this product or is missing.",
     "fieldError": "Check this value.",
     "readiness": "Check warehouse and supplier availability in the product editor."
+  },
+  "catalogImport": {
+    "open": "Import / Export",
+    "exports": "Export / Template",
+    "help": "Review changes before applying. New products default to Draft.",
+    "warehouse": "Warehouse for new products",
+    "chooseWarehouse": "Choose a warehouse",
+    "results": "{succeeded} succeeded · {unchanged} unchanged · {conflicted} conflicted · {failed} failed · {pending} pending",
+    "receipt": "Import receipt",
+    "expiry": "Review expires: {time}",
+    "reupload": "Reupload the reviewed file to resume.",
+    "confirm": "Apply reviewed changes. Products: {count}.",
+    "publish": "Publish products specified in this file: {count}.",
+    "resume": "Resume import",
+    "apply": "Approve and apply",
+    "check": "Check results",
+    "cancel": "Cancel remaining",
+    "pause": "Pause and check results",
+    "retry": "Review failed products",
+    "new": "New review",
+    "retryHelp": "Reupload the file. Committed products will be excluded.",
+    "succeeded": "Succeeded",
+    "unchanged": "Unchanged",
+    "conflicted": "Conflict",
+    "failed": "Failed",
+    "pending": "Pending",
+    "messages": {
+      "cancelled": "Remaining products cancelled. Committed changes are saved.",
+      "expired": "Review expired. Review pending products again.",
+      "conflict": "Product changed. Export and review it again.",
+      "identifier": "An identifier is already in use.",
+      "reference": "A referenced record is unavailable.",
+      "media": "The image is unavailable or not permitted.",
+      "history": "This option has inventory history.",
+      "retry": "The transaction could not finish. Review this product again.",
+      "validation": "Check this product and its related rows."
+    },
+    "errors": {
+      "source": "The file differs from the reviewed file.",
+      "stale": "This review is stale. Check results and review again.",
+      "reused": "This receipt belongs to a different review.",
+      "expired": "This review has expired.",
+      "warehouse": "Choose an active warehouse for new products only.",
+      "approval": "Confirm the review before applying.",
+      "retry": "Use failed product keys and IDs from a finished import.",
+      "publication": "Confirm publication for the products specified."
+    },
+    "unconfirmed": "Result unconfirmed. Check results before continuing."
   }
 }

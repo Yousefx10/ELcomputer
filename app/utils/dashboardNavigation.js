@@ -73,10 +73,11 @@ export const dashboardNavigationGroups = [
     child('recent-orders', 'Recent orders', 'clock', '/dashboard/orders', 'view', ['recent'], 'dashboard.orders'),
     child('confirm-orders', 'Confirm & pack', 'scan-barcode', '/dashboard/orders/confirm', null, [], 'dashboard.orders')
   ], { permission: 'dashboard.orders' }),
-  group('products', 'Products', 'package', { paths: ['/dashboard/products', '/dashboard/products/add'], prefixes: ['/dashboard/products/edit/'] }, [
+  group('products', 'Products', 'package', { paths: ['/dashboard/products', '/dashboard/products/add', '/dashboard/products/transfer'], prefixes: ['/dashboard/products/edit/'] }, [
     { ...child('all-products', 'All products', 'boxes', '/dashboard/products', 'status', ['', 'all'], 'products.view'), match: { paths: ['/dashboard/products'], prefixes: ['/dashboard/products/edit/'], queryKey: 'status', queryValues: ['', 'all'] } },
     child('published-products', 'Published', 'eye', '/dashboard/products', 'status', ['published'], 'products.view'),
     child('draft-products', 'Drafts', 'file-pen-line', '/dashboard/products', 'status', ['drafts'], 'products.view'),
+    child('catalog-transfer', 'Import / Export', 'table', '/dashboard/products/transfer', null, [], 'products.view'),
     child('add-product', 'Add product', 'circle-plus', '/dashboard/products/add', null, [], 'products.add')
   ], { permission: 'products.view' }),
   group('catalog', 'Catalog', 'library-big', { paths: ['/dashboard/catalog'] }, [

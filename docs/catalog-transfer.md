@@ -1,8 +1,9 @@
 # Catalog export and import preview
 
-Task 6A is a read-only preparation feature. No route applies imported changes.
-The listing keeps its existing design and current-page selection semantics.
-Task 6B needs separate authorization.
+Task 6A provides export/templates and a read-only preview endpoint. Authorized
+Task 6B adds a separate approved reupload/apply flow in a dedicated working view.
+See [Approved catalog import](catalog-import.md) for its transaction/recovery
+contract. Export selection and the main listing remain compact.
 
 ## Access and scope
 
@@ -71,8 +72,8 @@ Source uploads are raw request bytes, not public media. Auth runs before reading
 The request is capped at 4 MiB even without Content-Length, with a 15-second read
 timeout. No source is written to filesystem, Supabase Storage, database or browser
 persistent storage. The source buffer is cleared in finally; preview result state
-is in memory and cleared on closing/actor change. There is no staged import handle,
-resume token or durable source requiring expiry cleanup. JavaScript strings are
+is in memory and cleared on closing/actor change. The raw Task 6A preview creates no staged handle. Task 6B stores only expiring
+review metadata and durable minimal receipts; it retains no source. JavaScript strings are
 managed by GC; this is not a claim of guaranteed secure memory erasure.
 
 Limits are enforced cumulatively; the first limit reached wins:
@@ -127,9 +128,8 @@ canonicalization, tombstone states and no-follow filesystem safeguards. Missing,
 private Storage, traversal and unsafe explicit URLs fail. Existing public raster/
 legacy SVG references remain supported under the existing media rules. Preview
 uploads no images, rewrites no files and fetches no external images. External HTTP(S)
-references are checked structurally, not for remote availability. The media state
-and filesystem checks are advisory snapshots: Task 6B must recheck under the
-existing media guards before a write.
+references are checked structurally, not for remote availability. The raw preview checks are advisory snapshots. Task 6B rechecks authorized media,
+filesystem and tombstones under the existing commit-held media guards.
 
 Migration **77**, `20261014120000_catalog_transfer.sql`, is justified by bounded,
 explicit confidential projections and one-snapshot related/revision matching.
@@ -140,34 +140,15 @@ Migrations **1–76 are preserved byte-for-byte**. Execution is verified in nati
 read-only transactions and under non-superuser ownership in disposable databases.
 No SQL is applied to linked/hosted databases.
 
-## Remaining Task 6B implementation
+## Approved application
 
-Separate authorization must cover all of the following before applying any file:
+Task 6B now supplies the separately authorized approval, reupload, sparse
+transactions, warehouse choice, commit validation, audits and partial-result
+receipts described in [Approved catalog import](catalog-import.md). The raw preview
+endpoint remains read-only and never authorizes a write. Its source never persists.
 
-1. Define the exact supported mutation scope. This contract does not authorize
-   deletion, inventory/cost adjustments, variant price edits, supplier/warehouse
-   reassignment, taxonomy creation or ERP ownership changes.
-2. Add a private bounded staging lifecycle, ownership, expiry/cleanup and server
-   validation receipt, or require reupload/reparse. A client preview is never an
-   apply plan or authorization. No source or accepted plan is retained in 6A.
-3. Require explicit warehouse selection for new serialized products using existing
-   named access and ERP/inventory ownership rules. Never choose the first warehouse
-   or infer suppliers, stock, costs or publication states.
-4. Build sparse apply commands that preserve omitted fields and explicit clearing,
-   with product, variant-definition, specification/gallery and audit changes atomic
-   per product. Existing full-form PATCH normalization must not erase omissions.
-5. Recheck Auth/staff permissions, product revisions, related hashes, category/brand/
-   definition existence, prospective publication rules and media state under commit
-   locks. Resolve new row keys to real IDs within the product transaction. Protect
-   cross-product SKU/slug races and concurrent related changes.
-6. Add immutable actor-scoped idempotency receipts, bounded batching, status/recovery,
-   cancellation semantics and exact partial results without repeating committed work.
-7. Add explicit apply confirmation and lost-response recovery using existing controls,
-   with native concurrency, rollback, revoked-access, confidentiality and full browser/
-   regression acceptance. Preview success alone is insufficient.
-
-The fresh installer is certified through **71**. Development migrations **72–77**
-require a separately authorized installation/release certification. Frozen installer
+The fresh installer is certified through **71**. Development migrations **72–78**
+require separately authorized installation/release certification. Frozen installer
 artifacts, Quick Setup, providers and production remain unchanged.
 
-Validation evidence and limits: [Catalog transfer validation](catalog-transfer-validation.md).
+Validation: [Task 6A](catalog-transfer-validation.md), [Task 6B](catalog-import-validation.md).
