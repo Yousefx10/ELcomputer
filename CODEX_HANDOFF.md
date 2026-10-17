@@ -1,3 +1,70 @@
+# ADM-01 Procurement fix committed locally; packaging BLOCKED, 2026-10-18
+
+The owner approved only the focused Procurement correction, regression preparation
+and deployment proposal. **Do not deploy or mutate production.** Accepted ADM-01
+ingress and the live browse-only storefront remain in place. No CHECK/APPLY,
+Nginx reload, service restart, Auth action or production connection occurred here.
+
+Application change: the exact proposed one-line patch selects `created_at` in
+`app/components/dashboard/commerce/ProcurementTab.vue`. Existing newest-first order,
+30-row limit, serialization filter, search, selected rows/options and authorization
+are preserved. No schema/migration/RLS/grant/Auth or deployment identity change.
+
+New `tests/procurement-product-options-native.test.mjs` executes the component's
+existing loader through its actual query builder and PostgREST. The existing native
+fixture accepts an optional `afterCatalog` hook so the test applies all remaining
+immutable SQL before PostgREST starts: full 82-migration schema, no mocked query
+responses. Old projection reliably fails 42703; corrected native owner query and
+embedding/search/retention pass. Commerce draft scope and anonymous/customer/
+inactive denials remain. Native projection/REST suite: 20 PASS, zero fail/skip.
+Separate unchanged confidentiality coverage: 41 PASS. The initial fixture counted
+remaining files incorrectly; the failed local log is preserved and the final
+complete-schema run passes. No production history was touched.
+
+Prepared `authenticated-query-readonly.mjs` remains outside the repository in the
+new evidence folder. It uses an already-authenticated owner page and existing
+configured Supabase client; it creates/refreshes/revokes no session. Browser guard
+blocks every mutation before transmission, including automatic token refresh.
+Exact configurable HTTPS origins and three backend read paths are allowlisted.
+It returns counts/status/error code, never credentials/tokens/business rows.
+52 local policy/orchestration checks PASS. **No production authenticated corrected
+query was executed.** Synthetic local JWTs/Auth helpers are not hosted acceptance.
+See `docs/procurement-product-options.md` for the procedure and limitations.
+
+**New release blocker:** clean isolated `npm ci --ignore-scripts --no-audit
+--no-fund` with official Node 22.23.1 / npm 10.9.8 refuses the existing unchanged
+lockfile (`EUSAGE`): missing rolldown@1.2.14, @oxc-project/types@0.154.0 and platform
+bindings. Root package dependencies match the lock root; the resolver/lock drift
+cause is not established. The owner explicitly required additional defects to be
+reported rather than fixed automatically. Do not edit the lock, upgrade dependencies,
+add legacy-peer flags or bypass the clean-install gate under this approval.
+No Nuxt candidate build ran; no archive is sealed or ready to stage/deploy.
+An isolated Node 22.23.1 typecheck with existing workspace dependencies PASSed.
+That weaker source check does not clear the locked-dependency packaging gate;
+its log records the existing duplicate `getErpSettings` import warning unchanged.
+
+Read `/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/REPORT.md`,
+then `NATIVE-FULL82-VALIDATED.log`, `FOCUSED-CATALOG-REGRESSION.log`,
+`LOCAL-CANDIDATE-BUILD.log`, `READONLY-PROCEDURE-VALIDATION.json`,
+`CANDIDATE-SOURCE.json` and `DEPLOYMENT-PROPOSAL.json` there. The source snapshot has
+exactly one changed application input versus the original 597-input certificate;
+certificates, all migrations and package manifests/lock remain unchanged.
+Historical ADM/launch packages/evidence were not overwritten or regenerated.
+
+The BLOCKED deployment proposal retains the exact old release pointer/output,
+original certificate/environment, service hardening/retry policy and accepted
+post-ADM Nginx configuration. A later approved application-only switch requires
+a sealed reproducible archive, fresh target/baseline checks, candidate health and
+separate root activation review. No database rollback or automatic retry/rollback.
+Do not use stale pre-ADM Nginx hashes or rerun old activation packages.
+
+**Single next owner action:** authorize focused dependency-lock reproducibility
+investigation/correction and local packaging. Production deployment remains a
+separate approval. Then complete Procurement, AR, Warehouses, serialized Inventory,
+Back, explicit token rotation/logout and post-acceptance read-only data checks.
+Retain the existing passed EN Overview/Products/editor evidence. Keep signup,
+checkout/COD/payments disabled; no favicon or customer/order migration work.
+
 # ADM-01 v2 — deployed ingress; final acceptance BLOCKED, 2026-10-18
 
 Read this first. The owner executed root APPLY and reported PASS. Never repeat

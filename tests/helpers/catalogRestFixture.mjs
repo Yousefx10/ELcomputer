@@ -9,7 +9,7 @@ import { createCatalogFixture, reproduceCatalogCorrection, migrateCatalog, catal
 
 // A real PostgREST instance connected only to an owned disposable loopback DB.
 // Authentication uses synthetic signed fixture claims; no hosted Auth or API keys.
-export const createCatalogRestFixture = async () => {
+export const createCatalogRestFixture = async ({ afterCatalog = null } = {}) => {
   const db = await createEmailNativeDatabase({ stopBefore: catalogMigration })
   const dir = await mkdtemp(join(tmpdir(), 'catalog-rest-'))
   let server, logs = ''
@@ -23,6 +23,7 @@ export const createCatalogRestFixture = async () => {
   try {
     const fixture = await createCatalogFixture({ database: db })
     await reproduceCatalogCorrection(db); await migrateCatalog(db)
+    if (afterCatalog) await afterCatalog(db)
     // Modern PostgREST provides request.jwt.claims; existing SQL fixtures also
     // support legacy individual claim GUCs. Only fixture auth functions change.
     await db.exec(`

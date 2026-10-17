@@ -1,3 +1,53 @@
+# ADM-01 Procurement correction — local fix; release packaging BLOCKED, 2026-10-18
+
+- Applied the exact reviewed one-line proposal: select existing `created_at` in
+  `ProcurementTab.vue` before ordering the RPC result by that field. Existing
+  serialized filter, newest-first order, 30-row bound, search, option handling,
+  selected-product retention and staff authorization are unchanged. No store,
+  domain, owner/project identity or deployment path was added to application code.
+- Focused native regression executes the actual component loader/query builder
+  against PostgreSQL 17.11 and checksum-verified official PostgREST 16.4. All 82
+  immutable migrations are applied in an owned disposable loopback database before
+  schema caching. The original query reproduces `42703`; the correction passes.
+  **20 native projection/REST-security passes**, zero skips/failures. Separate
+  catalog confidentiality coverage passed **41 checks**. No additional application
+  defect was found in those tests. The initial full-schema fixture miscount was
+  corrected locally; its failed log is preserved, not a production migration issue.
+- A production authenticated GET-only validation procedure is prepared, not run.
+  It reuses an existing owner session/client, checks exact configurable origins,
+  blocks all Auth/business mutations and exports only sanitized results. **52 local
+  policy/orchestration checks pass** across independent origins. Hosted owner/RLS
+  and production corrected-query acceptance remain pending; local signed JWTs and
+  managed-platform scaffolding are explicit fixtures. No production connection,
+  Auth session, SSH staging or deployment occurred in this task.
+- **New release blocker, reported without repair:** isolated clean dependency
+  installation under Node 22.23.1 / npm 10.9.8 fails `npm ci` with `EUSAGE`,
+  reporting missing `rolldown@1.2.14`, `@oxc-project/types@0.154.0` and platform
+  bindings from the unchanged lock. The underlying lock/resolver drift is not yet
+  established. No dependency/lock change or bypass flag was applied. Nuxt candidate
+  build never started; no deployable archive/hash is available. Do not deploy.
+  An isolated Node 22.23.1 typecheck using the existing workspace dependencies
+  passed; it does not replace clean dependency installation or a candidate build.
+- An application-only deployment/rollback proposal preserves the original certified
+  Release 82 output/certificates, accepted ADM ingress, environment, unit hardening,
+  zero-stock catalog and disabled purchasing/signup. It requires a sealed local
+  build and private candidate runtime before an approved release-pointer switch/
+  runtime activation. Rollback retains the exact old release; no Nginx/DB changes
+  or automatic retries/rollback. The proposal is BLOCKED, not execution authority.
+- Evidence and the prepared procedure/plan:
+  `/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/REPORT.md`.
+  See [query/testing/deployment contracts](docs/procurement-product-options.md).
+  Production still runs the previous certified output with the known Procurement
+  bug. Prior verified 559 published / 7161 Draft, zero stock/orders/Storage and
+  unchanged RLS remain time-bound acceptance evidence; they were not re-audited.
+- Remaining after eventual deployment: Procurement, AR dashboard, Warehouses,
+  serialized Inventory, navigation/Back, token rotation, logout and read-only state
+  verification. Keep registration, checkout, COD/payments off. Favicon and WordPress
+  customer/order migration remain outside scope. README setup/architecture unchanged.
+- **Single next owner action:** approve focused dependency-lock reproducibility
+  investigation/correction, then local candidate packaging; no production deployment.
+  Do not reapply ADM ingress, alter migrations/RLS/Auth or restart production.
+
 # ADM-01 v2 — ingress deployed; final acceptance BLOCKED, 2026-10-18
 
 - Owner reports root APPLY **PASS**, replacement/reload acknowledged and runtime

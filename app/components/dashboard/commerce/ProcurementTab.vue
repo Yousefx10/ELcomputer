@@ -725,6 +725,7 @@ const loadProductOptions = async () => {
       sku,
       primary_warehouse_id,
       is_serialized,
+      created_at,
       product_variants (
         id,
         product_id,
