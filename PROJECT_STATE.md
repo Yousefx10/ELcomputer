@@ -1,3 +1,35 @@
+# ADM-01 v2 — staged; root CHECK pending, 2026-10-18
+
+- Owner approved preparation under plan
+  `6e31fd5174b7574cd3d9f7b704629d94f91a8db178b0c4003d4e185cf541016f`.
+  **Production owner access remains uncorrected; live acceptance is pending.**
+- The ten completed files were already committed at entry as
+  `6d713e7ce435ba22c8af587caf5ec172958d2004`. Verified all ten against the
+  validated v2 source hashes, plus 49 preserved evidence hashes. No duplicate
+  implementation commit or rewrite. Certified application inputs and migrations
+  remain unchanged against deployed Release 82 (`9a9c2d8`).
+- Approved read-only production verifier: **PASS**, 17 October 20:59:12 UTC.
+  Exact product/variant/revision/settings/publication receipts and certified
+  schema/RLS/grants match. There are 559 published products and one Draft
+  (source 7161); stock, orders and Storage objects remain zero.
+  Purchasing, COD, payments and signup restrictions remain intact.
+- Exact sealed archive `adm01-d6f3667b13b223c8.tar` staged exclusively at
+  `/home/elcomputer/.codex-inspection-staging/adm01-d6f3667b13b223c8.tar`.
+  Local and independent remote SHA-256 both equal
+  `d6f3667b13b223c807e4353e4489324f5d2c368648698a3dcfdc251df3334117`.
+  Size 81920 bytes; file UID 1002/mode 0600; directory mode 0700.
+- New evidence:
+  `/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017/approved-entry/`.
+  Read its `REPORT.md`, `PRODUCTION-STATE-READONLY.private.json` and
+  `STAGING-VERIFICATION.json`. Historical package/evidence files remain unchanged.
+- No root command, archive execution, Nginx change/reload, app rebuild/restart,
+  production business write or owner login occurred. No push performed.
+  The accepted storefront release remains in place. Existing-owner Auth/session
+  and login-audit acceptance is authorized only after separately approved deployment.
+- **Next owner action:** separately review the exact `ROOT-CHECK.command`.
+  Stop here. Root APPLY, deployment and login acceptance have not occurred.
+  This entry supersedes the preparation status below.
+
 # ADM-01 — locally validated; not deployed, 2026-10-17
 
 - **Production owner access is not marked fixed.** The accepted Release 82

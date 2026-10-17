@@ -1,3 +1,48 @@
+# ADM-01 v2 — preparation approved and staged, 2026-10-18
+
+Read this entry before the historical preparation status below.
+
+Owner approved only commit verification, the read-only production verifier and
+exact sealed v2 archive staging. All three preparation gates passed.
+
+- Implementation commit already present at task entry:
+  `6d713e7ce435ba22c8af587caf5ec172958d2004` (exact ten ADM-01 files).
+  All ten match `VALIDATION-V2.json`; all 49 preserved evidence hashes match.
+  Preserve that commit; no duplicate commit or history rewrite is needed.
+- Plan remains
+  `6e31fd5174b7574cd3d9f7b704629d94f91a8db178b0c4003d4e185cf541016f`.
+- Read-only verifier passed at 2026-10-17T20:59:12.030Z. Exact production
+  identity, certified schema/RLS/grants, products, variants, revisions, settings
+  and 23 publication receipts match. 559 published; source 7161 Draft;
+  stock/orders/Storage objects zero; purchasing/COD/payments/signup disabled.
+- Staged, without execution:
+  `/home/elcomputer/.codex-inspection-staging/adm01-d6f3667b13b223c8.tar`.
+  Local SHA-256 and a separate remote read both verified
+  `d6f3667b13b223c807e4353e4489324f5d2c368648698a3dcfdc251df3334117`.
+  81920 bytes, UID 1002, mode 0600; existing staging directory mode 0700.
+  Exclusive creation succeeded. Do not transfer, overwrite or regenerate it.
+
+Read the new execution evidence under:
+`/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017/approved-entry/`.
+Its `REPORT.md` records this completed preparation. The original package index,
+report, commands, manifests, bundles and checksummed historical evidence were
+not edited; their "not staged" wording describes their preparation snapshot.
+
+**STOP: root CHECK and APPLY have NOT run.** No Nginx change/reload, app rebuild,
+restart, business write, owner login or push occurred. Do not mark owner access
+fixed. Root-private configuration hashes/full-context candidate syntax and live
+existing-owner acceptance remain pending. Keep the certified Release 82 runtime,
+historical launch evidence and customer/checkout/payment restrictions intact.
+
+**Single next owner action:** review the exact existing `ROOT-CHECK.command`
+separately before running it in the root Web Console. Do not execute through SSH.
+After CHECK PASS and candidate review, APPLY still needs separate approval.
+Existing-owner session/login-audit effects are approved only for acceptance after
+that separately approved deployment; business mutations remain excluded.
+
+Only these two continuity files were updated after verifying the implementation
+commit. Reusable renderer inputs, operational bindings and sealed bytes are unchanged.
+
 # ADM-01 — ready for owner review; production unchanged, 2026-10-17
 
 Read this and `PROJECT_STATE.md` before historical entries. Both Codex accounts
