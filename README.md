@@ -13,3 +13,7 @@ See PROJECT_STATE.md for verified status and remaining checks.
 The accepted Release 82 browse-only storefront remains live.
 See [the ingress correction](docs/dashboard-access-ingress.md) for its narrow
 route/method rules, existing authorization and configurable deployment binding.
+
+For the current application candidate, use Node 22.23.1 and npm 10.9.8.
+See [reproducible builds](docs/dependency-reproducibility.md) for the clean-install
+procedure, lockfile correction and release authority.

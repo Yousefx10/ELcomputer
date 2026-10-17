@@ -1,3 +1,70 @@
+# ADM-01 dependency repair and local package — STOP before production, 2026-10-18
+
+The owner authorized local lock correction, clean installs/tests/build/package and
+focused commits only. No VPS access/staging, runtime change, Nginx operation,
+Auth/business write or push occurred. The accepted live storefront/ADM ingress
+were not changed. Production Procurement still needs this separately deployed fix.
+
+Read `PROJECT_STATE.md` first, then
+`/Users/imac/Documents/ELcomputer/dependency-reproducibility-20261018/REPORT.md`,
+`REGRESSION-SUMMARY.json`, `DEPLOYMENT-PLAN.json` and `candidate/release.json`.
+Preserve previous reports/packages. No duplicate production register is needed.
+
+Exact root cause: npm10.9.8 requires nested Rolldown optional-peer closure for
+unctx3.0.1 from i18n10.6.0/Kit4.5.2; npm11.13.0 accepts the original tree. Root
+Rolldown1.1.3 stays pinned by Vite8.1.0. Generating npm version is not established.
+Add17 generated closure records only: Rolldown1.2.14, types0.154.0, 15 native
+bindings. All1,025 old records unchanged, including77 libc fields npm10 would
+otherwise strip. package.json unchanged; no upgrades or peer bypass flags.
+Lock SHA256: d7c8b6dd08d15681b2aa555ee21fe2087cf10c99883f9de5e4a150d504661b15.
+
+Two isolated npmci installs with scripts enabled PASS under Node22.23.1/npm10.9.8;
+801 installed records identical and lock unchanged. Fresh typecheck/build PASS;
+61 native Procurement/PostgREST/confidentiality passes, no skips. Two independent
+local store/origin/backend bindings PASS598 HTTP checks. This uses owned empty
+fixtures and proves portability/runtime output, not live Auth or catalog access.
+
+Retain135 original immutable assets BEFORE stock Nuxt build so Nitro indexes them.
+Post-build copies alone produced404 and were corrected locally. Keep the new
+mutable builds/latest.json. Four generated public assets required group-write
+permission removal; bytes unchanged. No app/build configuration change was needed.
+Existing inventory guards reject native payloads, unsafe links, secrets/env/uploads.
+All597 committed application inputs match build inputs; only ProcurementTab.vue
+and package-lock differ from the original certificate. All109 SQL/certificate
+files unchanged. Never regenerate certificates or use fresh-install commands.
+
+Full-suite raw: 1,053 tests;1,002 pass/one fail/12 cancelled/38 skipped. The frozen
+source test correctly rejects a corrected app as original82; original guard suite
+PASS2 on exact certified9a9c2d8, and explicit corrected-fixture rejection PASS.
+The unchanged transport tests PASS30 with an active local harness handle (mock
+unrefed timeouts otherwise let Node22 exit); no production transport fix or test
+weakening. Supautils-dependent native/platform38 remain unexecuted. Do not report
+an entirely green full suite or a complete platform recertification.
+
+Output-only archive SHA256: c95bac1f9793fc0cfb1febe9d07b31f78db789d2e3de6e9f93a4514b688e331c.
+5,269,548 bytes;1,166 inventory entries; two archives identical; extraction exact.
+Final committed source and release/inventory hashes are bound in the candidate's
+external manifest after this focused commit. Original archive/certified release
+is retained unchanged; this is a separate application-only correction on schema82.
+
+No production-state refresh was done. Last verified559 published/7161 Draft,
+stock/orders/Storage0, purchasing/signupOFF remain historical acceptance evidence.
+Later deployment gates refresh all exact identities/revisions/control hashes,
+accepted POST-ADM ingress, current output/unit/env/Restart=no and private Linux
+candidate health. No Nginx change/reload or fresh database installation is needed.
+Do not replay obsolete launch/ADM root packages or compare pre-ADM ingress hashes.
+
+Rollback is separately reviewed, never automatic: restore exact retained release
+`/home/elcomputer/main-runtime/releases/release-82-40b87a3a289ea999` and approve
+one existing-unit activation; preserve database/security/environment/Nginx/media.
+It restores the known Procurement bug. STOP on ambiguity; no retry or cleanup.
+
+**Single next owner action:** review and approve this sealed app-only deployment
+plan. Root Console activation remains separately reviewed. Until then, no staging
+or production execution. Then finish Procurement, AR dashboard, Warehouses,
+serialized Inventory, Back, rotation/logout and post-acceptance read-only verifier.
+Keep signup/checkout/COD/payments disabled. No favicon or customer/order migration.
+
 # ADM-01 Procurement fix committed locally; packaging BLOCKED, 2026-10-18
 
 The owner approved only the focused Procurement correction, regression preparation

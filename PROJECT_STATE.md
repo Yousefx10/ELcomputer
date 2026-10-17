@@ -1,3 +1,68 @@
+# ADM-01 dependency repair — local candidate validated; NOT deployed, 2026-10-18
+
+- Root cause established: npm 10.9.8 and npm 11.13.0 resolve the existing optional
+  peer differently. i18n 10.6.0 → nested Kit 4.5.2 → unctx 3.0.1 requires optional
+  Rolldown ^1.1.5. Existing root 1.1.3 is below that range and remains required by
+  Vite 8.1.0 (~1.1.2). npm10 requires 17 missing closure entries; npm11 accepts the
+  old lock. Which npm originally generated the lock is unknown.
+- Minimum correction: add those 17 npm10-generated entries only. Existing 1,025
+  package records, versions, integrity and OS/libc metadata remain identical;
+  no removals, root dependency upgrades or package.json changes. Rejected the
+  generator's unrelated removal of 77 libc fields. No force/legacy flags or new
+  package manager. Lock SHA-256:
+  `d7c8b6dd08d15681b2aa555ee21fe2087cf10c99883f9de5e4a150d504661b15`.
+- Two clean Node22.23.1/npm10.9.8 installs PASS with lifecycle scripts enabled,
+  isolated configuration and no private dotenv. Both installed inventories have
+  801 identical package records; lock bytes stay unchanged. Corrected npm10 ideal
+  tree has zero missing/changed/removed nodes. New build instructions document
+  this exact release toolchain without adding store-specific application inputs.
+- Fresh-dependency typecheck and production build PASS. Native full82 Procurement,
+  actual PostgREST16.4 and catalog confidentiality: 61 PASS, zero fail/skip.
+  Two isolated differently configured storefront runtimes: 598 HTTP checks PASS,
+  EN/AR pages and runtime origin/backend overrides, anonymous admin denial,
+  disabled card capability and all 135 retained immutable old assets served.
+- Packaging found two local issues and corrected generated preparation only:
+  Nitro must see retained assets before build to index/serve them; copying after
+  build returns404. Mutable `_nuxt/builds/latest.json` stays current. Four generated
+  public assets inherited group-write mode; stripped that permission without
+  changing bytes. Existing inventory guards remain strict. No application source
+  change beyond already committed Procurement projection; no original artifact
+  was changed. All597 application inputs match the current build; only Procurement
+  and lock differ from the original certificate. All109 SQL/certificate files stay
+  byte-identical to the retained certified source.
+- Full-suite raw result is NOT green: 1,002 PASS, one frozen-source failure,
+  12 cancelled mock-transport tests, 38 optional native skips. Original certificate
+  guards PASS2 on exact certified source; corrected committed fixture is correctly
+  rejected as `source_changed`. Unchanged transport tests PASS30 with a local
+  active test handle, zero cancellations. No test/certificate was weakened.
+  Supautils-dependent checks remain unavailable, not claimed as recertification.
+- Local output-only archive built twice identically; extracted inventory matches
+  all1,166 entries. Native binaries, unsafe links, private dotenv, credentials,
+  merchant uploads and deployment bindings are excluded. Archive SHA-256:
+  `c95bac1f9793fc0cfb1febe9d07b31f78db789d2e3de6e9f93a4514b688e331c`.
+  Final commit binding/checksums are recorded in the new evidence report and
+  `candidate/release.json`; this application candidate has its own identity.
+  It is not the original unchanged Release82 application certificate.
+- Evidence: `/Users/imac/Documents/ELcomputer/dependency-reproducibility-20261018/REPORT.md`;
+  deployment/rollback proposal: `DEPLOYMENT-PLAN.json` there. Read
+  [dependency reproducibility](docs/dependency-reproducibility.md) and
+  [Procurement acceptance](docs/procurement-product-options.md).
+- No production access, staging, activation, rebuild/restart, Nginx CHECK/APPLY,
+  Auth/security/database/media mutation or push occurred. Production still runs
+  its previously accepted output with the known Procurement issue. Last verified
+  559 published /7161 Draft, zero stock/orders/Storage and disabled signup/commerce
+  are preserved historical evidence, not a fresh production-state claim.
+- Later deployment must refresh read-only identity/state gates, preserve accepted
+  post-ADM ingress/unit/environment/Restart=no, validate the sealed output privately
+  under LinuxNode22, and obtain separate root activation review. Rollback requires
+  separate review: exact retained application pointer plus one approved activation,
+  no database/Nginx rollback or automatic cleanup. It restores the Procurement bug.
+- **Single next owner action:** review and approve the sealed app-only deployment
+  plan; any root activation command requires separate review. Do not deploy now.
+  Then finish Procurement, AR, Warehouses, serialized Inventory, Back, token
+  rotation/logout and the read-only state verifier. Keep signup, checkout,
+  COD/payments OFF. Customer/order migration remains outside scope.
+
 # ADM-01 Procurement correction — local fix; release packaging BLOCKED, 2026-10-18
 
 - Applied the exact reviewed one-line proposal: select existing `created_at` in
