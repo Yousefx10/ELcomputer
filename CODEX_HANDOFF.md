@@ -1,3 +1,52 @@
+# ADM-01 staging STOP — settings preimage drift, 2026-10-18
+
+Read PROJECT_STATE.md and
+`/Users/imac/Documents/ELcomputer/adm01-controlled-staging-20261018/REPORT.md` first.
+Do not automatically rerun the verifier or stage/start the candidate. The owner
+approved controlled staging/private Linux acceptance, not production activation.
+
+Exact03ca445 source, sealedc95bac1f9793 archive/5,269,548 bytes, source597,
+archive/inventory1166,135 retained assets and deployment bindings PASS locally.
+No candidate replacement/rebuild. Existing strict-TLS read-only production
+verifier ran once into NEW evidence and failed POST_BRANDING_SETTINGS_DRIFT at
+verify-existing-state.mjs:19:9. Preserved diff shows ONLY:
+- dashboard_layout: standard → detailed
+- hero_enabled: false → true
+- updated_at: 2026-10-17T02:15:03.477Z → 2026-10-17T22:53:49.616Z
+
+Intent/actor is unestablished. Never restore these values or change the baseline
+without owner approval. This task caused no production settings mutation.
+Schema82/RLS/grants/counts, product/revisions and variants passed BEFORE the
+settings guard. Explicit control/receipts/inventory/order/Auth-signup checks and
+final PASS were not reached. Captured false purchasing flags do not establish
+complete fresh acceptance. Current runtime/link/post-ADM ingress are unverified.
+
+No SSH, transfer, Linux extraction, candidate runtime, active pointer switch,
+service start/restart, Nginx CHECK/APPLY/reload, Auth or business/security write.
+No retry, cleanup, media/customer-order work or push. Previous active output and
+ingress were not changed by this task; do not claim freshly verified live state.
+38 unavailable native-platform tests remain unverified. Raw verifier exceptions
+stay private; share only sanitized field names/these nonsensitive values.
+
+Activation and rollback proposal is preserved, not newly accepted/executable.
+Do not issue or replay an old root command. Private Linux acceptance must precede
+new exact activation/rollback instructions. Any unexpected privileged operation
+remains separately reviewed; preserve secure environment/root configuration custody.
+
+**Single next owner action:** confirm the two display-setting changes are intended,
+and approve only their reviewed preimage update (with recorded updated_at) plus
+ONE fresh entry-check/staging attempt. This proposes no settings write. Stop here
+until that approval; production activation remains a later separate gate.
+
+The concrete, unexecuted baseline proposal is in the NEW evidence folder:
+`BASELINE-REVIEW.json`, `PROPOSED-SETTINGS-PREIMAGE.private.json` and
+`ENTRY-SETTINGS-PREIMAGE-PROPOSED.patch`. Preimage SHA256:
+`130bff5729268ab9efb457b22a16ab6431458315e4a0232cc2b1cb1358b4a2b1`.
+It retains full settings equality/all other gates, binds exact target/candidate,
+and changes only the three reviewed expected fields. Syntax PASS; NOT executed.
+This continuity update changes documentation only; the sealed application source
+remains03ca445 and its archive remains unchanged. Do not rebuild for this docs commit.
+
 # ADM-01 dependency repair and local package — STOP before production, 2026-10-18
 
 The owner authorized local lock correction, clean installs/tests/build/package and

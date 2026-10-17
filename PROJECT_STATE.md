@@ -1,3 +1,50 @@
+# ADM-01 controlled staging — entry BLOCKED; nothing transferred, 2026-10-18
+
+- Current owner authorization covers sealed candidate staging/private Linux
+  acceptance only; production activation remains separately reviewed. Source
+  `03ca445cc7bf07011805093af185bc5f64ad1188` and original sealed archive
+  `c95bac1f9793fc0cfb1febe9d07b31f78db789d2e3de6e9f93a4514b688e331c`
+  (5,269,548 bytes) verified. All597 source inputs, all1,166 archive inventory
+  entries, deployment bindings/checksums and135 retained assets match unchanged.
+- Existing production read-only verifier ran ONCE and stopped at
+  **POST_BRANDING_SETTINGS_DRIFT**, `verify-existing-state.mjs:19:9`.
+  Captured current settings differ in `dashboard_layout` standard→detailed,
+  `hero_enabled` false→true, and `updated_at`
+  2026-10-17T02:15:03.477Z→2026-10-17T22:53:49.616Z. Actor/intent unknown.
+  This task made no changes and did not silently accept a new baseline.
+- Before the stop, sequential identity/schema82/RLS/grants/catalog-count,
+  product-data/revision and variant checks passed. Full verifier PASS, explicit
+  purchasing/publication receipts/inventory/orders/Auth-signup gates were NOT
+  reached. Do not claim complete fresh state acceptance from partial results.
+- No SSH, transfer, Linux extraction/test runtime, active pointer change, restart,
+  Nginx operation, Auth session, schema/security/business mutation, rebuild, retry,
+  cleanup or push. Current runtime/link/ingress were not freshly verified.
+  Previously accepted production output/ingress are unchanged by this task;
+  current live identity is not newly attested.38 native-platform tests remain
+  unverified. Procurement is still awaiting approved application activation.
+- New evidence: `/Users/imac/Documents/ELcomputer/adm01-controlled-staging-20261018/REPORT.md`,
+  `RESULT.json`, `LOCAL-ENTRY.json`, `ENTRY-FAILURE-SANITIZED.json` and
+  `SETTINGS-DIFF-REVIEW.json`. Historical evidence and sealed candidate preserved.
+  A local symlink-mode inspector mismatch was diagnosed/corrected without any
+  archive change; canonical link-target/hash and containment checks remain strict.
+- Activation/root command is NOT newly ready: entry and private Linux gates did
+  not pass. Preserve the existing guarded deployment/rollback proposal; never
+  replay launch/ADM CHECK/APPLY. Activation still requires future root review.
+- **Single next owner action:** confirm these two UI-setting changes are intended
+  and approve updating only the reviewed settings preimage, including recorded
+  updated_at, then ONE fresh entry-check/staging attempt. No production settings
+  write is proposed. Do not retry automatically or stage now. Keep signup,
+  checkout/COD/payments disabled. No media or customer/order migration work.
+
+The concrete, unexecuted baseline proposal is in the NEW evidence folder:
+`BASELINE-REVIEW.json`, `PROPOSED-SETTINGS-PREIMAGE.private.json` and
+`ENTRY-SETTINGS-PREIMAGE-PROPOSED.patch`. Preimage SHA256:
+`130bff5729268ab9efb457b22a16ab6431458315e4a0232cc2b1cb1358b4a2b1`.
+It retains full settings equality/all other gates, binds exact target/candidate,
+and changes only the three reviewed expected fields. Syntax PASS; NOT executed.
+This continuity update changes documentation only; the sealed application source
+remains03ca445 and its archive remains unchanged. Do not rebuild for this docs commit.
+
 # ADM-01 dependency repair — local candidate validated; NOT deployed, 2026-10-18
 
 - Root cause established: npm 10.9.8 and npm 11.13.0 resolve the existing optional
