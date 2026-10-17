@@ -1,6 +1,7 @@
 # Dashboard access during a browse-only launch
 
-ADM-01 is prepared locally. It has not changed production.
+ADM-01 is a reusable ingress correction. See `PROJECT_STATE.md` for current
+deployment status, verified acceptance and outstanding checks.
 
 The existing browse-only Nginx policy denies dashboard documents before Nuxt.
 It also denies dashboard data APIs and the existing login-audit POST.

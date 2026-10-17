@@ -1,3 +1,69 @@
+# ADM-01 v2 — deployed ingress; final acceptance BLOCKED, 2026-10-18
+
+Read this first. The owner executed root APPLY and reported PASS. Never repeat
+CHECK/APPLY, reload Nginx, restart Nuxt or roll back the accepted storefront.
+Original ADM-01 plan remains
+`6e31fd5174b7574cd3d9f7b704629d94f91a8db178b0c4003d4e185cf541016f`.
+The sealed v2 package and all historical evidence are unchanged.
+
+Verified live: runtime PID 12065, zero restarts, same Release 82 bindings and
+loopback port 3002. Nginx PID 1334 remains active. Main EN/AR public pages,
+Out of Stock product, VPS image hash, four SEO redirects, anonymous/invalid-token
+API denials and customer/signup/checkout route restrictions passed. Purchasing,
+COD/payments/signup remain off. Storefront launch remains accepted/live.
+
+Existing private owner credentials were used only in memory. Actual hosted Auth,
+active-owner RLS read and login-audit POST passed. EN Overview, Products and an
+existing product editor loaded and survived reload. No credentials, Auth headers,
+tokens, screenshots, traces, HAR or storage states were retained.
+
+An initial harness stop treated optional favicon 404 and safely blocked analytics
+POSTs as failures. Its evidence was preserved; the expectation correction kept
+analytics blocked and recorded the favicon separately. A second acknowledged
+sign-in continued acceptance. There were exactly two approved login audits;
+no failed/uncertain write was retried and no business mutation was permitted.
+
+**Genuine blocker:** Procurement's `loadProductOptions` calls
+`catalog_staff_products` with a projection omitting `created_at`, then orders
+by `created_at` at `app/components/dashboard/commerce/ProcurementTab.vue:740`.
+Actual PostgREST returns HTTP 400 / 42703:
+`column products.created_at does not exist`.
+The certified table does have that column. Anonymous read-only GET reproduces
+the query error; adding it to the projection reaches the expected 401/42501
+permission denial. This proves the parse/projection correction, not authenticated
+success. Inspect relation embedding during focused authenticated validation too.
+The old local gateway fixture did not model PostgREST selection/ordering.
+Do not infer its Chrome passes cover this hosted query behavior.
+
+Browser acceptance stopped at the genuine Procurement failure. AR dashboard,
+Warehouses, serialized Inventory, explicit token refresh, Back and UI logout are
+NOT accepted yet. Browser contexts closed; Auth session revocation was not tested.
+No additional sign-in or production correction followed that failure.
+
+Post-change production verifier PASS at 2026-10-17T21:29:46.540Z / 18 October
+00:29 Riyadh: exact certified schema/RLS/grants, products/variants/revisions,
+settings and 23 receipts preserved; 559 published, 7161 Draft; stock/orders/
+Storage zero. Separate hashes preserve admin permissions, customer profiles,
+warehouses and orders. No schema, Auth policy, inventory, provider, app, Nginx,
+DNS or production configuration changes were made by this acceptance task.
+
+Read:
+`/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017/approved-acceptance-20261018/REPORT.md`.
+Then `BROWSER-STOP.json`, `PROCUREMENT-ANONYMOUS-READONLY.json`,
+`PROCUREMENT-PROJECTION-PROBE.json`, `PROPOSED-CORRECTION.json`,
+`PRODUCTION-STATE-READONLY.private.json` and `BUSINESS-PRESERVATION.json`.
+The initial stop/runtime check remain under sibling `approved-after/`.
+All source application/migrations still match deployed certified `9a9c2d8`.
+
+**Single next owner action:** authorize focused Procurement query correction
+and actual PostgREST regression preparation. The proposed one-line patch is
+`PROCUREMENT-PROJECTION-PROPOSED.patch` in the new evidence folder; it passes
+`git apply --check` and is NOT applied. Keep it reusable: include the existing
+timestamp in the projection; preserve limits, ordering, RBAC/RLS and deployment
+configuration. Do not add a store-specific workaround, loosen policies or change
+migrations. Any application deployment requires separate review and authorization.
+Do not start WordPress customer/order migration or reopen historical launch work.
+
 # ADM-01 v2 — preparation approved and staged, 2026-10-18
 
 Read this entry before the historical preparation status below.

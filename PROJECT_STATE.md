@@ -1,3 +1,50 @@
+# ADM-01 v2 — ingress deployed; final acceptance BLOCKED, 2026-10-18
+
+- Owner reports root APPLY **PASS**, replacement/reload acknowledged and runtime
+  unchanged. CHECK/APPLY were not repeated. Fresh public behavior independently
+  confirms dashboard ingress is open and protected APIs require authentication.
+  The accepted browse-only Nuxt storefront remains live; this blocker concerns
+  final dashboard acceptance, not storefront launch acceptance.
+- Runtime check: **PASS**, 18 October 00:26 Riyadh. Same production PID 12065,
+  zero restarts, loopback port 3002, same release/environment/unit/inventory/start
+  receipt bindings. Nginx master PID 1334 remains active with zero restarts.
+- Actual existing-owner browser sign-in, active-owner RLS lookup and login audit
+  passed. EN Overview, Products and the existing product editor loaded; their
+  cookie sessions survived reload. Credentials/tokens were not printed or saved.
+  Two acknowledged sign-ins/audits occurred: an initial harness stop classified
+  a favicon 404 and safely blocked analytics as failures; corrected expectations
+  preserved those findings before continuing. No failed write was retried.
+- **Genuine blocker:** Procurement's `catalog_staff_products` RPC returns
+  HTTP 400 / SQLSTATE `42703`: `column products.created_at does not exist`.
+  The certified table DOES contain `created_at`. Its RPC projection omits that
+  field while ordering by it in `ProcurementTab.vue:740`. A read-only anonymous
+  GET reproduces the error; including the field reaches the expected 401/42501
+  function-permission denial instead. Authenticated corrected-query acceptance
+  is not established. Do not repair migrations/RLS or change Nginx for this.
+- Acceptance stopped at Procurement. AR dashboard views, Warehouses, serialized
+  Inventory, explicit token rotation, navigation/Back and UI logout remain
+  pending. Isolated browser contexts closed; no session state was exported.
+- Post-change read-only verifier: **PASS**, 18 October 00:29 Riyadh. Certified
+  schema/RLS/grants, exact products/variants/revisions/settings and 23 receipts
+  match. 559 published, source 7161 Draft; stock/orders/Storage zero. Purchasing,
+  COD/payments/signup remain disabled. Additional row hashes confirm unchanged
+  owner permissions, customer profiles, warehouses and orders. Two approved
+  acceptance login audits were observed; no business writes occurred.
+- Evidence:
+  `/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017/approved-acceptance-20261018/REPORT.md`.
+  The earlier instrumentation stop remains in `approved-after/`. Public EN/AR
+  pages, OOS product, VPS image integrity, four verified SEO redirects and live
+  anonymous/invalid-token denials passed. Optional `/favicon.svg` returns 404;
+  analytics POSTs remained blocked by the acceptance guard. Neither requires
+  rolling back the working ingress. Non-admin/inactive/restricted role cases
+  retain prior isolated test evidence; no production test users were created.
+- **Next owner action:** authorize the focused reusable Procurement query fix
+  and actual PostgREST regression preparation; application deployment remains a
+  separate review gate. A one-line proposed patch exists in the evidence folder;
+  it passes `git apply --check` but has NOT been applied. Application/migrations
+  remain byte-identical to certified Release 82. Do not rerun root commands,
+  republish, rebuild/deploy, change business data or start customer/order migration.
+
 # ADM-01 v2 — staged; root CHECK pending, 2026-10-18
 
 - Owner approved preparation under plan
