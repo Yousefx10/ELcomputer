@@ -1,3 +1,48 @@
+# ADM-01 staging continuation — wait for root ingress attestation, 2026-10-18
+
+Read PROJECT_STATE.md and
+`/Users/imac/Documents/ELcomputer/adm01-approved-staging-20261018/REPORT.md` first.
+Owner confirmed their two intentional UI changes and approved exact three-field
+settings-preimage correction130bff57...; no settings write. Exact reviewed verifier
+25455da6... ran ONCE into NEW evidence: production entry PASS23:30:59Z. Schema82/
+RLS/grants/identity, products/revisions/variants/full settings/23 receipts preserved;
+559 published/7161 Draft, stock-orders-Storage0, signup/commerce/payment/CODOFF.
+
+Read-only SSH runtime PASS23:31:59Z: original release pointer, complete release AND
+Node inventories, env/unit/start receipt/Restart=no match. Node22.23.1, PID12065,
+restarts0, loopback3002; Nginx master1334/restarts0. EN/AR/card/control reads pass.
+Port3003 free THEN, recheck before startup. No application/service/config change.
+
+Root-private accepted ADM APPLY receipt is unreadable to SSH UID1002. Fresh
+POST-ADM main+all-peer hash attestation remains mandatory before app transfer.
+Do not use pre-ADM hashes, rerun old CHECK/APPLY or elevate through SSH.
+Prepared a separate read-only attestation using verified existing root helper
+libraries without calling historical operator main.8 local file tests+syntax pass;
+nginx-T/config bytes stay in root RAM; only sanitized result/hash/count output.
+38 unavailable native/platform checks remain unverified.
+
+Transferred ONLY validated inspection helper, NOT the sealed application archive:
+/home/elcomputer/.codex-inspection-staging/adm01-ingress-readonly-3db591ae8b9d50a2.py
+SHA2563db591ae8b9d50a2ec606843fa293f73b1580005a35d10762a26198d188d7802;
+4,535 bytes/UID1002/mode0600/parent0700, exclusive write and independent read PASS.
+No helper execution through SSH. This is the sole new VPS inspection file; do not
+misreport zero filesystem writes or completed application staging/Linux acceptance.
+
+CURRENT-ACTION.json selects ONLY ROOT-INGRESS-SHORT.command in NEW evidence.
+The unexecuted longer inline command is retained local material; do not paste it.
+The short owner command copies helper into NEW root-owned0700 workspace, verifies
+full SHA, runs it read-only using existing protected bundle. No config/service/DB
+mutation. Owner review/execution is pending. No root command has run here.
+
+**Single next owner action:** review/run that short command ONCE in root Console
+and return sanitized result. On PASS, existing authorization covers continuing
+restricted exact-archive staging and private Linux tests; no general reapproval.
+On failure/ambiguity STOP without retry. Sealed source03ca445 and archivec95bac1f...
+remain unchanged/local. No activation authorized. Exact activation/rollback root
+commands can be finalized ONLY after private Linux PASS and reviewed separately.
+No active pointer/service/Nginx/env/DB/Auth/security change, rebuild, automatic
+retry/resume/rollback/cleanup, media repair, WordPress migration or push.
+
 # ADM-01 staging STOP — settings preimage drift, 2026-10-18
 
 Read PROJECT_STATE.md and

@@ -1,3 +1,49 @@
+# ADM-01 resumed staging — database/runtime PASS; root ingress gate pending, 2026-10-18
+
+- Owner confirmed their `dashboard_layout=detailed` and `hero_enabled=true`
+  changes and expected updated_at. Approved ONLY the reviewed three-field exact
+  preimage correction. Verified preimage130bff57... and verifier25455da6...;
+  executed ONE fresh read-only verifier into a NEW evidence directory. PASS at
+  2026-10-17T23:30:59.409Z. No settings were reverted or written; full settings
+  equality and all existing guards remain. Earlier drift stop is preserved below.
+- Exact production identity,82 migrations/schema/RLS/grants, products/revisions,
+  variants, approved settings and23 publication receipts match.559 published,
+  source7161 Draft; stock/orders/Storage0; signup/checkout/COD/payments disabled.
+- Fresh strict-pinned SSH runtime PASS at2026-10-17T23:31:59.949770Z: original
+  `release-82-40b87a3a289ea999`, PID12065, restarts0, Restart=no, loopback3002;
+  Nginx master1334/restarts0. Complete original release AND LinuxNode inventory,
+  unit/env/start receipt/retry policy match. Node22.23.1; EN/AR and payment/control
+  reads PASS. Port3003 free at check; recheck before any candidate startup.
+- **Remaining mandatory entry gate:** successful ADM APPLY receipt and accepted
+  POST-ADM configuration hashes are root-private. SSH UID1002 cannot read receipt.
+  No root command/escalation or obsolete CHECK/APPLY was attempted. Do not stage
+  the application archive until owner root-only attestation PASS.
+- Prepared NEW read-only attestation using the frozen reviewed root bundle and its
+  accepted APPLY receipt; nginx-T remains in root RAM, only sanitized hashes/counts
+  exported.8 disposable local tests and Python/Bash syntax PASS. Old-main/peer/
+  include/receipt/ack/mode drift fail closed.38 managed-platform tests unverified.
+- Only the inspection helper was exclusively transferred, NOT application output:
+  `/home/elcomputer/.codex-inspection-staging/adm01-ingress-readonly-3db591ae8b9d50a2.py`.
+  SHA256 `3db591ae8b9d50a2ec606843fa293f73b1580005a35d10762a26198d188d7802`,
+  4,535 bytes,UID1002/mode0600 under0700; independent remote hash verified.
+  It was not executed. A short root command securely copies/verifies it into a
+  NEW root-private workspace, avoiding known long-Console-paste truncation.
+- Evidence: `/Users/imac/Documents/ELcomputer/adm01-approved-staging-20261018/REPORT.md`.
+  Read CURRENT-ACTION.json and ROOT-INGRESS-SHORT.command there. Root command
+  NOT executed; no config/service/database/Auth change. Existing root evidence,
+  accepted ADM ingress and sealed application archive/source remain unchanged.
+- Source03ca445 and archivec95bac1f.../5,269,548 bytes remain exact; all597 app
+  inputs match. Application staging/private Linux candidate acceptance NOT RUN;
+  active pointer/service untouched. No rebuild, retries, cleanup, media work,
+  customer/order migration or push. Current report distinguishes the one staged
+  inspection file from application release staging; do not claim zero VPS file writes.
+- **Single next owner action:** review/run ROOT-INGRESS-SHORT.command once in
+  Hostinger root Console and return sanitized output. It is read-only, not an
+  activation command. On PASS continue the existing staging authorization;
+  no new general approval needed. Stop on failure. After private Linux PASS,
+  prepare exact guarded activation/rollback for separate owner review. Keep
+  registration, checkout, COD and payments disabled throughout.
+
 # ADM-01 controlled staging — entry BLOCKED; nothing transferred, 2026-10-18
 
 - Current owner authorization covers sealed candidate staging/private Linux
