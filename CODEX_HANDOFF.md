@@ -1,3 +1,78 @@
+# ADM-01 — ready for owner review; production unchanged, 2026-10-17
+
+Read this and `PROJECT_STATE.md` before historical entries. Both Codex accounts
+share this workspace. Preserve the uncommitted ADM-01 changes.
+
+Already completed: browse-only Release 82 launch accepted; 559 products published,
+7161 Draft, zero stock and purchasing/payments/COD/signup disabled. Owner audit at
+20:06 Riyadh identified Nginx dashboard/API denial. Existing owner/login/RBAC are
+present. Customer return URL encoding was not a confirmed defect. Do not repeat
+schema installation, imports, publication, runtime provisioning/startup, old
+activation packages or completed broad audits.
+
+Prepared locally: `scripts/nginx/dashboard_access.py` and `config_parser.py`.
+This is an ingress-only correction with configurable domains, alias, upstream
+and variable namespace. It reuses existing server authorization and RLS.
+No owner-ID exception, auth mechanism, application/UI rebuild, migration, grant,
+Auth origin or policy change. Customer/checkout restrictions and SEO remain.
+Unreviewed original server-name aliases gain no direct new admin access.
+
+Allowlist: dashboard GET/HEAD; eight exact read APIs; strict UUID product detail;
+canonical-host exact `POST /api/admin-logs`. Inventory additionally needs existing
+`/api/admin-inventory/items` and `/api/admin-inventory/options`; browser tests
+identified these and both `products.view` handlers were inspected/tested.
+No blanket API allowlist. Inventory detail/mutation and other unlisted APIs stay denied.
+
+Validation: 22 Node passes (including a wrapper for 12 Python/Nginx cases),
+6 prepared root-helper passes, 62 real Chrome checks. Owner Overview,
+Products/editor, Procurement/Inventory, EN/AR, cookie refresh, logout, Back,
+theme/mobile and restricted actors passed locally. Real compiled Release 82,
+HTTPS Nginx and application SQL were used; Auth/REST transport was simulated.
+The original HTTP fixture was corrected to HTTPS; Secure cookies were not weakened.
+Known denied chat requests and correctly rejected revoked sessions are recorded.
+No real production password/session or hosted owner RLS acceptance is claimed.
+
+Read `docs/dashboard-access-ingress.md`, then:
+`/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017/REPORT.md`.
+Its `OWNER-ACTION.md` contains the exact separate root commands and rollback
+procedure. `CURRENT-PACKAGE.json` binds this unexecuted package:
+
+- Plan: `6e31fd5174b7574cd3d9f7b704629d94f91a8db178b0c4003d4e185cf541016f`.
+- Manifest: `fbf3bcbe7aa79887a968f8af38f8d3bbb461dd9534f2a5e7f36ffadd84c0dbdb`.
+- Archive: `adm01-d6f3667b13b223c8.tar`, SHA-256
+  `d6f3667b13b223c807e4353e4489324f5d2c368648698a3dcfdc251df3334117`.
+
+Current v2 is indexed by CURRENT-PACKAGE.json. The superseded v1 archive and
+evidence are preserved under superseded-candidate-53642eb4c7794aac; never stage it.
+The current archive contains operational code/bindings, no credentials, raw root
+configuration or application output. Do not edit/rebuild it. It is not staged.
+After explicit approval: established read-only business-state verification into
+a new private directory; exact archive staging; owner-reviewed root CHECK.
+After CHECK PASS/candidate review, the separate APPLY repeats fresh gates,
+requires that checked candidate, changes only the main file and reloads Nginx
+once. Never restart Nuxt. Root-only actual-context syntax remains pending.
+Stop on any failure/ambiguity; no retry, resume, automatic rollback or cleanup.
+
+Then perform authorized existing-owner browser acceptance and repeat the
+read-only data verification. Guard business table/RPC writes independently:
+edge API denials do not remove direct owner RLS capabilities. Do not Save,
+receive stock or modify settings. Auth creates/refreshes/revokes sessions;
+login records an audit under existing retention rules. It is not zero writes.
+Actual production owner access is **NOT FIXED / LIVE ACCEPTANCE PENDING**.
+
+No production/SSH/database/Auth access or mutation happened during preparation.
+HEAD remains `5ea9566`; ADM-01 changes are uncommitted. No commit/push.
+Application/migrations compare unchanged to deployed `9a9c2d8`. Original launch
+plan `cf47caea1cf057c79774e41842cfb253549a653d9434551786d3fbb3917de55a` is preserved.
+**Next owner action:** approve ADM-01 execution and specific owner-session/audit
+acceptance effects. Each root command still needs owner Console review.
+No general relaunch approval is needed.
+
+After ADM-01 production acceptance, separately scope historic customer/order
+migration. Approximate 517 users, 589 orders and six refunds are owner-reported,
+pending source comparison. Do not copy WordPress hashes blindly into Auth or
+replay historic orders as new stock/financial events. That migration has not begun.
+
 # BETA Gate2B — release82 local certification, 2026-10-15
 
 - Authorized baseline/application input checkpoint `084058e127f7964bf2ab2953f595f9abb9f1f521`. Feature development stays frozen. Changes cover only versioned certification, installer/publisher routing, fixtures, tests and documentation; all597 application inputs remain identical.

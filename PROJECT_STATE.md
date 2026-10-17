@@ -1,3 +1,44 @@
+# ADM-01 — locally validated; not deployed, 2026-10-17
+
+- **Production owner access is not marked fixed.** The accepted Release 82
+  browse-only launch remains the baseline: 559 published zero-stock products,
+  source 7161 Draft, purchasing/payments/COD/signup disabled. Latest prior owner
+  audit: 17 October, 20:06 Riyadh. No production connection, login, upload, write,
+  reload or restart occurred during this preparation. This is not a fresh live check.
+- The completed audit at
+  `/Users/imac/Documents/ELcomputer/post-launch-owner-access-audit-20261017/REPORT.md`
+  proved Nginx blocks existing dashboard routes/APIs. The owner, login and RBAC
+  exist. The nested customer return URL was not a confirmed encoding defect.
+- Implemented [a configurable ingress correction](docs/dashboard-access-ingress.md).
+  Dashboard GET/HEAD, eight exact read APIs, strict UUID product snapshots and
+  canonical-host exact login-audit POST reach existing authorization handlers.
+  Browser tests identified two Inventory dependencies omitted by the proposal;
+  both existing handlers enforce `products.view`. Other API/customer/checkout
+  denials and public SEO/media routes remain. No application/Auth/schema/RLS change.
+- Validation: **22 Node passes**, including a wrapper executing **12 Python/real
+  Nginx cases**; **6 prepared root-helper passes**; **62 real Chrome checks** behind
+  isolated HTTPS Nginx and unchanged compiled Release 82. No page exceptions or
+  unexpected HTTP failures. Auth/REST transport is an explicit local fixture;
+  hosted owner credentials/RLS/session acceptance remains pending. Secure cookies stay enabled.
+- Git base remains `5ea95664a6dff76bd146e73fdc3d72eafe689a64`; these changes are
+  uncommitted. No commit/push. Application, public assets, Nuxt configuration,
+  dependency manifests and migrations compare unchanged against deployed `9a9c2d8`.
+- Review package:
+  `/Users/imac/Documents/ELcomputer/owner-dashboard-access-preparation-20261017`.
+  Read `REPORT.md`, `OWNER-ACTION.md` and `CURRENT-PACKAGE.json` there.
+  Plan SHA-256: `6e31fd5174b7574cd3d9f7b704629d94f91a8db178b0c4003d4e185cf541016f`.
+  Archive: `adm01-d6f3667b13b223c8.tar`, SHA-256
+  `d6f3667b13b223c807e4353e4489324f5d2c368648698a3dcfdc251df3334117`.
+  Current v2; neither transferred nor executed. Superseded v1 is preserved and must not be used. Original launch plan `cf47caea…55a` is unchanged.
+- **Next owner action:** approve the scoped ADM-01 procedure and existing-owner
+  session/login-audit acceptance. Fresh read-only state verification, root-only
+  configuration hashes and private full-context candidate syntax remain mandatory.
+  Every new root command requires separate owner Console review. Actual owner
+  login, authorized EN/AR screens, refresh/logout and post-change data checks remain pending.
+- This file replaces the requested register update; do not create another register.
+  `CODEX_HANDOFF.md` is the operational handoff. Customer/order migration is a
+  separate later scope after ADM-01 acceptance. Do not rerun historical launch commands.
+
 # BETA Gate2B — release82 local certification, 2026-10-15
 
 - Authorized baseline/application input checkpoint `084058e127f7964bf2ab2953f595f9abb9f1f521`. Feature development stays frozen. Changes cover only versioned certification, installer/publisher routing, fixtures, tests and documentation; all597 application inputs remain identical.

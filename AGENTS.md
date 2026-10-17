@@ -5,6 +5,20 @@
 - Avoid filler, promotional language, and AI-style explanations.
 - Apply this to storefront, dashboard, login, and signup screens.
 
+# Independent deployments
+
+- This is a reusable ecommerce product for independent businesses.
+- ELcomputer is one deployment, not a fixed application identity.
+- Reuse existing site settings, runtime configuration and environment abstractions.
+- Keep store names, domains, account IDs, project references and deployment paths
+  out of reusable application logic. Bind operational targets in reviewed,
+  deployment-specific configuration.
+- Keep authentication origins and Nginx routing configurable and restrictive.
+- Reuse existing authorization, RBAC and RLS contracts. Never special-case a
+  deployment's owner or bypass permissions to restore access.
+- Test portability when configuration affects a correction. Document new inputs.
+- Avoid unnecessary multi-tenancy or unrelated redesigns.
+
 # Product Manager and Dashboard UI
 
 - Preserve the current Dashboard design identity and existing components.
