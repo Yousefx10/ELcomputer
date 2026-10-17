@@ -8,17 +8,19 @@ import { verifyBundle, hash, json } from '../lib/cleanBaseline.mjs'
 import { assertPolicyTarget } from '../lib/targetPolicy.mjs'
 import {loadRelease79,release79Descriptor} from '../lib/release79Certification.mjs'
 import {loadRelease82,release82Descriptor} from '../lib/release82Certification.mjs'
+import {productionProjectRef,assertProductionTarget} from './production-profile.mjs'
 
 export const sourceRoot = fileURLToPath(new URL('../../', import.meta.url))
 export const migration71 = '20261012160000_quick_setup_installation_bootstrap.sql'
 export const cliVersion = '2.109.1'
 export const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 // Public references, already recorded in PROJECT_STATE and the staging runner.
-export const protectedProjectRefs = ['zsqhuwgoasrexdnamlks']
+export const protectedProjectRefs = ['zsqhuwgoasrexdnamlks', productionProjectRef]
 const messages = {
   policy_invalid: 'Supply the protected additional reservation policy and review record.',
   policy_changed: 'The approved additional policy changed. Preserve the frozen installation.',
   invalid_input: 'Use the documented strict manifest and command options.',
+  file_operations_disabled: 'This installation permits metadata only. Production files belong on VPS.',
   protected_target: 'This target is excluded. Select a genuinely new project.',
   ambient_credentials: 'Use a clean environment; provide credentials through a protected file.',
   unsafe_file: 'Use an absolute, owned path without symlinks and private permissions.',
@@ -50,16 +52,20 @@ export function safeEnvironment(environment = process.env) {
   ensure(!Object.keys(environment).some(key => /^(PG[A-Z_]*|DATABASE_URL|SUPABASE(?:_.*)?|NUXT_.*(?:KEY|SECRET|TOKEN|PASSWORD)|NODE_OPTIONS|NODE_TLS_REJECT_UNAUTHORIZED|NODE_EXTRA_CA_CERTS|SSLKEYLOGFILE)$/.test(key) && environment[key]),'ambient_credentials')
 }
 export function validateTarget(target) {
-  object(target,['format','profile','installation_id','project_ref','api_url','site_origin','database','api_ca_file','excluded_project_refs','laboratory','reservation_policy'],['format','profile','installation_id','project_ref','api_url','site_origin','database','excluded_project_refs'])
+  object(target,['format','profile','installation_id','project_ref','api_url','site_origin','database','api_ca_file','excluded_project_refs','laboratory','reservation_policy','production_profile'],['format','profile','installation_id','project_ref','api_url','site_origin','database','excluded_project_refs'])
   ensure(target.format===1 && ['supabase-direct','owned-laboratory'].includes(target.profile))
   ensure(uuid.test(target.installation_id) && /^[a-z0-9]{20}$/.test(target.project_ref))
   ensure(Array.isArray(target.excluded_project_refs) && target.excluded_project_refs.every(ref=>/^[a-z0-9]{20}$/.test(ref)))
-  ensure(![...protectedProjectRefs,...target.excluded_project_refs].includes(target.project_ref),'protected_target')
+  if(Object.hasOwn(target,'production_profile')){
+    try{assertProductionTarget(target)}catch{fail('protected_target')}
+  }
+  ensure(!target.excluded_project_refs.includes(target.project_ref),'protected_target')
+  ensure(!protectedProjectRefs.includes(target.project_ref)||target.project_ref===productionProjectRef&&target.production_profile,'protected_target')
   let site,api
   try { site=new URL(target.site_origin);api=new URL(target.api_url) } catch { fail('invalid_input') }
   ensure(site.protocol==='https:' && !site.username && !site.password && site.origin===target.site_origin && site.pathname==='/' && !site.search && !site.hash)
   ensure(target.site_origin.length<=253 && /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:[1-9][0-9]{0,4})?$/.test(target.site_origin) && !/\.\.|(^https:\/\/|\.)-|-(\.|:|$)/.test(target.site_origin))
-  ensure(!/(^|\.)elcomputer\.net$/i.test(site.hostname),'protected_target')
+  ensure(!/(^|\.)elcomputer\.net$/i.test(site.hostname)||target.production_profile,'protected_target')
   ensure(api.protocol==='https:' && !api.username && !api.password && !api.search && !api.hash)
   object(target.database,['host','port','name','user','ca_file'])
   ensure(target.database.name==='postgres' && target.database.user==='postgres' && isAbsolute(target.database.ca_file))

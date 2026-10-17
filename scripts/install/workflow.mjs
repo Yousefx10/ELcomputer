@@ -3,11 +3,12 @@ import assert from 'node:assert/strict'
 import { applyCandidate, verifyBundle } from '../lib/cleanBaseline.mjs'
 import { bootstrapFirstOwner, ownerBinding } from '../lib/installationBootstrap.mjs'
 import { connectPlatform } from './platform.mjs'
-import { ensure, fail, digest, object, frozenSource, validateTarget } from './contracts.mjs'
+import { ensure, fail, digest, object, frozenSource, validateTarget, validateOwner } from './contracts.mjs'
 import { createWorkspace, writeAtomic, checkpointWrite, checkpointRead, workspaceLock, settledCliJobs, receipt } from './files.mjs'
 import { refreshPolicy } from '../lib/targetPolicy.mjs'
 import { assertFresh, verifySchema, verifyBaseline, readHistory, validateHistory, readJournal, assertJournal, verifyInstalledData, verifyBuckets, pendingIdentity, buckets } from './verify.mjs'
 import { releasePlan, releaseStagesFor, assertReleaseSource, releaseObservation, assertFreshRelease, releaseHistory, verifyReleaseSchema, matchReleaseTarget, observeReleaseOwner } from './releases.mjs'
+import { assertProductionSource, storageBucketsFor, prepareProductionBaseline } from './production-profile.mjs'
 
 export const stages=['baseline','history','migration71','database','storage','owner','complete']
 const stagesFor=source=>source.release?[...stages.slice(0,-1),...releaseStagesFor(source),'complete']:stages
@@ -19,6 +20,7 @@ export function validatePlan(plan) {
   else ensure(!plan.source.release,'checkpoint_changed')
   ensure(JSON.stringify(plan.stages)===JSON.stringify(stagesFor(plan.source)),'checkpoint_changed')
   validateTarget(plan.target)
+  if(plan.target.production_profile){try{assertProductionSource(plan.target,plan.source);ensure(plan.engine===3,'checkpoint_changed')}catch{fail('checkpoint_changed')}}
   const {plan_digest,...content}=plan
   ensure(/^[0-9a-f]{64}$/.test(plan_digest) && digest(content)===plan_digest,'checkpoint_changed')
   return plan
@@ -34,6 +36,7 @@ export async function planInstallation({target,credentials,directory,platformFac
   validateTarget(target)
   ensure(process.versions.node==='22.23.1','platform_unavailable')
   const source=await frozenSource()
+  try{assertProductionSource(target,source)}catch{fail('source_changed')}
   await createWorkspace(directory)
   const platform=await platformFactory(target,credentials)
   try{
@@ -97,6 +100,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
   ensure(confirm===confirmation(plan),'confirmation_required')
   let chain=await checkpointRead(directory,plan),checkpoint=chain.at(-1)
   if(command==='apply')ensure(checkpoint.stage==='planned'&&checkpoint.status==='ready','installation_complete')
+  if(plan.target.production_profile&&checkpoint.status!=='complete')validateOwner(owner)
   const release=await workspaceLock(directory,plan,{resume:command==='resume'})
   let platform
   try{
@@ -157,7 +161,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
       await mark('baseline','pending')
       await unchangedSource(plan)
       try{
-        await applyCandidate(platform.db,{installationId:plan.target.installation_id,validate:async()=>{await unchangedSource(plan);await verifySchema(platform,70)}})
+        await applyCandidate(platform.db,{installationId:plan.target.installation_id,prepare:()=>prepareProductionBaseline(platform.db,plan.target),validate:async()=>{await unchangedSource(plan);await verifySchema(platform,70)}})
       }catch{fail('stage_uncertain')}
       await verifyBaseline(platform,plan)
       await mark('baseline','verified',{application_schema_verified:true})
@@ -230,7 +234,7 @@ export async function executeInstallation({command,plan,directory,credentials,ow
     if(bucketIds.length<6){
       ensure(journal.phase==='registered','bootstrap_uncertain')
       await mark('storage','pending',{covered_versions:70,migration71:true,buckets:bucketIds.length})
-      for(const bucket of buckets){
+      for(const bucket of storageBucketsFor(plan.target,buckets)){
         if(bucketIds.includes(bucket.id))continue
         platform.lease();await unchangedSource(plan)
         const result=await platform.client.storage.createBucket(bucket.id,{public:false,fileSizeLimit:bucket.file_size_limit,allowedMimeTypes:bucket.allowed_mime_types||undefined})

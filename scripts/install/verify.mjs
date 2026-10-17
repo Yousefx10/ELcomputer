@@ -4,6 +4,7 @@ import { catalog, assertCatalogEquivalent, assertPermissionMatrix, verifyCleanDa
 import { privateInstallationCatalog } from '../lib/installationCertification.mjs'
 import { bootstrapMarker } from '../lib/installationBootstrap.mjs'
 import { ensure, fail, migration71 } from './contracts.mjs'
+import { storageBucketsFor, productionFreshGuard } from './production-profile.mjs'
 
 const baseline=new URL('../../supabase/bootstrap/clean-v1/',import.meta.url),follow=new URL('../../supabase/bootstrap/portability-v1/',import.meta.url)
 const parse=async(url)=>JSON.parse(await readFile(url,'utf8'))
@@ -56,7 +57,7 @@ export function validateHistory(rows,inventory,{allow71=false,partial=false}={})
 export async function assertFresh(platform) {
   try{
     ensure(!(await platform.db.query("select to_regnamespace('private') present")).rows[0].present,'target_occupied')
-    await platform.db.query(freshGuard)
+    await platform.db.query(await productionFreshGuard(platform.db,platform.target,freshGuard))
     const users=await platform.client.auth.admin.listUsers({page:1,perPage:2}),bucketList=await platform.client.storage.listBuckets()
     ensure(!users.error&&!bucketList.error&&users.data.users.length===0&&bucketList.data.length===0,'target_occupied')
   }catch{fail('target_occupied')}
@@ -116,12 +117,13 @@ export async function verifyInstalledData(platform,plan,{owner=null,pendingSubje
   }catch(error){if(error.code&&error.constructor.name==='InstallationError')throw error;fail(owner?'owner_unavailable':'target_changed')}
 }
 export async function verifyBuckets(platform,{complete=false}={}) {
+  const expectedBuckets=storageBucketsFor(platform.target,buckets)
   const api=await platform.client.storage.listBuckets();ensure(!api.error,'platform_unavailable')
   const db=(await platform.db.query('select id,name,public,file_size_limit,allowed_mime_types from storage.buckets order by id')).rows
   const normalize=row=>({id:row.id,public:row.public,file_size_limit:Number(row.file_size_limit),allowed_mime_types:row.allowed_mime_types})
-  ensure(db.length<=buckets.length && (!complete||db.length===buckets.length),'target_changed')
+  ensure(db.length<=expectedBuckets.length && (!complete||db.length===expectedBuckets.length),'target_changed')
   for(const row of db) {
-    const expected=buckets.find(bucket=>bucket.id===row.id),remote=api.data.find(bucket=>bucket.id===row.id)
+    const expected=expectedBuckets.find(bucket=>bucket.id===row.id),remote=api.data.find(bucket=>bucket.id===row.id)
     ensure(expected&&remote&&row.name===row.id,'target_changed')
     try{assert.deepEqual(normalize(row),expected);assert.deepEqual(normalize(remote),expected)}catch{fail('target_changed')}
   }

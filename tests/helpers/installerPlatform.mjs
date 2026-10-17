@@ -33,6 +33,7 @@ export async function installerSourceCopy({extraFiles=[],release79=false,release
       !(!release82 && name.startsWith('supabase/migrations/') && name.endsWith('.sql') &&
         name>'supabase/migrations/'+lastMigration))
     const newNames=['scripts/lib/targetPolicy.mjs','scripts/elcomputer-setup.mjs','scripts/guided/state.mjs','scripts/guided/workflow.mjs','scripts/elcomputer-install.mjs','scripts/install/contracts.mjs','scripts/install/files.mjs','scripts/install/platform.mjs','scripts/install/verify.mjs','scripts/install/workflow.mjs','scripts/install/cli-supervisor.mjs']
+    newNames.push('scripts/install/production-profile.mjs')
     for(const name of new Set([...names,...newNames,...extraFiles])){
       const destination=join(directory,name);await mkdir(resolve(destination,'..'),{recursive:true});await cp(join(sourceRoot,name),destination)
     }
@@ -72,7 +73,9 @@ export async function createInstallerPlatform({siteOrigin='https://fresh.example
     const capture=chunk=>{logs[name]=(logs[name]+chunk).slice(-12000)};child.stdout.on('data',capture);child.stderr.on('data',capture)
     return child
   }
-  const wait=async(predicate,label)=>{for(let i=0;i<200;i++){try{if(await predicate())return}catch{}if(children.some(child=>child.exitCode!==null&&child.exitCode!==0))throw Error('Owned '+label+' service failed');await new Promise(resolve=>setTimeout(resolve,50))}throw Error('Owned '+label+' readiness timeout')}
+  // Cold native Storage startup can exceed ten seconds on the review machine.
+  // This changes only disposable-service readiness, never installer timeouts.
+  const wait=async(predicate,label)=>{for(let i=0;i<600;i++){try{if(await predicate())return}catch{}if(children.some(child=>child.exitCode!==null&&child.exitCode!==0))throw Error('Owned '+label+' service failed');await new Promise(resolve=>setTimeout(resolve,50))}throw Error('Owned '+label+' readiness timeout')}
   const close=async()=>{
     if(gateway){gateway.closeAllConnections();await new Promise(resolve=>gateway.close(resolve))}
     await Promise.allSettled(clients.map(client=>client.end()))

@@ -16,6 +16,17 @@ import { readProtected, validateLaboratory, privateDirectory, writeAtomic } from
 import { refreshPolicy } from '../lib/targetPolicy.mjs'
 import {loadRelease79,release79Descriptor} from '../lib/release79Certification.mjs'
 import {loadRelease82,release82Descriptor} from '../lib/release82Certification.mjs'
+import {productionHelper,productionApiOperationAllowed} from './production-profile.mjs'
+
+// Metadata is privileged on current hosted gateways. Independently authenticate
+// the public key against a non-existing relation; no data or RPC is written.
+export async function verifyDataApi(transport,apiUrl,credentials) {
+  const metadata=await transport(apiUrl+'/rest/v1/',{headers:{apikey:credentials.service_role_key,authorization:'Bearer '+credentials.service_role_key,accept:'application/openapi+json'}})
+  ensure(metadata.ok,'platform_unavailable')
+  const publicRead=await transport(apiUrl+'/rest/v1/__elcomputer_install_key_probe?select=id&limit=0',{headers:{apikey:credentials.anon_key,authorization:'Bearer '+credentials.anon_key}})
+  let body;try{body=await publicRead.json()}catch{fail('platform_unavailable')}
+  ensure(publicRead.status===404&&body.code==='PGRST205','platform_unavailable')
+}
 
 async function binaryHash(path){const digest=createHash('sha256');for await(const bytes of createReadStream(path))digest.update(bytes);return digest.digest('hex')}
 async function pinnedBinary(){
@@ -34,7 +45,7 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
   await validateLaboratory(target)
   const ca=await readProtected(target.database.ca_file,{json:false,privateMode:false}),apiCa=target.api_ca_file?await readProtected(target.api_ca_file,{json:false,privateMode:false}):undefined
   const controller=new AbortController()
-  const db=new pg.Client({host:target.database.host,port:target.database.port,database:target.database.name,user:target.database.user,password:credentials.database_password,ssl:{ca,rejectUnauthorized:true,...(isIP(target.database.host)?{}:{servername:target.database.host}),minVersion:'TLSv1.2'},connectionTimeoutMillis:5000,application_name:'elcomputer-fresh-install'})
+  const db=new pg.Client({host:target.database.host,port:target.database.port,database:target.database.name,user:target.database.user,password:credentials.database_password,ssl:{ca,rejectUnauthorized:true,...(isIP(target.database.host)?{}:{servername:target.database.host}),minVersion:'TLSv1.2'},connectionTimeoutMillis:5000,application_name:'elcomputer-fresh-install',...(target.production_profile&&!mutating?{options:'-c default_transaction_read_only=on'}:{})})
   let locked=false,closed=false,identity,apiFingerprint=null
   const lease=()=>ensure(!closed&&!controller.signal.aborted,'stage_uncertain')
   db.on('error',()=>{closed=true;controller.abort()});db.on('end',()=>{closed=true;controller.abort()})
@@ -61,6 +72,9 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     // separately freeze namespace and managed ACLs as additional evidence.
     const securityIdentity={public_namespace:publicNamespace,managed_acls:managed.map(({schema,name,acl})=>({schema,name,acl}))}
     identity={...metadata,operator_role_flags:role,managed_objects:managed.map(({acl,...row})=>row),tls_peer_sha256:hash(peer.raw),database_ca_sha256:hash(ca),api_ca_sha256:apiCa?hash(apiCa):null,platform_extensions:platformExtensions,supautils_policy_grants:supautils.setting}
+    if(target.production_profile){
+      try{identity.production_helper=(await productionHelper(db,target)).identity}catch{fail('target_changed')}
+    }
     const method=mutating?'pg_try_advisory_lock':'pg_try_advisory_lock_shared'
     const result=(await db.query(`select ${method}(hashtextextended('elcomputer-install:database',0)) acquired`)).rows[0]
     ensure(result.acquired,'lock_busy');locked=true
@@ -70,7 +84,9 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
       await refreshPolicy(target)
       lease()
       const url=new URL(typeof input==='string'?input:input.url)
+      if(target.production_profile)ensure(mutating||['GET','HEAD'].includes((options.method||'GET').toUpperCase()),'invalid_input')
       ensure(url.origin===base.origin && url.pathname.startsWith(base.pathname.replace(/\/$/,'')+'/') && /^\/(?:projects\/[a-z0-9]{20}\/)?(?:auth\/v1|storage\/v1|rest\/v1)(?:\/|$)/.test(url.pathname),'target_changed')
+      ensure(productionApiOperationAllowed(target,url.pathname,options.method||'GET',mutating),'file_operations_disabled')
       const headers=Object.fromEntries(new Headers(options.headers).entries())
       if(options.body!=null){ensure(typeof options.body==='string'||options.body instanceof Uint8Array);delete headers['transfer-encoding'];headers['content-length']=String(Buffer.byteLength(options.body))}
       return new Promise((resolveResponse,reject)=>{
@@ -96,8 +112,7 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     ensure(settingsResponse.ok,'platform_unavailable')
     const authSettings=await settingsResponse.json()
     ensure(authSettings.disable_signup===true && authSettings.external?.anonymous_users===false,'platform_unavailable')
-    const restResponse=await transport(target.api_url+'/rest/v1/',{headers:{apikey:credentials.anon_key,authorization:'Bearer '+credentials.anon_key}})
-    ensure(restResponse.ok,'platform_unavailable')
+    await verifyDataApi(transport,target.api_url,credentials)
     const users=await client.auth.admin.listUsers({page:1,perPage:2}),buckets=await client.storage.listBuckets()
     ensure(!users.error && !buckets.error,'platform_unavailable')
     identity.api_tls_peer_sha256=apiFingerprint
@@ -108,7 +123,7 @@ export async function connectPlatform(target,credentials,{mutating=false}={}) {
     const childEnv={PATH:process.env.PATH,LANG:'C',DO_NOT_TRACK:'1',DYLD_LIBRARY_PATH:process.env.DYLD_LIBRARY_PATH||''}
     ensure((await promisify(execFile)(cli,['--version'],{env:childEnv,cwd:dirnameForSource()})).stdout.trim()===cliVersion,'source_changed')
     identity.cli_binary_sha256=toolHash
-    return {db,client,anon,identity,securityIdentity,lease,transport,async close(){controller.abort();if(locked&&!closed)try{await db.query('select pg_advisory_unlock_all()')}catch{}await db.end().catch(()=>{})},
+    return {db,client,anon,identity,securityIdentity,lease,transport,target,async close(){controller.abort();if(locked&&!closed)try{await db.query('select pg_advisory_unlock_all()')}catch{}await db.end().catch(()=>{})},
       async cli(workspace,inventory,{repairVersions=null,dryRun=false,migrationHash,followOn=[]}={}) {
         await refreshPolicy(target)
         lease();ensure(mutating || dryRun,'invalid_input');await privateDirectory(workspace)

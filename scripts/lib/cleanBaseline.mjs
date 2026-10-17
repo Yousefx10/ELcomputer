@@ -264,11 +264,12 @@ export async function verifyCleanData(db) {
   return { counts, installation_id: state.installation_id }
 }
 
-export async function applyCandidate(db, { installationId = null, validate = null } = {}) {
+export async function applyCandidate(db, { installationId = null, validate = null, prepare = null } = {}) {
   await verifyBundle()
   if (installationId !== null) assert.match(installationId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'Explicit installation UUID required.')
   try {
     await db.query('BEGIN')
+    if (prepare) await prepare(db)
     for (const name of ['schema.sql','permissions.sql','clean-seeds.sql']) await db.query(await readFile(new URL(name, baselineDirectory), 'utf8'))
     if (installationId !== null) {
       // Operator initialization inside the same fresh-target transaction. The
