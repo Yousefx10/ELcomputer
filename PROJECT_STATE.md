@@ -1,3 +1,47 @@
+# ADM-01 production VERIFY PASS; activation BLOCKED on fresh DB/approval — 2026-10-19
+
+- Owner reports one corrected production VERIFY PASS, private root-state SHA256
+  `dfb0b32facb1fce24cfab213d20763e6dc034b4c6db055c0a9e5462d6e89580e`.
+  activation_authorized=false is expected, not failure. Pasted JSON clipped its
+  value; original text/provenance retained. Supersedes prior root-gate-pending notes.
+- Owner timestamp2026-10-18T22:29:49.591277+00:00; APPLY-entry900s deadline is
+  October19 01:44:49.591 Riyadh. PASS remains historical after expiry, not fresh
+  evidence. No VERIFY repeat/rebuild here; if expired, fresh separately approved
+  root snapshot/new exclusive workspace and exact new SHA/time binding required.
+- Original APPLY/rollback packages both had old module resolver. Narrow corrected
+  archives now share exact production-verified core3be097f8..., unchanged guards,
+  helpers, candidatec859c080..., CHECK0d884404..., PREPARE_EVIDENCEbbe8bdc0...,
+  policy70 GET/ten-held/customer/audit/HEAD/login/legacy/commercial contracts.
+- New APPLY235520 bytes/SHA256
+  `ce59d4506eaf7a2e4a4bb52dcbce63ded395d346f8a1cff38aa1163a3c1748cc`;
+  rollback235520 bytes/SHA256
+  `2f262bb570a2323fbba8c1364aaf41f65e5f84d3920abe367d05cfe260e0e10f`.
+  Reviewed bootstrap43a6473a... unchanged4790 bytes;8 deterministic files match.
+- Three inert files staged/read back completely through pinned nonroot SSH under
+  existing staging directory: archives with hash-prefix filenames and bootstrap
+  bootstrap-activation-43a6473a36b2abab-for-af8f43cfa5ef03d4-activation.py.
+  All regular1002:1004/0600/nlink1, dev2049/inodes7138323/7138324/7138325;
+  canonical parent1002:1004/0700/dev2049/inode7083189 unchanged. Seven one-shot
+  sessions PASS, exact bytes/hashes/metadata, no retry/repair/cleanup. Remote STOP.
+- Report, receipts and timed activation/rollback/acceptance procedure:
+  `/Users/imac/Documents/ELcomputer/adm01-final-activation-readiness-20261019/REPORT.md`.
+  Fresh read-only DB proof not collected; existing runner and192 input pins match.
+  Single-use collection command prepared; expires-root precheck before connecting.
+  Actual DB nonce/hash/business/times and separate activation approval missing;
+  no executable AUTHORIZATION or APPLY command fabricated. DB proof<=300s through
+  entry/swap/reload barriers; root<=900s at entry; explicit one-reload authorization.
+- 30 operator tests PASS per native1.28/1.30,5 DB unit tests and6 offline controls/
+  intake/freshness tests PASS. Local owned/simulated fixtures, not live acceptance.
+  Rollback separately approved and requires actual successful acknowledged APPLY
+  receipt plus fresh proof; partial/ambiguous failure needs explicit recovery review.
+- Git main/existing origin/maincd14788, initially clean/no unpushed commits; only
+  both handoffs edited. Prior work and24 historical sealed files preserved. No
+  production/root/DB/VERIFY/service/Nuxt/Procurement/APPLY/rollback operation,
+  historical cleanup, Git commit or push. Known Procurement RPC remains separate.
+- ONE next owner action: approve one prepared local read-only DB collection. If
+  root evidence expired, launcher blocks before connection; coordinate fresh
+  separately approved root evidence first. STOP before production activation.
+
 # ADM-01 corrected VERIFY package/staging PASS; root gate pending — 2026-10-19
 
 - Owner confirms guarded `.htpasswd` correction PASS, contents/xattrs unchanged,
