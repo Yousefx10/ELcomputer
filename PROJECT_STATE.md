@@ -1,3 +1,98 @@
+# ADM-01 CloudPanel writer review — exact-file group-write requirement UNKNOWN, 2026-10-18
+
+- Owner now identifies `/etc/nginx/.htpasswd` as root:clp/0664. Permission approval
+  remains withheld. The 0020 group-write blocker is confirmed; no permission changed.
+- Read-only review of official docs/installer and checksum-matched public package
+  cloudpanel2.5.4-3+clp-noble found a different PANEL credential path:
+  `/home/clp/services/nginx/basic-auth/credentials`. Its web/CLI handler calls
+  WriteFileCommand using sudo tee (root writer), then sudo chown to clp:clp.
+  Packaged PHP-FPM and CLI application execution are clp; writer identity follows
+  helper/sudo/pool implementation, not Nginx worker account assumptions.
+- This proves the published reference behavior only. Installed version/source and
+  the exact `/etc/nginx/.htpasswd` panel/site/legacy binding were not supplied.
+  Exact-file classification, actual updater and group-write necessity remain UNKNOWN.
+  Do not extrapolate the other credential path's privileged writer to this file.
+- 0644 preserves existing basic-mode reads; management compatibility is UNKNOWN.
+  With confirmed root:clp ownership, 0640 supports reported root/clp worker reads
+  under ordinary mode bits; management/ACL/other-consumer compatibility is unproven.
+  0600 would remove the nonroot clp reader's normal access. No mode is approved.
+- Evidence/report: `/Users/imac/Documents/ELcomputer/adm01-cloudpanel-updater-review-20261018/REPORT.md`.
+  Public package was inspected locally, never installed/executed. No VPS/root
+  commands, chmod/chown, VERIFY retry, staging, reload/APPLY/rollback, cleanup or push.
+  Existing module fix, tests, all sealed/private evidence and five-file shared
+  uncommitted work on main69e9a5d remain intact; only both handoffs changed this turn.
+- ONE next owner action: provide the installed version, sanitized exact-file vhost
+  source/listener mapping, matching credential handler/write-helper code and actual
+  relevant PHP-FPM pool user/group in one read-only evidence bundle. No credentials,
+  full Nginx config, .env, database data, logs or management save test. STOP.
+
+# ADM-01 credential mode blocker confirmed; permission proposal only — 2026-10-18
+
+- Owner supplied `/etc/nginx/.htpasswd`: UID0, mode0664, nlink1, resolved path
+  unchanged. ACL tooling unavailable; numeric GID and CloudPanel updater identity
+  remain unknown. Owner scan lists worker user/group clp:clp and root:root.
+- Confirmed predicate failure: 0664 & 0022 = 0020 (group write).
+  Proposed minimal correction is 0664 -> 0644, keeping UID/GID/content unchanged.
+  This removes only group write and preserves existing read bits for both worker
+  accounts. It supersedes the earlier conditional0640 example for this case.
+  It is NOT approved or executed. Installed CloudPanel updater compatibility and
+  unobserved ACLs remain unresolved; no group-write requirement may be assumed.
+- Strict validator and local module-prefix correction unchanged. Added exact0664
+  rejection to the existing security regression; focused test PASS. Prior30-test
+  PASS logs for each native Nginx version and all historical evidence preserved.
+- Current follow-up: `/Users/imac/Documents/ELcomputer/adm01-os-file-security-correction-20261018/metadata-followup/REPORT.md`.
+  Prior report/checksum index retained as historical snapshots. Five-file local
+  work remains uncommitted on main69e9a5d; no remote execution, chmod/chown,
+  package rebuild/staging, VERIFY retry, service operation, cleanup or push.
+- ONE next owner action: confirm the installed CloudPanel updater identity and
+  whether it requires this file's group-write access before approving0664->0644.
+  STOP before any production permission change or execution.
+
+# ADM-01 VERIFY stopped; local module fix PASS, permission decision pending — 2026-10-18
+
+- Owner reports ONE root VERIFY failed with `GateError: OS_FILE_SECURITY`;
+  private journal replacement_attempted=false/reload_attempted=false. Scan reports
+  `.htpasswd` WRITABLE, 12 config_prefix module lookups missing and five runtime
+  files PASS. Raw journal and exact numeric credential-file metadata were not
+  supplied/fetched. Preserve `/root/adm01-activation-verify-fad66381d2851176`.
+  The old command was consumed by that failed attempt: DO NOT REPLAY IT.
+- Confirmed source defect: Nginx load_module uses cycle->prefix, while the sealed
+  validator used config_prefix. C source/build headers for 1.28.0/1.30.6 and real
+  native loader fixtures prove the distinction. `--modules-path` is installation
+  only. Twelve module errors do NOT establish that production modules are absent.
+- Local `dashboard_activation.py` now derives the supported no-`-p` service prefix
+  from authenticated `-V` arguments with shlex, then resolves modules there.
+  Auth/TLS retain config_prefix; absolute paths remain exact. Missing/ambiguous/
+  invalid prefix evidence or missing resources still stop; no fallback search.
+  New core: 38164 bytes, SHA256
+  `3be097f8217bd200985aaf8879f2839ec89485bbd62dc583e66c4b0032ef67f4`.
+- `secured_file()` is AST-unchanged: expected owner, regular/nlink1, no group/other
+  write bits, bounded full reads and exact stat/path/xattr stability. Root owner
+  write is permitted. WRITABLE alone does not establish UID/mode/ACL or justify a
+  chmod. Nginx workers need credential reads/search, not file writes; installed
+  CloudPanel updater access remains unverified. No production permission changed.
+- Both blockers share one scoped plan in:
+  `/Users/imac/Documents/ELcomputer/adm01-os-file-security-correction-20261018/REPORT.md`.
+  Module correction is locally complete; exact `.htpasswd` decision remains gated
+  on numeric path/UID/GID/mode/nlink/ACL, parent, worker and updater identities.
+  Conditional UID0/reader-group/mode0640 is a proposal only, not observed current state.
+- Focused 30 tests PASS on EACH native Nginx 1.28.0/1.30.6; zero failures/skips.
+  Positive loader and 12-module runtime fixtures, decoy/missing/corrupt negatives,
+  strict file guards and accepted 70/ten/audit/legacy controls covered. Services/
+  process/SQL are simulated; no Linux root/production certification. Initial
+  directory-exception assertion failure and final passing logs are preserved.
+- Started clean main `69e9a5d`, equal to existing origin/main; no unpushed commits.
+  That owner commit contains prior staging notes. Scoped core/tests/operator docs
+  and both handoffs now have uncommitted changes. All other sources, sealed/staged
+  packages and candidate/policy bindings remain unchanged. Local source edits do
+  not fix old archives. No replacement package was generated or command emitted.
+- No SSH/root/VERIFY retry/staging or production chmod/chown/config/reload/restart/APPLY/rollback,
+  database/Auth/RLS/business/provider/media/Procurement action, cleanup or Git push.
+  Preserve all root evidence and accepted browse-only/login/70-read/ten-held guards.
+- ONE next owner action: provide existing redacted `.htpasswd` numeric metadata/
+  ACL and parent/worker/CloudPanel updater identities for the exact permission
+  decision. No password hashes or contents. STOP before remote execution.
+
 # ADM-01 final read-only verification staging PASS — STOP before execution, 2026-10-18
 
 - Current owner approval covered ONLY inert staging of the two final verification

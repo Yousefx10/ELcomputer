@@ -135,6 +135,41 @@ def service_execution(value):
     return re.findall(r'path=([^;]+);\s*argv\[\]=(.*?);\s*ignore_errors=(yes|no)\s*;', value)
 
 
+def nginx_build_prefix(version):
+    """Resolve the supported no-`-p` service contract from its exact build output."""
+    lines = re.findall(r'^configure arguments:[ \t]*([^\r\n]*)$',
+                       (version.stdout + b'\n' + version.stderr).decode(), re.M)
+    require(len(lines) == 1, 'NGINX_BUILD_ARGUMENTS')
+    arguments = shlex.split(lines[0])
+    require('--prefix' not in arguments, 'NGINX_BUILD_PREFIX')
+    prefixes = [arg[len('--prefix='):] for arg in arguments if arg.startswith('--prefix=')]
+    require(len(prefixes) <= 1, 'NGINX_BUILD_PREFIX')
+    # NGX_PREFIX defaults to /usr/local/nginx when configure omits --prefix.
+    prefix = prefixes[0] if prefixes else '/usr/local/nginx'
+    require(prefix and Path(prefix).is_absolute(), 'NGINX_BUILD_PREFIX')
+    return Path(prefix)
+
+
+def nginx_resource_paths(files, config_prefix, version):
+    """Match Nginx's separate cycle->prefix and cycle->conf_prefix semantics."""
+    import config_parser as parser
+    from private_config import walk
+    prefix = nginx_build_prefix(version)
+    config_prefix = Path(config_prefix)
+    require(config_prefix.is_absolute(), 'NGINX_CONFIG_PREFIX')
+    resources = set()
+    for text in files.values():
+        for node in walk(parser.parse(text)):
+            if node['name'] in ('load_module', 'ssl_certificate', 'ssl_certificate_key', 'ssl_client_certificate',
+                                'ssl_trusted_certificate', 'ssl_dhparam', 'auth_basic_user_file'):
+                require(len(node['args']) == 1 and '$' not in node['args'][0], 'UNBOUND_EXTERNAL_RESOURCE')
+                value = node['args'][0]
+                if value != 'off':
+                    base = prefix if node['name'] == 'load_module' else config_prefix
+                    resources.add(str(Path(value) if value.startswith('/') else base / value))
+    return resources
+
+
 def runtime_facts(saved, command, uid=0, proc=Path('/proc')):
     import config_parser as parser
     import root_dashboard_read_check as check
@@ -175,16 +210,8 @@ def runtime_facts(saved, command, uid=0, proc=Path('/proc')):
         service[key] = [list(command) for command in commands]
     artifacts = set([deployment['nginx'], deployment['systemctl'], deployment['ss'], service['FragmentPath']])
     artifacts.update(shlex.split(service.get('DropInPaths', '')))
-    from private_config import walk
-    for text in saved['files'].values():
-        for node in walk(parser.parse(text)):
-            if node['name'] in ('load_module', 'ssl_certificate', 'ssl_certificate_key', 'ssl_client_certificate',
-                                'ssl_trusted_certificate', 'ssl_dhparam', 'auth_basic_user_file'):
-                require(len(node['args']) == 1 and '$' not in node['args'][0], 'UNBOUND_EXTERNAL_RESOURCE')
-                value = node['args'][0]
-                if value != 'off':
-                    artifacts.add(str(Path(value) if value.startswith('/') else Path(deployment['config_prefix']) / value))
     version = command([deployment['nginx'], '-V'], 'nginx-build')
+    artifacts.update(nginx_resource_paths(saved['files'], deployment['config_prefix'], version))
     pid_record = check.nginx_pid_snapshot(saved['files'][deployment['nginx_entry']], pid, parser.parse, uid)
     app = process_record(runtime['expected_pid'], proc)
     require(app['uid'] == [runtime['uid']] * 4 and app['executable'] == runtime['node'], 'APPLICATION_PROCESS')

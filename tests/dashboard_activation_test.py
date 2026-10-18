@@ -111,6 +111,63 @@ class OperatorTests(unittest.TestCase):
         value='{ path=/owned/nginx ; argv[]=/owned/nginx -g daemon on; master_process on; -s reload ; ignore_errors=no ; start_time=old ; }'
         self.assertEqual(activation.service_execution(value),[('/owned/nginx ','/owned/nginx -g daemon on; master_process on; -s reload ','no')])
 
+    def test_resources_use_runtime_prefix_for_modules_and_config_prefix_for_auth_tls(self):
+        version=subprocess.CompletedProcess([],0,b'',b"configure arguments: --prefix='/owned/runtime prefix' --modules-path=/unused/install-only --conf-path=/separate/config/nginx.conf --with-cc-opt='-O2 -g'\n")
+        text='load_module modules/one.so; load_module /absolute/two.so; http { '
+        for directive in ['ssl_certificate','ssl_certificate_key','ssl_client_certificate',
+                          'ssl_trusted_certificate','ssl_dhparam','auth_basic_user_file']:
+            text+=directive+' secrets/'+directive+'; '
+        text+='}'
+        actual=activation.nginx_resource_paths({'/separate/config/nginx.conf':text},'/separate/config',version)
+        expected={'/owned/runtime prefix/modules/one.so','/absolute/two.so'}
+        expected.update('/separate/config/secrets/'+name for name in ['ssl_certificate','ssl_certificate_key',
+                        'ssl_client_certificate','ssl_trusted_certificate','ssl_dhparam','auth_basic_user_file'])
+        self.assertEqual(actual,expected)
+        self.assertNotIn('/unused/install-only/one.so',actual)
+        with self.assertRaisesRegex(activation.GateError,'UNBOUND_EXTERNAL_RESOURCE'):
+            activation.nginx_resource_paths({'fixture':'load_module modules/$unbound.so;'},'/separate/config',version)
+
+    def test_build_prefix_defaults_and_rejects_missing_ambiguous_or_relative_evidence(self):
+        def version(raw):return subprocess.CompletedProcess([],0,b'',raw.encode())
+        self.assertEqual(activation.nginx_build_prefix(version('configure arguments: --with-http_ssl_module\n')),Path('/usr/local/nginx'))
+        for raw in ['owned-build','configure arguments: --prefix=relative\n','configure arguments: --prefix=\n',
+                    'configure arguments: --prefix /owned\n','configure arguments: --prefix=/a --prefix=/b\n',
+                    'configure arguments: --prefix=/a\nconfigure arguments: --prefix=/b\n',
+                    "configure arguments: --prefix='/unterminated\n"]:
+            with self.subTest(raw=raw),self.assertRaises((activation.GateError,ValueError)):
+                activation.nginx_build_prefix(version(raw))
+
+    def test_os_file_security_keeps_owner_mode_type_and_link_guards(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();path=root/'.htpasswd';path.write_bytes(b'owned-private-fixture')
+            for mode in [0o600,0o640,0o644,0o440]:
+                path.chmod(mode);record=activation.secured_file(path,UID)
+                self.assertEqual(record['sha256'],activation.digest(b'owned-private-fixture'))
+                self.assertEqual(record['target_fingerprint'][5],mode)
+                self.assertNotIn(b'owned-private-fixture',activation.encoded(record))
+            for mode in [0o620,0o602,0o664,0o666]:
+                path.chmod(mode)
+                with self.subTest(mode=oct(mode)),self.assertRaisesRegex(activation.GateError,'OS_FILE_SECURITY'):
+                    activation.secured_file(path,UID)
+            path.chmod(0o640)
+            with self.assertRaisesRegex(activation.GateError,'OS_FILE_SECURITY'):activation.secured_file(path,UID+1)
+            alias=root/'hardlink';os.link(path,alias)
+            with self.assertRaisesRegex(activation.GateError,'OS_FILE_SECURITY'):activation.secured_file(path,UID)
+            with self.assertRaises((activation.GateError,IsADirectoryError)):activation.secured_file(root,UID)
+            with self.assertRaises(FileNotFoundError):activation.secured_file(root/'missing.so',UID)
+
+    def test_resource_symlink_identity_and_read_drift_remain_checked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();target=root/'module.so';target.write_bytes(b'owned-module');target.chmod(0o644)
+            link=root/'module-link.so';link.symlink_to(target)
+            record=activation.secured_file(link,UID)
+            self.assertEqual(record['resolved_path'],str(target));self.assertEqual(record['symlink_target'],str(target))
+            original=os.listxattr
+            def drift(path):
+                result=original(path);target.write_bytes(b'drift-module');return result
+            with patch.object(os,'listxattr',side_effect=drift):
+                with self.assertRaisesRegex(activation.GateError,'OS_FILE_DRIFT'):activation.secured_file(link,UID)
+
     def test_command_allowlist_and_exactly_one_reload(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory).resolve();d=dict(nginx='/owned/nginx',systemctl='/owned/systemctl',ss='/owned/ss',nginx_entry='/owned/nginx.conf',nginx_unit='owned.service',runtime=dict(unit='owned-app.service'))
@@ -213,11 +270,17 @@ class OperatorTests(unittest.TestCase):
             environment=file('environment',b'OWNED=true\n',0o600);start=file('start.json',b'{}',0o600)
             tree=dict(release={},node={'node':dict(type='file',mode=0o755,bytes=10,sha256=activation.digest(b'owned-node'))})
             inventory=file('inventory.json',json.dumps(tree).encode(),0o600)
-            pid=file('nginx.pid',b'42\n');entry='pid "'+pid+'"; events {} http {}'
+            config=root/'config';config.mkdir();prefix=root/'runtime-prefix';(prefix/'modules').mkdir(parents=True)
+            modules=[]
+            for i in range(12):
+                module=prefix/'modules'/('owned-'+str(i)+'.so');module.write_bytes(b'owned-module');module.chmod(0o644);modules.append(str(module))
+            auth=config/'.htpasswd';auth.write_bytes(b'owned-private-fixture');auth.chmod(0o640)
+            pid=file('nginx.pid',b'42\n');entry=''.join('load_module modules/owned-'+str(i)+'.so; ' for i in range(12))
+            entry+='pid "'+pid+'"; events {} http { auth_basic_user_file .htpasswd; }'
             runtime=dict(expected_pid=44,uid=UID,inventory=inventory,inventory_sha256=activation.digest(Path(inventory).read_bytes()),
                          release=str(release),node=str(node),node_directory=str(node_dir),current_link=str(current),
                          environment=environment,start_receipt=start,unit_path=appunit,retry_dropin=retry)
-            d=dict(nginx=nginx,systemctl=systemctl,ss=ss,nginx_unit='owned.service',runtime=runtime,nginx_entry='/owned/nginx.conf',config_prefix=str(root))
+            d=dict(nginx=nginx,systemctl=systemctl,ss=ss,nginx_unit='owned.service',runtime=runtime,nginx_entry='/owned/nginx.conf',config_prefix=str(config))
             saved=dict(deployment=d,files={'/owned/nginx.conf':entry})
             boot=proc/'sys/kernel/random';boot.mkdir(parents=True);(boot/'boot_id').write_text('owned-boot')
             def process(pid,ppid,command,executable):
@@ -233,11 +296,23 @@ class OperatorTests(unittest.TestCase):
                             ExecReload='{ path='+nginx+' ; argv[]='+nginx+' -s reload ; ignore_errors=no ; start_time=old ; }')
             def command(argv,label):
                 raw='\n'.join(k+'='+v for k,v in properties.items()).encode()
-                return subprocess.CompletedProcess(argv,0,raw if argv[0]==systemctl else b'',b'owned-build')
+                build=('configure arguments: --prefix="'+str(prefix)+'" --modules-path=/unused/install-only\n').encode()
+                return subprocess.CompletedProcess(argv,0,raw if argv[0]==systemctl else b'',build)
             with patch.object(check,'runtime_state',return_value=dict(nginx=dict(MainPID='42'),application=dict(MainPID='44'))):
                 facts=activation.runtime_facts(saved,command,UID,proc)
                 self.assertEqual(facts,json.loads(json.dumps(facts)), 'Runtime facts must survive the owner receipt boundary exactly')
                 self.assertEqual(facts['master']['pid'],42);self.assertEqual(facts['workers'][0]['pid'],43)
+                self.assertTrue(set(modules)|{str(auth)} <= set(facts['artifacts']))
+                auth.chmod(0o660)
+                with self.assertRaisesRegex(activation.GateError,'OS_FILE_SECURITY'):activation.runtime_facts(saved,command,UID,proc)
+                auth.chmod(0o640)
+                Path(modules[0]).rename(prefix/'module-preserved.so')
+                decoy=config/'modules';decoy.mkdir();(decoy/'owned-0.so').write_bytes(b'wrong-prefix-decoy')
+                with self.assertRaises(FileNotFoundError):activation.runtime_facts(saved,command,UID,proc)
+                (prefix/'module-preserved.so').rename(modules[0])
+                properties['ExecStart']=properties['ExecStart'].replace(' ; ignore_errors',' -p /unreviewed ; ignore_errors')
+                with self.assertRaisesRegex(activation.GateError,'SERVICE_START_CONTRACT'):activation.runtime_facts(saved,command,UID,proc)
+                properties['ExecStart']=properties['ExecStart'].replace(' -p /unreviewed','')
                 Path(unit).write_bytes(b'unit-drift')
                 self.assertNotEqual(activation.stable_runtime(facts),activation.stable_runtime(activation.runtime_facts(saved,command,UID,proc)))
                 properties['NeedDaemonReload']='yes'
@@ -279,6 +354,53 @@ class OperatorTests(unittest.TestCase):
 @unittest.skipUnless(NATIVE,'Set the owned native Nginx executable')
 class NativeOperatorTests(OperatorTests):
     # Do not inherit the ordinary tests twice in discovery.
+    def module_fixture(self):
+        temp=tempfile.TemporaryDirectory(prefix='module-prefix-owned-');self.addCleanup(temp.cleanup)
+        root=Path(temp.name).resolve();prefix=root/'runtime prefix';config=root/'separate config'
+        (prefix/'modules').mkdir(parents=True);config.mkdir()
+        module=prefix/'modules/probe.so'
+        # Empty module exports exercise the real loader without application code.
+        source=b'void *ngx_modules[] = {0}; char *ngx_module_names[] = {0};\n'
+        argv=['/usr/bin/cc','-dynamiclib' if sys.platform=='darwin' else '-shared','-fPIC','-x','c','-o',str(module),'-']
+        compiled=subprocess.run(argv,input=source,capture_output=True,timeout=30)
+        self.assertEqual(compiled.returncode,0,compiled.stderr.decode());module.chmod(0o644)
+        auth=config/'.htpasswd';auth.write_bytes(b'owned-private-fixture');auth.chmod(0o640)
+        entry=config/'nginx.conf'
+        text='load_module modules/probe.so; error_log stderr; pid "'+str(root/'nginx.pid')+'"; events {} http { access_log off; auth_basic_user_file .htpasswd; }'
+        entry.write_text(text)
+        argv=[NATIVE,'-T','-e','stderr','-p',str(prefix),'-c',str(entry)]
+        return root,prefix,config,module,entry,text,argv
+
+    def test_native_loader_resolves_modules_from_runtime_prefix(self):
+        root,prefix,config,module,entry,text,argv=self.module_fixture()
+        checked=subprocess.run(argv,capture_output=True,timeout=15)
+        self.assertEqual(checked.returncode,0,checked.stderr.decode())
+        self.assertFalse((config/'modules/probe.so').exists())
+        build=subprocess.run([NATIVE,'-V'],capture_output=True,timeout=15)
+        self.assertEqual(build.returncode,0)
+        compiled_prefix=activation.nginx_build_prefix(build)
+        self.assertTrue(compiled_prefix.is_absolute())
+        # -p is confined to this owned semantic fixture. The production service
+        # contract rejects -p, so its prefix comes from authenticated -V instead.
+        fixture_version=subprocess.CompletedProcess([],0,b'',('configure arguments: --prefix="'+str(prefix)+'" --modules-path=/unused/install-only\n').encode())
+        paths=activation.nginx_resource_paths({str(entry):text},str(config),fixture_version)
+        self.assertEqual(paths,{str(module),str(config/'.htpasswd')})
+        for path in paths:activation.secured_file(path,UID)
+
+    def test_native_missing_or_invalid_module_never_falls_back_to_config_directory(self):
+        root,prefix,config,module,entry,text,argv=self.module_fixture()
+        (config/'modules').mkdir();module.rename(config/'modules/probe.so')
+        checked=subprocess.run(argv,capture_output=True,timeout=15)
+        self.assertNotEqual(checked.returncode,0)
+        self.assertIn(str(module).encode(),checked.stderr)
+        self.assertIn(b'dlopen',checked.stderr)
+        with self.assertRaises(FileNotFoundError):activation.secured_file(module,UID)
+        module.write_bytes(b'invalid-owned-dynamic-module');module.chmod(0o644)
+        checked=subprocess.run(argv,capture_output=True,timeout=15)
+        self.assertNotEqual(checked.returncode,0)
+        self.assertIn(str(module).encode(),checked.stderr)
+        self.assertIn(b'dlopen',checked.stderr)
+
     def fixture(self,host='orchard.example.test',alias='www.orchard.example.test'):
         temp=tempfile.TemporaryDirectory(prefix='activation-owned-');self.addCleanup(temp.cleanup)
         base=Path(temp.name).resolve();cfg=base/'config';cfg.mkdir();main=cfg/'main.conf';actual=cfg/'main.actual';entry=cfg/'nginx.conf'

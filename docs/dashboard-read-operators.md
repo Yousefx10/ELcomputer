@@ -58,6 +58,41 @@ binary. Require one reviewed Nginx ExecStart and one reload command, no pending 
 daemon reload, original app PID/release/Node/listener, and no additional service
 action. Unsupported service contracts stop for private review, never adaptation.
 
+Resource paths use two distinct Nginx prefixes. Relative `load_module` paths use
+the runtime prefix, derived from the authenticated binary's `-V` configure
+arguments under the supported service contract, which rejects `-p` overrides.
+Quoted `--prefix` values are parsed with `shlex`; absent `--prefix` uses Nginx's
+documented `/usr/local/nginx` default. Missing/malformed build output, duplicate,
+empty or relative prefixes stop. `--modules-path` is an installation destination,
+not a runtime search directory. There is no fallback search or missing-file skip.
+Relative TLS/auth paths retain the reviewed configuration prefix; absolute paths
+retain their targets. See the [Nginx maintainer's explanation](https://mailman.nginx.org/pipermail/nginx/2023-July/VETGWYZ5GJ7F2NBJB7C2BH7766XB32CF.html).
+
+`secured_file()` still requires regular files, the expected owner (root for
+Nginx resources), no group/other write bits (`mode & 0022 == 0`), one hard link,
+bounded full reads and stable path/target/stat/xattr identity. It records GID;
+it does not require every resource to have GID zero. Owner write is allowed.
+A root-owned `0640` credential file can satisfy this predicate; a `0660` file
+cannot. Nginx reads `auth_basic_user_file` during requests and needs worker read
+and parent-directory search access. It does not need credential-file write access.
+Do not replace that check with `os.access(W_OK)`, accept a site-owned credential
+file, ignore an ACL writer, or special-case a CloudPanel path.
+
+Any proposed credential-file permission correction requires the actual numeric
+UID/GID/mode/link/ACL/parent metadata and worker groups, plus the installed
+CloudPanel updater's access contract. Preserve required worker reads and legitimate
+credential management; never guess a chmod/chown or silently bless insecure state.
+CloudPanel's [Basic Auth documentation](https://www.cloudpanel.io/docs/v2/admin-area/security/)
+exposes privileged management but does not establish the required mode or updater
+identity of a particular installation.
+Permission changes need their own owner review and are outside local source work.
+
+After a failed verification, preserve its workspace and journal. The earlier
+sealed package and console command retain their original bytes and defect;
+editing local source does not update a staged archive. Any future package must
+receive a new reviewed identity and exclusive workspace. Do not replay the failed
+command, rebuild historical packages, or infer permission approval from a code fix.
+
 The verify gate creates READONLY-STATE.private.json and private command logs only.
 It invokes Nginx -V/-T, systemctl show and ss; it does not reload or replace. Nginx
 syntax/dump commands open referenced resources, so this is not a zero-filesystem-
