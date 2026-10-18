@@ -1,3 +1,51 @@
+# ADM-01 production CHECK PASS; local APPLY preparation PASS, activation gated — 2026-10-18
+
+- Owner reports corrected production CHECK ran ONCE:PASS at2026-10-18T13:01:47.204575+00:00.
+  Manifest863c5c80.../deploymenta2b0dbdd...; accepted mainde00c8d2...;
+  validated candidate472,049 bytes, SHA256
+  `c859c080dcab025c6d7e614d77864905d034e8c50d6570eef95014d6f4574bb5`.
+  Policy aa40e475...,70 GET/ten held,23 configs/22 unchanged peers; full private
+  shadowPASS, non-API/runtime/Nginx PID unchanged; zero replacement/reload/releases.
+  Accept owner milestone; no CHECK/diagnostic/investigation repeated. Not activated.
+- Local source commit `4bc7b81691fe2b8e071bdd8c1761b6dd2dcfdb05` adds only evidence-preparation
+  gate/tests/procedure docs, retaining shared1ba7d9c/6a8cf5a/79b2101 and prior history.
+  Final executable APPLY/rollback operators and commands are NOT SEALED/READY.
+  Raw CHECK receipt/recovery/index hashes, current peer GID/security/PID bindings
+  and fresh exact schema/catalog/signup/commerce/business proof are unavailable.
+  User explicitly allowed a minimal separately approved root-only preparation gate.
+- Sealed evidence-only program `prepare-ingress-evidence-94c8d39890c3d682.py`,17,111 bytes, SHA256
+  `94c8d39890c3d6821f2751cb558e575f5f60e568686443b633fc54d89b05f3e7`;
+  binding `prepare-ingress-binding-f781b1b2fc5abd32.json`,1,815 bytes, SHA256
+  `f781b1b2fc5abd32bafcac87222893f4de407cbca1b5e49d520ac59d3888de50`.
+  Package manifest `20d2735763543dc528d81ae0681cf743572d3d2879eebe82d7eeea9c7411d4d7`.
+  These are NOT APPLY identities. No APPLY/rollback/command/HTTP/SQL/reload
+  capability. Future gate authenticates saved CHECK evidence, proves exact
+  source/candidate and binds current listed-file/security/PID evidence privately.
+  It expressly does not freshly certify loaded index/runtime/schema/commerce.
+- Local tests15 + sealed-program fixtures2 PASS; no failures/errors/skips or root/
+  production execution. Two stores/23-file contexts; macOS xattrs are a fixture.
+  Proposed staging/690-byte root wrapper syntax and remote-template AST PASS only.
+  STAGING-PLAN and commands are proposals; NOT staged/executed/authorized now.
+  Root gate would use new0700 `/root/adm01-read-apply-prep-94c8d39890c3d682`,
+  verify root0600 source/binding and create private evidence/receipts only.
+- Full review set, APPLY/rollback/browser plans, identities and commands:
+  `/Users/imac/Documents/ELcomputer/adm01-final-ingress-preparation-20261018/REPORT.md`.
+  Future APPLY must bind new private hashes/operator/manifest, fresh exact controls,
+  complete pre-swap shadow/drift gates, one atomic main replacement preserving
+  symlink/UID/GID/mode/xattrs, installed syntax/peers and exactly one reload with
+  actual worker acceptance. No automatic retry/rollback/cleanup. Separate rollback
+  restores exactde00.../existing owner login with older read-API gaps.
+- Existing approved verifier25455da6.../settings preimage130bff57... hashes verified
+  locally, NOT run; historical schema82/559-published/zero-stock data is not fresh.
+  Both literal frontend guards, strict legacy8080 contract,70/ten/HEAD/audit/login/
+  redirects/headers/customer/commerce/RBAC/RLS invariants stay sealed unchanged.
+- No SSH/VPS staging/root/Nginx/reload/restart/release/DB/Auth/RLS/business/media/
+  provider/Procurement action, private config export, cleanup or Git push.
+  Browser acceptance NOT run; separate session/audit effects need approval.
+- ONE next owner action: review report and approve ONLY inert staging of the two
+  evidence-gate files. Later root preparation and final APPLY each need separate
+  approval; never reuse an old APPLY/CHECK command. STOP before staging/root.
+
 # ADM-01 corrected CHECK staged inert — PASS; STOP before root, 2026-10-18
 
 - Owner approved ONLY inert staging of the two existing corrected CHECK artifacts.
