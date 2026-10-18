@@ -5,6 +5,11 @@ candidate, manifest, deployment, route counts and complete shadow result.
 It does not authorize staging, activation, reload or browser sessions.
 Use PROJECT_STATE.md for the current deployment-specific evidence and next action.
 
+The locally prepared [activation operators](dashboard-read-operators.md) consume
+the owner-reported evidence hashes. Their sealed source does not grant execution
+authority. Fresh root/database receipts and a separately reviewed, time-bound
+authorization remain mandatory before APPLY; rollback has its own authorization.
+
 ## Evidence gate before sealing an activation operator
 
 `prepare_dashboard_read_activation.py` is an evidence-only operator. It has no
