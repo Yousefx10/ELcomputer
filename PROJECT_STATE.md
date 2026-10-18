@@ -1,3 +1,57 @@
+# ADM-01 root attestation PASS; new production CHECK prepared, 2026-10-18
+
+- Owner reports the previously approved read-only root attestation ran ONCE:
+  PASS, current main SHA256
+  `de00c8d2f29da465f46dcd4e3f8f232431d14dd57825e4c9ef5423ceeffd03ae`,
+ 23 loaded configurations/22 unchanged peers; ownership/modes/hashes PASS.
+  Accepted APPLY receiptc4506ba3.../frozen manifestfbf3bcbe...; config changes,
+  reloads/service operations/transfers0; no source export. Accepted as owner
+  evidence, not rerun here. This supersedes the old pending-attestation action.
+- New source commit `de03e2552ebb6723b38fcdae8c654bb3403822b8` prepares a
+  production-bound CHECK-only procedure. No APPLY/rollback CLI. Reuses frozen
+  private/atomic helpers byte-for-byte, exact current binding and sourcee8b069f.
+  The approved renderer/registry/matrix/portable package remain unchanged:
+  exactly70 GET patterns/ten holds, existing HEAD/helper/audit behavior preserved.
+  No route audit, application build, security/permission or business change.
+- CHECK will keep complete source/candidate/diff/diagnostics on VPS under root.
+  It binds accepted receipt/manifest/current main/22 peers, checks runtime/full
+  inventory/PID/security/disabled commerce, renders current accepted bytes and
+  validates a full private include shadow with target Nginx. Before/after drift
+  checks and exclusive attempts fail closed. No historical helper/operator call.
+  Mutating commands, signals, service actions, provider/Auth session calls denied.
+- Local validation **76/76 Python cases PASS**, errors/failures/skips0:38 each
+  with actual Nginx1.28.0/1.30.6, including14 new CHECK safety cases. Two independent
+  stores/full five-file synthetic include trees, header inheritance, whole-peer
+  syntax failure, wildcard drift, tar protections, nonroot/CLI/method/inventory/
+  PID/commerce safeguards. Packaged ten-file extraction/hash/syntax/nonroot denial
+  and Bash command syntax PASS. Root/systemd/actual23-file production workflow
+  NOT RUN; no actual candidate hash or private production syntax PASS claimed.
+- New local CHECK archive `adm01-read-check-0d0ab69749ff8ee5.tar`,174,080 bytes:
+  SHA256 `0d0ab69749ff8ee5e34f768ab56a47b5ac893fe877a0df8ed4967f2ed84a1c71`.
+  Manifestc68ee744...; short owner CHECK command9772f659... (748 bytes).
+  Full archive/bootstrap/binding/CHECK/proposal/command hashes and exact effects:
+  `/Users/imac/Documents/ELcomputer/adm01-production-read-check-20261018/REPORT.md`.
+  [Reusable procedure](docs/dashboard-read-production-check.md).
+- NO new staging or root execution authorized/performed. Two inert files are
+  proposed for the existing inspection area: this archive and verified bootstrap;
+  require exclusive0600/UID1002 writes and independent hash/metadata read receipts
+  before owner Console execution. ROOT-CHECK-PENDING-STAGING.command is ready for
+  review only. Current live release/ingress unchanged by this task; no fresh live
+  runtime/data observation. No SSH, reload, application transfer/start, SQL/Auth/
+  RLS/media/provider change or push. Original application archivec95bac1f... and
+  all597 inputs remain exact. Procurement stays paused until eventual ingress
+  activation AND acceptance, then must bind its NEW ingress identity.
+- APPLY/rollback are hashed proposals only, not executable operations. Actual
+  CHECK PASS/candidate identity/private syntax must precede a NEW exact activation
+  operator/command and separate immediate owner approval. Preserve all runtime/
+  peer/symlink/security/disabled-signup-commerce/data gates; no retry/recovery.
+  Later guarded authenticated EN/AR/modules/navigation/session/data acceptance
+  remains required. Prior hosted/38-platform-test limits remain unchanged.
+- **Single next owner action:** approve ONLY this sealed package's two-file
+  inert staging and one owner-console CHECK after independent staging validation.
+  No APPLY/reload, Procurement staging or application activation. STOP here;
+  do not repeat the successful old attestation or follow older root actions below.
+
 # ADM-01 dashboard read policy — local PASS; production gates pending, 2026-10-18
 
 - Owner authorized local implementation/validation only. Source commit

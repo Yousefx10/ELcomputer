@@ -1,3 +1,87 @@
+# ADM-01 accepted preimage PASS — STOP before new staging/root CHECK, 2026-10-18
+
+Read PROJECT_STATE.md and the NEW report first:
+`/Users/imac/Documents/ELcomputer/adm01-production-read-check-20261018/REPORT.md`.
+
+Owner supplied successful one-time root attestation: main
+de00c8d2f29da465f46dcd4e3f8f232431d14dd57825e4c9ef5423ceeffd03ae;
+23 loaded/22 unchanged peers; ownership/modes/hashes PASS; receiptc4506ba3...,
+manifestfbf3bcbe...; source exportfalse, config/reload/service/transfer0.
+This is accepted owner evidence; not repeated or independently executed here.
+Do not ask for the old attestation again or run its historical helper.
+
+Entered clean main3f67a5a, ahead2; all existing commits/artifacts preserved.
+New generic CHECK tooling source:
+`de03e2552ebb6723b38fcdae8c654bb3403822b8`.
+Six focused files add CHECK/bootstrap, exact reviewed private/atomic helpers,
+security tests and docs/dashboard-read-production-check.md. No approved policy,
+application, UI, migration or dependency change. Renderer/registry/matrix still
+e8b069f,70 GET patterns/ten holds; preserve existing seven HEADs/two helpers and
+exact login-audit POST. No new audit, app rebuild, credentials or security bypass.
+
+Deployment-specific DEPLOYMENT.json stays in the NEW operational directory,
+outside generic logic. Derives only the accepted main hash/protected row from
+the frozen envelope. All22 peers/runtime/origin/upstream inputs stay exact;
+accepted byte length will be read from the hash-verified root-private receipt.
+No old production launch preimage is read/rendered. CHECK never imports/calls
+the old attestation/operator or exposes APPLY/rollback.
+
+Prepared ROOT-CHECK-PENDING-STAGING.command: verified root copy of bootstrap,
+bounded no-follow archive intake, complete tar/manifest validation BEFORE
+extraction, new root0700 workspace/exclusive0600 files. Root CHECK will verify
+accepted receipt/frozen files, current source/23-file index/22 peers, runtime/
+full installed inventory/PID/security and loopback disabled commerce, then render
+the unchanged policy and validate a COMPLETE private Nginx shadow/include set.
+It rechecks drift after syntax and retains source/candidate/diff/recovery/command
+diagnostics ONLY under root. Return sanitized status/hash/count fields only.
+New CHECK drift guards are not a rerun of the completed historical attestation.
+
+Local PASS76/76 Python cases, errors/failures/skips0 (38 per actual Nginx1.28.0/
+1.30.6), two independent stores with complete five-file synthetic include trees.
+Header preservation, peer syntax/include drift, tar safety, nonroot/no-mutation
+CLI, exclusive attempts, commands, receipt/binding/runtime/PID/commerce checks
+pass. Deterministic ten-file package extraction/hashes/Python syntax/nonroot entry
+denial/Bash command syntax pass. No root entry, real systemd/actual23-file private
+production shadow ran. Candidate SHA remains UNKNOWN; do not invent or export
+private configuration to obtain it. Earlier hosted/38-platform-test limits remain.
+
+CHECK archive adm01-read-check-0d0ab69749ff8ee5.tar,174,080 bytes;
+SHA2560d0ab69749ff8ee5e34f768ab56a47b5ac893fe877a0df8ed4967f2ed84a1c71.
+Manifestc68ee744...; bootstrap7767de30.../4,397 bytes; owner command9772f659.../
+748 bytes. Full values in PACKAGE.json/SHA256SUMS and report. APPLY-ROLLBACK-PLAN
+is a hashed proposal only; no actual candidate or executable activation command.
+
+NO transfer or staging has happened. The proposed inert archive/bootstrap paths
+are bound in STAGING-PLAN.json under the existing nonroot inspection area.
+After new approval, reuse existing strict pinned SSH/exclusive UID1002/mode0600/
+parent0700 transfer and independent read/hash validation. Execute neither file
+through SSH. Only after BOTH pass may the owner run the exact short root CHECK
+once in Console, with no automatic retry/resume/cleanup on failure. No root SSH.
+
+Current task accessed no production, ran no SSH/root/helper, changed no live
+configuration/service/release/env/SQL/Auth/RLS/provider/business/media state and
+made no push. Original c95bac1f... Procurement archive/5,269,548 bytes and all597
+application inputs match. Original accepted launch/login evidence preserved;
+current live runtime/data was not newly observed. Procurement remains paused.
+
+After future CHECK PASS, review actual candidate/receipt/full private syntax and
+prepare a NEW exact APPLY operator/command for separate immediate approval.
+Retain current preimage/peers/runtime/symlink/UID/GID/mode/xattrs/PID/inventory and
+fresh disabled-signup/commerce/data gates; one main replacement/one Nginx reload
+only if approved. No Nuxt restart or app release switch. Rollback separately
+approved, restoring the exact accepted owner-login ingress/known API gaps only;
+ambiguous state needs read-only diagnosis/new review, no automatic restore.
+Complete existing guarded owner EN/AR/module/privacy/ACL/held-dependency/
+navigation/reload/session/data acceptance; Auth/audit effects separately scoped.
+Only after ingress activation AND acceptance resume separately authorized
+Procurement staging, using the NEW accepted ingress receipt/hash. No old hashes.
+
+**Single next owner action:** approve ONLY this sealed package's two inert-file
+staging and one owner-console CHECK after independent staging verification.
+No APPLY/reload, Procurement staging or app activation is included. STOP here.
+The final continuity commit/status is appended to the NEW external report.
+This entry supersedes all older pending-attestation/root/staging actions below.
+
 # ADM-01 dashboard read policy — STOP after local preparation, 2026-10-18
 
 Read PROJECT_STATE.md and the NEW report first:
