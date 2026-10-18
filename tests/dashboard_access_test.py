@@ -164,6 +164,9 @@ class RoutingFixture(http.server.BaseHTTPRequestHandler):
 
 @unittest.skipUnless(os.environ.get('DASHBOARD_REVIEW_NGINX'), 'Set DASHBOARD_REVIEW_NGINX for isolated real Nginx tests')
 class NginxTests(unittest.TestCase):
+    site_host = 'orchard.example.test'
+    site_alias = 'www.orchard.example.test'
+    candidate_renderer = staticmethod(render)
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory(prefix='dashboard-nginx-owned-')
@@ -172,8 +175,8 @@ class NginxTests(unittest.TestCase):
         cls.thread = threading.Thread(target=cls.upstream.serve_forever, daemon=True)
         cls.thread.start()
         cls.edge = port()
-        cls.original, cls.binding = fixture(edge=cls.edge, upstream=cls.upstream.server_port)
-        candidate, _ = render(cls.original, cls.binding)
+        cls.original, cls.binding = fixture(host=cls.site_host, alias=cls.site_alias, edge=cls.edge, upstream=cls.upstream.server_port)
+        candidate, _ = cls.candidate_renderer(cls.original, cls.binding)
         config = cls.directory / 'nginx.conf'
         config.write_text('daemon off;\nworker_processes 1;\nerror_log "' + str(cls.directory / 'error.log') + '";\npid "' + str(cls.directory / 'nginx.pid') + '";\nevents { worker_connections 128; }\nhttp { access_log off; client_body_temp_path "' + str(cls.directory / 'body') + '"; proxy_temp_path "' + str(cls.directory / 'proxy') + '";\n' + candidate + '\n}\n')
         args = [os.environ['DASHBOARD_REVIEW_NGINX'], '-p', str(cls.directory) + '/', '-c', str(config)]
@@ -194,9 +197,9 @@ class NginxTests(unittest.TestCase):
             raise RuntimeError('Local Nginx readiness timeout')
 
     @classmethod
-    def request(cls, path, method='GET', host='orchard.example.test', token=None):
+    def request(cls, path, method='GET', host=None, token=None):
         connection = http.client.HTTPConnection('127.0.0.1', cls.edge, timeout=5)
-        headers = {'Host': host, **({'Authorization': 'Bearer ' + token} if token else {})}
+        headers = {'Host': host or cls.site_host, **({'Authorization': 'Bearer ' + token} if token else {})}
         connection.request(method, path, body='{}' if method == 'POST' else None, headers=headers)
         response = connection.getresponse()
         raw = response.read()

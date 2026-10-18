@@ -2,15 +2,17 @@ import { randomUUID } from 'node:crypto'
 import { resolve } from 'node:path'
 import { createServer } from 'node:http'
 import { build } from 'esbuild'
+import { readFile } from 'node:fs/promises'
 import { createApp, createRouter, readBody, toNodeListener } from 'h3'
 import { createProductSaveFixture } from './productSaveFixture.mjs'
 
 // Actual guards, handlers and application SQL. Hosted Auth/token verification
 // and Supabase transport are explicit fixtures, never production credentials.
-export async function createDashboardAccessFixture() {
-  const fixture = await createProductSaveFixture()
+export async function createDashboardAccessFixture({ fixture: suppliedFixture, readPolicy = false, runtime = {}, nativeClient = null } = {}) {
+  const fixture = suppliedFixture || await createProductSaveFixture()
   const key = '__dashboardAccess_' + randomUUID().replaceAll('-', '')
-  const { db, client, actors } = fixture
+  const { db, actors } = fixture
+  const client = nativeClient || fixture.client
   await db.query('update public.admin_users set permissions=$2 where id=$1',
     [actors.disabled, JSON.stringify({ 'products.view': true, 'products.edit': true })])
   const restricted = randomUUID()
@@ -18,9 +20,11 @@ export async function createDashboardAccessFixture() {
   await db.query("insert into public.admin_users(id,email,role,permissions,is_active) values($1,$2,'admin','{}',true)",
     [restricted, 'staff@independent.example.test'])
   actors.restricted = restricted
-  client.auth = { getUser: async token => ({ data: { user: actors[token] ? { id: actors[token] } : null }, error: null }) }
+  const getUser = async token => ({ data: { user: actors[token] ? { id: actors[token] } : null }, error: null })
+  if (nativeClient) client.auth.getUser = getUser
+  else client.auth = { getUser }
   const baseFrom = client.from
-  client.from = table => {
+  if (!nativeClient) client.from = table => {
     // Exact-count transport for the real summary handler. SQL is confined to
     // fixture tables/known columns; its permission branches remain unchanged.
     if (!['customer_orders', 'customer_profiles', 'storefront_products', 'categories'].includes(table)) return baseFrom(table)
@@ -48,6 +52,7 @@ export async function createDashboardAccessFixture() {
     return query
   }
   globalThis[key] = client
+  globalThis[key + '_runtime'] = runtime
   const router = createRouter()
   const handlerFiles = [
     ['get', '/api/admin-erp/state', 'server/api/admin-erp/state.get.js'],
@@ -59,15 +64,21 @@ export async function createDashboardAccessFixture() {
     ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js'],
     ['post', '/api/admin-logs', 'server/api/admin-logs/index.post.js']
   ]
+  if (readPolicy) {
+    const policy = JSON.parse(await readFile(new URL('../../scripts/nginx/dashboard_read_policy.json', import.meta.url), 'utf8'))
+    for (const route of policy.routes) {
+      if (!handlerFiles.some(([method, path]) => method === 'get' && path === route.path)) handlerFiles.push(['get', route.path, route.source])
+    }
+  }
   let server
   try {
     for (const [method, path, file] of handlerFiles) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false, format: 'esm', platform: 'node',
         alias: { '~': resolve('app') }, plugins: [{ name: 'isolated-dashboard-transport', setup(builder) {
-          builder.onResolve({ filter: /\/supabaseAdmin$/ }, () => ({ path: key, namespace: key }))
+          builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: key, namespace: key }))
           builder.onLoad({ filter: /.*/, namespace: key }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis[${JSON.stringify(key)}]`, loader: 'js' }))
           builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
-        } }], banner: { js: 'const defineEventHandler=handler=>handler;const readBody=globalThis[' + JSON.stringify(key + '_readBody') + '];' } })
+        } }], banner: { js: 'const defineEventHandler=handler=>handler;const useRuntimeConfig=()=>globalThis[' + JSON.stringify(key + '_runtime') + '];const readBody=globalThis[' + JSON.stringify(key + '_readBody') + '];' } })
       globalThis[key + '_readBody'] = readBody
       const handler = (await import('data:text/javascript;base64,' + Buffer.from(compiled.outputFiles[0].text).toString('base64'))).default
       router[method](path, handler)
@@ -77,23 +88,26 @@ export async function createDashboardAccessFixture() {
     server = createServer(toNodeListener(app))
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
     const origin = 'http://127.0.0.1:' + server.address().port
-    return { ...fixture, origin, async call(path, { token, body, headers = {} } = {}) {
-      const response = await fetch(origin + path, { method: body === undefined ? 'GET' : 'POST',
+    return { ...fixture, client, origin, async call(path, { token, body, headers = {}, method = body === undefined ? 'GET' : 'POST' } = {}) {
+      const response = await fetch(origin + path, { method,
         headers: { ...headers, ...(token ? { authorization: 'Bearer ' + token } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
-      return { status: response.status, data: await response.json(), headers: response.headers }
+      const raw = await response.text()
+      return { status: response.status, data: response.headers.get('content-type')?.includes('application/json') && raw ? JSON.parse(raw) : raw, headers: response.headers }
     }, async close() {
       server.closeAllConnections()
       await new Promise(resolve => server.close(resolve))
       delete globalThis[key]
       delete globalThis[key + '_readBody']
-      await db.close()
+      delete globalThis[key + '_runtime']
+      if (!suppliedFixture) await db.close()
     } }
   } catch (error) {
     if (server?.listening) server.close()
     delete globalThis[key]
     delete globalThis[key + '_readBody']
-    await db.close()
+    delete globalThis[key + '_runtime']
+    if (!suppliedFixture) await db.close()
     throw error
   }
 }

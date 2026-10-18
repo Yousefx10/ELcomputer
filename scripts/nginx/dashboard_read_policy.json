@@ -1,0 +1,1459 @@
+{
+  "version": 1,
+  "purpose": "Explicit authenticated dashboard reads; no production activation authority",
+  "routes": [
+    {
+      "path": "/api/admin-after-sales/catalog",
+      "source": "server/api/admin-after-sales/catalog.get.js",
+      "source_sha256": "c9ae95a2f5435af9f725ca6a144706fb2a2dc2c3ead1629a5cbb5bff37291c62",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims/:id/communications",
+      "source": "server/api/admin-after-sales/claims/[id]/communications.get.js",
+      "source_sha256": "572d8961a60e4c92b21575a19967e3cdbe3f07cba643a6d32cc437fdde783b6e",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; claims.communications.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims/:id/reverse-label",
+      "source": "server/api/admin-after-sales/claims/[id]/reverse-label.get.js",
+      "source_sha256": "8ac0fa5d9f996b6cee20ef1deea463b645358bc05d2b3c4c494495f2946b13ea",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; claims.logistics.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "private_storage_file",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Downloads a private stored return label; claims.logistics.view.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims/:id/reverse",
+      "source": "server/api/admin-after-sales/claims/[id]/reverse.get.js",
+      "source_sha256": "47eac9ca3b6db53fdf6c0a457307bc3872386ad7ec50912a033f56c53f25b511",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; claims.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims/:id",
+      "source": "server/api/admin-after-sales/claims/[id].get.js",
+      "source_sha256": "728a14b32238ae8ad6df72e368a3c3d543ae1090003c4f64e9be5cf6b117faa2",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; claims.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims/evidence/:id",
+      "source": "server/api/admin-after-sales/claims/evidence/[id].get.js",
+      "source_sha256": "5cc284dcd4f3b8296447d36eef27f4be2286b9e0062ea1adf8e57945697892e8",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; claims.evidence; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "private_storage_file",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Downloads private claim evidence; claims.evidence and claim access.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/claims",
+      "source": "server/api/admin-after-sales/claims/index.get.js",
+      "source_sha256": "dda968852e80e1234011e8a308bbfac9136867696b845e129bc84d52ee086d37",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; claims.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/communications",
+      "source": "server/api/admin-after-sales/communications/index.get.js",
+      "source_sha256": "57f94cf19d28c378012847d8009ff6604c3533b8393df0aea0160a996aaf1b7b",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; claims.communications.view; existing RPC actor/claim scope",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/policy",
+      "source": "server/api/admin-after-sales/policy.get.js",
+      "source_sha256": "20ac6268947a8de52885ae63c4114489fdcdb87e030d27b0745d637d31ea3b83",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-after-sales/reasons",
+      "source": "server/api/admin-after-sales/reasons.get.js",
+      "source_sha256": "f0cd603f015ee262a1cf3ab07a45542c6388925ab5d8d5355ff0e041b07b431d",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Claim/customer metadata or policy; claim RPC authorization",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-analytics/live",
+      "source": "server/api/admin-analytics/live.get.js",
+      "source_sha256": "eb792ceebf47e1588e63ffcc8ee7a0b71c9ea34c0f158a0ba0ea37d75991fd9d",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.analysis",
+      "sensitive_data": "Aggregated business/visitor analytics",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-analytics/overview",
+      "source": "server/api/admin-analytics/overview.get.js",
+      "source_sha256": "53b9e46cf8319d42e467a02ef996ff06829ff500183dac59b6c5ffcfdfc091e9",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.analysis",
+      "sensitive_data": "Aggregated business/visitor analytics",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/attachments/:id",
+      "source": "server/api/admin-chat/attachments/[id].get.js",
+      "source_sha256": "091b90298d39cce81a9ec7627c31259139d889552e5719199f2328c06c555ef8",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "private_storage_file",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Downloads private chat attachment after support.view and conversation access.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/availability",
+      "source": "server/api/admin-chat/availability.get.js",
+      "source_sha256": "11df40a054b219d769e0cd842b1ba3580cccc9d96f4b1969811d63a06f96f069",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.reply; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/conversations/:id/context",
+      "source": "server/api/admin-chat/conversations/[id]/context.get.js",
+      "source_sha256": "50d8462e7fab8520a9a847106c0c8fe6a975d0e97e0305c3c7b020fc99825b1f",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/conversations/:id/events",
+      "source": "server/api/admin-chat/conversations/[id]/events.get.js",
+      "source_sha256": "a651b89b8832e71ab0306216113710cde1ec7732ce17de95b7e1b0a653dbbd83",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/conversations/:id/messages",
+      "source": "server/api/admin-chat/conversations/[id]/messages.get.js",
+      "source_sha256": "205671753c59db2132cfc8e5723f0f61ea2cb3665e22b4dba192f7cde03e6e6e",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/conversations/:id",
+      "source": "server/api/admin-chat/conversations/[id].get.js",
+      "source_sha256": "e324e5967e3fb0e414073e465a2309e561602c5df4c356140f42e740a60db237",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/conversations",
+      "source": "server/api/admin-chat/conversations/index.get.js",
+      "source_sha256": "2d3759458fbf9634af03a69bdb554189ecf195fd5dd03b2d13e274811d72b60e",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view; existing conversation scope where applicable",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-chat/settings",
+      "source": "server/api/admin-chat/settings.get.js",
+      "source_sha256": "46d3cf8bef7ff1223131bb83f4d6d2a66c6af55d129b96a7e12f1709d511055d",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Customer conversations/internal messages; staff support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-crm/activities/:id",
+      "source": "server/api/admin-crm/activities/[id].get.js",
+      "source_sha256": "4dc25f4ddaac2174df349002cf31b8b4eba4409fd3b068d5fe73c26e1e1c25ee",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Contact/activity metadata; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-crm/activities",
+      "source": "server/api/admin-crm/activities/index.get.js",
+      "source_sha256": "1208894cce7970f94a89fa92604bbe742217f0483e759139b81c6d5dbd8a3dcd",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Contact/activity metadata; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-crm/activities/open-cases",
+      "source": "server/api/admin-crm/activities/open-cases.get.js",
+      "source_sha256": "511f23050cdf35e31908fad49f864ca752516f9676efe5adcee65da5d7d41f13",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Contact/activity metadata; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-crm/activities/stats",
+      "source": "server/api/admin-crm/activities/stats.get.js",
+      "source_sha256": "c0a7089f67eb22f2fd74c2e248bf4e1c3bbce35d1219e4c2148919ee5778e291",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Contact/activity metadata; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-crm/contacts",
+      "source": "server/api/admin-crm/contacts.get.js",
+      "source_sha256": "e5fd2f17eac7bc39d5b9a30b6758a8a066a6423ea433209580bd1f8b70a6b342",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Contact/activity metadata; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-dashboard/summary",
+      "source": "server/api/admin-dashboard/summary.get.js",
+      "source_sha256": "0a1a2baf30bfea3295abda08abc0ff8f3c7a4fb22b5b1aa6ed88c4514ebb0857",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin",
+      "sensitive_data": "Counts filtered by existing named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/access-options",
+      "source": "server/api/admin-documents/access-options.get.js",
+      "source_sha256": "6d5530aa505e2299e6f0a2ed0d9cde007e1effe9257456a90032b5894cbe8937",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer; active admin; documents.view + documents.manage (read of access options only)",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/activity",
+      "source": "server/api/admin-documents/activity.get.js",
+      "source_sha256": "aa426be039f690f56459b630630d56ec55154aac6705454028b5ba1215a56d22",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/files/:id/download",
+      "source": "server/api/admin-documents/files/[id]/download.get.js",
+      "source_sha256": "b17ac90d08085ff38d7eb1b10c47b40eb213cf8076466bd44779ecffa2973db1",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "mutating_get_and_private_storage",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Download upserts document_recent_items after private Storage delivery.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/folders/:id/permissions",
+      "source": "server/api/admin-documents/folders/[id]/permissions.get.js",
+      "source_sha256": "eaf938116252e7e209ec8e6d6d1b21cb72f2e53ac638027ce4609319ef8aefc2",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer; active admin; documents.view + documents.manage and effective folder editor ACL",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents",
+      "source": "server/api/admin-documents/index.get.js",
+      "source_sha256": "483f1b8f3f0026898fafe0910957bd93e91d1ff53ac5f4c71bcbfcd8c689f160",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/tagged",
+      "source": "server/api/admin-documents/tagged.get.js",
+      "source_sha256": "047f71a4ea309c239a2e8695f56e950b4e08a62463f4377d9a1287c9147698dc",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/tags",
+      "source": "server/api/admin-documents/tags.get.js",
+      "source_sha256": "4b00be1b3ec1c1eedd0e6eb279e05075c2a8f3ab0ead420beca6432dcc051990",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-documents/workspace",
+      "source": "server/api/admin-documents/workspace.get.js",
+      "source_sha256": "e7deb46fb218d900ab85a9326c9519c194e02f0c4f795792b3489f4c8d79bff5",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; documents.view; existing folder lineage/ACL where applicable",
+      "sensitive_data": "Document metadata/staff identity; folder ACLs, no file bytes",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/capabilities",
+      "source": "server/api/admin-email/capabilities.get.js",
+      "source_sha256": "2518bcb91cd0e524e6bcf533bb6d7913a1e0a20eeb32442d586384b34c005268",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.view",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/events",
+      "source": "server/api/admin-email/events.get.js",
+      "source_sha256": "c97986891d39af5b3f61b4853d56bb357cc87164a8217620d518cd67b9e54413",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.history.view",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/history",
+      "source": "server/api/admin-email/history.get.js",
+      "source_sha256": "cb90a8f84645972a1b76fa03b0e0b379b021d1aeb030cba6782de7e30a89c3da",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.history.view",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/preferences",
+      "source": "server/api/admin-email/preferences.get.js",
+      "source_sha256": "cff4f6f0a362f6400ba088a549e9a100c06d2b44bc7dcdd9e9c648b1469bdcaf",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.marketing.manage",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/settings",
+      "source": "server/api/admin-email/settings.get.js",
+      "source_sha256": "a5f3d46625836b762beeee32f256225b81d5f2a9d983c53001e46b89c977fa2f",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.settings.view",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-email/templates",
+      "source": "server/api/admin-email/templates.get.js",
+      "source_sha256": "1fb35728bfe56db29b4693b4c276b9a10f3e66169e9b522db2a3fa8a1fbad669",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; email.view; email.templates.view OR email.transactional.send; existing template classification filter",
+      "sensitive_data": "Messaging metadata; redacted credentials/recipients, named permissions",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-erp/dashboard",
+      "source": "server/api/admin-erp/dashboard.get.js",
+      "source_sha256": "cb6033492aced9d12db48c9ac23b0db42f8733086cc4c12f74c0e2de6f924c0c",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; dashboard.analysis",
+      "sensitive_data": "Local ERP configuration/status; credential presence only",
+      "side_effects": "external_provider_read",
+      "external_dependencies": "External ERP provider",
+      "reason": "Reads the external ERP provider after ownership checks; outside the local metadata-only profile and requires separate provider-read acceptance.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-erp/settings",
+      "source": "server/api/admin-erp/settings.get.js",
+      "source_sha256": "8e8dfda64e6a4aaf95feeea53162cec972802984813552f94bab67a4c379d9a0",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Local ERP configuration/status; credential presence only",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-erp/state",
+      "source": "server/api/admin-erp/state.get.js",
+      "source_sha256": "e54390b07e8d74685abced67849006eb544efc6379f51f030bd8dd7d902a7011",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin",
+      "sensitive_data": "Local ERP configuration/status; credential presence only",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-gallery",
+      "source": "server/api/admin-gallery/index.get.js",
+      "source_sha256": "e4ed26541d4dd32e063da1d4eed001ffafc676e80211c382fba8944424f539e5",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view for all public sections OR existing section add/edit permission for scoped sections",
+      "sensitive_data": "VPS public-image metadata within permitted sections",
+      "side_effects": "none",
+      "external_dependencies": "Configured VPS filesystem",
+      "reason": "Reads configured VPS filesystem directly using section permissions; no gallery index query, upload, deletion or Storage call.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-help/articles",
+      "source": "server/api/admin-help/articles/index.get.js",
+      "source_sha256": "804c4fe6b0c02124d7f173aefec63fb9f9ab5258f21b234bd774ad243a3444fd",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; help.view",
+      "sensitive_data": "Help content/category metadata including drafts",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-help/categories",
+      "source": "server/api/admin-help/categories/index.get.js",
+      "source_sha256": "32fe3935ecacf834e68287abc31622e59a87ff0630adbd41a5acff9544e8f240",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; help.view",
+      "sensitive_data": "Help content/category metadata including drafts",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-inventory/items/:token",
+      "source": "server/api/admin-inventory/items/[token].get.js",
+      "source_sha256": "d686618e55e6a8bc3711329f34697df1b9e4e6c06ee3054d56d9d54837b8c781",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; products.view",
+      "sensitive_data": "Serialized inventory and related order/customer metadata",
+      "side_effects": "confidential_projection_review",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "products.view alone exposes cost_price plus full purchaser/order data via service-role reads. Require a separately reviewed confidential projection and order/customer permission design; preserve handler/RBAC unchanged here.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-inventory/items",
+      "source": "server/api/admin-inventory/items/index.get.js",
+      "source_sha256": "059793a666ca0a693028e8ea6f00d2365d4f2fb08a47374fe2f59276bc4a9fab",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.view",
+      "sensitive_data": "Serialized inventory and related order/customer metadata",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-inventory/options",
+      "source": "server/api/admin-inventory/options.get.js",
+      "source_sha256": "06a1c2fa766304adf5268a583e129a1a9458903c1fac00dd75a136ed6f25135f",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.view",
+      "sensitive_data": "Serialized inventory and related order/customer metadata",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-logs",
+      "source": "server/api/admin-logs/index.get.js",
+      "source_sha256": "9f5a15a439599ececd41fb9090d307d17506c20b44724fd7ed72aa4f5973b993",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.view",
+      "sensitive_data": "Administrative audit metadata/staff identity",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders/:id",
+      "source": "server/api/admin-orders/[id].get.js",
+      "source_sha256": "7f9fa84b74f4045b0d0548c0126d717e7b96213af1b32a2083af6f28b3778674",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders",
+      "source": "server/api/admin-orders/index.get.js",
+      "source_sha256": "cbffb25b2e52418d52efaec4c63fb40359bffc756ff7a51c49231905a13b0007",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders/packing/:sessionId",
+      "source": "server/api/admin-orders/packing/[sessionId]/index.get.js",
+      "source_sha256": "6cf3ad9d048e084fd1a53e75221859abfeece0bb54fed3ed1bd7b2ff1b0ca960",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders/packing/:sessionId/video",
+      "source": "server/api/admin-orders/packing/[sessionId]/video.get.js",
+      "source_sha256": "ed5d79349c6f97c1056ab0f96e5e81b18b4c80fac9f4234b628e9b83a65c4865",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "private_storage_capability",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Generates a short-lived signed Supabase Storage URL.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders/packing",
+      "source": "server/api/admin-orders/packing/index.get.js",
+      "source_sha256": "4f51ee3c150430751cdcf98780460587f499ca313a8ccbb634b6cef094ba3488",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-orders/packing/work-session",
+      "source": "server/api/admin-orders/packing/work-session.get.js",
+      "source_sha256": "fa85105c67d4f059162e630d114856c520f0456e2d64d7e3baae5d1cb18e7a9b",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Order/customer/packing metadata; dashboard.orders",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-pages",
+      "source": "server/api/admin-pages/index.get.js",
+      "source_sha256": "b67e7f84fd296fa816bb954a97ec05e096edc388f813dfe0a97207e7be84917c",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; pages.view",
+      "sensitive_data": "CMS drafts/publication metadata",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/:id",
+      "source": "server/api/admin-products/[id].get.js",
+      "source_sha256": "6e60ba3bdc613743fd38181178928be49bcd3cabd3c02d98d4c04d2d58bd6069",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.edit",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/bulk",
+      "source": "server/api/admin-products/bulk.get.js",
+      "source_sha256": "3e80b9ce409dd288bbb1525b7a6925e5a046d6f18cbcb6deabecaaee55e24c09",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.edit",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "Actor-owned receipt SELECT with transaction-scoped advisory lock; no durable data mutation.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/filter-options",
+      "source": "server/api/admin-products/filter-options.get.js",
+      "source_sha256": "ec486217ddd3fe8c50e2d492f07aef9cabc1abf6ee6462fd3fefdc0dab0f0bcb",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.view",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products",
+      "source": "server/api/admin-products/index.get.js",
+      "source_sha256": "14ce4d268cee8db83e2389a80653be209167be810d0e82b6f2792482eec931b8",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer; active admin; SQL requires products.view plus add/edit and actor-owned receipt operation permission (owner retains owner permissions)",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/list",
+      "source": "server/api/admin-products/list.get.js",
+      "source_sha256": "2ba57d3a3063ee965d57ad443856b49af82110a6bbbfda1dc2f974db753d1cf1",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.view",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/transfer/import",
+      "source": "server/api/admin-products/transfer/import/index.get.js",
+      "source_sha256": "c5853a74ee02dc6a5c7791d451b56b692e6374011395ef7c5fcaa938f535867c",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; products.view; existing transfer/RPC permission checks (import preview requires add/edit permission as well)",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "mutating_receipt_expiry",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "GET with job_id calls catalog_import_status, which locks the job and updates expired import_jobs/import_items. Hold the whole path including options; split a truly read-only status/options contract in a separately approved application task.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-products/transfer/template",
+      "source": "server/api/admin-products/transfer/template.get.js",
+      "source_sha256": "181b2c72f85fe3f5e420b0cd186e00f7714e0f7d4dc081c6152a389afd99df68",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; products.view; existing transfer/RPC permission checks (import preview requires add/edit permission as well)",
+      "sensitive_data": "Merchandising or actor-owned receipt data; existing RPC projections",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "Generates an in-memory CSV/XLSX merchandising template; read-only SQL snapshot, no private stored file or durable preview.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-reviews",
+      "source": "server/api/admin-reviews/index.get.js",
+      "source_sha256": "ad4f150189288897809a81884a819cbb8d0637ea7d148c07e1e9aae6e60c6124",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; existing contract has no extra named handler permission; do not invent a new permission",
+      "sensitive_data": "Reviews and reviewer identity; existing coarse active-admin scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-setup/status",
+      "source": "server/api/admin-setup/status.get.js",
+      "source_sha256": "efa78e5f4a2ed8db136642285ff2409db27e1731e0c722a16b858197471bb293",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; role=owner",
+      "sensitive_data": "Owner-only configuration status and owner concurrency basis tokens",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "Owner-only SELECT/configuration status. Basis tokens bind owner PATCH concurrency; are not independent bearer capabilities. PATCH remains denied.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-shipping/orders/:id/label",
+      "source": "server/api/admin-shipping/orders/[id]/label.get.js",
+      "source_sha256": "c913d601fe0ab318c47b2e7179c9829f757655025a3387f99c13cf1d7774ef96",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; dashboard.orders",
+      "sensitive_data": "Courier configuration metadata; credential presence only",
+      "side_effects": "private_storage_file",
+      "external_dependencies": "Private Supabase Storage (deferred)",
+      "reason": "Downloads a stored private shipping label.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-shipping/settings",
+      "source": "server/api/admin-shipping/settings.get.js",
+      "source_sha256": "8d4dd478bba09da7af93220938247f1697dae0a09101a80d1632724b2d54627f",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; settings.edit",
+      "sensitive_data": "Courier configuration metadata; credential presence only",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-sms/capabilities",
+      "source": "server/api/admin-sms/capabilities.get.js",
+      "source_sha256": "15f71052a4900becd78371c40d1ab7d48b640a57d72735332f4c679b6c5aa885",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; sms.view",
+      "sensitive_data": "Messaging metadata; masked recipient diagnostics; no message bodies",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-sms/history",
+      "source": "server/api/admin-sms/history.get.js",
+      "source_sha256": "52cdd692b51aa1cd6e3a550a5c08dbd08fef668be1b77131587f33b1cd54c383",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; sms.history.view",
+      "sensitive_data": "Messaging metadata; masked recipient diagnostics; no message bodies",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-sms/order-events",
+      "source": "server/api/admin-sms/order-events.get.js",
+      "source_sha256": "bb4ba119e08e0676f3dfc2dcb94f1c97e9b6741fcd1ace41d3dd284318c3ecc2",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; sms.settings.view",
+      "sensitive_data": "Messaging metadata; masked recipient diagnostics; no message bodies",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-sms/settings",
+      "source": "server/api/admin-sms/settings.get.js",
+      "source_sha256": "6595bce40f86e440078796d4e94977b3e3e570c29e311402630bbe3e730bd885",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; sms.settings.view",
+      "sensitive_data": "Messaging metadata; masked recipient diagnostics; no message bodies",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-sms/templates",
+      "source": "server/api/admin-sms/templates.get.js",
+      "source_sha256": "2fa76d55ecd35ccfb918084fa6ead4ebf6dda6205ed88263c7fc72783577dfce",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; sms.templates.view",
+      "sensitive_data": "Messaging metadata; masked recipient diagnostics; no message bodies",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-support/assignees",
+      "source": "server/api/admin-support/assignees.get.js",
+      "source_sha256": "2bd50e1b75330c0116767be5ddbd81cc5b6871d331c95cbd6c7b2f15be316192",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view",
+      "sensitive_data": "Support/customer/order metadata; existing support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-support/tickets/:id",
+      "source": "server/api/admin-support/tickets/[id].get.js",
+      "source_sha256": "d0d30fdea96fd0ce0712c94af9c1eea9ce7f9f476a5fe7f81d50ea6df85c3e31",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view",
+      "sensitive_data": "Support/customer/order metadata; existing support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-support/tickets",
+      "source": "server/api/admin-support/tickets/index.get.js",
+      "source_sha256": "c8b29aec10ae8dd55bc2f389cf745451e815e107d2229a8354d516387931e0a3",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; support.view",
+      "sensitive_data": "Support/customer/order metadata; existing support scope",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-system-reset",
+      "source": "server/api/admin-system-reset/index.get.js",
+      "source_sha256": "a4a26d68a8576464b5c7cbde1c575c6d6c535755a407ad1a0190c1fda0256461",
+      "methods": [],
+      "decision": "hold",
+      "authorization": "Verified bearer user; active admin; role=owner",
+      "sensitive_data": "Owner-only destructive workflow preview",
+      "side_effects": "destructive_workflow_preview",
+      "external_dependencies": "PostgreSQL/Auth plus configured VPS filesystem for media preview",
+      "reason": "Owner-only preview, not a reset; outside dashboard read-inspection requirements.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/admin-users",
+      "source": "server/api/admin-users/index.get.js",
+      "source_sha256": "6b729797b85716a1d62cf14d52b69d9d0e21fffc9be1cb3f05610e73eee5cfc5",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; users.view",
+      "sensitive_data": "Staff identity/role/permissions; no Auth credentials",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/customer-users/:id",
+      "source": "server/api/customer-users/[id].get.js",
+      "source_sha256": "79c8212b41d433ef80b253427e037d4a563d1e28a8c36c384fc4974a9cac7996",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; users.view",
+      "sensitive_data": "Customer PII, wallet and order/behavior summaries; users.view",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    },
+    {
+      "path": "/api/customer-users",
+      "source": "server/api/customer-users/index.get.js",
+      "source_sha256": "8d3654405e55f1506fc77819b101137207541b7ce135fe7bc5d015a6e5946a80",
+      "methods": [
+        "GET"
+      ],
+      "decision": "allow",
+      "authorization": "Verified bearer user; active admin; users.view",
+      "sensitive_data": "Customer PII, wallet and order/behavior summaries; users.view",
+      "side_effects": "none",
+      "external_dependencies": "PostgreSQL/Auth transport only; no business provider request",
+      "reason": "SELECTs/local metadata or read RPC only; existing application authorization remains required.",
+      "handler_method": "GET"
+    }
+  ],
+  "review_inputs": {
+    "app/utils/accountOrders.js": "978d5d6016f6146845e902313be94a22489afdeea3f3e3c1288cc5bc0db59b50",
+    "app/utils/adminPermissions.js": "10e54f5e12bf60e39a2f8e008166d4a329009795f12d5a1e727011b08a772a89",
+    "app/utils/afterSalesClaims.js": "4ab7d56b1c0d9e900667ccbec8b3f4add5804cf87c22a51a6fae44da31832172",
+    "app/utils/afterSalesFields.js": "1b95ba4d1fd9f541da0baf1de2b7a6b2354d2c1652e848dba5e61733f867ac79",
+    "app/utils/appearance.js": "a461ebdb75e36c52b2ba5b7526a47bd6e617e6bc273e9357c0ee3c0c6d6154a6",
+    "app/utils/brandPage.js": "e59e97a83b635adf1011a270280179d621aa7137b259388a23678d41ed4566ef",
+    "app/utils/categoryLocale.js": "626fef2e7c7b769b261f16670c2166d48c4998fc6a09be8963613c620a6b0273",
+    "app/utils/claimCommunications.js": "e923293cd4e95ecc67d5a546ac781257b1c20a8f72e738ae43787c6d456365e8",
+    "app/utils/dashboardNavigation.js": "cc62432ae3e7753e6e6a95aee7e708461de33339efbf4578634dd3abfd4d4233",
+    "app/utils/dashboardSettings.js": "2f60114c134d7629c5ce46792262ebd0cc9b4bd25bc6adf511427ead54843746",
+    "app/utils/email.js": "2ffdcc27ce2376483501b448931c09c1a8446ba31f70066af98fa99d8f837365",
+    "app/utils/erpState.js": "9d0f38b08ff24bef17655d66b5d9b657a3d3ac9d6e08ce6d74a357b1d79018ec",
+    "app/utils/orderSms.js": "3af0dec99585905117fcb3922e033e41e78a08ebe09742ffe177a9452e98fa1d",
+    "app/utils/orderStatus.js": "ebbaf3586a79b05ea31c93b64266d1e9b46ab0b06eafa64abdcf834aea60e60b",
+    "app/utils/paymentMethods.js": "bbac119ccc3294be434aa5f4698b66002168e3172d55ce4a06b7441c055f4065",
+    "app/utils/productBulk.js": "d32f1acd0eac8cf261195cbd28731e93b364adb0c57e62100e3fa98744c9dee4",
+    "app/utils/quickSetup.js": "3177f188779c9131896f5cbcb2e7c5680d64fa6de6e8fb9c8d407a37aa436dcc",
+    "app/utils/seo.js": "7eb7f9524ee954a4af5bfb1bed0236085d6386fa4d9a46471a8eba0013f76964",
+    "app/utils/seoQuery.js": "2c3b15f0b1d0614131b15425f1e9d0ddd57d5e341cb8f97fd32761d3e4c721ba",
+    "app/utils/shipmentTracking.js": "b727bc2d996c7179559bb762d8085f2aef03e0e8b383de225e8ffe24cff2964d",
+    "app/utils/sms.js": "cf2f005bf65b2bdaf713a149508dc78a2d98c3f0d1a855d1e35820865255a01a",
+    "app/utils/uiMessageKeys.json": "4161a3b4724d7078bb64e72543e077ff97686e0d5e9a9f727ed6783ea49deab1",
+    "app/utils/warranty.js": "fe81f9a98d25a29fc113b5f28e7b30b9b747614d141e450b5dafa5ecbc317b9f",
+    "i18n/locales/ar.json": "ec954d76c4532b5293b35fac1217955f22981bc7a79b1814172eb6a7ffe648ac",
+    "i18n/locales/en.json": "83fb7c273cd4c521e0c62ef284d48548ca1c4ffcecdcd684e7c9288c26714b8c",
+    "server/api/admin-after-sales/catalog.get.js": "c9ae95a2f5435af9f725ca6a144706fb2a2dc2c3ead1629a5cbb5bff37291c62",
+    "server/api/admin-after-sales/claims/[id].get.js": "728a14b32238ae8ad6df72e368a3c3d543ae1090003c4f64e9be5cf6b117faa2",
+    "server/api/admin-after-sales/claims/[id]/communications.get.js": "572d8961a60e4c92b21575a19967e3cdbe3f07cba643a6d32cc437fdde783b6e",
+    "server/api/admin-after-sales/claims/[id]/reverse-label.get.js": "8ac0fa5d9f996b6cee20ef1deea463b645358bc05d2b3c4c494495f2946b13ea",
+    "server/api/admin-after-sales/claims/[id]/reverse.get.js": "47eac9ca3b6db53fdf6c0a457307bc3872386ad7ec50912a033f56c53f25b511",
+    "server/api/admin-after-sales/claims/evidence/[id].get.js": "5cc284dcd4f3b8296447d36eef27f4be2286b9e0062ea1adf8e57945697892e8",
+    "server/api/admin-after-sales/claims/index.get.js": "dda968852e80e1234011e8a308bbfac9136867696b845e129bc84d52ee086d37",
+    "server/api/admin-after-sales/communications/index.get.js": "57f94cf19d28c378012847d8009ff6604c3533b8393df0aea0160a996aaf1b7b",
+    "server/api/admin-after-sales/policy.get.js": "20ac6268947a8de52885ae63c4114489fdcdb87e030d27b0745d637d31ea3b83",
+    "server/api/admin-after-sales/reasons.get.js": "f0cd603f015ee262a1cf3ab07a45542c6388925ab5d8d5355ff0e041b07b431d",
+    "server/api/admin-analytics/live.get.js": "eb792ceebf47e1588e63ffcc8ee7a0b71c9ea34c0f158a0ba0ea37d75991fd9d",
+    "server/api/admin-analytics/overview.get.js": "53b9e46cf8319d42e467a02ef996ff06829ff500183dac59b6c5ffcfdfc091e9",
+    "server/api/admin-chat/attachments/[id].get.js": "091b90298d39cce81a9ec7627c31259139d889552e5719199f2328c06c555ef8",
+    "server/api/admin-chat/availability.get.js": "11df40a054b219d769e0cd842b1ba3580cccc9d96f4b1969811d63a06f96f069",
+    "server/api/admin-chat/conversations/[id].get.js": "e324e5967e3fb0e414073e465a2309e561602c5df4c356140f42e740a60db237",
+    "server/api/admin-chat/conversations/[id]/context.get.js": "50d8462e7fab8520a9a847106c0c8fe6a975d0e97e0305c3c7b020fc99825b1f",
+    "server/api/admin-chat/conversations/[id]/events.get.js": "a651b89b8832e71ab0306216113710cde1ec7732ce17de95b7e1b0a653dbbd83",
+    "server/api/admin-chat/conversations/[id]/messages.get.js": "205671753c59db2132cfc8e5723f0f61ea2cb3665e22b4dba192f7cde03e6e6e",
+    "server/api/admin-chat/conversations/index.get.js": "2d3759458fbf9634af03a69bdb554189ecf195fd5dd03b2d13e274811d72b60e",
+    "server/api/admin-chat/settings.get.js": "46d3cf8bef7ff1223131bb83f4d6d2a66c6af55d129b96a7e12f1709d511055d",
+    "server/api/admin-crm/activities/[id].get.js": "4dc25f4ddaac2174df349002cf31b8b4eba4409fd3b068d5fe73c26e1e1c25ee",
+    "server/api/admin-crm/activities/index.get.js": "1208894cce7970f94a89fa92604bbe742217f0483e759139b81c6d5dbd8a3dcd",
+    "server/api/admin-crm/activities/open-cases.get.js": "511f23050cdf35e31908fad49f864ca752516f9676efe5adcee65da5d7d41f13",
+    "server/api/admin-crm/activities/stats.get.js": "c0a7089f67eb22f2fd74c2e248bf4e1c3bbce35d1219e4c2148919ee5778e291",
+    "server/api/admin-crm/contacts.get.js": "e5fd2f17eac7bc39d5b9a30b6758a8a066a6423ea433209580bd1f8b70a6b342",
+    "server/api/admin-dashboard/summary.get.js": "0a1a2baf30bfea3295abda08abc0ff8f3c7a4fb22b5b1aa6ed88c4514ebb0857",
+    "server/api/admin-documents/access-options.get.js": "6d5530aa505e2299e6f0a2ed0d9cde007e1effe9257456a90032b5894cbe8937",
+    "server/api/admin-documents/activity.get.js": "aa426be039f690f56459b630630d56ec55154aac6705454028b5ba1215a56d22",
+    "server/api/admin-documents/files/[id]/download.get.js": "b17ac90d08085ff38d7eb1b10c47b40eb213cf8076466bd44779ecffa2973db1",
+    "server/api/admin-documents/folders/[id]/permissions.get.js": "eaf938116252e7e209ec8e6d6d1b21cb72f2e53ac638027ce4609319ef8aefc2",
+    "server/api/admin-documents/index.get.js": "483f1b8f3f0026898fafe0910957bd93e91d1ff53ac5f4c71bcbfcd8c689f160",
+    "server/api/admin-documents/tagged.get.js": "047f71a4ea309c239a2e8695f56e950b4e08a62463f4377d9a1287c9147698dc",
+    "server/api/admin-documents/tags.get.js": "4b00be1b3ec1c1eedd0e6eb279e05075c2a8f3ab0ead420beca6432dcc051990",
+    "server/api/admin-documents/workspace.get.js": "e7deb46fb218d900ab85a9326c9519c194e02f0c4f795792b3489f4c8d79bff5",
+    "server/api/admin-email/capabilities.get.js": "2518bcb91cd0e524e6bcf533bb6d7913a1e0a20eeb32442d586384b34c005268",
+    "server/api/admin-email/events.get.js": "c97986891d39af5b3f61b4853d56bb357cc87164a8217620d518cd67b9e54413",
+    "server/api/admin-email/history.get.js": "cb90a8f84645972a1b76fa03b0e0b379b021d1aeb030cba6782de7e30a89c3da",
+    "server/api/admin-email/preferences.get.js": "cff4f6f0a362f6400ba088a549e9a100c06d2b44bc7dcdd9e9c648b1469bdcaf",
+    "server/api/admin-email/settings.get.js": "a5f3d46625836b762beeee32f256225b81d5f2a9d983c53001e46b89c977fa2f",
+    "server/api/admin-email/templates.get.js": "1fb35728bfe56db29b4693b4c276b9a10f3e66169e9b522db2a3fa8a1fbad669",
+    "server/api/admin-erp/dashboard.get.js": "cb6033492aced9d12db48c9ac23b0db42f8733086cc4c12f74c0e2de6f924c0c",
+    "server/api/admin-erp/settings.get.js": "8e8dfda64e6a4aaf95feeea53162cec972802984813552f94bab67a4c379d9a0",
+    "server/api/admin-erp/state.get.js": "e54390b07e8d74685abced67849006eb544efc6379f51f030bd8dd7d902a7011",
+    "server/api/admin-gallery/index.get.js": "e4ed26541d4dd32e063da1d4eed001ffafc676e80211c382fba8944424f539e5",
+    "server/api/admin-help/articles/index.get.js": "804c4fe6b0c02124d7f173aefec63fb9f9ab5258f21b234bd774ad243a3444fd",
+    "server/api/admin-help/categories/index.get.js": "32fe3935ecacf834e68287abc31622e59a87ff0630adbd41a5acff9544e8f240",
+    "server/api/admin-inventory/items/[token].get.js": "d686618e55e6a8bc3711329f34697df1b9e4e6c06ee3054d56d9d54837b8c781",
+    "server/api/admin-inventory/items/index.get.js": "059793a666ca0a693028e8ea6f00d2365d4f2fb08a47374fe2f59276bc4a9fab",
+    "server/api/admin-inventory/options.get.js": "06a1c2fa766304adf5268a583e129a1a9458903c1fac00dd75a136ed6f25135f",
+    "server/api/admin-logs/index.get.js": "9f5a15a439599ececd41fb9090d307d17506c20b44724fd7ed72aa4f5973b993",
+    "server/api/admin-orders/[id].get.js": "7f9fa84b74f4045b0d0548c0126d717e7b96213af1b32a2083af6f28b3778674",
+    "server/api/admin-orders/index.get.js": "cbffb25b2e52418d52efaec4c63fb40359bffc756ff7a51c49231905a13b0007",
+    "server/api/admin-orders/packing/[sessionId]/index.get.js": "6cf3ad9d048e084fd1a53e75221859abfeece0bb54fed3ed1bd7b2ff1b0ca960",
+    "server/api/admin-orders/packing/[sessionId]/video.get.js": "ed5d79349c6f97c1056ab0f96e5e81b18b4c80fac9f4234b628e9b83a65c4865",
+    "server/api/admin-orders/packing/index.get.js": "4f51ee3c150430751cdcf98780460587f499ca313a8ccbb634b6cef094ba3488",
+    "server/api/admin-orders/packing/work-session.get.js": "fa85105c67d4f059162e630d114856c520f0456e2d64d7e3baae5d1cb18e7a9b",
+    "server/api/admin-pages/index.get.js": "b67e7f84fd296fa816bb954a97ec05e096edc388f813dfe0a97207e7be84917c",
+    "server/api/admin-products/[id].get.js": "6e60ba3bdc613743fd38181178928be49bcd3cabd3c02d98d4c04d2d58bd6069",
+    "server/api/admin-products/bulk.get.js": "3e80b9ce409dd288bbb1525b7a6925e5a046d6f18cbcb6deabecaaee55e24c09",
+    "server/api/admin-products/filter-options.get.js": "ec486217ddd3fe8c50e2d492f07aef9cabc1abf6ee6462fd3fefdc0dab0f0bcb",
+    "server/api/admin-products/index.get.js": "14ce4d268cee8db83e2389a80653be209167be810d0e82b6f2792482eec931b8",
+    "server/api/admin-products/list.get.js": "2ba57d3a3063ee965d57ad443856b49af82110a6bbbfda1dc2f974db753d1cf1",
+    "server/api/admin-products/transfer/import/index.get.js": "c5853a74ee02dc6a5c7791d451b56b692e6374011395ef7c5fcaa938f535867c",
+    "server/api/admin-products/transfer/template.get.js": "181b2c72f85fe3f5e420b0cd186e00f7714e0f7d4dc081c6152a389afd99df68",
+    "server/api/admin-reviews/index.get.js": "ad4f150189288897809a81884a819cbb8d0637ea7d148c07e1e9aae6e60c6124",
+    "server/api/admin-setup/status.get.js": "efa78e5f4a2ed8db136642285ff2409db27e1731e0c722a16b858197471bb293",
+    "server/api/admin-shipping/orders/[id]/label.get.js": "c913d601fe0ab318c47b2e7179c9829f757655025a3387f99c13cf1d7774ef96",
+    "server/api/admin-shipping/settings.get.js": "8d4dd478bba09da7af93220938247f1697dae0a09101a80d1632724b2d54627f",
+    "server/api/admin-sms/capabilities.get.js": "15f71052a4900becd78371c40d1ab7d48b640a57d72735332f4c679b6c5aa885",
+    "server/api/admin-sms/history.get.js": "52cdd692b51aa1cd6e3a550a5c08dbd08fef668be1b77131587f33b1cd54c383",
+    "server/api/admin-sms/order-events.get.js": "bb4ba119e08e0676f3dfc2dcb94f1c97e9b6741fcd1ace41d3dd284318c3ecc2",
+    "server/api/admin-sms/settings.get.js": "6595bce40f86e440078796d4e94977b3e3e570c29e311402630bbe3e730bd885",
+    "server/api/admin-sms/templates.get.js": "2fa76d55ecd35ccfb918084fa6ead4ebf6dda6205ed88263c7fc72783577dfce",
+    "server/api/admin-support/assignees.get.js": "2bd50e1b75330c0116767be5ddbd81cc5b6871d331c95cbd6c7b2f15be316192",
+    "server/api/admin-support/tickets/[id].get.js": "d0d30fdea96fd0ce0712c94af9c1eea9ce7f9f476a5fe7f81d50ea6df85c3e31",
+    "server/api/admin-support/tickets/index.get.js": "c8b29aec10ae8dd55bc2f389cf745451e815e107d2229a8354d516387931e0a3",
+    "server/api/admin-system-reset/index.get.js": "a4a26d68a8576464b5c7cbde1c575c6d6c535755a407ad1a0190c1fda0256461",
+    "server/api/admin-users/index.get.js": "6b729797b85716a1d62cf14d52b69d9d0e21fffc9be1cb3f05610e73eee5cfc5",
+    "server/api/customer-users/[id].get.js": "79c8212b41d433ef80b253427e037d4a563d1e28a8c36c384fc4974a9cac7996",
+    "server/api/customer-users/index.get.js": "8d3654405e55f1506fc77819b101137207541b7ce135fe7bc5d015a6e5946a80",
+    "server/utils/adminLogs.js": "b5c9ae4ba84a161386832884fc503c70d23407c985e5f66b917e8cfab8014293",
+    "server/utils/adminOrders.js": "4877c9cb2324cf21fe2a967a04cac24e878a6dc1c3350f2b3c4bc43d5a15ef06",
+    "server/utils/adminProducts.js": "908ffc2b22dbde04a6f0cf4f95280027fb9fa4aa68d49f37048ec6fb68a1545c",
+    "server/utils/adminRequest.js": "7abcbd2a7159f1ac7c1aead0bf6e89543d95fec89fac6fed42d6dc21cf7eb386",
+    "server/utils/adminUsers.js": "6f4e33d29cbddef34d6e6be226f4323b318415c1fdaf7b0071dc6ffc409e9ee6",
+    "server/utils/afterSalesClaimValidation.js": "71847fd9dd54879702e796f0a29cabb1bfc3adc318e1f510120638c1862813af",
+    "server/utils/afterSalesClaims.js": "e85107ddbb839db57de26a07cfc1d65d7aae1738083916d9a00c0f0b44f3baf9",
+    "server/utils/afterSalesCommunications.js": "55674e5d3330be7b1b2ff4874dd3d98803e57f0adf1566acba15c4658db4a8d2",
+    "server/utils/afterSalesPolicy.js": "8b6790c2d2081d7bf09e7bccbaf5104024b4e599fcecbd7395963cd8d4ab5ff8",
+    "server/utils/catalogImport.js": "feaa5293bd9ba671d3fd7aebcdf48a22e19ce5efd0984545871cb034e11a7cfa",
+    "server/utils/catalogTransfer.js": "1fcd25b6b6946b55201374b68dfe996634b48980f39f5f7e4a405c13385fc0e6",
+    "server/utils/catalogTransferContract.js": "4a24d517be223e6cb61859ebadc1f3e1fd1e2f808120488a8ba77d4358f97bbe",
+    "server/utils/catalogTransferCsv.js": "6a72c21f7c88853de33ea62d575622f166e999ea7b4f6502b2da1605c04706a3",
+    "server/utils/catalogTransferPreview.js": "831c09cd0f5271299ba96d28d4cce8920ba016672850159c2e3384c814ddbd07",
+    "server/utils/catalogTransferXlsx.js": "33330c37efea38b3ff245fd656ea585a5613674f79af980e4f97a04d317cb24b",
+    "server/utils/catalogTransferZip.js": "8d96448dc94d5341517c05619287f80600a1b03c020c3b5d1af250c06c1bb16a",
+    "server/utils/chatAttachmentValidation.js": "3360cd9aaae9e4f503d6212903be0cea8cbf4142a07c64f73d65196a9b30a054",
+    "server/utils/claimDatabase.js": "e83a46e33c6869f82fb64d89c14bc0d95d1410adbd8b6a8007c1d39c24a46200",
+    "server/utils/credentialSecrets.js": "53796a4c6f0c0c9b4382648b101d1bfb32c535c1231dc0061a89af96f3b0c35c",
+    "server/utils/crmActivities.js": "9028f6be3d1db1e21ab38884017ec654950b046eead7013d4a59f1b3a753cf85",
+    "server/utils/crmReportingPeriods.js": "bdb9a681488640cd893155989de24000a3aeb271ae499da07d5f25eca0b2101f",
+    "server/utils/customerRequest.js": "db852b33d7cc119abe17a92563733d9c50dc604515f451f8dc9d28a8fb8991f1",
+    "server/utils/customerUsers.js": "18f7859c3a7ff9f21954106bea7d57f4f8e1d2ec33bd332862f3481ae1e9549f",
+    "server/utils/daftra.js": "97859955f7e9311ca2ac3b39c099e80db71636528220a5b3661d337cd12720b0",
+    "server/utils/documents.js": "f82cba3ddc3db16e7cda44083fdef30f14b0f29c887531dbbcb637c0222f32b1",
+    "server/utils/email/brevo.js": "74976682ac8daf28f29cf336e792b7a00b70456497ad9a6fbd6c8ab1ab3659b2",
+    "server/utils/email/core.js": "93c11139f15fa286646756d215ae3bf5e2576758b3c9072125abef4349a8e2d8",
+    "server/utils/email/service.js": "d399506feec02782291a70da324e19924c24f5562a7682abfa46d237cf17c8c9",
+    "server/utils/email/settings.js": "51ff65184e62d446592a530e218eda89fd4ba7ebb2fceb2d77c003a1c817d959",
+    "server/utils/erpOwnership.js": "a68949c33dde7c131119425f09a42af2b9f2635f04da72c6c96fa4471576bcb5",
+    "server/utils/helpCenter.js": "f2046d2e758dd2c42b14fc9ecad952b7f82875f55c22f3df55d629bf8a328b41",
+    "server/utils/imageContent.js": "26c400561d9bf650d32824b266eaac939b5c004eb998801fde7730382cb6ece3",
+    "server/utils/liveChat.js": "9b92f0487d00ea617b83896cb2504399e171adb4288d9aa6fb935fcc5915bde4",
+    "server/utils/liveChatAttachments.js": "1099a86980b0f3bb6089452ebf5c578fbb7703b9946348cbca8c28cb7f657507",
+    "server/utils/liveChatContext.js": "0c7f3f8f26062fde00df4960d4cd57339adf19a621baa2837c21c54212350010",
+    "server/utils/liveChatRateLimit.js": "3df71764e91d24565523ee64c0a8079cc5956da1cfe302337f330413dc2e88dc",
+    "server/utils/liveChatRateLimitIdentity.js": "06f7cc5d85e441f22f0c5c0427b376e3f656312bfe00f352082bc4c63d9844b8",
+    "server/utils/liveChatSettings.js": "fcf1dfddff2e299c064002cc2276477dc41f50c700fc40eb568c819895afefb9",
+    "server/utils/mediaReferenceError.js": "186a0d21b6adec599124adbbc3300c315b7bb0323cb51d33a18eee3b645ee904",
+    "server/utils/nps.js": "a133db82652713a355c378a0955d345c90abaacb00b3f170d676b409611435b5",
+    "server/utils/orderPacking.js": "99ba501c845b068a735df93f9137bdd71f6bfafb00efb0695a37084497ddf8ac",
+    "server/utils/payments/body.js": "46071cf6142e9f22a910903dd39c9b08361cfc862b8c97949ab4f50f9fe831f9",
+    "server/utils/payments/methods.js": "2caa9a0edc9a309a44008c788210e39c7b0aee7ee5fc65eaeb516ea56049b477",
+    "server/utils/payments/paymob.js": "ff8a041630c303e8b051cec63aeedcae179b02a48c3cda4a2b04dd2b7148743c",
+    "server/utils/pdcLookups.js": "8187758dab6e6f486f8f813c9646b882753f779538cd103c04070e2c8268945e",
+    "server/utils/pdcReverseLogistics.js": "d7bc444ba170fecea267d00ea12f7ec3fdfd22c48ffcda085e84f2589a7fc494",
+    "server/utils/pdcSettings.js": "ec00c97c03ddb041b5f30aff0976d48ef602a0906422ae92d9f67d0d7a9f5e64",
+    "server/utils/pdcShipping.js": "aa731b5135076a022fe78487ab18affb00f47244719223a99c8bd1e836500af8",
+    "server/utils/pdcTracking.js": "1e14b3e57d5b8ffa04ad507a7b8b621319b5622e8a003ce7b38a44e85f4ae451",
+    "server/utils/productBulk.js": "8c55488589d0cb58924f7deefbb36b76602e2eb709df42a58f1569bf72f2538e",
+    "server/utils/productList.js": "08c9b1b5d59ae83dc009362d4def02063618549e1ef8f7da6e295f11cd43673b",
+    "server/utils/productReviews.js": "c9a193c199001d22268ddd4add47d742774582147405763b943ad3d7393681b5",
+    "server/utils/productSave.js": "bdf8682c15feeca43b902b342273afe02d42279f0a93f529970647b5f3f24e9c",
+    "server/utils/quickSetup.js": "7450bb5aae18a5414eddbcdd56818c0732cb48f2cf914938519752a8befee504",
+    "server/utils/quickSetupHttp.js": "543866ffa16803e4f930709fe76b768662bc815ba47e4384335e6877bea1b6b0",
+    "server/utils/quickSetupProgress.js": "82a100bd7cef74714eda819246b7bbab2642b7cf6ca5ef59217c2912f873736e",
+    "server/utils/requestDatabaseError.js": "94148eef4baf71aea4ea9fff10f1e23e114a3b5c60d0e52c73d7f28030a350d3",
+    "server/utils/resetFilePolicy.js": "26f49ff702e321dd4477903f3dac7e88e78cf473986acb4fc5cad1a5e296265b",
+    "server/utils/seoFields.js": "0fea1fd8edb8fbd20d64cf8dfaad400381ca7517faa21240cded729a16013102",
+    "server/utils/serializedInventory.js": "de5e5434dfbbfbeffcf15883f1a21e9dde009e68fe08e73d2c38da34b61544b8",
+    "server/utils/shippingSecrets.js": "cdf7a2411d1b3cf56f6255c31ff199fa44ddbccae70515c74308cdc05d2100ec",
+    "server/utils/sitePages.js": "61b37e55ef5452190e5a59462fea862fb9798cc9159b76bc351e842eb3a8ad59",
+    "server/utils/sms/admin.js": "a8ad76a74c54ef535085056570ae3f3baa011a51760c35ce46c7d08b0e4eca12",
+    "server/utils/sms/errors.js": "0f769c4fdc617d0abccd95217777edb864cf81d8b26934d1aca7f81a442d425a",
+    "server/utils/sms/orderEvents.js": "1ee9f367627a6fab39f2014377bf645a7a75e5ca47333ec1205a9e189223bd2c",
+    "server/utils/sms/service.js": "d6f8182037d7d6e7226e7b85ad4434e06e5e0eba4de54192992f55c01b24a62f",
+    "server/utils/sms/settings.js": "a4769f0f3ecd4f1c0b87e29dc6fbc2d206e199b8be944b5450051546c3104cc4",
+    "server/utils/sms/transport.js": "a36ed381bd6f7ae27e0d7f18e5d68ea4fea0e754597db7e28c14b1f105bb0241",
+    "server/utils/sms/vodafone.js": "e9cd3457b4d6dd8d23f8732a9dfdcfe90ae801754d7fa6026eb4974f39d0dba2",
+    "server/utils/supabaseAdmin.js": "e7e8676108103e5b9c287cdd7ae6943c3c7cad8330f76eb1c73ca9437ec2ccf8",
+    "server/utils/supportTickets.js": "4f531aaf4c5e093ebabe52a1d6f587576da3b359e04e5ae36337a1bb2e956652",
+    "server/utils/systemReset.js": "06e94cd056b22812b43e560e0dae5f196c90f1062216ca72cc3f12b662300d2b",
+    "server/utils/systemResetFiles.js": "3ee0d89457ed8385babc5dab1f58984c445a9577c7a24227b88c872a36d89047",
+    "server/utils/systemResetScopes.js": "735fb55bfb92b3c1e0599a08296b781601b1db038627eda6eb6b7055759450e1",
+    "server/utils/uploads.js": "88cdbe582ba376019096a8921025eaff4220a0c7270bde6d2d69a3723edce263",
+    "supabase/migrations/20260717000000_commerce_manual_sales.sql": "111c62fba70e924e0392ffca2edcfa0fbd6f025294dabf410be351173d4bbe62",
+    "supabase/migrations/20260717010000_hr_treasury.sql": "87b3cfbf634ed750c14b3c31aa48404692ecb8faad895ae6f515833c5233f804",
+    "supabase/migrations/20260718000000_dashboard_analysis.sql": "3f15b6573dd419432a9049aae0ea8b848e7136bcb94a13610f04644c85c0e2bd",
+    "supabase/migrations/20260725000000_product_reviews.sql": "b5b022a98c277905f3b7a23ef45a3afb0186d0fd7d7d5d1d87f8834e7f385d38",
+    "supabase/migrations/20260725120000_homepage_reviews.sql": "5c154aedabb6386b498bac4c58db783214134b231b5e2b2da98f434e0d47cc64",
+    "supabase/migrations/20260725130000_nps_customer_analytics.sql": "12dff86a8aa1a89e587ef755ffc908787ff820c0a592cb296b11ff1b77873089",
+    "supabase/migrations/20260725140000_exclude_internal_analytics.sql": "bbdc22a43bbdd93c78d8641329853813aca09e0934bdff9d8b0a9f43b9c79b01",
+    "supabase/migrations/20260725150000_crm_activities.sql": "2855500b759c52dbf1d06165ed4577a0ce05e43a6f4e8582d94442ac038e8feb",
+    "supabase/migrations/20260725160000_live_store_visitors.sql": "4ba9efabab0313e305cffc0c4eab63a6f35c3520c9900bab7f0a84cfffe4e8cd",
+    "supabase/migrations/20260725170000_product_review_account_age.sql": "02bd3eda0375673bae0742058b1842d2c1aea38338515175a13e9d3c3bf22099",
+    "supabase/migrations/20260725180000_serialized_inventory.sql": "90bc2dfcf1638142825ddd5eeceadef22ca9667945d0a4917af3dae36898c572",
+    "supabase/migrations/20260725190000_variant_gallery_cost_projection.sql": "063752ffd630aca2903b8654115618a00efc80a871e6f17d2bcb24b4ecc1bbb9",
+    "supabase/migrations/20260725200000_dashboard_layout.sql": "f54fa387617ca65078c374e679f2d2b87437eaf52230c7fd8f6c740601549d8a",
+    "supabase/migrations/20260730120000_order_packing.sql": "b6980872f87b6448ae849a6506997adf1340f93a44a7d325ad7f445a0954ba52",
+    "supabase/migrations/20260730130000_order_problem_conversations.sql": "1df49245bdc408f899795e426e5189f2d496e9b04f4bf997106c591eaa403c3e",
+    "supabase/migrations/20260828120000_admin_documents.sql": "4faf376562c5659bd1490f98a4bfb8492602dd279ed2960d4c8b825b809828a6",
+    "supabase/migrations/20260828130000_pdc_shipping_preparation.sql": "b6a25f1859e6357534808e924f918d51b534a981559d5da8f9f7f9f612dc86b3",
+    "supabase/migrations/20260828131000_pdc_city_mappings.sql": "7357382d4274d35d19a6d654d609d59d9ec44dec750e03d23c8964707841d5ec",
+    "supabase/migrations/20260911090000_owner_system_reset.sql": "bee1cd5a8da8288e1900bd487be9cb1150cf4a55aa1e629ca290a5e7b688c6d7",
+    "supabase/migrations/20260911110000_daftra_erp_integration.sql": "fe10fecb09c738020203c98e0d05522b991d02a3fd44bef4fbbd11572d37fbbe",
+    "supabase/migrations/20260911120000_daftra_queue_fail_safe.sql": "12b4c72559801b618d4ce1c1776962ff0ed82d92c808203aa52da9b35045b78c",
+    "supabase/migrations/20260911130000_document_workspace.sql": "733b921f5c3f75eb826d0a0794ee6bc1a45dc4e95d108e5377251dcc3e0555aa",
+    "supabase/migrations/20260911140000_packing_work_sessions_and_video.sql": "e8e806de9b540fa3d376491d5ad440e57f265f78303de186141b3ac7dc43109f",
+    "supabase/migrations/20260911150000_require_video_scan_coverage.sql": "137ece8f4756429dd6241d50f754d21a575048e03019736006a5fe94dcf490b1",
+    "supabase/migrations/20260913100000_close_packing_work_session.sql": "1787851a2df76fe710c87eee4f48ea8fc7875024e5099b0b253c51a069e38502",
+    "supabase/migrations/20260913110000_document_tags.sql": "75a0f1088ee3ac0ab920b946dacd7ddffeb5b392057e7ccf5c674c03a6f5986e",
+    "supabase/migrations/20260913120000_custom_site_pages.sql": "dbb185e97f875ebcb385e890257c404aa35a3a1e5a837d798165b7a11d98ea35",
+    "supabase/migrations/20260913130000_site_page_text_direction.sql": "e6a8cae3ce60458dd1e38f345baaef78aa09f799dfa2e27765ced9f0ec99366d",
+    "supabase/migrations/20260913140000_remove_default_return_policy_link.sql": "34644f13a314b1a93695f02bfed9fa848ffada0fd6772e9ec6e2c64c0c5ef26c",
+    "supabase/migrations/20260914200000_dashboard_settings_and_erp_credentials.sql": "c3d214d6cbc94f0314352100ef5f4643c82dee40e24ec9673317432c10b037f4",
+    "supabase/migrations/20260919120000_help_center_support.sql": "97143b22a29d3b78c39c7b9728f01aed86394c3d3d2f3dcae1719fb1fdd30b2e",
+    "supabase/migrations/20260920120000_support_unread_replies.sql": "c0f7670401527b1bb780d851fefa79de2d32ea96271b78606373817683455812",
+    "supabase/migrations/20260920130000_guard_customer_profile_fields.sql": "a1356de9be6e809350abeaf8e438829c295923aab07d834c3ebe3e8d9a9e4cf2",
+    "supabase/migrations/20260920140000_customer_account_appearance.sql": "c8cebe8fd73bb517d12028722e871de60d24f546c0f3ffd611f51f927583b832",
+    "supabase/migrations/20260920150000_live_chat_foundation.sql": "1867ced4c1651043986880001c70940539739f48c9da95bb3baa2d98073212fa",
+    "supabase/migrations/20260920160000_live_chat_transactions.sql": "e068edf59e3597559662539d3322dba0cda5d67bd30686f65d8a4a3098a0f0fc",
+    "supabase/migrations/20260920170000_live_chat_customer_intake.sql": "ac918b94a6945126428dd4222bca08bd63df5e788e7d7dd9d2827ba7ff397cbc",
+    "supabase/migrations/20260921100000_live_chat_assignment_audit.sql": "2941ef1994573b4e54f5827910ad033fc6a3bb22561b94ec47e30816a36d76ae",
+    "supabase/migrations/20260921110000_live_chat_read_presence.sql": "b8b444e5ad57289110d4704a272dc40f11f7b299faba3033cfd26e5bcf27c8f6",
+    "supabase/migrations/20260921120000_live_chat_customer_orders.sql": "394f8bbaf0feefad5ce8178ad85285e8e17407811503b599912c2f23c6835ecb",
+    "supabase/migrations/20260921130000_live_chat_attachments.sql": "58f61274b91f80a0ef3f22cf99cd9beff939011c0c1e5d78654b16170332c761",
+    "supabase/migrations/20260921140000_live_chat_ticket_conversion.sql": "b8fedefd49938568d43f95f6bb114ced12424e3c51ac5a7dd61c9402cf9e6e63",
+    "supabase/migrations/20260921150000_live_chat_settings.sql": "f7dd7c88a44db8da4d3db786b33ed04fb307336ede6d56ac9fecdb924288a55c",
+    "supabase/migrations/20260921160000_live_chat_rate_limits.sql": "ebebb4edc4d181906cd6c79449eacb5fa1f066c51bf35e76bf21b93a0d9b757f",
+    "supabase/migrations/20260922100000_live_chat_audit_hardening.sql": "a0a2a0d7e0e7b8673932cae9b4d43feabbad8eb74130f7802c72e0cba434de67",
+    "supabase/migrations/20260923120000_modern_storefront_footer.sql": "05fd4c98ee546f3e0ce059172d7439c5bde31f506f6ea0ab729e4989105572d8",
+    "supabase/migrations/20260923140000_storefront_payment_methods.sql": "63c93b10b3913cbc5fb45962a030188515d31a5d81da2c1d1688b04a2676257f",
+    "supabase/migrations/20260927120000_product_specification_library.sql": "ff7dbdccb6bff898adc9fe5a80e252cc86617ecbc46bf54c581806b3c8e75ff8",
+    "supabase/migrations/20260927180000_live_chat_resolution_callbacks.sql": "415c4b124a07f9d3920a7a5db4d799753a553e45674590d214b94fe4b41b7af0",
+    "supabase/migrations/20260928100000_preorders.sql": "ff588dbc81b1c6e50fee3c21b764de4081c685cdc98e751c7be6da74e11abb5a",
+    "supabase/migrations/20260928130000_ui_appearance.sql": "5e426c0e6a6e457907c6211835981359905f3adbedeadee4d0b1b8fd761f8d9a",
+    "supabase/migrations/20260930120000_auth_page_appearance.sql": "c30ba991fa05d92d05f96a0659fad79f0971e4ec7de62a14f4448213482b0dc6",
+    "supabase/migrations/20261001120000_public_seo.sql": "bb6b6ed828d06ccf2a873d37f6a3db4dd3cf8537d73aec35f7b99bdbd5888c57",
+    "supabase/migrations/20261003120000_erp_ownership.sql": "a50d901d2c9b685adc3a7367b3c45c25345ad22f83c66257ca0752e1cb6ec743",
+    "supabase/migrations/20261003140000_category_arabic_name.sql": "bf5080de837e989b4bbdc5787fd9734b8454ab6984328c24765989a069d4e7aa",
+    "supabase/migrations/20261003160000_brand_landing_pages.sql": "c26208eecc7202493030382349f6899ea427fba95b6a7bd8c200651e7e641652",
+    "supabase/migrations/20261004120000_paymob_foundation.sql": "76aea7fffaab72423d8ff62f977f043b88ff3f3183615629e7bbc7f1ea000df0",
+    "supabase/migrations/20261005120000_pdc_customer_tracking.sql": "6a84752937b1d6e9da1410fdd1d609e2ca8c2312dd2acde310a9f9574552c94f",
+    "supabase/migrations/20261005160000_vodafone_sms_foundation.sql": "0a88239aa00db65a17672736f933dc01fc3e4d51d08fd2175bc5dc99ed2ca5ad",
+    "supabase/migrations/20261006100000_order_sms_notifications.sql": "988c6fb47ad1547081f8e938316d91aee517b1e4738a6287e61460f2737274b0",
+    "supabase/migrations/20261006120000_pdc_sms_notifications.sql": "072cef061294dc23518658cff405ecf7dbd3df4757502096814fbcb5da4e6f58",
+    "supabase/migrations/20261007120000_warranty_entitlements.sql": "ba999c03204557d1130440ed32dfefeb661d59d0db0df3bbb2ab1973f5343b52",
+    "supabase/migrations/20261007160000_after_sales_policy.sql": "24f40ba0968842fc801e4d7aff2af473c6b958d31b671d6c0c52db8a630a88e5",
+    "supabase/migrations/20261008120000_after_sales_claims_core.sql": "7db914fecd7be043281f18fe7dbbb0563de8180665634880e9c80e0a581af4cd",
+    "supabase/migrations/20261008160000_after_sales_reverse_logistics.sql": "833b36b9dcf7acefbc47de95b2f21af64202b94233d73e673328348aaa8942d2",
+    "supabase/migrations/20261008180000_email_foundation.sql": "e32c88ad21f6fb971bcf82da293857d10eb6a4f5eb25bcf219392597ab78784d",
+    "supabase/migrations/20261009120000_after_sales_communications.sql": "df83fed86e8cb119a67b12e84974de059c665ea3b449c5d8724f5e35e9543f63",
+    "supabase/migrations/20261011120000_catalog_confidentiality.sql": "e7d9fb35a05f9c8cb2b82c343efdb79e515c607842e0d7f9c5369e4365bb3cae",
+    "supabase/migrations/20261011140000_order_amount_constraints_reconciliation.sql": "d2b60fbd08f8d457c9d507737b9f0b6665b34b89b6860214bfc5f5329ce7cf89",
+    "supabase/migrations/20261012120000_quick_setup_progress.sql": "1dff9aac7d94bab1091287b61dac7e86f50fdbe1d803bba2239940f1674f2161",
+    "supabase/migrations/20261012160000_quick_setup_installation_bootstrap.sql": "f518219c3fdd0a5d6a934da2bc84caee04d41d97dd5add0bd254ace85d6c0434",
+    "supabase/migrations/20261013120000_atomic_product_saves.sql": "c084c89d5a10b24853cc93be28c40a9df5434f577095237e391d6fe3f6b32102",
+    "supabase/migrations/20261013140000_media_reference_safety.sql": "6ec6a9bbfc18d01e0285e0e05e5ef2ae1d4c4fa86b84a5e17edcbb477920e409",
+    "supabase/migrations/20261013160000_product_draft_default.sql": "a305188a5ac9cfb84650ebaafdedd1af3e697e7ec510fae25cab5cc3dece7aed",
+    "supabase/migrations/20261013180000_product_listing.sql": "a05357c015651005746cad6fb496a9ec7c0308acefb5ed45ee635d4b3d084ca8",
+    "supabase/migrations/20261013200000_product_bulk_operations.sql": "9ffa8745cc09cf1fb09a4453611c006756ab62fe53431b795bebddaa1868f145",
+    "supabase/migrations/20261014120000_catalog_transfer.sql": "b4bbaff0cf1c7010c6c9bd9b270262b92768b7a21c43eca63ed4e9c9f035b6ea",
+    "supabase/migrations/20261014180000_catalog_import.sql": "ae5e86e81ef76722ce9e6c9b8e4bff69f00289b99bf8257f94b681281658caf4",
+    "supabase/migrations/20261014200000_system_reset_compatibility.sql": "c7173c3e2a67e1d9fb3c1356ab27d9ed5d9bf0b21261dd48a078a7de8645ca11",
+    "supabase/migrations/20261014220000_packing_scan_authorization.sql": "da568a2cef429306ea208a795d640721d810bd5aa1aec4151e941a5fe92fb6b7",
+    "supabase/migrations/20261014230000_salary_payment_commands.sql": "f6ee211a4568e59dcb87f51f2db5432b23f8b5f88b9d50e024493840d0f9c04a",
+    "supabase/migrations/20261015000000_checkout_commands.sql": "512e758a3ee688c5f549790a3919bf16f627b99dba5b789ca31776146ab3d8fd",
+    "supabase/backups/schema.sql": "c45588387105d146ba4c3824ea56d01e5a3f207e7840d6955720f28e5b6126a8"
+  },
+  "head_policy": "Preserve seven existing HEAD ingress entries. Newly admitted handlers are GET-only: Nitro method-specific GET routes do not promise HEAD dispatch. No upstream method rewriting."
+}
