@@ -172,7 +172,7 @@ def runtime_facts(saved, command, uid=0, proc=Path('/proc')):
         else:
             require(executable == base and arguments in starts and ignore_errors == 'no'
                     and master['command'] == 'nginx: master process ' + arguments, 'SERVICE_START_CONTRACT')
-        service[key] = commands
+        service[key] = [list(command) for command in commands]
     artifacts = set([deployment['nginx'], deployment['systemctl'], deployment['ss'], service['FragmentPath']])
     artifacts.update(shlex.split(service.get('DropInPaths', '')))
     from private_config import walk

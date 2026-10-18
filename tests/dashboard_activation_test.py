@@ -236,6 +236,7 @@ class OperatorTests(unittest.TestCase):
                 return subprocess.CompletedProcess(argv,0,raw if argv[0]==systemctl else b'',b'owned-build')
             with patch.object(check,'runtime_state',return_value=dict(nginx=dict(MainPID='42'),application=dict(MainPID='44'))):
                 facts=activation.runtime_facts(saved,command,UID,proc)
+                self.assertEqual(facts,json.loads(json.dumps(facts)), 'Runtime facts must survive the owner receipt boundary exactly')
                 self.assertEqual(facts['master']['pid'],42);self.assertEqual(facts['workers'][0]['pid'],43)
                 Path(unit).write_bytes(b'unit-drift')
                 self.assertNotEqual(activation.stable_runtime(facts),activation.stable_runtime(activation.runtime_facts(saved,command,UID,proc)))
