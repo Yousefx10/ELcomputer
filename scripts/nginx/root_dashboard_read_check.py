@@ -43,6 +43,12 @@ SAFE_FAILURES = frozenset({
     'NGINX_PID_DIRECTIVE', 'NGINX_PID_METADATA', 'NGINX_PID_IDENTITY', 'NGINX_ENTRY_HASH',
     'ACCEPTED_METHOD_MAP_DRIFT', 'ACCEPTED_ROUTE_DRIFT', 'ACCEPTED_API_DENY_DRIFT',
     'ACCEPTED_PROXY_BODY', 'ACCEPTED_HEADERS_DRIFT', 'ACCEPTED_UUID_DRIFT', 'READ_POLICY_ALREADY_PRESENT',
+    'AUXILIARY_CONTRACT', 'AUXILIARY_BLOCK_DRIFT', 'AUXILIARY_CONTEXT_REQUIRED',
+    'AUXILIARY_CONTEXT_PATH', 'AUXILIARY_CONTEXT_DRIFT', 'AUXILIARY_INCLUDE', 'AUXILIARY_INCLUDE_MISSING',
+    'AUXILIARY_INCLUDE_CYCLE', 'AUXILIARY_HTTP_CONTEXT', 'AUXILIARY_CONTEXT_BINDING',
+    'AUXILIARY_ERROR_HANDLING', 'AUXILIARY_TERMINAL_RETURN', 'AUXILIARY_LISTENERS',
+    'AUXILIARY_LOCATIONS', 'AUXILIARY_HANDLERS', 'AUXILIARY_COUNT', 'AUXILIARY_BYTES_CHANGED',
+    'UNCLASSIFIED_SAME_HOST_SERVER', 'FRONTEND_LISTENERS', 'LISTENER_BINDING',
 })
 
 
@@ -176,10 +182,14 @@ def non_api_projection(text, parse):
     return project(parse(text))
 
 
-def prepare_shadow(contents, deployment, root, command, parse, render_reads, validate_binding, shadow_tree, loaded_names):
+def prepare_shadow(contents, deployment, root, command, parse, render_reads, validate_binding, shadow_tree, loaded_names,
+                   auxiliary_contract=None):
     original = contents[deployment['main_path']]
     headers = inherited_headers(contents, deployment, parse, validate_binding)
-    candidate, result = render_reads(original, deployment['routing'], headers)
+    candidate, result = render_reads(original, deployment['routing'], headers, auxiliary_contract,
+                                    dict(files=contents, main=deployment['main_path'], entry=deployment['nginx_entry'],
+                                         prefix=deployment['config_prefix'], approved_files={r['file_id']: r['sha256']
+                                             for r in deployment['protected_configurations']} if auxiliary_contract else {}))
     require(result['approved_reads'] == 70 and result['held_reads'] == 10, 'APPROVED_ROUTE_COUNTS')
     require(non_api_projection(original, parse) == non_api_projection(candidate, parse), 'NON_API_POLICY_CHANGED')
     clones = shadow_tree(contents, candidate, deployment['main_path'], root / 'check-shadow', parse,
@@ -342,7 +352,8 @@ def main():
     require(str(snapshot['resolved']) == preserved['resolved_path'] and snapshot['link'] == preserved['symlink_target']
             and list(snapshot['metadata'][3:6]) == preserved['stat_fingerprint'][3:6]
             and {k:base64.b64encode(v).decode() for k,v in snapshot['attrs'].items()} == preserved['xattrs_base64'], 'MAIN_SECURITY_BINDING')
-    candidate, rendered = prepare_shadow(contents, deployment, root, command, parse, render_reads, validate_binding, shadow_tree, loaded_names)
+    candidate, rendered = prepare_shadow(contents, deployment, root, command, parse, render_reads, validate_binding, shadow_tree,
+                                         loaded_names, spec['auxiliary_contract'])
     # Recheck the same accepted preimage after shadow validation; not a second
     # invocation of the successful historical attestation/helper.
     assert_unchanged(snapshot)

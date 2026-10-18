@@ -9,8 +9,9 @@ remain separate. This is not a new Dashboard design or route audit.
 
 ## Fixed policy and deployment binding
 
-The approved [read policy](dashboard-read-ingress.md), renderer, route matrix and
-sealed portable package remain unchanged. The registry still admits 70 GET
+The approved [read policy](dashboard-read-ingress.md), route matrix and historical
+sealed packages remain unchanged. The corrected renderer selects structural
+frontend roles and validates a separately bound terminal auxiliary. The registry still admits 70 GET
 patterns and holds ten; existing seven HEAD entries/two helpers and the exact
 login-audit POST retain their existing contracts. Nuxt authentication, active-admin
 checks, normalized permissions, owner-only Setup, resource scopes and RLS stay.
@@ -81,8 +82,8 @@ The CHECK procedure:
 6. Captures `nginx -T` privately, validates the exact loaded index and every
    protected file hash/size/ownership/mode, and captures main symlink/xattrs.
    Compares security metadata with the preserved activation metadata.
-7. Renders from those CURRENT accepted bytes using the unchanged approved
-   renderer and effective HTTP/server include headers. Requires 70 reads/ten
+7. Renders from those CURRENT accepted bytes using the corrected role selection
+   and effective HTTP/server include headers. Requires 70 reads/ten
    holds and an independent unchanged non-API directive projection.
 8. Uses the existing private shadow helper to clone **every loaded configuration**.
    All configuration includes are rewritten to those clones; unreviewed include
@@ -121,6 +122,7 @@ Run as a normal local user with `DASHBOARD_REVIEW_NGINX` bound to an isolated to
 python3 -B tests/dashboard_access_test.py
 python3 -B tests/dashboard_reads_test.py
 python3 -B tests/dashboard_read_check_test.py
+python3 -B tests/dashboard_read_roles_test.py
 ```
 
 The new tests exercise two independent store bindings and actual local full-context
@@ -135,6 +137,54 @@ workflow. The production candidate hash and full private production syntax statu
 remain **NOT GENERATED / NOT RUN** until the approved owner CHECK succeeds.
 Do not export the production source to overcome this boundary or invent a hash
 from a local example. The operational report records precise pass counts/limits.
+
+## Terminal auxiliary contract
+
+Frontend selection uses the bound canonical root proxy and the alias's exact
+canonical redirect, with the reviewed listener ports. Each selected frontend
+still requires exactly one literal customer guard and method guard.
+`ACCEPTED_GUARD_DRIFT` remains a blocking assertion. Guard presence does not
+select a frontend.
+
+An additional canonical server requires `auxiliary_contract` in the reviewed
+operational `DEPLOYMENT.json`, outside the frozen `current_deployment` envelope.
+The format-1 contract binds `frontend_ports` and exactly one `auxiliary` record:
+`block_sha256`, `port`, `locations` (2), and `fastcgi_passes` (1). No store identity
+is embedded in reusable Python. Other deployments supply independently reviewed
+bindings; the tests use different origins, aliases, prefixes and ephemeral ports.
+
+The auxiliary requires its exact raw block hash, one wildcard IPv4 and one
+wildcard IPv6 listener on its separately bound port, no root location, two
+retained locations and one static loopback FastCGI target distinct from Nuxt.
+Changed bytes, listeners, additional handlers or ambiguous same-host servers
+stop. Its entire raw block remains untouched in the candidate.
+
+All context files must match the accepted protected-file hash index. Includes
+expand only from those in-memory bytes, with segment-aware glob matching and
+cycle/depth checks. The target must occur exactly once in the effective HTTP
+context; no same-host peer server is allowed. The first include-expanded
+server-level rewrite action must be the unconditional, payload-free `return 404`.
+HTTP-level or server-level `error_page` and `recursive_error_pages` are rejected,
+including directives supplied by includes. Retained location routing does not
+execute before that return; new routing capabilities remain blocked by the raw
+block and complete protected-file identities as well as structural checks.
+
+Nginx executes server rewrite directives before location selection, and `return`
+stops processing. Error handlers can re-enter routing, so their absence is a
+required condition, not an assumption. See the official
+[rewrite execution order](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html)
+and [error-page inheritance](https://nginx.org/en/docs/http/ngx_http_core_module.html#error_page).
+The native tests include an unsafe named-FastCGI error-page control that actually
+reaches the canary, alongside the terminal auxiliary that never reaches it.
+Malformed requests can be rejected earlier with 400; TRACE is rejected earlier
+with 405 by Nginx's request-header processing.
+
+The owner's saved-snapshot inventory supplies evidence, not automatic safety
+certification or live acceptance. A wildcard listener may be externally
+reachable; this correction does not depend on a firewall assumption. The future
+owner-approved CHECK must validate these conditions against the unchanged live
+accepted index and run the complete private shadow syntax gate. Any stricter
+contract mismatch stops for review without rebinding or retry.
 
 ## Separately gated APPLY and rollback
 

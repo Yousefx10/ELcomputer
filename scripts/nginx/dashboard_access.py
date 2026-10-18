@@ -5,8 +5,10 @@ read loads the colocated reviewed registry. No deployment I/O, writes, commands
 or authentication decisions occur here. Nuxt/RLS remain authoritative.
 """
 import hashlib
+import fnmatch
 import json
 from pathlib import Path
+import posixpath
 import re
 from urllib.parse import urlsplit
 
@@ -200,7 +202,119 @@ def read_path_pattern(path):
         for part in path.split('/')) + '$'
 
 
-def render_reads(original, binding, inherited_add_headers=None):
+def effective_context(configuration):
+    """Expand only authenticated snapshot bytes, never live include paths."""
+    require(configuration is not None, 'AUXILIARY_CONTEXT_REQUIRED')
+    files = configuration['files']
+    require({digest(p): digest(text) for p, text in files.items()} == configuration['approved_files'], 'AUXILIARY_CONTEXT_DRIFT')
+    entry, main, prefix = (configuration[k] for k in ('entry', 'main', 'prefix'))
+    require(all(p.startswith('/') and posixpath.normpath(p) == p for p in files)
+            and prefix.startswith('/'), 'AUXILIARY_CONTEXT_PATH')
+    parsed = {p: parse(text) for p, text in files.items()}
+    def direct(nodes, origin, stack):
+        for node in nodes:
+            if node['name'] != 'include':
+                yield node, origin, stack
+                continue
+            require(len(node['args']) == 1 and not any(c in node['args'][0] for c in '$\\{}\x00'), 'AUXILIARY_INCLUDE')
+            pattern = posixpath.normpath(posixpath.join(prefix, node['args'][0]))
+            def matches(path):
+                a, b = pattern.split('/'), path.split('/')
+                return len(a) == len(b) and all(fnmatch.fnmatchcase(n, p) and
+                    (not n.startswith('.') or p.startswith('.')) for p, n in zip(a, b))
+            names = sorted(p for p in files if matches(p))
+            require(names or any(c in pattern for c in '*?['), 'AUXILIARY_INCLUDE_MISSING')
+            for path in names:
+                require(path not in stack and len(stack) < 32, 'AUXILIARY_INCLUDE_CYCLE')
+                yield from direct(parsed[path], path, stack + (path,))
+    def tree(nodes, origin, stack):
+        return [dict(n, children=tree(n['children'], p, trail)) for n, p, trail in direct(nodes, origin, stack)]
+    http = [n for n in parsed[entry] if n['name'] == 'http']
+    require(len(http) == 1, 'AUXILIARY_HTTP_CONTEXT')
+    return files, main, list(direct(http[0]['children'], entry, (entry,))), tree
+
+
+def listener_port(node):
+    require(node['args'] and re.fullmatch(r'(?:[0-9]+|(?:\[[0-9a-fA-F:]+\]|[0-9.]+|\*):[0-9]+)', node['args'][0]), 'LISTENER_BINDING')
+    port = int(node['args'][0].rsplit(':', 1)[-1])
+    require(0 < port <= 65535, 'LISTENER_BINDING')
+    return port
+
+
+def read_server_roles(original, nodes, binding, contract, configuration):
+    """Select structural frontend roles; exclude only a pinned terminal server."""
+    host, alias = validate_binding(binding)
+    if contract is not None:
+        require(set(contract) == {'format', 'frontend_ports', 'auxiliary'} and contract['format'] == 1
+                and contract['frontend_ports'] and all(type(p) is int and 0 < p <= 65535 for p in contract['frontend_ports'])
+                and len(set(contract['frontend_ports'])) == len(contract['frontend_ports'])
+                and len(contract['auxiliary']) == 1, 'AUXILIARY_CONTRACT')
+    fronts, auxiliaries = [], []
+    for node in nodes:
+        if node['name'] != 'server':
+            continue
+        names = [c['args'] for c in node['children'] if c['name'] == 'server_name']
+        require(len(names) == 1, 'SERVER_IDENTITY')
+        identity = set(names[0]).intersection({host, alias})
+        if not identity:
+            continue
+        require(len(identity) == 1, 'FRONTEND_IDENTITY')
+        name = next(iter(identity))
+        roots = [c for c in node['children'] if c['name'] == 'location' and c['args'] == ['/']]
+        canonical = name == host and len(roots) == 1 and [c['args'] for c in walk(roots[0]['children'])
+                    if c['name'] == 'proxy_pass'] == [[binding['runtime_upstream']]]
+        redirect = name == alias and not roots and [c['args'] for c in node['children']
+                    if c['name'] == 'return'] == [['301', 'https://' + host + '$request_uri']]
+        if canonical or redirect:
+            listeners = [c for c in node['children'] if c['name'] == 'listen']
+            require(listeners and (contract is None or {listener_port(c) for c in listeners}
+                    == set(contract['frontend_ports'])), 'FRONTEND_LISTENERS')
+            for text in (CUSTOMER_GUARD, 'if ($' + binding['variable_prefix'] + '_method_denied = 1) { return 405; }'):
+                require(sum(original[c['start']:c['end']] == text for c in node['children']) == 1, 'ACCEPTED_GUARD_DRIFT')
+            fronts.append((node, name))
+            continue
+        require(name == host and contract is not None and not roots, 'UNCLASSIFIED_SAME_HOST_SERVER')
+        expected = contract['auxiliary'][0]
+        require(set(expected) == {'block_sha256', 'port', 'locations', 'fastcgi_passes'}
+                and re.fullmatch(r'[0-9a-f]{64}', expected['block_sha256'])
+                and type(expected['port']) is int and 0 < expected['port'] <= 65535
+                and expected['port'] not in contract['frontend_ports']
+                and expected['locations'] == 2 and expected['fastcgi_passes'] == 1, 'AUXILIARY_CONTRACT')
+        require(digest(original[node['start']:node['end']]) == expected['block_sha256'], 'AUXILIARY_BLOCK_DRIFT')
+        files, main, http, tree = effective_context(configuration)
+        require(files[main] == original and sum(p == main and n['start'] == node['start']
+                and n['name'] == 'server' for n, p, _ in http) == 1, 'AUXILIARY_CONTEXT_BINDING')
+        related = [(n, p) for n, p, _ in http if n['name'] == 'server' and any(
+            c['name'] == 'server_name' and set(c['args']).intersection({host, alias}) for c in n['children'])]
+        require(len(related) == 3 and all(p == main for _, p in related), 'AUXILIARY_CONTEXT_BINDING')
+        children = tree(node['children'], main, (configuration['entry'], main))
+        require(not any(n['name'] in {'error_page', 'recursive_error_pages'}
+                for n in children + [n for n, _, _ in http]), 'AUXILIARY_ERROR_HANDLING')
+        actions = [n for n in children if n['name'] in {'return', 'rewrite', 'if', 'set', 'break'}]
+        require(actions and actions[0]['name'] == 'return' and actions[0]['args'] == ['404']
+                and actions[0]['body_start'] is None, 'AUXILIARY_TERMINAL_RETURN')
+        listeners = [n for n in children if n['name'] == 'listen']
+        port = str(expected['port'])
+        require(len(listeners) == 2 and {listener_port(n) for n in listeners} == {expected['port']}
+                and sum(n['args'][0] in (port, '*:' + port, '0.0.0.0:' + port) for n in listeners) == 1
+                and sum(n['args'][0] == '[::]:' + port for n in listeners) == 1
+                and all(len(n['args']) == 1 for n in listeners), 'AUXILIARY_LISTENERS')
+        descendants = list(walk(children))
+        locations = [n for n in descendants if n['name'] == 'location']
+        require(len(locations) == expected['locations'] and all(n['args'] != ['/'] for n in locations), 'AUXILIARY_LOCATIONS')
+        handlers = [n for n in descendants if n['name'].endswith('_pass') or n['name'] in {'auth_request', 'mirror', 'perl'}
+                    or n['name'].startswith(('js_', 'lua_')) or '_lua' in n['name']]
+        require(len(handlers) == expected['fastcgi_passes'] and all(n['name'] == 'fastcgi_pass'
+                and len(n['args']) == 1 and re.fullmatch(r'(?:127\.0\.0\.1|\[::1\]):[1-9][0-9]{0,4}', n['args'][0])
+                and int(n['args'][0].rsplit(':', 1)[-1]) <= 65535
+                and 'http://' + n['args'][0] != binding['runtime_upstream'] for n in handlers), 'AUXILIARY_HANDLERS')
+        auxiliaries.append(node)
+    require(len(fronts) == 2 and {name for _, name in fronts} == {host, alias}, 'FRONTEND_COUNT')
+    require(len(auxiliaries) == (1 if contract is not None else 0), 'AUXILIARY_COUNT')
+    return fronts, auxiliaries
+
+
+def render_reads(original, binding, inherited_add_headers=None, auxiliary_contract=None, configuration=None):
     """Upgrade CURRENT accepted ADM-01 bytes, never a historical launch preimage.
 
     Existing routes, proxy controls and method maps must match the accepted
@@ -212,20 +326,7 @@ def render_reads(original, binding, inherited_add_headers=None):
     require(digest(original) == binding['source_sha256'], 'SOURCE_HASH_MISMATCH')
     require('# ADM-01-READS-v1' not in original, 'READ_POLICY_ALREADY_PRESENT')
     nodes = parse(original)
-    fronts = []
-    for node in nodes:
-        if node['name'] != 'server':
-            continue
-        names = [c['args'] for c in node['children'] if c['name'] == 'server_name']
-        require(len(names) == 1, 'SERVER_IDENTITY')
-        identity = set(names[0]).intersection({host, alias})
-        if not identity:
-            continue
-        require(len(identity) == 1, 'FRONTEND_IDENTITY')
-        for text in (CUSTOMER_GUARD, 'if ($' + binding['variable_prefix'] + '_method_denied = 1) { return 405; }'):
-            require(sum(original[c['start']:c['end']] == text for c in node['children']) == 1, 'ACCEPTED_GUARD_DRIFT')
-        fronts.append((node, identity.pop()))
-    require(len(fronts) == 2 and {name for _, name in fronts} == {host, alias}, 'FRONTEND_COUNT')
+    fronts, auxiliaries = read_server_roles(original, nodes, binding, auxiliary_contract, configuration)
     prefix = '$' + binding['variable_prefix']
     maps = [c for c in nodes if c['name'] == 'map' and c['args'][-1] in (prefix + '_read_method_denied', prefix + '_method_denied')]
     require(len(maps) == 2, 'ACCEPTED_METHOD_MAPS')
@@ -278,7 +379,7 @@ def render_reads(original, binding, inherited_add_headers=None):
             and nested[1]['name'] == 'return' and nested[1]['args'] == ['403'], 'ACCEPTED_API_DENY_DRIFT')
     require(original[nested[0]['body_start']:nested[0]['end'] - 1] == '\n' + guards(None, 'GET|HEAD') + body, 'ACCEPTED_UUID_DRIFT')
     removed = {begin for begin, _, _ in edits} | {deny['start']}
-    for node in walk(nodes):
+    for node in walk([n for n in nodes if n not in auxiliaries]):
         if node['name'] != 'location' or not node['args'] or node['start'] in removed or node is nested[0]:
             continue
         selector = node['args'][-1]
@@ -303,6 +404,8 @@ def render_reads(original, binding, inherited_add_headers=None):
     for begin, end, replacement in sorted(edits, key=lambda edit: edit[0], reverse=True):
         candidate = candidate[:begin] + replacement + candidate[end:]
     parse(candidate)
+    for auxiliary in auxiliaries:
+        require(original[auxiliary['start']:auxiliary['end']] in candidate, 'AUXILIARY_BYTES_CHANGED')
     return candidate, dict(result='PASS', source_sha256=digest(original), candidate_sha256=digest(candidate),
                            policy_sha256=digest(json.dumps(policy, sort_keys=True)), policy_version=policy['version'],
                            approved_reads=len(allowed), held_reads=len(policy['routes']) - len(allowed),
