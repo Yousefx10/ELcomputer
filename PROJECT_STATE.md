@@ -1,3 +1,50 @@
+# ADM-01 evidence-preparation inert staging PASS; STOP before root — 2026-10-18
+
+- Owner approved ONLY the two existing evidence-preparation files. Continued from
+  4bc7b81/8461879; no CHECK, investigation, renderer correction or tests repeated.
+  Original sealed source/binding/manifest/plan/command and35 evidence hashes remain
+  exact. Historical proposal authorization flags remain preserved; this subsequent
+  approval is recorded in the new attempt's OWNER-AUTHORIZATION.txt.
+- Exact new paths under `/home/elcomputer/.codex-inspection-staging/`:
+  `prepare-ingress-evidence-94c8d39890c3d682.py`,17,111 bytes, SHA256
+  `94c8d39890c3d6821f2751cb558e575f5f60e568686443b633fc54d89b05f3e7`;
+  `prepare-ingress-binding-f781b1b2fc5abd32.json`,1,815 bytes, SHA256
+  `f781b1b2fc5abd32bafcac87222893f4de407cbca1b5e49d520ac59d3888de50`.
+  Both regular/nlink1, UID:GID1002:1004/0600; device2049/inodes7138135/7138136.
+  Canonical parent1002:1004/0700/device2049/inode7083189 remains exact.
+- Exactly five pinned nonroot SSH calls PASS/exit0/empty stderr: account/directory/
+  absent-target preflight, two exclusive nofollow/fsynced transfers, two independent
+  FULL readbacks. All bytes equal originals; hashes/lengths/ownership/modes/link
+  counts/fingerprints match. UID/EUID1002 and GID/EGID1004 enforced throughout.
+  No overwrite, symlink, drift, retry, repair, cleanup or artifact execution.
+- Gate manifest20d27357... binds ONLY preparation; original CHECK manifest863c5c80...,
+  deploymenta2b0dbdd..., owner-reported PASS and exact candidatec859c080.../472049
+  remain bound. Accepted mainde00c8d2...,70 GET/ten holds, strict legacy8080,
+  owner login/audit/customer/commercial/RBAC/RLS protections remain unchanged.
+- Report and complete immutable transfer/readback evidence:
+  `/Users/imac/Documents/ELcomputer/adm01-final-ingress-preparation-20261018/future-staging-attempt/REPORT.md`.
+  ROOT-PREPARE-REVIEWED.command equals original690-byte proposal (final newline),
+  SHA256 `672dc34ef46f3effa4470d3c414f1550788e23ca08eee9fc10a87bd0ac2bcefa`.
+  Ready for SEPARATE OWNER REVIEW ONLY; root execution remains UNAUTHORIZED.
+- Proposed root gate would exclusively create root0700
+  `/root/adm01-read-apply-prep-94c8d39890c3d682`, copy/verify root0600 program/binding,
+  import hash-verified frozen config_parser/dashboard_access/root_dashboard_read_check
+  helpers, read saved CHECK evidence plus23 listed configurations/PID metadata,
+  and create private preparation receipts/APPLY-EVIDENCE only. Dependency hashes,
+  exact private file inventory, external wrapper tools and stop conditions are in
+  the new report. No CHECK.main, Nginx/HTTP/SQL/service/configuration write path.
+  Actual remote root-private dependencies were NOT accessed; gate verifies them
+  before future imports. Fresh loaded-index/runtime/schema/commerce remain pending;
+  apply_ready=false; final APPLY/rollback operators remain unsealed.
+- No root execution/Nginx command/reload/restart/release/database/Auth/RLS/business/
+  media/provider/Procurement action or push. Old root evidence untouched. Only two
+  inert VPS files added; no private production configuration or credentials exported.
+  PROJECT_STATE and CODEX_HANDOFF are the only tracked files changed by this task.
+- ONE next owner action: review the staged program, three frozen helper dependencies
+  and exact690-byte proposal, then separately authorize evidence-only owner-console
+  execution if accepted. STOP after staging; no preparation, CHECK or APPLY run.
+  This supersedes the previous pending-staging next action below.
+
 # ADM-01 production CHECK PASS; local APPLY preparation PASS, activation gated — 2026-10-18
 
 - Owner reports corrected production CHECK ran ONCE:PASS at2026-10-18T13:01:47.204575+00:00.
