@@ -1,3 +1,79 @@
+# ADM-01 corrected VERIFY package/staging PASS; root gate pending — 2026-10-19
+
+- Owner confirms guarded `.htpasswd` correction PASS, contents/xattrs unchanged,
+  separate live check0:0/0644/nlink1. Attributed owner evidence; no agent target
+  access or repeated correction. Prior ACL/permission-decision pending entries
+  below are historical. New actual root/runtime VERIFY receipt remains pending.
+- Preserved1eb09a5 module-prefix fix and AST-identical strict secured_file.
+  Corrected core38164 bytes/SHA256
+  `3be097f8217bd200985aaf8879f2839ec89485bbd62dc583e66c4b0032ef67f4`.
+  17 focused tests PASS on EACH native1.28/1.30: prefixes/modules,644 acceptance,
+  writable/owner/link/drift rejection, actual package intake and VERIFY guards.
+  Service/process/HTTP/Linux xattrs modeled; not production-root acceptance.
+- New deterministic VERIFY-only archive,235520 bytes:
+  `adm01-activation-verify-834aed5095addc13.tar`, SHA256
+  `834aed5095addc131c08fd7b8fdc53864f86ac8f2e77e5ca2862dca859838670`.
+  ManifestSHA256 `5b3c0b52fdb12f933975aff883d1a7d61c7e1c485d2dca251193b2244e3f1185`.
+  Reviewed bootstrap unchanged4790 bytes/SHA256
+  `43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1`.
+  Independent builds match7 files; only core/BINDING payloads changed. Manifest
+  modeverify; BINDING has only NEW `/root/adm01-activation-verify-3be097f8217bd200`.
+- Both staged under `/home/elcomputer/.codex-inspection-staging/`:
+  archive leaf above; `bootstrap-activation-43a6473a36b2abab-for-834aed5095addc13.py`.
+  Regular1002:1004/0600/nlink1, dev2049/inodes7138237/7138238; parent unchanged
+  1002:1004/0700/dev2049/inode7083189. Five pinned nonroot sessions passed once,
+  full independent readbacks byte-equal to originals; no retry/repair/cleanup.
+- Report/receipts/sealed proposal/exact command:
+  `/Users/imac/Documents/ELcomputer/adm01-corrected-verification-20261019/REPORT.md`.
+  sealed/ROOT-VERIFY-PENDING-STAGING.command:811 bytes including LF, SHA256
+  `7721d3c3d41470e3fd5aa9f11a1e4acab4e29da34e2cf8386f5df3c74f69c880`.
+  Prepared/syntax checked, NOT EXECUTED. New root workspace exclusive; old failed
+  fad66381d2851176 workspace/command never reused. VERIFY uses read-only systemctl
+  show/ss/nginx-V/-T and8 GETs; writes new private evidence, no activation/reload.
+- Exact candidatec859c080dcab025c6d7e614d77864905d034e8c50d6570eef95014d6f4574bb5,
+  CHECK0d884404..., expected PREPARE_EVIDENCEbbe8bdc0..., all frozen receipts,
+  policy70 GET/ten-held/customer/audit/HEAD/login/legacy/commerce controls preserved.
+  No successful CHECK/preparation repeat; all17 historical sealed files unchanged.
+- Git main/existing origin/main9024eec, no unpushed commits. Preserved prior33-line
+  uncommitted additions; only both handoffs changed in Git. No source change,
+  root execution, production config/permission/service/database/Procurement action,
+  APPLY/rollback, cleanup, Git commit or push. Remote work stopped after readbacks.
+- ONE next owner action: security-review the811-byte command and disclosed effects
+  for separate approval of one owner-console VERIFY. STOP before execution.
+
+# ADM-01 permission script inert staging PASS; STOP before root — 2026-10-19
+
+- Owner approved only inert staging of the existing unchanged permission script.
+  Original5306 bytes/SHA256
+  `e84c29c94607560ed33587751763c4ff4b764def798d4ac52c7886645f5d1e46` verified
+  before transfer and after full independent readback; all bytes match exactly.
+- New exclusive destination:
+  `/home/elcomputer/.codex-inspection-staging/htpasswd-e84c29c94607560e-20261019.command`.
+  Regular1002:1004/0600/nlink1, dev2049/inode7138234. Canonical parent unchanged:
+  1002:1004/0700, dev2049/inode7083189. Three pinned non-root SSH sessions passed
+  once: preflight, O_EXCL/O_NOFOLLOW transfer and separate full-byte readback.
+  All exits0/stderr empty; no retry, repair or cleanup. Remote work ended there.
+- Report, complete receipts and exact short command:
+  `/Users/imac/Documents/ELcomputer/adm01-permission-correction-staging-20261019/REPORT.md`.
+  ROOT-PERMISSION-PENDING-EXECUTION.command:819 bytes including LF, SHA256
+  `370e58bafa3c45905725d2d22bdfb1f39a97fe06c0895aa4d7f621ebe95097d5`.
+  Syntax checked only, NOT EXECUTED. Would exclusively create
+  `/root/adm01-htpasswd-e84c29c94607560e-20261019` root:root/0700, install a
+  root:root/0600 copy, verify metadata/hash, then execute Bash for its Python heredoc.
+- Original script still requires target0:0/0664/regular/nlink1, safe parent,
+  stable content/identity/xattrs and verified ACL absence before fchmod0644.
+  ACL remains UNKNOWN; its fail-closed Python probe is unchanged. No permission
+  correction, root command, ACL check or VERIFY was executed by this staging task.
+- Git started1eb09a5 with both prior37-line handoff additions uncommitted. Main
+  and existing origin/main advanced externally to9024eec (docs-only last notes),
+  committing those prior additions. Inspected/preserved; no unpushed commits.
+  Only these same two docs changed here. Module fix/source/tests, historical
+  evidence and accepted70/ten/customer/audit/login/legacy/commerce controls intact.
+- No production config/permission change, Nginx/service/database/Procurement
+  action, VERIFY rebuild/retry, APPLY/rollback, cleanup, Git commit or push.
+- ONE next owner action: review the819-byte command for separate approval of one
+  owner-console execution. Do not infer root execution approval from staging. STOP.
+
 # ADM-01 permission proposal bound to root:root; ACL result pending — 2026-10-18
 
 - Latest owner-supplied installed Hostinger inspection reports CloudPanel writes
