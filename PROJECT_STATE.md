@@ -1,3 +1,40 @@
+# ADM-01 permission proposal bound to root:root; ACL result pending — 2026-10-18
+
+- Latest owner-supplied installed Hostinger inspection reports CloudPanel writes
+  as root and Nginx only reads; group write unnecessary and0664->0644 compatible.
+  Accepted as attributed installed evidence, not a new agent VPS inspection.
+- Fresh owner metadata: `/etc/nginx/.htpasswd` UID:GID0:0/root:root, regular,
+  mode0664, nlink1. This supersedes earlier root:clp wording. Older raw metadata
+  omitted file GID; its root:root entry described a worker, not this file.
+  ACL remains UNKNOWN; getfacl unavailable does not prove absence.
+- One proposed correction is bound to0:0/0664/regular/nlink1, canonical parent,
+  no-follow stable inode/path and absent ACL. Only fchmod(open_fd,0644), with
+  unchanged content/UID/GID/xattrs verified; chmod updates ctime. Errors stop,
+  including denied/unsupported ACL probes. No retry/rollback. NOT EXECUTED.
+  0640 is not proposed: root:root removes the clp worker's ordinary group read.
+- Exact proposal, ACL-only Python console check and report:
+  `/Users/imac/Documents/ELcomputer/adm01-permission-correction-proposal-20261018/REPORT.md`.
+  Correction: 5306 bytes, SHA256 e84c29c94607560ed33587751763c4ff4b764def798d4ac52c7886645f5d1e46;
+  ACL check: 1301 bytes, SHA256 b24f5f2a38d2c6c88d9ef542f94b0f5849b1381a577cd9e2a28d094f289ae968.
+  Neither console command executed. 19 local fixture tests PASS; Linux ACL and
+  O_NOATIME modeled on macOS, not production/root acceptance.
+- Git reconciled: main HEAD and existing origin/main now1eb09a5, initially clean,
+  no unpushed commits; no fetch/pull/push here. Core/tests/operator docs remain
+  byte-identical to that commit. Module-prefix correction and strict secured_file
+  remain unchanged. Existing30-test native-version results retained, not repeated.
+- Minimum later path: ACL result -> separately reviewed owner mode correction ->
+  separately authorized new verify-only package with corrected source/exclusive
+  workspace -> separately authorized inert staging -> one separately approved
+  owner VERIFY. Reuse successful CHECK/preparation and accepted candidate/receipts;
+  do not replay old8dc596f verifier or alter any historical package/workspace.
+  Target credential file is outside the23 frozen configuration snapshot rows.
+- Only both handoffs changed in Git. New unsealed review/test materials are local
+  outside checkout. No VPS/root/permission/config/service/VERIFY/staging/APPLY/
+  rollback/Procurement/data operation, cleanup or push. Existing evidence and
+  accepted70 GET/ten-held/customer/audit/login/legacy/commercial restrictions intact.
+- ONE next owner action: run only OWNER-READONLY-ACL-CHECK.command's contents in
+  the owner console and return its sanitized result. No chmod or VERIFY yet. STOP.
+
 # ADM-01 CloudPanel writer review — exact-file group-write requirement UNKNOWN, 2026-10-18
 
 - Owner now identifies `/etc/nginx/.htpasswd` as root:clp/0664. Permission approval
