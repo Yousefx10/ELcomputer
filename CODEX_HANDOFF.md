@@ -1,3 +1,80 @@
+# ADM-01 dashboard read policy — STOP after local preparation, 2026-10-18
+
+Read PROJECT_STATE.md and the NEW report first:
+`/Users/imac/Documents/ELcomputer/adm01-dashboard-read-policy-20261018/REPORT.md`.
+Local implementation/validation is complete. No production access, root command,
+helper execution, config/service/Auth/RLS/provider/business change, application
+transfer/startup, Procurement staging, migration or push occurred in this task.
+Do not automatically continue historical staging/root commands or another stream.
+
+Entered clean main08d46c7. Focused implementation commit:
+`e8b069f5356d97d2a8ebbde6f940dff8f069b15e` (ten source/docs/test files).
+The following continuity commit changes PROJECT_STATE/CODEX_HANDOFF only;
+its exact identity and final Git status are appended to the external report.
+Prior9dbf1c9 Procurement and03ca445 dependency changes are preserved.
+
+`scripts/nginx/dashboard_read_policy.json` and
+`docs/dashboard-read-api-coverage.csv`:80 current GET handlers,70 admitted GET
+patterns/ten holds. Current handlers/imported helpers/baseline SQL/all82 migrations
+are review-bound; changed inputs/new GETs require explicit review, not hash refresh.
+`render_reads` upgrades CURRENT accepted ADM-01 bytes with existing six-field
+binding. Checks old maps/guards/headers/proxies/default deny and source hash;
+rejects repeat use. Do not render from obsolete production launch preimages.
+
+Two new holds beyond the audit's eight: `/api/admin-inventory/items/:token`
+returns costs/full purchaser/order data under products.view; GET
+`/api/admin-products/transfer/import` calls SQL that UPDATEs expired jobs/items.
+Keep whole paths held. No permission/projection/status redesign authorized here.
+Private Storage files/capability, external ERP dashboard and reset preview remain
+held; all future bytes belong on VPS. No Storage migration or upload performed.
+Gallery is an actual configured VPS filesystem scan, not a gallery index query.
+Do not infer missing files from old edge403 or reopen completed media diagnosis.
+
+New approved reads are GET-only. Preserve seven existing API HEAD entries and
+two helpers without promising Nitro HEAD dispatch. Existing audit POST remains
+the sole exact canonical-host mutation exception. All other business writes,
+provider operations/signup/checkout/COD/payment routes stay closed. Bearer/admin/
+parent RBAC/owner-only Setup/folder ACL/receipt scope/RLS contracts unchanged.
+Coarse CRM/reviews and existing Inventory-list/customer scopes are disclosed,
+not silently redesigned. A main-domain guard cannot constrain owner Supabase writes.
+
+Validation:121 existing/new regression tests PASS,fail/cancel/skip0; final-source
+focused10/10. Actual Nginx1.28.0/1.30.6 new Python matrix12 cases per version,
+two independent hosts/aliases/upstreams. Real edge→H3→native PostgREST/SQL:350
+negative identity requests, owner55 HTTP200/15 valid missing-resource404, staff
+permissions, confidential data, owner Setup, media sections, folder ACLs/receipts.
+All131 non-system fixture tables unchanged/no provider calls. Held import expiry
+write proven in rolled-back local SQL. Hosted Auth/token decisions and local
+service SELECT grants are explicit platform fixtures, not live acceptance.
+No full release recertification/build/typecheck; previous38 unavailable platform
+checks and broad-suite limitations remain. See final logs, not earlier harness failures.
+
+Sealed application unchanged: all597 inputs match; source03ca445 and original
+c95bac1f... archive/5,269,548 bytes remain exact. This policy does not fix the
+deployed Procurement query. No rebuild, transfer or private Linux test was run.
+Production not freshly observed; previous accepted Release82/owner login intact
+by this task. Current helper3db591ae... was not executed or modified.
+
+Portable package `adm01-dashboard-reads-v1-e8b069f5356d.tar.gz`,50,733 bytes;
+SHA256dff4a1e776225e0bd92d00dbfd8e3f917a9adbf073930e5d0453a049b1737e65.
+Deterministic reproduction/extraction/manifest/two synthetic-store renders PASS.
+No production config, binding, credentials, operator or application payload.
+It is review material, not an activation bundle. Source/matrix/docs are committed;
+evidence/archive remain in the new shared workspace directory. No push.
+
+**Single next owner action:** review the report and authorize ONLY the preserved
+read-only root ingress attestation once. No replacement/reload, Procurement
+staging or app activation yet. Future ingress needs a NEW accepted-current-hash
+plan/operator, complete private shadow syntax/diff and separately approved exact
+replacement/reload/rollback. If ingress changes first, review new post-change
+receipt/binding before later application staging; never weaken historical hashes.
+Keep production negative-test accounts prohibited. Guard business/direct Supabase/
+chat/document writes in later browser inspection; separately coordinate Auth/
+login-audit/rotation/logout effects. Complete EN/AR modules, missing/empty/error
+distinctions, Back/reload/responsive and new data invariants after authorized
+corrections. Full checklist: `docs/dashboard-read-ingress.md`.
+STOP here. This entry supersedes older next-action/staging instructions below.
+
 # ADM-01 dashboard API audit — STOP after investigation, 2026-10-18
 
 Read PROJECT_STATE.md and the NEW report/matrix/proposal first:

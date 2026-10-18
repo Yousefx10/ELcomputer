@@ -1,3 +1,60 @@
+# ADM-01 dashboard read policy — local PASS; production gates pending, 2026-10-18
+
+- Owner authorized local implementation/validation only. Source commit
+  `e8b069f5356d97d2a8ebbde6f940dff8f069b15e` extends the existing renderer via
+  `render_reads` against CURRENT accepted ADM-01 bytes and the existing binding.
+  Initial renderer/owner-login behavior preserved. No production access/change,
+  root helper, staging, application startup, migration, Auth/RLS, provider or push.
+- Final reviewed registry/matrix: **80 GET handlers, 70 admitted GETs, ten holds**.
+  Two additions to the audit's holds: Inventory detail leaks costs/full purchaser
+  data under products.view; import-status SQL UPDATEs expired jobs/items. Do not
+  open their mixed paths or fix their application contracts in this task.
+  Eight original private-file/capability/provider/reset holds remain closed.
+- Exact paths/UUIDs, raw path guards, strict methods and default deny; existing
+  bearer/active-admin/RBAC/owner/ACL/RLS unchanged. New reads GET-only; seven old
+  API HEAD entries/two helpers preserved without claiming Nitro HEAD success.
+  Existing exact login-audit POST unchanged; all other writes/commerce stay shut.
+  Users/Setup/gallery and approved module reads gain candidate coverage only.
+  CRM/reviews retain existing coarse admin scope; no new permissions invented.
+- **121 regression tests PASS**, fail/cancel/skip0. Final source-focused suite
+  PASS10/10 after broader fingerprint/registry metadata checks. Actual Nginx
+  1.28.0/1.30.6,12 new Python cases each, two distinct store bindings. Native
+  Nginx→H3→PostgREST→SQL:350 negative-identity reads; owner55 successful reads/
+  15 missing-fixture404s; staff permissions, Users/Orders confidentiality,
+  owner-only Setup, gallery sections, folder ACLs and receipt ownership pass.
+  All131 fixture tables unchanged; zero provider requests. Held expiry write
+  demonstrated inside rolled-back local SQL. Hosted Auth is a fixture; local
+  service SELECT scaffolding is not hosted grant/RLS/browser acceptance.
+  Earlier38 unavailable platform cases/broad-suite limits remain unverified.
+- Gallery currently scans permitted VPS images directly, not an index table.
+  Earlier2,505-file evidence is preserved, not remeasured. No media/index repair.
+  All597 sealed application inputs and original application archive remain exact:
+  source03ca445, archivec95bac1f.../5,269,548 bytes. Procurement remains a separate
+  deployed query bug awaiting its own staging/Linux/application activation gates.
+- Portable preparation package (not production-bound config/operator):
+  `adm01-dashboard-reads-v1-e8b069f5356d.tar.gz`,50,733 bytes;
+  SHA256 `dff4a1e776225e0bd92d00dbfd8e3f917a9adbf073930e5d0453a049b1737e65`.
+  Deterministic double build,15-file extraction/hash/mode checks and standalone
+  two-store rendering PASS. No live config/credential/application output included.
+- Report/package/checksums/final matrix:
+  `/Users/imac/Documents/ELcomputer/adm01-dashboard-read-policy-20261018/REPORT.md`.
+  Reusable design, holds, rollback and exact browser checklist:
+  [dashboard read ingress](docs/dashboard-read-ingress.md).
+  README reviewed; no architecture/setup input changed. Historical evidence intact.
+- Production was NOT accessed; previous accepted Release82/owner-login state
+  unchanged by this task. Do not label old catalog/runtime counts fresh evidence.
+  Staged root helper remains unexecuted here. Before activation, obtain accepted
+  root-private current identity, prepare a NEW current-source-bound shadow/diff/
+  operator and separately review exact replacement/reload. No live candidate hash
+  or activation command is newly approved. If ingress changes before Procurement
+  staging, rebind its new post-change receipt; never weaken/replay old hashes.
+- **Single next owner action:** review the new report and authorize ONLY the
+  preserved read-only root ingress attestation once. No replacement/reload,
+  Procurement staging or application activation yet. Later guarded EN/AR/modules/
+  navigation/rotation/logout and data acceptance remain pending. STOP after local
+  preparation; no deployment, push, media or customer/order work is authorized.
+  This entry supersedes historical next-action/root/staging instructions below.
+
 # ADM-01 dashboard API audit — ingress coverage incomplete, 2026-10-18
 
 - Read-only investigation complete; ADM-01 access acceptance remains pending.
