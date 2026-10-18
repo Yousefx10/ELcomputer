@@ -1,3 +1,51 @@
+# ADM-01 final read-only verification staging PASS — STOP before execution, 2026-10-18
+
+- Current owner approval covered ONLY inert staging of the two final verification
+  artifacts. One pinned non-root SSH attempt passed: account/directory preflight,
+  two exclusive transfers and two separate full-byte readbacks. Remote activity
+  ended there. No root, verification, APPLY or rollback execution was authorized.
+- Evidence/report:
+  `/Users/imac/Documents/ELcomputer/adm01-final-verification-staging-20261018/REPORT.md`;
+  complete receipts/raw readbacks in `attempt/STAGING-PASS.json` and siblings.
+  Original sealed artifacts, proposals, packages and historical evidence unchanged.
+- Exact remote files under `/home/elcomputer/.codex-inspection-staging/`:
+  `adm01-activation-verify-8dc596f179d536e8.tar`, 235520 bytes, SHA256
+  `8dc596f179d536e897d0fca5bbf1c5333ae69558a9523b3300d85ef851b70d0e`;
+  `bootstrap-activation-43a6473a36b2abab-for-8dc596f179d536e8.py`, 4790 bytes, SHA256
+  `43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1`.
+  Both regular UID:GID `1002:1004`, mode `0600`, nlink 1; device 2049, inodes 7138195/7138196.
+  Independent returned bytes equal original local files and exact expected hashes.
+  Canonical parent remains `1002:1004/0700`, device 2049, inode 7083189; no repair/overwrite.
+- Existing unchanged `final-sealed/ROOT-VERIFY-PENDING-STAGING.command` is ready
+  for separate SECURITY REVIEW only: 724 bytes including LF, SHA256
+  `df5d3d25a13228ee5f9407f3ff924856d24d19a46c3f8327dd47f25d4c34779a`.
+  It would create NEW root:root/0700
+  `/root/adm01-activation-verify-fad66381d2851176`, authenticate/extract the
+  fixed-mode package and write root/0600 evidence/READONLY-STATE.private.json.
+  Future commands include systemctl show, ss -lntp, nginx -V/-T. Eight anonymous
+  GETs cover two loopback capability/settings endpoints and six public EN/AR
+  storefront/login/product URLs. No direct SQL/Auth/provider access; serving those
+  requests can cause normal application DB/cache/log work. Nginx -T opens configured
+  resources; future verification is not a zero-filesystem-effects guarantee.
+  No configuration replacement, activation, reload or service mutation in verify.
+- Fresh actual root/runtime/security receipt and separate fresh database/business
+  proof remain missing. Expected preparation receipt identity is still subject to
+  actual root-byte verification. Staging is not production/authenticated acceptance.
+  APPLY/rollback and their fresh receipt/nonce/window gates remain blocked.
+- Git reconciled before work: clean main at `bbfb393`, equal to existing origin/main;
+  no unpushed commits. Source remains `d220ba5`; subsequent commit changes docs only.
+  Earlier historical "unpushed"/"not staged" entries below are superseded for these
+  two final artifacts. Only both continuity documents changed in this checkout;
+  no source edit/build/retest, reset/rebase/pull/commit or push in this task.
+- Zero root/Nginx commands, production HTTP checks, configuration changes/reloads,
+  service/release/database/Auth/RLS/business/media/provider/Procurement operations.
+  No APPLY/rollback archive transfer, retry, cleanup or historical evidence change.
+  Browse-only storefront, owner login, 70 GET/ten-held/customer/audit/commerce and
+  all accepted security contracts remain unchanged by this staging task.
+- ONE next owner action: security-review the exact 724-byte command and its disclosed
+  private/network effects before separately authorizing one owner-console execution.
+  STOP after staging. Do not run verification, APPLY, rollback or any root command.
+
 # ADM-01 authoritative operator revision 2 — LOCAL PASS; STOP before staging, 2026-10-18
 
 - Final source is `d220ba5236bcf1fa36a424157f65ff32aa4be79c`. Final review fixed
