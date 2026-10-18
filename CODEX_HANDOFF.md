@@ -1,3 +1,69 @@
+# ADM-01 dashboard API audit — STOP after investigation, 2026-10-18
+
+Read PROJECT_STATE.md and the NEW report/matrix/proposal first:
+`/Users/imac/Documents/ELcomputer/adm01-dashboard-api-audit-20261018/REPORT.md`.
+The latest owner instruction authorizes investigation/docs only. No root helper,
+application transfer, candidate startup, ingress patch or activation this turn.
+Historical staging authorization/artifacts remain preserved, not exercised here.
+
+Exact cause: accepted narrow ingress omits Users, Setup Status and gallery reads.
+Fresh canonical-edge/loopback comparison covers all80 administrative GET patterns:
+edge72 NginxHTML403/one405(logs GET)/seven401; runtime80 JSON401. Requests were
+anonymous, synthetic parameter IDs, no credentials/Auth sessions/business writes.
+GET `/api/admin-setup/status` is owner-only, reads configuration/snapshots; page
+catches edge403. PATCH setup state stays closed. No owner/RLS repair justified.
+Image Manager GET `/api/admin-gallery` is similarly denied; generic403 warning
+does not mean no files. Fresh configured VPS scan2,505 supported product images,
+known public sample200/hash;560 local primary refs/559 published/Storage0. Do not
+start media migration. Relevant nine table RLS and one active owner confirmed.
+
+Keep Procurement42703 separate: sealed source03ca445 already adds created_at to
+the RPC projection. Direct Supabase Procurement/Warehouses/HR/Treasury reads are
+not controlled by main-site Nginx. Actual owner-authenticated reads remain pending.
+
+Proposal only: PROPOSED-READ-POLICY.json lists72 metadata/receipt GET candidates
+and eight held routes. Use one generic versioned route/method/side-effect registry
+for renderer and tests; preserve existing verified bearer/admin/RBAC/resource
+contracts, restrictive origin/upstream binding/no-store/security headers and
+default deny. No broad /api/ or admin wildcard. Keep private file/capability GETs,
+document-download recents write, external ERP-provider reads and reset preview
+held. All business writes/providers/customer signup/checkout/COD/payments closed.
+Existing users.view also authorizes some writes; no users.edit exists. CRM/reviews
+are active-admin contracts. Do not invent roles or silently change permissions.
+Direct owner Supabase writes require separate browser guard; edge is not global
+read-only mode. Chat read receipts/presence/doc activity are not implicit approval.
+
+PASS50 unchanged focused tests, zero fail/cancel/skip: actual Nginx portability,
+Setup/progress, native PostgREST confidentiality and isolated VPS media safety.
+Current relevant tests/renderer match tested clean dependencies; new policy has
+NOT been implemented/tested.38 earlier platform cases still unavailable. No broad
+audit/build/full production verifier rerun; fixture tests are not hosted acceptance.
+
+Archivec95bac1f.../5,269,548 bytes, source03ca445, all597 app inputs and bound
+manifest/inventory/deployment plan hashes PASS unchanged. Runtime still retained
+original Release82, PID12065/restarts0/Restart=no. Full entry23:30:59Z is preserved
+evidence for exact schema82/RLS/revisions/settings/23 receipts/7161Draft/stock-
+orders0/signup; focused audit must not claim a new full entry or completed ADM.
+
+Pending helper3db591ae... freshly remote-read hashed, UID1002/mode0600/parent0700,
+4,535 bytes, NOT executed. It remains valid for the currently accepted root-private
+APPLY receipt and23 loaded config identities. It does not attest API coverage.
+Root-only hash gate and exact Procurement staging remain valid unchanged while
+that accepted ingress remains in force. Candidate deployment fixes only Procurement.
+If ingress changes first, review the new post-change binding/receipt; never weaken
+the guard, use obsolete pre-ADM hashes or replay CHECK/APPLY. No root command
+issued/executed, no application staged, no automatic retry/rollback/cleanup/push.
+
+**Single next owner action:** approve LOCAL preparation of the reusable dashboard
+authenticated read policy/renderer correction and focused route/auth/permission/
+method/privacy/portability coverage. No production changes/new writes authorized.
+Then retain owner-reviewed root identity attestation and existing private Linux
+candidate gates. Exact ingress/app activation requires separate reviewed commands;
+finish guarded owner EN/AR/modules/Back/rotation/logout and fresh read-only state
+acceptance afterward. Preserve immutable candidate and accepted production.
+No WordPress customer/order work, media migration, favicon or unrelated features.
+This next action supersedes the older immediate root-command instruction below.
+
 # ADM-01 staging continuation — wait for root ingress attestation, 2026-10-18
 
 Read PROJECT_STATE.md and

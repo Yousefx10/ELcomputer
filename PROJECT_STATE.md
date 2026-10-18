@@ -1,3 +1,64 @@
+# ADM-01 dashboard API audit — ingress coverage incomplete, 2026-10-18
+
+- Read-only investigation complete; ADM-01 access acceptance remains pending.
+  No application, Nginx, service, database, Auth or media change. No root helper
+  execution, application transfer, candidate startup, retry or deployment.
+- Fresh 80-route anonymous GET comparison: public edge72 Nginx403, log-history
+  GET405, seven existing allowlisted reads401. Existing loopback runtime: all80
+  JSON401. Users `/api/admin-users`, Setup `/api/admin-setup/status` and Image
+  Manager `/api/admin-gallery` are denied BEFORE Nuxt authentication/RBAC/RLS.
+  The accepted initial ingress deliberately covered fewer modules; no evidence
+  justifies owner recreation, role/grant changes or an RLS bypass.
+- Setup status is an owner-only configuration/snapshot read. Its page catches the
+  edge rejection and displays the reported error. Setup-state PATCH is separate;
+  incomplete readiness does not authorize enabling providers/payments/COD.
+- Image Manager's generic403 permission warning does not establish missing files:
+  existing configured VPS root contains2,505 supported product images; known
+  public image200/hash PASS.560 products retain local primary image references,
+  559 published, Storage0. No media migration/repair performed or required by
+  this evidence. Fresh relevant RLS inspection: nine tables enabled, one owner.
+- Procurement remains a separate known deployed query defect42703, already fixed
+  by sealed source03ca445. Direct browser Supabase reads in Procurement/Warehouses/
+  HR/Treasury are outside main-domain ingress and retain existing JWT/RLS contracts.
+  No authenticated production module success is newly claimed from anonymous401.
+- Proposed ONLY: one reusable reviewed method/path/side-effect registry shared by
+  the existing renderer and coverage tests.72 metadata/receipt GET candidates,
+  eight held GETs: private files/video capability, document download that records
+  recents, external ERP-provider reads and reset preview. Preserve existing
+  named permissions/owner-role/resource scopes, strict host/upstream binding,
+  headers/no-store, exact audit POST and all commerce/customer/write denials.
+  No blanket API exposure, hardcoded identity or new schema/Auth/config input.
+- Existing Users writes also use users.view; CRM/reviews use coarse active-admin
+  contracts. Do not invent users.edit or silently redesign RBAC. Edge restrictions
+  cannot make direct owner Supabase privileges read-only. Guard future browser
+  acceptance against business writes, chat activity and document activity too.
+- Focused existing regressions PASS50, fail/cancel/skip0: actual Nginx portability,
+  Setup/status/progress, native PostgREST media privacy and isolated VPS media
+  safety. Relevant current tests/renderer equal tested clean dependency workspace.
+  Proposed expanded coverage is NOT implemented/tested.38 earlier platform cases
+  remain unverified. No broad suite/build/full production verifier repeated.
+- Sealed archivec95bac1f.../5,269,548 bytes, manifest/inventory/plan and all597 app
+  inputs freshly match. Original live release remains active, PID12065/restarts0,
+  Restart=no. Earlier full entry23:30:59Z remains exact schema82/revision/settings/
+  receipts/7161Draft/stock-orders0/signup evidence; do not relabel as a new scan.
+- Pending staged root helper3db591ae.../4,535 bytes/UID1002/mode0600/parent0700
+  independently rehashed READ ONLY, not executed. It remains valid unchanged
+  for accepted ingress identity, not API completeness. Existing Procurement-only
+  staging procedure remains valid while that ingress baseline is unchanged;
+  deploying it alone cannot fix these API gaps. Current investigation pauses
+  helper execution and staging. Never weaken/replay old hashes if ingress changes.
+- Evidence and full matrix/proposal:
+  `/Users/imac/Documents/ELcomputer/adm01-dashboard-api-audit-20261018/REPORT.md`.
+  Earlier accepted ingress, root evidence, candidate and reports preserved.
+- **Single next owner action:** approve local preparation of the reusable
+  authenticated dashboard read policy/renderer correction and coverage tests.
+  No production execution or new administrative-write access is requested.
+  Then retain root identity and private Linux staging gates; exact ingress/app
+  activation commands require separate review. Complete guarded owner EN/AR,
+  remaining modules/navigation/token rotation/logout and read-only state
+  acceptance after both corrections. No customer/order migration or media work.
+  This next action supersedes the immediate run-root-command instruction below.
+
 # ADM-01 resumed staging — database/runtime PASS; root ingress gate pending, 2026-10-18
 
 - Owner confirmed their `dashboard_layout=detailed` and `hero_enabled=true`
