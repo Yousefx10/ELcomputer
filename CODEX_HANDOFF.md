@@ -1,3 +1,271 @@
+# ADM-01 renderer correction — LOCAL PASS; new CHECK unstaged, 2026-10-18
+
+- Latest owner reports one saved-snapshot ROLE_INVENTORY_COMPLETE. The diagnostic
+  itself said NOT_ASSESSED; Nginx phase semantics plus its reported first
+  unconditional return404/no HTTP/server error handlers support the pinned
+  disabled legacy-backend classification. Wildcard8080 may be externally
+  reachable; no live/network/firewall verification or isolation assumption.
+- Local source commit `79b21019dd1c34449a8a0c6921c2540ea6822953` fixes structural role
+  selection: canonical bound root proxy, alias exact301, reviewed frontend ports;
+  both literal guards still exact with ACCEPTED_GUARD_DRIFT intact. One auxiliary
+  requires exact raw SHA a7a2a159..., wildcard dual-stack listener, terminal404,
+  two locations/one other-loopback FastCGI and complete authenticated include
+  context. Unexpected handlers/errors/roles/listeners/bytes stop. Auxiliary bytes,
+  accepted main/receipt/23-file22-peer envelope,70 GETs/ten holds/HEAD/audit POST,
+  authentication/RBAC/RLS/customer/commercial restrictions remain unchanged.
+- Nginx1.28.0 and1.30.6:61 Python +14 native application cases EACH PASS;
+  failures/errors/skips0.1620 legacy requests across two stores,0 FastCGI hits.
+  Unsafe error_page control hits FastCGI once/version.131 fixture tables remain
+  unchanged; nine extracted-package contract tests also PASS. Local fixtures
+  only; actual candidate/full private production shadow still NOT GENERATED/NOT RUN.
+- New archive `adm01-read-check-b54753fca9ee4a4f.tar`,184,320 bytes, SHA256
+  `b54753fca9ee4a4f702a1564428e6b6a42be50b67cdb89664c69ad18e6025145`.
+  Manifest `863c5c807d80bb665d890f4d94a931424759e82a6f20e04d10ae5cd234aae9ed`.
+  Same4397-byte vetted bootstrap7767de30... gets a new staging basename.
+  Deterministic double build, ten flat0600/root tar members, verified extraction
+  and standalone rendering PASS. Prior0d0ab697... package/diagnostics preserved.
+- Full report, identities, final/initial logs, deterministic BUILD.py and proposed
+  STAGING-PLAN.json/ROOT-CHECK-PENDING-STAGING.command:
+  `/Users/imac/Documents/ELcomputer/adm01-legacy-backend-correction-20261018/REPORT.md`.
+  New future root workspace `/root/adm01-reads-check-b54753fca9ee4a4f`.
+  Command is774 bytes, SHA c7fd06d02274dfeb825f664d39d53b6cfb5c03c41b08a5e0121407a856f2204d;
+  NOT READY: new staging PASS and separate explicit root-console approval required.
+- No SSH/staging/VPS/root command, live configuration/service/release/database/
+  Auth/RLS/media/provider/ERP change, rollback/cleanup or push. Failed CHECK and
+  root-private evidence untouched. Procurementc95bac1f.../5,269,548-byte archive
+  hash verified unchanged locally; never transferred. All pre-existing staged
+  continuity entries and prior unpushed commits retained.
+- ONE next owner action: review report/plan and approve ONLY inert staging of the
+  two new CHECK artifacts. Then STOP for independently verified staging and later
+  separate owner-console CHECK approval. No root execution is currently authorized.
+
+# ADM-01 role inventory staged inert — STOP before root execution, 2026-10-18
+
+Read the new staging report:
+`/Users/imac/Documents/ELcomputer/adm01-role-diagnostic-staging-20261018/REPORT.md`.
+Owner approved ONLY inert staging of the exact existing source. Reviewed original
+scope/plan/wrapper before transfer; no source/procedure difference. Saved failed
+workspace only, no live configuration/network/commands/writes in the inventory.
+
+Exclusive new path:
+`/home/elcomputer/.codex-inspection-staging/adm01-role-inventory-50828eabda88197d.py`.
+14,843 bytes; SHA256
+`50828eabda88197da1218545285f2bb1a611a55af5489ace011133309a1f6e8e`.
+UID:GID1002:1004,0600; canonical existing directory1002:1004/0700. Three exact
+pinned nonroot SSH calls PASS: account/directory/path preflight, exclusive/fsynced
+create, independent full byte readback locally matched. GID1004 checked explicitly
+for process, directory and file. No symlink/overwrite/drift/retry/cleanup. Preserve
+new receipts/streams/invocations/readback; never rerun this staging attempt.
+
+Existing proposal's403-byte wrapper is unchanged, copied into the new evidence
+folder as OWNER-ROLE-DIAGNOSTIC.command; SHA256
+`47d82adaea42ed7993760b71f65eae48d5e42a2b5c3b9253fad5e3c404423eae`.
+Ready for separate owner review only: exclusive new root0700 location, root:root
+0600 copy, full source-SHA verification and one isolated Python exec. Existing
+directory or failure stops; no fallback/retry/cleanup. Root execution NOT approved
+or performed in this task. Do not execute through root SSH or run CHECK again.
+
+Source/original proposal/old evidence/shared edits/history preserved. No root
+workspace accessed, private config transferred, repeated investigation/audit,
+renderer correction or new CHECK package, Nginx/service/release/DB/Auth/RLS/media/
+provider/Procurement change, reload/restart/retry/cleanup, commit or push. Only the
+one inert inspection file was added on VPS. Block2 role still awaits owner output.
+
+**ONE next owner action:** separately review and approve the short command for
+one owner-console role diagnostic. STOP after staging; root execution is not
+authorized here. This supersedes older pending-staging/role-diagnostic actions.
+
+# ADM-01 block2 trigger confirmed; STOP before role-dependent correction, 2026-10-18
+
+Read the new role-gate report:
+`/Users/imac/Documents/ELcomputer/adm01-renderer-role-gate-20261018/REPORT.md`.
+Continued at e198312; pre-existing shared document edits and Git history preserved.
+
+Owner reports prior read-only diagnostic ran ONCE: DIAGNOSTIC_COMPLETE, accepted
+SAVED main SHAde00c8d2... matches. Alias block0 and canonical/root block1 have both
+required guards1/1; additional canonical block2 has raw root0, customer0/method0.
+First failing comparison now proven: block2/customer/expected1/observed0.
+No new live configuration read or independent root action here. Do not rerun the
+old diagnostic/CHECK or modify either existing root evidence workspace.
+
+Confirmed defect: render_reads225-226 selects all hostname-matching blocks and
+applies the frontend guard expectation to block2. Actual auxiliary role still
+UNVERIFIED. Historical launch code identifies a third port8080 legacy backend and
+prepends return404 while preserving opaque directives; it does not expose accepted
+locations/includes/inherited error handling or prove unrestricted API routes
+impossible. Do not equate raw root0 with safe-to-skip.
+
+Owner explicitly requires STOP/proposed diagnostic when role cannot be established
+locally. No renderer source change, relaxed guard/hash, new CHECK package or
+production candidate was prepared. Required renderer/Nginx-version regression
+matrix remains deferred until the role gate permits a legitimate correction.
+
+New independent saved-snapshot role inventory is prepared for review only:
+readonly_role_inventory.py,14,843 bytes, SHA256
+`50828eabda88197da1218545285f2bb1a611a55af5489ace011133309a1f6e8e`.
+Use ROLE-DIAGNOSTIC-PROPOSAL.md and PROPOSED-ROLE-DIAGNOSTIC.json in the new folder.
+Four fixed failed-workspace inputs only: manifest, deployment, verified parser,
+saved fourth-command dump. Full23-file hashes and accepted main are pinned;
+include expansion uses only saved bytes, never live globbing. Outputs role/port/
+rewrite/location/handler/error-page/security categories/counts/hashes, no private
+source/targets/paths/credentials. Explicitly makes NO auxiliary safety verdict.
+No files/network/Nginx/service/CHECK calls. Fixed failures stop, no retry/cleanup.
+
+Inventory pure/static tests PASS9/9, no errors/failures/skips; not a correction,
+native Nginx or hosted acceptance result. Privileged intake NOT RUN. Future
+OWNER-ROLE-DIAGNOSTIC-PENDING-STAGING.command is403 bytes, syntax-only PASS;
+NOT ready to run or approved. No SSH/transfer/staging is authorized in this task.
+
+70-approved/ten-held registry, existing methods/audit/login/customer/commercial/
+header/peer constraints and old sealed artifacts unchanged. No production/root/
+SSH access, config/service/release/SQL/Auth/RLS/media/provider/Procurement change,
+retry/reload/restart/cleanup, commit or push. Procurement archive not accessed.
+
+**ONE next owner action:** review and approve inert staging of this exact role
+diagnostic. After independent staging verification, return the short command for
+separate owner-console execution. STOP at the missing role evidence. No renderer
+exclusion, replacement CHECK, APPLY or retry before that evidence and review.
+
+# ADM-01 reviewed diagnostic staged inert — STOP before owner execution, 2026-10-18
+
+Read the current staging report and short command:
+`/Users/imac/Documents/ELcomputer/adm01-guard-diagnostic-staging-20261018/REPORT.md`.
+Owner authorized inert staging of the EXISTING diagnostic only; original command,
+embedded Python and parser remain unchanged. No investigation/tests repeated.
+
+Local identity/exclusive transfer/independent full byte readback PASS: 8,728 bytes,
+SHA256 `ae91cf1f7f3df2006a35553a988af1ceb60a3bee258cb0af3519066e9d8509c9`.
+New path `/home/elcomputer/.codex-inspection-staging/adm01-guard-diag-ae91cf1f7f3df200.command`,
+UID:GID1002:1004,0600; existing canonical parent0700, same ownership. Three exact
+approved pinned nonroot SSH calls PASS, stderr empty; no overwrite/retry/cleanup.
+Complete transfer/metadata/byte evidence retained in the new private directory.
+
+OWNER-SHORT-READONLY-DIAGNOSTIC.command is397 bytes, SHA256
+`359c994acf333516e157d2579c0b47885e914ba1f0225f66d49b9ef01df10b95`.
+Prepared for owner review/execution only. Fixed exclusive mkdir creates separate
+`/root/adm01-guard-diag-ae91cf1f7f3df200`0700, then root:root0600 copy, full SHA
+verification, one Bash invocation of the unchanged command. Existing destination
+or any earlier failure stops; replay is blocked. Only syntax parsing ran locally.
+
+No root/diagnostic execution by this agent. Failed CHECK workspace and evidence
+untouched; do not rerun CHECK or stage anything else. No live config/services/
+release/SQL/Auth/RLS/media/providers, reload/restart/rollback, Procurement, commit
+or push. Existing shared documentation edits/history/sealed artifacts preserved.
+
+**Single next owner action:** review and execute the short command ONCE in the
+Hostinger root Console; return only sanitized JSON. STOP here. Do not run it
+through SSH, retry, clean up, repeat diagnosis or prepare a production repair.
+
+# ADM-01 ACCEPTED_GUARD_DRIFT — STOP after diagnosis, 2026-10-18
+
+Read PROJECT_STATE.md and the new diagnosis report first:
+`/Users/imac/Documents/ELcomputer/adm01-accepted-guard-diagnosis-20261018/REPORT.md`.
+Continued on e198312 with the prior two continuity-document edits preserved.
+No Git history/source/sealed package change, commit or push.
+
+Owner reports the approved root Console CHECK ran ONCE and returned BLOCKED /
+ValueError / ACCEPTED_GUARD_DRIFT, config/reload/service0, export/retry/rollback
+false. Do NOT replay ROOT-CHECK-PENDING-STAGING.command or retry/resume/rename/
+delete evidence in `/root/adm01-reads-check-0d0ab69749ff8ee5`. Root-private workspace
+is untouched by this investigation. Staging PASS remains historical transfer
+evidence; it is not CHECK PASS. Older NOT-RUN/ready-to-run actions are superseded.
+
+Exact source: scripts/nginx/dashboard_access.py render_reads225-226 -> require36-38.
+For every hostname-selected top-level server, each customer/method guard must
+have exactly one immediate-child source span equal to its expected literal.
+Caller: root_dashboard_read_check.py main345 -> prepare_shadow182. The root error
+whitelist does not raise this guard. Actual block/guard/count not yet known.
+
+Reaching this source comparison on sealed code implies accepted receipt,
+runtime/inventory/PID/commerce,23-file baseline/main security and main SHA gates
+already passed, including render_reads212. At that CHECK, source matched accepted
+de00c8d2...; error name alone does not establish production security drift.
+Shadow cloning/syntax, candidate identity and post-check gates were NOT REACHED.
+
+Local reproduction proves a selection incompatibility: frozen original renderer
+accepts/preserves an extra same-host redirect while altering only its two guarded
+frontends; render_reads selects that extra block by hostname and fails customer
+count0 vs1. Two stores/identities/orders reproduce. The production trigger is
+still UNPROVEN; duplicate/missing/literal guard cases remain possible. Expected
+guard literals/variable prefix/parser match frozen artifacts. No hash refreshed.
+
+10 focused tests PASS, no errors/failures/skips; native Nginx1.28.0 made1,320 local
+fixture requests. Registry70 GET patterns/ten holds unchanged; method maps,
+non-API/login/customer restrictions preserved; administrative writes denied except
+the exact existing audit POST. Fixture authorization is not hosted acceptance.
+No correction was applied/tested or replacement CHECK execution package created.
+
+Additional minimal owner-console read-only diagnostic is prepared, NOT executed:
+`OWNER-READONLY-DIAGNOSTIC.command` in the diagnosis directory,8,728 bytes,
+SHA256 `ae91cf1f7f3df2006a35553a988af1ceb60a3bee258cb0af3519066e9d8509c9`.
+Review its inline Python source first. Only existing failed-workspace reads using
+no-follow/no-atime/size/UID/mode/hash/stability guards; exact accepted main recovered
+from saved `4-accepted-live-index.stdout.private`, plus pinned parser and STOP.
+Outputs only role labels/ordinals/booleans/guard hashes/exact and structural counts.
+No raw config/paths/credentials exported; no new files, Nginx/service/network/live
+reads or CHECK calls. Any mismatch stops; no fallback, retry or cleanup. Pure
+comparison/extraction helpers tested; privileged diagnostic main remains unrun.
+
+No production/root/SSH access or config/service/release/env/SQL/Supabase/Auth/RLS/
+commerce/media/provider change in this investigation. Procurement archive never
+opened or touched. Original sealed CHECK archive/bootstrap/command unchanged.
+No implementation correction is authorized: do not skip guards or unprotected
+same-host blocks. First establish actual roles/counts; a later reviewed correction
+must retain positive frontend identity, required guards, separately verified
+auxiliary roles and every existing source/method/security/peer/shadow invariant.
+
+**ONE next owner action:** approve the exact read-only diagnostic for one
+owner-console execution, as explicitly required by the current request. STOP.
+No CHECK retry, production repair, replacement package, APPLY or Procurement work.
+
+# ADM-01 two-file inert staging PASS — root CHECK NOT RUN, 2026-10-18
+
+Read PROJECT_STATE.md and the new staging evidence first:
+`/Users/imac/Documents/ELcomputer/adm01-inert-check-staging-20261018/REPORT.md`.
+Started clean at e198312; de03e25 CHECK tooling and all sealed packages preserved.
+Current owner approval covers ONLY controlled two-file inert staging. It does
+not authorize root execution, Nginx replacement/reload, services or Procurement.
+
+Both exact approved destinations are now staged inert under
+`/home/elcomputer/.codex-inspection-staging/`:
+
+- `adm01-read-check-0d0ab69749ff8ee5.tar`, 174,080 bytes,
+  SHA256 `0d0ab69749ff8ee5e34f768ab56a47b5ac893fe877a0df8ed4967f2ed84a1c71`.
+- `bootstrap-read-check-7767de30e3b65735.py`, 4,397 bytes,
+  SHA256 `7767de30e3b6573538f547954d3ff8e05d697c0017c5f62200a059c632fbc4da`.
+
+UID:GID 1002:1004 and mode 0600 for both; existing canonical directory 0700,
+same ownership. Preflight confirmed account/directory and BOTH paths absent.
+Exact approved pinned nonroot SSH only: one preflight, two O_EXCL/O_NOFOLLOW
+fsynced transfers, two independent full byte readbacks, locally rehashed.
+All five calls PASS, no stderr. File fingerprints and directory identity stable.
+No overwrite, retry, cleanup or execution of uploaded artifacts. Never rerun
+the staging script: its one-attempt marker and existing files deliberately block.
+
+Full receipts, remote source/argv/exit/stdout/stderr, local identities and returned
+file bytes are preserved in the new private evidence directory. Existing sealed
+STAGING-PLAN/PACKAGE/REPORT retain their historical preparation-only status;
+the new evidence supersedes those pending statements without modifying them.
+
+Original ROOT-CHECK-PENDING-STAGING.command is unchanged: 748 bytes,
+SHA256 `9772f65934ca325e7516ac6a76c1aca144c3838804fa9f214070606621b2ad9a`.
+Ready for owner review after matching its staged paths/hashes, manifest, UID and
+root workspace to the receipts/procedure. One supplemental local review snippet
+used the flag's argument index instead of the manifest hash's index; preserved
+as LOCAL-REVIEW-DIAGNOSTIC.txt and manually resolved after the complete argument
+comparison had passed. No failed comparison or remote operation was retried.
+
+No root command or historical attestation ran. Root candidate UNKNOWN; full
+private production shadow NOT RUN. No config/service/release/env/SQL/Auth/RLS/
+commerce/media/provider change, application build/transfer, Procurement staging
+or push. Existing 70 GET patterns/ten holds and owner-login/commercial restrictions
+remain unmodified by this task. No fresh live acceptance is claimed.
+
+**Single next owner action:** review and approve the sealed command for ONE
+owner-console CHECK. This agent must not execute it. STOP here. No APPLY/reload,
+retry, Procurement or app activation. All later gates below remain applicable;
+older pending-staging/attestation actions are superseded by this entry.
+
 # ADM-01 accepted preimage PASS — STOP before new staging/root CHECK, 2026-10-18
 
 Read PROJECT_STATE.md and the NEW report first:
