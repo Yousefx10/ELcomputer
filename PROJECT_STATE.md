@@ -1,3 +1,39 @@
+# ADM-01 corrected CHECK staged inert — PASS; STOP before root, 2026-10-18
+
+- Owner approved ONLY inert staging of the two existing corrected CHECK artifacts.
+  Continued at79b2101/6a8cf5a; no renderer investigation/correction/tests/build repeat.
+  Original source, sealed plan/package/wrapper and all previous evidence preserved.
+- Exact staged paths under `/home/elcomputer/.codex-inspection-staging/`:
+  `adm01-read-check-b54753fca9ee4a4f.tar`,184,320 bytes, SHA256
+  `b54753fca9ee4a4f702a1564428e6b6a42be50b67cdb89664c69ad18e6025145`;
+  `bootstrap-read-check-7767de30e3b65735-for-b54753fca9ee4a4f.py`,4,397 bytes, SHA256
+  `7767de30e3b6573538f547954d3ff8e05d697c0017c5f62200a059c632fbc4da`.
+  Both regular/nlink1, UID:GID1002:1004/0600. Parent canonical1002:1004/0700,
+  device2049/inode7083189 matches prior staging identity; no drift or symlinks.
+- Exactly five pinned nonroot SSH calls PASS/exit0/empty stderr: account/directory/
+  absent-path preflight, two exclusive/fsynced writes, two independent complete
+  byte readbacks. All bytes equal local originals; full hashes/lengths/metadata
+  and fingerprints match. UID/EUID1002 and GID/EGID1004 enforced each phase.
+  No overwrite/retry/cleanup, source modification or artifact execution.
+- Manifest `863c5c807d80bb665d890f4d94a931424759e82a6f20e04d10ae5cd234aae9ed`.
+  Ten archive members/source bindings and unchanged70 GET/ten-hold registry,
+  strict legacy auxiliary contract, both frontend guards, HEAD/audit POST/login/
+  commercial restrictions match the sealed package. No new live acceptance claim.
+- Report and complete evidence:
+  `/Users/imac/Documents/ELcomputer/adm01-corrected-check-staging-20261018/REPORT.md`.
+  ROOT-CHECK-REVIEWED.command is the unchanged774-byte proposal, SHA256
+  `c7fd06d02274dfeb825f664d39d53b6cfb5c03c41b08a5e0121407a856f2204d`.
+  READY for SEPARATE OWNER REVIEW ONLY. New root0700 workspace would be
+  `/root/adm01-reads-check-b54753fca9ee4a4f`; root0600 verified bootstrap/archive intake,
+  then CHECK only. Existing workspace or any failure stops with evidence retained.
+  Root execution NOT approved/performed; actual candidate/private production
+  shadow remain NOT GENERATED/NOT RUN. Never retry the previous failed CHECK.
+- No root/Nginx command, config/service/storefront/release/database/Auth/RLS/
+  business/media/provider/ERP/Procurement change, evidence deletion or push.
+  No root evidence workspace accessed. Only two inert VPS files added.
+- ONE next owner action: review and separately approve the exact staged-package
+  command for one owner-console CHECK. STOP now; no CHECK execution authorized.
+
 # ADM-01 renderer correction — LOCAL PASS; new CHECK unstaged, 2026-10-18
 
 - Latest owner reports one saved-snapshot ROLE_INVENTORY_COMPLETE. The diagnostic
