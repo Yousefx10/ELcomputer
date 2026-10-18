@@ -1,3 +1,40 @@
+# ADM-01 authoritative operator revision 2 — LOCAL PASS; STOP before staging, 2026-10-18
+
+- Final source is `d220ba5236bcf1fa36a424157f65ff32aa4be79c`. Final review fixed
+  systemd command tuple/list identity across private JSON receipts; the Linux
+  fixture now asserts full runtime-record round-trip equality.24 tests PASS again
+  on EACH native Nginx1.28.0/1.30.6, plus unchanged5 Node PASS;0 failures/skips.
+  Native syntax/atomic fixtures are real; reload/workers/SQL remain simulations.
+- Authoritative artifacts are ONLY in:
+  `/Users/imac/Documents/ELcomputer/adm01-final-activation-operators-20261018/final-sealed/`.
+  Earlier sealed/ sourcee8158aa is preserved SUPERSEDED, never staged/executed.
+  Use REPORT.md and FINAL-SOURCE-IDENTITIES.json; do not stage the older proposal.
+- Three archives are235520 bytes EACH:
+  APPLY `adm01-activation-apply-e63aadd8c4d4bc50.tar`, SHA256
+  `e63aadd8c4d4bc502f6b53d6fbcb5dc71ff4e8c70adb128ceff743a2a056587b`;
+  rollback `adm01-activation-rollback-8df30e5e4736181b.tar`, SHA256
+  `8df30e5e4736181b55ed96da41ac510fca544e96cd0646c359829420253de673`;
+  verify `adm01-activation-verify-8dc596f179d536e8.tar`, SHA256
+  `8dc596f179d536e897d0fca5bbf1c5333ae69558a9523b3300d85ef851b70d0e`.
+  Final mode-specific manifests/BINDING/receipt derivation and separate root/
+  database controls remain exact and reviewable. No APPLY/rollback command or
+  fabricated AUTHORIZATION/fresh receipt exists. Execution remains BLOCKED.
+- Future root-only read-only workspace:
+  `/root/adm01-activation-verify-fad66381d2851176`.
+  Final bootstrap4790 bytes SHA256
+  `43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1`.
+  New staging proposal covers ONLY this bootstrap and the final verify archive.
+  Fresh service/build/process/worker facts and database proof remain mandatory;
+  age/window/nonce checks, separate owner APPLY approval and later separate rollback
+  approval remain enforced. Existing candidate70/ten/legacy/login/commerce unchanged.
+- All prior owner evidence/commits/packages and superseded local revision preserved.
+  No SSH/staging/root/prod Nginx/reload/restart/release/database/Auth/RLS/business/
+  provider/media/Procurement action, historical cleanup or Git push.
+- ONE next owner action: approve ONLY inert staging of the exact two files in
+  `final-sealed/STAGING-PROPOSAL.json` after reviewing the updated report.
+  STOP before transfer, fresh root/database verification or activation.
+  This authoritative revision supersedes all earlier staging proposal paths below.
+
 # ADM-01 final operator preparation LOCAL PASS; execution gated — 2026-10-18
 
 - Owner reports ONE successful PREPARE_EVIDENCE; prior root prep/CHECK/diagnostic
