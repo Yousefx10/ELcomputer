@@ -54,11 +54,14 @@ export async function snapshot(db, certificate, vetted) {
   return { fingerprints, business_fingerprint_sha256: hash(bytes(fingerprints)) }
 }
 
-async function pinned(path, sha) {
+export async function pinned(path, sha, expectedMetadata) {
   assert.equal(await realpath(path), path, 'LOCAL_SOURCE_SYMLINK')
   const info = await lstat(path)
   assert.equal(info.isFile(), true)
-  assert.equal(info.nlink, 1)
+  assert.equal(info.nlink, expectedMetadata?.nlink ?? 1)
+  if (expectedMetadata) {
+    for (const key of ['dev', 'ino', 'size', 'uid', 'gid', 'mode', 'nlink']) assert.equal(info[key], expectedMetadata[key], 'LOCAL_INPUT_METADATA_DRIFT')
+  }
   assert.ok([0, process.getuid()].includes(info.uid), 'LOCAL_INPUT_OWNER')
   assert.equal(info.mode & 0o022, 0, 'LOCAL_INPUT_WRITABLE')
   const raw = await readFile(path)
@@ -83,7 +86,7 @@ export async function main(argv = process.argv.slice(2)) {
   await pinned(binding.runner_path, binding.runner_sha256)
   assert.equal(await realpath(process.execPath), binding.node_path, 'NODE_IDENTITY')
   await pinned(binding.node_path, binding.node_sha256)
-  for (const [path, sha] of Object.entries(binding.locked_inputs)) await pinned(path, sha)
+  for (const [path, sha] of Object.entries(binding.locked_inputs)) await pinned(path, sha, binding.locked_input_metadata[path])
   await pinned(binding.verifier_path, binding.verifier_sha256)
   await pinned(binding.production_module, binding.production_module_sha256)
   // The existing vetted verifier stays unchanged, including strict TLS and its
@@ -126,7 +129,7 @@ export async function main(argv = process.argv.slice(2)) {
     assert.equal(certificate.certified_application_schema_sha256, prior.schema_sha256)
   }
   // Recheck all inputs after collection. No changed helper or baseline is accepted.
-  for (const [path, sha] of Object.entries(binding.locked_inputs)) await pinned(path, sha)
+  for (const [path, sha] of Object.entries(binding.locked_inputs)) await pinned(path, sha, binding.locked_input_metadata[path])
   await pinned(bindingPath, bindingSha)
   const receipt = {
     result: 'PASS', mode: 'ACTIVATION_DATABASE_READONLY', nonce, observed_at_utc: started,

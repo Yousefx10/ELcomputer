@@ -1,6 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { assertProof, snapshot, hash } from '../scripts/nginx/activation_database_state.mjs'
+import { assertProof, snapshot, hash, pinned } from '../scripts/nginx/activation_database_state.mjs'
+import { mkdtemp, writeFile, chmod, link, lstat, rm, realpath } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 const expected = { published: 12, draft: 2, publication_receipts: 4, held_source_id: 'owned-held' }
 const certificate = { read_only: true, schema_rls_grants_exact: true, certified_application_schema_sha256: 'owned-schema' }
@@ -47,4 +50,19 @@ test('business fingerprints change when permissions, profiles or warehouses drif
     const state = await snapshot(db, certificate, vetted)
     assert.notEqual(state.business_fingerprint_sha256, baseline.business_fingerprint_sha256)
   }
+})
+
+test('existing npm hardlinks need exact reviewed metadata and immutable bytes', async t => {
+  const directory = await realpath(await mkdtemp(join(tmpdir(), 'activation-input-owned-')))
+  t.after(() => rm(directory, { recursive: true }))
+  const path = join(directory, 'package-binary'), alias = join(directory, 'installed-alias')
+  await writeFile(path, 'owned-code', { mode: 0o600 }); await link(path, alias)
+  const info = await lstat(path)
+  const metadata = Object.fromEntries(['dev', 'ino', 'size', 'uid', 'gid', 'mode', 'nlink'].map(key => [key, info[key]]))
+  const sha = hash(Buffer.from('owned-code'))
+  await assert.rejects(pinned(path, sha))
+  await pinned(path, sha, metadata)
+  await assert.rejects(pinned(path, sha, { ...metadata, nlink: 3 }))
+  await writeFile(alias, 'changed-code')
+  await assert.rejects(pinned(path, sha, metadata))
 })
