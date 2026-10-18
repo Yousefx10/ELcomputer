@@ -1,3 +1,66 @@
+# ADM-01 final operator preparation LOCAL PASS; execution gated — 2026-10-18
+
+- Owner reports ONE successful PREPARE_EVIDENCE; prior root prep/CHECK/diagnostic
+  workflows were NOT rerun. Candidatec859c080.../472049 and23 protected configs
+  remain exact. New owner-supplied private identities:
+  CHECK receipt `0d884404657f36d8ad38bc1f94ef074e902227dbeb8b97904e85fac61a564db6`;
+  recovery metadata `50a23db12c975cf33cb653aae631c22e5ce16dcbdafdefe1df1f48b9f5539f18`;
+  saved index `06fa2000643bb64a6be8f32174f6926dd7d1307dfcfd4ada34c909650c9ccd78`;
+  APPLY-EVIDENCE `a09ca4f3f299ce279b8f4af45211b8664911c360f5eb7c5740e7d6ccb7303661`.
+  Fresh loaded index/runtime/schema/catalog/commerce and activation remain gated.
+- Reconciled actual status/log/show/diff/upstream: owner6cae165 committed prior
+  staging notes; implementation began clean and preserves4bc7b81/8461879/history.
+  Local sourcef2be792 and metadata-pinning fixe8158aa are NOT pushed. Frozen source
+  packages bind `e8158aaf0e9aa9d8978f39c6b2ab69e0a2daf64b`; reusable logic keeps
+  deployment identities in reviewed BINDING.json, with no app/SQL/RBAC shortcuts.
+- New root entry/core/bootstrap and local database-proof wrapper implement complete
+  evidence/hash/source/config/security/include/runtime gates, native full shadow
+  and installed validation, atomic main-only replacement, at most ONE approved
+  Nginx reload, new-worker acceptance and exact behavior probes. Separate rollback
+  requires successful APPLY receipt/state plus its own fresh proof and approval;
+  restores exactde00c8d2.../owner login with older API gaps. No automatic recovery.
+- Local sealed APPLY archive235520 bytes:
+  `adm01-activation-apply-b507809238603849.tar`, SHA256
+  `b507809238603849546ece5d4a0bad674fb64deb3f32d9c478d6677e3c33a586`;
+  rollback archive235520 bytes `adm01-activation-rollback-85fa1bd537fd060d.tar`, SHA256
+  `85fa1bd537fd060d0ee0c7bf20b5af74515a5502bae8d80276b2dc2495870678`.
+  Sealed SOURCE ONLY: neither is execution-ready. No fabricated AUTHORIZATION,
+  fresh receipts, APPLY/rollback console command or deployment authority.
+- Genuine missing facts: Nginx service/drop-in/binary/build/process/worker identities
+  and fresh read-only schema/catalog/settings/signup/business fingerprints.
+  Mode-bound verify archive235520 bytes `adm01-activation-verify-98f06524410190f3.tar`,
+  SHA256 `98f06524410190f36fd680b9e6673003d6d0570e9f866206a3e55f3c2cfb10b4`;
+  bootstrap4790 bytes SHA256
+  `43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1`.
+  Only these two files are proposed for later inert staging; NOT staged/authorized.
+  Future root verify uses NEW0700 /root/adm01-activation-verify-33ba3dd28de5ce8d,
+  no replacement/reload. Existing root workspaces remain read-only.
+- Fresh database gate retains vetted verifier25455da6.../settings130bff57...,
+  strict TLS/read-only certified82/catalog/publication/commercial checks; adds
+  coherent SELECT-only permissions/profile/warehouse/stock/order fingerprints.
+ 192 pinned local inputs/16 npm packages verified WITHOUT production imports,
+  credential access or connections. Existing esbuild hardlinks are explicitly
+  metadata/hash-bound unchanged; staging/private receipts still require nlink1.
+- Later owner authorization must bind actual root/database receipts, source/candidate/
+  evidence/business hashes, nonce and UTC window<=900s. Database proof age<=300s at
+  entry/swap/reload; APPLY root proof age<=900s at entry. Immutable controls rehashed
+  and live checks repeated at barriers. Results say INFRASTRUCTURE_PASS, NOT full
+  acceptance; separate database post-comparison and guarded browser acceptance needed.
+- Tests:24 PASS EACH on native Nginx1.28.0/1.30.6;5 Node PASS;0 failures/errors/skips.
+  Native full23-file syntax, real disposable atomic apply/restore,70 GET/ten held
+  GET+HEAD, exact audit and backend404/canary0. Reload/workers/SQL are simulated;
+  Linux proc fixtures/macOS xattrs model are NOT root/Linux/production certification.
+  Three archives/mode substitution checks PASS;17 sealed outputs independently
+  reproduce byte-for-byte. Prior CHECK/prep/staging/Procurement archives unchanged.
+- Report, exact source/archive/manifest identities, proposed gate command/staging
+  and authorization requirements:
+  `/Users/imac/Documents/ELcomputer/adm01-final-activation-operators-20261018/REPORT.md`.
+  No SSH/staging/root/prod Nginx/reload/restart/release/database/Auth/RLS/business/
+  media/provider/Procurement action, historical cleanup or push. Storefront unchanged.
+- ONE next owner action: review report and approve ONLY inert staging of the two
+  read-only-verification artifacts in sealed/STAGING-PROPOSAL.json. STOP before
+  transfer/root/database execution/APPLY. This supersedes older pending-prep actions.
+
 # ADM-01 evidence-preparation inert staging PASS; STOP before root — 2026-10-18
 
 - Owner approved ONLY the two existing evidence-preparation files. Continued from
