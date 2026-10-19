@@ -1,3 +1,78 @@
+# Existing VPS clean reinstall: backup baseline BLOCKED — 2026-10-20
+
+- Current task is backup readiness for the ONE existing VPS. No new VPS,
+  reinstall, production data/configuration write, deploy, production Nginx operation, DNS
+  change, restart, migration or WordPress-import replay is authorized or performed.
+- Startup main1be84542733db0fa146d6c6b1da179a366abcc2e clean and synchronized;
+  live GitHub main independently matched. All prior Codex work retained. Task-owned
+  operations/report/tests and these additive handoffs will be committed without push.
+- Verified current Supabase amighioggheqddyypgcl: all560 original product IDs,
+  559 published/one Draft,628 definitions/576 active including all68 original
+  variations,2836 gallery rows,3555 specification rows,9 categories/24 brands.
+  All supplied original product fields match except559 deliberate publications;
+  all576 imported variant identities/name/code/active fields still match.
+  Four independently saved specification sections differ from frozen source:
+  81 original rows unmatched/54 current rows unmatched, net27 fewer. Actor/time/
+  cause NOT ESTABLISHED. Both versions preserved; no replacement/import attempted.
+- Full82 certified migration identities/schema/RLS/grants match;255 validated FKs,
+  zero orphans. Current encrypted consistent-snapshot backup database-v4 restores
+  all173 table fingerprints,13 security metadata categories,82 identities and60
+  effective-permission checks exactly in an egress-denied Unix-socket-only PG17.11
+  laboratory. All7 managed event triggers and original role attributes restored.
+  Earlier failed collectors/rehearsals preserved and excluded. Original tools and
+  production permissions unchanged; pg_trgm added only to isolated toolchain copy.
+- Auth/customer distinction: Supabase has1 Auth user/identity and1 INTERNAL owner
+  profile; no external customer profiles. Live WordPress has518 accounts,516 with
+  customer role,590 Woo lookup rows (502 registered/88 guest),597 HPOS order/refund
+  rows. Archive has518 accounts,588 lookup/595 order-refund rows. Both fresh encrypted
+  SQL exports restore all466/465 table counts and all518 user IDs/emails/password
+  hashes respectively. No WordPress/PHP executed. Both disposable clusters removed.
+- All WordPress hashes use $wp$2y$ prehashed bcrypt, incompatible with an assumed
+  native Supabase bcrypt copy. No customer-role email overlaps Auth. One overlapping
+  administrator email is not migration proof. No legacy Auth mapping/bridge found;
+  preserve full WordPress users/usermeta/billing/shipping/order links and hashes.
+  Future customer-login migration is separate; no Auth/password/email change here.
+- Durable media root explicitly /home/elcomputer/catalog-media/uploads:
+  all2505 original files/389938079 bytes rehashed, zero changes/additions.
+  Older Nuxt uploads have102 files/16822229 bytes:86 products/16 settings, including
+  four later settings uploads. Full homes preserve runtime/env/encryption keys,
+  assets, original WordPress uploads/backups and private archive material encrypted.
+  Six private Supabase compatibility buckets/zero objects; private attachment,
+  documents, packing-video and claims-evidence tables have zero file records.
+- Original22 WPvivid parts/6253640707 bytes match prior accepted hashes and were
+  restored/rehashed from a new encrypted off-VPS archive. All1065 import-plan pins
+  still match. Seven historical database sets/63 components authenticated; one
+  incomplete set excluded. Those old63/69-checkpoint/older-target sets are not
+  credited for current production. Existing source and historical artifacts intact.
+- Exact accepted1634 legacy paths/559 query-ID mappings preserved encrypted.
+  Restored actual local Nginx passes2752 redirects, retained28 held paths/six IDs,
+  no chains/loops. Fresh public48 HEAD redirects/16 GET image hashes PASS; sample
+  evidence only. No production mutation request, login or full hosted rerun.
+- Archive home203012 files and older Nuxt17632 files/41 symlinks independently match
+  encrypted archive bytes, paths, owners and modes. Main home101234 files/eight
+  symlinks also match independently, with zero differences. Actual Nuxt upload GET
+  handler under Node22.23.1 serves all2505 restored URLs/389938079 bytes exactly;
+  private paths remain denied. Final commit/all-ref mirror restore and full-source
+  custody hashes are in external SOURCE-CUSTODY.json/FINAL-GIT.json; no push.
+- BLOCKER: current full protected /etc/nginx and private TLS/config/root receipts
+  cannot be read by existing authorized nonroot access; PermissionError observed.
+  Readable main unit/drop-ins already encrypted off VPS. A deployment-bound root
+  backup-only plan/exporter and public recipient certificate are prepared LOCALLY,
+  NOT staged/executed. Actual VPS OpenSSL public-recipient fixture PASS in memory;
+  private recipient key stays on iMac. No new permission/access workaround.
+- Evidence: /Users/imac/Documents/ELcomputer/clean-reinstall-backup-readiness-20261020/.
+  Report: docs/clean-reinstall-backup-readiness.md. Keys separately in protected
+  production-backup-credentials; no secrets/customer rows in committed reports.
+  Hostinger snapshots and second-device/key escrow are not verified or credited.
+- ONE next owner action: approve PROTECTED-CONFIG-EXPORT-PLAN.json for one scoped
+  owner-run encrypted protected-configuration backup export. It creates backup
+  artifacts only, with no Nginx execution/reload, DB access, deploy, DNS or reset.
+  Off-VPS authenticated retrieval/path verification must pass before readiness
+  can change. Refresh the backup watermark for intervening changes before any
+  separately approved destructive reset. Single-site architecture is the next
+  separate task. Prior Products release/root-inspection actions remain unexecuted
+  by this task; preserve their receipts and work while backup readiness is priority.
+
 # Products inspector: corrected APPLY binding, inert staging PASS; owner short command ready — 2026-10-19
 
 - Owner confirmed earlier long block was ONLY COPIED, never executed. Web Console
