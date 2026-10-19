@@ -1,3 +1,65 @@
+# Product bulk UX: reviewed, validated and sealed for deployment review — 2026-10-19
+
+- GO for separate application-only deployment review. No staging/deployment.
+  Implementation already exists in c7480a0c307d154a8c612852553c9cc5cd23ea97.
+  Exact implementation diff from e11e34c reviewed; no new application correction
+  required. This review commit preserves both accounts' work and original history.
+- Confirmed 405/401/403 denial state, original-command uncertainty, actor-generation
+  isolation, authenticated GET-only receipt recovery and idempotency. No denial or
+  missing/malformed receipt clears pending evidence or automatically POSTs again.
+  Durable pause/storage-error behavior and explicit same-command retry remain.
+- Reviewed EN/AR copy and refreshed ONLY those two registry review-input hashes.
+  All 263 inputs match. Policy decisions/methods/authorization unchanged; existing
+  renderer produces byte-identical fixture configuration (70 allows/10 holds).
+  Local registry SHA now 8849fd91dc2eb461a7b39c7f4ed90fc393d1ba5e3172c373582db2815570139b.
+  No deployed Nginx change or edit to historical activation packages/evidence.
+- Node22.23.1/npm10.9.8: TWO clean installs with lifecycle scripts PASS, 801 identical
+  installed records and unchanged lock. Fresh-dependency typecheck/build PASS.
+  Recovery 54/54 PASS; existing pure/HTTP/native bulk 19/19 PASS; binding guards
+  2/2 PASS. No focused failure/skip. Full historical suite not repeated.
+- Focused Chrome regression: 310 assertions/36 screenshots PASS, including 108
+  new assertions/six scenarios for EN/AR405,401/403,timeout/malformed POST, failed
+  GET recovery, actor changes and real sessionStorage reload. No mutation during
+  recovery, unexpected browser errors or external requests. Existing 202 checks
+  retained. Fresh temporary Chrome contexts only; no owner profile/session access.
+  Auth and ingress denials are fixtures; native business/audit/receipt checks are
+  local. Formal hosted authenticated acceptance is not established by these tests.
+- Local sealed-candidate runtime: 598 HTTP checks PASS across two independent
+  store/backend bindings. All 135 verified retained immutable assets served.
+  Original mutable builds/latest.json excluded; retained assets supplied before
+  stock build. Output mode normalization changed no bytes. Build warnings retained.
+- Archive: /Users/imac/Documents/ELcomputer/product-bulk-release-review-20261019-9oxru4kf/candidate/release.tar.gz
+  SHA-256 7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846;
+  5,277,655 bytes. Deterministic archive repeats and extraction inventory match.
+  Output inventory: 1,167 entries, SHA 3ebb47018ff542797f50272fab452e374c20aced53d1dc654c1d7e35ac128b34.
+  597 application inputs SHA ea2531f1b45a8069f9028e6b266dd7819b8295459f8b5554765b745c3436b5fd.
+  Final external release.json binds the commit containing this entry; independent
+  Python verification and FINAL-GIT.json record final seal and commit identities.
+- Only four runtime inputs differ from the previously sealed Procurement candidate:
+  bulk composable, Products listing and EN/AR. Earlier reviewed Procurement/lock
+  corrections are carried forward unchanged; production repair remains separately
+  unverified. All 82 SQL migrations/DB security and original certificates preserved.
+- No migrations, Nginx/environment changes or commercial activation required.
+  Bulk POST stays intentionally blocked. Owner's original batch stays UNVERIFIED
+  and untouched. Legacy commands do not acquire invented denial history. Denied/
+  interrupted batches without receipts remain held for separate reconciliation;
+  storage is tab-local and open old clients retain their old UX until reload.
+- Follow docs/product-bulk-release.md and the external DEPLOYMENT-PLAN.json.
+  Before later staging: fresh read-only target/current-release/env/unit/ingress/
+  schema/OFF-control and retained-backup checks. The historical pre-activation
+  ingress plan is not current authority. Validate the exact sealed output privately
+  on Linux before a switch; preserve old release/assets and existing Restart=no.
+  No automatic retry/resume/rollback/cleanup. Rollback needs separate approval.
+- ADM-01 DEPLOYED/INFRASTRUCTURE_PASS, post-DB zero-write/public PASS and the five
+  owner functional observations remain intact and separate. Formal authenticated
+  RBAC/held-route/restricted-role/browser-write-safety acceptance stays DEFERRED/
+  BLOCKED, not waived. Upload/description issues and commerce remain unchanged.
+- This commit stages only the two handoffs, bulk validation/release docs, registry
+  hash refresh and focused browser runner/helper. No push, production access,
+  production write, SSH/root operation, reload, rollback or unrelated change.
+- ONE next owner action: approve a separate read-only production preflight for
+  this sealed candidate. STOP before production staging or deployment.
+
 # Product bulk denial/recovery UX: local implementation validated — 2026-10-19
 
 - Scope: application-only bulk UX. Traced confirm -> durable immutable command ->

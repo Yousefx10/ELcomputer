@@ -151,3 +151,29 @@ permit discarding an unresolved command; interrupted/denied batches may require
 separately authorized reconciliation. Tab-local storage has no cross-device
 recovery. Production functional smoke observations and prior infrastructure/public
 PASS evidence remain separate from DEFERRED/BLOCKED authenticated acceptance.
+
+## Release review and sealing — 2026-10-19
+
+The later [release review](product-bulk-release.md) completes the source-binding,
+focused browser and clean-build gates left open above. The implementation was
+already committed as c7480a0. Review found no required application correction.
+The new commit adds browser denial cases, refreshes only the two reviewed locale
+hashes, and records the sealed candidate; it does not change ingress behavior.
+
+Fresh-dependency results: recovery 54 PASS; existing pure/HTTP/native bulk 19 PASS;
+Chrome 310 assertions/36 screenshots PASS; source-binding guards 2 PASS; two clean
+installs with 801 identical records PASS; typecheck/build PASS; runtime 598 HTTP
+checks across two configurations PASS. No focused failures/skips or unexpected
+browser errors/external requests. Historical suite and hosted acceptance were not
+repeated. Original evidence above remains intact with its original scope.
+
+The deterministic output-only archive is 5,277,655 bytes, SHA-256
+`7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846`.
+Output inventory has 1,167 entries and 597 application inputs bind to the final
+review commit. Final external manifests and independent verification are under
+`/Users/imac/Documents/ELcomputer/product-bulk-release-review-20261019-9oxru4kf/`.
+Status: GO for separate deployment review; no production staging/deployment.
+No migrations, Nginx changes or commercial activation are required. Bulk POST
+stays blocked and the original owner batch remains unverified. The release review
+documents fresh target/backup/private-Linux health gates and separate rollback
+approval. Authenticated security acceptance stays DEFERRED/BLOCKED.

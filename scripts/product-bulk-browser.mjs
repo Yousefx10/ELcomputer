@@ -12,6 +12,7 @@ import {createProductSaveHttpFixture} from '../tests/helpers/productSaveHttpFixt
 import {createMediaFixture,pngImage} from '../tests/helpers/mediaFixture.mjs'
 import {seedListing} from '../tests/helpers/productListFixture.mjs'
 import {nativeWaitFor} from '../tests/helpers/emailNativeDatabase.mjs'
+import {runBulkDenialBrowser} from '../tests/helpers/productBulkDenialBrowser.mjs'
 const base=resolve(new URL('..',import.meta.url).pathname)
 const dir=process.env.PRODUCT_BULK_REVIEW_ARTIFACTS||'/private/tmp/elcomputer-product-bulk-browser'
 await mkdir(dir,{recursive:true})
@@ -152,6 +153,7 @@ window.editorTest={config,invalidations,actor,theme,erp,locale:i18n.global.local
  await page.evaluate(()=>window.editorTest.actor.value='viewer');await waitList();check(await rowBoxes().count()>0,'Viewer can select for export');check(await page.locator('#product-bulk-action').count()===0,'Viewer has no mutating bulk controls')
  await page.evaluate(()=>window.editorTest.actor.value='editor');await waitList();await rowBoxes().first().check();await review('ar');await rest.db.query('update public.admin_users set is_active=false where id=$1',[f.actors.editor]);await controls.getByRole('button',{name:labels.ar.productBulk.apply,exact:true}).click();await controls.getByRole('alert').filter({hasText:labels.ar.productBulk.accessDenied}).waitFor();check(true,'Revoked staff cannot commit');await page.setViewportSize({width:390,height:1000});await screenshot('ar-390-revoked')
  check(expectedLostResponses===1,'One deliberately dropped acknowledgement');check(errors.length===0,'No unexpected browser errors: '+errors.join(';'));check(external.length===0,'No external requests')
+ const denials=await runBulkDenialBrowser({browser,url,fixture:f,labels,directory:dir,origins:[url,f.url,rest.url,media.url,empty.url]});assertions+=denials.assertions;screens+=denials.screenshots
  const report={assertions,screenshots:screens,errors,external,expectedLostResponses,database:'Owned native PostgreSQL, PostgREST, real bulk/list/product/media HTTP handlers',limits:'Synthetic Auth verification, JWTs and Nuxt shell. Real components, Vue Router, browser storage and Chrome. Local acceptance only; no hosted or production access.'}
  await writeFile(join(dir,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report))
 }catch(error){if(reviewPage){await writeFile(join(dir,'failure.json'),JSON.stringify({error:error.message,body:await reviewPage.locator('body').innerText(),storage:await reviewPage.evaluate(()=>Object.entries(sessionStorage)),writes:f?.controls.writes,rpcErrors:f?.controls.rpcErrors},null,2));await reviewPage.screenshot({path:join(dir,'failure.png'),fullPage:true})}throw error}finally{await browser?.close();if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}await empty?.close();await media?.close();await f?.close();await rest.close()}
