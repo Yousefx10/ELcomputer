@@ -1,3 +1,68 @@
+# Products administrator writes: local ingress repair ready for review — 2026-10-19
+
+- New priority: restore Products before uploads/storage/other dashboard work or
+  ecommerce. Startup main c11f9ac, clean worktree/index, one local unpushed commit
+  relative to recorded origin/main 3d5fe61. Both accounts' work preserved.
+- Confirmed accepted ADM-01 denies POST /api/admin-products, PATCH /api/admin-products/:id
+  and POST /api/admin-products/bulk before Nuxt. Earlier production logs corroborate
+  exact bulk POST405; original actor/UUID/upstream attribution remains unavailable.
+  Create/PATCH diagnosis is configuration plus actual local reproduction, not a
+  newly captured owner request. No new production access was needed or performed.
+- Traced forms/composables, Nuxt routes, hosted-Auth guard, named Products permissions,
+  service-only SQL, revisions, audits, receipts and independent PostgREST section
+  saves. No evidence supports a new schema/RLS/authorization fix. Original deployed
+  bulk client misclassifies405; sealed candidate fixes UX but cannot admit writes.
+- Implemented scripts/nginx/product_writes.py: separate SHA-pinned READS-v1 upgrade,
+  exactly those three commands on canonical host/raw path; no broad POST, query,
+  encoded/alias/trailing/sibling permission. Only their location method guards and
+  global map change; explicit proxy_next_upstream off prevents command retries.
+  All70 reads/methods, ten holds, audit exception, commercial/private/public/TLS/
+  headers/cache/peer controls preserved. Independent byte reversal proves scope.
+- Local-only prepare_product_writes.py emits an exclusive private review directory
+  with pinned input/candidate/diff/binding/report; no SSH/apply/stage/reload capability.
+  Historical operators, source registry, sealed packages/receipts and app bytes
+  remain unchanged. Auth/RBAC/RLS and transactional idempotency stay authoritative.
+- Final validation: new ingress/package tests9 PASS; real Nginx -> actual handlers ->
+  disposable native PostgreSQL tests8 PASS (createDraft/edit/publish/Draft, named
+  add/edit/view, forbidden actors, exact acknowledgements, conflicts/duplicates,
+  lost responses, actor-only GET recovery and zero recovery mutation requests).
+  Existing focused Products tests113 PASS/2 optional Supautils-owner tests SKIPPED/
+  zero failures; existing READS suite12 PASS including263 binding checks. Browser
+  create/edit185 assertions/36 screenshots PASS. Node22 typecheck/build PASS.
+  Earlier local diagnostics retained; no final failure. Hosted Auth is synthetic;
+  this is not authenticated production acceptance. Prior PASS evidence is intact.
+- Existing sealed application still 3d5fe61c1109190c2ac3df12fb858987bc103aa5,
+  5,277,655 bytes / SHA7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846.
+  All597 source inputs/provenance reverified. No replacement artifact or new
+  migration/API/Auth/environment/commercial change required. Its previously
+  reviewed Procurement/lock fixes remain carried forward; Procurement production
+  acceptance is separate. This task adds no Procurement implementation.
+- LIVE PRODUCTS NOT YET RESTORED: policy and sealed UX remain undeployed. Current
+  protected config is not freshly attested; external proposed binding pins last
+  accepted c859c080dcab025c6d7e614d77864905d034e8c50d6570eef95014d6f4574bb5.
+  Need protected loaded-config/peer attestation and exact candidate seal/private
+  shadow validation before any staging/reload. Then separately reviewed main-systemd
+  app staging/Linux health/backups and activation authorization. Generic demo
+  deploy.sh/old first-install guards are unsuitable. No automatic retry/rollback.
+  Prior settings-drift release gate remains intact, uninvestigated/unrebaselined.
+- Original owner batch remains UNVERIFIED and untouched. IDs unavailable: no lookup,
+  retry, replacement, discard or publication change. Existing actor-owned receipt
+  GET alone can reconcile exact retained command; null/error cannot clear it.
+  Known denied/unresolved entries may continue holding bulk controls after ingress
+  is enabled. Never bypass that hold or manufacture completion evidence.
+- ADM-01 remains DEPLOYED/INFRASTRUCTURE_PASS, prior zero-write DB/public110 PASS
+  and five owner functional observations separately preserved. Formal authenticated
+  RBAC/restricted-role/held-route/browser-write-safety acceptance stays DEFERRED/
+  BLOCKED, not waived. Uploads, storage, remaining dashboard and ecommerce deferred.
+- Report: docs/product-writes-ingress.md. Evidence and proposed operational binding:
+  /Users/imac/Documents/ELcomputer/products-write-repair-20261019-9ni51nze/.
+  Synthetic fixture-review must NEVER be installed. Task-owned code/tests/docs and
+  both additive handoffs committed; final SHA/state recorded in external FINAL-GIT.json.
+  No Git push, production mutation, staging, backup, deploy, reload or rollback.
+- ONE next owner action: authorize the protected-config Products release preflight
+  to bind and seal this three-command patch with the existing application candidate.
+  STOP before production staging or activation.
+
 # Product bulk UX: ONE production read-only preflight BLOCKED — 2026-10-19
 
 - Approved release remains 3d5fe61c1109190c2ac3df12fb858987bc103aa5;

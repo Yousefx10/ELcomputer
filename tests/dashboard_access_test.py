@@ -167,11 +167,12 @@ class NginxTests(unittest.TestCase):
     site_host = 'orchard.example.test'
     site_alias = 'www.orchard.example.test'
     candidate_renderer = staticmethod(render)
+    upstream_handler = RoutingFixture
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory(prefix='dashboard-nginx-owned-')
         cls.directory = pathlib.Path(cls.temp.name)
-        cls.upstream = http.server.ThreadingHTTPServer(('127.0.0.1', 0), RoutingFixture)
+        cls.upstream = http.server.ThreadingHTTPServer(('127.0.0.1', 0), getattr(cls, 'upstream_handler', RoutingFixture))
         cls.thread = threading.Thread(target=cls.upstream.serve_forever, daemon=True)
         cls.thread.start()
         cls.edge = port()
