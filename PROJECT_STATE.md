@@ -1,3 +1,61 @@
+# Product bulk UX: ONE production read-only preflight BLOCKED — 2026-10-19
+
+- Approved release remains 3d5fe61c1109190c2ac3df12fb858987bc103aa5;
+  archive 5,277,655 bytes / SHA 7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846.
+  Archive identity and all 597 source inputs reverified; no completed local test
+  suite/build repeated. Startup main and locally recorded origin/main both 3d5fe61,
+  clean index/worktree; both accounts' work and all prior receipts preserved.
+- One pinned non-root SSH session, one sealed DB collector invocation and eleven
+  bounded anonymous GET health probes. No root session, staging, backup creation,
+  production file/DB write, restart, reload, rollback, mutation request or retry.
+- Live current pointer still targets release-82-40b87a3a289ea999, with all 1,066
+  release entries and 5,865 Node entries matching. Custody bundle/archive bind it
+  to source 9a9c2d8dba76321694a1b1183c8634018ba5ec12. Old archive 1b92463c...434cc48
+  and exact old release retained. Ubuntu24.04/x86_64/Node22.23.1; existing unit/PID
+  12065 active, NRestarts=0, Restart=no. Unit/env/start receipt hashes match; running
+  environment matches disk. Pointer/PID unchanged. Loopback3002 active,3003 free;
+  sufficient disk/inodes and existing media mapping verified without a write.
+- Exactly six expected source differences from LIVE: bulk composable, Products
+  listing, EN/AR, earlier Procurement created_at projection and package-lock.
+  Lock adds17 records, changes/removes zero existing records; package.json matches.
+  No unrelated new feature/input. Procurement production acceptance stays separate.
+- Registry changes ONLY two locale source hashes. All263 bindings match; routing,
+  methods, authorization and 70 allowed GET/ten held decisions are identical.
+  No ingress modification. Protected live vhost read returned PermissionError;
+  current exact vhost/loaded configuration is NOT freshly attested. No escalation.
+- Eleven health probes PASS: EN/AR storefront/login/products, exact public image,
+  receipt GET401/no-store, held-route403, signup403 and checkout403. No owner Auth,
+  cookies/session export or original batch lookup. Prior110-route audit not repeated.
+- BLOCKER: sealed DB verifier stopped at POST_REVIEWED_SETTINGS_DRIFT. Actual
+  allow_out_of_stock_purchases=true; approved preimage=false. updated_at also differs.
+  Actor/cause/mutation time NOT ESTABLISHED. No setting correction or baseline
+  rebinding. Checkout/signup remain ingress-denied; the flag alone does not prove
+  full commercial activation. No additional DB request or automatic retry.
+- All192 collector input/metadata pins passed. Read-only TLS transport is enforced.
+  Linear sealed-verifier evidence shows schema82/migrations/RLS/grants and product/
+  revision/variant comparisons completed before the settings assertion. No complete
+  fresh DB PASS receipt: later stock/order checks, Auth settings GET, second snapshot
+  and prior-receipt comparison were not reached. Old post-DB PASS remains historical,
+  not refreshed. Do not substitute old evidence or waive the settings/OFF-state gate.
+- Candidate needs no migration, new API/Auth/RBAC/RLS change, Nginx/environment change
+  or commercial activation. Exact old release/archive support reviewed rollback,
+  but private Linux candidate health remains for a later authorized staging phase.
+  No candidate-bound main-application staging/activation operator is prepared.
+  Original provision/start guards are first-install/old-artifact guards; generic
+  deploy.sh targets the separate demo PM2 deployment. Do not replay/bypass them.
+- Overall BLOCKED before staging/deployment: reconcile settings drift; protected
+  ingress attestation and exact candidate-bound application operator remain gates.
+  No automatic retry/resume/rollback/cleanup. Formal authenticated security acceptance
+  stays DEFERRED/BLOCKED; ADM-01 infrastructure/public and owner functional evidence
+  keep their original provenance. Original owner bulk outcome remains UNVERIFIED.
+- Report: docs/product-bulk-production-preflight.md. Evidence:
+  /Users/imac/Documents/ELcomputer/product-bulk-production-preflight-20261019-8pzap6pq/.
+  Only this report and additive handoff entries are committed; release bytes and
+  implementation remain unchanged. Final doc commit/Git state in external FINAL-GIT.json.
+  No Git push. STOP before deployment.
+- ONE next owner action: confirm whether enabling allow_out_of_stock_purchases was
+  intentional. Any correction or new production attempt needs a separate reviewed task.
+
 # Product bulk UX: reviewed, validated and sealed for deployment review — 2026-10-19
 
 - GO for separate application-only deployment review. No staging/deployment.
