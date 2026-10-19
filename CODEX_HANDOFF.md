@@ -1,3 +1,419 @@
+# Product bulk denial/recovery UX: local implementation validated — 2026-10-19
+
+- Scope: application-only bulk UX. Traced confirm -> durable immutable command ->
+  POST -> exact receipt validation, plus authenticated actor-owned GET recovery.
+  Previous 405 fell through to unknown and offered the same unavailable POST.
+- Implemented distinct method/access denial state. POST 405 shows a clear refusal;
+  401/403 shows denied access. Known denials hide Retry and reject programmatic
+  retry. They do NOT prove an earlier dispatch failed. Original UUID, operation,
+  assignment and product IDs/revisions stay intact until an exact terminal receipt.
+- GET null now says no recorded result; malformed/missing/error responses retain
+  evidence. No automatic POST, replacement UUID, cancellation or discard added.
+  Uncertain lost responses/timeouts retain exact-command manual retry only where
+  no known denial/pause exists. GET 405 describes unavailable checks, not a POST
+  outcome. A known POST denial survives failed/missing receipt checks.
+- Raw actor-scoped sessionStorage command format remains compatible. A companion
+  request UUID/transport-state entry stores no authored fields or credentials.
+  A durable awaiting pause precedes every POST; failed state persistence or an
+  interrupted dispatch restores GET-only recovery. Legacy metadata stays unknown;
+  this fix cannot retroactively classify the owner's original batch. Corrupt
+  storage locks new batches to avoid overwriting evidence. Actor changes ignore
+  late responses and preserve each actor's entry. Verified receipt alone unlocks.
+- EN/AR compact toolbar now labels Saved batch, separates denial from result
+  uncertainty, and keeps Check result. Existing permission checks, 25-item bound,
+  normalization, revisions, idempotency, SQL/RLS and backend handlers are unchanged.
+  A listing refresh failure cannot undo an already validated terminal result.
+- Node 22.23.1: 54/54 new focused tests PASS, plus 1/1 existing pure bulk contract
+  test PASS. Actual Vue lifecycle/reactivity/toolbar, synthetic Auth/storage/router,
+  real loopback HTTP405/ofetch, actor switch/late responses, timeouts, receipts,
+  duplicate clicks, reload states and storage failures covered. Recovery requests
+  assert GET-only, no body, original UUID, actor headers, retry=0. No DB tests/state
+  changes. This is local fixture evidence, not hosted/browser security acceptance.
+- Nuxt typecheck and full local build PASS with empty dotenv, clean explicit
+  environment and synthetic loopback backend settings. Build output is validation
+  only; do not deploy it. Existing pure tests preserved. Browser-script expectations
+  updated; syntax PASS, DB/browser suite not rerun. Build logs retain duplicate
+  ERP import, sourcemap and chunk warnings; no unrelated cleanup. Diff check PASS.
+- Details: docs/product-bulk-operations.md and docs/product-bulk-validation.md.
+  Evidence: /Users/imac/Documents/ELcomputer/product-bulk-denial-local-20261019-vmb6s908/.
+- READY FOR SEPARATE PRODUCTION DEPLOYMENT REVIEW; not deployment authorization
+  or a sealed release. Accepted ADM-01 policy is unchanged (SHA-256 aa40e475976116d5e53cb52d6492a0bb929e0cbd484706b42c1265fe2af631f2).
+  Its two EN/AR review-input bindings are stale for this changed candidate;
+  review/update source evidence separately, without opening any Nginx write route.
+  Bulk POST remains intentionally blocked. Denied/interrupted batches without a
+  terminal receipt stay held for separately authorized reconciliation. Tab-local
+  storage has no cross-device recovery. Owner's original batch completion remains
+  NOT ESTABLISHED; no retry, product change or receipt lookup was performed.
+- ADM-01 stays DEPLOYED / INFRASTRUCTURE_PASS; APPLY receipt 6a93dc6ad6929e2eb1e677613c1cb6a29b36df81acc00652eb942cdacd033372,
+  post-DB PASS/zero reported writes receipt e2d3dd7615892054c1efe763563bb29b838e0749826c910956d63ecab8f62d20,
+  110/110 public PASS and five owner-reported functional smoke PASS observations
+  preserved separately. Formal authenticated RBAC/held-route/restricted-role and
+  browser-write-safety acceptance remains DEFERRED/BLOCKED, not waived. Historical
+  Procurement projection issue remains separate; no production repair inferred.
+  Upload P2 and description-image report remain separate, unimplemented here.
+- Git main/HEAD/locally recorded origin/main e11e34c; no staged/unpushed commits.
+  Both accounts' previous handoff bytes preserved in full. No production access,
+  database operation, browser/profile change, extension, Nginx modification,
+  deployment, rollback, commit or push. Commerce remains disabled.
+- ONE next action: review and seal an application-only release candidate for this
+  bulk UX fix, retaining the accepted ingress restrictions. STOP after handoff.
+
+# Dashboard logo upload follow-up: production 405 evidence; batch identity unresolved — 2026-10-19
+
+- Owner clarifies the batch screenshot was captured around 11:58 AM Saudi time
+  (08:58 UTC), October 19; action time is unconfirmed. Product/SKU/batch UUID are
+  unavailable. Owner reports no retry. Preserve the original pending command.
+- Logo-fallback wording matches Settings/Light Mode Logo in settings.vue:124:
+  site_logo_light_url, section=site_logo, shared DashboardMediaUploadField.
+  After file selection it sends multipart POST /api/admin-uploads through
+  useAdminUploads. This is a settings.edit/VPS settings/site-logo operation,
+  independently traced from any product-description interaction. Identification
+  is based on reported text/source matching, not a newly inspected screenshot.
+- NEW production evidence from an existing access.log, read via pinned non-root SSH:
+  POST /api/admin-products/bulk returned 405 at 11:51:51 and 11:51:54 Saudi time;
+  POST /api/admin-uploads returned 405 at 12:00:52 and 12:00:58. Search window was
+  11:28–12:08 Saudi / 08:28–09:08 UTC, anchored to screenshot time, not asserted
+  action time. No new HTTP upload/submission probes were generated.
+- Each path now has independent production method-denial evidence, corroborating
+  its exclusion from the accepted ADM-01 POST policy. Under that guard, these
+  dispatches cannot reach Nuxt's write handler. No upstream-status attribution
+  or exact actor/request UUID match was established by this sanitized extract.
+  No MIME, request-size, VPS permission/disk or application-RBAC fault is proved.
+- Two bulk records do NOT prove an owner retry, shared command or duplicate-batch
+  defect. No successful response is shown for either candidate. The original
+  command's receipt-level completion remains NOT ESTABLISHED; screenshot timing
+  cannot exclude an earlier attempt. No batch retry/replacement, status change,
+  recovery-data clearing or database query. Existing exact receipt SELECT stays
+  prepared but unexecuted without the original identifiers.
+- Description-image interaction remains UNCONFIRMED and separately tracked.
+  Prior plain-textarea/no-inline-image source observations remain valid, but do
+  not attribute the owner's unobserved interaction to that gap or to this upload.
+  No new description-editor investigation or feature work was started.
+- Read scope: verified elcomputer uid 1002, strict existing host-key pin, no root,
+  no agent/password/forwarding; three SSH sessions for log metadata, a stopped
+  owner-metadata preflight and the filtered read. Root-owned 0640/group 1004 log
+  was already readable. First preflight read no log bytes; revised regular/
+  no-follow/16 MiB/root-or-current-owner scope then succeeded. No file permissions
+  changed. No raw lines, IPs, headers, bodies, query values, cookies or tokens
+  exported. No production HTTP probes, Supabase Auth, SQL or agent production file writes.
+- New report and sanitized four-record evidence:
+  /Users/imac/Documents/ELcomputer/dashboard-logo-upload-followup-20261019-j8u7iy4x/REPORT.md.
+  Prior report/diagnostics/receipt template and both accounts' history stay intact.
+  No broad suite, browser guard experiment, Nginx operation, deployment or rollback.
+- Recommended next engineering action remains the local bulk recovery/405 UX
+  repair, preserving the exact pending command and GET-only result checks.
+  Treat upload availability separately; no write-route opening or implementation
+  is authorized by this read-only continuation.
+- Git main/HEAD/locally recorded origin/main e11e34c; index empty/no unpushed commits.
+  Only additive handoff entries in the checkout; complete prior bytes preserved.
+  ADM-01 deployment and all previous passes remain established with their original
+  provenance; authenticated security acceptance stays DEFERRED/BLOCKED, Procurement
+  separate, extension local-only. No commit/push. STOP after reporting.
+
+# Dashboard upload and product-batch failures: read-only triage — 2026-10-19
+
+- Owner reports generic image upload failure and an unresolved one-product
+  Move to Draft batch. Investigation completed without production access.
+  Formal ADM-01 acceptance does not block this source/configuration diagnosis.
+  Account 1's work and Account 2's prior 210 additive lines per file are preserved.
+- CONFIRMED configuration mismatch: useAdminUploads.js POSTs multipart to
+  /api/admin-uploads; useProductBulk.js POSTs to /api/admin-products/bulk.
+  Accepted ADM-01 method maps permit GET/HEAD and only exact canonical POST
+  /api/admin-logs. Both feature submission POSTs therefore have a deterministic
+  405 rejection under that accepted policy, before Nuxt. Existing ingress
+  restrictions are intentional, not proof of an incorrectly deployed ADM-01.
+  No original incident status/log or fresh live-config attestation was collected.
+- Upload error propagation obscures that layer: useMediaErrors.js maps raw 405,
+  raw 413, untyped 5xx and network/pre-send failures to the generic upload message.
+  Typed content/size/permission errors retain their existing specific messages.
+  The source trace confirms a sufficient ingress blocker; exact incident error
+  attribution remains unobserved. No VPS permission/space/codec fault is proved.
+- Upload downstream: hosted bearer/current-active-admin and section permissions,
+  bounded two-part multipart, 8 MiB image + 64 KiB request allowance, real MIME/content
+  checks for JPEG/PNG/WebP/GIF/AVIF; new SVG rejected. Existing dimension/inflation/
+  frame limits remain. Runtime uploadsDir targets VPS public-image sections;
+  no Supabase Storage file bytes. Checked POSIX staging/no-follow/exclusive
+  hard-link publication and fsync precede acknowledgement; complete published
+  files survive later acknowledgement failure. Effective live Nginx body cap
+  and VPS metadata were not probed. No ownership/permission/codec change proposed.
+- Description insertion is not an implemented rich-text upload in reviewed code:
+  create/edit Short/Long Description fields are plain textareas; product page
+  descriptionBlocks renders escaped text, without image blocks or HTML insertion.
+  Binary paste/drop has no handler; image markup remains text. The owner's exact
+  control is unspecified. A shared Upload Image button would use the POST above;
+  do not claim an unobserved description flow shares that endpoint. Any inline
+  image feature is separate scope, with content validation/reference coverage.
+- Bulk UI stores the immutable actor-scoped request UUID/action/product IDs and
+  revisions in tab-local sessionStorage BEFORE header acquisition/submission.
+  Pending batch is client recovery state, not a server queue. Raw405 maps to
+  unknown; timeout/lost/malformed acknowledgement, pre-send session failure and
+  GET null receipt can also do so. Pending state alone proves neither commit
+  nor failure. Do not retry, replace the batch or clear its recovery metadata.
+- Backend bulk POST retains products.edit, 25-item/sparse/revision checks and
+  service-only catalog_bulk_products. SQL locks the request, fingerprints its
+  payload, checks current actor/revisions, writes only the selected field and
+  records per-product audit plus durable actor-owned terminal receipt.
+  Same-command replay is idempotent; changed actor/payload reuse is rejected.
+  Outer receipt failure rolls back all batch changes. No-op/conflicted/failed
+  outcomes can be receipted without a successful-change audit.
+- GET /api/admin-products/bulk?request_id=... IS admitted by the 70-read policy.
+  It requires products.edit and catalog_product_bulk_status returns only the
+  actor's receipt after the request lock, without durable mutation. It was not
+  called here. Original mutation completion remains NOT ESTABLISHED: no original
+  request/actor receipt or matched incident log was supplied. Product state alone
+  cannot identify this operation. A missing receipt cannot justify forgetting it.
+- Minimum further evidence, without new probes: existing request UTC time,
+  method/path/status/upstream_status; and one exact actor/request receipt SELECT
+  using an existing vetted direct read-only DB connection. A review-only,
+  parameterized SELECT is prepared, NOT EXECUTED. No raw headers/bodies/IPs,
+  credentials, full HAR or personal Chrome access. No broad DB/log search.
+- Eight NEW focused source-execution checks PASS using synthetic framework hooks,
+  Auth headers, storage and transport; no browser, database or network. They
+  reproduce 405 mapping, retained pending state, missing/exact receipt recovery
+  and text-only description parsing. Local Node 24.16.0 is not release validation;
+  a future release must use pinned Node 22.23.1/npm 10.9.8. No broad suite rerun.
+- Severity/priority: P1 administrator publication uncertainty/recovery; P2 shared
+  upload unavailability and separate description-image capability gap. No proven
+  unauthorized write, data loss, existing-media corruption or commerce activation.
+  Report, file/line evidence, diagnostic output and minimal query:
+  /Users/imac/Documents/ELcomputer/dashboard-upload-bulk-triage-20261019-y7xxa281/REPORT.md.
+- ONE next engineering action: implement bulk method-denial/recovery UX locally,
+  preserving the exact pending command and GET-only receipt checks. Distinguish
+  observed 405 without declaring the original mutation failed or clearing it;
+  do not encourage retry while the action is unavailable. Test rejection/lost
+  response/null/malformed/actor-isolated receipts, retained UUID/storage and
+  EN/AR/RTL/responsive behavior. No ingress opening is included in that action.
+- Afterward, treat uploads separately. Any administrative write admission needs
+  explicit review of the exact canonical route/method, both method map and proxy
+  location, bounded body, real application authorization, audit/idempotency/
+  acknowledgement recovery and scoped rollback. Uploads currently have random
+  filenames/retry 0, not an upload receipt/replay contract. Preserve all ten holds,
+  customer commerce denials, RLS and confidential projections. No admin wildcard,
+  bearer-presence shortcut, WAF bypass, broad POST rule or arbitrary HTML repair.
+- Any future app/config release requires its own sealed candidate, staging proof,
+  existing backup/manual-recovery gates and deployment authorization. Do not
+  replay or undo ADM-01, compensate product status or treat deferred browser
+  acceptance as permission for unguarded write tests.
+- ADM-01 remains DEPLOYED/INFRASTRUCTURE_PASS with preserved post-DB PASS,
+  public 110/110 and five OWNER_REPORTED_PASS smoke observations. Formal guarded
+  authenticated security acceptance remains DEFERRED/BLOCKED, not waived.
+  Procurement stays separately UNVERIFIED in production; extension remains local-only.
+- Git main/HEAD/locally recorded origin/main e11e34c, index empty/no unpushed commits.
+  Only additive updates to both handoffs in the checkout; original bytes/evidence
+  preserved. No application/SQL/policy change, production HTTP/Auth/filesystem
+  operation, image upload, batch retry, Nginx/reload/rollback/deployment, commercial
+  activation, Git commit or push. Investigation only; STOP after reporting.
+
+# ADM-01 final operational reconciliation: DEPLOYED; security acceptance DEFERRED/BLOCKED — 2026-10-19
+
+| Area | Final recorded status |
+| --- | --- |
+| Nginx infrastructure rollout | DEPLOYED — INFRASTRUCTURE_PASS |
+| Independent production verification | PASS — preserved post-DB comparison and 110/110 public checks |
+| Formal guarded authenticated security acceptance | DEFERRED / BLOCKED — no authenticated checks completed; no waiver |
+| Owner functional smoke | OWNER_REPORTED_PASS — five observations, recorded separately |
+| Historical Procurement RPC projection defect | Separate application follow-up; production technical resolution UNVERIFIED |
+
+The rollout is successfully deployed and independently supported by the available
+post-activation production evidence. The private APPLY result remains attributed
+owner evidence; its raw root receipt was not independently reread here.
+This reconciliation adds no fresh live attestation and replays no deployment.
+
+- APPLY receipt SHA-256:
+  6a93dc6ad6929e2eb1e677613c1cb6a29b36df81acc00652eb942cdacd033372.
+- Post-database receipt SHA-256:
+  e2d3dd7615892054c1efe763563bb29b838e0749826c910956d63ecab8f62d20.
+  The checked schema/RLS/business state was unchanged, with collector writes zero.
+  This scoped evidence does not establish zero browser-induced production writes.
+- Public checks: 110/110 PASS, including 70 anonymous JSON 401/no-store reads
+  and ten held 403 responses. These remain public/anonymous observations.
+- Owner reports Dashboard, Products, Inventory/Procurement, EN/AR and session
+  continuity PASS in ordinary Chrome. Retain all five without repeating them.
+  They do not establish the formal authenticated security requirements below.
+
+Outstanding authenticated acceptance requirements, all NOT_EXERCISED:
+
+1. Verify the existing owner's hosted identity, active role and RBAC; demonstrate
+   approved API reads through application authorization with correct projections,
+   resource confidentiality, document ACLs, actor-owned receipts and no-store.
+   Follow the approved 70-route policy and existing read contracts; no bypasses.
+2. Demonstrate actual owner-context ingress denials for all ten held paths below.
+   A local guard abort is not a Nginx 403 response and cannot satisfy this check.
+3. Verify applicable non-owner/restricted-role negative branches using only
+   explicitly approved existing sessions. No production account/role creation,
+   permission changes or owner substitution. Unavailable branches remain open.
+4. Enforce the guard before first browser activity; contain existing connections,
+   workers and unknown traffic. Audit exact reads/RPC arguments, not methods alone.
+   Prevent saves, stock/order/settings/import changes, document activity, chat
+   presence/read/typing, prohibited RPCs, private bytes and provider operations.
+   Account for SSR server-side Auth effects as well as browser transport.
+   Any login/audit/refresh/rotation/logout effects need separate explicit scope.
+   Retain sanitized permitted/blocked outcomes and adequate write observation;
+   before/after state equality alone is not proof of no intervening writes.
+5. Retain the detailed module/resource and authenticated EN/AR/RTL/theme/responsive,
+   Back/reload checklist as pending evidence. Distinguish missing, empty, failed
+   and denied resources. Create no data merely to exercise a branch.
+
+| Held path requiring owner-context denial evidence |
+| --- |
+| /api/admin-products/transfer/import |
+| /api/admin-inventory/items/:token |
+| /api/admin-erp/dashboard |
+| /api/admin-documents/files/:id/download |
+| /api/admin-orders/packing/:sessionId/video |
+| /api/admin-shipping/orders/:id/label |
+| /api/admin-after-sales/claims/:id/reverse-label |
+| /api/admin-after-sales/claims/evidence/:id |
+| /api/admin-chat/attachments/:id |
+| /api/admin-system-reset |
+
+Future completion needs a separately authorized test scope and environment:
+an isolated stack matching the accepted application/Nginx/Auth/RBAC/RLS contracts,
+approved test identities/resources and explicit Auth/session/audit allowances.
+Client enforcement must start before any connection; server-side instrumentation
+must also observe or contain SSR/Auth effects. Use an exact read/RPC manifest,
+sanitized correlated browser/server/Auth/DB observations and scoped state comparisons.
+Held-route tests need a reviewed means of observing real edge denial without
+letting a held handler execute. Preserve every held route and commercial restriction.
+Staging/synthetic success alone cannot become production-owner acceptance;
+any final production observation needs its own approved safe procedure.
+No such environment, instrumentation, account or session is created in this task.
+
+The extension remains LOCAL-ONLY and MUST NOT be installed for production acceptance.
+Its 40 local capability checks included reproduced existing-WebSocket and SSR
+refresh limitations. They are not authenticated acceptance or zero-write proof.
+No further browser/extension feasibility work is scheduled by this handoff.
+
+Procurement remains separate: historical 42703 arose from ordering an RPC result
+by created_at without including that field in its projection. The existing local
+correction and sealed source 03ca445 candidate are preserved, with prior regression
+evidence. Nginx activation did not deploy that application correction. The owner's
+tested flow passed; the underlying production technical repair remains UNVERIFIED.
+Do not rebuild/redeploy that candidate or relax its independent release gates here.
+
+Recommended next independent task, not started: design the VPS private-document
+delivery contract and local fixture test plan. Preserve existing document/folder
+ACLs, confidential bytes and configurable deployment bindings; explicitly separate
+download reads from recent-items/activity writes. Keep the production download
+route held. No file migration, Supabase Storage bytes or deployment belongs to
+that design task. This work can proceed independently of the open ADM-01 checks.
+
+Git reviewed: main/HEAD/locally recorded origin/main e11e34c; index empty and no
+unpushed commits. Both accounts' prior work, including 108 uncommitted additive
+lines per handoff at entry, is preserved byte-for-byte beneath this new entry.
+Only these two continuity files change. Existing receipts/reports remain untouched.
+No browser/profile/extension operation, live request, Nginx change, SQL/Auth write,
+deployment, rollback, commercial activation, commit or push. This reconciliation
+supersedes historical pending-rollout/next-action wording. STOP after the handoff.
+
+# ADM-01 Chrome extension review: HTTP blocking verified; full acceptance BLOCKED — 2026-10-19
+
+- Account 2 continued Account 1's e11e34c handoff and its own prior 51-line
+  uncommitted entries. The owner authorized extension investigation/preparation
+  and synthetic local validation only. Both accounts' complete starting work
+  remains preserved. No existing Chrome session or profile was accessed.
+- A minimal Manifest V3 DNR extension demonstrably blocks new requests before
+  server receipt. Complete read-only acceptance in the unchanged live session
+  is NOT established. Do not install the laboratory specimen into owner Chrome
+  or recommend production navigation. ADM-01 remains BLOCKED and cannot close.
+- Actual local validation: 40 recorded checks PASS in Chrome for Testing
+  156.0.8078.4 / Playwright 1.64.1, using a fresh synthetic profile and debugging
+  pipe, without a remote-debugging TCP port. This is not the owner's Chrome.
+  Static default-deny rules load before navigation; only exact loopback GETs
+  are admitted. Production origins, unknown operations and all RPCs stay denied.
+- Prohibited methods, Auth refresh/logout, audit POSTs, unknown GET/RPC paths,
+  all ten held path shapes, beacon and worker network writes were actually
+  blocked, with zero matching fixture-server requests. New WebSockets were
+  blocked. WebTransport was a hypothetical rule-match check, not a QUIC test.
+- Two material limits were reproduced: an already-established WebSocket
+  delivered one synthetic message after deny-rule activation; an allowed GET
+  using the installed Supabase SSR client caused one server-originated Auth
+  refresh POST and synthetic cookie updates, outside browser enforcement.
+  These are local reproductions, not observations about the owner's session.
+- Current local Nuxt/Supabase defaults use SSR cookies and call getSession;
+  the real installed SSR 0.10.3 client refreshed the expired synthetic session.
+  No deployed dependency/configuration claim or production refresh is inferred.
+  Blocking browser Auth requests or stripping a response cookie cannot undo
+  a server-side refresh. No application/authentication behavior was changed.
+- DNR cannot enforce arbitrary JSON RPC-argument restrictions. All RPCs remain
+  denied in the specimen. A service-worker-generated POST response returned
+  local 200 without reaching the server; distinguish local success from network
+  authorization. Worker network fetches were actually blocked in separate tests.
+- Exact approved HTTP GET projections/no-store and owner/RBAC reads are eligible
+  only for a later narrowed pass after reviewed connection quiescence and an
+  exact read manifest. All authenticated checks remain NOT_EXERCISED here.
+  Reload/session/SSR, existing realtime, RPC-dependent modules, restricted-role
+  access and owner-context Nginx held-403 proofs remain deferred/unestablished.
+  Client blocking is not an owner-context Nginx 403 response.
+- Report, minimal loopback specimen, executable synthetic tests, evidence and
+  safe local-only instructions:
+  /Users/imac/Documents/ELcomputer/adm01-chrome-guard-review-20261019-2_bfor_x/REPORT.md.
+  Forty checks include successful limitation reproductions; they are not
+  production acceptance passes or proof of zero owner-browser writes.
+- Preserve infrastructure INFRASTRUCTURE_PASS, post-DB comparison PASS with
+  collector writes zero, public 110/110 PASS and the five OWNER_REPORTED_PASS smoke
+  results. None were repeated. Procurement's technical defect remains UNVERIFIED.
+  No acceptance deferrals were silently approved and no business data was made.
+- ONE immediate owner action: review the demonstrated limitations in the report
+  before choosing any narrower acceptance scope. No production installation or
+  navigation is recommended. No credentials, exports or new login are requested.
+- Git main/HEAD/locally recorded origin/main remain e11e34c; index empty and no
+  unpushed commits. Only additive continuity updates in the checkout; implementation,
+  tools and evidence are in a new exclusive local directory. No production HTTP,
+  SQL/Auth operation, browser-profile modification, Nginx/APPLY/reload/rollback,
+  deployment, commerce/provider activation, Storage bytes, commit or push. STOP.
+
+# ADM-01 guarded owner acceptance BLOCKED on browser capability — 2026-10-19
+
+- Codex Account 2 continued Account 1's committed handoff at e11e34c.
+  The owner authorized ONE focused guarded read-only acceptance pass.
+  Authorization is sufficient; an accessible guarded owner browser is missing.
+  Stop before owner-session navigation. ADM-01 cannot formally close yet.
+- Preserve Account 1's accepted infrastructure/post-DB/public evidence and the
+  owner's five OWNER_REPORTED_PASS smoke results: Dashboard, Products,
+  Inventory/Procurement, EN/AR and session continuity. None were rerun.
+  Procurement's historical RPC defect remains technically UNVERIFIED.
+- Exposed tools provide no browser control or transport interception.
+  Chrome is running, but no Chrome TCP debugging listener was observed;
+  only two VS Code helper listeners were found. Personal Chrome's session
+  validity was not inspected. No profiles, credentials or session state read.
+  Plugin discovery found an uninstalled cloud browser, without established
+  access to that existing session or the required guard. No plugin connected.
+- Existing acceptance documents specify guarding; they do not establish an
+  installed guard or complete direct-Supabase read/RPC whitelist. Local fixture
+  browser scripts do not supply approved production owner access. No browser
+  was launched, attached or navigated; no authenticated request was issued.
+- ONE existing local policy-integrity test PASS: all 80 GET classifications,
+  70 approvals/ten holds, coverage CSV and 263 reviewed input hashes match.
+  Policy SHA256 remains
+  aa40e475976116d5e53cb52d6492a0bb929e0cbd484706b42c1265fe2af631f2.
+  This is source-integrity evidence, not hosted Auth/RBAC acceptance.
+- New authenticated checks verified: NONE. Owner identity/active RBAC,
+  authorized API projections/no-store, owner-context ten held denials and
+  restricted-role negatives remain NOT_EXERCISED. No approved restricted
+  session was available; no accounts, roles or business fixtures were created.
+- Detailed module/resource checks and Back/reload/RTL/theme/responsive branches
+  remain NOT_EXERCISED. Retain the five general smoke passes without repetition.
+  Resource availability is unknown, not empty/missing/failed. No owner-approved
+  deferrals were supplied. The current matrix and bounded procedure are in
+  /Users/imac/Documents/ELcomputer/adm01-guarded-owner-acceptance-20261019-f4ubjp2u/REPORT.md.
+- Browser requests were NOT instrumented or guarded in this run; none were
+  initiated. No browser writes were observed or intercepted. Zero browser-induced
+  production writes remain UNESTABLISHED; personal Chrome was outside scope.
+  No new production HTTP/SQL/Auth operation or database comparison occurred.
+  The old collector's production_writes=0 is not proof covering the personal-browser smoke.
+- ONE next owner action: identify an already signed-in owner browser available
+  to an operator who can enforce/verify the approved transport guard before
+  dashboard activity. Share capability confirmation only, never credentials.
+  If unavailable, keep this branch BLOCKED; do not log in, refresh/rotate,
+  log out, export sessions, bypass guarding or repeat unguarded smoke tests.
+  This is a capability prerequisite, not another request for read-only approval.
+- Git reviewed: main/HEAD/locally recorded origin/main e11e34c, initially clean,
+  empty index and no unpushed commits. Only additive updates to these two
+  continuity files; all earlier bytes/evidence and both accounts' work preserved.
+  No application/policy change, Nginx/APPLY/reload/rollback/deployment, business
+  mutation, provider/commercial activation, Supabase Storage bytes, commit or push.
+
 # ADM-01 owner functional smoke 5/5 PASS; remaining acceptance evidence — 2026-10-19
 
 - Owner personally reports live production tests using their owner account:

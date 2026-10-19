@@ -63,10 +63,14 @@
           <p class="text-sm text-gray-900">{{ confirmation }}</p><p class="mt-1 text-xs text-gray-500">{{ $t('productBulk.confirmHelp') }}</p>
           <div class="mt-2 flex flex-wrap gap-3"><button type="button" :disabled="!bulk.ready" class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50" @click="bulk.confirm">{{ $t('productBulk.apply') }}</button><button type="button" class="rounded-lg border px-3 py-2 text-sm text-gray-700" @click="bulk.cancel">{{ $t('common.cancel') }}</button></div>
         </div>
-        <p v-if="bulk.pending && !bulk.busy" class="mt-3 text-sm text-gray-600">{{ $t('productBulk.pending', { count: bulk.pending.items.length }) }}</p>
+        <p v-if="bulk.pending && !bulk.busy" class="mt-3 text-sm text-gray-600">{{ $t('productBulk.saved', { count: bulk.pending.items.length }) }}</p>
+        <div v-if="bulk.pending && ['method', 'permission'].includes(bulk.submission)" role="alert" class="mt-3 text-sm text-red-600">
+          <p>{{ $t(bulk.submission === 'method' ? 'productBulk.methodDenied' : 'productBulk.accessDenied') }}</p>
+          <p class="mt-1">{{ $t('productBulk.deniedHelp') }}</p>
+        </div>
         <p v-if="bulk.busy" role="status" class="mt-3 text-sm text-gray-600">{{ $t('productBulk.updating', { count: bulk.pending?.items.length || 0 }) }}</p>
         <p v-if="bulk.error" role="alert" class="mt-3 text-sm text-red-600">{{ bulkError }}</p>
-        <div v-if="bulk.pending && !bulk.busy" class="mt-2 flex flex-wrap gap-3"><button type="button" :disabled="!canEdit" class="rounded-lg border px-3 py-2 text-sm text-gray-700" @click="bulk.check">{{ $t('productBulk.check') }}</button><button type="button" :disabled="!canEdit" class="rounded-lg border px-3 py-2 text-sm text-gray-700" @click="bulk.retry">{{ $t('productBulk.retry') }}</button></div>
+        <div v-if="bulk.pending && !bulk.busy" class="mt-2 flex flex-wrap gap-3"><button type="button" :disabled="!canEdit" class="rounded-lg border px-3 py-2 text-sm text-gray-700" @click="bulk.check">{{ $t('productBulk.check') }}</button><button v-if="bulk.retryAllowed" type="button" class="rounded-lg border px-3 py-2 text-sm text-gray-700" @click="bulk.retry">{{ $t('productBulk.retry') }}</button></div>
         <div v-if="bulk.outcome" class="mt-3 text-xs text-gray-700" data-bulk-results>
           <p role="status">{{ $t('productBulk.results', bulk.outcome) }}</p>
           <details class="mt-2"><summary class="cursor-pointer">{{ $t('productBulk.details') }}</summary><ul class="mt-2 space-y-1"><li v-for="item in bulk.outcome.items" :key="item.id" class="flex flex-wrap gap-2"><NuxtLinkLocale :to="editorLink(item.id)" class="break-all text-blue-700 hover:underline">{{ result?.items.find(product => product.id === item.id)?.title || item.id }}</NuxtLinkLocale><span>{{ itemResult(item) }}</span></li></ul></details>
@@ -127,7 +131,7 @@ const { state, search, result, loading, error, context, canAdd, canEdit, update,
 const bulk = reactive(useProductBulk({ result, loading, context, canEdit, canSelect: canExport, externalLocked: transferBusy, load }))
 watch(() => bulk.locked || transferBusy.value, value => { bulkLocked.value = value }, { flush: 'sync' })
 const confirmation = computed(() => bulk.operation === 'publish' ? t('productBulk.confirmPublish', { count: bulk.count }) : bulk.operation === 'draft' ? t('productBulk.confirmDraft', { count: bulk.count }) : bulk.operation === 'category' ? t('productBulk.confirmCategory', { count: bulk.count, name: bulk.referenceName }) : t('productBulk.confirmBrand', { count: bulk.count, name: bulk.referenceName }))
-const bulkError = computed(() => bulk.error === 'permission' ? t('productBulk.permission') : bulk.error === 'reference' ? t('productBulk.referenceError') : bulk.error === 'invalid' ? t('productBulk.invalid') : bulk.error === 'storage' ? t('productBulk.storage') : bulk.error === 'leave' ? t('productBulk.leave') : t('productBulk.unknown'))
+const bulkError = computed(() => bulk.error === 'permission' ? t('productBulk.permission') : bulk.error === 'reference' ? t('productBulk.referenceError') : bulk.error === 'invalid' ? t('productBulk.invalid') : bulk.error === 'storage' ? t(bulk.pending || bulk.recoveryBlocked ? 'productBulk.recoveryStorage' : 'productBulk.storage') : bulk.error === 'leave' ? t('productBulk.leave') : bulk.error === 'noReceipt' ? t('productBulk.noReceipt') : bulk.error === 'checkUnavailable' ? t('productBulk.checkUnavailable') : t('productBulk.unknown'))
 const itemResult = item => item.status === 'succeeded' ? t('productBulk.succeeded') : item.status === 'unchanged' ? t('productBulk.unchanged') : item.status === 'conflicted' ? t('productBulk.conflicted') : item.reason === 'incomplete' ? t('productBulk.incomplete') : item.reason === 'reference' ? t('productBulk.referenceError') : item.reason === 'not_found' ? t('productBulk.notFound') : t('productBulk.failed')
 const pages = computed(() => Math.max(1, Math.ceil((result.value?.total || 0) / 25)))
 const categoryName = category => getLocalizedCategoryName(category, locale.value)

@@ -94,3 +94,60 @@ separate. There is no claim of providers, production, hosted installation or dep
 The frozen installer certifies **1–71**; development **72–76** requires a separate
 release-certification task. Installer artifacts are unchanged. Stop after Task 5
 commit/push for review; do not begin Task 6.
+
+## Local denial/recovery candidate — 2026-10-19
+
+This section records a later application-only correction. All earlier evidence
+above remains historical; it was not rerun or recertified for this candidate.
+Current task authority stops after local implementation and handoff, without
+commit, push, deployment, database work or ingress changes.
+
+State-machine trace before editing: confirm stored the actor's exact command,
+POST used retry=0, and only productBulkResult validation cleared it. Every other
+response retained pending; 405 fell through to unknown, and Retry stayed visible.
+GET recovery was authenticated, actor-owned, and already used retry=0. The fix
+keeps those safety contracts while retaining transport denial separately.
+
+With Node **22.23.1**, the following completed locally:
+
+- `node --test tests/product-bulk-recovery.test.mjs`: **54/54 PASS**, zero failed,
+  skipped or cancelled. Executes the real composable, Vue lifecycle/reactivity,
+  and the real Products toolbar/error mapping in a memory renderer. One test
+  uses a real loopback HTTP 405 and the actual ofetch client. Other transport,
+  Auth, sessionStorage and router registrations are explicit synthetic fixtures.
+- `node --test --test-name-pattern '^bulk commands and acknowledgements reject ambiguity and malformed counts$' tests/product-bulk.test.mjs`:
+  **1/1 PASS**. Only the existing pure command/receipt test ran; no DB fixture.
+- Nuxt typecheck and full local build: **PASS**, with an empty dotenv, explicit
+  environment, synthetic loopback backend settings and no deployment credentials.
+  The generated output is validation output, not a production release artifact.
+- `node --check scripts/product-bulk-browser.mjs` and `git diff --check`: **PASS**.
+  Browser-script expectations were updated for the companion storage entry,
+  missing-receipt copy and denied-access copy; its DB/browser suite was not run.
+
+Focused cases cover explicit POST 405, 401/403, lost responses, timeouts,
+unclassified HTTP failures, exact manual retry, GET-only terminal receipt recovery,
+null/malformed/mismatched receipts, repeated clicks, actor switches before/after
+dispatch, late POST/GET responses, revoked permissions, legacy command restoration,
+all persisted transport states, storage failures/corruption, navigation/unload,
+EN/AR toolbar controls, and list-refresh failure after verified acknowledgement.
+Recovery assertions inspect method, body absence, request UUID, actor headers,
+timeout and retry=0; no recovery failure generates a POST or replacement batch.
+Reload tests remount actual Vue with preserved synthetic storage. They are not
+personal-Chrome or hosted Auth acceptance. No DB state was changed by these tests.
+
+Build logs retain duplicate getErpSettings import, plugin sourcemap and chunk-size
+warnings. No unrelated warning cleanup or dependency changes were attempted.
+Evidence: `/Users/imac/Documents/ELcomputer/product-bulk-denial-local-20261019-vmb6s908/`.
+
+The accepted ADM-01 policy remains byte-identical at SHA-256
+`aa40e475976116d5e53cb52d6492a0bb929e0cbd484706b42c1265fe2af631f2`.
+Its review_inputs still bind the previous EN/AR locale bytes; those two bindings
+are stale for this local candidate. They were deliberately not refreshed or
+reapproved here. This is **READY FOR SEPARATE DEPLOYMENT REVIEW**, not deploy-ready:
+review the application diff, source bindings and a separately sealed release.
+Keep the existing Nginx restrictions. POST bulk changes remain unavailable there.
+The owner's original batch remains unverified and untouched. Null receipts never
+permit discarding an unresolved command; interrupted/denied batches may require
+separately authorized reconciliation. Tab-local storage has no cross-device
+recovery. Production functional smoke observations and prior infrastructure/public
+PASS evidence remain separate from DEFERRED/BLOCKED authenticated acceptance.

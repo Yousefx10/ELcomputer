@@ -83,7 +83,8 @@ Before submitting, the browser saves only request UUID, action, reference UUID
 and product IDs/revisions in actor-scoped **sessionStorage**. No authored product
 fields, SKU, price, cost, stock or confidential identifiers are retained. A storage
 failure prevents submission. Unknown acknowledgements retain the exact command;
-Check result or Retry this batch reconcile it. A missing receipt does not authorize
+Check result reconciles it without a mutation. Explicit Retry this batch is
+available only for an uncertain submission without a known denial. A missing receipt does not authorize
 forgetting a request that may still arrive. Pending navigation is blocked and
 reload restores recovery metadata. Actor changes ignore late responses and retain
 the previous actor's recovery entry for reauthentication. Confirmation clears the
@@ -93,6 +94,33 @@ keeps recovery pending until permission is restored; it cannot retrieve receipts
 Session storage is tab-local, with no cross-device recovery interface. Operators
 must preserve an unresolved tab/session; deliberate storage clearing loses its
 client recovery handle. Database receipts still prevent reuse of known requests.
+
+### Denial handling — local candidate, 2026-10-19
+
+HTTP 405 on POST records a refused submission and hides/disables mutation retry.
+HTTP 401/403 records denied access, including during result checks. Neither proves
+that an earlier attempt with the same UUID failed. The original command remains
+locked and available to authenticated, actor-owned GET receipt recovery. A GET
+405 describes unavailable result checks; it does not establish a POST outcome.
+Missing, malformed and failed receipt responses never clear the command, create
+a new batch or automatically retry a mutation. Only an exact terminal receipt
+unlocks it. Timeouts, lost responses and unclassified HTTP errors stay uncertain.
+
+The existing raw command storage format is unchanged. An actor-scoped
+`:submission` companion entry contains only request UUID and transport state.
+Before every POST, an `awaiting` pause must be stored successfully. A failed
+subsequent state write therefore restores GET-only recovery. An interrupted
+`awaiting` submission also restores GET-only. Successfully recorded uncertainty
+permits an explicit retry of the identical command; legacy commands without a
+companion remain uncertain, with no inferred denial. Corrupt storage prevents
+new batches from overwriting evidence. A verified receipt clears the command;
+an orphan companion, if cleanup fails, cannot restore or replay a command.
+
+There is no automatic dismissal or unlock on a null receipt. A denied command
+without a terminal receipt requires separately authorized reconciliation; this
+candidate does not provide a discard control or open an unavailable write route.
+The original owner's unresolved batch is untouched. See the dated local section
+in [validation](product-bulk-validation.md) for evidence and deployment limits.
 
 ## Migration and release boundary
 
