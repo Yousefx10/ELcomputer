@@ -34,16 +34,16 @@ activation is required. The ingress repair is a distinct, narrowly scoped change
 
 ## 1. Complete this read-only entry phase
 
-The owner runs [products-protected-inspection.command](products-protected-inspection.command)
-in the existing VPS root console once. To copy its complete reviewed block on
-the iMac:
+Use the finalized revision3 inspector and [verified inert staging](../products-inspection-staging.md).
+The actual successful APPLY binding is `/root/adm01-activation-apply-3be097f8217bd200`,
+manifest34e62ec6..., rather than the superseded fad66381... package. The owner
+confirmed the earlier long block was only copied, never executed.
 
-```sh
-pbcopy < /Users/imac/Documents/ELcomputer/ELcomputer/docs/operations/products-protected-inspection.command
-```
-
-Use reviewed revision2. If the first draft already ran, return its existing JSON
-and stop for review; do not treat this correction as automatic retry authority.
+The owner pastes the **short** [products-protected-inspection.command](products-protected-inspection.command)
+into the existing VPS root console once. It checks staged bytes, creates an
+exclusive root-private workspace, copies bounded bytes mode0600, checks the root
+copy again and runs it with `-I -B`. Codex staged the script inertly and never
+executes root. No long Python block or old command should be pasted.
 
 The block validates the root-owned frozen bundle/manifest and accepted APPLY
 receipt before importing its read-only helpers. It never invokes an operator
@@ -53,8 +53,9 @@ master/worker start identities, and computes the Products candidate independentl
 in memory. Only hashes, counts and verification booleans leave the root process.
 It explicitly reports that proposed-candidate Nginx syntax was not run.
 
-The program does not create a file, stage code, signal a process or query a
-database. `-I -B` prevents local import-path and bytecode writes. Returned BLOCKED
+The inspection program does not create a file, signal a process or query a
+database; its separately authorized intake creates only the private copy.
+`-I -B` prevents local import-path and bytecode writes. Returned BLOCKED
 means STOP; preserve its JSON, with no automatic retry. No raw dump, configuration,
 environment, secret, session or private receipt should be pasted back.
 

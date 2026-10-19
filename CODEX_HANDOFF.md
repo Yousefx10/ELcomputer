@@ -1,3 +1,67 @@
+# Products inspector: corrected APPLY binding, inert staging PASS; owner short command ready — 2026-10-19
+
+- Owner confirmed earlier long block was ONLY COPIED, never executed. Web Console
+  cannot reliably paste it. New explicit authority covers inert nonroot script
+  staging and preparation of one short OWNER command; no Codex root execution.
+- Startup main95d8287 clean, one local unpushed commit over recorded origin/main
+  a1a1ce0. Required instructions/notes and Git status/log/show/diffs reviewed;
+  both accounts' work preserved. No app/SQL/ingress implementation change.
+- Corrected a real binding error in the prior unexecuted inspector: fad66381...
+  root/manifest were superseded. Exact successful1588-byte command SHA
+  d52df628a0fc6efbf45d7eefff920b53aef673fb1475455df42b3844cff401f7 names
+  /root/adm01-activation-apply-3be097f8217bd200, archivece59d450..., manifest
+  34e62ec63b974d1143405ae7b3ce70cedf6e5645509c33bcde0648bfcd28269a.
+  Archive/member/BINDING hashes verified locally; BINDINGaf8f43cf... confirms path,
+  core3be097f8... matches checkout. Owner-reported successful receipt remains
+  6a93dc6ad6929e2eb1e677613c1cb6a29b36df81acc00652eb942cdacd033372.
+  Raw private receipt NOT exported/read by Codex; owner inspector must verify its
+  exact SHA plus manifest, acknowledgements, installed472049 bytes/c859... and
+  current runtime. Historical packages/receipts and failed fad workspace untouched.
+- Final revision3 standalone inspector in docs/operations/products-protected-inspection.py:
+  8886 bytes/SHA98da9911131c85efcbb7df4da111eb3506482f70c84c85cd19bdd2e5e3a2ddd3.
+  Correct ROOT/manifest, ss-lntp, strict root-private copy, receipt/workspace binding
+  and sanitized phase failures. Existing frozen read-only helpers only; -T stays
+  in root memory, no configuration/secret export or operator main/SQL/Auth/API call.
+- INERT STAGING_PASS, exactly ONE script:
+  /home/elcomputer/.codex-inspection-staging/products-inspect-98da9911131c85ef.py.
+  Three pinned non-root SSH sessions once: account/absent-target/parent preflight,
+  exclusive O_EXCL/O_NOFOLLOW directory-fd transfer+fsync, independent FULL-BYTE
+  readback. Complete bytes equal source; stable signature/SHA/size. Regular
+  UID1002:GID1004/0600/nlink1/device2049/inode7138193; canonical parent
+  UID1002:GID1004/0700/device2049/inode7083189 unchanged. No retries, repairs,
+  existing file overwrite or cleanup. Script never executed, no root connection.
+- Final OWNER short command docs/operations/products-protected-inspection.command:
+  662 bytes including LF / SHAeda5389f66353ae9a085d8a8a8304a2151d262eb04a89bc98b93499c9f188177.
+  Verifies staged regular/nonlink/UID/GID/mode/nlink/size and bounded SHA, creates
+  exclusive0700 /root/products-inspect-98da9911131c85ef, makes bounded0600 copy,
+  rechecks SHA, execs only that root copy with -I-B. Repeat mkdir fails; no auto
+  rerun/cleanup. Only owner intake writes its authorized private dir/copy; actual
+  inspection requests no file/config/service/business mutations.
+- Five focused validation tests PASS: corrected APPLY/receipt scope, private-copy
+  guards, six independent patch cases, read-only transport gates, and owned-file
+  short-intake positive/repeat/drift/mode/symlink/size/copy-race rejection. Python/
+  Bash syntax PASS. No actual root entry or historical broad test suite rerun.
+  First local fixture needed canonical macOS temp path; diagnostic retained.
+- Source/regression artifacts and three staging source/stdout/stderr/exit records:
+  /Users/imac/Documents/ELcomputer/products-inspection-staging-20261019-gbkw9hrd/.
+  APPLY-BINDING-RESOLUTION.json, STAGING-INTENT.json, STAGING-PASS.json and full
+  independent returned bytes preserved. Report: docs/products-inspection-staging.md.
+- Protected inspection/candidate fingerprint still PENDING OWNER EXECUTION.
+  Nginx candidate hash remains null; staging PASS is not deployment/acceptance PASS.
+  Original unknown batch retained/UNVERIFIED, GET-only recovery; no lookup/retry/
+  discard/publication change. Owner-acknowledged stock=true, payment/signup/checkout
+  restrictions, sealed app/definition,70GET/ten holds, ADM01 and prior DB/public PASS,
+  five owner smoke observations and separate Procurement acceptance all preserved.
+  Formal authenticated acceptance stays DEFERRED/BLOCKED, not waived. No uploads,
+  storage, ecommerce, Nginx/deployment/reload/rollback work began.
+- Commit task-owned inspector/short command/tests/report/procedure and both
+  additive handoffs; no push. Final commit/state in external FINAL-GIT.json.
+  Remote work STOPPED after inert staging/readback. No Codex root, Nginx operation,
+  database access/mutation, app transfer/deploy, service operation or rollback.
+- ONE next owner action: paste the exact 662-byte short command into the existing
+  Hostinger root console once and return its JSON. On error/BLOCKED stop; never
+  rerun the old long block, private copied script or consumed short command.
+
 # Products protected preflight: application/scoped DB PASS; owner config receipt pending — 2026-10-19
 
 - Scope: ONE focused read-only preflight, starting clean/synchronized main

@@ -1,5 +1,12 @@
 # Products protected preflight — 2026-10-19
 
+Later console-method correction: the owner confirmed the long block was not run.
+Use the [finalized, inertly staged revision3](products-inspection-staging.md) and
+its short command. Its APPLY root/manifest now follow the actual successful
+3be097f8... package, not the superseded fad66381... binding below. Earlier
+inspection drafts are historical and must not be executed. Other evidence below
+is preserved; protected inspection and production deployment remain pending.
+
 **BLOCKED for production deployment.** Application identity and scoped database/
 commercial-boundary checks pass. Actual protected Nginx and candidate fingerprints
 still require the owner-console result; no such result has been received.
