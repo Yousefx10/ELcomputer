@@ -1,3 +1,77 @@
+# Products protected preflight: application/scoped DB PASS; owner config receipt pending — 2026-10-19
+
+- Scope: ONE focused read-only preflight, starting clean/synchronized main
+  a1a1ce02992cdb00a2c2c185ab5885a912324ef7. Both accounts' prior work preserved.
+  No application/ingress implementation or previously sealed artifact changed.
+- Fresh pinned non-root SSH read verifies actual main release82-40b87a3a289ea999,
+  all1066 app and5865 Node entries, custody/archive, environment/unit and running
+  process. Source9a9c2d8; PID12065 active/NRestarts0/Restart=no. Pointer/PID stable,
+  Linuxx86_64/Node22.23.1 and private3003/capacity gates match. Private values hidden.
+- Sealed app remains commit3d5fe61c1109190c2ac3df12fb858987bc103aa5;
+  5,277,655 bytes / SHA7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846.
+  All597 input hashes/provenance match. Same six reviewed live-to-candidate inputs;
+  earlier Procurement/lock changes retained, with separate production acceptance.
+- New scoped read-only TLS transaction verifies certified82 migration identities,
+  exact five Products RPC definitions/current service-only grants, and private
+  receipt-table RLS/zero policies/no direct grants. No product/actor/receipt rows
+  read. Active-actor RBAC, audit/idempotency/revisions unchanged. PASS_SCOPED only;
+  not a fresh complete schema/business comparison. Old failed collector not retried.
+- OWNER CLARIFICATION: allow_out_of_stock_purchases=true was intentional. Fresh
+  six-boolean projection confirms true plus five payments=false; Auth settings
+  GET confirms disable_signup=true. New explicit Products review baseline records
+  only that intent/projection. No live setting/default/history/old receipt edited.
+  The previous unexplained-change finding is resolved; its old false-only failure
+  is not relabeled PASS. Other settings/updated_at/security are not blanket accepted.
+- Stock policy permits non-serialized backorders/availability/cart/SEO behavior;
+  normal serialized checkout still requires physical stock. Existing AI copy can
+  label zero-stock serialized items Backorder despite that stock requirement;
+  source-level presentation discrepancy documented, no unrelated fix started.
+  Commercial activation remains deferred. Five anonymous GET probes PASS: checkout,
+  signup, checkout API/payment intentions403; inert bulk receipt401/private-no-store.
+  No real batch lookup or mutation request, historical110-route audit not repeated.
+- Protected vhost read remains PermissionError. NO Codex root execution/escalation.
+  Last accepted c859c080dcab025c6d7e614d77864905d034e8c50d6570eef95014d6f4574bb5 /
+  472049 bytes is required preimage, NOT fresh protected attestation. Actual proposed
+  production candidate SHA remains NULL; synthetic/definition hashes cannot replace it.
+- Deterministic definition-only archive: 32,877 bytes / SHA
+  175fabe351d2c5b39c8447e61980b4901e0d72c24a52199e839bbb3b12f746da;
+  manifest f121d0be540e30cab6b9bb7b3c24eea088252db73355f8aa3944df8fef73e8a2.
+  Eight regular members; five implementation files match approved a1a1ce0 objects,
+  bounded canonical binding/scope. Repeat identical and independent read PASS.
+  No private config/secrets/application/apply operator. This is not a production
+  Nginx candidate seal or activation authority. All70GET/ten holds remain bound.
+- Prepared readable owner-console inspection using frozen/hash-verified read-only
+  functions: capture -T in RAM, attest all23 files/22 peers/accepted worker lineage,
+  independently calculate proposed patch hash; no file/config export or mutation.
+  First wrapper had ss-lnt versus frozen ss-lntp mismatch; corrected revision2
+  tested. Original draft preserved externally/DO-NOT-RUN. New validation2 tests
+  PASS: six independent fingerprint cases, five read commands/five denied commands.
+  No root entry or prior Products/browser/typecheck/build suite rerun by Codex.
+- Owner returned SCRIPT TEXT, not printed JSON; execution/result NOT ESTABLISHED.
+  Clarification pending. If first draft ran, preserve its existing output and STOP;
+  no automatic retry. If only copied, use reviewed revision2 once. No protected
+  runtime/candidate PASS may be inferred from the code or owner functional smoke.
+- docs/operations/products-release-procedure.md and explicit baseline bind existing
+  main systemd/current pointer, exact old release/archive, environment, exclusive
+  candidate name/loopback3003, accepted READS-v1 rollback c859... and exact app SHA.
+  No demo PM2 helper/old guard replay. Need owner receipt, final candidate seal,
+  candidate-bound reviewed operator, separately authorized protected shadow syntax/
+  backups/Linux staging/health, then explicit activation authority. No automatic
+  retry/resume/rollback/cleanup. No production staging or backup created here.
+- Overall BLOCKED for production deployment. Original owner batch UNVERIFIED,
+  retained and untouched; exact actor-owned authenticated GET recovery only, no
+  retry/replacement/discard/publication change. ADM01 infrastructure, historical
+  DB/public110 PASS and five owner functional observations preserved separately.
+  Formal authenticated security acceptance DEFERRED/BLOCKED, not waived. Uploads,
+  storage, Procurement acceptance, other dashboard work and ecommerce stay separate.
+- Report: docs/products-protected-preflight.md. Evidence:
+  /Users/imac/Documents/ELcomputer/products-protected-preflight-20261019-g_6q0opw/.
+  Commit task-owned inspection/review docs/tests and both additive handoffs only;
+  final SHA/state in external FINAL-GIT.json. No push, production write/deployment,
+  Nginx change/reload or rollback. STOP before production mutation.
+- ONE immediate owner action: return the existing console JSON, or confirm the
+  first block was only copied before running corrected revision2 once.
+
 # Products administrator writes: local ingress repair ready for review — 2026-10-19
 
 - New priority: restore Products before uploads/storage/other dashboard work or

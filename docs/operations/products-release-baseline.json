@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "scope": "ELcomputer Products repair deployment review; no execution authority",
+  "implementation_commit": "a1a1ce02992cdb00a2c2c185ab5885a912324ef7",
+  "application": {
+    "commit": "3d5fe61c1109190c2ac3df12fb858987bc103aa5",
+    "archive_bytes": 5277655,
+    "archive_sha256": "7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846",
+    "output_inventory_entries": 1167,
+    "output_inventory_sha256": "3ebb47018ff542797f50272fab452e374c20aced53d1dc654c1d7e35ac128b34",
+    "application_input_count": 597,
+    "application_inputs_sha256": "ea2531f1b45a8069f9028e6b266dd7819b8295459f8b5554765b745c3436b5fd"
+  },
+  "ingress": {
+    "last_accepted_main_bytes": 472049,
+    "last_accepted_main_sha256": "c859c080dcab025c6d7e614d77864905d034e8c50d6570eef95014d6f4574bb5",
+    "accepted_apply_receipt_sha256": "6a93dc6ad6929e2eb1e677613c1cb6a29b36df81acc00652eb942cdacd033372",
+    "production_candidate_sha256": null,
+    "production_candidate_status": "PENDING_OWNER_PROTECTED_ATTESTATION",
+    "approved_get_patterns": 70,
+    "held_get_patterns": 10,
+    "additional_commands": [
+      { "method": "POST", "path": "/api/admin-products" },
+      { "method": "PATCH", "path": "/api/admin-products/:id" },
+      { "method": "POST", "path": "/api/admin-products/bulk" }
+    ]
+  },
+  "acknowledged_settings": {
+    "authority": "Owner explicitly confirmed intentional dashboard change on 2026-10-19",
+    "allow_out_of_stock_purchases": true,
+    "payment_cash_enabled": false,
+    "payment_card_enabled": false,
+    "payment_bank_transfer_enabled": false,
+    "payment_instapay_enabled": false,
+    "payment_paypal_enabled": false,
+    "auth_disable_signup": true,
+    "limits": "Only this stated settings projection is accepted; no blanket settings-row or schema rebaseline"
+  },
+  "safety": {
+    "commercial_activation": false,
+    "database_migrations": false,
+    "database_mutations": false,
+    "automatic_retry": false,
+    "automatic_rollback": false,
+    "automatic_cleanup": false,
+    "original_batch": "UNVERIFIED; exact actor-owned authenticated GET only; no retry, replacement or discard",
+    "formal_authenticated_security_acceptance": "DEFERRED_BLOCKED_NOT_WAIVED",
+    "production_staging_and_activation_authorized": false
+  }
+}

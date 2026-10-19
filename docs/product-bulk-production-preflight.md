@@ -1,5 +1,12 @@
 # Product bulk UX production preflight — 2026-10-19
 
+Later owner clarification: enabling `allow_out_of_stock_purchases=true` was
+intentional. The [Products protected preflight](products-protected-preflight.md)
+records the explicit new six-boolean baseline and fresh scoped compatibility/
+Auth checks. The historical false-only failure below remains intact; it is no
+longer an unexplained incident or a requirement to restore the flag to false.
+Other security/deployment requirements are not waived.
+
 Decision: **BLOCKED before staging or deployment**.
 One read-only preflight was performed. No production mutation, staging, backup
 creation, restart, reload, rollback, browser/session operation or Git push.

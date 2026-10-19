@@ -1,5 +1,11 @@
 # Products write repair — local review, 2026-10-19
 
+Follow-up: [protected Products preflight](products-protected-preflight.md).
+The owner has acknowledged the true stock-purchasing flag; the new explicit
+projection preserves payments/signup/customer ingress restrictions. The old
+settings-drift finding is reconciled without modifying its historical evidence.
+Protected console evidence and final deployment prerequisites remain pending.
+
 Status: **implemented and validated locally; NOT deployed**.
 The repair restores admission to existing authenticated Products commands.
 It does not authorize production execution or resolve the original unknown batch.
