@@ -1,3 +1,346 @@
+# ADM-01 owner functional smoke 5/5 PASS; remaining acceptance evidence — 2026-10-19
+
+- Owner personally reports live production tests using their owner account:
+  Dashboard PASS; Products PASS; Inventory and Procurement PASS; EN/AR PASS;
+  session continuity PASS, all without errors. Record OWNER_REPORTED_PASS,
+  not agent-observed or instrumented API/security acceptance. No exact browser
+  test time, tested resource IDs, request records or write guard was supplied.
+- Infrastructure APPLY PASS, post-database comparison PASS and 110/110 public
+  checks PASS remain established with their existing provenance/receipts below.
+  Preserve all prior evidence. Do not repeat activation, collection or public checks.
+- Reviewed OWNER-ACCEPTANCE-CHECKLIST.md in
+  /Users/imac/Documents/ELcomputer/adm01-post-activation-verification-20261019/.
+  Its earlier owner-pending labels and the prior handoff entry are historical:
+  the five reported functional checks now pass. The original checklist/evidence
+  is unchanged; this entry reconciles the new report and lists only remaining gaps.
+- Authenticated security evidence remains unestablished: verified active owner
+  identity/role and authorized API projections; owner-context ten held denials;
+  restricted-role/non-owner negative branches. Owner UI success and anonymous
+  401/no-store/403 results do not establish these hosted API/RBAC properties.
+  Use only an approved existing restricted account; never create test identities.
+- Browser write-safety remains unestablished: no evidence of the approved request
+  guard/audited read-RPC whitelist, blocked automatic business/activity writes,
+  or a scoped comparison bracketing the reported browser tests. The post-DB
+  receipt proves collector writes0 and unchanged scoped state at that snapshot,
+  not zero browser-induced writes. Auth/session/audit effects require separate
+  accounting/authorization; do not infer zero effects from session continuity.
+- Detailed checklist branches were not specifically reported: Products filters,
+  existing-product editor/receipt projections; Warehouses/serialized list/options;
+  Users/customers/owner-only Setup; Image Manager metadata; Orders/packing and
+  Documents ACLs; Support/chat/CRM/reviews; configuration/analytics; applicable
+  existing-resource branches. EN/AR/session smoke passes do not individually
+  establish Back/reload steps, detailed RTL, theme or responsive coverage.
+  These are unestablished observations, not failures. Preserve empty/missing/
+  denied distinctions; unavailable resources stay NOT_EXERCISED, without new data.
+- Procurement functional smoke is OWNER_REPORTED_PASS for the tested flow.
+  The historical RPC defect's technical fix/deployment remains UNVERIFIED;
+  UI success alone does not close it. Keep its application follow-up separate
+  from accepted ingress and do not redeploy Procurement for this reconciliation.
+- Final comprehensive acceptance remains pending only the missing checklist
+  evidence or explicit owner-approved deferrals. Shortest route: one focused
+  guarded acceptance pass filling those gaps, retaining all existing passes.
+  ONE next owner action: authorize that focused read-only completion; no repeated
+  infrastructure audit or rerun of the five reported smoke checks is required.
+- Git reviewed: main/HEAD/origin/main7a1240b, index empty, no unpushed commits.
+  Prior295 additive lines in each handoff preserved. Only these two docs changed
+  in this task; diff checked. No live check, root command, SQL/Auth/business write,
+  Nginx/service/deployment operation, evidence cleanup, Git commit or push.
+
+# ADM-01 production INFRASTRUCTURE_PASS; post-DB/public reads PASS; owner UX pending — 2026-10-19
+
+- Owner reports actual production APPLY INFRASTRUCTURE_PASS, private receipt
+  6a93dc6ad6929e2eb1e677613c1cb6a29b36df81acc00652eb942cdacd033372,
+  replacement/reload attempted+acknowledged, worker acceptance true;
+  full_acceptance=false/database_post_verification_required=true. Raw private
+  receipt not exported; attributed owner evidence. Never rerun consumed APPLY.
+- ONE fresh post-activation read-only collection PASS, comparing the exact
+  pre-receipt edc4d83f610e04a00690f8b82f7e59ab0be446fc1942c9147d9256fc06b054f7.
+  Existing sealed collector/binding/Node/192 pins unchanged; new nonce/output.
+  Post2573-byte receipt SHA256
+  e2d3dd7615892054c1efe763563bb29b838e0749826c910956d63ecab8f62d20,
+  observed23:41:41.594Z/completed23:42:02.282Z; post_comparison_verified=true.
+  Schema/RLS/grants, certified catalog/settings/publications and scoped business
+  fingerprint unchanged; zero stock/orders/Storage; commerce/signup disabled.
+  Collector writes0 and no verified scoped drift; not a global DB write-log claim.
+- Local wrapper preflight stopped before DB on an unnecessary128MiB Node read
+  cap. Approved243486096-byte binary hash/metadata matched; unchanged collector
+  then invoked for the FIRST time, once/PASS. No collector retry; details kept.
+- 110 independent public HTTPS GET/HEAD checks PASS on elcomputer.net:70/70
+  admitted GETs JSON401+no-store, ten held403;6 EN/AR public/login/product200
+  with en/ltr/ar/rtl;10 protected EN/AR document redirects to same-origin login;
+  seven browse-only denials, four exact legacy redirects, frozen public image,
+  login HEAD and canonical alias. No credentials, cookies, bodies or Auth writes.
+- Full Dashboard acceptance remains BLOCKED on guarded owner browser/session:
+  positive identity/RBAC/real module data, navigation/session continuity,
+  authenticated EN/AR/RTL/theme/responsive and owner-held route/resource branches
+  NOT_EXERCISED. Anonymous checks are not owner acceptance. Known Procurement
+  RPC projection issue remains separate, not fixed/deployed or owner-retested.
+- Report, complete private post evidence, live HTTP records and owner checklist:
+  `/Users/imac/Documents/ELcomputer/adm01-post-activation-verification-20261019/REPORT.md`.
+  ONE next owner action: complete guarded existing-owner EN/AR acceptance and
+  return sanitized checklist outcomes; no tokens/passwords or session exports.
+  If session/guard absent, report it; do not infer login/refresh/audit approval.
+- Git main/origin7a1240b unchanged; initial256 additive lines in both handoffs
+  preserved, index empty/no unpushed commits. Only these docs change in Git.
+  No agent root/APPLY/reload/rollback, SQL/Auth/business mutation, Nuxt/provider/
+  Procurement/commercial action, cleanup, Git commit or push. All evidence kept.
+
+# ADM-01 fresh DB collection + new control staging PASS; owner APPLY pending — 2026-10-19
+
+- Owner explicitly authorizes ONE fresh collection and immediate new receipt-bound
+  authorization/inert control staging for accepted-candidate APPLY/max1 reload.
+  Agent must not execute APPLY; no new VERIFY/rebuild/audit/retry/rollback.
+- New collection in adm01-r2-database-refresh-20261019 ran ONCE, exit0/PASS,
+  production_writes0. DB SHAedc4d83f610e04a00690f8b82f7e59ab0be446fc1942c9147d9256fc06b054f7,
+  noncef23c680861885b359e1c04fe9cbf66937e502127cbd66d3a8493ee840bd24eb9,
+  observed23:34:44.016Z/completed23:35:06.058Z. Actual r2 rootecfda402... unchanged.
+- New auth0646bbf5dc97320550e42799aab36e857ddcf9fd079eb4f544cc497e68bf01f0
+  (960 bytes) and DB2574 bytes staged exclusively; five pinned sessions and full
+  independent readbacks PASS,1002:1004/0600/nlink1, canonical0700 parent unchanged.
+  Old d219/63a/da73 controls/command remain preserved and must not be reused.
+- NEW approved-apply-controls/ROOT-APPLY.command1588 bytes/SHA256
+  d52df628a0fc6efbf45d7eefff920b53aef673fb1475455df42b3844cff401f7,
+  under adm01-r2-database-refresh-20261019. Full receipt FRESH-CONTROLS-READY.json.
+  Auth/DB deadline02:39:44.016 Riyadh; root900s deadline02:39:56.170087.
+  Freshness checked23:35:53.875153Z; actual live runtime NOT agent-rechecked and
+  equality remains mandatory before any sealed APPLY mutation. No root execution.
+- ONE next action: owner reviews/executes NEW command once only while all gates
+  pass, then returns result. Expiry/drift/failure STOP without retry or rollback.
+  No agent APPLY/reload, package/config/service/Procurement change, cleanup or push.
+
+# ADM-01 r2 APPLY window STOPPED; fresh DB collection prepared, not run — 2026-10-19
+
+- Owner explicitly stops current APPLY window. Do not execute da73beed... or
+  reuse authorization d2193cc5... / DB proof63a1874c... for activation. Keep all
+  artifacts, staged controls, receipts and consumed markers untouched.
+- Prepared a new exclusive local one-shot collection namespace, with exact
+  byte-identical tested collector/root validator/authorization/staging tools:
+  `/Users/imac/Documents/ELcomputer/adm01-r2-database-refresh-20261019/PLAN.md`.
+  No package rebuild, root command, remote operation, collection or new active
+  authorization in this task. Two focused offline relocation/expiry tests PASS.
+- Actual r2 root receipt ecfda402... / bindinge26902c7... reused only as unchanged
+  metadata; deadline02:39:56.170087 Riyadh. Check900s age before DB access; never
+  reset its timestamp. Current runtime was NOT remotely rechecked: exact runtime/
+  security/config identity remains a mandatory live APPLY gate before replacement.
+- ONE next action: obtain separate approval for ONE fresh read-only collection
+  using the prepared new command. Then validate actual new proof and prepare
+  new hash-bound authorization/controls as approved; no expired controls reused.
+  No APPLY/reload/rollback execution. If gates expire/fail, STOP; no automatic
+  collection, root refresh, retry, cleanup or Git push. Prior handoffs preserved.
+
+# ADM-01 r2 APPLY approved; controls staged PASS; owner execution pending — 2026-10-19
+
+- Owner explicitly approves ONE accepted-candidate APPLY and at most ONE reload,
+  subject to all gates. Agent must not execute it. No automatic retry/rollback.
+- Actual receipt-bound authorization960 bytes/SHAd2193cc5242b411608fcdac844470e8d25d3fbd58afa92990bbf03d18bd89017
+  generated and inertly staged with actual DB receipt63a1874c... (2574 bytes).
+  Five pinned sessions/full independent readbacks PASS;1002:1004/0600/nlink1;
+  existing0700 directory preserved. Full receipts in r2/approved-control-staging-attempt/.
+- Final approved-apply-controls/ROOT-APPLY.command1588 bytes/SHA256
+  da73beedc7ea8fdf5ea75464ab23b5871f0eb88225e8a642a2ef64ce806cb394.
+  Actual r2 root ecfda402... and DB63a1874c... bound; existing APPLYce59d450...
+  and manifest34e62ec6... unchanged. Hash/scope/freshness and syntax checked.
+- Authorization/DB deadline2026-10-19 02:30:13.886 Riyadh; must pass entry,
+  swap/pre-reload gates. Current readiness checked23:28:12.394325Z. No root
+  APPLY/reload executed by agent. Owner reviews and executes exact command once
+  only if sufficient freshness remains; otherwise STOP without retry/recollection.
+
+# ADM-01 r2 VERIFY + one DB collection PASS; STOP before authorization — 2026-10-19
+
+- Owner r2 VERIFY PASS/activation_authorized=false, actual root receipt
+  ecfda402493b2520975714998eb722af365280fbe9b9606992b0c99b6d1eb4f3,
+  observed2026-10-18T23:24:56.170087+00:00; root900s deadline23:39:56.170087Z.
+  Actual r2 metadata bound locally; command consumed, never replay it.
+- ONE authorized local read-only collection exit0/PASS, production_writes0.
+  Actual DB receipt2574 bytes/SHA63a1874c93943188daa5c40b8dbe4e44fa11556c29c1fc26d5d0c5f248e8b67f,
+  noncea841ca3d61d6b1d39611c0b03eefdb28d0897d2c575b28c045fb9442bf321a5a,
+  observed23:25:13.886Z/completed23:25:35.128Z. Exact hash/private metadata,
+  target/invariants and freshness validated. Preserved in r2 evidence directory.
+- DB deadline2026-10-18T23:30:13.886Z / Oct19 02:30:13.886 Riyadh, including
+  swap/pre-reload barriers. Root binding SHAe26902c77f1d5c693ba88dc6e798e70b5585c077a4f3b2fbb444bc09bf51ee2f.
+  No r1 receipt reused. No retry, recollection, cleanup or Git push.
+- STOP before activation authorization: no AUTHORIZATION issued, fresh controls
+  staged, APPLY/reload/rollback run. Request separate owner approval for one
+  exact accepted-candidate APPLY/at most one reload and its bound control
+  generation/inert staging; then return the command for owner console execution.
+  If freshness expires, STOP without automatic refresh or collection.
+
+# ADM-01 NEW r2 window ready/staged PASS; await owner VERIFY — 2026-10-19
+
+- Owner authorizes NEW preparation/inert staging, one owner-console read-only
+  VERIFY and one local read-only DB collection after its actual fresh PASS.
+  APPLY/replacement/reload/rollback/data mutation remain unauthorized. No root
+  program or collector executed yet, no clock started or authorization issued.
+- New exclusive root workspace /root/adm01-activation-verify-3be097f8217bd200-r2.
+  Deterministic archive235520 bytes, adm01-activation-verify-00c13cd5958971c8.tar,
+  SHA25600c13cd5958971c866f2d6a5ab8c34a444dd17cb3391acab222c42df4a079c33;
+  manifest3b135f81a839f00aca206bdab148cc7eca6544783792e2d3955df95495eac7f4.
+  Bootstrap unchanged4790 bytes/43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1.
+- Exactly these two files inertly staged under existing restricted directory:
+  archive above; bootstrap-activation-43a6473a36b2abab-for-00c13cd5958971c8.py.
+  Five pinned nonroot sessions PASS once; full independent bytes/size/SHA/stable
+  metadata match. Regular1002:1004/0600/nlink1, dev2049/inodes7138412/7138413.
+  Canonical parent unchanged1002:1004/0700/dev2049/inode7083189. No retries/cleanup.
+- All five local tools are ready: r2 receipt binder, unused one-shot collector,
+  authorization constructor, control staging adapter and final APPLY generator.
+  Only window path/manifest/hash pins rebound; stopped r1 SHA explicitly rejected.
+  Twenty focused local tests PASS;192 database input hashes/metadata exact;
+  seven deterministic build outputs identical. No repeated broader investigation.
+- Reuse exact CHECK/preparation, candidatec859c080..., corrected APPLYce59d450...
+  and rollback2f262bb5... packages,70 GET/ten held and all protection contracts.
+  No APPLY/rollback rebuild/restaging, private root evidence export or reissue.
+  All152 prior local evidence/sealed files and r1 marker/output/workspace preserved.
+- Report, source binding diffs, full receipts and exact new command:
+  `/Users/imac/Documents/ELcomputer/adm01-coordinated-window-r2-20261019/REPORT.md`.
+  sealed/ROOT-VERIFY-PENDING-STAGING.command1076 bytes/SHA256
+  586c5b82f80cadddfbd362262772bafdb9c409ba02312bfe5af9d6013719f9dd.
+- Immediate Codex action after actual PASS/hash/time: run THIS r2 directory's
+  bind_fresh_root.py, then its printed hash-bound collector ONCE under existing
+  owner approval. Validate actual DB proof; stop before activation authorization
+  and seek separate approval. Root900s/DB300s limits unchanged; expiry/failure STOP.
+- Git main/origin7a1240b unchanged, index empty/no unpushed commits. Preserved
+  initial136 uncommitted lines in each handoff; only these docs edited in Git.
+  No root/DB/APPLY/reload/rollback/service/live configuration/permission/Procurement
+  action, Git commit or push. Only the two inert stage files created on VPS.
+- ONE next owner action: review/run the NEW r2 VERIFY command once in Hostinger
+  root Web Console; immediately return both JSON result lines. Never replay r1.
+
+# ADM-01 activation window STOPPED by owner; await new approval — 2026-10-19
+
+- Owner explicitly stops this window. Do not use its current DB receipt for APPLY,
+  even if a timestamp gate would still pass. Prior activation-approval requests
+  below are historical and are withdrawn for this window.
+- Successful refreshed VERIFY and single read-only DB collection remain PASS
+  history, with zero production writes. Preserve their exact receipts, original
+  root workspaces, collection marker/output, all tested/staged packages and every
+  prior handoff entry. No active authorization or fresh controls were issued.
+- APPLY, replacement/reload/rollback, commercial activation and production changes
+  remain unauthorized. No automatic collection, root refresh, retry, cleanup or
+  Git push. This stop adds continuity only; no remote operation is required.
+- Wait for explicit approval of a NEW coordinated window. Only then determine
+  minimum fresh evidence from actual freshness gates, using new exclusive attempt
+  paths where required. Never replay consumed commands or clear existing markers.
+
+# ADM-01 fresh VERIFY and one DB collection PASS; activation approval pending — 2026-10-19
+
+- Owner returns refreshed VERIFY PASS/activation_authorized=false with matching
+  actual receipt SHA54a8e5e26f2157d359d11b8813429eede106460affc51b9c38d25df7eb5dcc75,
+  observed2026-10-18T23:13:15.784754+00:00. Bound locally without editing root
+  evidence; root-entry deadline23:28:15.784754 UTC. r1 command consumed; no replay.
+- Exactly ONE authorized local read-only collector executed, exit0/PASS. Actual
+  private DB receipt2574 bytes/SHAee2e2a8641682b6743e71eea29c165e023a55caa933b63d57c158a8f69f4d01c,
+  noncee70ee5823dbc636b83f0f585e856ec7cd48bfb1d685546829dba20cf50c78c00,
+  observed23:13:48.888Z/completed23:14:12.074Z. Hash/private metadata/target/
+  invariants/freshness validated; production_writes integer0. No second collection.
+- DB300s deadline2026-10-18T23:18:48.888Z / October19 02:18:48.888 Riyadh;
+  must remain fresh at entry/swap/pre-reload. Timeouts/expiry STOP; no automatic
+  recollection or root refresh. Receipt/business fingerprint and complete actual
+  read-only evidence summary preserved at adm01-coordinated-window-readiness-
+  20261019/ACTUAL-READONLY-WINDOW-PASS.json outside the checkout.
+- STOP before activation authorization. No AUTHORIZATION.json generated, fresh
+  controls staged, APPLY/rollback/root command run by agent, or Nginx reload.
+  Candidate/packages/protection contracts unchanged; both historical workspaces
+  and all new private evidence preserved. No Git push or cleanup.
+- ONE next owner action: separately approve one receipt-bound policy APPLY with
+  at most one reload, including its authorization/control preparation and inert
+  staging. Then return the exact command for owner review/execution; never run it
+  through agent/root SSH. Approval must still satisfy actual freshness gates.
+
+# ADM-01 read-only window start authorized; waiting for owner VERIFY — 2026-10-19
+
+- Owner authorizes exactly one reviewed refreshed VERIFY in their Hostinger
+  root Web Console, then exactly one local read-only DB collection after actual
+  PASS with fresh receipt SHA/time. No operation has been reported/executed yet.
+- Reviewed command remains1076 bytes/SHAfb8f0f9088ed0182fdbd62b7d394d8b3543e3e1250f7b5ee2e26c7302bd3132f.
+  No collector-start marker exists. Await owner output; do not execute remotely,
+  repeat old commands or retry failures/expired evidence automatically.
+- APPLY, active activation authorization, replacement/reload/rollback, database
+  mutations and commercial activation remain withheld. Guide one action at a
+  time; stop after approved read-only proof for separate activation approval.
+
+# ADM-01 coordinated window technically ready; execution not started — 2026-10-19
+
+- Owner confirms review and independent SHA check of the existing1076-byte
+  refreshed VERIFY command. Approval currently covers preparation only;
+  APPLY/reload remain expressly unauthorized. No freshness clock started.
+- Collector, shared actual-receipt binding, approved authorization constructor
+  and final APPLY command generator remain exact/tested. One gap was closed
+  locally: stage_controls.py now accepts actual generated control paths/hashes,
+  reusing the existing pinned remote protocol without edits during the window.
+  It validates exact command/proof scope/freshness and stages only two approved
+  controls with exclusive creation and full independent byte readbacks. No SSH
+  or root execution in this preparation; active authorization remains unissued.
+- Nine offline adapter tests PASS: mocked five-session handoff, corrupt readback/
+  metadata, SSH failure, stale proof, unapproved auth, hash/command mismatch,
+  existing output and file/link guards. All192 locked DB input identities still
+  match; no credential read or database access. All109 prior local evidence files
+  unchanged. Existing staged packages supported by prior full readback receipts;
+  no new remote inspection, transfer, rebuild or source/package change.
+- Readiness record and exact future CLI inputs:
+  `/Users/imac/Documents/ELcomputer/adm01-coordinated-window-readiness-20261019/READY.md`.
+  No additional development/investigation planned within root900s/DB300s windows.
+  Only actual receipt values and applicable approvals remain; any expiry/failure
+  stops without automatic retry/recollection/cleanup. Owner/local operator must
+  be available together. No fabricated --owner-approved assertion or authorization.
+- Git main/origin7a1240b unchanged; prior52-line additions to each handoff kept.
+  Only these docs change in Git. No production/root/DB/APPLY/rollback/reload,
+  permissions/service/Procurement operation, Git commit or push.
+- ONE first owner action: authorize the start of one refreshed owner-console
+  VERIFY and one local read-only DB collection after PASS; keep APPLY/reload
+  withheld. Preparation approval alone does not start either execution.
+
+# ADM-01 expired evidence refresh staged PASS; root execution pending — 2026-10-19
+
+- Historical production VERIFY PASS/dfb0b32f... is expired for activation.
+  New actual receipt SHA/time remain UNKNOWN. No timestamp or receipt was edited.
+  This entry supersedes the old fixed-time collector/controls/next-action below.
+- Confirmed from sealed corrected APPLY/rollback manifests, BINDING, bootstrap
+  and core: no old VERIFY source path or receipt SHA is sealed into either.
+  APPLY authenticates private ROOT-STATE against separate authorization, checks
+  scope/private evidence, root age<=900 and current runtime equality. Reuse the
+  already staged ce59d450... APPLY and2f262bb5... rollback unchanged; no rebuild.
+- New local collector and prepare_controls share one exact SHA-bound metadata
+  file through required root-evidence-binding/root-evidence-sha256 arguments.
+  Actual owner-returned root hash/time are required. Controls copy from the new
+  r1 workspace and bind that same hash into authorization and copy verification.
+  Expiry is capped at root and DB deadlines. No actual binding/DB/auth generated.
+- Complete old collector reviewed: nonroot/expiry first, before umask, nonce,
+  marker/output creation or Node/database entry. New collector preserves that
+  order and adds authenticated receipt metadata; neither collector was executed.
+- Minimal deterministic VERIFY-only refresh changes only workspace BINDING and
+  consequent manifest; all tested source/policy/bootstrap bytes unchanged.
+  Archive235520 bytes, adm01-activation-verify-99792a182dc0c79c.tar, SHA256
+  `99792a182dc0c79c43b06d0e0964e8b91f1849dc606f738e35f4d3369380d9d9`;
+  manifest `9cc9468aaf33534616e6232ac8723d8c6c3d3f5e37740ff2c890c8891f810292`.
+  Bootstrap4790 bytes/SHA256
+  `43a6473a36b2abab4d2ee3b6f853416aa99de0a3b40411d98451d122919c24b1`.
+- Exactly two files staged under existing .codex-inspection-staging: archive
+  above and bootstrap-activation-43a6473a36b2abab-for-99792a182dc0c79c.py.
+  Regular1002:1004/0600/nlink1, dev2049/inodes7138326/7138327. Parent canonical
+  1002:1004/0700/dev2049/inode7083189 unchanged. Five pinned nonroot sessions
+  PASS once; full independent bytes/size/SHA/stable metadata match. Remote STOP.
+- Report, full staging receipts, shared-binding tools and practical timed plan:
+  `/Users/imac/Documents/ELcomputer/adm01-root-evidence-refresh-20261019/REPORT.md`.
+  Exact sealed/ROOT-VERIFY-PENDING-STAGING.command1076 bytes/SHA256
+  `fb8f0f9088ed0182fdbd62b7d394d8b3543e3e1250f7b5ee2e26c7302bd3132f`.
+  New exclusive root workspace /root/adm01-activation-verify-3be097f8217bd200-r1;
+  command prints actual receipt SHA/time together after PASS. NOT EXECUTED.
+- Eleven focused offline tests PASS; seven deterministic build outputs match.
+  Actual intake/mode/tamper, unchanged sealed APPLY, receipt propagation,
+  freshness/approval/security negatives and collector order checked. Fixtures
+  only; no collector main or root program executed. Existing source tests retained.
+- Review/coordinate later approvals before starting root900s clock. Bind actual
+  returned metadata, collect approved DB proof immediately, prepare/stage/review
+  actual controls within DB300s through entry/swap/pre-reload. No automatic retry.
+- Git initially main7a1240b clean/ahead1 of observed origin/maincd14788; existing
+  origin/main advanced externally to7a1240b during work. HEAD/source unchanged.
+  Only these two docs edited in Git; prior work and all historical evidence kept.
+  No root/DB/VERIFY/APPLY/rollback/reload/service/permission/Procurement action,
+  CHECK/preparation repeat, historical cleanup, Git commit or push. Candidate
+  c859c080...,70 GET/ten held and all protection contracts remain unchanged.
+- ONE next owner action: separately security-review/approve the prepared1076-byte
+  refreshed VERIFY command for a coordinated run. Do not run DB collection now.
+
 # ADM-01 production VERIFY PASS; activation BLOCKED on fresh DB/approval — 2026-10-19
 
 - Owner reports one corrected production VERIFY PASS, private root-state SHA256
