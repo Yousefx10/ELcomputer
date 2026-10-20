@@ -1,6 +1,6 @@
 # First COD purchase: local implementation and activation gates
 
-Status: local checkout correction validated; public purchases remain disabled.
+Status: checkout and private packing validated locally; public purchases remain disabled.
 No deployment, hosted migration, business configuration or real order was made.
 
 ## Existing features reused
@@ -78,13 +78,13 @@ It was not modified. Do not open it before owner-controlled acceptance. Review a
 restricted acceptance environment/access gate separately; retain existing Auth,
 RBAC, RLS, restrictive origins and deployment configuration.
 
-**Fulfillment gap:** packing completion requires a saved private video covering
-the scans. `server/api/admin-orders/packing/[sessionId]/video-upload.post.js`
-still issues Supabase Storage signed uploads, while the current file policy puts
-all files on the VPS and blocks Storage object traffic. A scoped private VPS video
-adapter and its authorization/upload/completion acceptance are needed before
-claiming dispatch readiness. Public media uploads cannot replace private packing
-evidence. Do not remove the video guard or enable Supabase file storage.
+**Packing video correction implemented locally:** [private VPS packing
+videos](private-packing-videos.md) replace signed Storage uploads, verification and
+redirects with authenticated streams and server-validated file evidence. Migration84
+and the application require an approved release, private directory/verifier setup
+and target-service acceptance. Original scan/video coverage and completion guards
+remain. No production file handling or routing was changed. Dispatch is not yet
+accepted on the VPS.
 
 **Collection gap:** `/api/admin-orders/[id]/payments.post.js` records preorder
 payments only. This task does not add or certify a normal-order COD collection
@@ -150,7 +150,7 @@ is claimed. No release certificate was regenerated.
 
 ## Activation boundary
 
-Keep public checkout off. Resolve the private-video and collection paths, review
+Keep public checkout off. Accept private VPS configuration and the collection path, review
 the release/migration and configure actual stock, delivery and confirmed customer
 access. Then obtain authorization for restricted owner-controlled end-to-end
 acceptance: one reviewed COD order, exact totals, one stock deduction, identical
@@ -158,6 +158,6 @@ replay, customer confirmation, Dashboard visibility and real fulfillment evidenc
 Accept dispatch/collection separately with actual evidence; do not mark COD paid
 at checkout. Public activation requires the owner's acceptance and approval.
 
-**One next owner action:** prepare the business-input table above with the first
-physically verified product/model quantities and delivery options/prices. Keep
-public checkout disabled while the remaining technical acceptance gaps are closed.
+**One next technical task:** implement normal-order COD cash collection and
+reconciliation. The owner can supply the business-input table separately.
+Keep public checkout disabled through controlled acceptance and approval.

@@ -1,5 +1,9 @@
 # Product Manager Task 2: media library and image safety
 
+Packing videos now use [private VPS storage](private-packing-videos.md), outside
+public uploads and the Media Library. References below describe the Task 2
+baseline; other private-file adapters remain separate work.
+
 Authorized baseline: `8c5256b9708b488e3022e756e8c9f85aaf8a96ae`.
 This task extends the existing upload endpoint, public image route, library and
 shared image field. Product listing, imports/exports, bulk actions, providers,

@@ -1,6 +1,8 @@
 import { createError, getRouterParam, readBody } from 'h3'
 import { recordAdminActivity } from '../../../../utils/adminLogs'
 import { requireAdminRequest } from '../../../../utils/adminRequest'
+import { getPackingVideo } from '../../../../utils/packingVideoRequests'
+import { openPackingVideo } from '../../../../utils/privatePackingVideos'
 import {
   CUSTOMER_MESSAGES_TABLE,
   DEFAULT_PACKED_ORDER_STATUS,
@@ -116,6 +118,10 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Save the packing video before completing this order.'
       })
     }
+
+    const { video } = await getPackingVideo(supabaseAdmin, sessionId, { adminId: adminUser.id })
+    const verified = await openPackingVideo(video)
+    await verified.handle.close()
 
     if (messageBody && !detailBeforeCompletion.order.user_id) {
       throw createError({

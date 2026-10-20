@@ -1507,8 +1507,33 @@ const stopOrderRecording = async ({ discard = false } = {}) => {
   return blob
 }
 
+const finishVideoUpload = async () => {
+  return await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-complete`, {
+    method: 'POST', retry: 0, timeout: 90000, headers: await getAuthHeaders()
+  })
+}
+
+const applySavedPackingVideo = video => {
+  packingDetail.value.video = video
+  recordingState.value = 'saved'
+  videoUploadProgress.value = `Saved as ${video.file_name}`
+  recordingChunks = []
+  recordingBlob.value = null
+  stopRecordingPromise = null
+  mediaRecorder = null
+  return video
+}
+
 const uploadPackingVideo = async () => {
   if (packingDetail.value?.video?.status === 'ready') return packingDetail.value.video
+
+  // A previous upload may have persisted before its acknowledgement was lost.
+  if (packingDetail.value?.video?.status === 'uploading') {
+    try { return applySavedPackingVideo((await finishVideoUpload()).video) }
+    catch (error) {
+      if (Number(error?.statusCode || error?.status) !== 409 || error?.data?.statusMessage !== 'The saved packing video is unavailable.') throw error
+    }
+  }
 
   const blob = recordingBlob.value
 
@@ -1532,37 +1557,23 @@ const uploadPackingVideo = async () => {
         recordingStartedAt: recordingStartedAt.value,
         recordingEndedAt: recordingEndedAt.value
       },
-      headers: await getAuthHeaders()
+      headers: await getAuthHeaders(),
+      retry: 0,
+      timeout: 30000
     }
   )
+  packingDetail.value.video = response.video
 
   videoUploadProgress.value = 'Uploading packing video...'
-  const { error: uploadError } = await supabase.storage
-    .from('order-packing-videos')
-    .uploadToSignedUrl(response.upload.path, response.upload.token, blob, {
-      contentType: blob.type || 'video/webm',
-      upsert: true
+  if (response.video.status !== 'ready') {
+    await $fetch(response.upload.url, {
+      method: 'PUT', body: blob, retry: 0, timeout: 17 * 60 * 1000,
+      headers: { ...await getAuthHeaders(), 'Content-Type': blob.type || 'video/webm' }
     })
-
-  if (uploadError) throw uploadError
+  }
 
   videoUploadProgress.value = 'Verifying packing video...'
-  const completed = await $fetch(
-    `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-complete`,
-    {
-      method: 'POST',
-      headers: await getAuthHeaders()
-    }
-  )
-
-  packingDetail.value.video = completed.video
-  recordingState.value = 'saved'
-  videoUploadProgress.value = `Saved as ${completed.video.file_name}`
-  recordingChunks = []
-  recordingBlob.value = null
-  stopRecordingPromise = null
-  mediaRecorder = null
-  return completed.video
+  return applySavedPackingVideo((await finishVideoUpload()).video)
 }
 
 const downloadPackingVideo = async () => {

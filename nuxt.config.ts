@@ -57,6 +57,8 @@ export default defineNuxtConfig({
     shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',
     erpWorkerSecret: process.env.ERP_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',
+    packingVideosDir: '',
+    packingVideoProbePath: 'ffprobe',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
       supabaseUrl,

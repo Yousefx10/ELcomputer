@@ -6,9 +6,11 @@ export const smsDatabaseClient = db => {
     const query = {
       select(columns = '*', options = {}) { state.columns = columns; state.options = options; return query },
       update(data) { state.action = 'update'; state.data = data; return query },
+      delete() { state.action = 'delete'; return query },
       insert(data) { state.action = 'insert'; state.data = data; return query },
       upsert(data) { state.action = 'upsert'; state.data = data; return query },
       eq(key, value) { state.filters.push(`${key}=${parameter(value)}`); return query },
+      is(key, value) { state.filters.push(value === null ? `${key} is null` : `${key} is ${value === true ? 'true' : 'false'}`); return query },
       gte(key, value) { state.filters.push(`${key}>=${parameter(value)}`); return query },
       lte(key, value) { state.filters.push(`${key}<=${parameter(value)}`); return query },
       in(key, values) { state.filters.push(`${key}=any(${parameter(values)})`); return query },
@@ -27,7 +29,8 @@ export const smsDatabaseClient = db => {
           else if (columns.includes('sms_messages(')) columns = "id,traffic_type,triggered_by,trigger_source,template_id,external_trx_id,status,attempts,result_status,error_code,failure_category,created_at,submitted_at,(select coalesce(jsonb_agg(to_jsonb(m)-'body'),'[]') from public.sms_messages m where m.batch_id=sms_batches.id) sms_messages,(select coalesce(jsonb_agg(to_jsonb(a)),'[]') from public.sms_attempts a where a.batch_id=sms_batches.id) sms_attempts"
           const where = state.filters.length ? ' where ' + state.filters.join(' and ') : ''
           let sql
-          if (state.action === 'update') sql = `update public.${table} set ` + Object.entries(state.data).map(([key, value]) => `${key}=${parameter(value)}`).join(',') + where + ' returning *'
+          if (state.action === 'delete') sql = `delete from public.${table}` + where + ' returning *'
+          else if (state.action === 'update') sql = `update public.${table} set ` + Object.entries(state.data).map(([key, value]) => `${key}=${parameter(value)}`).join(',') + where + ' returning *'
           else if (['insert', 'upsert'].includes(state.action)) sql = `insert into public.${table}(${Object.keys(state.data).join(',')}) values (${Object.values(state.data).map(parameter).join(',')})` + (state.action === 'upsert' ? ' on conflict(id) do update set ' + Object.keys(state.data).filter(key => key !== 'id').map(key => `${key}=excluded.${key}`).join(',') : '') + ' returning *'
           else sql = `select ${columns} from public.${table}` + where + (state.orders.length ? ' order by ' + state.orders.join(',') : '') + (state.limit ? ' limit ' + state.limit : '') + (state.offset ? ' offset ' + state.offset : '')
           const result = await db.query(sql, state.params)

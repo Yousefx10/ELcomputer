@@ -100,7 +100,9 @@ for (const mode of ['built_in','daftra']) test(`packing requires an operator ses
   )
 
   await db.query(
-    `update public.order_packing_videos set recording_started_at=now() - interval '1 minute', recording_ended_at=now() + interval '1 minute' where packing_session_id=$1`,
+    `update public.order_packing_videos set recording_started_at=now() - interval '1 minute', recording_ended_at=now() + interval '1 minute',
+     storage_backend='vps',upload_id=id,storage_path='vps-v1/'||recorded_by::text||'/'||order_id::text||'/'||packing_session_id::text||'/'||id::text||'.webm',
+     sha256=repeat('a',64),validated_at=now() where packing_session_id=$1`,
     [packingSessionId]
   )
   const result = await db.query(

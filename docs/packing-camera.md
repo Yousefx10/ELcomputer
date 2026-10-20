@@ -40,12 +40,15 @@ The session closure remains in the activity log.
 
 ## Video storage
 
-- Videos are stored in a private Supabase bucket.
+- Videos stay in private VPS storage.
 - Each filename uses its order number.
 - Supported formats are WebM, MP4, and QuickTime.
 - The maximum video size is 500 MB.
 - Only dashboard users with order access can download videos.
 - Order completion fails without a verified video.
+- Failed uploads retain the recording for retry.
+
+Server setup and isolated evidence: [Private packing videos](private-packing-videos.md).
 
 ## Recommended camera settings
 

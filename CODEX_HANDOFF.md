@@ -1,3 +1,56 @@
+# Private VPS packing videos PASS locally; public sales stay disabled — 2026-10-20
+
+- Started from clean main and recorded origin/main `31b295c`. Reviewed AGENTS,
+  README, current handoffs, relevant Notes, COD plan and all available local/tracking
+  refs, worktrees and stashes for both Codex accounts. One worktree, no prior dirty
+  or unpushed branch work; existing commits preserved. No live Git fetch/push.
+- Existing packing sessions, operator ownership, actual assigned-unit scans,
+  every-scan recording coverage and completion/status/financial guards retained.
+  Three existing video handlers and the confirmation screen now use private VPS
+  files; one authenticated streaming PUT added. No Supabase Storage object upload,
+  list, signed token, download or redirect occurs in this packing workflow.
+- Server requires current active owner/staff Orders permission. Uploads bind to the
+  exact claimed operator/order/work session/upload identity; SQL rechecks after
+  streaming. Only service-only prepare/finish routines mutate video evidence;
+  browser ACL/RLS and inventory grants remain unchanged. Direct service-role video
+  INSERT/UPDATE revoked. Historical video rows and objects are not overwritten.
+- New migration84 `20261020160000_private_vps_packing_videos.sql`: existing video
+  table gets backend/upload identity/SHA-256/validation metadata; new completion
+  trigger requires VPS evidence alongside the unchanged original video/coverage
+  trigger. Release/close retires interrupted uploads. Existing reset manifests and
+  checkpoint cleanup include VPS keys, retaining dependency and owner/password guards.
+  No historical migration/certificate changes, new business tables or seed data.
+- Private directory must be configured outside application/public uploads, owned
+  by the application user (0700 directories/0600 files); links and unsafe paths
+  fail closed. Files stream with fixed byte limits, fsync and atomic no-overwrite
+  publication. Actual video decoding/type/duration verification uses bounded local
+  ffprobe, no shell/network protocol. Existing 500 MiB limit retained.
+- Authorized downloads verify saved bytes against SHA-256 and stream private,
+  no-store attachments; no bearer capability in a URL. Missing/tampered files block
+  new completion. Lost SQL/HTTP acknowledgements recover the existing file; UI keeps
+  failed recordings for retry and checks persisted evidence before resending bytes.
+- Deployment inputs: `NUXT_PACKING_VIDEOS_DIR` (empty fails closed), trusted
+  `NUXT_PACKING_VIDEO_PROBE_PATH` (default ffprobe), private directory provisioning
+  and a narrow existing-service ReadWritePaths addition. All remain unapplied.
+  Do not place videos under public uploads or weaken the existing service sandbox.
+- Validation on Node22.23.1/npm10.9.8:25 native packing +17 native COD checks PASS;
+  45 focused packing/reset/preorder/amount/public-media regressions PASS,8 existing
+  native opt-in skips. Typecheck/build/diff check PASS. Actual disposable PG17.11,
+  filesystem, ffprobe8 and compiled handlers; Auth/Supabase transport are fixtures.
+  No hosted Auth/PostgREST/RLS, real webcam/browser or Linux/systemd acceptance claimed.
+  Native packing proves unchanged prices/payment/inventory/ledger through completion,
+  recovery/concurrency, authorization revocation, codec/size failures, file privacy,
+  reset cleanup and preserved historical evidence. No real customer orders.
+- Feature details/configuration/acceptance: [docs/private-packing-videos.md](docs/private-packing-videos.md).
+  Public checkout remains disabled. Production still needs an approved release
+  (pending83/84), scoped private-file setup and later controlled acceptance.
+  Business stock/coverage/charges and confirmed customer access remain unselected;
+  nothing fabricated. No production connection/change, restart, deploy, Caddy/Nginx
+  investigation, Supabase change or Git push.
+- ONE next task: normal-order COD cash collection and reconciliation. Do not wait
+  for stock/shipping decisions or start another infrastructure audit. Historical
+  WordPress customer/order/address migration remains after the initial sales milestone.
+
 # COD purchase flow prepared locally; public sales remain disabled — 2026-10-20
 
 - Current priority supersedes the old pending health action: owner reports health
