@@ -4,8 +4,8 @@ import { decryptShippingSecret } from './shippingSecrets.js'
 import { boundedPdcText, parsePdcStatusDate, persistPdcUpdate } from './pdcTracking.js'
 
 const unavailable = () => createError({ statusCode: 502, statusMessage: 'Courier lookup is unavailable.' })
-export const requirePdcReadAccess = (settings, runtime = useRuntimeConfig()) => {
-  if (runtime.shippingLiveRequestsEnabled !== true || !settings.is_enabled) throw createError({ statusCode: 503, statusMessage: 'Courier calls are disabled.' })
+export const requirePdcReadAccess = (settings, runtime = useRuntimeConfig(), { allowDisabled = false } = {}) => {
+  if (runtime.shippingLiveRequestsEnabled !== true || (!allowDisabled && !settings.is_enabled)) throw createError({ statusCode: 503, statusMessage: 'Courier calls are disabled.' })
   validatePdcBaseUrl(settings.base_url, settings.api_mode)
   if (!settings.access_token_encrypted || !/^\d{1,40}$/.test(settings.company_id || '')) throw createError({ statusCode: 503, statusMessage: 'Courier credentials are incomplete.' })
 }

@@ -1,3 +1,11 @@
+# Current readiness — 2026-10-20
+
+See the [current provider/access review](customer-access-provider-readiness.md).
+Existing PDC settings, lookups, booking and tracking are retained. The local lookup
+bootstrap fix keeps shipments disabled during authorized diagnostics. Real booking
+still needs COD/eligibility/retry corrections and private VPS labels. Nothing
+activated or deployed in this task; older entries below describe their dated work.
+
 # Current local extension: After-Sales Stage 2, 2026-10-08
 
 Claim reverse bookings now use the existing PDC adapter/settings/authenticated worker/webhook/normalization and private-label transport, with separate claim-linked jobs/history and stable `ASREV-` references. Staff explicitly initiate pickup; reverse events route outside the original outbound/SMS persistence path. Original order AWBs/references/history and normal order PDC SMS remain unchanged. No provider cancellation action is invented.

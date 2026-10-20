@@ -11,7 +11,9 @@ export default defineEventHandler(async event => {
   try { body = JSON.parse(await readPaymentCallbackBody(event, 1024, 2000)) } catch { throw createError({ statusCode: 400, statusMessage: 'Invalid lookup request.' }) }
   if (!['sync', 'test'].includes(body?.action)) throw createError({ statusCode: 400, statusMessage: 'Invalid lookup request.' })
   const settings = await getPdcSettings(supabaseAdmin)
-  requirePdcReadAccess(settings)
+  // Manual settings diagnostics must work before shipment enablement/product
+  // selection. Keep the operator gate, settings permission and credential checks.
+  requirePdcReadAccess(settings, useRuntimeConfig(event), { allowDisabled: true })
   const { data: claimed, error: claimError } = await supabaseAdmin.rpc('shipping_claim_pdc_lookup').abortSignal(AbortSignal.timeout(4000))
   if (claimError) throw createError({ statusCode: 503, statusMessage: 'Courier lookup is unavailable.' })
   if (!claimed) throw createError({ statusCode: 429, statusMessage: 'Try again in one minute.' })

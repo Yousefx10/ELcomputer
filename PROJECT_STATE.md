@@ -1,3 +1,60 @@
+# Account access fix PASS locally; provider activation BLOCKED — 2026-10-20
+
+- Started clean at `8f22448`, preserving both unpushed release commits (`07bb18f`,
+  `8f22448`) ahead of recorded origin/main. Reviewed AGENTS/README/handoffs, relevant
+  Notes, current routes/guards and existing Paymob/PDC/Quick Setup implementation.
+  One worktree, no other branches/stashes/unrelated work. No fetch/push/deployment.
+- Exact live cause for all four reports: current Caddy `@commerce` denies
+  `/api/account/*`, `/api/support/*`, `/api/customer-*` before Nuxt. Messages,
+  tickets, Claims plus items, and customer-users returned public plain 403 versus
+  loopback JSON 401 without a token. Current Caddy SHA remains
+  `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c`.
+  This is a narrow current-policy diagnosis, not a reopened VPS/Nginx audit.
+- Prepared scripts/customer-access policy + local-only patcher. Explicit methods/
+  anchored paths restore account sections/read dependencies/text actions and staff
+  customer reads through unchanged Auth/ownership/RBAC. Forced private/no-store,
+  token forwarding and two business configurations tested with actual Caddy.
+  Checkout/login/signup, provider/webhook/worker routes, customer mutations and
+  legacy support/Claims attachment bytes/uploads remain held. Attachment workflows
+  still need private VPS conversion; no Supabase file path was newly enabled.
+- Prepared candidate Caddy SHA
+  `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  policy SHA `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997`.
+  Private candidate under customer-provider-readiness-20261020/candidate. All original
+  configuration bytes retained; exact production copy adapts successfully. Not applied.
+- Existing provider accounts/credentials belong to the owner; neither integration
+  needs rebuilding. Quick Setup is the existing owner guide, not a secret editor
+  or activation switch. Paymob keys are operator-managed runtime inputs. PDC secrets
+  use the existing encrypted Dashboard editor; server shipping encryption IS ready.
+- Fixed one small PDC setup dependency locally: authorized manual Test/Sync can
+  fetch products while provider/auto-labels remain disabled and product ID is null.
+  Only that trusted caller opts into disabled-provider diagnostics. Runtime outbound
+  gate, settings permission, credentials, whitelist/throttle and cache revision stay
+  enforced. Tracking/default provider checks and all booking workers are unchanged.
+- Current read-only production: schema 85, no Paymob/PDC credentials configured,
+  all payment/live flags off, PDC/auto-label/reverse off, no worker secret, zero
+  orders/attempts/jobs/available serialized units/delivery options; 382 destination
+  and 32 status mappings retained. No key/token/ciphertext/account value printed.
+- Actual activation blockers: Paymob JS and SQL explicitly reject live initiation;
+  confirmed identity/physical stock/delivery pricing extensions currently cover COD,
+  not card. PDC normal booking is paid-only with cod=0, has unsafe ambiguous-POST retry,
+  needs selected-courier/packing/cancellation eligibility checks, and normal/reverse
+  labels still use Supabase Storage. Existing mechanisms must be extended safely;
+  do not mark COD paid early, bypass live guards or enable those file uploads.
+- Validation: 142 focused account/Claims/support/Paymob/PDC/Quick Setup checks PASS,
+  zero skips, including six native Paymob concurrency results. Two new actual Caddy
+  policy checks and six existing Caddy/archive checks PASS, zero skips. Final pinned
+  Node22.23.1 typecheck/build and diff check PASS; known warnings remain. Provider
+  transports/Auth are isolated fixtures, not hosted transaction acceptance.
+- [Exact findings, credential/configuration steps and remaining code gates](docs/customer-access-provider-readiness.md).
+  ONE next action: approve the scoped Caddy access correction FIRST, with backup,
+  fresh binding checks and one Caddy restart (`admin off`); no Nuxt/SQL/provider
+  activation for that ingress-only step. PDC code fix stays local until a separately
+  reviewed matching application deployment. Current production 403s remain until approval.
+  Do not rerun the completed commerce operator. Keep public checkout/providers off.
+  Continue existing Paymob/PDC corrections next; required WordPress login/identity/
+  address/order migration remains the next launch workstream. No UI redesign.
+
 # Commerce foundation DEPLOY PASS; owner browser smoke pending — 2026-10-20
 
 - Owner explicitly approved the exact `07bb18f` plan and paused Dashboard editing.

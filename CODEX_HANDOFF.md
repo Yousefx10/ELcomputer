@@ -1,3 +1,59 @@
+# Account access correction PASS locally; no deployment — 2026-10-20
+
+- Preserve existing `07bb18f` and `8f22448` (both ahead of recorded origin/main).
+  Started clean at `8f22448`, one worktree, no stashes/other branches/unrelated work.
+  Current production stays release `82214df492a57126`, schema 85. No production
+  write, credentials entry, provider request, deploy, restart, migration or push.
+- Four reported 403s share the current Caddy @commerce rule. Read-only pinned
+  comparisons proved public plain 403/Unavailable versus loopback JSON 401 for
+  Messages, Support tickets, Claims/items and customer-users. Existing Auth,
+  customer ownership and staff users.view guards are intact. Direct account-page
+  reloads also meet @dormant. Do not restart retired Nginx/VPS investigations.
+- New local-only scripts/customer-access/prepare.py + policy.json insert one
+  explicit method/path proxy before those rules, retaining original config bytes.
+  Supports three account page families, read/dependency/text actions and staff
+  customer reads; passes tokens and forces private/no-store. Does not open checkout,
+  login/signup, payments/callbacks/workers, customer mutations or attachment bytes.
+  Support/Claims uploads still use Storage; hold until VPS conversion is reviewed.
+- Exact baseline Caddy SHA `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c`.
+  Candidate `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  policy `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997`.
+  Candidate/receipts outside Git at customer-provider-readiness-20261020/candidate.
+  Actual source adapts successfully; do not reformat/rewrite unrelated rules.
+- ONE next owner action: approve scoped Caddy correction first. Future execution
+  must recheck bindings, preserve exclusive backup/intent, validate/atomically install
+  candidate, restart Caddy once because admin API is off, then verify application 401
+  for the five list/dependency requests and continued checkout/provider 403. Nuxt,
+  DB85 and provider gates stay unchanged. No approval has been given for this action.
+  Do not reuse/retry completed commerce release operator or its activation intent.
+- Existing Paymob/PDC and Quick Setup are present. Owner already HAS external
+  accounts and credentials; application runtime/DB currently has none configured.
+  Paymob: server runtime keys plus existing card settings, test Intention/Pixel,
+  HMAC authoritative callbacks, owner status, private ledgers and idempotency.
+  JS+SQL live gates intentionally block charging; card still lacks COD's strict
+  confirmed-email/physical-stock/delivery-price extensions. Do not just remove gates.
+- PDC: existing encrypted settings/test/sync, 382 address/32 status mappings,
+  booking/labels/tracking/webhook/worker. Shipping encryption is ALREADY ready;
+  worker secret absent, flags/credentials/pickup/caches/delivery options unset.
+  Fixed only the lookup bootstrap locally: settings-authorized Test/Sync may run
+  with provider disabled/product unset, while outbound operator gate remains required.
+  Default tracking checks, workers, enablement and financial guards stay intact.
+  Actual isolated HTTP proves only one mocked GET and no job/flag/Storage changes.
+- PDC real booking still blocked: normal queue requires paid, cod0, ambiguous POSTs
+  can retry; current courier/packing/cancellation eligibility needs review; normal/
+  reverse labels still use Supabase Storage. Extend these existing paths rather
+  than rebuilding providers. PDC helper change needs a matching future app release;
+  ingress-only deployment will not install it. No new migration required here.
+- Validation: 142 final focused tests PASS/zero skips, including real native Paymob
+  concurrency; two new actual-Caddy policy checks + six existing Caddy/archive
+  checks PASS/zero skips. Final typecheck, build and diff PASS. Fixture Auth/provider
+  tests do not establish hosted customer/merchant acceptance. Public access remains
+  blocked until deployment approval; payment/shipping activation additionally needs
+  the code/configuration/acceptance gates in the [readiness report](docs/customer-access-provider-readiness.md).
+- Keep checkout/providers off. Fix four access errors first, then existing Paymob/
+  PDC controlled activation; WordPress customer login/identity/address/order migration
+  remains required for launch, with current Auth and duplicate prevention preserved.
+
 # Commerce foundation DEPLOY PASS; do not rerun — 2026-10-20
 
 - Owner approved exact preparation `07bb18f`/plan SHA

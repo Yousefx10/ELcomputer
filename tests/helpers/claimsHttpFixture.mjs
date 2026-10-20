@@ -8,7 +8,7 @@ import { build } from 'esbuild'
 import { createApp, createRouter, toNodeListener, readBody } from 'h3'
 import { createClaimsFixture } from './claimsFixture.mjs'
 
-export const createClaimsHttpFixture = async ({ shipping = false,communications=false } = {}) => {
+export const createClaimsHttpFixture = async ({ shipping = false,communications=false, extraDirectories=[] } = {}) => {
   globalThis.useRuntimeConfig ??= () => ({ shippingLiveRequestsEnabled: false })
   const f = await createClaimsFixture(), actors = { buyer: f.customer, owner: f.owner }, objects = new Map(), storageCalls = []
   const permissions = { viewer: [], reviewer: ['review'], manager: ['manage'], evidence: ['evidence'], notes: ['notes'], decider: ['decide'], resolver: ['resolution'], logisticsViewer: ['logistics.view'], booker: ['logistics.view','logistics.create'], rebooker: ['logistics.view','logistics.create','logistics.retry'], diagnostician: ['logistics.view','logistics.diagnostics'], communicationsViewer: ['communications.view'], communicationsManager: ['communications.view','communications.manage'] }
@@ -41,9 +41,9 @@ export const createClaimsHttpFixture = async ({ shipping = false,communications=
       const file = dir + '/' + entry.name
       if (entry.isDirectory()) await visit(file)
       else {
-        const matched = /\.(get|post|delete)\.js$/.exec(file)
+        const matched = /\.(get|post|patch|delete)\.js$/.exec(file)
         if (!matched) continue
-        const route = '/' + file.replace(/^server\//, '').replace(/\.(get|post|delete)\.js$/, '').replace(/\/index$/, '').replace(/\[([^\]]+)\]/g, ':$1')
+        const route = '/' + file.replace(/^server\//, '').replace(/\.(get|post|patch|delete)\.js$/, '').replace(/\/index$/, '').replace(/\[([^\]]+)\]/g, ':$1')
         const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false, format: 'esm', platform: 'node', alias: { '~': resolve('app') }, plugins: [{ name: 'claims-database-fixture', setup(builder) {
           builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: 'database', namespace: 'claims-fixture' }))
           builder.onLoad({ filter: /.*/, namespace: 'claims-fixture' }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis.${databaseKey}`, loader: 'js' }))
@@ -63,6 +63,7 @@ export const createClaimsHttpFixture = async ({ shipping = false,communications=
     }
   }
   await visit('server/api/account/after-sales'); await visit('server/api/admin-after-sales/claims')
+  for (const directory of extraDirectories) await visit(directory)
   if(communications){await visit('server/api/admin-after-sales/communications');await visit('server/api/internal/sms');await visit('server/api/internal/email')}
   if (shipping) { await visit('server/api/webhooks'); await visit('server/api/internal/shipping') }
   const app = createApp().use(router)

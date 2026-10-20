@@ -1,3 +1,12 @@
+# Current provider readiness — 2026-10-20
+
+Use the [current access/provider review](customer-access-provider-readiness.md)
+for schema85 and the existing owner accounts. Quick Setup remains the same guide;
+credentials alone do not enable live Paymob charging or safe PDC booking.
+The local PDC lookup correction permits explicit diagnostics before shipment
+enablement, retaining the operator gate and existing permissions. Not deployed.
+The older milestone notes below retain their historical boundaries.
+
 # Guided fresh installation handoff
 
 The [operator coordinator](guided-installation.md) completes fresh installation

@@ -161,6 +161,16 @@ test('lookup gate preserves disabled server/provider behavior and does not depen
   assert.throws(() => requirePdcReadAccess({ ...settings(), is_enabled: false }, { shippingLiveRequestsEnabled: true }), /disabled/)
 })
 
+test('explicit configuration lookups work before shipment enablement without weakening the operator or tracking gates', () => {
+  const config={...settings(),is_enabled:false,auto_create_labels:false,product_id:null}
+  assert.doesNotThrow(()=>requirePdcReadAccess(config,{shippingLiveRequestsEnabled:true},{allowDisabled:true}))
+  assert.throws(()=>requirePdcReadAccess(config,{shippingLiveRequestsEnabled:false},{allowDisabled:true}),/disabled/)
+  assert.throws(()=>requirePdcReadAccess(config,{shippingLiveRequestsEnabled:true}),/disabled/)
+  for(const change of [{access_token_encrypted:null},{company_id:''},{base_url:'https://foreign.example.invalid/'}]){
+    assert.throws(()=>requirePdcReadAccess({...config,...change},{shippingLiveRequestsEnabled:true},{allowDisabled:true}))
+  }
+})
+
 test('mocked city/product requests use configured headers and GET, with bounded duplicate-safe cache normalization', async () => {
   for (const operation of ['GetCities', 'GetProducts']) {
     const rows = await requestPdcLookup(settings(), operation, undefined, async (url, options) => {
