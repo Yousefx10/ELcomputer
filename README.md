@@ -28,8 +28,10 @@ a retired deployment. Both current handoffs record evidence and recovery.
 The [Paymob/PDC readiness candidate](docs/live-sales-readiness.md) extends existing
 integrations with trusted card delivery totals and safe private PDC dispatch.
 Its [disabled release plan](docs/live-sales-release.md) requires owner approval.
+The [approved attempt stopped during preflight](docs/live-sales-release-blocked-receipt.md)
+on an Auth-row fingerprint mismatch. No deployment or migration ran. Do not retry.
 The [sealed preparation receipt](docs/live-sales-release-preparation.md) records
-verified backups and retained assets. Nothing was deployed by preparation.
+verified backups and retained assets. Its earlier command must not be rerun.
 The [WordPress migration plan](docs/wordpress-customer-migration.md) preserves
 current Auth identities and separates historical orders from commerce effects.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)

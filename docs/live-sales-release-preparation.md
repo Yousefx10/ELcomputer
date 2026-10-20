@@ -1,6 +1,9 @@
 # Paymob/PDC disabled release preparation — 2026-10-21
 
 **PREPARATION PASS. Deployment requires separate owner approval.**
+Historical preparation record: the owner later approved one exact attempt.
+It [stopped during preflight](live-sales-release-blocked-receipt.md) before any
+production mutation. Do not rerun the command below or reuse that approval.
 No production mutation, migration, restart, provider call, credential entry,
 WordPress import, public activation or Git push was performed by this operator.
 The completed82→85 operator and both accounts' existing work are unchanged.

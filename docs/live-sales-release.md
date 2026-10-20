@@ -1,7 +1,10 @@
 # Disabled Paymob/PDC application release plan
 
+The [approved attempt stopped in preflight](live-sales-release-blocked-receipt.md)
+on protected Auth drift. No production mutation ran. Do not rerun its command.
+
 Scope: schema85 →87, matching Nuxt output and private VPS shipping documents.
-Deployment, live charging, booking, checkout and credential changes are unapproved.
+Further execution, live charging, booking, checkout and credential changes are unapproved.
 No Caddy change, reinstall, decoder rebuild, Auth change or payment activation.
 
 ## Candidate and dependencies

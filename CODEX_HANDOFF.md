@@ -1,3 +1,54 @@
+# Paymob/PDC approved release BLOCKED in preflight — 2026-10-21
+
+- Owner approved exactly d2d7a8029b473e4a / seal
+  `8cc87fe1dab33c4f7308cdf8f533322108386ee8d581b39222174387dfae5b5a`,
+  preparation commit c8457fe, and said Dashboard editing would be paused.
+  Started clean at c8457fe, one local unpushed commit. Both accounts' existing
+  work and the completed82→85 operator remain untouched. No fetch/push.
+- Invoked the unchanged reviewed operator exactly ONCE with only
+  paymob-pdc-release-preparation-20261021/prepared-final/plan-reviewed.json.
+  Ran02:13:33–02:14:15 Riyadh21 October; exit1. No automatic retry or recovery.
+- Exact failed phase: preflight / inspectPrepared / protected database
+  approvalState comparison. auth.users fingerprint differs from the sealed
+  baseline; count remains one and columns match. Changed column/actor/reason
+  NOT ESTABLISHED. Do not assume a login caused it, change Auth, exempt it or
+  silently reseal. The two allowed analytics tables also changed; every other
+  one of131 table fingerprints matches. No operator database writes occurred.
+- All local source/tool/protected-input/migration/archive/inventory/evidence hashes
+  pass; all runtime bindings match.85 exact migration identities/sources remain.
+  Nuxt82214df492a57126/PID22422 and Caddy PID23477 active/running/zero restarts;
+  Caddy504191ccdc985084, env/unit/drop-ins/decoder/output/private packing unchanged.
+  561 products, all2,613 public files/410,096,992 bytes, one Auth identity and four
+  Storage objects match their protected fingerprints. No order/packing/payment/
+  normal/reverse job was created. Payment/PDC/auto/reverse flags stay off;
+  signup disabled, email confirmation required.14 read-only HTTP checks PASS.
+- Failure preceded execution intent. No execution-intent.json, STOP.json,
+  execution-backup directory or completed.json exists. Fresh recovery backup
+  NOT_STARTED; remote stage/provision NOT_STARTED; native candidate/sandbox
+  NOT_EXERCISED; SQL86–87 NOT_STARTED; activation/restart NOT_STARTED. Original
+  preparation envelopes still authenticate. No credentials/provider request,
+  business mutation, public activation, rollback or restoration occurred.
+- [BLOCKED attempt receipt](docs/live-sales-release-blocked-receipt.md) supersedes
+  the prior preparation command. Private approved-execution.log/exit receipt,
+  blocked-local-gates/runtime/database/readonly-boundary.json and sanitized
+  blocked-release-receipt.json retain the exact evidence. The last receipt binds
+  diagnostics by hashes. Preserve all prior plans/artifacts and stopped evidence.
+- Current production remains82214df492a57126/schema85. New-release owner browser
+  acceptance is not due; editing may resume on the unchanged release. Existing
+  six accepted account pages remain complete. Never rerun this attempt.
+- ONE next owner action: authorize focused review of the Auth-row change and a
+  newly reviewed release binding. Any later execution needs separate exact
+  approval. No new seal, guard exception, fix or broad investigation was started.
+- Next business milestone remains private connection of existing Paymob/PDC
+  accounts through existing Quick Setup/editors/protected runtime, then controlled
+  payment/shipment acceptance after successful disabled deployment/browser smoke.
+  Real saleable stock, delivery coverage/charges, parcel settings, confirmed
+  customer access and callback reachability remain first-purchase prerequisites.
+- REQUIRED afterward: WordPress login compatibility, personal details, phones,
+  billing/shipping addresses and historical order migration. Preserve current Auth
+  UUIDs, prevent duplicate identities and prevent history from triggering stock,
+  payment, booking or notification transactions. No import ran; roadmap retained.
+
 # Disabled Paymob/PDC release sealed; deployment unapproved — 2026-10-21
 
 - Continued clean at `21f54e49f7da3a1f39e3802ec8e366f499fcb286`. Preserved both
