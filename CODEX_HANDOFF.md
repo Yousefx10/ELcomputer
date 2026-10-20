@@ -1,3 +1,28 @@
+# Final offline VPS reinstall verification: GO; stop before Change OS — 2026-10-20
+
+- Codex 1 resumed at clean main `e71cd1933232a56c765b34b349b57b340c1d6a89`.
+  One worktree; no staged/unstaged changes, stashes or unpushed branch commits.
+  Prior Codex work remains intact. This follow-up changes documentation only.
+- Documented sealed `owner-restore.py ... verify` returned `OFFLINE INPUTS PASS`.
+  Independent verifier passed all 20 kit files. All three reviewed SHA-256 anchors
+  match. Candidate remains 5,277,655 bytes, SHA-256
+  `7bfe6316a1f544d84b37366f447cdfdd7b11bd11d3473df632930c5ad6618846`;
+  all 597 application inputs match. No rebuild or package replacement.
+- Media/environment envelopes authenticate. Backup key and SSH identity are
+  readable, mode 0600. Encrypted credential archive authenticates; all 13 restored
+  account/SSH files match current local copies, including three private SSH keys.
+  Initial-access public key matches the usable private identity. No secrets printed.
+- Both encrypted source/Git archives authenticate against the preserved `e71cd19`
+  custody receipt. Prior GO receipt and all independent receipt hashes match.
+  Hostinger recovery access remains previously owner-attested; no new panel check.
+- Receipt outside Git/VPS: `../actual-vps-reinstall-preparation-20261020/FINAL-OFFLINE-VERIFICATION-CODEX1.json`,
+  verified at 2026-10-20 03:39 Asia/Riyadh. Zero production connections or changes.
+- GO readiness; no new critical blocker. Existing Linux rehearsal waiver remains.
+  Keep writers idle at the recorded watermark; preserve any later changes first.
+  ONE next owner action: select Plain OS → Ubuntu 24.04 LTS x86_64 for Hostinger
+  srv1259611 / VPS 1259611 / 168.231.104.25. STOP before Change OS.
+  Final destructive confirmation remains pending. No erase, deployment or Git push.
+
 # Actual VPS reinstall preparation: GO; owner waived VM — 2026-10-20
 
 - OWNER explicitly skips disposable Ubuntu VM rehearsal and accepts first Linux
