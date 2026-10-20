@@ -1,3 +1,56 @@
+# Auth metadata drift resolved; guarded release readiness PASS — 2026-10-21
+
+- Started clean at5fae720, preserving both accounts' work and the blocked attempt.
+  Task scope: read-only Auth diagnosis, local preflight correction and new sealing.
+  No production Auth/data/timestamp write, password reset, deployment retry/new
+  deployment, staging, service operation, migration, provider call or push ran.
+- Exact cause: full-row auth.users comparison included volatile updated_at. Only
+  updated_at advanced; all other34 fields match, including last_sign_in_at. The
+  retained authenticated dump reproduces the approved fingerprint and the current
+  record reproduces the blocked fingerprint after canonical typed normalization.
+  Same one identity. No password/token/contact/UUID/raw metadata value was exported.
+  Audit supplied no matching action: exact actor/operation remains NOT ESTABLISHED;
+  do not call this a proven sign-in or token refresh.
+- New release-only auth.mjs binds all33 non-activity columns, full schema/type/
+  generation shape, counts/membership and default-deny future columns. Only
+  updated_at and last_sign_in_at are activity fields; neither permits a password,
+  role/claims/metadata, contact/confirmation/token/ban/deletion/security change.
+  Auth identities/relationships and every other protected table remain exact.
+  Missing policy/fingerprint fails closed. Auth/RBAC/RLS/login code is unchanged.
+- Full Auth fingerprints remain evidence. Preflight, before/after lock, SQL
+  preservation, pre-commit and post-release compare the new security projection;
+  activity-only differences are a boolean receipt. Managed Auth/Storage stay
+  read-only, without new locks/grants. All other SQL preservation/ACL/history/
+  conservative control and no-retry gates remain.52 focused checks PASS, no skips:
+  39 Auth guard cases plus13 existing operator/native cases. Includes non-superuser
+  85→87, late rollback, exact sources/history, ACLs and repeat refusal.
+- Reused exact d2d7a8029b473e4a application archive/source21f54e4: all609 app inputs,
+  migrations, dependencies and bytes unchanged. Independent strict archive readback
+  and331 retained immutable client assets PASS. No rebuild or recertification.
+  Fresh encrypted database backup8,738,319 bytes authenticates and passes TOC/full
+  SQL-to-dev-null readback; eight encrypted runtime files pass full-byte checks.
+- Fresh target checks preserve current Nuxt82214df492a57126/PID22422/schema85,
+  Caddy PID23477/SHA504191ccdc985084, env/unit/drop-ins/decoder/output,561 products,
+  one Auth identity/four Storage objects and all2,613 media files/410,096,992 bytes.
+  Orders/videos/attempts/normal/reverse jobs empty. All payments/provider/auto/
+  reverse/signup gates off; confirmation required.14 public GET checks PASS.
+- [Resolution and new reviewed release](docs/live-sales-auth-preflight-resolution.md).
+  Private plan: paymob-pdc-auth-drift-resolution-20261021/prepared/plan-reviewed.json.
+  Exact NEW seal
+  `e81236a4ab2faf0961be6f852a58424de4e8f2e3a3334006dd32266155531c5e`.
+  Final corrected read-only check READY_FOR_OWNER_APPROVAL, writes0, deployment
+  NOT_AUTHORIZED. No execution intent or deployment completion exists. Linux
+  candidate/sandbox remain NOT_EXERCISED until approved execution, before SQL.
+- ONE next owner action: approve this exact new seal for one disabled deployment
+  and pause Dashboard edits during its maintenance window. Old8cc approval/blocked
+  attempt must not be reused. No provider activation or public purchase is included.
+- Roadmap after deployment: private existing Paymob/PDC configuration; required
+  WordPress login/personal details/phone/billing/shipping address/historical order
+  migration; controlled purchase acceptance; owner-approved public checkout.
+  Preserve Auth UUIDs, avoid duplicate identities and all historical commerce side
+  effects. Real saleable stock, coverage/charges/parcel settings, confirmed access
+  and callback reachability remain purchase prerequisites. No import ran.
+
 # Paymob/PDC approved release BLOCKED in preflight — 2026-10-21
 
 - Owner approved exactly d2d7a8029b473e4a / seal

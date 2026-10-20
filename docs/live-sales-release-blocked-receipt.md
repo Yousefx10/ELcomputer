@@ -1,6 +1,9 @@
 # Paymob/PDC release attempt — BLOCKED, 2026-10-21
 
 **DEPLOY BLOCKED during preflight. Nothing was deployed. Do not retry.**
+The later [read-only Auth diagnosis](live-sales-auth-preflight-resolution.md)
+proves only `updated_at` changed and prepares a new seal. This receipt remains
+the historical account of the stopped attempt; its command stays retired.
 
 The owner approved release `d2d7a8029b473e4a`, preparation commit `c8457fe`,
 and exact seal

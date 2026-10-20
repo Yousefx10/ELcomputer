@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {readFile,readdir} from 'node:fs/promises'
 import {hash,connect,snapshot,verifyAccess as verifyFoundation} from '../commerce-release/database.mjs'
 import {json as certificateJson} from '../lib/cleanBaseline.mjs'
+import {authSecurityFingerprint,assertAuthSecurityShape} from './auth.mjs'
 export {hash,connect,snapshot}
 const foundation = [
   ['20261020120000_cod_shipping_checkout.sql','7f7dce470bd29b25b2aec5b5cbaaefe06c43efb6a7d6c0b8f49a451bb9eaa36b'],
@@ -36,7 +37,7 @@ export async function checkDatabase(db,release,{after=false}={}) {
   assert.ok(owners.length>100&&owners.every(r=>r.owner==='postgres'),'Application ownership drift')
   const protectedTables=await snapshot(db)
   for(const name of ['public.payment_attempts','public.shipping_order_jobs','public.shipping_claim_jobs'])assert.equal(protectedTables.find(r=>r.schema+'.'+r.name===name)?.count,0,'Outstanding provider work requires separate review')
-  return {history:identities(history),controls:controls[0],pdc,protected_tables:protectedTables,read_only:(await db.query('show transaction_read_only')).rows[0].transaction_read_only}
+  return {history:identities(history),controls:controls[0],pdc,protected_tables:protectedTables,auth_security:await authSecurityFingerprint(db),read_only:(await db.query('show transaction_read_only')).rows[0].transaction_read_only}
 }
 export async function verifyAccess(db) {
   await verifyFoundation(db)
@@ -52,13 +53,19 @@ export async function verifyAccess(db) {
   assert.equal((await db.query('select count(*)::int count from private.pdc_dispatches')).rows[0].count,0)
   return {foundation:'PASS',dispatch_acl:'PASS',service_only_commands:'PASS',dispatches:0}
 }
-export async function compareOriginal(db,before) {
+export async function compareOriginal(db,before,{authSecurity=null}={}) {
   const quote=s=>'"'+s.replaceAll('"','""')+'"'
+  let authActivityChanged=false
   for(const old of before){
     const columns=old.columns.map(quote).join(','),table=quote(old.schema)+'.'+quote(old.name)
     const actual=(await db.query(`select count(*)::int count,encode(sha256(convert_to(coalesce(jsonb_agg(row_data order by row_data::text collate "C")::text,'[]'),'UTF8')),'hex') sha256 from (select to_jsonb(t) row_data from (select ${columns} from ${table}) t) rows`)).rows[0]
-    assert.deepEqual(actual,{count:old.count,sha256:old.sha256},'Existing row changed: '+table)
+    if(old.schema==='auth'&&old.name==='users'&&authSecurity){
+      assertAuthSecurityShape(authSecurity,old)
+      assert.deepEqual(await authSecurityFingerprint(db),authSecurity,'Protected Auth identity/security state changed')
+      authActivityChanged=actual.sha256!==old.sha256
+    }else assert.deepEqual(actual,{count:old.count,sha256:old.sha256},'Existing row changed: '+table)
   }
+  return {auth_activity_metadata_changed:authActivityChanged}
 }
 export async function applyMigrations(db,release,{beforeCommit=()=>{}}={}) {
   let begun=false
@@ -66,18 +73,20 @@ export async function applyMigrations(db,release,{beforeCommit=()=>{}}={}) {
     await db.query('begin');begun=true
     await db.query("set local lock_timeout='5s';set local statement_timeout='60s'")
     assert.equal((await db.query("select pg_try_advisory_xact_lock(hashtextextended('elcomputer-system-reset',0)) locked")).rows[0].locked,true,'Business operation in progress')
-    await checkDatabase(db,release)
+    const initial=await checkDatabase(db,release)
     const before=await snapshot(db,{lock:true})
-    await checkDatabase(db,release) // Recheck queues/controls after acquiring locks.
+    const locked=await checkDatabase(db,release) // Recheck queues/controls after acquiring locks.
+    assert.deepEqual(locked.auth_security,initial.auth_security,'Auth security changed while acquiring locks')
     for(const m of release.pending){
       assert.equal(hash(m.text),m.sha256,'Migration source drift')
       assert.equal((m.text.match(/^begin;$/gmi)||[]).length,1);assert.equal((m.text.match(/^commit;$/gmi)||[]).length,1)
       await db.query(m.text.replace(/^begin;\s*$/im,'').replace(/^commit;\s*$/im,''))
       await db.query('insert into supabase_migrations.schema_migrations(version,name,statements) values($1,$2,$3)',[m.version,m.name,[m.text]])
     }
-    await compareOriginal(db,before)
+    const preservation=await compareOriginal(db,before,{authSecurity:locked.auth_security})
     const access=await verifyAccess(db),state=await checkDatabase(db,release,{after:true})
-    await beforeCommit({before,history:state.history,access});await db.query('commit');begun=false
-    return {before,history:state.history,access,preserved_tables:before.length}
+    assert.deepEqual(state.auth_security,locked.auth_security,'Auth security changed before commit')
+    await beforeCommit({before,auth_security:locked.auth_security,history:state.history,access,preservation});await db.query('commit');begun=false
+    return {before,auth_security:locked.auth_security,history:state.history,access,preservation,preserved_tables:before.length}
   }catch(error){if(begun)await db.query('rollback').catch(()=>{});throw error}
 }

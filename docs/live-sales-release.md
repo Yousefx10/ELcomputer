@@ -2,6 +2,8 @@
 
 The [approved attempt stopped in preflight](live-sales-release-blocked-receipt.md)
 on protected Auth drift. No production mutation ran. Do not rerun its command.
+The [narrow Auth correction and newly reviewed seal](live-sales-auth-preflight-resolution.md)
+now pass read-only preflight; only the new reviewed plan may be approved next.
 
 Scope: schema85 →87, matching Nuxt output and private VPS shipping documents.
 Further execution, live charging, booking, checkout and credential changes are unapproved.
@@ -102,7 +104,10 @@ Between read-only observations, only `store_analytics_sessions` and
 `store_analytics_events` may advance through normal storefront activity. Their
 schemas remain bound; all other table fingerprints remain exact. Within SQL, all
 134 original tables, including both analytics tables, are locked where permitted
-and compared using their original columns. Auth/Storage remain read-only.
+and compared using their original columns. Only Auth `updated_at`/`last_sign_in_at`
+activity is separated from the newly bound identity/security projection; every
+other Auth column/schema/member and all Auth relationships remain protected.
+Auth/Storage remain read-only.
 Pre-commit business drift, queued provider work or a changed migration rolls back.
 
 ## Recovery and acceptance

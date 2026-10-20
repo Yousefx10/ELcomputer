@@ -37,6 +37,7 @@ test('authenticated backup readback drains before an archive reader exits early'
 test('new operator refuses implicit execution and requires a complete exact approval',()=>{
   for(const args of [[],['apply'],['apply','plan'],['apply','plan','--yes','a'.repeat(64)],['apply','plan','--approved','short'],['prepare','spec','dir','extra']])assert.throws(()=>argumentsFor(args))
   assert.equal(argumentsFor(['check','plan']).mode,'check')
+  assert.equal(argumentsFor(['rebind','old-plan','auth-evidence','new-directory']).mode,'rebind')
   assert.equal(argumentsFor(['apply','plan','--approved','a'.repeat(64)]).approval,'a'.repeat(64))
 })
 test('approval allows only telemetry activity; its schema and all business fingerprints stay bound',()=>{
