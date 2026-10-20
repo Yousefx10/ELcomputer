@@ -1,3 +1,42 @@
+# Account entry acceptance BLOCKED; follow-up not deployed — 2026-10-21
+
+- Owner reports `/account` shows Unavailable. Do not mark the four direct section
+  tests accepted. The original policy omitted the parent entry, linked by existing
+  My Account navigation. Read-only public 403/plain versus loopback 302 proves Caddy
+  denial, not missing customer data or an empty Nuxt implementation.
+- Fresh live binding remains `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  Caddy PID 23064 active/running/NRestarts 0, Nuxt PID 22422/release 82214df492a57126.
+  Direct Messages/Support/After-Sales anonymously 302; four reported APIs 401.
+  `/login` remains deliberately 403; use existing session or `/dashboard/login`.
+  GET/HEAD loopback EN/AR root/slash forms all use existing login middleware 302.
+  One Auth user already has an active customer profile, verified read-only.
+- Local follow-up adds only GET/HEAD `^/(ar/)?account/?$`. Exactly one matcher
+  line changes; no API, authorization, RLS or Nuxt source change. Existing overview
+  implementation reused. All held checkout/signup/payment/worker/attachment routes
+  and other account pages keep their current policy. No production write/restart.
+- Candidate `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558`;
+  policy `8e2a5a23734fe5d283267b385119c734b794e7cd570e4a7d288bd2615a105d8b`;
+  previous policy `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997`.
+  `prepare.py --previous-policy` verifies/reconstructs the installed block exactly
+  before preparing an update locally. Source hash remains mandatory; drift/repeat
+  fail closed. No remote execution mode was added.
+- Nine fresh local Caddy/preparation/archive checks PASS, zero skips; root auth
+  forwarding/no-store and unchanged held methods/paths tested for two stores.
+  Exact candidate adaptation + independent one-line diff assertion PASS. No app
+  source edits; typecheck/build not repeated. No migration/provider/Storage action.
+- [Exact diagnosis, hashes and guarded approval action](docs/customer-account-entry-followup.md).
+  Private files: customer-account-parent-followup-20261021/ (candidate/receipt,
+  installed policy/source, loopback/profile checks, release-plan.json). Do not
+  alter old receipts or rerun the completed Caddy/commerce executors. Future intent
+  must be new `/var/lib/customer-access-releases/504191ccdc985084/` and back up a19befc.
+- ONE next owner action: approve this exact follow-up. Original approval pinned
+  the first candidate and one execution, so this additional route needs approval.
+  Recheck bindings before any action; stop on drift, no automatic retry/recovery.
+  Keep checkout/signup/providers disabled. Owner browser acceptance still required;
+  then continue existing Paymob/PDC activation requirements. No rebuild/audit.
+- Started clean at 4fed0af with prior unpushed work preserved. Commit only this
+  task's local preparation/tests/docs; no push or deployment authorized here.
+
 # Customer access Caddy DEPLOY PASS; do not rerun — 2026-10-20
 
 - Owner explicitly approved the exact `c7d2079` Caddy-only correction. Started

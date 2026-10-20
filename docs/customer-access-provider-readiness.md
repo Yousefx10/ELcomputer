@@ -1,7 +1,9 @@
 # Customer access and existing provider readiness — 2026-10-20
 
 Owner-approved Caddy access correction DEPLOY PASS at 20:31 UTC.
-See the [release receipt and pending browser acceptance](customer-access-release-receipt.md).
+The [release receipt](customer-access-release-receipt.md) records the first execution.
+Owner acceptance is now BLOCKED at the omitted `/account` entry. The narrow
+[parent-page follow-up](customer-account-entry-followup.md) is prepared, not deployed.
 Only Caddyfile changed; no Nuxt deployment, SQL change or provider call occurred.
 The PDC application correction remains local and undeployed.
 Real payment/shipment activation remains BLOCKED by the specific gaps below.
@@ -67,7 +69,7 @@ Prepared deployment-specific files, outside Git:
 | --- | --- |
 | Before Caddy configuration | `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c` |
 | Installed Caddy configuration | `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169` |
-| Reviewed route policy | `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997` |
+| Initially installed route policy | `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997` |
 
 The exact production copy passes Caddy adaptation. Formatting warnings do not
 justify reformatting unrelated rules. The immutable restoration kit is untouched.

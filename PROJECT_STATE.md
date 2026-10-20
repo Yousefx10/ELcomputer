@@ -1,3 +1,39 @@
+# Account entry acceptance BLOCKED; narrow follow-up ready — 2026-10-21
+
+- Owner reports `Unavailable` at `/account`. This is not acceptance of the four
+  direct sections. Fresh read-only checks confirm public parent 403/plain denial
+  versus existing Nuxt loopback 302 for GET/HEAD, EN/AR and trailing slash forms.
+  The initial exceptions omitted the normal My Account entry; no data is empty
+  or missing merely because Caddy denied that page.
+- Live configuration still matches installed `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`.
+  Caddy PID 23064 active/running/zero restarts; Nuxt PID 22422/release 82214df492a57126
+  unchanged. The three direct account sections reach existing anonymous 302 guards;
+  four reported list APIs reach application 401. Customer login remains held 403;
+  owner uses the existing session or Dashboard login. No hosted Auth PASS claimed.
+- Prepared only GET/HEAD `^/(ar/)?account/?$`. One matcher line changes; no API
+  exception, Auth/RBAC/RLS change, Nuxt edit or deployment-specific app constant.
+  Existing overview/profile/own-order implementation is reused. Read-only counts
+  confirm the single current Auth user already has an active customer profile.
+- Candidate SHA `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558`;
+  policy `8e2a5a23734fe5d283267b385119c734b794e7cd570e4a7d288bd2615a105d8b`.
+  Local prepare CLI now supports explicit previous-policy verification before
+  replacing an installed block. Hash mismatch, modified block and repeated update
+  fail closed. It still has no remote/install/restart capability.
+- Nine fresh preparation/actual-Caddy/archive tests PASS, no skips; two deployment
+  hostnames, parent GET/HEAD, tokens/no-store and continued held routes covered.
+  Exact candidate adapts; independent comparison proves only one matcher line
+  changes. No app edits/typecheck/build repeat. No production mutation, restart,
+  migration, provider call or Git push; checkout/signup/providers stay restricted.
+- [Diagnosis, exact candidate and guarded follow-up](docs/customer-account-entry-followup.md).
+  Private preparation: customer-account-parent-followup-20261021/. Original release
+  receipts/recovery remain intact. Never rerun its completed executor. Started clean
+  at 4fed0af; existing unpushed work preserved; task-owned changes only.
+- ONE next owner action: approve this exact parent-page follow-up. Earlier approval
+  pinned a different configuration and one execution; it does not authorize this
+  added route/restart. After approved application, owner tests account entry plus
+  four sections. Keep private attachments held; existing Paymob/PDC work follows
+  acceptance. No provider rebuild or infrastructure audit.
+
 # Customer access Caddy DEPLOY PASS; browser acceptance pending — 2026-10-20
 
 - Owner approved the exact Caddy-only candidate prepared at `c7d2079`. Started

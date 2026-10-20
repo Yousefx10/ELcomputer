@@ -2,6 +2,7 @@
   "format": 1,
   "description": "Existing authenticated account read/text flows and staff customer reads; checkout, customer mutations and file uploads stay held.",
   "routes": [
+    { "methods": ["GET", "HEAD"], "path": "^/(ar/)?account/?$" },
     { "methods": ["GET", "HEAD"], "path": "^/(ar/)?account/(messages|support(/[0-9a-fA-F-]{36})?|after-sales(/[0-9a-fA-F-]{36})?)/?$" },
     { "methods": ["GET"], "path": "^/api/account/messages/?$" },
     { "methods": ["PATCH"], "path": "^/api/account/messages/[0-9a-fA-F-]{36}/read/?$" },

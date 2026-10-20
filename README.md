@@ -29,8 +29,9 @@ Next, accept the account access correction, then existing Paymob/PDC Quick Setup
 WordPress accounts, addresses and orders remain a required launch workstream.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)
 now identifies the exact Caddy denials and remaining activation gates.
-The narrow Caddy correction is deployed; [browser acceptance](docs/customer-access-release-receipt.md)
-remains pending. Nuxt and schema 85 are unchanged. The PDC lookup fix stays local.
+The first Caddy correction is deployed. Owner acceptance is blocked at `/account`.
+Its narrow [parent-page follow-up](docs/customer-account-entry-followup.md) is prepared,
+awaiting approval. Nuxt and schema 85 are unchanged. The PDC lookup fix stays local.
 Live Paymob charging and PDC booking remain blocked.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

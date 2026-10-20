@@ -44,20 +44,39 @@ def patch(source, policy=None):
     return source.replace(anchor, block + anchor, 1)
 
 
+def update_policy(source, previous_policy, policy=None):
+    """Replace only a byte-for-byte verified, previously installed policy block."""
+    start = '        # Authenticated account services; application Auth/RBAC/ownership still apply.\n'
+    end = '        @dormant path_regexp dormant '
+    assert source.count(start) == 1 and source.count(end) == 1, 'Expected one installed access policy'
+    beginning, ending = source.index(start), source.index(end)
+    assert beginning < ending, 'Unexpected access policy position'
+    baseline = source[:beginning] + source[ending:]
+    assert patch(baseline, previous_policy) == source, 'Installed policy differs from reviewed source'
+    candidate = patch(baseline, policy)
+    assert candidate != source, 'Policy already present; never apply twice'
+    return candidate
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('baseline', type=pathlib.Path)
     parser.add_argument('output', type=pathlib.Path)
     parser.add_argument('--expected-sha256', required=True)
+    parser.add_argument('--previous-policy', type=pathlib.Path,
+                        help='Explicit reviewed policy for replacing an installed block locally')
     args = parser.parse_args()
     raw = args.baseline.read_bytes()
     assert sha(raw) == args.expected_sha256, 'Baseline changed; stop for review'
-    candidate = patch(raw.decode()).encode()
+    candidate = (update_policy(raw.decode(), json.loads(args.previous_policy.read_text()))
+                 if args.previous_policy else patch(raw.decode())).encode()
     args.output.mkdir(mode=0o700)
     (args.output / 'Caddyfile.before').write_bytes(raw)
     (args.output / 'Caddyfile').write_bytes(candidate)
     receipt = {'result': 'PREPARED_ONLY', 'baseline_sha256': sha(raw), 'candidate_sha256': sha(candidate),
                'policy_sha256': sha((HERE / 'policy.json').read_bytes()), 'production_writes': 0}
+    if args.previous_policy:
+        receipt['previous_policy_sha256'] = sha(args.previous_policy.read_bytes())
     (args.output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt))
 

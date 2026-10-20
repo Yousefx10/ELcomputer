@@ -1,6 +1,11 @@
 # Customer access Caddy release — 2026-10-20
 
 **DEPLOY PASS. Authenticated owner browser acceptance remains pending.**
+Follow-up, 21 October: owner reports `Unavailable` at the `/account` entry.
+Acceptance is BLOCKED by that omitted parent page. The separate
+[prepared correction](customer-account-entry-followup.md) awaits approval;
+the deployment receipt below remains historical evidence, not full acceptance.
+
 The owner approved the exact correction prepared at `c7d2079`.
 Only Caddyfile changed. Caddy restarted once at 20:31 UTC.
 Nuxt, schema 85, Auth/RBAC/RLS and provider settings were unchanged.

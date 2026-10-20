@@ -41,6 +41,28 @@ def configuration(domain, backend, port):
 
 
 class PolicyPreparation(unittest.TestCase):
+    def test_parent_followup_replaces_only_the_verified_installed_policy_and_rejects_drift(self):
+        policy = json.loads((ROOT/'scripts/customer-access/policy.json').read_text())
+        previous = {**policy, 'routes': [route for route in policy['routes'] if route['path'] != '^/(ar/)?account/?$']}
+        original = configuration('orchid.example.invalid', 3000, 8080)
+        installed = prepare.patch(original, previous)
+        candidate = prepare.update_policy(installed, previous)
+        self.assertEqual(candidate, prepare.patch(original))
+        with self.assertRaises(AssertionError): prepare.update_policy(candidate, previous)
+        with self.assertRaises(AssertionError): prepare.update_policy(installed.replace('private, no-store', 'public'), previous)
+        with self.assertRaises(AssertionError): prepare.update_policy(installed, policy)
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            source = base/'installed'; source.write_text(installed)
+            old = base/'previous.json'; old.write_text(json.dumps(previous))
+            result = subprocess.run(['python3', str(ROOT/'scripts/customer-access/prepare.py'), str(source), str(base/'out'), '--expected-sha256', hashlib.sha256(source.read_bytes()).hexdigest(), '--previous-policy', str(old)], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((base/'out/Caddyfile.before').read_text(), installed)
+            self.assertEqual((base/'out/Caddyfile').read_text(), candidate)
+            receipt = json.loads((base/'out/receipt.json').read_text())
+            self.assertEqual(receipt['production_writes'], 0)
+            self.assertEqual(receipt['previous_policy_sha256'], hashlib.sha256(old.read_bytes()).hexdigest())
+
     def test_only_insertion_preserves_every_original_byte_and_rejects_repeat_or_drift(self):
         original = configuration('orchid.example.invalid', 3000, 8080)
         patched = prepare.patch(original)
@@ -114,13 +136,14 @@ class ActualCaddy(unittest.TestCase):
                                         self.assertEqual(status, expected)
                                         self.assertEqual(headers.get('Cache-Control'), 'private, no-store')
                                         self.assertEqual(json.loads(data)['authorization'], 'Bearer '+token if token else None)
-                            for path in ['/account/messages','/account/support',f'/account/support/{UUID}','/account/after-sales',f'/ar/account/after-sales/{UUID}']:
+                            for path in ['/account','/account/','/ar/account','/ar/account/','/account/messages','/account/support',f'/account/support/{UUID}','/account/after-sales',f'/ar/account/after-sales/{UUID}']:
                                 self.assertEqual(call(path)[0],200)
                                 self.assertEqual(call(path,'HEAD')[1].get('Cache-Control'),'private, no-store')
+                                self.assertEqual(call(path,token=None)[0],401)
                             held = [('GET','/api/customer-private'), ('GET','/api/account/orders'), ('POST','/api/checkout'), ('GET','/api/payments/capabilities'), ('POST','/api/payments/paymob/webhook'), ('POST','/api/webhooks/pdc'),
-                                    ('POST','/api/internal/shipping/process'), ('GET','/login'), ('GET','/signup'), ('GET','/checkout'), ('GET','/ar/checkout'), ('GET','/account'),
+                                    ('POST','/api/internal/shipping/process'), ('GET','/login'), ('GET','/signup'), ('GET','/checkout'), ('GET','/ar/checkout'), ('POST','/account'), ('PATCH','/ar/account/'),
                                     ('POST',f'/api/support/tickets/{UUID}/attachments'), ('POST',f'/api/account/after-sales/items/{UUID}/evidence'), ('GET',f'/api/account/after-sales/evidence/{UUID}'),
-                                    ('GET','/api/account/messages-extra'), ('GET','/api/customer-users-extra'), ('PUT','/api/customer-users'), ('PATCH',f'/api/customer-users/{UUID}'), ('DELETE',f'/api/customer-users/{UUID}'), ('DELETE','/api/support/tickets'), ('POST','/account/messages'),
+                                    ('GET','/api/account/messages-extra'), ('GET','/api/customer-users-extra'), ('GET','/account/unknown'), ('GET','/account/profile'), ('GET','/account/orders'), ('GET','/ar/account/orders'), ('GET','/api/account'), ('PUT','/api/customer-users'), ('PATCH',f'/api/customer-users/{UUID}'), ('DELETE',f'/api/customer-users/{UUID}'), ('DELETE','/api/support/tickets'), ('POST','/account/messages'),
                                     ('GET','/api/account/messages/%2e%2e/orders'), ('GET','/api/account/messages%2F..%2Forders')]
                             for method, path in held:
                                 before=len(calls)
