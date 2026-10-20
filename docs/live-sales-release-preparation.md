@@ -1,5 +1,9 @@
 # Paymob/PDC disabled release preparation — 2026-10-21
 
+Historical record. The later corrected approval completed the
+[disabled production release](live-sales-release-receipt.md). Neither the original
+command below nor its corrected successor may be rerun.
+
 **PREPARATION PASS. Deployment requires separate owner approval.**
 Historical preparation record: the owner later approved one exact attempt.
 It [stopped during preflight](live-sales-release-blocked-receipt.md) before any

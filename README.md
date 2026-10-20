@@ -25,12 +25,13 @@ Checkout and providers remain disabled. Real-order workflow acceptance is separa
 The release action has completed; do not rerun it. The older PM2 scripts target
 a retired deployment. Both current handoffs record evidence and recovery.
 
-The [Paymob/PDC readiness candidate](docs/live-sales-readiness.md) extends existing
-integrations with trusted card delivery totals and safe private PDC dispatch.
-Its [disabled release plan](docs/live-sales-release.md) requires owner approval.
-The [approved attempt stopped during preflight](docs/live-sales-release-blocked-receipt.md).
-The [Auth metadata correction](docs/live-sales-auth-preflight-resolution.md) now
-passes read-only release checks with a new seal. Deployment needs separate approval.
+The [Paymob/PDC disabled production release](docs/live-sales-release-receipt.md)
+passed: release `d2d7a8029b473e4a`, schema87, with purchases and providers off.
+Owner browser acceptance remains pending. Do not rerun the release.
+The [readiness guide](docs/live-sales-readiness.md) covers controlled configuration.
+The [first attempt stopped during preflight](docs/live-sales-release-blocked-receipt.md).
+The [Auth metadata correction](docs/live-sales-auth-preflight-resolution.md) enabled
+the separately approved deployment while preserving identity/security drift guards.
 The [sealed preparation receipt](docs/live-sales-release-preparation.md) records
 verified backups and retained assets. Its earlier command must not be rerun.
 The [WordPress migration plan](docs/wordpress-customer-migration.md) preserves
@@ -39,8 +40,8 @@ The [access correction and provider readiness review](docs/customer-access-provi
 now identifies the exact Caddy denials and remaining activation gates.
 Both Caddy corrections are deployed. The owner reports all six account-page checks pass.
 The [account entry release receipt](docs/customer-account-entry-release-receipt.md)
-records execution, acceptance and recovery. Nuxt and schema 85 are unchanged.
-Migrations86–87 and the matching application remain local.
+records the earlier access execution, acceptance and recovery.
+Migrations86–87 and their matching application are now deployed.
 Live charging, real booking and checkout remain disabled.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

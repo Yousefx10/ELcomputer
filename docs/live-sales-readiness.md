@@ -1,7 +1,8 @@
 # Paymob and PDC controlled-sales readiness — 2026-10-21
 
-Local implementation reuses both existing integrations and Quick Setup.
-Nothing was deployed, enabled, migrated remotely or sent to either provider.
+The [disabled production release](live-sales-release-receipt.md) passed with
+schema87, reusing both existing integrations and Quick Setup. Owner browser
+acceptance remains pending. No provider was enabled or contacted.
 The owner accepted all six customer-access pages; that milestone stays closed.
 
 ## Existing implementation retained
@@ -92,9 +93,9 @@ coverage, disk persistence, a reachable callback or a running scheduler.
 
 ## First controlled purchase prerequisites
 
-1. Deploy the [disabled candidate](live-sales-release.md), migrations86–87 and
-   the private document runtime after separate approval. Verify the native Linux
-   sandbox and matching application/schema before merchant configuration.
+1. Complete the [disabled release's owner browser acceptance](live-sales-release-receipt.md).
+   Migrations86–87, the exact application and private document runtime are deployed;
+   native Linux/systemd sandbox and read-only release checks passed.
 2. Physically verify saleable SKUs and receive actual units through existing
    procurement/inventory. Select active warehouses. Do not edit the original
    imports to fabricate stock. Last production observations showed no saleable
@@ -140,8 +141,10 @@ payment races, PDC delivery/payment/packing gates, duplicate booking/REF recover
 PDF retries, authorization, file integrity and populated85→87 preservation.
 The existing [official HMAC contract](https://developers.paymob.com/paymob-docs/developers/webhook-callbacks-and-hmac/hmac/hmac-transaction-callback)
 was checked against the retained field ordering and SHA-512 verification.
-No live credentials, Pixel/3DS, merchant charge, carrier booking, hosted RBAC,
-browser write or native production-file acceptance is claimed.
+These implementation tests do not establish live credentials, Pixel/3DS, merchant
+charging, carrier booking, hosted RBAC, browser writes or production file behavior.
+The later [release receipt](live-sales-release-receipt.md) separately records the
+actual Linux/systemd sandbox and private-file probe. Merchant acceptance is pending.
 
 Old Storage label references fail closed without VPS hash evidence. Preserve
 their records/objects; review a separate explicit transfer or regeneration plan

@@ -1,11 +1,13 @@
 # Disabled Paymob/PDC application release plan
 
-The [approved attempt stopped in preflight](live-sales-release-blocked-receipt.md)
-on protected Auth drift. No production mutation ran. Do not rerun its command.
-The [narrow Auth correction and newly reviewed seal](live-sales-auth-preflight-resolution.md)
-now pass read-only preflight; only the new reviewed plan may be approved next.
+The corrected owner-approved deployment returned
+[DEPLOY PASS](live-sales-release-receipt.md): release `d2d7a8029b473e4a`, schema87.
+Owner browser acceptance remains pending. All purchase/provider gates remain off.
+The earlier [blocked attempt](live-sales-release-blocked-receipt.md) and subsequent
+[Auth correction](live-sales-auth-preflight-resolution.md) remain historical.
+Both approvals are consumed. Do not rerun either release command.
 
-Scope: schema85 →87, matching Nuxt output and private VPS shipping documents.
+Completed scope: schema85 →87, matching Nuxt output and private VPS shipping documents.
 Further execution, live charging, booking, checkout and credential changes are unapproved.
 No Caddy change, reinstall, decoder rebuild, Auth change or payment activation.
 

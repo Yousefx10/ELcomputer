@@ -1,3 +1,55 @@
+# Paymob/PDC disabled production release PASS — 2026-10-21
+
+- Owner approved corrected seal
+  `e81236a4ab2faf0961be6f852a58424de4e8f2e3a3334006dd32266155531c5e`
+  at clean `108d9df`; owner said Dashboard editing would be paused. Invoked the operator
+  exactly once using only paymob-pdc-auth-drift-resolution-20261021/prepared/
+  plan-reviewed.json. Ran 02:45:55–02:52:54 Riyadh, exit0, completed PASS.
+  Both accounts' prior work and the original blocked attempt remain preserved.
+- Production now runs d2d7a8029b473e4a, application source `21f54e4`, schema 87.
+  Nuxt PID 25021 active/running/zero automatic restarts. One controlled restart.
+  Caddy PID 23477/config SHA504191ccdc985084 remain unchanged. All hashes and
+  protected target/data/security bindings passed before exclusive execution intent.
+- Fresh encrypted database backup 8,742,635 bytes authenticates and passes TOC/full
+  SQL-to-dev-null readback; eight encrypted runtime files pass full-byte readback.
+  Native Linux candidate, systemd unit validation and same-user/sandbox private
+  file create/fsync/read/delete PASS before SQL. Candidate stopped before SQL.
+- Applied only 86 then 87 in one guarded transaction. Exact 87 history identities/
+  stored sources and all earlier 85 remain verified. 134 original table projections
+  preserved before commit, including analytics; Auth activity unchanged in SQL.
+  Corrected 33-column Auth security projection/relationships and RBAC/RLS/ACL checks
+  pass. No Auth write, reset, timestamp manipulation or permission bypass.
+- Preserved 561 products, one Auth user/identity, four Storage objects and all 2,613
+  public media files / 410,096,992 bytes. Orders/payment attempts/packing videos/
+  normal/reverse jobs/private dispatches remain empty. Old release, packing path,
+  decoder, original environment bytes, base unit/drop-ins and history retained.
+- Added only approved shipping-documents 0700/storefront path, exact write-path
+  drop-in and two environment additions. Independent read-only verification at
+  02:53:04 Riyadh confirms all 1,367 output entries, 331 retained assets, private
+  documents empty, original runtime/media preserved and exact approved changes.
+  All five payment flags/PDC/auto/reverse/outbound gates remain false; signup off,
+  email confirmation required. 14 public GET checks PASS; callbacks remain held 403.
+- [Committed release receipt](docs/live-sales-release-receipt.md). Private evidence:
+  paymob-pdc-auth-drift-resolution-20261021/prepared/release-receipt.json, SHA256
+  e2e91739dcbd2822f98af2089f789752d7fb33e8bfc54b6b8fda99f2131ee2f5,
+  binds 25 evidence files. completed.json PASS, no STOP. No credential entry,
+  provider request, real transaction, public activation, retry, rollback, database
+  restoration, pruning or push. Do not rerun either release or completed 82→85.
+- ONE next owner action: report PASS/FAIL for the receipt's three browser checks:
+  existing owner login/Products/images; Orders/Shipping/Quick Setup and disabled
+  controls; private-window storefront plus held checkout/signup. No saves/enabling.
+  Deployment PASS does not establish authenticated browser or real merchant acceptance.
+- Immediately after browser acceptance, prioritize PRIVATE configuration of the
+  owner's EXISTING Paymob/PDC accounts through Quick Setup's current destinations.
+  PDC uses protected provider settings; Paymob secrets use existing protected
+  runtime, not an invented Dashboard secret form. No credentials in chat/Git.
+- REQUIRED roadmap: WordPress identities/old-login compatibility/names/phones/
+  billing/shipping addresses/historical orders; preserve current Auth UUIDs,
+  prevent duplicates and historical commerce side effects. Then controlled real
+  payment/shipment acceptance and separately approved public checkout. First verify
+  real saleable stock, coverage/charges, parcels, customer access and callbacks.
+  No VPS/Caddy investigation, import or new provider implementation is needed here.
+
 # Auth metadata drift resolved; guarded release readiness PASS — 2026-10-21
 
 - Started clean at5fae720, preserving both accounts' work and the blocked attempt.

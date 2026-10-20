@@ -1,6 +1,8 @@
 # Local Paymob/PDC validation — 2026-10-21
 
-No production, provider, credential or public-activation operation ran.
+This implementation-validation task made no production, provider, credential or
+public-activation operation. The later separately approved
+[disabled release](live-sales-release-receipt.md) passed its production gates.
 Started clean at `e648135`; prior unpushed work is preserved.
 Later read-only release preparation adds18 passing operator/remote guard checks
 and a new retained-assets build. See its [receipt](live-sales-release-preparation.md).
@@ -76,7 +78,8 @@ existing duplicated `getErpSettings` auto-import and existing CSS/source-map/too
 warnings. None is a failed build. Merchant Pixel/3DS, real callbacks/booking/PDF
 formats, production sandbox and owner browser acceptance remain separate gates.
 
-The [release plan](live-sales-release.md) records migration/input/inventory hashes
-and pending target-bound sealing, encrypted backups and retained target assets.
+The [release plan](live-sales-release.md) records migration/input/inventory hashes.
+The later [production receipt](live-sales-release-receipt.md) records completed
+target-bound sealing, verified encrypted backups and retained target assets.
 The [readiness guide](live-sales-readiness.md) records exact business/provider
 settings, controlled purchase steps and the required WordPress migration workstream.

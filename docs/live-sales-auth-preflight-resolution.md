@@ -1,6 +1,10 @@
 # Auth preflight resolution — 2026-10-21
 
-**Corrected release readiness PASS. Deployment was not executed.**
+**Resolution task: corrected release readiness PASS; no deployment by that task.**
+
+The owner subsequently approved the new seal below. Its single execution returned
+[DEPLOY PASS](live-sales-release-receipt.md), with schema87 and providers disabled.
+The approval is consumed. The command below is retained history; do not rerun it.
 
 This is a local release-tool correction and read-only resealing task.
 No deployment, production Auth/data write, timestamp edit, password reset,
@@ -125,9 +129,9 @@ they must pass before SQL during a separately approved execution. No application
 build was repeated: exact archive/input/inventory equality and fresh independent
 extraction/retained-asset checks verify the preserved application artifact.
 
-**One next owner action:** approve the exact new seal for one guarded disabled
-deployment, with Dashboard edits paused during its maintenance window. Only after
-that separate approval, the future command is:
+At resolution completion, the next action was separate owner approval with
+Dashboard edits paused. That approval and single deployment are now complete.
+Historical approved command — **do not rerun**:
 
 ```sh
 /Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node \
