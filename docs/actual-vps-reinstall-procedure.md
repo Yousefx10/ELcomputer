@@ -1,5 +1,9 @@
 # Actual single-VPS reinstall: owner procedure
 
+**20 October health follow-up:** the owner reports restoration and activation
+completed. Run the corrected health command in section 7 once. Earlier install
+steps are historical procedure; do not repeat them for the stalled check.
+
 **Readiness: GO, with the owner's explicit waiver of the Ubuntu VM rehearsal.**
 The first Linux execution will happen on the ONE existing VPS. No VM is required.
 This is readiness for a later approved execution; nothing is erased or deployed
@@ -281,9 +285,35 @@ All auxiliary domains remain without site blocks/certificates. Do not change DNS
 
 ## 7. Health, persistence and owner acceptance
 
+For the stalled-check correction, use the current repository helper below.
+The sealed preparation helper and VPS kit remain unchanged. This helper verifies
+the original kit, then streams the corrected checker over pinned SSH.
+
 ```sh
-python3 "$PREP/owner-restore.py" "$PREP/OWNER-BINDING.json" health
+python3 -u /Users/imac/Documents/ELcomputer/ELcomputer/scripts/clean-reinstall/owner-restore.py "$PREP/OWNER-BINDING.json" health
 ```
+
+Run this once for the interrupted health check. It does not install, restart or
+redeploy anything. Target identity and sealed-kit checks each have a 30-second
+SSH deadline. HTTP verification has a 900-second total budget, with a 30-second
+absolute deadline per request, including DNS, TLS and body delivery. The health
+SSH child is capped at 915 seconds; SSH keepalives detect a dead connection.
+Progress is flushed at stage boundaries and every 100 checks or five seconds
+between requests. A stalled request fails within its deadline; there are no retries.
+
+Each attempt creates a private, unique local receipt under
+`$PREP/health-results/`, updating its phase and progress. A final PASS requires all
+expected counts, the checker's final PASS and SSH exit zero. Timeout, interruption,
+missing output or nonzero exit produce FAIL; the receipt preserves any remote
+result separately. A buffered PASS alone never establishes success.
+
+The original command had no SSH execution deadline, no configured keepalive,
+no intermediate output and no saved result. A remote Python exit does not itself
+guarantee that the SSH transport has exited or closed its channels. No old child
+remains to identify the original stall's exact phase or transport cause. Bounded
+read-only SSH probes now exit normally; no full production health run was repeated
+to diagnose it. The corrected runner avoids waiting for pipe EOF, closes unused
+stdin, and terminates its own child process group on timeout or interruption.
 
 Expected: trusted HTTPS and PASS for EN/AR pages, **2,607 image hashes**, all
 **5,504 main/www legacy redirect cases**, held503s, private-file404s, disabled
@@ -355,6 +385,6 @@ Never paste env files, credentials, database rows or raw private journals into a
 report/chat. Record phase, sanitized error and hash/receipt instead. Failure does
 not authorize an automatic retry, cleanup, rollback or another destructive reset.
 
-**Current stopping point:** GO readiness recorded; owner may navigate to the
-Plain Ubuntu24.04 selection. **No Change OS click or destructive confirmation
-has been authorized or performed by this preparation task.**
+**Current stopping point:** restoration and activation are owner-reported complete.
+One corrected health run is pending. This health correction does not perform a
+reinstall, restart, redeploy, reboot or manual owner acceptance.

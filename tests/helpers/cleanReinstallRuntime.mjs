@@ -76,9 +76,12 @@ try {
   }
   const check = spawn('python3', [join(kit, 'health.py'), kit, '--origin', `http://127.0.0.1:${port}`, '--fixture'], { stdio: ['ignore', 'pipe', 'pipe'] })
   let out = '', error = ''; check.stdout.on('data', b => out += b); check.stderr.on('data', b => error += b)
-  assert.equal((await once(check, 'exit'))[0], 0, error)
+  assert.equal((await once(check, 'close'))[0], 0, error)
   assert.ok(requests.every(r => ['GET', 'HEAD', 'OPTIONS'].includes(r.method)))
-  const result = { ...JSON.parse(out), authorization_checks: authorizationChecks, actual_caddy: '2.11.7', actual_node: '22.23.1', exact_sealed_nuxt: true, backend: 'isolated synthetic Auth and read-only data fixture', production_connected: false,
+  const finalResults = out.trim().split('\n').map(line => JSON.parse(line)).filter(event => event.result)
+  assert.equal(finalResults.length, 1, 'One final health result after progress')
+  assert.equal(finalResults[0].result, 'PASS')
+  const result = { ...finalResults[0], authorization_checks: authorizationChecks, actual_caddy: '2.11.7', actual_node: '22.23.1', exact_sealed_nuxt: true, backend: 'isolated synthetic Auth and read-only data fixture', production_connected: false,
     external_fetches_blocked: true, backend_mutations: 0, ubuntu_systemd_reboot_acceptance: 'not exercised by this loopback fixture' }
   await writeFile(join(evidence, 'CADDY-NUXT-RESTORE.json'), JSON.stringify(result, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
   console.log(JSON.stringify(result))

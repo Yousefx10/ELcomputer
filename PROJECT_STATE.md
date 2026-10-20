@@ -1,3 +1,41 @@
+# Production health runner corrected; one fresh owner run pending — 2026-10-20
+
+- Owner reports plain Ubuntu 24.04 reinstall completed: 2,607 media files and
+  environment restored, Nuxt/Caddy activated, public HTTPS HTTP/2 200. These are
+  owner-reported restoration results; full health and manual acceptance are pending.
+  Startup main `cf1e475` was clean and matched origin/main. Prior work preserved.
+- Interrupted first health run has no recorded PASS/FAIL. Local Python waited for
+  SSH; two owner process checks found no remote health.py. No old SSH/health child
+  remains now, so its exact stalled phase/transport trigger cannot be reconstructed.
+- Exact local/sealed/remote health.py hashes match. Original SSH had no execution
+  timeout or active keepalive; stdin was inherited. Health printed only at the end,
+  had no receipt, and its 30-second socket timeout did not bound DNS or trickling
+  responses. It creates no subprocesses; no checker-created descendant leak found.
+- Four bounded read-only SSH diagnostics exited normally, including exact identity
+  and sealed-manifest probes and the corrected runner's streamed-code probe.
+  Zero production HTTP health requests repeated. Sealed VPS kit/binding unchanged.
+- Health-only path now uses 30-second SSH preflights, keepalives, isolated child
+  cleanup, explicit stdin and output collection independent of pipe EOF. It streams
+  the corrected local checker without changing files on the VPS. HTTP requests
+  have absolute 30-second deadlines within a 900-second run budget; health SSH has
+  a 915-second cap. Connections close on failure. No automatic retries.
+- Flushed stage/count progress and unique local 0600 health-results receipts expose
+  each phase. PASS requires the final complete result AND SSH exit zero. Missing
+  output, timeout, interruption, partial counts or nonzero exit are FAIL, even if a
+  remote PASS appeared first. Coverage stays 8,185 checks / 2,607 media / 5,504 redirects.
+- Validation: 12 focused regressions PASS; five existing safety tests PASS, one
+  unrelated Caddy portability test skipped (no CADDY_BIN). Corrected pinned-SSH
+  streamed diagnostic PASS in 1.54 seconds, with zero HTTP requests or VPS changes.
+- ONE next owner command, from the current checkout helper (not sealed old helper):
+
+```sh
+python3 -u /Users/imac/Documents/ELcomputer/ELcomputer/scripts/clean-reinstall/owner-restore.py /Users/imac/Documents/ELcomputer/actual-vps-reinstall-preparation-20261020/OWNER-BINDING.json health
+```
+
+- No full production health rerun, reinstall, restart, redeploy, Supabase/product/
+  media/routing/permission change or Git push. Reboot/manual owner acceptance remain
+  separate pending work; this task performs neither.
+
 # Final offline VPS reinstall verification: GO; stop before Change OS — 2026-10-20
 
 - Codex 1 resumed at clean main `e71cd1933232a56c765b34b349b57b340c1d6a89`.
