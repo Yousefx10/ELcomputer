@@ -1,3 +1,58 @@
+# Commerce foundation release GO for owner approval; not deployed — 2026-10-20
+
+- Continue from the prepared release; do not rebuild the three completed features.
+  Preparation began at clean main/recorded origin/main `862b1e3`, one worktree,
+  no other branches/stashes/unpushed work. No fetch/push or production mutation.
+  Application source is `862b1e3`; this commit adds operational tools/tests/docs.
+- Read AGENTS/README/current handoffs/Notes and all three feature documents before
+  execution. Current architecture is Caddy + systemd `storefront` + Node22.23.1
+  under `/srv/storefront`. The saved PM2 skill/npm deploy target is retired.
+  Linked Supabase CLI and old pooler pgpass point at staging; leave them untouched.
+  The new operator binds explicit production, verified CA and strict pinned SSH.
+- Read-only baseline: active Nuxt/Caddy, 82 migrations, 561 products, one Auth user,
+  zero customer orders/videos, 2,613 VPS public files, four Storage metadata objects.
+  Existing 560 imports plus owner additions, Auth, media and financial data survive.
+  All five payment methods/provider-live flags remain false; signup/checkout off.
+- Exactly83–85 pending: `20261020120000_cod_shipping_checkout.sql`,
+  `20261020160000_private_vps_packing_videos.sql`,
+  `20261020200000_normal_cod_collections.sql`. Preserve all historical source and
+  certificates. One guarded transaction includes history entries, original-row
+  comparisons and ACL assertions. No original-row backfill or business requests.
+- Archive `82214df492a57126182d03e48e643baaf6913f2279db39ec39fde48cab93e8fa`,
+  release `82214df492a57126`, 606 app inputs, 1,269 inventory entries, clean build.
+  Approved-plan candidate (not yet approved):
+  `/Users/imac/Documents/ELcomputer/commerce-foundation-release-20261020/prepared/plan-approved.json`.
+  SHA `779a17d27a8d34e15488173e67eca0cfd7e03e661f21a769c5f303b37d4e7557`.
+  Older plan.json/plan-final.json are superseded. Do not execute those plans.
+- Added scripts/commerce-release operator/database/remote and pinned decoder config,
+  reusing the strict restoration extractor and existing backup envelope/inventory.
+  Missing production private path/ffprobe are covered by the approved action:
+  isolated decoder from signed source, frozen compiler dependencies (46 new,
+  zero upgrades/removals), 0700 private paths, appended runtime keys, narrow unit
+  drop-in. Package service restarts suppressed. None provisioned before approval.
+- Validation PASS: 69 commerce cases; 10 native release/migration cases including
+  non-superuser populated82→85/rollback/no-reapply; five remote guards; same 25
+  packing cases rerun using the restricted decoder. Five extractor passes/one
+  optional local Caddy skip. Clean install, typecheck, production build and diff
+  PASS. ERP/sourcemap warnings known. Read-only sealed preflight returned GO,
+  zero writes. Actual hosted Linux candidate/authenticated browser acceptance pending.
+- ONE next owner action: approve the exact command in
+  [docs/commerce-foundation-release.md](docs/commerce-foundation-release.md).
+  Scope: brief editing pause, fresh verified encrypted backup, private runtime,
+  83–85, candidate sandbox checks and ONE Nuxt restart. No Caddy edit/reload/restart,
+  checkout/provider activation, real order/shipment/payment or inventory mutation.
+  Do not deploy before that approval; no push authorized.
+- On approval, run the bound action once. It stops on input/runtime/DB drift,
+  prints progress every 15s and records exclusive intent plus phase receipts. Do not
+  rerun after STOP/disconnection, auto-reapply SQL or auto-rollback. Preserve old
+  release `7bfe6316a1f544d8`, original environment, new output and encrypted backup.
+  Recovery requires separate review; old packing code cannot operate with 84.
+- Follow-up roadmap: four reported customer/admin access errors, existing Paymob
+  and PDC integrations, required WordPress identity/order/address launch migration;
+  UI later. Keep duplicate-identity prevention and current Auth. Business stock,
+  coverage/charges, confirmed access and named operators still precede purchase
+  acceptance. This supersedes older WordPress-after-first-sale sequencing.
+
 # Normal COD cash collection PASS locally; public checkout stays disabled - 2026-10-20
 
 - Completed the interrupted task from the existing working tree. Before further

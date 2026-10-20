@@ -5,6 +5,9 @@ Public checkout remains disabled.
 Migration85 and the application are not deployed or applied to production.
 No real orders, cash, inventory or provider operations were created.
 
+The [guarded foundation release](commerce-foundation-release.md) combines
+migrations83–85 with the application. It is prepared for owner approval only.
+
 ## Existing infrastructure reused
 
 Normal orders retain their immutable checkout totals and stock allocations.

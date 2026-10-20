@@ -1,0 +1,16 @@
+{
+  "version": "8.0.3",
+  "source_url": "https://ffmpeg.org/releases/ffmpeg-8.0.3.tar.xz",
+  "filename": "ffmpeg-8.0.3.tar.xz",
+  "sha256": "6136812ea6d4e68bdba27e33c2a94382711cdf4f8602ffef056ff792bd6f9818",
+  "signing_fingerprint": "FCF986EA15E6E293A5644F10B4322F04D67658D8",
+  "configure": [
+    "--disable-everything", "--disable-autodetect", "--disable-programs",
+    "--enable-ffprobe", "--disable-network", "--enable-protocol=file",
+    "--enable-demuxer=matroska,mov",
+    "--enable-decoder=vp8,vp9,h264,hevc,mpeg4,mjpeg,rawvideo",
+    "--enable-parser=vp8,vp9,h264,hevc,mpeg4video,mjpeg",
+    "--disable-avdevice", "--disable-avfilter", "--disable-swresample",
+    "--disable-swscale", "--disable-doc", "--disable-debug", "--disable-x86asm"
+  ]
+}

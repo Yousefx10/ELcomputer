@@ -161,7 +161,10 @@ replay, customer confirmation, Dashboard visibility and real fulfillment evidenc
 Accept dispatch/collection separately with actual evidence; do not mark COD paid
 at checkout. Public activation requires the owner's acceptance and approval.
 
-**One next owner action:** supply verified saleable inventory and delivery/COD
-settings for the first controlled purchase, using the business-input table above.
-The combined local candidate includes migrations83–85. Release, restricted
-acceptance and later public activation each remain subject to owner approval.
+**One next owner action:** approve the prepared
+[guarded commerce foundation release](commerce-foundation-release.md).
+The combined local candidate includes migrations83–85; public checkout stays off.
+Verified inventory and delivery/COD settings remain required before acceptance.
+After release, investigate the four reported access errors, then prioritize existing
+Paymob/PDC. WordPress identities, orders and addresses are a required launch
+workstream. Restricted acceptance and public activation require owner approval.

@@ -4,6 +4,10 @@ Local implementation PASS. Nothing deployed or applied to production.
 Public checkout stays disabled. [Normal COD collection and reconciliation](cod-collections.md)
 are now implemented locally; business configuration and controlled acceptance remain.
 
+The [guarded foundation release](commerce-foundation-release.md) now binds the
+private directory, restricted decoder and systemd sandbox extension. Awaiting
+owner approval; no production packing configuration has changed.
+
 ## Existing workflow retained
 
 The Orders confirmation screen still starts an operator work session, claims one
