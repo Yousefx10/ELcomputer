@@ -1,3 +1,55 @@
+# Customer access Caddy DEPLOY PASS; do not rerun — 2026-10-20
+
+- Owner explicitly approved the exact `c7d2079` Caddy-only correction. Started
+  clean at `c7d2079`, also recorded origin/main; no other branches/stashes/worktrees
+  or unrelated changes. Both accounts' existing work retained. No fetch or push.
+- Fresh guards matched reviewed baseline/candidate/policy, pinned machine/current
+  release, process identities, env/unit and disabled commerce/Auth settings. Local
+  reconstruction matched exactly. Documented procedure executed ONCE at 20:31 UTC:
+  exclusive intent + private original, staged validation, atomic Caddyfile replacement
+  preserving root:root 0644, then one `systemctl restart caddy.service` (`admin off`).
+  No automatic retry/rollback, Nuxt redeploy/restart, schema change or provider call.
+- Installed SHA `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  baseline `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c`;
+  policy `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997`.
+  Caddy PID 23064 active/running/NRestarts 0. Nuxt PID 22422/release 82214df492a57126,
+  env, base unit/drop-ins, private packing runtime, Caddy unit/binary unchanged.
+- Forty live HTTP checks PASS. Missing/invalid-token GETs now reach Nuxt JSON 401
+  for `/api/account/messages`, `/api/support/tickets`, `/api/account/after-sales/claims`,
+  `/api/account/after-sales/items`, `/api/customer-users`, all private/no-store.
+  Support dependencies 401; account-page redirects 302 enforce existing Auth. Root,
+  Dashboard login and existing public image 200; downloaded image hash matches.
+  Checkout/signup/login/payments/workers/webhooks and private attachments still 403;
+  unknown customer APIs and held customer/attachment mutation methods 403; private
+  path 404. Anonymous admin-products/image/private-video upload requests 401.
+- Read-only schema 85 identities and 83–85 source hashes match. Products full content,
+  protected counts (561 products, one Auth user/identity, four Storage objects;
+  zero orders/videos/attempts/jobs/COD ledger rows) and all 2,613 VPS image hashes
+  unchanged. All payment/provider flags off, PDC/auto-label/reverse off, hosted
+  signup disabled and confirmation required. No DB write or Supabase Storage upload.
+- Fresh tests: two actual-Caddy policy + six existing Caddy/archive + seven account
+  Auth/RBAC checks including parent PASS, zero skips. PDC diagnostic is mocked/local;
+  c7d2079 PDC application helper was NOT deployed. No app edit/typecheck/build rerun.
+  Initial HTTP harness wrongly expected 200 for five anonymous pages; unchanged
+  middleware proves their 302 redirects correct. Raw evidence retained; offline
+  expectation review only, no repeated requests or deployment after that result.
+- [Versioned release receipt and exact owner browser acceptance](docs/customer-access-release-receipt.md).
+  Private local evidence: customer-provider-readiness-20261020/execution-a19befc25ede2954/;
+  `completed.json` SHA `35854a5cbb9bda4fcd34f697031986d8b523a952ae9de75eda399ab5b83bcaf4`.
+  Remote `/var/lib/customer-access-releases/a19befc25ede2954/` retains 0700 directory,
+  original 0600 Caddyfile, intent, candidate and validation/restart/activation receipts.
+  Both file hashes verified after execution. Do not prune/reapply; recovery needs review.
+- ONE next owner action: existing-session browser acceptance of `/account/messages`,
+  `/account/support`, `/account/after-sales`, `/dashboard/hr?tab=users&people=customers`.
+  Operator has NOT exercised hosted owner reads, a valid customer denied staff access,
+  cross-customer isolation or authenticated upload writes. Fixtures are not that proof.
+  No account/session was created. Support/Claims attachments remain 403 pending private
+  VPS conversion; no legacy Storage upload/download route was opened.
+- After acceptance prioritize existing Paymob/PDC activation gaps from readiness doc,
+  not a rebuild/audit. Keep checkout/providers disabled; PDC helper needs a matching
+  separately reviewed application deployment. WordPress identity/order/address
+  migration remains required for launch. No unrelated infrastructure/UI work.
+
 # Account access correction PASS locally; no deployment — 2026-10-20
 
 - Preserve existing `07bb18f` and `8f22448` (both ahead of recorded origin/main).

@@ -1,11 +1,13 @@
 # Customer access and existing provider readiness — 2026-10-20
 
-Local access correction PASS. Production still has the original rule; no deploy,
-reload, restart, SQL change, credentials entry or provider call occurred.
+Owner-approved Caddy access correction DEPLOY PASS at 20:31 UTC.
+See the [release receipt and pending browser acceptance](customer-access-release-receipt.md).
+Only Caddyfile changed; no Nuxt deployment, SQL change or provider call occurred.
+The PDC application correction remains local and undeployed.
 Real payment/shipment activation remains BLOCKED by the specific gaps below.
 
-Started from clean `8f22448`, with `07bb18f` and `8f22448` ahead of recorded
-origin/main. One worktree, no other branches/stashes or unrelated changes. Existing
+The initial review started clean at `8f22448`, with `07bb18f` and `8f22448` ahead of
+recorded origin/main. One worktree, no other branches/stashes or unrelated changes. Existing
 unpublished work is preserved. Current deployed application remains release
 `82214df492a57126`, schema 85. No migration is required for this correction.
 
@@ -15,7 +17,7 @@ Read-only comparison at 18:27 UTC used the pinned SSH identity/host and current
 loopback 3000. The public response body was `Unavailable`, content-type text/plain.
 Nuxt returned JSON 401 `Missing authorization token.` at loopback for every row.
 
-| Reported surface | Actual request | Public | Nuxt loopback |
+| Reported surface | Actual request | Public before correction | Nuxt loopback |
 | --- | --- | --- | --- |
 | Account Messages | `GET /api/account/messages` | 403 | 401 |
 | Account Support | `GET /api/support/tickets` | 403 | 401 |
@@ -23,10 +25,10 @@ Nuxt returned JSON 401 `Missing authorization token.` at loopback for every row.
 | Purchased items dependency | `GET /api/account/after-sales/items` | 403 | 401 |
 | Store Customers | `GET /api/customer-users` | 403 | 401 |
 
-The current Caddy `@commerce` matcher explicitly blocks `/api/account/*`,
-`/api/support/*` and `/api/customer-*` before Nuxt. Its `@dormant` rule also blocks
-direct reloads of the account pages. The generic Claims error hides the same
-denied request. This is the current Caddy access policy, not an Auth/RLS diagnosis
+The original Caddy `@commerce` matcher explicitly blocked `/api/account/*`,
+`/api/support/*` and `/api/customer-*` before Nuxt. Its `@dormant` rule also blocked
+direct reloads of the account pages. The generic Claims error hid the same
+denied request. This was the Caddy access policy, not an Auth/RLS diagnosis
 or a reason to revisit the retired Nginx/VPS work.
 
 Customer handlers already verify the bearer with Supabase, reject missing,
@@ -63,24 +65,23 @@ Prepared deployment-specific files, outside Git:
 
 | Binding | SHA-256 |
 | --- | --- |
-| Current Caddy configuration | `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c` |
-| Candidate Caddy configuration | `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169` |
+| Before Caddy configuration | `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c` |
+| Installed Caddy configuration | `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169` |
 | Reviewed route policy | `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997` |
 
 The exact production copy passes Caddy adaptation. Formatting warnings do not
 justify reformatting unrelated rules. The immutable restoration kit is untouched.
 
-ONE next owner action: approve the scoped **Caddy access correction first**.
-Before execution, recheck these hashes, current release/service identity and the
-disabled commerce controls. Preserve an exclusive backup/intent, validate the
-staged candidate, atomically replace only Caddyfile, and restart Caddy once because
-the existing configuration has `admin off`. Preserve mode/ownership and the old
-file. Do not restart Nuxt or reapply 83–85 for this ingress-only step. Verify the
-five routes now reach application 401 anonymously while checkout/payment/worker
-routes stay 403, and verify authenticated owner/customer isolation in the browser.
-Stop on failure; do not retry, reverse SQL or automatically recover.
+Owner approved this exact candidate at `c7d2079`. Execution rechecked these hashes,
+current release/service identity and disabled commerce controls, preserved an
+exclusive backup/intent, validated the staged candidate, atomically replaced
+Caddyfile and restarted Caddy ONCE because `admin off` remains set. Original
+mode/ownership and recovery file were preserved. Nuxt and schema 85 were unchanged.
+The five routes now reach application 401 anonymously and with invalid tokens;
+checkout/payment/worker paths remain 403. No retry or automatic recovery ran.
+ONE next owner action: perform the authenticated browser acceptance in the receipt.
 
-This approval has not been given. The PDC application correction below is local
+The PDC application correction below is local
 and needs its own matching reviewed application deployment; it is not installed
 by replacing Caddyfile. Do not rerun the completed commerce release operator.
 
@@ -213,8 +214,8 @@ Private evidence: `customer-provider-readiness-20261020/` contains denial compar
 provider presence/counts, canonical encryption readiness, candidate and build/test
 logs. No secrets belong in Git. No new migration or provider activation was added.
 
-Approve the scoped access correction first, then accept those account sections
-with the existing identities. Continue the identified corrections within existing
+Accept the deployed account correction using the existing identities, then
+continue the identified corrections within existing
 Paymob/PDC before controlled activation. Keep public checkout off until verified
 stock, configured delivery and owner acceptance. Historical WordPress login,
 identity/address/order migration remains the next required launch workstream;

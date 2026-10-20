@@ -1,3 +1,56 @@
+# Customer access Caddy DEPLOY PASS; browser acceptance pending — 2026-10-20
+
+- Owner approved the exact Caddy-only candidate prepared at `c7d2079`. Started
+  clean at that commit; recorded origin/main also points there. One worktree,
+  no stashes/other branches/unrelated changes. Existing accounts' work preserved.
+  No fetch/push, Nuxt deployment, SQL migration or provider activation.
+- Final pinned-host preflight matched machine, baseline/candidate/policy hashes,
+  current release, Nuxt/Caddy processes, environment/unit and disabled controls.
+  Reconstructed candidate matched the reviewed policy exactly. Exclusive private
+  intent/backup, staged validation and atomic installation completed before one
+  Caddy restart, 20:31:04–20:31:08 UTC. No retry or automatic recovery.
+- Installed Caddy SHA `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  original `f1b944bbd78b8ba100ee26ed005c08585840a38e968299c378cacdd475d91c7c`
+  retained privately. Caddy PID 23064 active/running, zero automatic restarts.
+  Nuxt PID 22422/release `82214df492a57126`, env, base unit/drop-ins, private packing
+  runtime and Caddy unit/binary unchanged. Original Caddyfile root:root 0644 retained.
+- Forty live HTTP checks passed: Messages, tickets, Claims/items and customer-users
+  now return Nuxt JSON 401 for missing AND invalid tokens, private/no-store. Support
+  dependencies also 401. Anonymous account pages correctly 302 to existing login;
+  Dashboard Store Customers redirects to Dashboard login. These are authentication
+  boundary checks, not authenticated owner/customer acceptance.
+- Checkout/signup/login, provider/webhook/worker routes, unknown customer APIs,
+  customer mutations and Support/Claims attachment bytes/uploads still 403; private
+  paths 404. Root/dashboard-login/public image 200, downloaded image hash matched.
+  Anonymous admin-products and empty-body image/private-video upload POSTs 401.
+  No file body, real order, financial command or provider transaction was sent.
+- Read-only schema 85 identities and stored 83–85 hashes match. Product content,
+  561 products, one Auth user/identity, four Storage objects, zero orders/videos/
+  payment attempts/shipping jobs/COD ledgers and all 2,613 public file hashes match
+  before/after. All payment/provider flags off, PDC/auto-label/reverse off, hosted
+  signup disabled and email confirmation required. No Storage upload or DB write.
+- Fresh local validation: two actual-Caddy policy tests, six existing Caddy/archive
+  tests and seven account Auth/RBAC tests including parent PASS, zero skips. The
+  latter includes one mocked PDC check; that helper remains LOCAL, not deployed.
+  No application source changed; typecheck/build were not repeated.
+  Raw HTTP evidence retains five incorrect 200 expectations for anonymous protected
+  pages. Existing middleware confirmed 302; reviewed offline without request/release retry.
+- [Release receipt, exact routes, hashes and owner tests](docs/customer-access-release-receipt.md).
+  Private completed receipt: customer-provider-readiness-20261020/
+  execution-a19befc25ede2954/completed.json. Remote root-only backup/intent/logs:
+  `/var/lib/customer-access-releases/a19befc25ede2954/`. Backup verified after install.
+  Do not rerun the executor or prune evidence. Any recovery needs review.
+- ONE next owner action: hard-refresh Messages, Support, After-Sales and
+  `/dashboard/hr?tab=users&people=customers` using the existing owner session.
+  Authenticated reads, valid restricted-role denial and authenticated upload writes
+  remain unexercised live. No session/account was manufactured. Private Support/
+  Claims attachments remain held pending VPS conversion; text/list access is open
+  only through existing Auth/ownership/RBAC. Keep public checkout/providers disabled.
+- After acceptance, quickly complete the identified requirements in EXISTING
+  Paymob/PDC, retaining their current infrastructure. PDC setup fix needs its own
+  reviewed app release. WordPress login/identity/address/order migration remains
+  required. No renewed VPS/Nginx investigation or UI redesign.
+
 # Account access fix PASS locally; provider activation BLOCKED — 2026-10-20
 
 - Started clean at `8f22448`, preserving both unpushed release commits (`07bb18f`,

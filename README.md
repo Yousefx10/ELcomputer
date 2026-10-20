@@ -25,12 +25,13 @@ Checkout and providers remain disabled. Owner browser smoke is pending.
 The release action has completed; do not rerun it. The older PM2 scripts target
 a retired deployment. Both current handoffs record evidence and recovery.
 
-Next, address the four reported access errors, then existing Paymob/PDC Quick Setup.
+Next, accept the account access correction, then existing Paymob/PDC Quick Setup.
 WordPress accounts, addresses and orders remain a required launch workstream.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)
 now identifies the exact Caddy denials and remaining activation gates.
-The narrow route candidate and PDC lookup setup fix are validated locally.
-Neither is deployed. Live Paymob charging and PDC booking remain blocked.
+The narrow Caddy correction is deployed; [browser acceptance](docs/customer-access-release-receipt.md)
+remains pending. Nuxt and schema 85 are unchanged. The PDC lookup fix stays local.
+Live Paymob charging and PDC booking remain blocked.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
 See [reproducible builds](docs/dependency-reproducibility.md) for the clean-install
