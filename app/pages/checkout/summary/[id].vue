@@ -142,6 +142,10 @@
                 <span>- {{ formatCurrency(orderData.order.discount_amount) }}</span>
               </div>
 
+              <div v-if="orderData.order.shipping_company_id" class="flex items-center justify-between text-sm text-gray-500">
+                <span>{{ $t('common.shipping') }} · {{ orderData.order.shipping_company_name }}</span>
+                <span>{{ formatCurrency(orderData.order.shipping_fee_amount) }}</span>
+              </div>
               <div v-if="Number(orderData.order.payment_fee_amount)" class="flex items-center justify-between text-sm text-gray-500">
                 <span>{{ $t('common.paymentFee') }}</span>
                 <span>{{ formatCurrency(orderData.order.payment_fee_amount) }}</span>

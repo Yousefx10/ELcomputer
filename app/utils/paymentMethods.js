@@ -3,7 +3,7 @@ export const paymentMethodDefinitions = [
   { value: 'bank_transfer', label: 'Bank transfer', description: 'Transfer first, then attach your receipt.', icon: 'lucide:landmark' },
   { value: 'instapay', label: 'InstaPay', description: 'Pay with InstaPay and attach your receipt.', icon: 'lucide:smartphone' },
   { value: 'paypal', label: 'PayPal', description: 'Continue with your PayPal account.', icon: 'lucide:badge-dollar-sign' },
-  { value: 'cash', label: 'Cash', description: 'Pay when your order is delivered.', icon: 'lucide:banknote' }
+  { value: 'cash', label: 'Cash on delivery', description: 'Pay when your order is delivered.', icon: 'lucide:banknote' }
 ]
 
 export const normalizePaymentMethod = value => {

@@ -5083,5 +5083,22 @@
     "preorder": "Preorders use bank transfer or InstaPay without coupons.",
     "invalidRequest": "A valid checkout request is required.",
     "invalidCart": "A valid cart is required."
+  },
+  "codCheckout": {
+    "cash": "Cash on delivery",
+    "deliveryOption": "Delivery option",
+    "chooseDelivery": "Choose delivery",
+    "noDelivery": "Delivery is unavailable for this governorate.",
+    "reloadDelivery": "Reload delivery options",
+    "offerDelivery": "Offer COD delivery",
+    "governorates": "COD governorates",
+    "selectGovernorates": "Select delivery governorates.",
+    "optionsUnavailable": "Delivery options are unavailable.",
+    "chooseGovernorateDelivery": "Choose delivery for your governorate.",
+    "stockUnavailable": "This item has no available warehouse stock.",
+    "notReady": "COD checkout is not ready.",
+    "confirmEmail": "Confirm your account email before ordering.",
+    "readyStock": "COD requires ready stock in the built-in inventory.",
+    "explicitPrice": "Enter a delivery price, including zero for free delivery."
   }
 }

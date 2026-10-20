@@ -325,6 +325,14 @@
                       <span>- {{ formatCurrency(orderDetail.discount_amount) }}</span>
                     </div>
 
+                    <div v-if="orderDetail.shipping_company_id" class="flex items-center justify-between text-sm text-gray-500">
+                      <span>{{ $t('common.shipping') }} · {{ orderDetail.shipping_company_name }}</span>
+                      <span>{{ formatCurrency(orderDetail.shipping_fee_amount) }}</span>
+                    </div>
+                    <div v-if="Number(orderDetail.payment_fee_amount)" class="flex items-center justify-between text-sm text-gray-500">
+                      <span>{{ $t('common.paymentFee') }}</span>
+                      <span>{{ formatCurrency(orderDetail.payment_fee_amount) }}</span>
+                    </div>
                     <div class="flex items-center justify-between border-t pt-3 text-lg font-bold text-gray-900">
                       <span>{{ $t('common.total') }}</span>
                       <span>{{ formatCurrency(orderDetail.total_amount) }}</span>
@@ -569,6 +577,14 @@ const buildPrintableOrderHtml = () => {
           <span>${escapeHtml(uiLabel('Discount'))}</span>
           <span>- ${escapeHtml(formatCurrency(orderDetail.value.discount_amount))}</span>
         </div>
+        ${orderDetail.value.shipping_company_id ? `<div class="totals-row">
+          <span>${escapeHtml(uiLabel('Shipping'))} · ${escapeHtml(orderDetail.value.shipping_company_name)}</span>
+          <span>${escapeHtml(formatCurrency(orderDetail.value.shipping_fee_amount))}</span>
+        </div>` : ''}
+        ${Number(orderDetail.value.payment_fee_amount) ? `<div class="totals-row">
+          <span>${escapeHtml(uiLabel('Payment fee'))}</span>
+          <span>${escapeHtml(formatCurrency(orderDetail.value.payment_fee_amount))}</span>
+        </div>` : ''}
         <div class="totals-row total">
           <span>${escapeHtml(uiLabel('Total'))}</span>
           <span>${escapeHtml(formatCurrency(orderDetail.value.total_amount))}</span>

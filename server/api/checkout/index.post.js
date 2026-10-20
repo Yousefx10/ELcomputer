@@ -4,11 +4,13 @@ import { requireCustomerRequest } from '../../utils/customerRequest'
 import { isStoreAnalyticsUuid, recordStoreOrderCreated } from '../../utils/storeAnalytics'
 import { normalizeCheckoutCommand, throwCheckoutError } from '../../utils/checkoutCommand'
 import { getPaymobConfig } from '../../utils/payments/paymob.js'
+import { requireCodCheckoutSchema } from '../../utils/codCheckout'
 
 export default defineEventHandler(async event => {
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
   const { cartId, order: orderPayload, items: orderItems } = normalizeCheckoutCommand(body, authUser)
+  await requireCodCheckoutSchema(supabaseAdmin, orderPayload.payment_method)
   const quoteId = String(body?.quote_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(quoteId)) throw createError({ statusCode: 409, statusMessage: 'Review checkout before confirming.', data: { code: 'checkout:quote' } })
   if (orderPayload.payment_method === 'card') {
@@ -79,7 +81,7 @@ export default defineEventHandler(async event => {
       .from('customer_profiles')
       .upsert({
         id: authUser.id,
-        email,
+        email: authUser.email || email,
         full_name: fullName || authUser.email?.split('@')[0] || 'Customer',
         phone,
         address_line_1: streetAddress,
@@ -118,6 +120,7 @@ export default defineEventHandler(async event => {
       subtotalAmount: Number(orderRecord.subtotal_amount || 0),
       discountAmount: Number(orderRecord.discount_amount || 0),
       paymentFeeAmount: Number(orderRecord.payment_fee_amount || 0),
+      shippingFeeAmount: Number(orderRecord.shipping_fee_amount || 0),
       totalAmount: Number(orderRecord.total_amount || 0),
       paymentMethod: orderRecord.payment_method,
       paymentProofStatus: orderRecord.payment_proof_status,

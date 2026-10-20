@@ -3071,5 +3071,20 @@
   "Cart financial values must come from the store.": "checkoutRecovery.financial",
   "Preorders use bank transfer or InstaPay without coupons.": "checkoutRecovery.preorder",
   "A valid checkout request is required.": "checkoutRecovery.invalidRequest",
-  "A valid cart is required.": "checkoutRecovery.invalidCart"
+  "A valid cart is required.": "checkoutRecovery.invalidCart",
+  "Cash on delivery": "codCheckout.cash",
+  "Choose delivery": "codCheckout.chooseDelivery",
+  "Delivery is unavailable for this governorate.": "codCheckout.noDelivery",
+  "Reload delivery options": "codCheckout.reloadDelivery",
+  "Offer COD delivery": "codCheckout.offerDelivery",
+  "COD governorates": "codCheckout.governorates",
+  "Select delivery governorates.": "codCheckout.selectGovernorates",
+  "Delivery options are unavailable.": "codCheckout.optionsUnavailable",
+  "Choose delivery for your governorate.": "codCheckout.chooseGovernorateDelivery",
+  "This item has no available warehouse stock.": "codCheckout.stockUnavailable",
+  "COD checkout is not ready.": "codCheckout.notReady",
+  "Confirm your account email before ordering.": "codCheckout.confirmEmail",
+  "COD requires ready stock in the built-in inventory.": "codCheckout.readyStock",
+  "Enter a delivery price, including zero for free delivery.": "codCheckout.explicitPrice",
+  "Choose an available delivery option.": "codCheckout.chooseDelivery"
 }

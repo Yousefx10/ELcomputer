@@ -7,12 +7,12 @@ Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.
 
-ADM-01 ingress is deployed. Existing-owner sign-in works.
-Final acceptance is blocked by a Procurement RPC projection error.
-See PROJECT_STATE.md for verified status and remaining checks.
-The accepted Release 82 browse-only storefront remains live.
-See [the ingress correction](docs/dashboard-access-ingress.md) for its narrow
-route/method rules, existing authorization and configurable deployment binding.
+The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
+Dashboard login, product creation, Draft saving and VPS uploads also passed.
+The storefront remains browse-only; purchases and signup are disabled.
+The [COD purchase preparation](docs/cod-first-purchase.md) reuses existing checkout,
+inventory and shipping. Its migration83 and application changes are local only.
+Verified stock, delivery settings and controlled acceptance remain required.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
 See [reproducible builds](docs/dependency-reproducibility.md) for the clean-install

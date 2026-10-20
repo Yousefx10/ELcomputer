@@ -4,7 +4,7 @@ import { normalizePaymentMethod } from '~/utils/paymentMethods'
 
 export const normalizeCheckoutCommand = (body, user, { review = false } = {}) => {
   const invalid = message => { throw createError({ statusCode: 400, statusMessage: message }) }
-  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'items', 'coupon_code', 'address', 'shipping_method', 'payment_method', 'locale'].includes(key))) invalid('A valid checkout request is required.')
+  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale'].includes(key))) invalid('A valid checkout request is required.')
   const cartId = String(body?.cart_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(cartId)) invalid('Refresh your cart before checkout.')
   if (!Array.isArray(body?.items) || !body.items.length || body.items.length > 100) invalid('A valid cart is required.')
@@ -32,6 +32,9 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   if (!order.payment_method) invalid('Choose a valid payment method.')
   order.shipping_method = text(body?.shipping_method || 'shipping')
   if (order.shipping_method !== 'shipping') invalid('Choose an available delivery method.')
+  const shippingCompany = text(body?.shipping_company_id).toLowerCase()
+  if (shippingCompany && (!isStoreAnalyticsUuid(shippingCompany) || order.payment_method !== 'cash')) invalid('Choose an available delivery option.')
+  if (shippingCompany) order.shipping_company_id = shippingCompany
   order.coupon_code = text(body?.coupon_code).toUpperCase() || null
   if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) invalid('Choose a supported checkout language.')
   order.locale = body?.locale || 'en'
@@ -46,11 +49,13 @@ export const throwCheckoutError = error => {
     'checkout:retired': 'This checkout was reset. Start a new cart.',
     'checkout:quote': 'This quote expired or changed. Review checkout again.',
     'checkout:unavailable': 'A product is no longer available. Refresh your cart.',
-    'checkout:coupon': 'The coupon is no longer valid for this order.'
+    'checkout:coupon': 'The coupon is no longer valid for this order.',
+    'checkout:delivery': 'Choose delivery for your governorate.',
+    'checkout:stock': 'This item has no available warehouse stock.'
   }
   const conflict = Object.keys(conflicts).find(key => code.includes(key))
   if (conflict) throw createError({ statusCode: 409, statusMessage: conflicts[conflict], data: { code: conflict } })
-  if (error?.code === '42501') throw createError({ statusCode: 403, statusMessage: 'A current customer account is required.' })
+  if (error?.code === '42501') throw createError({ statusCode: 403, statusMessage: code === 'Confirm your account email before ordering.' ? code : 'A current customer account is required.' })
   // A business exception is a confirmed SQL rollback. Existing stock/preorder
   // guards must let the customer review again instead of retaining an invalid
   // command as though its acknowledgement were still uncertain.

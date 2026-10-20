@@ -9,6 +9,7 @@ test('purchase-bound checkout preserves retries, commercial integrity and reset 
   const f = await createResetPlatform()
   try {
     await f.db.query("update public.site_settings set payment_cash_enabled=true,payment_cash_fee=2,payment_bank_transfer_enabled=true,payment_bank_transfer_fee=1 where key='default'")
+    const shipping = (await f.db.query("insert into public.commerce_shipping_companies(name,checkout_enabled,checkout_governorates,client_shipping_price) values('Native configured delivery',true,array['Cairo'],0) returning id")).rows[0].id
     const warehouse = (await f.db.query("insert into public.commerce_warehouses(name,code) values('Native H3','NATIVE-H3') returning id")).rows[0].id
     const supplier = (await f.db.query("insert into public.commerce_crm_accounts(name,account_type) values('Native H3 supplier','supplier') returning id")).rows[0].id
     const product = (await f.db.query("insert into public.products(title,slug,price,is_serialized,primary_warehouse_id,is_published) values('Native H3 product','native-h3',20,true,$1,true) returning id", [warehouse])).rows[0].id
@@ -18,8 +19,9 @@ test('purchase-bound checkout preserves retries, commercial integrity and reset 
     const receipt = await f.browser.rpc('commerce_create_procurement_order', { p_supplier_id: supplier, p_warehouse_id: warehouse, p_invoice_number: 'NATIVE-H3-RECEIPT', p_notes: '', p_paid_amount: 0, p_items: [variant, otherVariant].map(id => ({ product_id: product, variant_id: id, quantity: 30, unit_cost: 10 })) })
     assert.equal(receipt.error, null)
     await f.db.query("insert into public.site_coupons(code,discount_type,discount_value,minimum_order_amount,is_active,usage_limit) values('H3', 'percentage',10,0,true,100)")
-    const input = () => ({ cart_id: randomUUID(), items: [{ id: product, variant_id: variant, quantity: 1 }], coupon_code: 'H3', address: { first_name: 'Native', last_name: 'Customer', street_address: 'Owned street', city: 'Cairo', governorate: 'Cairo', phone: '01012345678', email: 'customer@native.invalid' }, shipping_method: 'shipping', payment_method: 'cash', locale: 'en' })
+    const input = () => ({ cart_id: randomUUID(), items: [{ id: product, variant_id: variant, quantity: 1 }], coupon_code: 'H3', address: { first_name: 'Native', last_name: 'Customer', street_address: 'Owned street', city: 'Cairo', governorate: 'Cairo', phone: '01012345678', email: 'customer@native.invalid' }, shipping_method: 'shipping', shipping_company_id: shipping, payment_method: 'cash', locale: 'en' })
     const quote = async (body, actor = 'customer') => {
+      if (body.payment_method !== 'cash') delete body.shipping_company_id
       const r = await f.call('/api/checkout/quote', { method: 'POST', actor, body })
       assert.equal(r.response.status, 200, JSON.stringify(r.body))
       return { ...body, quote_id: r.body.quoteId }
@@ -147,7 +149,7 @@ test('purchase-bound checkout preserves retries, commercial integrity and reset 
       const retainedStock = (await f.db.query('select stock_quantity from public.products where id=$1', [external])).rows[0].stock_quantity
       await f.db.query("insert into public.erp_inventory_cache(local_entity_type,local_id,product_id,external_id,quantity,cost,fetched_at) values('product_variant',$1,$2,'NATIVE-H3-REMOTE',5,10,clock_timestamp())", [otherVariant, product])
       await f.db.query("update public.site_settings set erp_mode='daftra',daftra_connection_status='error' where key='default'")
-      const body = await quote({ ...input(), items: [{ id: external, variant_id: otherVariant, quantity: 2 }], coupon_code: '' }), r = await send(body)
+      const body = await quote({ ...input(), items: [{ id: external, variant_id: otherVariant, quantity: 2 }], payment_method: 'bank_transfer', coupon_code: '' }), r = await send(body)
       assert.equal(r.response.status, 200, JSON.stringify(r.body)); assert.equal((await send(body)).body.order.id, r.body.order.id)
       assert.equal((await f.db.query('select erp_owner from public.customer_orders where id=$1', [r.body.order.id])).rows[0].erp_owner, 'daftra')
       assert.equal((await f.db.query('select count(*)::int n from public.erp_sync_jobs where local_id=$1', [r.body.order.id])).rows[0].n, 1)

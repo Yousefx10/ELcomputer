@@ -1,3 +1,58 @@
+# COD purchase flow prepared locally; public sales remain disabled — 2026-10-20
+
+- Current priority supersedes the old pending health action: owner reports health
+  PASS, Dashboard login, product creation, Draft saving and VPS image uploads
+  working after Ubuntu/Caddy/Nuxt restoration. These are owner-reported results;
+  this task did not repeat production health or browser acceptance.
+- Started at clean main/origin/main `58a165e274b4914bde25b23e19a295513438b015`.
+  Reviewed AGENTS, README, both handoffs, relevant Notes and all local refs/worktrees/
+  stashes for both Codex accounts. One worktree, no prior unpushed branch work or
+  uncommitted changes; prior commits and historical handoffs preserved.
+- Reused existing cart/recovery, Supabase Auth/customer UUID, quote/command receipts,
+  trusted pricing, procurement/physical allocation, payment settings, shipping
+  companies and guarded admin order management. No functioning flow rebuilt.
+- New migration83 `20261020120000_cod_shipping_checkout.sql` and application edits
+  add disabled-by-default carrier coverage, admin-configured customer delivery
+  prices, authenticated safe delivery options and saved shipping snapshots/totals.
+  COD requires confirmed email, built-in ready stock and an active warehouse;
+  its allocation always disallows backorders. Exact old82 and new command recovery
+  survives current price/stock/carrier/payment changes. Code before schema fails
+  closed. No method enabled; other payment/provider paths remain dormant.
+- Profile email now comes from verified Auth rather than delivery-contact email.
+  No customer identity created or migrated. Later WordPress migration must match
+  unique verified Auth emails, retain UUIDs/new orders and review ambiguous matches.
+- Read-only hosted observation at 11:37 UTC: 561 products, all original560 present,
+  559 published; zero saleable positive stock/in_stock units/positive warehouse
+  balances/procurement orders; one active warehouse; built_in ERP; no carriers;
+  all payment methods off; signup disabled; one Auth/profile, no nonstaff customer;
+  zero orders,82 migrations,zero Storage objects. Global backorder flag remains
+  true and unchanged; new COD rejects unavailable stock independently.
+- Owner has not selected stock, coverage or charges. No values fabricated or
+  entered. Existing browse-only ingress/customer/API restrictions remain intact.
+  Production still needs approved migration/application release, real received
+  stock, configured rates/areas/COD fee and verified customer access before private
+  owner acceptance. Public activation needs subsequent owner acceptance/approval.
+- Dispatch remains blocked by required packing-video uploads using Supabase Storage.
+  ALL files must use VPS: implement/accept private VPS video handling separately;
+  do not bypass video/scan guards or route private evidence through public uploads.
+  Existing normal COD stays unpaid; the payment-recording endpoint handles only
+  preorders. Normal COD collection/reconciliation is not implemented/certified here.
+  Local order persistence/list/detail/processing passes; dispatch/collection does not
+  have end-to-end acceptance. No provider jobs or shipment created.
+- Isolated native PostgreSQL17 schema + compiled actual API handlers:17 PASS,
+  including upgrade/replay, concurrency/last unit, trusted totals, carrier changes,
+  explicit free delivery/another area, warehouse/stock/Auth/permissions and admin
+  visibility. Auth and transport are fixtures, not hosted GoTrue/RLS acceptance.
+  Existing focused suites:64 PASS,6 native opt-in skips. Typecheck/build/diff check
+  PASS. Older full native Auth/PostgREST checkout test adapted but not executed
+  because its external service tools are unavailable. No installer recertification.
+- Detailed implementation, settings, identity plan and acceptance boundaries:
+  [docs/cod-first-purchase.md](docs/cod-first-purchase.md).
+  ONE next owner action: prepare its business-input table with physically verified
+  product/model quantities and delivery options/prices; keep public checkout off.
+- No production business/Auth/schema/file change, real order, reinstall, restart,
+  deploy, routing/permission change, Nginx investigation or Git push.
+
 # Production health runner corrected; one fresh owner run pending — 2026-10-20
 
 - Owner reports plain Ubuntu 24.04 reinstall completed: 2,607 media files and
