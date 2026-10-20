@@ -1,4 +1,5 @@
-import { getPdcSettings, requestPdcJson, requestPdcLabel, findShipmentResult, validatePdcBaseUrl, PDC_LABEL_BUCKET } from './pdcShipping.js'
+import { getPdcSettings, requestPdcJson, requestPdcLabel, findShipmentResult, validatePdcBaseUrl } from './pdcShipping.js'
+import { getShippingDocumentsRoot, saveShippingDocument } from './privateShippingDocuments.js'
 import { decryptShippingSecret } from './shippingSecrets.js'
 import { requestPdcLookup, pdcResponseRows } from './pdcLookups.js'
 import { boundedPdcText, parsePdcStatusDate, persistPdcUpdate } from './pdcTracking.js'
@@ -53,13 +54,14 @@ export const processPdcReverseQueue = async ({ supabaseAdmin: db, limit = 10, fe
   const labels = await claimRpc(db, 'shipping_claim_label_take', { p_ready: ready, p_limit: Math.min(25, Math.max(1, Number(limit) || 10)), p_configuration: dispatchConfiguration(settings) })
   for (const job of labels) {
     await authorize()
-    let success = false
+    let success = false, evidence
     try {
+      await getShippingDocumentsRoot({ create: true })
       const bytes = await requestPdcLabel({ settings, awb: job.awb, fetcher, bounded: true })
-      const { error } = await db.storage.from(PDC_LABEL_BUCKET).upload(`claims/${job.claim_id}/${job.id}.pdf`, bytes, { contentType: 'application/pdf', upsert: true })
-      success = !error
+      evidence = await saveShippingDocument(`vps-v1/claims/${job.claim_id}/${job.id}.pdf`, bytes)
+      success = true
     } catch {}
-    try { await claimRpc(db, 'shipping_claim_label_finish', { p_job: job.id, p_token: job.token, p_success: success }); processed.push({ id: job.id, label_ready: success }) }
+    try { await claimRpc(db, 'shipping_claim_vps_label_finish', { p_job: job.id, p_token: job.token, p_success: success, p_sha256: evidence?.sha256 || null, p_size: evidence?.size_bytes || null }); processed.push({ id: job.id, label_ready: success }) }
     catch { processed.push({ id: job.id, label_ready: false }) }
   }
   return { active: ready, processed }

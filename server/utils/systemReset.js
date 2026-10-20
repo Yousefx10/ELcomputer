@@ -3,6 +3,7 @@ import { createError } from 'h3'
 import { getResetConfirmation, getSystemResetScope } from './systemResetScopes.js'
 import { removeResetMediaFiles } from './systemResetFiles.js'
 import { isVpsPackingVideoPath, removePrivatePackingVideos } from './privatePackingVideos.js'
+import { isVpsShippingDocumentPath, removePrivateShippingDocuments } from './privateShippingDocuments.js'
 
 export const validateResetInput = (body) => {
   const scope = getSystemResetScope(body?.scope)
@@ -67,7 +68,9 @@ export const finishResetCleanup = async ({ supabaseAdmin, run, ownerId, uploadsR
       const batch = files.slice(offset, offset + 100)
       const privateFiles = kind === 'packing' ? batch.filter(isVpsPackingVideoPath) : []
       if (privateFiles.length) await removePrivatePackingVideos(privateFiles)
-      const legacyFiles = batch.filter(path => !privateFiles.includes(path))
+      const privateLabels = kind === 'labels' ? batch.filter(isVpsShippingDocumentPath) : []
+      if (privateLabels.length) await removePrivateShippingDocuments(privateLabels)
+      const legacyFiles = batch.filter(path => !privateFiles.includes(path) && !privateLabels.includes(path))
       if (legacyFiles.length) {
         const { error } = await supabaseAdmin.storage.from(bucket).remove(legacyFiles)
         if (error) throw new Error('File cleanup failed. Retry to finish the reset.')

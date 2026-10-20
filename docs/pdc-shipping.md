@@ -1,10 +1,14 @@
-# Current readiness — 2026-10-20
+# Current readiness — 2026-10-21
 
-See the [current provider/access review](customer-access-provider-readiness.md).
-Existing PDC settings, lookups, booking and tracking are retained. The local lookup
-bootstrap fix keeps shipments disabled during authorized diagnostics. Real booking
-still needs COD/eligibility/retry corrections and private VPS labels. Nothing
-activated or deployed in this task; older entries below describe their dated work.
+Current local extension: [controlled live-sales readiness](live-sales-readiness.md).
+Normal/reverse labels now use private VPS files, with durable normal-order
+dispatch/recovery and selected-provider checkout guards in migration87.
+The following records the earlier tracking foundation, not current activation.
+
+Existing PDC settings, lookups, tracking and encrypted credentials are retained.
+The local candidate adds selected-courier eligibility, safe recovery and private
+VPS labels. Real booking requires deployment and controlled merchant acceptance.
+Nothing was activated or deployed; older entries retain their dated evidence.
 
 # Current local extension: After-Sales Stage 2, 2026-10-08
 

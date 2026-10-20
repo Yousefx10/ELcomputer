@@ -6,7 +6,7 @@ import { readPaymentCallbackBody } from '../../../utils/payments/body.js'
 export default paymentHandler(async event => {
   paymentNoStore(event)
   let config
-  try { config = getPaymobConfig(useRuntimeConfig(event)) } catch (error) { throwPaymentError(error) }
+  try { config = getPaymobConfig(useRuntimeConfig(event), { callback: true }) } catch (error) { throwPaymentError(error) }
   const raw = await readPaymentCallbackBody(event)
   if (!raw) throw createError({ statusCode: 400, statusMessage: 'Invalid callback.' })
   let body

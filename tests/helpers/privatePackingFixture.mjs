@@ -60,7 +60,7 @@ export async function createPrivatePackingFixture(options = {}) {
     ]) {
       const compiled = await build({ entryPoints: [resolve('server/api/admin-orders/packing', file)], bundle: true, write: false, format: 'esm', platform: 'node', alias: { '~': resolve('app') },
         banner: { js: `const useRuntimeConfig=()=>globalThis[${JSON.stringify(key)}].config; const defineEventHandler=handler=>handler;` }, plugins: [{ name: key, setup(builder) {
-          builder.onResolve({ filter: /\/supabaseAdmin$/ }, () => ({ path: key, namespace: key }))
+          builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: key, namespace: key }))
           builder.onLoad({ filter: /.*/, namespace: key }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis[${JSON.stringify(key)}].client`, loader: 'js' }))
           builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
         } }] })
@@ -94,13 +94,14 @@ export async function createPrivatePackingFixture(options = {}) {
       const units = (await db.query('select * from public.commerce_serialized_units where customer_order_id=$1 order by unit_code', [order])).rows
       return { order, session, units, actor, path: '/api/admin-orders/packing/' + session.id }
     }
-    const newPack = async (quantity = 2, actor = 'editor') => {
-      const p_order = { first_name: 'Fixture buyer', email: 'customer@product-save.example.invalid', street_address: 'Owned street', city: 'Fixture city', governorate: 'Cairo', phone: '01012345678', shipping_method: 'shipping', shipping_company_id: company, payment_method: 'cash', locale: 'en' }
+    const newPack = async (quantity = 2, actor = 'editor', { paymentMethod = 'cash', beforePack = async () => {} } = {}) => {
+      const p_order = { first_name: 'Fixture buyer', email: 'customer@product-save.example.invalid', street_address: 'Owned street', city: 'Fixture city', governorate: 'Cairo', phone: '01012345678', shipping_method: 'shipping', shipping_company_id: company, payment_method: paymentMethod, locale: 'en' }
       const p_items = [{ product_id: product, variant_id: variant, quantity }], p_cart_id = randomUUID(), p_user_id = actors.customer
       const quote = await client.rpc('commerce_checkout_quote', { p_user_id, p_cart_id, p_order, p_items })
       if (quote.error) throw Error(quote.error.message)
       const command = await client.rpc('commerce_checkout_command', { p_user_id, p_cart_id, p_order, p_items, p_quote_id: quote.data.quoteId })
       if (command.error) throw Error(command.error.message)
+      await beforePack(command.data.order.id)
       return claimOrder(command.data.order.id, actor)
     }
     const scan = async pack => {

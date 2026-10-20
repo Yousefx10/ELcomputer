@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createPrivatePackingFixture } from './helpers/privatePackingFixture.mjs'
 import { emailNativeAvailable, nativeWaitFor } from './helpers/emailNativeDatabase.mjs'
+import { loadCodCollections } from '../server/utils/codCollections.js'
 
 const migration = '20261020200000_normal_cod_collections.sql'
 const extraRoutes = [
@@ -14,7 +15,7 @@ const extraRoutes = [
   ['post', '/api/admin-logs', resolve('server/api/admin-logs/index.post.js')]
 ]
 const input = (changes = {}) => ({ command_id: randomUUID(), action: 'receive', collection_id: null, amount: '40.25',
-  reference: 'CASH-' + randomUUID(), received_on: new Date().toISOString().slice(0, 10), confirmed: true, ...changes })
+  reference: 'CASH-' + randomUUID(), received_on: new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()), confirmed: true, ...changes })
 const send = (f, order, body, actor = 'editor') => f.call('/api/admin-orders/' + order + '/cod-cash', { method: 'POST', body, actor })
 const counts = async f => (await f.db.query(`select (select count(*)::int from public.order_cod_collections) receipts,
  (select count(*)::int from public.order_cod_reconciliations) reconciliations,
@@ -356,7 +357,8 @@ test('migration85 preserves existing payment and treasury history without backfi
     assert.deepEqual((await f.db.query('select * from public.treasury_transactions order by id')).rows.map(({ customer_order_id, ...row }) => row), ledger)
     const n = await counts(f), r = await send(f, id, input())
     assert.equal(r.response.status, 409); assert.equal(r.body.data.codCashError, 'history'); assert.deepEqual(await counts(f), n)
-    assert.equal((await details(f, id)).body.codCash.history_consistent, false)
+    // This historical85 fixture intentionally lacks the current shipping87 schema.
+    assert.equal((await loadCodCollections(f.client,await orderRow(f,id))).history_consistent, false)
     await assert.rejects(f.db.query("update public.customer_orders set amount_paid=0,payment_status='pending',paid_at=null where id=$1", [id]), /cod:history/)
     assert.deepEqual(await orderRow(f, id), historical)
   } finally { await f.close() }

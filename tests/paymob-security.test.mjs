@@ -24,7 +24,7 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
   const user = randomUUID(), id = randomUUID()
   const db = {
     from(table) { return {
-      select() { return this }, eq() { return this }, in() { return this },
+      select() { return this }, eq() { return this }, in() { return this }, limit() { return this },
       async maybeSingle() { return { data: table === 'customer_orders' ? existing : { payment_card_enabled: true } } },
       then(resolve) { resolve({ data: [{ id: body.items[0].id, selling_mode: 'normal' }] }) },
       async upsert() { return {} }

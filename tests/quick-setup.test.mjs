@@ -109,8 +109,15 @@ test('Paymob reports test capability without presenting live payment support', (
   assert.equal(entry(run(f), 'paymob').required, false)
   f.runtime.paymobEnabled = true
   assert.equal(entry(run(f), 'paymob').required, true); assert.ok(run(f).readiness.blockers.includes('payment_methods'))
-  f.runtime.paymobMode = 'live'; assert.equal(entry(run(f), 'paymob').configuration, 'unsupported')
+  f.runtime.paymobMode = 'live'; assert.equal(entry(run(f), 'paymob').configuration, 'incomplete')
   f.data.site.payment_cash_enabled = false; assert.equal(entry(run(f), 'payment_methods').configuration, 'incomplete')
+  Object.assign(f.runtime,{paymobSecretKey:'egy_sk_live_fixture',paymobPublicKey:'egy_pk_live_fixture',paymobCardIntegrationMode:'live',paymobLiveRequestsEnabled:true})
+  assert.equal(entry(run(f),'paymob').configuration,'complete')
+  assert.equal(entry(run(f),'payment_methods').configuration,'complete')
+  assert.ok(!entry(run(f),'payment_methods').notes.includes('no_live_payment_path'))
+  assert.equal(entry(run(f),'paymob').connection,'not_verified')
+  assert.equal(run(f).readiness.operationalReady,false)
+  f.runtime.paymobLiveRequestsEnabled=false;assert.equal(entry(run(f),'payment_methods').configuration,'incomplete')
 })
 
 test('PayPal, wallets and incomplete transfer proof support never imply working gateways', () => {
@@ -129,6 +136,10 @@ test('PDC configuration uses existing validation and keeps read-only status unve
     label_template_id: 1, allow_open_shipment: false, all_must_valid: true })
   assert.equal(entry(run(f), 'shipping').configuration, 'incomplete')
   f.runtime.shippingLiveRequestsEnabled = true
+  assert.equal(entry(run(f), 'shipping').configuration, 'incomplete')
+  f.runtime.shippingDocumentsDir='/private/fixture-documents'
+  f.data.pdc.cities_cache=[{id:1}];f.data.pdc.products_cache=[{id:40}]
+  Object.assign(f.data.couriers[0],{provider:'pdc',checkout_enabled:true,checkout_governorates:['Cairo'],client_shipping_price:0})
   assert.equal(entry(run(f), 'shipping').configuration, 'complete'); assert.equal(entry(run(f), 'shipping').connection, 'not_verified')
   f.data.pdc.base_url = 'https://attacker.example.invalid'; assert.equal(entry(run(f), 'shipping').configuration, 'incomplete')
 })

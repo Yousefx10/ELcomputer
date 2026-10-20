@@ -1,4 +1,8 @@
-# Current provider readiness — 2026-10-20
+# Current provider readiness — 2026-10-21
+
+For current Paymob/PDC fields, server-only Paymob credentials and independent
+activation gates, use [controlled-sales readiness](live-sales-readiness.md).
+Quick Setup remains an owner guide with evidence; it does not transact.
 
 Use the [current access/provider review](customer-access-provider-readiness.md)
 for schema85 and the existing owner accounts. Quick Setup remains the same guide;

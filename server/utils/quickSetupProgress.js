@@ -25,10 +25,10 @@ const runtimeBasis = (runtime, domains) => {
   include('daftra', ['daftraAccountUrl', 'daftraApiKey', 'daftraClientId', 'credentialsEncryptionKey', 'erpWorkerSecret'])
   include('vodafone', ['credentialsEncryptionKey', 'smsWorkerSecret'])
   include('brevo', ['credentialsEncryptionKey', 'emailWorkerSecret'])
-  include('shipping', ['shippingCredentialsEncryptionKey', 'shippingWorkerSecret', 'shippingLiveRequestsEnabled'])
-  include('paymob', ['paymobEnabled', 'paymobMode', 'paymobSecretKey', 'paymobPublicKey', 'paymobHmacSecret', 'paymobCardIntegrationId', 'paymobCardIntegrationMode', 'paymobIntegrationIds'])
+  include('shipping', ['shippingCredentialsEncryptionKey', 'shippingWorkerSecret', 'shippingLiveRequestsEnabled', 'shippingDocumentsDir'])
+  include('paymob', ['paymobEnabled', 'paymobLiveRequestsEnabled', 'paymobMode', 'paymobSecretKey', 'paymobPublicKey', 'paymobHmacSecret', 'paymobCardIntegrationId', 'paymobCardIntegrationMode', 'paymobIntegrationIds'])
   if (domains.includes('paymob')) context.paymentOrigin = runtime.public?.siteUrl ?? null
-  include('payment_methods', ['paymobEnabled', 'paymobMode'])
+  include('payment_methods', ['paymobEnabled', 'paymobLiveRequestsEnabled', 'paymobMode'])
   return context
 }
 const domainsFor = (action, key) => action === 'acknowledge' ? setupAcceptanceDomains[key] : setupVerificationDomains[key]

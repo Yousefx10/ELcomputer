@@ -5,17 +5,17 @@ export class PaymentError extends Error {
   constructor(code, statusCode = 503) { super(code); this.code = code; this.statusCode = statusCode }
 }
 const enabled = value => value === true || value === 'true'
-export const getPaymobConfig = runtime => {
-  if (!enabled(runtime.paymobEnabled)) throw new PaymentError('gateway_disabled')
+export const getPaymobConfig = (runtime, { callback = false } = {}) => {
+  if (!callback && !enabled(runtime.paymobEnabled)) throw new PaymentError('gateway_disabled')
   const mode = runtime.paymobMode || 'test'
   if (!['test', 'live'].includes(mode)) throw new PaymentError('invalid_mode')
-  // Foundation phase cannot send live requests, even with otherwise valid keys.
-  if (mode === 'live') throw new PaymentError('live_mode_unavailable')
+  // Closing outbound initiation must not discard already signed payment receipts.
+  if (!callback && mode === 'live' && !enabled(runtime.paymobLiveRequestsEnabled)) throw new PaymentError('live_requests_disabled')
   const secretKey = String(runtime.paymobSecretKey || '')
   const publicKey = String(runtime.paymobPublicKey || '')
   const hmacSecret = String(runtime.paymobHmacSecret || '')
   const integrationId = Number(runtime.paymobCardIntegrationId)
-  if (!secretKey.startsWith(`egy_sk_${mode}_`) || !publicKey.startsWith(`egy_pk_${mode}_`)
+  if (!new RegExp(`^(egy_)?sk_${mode}_.+$`).test(secretKey) || !new RegExp(`^(egy_)?pk_${mode}_.+$`).test(publicKey)
     || !hmacSecret || !Number.isSafeInteger(integrationId) || integrationId < 1
     || runtime.paymobCardIntegrationMode !== mode) throw new PaymentError('invalid_configuration')
   const origin = new URL(String(runtime.public?.siteUrl || ''))
@@ -69,7 +69,7 @@ export const createPaymobIntention = async (config, payload, fetcher = fetch, ti
   const detail = data?.intention_detail
   if (typeof data?.id !== 'string' || !data.id.startsWith(`pi_${config.mode}_`) || data.id.length > 160
     || !Number.isSafeInteger(data.intention_order_id) || data.intention_order_id < 1
-    || typeof data.client_secret !== 'string' || !data.client_secret.startsWith(`egy_csk_${config.mode}_`) || data.client_secret.length > 512
+    || typeof data.client_secret !== 'string' || !new RegExp(`^(egy_)?csk_${config.mode}_.+$`).test(data.client_secret) || data.client_secret.length > 512
     || detail?.amount !== payload.amount || detail?.currency !== payload.currency
     || data.special_reference !== payload.special_reference) throw new PaymentError('intention_uncertain', 502)
   return { intentionId: data.id, providerOrderId: String(data.intention_order_id), clientSecret: data.client_secret }

@@ -4599,7 +4599,11 @@
       "transfer_proof_support": "Transfer proof submission is supported",
       "live_card_support": "Live card payments are supported",
       "payment_credentials": "Payment credentials are present",
-      "paymob_test_configuration": "Paymob test configuration is valid",
+      "paymob_test_configuration": "Paymob keys and selected mode match",
+      "paymob_live_gate": "Server allows live Paymob initiation",
+      "private_shipping_storage": "Private VPS document path is configured",
+      "pdc_lookups": "Provider cities and products are synced",
+      "pdc_courier_selected": "PDC delivery option is explicitly selected",
       "pdc_credentials": "PDC access token saved",
       "shipping_encryption": "Shipping encryption is configured",
       "pdc_account": "PDC account and product IDs saved",
@@ -4645,7 +4649,8 @@
       "transfer_proof_unavailable": "Secure transfer proof submission is not implemented yet.",
       "card_gateway_disabled": "The saved Card option is unavailable while Paymob is disabled.",
       "operator_paymob": "Paymob credentials are managed in server runtime configuration.",
-      "paymob_test_only": "Card supports test mode only. Live payments remain blocked.",
+      "paymob_test_only": "Test payments never mark real orders paid.",
+      "paymob_acceptance": "Verify a real payment before public activation.",
       "paypal_unavailable": "A selectable option exists; the PayPal gateway is not implemented.",
       "express_unavailable": "Apple Pay, Google Pay and mobile wallets are not implemented.",
       "pdc_acceptance": "No PDC lookup, shipment or label runs from this guide.",
@@ -5090,8 +5095,8 @@
     "chooseDelivery": "Choose delivery",
     "noDelivery": "Delivery is unavailable for this governorate.",
     "reloadDelivery": "Reload delivery options",
-    "offerDelivery": "Offer COD delivery",
-    "governorates": "COD governorates",
+    "offerDelivery": "Offer delivery at checkout",
+    "governorates": "Delivery governorates",
     "selectGovernorates": "Select delivery governorates.",
     "optionsUnavailable": "Delivery options are unavailable.",
     "chooseGovernorateDelivery": "Choose delivery for your governorate.",
@@ -5171,6 +5176,27 @@
       "mismatch": "Match the receipt amount and collection date.",
       "duplicate": "This receipt or reference is already recorded.",
       "date": "The cash date cannot precede the order."
+    }
+  },
+  "liveSales": {
+    "confirmBooking": "Book this shipment with PDC now?",
+    "provider": "Shipping provider",
+    "manual": "Manual courier",
+    "codEnabled": "Allow COD with this PDC account",
+    "autoBooking": "Automatically book eligible orders",
+    "book": "Book shipment",
+    "recover": "Reconcile booking",
+    "label": "Retrieve label",
+    "uncertain": "Booking is uncertain. Reconcile before retrying.",
+    "states": {
+      "not_booked": "Not booked",
+      "queued": "Queued",
+      "blocked": "Needs review",
+      "failed": "Needs review",
+      "uncertain": "Uncertain booking",
+      "submitting": "In progress",
+      "label_pending": "Label pending",
+      "ready": "Label ready"
     }
   }
 }

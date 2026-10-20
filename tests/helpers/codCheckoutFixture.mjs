@@ -14,7 +14,7 @@ export async function createCodCheckoutFixture(options = {}) {
   const key = '__codCheckout_' + randomUUID().replaceAll('-', '')
   const close = async () => {
     if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)) }
-    delete globalThis[key]; await db.close()
+    delete globalThis[key]; delete globalThis[key + 'Runtime']; await db.close()
   }
   try {
     fixture = await createProductSaveFixture({ database: db })
@@ -33,6 +33,7 @@ export async function createCodCheckoutFixture(options = {}) {
       finally { await connection.end() }
     }
     globalThis[key] = fixture.client
+    globalThis[key + 'Runtime'] = options.runtime || { paymobEnabled: false }
     globalThis.defineEventHandler = handler => handler; globalThis.readBody = readBody; globalThis.setHeader = setHeader
     const controls = { loseResponse: false }, router = createRouter()
     for (const [method, path, file] of [
@@ -41,11 +42,12 @@ export async function createCodCheckoutFixture(options = {}) {
       ['get', '/api/checkout/shipping', 'server/api/checkout/shipping.get.js'],
       ['get', '/api/admin-orders', 'server/api/admin-orders/index.get.js'],
       ['get', '/api/admin-orders/:id', 'server/api/admin-orders/[id].get.js'],
-      ['patch', '/api/admin-orders/:id', 'server/api/admin-orders/[id].patch.js']
+      ['patch', '/api/admin-orders/:id', 'server/api/admin-orders/[id].patch.js'],
+      ...(options.routes || [])
     ]) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false, format: 'esm', platform: 'node',
-        alias: { '~': resolve('app') }, banner: { js: 'const useRuntimeConfig=()=>({paymobEnabled:false});' }, plugins: [{ name: key, setup(builder) {
-          builder.onResolve({ filter: /\/supabaseAdmin$/ }, () => ({ path: key, namespace: key }))
+        alias: { '~': resolve('app') }, banner: { js: 'const useRuntimeConfig=()=>globalThis[' + JSON.stringify(key + 'Runtime') + '];' }, plugins: [{ name: key, setup(builder) {
+          builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: key, namespace: key }))
           builder.onLoad({ filter: /.*/, namespace: key }, () => ({ contents: 'export const getSupabaseAdminClient=()=>globalThis[' + JSON.stringify(key) + ']', loader: 'js' }))
           builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
         } }] })

@@ -138,6 +138,7 @@ export default defineEventHandler(async (event) => {
       provider_status_at,
       provider_reason_name,
       label_storage_path,
+      label_sha256,
       attempt_count,
       last_error,
       updated_at
@@ -155,7 +156,7 @@ export default defineEventHandler(async (event) => {
   if (shippingJob) {
     shipping = {
       ...shippingJob,
-      label_ready: Boolean(shippingJob.label_storage_path)
+      label_ready: Boolean(shippingJob.label_storage_path && shippingJob.label_sha256)
     }
     const { data: courierEvents, error: eventError } = await supabaseAdmin.from('shipping_webhook_events')
       .select('id,provider_status_id,provider_status_name,status_date,reason_name,normalized_state,source,received_at')
@@ -165,8 +166,14 @@ export default defineEventHandler(async (event) => {
     shipping.events = courierEvents || []
     delete shipping.to_ref
     delete shipping.label_storage_path
+    delete shipping.label_sha256
   }
 
+  if (!shipping && orderRecord.shipping_company_id && orderRecord.status === 'ready_to_deliver') {
+    const { data: courier, error } = await supabaseAdmin.from('commerce_shipping_companies').select('provider,is_active').eq('id', orderRecord.shipping_company_id).maybeSingle()
+    if (error) throw createError({ statusCode: 503, statusMessage: 'Courier selection is unavailable.' })
+    if (courier?.provider === 'pdc' && courier.is_active) shipping = { provider: 'pdc', state: 'not_booked', awb: null, label_ready: false, events: [] }
+  }
   return {
     order: normalizeAdminOrderRecord(orderRecord),
     items: (orderItems || []).map((item) => {

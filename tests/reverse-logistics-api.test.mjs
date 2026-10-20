@@ -1,11 +1,16 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
+import { mkdtemp, realpath, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { createClaimsHttpFixture } from './helpers/claimsHttpFixture.mjs'
 import { attachReverseFixture, reverseFixtureRuntime } from './helpers/reverseFixture.mjs'
 
 test('actual HTTP reverse staff/customer APIs, existing shipping worker and authenticated webhook use disposable SQL', async t => {
   const originalFetch=globalThis.fetch, originalRuntime=globalThis.useRuntimeConfig
+  const documents=await mkdtemp(join(await realpath(tmpdir()),'reverse-private-documents-'))
+  reverseFixtureRuntime.shippingDocumentsDir=documents
   const f=await attachReverseFixture(await createClaimsHttpFixture({shipping:true})), requests=[]
   reverseFixtureRuntime.shippingWorkerSecret='reverse-fixture-worker-secret-over-32-characters'
   globalThis.useRuntimeConfig=()=>reverseFixtureRuntime
@@ -78,5 +83,6 @@ test('actual HTTP reverse staff/customer APIs, existing shipping worker and auth
       assert.equal(requests.at(-1).payload.reFs,booked.data.to_ref);assert.equal(requests.at(-1).payload.awBs,'');assert.equal((await f.detail(claim.id)).claim.status,'in_transit');assert.equal(requests.filter(x=>x.url.endsWith('SaveShipmentEx')).length,creates)
       assert.equal((await call(prefix+'/reverse-actions','rebooker',{job_id:booked.data.id,action:'refresh'})).status,409)
     })
-  } finally { globalThis.fetch=originalFetch;globalThis.useRuntimeConfig=originalRuntime; await server.close() }
+    assert.equal(f.storageCalls.filter(call=>['upload','download'].includes(call.action)).length,0)
+  } finally { globalThis.fetch=originalFetch;globalThis.useRuntimeConfig=originalRuntime; await server.close();await rm(documents,{recursive:true,force:true});delete reverseFixtureRuntime.shippingDocumentsDir }
 })

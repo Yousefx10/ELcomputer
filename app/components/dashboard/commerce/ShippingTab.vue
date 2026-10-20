@@ -207,9 +207,10 @@
         </div>
 
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700"><input v-model="pdcSettings.cod_enabled" type="checkbox">{{ $t('liveSales.codEnabled') }}</label>
           <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.auto_create_labels" type="checkbox">
-            {{ $t('common.autoCreatePaidLabels') }}
+            {{ $t('liveSales.autoBooking') }}
           </label>
           <label class="flex items-center gap-2 text-sm text-gray-700">
             <input v-model="pdcSettings.all_must_valid" type="checkbox">
@@ -382,6 +383,9 @@
         <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <input v-model="form.checkout_enabled" type="checkbox">
           {{ $t('codCheckout.offerDelivery') }}
+        </label>
+        <label class="mt-4 block text-sm font-semibold text-gray-700">{{ $t('liveSales.provider') }}
+          <select v-model="form.provider" class="mt-2 w-full rounded-lg border bg-white p-3"><option value="manual">{{ $t('liveSales.manual') }}</option><option value="pdc">PDC</option></select>
         </label>
         <label class="mt-4 block text-sm text-gray-600">
           <span class="mb-2 block font-semibold">{{ $t('codCheckout.governorates') }}</span>
@@ -558,6 +562,7 @@ const createEmptyPdcSettings = () => ({
   all_must_valid: true,
   is_enabled: false,
   auto_create_labels: false,
+  cod_enabled: false,
   access_token: '',
   webhook_secret: '',
   access_token_configured: false,
@@ -662,6 +667,7 @@ const savePdcSettings = async () => {
         all_must_valid: pdcSettings.all_must_valid,
         is_enabled: pdcSettings.is_enabled,
         auto_create_labels: pdcSettings.auto_create_labels,
+        cod_enabled: pdcSettings.cod_enabled,
         access_token: pdcSettings.access_token,
         webhook_secret: pdcSettings.webhook_secret
       }
@@ -682,6 +688,7 @@ const savePdcSettings = async () => {
 }
 
 const createEmptyForm = () => ({
+  provider: 'manual',
   name: '',
   code: '',
   shipping_cost: '',
@@ -738,6 +745,7 @@ const loadCompanies = async () => {
 }
 
 const mapPayload = () => ({
+  provider: form.provider,
   name: String(form.name || '').trim(),
   code: String(form.code || '').trim() || null,
   shipping_cost: Number(form.shipping_cost || 0),
@@ -754,6 +762,7 @@ const startEdit = (company) => {
   isFormOpen.value = true
   editingId.value = company.id
   Object.assign(form, {
+    provider: company.provider || 'manual',
     name: company.name || '',
     code: company.code || '',
     shipping_cost: String(Number(company.shipping_cost || 0)),

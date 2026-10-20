@@ -4599,7 +4599,11 @@
       "transfer_proof_support": "إرسال إثبات التحويل مدعوم",
       "live_card_support": "الدفع الفعلي بالبطاقات مدعوم",
       "payment_credentials": "بيانات خدمة الدفع موجودة",
-      "paymob_test_configuration": "إعدادات اختبار Paymob صحيحة",
+      "paymob_test_configuration": "مفاتيح Paymob تطابق الوضع المحدد",
+      "paymob_live_gate": "الخادم يسمح ببدء مدفوعات Paymob الفعلية",
+      "private_shipping_storage": "مسار مستندات VPS الخاصة مضبوط",
+      "pdc_lookups": "تمت مزامنة مدن وخدمات شركة الشحن",
+      "pdc_courier_selected": "خيار توصيل PDC محدد صراحةً",
       "pdc_credentials": "رمز اتصال PDC محفوظ",
       "shipping_encryption": "تشفير بيانات الشحن مُعدّ",
       "pdc_account": "معرّفات حساب PDC والمنتج محفوظة",
@@ -4645,7 +4649,8 @@
       "transfer_proof_unavailable": "إرسال إثبات التحويل الآمن لم يُنفّذ بعد.",
       "card_gateway_disabled": "خيار البطاقة المحفوظ غير متاح عند تعطيل Paymob.",
       "operator_paymob": "بيانات Paymob تُدار في إعدادات تشغيل الخادم.",
-      "paymob_test_only": "البطاقات تدعم الاختبار فقط. الدفع الفعلي ما زال محظورًا.",
+      "paymob_test_only": "المدفوعات التجريبية لا تسدد الطلبات الفعلية.",
+      "paymob_acceptance": "تحقق من دفعة فعلية قبل التفعيل العام.",
       "paypal_unavailable": "يوجد خيار للاختيار؛ بوابة PayPal لم تُنفّذ.",
       "express_unavailable": "Apple Pay وGoogle Pay والمحافظ لم تُنفّذ.",
       "pdc_acceptance": "لا ينفّذ هذا الدليل استعلامات PDC أو الشحنات أو الملصقات.",
@@ -5090,8 +5095,8 @@
     "chooseDelivery": "اختر التوصيل",
     "noDelivery": "التوصيل غير متاح لهذه المحافظة.",
     "reloadDelivery": "إعادة تحميل خيارات التوصيل",
-    "offerDelivery": "إتاحة التوصيل للدفع عند الاستلام",
-    "governorates": "محافظات الدفع عند الاستلام",
+    "offerDelivery": "إتاحة التوصيل عند الشراء",
+    "governorates": "محافظات التوصيل",
     "selectGovernorates": "اختر محافظات التوصيل.",
     "optionsUnavailable": "خيارات التوصيل غير متاحة.",
     "chooseGovernorateDelivery": "اختر توصيلًا لمحافظتك.",
@@ -5171,6 +5176,27 @@
       "mismatch": "طابق مبلغ الإيصال وتاريخ التحصيل.",
       "duplicate": "هذا الإيصال أو المرجع مسجل بالفعل.",
       "date": "لا يمكن أن يسبق تاريخ النقد تاريخ الطلب."
+    }
+  },
+  "liveSales": {
+    "confirmBooking": "هل تريد حجز هذه الشحنة مع PDC الآن؟",
+    "provider": "مزود الشحن",
+    "manual": "شركة شحن يدوية",
+    "codEnabled": "السماح بالدفع عند الاستلام عبر حساب PDC",
+    "autoBooking": "حجز الطلبات المؤهلة تلقائيًا",
+    "book": "حجز شحنة",
+    "recover": "مطابقة الحجز",
+    "label": "استرجاع ملصق الشحن",
+    "uncertain": "نتيجة الحجز غير مؤكدة. طابق الحجز قبل المحاولة.",
+    "states": {
+      "not_booked": "لم يتم الحجز",
+      "queued": "في الانتظار",
+      "blocked": "تحتاج مراجعة",
+      "failed": "تحتاج مراجعة",
+      "uncertain": "حجز غير مؤكد",
+      "submitting": "قيد التنفيذ",
+      "label_pending": "الملصق قيد الانتظار",
+      "ready": "الملصق جاهز"
     }
   }
 }

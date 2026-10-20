@@ -58,6 +58,7 @@ export default defineEventHandler(async (event) => {
       all_must_valid: Boolean(settings.all_must_valid),
       is_enabled: Boolean(settings.is_enabled),
       auto_create_labels: Boolean(settings.auto_create_labels),
+      cod_enabled: settings.cod_enabled === true,
       access_token_configured: Boolean(settings.access_token_encrypted),
       webhook_secret_configured: Boolean(settings.webhook_secret_encrypted),
       encryption_ready: isShippingEncryptionReady(),

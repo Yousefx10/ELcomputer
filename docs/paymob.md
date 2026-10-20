@@ -1,5 +1,10 @@
 # Paymob foundation — local only, 2026-10-04
 
+Current local extension: [controlled live-sales readiness](live-sales-readiness.md)
+and the [disabled release plan](live-sales-release.md). Migrations86–87 replace
+the original live-only restrictions below; deployment and activation are pending.
+The remainder records the historical foundation and its original evidence.
+
 REAL PAYMOB TRANSACTION TESTED: NO. LIVE PAYMOB ENABLED: NO. PRODUCTION DEPLOYED: NO.
 
 This first phase implements the server/provider boundary, private gateway ledger, modern Intention request, secure Pixel mount and verified callback/return separation. It does not authorize deployment, production migrations, dashboard changes or an external transaction. Gateway configuration defaults off, and live initiation is hard-blocked in JavaScript and the claim RPC. No real credentials were added or changed.

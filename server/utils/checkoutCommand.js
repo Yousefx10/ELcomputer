@@ -33,7 +33,7 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   order.shipping_method = text(body?.shipping_method || 'shipping')
   if (order.shipping_method !== 'shipping') invalid('Choose an available delivery method.')
   const shippingCompany = text(body?.shipping_company_id).toLowerCase()
-  if (shippingCompany && (!isStoreAnalyticsUuid(shippingCompany) || order.payment_method !== 'cash')) invalid('Choose an available delivery option.')
+  if (shippingCompany && (!isStoreAnalyticsUuid(shippingCompany) || !['cash', 'card'].includes(order.payment_method))) invalid('Choose an available delivery option.')
   if (shippingCompany) order.shipping_company_id = shippingCompany
   order.coupon_code = text(body?.coupon_code).toUpperCase() || null
   if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) invalid('Choose a supported checkout language.')

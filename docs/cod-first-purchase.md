@@ -17,6 +17,9 @@ See the [release receipt and owner browser checks](commerce-foundation-release-r
 | Shipping | Existing Commerce shipping-company management, customer price, internal cost/return cost and carrier activity. |
 | Dashboard | Existing authorized order list, detail and processing transition. Packing, scan, video and payment guards remain intact. |
 
+Current card/PDC extension: [controlled-sales readiness](live-sales-readiness.md).
+Migrations86–87 are local candidates; public checkout remains disabled.
+
 ## Task changes
 
 Migration83 is `20261020120000_cod_shipping_checkout.sql`. It was applied before
@@ -77,7 +80,7 @@ The owner reports production health PASS, Dashboard login, product creation,
 Draft saving and VPS image uploads working. Those are owner-reported results,
 not new authenticated browser acceptance from this task.
 
-The existing browse-only ingress still denies customer access and checkout APIs.
+The customer-access pages are now owner accepted. Browse-only ingress still denies checkout APIs.
 It was not modified. Do not open it before owner-controlled acceptance. Review a
 restricted acceptance environment/access gate separately; retain existing Auth,
 RBAC, RLS, restrictive origins and deployment configuration.
@@ -94,7 +97,7 @@ remain pending; the release created no order or packing evidence.
 verified partial/full customer receipts and separate exact treasury reconciliation.
 It reuses order balances and the existing customer-receipt ledger, with locked
 permissions, audit history and durable duplicate protection. Delivery never marks
-cash paid. Migration85 and the application remain local; actual delivery, cash
+cash paid. Migration85 and its application are deployed; actual delivery, cash
 and reconciliation still need restricted owner acceptance. The preorder payment
 endpoint remains separate and unchanged.
 

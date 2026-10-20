@@ -1,5 +1,10 @@
 # Customer access and existing provider readiness — 2026-10-20
 
+Provider gaps identified in this review are addressed locally by
+[Paymob/PDC controlled-sales readiness](live-sales-readiness.md) and migrations86–87.
+The [disabled release plan](live-sales-release.md) supersedes the old provider
+blocker descriptions below. No provider was activated or deployed by this work.
+
 Owner-approved Caddy access correction DEPLOY PASS at 20:31 UTC.
 The [release receipt](customer-access-release-receipt.md) records the first execution.
 The narrow parent-page follow-up is also deployed. The owner reports all six

@@ -89,14 +89,14 @@ test('native PostgreSQL concurrent claims, webhook replay, transaction binding a
       assert.equal((await checkout(cart)).created, false)
       assert.deepEqual(await snapshot(), before)
     })
-    await t.test('dormant live fixture racing success/failure/pending creates one paid event and shipping job', async () => {
-      // Fixture only: production claim/config remain test-only. Never call a provider.
+    await t.test('live receipt races create one paid event without booking unpacked/unselected delivery', async () => {
+      // Isolated settlement fixture. No provider request or merchant acceptance.
       await db.query("update public.payment_attempts set mode='live',status='pending',paid_at=null where id=$1", [attempt.id])
       const before = await snapshot()
       await hold([id]); const pending = workers.map((client, i) => reconcile(client, { mode: 'live', status: ['succeeded','failed','pending'][i] })); await blocked(3); await blocker.query('commit'); await Promise.all(pending)
       assert.equal((await db.query('select payment_status,status from public.customer_orders where id=$1', [id])).rows[0].payment_status, 'paid')
       assert.equal((await db.query('select count(*)::int n from public.review_paid_events where order_id=$1', [id])).rows[0].n, 1)
-      assert.equal((await db.query('select count(*)::int n from public.shipping_order_jobs where order_id=$1', [id])).rows[0].n, 1)
+      assert.equal((await db.query('select count(*)::int n from public.shipping_order_jobs where order_id=$1', [id])).rows[0].n, 0)
       const paid = (await db.query('select * from public.customer_orders where id=$1', [id])).rows[0]
       await Promise.all(workers.map(client => reconcile(client, { mode: 'live' })))
       assert.deepEqual((await db.query('select * from public.customer_orders where id=$1', [id])).rows[0], paid)

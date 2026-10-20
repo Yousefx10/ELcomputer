@@ -59,7 +59,7 @@
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.governorate') }}</span><select v-model="address.governorate" autocomplete="address-level1" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('common.selectGovernorate') }}</option><option v-for="governorate in egyptGovernorates" :key="governorate" :value="governorate">{{ $uiLabel(governorate) }}</option></select></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.phoneVariant2') }}</span><input v-model="address.phone" autocomplete="tel" inputmode="tel" type="tel" :placeholder="$t('common.01xxxxxxxxx')" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><span class="mt-2 block text-xs text-slate-500">{{ $t('checkout.11DigitsStartingWith01') }}</span></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.email') }}</span><input v-model="address.email" autocomplete="email" type="email" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
-                <div v-if="selectedPaymentMethod === 'cash'" class="md:col-span-2">
+                <div v-if="requiresDelivery" class="md:col-span-2">
                   <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('codCheckout.deliveryOption') }}</span><select v-model="shippingCompanyId" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('codCheckout.chooseDelivery') }}</option><option v-for="option in availableDeliveryOptions" :key="option.id" :value="option.id">{{ option.name }} · {{ formatCurrency(option.price) }}</option></select></label>
                   <p v-if="deliveryError" role="alert" class="mt-2 text-sm text-red-700">{{ $uiMessage(deliveryError) }}</p>
                   <p v-else-if="address.governorate && !loadingDelivery && !availableDeliveryOptions.length" class="mt-2 text-sm text-slate-600">{{ $t('codCheckout.noDelivery') }}</p>
@@ -118,7 +118,7 @@
             <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ quoteLine(item)?.title || item.title }}</p><p v-if="quoteLine(item)?.variantName || item.variant_name" class="text-xs text-slate-600">{{ quoteLine(item)?.variantName || item.variant_name }}</p><p v-if="item.selling_mode === 'preorder'" class="text-xs font-bold text-amber-800">{{ $t('common.preOrderValue', { value0: ((quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? $t('preorder.depositPercent', { value0: (quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</p><p v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="text-xs text-slate-600">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date)) }) }}</p><p class="mt-1 text-xs text-slate-500">{{ $t('common.qtyValue', { value0: (item.quantity) }) }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</p></article>
           </div>
           <p v-if="quoteError" class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(quoteError) }}</p>
-          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? $t('common.preorderMerchandise') : $t('common.subtotal') }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount)}` : '—' }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : selectedPaymentMethod === 'cash' ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ selectedPaymentMethod === 'cash' && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
+          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? $t('common.preorderMerchandise') : $t('common.subtotal') }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount)}` : '—' }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
           <button v-else type="button" :disabled="placingOrder || !quote || !!pendingCheckout || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
@@ -163,6 +163,7 @@ const couponSuccess = ref('')
 const orderError = ref('')
 const selectedPaymentMethod = ref('')
 const shippingCompanyId = ref('')
+const requiresDelivery = computed(() => ['cash', 'card'].includes(selectedPaymentMethod.value))
 const deliveryOptions = ref([])
 const loadingDelivery = ref(false)
 const deliveryError = ref('')
@@ -192,7 +193,7 @@ const checkoutBody = () => ({
   cart_id: cartId.value || null, coupon_code: isPreorderCart.value ? '' : appliedCoupon.value?.code || '',
   address: { ...address, email: address.email.trim() || user.value?.email || '' },
   shipping_method: 'shipping', payment_method: selectedPaymentMethod.value, locale: locale.value,
-  ...(selectedPaymentMethod.value === 'cash' && shippingCompanyId.value ? { shipping_company_id: shippingCompanyId.value } : {})
+  ...(requiresDelivery.value && shippingCompanyId.value ? { shipping_company_id: shippingCompanyId.value } : {})
 })
 const loadDeliveryOptions = async () => {
   loadingDelivery.value = true
@@ -213,7 +214,7 @@ watch(availableDeliveryOptions, options => {
 const refreshQuote = async () => {
   syncCart()
   if (!items.value.length) { quote.value = null; return false }
-  if (selectedPaymentMethod.value === 'cash' && !shippingCompanyId.value) { quote.value = null; quoteError.value = ''; return false }
+  if (requiresDelivery.value && !shippingCompanyId.value) { quote.value = null; quoteError.value = ''; return false }
   const sequence = ++quoteSequence, body = checkoutBody(), identity = JSON.stringify(body)
   const previous = quote.value
   try {
@@ -287,7 +288,7 @@ const validateAddress = () => {
   if (!address.city.trim()) return (orderError.value = 'City is required.', false)
   if (!address.governorate.trim()) return (orderError.value = 'Governorate is required.', false)
   if (!PHONE_PATTERN.test(address.phone.trim())) return (orderError.value = 'Phone number must start with 01 and contain 11 digits.', false)
-  if (selectedPaymentMethod.value === 'cash' && !availableDeliveryOptions.value.some(option => option.id === shippingCompanyId.value)) return (orderError.value = 'Choose delivery for your governorate.', false)
+  if (requiresDelivery.value && !availableDeliveryOptions.value.some(option => option.id === shippingCompanyId.value)) return (orderError.value = 'Choose delivery for your governorate.', false)
   return true
 }
 

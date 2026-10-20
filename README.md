@@ -25,15 +25,17 @@ Checkout and providers remain disabled. Real-order workflow acceptance is separa
 The release action has completed; do not rerun it. The older PM2 scripts target
 a retired deployment. Both current handoffs record evidence and recovery.
 
-Next, complete existing Paymob/PDC activation requirements.
+The [Paymob/PDC readiness candidate](docs/live-sales-readiness.md) extends existing
+integrations with trusted card delivery totals and safe private PDC dispatch.
+Its [disabled release plan](docs/live-sales-release.md) requires owner approval.
 WordPress accounts, addresses and orders remain a required launch workstream.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)
 now identifies the exact Caddy denials and remaining activation gates.
 Both Caddy corrections are deployed. The owner reports all six account-page checks pass.
 The [account entry release receipt](docs/customer-account-entry-release-receipt.md)
 records execution, acceptance and recovery. Nuxt and schema 85 are unchanged.
-The PDC lookup fix stays local.
-Live Paymob charging and PDC booking remain blocked.
+Migrations86–87 and the matching application remain local.
+Live charging, real booking and checkout remain disabled.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
 See [reproducible builds](docs/dependency-reproducibility.md) for the clean-install

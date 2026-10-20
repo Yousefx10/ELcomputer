@@ -1,6 +1,6 @@
 import { createError, getRouterParam } from 'h3'
 import { requireAdminRequest } from '../../../../utils/adminRequest'
-import { PDC_LABEL_BUCKET } from '../../../../utils/pdcShipping'
+import { readShippingDocument } from '../../../../utils/privateShippingDocuments.js'
 
 export default defineEventHandler(async (event) => {
   const { supabaseAdmin } = await requireAdminRequest(event, {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: job, error } = await supabaseAdmin
     .from('shipping_order_jobs')
-    .select('awb, label_storage_path')
+    .select('id,order_id,awb,label_storage_path,label_sha256,label_size_bytes')
     .eq('order_id', orderId)
     .eq('state', 'ready')
     .maybeSingle()
@@ -25,31 +25,23 @@ export default defineEventHandler(async (event) => {
   if (error) {
     throw createError({
       statusCode: 500,
-      statusMessage: error.message
+      statusMessage: 'Shipping label is unavailable.'
     })
   }
 
-  if (!job?.label_storage_path) {
+  if (!job?.label_sha256 || job.label_storage_path !== `vps-v1/orders/${job.order_id}/${job.id}.pdf`) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Shipping label not found.'
     })
   }
 
-  const { data: label, error: downloadError } = await supabaseAdmin.storage
-    .from(PDC_LABEL_BUCKET)
-    .download(job.label_storage_path)
-
-  if (downloadError || !label) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: downloadError?.message || 'Could not download the shipping label.'
-    })
-  }
-
-  return new Response(await label.arrayBuffer(), {
+  const bytes = await readShippingDocument({ path: job.label_storage_path, sha256: job.label_sha256, size_bytes: job.label_size_bytes })
+  return new Response(bytes, {
     headers: {
       'content-type': 'application/pdf',
+      'x-content-type-options': 'nosniff',
+      'content-security-policy': "sandbox; default-src 'none'",
       'content-disposition': `attachment; filename="PDC-${job.awb || orderId}.pdf"`,
       'cache-control': 'private, no-store'
     }

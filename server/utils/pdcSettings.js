@@ -42,6 +42,8 @@ export const validatePdcSettings = (body, current) => {
     update[key] = body[key]
   }
   if (body.reverse_enabled !== undefined && typeof body.reverse_enabled !== 'boolean') fail('Reverse pickup')
+  if (body.cod_enabled !== undefined && typeof body.cod_enabled !== 'boolean') fail('COD collection')
+  update.cod_enabled = body.cod_enabled ?? current.cod_enabled ?? false
   const reverseType = body.reverse_shipment_type_id ?? current.reverse_shipment_type_id ?? null
   if (reverseType !== null && reverseType !== '' && Number(reverseType) !== 3) fail('Reverse shipment type')
   update.reverse_enabled = body.reverse_enabled ?? current.reverse_enabled ?? false

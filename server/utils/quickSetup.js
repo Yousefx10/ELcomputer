@@ -53,7 +53,7 @@ export const readQuickSetupStatus = async (db, runtime, now = Date.now(), select
     sms: async () => { const s = await getSmsSettings(db); if (s._missing) throw Error(); return s },
     email: () => getEmailSettings(db),
     pdc: () => getPdcSettings(db),
-    couriers: () => readRows(db, 'commerce_shipping_companies', 'is_active'),
+    couriers: () => readRows(db, 'commerce_shipping_companies', 'is_active,provider,checkout_enabled,checkout_governorates,client_shipping_price'),
     policies: () => readRows(db, 'after_sales_policies', 'warranty_enabled,return_enabled,warranty_configured,return_configured'),
     events: () => readRows(db, 'sms_order_event_settings', 'is_enabled,template_en_id,template_ar_id'),
     communications: () => readRows(db, 'after_sales_communication_settings', 'is_enabled,sms_enabled,email_enabled,sms_template_en,sms_template_ar,email_template_en,email_template_ar'),
@@ -77,6 +77,8 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
   const emailSelected = communications.some(s => s.email_enabled === true)
   const paymobEnabled = on(runtime.paymobEnabled)
   const cardSelected = paymobEnabled && site?.payment_card_enabled === true
+  let liveCardConfigured = false
+  try { liveCardConfigured = getPaymobConfig(runtime).mode === 'live' } catch { /* Configuration only; never a provider request. */ }
 
   items.push(item('application', true, [
     check('database_access', available('site') && available('erp') && available('catalog'), 'operator'),
@@ -95,27 +97,27 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
   } else items.push(unavailable('policies', true))
 
   if (site) {
-    // Cash is currently the implemented non-test path. Transfer proof submission
-    // and PayPal settlement are not implemented; card is a test-only foundation.
+    // Configuration readiness is distinct from merchant transaction acceptance.
     const cash = site.payment_cash_enabled === true
     const transfer = site.payment_bank_transfer_enabled === true || site.payment_instapay_enabled === true
-    items.push(item('payment_methods', true, [check('usable_payment_method', cash),
+    items.push(item('payment_methods', true, [check('usable_payment_method', cash || cardSelected && liveCardConfigured),
       ...(site.payment_bank_transfer_enabled ? [check('bank_instructions', present(site.payment_bank_transfer_instructions))] : []),
       ...(site.payment_instapay_enabled ? [check('instapay_instructions', present(site.payment_instapay_instructions))] : []),
       ...(transfer ? [check('transfer_proof_support', false)] : []),
-      ...(cardSelected ? [check('live_card_support', false, 'operator')] : [])
-    ], { notes: [...(cash ? ['cash_acceptance'] : ['no_live_payment_path']), ...(transfer ? ['transfer_proof_unavailable'] : []),
+      ...(cardSelected ? [check('live_card_support', liveCardConfigured, 'operator')] : [])
+    ], { notes: [...(cash ? ['cash_acceptance'] : cardSelected && liveCardConfigured ? ['paymob_acceptance'] : ['no_live_payment_path']), ...(transfer ? ['transfer_proof_unavailable'] : []),
       ...(site.payment_card_enabled && !paymobEnabled ? ['card_gateway_disabled'] : [])] }))
   } else items.push(unavailable('payment_methods', true))
 
   const paymobCredentials = ['paymobSecretKey', 'paymobPublicKey', 'paymobHmacSecret'].every(key => present(runtime[key]))
   let paymobConfigured = false
-  try { getPaymobConfig({ ...runtime, paymobEnabled: true }); paymobConfigured = true } catch { /* Safe fixed status only. */ }
+  try { getPaymobConfig({ ...runtime, paymobEnabled: true, paymobLiveRequestsEnabled: true }); paymobConfigured = true } catch { /* Safe fixed status only. */ }
   items.push(item('paymob', cardSelected || selections.paymob === true, [check('payment_credentials', paymobCredentials, 'operator'), check('paymob_test_configuration', paymobConfigured, 'operator'),
+    ...(runtime.paymobMode === 'live' ? [check('paymob_live_gate', on(runtime.paymobLiveRequestsEnabled), 'operator')] : []),
     ...(selections.paymob === true ? [check('selected_card_enabled', cardSelected, 'operator')] : [])], {
     credentialsSaved: paymobCredentials, connection: 'not_verified', enabled: paymobEnabled,
-    configuration: runtime.paymobMode === 'live' ? 'unsupported' : paymobConfigured && (selections.paymob !== true || cardSelected) ? 'complete' : 'incomplete',
-    notes: ['operator_paymob', 'paymob_test_only', ...(cardSelected ? ['no_live_payment_path'] : [])]
+    configuration: paymobConfigured && (runtime.paymobMode !== 'live' || on(runtime.paymobLiveRequestsEnabled)) && (selections.paymob !== true || cardSelected) ? 'complete' : 'incomplete',
+    notes: ['operator_paymob', 'paymob_acceptance', ...(runtime.paymobMode !== 'live' ? ['paymob_test_only'] : [])]
   }))
   items.push(item('paypal', site?.payment_paypal_enabled === true || selections.paypal === true, [], { configuration: 'unsupported', enabled: site ? site.payment_paypal_enabled === true : null, notes: ['paypal_unavailable'] }))
   items.push(item('express_payments', false, [], { configuration: 'unsupported', enabled: false, notes: ['express_unavailable'] }))
@@ -129,6 +131,9 @@ export const buildQuickSetupStatus = (data, runtime, { now = Date.now(), availab
       check('pdc_webhook', present(s.webhook_secret_encrypted)),
       check('pickup_details', positive(s.origin_city_id) && present(s.origin_address) && present(s.origin_phone) && present(s.origin_contact_name)),
       check('pdc_enabled', s.is_enabled === true), check('pdc_outbound_gate', runtime.shippingLiveRequestsEnabled === true, 'operator'),
+      check('private_shipping_storage', present(runtime.shippingDocumentsDir), 'operator'),
+      check('pdc_lookups', Array.isArray(s.cities_cache) && s.cities_cache.length > 0 && Array.isArray(s.products_cache) && s.products_cache.length > 0),
+      check('pdc_courier_selected', data.couriers.some(c => c.is_active && c.provider === 'pdc' && c.checkout_enabled && c.checkout_governorates?.length > 0)),
       ...(s.auto_create_labels || s.reverse_enabled ? [check('shipping_worker', present(runtime.shippingWorkerSecret) && runtime.shippingWorkerSecret.trim().length >= 32, 'operator')] : [])
     ] : [check('manual_courier', data.couriers.some(c => c.is_active === true))]
     items.push(item('shipping', true, checks, { credentialsSaved: present(s.access_token_encrypted), connection: 'not_verified', enabled: s.is_enabled === true,

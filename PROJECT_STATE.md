@@ -1,3 +1,62 @@
+# Paymob/PDC local technical PASS; live activation held — 2026-10-21
+
+- Started clean at `e6481351ca2e74976c4bc1089ec453e8b43917ae`, main ahead one
+  of recorded origin/main, one worktree, no other branches/stashes. Preserved both
+  accounts' committed/unpushed work. No fetch, push, deployment or production call.
+  Six owner-accepted account pages remain complete; no infrastructure audit.
+- Reused existing Quick Setup/editors, Intention/Pixel/HMAC/payment ledgers,
+  checkout quote/command, PDC encryption/lookups/booking/tracking/reverse transport,
+  packing evidence and COD accounting. No replacement provider/UI or demo data.
+- Additive86 extends confirmed-customer/strict received-stock/trusted shipping
+  totals to card, attests new orders, permits mode-matched live intentions behind
+  an independent default-off server gate and preserves callback reconciliation
+  after outbound initiation is paused. Legacy card orders cannot start live charges.
+- Additive87 binds delivery companies explicitly to manual/PDC; checks configured
+  account/product/exact destination at checkout and paid-live-card or eligible-COD,
+  real allocations and completed VPS packing at booking. Manual confirmed booking
+  works with automation off. Stable REF/private retained dispatch barriers, leases
+  and tokens prevent repeat POSTs after uncertain responses or lost acknowledgements.
+  Recovery requires one provider REF match; no forced AWB or blind rebooking.
+- Normal and reverse labels use bounded private VPS PDF persistence/integrity and
+  authenticated downloads, separate from public images. No shipping Storage object
+  uploads/downloads. Existing legacy label objects/records are preserved and fail
+  closed without VPS evidence. Explicit reset cleanup handles new private paths;
+  dispatch tombstones and all existing financial audit protections are retained.
+- New runtime inputs: `NUXT_PAYMOB_LIVE_REQUESTS_ENABLED=false` and a separately
+  provisioned `NUXT_SHIPPING_DOCUMENTS_DIR`. Existing shipping encryption remains.
+  Quick Setup distinguishes configuration, connection and acceptance; Paymob keys
+  remain protected operator runtime inputs, PDC tokens remain encrypted Dashboard
+  configuration. No credentials entered, exposed, changed or committed.
+- Validation: combined19-file run271 PASS/0 FAIL/1 existing opt-in platform SKIP;
+  final PDC HTTP/native/filesystem13 PASS; final PDC/85→87 upgrade13 PASS (overlap).
+  Native PostgreSQL17.11 and PGlite, synthetic received stock/generated video,
+  real private files, mocked providers. Typecheck and production build PASS on
+  Node22.23.1/npm10.9.8 with empty dotenv. Portable output inventory1075 entries
+  and diff whitespace PASS. [Exact evidence/limits](docs/live-sales-validation.md).
+  Test-only Cairo-date/schema/mock expectations corrected; financial guards intact.
+- [Owner fields and acceptance](docs/live-sales-readiness.md),
+  [smallest disabled release](docs/live-sales-release.md).86 SHA
+  `04d26ea7cef634cc753c71663061e9a14a400efb8eb2741f7e9c158e87245790`;
+  87 SHA `1166201e9f0d9af4c8d2a4b8e04601c4e7318fbb82ce7609aa9f8e19f4927cd3`.
+  Candidate input/inventory hashes and private evidence paths are in the plan.
+- Production unchanged by this task. Last accepted baseline remains Nuxt
+  `82214df492a57126`/schema85/Caddy504191ccdc985084. No fresh live verification
+  claimed. Public checkout/signup, charging, providers, auto/reverse bookings and
+  unapproved payment methods stay disabled. Do not rerun the completed82→85 operator.
+  Target-bound sealing/retained assets, final live preflight and verified encrypted
+  backup remain production preparation; no deployment GO/merchant E2E is claimed.
+- First controlled purchase still needs approval/deployment, real verified stock,
+  owner delivery areas/charges/parcel settings, secure merchant configuration,
+  confirmed customer access and narrow checkout/callback acceptance access.
+  Real Pixel/3DS/payment/booking/labels/tracking and bank payout acceptance are
+  unverified. COD delivery, receipt and treasury reconciliation remain distinct.
+- ONE next action: approve guarded production preparation and disabled deployment
+  under the documented release scope, stopping on final preflight/hash/backup drift.
+  No live sale, provider request or public activation is included in that approval.
+  Required next launch workstream: WordPress identities/login/names/phone/addresses/
+  historical orders; preserve Supabase UUIDs, prevent duplicate identities and never
+  replay commerce/payment/stock/shipping effects from historical data.
+
 # Account entry DEPLOY PASS; six owner page checks PASS — 2026-10-21
 
 - Owner conditionally approved exact `3b6f3a8`. Navigation/layout use `/account`,

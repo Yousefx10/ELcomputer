@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     smsWorkerSecret: '',
     emailWorkerSecret: '',
     paymobEnabled: false,
+    paymobLiveRequestsEnabled: false,
     paymobMode: 'test',
     paymobSecretKey: '',
     paymobPublicKey: '',
@@ -58,6 +59,7 @@ export default defineNuxtConfig({
     erpWorkerSecret: process.env.ERP_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',
     packingVideosDir: '',
+    shippingDocumentsDir: '',
     packingVideoProbePath: 'ffprobe',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
