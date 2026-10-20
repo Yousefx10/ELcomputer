@@ -55,7 +55,8 @@ export async function createPrivatePackingFixture(options = {}) {
       ['get', '/api/admin-orders/packing/:sessionId', '[sessionId]/index.get.js'],
       ...['scan', 'complete', 'release', 'video-upload', 'video-complete'].map(name => ['post', '/api/admin-orders/packing/:sessionId/' + name, '[sessionId]/' + name + '.post.js']),
       ['put', '/api/admin-orders/packing/:sessionId/video-content', '[sessionId]/video-content.put.js'],
-      ['get', '/api/admin-orders/packing/:sessionId/video', '[sessionId]/video.get.js']
+      ['get', '/api/admin-orders/packing/:sessionId/video', '[sessionId]/video.get.js'],
+      ...(options.extraRoutes || [])
     ]) {
       const compiled = await build({ entryPoints: [resolve('server/api/admin-orders/packing', file)], bundle: true, write: false, format: 'esm', platform: 'node', alias: { '~': resolve('app') },
         banner: { js: `const useRuntimeConfig=()=>globalThis[${JSON.stringify(key)}].config; const defineEventHandler=handler=>handler;` }, plugins: [{ name: key, setup(builder) {

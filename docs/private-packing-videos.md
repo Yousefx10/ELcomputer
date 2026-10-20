@@ -1,8 +1,8 @@
 # Private VPS packing videos
 
 Local implementation PASS. Nothing deployed or applied to production.
-Public checkout stays disabled. The next feature is normal-order COD collection
-and reconciliation; stock and shipping decisions can proceed separately.
+Public checkout stays disabled. [Normal COD collection and reconciliation](cod-collections.md)
+are now implemented locally; business configuration and controlled acceptance remain.
 
 ## Existing workflow retained
 

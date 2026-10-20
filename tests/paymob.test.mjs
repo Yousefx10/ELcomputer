@@ -75,9 +75,13 @@ test('provider failures, timeouts and malformed responses never retry an uncerta
     await assert.rejects(() => createPaymobIntention(config, payload, async () => { calls++; return { ok: false, status } }), /provider_rejected|intention_uncertain/)
     assert.equal(calls, 1)
   }
-  await assert.rejects(() => createPaymobIntention(config, payload, async (_url, options) => {
-    await new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true }))
-  }, 10), /intention_uncertain/)
+  // The fake transport has no socket to keep Node alive for its unref'd timeout.
+  const keepAlive = setInterval(() => {}, 1000)
+  try {
+    await assert.rejects(() => createPaymobIntention(config, payload, async (_url, options) => {
+      await new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true }))
+    }, 10), /intention_uncertain/)
+  } finally { clearInterval(keepAlive) }
 })
 test('malformed Intention amount/currency/reference/mode/IDs are rejected', async () => {
   for (const change of [{ id: 'pi_live_other' }, { intention_order_id: null }, { client_secret: 'egy_csk_live_other' }, { intention_detail: { amount: 1, currency: 'EGP' } }, { intention_detail: { amount: 11250, currency: 'USD' } }, { special_reference: 'wrong-order' }, { client_secret: {} }]) {

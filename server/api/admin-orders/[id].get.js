@@ -1,8 +1,10 @@
 import { createError, getRouterParam } from 'h3'
 import { normalizeAdminOrderItemRecord, normalizeAdminOrderRecord } from '../../utils/adminOrders'
 import { requireAdminRequest } from '../../utils/adminRequest'
+import { codCashResponse, loadCodCollections } from '../../utils/codCollections'
 
 export default defineEventHandler(async (event) => {
+  codCashResponse(event)
   const { supabaseAdmin } = await requireAdminRequest(event, {
     permission: 'dashboard.orders'
   })
@@ -175,6 +177,7 @@ export default defineEventHandler(async (event) => {
     }),
     customer: customerProfile,
     shipping,
-    preorderPayments
+    preorderPayments,
+    codCash: await loadCodCollections(supabaseAdmin, orderRecord)
   }
 })

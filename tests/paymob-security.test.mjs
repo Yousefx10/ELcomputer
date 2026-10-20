@@ -12,6 +12,7 @@ import { getPaymobConfig } from '../server/utils/payments/paymob.js'
 import { createPaymobIntention } from '../server/utils/payments/paymob.js'
 import { normalizePaymentMethod } from '../app/utils/paymentMethods.js'
 import { paymobPixelOptions } from '../app/utils/paymobPixel.js'
+import { requireCodCheckoutSchema } from '../server/utils/codCheckout.js'
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')
 const runtime = { paymobEnabled: true, paymobMode: 'test', paymobSecretKey: 'egy_sk_test_fixture', paymobPublicKey: 'egy_pk_test_fixture', paymobHmacSecret: 'fixture-hmac', paymobCardIntegrationId: '12345', paymobCardIntegrationMode: 'test', public: { siteUrl: 'https://staging.example.invalid' } }
@@ -34,7 +35,7 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
   const source = read('server/api/checkout/index.post.js').replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '').replace('export default defineEventHandler', 'captureHandler')
   runInNewContext(commandSource + '\n' + source, {
     captureHandler: fn => { handler = fn }, defineEventHandler: fn => fn,
-    createError, randomUUID, normalizePaymentMethod, getPaymobConfig,
+    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema,
     readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, paymobEnabled: enabled }),
     requireCustomerRequest: async () => ({ authUser: { id: user, email: 'fixture@example.invalid' }, supabaseAdmin: db }),
     isStoreAnalyticsUuid: value => /^[0-9a-f-]{36}$/i.test(value), recordStoreOrderCreated: async () => {}, console

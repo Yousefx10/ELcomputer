@@ -1,6 +1,7 @@
 # First COD purchase: local implementation and activation gates
 
-Status: checkout and private packing validated locally; public purchases remain disabled.
+Status: checkout, private packing and normal COD cash validated locally.
+Public purchases remain disabled.
 No deployment, hosted migration, business configuration or real order was made.
 
 ## Existing features reused
@@ -86,11 +87,13 @@ and target-service acceptance. Original scan/video coverage and completion guard
 remain. No production file handling or routing was changed. Dispatch is not yet
 accepted on the VPS.
 
-**Collection gap:** `/api/admin-orders/[id]/payments.post.js` records preorder
-payments only. This task does not add or certify a normal-order COD collection
-ledger. Normal COD remains `payment_status=pending`; define and validate the
-authorized collection/reconciliation path before claiming a fully reconciled sale.
-Order persistence and processing are proven locally, not dispatch or collection.
+**Collection path:** [Normal COD cash collection](cod-collections.md) now records
+verified partial/full customer receipts and separate exact treasury reconciliation.
+It reuses order balances and the existing customer-receipt ledger, with locked
+permissions, audit history and durable duplicate protection. Delivery never marks
+cash paid. Migration85 and the application remain local; actual delivery, cash
+and reconciliation still need restricted owner acceptance. The preorder payment
+endpoint remains separate and unchanged.
 
 ## Business inputs required before purchases
 
@@ -158,6 +161,7 @@ replay, customer confirmation, Dashboard visibility and real fulfillment evidenc
 Accept dispatch/collection separately with actual evidence; do not mark COD paid
 at checkout. Public activation requires the owner's acceptance and approval.
 
-**One next technical task:** implement normal-order COD cash collection and
-reconciliation. The owner can supply the business-input table separately.
-Keep public checkout disabled through controlled acceptance and approval.
+**One next owner action:** supply verified saleable inventory and delivery/COD
+settings for the first controlled purchase, using the business-input table above.
+The combined local candidate includes migrations83–85. Release, restricted
+acceptance and later public activation each remain subject to owner approval.

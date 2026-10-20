@@ -1,4 +1,4 @@
-import { createError } from 'h3'
+import { createError, readBody } from 'h3'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { recordAdminActivity } from '../../utils/adminLogs'
 
@@ -7,8 +7,9 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const description = String(body?.description || '').trim()
 
-  if (String(body?.actionKey || '').trim() === 'treasury.salary_payment.created') {
-    throw createError({ statusCode: 400, statusMessage: 'Salary audits are recorded with the payment.' })
+  if (String(body?.actionKey || '').trim() === 'treasury.salary_payment.created'
+    || String(body?.actionKey || '').trim().startsWith('orders.cod.')) {
+    throw createError({ statusCode: 400, statusMessage: 'Financial audits are recorded with the payment.' })
   }
 
   if (!description) {

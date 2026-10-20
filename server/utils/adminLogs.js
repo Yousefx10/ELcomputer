@@ -36,7 +36,7 @@ const cleanupAdminLogs = async ({ supabaseAdmin, adminUserId, authorEmail }) => 
   let cleanupQuery = supabaseAdmin
     .from(ADMIN_LOGS_TABLE)
     .select('id')
-    .or('action_key.is.null,and(action_key.neq.settings.erp.mode-update,action_key.neq.treasury.salary_payment.created)')
+    .or('action_key.is.null,and(action_key.neq.settings.erp.mode-update,action_key.neq.treasury.salary_payment.created,action_key.neq.orders.cod.receive,action_key.neq.orders.cod.reconcile)')
     .order('created_at', { ascending: false })
     .order('id', { ascending: false })
     .range(ADMIN_LOG_LIMIT_PER_USER, ADMIN_LOG_LIMIT_PER_USER + 5000)

@@ -110,6 +110,8 @@
               </div>
             </section>
 
+            <DashboardOrderCodCash v-if="codCash" :order="orderDetail" :cash="codCash" :external-erp="externalErp" @updated="refreshCash" />
+
             <section v-if="orderDetail.is_preorder" class="rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
               <h4 class="text-lg font-bold text-gray-900">{{ $t('dashboard.OrderDetailsDialog.preOrderPaymentAndFulfillment') }}</h4>
               <p class="mt-1 text-sm text-gray-600">{{ orderDetail.preorder_fulfillment_state === 'ready' ? $t('dashboard.OrderDetailsDialog.physicalStockAssignedThisOrderCanProceedThroughNormalFulfillment') : $t('dashboard.OrderDetailsDialog.awaitingStockDoNotPackOrShipThisOrder') }}</p>
@@ -392,6 +394,7 @@ const orderItems = ref([])
 const customerDetail = ref(null)
 const shippingDetail = ref(null)
 const preorderPayments = ref([])
+const codCash = ref(null)
 const paymentAmount = ref('')
 const paymentReference = ref('')
 const paymentVerified = ref(false)
@@ -673,12 +676,12 @@ const downloadShippingLabel = async () => {
   }
 }
 
-const loadOrderDetails = async () => {
+const loadOrderDetails = async (background = false) => {
   if (!props.open || !props.orderId) {
     return
   }
 
-  loading.value = true
+  if (!background) loading.value = true
   errorMessage.value = ''
   statusMessage.value = ''
 
@@ -692,12 +695,18 @@ const loadOrderDetails = async () => {
     customerDetail.value = response.customer || null
     shippingDetail.value = response.shipping || null
     preorderPayments.value = response.preorderPayments || []
+    codCash.value = response.codCash || null
   } catch (error) {
-    orderDetail.value = null
+    if (!background) orderDetail.value = null
     errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not load order details.'
   } finally {
-    loading.value = false
+    if (!background) loading.value = false
   }
+}
+
+const refreshCash = async () => {
+  await loadOrderDetails(true)
+  emit('updated', orderDetail.value)
 }
 
 const recordVerifiedPayment = async () => {

@@ -1,3 +1,63 @@
+# Normal COD cash collection PASS locally; public checkout stays disabled - 2026-10-20
+
+- Completed the interrupted task from the existing working tree. Before further
+  edits, reviewed all 25 changes (17 tracked/eight new), staged/unstaged files,
+  AGENTS, README, both handoffs, COD/packing documents and local Git state.
+  HEAD and recorded origin/main were `1e58bd6`; one worktree, no stashes, other
+  branches or unpushed commits. No unrelated work was found or discarded.
+- Migration85 `20261020200000_normal_cod_collections.sql` and the existing Order
+  Details panel now support verified partial/full normal COD receipts and separate
+  exact treasury reconciliation. Reuses customer_orders balances and existing
+  positive treasury customer_receipt entries. No manufactured sales invoices.
+  Checkout, dispatch and delivery never prove receipt or reconciliation.
+- Active bearer Orders access is checked in API and under an admin-row lock in
+  service-only SQL. Staff require Dashboard view/Orders; reconciliation also
+  requires Treasury view/edit. Only delivered/completed normal cash orders with
+  built-in accounting accept fresh commands. Existing Daftra ownership, preorders,
+  provider reconciliation, stock allocation and packing guards stay intact.
+- Amounts/references/dates/confirmation are server-validated. Missing/incorrect,
+  excess, sub-cent or unconfirmed cash never changes balances. Partial customer
+  collections leave a balance; short remittances stay unreconciled. Each receipt
+  settles exactly once in full. No automatic fee netting, write-off or reversal.
+- Locked order balances, actor/order/action/payload-bound command UUIDs, unique
+  receipt/remittance references and retained command outcomes prevent duplicate
+  collection/posting. Lost SQL/HTTP acknowledgements retry the original command.
+  The compact EN/AR panel preserves exact pending commands across tab reloads.
+- Cash balance, receipt/reconciliation, treasury, audit and command receipt commit
+  atomically. New ledger writes are RPC-only; browser roles cannot read or write
+  them. Financial audits are excluded from routine 50-log trimming and protected
+  by FKs. Generic log submission cannot forge COD audit keys. Orders Reset blocks
+  COD financial history; explicitly authorized Commerce/Full erasure retains
+  non-reposting command tombstones. Only disposable test resets were executed.
+- Final review found and fixed one additional history guard gap: direct updates
+  could rewrite a paid timestamp or clear unmatched historical cash balances.
+  Native tests reproduced both failures before the fix. Financial fields now
+  advance only against a newly inserted immutable receipt. Migration85 never
+  backfills or rewrites historical totals, payments or treasury entries.
+- Resolved the outstanding SMS test failure with one assertion correction: the
+  existing COD label uses codCheckout.cash, not common.cash. The later invalid_phone
+  failure disappeared once preceding cleanup completed. SMS application/provider
+  code is unchanged. Existing Paymob fixture corrections remain test-only.
+- Validation on Node 22.23.1/npm 10.9.8: 27 COD checks PASS, 42 checkout/private packing
+  checks PASS, 23 SMS checks PASS, 89 other focused regressions PASS; five existing
+  optional native amount-migration checks skipped. No remaining test failures.
+  Final typecheck, production build and diff check PASS. Existing duplicate ERP
+  import and Tailwind sourcemap warnings remain, without build/typecheck failures.
+- Evidence uses disposable native PostgreSQL17.11, actual role ACLs, compiled HTTP
+  handlers, actual private files/ffprobe and Vue controller lifecycle. Auth and
+  Supabase transport are fixtures; hosted Auth/PostgREST, real browser/webcam,
+  courier/cash operations and owner acceptance remain unproven.
+- Details and reproducible validation commands: docs/cod-collections.md.
+  Pending migrations83/84/85, application and private packing configuration need
+  a separately reviewed/authorized release. No production connection/change,
+  Supabase mutation, deployment, push, provider activation or checkout enablement.
+  Original 560 products, media, Auth and financial history remain untouched.
+- ONE next owner action: confirm verified saleable stock, delivery coverage/customer
+  charges, COD fee/eligibility, confirmed customer access and named fulfillment/
+  treasury operators using docs/cod-first-purchase.md. Keep checkout off while
+  preparing restricted owner acceptance. Historical WordPress migration remains
+  after the initial sales milestone. Do not reopen infrastructure investigations.
+
 # Private VPS packing videos PASS locally; public sales stay disabled — 2026-10-20
 
 - Started from clean main and recorded origin/main `31b295c`. Reviewed AGENTS,

@@ -3,6 +3,26 @@ export const smsDatabaseClient = db => {
   const from = table => {
     const state = { action: 'select', columns: '*', filters: [], orders: [], params: [] }
     const parameter = value => { state.params.push(value); return '$' + state.params.length }
+    const filterGroup = (expression, join = 'or') => {
+      const parts = []; let depth = 0, start = 0
+      for (let i = 0; i < expression.length; i++) {
+        if (expression[i] === '(') depth++
+        if (expression[i] === ')') depth--
+        if (expression[i] === ',' && depth === 0) { parts.push(expression.slice(start, i)); start = i + 1 }
+      }
+      parts.push(expression.slice(start))
+      return '(' + parts.map(part => {
+        const nested = part.match(/^(and|or)\((.*)\)$/)
+        if (nested) return filterGroup(nested[2], nested[1])
+        const match = part.match(/^([a-z_][a-z_0-9]*)\.(eq|neq|gte|lte|gt|lt|ilike|is)\.(.*)$/)
+        if (!match) throw Error('Unsupported owned SQL fixture filter: ' + part)
+        const [, key, operator, value] = match
+        if (operator === 'is' && ['null', 'true', 'false'].includes(value)) return key + ' is ' + value
+        const sqlOperator = { eq: '=', neq: '<>', gte: '>=', lte: '<=', gt: '>', lt: '<', ilike: ' ilike ' }[operator]
+        if (!sqlOperator) throw Error('Unsupported owned SQL fixture operator')
+        return key + sqlOperator + parameter(value)
+      }).join(' ' + join + ' ') + ')'
+    }
     const query = {
       select(columns = '*', options = {}) { state.columns = columns; state.options = options; return query },
       update(data) { state.action = 'update'; state.data = data; return query },
@@ -14,7 +34,7 @@ export const smsDatabaseClient = db => {
       gte(key, value) { state.filters.push(`${key}>=${parameter(value)}`); return query },
       lte(key, value) { state.filters.push(`${key}<=${parameter(value)}`); return query },
       in(key, values) { state.filters.push(`${key}=any(${parameter(values)})`); return query },
-      or() { return query },
+      or(expression) { state.filters.push(filterGroup(expression)); return query },
       ilike(key, value) { state.filters.push(`${key} ilike ${parameter(value)}`); return query },
       abortSignal() { return query },
       order(key, options = {}) { state.orders.push(`${key} ${options.ascending === false ? 'desc' : 'asc'}`); return query },
