@@ -24,15 +24,17 @@ Bind source commit, application input hashes, output inventory/archive, migratio
 hashes, release tools, target configuration and recovery inputs before execution.
 Local validation output is not a production artifact/host acceptance certificate.
 
-Local candidate inventory: 1,075 entries, Node22.23.1, clean build dotenv.
+Original implementation-validation inventory: 1,075 entries, Node22.23.1,
+clean build dotenv. This predates target-asset retention and release packaging.
 Application-input map SHA256
 `a697421c21b5f25a368583d9cee0756de1d368de3fa17b9a084b6ca6830a40ed`;
 output-inventory SHA256
 `0d02e8fcf0787e7447ebe3280c23d5924f1a66481ae131136adfac5d128ac8f0`.
 These hash the compact JSON maps, not a deploy archive. Private evidence lives in
 `/Users/imac/Documents/ELcomputer/paymob-pdc-live-readiness-20261021/`.
-No target assets, encrypted backup or final target-bound execution seal was
-collected this task; those remain required final production preparation.
+The later [preparation receipt](live-sales-release-preparation.md) records fresh
+read-only target evidence, retained assets, encrypted recovery and a separate seal.
+No production execution is authorized by that preparation.
 
 | Migration | SHA256 |
 | --- | --- |
@@ -87,9 +89,18 @@ collected this task; those remain required final production preparation.
    must work. Owner verifies existing pages and masked Quick Setup/settings
    without enabling/saving providers or creating orders. Retain receipts/logs.
 
-An application switch requires its own final bound operator/plan and current
-encrypted backup evidence. Those production preflight/sealing actions have not
-been executed here. Approval of implementation does not authorize execution.
+The separate `scripts/live-sales-release/operator.mjs` prepares and checks85→87.
+Its sealed plan binds the exact artifact, new operator, shared immutable helpers,
+target, recovery evidence and migration bytes. Its apply mode requires separate
+owner approval of that digest and an exclusive execution intent. It takes another
+fresh encrypted backup before changing production. Never invoke it from preparation.
+
+Between read-only observations, only `store_analytics_sessions` and
+`store_analytics_events` may advance through normal storefront activity. Their
+schemas remain bound; all other table fingerprints remain exact. Within SQL, all
+134 original tables, including both analytics tables, are locked where permitted
+and compared using their original columns. Auth/Storage remain read-only.
+Pre-commit business drift, queued provider work or a changed migration rolls back.
 
 ## Recovery and acceptance
 
@@ -108,3 +119,5 @@ verify migration ownership and original-row preservation, not hosted recovery.
 After the disabled release, follow [controlled acceptance](live-sales-readiness.md)
 for secure configuration and separately approved narrow live payment/shipment
 access. This release alone does not authorize a purchase or provider transaction.
+The [required customer migration](wordpress-customer-migration.md) follows next;
+historical imports need their own dry-run, identity review and owner approval.

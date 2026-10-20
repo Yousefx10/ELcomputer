@@ -1,3 +1,58 @@
+# Disabled Paymob/PDC release sealed; deployment unapproved — 2026-10-21
+
+- Continued clean at `21f54e49f7da3a1f39e3802ec8e366f499fcb286`. Preserved both
+  accounts' work, history and the completed82→85 operator. Recorded origin/main
+  also points to21f54e4; no fetch/push occurred. No application, dependency or
+  existing migration changed. All609 application input hashes match21f54e4.
+- Read-only live checks confirm Nuxt82214df492a57126/schema85, PID22422,
+  Caddy PID23477/SHA504191ccdc985084, unchanged env/unit/drop-ins/decoder,
+  2,613 media files/410,096,992 bytes,561 products, one Auth user/identity and
+  four Storage objects. Orders, payment attempts, packing videos and both shipping
+  job queues remain empty. All payment/provider/auto/reverse/signup gates stay off;
+  email confirmation required. Existing six-page owner acceptance stays closed.
+- Separate `scripts/live-sales-release/` prepares/checks/applies only85→87 with
+  strict target binding and separately approved exact digest. No deployment,
+  migration, service operation, remote staging, credential entry, provider call,
+  WordPress import or public activation ran. Deployment still requires approval.
+- Proposed release `d2d7a8029b473e4a`: archive SHA
+  `d2d7a8029b473e4ae82d562abc0c8534e14e9f12a44c4daaff9f4a57f4ffd382`,
+  6,630,641 bytes/1,367 output entries,331 individually retained immutable assets.
+  Clean Node22.23.1/npm10.9.8 install/build, unchanged lockfile, portable inventory,
+  secret scan and independent strict extraction/readback PASS. Hosted Linux
+  candidate/sandbox remain NOT_EXERCISED until approved execution, before SQL.
+- AES-256-GCM database backup authenticates; pg_restore TOC/full SQL-to-dev-null
+  readback PASS. Eight encrypted runtime/recovery files pass full-byte hash readback.
+  No plaintext dump/runtime archive retained or backup key sent to the VPS.
+  Execution takes another fresh backup before its first production mutation.
+- New tests:13 operator/native checks plus5 remote guard checks PASS, zero skips.
+  Native non-superuser85→87, late rollback, original-row preservation, service ACLs,
+  disabled controls, history drift, repeat refusal, early archive-reader closure,
+  tamper detection and large-plan stdin transport covered. Prior271 PASS/one skip
+  and typecheck remain unchanged-source implementation evidence, not rerun counts.
+- Preserve stopped preparation diagnostics: early TOC reader closed its pipe;
+  normal analytics activity differed between snapshots;178,197-byte remote command
+  hit the argument limit. Corrected bounded-memory full-drain reader and structured
+  SSH stdin pass regression tests. Only the two analytics tables may advance across
+  read-only approval checks; their schemas and all other fingerprints remain bound.
+  The SQL transaction still compares ALL134 original tables, including analytics.
+- Private final plan: paymob-pdc-release-preparation-20261021/prepared-final/
+  `plan-reviewed.json`. Exact approval seal
+  `8cc87fe1dab33c4f7308cdf8f533322108386ee8d581b39222174387dfae5b5a`.
+  Earlier plan.json/seals/directories are diagnostics, not execution instructions.
+  [Full preparation receipt](docs/live-sales-release-preparation.md) records evidence,
+  command, recovery and limitations. No execution intent/completed deployment exists.
+- Final corrected read-only check: READY_FOR_OWNER_APPROVAL for the exact reviewed
+  seal, production writes0, hosted candidate NOT_EXERCISED, deployment NOT_AUTHORIZED.
+- ONE next owner action: separately approve that sealed disabled release and pause
+  Dashboard edits for its maintenance window. No charging, booking, public purchases,
+  signup, provider credential changes, Caddy changes or WordPress import is included.
+- REQUIRED next workstream: [WordPress customer migration](docs/wordpress-customer-migration.md)
+  covers login compatibility, UUID-preserving identity matching, names/phones/private
+  billing/shipping addresses and isolated historical orders. No duplicate Auth users
+  or historical-triggered stock/payment/booking/notification transactions. No import
+  ran. Before any controlled purchase, confirm actual saleable stock, delivery
+  coverage/charges, parcel settings, confirmed access and callback reachability.
+
 # Paymob/PDC local technical PASS; live activation held — 2026-10-21
 
 - Started clean at `e6481351ca2e74976c4bc1089ec453e8b43917ae`, main ahead one

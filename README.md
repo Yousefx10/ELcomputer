@@ -28,7 +28,10 @@ a retired deployment. Both current handoffs record evidence and recovery.
 The [Paymob/PDC readiness candidate](docs/live-sales-readiness.md) extends existing
 integrations with trusted card delivery totals and safe private PDC dispatch.
 Its [disabled release plan](docs/live-sales-release.md) requires owner approval.
-WordPress accounts, addresses and orders remain a required launch workstream.
+The [sealed preparation receipt](docs/live-sales-release-preparation.md) records
+verified backups and retained assets. Nothing was deployed by preparation.
+The [WordPress migration plan](docs/wordpress-customer-migration.md) preserves
+current Auth identities and separates historical orders from commerce effects.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)
 now identifies the exact Caddy denials and remaining activation gates.
 Both Caddy corrections are deployed. The owner reports all six account-page checks pass.

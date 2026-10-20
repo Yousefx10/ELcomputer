@@ -150,7 +150,8 @@ private objects. There are no new remote uploads of any shipping document.
 
 ## Required next launch workstream
 
-Historical WordPress migration follows provider readiness: identities, login
+The [WordPress migration plan](wordpress-customer-migration.md) follows provider
+readiness: identities, login
 compatibility, names, phone numbers, billing/shipping addresses and orders.
 Inventory authoritative sources and stable legacy customer/order keys first.
 Match existing Supabase Auth identities safely; never create a second identity

@@ -2,6 +2,9 @@
 
 No production, provider, credential or public-activation operation ran.
 Started clean at `e648135`; prior unpushed work is preserved.
+Later read-only release preparation adds18 passing operator/remote guard checks
+and a new retained-assets build. See its [receipt](live-sales-release-preparation.md).
+These are separate from the implementation counts below.
 
 | Validation | Result |
 | --- | --- |
