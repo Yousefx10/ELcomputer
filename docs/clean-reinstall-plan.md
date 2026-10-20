@@ -1,9 +1,11 @@
 # Existing VPS: clean single-site deployment plan
 
-Decision, 2026-10-20: **BLOCKED for destructive reinstall.** The recovery data
-passes verification. The prepared Ubuntu installation and systemd/reboot sequence
-still need a disposable Linux rehearsal. Owner console recovery and the final
-backup watermark also require confirmation before erasure.
+Current decision, 2026-10-20: **GO readiness for the actual existing VPS.**
+The owner explicitly waived the disposable Ubuntu VM rehearsal and accepted
+first-execution downtime/recovery risk. Use the exact current
+[owner procedure](actual-vps-reinstall-procedure.md). No VM is required.
+This design report retains earlier backup evidence; the new procedure and latest
+handoffs govern execution. No destructive action is performed in preparation.
 
 Use the ONE existing VPS. Choose **plain Ubuntu 24.04 LTS, x86_64**, without a
 control panel. Install pinned Node **22.23.1**, npm **10.9.8**, Nuxt's reviewed
@@ -146,7 +148,7 @@ storage are writable through the respective service filesystem restrictions.
 | Archive safety and Caddy configuration portability | PASS: traversal/link/private-member/hash-corruption/overwrite checks and real Caddy across two independent business domains; administrator methods/headers preserved |
 | Existing Products save/bulk/recovery tests | **74 PASS, four native cases skipped**, zero failures/cancellations |
 | Production read-only recovery gates | PASS: 560 products, 82 migrations, one active owner/Auth match, six private buckets/zero objects, 2,505 media-path records, five payments false, Auth `disable_signup=true` |
-| Ubuntu installation/systemd parser/ownership/firewall/reboot | **UNVERIFIED; required before GO** |
+| Ubuntu installation/systemd parser/ownership/firewall/reboot | **UNVERIFIED; owner accepted first execution on actual VPS** |
 
 Local HTTP fixtures deny non-loopback application fetches. Auth and Supabase data
 are synthetic; these tests do not establish hosted login or owner write acceptance.
@@ -160,107 +162,19 @@ verified against their release hashes. `clean-reinstall.json` records those pins
 See [Caddy releases](https://github.com/caddyserver/caddy/releases/tag/v2.11.7) and
 [Node checksums](https://nodejs.org/dist/v22.23.1/SHASUMS256.txt).
 
-## Executable sequence, after the missing gates pass
+## Current executable sequence
 
-The following are future operator commands, **not current execution authority**.
-Kit: `../clean-reinstall-plan-20261020/kit-final-v2/`; its independent hash receipt is
-`KIT-SEAL.json`. The sealed `SHA256.json` hash is
-`cde6d5123c10c19bd03fccb86eb14d58e343b3f455202eecba8e52854d5e055a`.
-Verify that receipt before trusting the kit's `SHA256.json`.
+Follow [Actual VPS owner procedure](actual-vps-reinstall-procedure.md), including
+its pinned-host transfer/install/media/env/deploy/health commands. Current kit:
+`../actual-vps-reinstall-preparation-20261020/operator-kit/`. Its independent
+`KIT-SEAL.json` anchors `SHA256.json` before execution. The earlier kit and VM
+scripts remain historical evidence. Current production kit excludes VM helpers.
 
-1. Complete the disposable Linux rehearsal below. Export both Linux PASS receipts.
-2. Verify owner access to Hostinger console/reinstall and root recovery, DNS account
-   and Supabase management account. Confirm owner password recovery and MFA access.
-   Confirm the verified iMac backup/key paths remain available during maintenance.
-   A second device/key copy has not been verified; current custody is one iMac.
-   Do not place keys inside the deployment kit.
-3. Agree the maintenance window and explicitly approve reinstalling this existing
-   VPS only. Freeze all editors/uploaders/WordPress writers. Refresh changed file,
-   WordPress and Supabase backups read-only; authenticate and restore-check deltas.
-   Stop for any new Storage object/private-file class, unexpected data drift or
-   missing media. Record the final watermark; today's snapshot is not a future
-   zero-data-loss guarantee. Repackage/reseal changed recovery inputs.
-4. In Hostinger choose **plain Ubuntu 24.04**, same existing VPS/location. Verify
-   backups first: [Hostinger documents that reinstall erases data and snapshots](https://www.hostinger.com/support/4965922-how-to-change-the-operating-system-of-your-vps-at-hostinger/).
-   The old protected-config export is not a prerequisite for this replacement.
-5. Verify the NEW SSH host fingerprint through the provider console. Use a separate
-   strict known-hosts file; do not disable checking or overwrite the old record.
-   Confirm existing public IP, SSH/22 and provider firewall/console recovery.
-6. Transfer the verified public kit to `/root/reinstall-kit` over that pinned SSH
-   session. On the **fresh** VPS, run:
-
-   ```sh
-   python3 /root/reinstall-kit/install.py /root/reinstall-kit \
-     --fresh-machine-id "$(cat /etc/machine-id)"
-   ```
-
-7. From the iMac, authenticate/decrypt `recovery-inputs/media.tar.gz.enc` with
-   `docs/operations/backup-envelope.mjs` and pipe plaintext directly through the
-   pinned SSH channel to:
-
-   ```sh
-   python3 /root/reinstall-kit/restore-media.py /root/reinstall-kit
-   ```
-
-   The key stays on the iMac. Do not restore a home archive wholesale.
-8. Through the same pinned channel, stream authenticated `runtime.env.enc` to:
-
-   ```sh
-   python3 /root/reinstall-kit/restore-env.py /root/reinstall-kit \
-     --expected-env-sha256 SHA256_FROM_RECOVERY_INPUTS_RUNTIME_ENV_RECEIPT
-   ```
-
-   This checks the environment hash, exact allowed names, site/backend binding,
-   loopback/durable paths and disabled live flags before creating the exclusive
-   root-owned `/etc/storefront/runtime.env`, mode 0600. It writes the non-secret
-   recovery hash receipt automatically. Preserve both application encryption keys
-   exactly; never source the file as shell code. Confirm the **production** kit.
-9. Start the verified application and proxy once:
-
-   ```sh
-   python3 /root/reinstall-kit/deploy.py /root/reinstall-kit --activate-new-host
-   python3 /root/reinstall-kit/health.py /root/reinstall-kit \
-     --origin https://elcomputer.net
-   ```
-
-   Caddy obtains fresh apex/www certificates. Confirm HTTP canonical redirects,
-   valid trusted TLS on both hosts, port 3000 unavailable externally, all required
-   health results and service enablement. Test an approved reboot and repeat checks.
-10. Owner performs the short acceptance checklist below. Keep commerce, providers,
-    customers and auxiliary domains offline. Acceptance records precede maintenance
-    closure. No pending bulk command is replayed by an operator or health script.
-
-The installation/deployment scripts do not execute `psql`, schema installers,
-WordPress imports, Auth resets, provider schedulers or the old deploy scripts.
-Do not restore Supabase merely because the VPS was erased: that hosted project
-survives intact. SQL restoration is disaster recovery requiring separate approval.
-
-## Disposable Linux rehearsal
-
-No local Linux runtime is available here. Installing QEMU through Homebrew stopped
-because `/usr/local/share/man/man8` is not writable; no elevation, ownership change
-or permission workaround was attempted. macOS checks are not Ubuntu proof.
-Installation requires Ubuntu's Python 3.12+. A separate vendor extraction probe
-on local Python 3.9 stopped at its unsupported `tarfile` filter API; it did not
-execute Linux binaries. That target-specific extraction remains a rehearsal gate.
-
-Provide a **local disposable Ubuntu 24.04 x86_64 VM**, not another VPS. Transfer
-only the public kit and public media stream. Never give the VM production env,
-database credentials, Auth tokens or customer backups. Copy the kit to `/root/kit`.
-Stream authenticated public media from the iMac through the VM's pinned SSH to:
-
-```sh
-bash /root/kit/rehearse-linux.sh --disposable-local-lab /root/kit
-```
-
-The script rejects the existing VPS IP and old installation, rebinds to an invalid
-example domain/loopback HTTP, installs on fresh Ubuntu, restores the media, starts
-a synthetic local backend through systemd and runs the exact candidate/health
-checks. External application fetches are blocked. It tests app-user filesystem
-hard links and image delivery across a service restart. Preserve
-`/var/lib/clean-storefront-install/LINUX-FIRST-PASS.json`. Reboot **only that VM**,
-then run the printed `lab.py ... --after-reboot` command and export
-`LINUX-REBOOT-PASS.json`. Absence/failure of either receipt blocks destructive GO.
+Owner confirmed both Hostinger OS-selection and recovery access. Pinned SSH
+independently confirms the existing VPS is running; the earlier Stopped display
+is not shutdown evidence. First Linux startup/systemd/firewall/reboot behavior is
+an accepted risk to test during the separately approved actual maintenance window.
+Do not execute a VM rehearsal or require VM PASS receipts.
 
 ## Recovery after erasure
 
@@ -302,16 +216,16 @@ owner-approved product; do not reuse the unresolved batch or invent store conten
 
 ## Destructive decision and next action
 
-**BLOCKED.** Recovery data/env/source/media are verified. Critical open gates are
-the Ubuntu/systemd/reboot rehearsal and owner control-panel recovery confirmation.
-A fresh final backup watermark is required at
-the actual maintenance boundary. New trusted certificates must succeed before
-reopening; current DNS is compatible, not a certificate issuance guarantee.
+**GO readiness.** Fresh backup, media/configuration/credential checks, isolated
+restores and owner Hostinger recovery confirmation pass. The owner explicitly
+accepted untested Linux startup risk on the actual single VPS. Supabase remains
+intact; WordPress import/schema/Auth resets are excluded.
 
-Estimated outage: **90–180 minutes**, after rehearsals and approvals; reserve
-**four hours**. This is an engineering estimate, not a measured guarantee.
-One VPS is offline from erasure through restore, TLS and acceptance. Provider,
-network or certificate failures can extend downtime.
+Estimated outage: **90–180 minutes**; reserve **four hours**, potentially longer
+for native startup/network/TLS recovery. Keep writers idle at the backup watermark
+and capture any later file/WordPress changes before erasure.
 
-**ONE next owner action:** provide a disposable local Ubuntu 24.04 x86_64 VM for
-the prepared rehearsal, leaving the existing VPS unchanged.
+**Exact first owner action:** VPS → Manage srv1259611 (168.231.104.25) →
+OS & Panel → Operating System → Plain OS → Ubuntu24.04 LTS x86_64.
+**Stop before Change OS.** Same-template Reinstall would restore the old panel.
+The preparation task does not authorize or perform that destructive click.

@@ -1,3 +1,73 @@
+# Actual VPS reinstall preparation: GO; owner waived VM — 2026-10-20
+
+- OWNER explicitly skips disposable Ubuntu VM rehearsal and accepts first Linux
+  execution/downtime/recovery risk on the ONE existing VPS. No VM is required.
+  This supersedes the VM gate in the prior design entry. Current task is preparation
+  only: no wipe/reset/deploy, DNS/Nginx/config change, production business write,
+  service/power operation or cleanup authorized/performed. Do not push Git.
+- Startup main5a2d7ac2f56ed8aacb4fbff4978e089195d0b4d3 clean, one unpushed commit;
+  local/live origin90e87e5 matched. Preserve that prior commit and all other work.
+- Hostinger access CONFIRMED by owner: OS selection and Browser Terminal/recovery
+  both work for1259611/168.231.104.25. Existing Chrome hPanel URL observed. DOM
+  scripting denied by Chrome, left unchanged; no claim of automated button proof.
+  Pinned SSH independently confirms running srv1259611, uptime>61hours, active
+  elcomputer-main PID12065/NRestarts0. Earlier incorrect Stopped label is NOT shutdown.
+- All20 original encrypted components/31813290811 bytes freshly authenticate and
+  exact-hash match;9 original restore receipts match. Fresh independent home hashes
+  main101234/olderNuxt17632/archive203012 files showZERO changes/deletions/errors,
+  excluding active logs as before. All2607 media/406760308 bytes and original env
+  match live paths/hashes; existing encrypted recovery copies remain valid.
+- Fresh consistent read-only Supabase snapshot:all560 original products present,
+  0missing/0additional,82 migrations,1Auth user/identity/internal profile,255FKs
+  zeroorphans. New Auth session/refresh-token/user metadata changes captured rather
+  than assuming old snapshot unchanged. Offline owner password verification PASS.
+  Isolated egress-denied PG restore PASS:173 fingerprints/13metadata categories/
+  82migration identities/60permissions; hosted Supabase unchanged. First isolated
+  verifier lacked a copied metadata-query file; corrected local dependency and
+  preserved failed receipt, then complete independent PASS. No production repair.
+- Fresh WP SQL exports independently restore466/465 tables,518user/email/hash
+  identities each, live597order rows/590lookup vsarchive595/588. No WordPress/PHP
+  application/import execution. Historical customer-login migration remains separate.
+- New encrypted deployment credential archive independently restores13files incl
+  3private SSHkeys plusSupabase/owner/CA/connection inputs. Private values/keys stay
+  outside Git/public kit; AES backup key remains separately protected on iMac.
+- Candidate3d5fe61c1109190c2ac3df12fb858987bc103aa5 exactarchive7bfe6316... retained;
+  ALL597 application inputs match latestcheckout. Products save/bulk recovery and
+  Procurement fixes preserved,135immutable clientassets included. No production
+  npm build/install, migration, Auth bootstrap or original bulk-command replay.
+- Corrected real prepared-installer defect:umask077 could hide service directories.
+  Explicit safe directory modes now preserve app/Caddy traversal/readability in
+  installer and sealed extraction. Full pinned Linux Node extraction locally PASS
+  under077; ELF64x86_64,actualDT_NEEDED dependencies,GLIBC2.28 max verified without
+  executing Linux. APT libraries explicit; Python3.12+/Ubuntu24.04 are required.
+- Six local automation tests PASS:restrictive-umask access,archive safety,independent
+  console SSH-fingerprint match/old-key rejection,Caddy two-business portability.
+  New public operator helper verifies local sealed inputs, pinsNEWhost against
+  BrowserTerminal fingerprint, rejects previousmachine-ID before every target step,
+  transfers/installs/restores/deploys/checks only after future explicit commands.
+  VM scripts excluded from current production kit. Linux startup remains UNTESTED,
+  an owner-accepted risk to test on actual VPS after approved erasure.
+- Current sealed Caddy+exactNuxt restoration PASS8185HTTP checks inclall2607media
+  hashes/5504redirects;15syntheticAuth permissioncases PASS,0backendmutations.
+  Actual Linux/systemd/reboot is outside this loopback fixture; no VM gate applies.
+- Main security contracts retained:existingAuth/RBAC/RLS,scoped Nuxtmediahandler,
+  privateStorage isolation,commerce/signup/providers/workers disabled,legacy1634
+  path mappings and559query-IDs;auxiliarydomains offline. Keep ALL560originals.
+  OwnerCRUD test creates/edits/publishes/drafts/deletes ONLY a new acceptance product
+  without history;never delete original or bypass history/reference restrictions.
+- Authoritative exactownersteps:docs/actual-vps-reinstall-procedure.md. Design report
+  docs/clean-reinstall-plan.md updated to waiveVM. Evidence outsideGit/VPS:
+  /Users/imac/Documents/ELcomputer/actual-vps-reinstall-preparation-20261020/.
+  KIT-SEAL.json/OWNER-BINDING.json anchor currentoperator-kit; latestencrypted
+  source/all-ref mirror receipt binds finalunpushed taskcommit after sealing.
+- GO readiness with accepted nativeLinux/systemd/UFW/hardlink/reboot/TLS risks;
+  estimate90–180minutes,reserve4hours. No instantverifiedsnapshot rollback. Recover
+  sameVPS from externalkit/media/env;never restore/reset hostedDB for VPS erasure.
+- EXACT FIRST Hostinger action:VPS→Manage srv1259611(168.231.104.25)→OS & Panel→
+  Operating System→Plain OS→Ubuntu24.04LTSx86_64. STOP BEFORE Change OS. Do not use
+  same-templateReinstall (would retainoldpanel),or power controls based on stale
+  Stopped display. Destructive confirmation remains separately approved execution.
+
 # Existing VPS: clean Caddy deployment plan prepared; destructive reinstall BLOCKED — 2026-10-20
 
 - User now chooses ONE existing VPS, plain Ubuntu24.04/Node22.23.1/Nuxt4/systemd/

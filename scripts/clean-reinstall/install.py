@@ -23,15 +23,39 @@ def run(*args):
 
 def unpack(path, destination, prefix=''):
     with tarfile.open(path) as archive:
-        for m in archive:
+        members = archive.getmembers()
+        links = {m.name for m in members if m.issym()}
+        seen = set()
+        for m in members:
             p = pathlib.PurePosixPath(m.name)
             assert not p.is_absolute() and '..' not in p.parts
+            assert str(p) not in seen; seen.add(str(p))
             assert m.isdir() or m.isfile() or m.issym()
+            assert not any(str(parent) in links for parent in p.parents)
             if m.issym():
                 assert not pathlib.PurePosixPath(m.linkname).is_absolute()
                 resolved = posixpath.normpath(str(p.parent / m.linkname))
                 assert resolved.startswith(p.parts[0] + '/')
-        archive.extractall(destination, filter='data')
+            else: assert not m.mode & 0o022 and not m.mode & 0o7000
+        # Explicit modes survive root's private umask. Defer all symlinks until
+        # real files/directories are complete; never traverse a link on extraction.
+        for m in members:
+            target = pathlib.Path(destination) / m.name
+            if m.isdir():
+                target.mkdir(mode=m.mode)
+                target.chmod(m.mode)
+            elif m.isfile():
+                with target.open('xb') as output:
+                    source = archive.extractfile(m)
+                    for block in iter(lambda: source.read(1024 * 1024), b''): output.write(block)
+                target.chmod(m.mode)
+        for m in members:
+            if m.issym(): (pathlib.Path(destination) / m.name).symlink_to(m.linkname)
+
+
+def directory(path, mode):
+    path.mkdir(mode=mode)
+    path.chmod(mode)
 
 
 def main():
@@ -62,12 +86,12 @@ def main():
     (marker / 'machine-id').write_text(args.fresh_machine_id + '\n')
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
     run('apt-get', 'update')
-    run('apt-get', 'install', '-y', '--no-install-recommends', 'ca-certificates', 'curl', 'xz-utils', 'ufw')
+    run('apt-get', 'install', '-y', '--no-install-recommends', 'ca-certificates', 'curl', 'xz-utils', 'ufw', 'libstdc++6', 'libgcc-s1', 'openssl')
     for user, home in [(cfg['user'], '/nonexistent'), ('caddy', '/var/lib/caddy')]:
         run('useradd', '--system', '--user-group', '--home-dir', home, '--shell', '/usr/sbin/nologin', user)
     root = pathlib.Path(cfg['root'])
     for folder, mode in [(root, 0o755), (root / 'releases', 0o755), (root / 'shared', 0o750), (pathlib.Path('/etc') / cfg['service'], 0o700), (pathlib.Path('/etc/caddy'), 0o755), (pathlib.Path('/var/lib/caddy'), 0o700)]:
-        folder.mkdir(mode=mode)
+        directory(folder, mode)
     caddy = pwd.getpwnam('caddy'); app = pwd.getpwnam(cfg['user'])
     os.chown('/var/lib/caddy', caddy.pw_uid, caddy.pw_gid)
     os.chown(root / 'shared', 0, app.pw_gid)

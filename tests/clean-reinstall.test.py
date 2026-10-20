@@ -9,6 +9,7 @@ import importlib.util
 import io
 import json
 import os
+import stat
 import pathlib
 import socket
 import subprocess
@@ -28,6 +29,8 @@ def load(name):
 
 
 restore, deploy, render = load('restore-media'), load('deploy'), load('render')
+installer = load('install')
+operator = load('owner-restore')
 
 
 def archive(name, data=b'image', kind=None, link=None):
@@ -41,6 +44,38 @@ def archive(name, data=b'image', kind=None, link=None):
 
 
 class RestoreSafety(unittest.TestCase):
+    def test_host_key_requires_console_match_and_preserves_old_identity(self):
+        with tempfile.TemporaryDirectory() as d:
+            key = pathlib.Path(d) / 'fixture-key'
+            subprocess.run(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', str(key)], check=True, capture_output=True)
+            public = key.with_suffix('.pub').read_text().split()[:2]
+            fingerprint = subprocess.check_output(['ssh-keygen', '-lf', str(key.with_suffix('.pub'))], text=True).split()[1]
+            line = '192.0.2.7 ' + ' '.join(public)
+            self.assertEqual(operator.pinned_line(line, '192.0.2.7', fingerprint, 'SHA256:' + 'x' * 43), line + '\n')
+            with self.assertRaises(AssertionError): operator.pinned_line(line, '192.0.2.7', 'SHA256:' + 'y' * 43, 'SHA256:' + 'x' * 43)
+            with self.assertRaises(AssertionError): operator.pinned_line(line, '192.0.2.7', fingerprint, fingerprint)
+            with self.assertRaises(AssertionError): operator.pinned_line(line, '192.0.2.8', fingerprint, 'SHA256:' + 'x' * 43)
+
+    def test_service_readability_with_private_root_umask(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = pathlib.Path(d)
+            previous = os.umask(0o077)
+            try:
+                installer.directory(base / 'public-config', 0o755)
+                installer.directory(base / 'shared', 0o750)
+                self.assertEqual(stat.S_IMODE((base / 'public-config').stat().st_mode), 0o755)
+                self.assertEqual(stat.S_IMODE((base / 'shared').stat().st_mode), 0o750)
+                with tarfile.open(base / 'release.tar.gz', 'w:gz') as t:
+                    for name in ['.output', '.output/server']:
+                        member = tarfile.TarInfo(name); member.type = tarfile.DIRTYPE; member.mode = 0o755; t.addfile(member)
+                    member = tarfile.TarInfo('.output/server/index.mjs'); member.mode = 0o644; member.size = 2; t.addfile(member, io.BytesIO(b'{}'))
+                inventory = [{'path': '', 'type': 'directory', 'mode': 0o755}, {'path': 'server', 'type': 'directory', 'mode': 0o755},
+                             {'path': 'server/index.mjs', 'type': 'file', 'mode': 0o644, 'size': 2, 'sha256': hashlib.sha256(b'{}').hexdigest()}]
+                deploy.extract_release(base / 'release.tar.gz', base / 'release', inventory)
+                for p in [base / 'release', base / 'release/server']: self.assertEqual(stat.S_IMODE(p.stat().st_mode), 0o755)
+                self.assertEqual(stat.S_IMODE((base / 'release/server/index.mjs').stat().st_mode), 0o644)
+            finally: os.umask(previous)
+
     def test_media_bytes_and_existing_destination_preserved(self):
         with tempfile.TemporaryDirectory() as d:
             dest = pathlib.Path(d) / 'uploads'

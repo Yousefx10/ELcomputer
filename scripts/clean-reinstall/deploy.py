@@ -22,6 +22,7 @@ def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 def extract_release(archive, destination, inventory):
     expected = {e['path']: e for e in inventory}; seen = set()
     destination.mkdir(mode=0o755)
+    destination.chmod(0o755)
     with tarfile.open(archive) as tar:
         members = tar.getmembers()
         for member in members:
@@ -49,7 +50,9 @@ def extract_release(archive, destination, inventory):
             name = '/'.join(pathlib.PurePosixPath(member.name).parts[1:])
             if not name: continue
             target = destination / name
-            if member.isdir(): target.mkdir(mode=member.mode, exist_ok=True)
+            if member.isdir():
+                target.mkdir(mode=member.mode, exist_ok=True)
+                target.chmod(member.mode)
             elif member.isfile():
                 target.parent.mkdir(parents=True, exist_ok=True)
                 with target.open('xb') as out: out.write(tar.extractfile(member).read())

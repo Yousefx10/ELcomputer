@@ -33,7 +33,7 @@ def main():
             (recovery / 'media-manifest.json', 'media-manifest.json'),
             (tools / f"node-v{cfg['node_version']}-linux-x64.tar.xz", f"node-v{cfg['node_version']}-linux-x64.tar.xz"),
             (tools / f"caddy_{cfg['caddy_version']}_linux_amd64.tar.gz", f"caddy_{cfg['caddy_version']}_linux_amd64.tar.gz")]
-    copy += [(here / name, name) for name in ['install.py', 'deploy.py', 'restore-media.py', 'restore-env.py', 'health.py', 'rehearse-linux.sh', 'lab.py']]
+    copy += [(here / name, name) for name in ['install.py', 'deploy.py', 'restore-media.py', 'restore-env.py', 'health.py', 'verify-kit.py']]
     for source, name in copy: shutil.copyfile(source, output / name)
     (output / 'Caddyfile').write_text(render.render(cfg, mapping))
     (output / 'maintenance.Caddyfile').write_text('''{
