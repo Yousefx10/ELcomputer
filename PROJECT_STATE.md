@@ -1,3 +1,42 @@
+# Account entry DEPLOY PASS; six owner page checks PASS — 2026-10-21
+
+- Owner conditionally approved exact `3b6f3a8`. Navigation/layout use `/account`,
+  localized as `/ar/account`; deployed source matches. `/myaccount` is neither page
+  nor alias and remains 404, including Arabic. Approved parent matcher covers the
+  actual denial; no extra route was added. Started clean, preserving unpushed work.
+- All source/plan/candidate/policy, live process/runtime/media, existing active
+  owner/profile, schema 85, disabled controls and prior recovery guards matched.
+  Applied ONCE at 00:49 Riyadh 21 October: private exclusive intent/backup, staged
+  validation, atomic root:root 0644 install and one Caddy restart. No retry/recovery.
+- Installed SHA `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558`;
+  Caddy PID 23477 active/running/zero automatic restarts. Nuxt PID 22422/release
+  `82214df492a57126`, env/unit/drop-ins, Caddy unit/binary and private packing runtime
+  unchanged. No Nuxt deployment/restart, SQL change, provider call or Git push.
+- Fifty-one live HTTP checks and nine local Caddy/preparation/archive tests PASS,
+  zero skips. EN/AR parent GET/HEAD/slashes now 302/no-store through Auth; primary
+  APIs 401 for missing/invalid tokens; held private/checkout/signup/provider/worker/
+  attachment routes and methods stay 403. Root/dashboard-login/public image 200,
+  downloaded hash matches; anonymous uploads 401. No app typecheck/build repeat.
+- Read-only before/after 85 identities and 83–85 sources, full product hash/protected
+  counts (561 products, one Auth user/identity, four Storage objects; zero orders/
+  videos/attempts/jobs/COD rows) and all 2,613 public file hashes/410,096,992 bytes
+  match. Payment/provider flags false; PDC/auto-label/reverse/signup off; confirmation
+  required. No real financial, order, stock, file or provider operation performed.
+- Owner answered “All six pass” for both account entries, Messages, Support,
+  After-Sales and authorized Dashboard Store Customers. Record OWNER-REPORTED
+  functional page smoke, not hosted restricted-role/isolation/write acceptance or
+  global no-browser-write proof. No repeat of these six checks is required.
+- [Final release receipt and evidence limits](docs/customer-account-entry-release-receipt.md).
+  Private execution-504191ccdc985084/accepted.json SHA
+  `c8d117339cbe286fb067d91ede6853fc1e55940911afe1b773d69156f64476e6`.
+  Remote `/var/lib/customer-access-releases/504191ccdc985084/` retains verified a19befc
+  backup/candidate/intent/logs; prior a19befc/f1b944 recovery remains. Never rerun or
+  prune either executor; any recovery needs review.
+- Account-entry owner checklist complete. Next: existing Paymob/PDC activation
+  requirements, with local PDC helper still undeployed. Keep checkout/providers off
+  and Support/Claims attachments held pending VPS conversion. WordPress customer
+  identity/login/address/order migration remains required. No infrastructure audit.
+
 # Account entry acceptance BLOCKED; narrow follow-up ready — 2026-10-21
 
 - Owner reports `Unavailable` at `/account`. This is not acceptance of the four

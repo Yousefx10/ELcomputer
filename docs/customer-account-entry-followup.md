@@ -1,15 +1,16 @@
 # Account entry follow-up — 2026-10-21
 
-**Owner acceptance BLOCKED. Narrow correction prepared; not deployed.**
-The owner reports `Unavailable` at `/account` after the first Caddy correction.
-This does not establish a failure or success for the four direct section tests.
+**DEPLOY PASS. Owner reports all six account-page checks PASS.**
+The exact prepared correction was conditionally approved and applied once.
+See the [final release receipt](customer-account-entry-release-receipt.md).
+The preparation diagnosis below records the original omitted entry.
 
 ## Confirmed cause
 
-Fresh read-only checks at 21:27 UTC on 20 October (21 October in Riyadh) confirm
-the deployed Caddy hash remains `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`.
-Caddy PID 23064 is active/running with zero restarts. Nuxt PID 22422 and release
-`82214df492a57126` are unchanged. No production change or retry was performed.
+Pre-release read-only checks at 21:27 UTC on 20 October (21 October in Riyadh)
+confirmed the then-deployed Caddy hash `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`.
+At that checkpoint, Caddy PID23064 was active/running with zero restarts. Nuxt
+PID22422/release `82214df492a57126` were unchanged; no production change had run.
 
 The first policy explicitly left `/account` held. That omitted the normal entry
 linked by My Account and the account layout. Public `/account` and `/account/`
@@ -47,8 +48,8 @@ The page exception forwards unchanged Auth and forces private/no-store.
 
 | Binding | SHA-256 |
 | --- | --- |
-| Current installed config | `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169` |
-| Follow-up candidate | `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558` |
+| Before config | `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169` |
+| Installed follow-up | `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558` |
 | Follow-up policy | `8e2a5a23734fe5d283267b385119c734b794e7cd570e4a7d288bd2615a105d8b` |
 | Previously installed policy | `8b2bdcb1ed45fc3976be24a646d0d0e318d9404f5d6b68725c374313a985b997` |
 
@@ -75,23 +76,19 @@ No Nuxt source changed; typecheck/build were not repeated.
 
 ## Approval and guarded action
 
-The earlier owner approval covered the exact first candidate and one execution.
-This adds an omitted route under a different hash. It needs approval for this
-specific follow-up; the completed executor must never be rerun.
+The owner separately approved this exact follow-up, conditional on the real route.
+Navigation/deployed source and live EN/AR entry confirmed coverage. `/myaccount`
+returns 404 without alias/redirect and required no change. All pinned preflight
+bindings and disabled controls matched. The new exclusive intent/recovery directory
+`/var/lib/customer-access-releases/504191ccdc985084/` preserves the a19befc backup.
+Staged validation, atomic install with original ownership/mode and one Caddy
+restart completed at 00:49 Riyadh 21 October. No retry/recovery or Nuxt/SQL change.
 
-After approval, recheck source/candidate/policy hashes, pinned machine, release,
-process/env/unit bindings, schema 85 and disabled checkout/signup/provider settings.
-Abort on drift. Use a fresh exclusive intent/recovery directory at
-`/var/lib/customer-access-releases/504191ccdc985084/`, backing up the current
-`a19befc...` config. Validate the staged candidate, atomically replace Caddyfile
-preserving root:root 0644, and restart only Caddy ONCE because `admin off` remains.
-No Nuxt deployment, SQL change, automatic retry or automatic recovery is approved.
+All 51 post-release HTTP checks PASS, including parent GET/HEAD anonymous 302 with
+private/no-store, primary API 401 and held route403 responses. The owner then
+answered “All six pass” for both entries, Messages, Support, After-Sales and
+Dashboard Store Customers. No repeat acceptance is required.
 
-Verify parent GET/HEAD now reaches the existing anonymous 302 login guard with
-private/no-store; primary API 401 and held route 403 responses must remain.
-Then the owner tests `/account`, Messages, Support, After-Sales and Dashboard Store
-Customers using the existing session. Do not enable `/login` or weaken Auth to
-bypass an expired session. No order, provider transaction or attachment test.
-
-ONE next owner action: approve this exact Caddy-only parent-page follow-up.
-Existing Paymob/PDC activation work follows account acceptance; no rebuild.
+This release is complete; do not rerun either executor. Recovery needs review.
+Continue existing Paymob/PDC activation requirements and the required WordPress
+identity/address/order migration. Keep checkout/providers disabled; no rebuild.

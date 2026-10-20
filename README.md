@@ -21,17 +21,18 @@ Public activation still requires owner-controlled acceptance.
 
 The owner-approved [commerce foundation release](docs/commerce-foundation-release-receipt.md)
 passed with migrations83–85 on the existing Caddy/systemd deployment.
-Checkout and providers remain disabled. Owner browser smoke is pending.
+Checkout and providers remain disabled. Real-order workflow acceptance is separate.
 The release action has completed; do not rerun it. The older PM2 scripts target
 a retired deployment. Both current handoffs record evidence and recovery.
 
-Next, accept the account access correction, then existing Paymob/PDC Quick Setup.
+Next, complete existing Paymob/PDC activation requirements.
 WordPress accounts, addresses and orders remain a required launch workstream.
 The [access correction and provider readiness review](docs/customer-access-provider-readiness.md)
 now identifies the exact Caddy denials and remaining activation gates.
-The first Caddy correction is deployed. Owner acceptance is blocked at `/account`.
-Its narrow [parent-page follow-up](docs/customer-account-entry-followup.md) is prepared,
-awaiting approval. Nuxt and schema 85 are unchanged. The PDC lookup fix stays local.
+Both Caddy corrections are deployed. The owner reports all six account-page checks pass.
+The [account entry release receipt](docs/customer-account-entry-release-receipt.md)
+records execution, acceptance and recovery. Nuxt and schema 85 are unchanged.
+The PDC lookup fix stays local.
 Live Paymob charging and PDC booking remain blocked.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

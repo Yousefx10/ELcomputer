@@ -1,10 +1,10 @@
 # Customer access Caddy release — 2026-10-20
 
-**DEPLOY PASS. Authenticated owner browser acceptance remains pending.**
-Follow-up, 21 October: owner reports `Unavailable` at the `/account` entry.
-Acceptance is BLOCKED by that omitted parent page. The separate
-[prepared correction](customer-account-entry-followup.md) awaits approval;
-the deployment receipt below remains historical evidence, not full acceptance.
+**DEPLOY PASS. Owner browser acceptance subsequently reported PASS.**
+Follow-up, 21 October: the separate parent-page correction is deployed and the
+owner reports all six account-page checks pass. See the
+[final receipt](customer-account-entry-release-receipt.md). The deployment facts
+below remain historical evidence for the first correction.
 
 The owner approved the exact correction prepared at `c7d2079`.
 Only Caddyfile changed. Caddy restarted once at 20:31 UTC.
@@ -108,8 +108,7 @@ still use Supabase Storage and require a separate private VPS conversion.
 This release does not enable those uploads/downloads. Packing videos remain on
 the existing private VPS workflow; public product images remain separate.
 
-ONE next owner action: complete this browser acceptance using the existing owner
-session, signing in through `/dashboard/login` if necessary:
+Original browser checklist, subsequently completed with owner-reported PASS:
 
 1. Hard-refresh `/account/messages`; expect the owned list or proper empty state.
 2. Open `/account/support`; tickets and order choices must load without 403.
@@ -127,7 +126,7 @@ No new account/session was manufactured. Local tests cover the role/ownership
 boundaries; they are not a substitute for hosted acceptance. Report any browser
 failure before further release work; do not retry deployment automatically.
 
-After acceptance, complete the documented live activation requirements in the
+After reported acceptance, complete the documented live activation requirements in the
 existing Paymob/PDC implementations. The PDC setup helper remains local.
 Checkout stays disabled. WordPress identity/address/order migration remains
 a required launch workstream.

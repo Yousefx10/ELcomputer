@@ -1,3 +1,43 @@
+# Account entry DEPLOY PASS; owner confirms all six pages — 2026-10-21
+
+- Conditional `3b6f3a8` approval satisfied: real entry `/account`, Arabic
+  `/ar/account`; no `/myaccount` page/alias (EN/AR404 unchanged). Only approved
+  parent GET/HEAD matcher added. Existing Auth/profile/RBAC/RLS and API exceptions
+  unchanged. Started clean; prior unpushed commits preserved. No push.
+- Final hashes, live runtime/media/recovery, existing active owner/profile,
+  schema 85 and disabled controls matched. Exclusive private intent/backup, staged
+  validation, atomic root:root 0644 install and ONE Caddy restart completed 00:49
+  Riyadh 21 October. No retry/rollback, Nuxt restart/deploy, SQL or provider operation.
+- Installed `504191ccdc985084cf9aa0bba4fc36b7cf2bcae7405af95abce469d56bd81558`;
+  before `a19befc25ede29546b5670c0d4a8075e4180c8e310f7e72bd2d0536dc287a169`;
+  policy `8e2a5a23734fe5d283267b385119c734b794e7cd570e4a7d288bd2615a105d8b`.
+  Caddy PID 23477 active/running/NRestarts 0. Nuxt PID 22422/release 82214df492a57126,
+  env/unit/drop-ins, Caddy unit/binary and private packing runtime unchanged.
+- Operator 51 HTTP checks PASS: EN/AR parent GET/HEAD/slashes 302/no-store through
+  Auth, primary APIs 401 for missing/invalid tokens, held/private/checkout/signup/
+  provider/worker/attachment methods 403. Root/dashboard-login/existing image 200;
+  downloaded hash matches, anonymous image/video upload 401. Nine fresh local
+  Caddy/preparation/archive tests PASS, zero skips; no app typecheck/build repeat.
+- Before/after 85 identities and 83–85 stored sources, product content/counts, Auth
+  user/identity/Storage counts, zero orders/videos/attempts/jobs/COD rows and all 2,613
+  media hashes match. Payment/provider flags false, PDC/auto-label/reverse/signup off;
+  confirmation required. No stock/data/financial/file/provider mutation by operator.
+- Owner replied “All six pass”: `/account`, `/ar/account`, `/account/messages`,
+  `/account/support`, `/account/after-sales`, `/dashboard/hr?tab=users&people=customers`.
+  OWNER-REPORTED page smoke PASS, not hosted restricted-role/customer isolation,
+  upload/write acceptance or global no-write proof. Do not ask for an identical pass.
+- [Final receipt](docs/customer-account-entry-release-receipt.md). Private
+  customer-account-parent-followup-20261021/execution-504191ccdc985084/accepted.json
+  SHA `c8d117339cbe286fb067d91ede6853fc1e55940911afe1b773d69156f64476e6` binds the
+  immutable completed.json and later owner-browser acceptance. Remote
+  `/var/lib/customer-access-releases/504191ccdc985084/` holds 0700 directory/0600 a19befc
+  backup, candidate, intent and validation/restart receipts; hashes verified.
+  Prior a19befc/f1b944 recovery preserved. Never rerun/prune; recovery needs review.
+- Account-entry owner checklist complete. Next existing Paymob/PDC activation
+  requirements; PDC setup helper remains local/undeployed. Keep checkout/providers
+  off and legacy attachments held pending VPS conversion. Historical WordPress
+  customer identity/login/address/order migration remains required. No rebuild/audit.
+
 # Account entry acceptance BLOCKED; follow-up not deployed — 2026-10-21
 
 - Owner reports `/account` shows Unavailable. Do not mark the four direct section
