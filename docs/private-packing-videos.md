@@ -1,12 +1,12 @@
 # Private VPS packing videos
 
-Local implementation PASS. Nothing deployed or applied to production.
+Implementation and guarded production release PASS on schema85.
 Public checkout stays disabled. [Normal COD collection and reconciliation](cod-collections.md)
-are now implemented locally; business configuration and controlled acceptance remain.
+are deployed; business configuration and controlled acceptance remain.
 
-The [guarded foundation release](commerce-foundation-release.md) now binds the
-private directory, restricted decoder and systemd sandbox extension. Awaiting
-owner approval; no production packing configuration has changed.
+The [foundation release receipt](commerce-foundation-release-receipt.md) records
+the configured private directory, restricted decoder and systemd sandbox probes.
+Real staff/browser camera, upload/download and packing completion remain pending.
 
 ## Existing workflow retained
 
@@ -82,7 +82,7 @@ No automatic conversion or retention/deletion worker is added. A process/host
 crash may leave private staging remnants; they cannot become ready evidence or
 public downloads. Include private files in the approved backup/retention procedure.
 
-## Inputs for a future approved deployment
+## Deployment inputs
 
 These are deployment inputs, not stock/shipping decisions:
 
@@ -97,7 +97,8 @@ For example, a deployment can bind a private root beneath
 `/srv/your-service/shared/private/packing-videos`. Never place it under public
 uploads or add a static file-server mapping. No new public route exception,
 Caddy redesign or checkout activation is required for these authenticated admin
-endpoints. No service, configuration, package or permission was changed on the VPS.
+endpoints. The original implementation task made no VPS change; the approved
+foundation release later configured these inputs without changing Caddy.
 
 ## Isolated validation
 
@@ -143,6 +144,7 @@ The 25 passing tests include:
 
 Native COD regression:17 PASS. Focused packing, reset, preorder, amount and public
 media regressions:45 PASS, eight existing native opt-in skips. Typecheck and build
-use the project's Node22.23.1/npm10.9.8. Linux/systemd, hosted services and actual
-camera acceptance remain for a separately approved deployment. No production
-connection or change, real customer order, provider activation, deployment or Git push.
+use the project's Node22.23.1/npm10.9.8. The later approved foundation release
+passed actual Linux/systemd and production schema/HTTP checks. Authenticated
+browser/camera and real packing acceptance remain pending. No real customer order,
+provider activation or Git push occurred.

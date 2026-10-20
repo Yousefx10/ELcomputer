@@ -1,8 +1,9 @@
-# First COD purchase: local implementation and activation gates
+# First COD purchase: implementation and activation gates
 
-Status: checkout, private packing and normal COD cash validated locally.
+Status: checkout, private packing and normal COD cash deployed on schema85.
 Public purchases remain disabled.
-No deployment, hosted migration, business configuration or real order was made.
+No business settings or real orders were created by the release.
+See the [release receipt and owner browser checks](commerce-foundation-release-receipt.md).
 
 ## Existing features reused
 
@@ -18,8 +19,8 @@ No deployment, hosted migration, business configuration or real order was made.
 
 ## Task changes
 
-Migration83 is `20261020120000_cod_shipping_checkout.sql`. Apply it before the
-new application in a separately approved release. Migrations1–82 and existing
+Migration83 is `20261020120000_cod_shipping_checkout.sql`. It was applied before
+the new application in the approved foundation release. Migrations1–82 and existing
 installation certificates are unchanged; this is not installer recertification.
 
 - Carriers gain disabled-by-default `checkout_enabled` and empty
@@ -54,9 +55,11 @@ installation certificates are unchanged; this is not installer recertification.
 - EN/AR strings and existing components/styles are reused. No deployment-specific
   SKU, city, domain, account or fee is added to application logic.
 
-## Current production blockers
+## Initial production observations and purchase blockers
 
 Read-only observation at **2026-10-20 11:37 UTC**:
+This historical snapshot predates the foundation release. Current schema85,
+four retained Storage metadata objects and release evidence are recorded above.
 
 | Observation | Consequence |
 | --- | --- |
@@ -79,13 +82,13 @@ It was not modified. Do not open it before owner-controlled acceptance. Review a
 restricted acceptance environment/access gate separately; retain existing Auth,
 RBAC, RLS, restrictive origins and deployment configuration.
 
-**Packing video correction implemented locally:** [private VPS packing
+**Packing video correction deployed:** [private VPS packing
 videos](private-packing-videos.md) replace signed Storage uploads, verification and
 redirects with authenticated streams and server-validated file evidence. Migration84
-and the application require an approved release, private directory/verifier setup
-and target-service acceptance. Original scan/video coverage and completion guards
-remain. No production file handling or routing was changed. Dispatch is not yet
-accepted on the VPS.
+and the application are deployed with the private directory, decoder and Linux
+service-sandbox probes accepted. Original scan/video coverage and completion guards
+remain. Caddy routing is unchanged. Real camera/packing and dispatch acceptance
+remain pending; the release created no order or packing evidence.
 
 **Collection path:** [Normal COD cash collection](cod-collections.md) now records
 verified partial/full customer receipts and separate exact treasury reconciliation.
@@ -147,24 +150,26 @@ tools are unavailable. Fixture Auth checks do not establish hosted signup,
 confirmation, RLS end-to-end or real email delivery. Checkout analytics is outside
 this fixture; its best-effort warning is not analytics acceptance.
 
-Typecheck, production build and `git diff --check` pass. No real browser purchase,
-hosted schema change, provider call, packing video, shipment or cash collection
-is claimed. No release certificate was regenerated.
+Typecheck, production build and `git diff --check` pass. The original isolated
+implementation tests made no hosted change. The later approved release applied
+83–85, as recorded in its receipt. No real browser purchase, provider call, packing
+video, shipment or cash collection is claimed. No certificate was regenerated.
 
 ## Activation boundary
 
-Keep public checkout off. Accept private VPS configuration and the collection path, review
-the release/migration and configure actual stock, delivery and confirmed customer
-access. Then obtain authorization for restricted owner-controlled end-to-end
+Keep public checkout off. Complete owner browser smoke and configure actual stock,
+delivery and confirmed customer access. Then obtain authorization for restricted
+owner-controlled end-to-end
 acceptance: one reviewed COD order, exact totals, one stock deduction, identical
 replay, customer confirmation, Dashboard visibility and real fulfillment evidence.
 Accept dispatch/collection separately with actual evidence; do not mark COD paid
 at checkout. Public activation requires the owner's acceptance and approval.
 
-**One next owner action:** approve the prepared
-[guarded commerce foundation release](commerce-foundation-release.md).
-The combined local candidate includes migrations83–85; public checkout stays off.
+**One next owner action:** complete the
+[post-release owner browser checks](commerce-foundation-release-receipt.md#exact-owner-browser-checks).
+The combined release includes migrations83–85; public checkout stays off.
 Verified inventory and delivery/COD settings remain required before acceptance.
-After release, investigate the four reported access errors, then prioritize existing
-Paymob/PDC. WordPress identities, orders and addresses are a required launch
+Next, investigate the four reported access errors, then activate the existing
+Paymob/PDC Quick Setup integrations under approval. WordPress identities, orders
+and addresses are a required launch
 workstream. Restricted acceptance and public activation require owner approval.

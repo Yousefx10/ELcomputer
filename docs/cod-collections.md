@@ -1,12 +1,12 @@
 # Normal COD cash collection
 
-Local implementation and isolated validation PASS.
+Implementation, isolated validation and guarded production release PASS.
 Public checkout remains disabled.
-Migration85 and the application are not deployed or applied to production.
+Migration85 and the application are deployed on schema85.
 No real orders, cash, inventory or provider operations were created.
 
-The [guarded foundation release](commerce-foundation-release.md) combines
-migrations83–85 with the application. It is prepared for owner approval only.
+The [foundation release receipt](commerce-foundation-release-receipt.md) records
+migrations83–85, private runtime and activation. Owner browser acceptance remains.
 
 ## Existing infrastructure reused
 
@@ -128,9 +128,9 @@ label assertion was corrected; SMS provider code remains unchanged.
 Keep public checkout disabled. Before a restricted owner-controlled purchase,
 confirm verified stock, configured delivery coverage/customer charges, COD fee and
 eligible methods, confirmed customer access and named fulfillment/treasury staff.
-Review and authorize the combined release of pending migrations83–85, private VPS
-packing configuration and application separately. No activation or deployment is
-authorized by this document. After an approved restricted order, verify cash
+The combined migrations83–85, private runtime and application release has passed.
+This document does not authorize purchases or provider activation. After an
+approved restricted order, verify cash
 receipt and treasury reconciliation with actual evidence before public activation.
 
 

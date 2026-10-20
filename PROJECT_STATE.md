@@ -1,3 +1,48 @@
+# Commerce foundation DEPLOY PASS; owner browser smoke pending — 2026-10-20
+
+- Owner explicitly approved the exact `07bb18f` plan and paused Dashboard editing.
+  Clean HEAD/tools/artifact/migration/protected-input hashes, live service/config
+  bindings, all media hashes, production counts/controls and backup prerequisites
+  matched. The unchanged operator executed ONCE, 17:57:13–18:02:49 UTC. No release
+  retry, automatic recovery, unrelated changes or Git push.
+- Release `82214df492a57126`, application source `862b1e3`, now selected under
+  `/srv/storefront/current`. Archive SHA
+  `82214df492a57126182d03e48e643baaf6913f2279db39ec39fde48cab93e8fa`.
+  Approved plan SHA `779a17d27a8d34e15488173e67eca0cfd7e03e661f21a769c5f303b37d4e7557`.
+- Fresh 8,527,288-byte AES-256-GCM database backup authenticated before production
+  changes. Encrypted SHA `9ec6f8582335ef08a98cbe6bf2a16c13bc350d049d61feb962895a6355fa6da9`.
+  Backup/key remain private on the iMac; no plaintext dump/key transferred.
+- Linux compiler/isolated signed decoder, private 0700 directory and narrow runtime
+  extension passed. Candidate sandbox authorization/file/decoder checks passed
+  before SQL; old release stayed active until commit. One Nuxt restart selected
+  PID 22422, active/running, zero automatic restarts. Caddy PID 14793, configuration
+  and original base service unit unchanged. No Caddy edit/reload/restart.
+- Exactly 83/84/85 applied atomically. Post-release 85 history identities and stored
+  source hashes match the approved files. Actual production ledger/RPC ACL checks
+  PASS; 131 original table fingerprints matched before commit. Existing 561 products,
+  one Auth user/identity, four Storage metadata objects and all 2,613 VPS image files
+  preserved. Zero orders/videos/financial postings/shipments created. No original
+  inventory mutation or Supabase Storage upload.
+- Fresh post-release checks: root/dashboard login 200; anonymous admin-products 401;
+  login/checkout/checkout API 403 retained. All five payment flags and provider-live
+  flags off. Hosted signup still disabled, email confirmation required. Current
+  Nuxt cwd, env addition, private ownership/modes and retained recovery files PASS.
+- Private completed receipt:
+  `/Users/imac/Documents/ELcomputer/commerce-foundation-release-20261020/prepared/completed.json`.
+  Versioned [release receipt, hashes and exact owner browser tests](docs/commerce-foundation-release-receipt.md).
+  Retain old release `7bfe6316a1f544d8`, original environment and encrypted backup.
+  Do not rerun the apply action. Manual recovery remains separately reviewed;
+  old packing code cannot operate with 84. No cleanup/pruning performed.
+- ONE next owner action: complete the documented Dashboard/browser smoke using
+  the existing owner account. Authenticated reads/saves and real camera/order/cash
+  acceptance were not simulated as hosted success. Keep public checkout/providers
+  off; no real purchase or financial test was performed.
+- Next engineering priorities: four reported customer/admin 403 errors, then
+  activate the EXISTING Paymob/PDC Quick Setup integrations under authorization;
+  do not redevelop them. Required WordPress identity/order/address migration remains
+  a launch workstream. Business stock/coverage/fees and restricted acceptance still
+  precede public purchasing. UI work later.
+
 # Commerce foundation release GO for owner approval; not deployed — 2026-10-20
 
 - Prepared the combined `31b295c` / `1e58bd6` / `862b1e3` release from clean main

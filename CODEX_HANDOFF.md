@@ -1,3 +1,47 @@
+# Commerce foundation DEPLOY PASS; do not rerun — 2026-10-20
+
+- Owner approved exact preparation `07bb18f`/plan SHA
+  `779a17d27a8d34e15488173e67eca0cfd7e03e661f21a769c5f303b37d4e7557`,
+  with editing paused. Final preflight matched approved inputs, runtime, counts,
+  media and disabled controls. Existing operator invoked ONCE; PASS at
+  2026-10-20 18:02:49.506 UTC. No release retry, rollback or Git push.
+- Deployed release `82214df492a57126`, application source `862b1e3`, archive SHA
+  `82214df492a57126182d03e48e643baaf6913f2279db39ec39fde48cab93e8fa`.
+  Current `/srv/storefront/releases/82214df492a57126`; Nuxt PID 22422 active/running,
+  zero automatic restarts. Caddy PID 14793/config and original base unit unchanged.
+- Fresh authenticated encrypted database backup completed before production
+  changes: 8,527,288 bytes; SHA `9ec6f8582335ef08a98cbe6bf2a16c13bc350d049d61feb962895a6355fa6da9`.
+  Private backup and key stay on iMac. Signed-source restricted decoder 8.0.3 built
+  on Linux; private 0700 video root, appended runtime keys and narrow write-path
+  drop-in provisioned. Candidate/service sandbox file/decoder/auth probes PASS.
+- Migrations `20261020120000`, `20261020160000`, `20261020200000` committed together;
+  production now 85. Stored statement hashes/identities match approved source.
+  New financial ledger ACL/RLS and service-only packing/COD routines PASS. All 131
+  original-table fingerprints matched. Preserved 561 products, one Auth user and
+  identity, four Storage metadata objects and all 2,613 public VPS files. Zero real
+  orders/videos/payments/shipments or original-stock changes; no Storage uploads.
+- Fresh HTTP root/dashboard-login 200, anonymous admin-products 401, customer-login/
+  checkout/checkout API 403 as previously restricted. All payment methods/provider
+  live flags false, signup disabled and email confirmation required. No public
+  activation, provider call, Caddy operation or unrelated production change.
+- Private evidence: `commerce-foundation-release-20261020/prepared/completed.json`,
+  encrypted backup/receipt, each remote phase, before-commit preservation data,
+  migration result, final-verification and health-auth-verification JSON. Remote
+  `/var/lib/commerce-releases/82214df492a57126/` retains the original 0600 environment.
+  Old release `7bfe6316a1f544d8` and VERIFIED/output inventory retained. No pruning.
+  DO NOT re-execute apply, reseal to bypass the execution intent, reverse SQL or
+  auto-rollback. Recovery needs review; old packing code is incompatible with 84.
+- [Versioned deployment receipt and exact owner browser checks](docs/commerce-foundation-release-receipt.md).
+  ONE next owner action: existing-account Dashboard smoke for Products/images,
+  Shipping form, Orders/Treasury and disabled payment controls. Hosted authenticated
+  CRUD/camera/packing/COD/purchase acceptance remains pending; unauthenticated
+  HTTP/native fixtures do not establish those operations. No real-order test.
+- Next: investigate the four reported 403 errors, then reuse and activate the
+  EXISTING Paymob/PDC Quick Setup integrations under authorization. No redevelopment.
+  WordPress identity/order/address migration remains a required launch workstream;
+  preserve current Auth/duplicate-identity prevention. Checkout stays off pending
+  business inputs and controlled acceptance. UI improvements later.
+
 # Commerce foundation release GO for owner approval; not deployed — 2026-10-20
 
 - Continue from the prepared release; do not rebuild the three completed features.

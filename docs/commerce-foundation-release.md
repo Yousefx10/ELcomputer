@@ -1,6 +1,8 @@
 # Commerce foundation release — 2026-10-20
 
-**GO for one owner approval. Prepared, not deployed.**
+**DEPLOY PASS — owner-approved action completed once at 18:02:49 UTC.**
+See the [release receipt and owner browser checks](commerce-foundation-release-receipt.md).
+The command below is retained as execution evidence. Do not run it again.
 
 This release combines COD checkout, configured delivery, private packing videos
 and normal COD cash collection. Public purchasing and all providers stay off.
@@ -156,7 +158,7 @@ and prohibits automatic retry/rollback. No broad historical health script runs.
 
 Private evidence: local `commerce-foundation-release-20261020/prepared/` and remote
 `/var/lib/commerce-releases/82214df492a57126/`. Successful execution must produce
-`completed.json`; it does not exist yet. Local backup encryption keys remain
+`completed.json`; it now records PASS. Local backup encryption keys remain
 in their existing private owner location.
 
 ## Recovery and acceptance limits
@@ -191,10 +193,11 @@ compiler tools and the isolated decoder do not require emergency removal.
   PASS. Lockfile unchanged; known duplicate ERP/Tailwind warnings remain.
 - Sealed-plan read-only check returned `GO_FOR_OWNER_APPROVAL`, production writes 0.
 
-Evidence uses disposable PostgreSQL, actual files/decoder and fixture Auth/API
-transport. The private Linux candidate/sandbox, hosted authenticated Dashboard,
-browser camera and end-to-end order acceptance remain pending. Those limits do
-not authorize public activation. Linux candidate failure stops before SQL.
+Implementation evidence uses disposable PostgreSQL, actual files/decoder and
+fixture Auth/API transport. The approved Linux candidate/sandbox, production
+migrations and post-release service/HTTP checks have now passed. Authenticated
+owner Dashboard, browser camera and end-to-end order acceptance remain pending.
+Those limits do not authorize public activation.
 
 After this foundation release, investigate the four owner-reported customer/admin
 access errors, then prioritize existing Paymob and PDC integrations. Historical
