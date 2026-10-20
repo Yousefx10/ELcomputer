@@ -1,3 +1,64 @@
+# Existing VPS: clean Caddy deployment plan prepared; destructive reinstall BLOCKED — 2026-10-20
+
+- User now chooses ONE existing VPS, plain Ubuntu24.04/Node22.23.1/Nuxt4/systemd/
+  Caddy2.11.7; old CloudPanel/Nginx and auxiliary deployments are discarded.
+  This supersedes the earlier protected-Nginx export/inspection prerequisite for
+  this replacement architecture. Do not revive those old root actions.
+- Startup main90e87e58777fa858d9efc0fa072178e2b415dfcd clean; local origin and
+  independent live remote matched. All prior work preserved. Task commit is local;
+  no push. No VPS connection, reset, deployment, DNS/Nginx/service operation,
+  production business write or cleanup performed in this task.
+- Fresh authenticated verification PASS:20 components/31813290811 encrypted bytes;
+  all9 original restore receipts hash-match. Original DB173 fingerprints/13 metadata
+  categories/82 identities/60 permission checks, WP466/465 tables and518 user/hash
+  identities each remain restored evidence. No new SQL restore on production.
+- Recovery package PASS:2607 images/406760308 bytes=2505 original+102 older uploads
+  (86 product/16 settings), zero filename collisions. All2607 actual image URLs
+  hash-match through reviewed Nuxt behind real Caddy. Original full homes, WP22
+  parts, current SQL, source/mappings and private material remain encrypted.
+- Original runtime env recovered and independently hash-matched to home manifest.
+  New encrypted env preserves BOTH application encryption keys, matches production
+  Supabase keys and rebinds only loopback/new durable upload path. Dedicated seven
+  account/connection/CA/SMTP input archive authenticated. Offline owner password
+  verification against restored Auth hash PASS; no hosted signin/reset attempted.
+- Focused production READ ONLY gate at UTC2026-10-19T23:59:32Z:
+  560 products,82 migrations,1 Auth user/identity and active owner match,6 private
+  buckets/0 objects,2505 catalog_private.media_paths records,5 payment methods false,
+  public Auth settings disable_signup=true. No nonexistent signup DB setting is
+  assumed. First collector42703 was read-only and preserved; corrected query PASS.
+- Candidate3d5fe61c1109190c2ac3df12fb858987bc103aa5 archive7bfe6316a1f544d84b37366f447c
+  dfdd7b11bd11d3473df632930c5ad6618846: ALL597 application inputs match current
+  checkout. Latest Products bulk denial/recovery, Procurement and lock fixes retained;
+  not old deployed Release82. Original unresolved owner batch remains UNVERIFIED;
+  no replay/clear/replacement.135 old immutable client assets retained.
+- Prepared generic scripts:offline kit, fresh-host install, authenticated recovery
+  package, collision/path/hash-checked public media restore, private env intake,
+  verified artifact/pointer activation/retained rollback, health, local Ubuntu lab.
+  No schema/import/Auth reset command. Caddy proxies administrator methods to
+  existing Auth/RBAC/RLS; explicit customer/provider/worker/reset denials remain.
+- Local actual Caddy+exact Nuxt Node22 PASS:8185 HTTP checks incl5504 redirects and
+  all2607 media;15 synthetic-Auth authorization cases PASS; zero backend mutations.
+  Four automation tests PASS incltwo-business Caddy portability and archive safety.
+  Existing Products save/bulk/recovery74 PASS/4 native skips,0failures/cancellations.
+  Synthetic/macOS evidence is not hosted login, Ubuntu/systemd or reboot acceptance.
+- DNS read PASS:apex existing168.231.104.25,www CNAMEapex,no apexAAAA/CAA;external
+  domaincontrol DNS,Microsoft365 MX. Fresh TLS needs80/443 and outboundDNS/HTTPS.
+  No old TLS key/CloudPanel config is required. Auxiliary hosts remain offline.
+- BLOCKED gates:disposable Ubuntu24.04 x86_64 installation/systemd/env-parser/
+  ownership/firewall/restart/reboot rehearsal; owner console/account recovery
+  confirmation; final frozen backup watermark before
+  any separately approved erase. QEMU install attempt stopped at local Homebrew
+  permission preflight; no sudo/ownership workaround or tool install completed.
+- Downtime estimate90–180minutes; reserve4hours, subject to provider/TLS failures.
+  No verified snapshot rollback; recover same VPS from external kit/media/env,
+  preserve Supabase intact. First installation has no prior accepted new release.
+- Report/owner acceptance:docs/clean-reinstall-plan.md. Evidence outside Git/VPS:
+  /Users/imac/Documents/ELcomputer/clean-reinstall-plan-20261020/. Kit-final-v2 21files/
+  55865716bytes; SHA256.jsoncde6d5123c10c19bd03fccb86eb14d58e343b3f455202eecba8e52854d5e055a.
+  KIT-SEAL.json and final encrypted Git bundle/mirror receipt bind custody.
+- ONE next owner action:provide a disposable LOCAL Ubuntu24.04 x86_64 VM for the
+  prepared rehearsal. No new VPS. Keep the existing VPS unchanged.
+
 # Existing VPS clean reinstall: backup baseline BLOCKED — 2026-10-20
 
 - Current task is backup readiness for the ONE existing VPS. No new VPS,
