@@ -1,6 +1,8 @@
 # PDC GetProducts HTTP500 — local evidence review, 2026-10-21
 
 **Offline review complete. PDC CONNECTION BLOCKED; cause remains unknown.**
+A [sealed bounded capture](pdc-getproducts-capture-preparation.md) is now prepared;
+separate owner approval is required. No provider request has been executed.
 No new provider request, production connection for this review, credential
 decryption, setting change, retry, shipment or deployment occurred. The separately
 completed [Paymob restart](paymob-controlled-restart-receipt.md) does not authorize
@@ -62,7 +64,8 @@ GET-only method, redirect refusal, timeout/size bounds, no retry, no GetCities a
 all persistent gates off. Any raw response that might contain private data must
 remain protected/encrypted outside Git and all output must be sanitized. Current
 provider/account evidence is the alternative way to establish the missing cause.
-This is an investigation proposal, not a sealed command or request approval.
+The subsequent preparation seals that narrow diagnostic; this review itself grants
+no execution approval. Use only its final plan after separate owner authorization.
 Do not rerun the consumed wrapper or use Dashboard Test/Sync under this record.
 
 Controlled payment/shipping acceptance and required WordPress customer identities,

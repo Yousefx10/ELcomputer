@@ -32,12 +32,13 @@ Follow the [existing-account configuration guide](docs/provider-configuration.md
 for personal secret entry. PDC is saved and disabled. Its
 [approved one-run diagnostic](docs/pdc-readonly-diagnostic-receipt.md) stopped at
 GetProducts HTTP500; no retry or city lookup ran.
-The owner reports all 24 Paymob configuration/safety checks passed; saved LIVE
-inputs still need loading. The [controlled app restart](docs/paymob-controlled-restart.md)
+The owner's Paymob LIVE inputs are loaded. The
+[controlled app restart](docs/paymob-controlled-restart.md)
 is complete. The owner ran all phases; independent read-only
 [restart acceptance](docs/paymob-controlled-restart-receipt.md) passed with credentials
 loaded and all gates off. [PDC HTTP500 local review](docs/pdc-http500-local-review.md)
-found the cause remains unknown; no retry is authorized. The earlier
+found the cause remains unknown. A [bounded PDC capture](docs/pdc-getproducts-capture-preparation.md)
+is prepared and requires separate owner approval; no retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST

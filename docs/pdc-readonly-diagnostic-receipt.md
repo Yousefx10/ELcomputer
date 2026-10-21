@@ -5,6 +5,8 @@ Subsequent [local evidence review](pdc-http500-local-review.md) found no establi
 cause. No retry occurred. Paymob entry and the
 [controlled restart](paymob-controlled-restart-receipt.md) subsequently completed;
 the Paymob-entry next-step section below is historical, not a new instruction.
+The [new bounded capture preparation](pdc-getproducts-capture-preparation.md) is
+separate and awaits owner approval; it does not revive this consumed wrapper.
 Production remains release `d2d7a8029b473e4a`, schema87, with PDC disabled.
 The owner approved the specific one-run exception documented in the
 [preparation record](pdc-connection-paymob-preparation.md). That approval is consumed.

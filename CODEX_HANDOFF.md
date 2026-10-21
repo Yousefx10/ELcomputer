@@ -1,3 +1,55 @@
+# PDC bounded capture prepared; APPROVAL REQUIRED — 2026-10-21
+
+- Started clean at `a74529b`, one commit ahead of origin/main. Paymob controlled
+  restart/acceptance stays closed; no production connection, provider request or
+  restart revalidation occurred. [Exact proposed scope and short commands](docs/pdc-getproducts-capture-preparation.md).
+- Prepared one isolated authenticated production GetProducts GET with existing
+  saved credentials. At most one request, no body, no redirect follow/retry, total
+  deadline8s, headers16KiB, captured body64KiB and redacted projection2048 characters.
+  GetCities is forbidden even after success; no shipment/label/status/webhook call,
+  cache save, persistent enablement, deployment, migration or service operation.
+- Reuses existing lookup/header/decryption/normalization helpers unchanged. The
+  standalone root-only wrapper captures direct HTTP status before generic502
+  masking, safe layer/authentication/error hints, permitted correlation identifiers
+  and redacted body structure. Unknown keys/free-form values/PII/configuration are
+  removed; no raw body is retained. Safe correlation values and redacted report
+  remain encrypted; root console shows fixed status/classification/PASS-BLOCKED only.
+- One native HTTPS request has no proxy environment, retry agent or redirect path.
+  Root preflight reads only reviewed existing site/Supabase metadata and shipping
+  encryption readiness, enforces all saved/running payment/shipping/signup/checkout
+  gates off and PDC enable/auto/reverse/COD false. Approved IDs, unchanged accepted
+  runtime/unit state, 15-minute checkpoint and exclusive consumed marker gate dispatch.
+  Any echoed company must match; a missing echo does not prove ownership. No provider
+  secret was read/decrypted in this local preparation.
+- Temporary instrumentation runs only in a separate child, never Nuxt. After
+  independent encrypted archive readback/authentication, root-only ARCHIVED.json
+  allows retire to delete only run.py. Markers/encrypted evidence remain for audit.
+  Failure/interruption means stop and preserve evidence; never reset or retry.
+- Supplied Courier Integration Test V4-1 PDF p8 confirms GET/header/id-name contract;
+  Webhook Integration PDF is a separate callback protocol. Both pinned locally.
+  Their shipment/testing/registration instructions are not execution permission.
+- Eighty local safety cases PASS: 34 capture/privacy/HTTPS, 41 runner/gate/custody,
+  four owner-reader, one actual isolated Node-loader dry run. Real provider requests
+  and production connections zero. No native production execution/staging claimed.
+  Local directory0700/files0600 outside Git: parent
+  pdc-getproducts-capture-preparation-20261021/. A diagnostic RSA3072 evidence key
+  stays local; only its public key would be staged. No provider/master-key rotation.
+- FINAL plan: plan-reviewed-final.json. Approval seal
+  a453c1c120966eba492ebd0e394cae56f4562d744ca0d0271644e446a79f899a.
+  Reviewed helper SHA256
+  f3b098765c075a279ed39001293ee518587cefecea37b83623fc9518dcfacb8b.
+  PREPARATION-RECEIPT-final.json SHA256
+  2353b9ce892489055de50c131afe4e3e506ae5fbe0ba321eaa5cd581067f2c60.
+  Earlier unapproved local draft plan/seal are superseded. Nothing is staged.
+- ONE next owner action: approve this exact seal for helper staging and one bounded
+  GET exception, then use separately executed short pre/once/status console steps
+  after verified staging. CLI --approved alone grants no authorization. PDC cause
+  and connection remain UNKNOWN/BLOCKED until new approved evidence. All commerce
+  gates remain off. Next priorities: controlled provider acceptance and mandatory
+  WordPress identities/old-login/private details/profiles/addresses/historical orders
+  before unrestricted signup. Preserve Auth UUIDs, avoid duplicates and prevent
+  imported financial/commerce effects. No push or application-source change.
+
 # Controlled restart PASS; PDC local review cause unknown — 2026-10-21
 
 - Started clean at `930cf25`, two commits ahead of origin/main. Owner reported all
