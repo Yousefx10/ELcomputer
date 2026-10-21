@@ -1,9 +1,9 @@
 # Modern Footer validation receipt — 2026-10-21
 
 Historical feature receipt at commit `8181953`: local PASS; production unchanged.
-The later owner-approved [87→88 release preparation](modern-footer-release.md) is
-complete and awaits final execution approval. Its fresh backups, failure review,
-retained-asset artifact and checks are separate from this earlier feature receipt.
+The later owner-approved [87→88 deployment](modern-footer-release.md) passed.
+Its production/browser evidence and remaining owner content checks are separate
+from this earlier local feature receipt.
 See the [feature, configuration and release boundary](modern-footer.md).
 
 Started at clean `89743faa109e44450dfa24ec84c4ca3b6d96b6e2`, two commits ahead of
@@ -11,7 +11,7 @@ cached origin/main. Both unpushed PDC commits remain preserved. No fetch or push
 Current README, state, shared Codex handoff, personal Notes and release procedures
 were reviewed before implementation. The shared handoff/state serve both accounts.
 
-## Current verification
+## Feature verification at 8181953
 
 - Five focused tests PASS. They exercise the additive migration against the real
   schema in PGlite, stored JSON round trips, bounds/version rejection, unchanged

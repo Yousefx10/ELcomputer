@@ -82,26 +82,33 @@ Final test counts and protected evidence are recorded in the
 
 ## Production status and next release boundary
 
-**PREPARATION PASS. Final deployment approval is pending.**
+**DEPLOY PASS. Owner content and authenticated Dashboard acceptance remain pending.**
 
-The owner approved preparation of a separate 87→88 release. The
-[sealed plan and exact approval/deployment procedure](modern-footer-release.md)
-are ready. Production remains on `d2d7a8029b473e4a`/schema 87; no migration,
-activation, restart, provider request or production configuration edit has run.
-The new binding retains all 428 current immutable client assets and verified fresh
-recovery backups. Historical operators and seals remain unchanged.
+The owner approved the exact sealed digest. The [87→88 release](modern-footer-release.md)
+ran once: `d1b10bb664e15a67`/schema 88. Its fresh backups, private candidate,
+transaction preservation, activation and post-deployment checks passed. The old
+release and all 428 immutable client assets remain retained. Historical operators
+and seals remain unchanged. The consumed command must never be rerun.
 
-The minimal next owner instruction is the final digest approval in that release
-procedure. Do not run a completed operator or the retired PM2 scripts. The earlier
-local `.output` remains validation evidence; deployment uses only the new sealed,
-asset-retaining candidate. All purchase/provider/signup gates stay off.
+Production browser checks passed 228 assertions with 18 screenshots: EN/AR,
+1440/900/390px, Light/Dark/System, including live system-theme changes. No page or
+hydration error occurred. Existing chat-status GETs still return 403 under the
+unchanged Caddy hold; these produce network console messages. Analytics POSTs
+were blocked by the read-only browser harness. No hosted save/upload/style switch
+or real provider operation was performed. All purchase/provider/signup gates stay off.
+
+The inherited content remains sparse: one footer heading row has no destination,
+and the versioned Modern configuration remains NULL. Both saved theme logos use
+the same white artwork, giving poor contrast in Light mode. Choose a contrasting
+**Light logo** in Settings → Footer content → Modern Footer branding. Populate
+actual EN/AR links and optional sections there; the release invents no content.
 
 PDC remains awaiting schema/support clarification. Both consumed diagnostic
 approvals remain consumed. Preserve mandatory WordPress customer migration,
 controlled provider acceptance, verified stock/delivery and later purchasing gates.
 UI Improvement 2 has not started. No Git push is authorized or performed.
 
-After an eventual successful deployment, the owner browser checks are:
+Remaining owner browser checks are:
 
 1. Open `/` and `/ar` at desktop, tablet and phone widths in Light/Dark/System.
    Check the footer, RTL, internal links and absence of horizontal scrolling.

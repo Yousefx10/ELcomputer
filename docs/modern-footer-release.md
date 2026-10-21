@@ -1,6 +1,59 @@
-# Modern Footer 87→88 release preparation — 2026-10-21
+# Modern Footer 87→88 deployment — 2026-10-21
 
-**PREPARATION PASS. Final production execution is NOT approved or performed.**
+**DEPLOY PASS. Owner content and authenticated Dashboard acceptance remain pending.**
+
+The owner approved digest `768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214`.
+The guarded operator ran once and completed at `2026-10-21T19:52:59.301Z`.
+Release `d1b10bb664e15a67` is active on schema 88. The later read-only preservation
+check passed at `2026-10-21T19:55:49.296Z`. The plan is consumed: never rerun `apply`,
+erase its intent/receipts, invoke an old executor or reverse the migration.
+
+- A fresh encrypted execution recovery set passed authenticated full readback:
+  database 9,114,567 bytes; runtime 2,272,910 bytes covering 10 original files.
+- Private candidate checks passed before the public switch. The 87→88 transaction
+  preserved all 135 original table projections, Auth identity/security and existing
+  ACL/RLS/functions/triggers/indexes. It added only the reviewed column/check/comment.
+- One current-symlink switch and one controlled Nuxt restart completed. Systemd is
+  active/running with no automatic restart; Caddy/runtime/unit files remain exact.
+- All 14 public health/hold checks passed. Signup, checkout, all five payment methods,
+  provider outbound flags and PDC/auto/reverse remain off. Existing credentials and
+  configuration remain unchanged. No real provider request or Git push ran.
+- All 2,613 media files/410,096,992 bytes and protected private files remain unchanged.
+  The old `d2d7a8029b473e4a` release passed complete 1,367-entry inventory verification.
+  The temporary private candidate is stopped. No rollback was needed or attempted.
+- Public browser verification passed 228 checks with 18 screenshots: EN/AR,
+  desktop/tablet/mobile and Light/Dark/System, including system-theme changes.
+  Footer images/links, responsive grids, direction and overflow passed; no page or
+  hydration error occurred. All 18 non-read analytics requests were blocked locally.
+- Each page recorded the existing `/api/chat/status` 403 under unchanged Caddy
+  routing: 18 corresponding network console errors. These remain a held-route
+  observation, not a claim of zero browser console messages or live-chat acceptance.
+
+| Fresh execution backup | SHA256 |
+| --- | --- |
+| Encrypted database | `a2e75d3c1ad4ecd1465dc82d957e880a14fe864aae030a7db901d5edced603c6` |
+| Encrypted runtime | `e30e25ca7b8b4fc56f37f2ce9259f4c3a4aa30e436368f0c798a07184b5013be` |
+
+Both theme settings currently point to the same white logo. It loads but has poor
+contrast in Light mode. Inherited content has one footer heading without a usable
+destination; the new JSON remains NULL and optional empty sections stay hidden.
+These saved settings were preserved. The next owner action is to choose a suitable
+**Light logo**, populate actual EN/AR links, and complete the
+[Dashboard save/reload/style checks](modern-footer.md#production-status-and-next-release-boundary).
+Hosted authenticated edits/uploads and Classic/Modern switching were not exercised.
+
+Private evidence: parent `modern-footer-release-preparation-20261021/approved-deployment/`,
+including owner approval, apply log, browser receipt/screenshots, content observations,
+post-verification and `FINAL-DEPLOYMENT-RECEIPT.json`. The consumed plan and SQL/runtime/
+backup/health receipts remain under `prepared-final/`. The preparation receipt remains
+unchanged. This records scoped deployment acceptance, not provider/commerce activation.
+
+## Archived preparation record
+
+The following records the reviewed state before final approval and execution.
+Its command block is historical; it is not an instruction to deploy again.
+
+**Preparation status at sealing: PASS; execution was not yet approved.**
 
 The owner approved preparing a separate guarded release for application commit
 `8181953a7678b36fd4643d1ce52a0b96f65d8136` and migration 88. This is a new binding
@@ -114,7 +167,7 @@ uncommitted SQL refusal and failed-activation evidence/no retry/no rollback.
 These results do not certify live merchant payments, shipments, Daftra COD or
 future provider acceptance. Those workstreams remain separately gated.
 
-## Final approval and one execution
+## Reviewed approval and execution (consumed)
 
 Private plan:
 `/Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json`.
@@ -132,14 +185,14 @@ The exact owner approval phrase is:
 > APPROVE MODERN FOOTER DEPLOY
 > 768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214
 
-This preparation approval does not authorize execution. After the final phrase,
-the agent runs these commands once from the repository, using the pinned Node:
+The owner later supplied this exact phrase. These commands ran once using the
+pinned Node and are retained for audit. The consumed plan must not be run again:
 
 ```sh
 /Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs check /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json
 ```
 
-The check is read-only and must pass. Then execute exactly:
+The read-only check passed before the single approved invocation:
 
 ```sh
 /Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs apply /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json --approved 768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214

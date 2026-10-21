@@ -69,10 +69,13 @@ records the earlier access execution, acceptance and recovery.
 Migrations86–87 and their matching application are now deployed.
 Live charging, real booking and checkout remain disabled.
 
-The [Modern Footer replacement](docs/modern-footer.md) is implemented locally.
+The [Modern Footer replacement](docs/modern-footer.md) is deployed.
 Its [validation receipt](docs/modern-footer-validation.md) records responsive,
 localized Dashboard persistence and SSR checks. The [sealed 87→88 release](docs/modern-footer-release.md)
-is prepared and awaits final execution approval; completed release operators stay unchanged.
+passed: release `d1b10bb664e15a67`, schema88. Purchases, signup and providers remain off.
+Live responsive/theme checks passed. Owner content and authenticated Dashboard
+acceptance remain pending; the saved white logo needs a contrasting Light variant.
+The release is consumed; do not rerun its commands. Historical operators stay unchanged.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

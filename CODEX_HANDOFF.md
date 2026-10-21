@@ -1,3 +1,54 @@
+# Modern Footer deployed; schema88; commerce remains disabled — 2026-10-21
+
+- Owner approved exact digest `768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214`.
+  The reviewed `apply` ran ONCE and completed `2026-10-21T19:52:59.301Z` with PASS.
+  [Deployment evidence, owner checks and archived procedure](docs/modern-footer-release.md).
+- Active release `d1b10bb664e15a67`, application `8181953`, schema88. New release
+  tooling remains exactly `18f2c9d`; historical operators/seals are unchanged.
+  The plan is consumed. Never repeat apply/check on that plan, erase intent/receipts,
+  invoke completed executors, reverse SQL or perform automatic rollback.
+- Fresh read-only preflight and additional encrypted execution backups PASS:
+  DB 9,114,567 bytes; runtime 2,272,910 bytes/10 original files. Authenticated full
+  decryption/parser/file readback PASS. Both preparation and execution sets remain
+  protected; this is archive verification, not a hosted restore exercise.
+- Private candidate PASS before activation. The locked 87→88 transaction preserved
+  all 135 original table projections and original Auth/Storage/settings/product
+  data. Only the reviewed nullable JSON/check/comment was added. Original 87
+  history/source bytes, ACL, RLS, functions, triggers and indexes remain unchanged.
+  Between-observation analytics and reviewed Auth activity timestamp exclusions
+  remain explicit; this does not claim a global write-history audit.
+- One atomic app switch and one controlled storefront restart PASS. Systemd is
+  active/running, NRestarts=0; Caddy, units/runtime, existing Paymob LIVE inputs and
+  provider configuration remain unchanged. No Caddy edit/reload or provider request.
+- All 14 public health/hold GETs PASS. All five payment methods, provider outbound
+  gates, PDC/auto/reverse, checkout and signup remain disabled. Built-in ERP remains.
+  No payment, booking, customer import, diagnostic retry or commerce activation ran.
+- All 2,613 media files/410,096,992 bytes and private files remain exact. Retained
+  `d2d7a8029b473e4a` passed complete 1,367-entry inventory verification after release.
+  The temporary candidate is stopped. Recovery retains current schema/data and
+  needs its own reviewed app-only plan/approval; no old DB restore or SQL reversal.
+- Public browser: 228 checks/18 screenshots PASS across EN/AR, 1440/900/390px and
+  Light/Dark/System, including live system-theme changes. No page/hydration errors,
+  overflow or broken footer image. All 18 analytics POSTs were blocked locally.
+  Each page recorded the existing chat-status 403 under unchanged Caddy routing:
+  18 corresponding console network errors, not zero console messages/chat acceptance.
+- Content observation: saved Light/Dark logos use the same white image; Light
+  footer contrast is poor. The inherited footer has a heading row without a URL,
+  zero usable navigation destinations and few populated sections. New JSON stays
+  NULL; existing settings were preserved. Empty/unsupported sections stay hidden.
+- ONE next owner action: review Settings → Footer content → Modern Footer. Choose
+  a contrasting Light logo, populate actual EN/AR links, then save/reload and check
+  both footer styles. Return to the preferred style; keep all commerce gates off.
+  Authenticated production saves/uploads/style switching remain owner acceptance;
+  no such writes were performed by the anonymous browser verification.
+- Independent post-browser target/data/Auth preservation PASS at
+  `2026-10-21T19:55:49.296Z`. Protected evidence and FINAL-DEPLOYMENT-RECEIPT.json:
+  parent modern-footer-release-preparation-20261021/approved-deployment/.
+  Main changes after the release are documentation only. No Git push.
+- UI Improvement 2 has not started. Preserve PDC clarification/support, consumed
+  diagnostics, mandatory WordPress customer migration, controlled provider
+  acceptance, verified stock/delivery and later public purchasing approval.
+
 # Modern Footer 87→88 preparation PASS; final deployment approval pending — 2026-10-21
 
 - Owner approved preparation only for footer commit `8181953`, migration 88 and the
