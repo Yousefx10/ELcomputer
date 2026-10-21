@@ -37,8 +37,10 @@ The owner's Paymob LIVE inputs are loaded. The
 is complete. The owner ran all phases; independent read-only
 [restart acceptance](docs/paymob-controlled-restart-receipt.md) passed with credentials
 loaded and all gates off. [PDC HTTP500 local review](docs/pdc-http500-local-review.md)
-found the cause remains unknown. A [bounded PDC capture](docs/pdc-getproducts-capture-preparation.md)
-is prepared and requires separate owner approval; no retry is authorized. The earlier
+found the cause remains unknown. The [bounded PDC capture](docs/pdc-getproducts-capture-preparation.md)
+helper is approved and [independently staged](docs/pdc-getproducts-capture-staging-receipt.md).
+Owner-only pre/once execution is pending; no provider request ran during staging.
+No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST

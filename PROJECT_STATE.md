@@ -1,3 +1,44 @@
+# PDC capture STAGING PASS; owner execution pending — 2026-10-21
+
+- Started clean at `913d233`, two commits ahead of origin/main. The owner approved
+  final seal a453c1c120966eba492ebd0e394cae56f4562d744ca0d0271644e446a79f899a
+  for staging and exactly one GetProducts GET, reserving console execution personally.
+  [Staging receipt and next commands](docs/pdc-getproducts-capture-staging-receipt.md).
+- All final-plan artifact, bundle input and PDF-reference hashes matched. Use only
+  private plan-reviewed-final.json, never the superseded draft or old consumed wrapper.
+  Reviewed helper SHA256 remains
+  f3b098765c075a279ed39001293ee518587cefecea37b83623fc9518dcfacb8b.
+  No approved helper or application source changed; eighty local safety cases remain
+  preparation evidence, not native provider acceptance.
+- Three pinned-SSH sessions passed absent-target preflight, exclusive/no-follow
+  upload and independent full-byte/hash/mode/ownership readback at 13:42:42 UTC.
+  /root/pdc-capture is root:root0700; its only file run.py is root:root0600.
+  No private evidence key, checkpoint, consumed marker or result was staged.
+  Machine/release, accepted runtime hash/root600 and sealed app-unit hashes matched;
+  app/Caddy stayed active with unchanged PIDs and zero automatic restarts.
+- STAGING PASS only: neither pre nor once was executed. Zero provider requests,
+  credential decryptions, restarts, deployments, migrations or production-data/
+  configuration changes. Only the approved helper directory/file were created.
+  Release remains d2d7a8029b473e4a; schema87 is the accepted deployed baseline,
+  without fresh SQL. Paymob restart acceptance remains closed.
+- Protected local staging directory outside Git, directory0700/files0600:
+  parent pdc-approved-capture-staging-20261021/. STAGING-RECEIPT.json SHA256
+  a82ce8d6c987337ec48a38fbf0f6178d554e67adf94c35749bf43300a2bc85b4.
+  The preparation directory retains the local-only private evidence key unchanged.
+- ONE next owner action: pause Shipping edits and run the two short root-console
+  commands in the staging receipt separately. Pre must PASS; once follows within
+  fifteen minutes. The fresh owner preflight verifies saved/running disabled gates.
+  Stop on any BLOCKED, interruption or uncertainty; never repeat pre/once, use
+  Dashboard Test/Sync or call GetCities. Owner returns only fixed output lines.
+- Agent then inspects fixed receipts and independently archives/authenticates the
+  single encrypted result without another provider request. No automatic retirement;
+  preserve evidence after failure. PDC cause/connection stay UNKNOWN/BLOCKED pending
+  that result. All commerce/signup/checkout gates remain required off. No shipments,
+  labels, payments, webhooks or provider activation authorized. No Git push.
+- Roadmap: PDC diagnosis, controlled provider acceptance, then required WordPress
+  identities/old-login/private profiles/addresses/historical orders before unrestricted
+  signup. Preserve Auth UUIDs, avoid duplicate identities and imported commerce effects.
+
 # PDC bounded capture prepared; APPROVAL REQUIRED — 2026-10-21
 
 - Started clean at `a74529b`, one commit ahead of origin/main. Paymob controlled

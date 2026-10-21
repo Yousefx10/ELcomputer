@@ -2,7 +2,8 @@
 
 **Offline review complete. PDC CONNECTION BLOCKED; cause remains unknown.**
 A [sealed bounded capture](pdc-getproducts-capture-preparation.md) is now prepared;
-separate owner approval is required. No provider request has been executed.
+its final seal is now owner-approved and [helper staging passed](pdc-getproducts-capture-staging-receipt.md).
+Owner console execution is pending. No new provider request has been executed.
 No new provider request, production connection for this review, credential
 decryption, setting change, retry, shipment or deployment occurred. The separately
 completed [Paymob restart](paymob-controlled-restart-receipt.md) does not authorize

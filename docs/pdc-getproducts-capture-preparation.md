@@ -1,11 +1,15 @@
 # Bounded PDC GetProducts capture — preparation, 2026-10-21
 
-**PREPARATION PASS. APPROVAL REQUIRED. No provider request or production access.**
+**PREPARATION PASS. Approved helper STAGING PASS; owner execution pending.**
+
+The owner approved the final seal below. [Independent staging passed](pdc-getproducts-capture-staging-receipt.md)
+at 13:42:42 UTC. No provider request or helper command has been executed by the agent.
+The preparation evidence below records the original local-only phase.
 
 Paymob restart acceptance is closed and unchanged. This prepares one new,
 separately approved PDC diagnostic. The earlier lookup approval is consumed;
 never rerun its wrapper. The HTTP500 cause remains unknown until new evidence
-is obtained. No helper has been staged or executed on production for this task.
+is obtained. The helper is now staged; its execution remains owner-only.
 
 ## Exact scope
 
@@ -107,13 +111,13 @@ everything and stop; cleanup is never automatic.
 
 ## Short owner approval/execution procedure
 
-**Do not execute these commands now. Staging and the provider request need approval.**
+**Approval received; staging verified. The owner runs `pre` and `once` personally.**
 
-Owner approval must identify this exact seal:
+The received owner approval identifies this exact seal:
 
 `a453c1c120966eba492ebd0e394cae56f4562d744ca0d0271644e446a79f899a`
 
-Suggested owner response in chat:
+Recorded approval scope:
 
 > I approve the sealed PDC capture: staging the verified helper and one authenticated
 > GetProducts GET with existing saved credentials, all gates unchanged, no GetCities
