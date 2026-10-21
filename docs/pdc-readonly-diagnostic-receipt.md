@@ -7,7 +7,9 @@ cause. No retry occurred. Paymob entry and the
 the Paymob-entry next-step section below is historical, not a new instruction.
 The [new bounded capture preparation](pdc-getproducts-capture-preparation.md) is
 separate: its final seal is approved and [helper staging passed](pdc-getproducts-capture-staging-receipt.md).
-Owner console execution is pending; it does not revive this consumed wrapper.
+The owner consumed that separate attempt: HTTP200 / RESPONSE_SCHEMA_REJECTED.
+[Archive analysis and Codex 1 handoff](pdc-getproducts-capture-analysis.md) are complete;
+neither consumed approval permits another call or revival of this wrapper.
 Production remains release `d2d7a8029b473e4a`, schema87, with PDC disabled.
 The owner approved the specific one-run exception documented in the
 [preparation record](pdc-connection-paymob-preparation.md). That approval is consumed.

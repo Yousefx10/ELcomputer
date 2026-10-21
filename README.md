@@ -39,8 +39,10 @@ is complete. The owner ran all phases; independent read-only
 loaded and all gates off. [PDC HTTP500 local review](docs/pdc-http500-local-review.md)
 found the cause remains unknown. The [bounded PDC capture](docs/pdc-getproducts-capture-preparation.md)
 helper is approved and [independently staged](docs/pdc-getproducts-capture-staging-receipt.md).
-Owner-only pre/once execution is pending; no provider request ran during staging.
-No retry is authorized. The earlier
+The owner consumed its single attempt: HTTP200 / RESPONSE_SCHEMA_REJECTED.
+[Encrypted archive verification and analysis](docs/pdc-getproducts-capture-analysis.md)
+are complete. Exact row rejection remains unknown; no code or account correction
+is confirmed. Both diagnostic approvals are consumed. No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST

@@ -3,7 +3,9 @@
 **Offline review complete. PDC CONNECTION BLOCKED; cause remains unknown.**
 A [sealed bounded capture](pdc-getproducts-capture-preparation.md) is now prepared;
 its final seal is now owner-approved and [helper staging passed](pdc-getproducts-capture-staging-receipt.md).
-Owner console execution is pending. No new provider request has been executed.
+The subsequent owner attempt returned HTTP200 / RESPONSE_SCHEMA_REJECTED.
+[Its archive analysis](pdc-getproducts-capture-analysis.md) is complete; the exact
+schema failure and this original500 cause remain UNKNOWN. Both approvals are consumed.
 No new provider request, production connection for this review, credential
 decryption, setting change, retry, shipment or deployment occurred. The separately
 completed [Paymob restart](paymob-controlled-restart-receipt.md) does not authorize

@@ -1,3 +1,55 @@
+# PDC diagnostic analysis COMPLETE; connection BLOCKED — 2026-10-21
+
+- Started clean at `61ecaca`, three commits ahead of origin/main. Owner ran the exact
+  approved pre/once commands. One GetProducts GET at 13:46:52 UTC returned HTTP200 /
+  RESPONSE_SCHEMA_REJECTED; encryption and state-preservation PASS. No GetCities or
+  retry. [Complete evidence analysis and Codex 1 handoff](docs/pdc-getproducts-capture-analysis.md).
+- Both PDC diagnostic approvals are consumed. Never rerun pre/once, the original
+  wrapper or Dashboard Test/Sync. Approval seal
+  a453c1c120966eba492ebd0e394cae56f4562d744ca0d0271644e446a79f899a
+  authorizes no further provider request. The original HTTP500 cause remains UNKNOWN.
+- Two independent pinned-SSH copies/readbacks verified full encrypted-file bytes,
+  root-only custody, consumed marker, unchanged helper and matching final/capture
+  receipts. Approved owner-report.mjs --verify authenticated the encrypted envelope.
+  Correlation ID not supplied. No owner-view execution or raw/private values printed.
+  Helper remains root0600 in /root/pdc-capture root0700; no remote ARCHIVED.json,
+  retirement or production write occurred. Preserve helper/markers/evidence for review.
+- Protected local archive, outside Git, directory0700/files0600:
+  parent pdc-getproducts-capture-analysis-20261021/. RESULT.enc SHA256
+  18d9220ba80327387ccd5ae7360c86adee627bb3dc9b207e6188bdc3a84e0acb.
+  FINAL-ANALYSIS-RECEIPT.json SHA256
+  ad6cfea0d21f730a4f46572fd05cde9654d8c3595b79d54f6d8bec189cefda6f.
+  The preparation directory's local-only evidence private key remains untouched.
+- Confirmed: complete, unencoded application/json; valid JSON; top-level array of
+  two objects; no application proxy. Redaction removed every original row key/value.
+  The broad schema classification covers normalization and subsequent company-echo
+  conversion. Precise rejected field/cause is UNKNOWN. Selection was not reached:
+  saved_product_matches:false is an initial value, not proof of incorrect Product ID.
+  Authentication, company ownership and live product/city eligibility are unproven.
+- Existing server/utils/pdcLookups.js:40 accepts this array; :47 normalizes id/ID,
+  name/Name with positive unique integer IDs and bounded required names. These are
+  candidates, not confirmed defects. Supplied Courier PDF p8 documents an id/name
+  array already supported. Eight synthetic replay cases PASS using unchanged bundle,
+  local Node24.16.0 and refused real network. Several distinct failures share the
+  identical redacted projection. No application patch or account change is justified.
+- ONE next Codex 1 action: review the closure and establish a verified values-free
+  row schema from existing owner-held/authoritative account evidence before choosing
+  any narrow normalization or account correction. PDC support is not established as
+  necessary; it is a clarification fallback. Do not invent aliases or relax validation.
+  Any new provider request, helper retirement or production change needs its own scope.
+- Fresh read-only runtime/service custody matched the accepted release and owner's
+  preflight; app/Caddy active, unchanged PIDs, zero automatic restarts. Release remains
+  d2d7a8029b473e4a; schema87 is the accepted baseline without fresh SQL. The final
+  diagnostic receipt records preserved gates/settings; no new DB query is claimed.
+  Agent provider requests/helper executions/production mutations zero. No deployment,
+  restart, migration, enablement, credentials change, transaction or Git push.
+- Paymob configuration and accepted controlled restart stay closed. Keep payment,
+  shipping, signup and checkout gates disabled. Priorities remain resolving PDC,
+  controlled payment/shipping acceptance and mandatory WordPress identities, old
+  logins, private profiles/details, billing/shipping addresses and historical orders
+  before unrestricted signup. Preserve Auth UUIDs, prevent duplicate identities and
+  imported financial/commerce effects. Codex 1 takes over from this completed closure.
+
 # PDC capture STAGING PASS; owner execution pending — 2026-10-21
 
 - Started clean at `913d233`, two commits ahead of origin/main. The owner approved

@@ -1,9 +1,14 @@
 # Bounded PDC GetProducts capture — preparation, 2026-10-21
 
-**PREPARATION PASS. Approved helper STAGING PASS; owner execution pending.**
+**PREPARATION PASS. Approved attempt consumed; archive verification PASS.**
+
+The owner executed the single GET: HTTP200, RESPONSE_SCHEMA_REJECTED. Independent
+[archive analysis and complete Codex 1 handoff](pdc-getproducts-capture-analysis.md)
+are complete. The exact rejected field remains UNKNOWN because redaction removed
+row keys/values. **Never rerun pre/once or use this consumed approval again.**
 
 The owner approved the final seal below. [Independent staging passed](pdc-getproducts-capture-staging-receipt.md)
-at 13:42:42 UTC. No provider request or helper command has been executed by the agent.
+at 13:42:42 UTC. The agent did not execute a provider request or the remote helper.
 The preparation evidence below records the original local-only phase.
 
 Paymob restart acceptance is closed and unchanged. This prepares one new,
@@ -109,9 +114,9 @@ Consumed markers and encrypted evidence remain protected for audit. No service
 restart, gate restoration or application rollback is needed. On failure, retain
 everything and stop; cleanup is never automatic.
 
-## Short owner approval/execution procedure
+## Recorded owner approval/execution procedure — consumed
 
-**Approval received; staging verified. The owner runs `pre` and `once` personally.**
+**Historical procedure only. Already executed; never repeat pre or once.**
 
 The received owner approval identifies this exact seal:
 
@@ -123,8 +128,8 @@ Recorded approval scope:
 > GetProducts GET with existing saved credentials, all gates unchanged, no GetCities
 > and no retry. Approval seal: a453c1c120966eba492ebd0e394cae56f4562d744ca0d0271644e446a79f899a.
 
-After approval and verified staging, pause Shipping settings edits. In the Hostinger
-root console, run each short line separately; never chain commands.
+After approval and verified staging, the owner used the following procedure with
+Shipping edits paused. These recorded commands are not a new execution instruction.
 
 ```sh
 python3 -I -S -B /root/pdc-capture/run.py pre

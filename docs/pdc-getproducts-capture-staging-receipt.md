@@ -1,6 +1,10 @@
 # PDC bounded capture — approved helper staging, 2026-10-21
 
-**STAGING PASS. Owner console execution pending. No provider request executed.**
+**STAGING PASS. Owner attempt consumed; encrypted archive verification PASS.**
+
+The subsequent owner GET returned HTTP200 / RESPONSE_SCHEMA_REJECTED.
+[Analysis and complete Codex 1 handoff](pdc-getproducts-capture-analysis.md) are complete.
+Never rerun pre/once. The original staging evidence below remains unchanged.
 
 The owner approved the [final sealed capture](pdc-getproducts-capture-preparation.md)
 and reserved both console commands for personal execution. Staging completed at
@@ -40,11 +44,10 @@ Private staging evidence is outside Git, directory0700/files0600:
 The diagnostic private key remains only in the protected local preparation
 directory. No provider credential was decrypted or displayed during staging.
 
-## Next owner action
+## Recorded owner action — consumed
 
-Pause Shipping settings edits. Run these lines separately in Hostinger's root
-console. The approval already covers this exact one-run helper; no new approval
-is needed for these two commands.
+**Already executed. Do not run these commands again.** The owner used these
+separate Hostinger root-console commands after pausing Shipping settings edits.
 
 ```sh
 python3 -I -S -B /root/pdc-capture/run.py pre
@@ -63,10 +66,10 @@ BLOCKED, interruption, missing output or uncertainty. Never repeat either comman
 use Test/Sync or proceed to GetCities. A captured500 may report successful evidence
 capture while GetProducts itself remains BLOCKED.
 
-The agent will then inspect fixed receipts and independently archive/authenticate
-the encrypted result without another provider call. Cause and connection remain
-UNKNOWN/BLOCKED pending that evidence. Do not retire instrumentation before archive
-verification; retain all evidence after any failed phase.
+The agent subsequently inspected fixed receipts and independently archived and
+authenticated the encrypted result without another provider call. The exact schema
+failure remains UNKNOWN and connection remains BLOCKED. Archive verification passed;
+the helper remains preserved pending review. No retirement was performed.
 
 All payment, shipping, signup and checkout gates remain required off. No shipments,
 labels, webhooks or other transactions are authorized. Paymob restart acceptance
