@@ -10,6 +10,12 @@ inspection also found no Paymob keys/integration ID and no PDC token/webhook sec
 merchant/pickup settings, synchronized caches or shipping company. No provider call
 or credential entry was performed by the agent.
 
+Later [offline WordPress recovery](pdc-offline-recovery.md) found the historical PDC
+account, pickup details, token and compatible webhook secret in three agreeing
+sources. Exact values are in the protected local owner report; credentials remain
+encrypted. This supplies personal setup inputs, without changing production or
+proving current account/parcel/template/registration readiness.
+
 ## Start in the existing Dashboard
 
 Use the existing owner account at `https://elcomputer.net/dashboard/setup`.

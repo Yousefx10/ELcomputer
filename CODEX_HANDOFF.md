@@ -1,3 +1,62 @@
+# Offline WordPress PDC recovery PASS — 2026-10-21
+
+- Started clean at `580e139`. Scope: offline preservation sources only. No production
+  connection/write, Dashboard save, provider call, Test/Sync, shipment/transaction,
+  deployment/restart, Auth/inventory change, WordPress/PHP/SQL execution, cron,
+  email/SMS, website restoration or Git push. Owner-accepted production remains
+  d2d7a8029b473e4a/schema87 from the preceding receipt; no new live inspection.
+- [Recovery evidence and confidence](docs/pdc-offline-recovery.md). Two encrypted
+  fresh WordPress exports authenticate and match accepted plaintext/ciphertext
+  pins: 466/465 schemas. All 22 original WPvivid part hashes match. Data-only parsing
+  and bounded nested reads inspected 43,826 relevant code/config files and three
+  protected configs. The active PDC wp_snippets code matches the original package.
+  Large encrypted homes were located/preserved, not re-extracted or executed.
+- wp_options.elc_pdc_settings contains all requested account/pickup fields, token
+  and webhook secret. EVERY dedicated setting agrees across both later exports
+  and the original package. Explicit from* request bindings establish store pickup;
+  no customer billing/shipping address or destination city was used as pickup.
+- Pickup City ID matches once in both 382-city maps; English name agrees. WordPress
+  has no Arabic label, so absent Arabic is not a conflict. Pickup phone is valid
+  format but equals a legacy code fallback: owner must confirm current business
+  ownership. PDC pickup and general WooCommerce store addresses differ; both are
+  retained privately for review. Company/product/mode/base URL are confirmed
+  historical inputs, not evidence of current account/coverage acceptance.
+- Four historical PDC customer checkout rates and zone/area links recovered;
+  settings match all three sources and zone tables agree across both exports.
+  They are not carrier costs or approved current fees. Metadata has 131 AWB rows,
+  131 REF rows and 134 event arrays/702 decoded events. No label-template setting,
+  ExportPDF call or upload PDF identified. Weight/type/validation code constants
+  are candidates, not actual parcel measurements; do not invent a template/fee.
+- Access Token FOUND / independent 32+ webhook secret FOUND; both match all three
+  sources. Credentials remain only in authenticated encrypted evidence, including
+  owner-recovered-credentials.json.enc. No value printed/copied to production.
+  Legacy and Nuxt both use X-Webhook-Secret: recovered secret is technically
+  reusable, but current provider validity/registration is NOT VERIFIED offline.
+  Legacy route /wp-json/elcomputer-pdc/v1/webhook differs from current exact Nuxt
+  POST https://elcomputer.net/api/webhooks/pdc. PDC must update that destination
+  before callback acceptance; use existing self-service controls if available,
+  otherwise PDC assistance for cutover. No registration/Caddy/secret change here.
+- Protected LOCAL owner report outside Git:
+  /Users/imac/Documents/ELcomputer/pdc-offline-recovery-20261021/OWNER-RECOVERY-REPORT.md.
+  Exact business values/qualifications and historical charges are private. Directory
+  0700/files 0600/owner checks pass; four new envelopes authenticate; plaintext exact
+  secret scan PASS. owner-secret-copy.py permits personal no-echo clipboard entry;
+  only --check was exercised, without touching clipboard or provider configuration.
+  RECOVERY-RECEIPT.json SHA256
+  5ee0d8029fba71ee81486df207daecc408a4e8900cf26f36f86aefd4dd11fa90.
+- ONE next owner action: privately review that report, confirm current pickup
+  phone/address, and stage confirmed PDC values personally through existing Quick
+  Setup → Shipping & ERP → Shipping configuration → Open shipping settings. Keep
+  provider/automatic/reverse/COD gates off; parcel/template/current fee facts remain
+  pending where unconfirmed. Historical auto_send must not be restored. Recovery
+  supplies inputs without requiring PDC support for initial private credential entry.
+- Roadmap preserved: existing Paymob live configuration; separately approved
+  controlled payment/shipping tests; REQUIRED historical WordPress customer
+  identities/old-login/private profiles/addresses/orders before unrestricted signup;
+  first approved public purchase. Preserve Auth UUIDs, avoid duplicate identities
+  and historical-import commerce effects. Real stock, delivery/parcel facts,
+  confirmed customer access and callback reachability remain purchase gates.
+
 # Owner acceptance PASS; existing provider configuration pending — 2026-10-21
 
 - Owner reports release d2d7a8029b473e4a/schema87 passed Dashboard, Products/images,

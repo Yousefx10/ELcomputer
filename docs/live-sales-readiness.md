@@ -4,6 +4,9 @@ The [disabled production release](live-sales-release-receipt.md) passed with
 schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
 Credentials are not yet entered; no provider was enabled or contacted.
+Historical PDC account/pickup inputs and encrypted credentials were subsequently
+[recovered offline](pdc-offline-recovery.md). Currentness and provider acceptance
+remain separate; production settings were not populated automatically.
 The owner accepted all six customer-access pages; that milestone stays closed.
 
 ## Existing implementation retained
