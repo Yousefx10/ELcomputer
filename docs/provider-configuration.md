@@ -4,16 +4,18 @@ The owner reports that disabled release `d2d7a8029b473e4a`, schema87, passed
 Dashboard, Products/images, Orders, Shipping, Quick Setup and browse-only browser
 acceptance. That release milestone is complete. Do not redeploy or rerun its operator.
 
-**Paymob BLOCKED; PDC BLOCKED: owner credentials have not been entered.**
-The owner confirmed this during the configuration task. The metadata-only live
-inspection also found no Paymob keys/integration ID and no PDC token/webhook secret,
-merchant/pickup settings, synchronized caches or shipping company. No provider call
-or credential entry was performed by the agent.
+**Current: PDC saved-state PASS; PDC CONNECTION BLOCKED; Paymob entry pending.**
+The owner personally saved PDC and confirmed persistence. The
+[fresh masked verification](pdc-connection-paymob-preparation.md) confirms encrypted
+secret presence and matching recovered company/product/pickup-city settings.
+The pickup address differs; confirm it privately. Product/city caches remain empty,
+no shipping company exists, and the operator gate prevents connection diagnostics.
+No provider call, activation or credential entry was performed by the agent.
 
-Later [offline WordPress recovery](pdc-offline-recovery.md) found the historical PDC
+[Offline WordPress recovery](pdc-offline-recovery.md) supplied the historical PDC
 account, pickup details, token and compatible webhook secret in three agreeing
 sources. Exact values are in the protected local owner report; credentials remain
-encrypted. This supplies personal setup inputs, without changing production or
+encrypted. Recovery supplied personal setup inputs without changing production or
 proving current account/parcel/template/registration readiness.
 
 ## Start in the existing Dashboard
@@ -201,9 +203,9 @@ Quick Setup's overall **Incomplete** and **Connection not verified** can remain
 correct after secure entry: live gates, coverage/cache checks and acceptance are
 intentionally separate. Do not enable charging/bookings to force a green badge.
 
-## Current evidence and next action
+## Earlier baseline and current next action
 
-At 00:12:24 UTC on 21 October, pinned SSH and a read-only database transaction confirmed
+Before owner entry, at 00:12:24 UTC on 21 October, pinned SSH and a read-only database transaction confirmed
 release d2d7a8029b473e4a/schema87, runtime root 0600, no Paymob credential/ID values,
 test-mode defaults, PDC encryption ready but token/webhook/account/pickup absent,
 empty product/city caches and zero shipping companies. Positive parcel/template
@@ -216,11 +218,15 @@ No raw provider secret, customer/contact data or encrypted credential was select
 into the report. No production setting, service, release, Auth, inventory, provider
 account, callback or shipment changed. No push occurred.
 
-**One next action:** personally complete the private credential-entry steps and
-report only **“PDC saved”** and/or **“Paymob file saved; not restarted”**. Then verify
-masked loaded/on-disk configuration and the retained holds before any runtime reload.
-Provider-read-only connection checks remain a separately gated step; no real charge
-or shipment is authorized.
+PDC entry is now complete and independently verified through masked checks at
+09:37 UTC. The [current receipt and diagnostic approval scope](pdc-connection-paymob-preparation.md)
+supersede that earlier baseline. All outbound/provider/payment holds remain off.
+
+**One next owner action:** personally enter the six Paymob assignments above and
+report only **“Paymob file saved; not restarted”**. Then verify masked disk/process
+configuration, preservation hashes and retained holds before any runtime reload.
+PDC GetProducts/GetCities remain BLOCKED pending specific one-run diagnostic
+approval; no real charge or shipment is authorized.
 
 After provider configuration, the required workstream remains WordPress customer
 identities/old-login compatibility, private names/phones/profiles, billing/shipping

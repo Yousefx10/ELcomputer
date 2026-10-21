@@ -3,7 +3,9 @@
 The [disabled production release](live-sales-release-receipt.md) passed with
 schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
-Credentials are not yet entered; no provider was enabled or contacted.
+PDC credentials/settings are saved; Paymob credential entry is pending.
+[Masked saved-state verification](pdc-connection-paymob-preparation.md) passed.
+PDC connection is BLOCKED by the disabled operator gate; no provider was contacted.
 Historical PDC account/pickup inputs and encrypted credentials were subsequently
 [recovered offline](pdc-offline-recovery.md). Currentness and provider acceptance
 remain separate; production settings were not populated automatically.

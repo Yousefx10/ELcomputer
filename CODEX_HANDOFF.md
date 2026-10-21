@@ -1,3 +1,47 @@
+# PDC saved-state PASS; connection BLOCKED; Paymob prepared — 2026-10-21
+
+- Started clean at `91c55a4`. Owner personally saved PDC and confirmed persistence.
+  [Masked verification and exact Paymob steps](docs/pdc-connection-paymob-preparation.md).
+  Pinned SSH/read-only DB at 09:37:38–09:38:57 UTC confirm release
+  d2d7a8029b473e4a/schema87, active PID25021/NRestarts0, runtime root0600.
+- PDC token/webhook secret saved with valid encrypted-envelope shapes. No secret
+  decrypted or ciphertext/private values selected into output. Production URL/mode,
+  company/product/pickup-city IDs and contact/phone match recovery. Pickup city has
+  exactly one match in the current 382-city mapping. Pickup address differs beyond
+  whitespace/punctuation; owner must confirm it privately, without overwriting an
+  intentional update. Saved positive weight/template are not contractual acceptance.
+- PDC CONNECTION BLOCKED at `pdc-read-access/operator-outbound-gate`:
+  shippingLiveRequestsEnabled=false. Zero provider calls/diagnostic attempts.
+  Test only GETs GetProducts; Sync also GETs GetCities, but both write local throttle/
+  audit and Sync writes caches. UI additionally requires provider enablement despite
+  API allowDisabled support. No gate bypass, activation, UI fix or redeploy occurred.
+- All four runtime gates, all five payment methods and PDC provider/automatic/
+  reverse/COD switches remain false. Product/city caches empty; shipping companies0.
+  Orders/payment attempts/normal jobs/reverse jobs/dispatches0. Settings RLS and denied
+  anon/authenticated SELECT retained. Public checkout/signup/PDC webhook GETs403.
+- Exact receiver remains POST https://elcomputer.net/api/webhooks/pdc with JSON and
+  independent X-Webhook-Secret. External registration/header/reachable cutover still
+  pending; no provider registration inspected/changed. Do not cut over while held.
+- Private evidence: pdc-saved-paymob-preparation-20261021/ under the parent directory,
+  0700/files0600. TASK-RECEIPT.json SHA256
+  c35540c06129c444cd8c2791037471e5a75e5f7eeed29bd629f678b851378dde.
+  A concrete one-run GetProducts/GetCities-only exception proposal is retained;
+  NOT AUTHORIZED/EXECUTED and no executable bypass exists. Requires specific owner
+  approval; no POST, cache/settings writes, persistent gate changes or restart.
+- Paymob four credential/ID inputs absent on disk/process; modes default test.
+  Private owner instructions edit ONLY six Paymob assignments in existing root0600
+  /etc/storefront/runtime.env. Before-entry whole-file and all-other-settings/lines
+  hashes retained for preservation verification. No runtime write or reload here.
+  ONE next owner action: personal entry, keep all holds off, reply only
+  “Paymob file saved; not restarted.” Check masks/hashes before any later reload.
+- No production write, Dashboard save, provider request, SaveShipmentEx, ExportPDF,
+  shipment, charge, inventory/Auth change, deployment/restart, Caddy change or push.
+  Complete Paymob configuration and approved read-only PDC diagnostics. The next
+  mandatory workstream remains historical WordPress customer
+  identity/old-login/private details/addresses/orders into Supabase, preserving Auth
+  UUIDs and preventing duplicates or financial/commerce effects, before unrestricted
+  signup. Controlled provider acceptance and public purchase need separate approval.
+
 # Offline WordPress PDC recovery PASS — 2026-10-21
 
 - Started clean at `580e139`. Scope: offline preservation sources only. No production

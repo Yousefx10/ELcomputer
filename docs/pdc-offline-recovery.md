@@ -1,6 +1,9 @@
 # PDC offline WordPress recovery — 2026-10-21
 
-**OFFLINE RECOVERY PASS. Production configuration remains unchanged and disabled.**
+**OFFLINE RECOVERY PASS. No production change occurred during recovery.**
+The owner subsequently saved PDC personally. The
+[masked production verification](pdc-connection-paymob-preparation.md) confirms saved
+credentials/account IDs with provider gates still off. Connection remains blocked.
 
 Historical PDC account and pickup settings were recovered from three agreeing
 sources: the two verified encrypted WordPress exports and the original WPvivid
@@ -115,9 +118,9 @@ prevent staging the recovered account/pickup settings tonight. The last verified
 Nuxt receiver remained held 403; reachability was not retested or changed here.
 Do not cut over to an unreachable receiver or bypass secret validation.
 
-## One next owner action
+## Recovery handover action — subsequently completed by the owner
 
-Privately open `OWNER-RECOVERY-REPORT.md`, confirm the current pickup phone/address,
+The recovery handover instructed the owner to privately open `OWNER-RECOVERY-REPORT.md`, confirm the current pickup phone/address,
 and stage the confirmed PDC values through **Quick Setup → Shipping & ERP →
 Shipping configuration → Open shipping settings → PDC API**. Use the personal
 secret-copy instructions there; never paste recovered data into chat.
