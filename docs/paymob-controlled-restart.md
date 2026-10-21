@@ -1,11 +1,12 @@
 # Paymob credential-loading restart preparation — 2026-10-21
 
-**Owner approval received. Staging PASS. Read-only pre-restart checks PASS.**
+**CONTROLLED_RESTART PASS. Completed; do not repeat this sequence.**
 
-At 12:13:06 UTC, the staged helper passed production `pre`. No restart has been
-executed by the agent. The approved `pre`, `once --approved`, `post` sequence is
-reserved for the owner's Hostinger root console. Final restart/health/policy
-acceptance remains pending those results and read-only receipt verification.
+The owner completed `pre`, `once --approved`, `post` in the Hostinger root console.
+Independent read-only verification passed at 12:28:31 UTC. The original restart
+policy is restored and the temporary guard removed. See the
+[final acceptance receipt](paymob-controlled-restart-receipt.md).
+The commands below are retained for audit. The one-restart approval is consumed.
 
 The owner reports all 24 configuration/safety checks PASS. Only
 `SAVED_VALUES_LOADED` was BLOCKED. This establishes the restart need from the
@@ -59,7 +60,7 @@ agent session while the owner console attempt is pending.
 
 ## Short Hostinger root-console commands
 
-**Approval and verified helper staging are complete. Use the owner console.**
+**Historical commands: completed by the owner. Do not run them again.**
 Run one line at a time. Stop immediately on any BLOCKED, unexpected output,
 interruption, timeout or missing success line. Do not repeat a failed command.
 
@@ -186,11 +187,11 @@ Staging evidence is protected outside Git, directory0700/files0600:
 `65d3fb61a7bd6ed5d8c232939e7ad29c2b3bc05b42863f999a90e5221cdadd47`.
 `PRE-RESTART-RECEIPT.json` SHA256:
 `bebaddf941871297d3a41523b533dfb6face6f56c94f1fa4d94c328620c01052`.
-No ATTEMPT/VERIFIED/SUCCESS receipt was created by the agent. Restart is unexecuted.
+The agent created no ATTEMPT/VERIFIED/SUCCESS receipt. The owner's completed
+attempt created those protected receipts; independent read-only acceptance passed.
 
-Next action: owner runs the approved three short console commands, one at a time,
-and returns only PASS/BLOCKED lines. After success, verify receipts, health and
-original restart policy read-only; do not rerun `once` or completed `post`.
+Next priority: [PDC HTTP500 local review](pdc-http500-local-review.md).
+Do not rerun `once` or completed `post`. Another provider call needs separate approval.
 Paymob loading is not payment acceptance. Charging, PDC booking/automation, customer
 checkout and signup remain disabled. PDC GetProducts HTTP500 investigation remains
 pending under a new bounded approval; the earlier one-run permission is consumed.

@@ -1,6 +1,10 @@
 # Approved PDC read-only diagnostic — 2026-10-21
 
 **BLOCKED at GetProducts: HTTP500. Stopped after one authenticated GET.**
+Subsequent [local evidence review](pdc-http500-local-review.md) found no established
+cause. No retry occurred. Paymob entry and the
+[controlled restart](paymob-controlled-restart-receipt.md) subsequently completed;
+the Paymob-entry next-step section below is historical, not a new instruction.
 Production remains release `d2d7a8029b473e4a`, schema87, with PDC disabled.
 The owner approved the specific one-run exception documented in the
 [preparation record](pdc-connection-paymob-preparation.md). That approval is consumed.

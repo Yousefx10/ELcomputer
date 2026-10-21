@@ -7,9 +7,12 @@ PDC credentials/settings are saved. The owner reports verified LIVE Paymob input
 saved in root0600 runtime.env. The
 [owner-only validator](paymob-owner-validation.md) passed all 24 safety/configuration
 checks according to the owner; only saved-value loading was BLOCKED. The
-[controlled application restart](paymob-controlled-restart.md) is approved. Helper
-staging and live read-only preflight passed; owner-console restart remains pending.
-No service operation or provider request occurred during staging/preflight.
+[controlled application restart](paymob-controlled-restart-receipt.md) is complete.
+The owner ran all phases; independent read-only verification confirms loaded LIVE
+inputs, restored restart policy, healthy storefront and all gates off. No additional
+restart or provider request occurred during acceptance. The
+[PDC HTTP500 local review](pdc-http500-local-review.md) leaves the cause unknown;
+another request needs separate bounded approval.
 [Offline Paymob recovery](paymob-offline-recovery.md) supplies protected historical
 LIVE/TEST keys, HMAC and EGP card IDs; the owner reports current verification and
 personal entry. No agent production credential copy or provider request occurred

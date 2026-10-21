@@ -4,10 +4,13 @@ The owner reports that disabled release `d2d7a8029b473e4a`, schema87, passed
 Dashboard, Products/images, Orders, Shipping, Quick Setup and browse-only browser
 acceptance. That release milestone is complete. Do not redeploy or rerun its operator.
 
-**Current: PDC saved-state PASS; PDC CONNECTION BLOCKED; Paymob saved by owner.**
-The owner reports verified LIVE inputs saved in root0600 runtime.env. The
-[owner-only read-only validation](paymob-owner-validation.md) is prepared but has
-not run in production. No process reload or merchant acceptance is inferred.
+**Current: Paymob configuration loaded; PDC saved-state PASS, CONNECTION BLOCKED.**
+The owner entered verified LIVE inputs and completed the controlled app restart.
+Independent [restart acceptance](paymob-controlled-restart-receipt.md) passed:
+root0600 runtime, matching saved/running inputs, healthy app, original restart
+policy and all gates off. Merchant payment acceptance remains untested.
+The [PDC HTTP500 local review](pdc-http500-local-review.md) establishes no cause
+or configuration fix; no further provider request is authorized.
 The owner personally saved PDC and confirmed persistence. The
 [fresh masked verification](pdc-connection-paymob-preparation.md) confirms encrypted
 secret presence and matching recovered company/product/pickup-city settings.
@@ -16,7 +19,8 @@ stopped after one GetProducts GET returned HTTP500. GetCities was not attempted;
 no remote identifier validation passed. The approval is consumed; no retries.
 The address difference is an Arabic HEH/TEH MARBUTA spelling variant, with matching
 numeric details. No material location change was found; no address was changed.
-Product/city caches remain empty. No provider activation or credential entry ran.
+Product/city caches remain empty. No provider activation or agent credential entry
+occurred during verification.
 
 The later [offline Paymob recovery](paymob-offline-recovery.md) found matching
 LIVE/TEST Secret/Public pairs, legacy API key, HMAC and LIVE/TEST EGP card IDs in

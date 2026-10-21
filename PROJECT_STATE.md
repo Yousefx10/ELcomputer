@@ -1,3 +1,48 @@
+# Controlled restart PASS; PDC local review cause unknown — 2026-10-21
+
+- Started clean at `930cf25`, two commits ahead of origin/main. Owner reported all
+  eleven expected pre/once/post PASS lines from the Hostinger root console.
+  Independent pinned-SSH read-only verification at 12:28:31 UTC confirms
+  CONTROLLED_RESTART PASS. [Acceptance receipt](docs/paymob-controlled-restart-receipt.md).
+- Exact reviewed helper hash and root-only custody passed. ATTEMPT/VERIFIED/SUCCESS
+  receipts agree; app PID/start changed from the approved before-state; zero
+  automatic restarts. Original Restart=on-failure is restored; temporary runtime
+  guard absent; original unit/drop-in loading/hashes intact. Caddy PID/start and
+  configuration/unit hashes unchanged. All six approved LIVE Paymob inputs now
+  match the running process; runtime root600, unrelated values preserved.
+- Public storefront200, loopback protected Products API401, EN/AR signup/checkout
+  and /api/checkout403. Hosted signup/anonymous signup off, email confirmation
+  retained, five payment flags false, saved/running payment/shipping gates false.
+  Current release remains d2d7a8029b473e4a; schema87 is the accepted deployed baseline,
+  not a fresh SQL observation. Merchant payment/shipping acceptance is still untested.
+- Agent verification called only reviewed custody/receipt/configuration/health/
+  snapshot readers, never helper main/once/post or service commands. No extra
+  restart, manager reload, deployment, migration, provider call, gate/configuration
+  edit, transaction, Auth/media/product/inventory write or push. Approval consumed:
+  preserve all receipts and never rerun once or completed post.
+- Private acceptance evidence: parent paymob-restart-acceptance-20261021/,
+  directory0700/files0600, outside Git. FINAL-RECEIPT.json SHA256
+  83d8567151d390e352a1938050255c7b727713ee96baf8406bb1b5254913da7f.
+  READ-ONLY-VERIFICATION.json SHA256
+  e8697a6c3fafa9776fc8d5efaeea2310a8a71cb9c45a5902fb33bcc8befa3721.
+- [PDC offline HTTP500 review](docs/pdc-http500-local-review.md) completed using
+  captured evidence/local code only. Nine helper hashes match the original bundle.
+  Captured500 precedes parsing; only operation/method/status were retained, no
+  error body/correlation headers. Three synthetic replay cases PASS, real network
+  disabled. Pickup/city/product/parcel fields are not transmitted in this GET.
+  No local defect or safe configuration correction established; cause UNKNOWN.
+  PDC CONNECTION stays BLOCKED. No retry, credential decryption or live PDC probe.
+  Private parent pdc-http500-offline-review-20261021/ REVIEW-RECEIPT.json SHA256
+  255d1a65c04d6b34048fac58654e20c6431a37619a036864ce9be54d5070ca95.
+- Next bounded step: prepare one-request GetProducts error-capture diagnostic for
+  separate review/approval; this review is not an executable command or permission
+  to retry. Keep all provider/booking/automation, checkout and signup gates off.
+  Controlled provider acceptance remains separate. Mandatory WordPress customer
+  identity/old-login compatibility, private profiles/details, billing/shipping
+  addresses and historical orders remain before unrestricted signup. Preserve
+  Auth UUIDs, avoid duplicates and prevent imported commerce/financial transactions.
+  Real stock, fees, delivery, parcel and callback acceptance precede public purchase.
+
 # Paymob helper staging PASS; owner-console restart pending — 2026-10-21
 
 - Started clean at `5c2c4d7`, one commit ahead of origin/main. Owner explicitly
