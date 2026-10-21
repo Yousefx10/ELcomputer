@@ -5,12 +5,23 @@ import {resolve,join} from 'node:path'
 import {tmpdir} from 'node:os'
 import {execFile} from 'node:child_process'
 import {promisify} from 'node:util'
-import {argumentsFor,digest,remoteCommand,approvalState} from '../scripts/footer-release/operator.mjs'
+import {argumentsFor,digest,remoteCommand,approvalState,saveActivationReceipt} from '../scripts/footer-release/operator.mjs'
 import {migrations,hash,applyMigration,checkDatabase,snapshot,schemaState,assertAdditive,footerMigrationHash} from '../scripts/footer-release/database.mjs'
 import {json as certificateJson} from '../scripts/lib/cleanBaseline.mjs'
 import {createEmailNativeDatabase,emailNativeAvailable} from './helpers/emailNativeDatabase.mjs'
 import {createProductSaveFixture} from './helpers/productSaveFixture.mjs'
 const run=promisify(execFile),repo=resolve('.')
+test('activation evidence preserves the preparation snapshot and refuses overwriting its first receipt',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'footer-activation-')),before={current:'retained-production'},after={current:'approved-footer'}
+ try{
+  await writeFile(directory+'/runtime-after.json',JSON.stringify(before))
+  await saveActivationReceipt(directory,after)
+  assert.deepEqual(JSON.parse(await readFile(directory+'/runtime-after.json','utf8')),before)
+  assert.deepEqual(JSON.parse(await readFile(directory+'/runtime-after-activation.json','utf8')),after)
+  await assert.rejects(()=>saveActivationReceipt(directory,{current:'unapproved-retry'}),{code:'EEXIST'})
+  assert.deepEqual(JSON.parse(await readFile(directory+'/runtime-after-activation.json','utf8')),after)
+ }finally{await rm(directory,{recursive:true,force:true})}
+})
 test('footer release selects only approved88 and preserves all historical source bytes',async()=>{
  const r=await migrations(repo);assert.equal(r.history.length,87);assert.equal(r.pending.length,1);assert.equal(r.pending[0].sha256,footerMigrationHash)
  for(const name of ['scripts/commerce-release/operator.mjs','scripts/commerce-release/database.mjs','scripts/live-sales-release/operator.mjs','scripts/live-sales-release/database.mjs','scripts/live-sales-release/remote.py'])assert.equal(hash(await readFile(name)),hash((await run('git',['show','8181953:'+name],{encoding:'buffer'})).stdout))

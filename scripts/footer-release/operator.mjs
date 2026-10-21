@@ -14,6 +14,7 @@ export {digest,approvalState}
 const run=promisify(execFile),here=dirname(fileURLToPath(import.meta.url)),repo=resolve(here,'../..'),load=async file=>JSON.parse(await readFile(file,'utf8'))
 const scope={schema:'87->88',runtime_change:false,caddy_change:false,provider_calls:false,public_checkout:false,signup:false}
 const save=(file,value)=>writeFile(file,JSON.stringify(value,null,2)+'\n',{flag:'wx',mode:0o600})
+export const saveActivationReceipt=(work,value)=>save(work+'/runtime-after-activation.json',value)
 const cleanEnv=()=>({PATH:dirname(process.execPath)+':/usr/local/bin:/usr/bin:/bin',HOME:process.env.HOME,LANG:'C',NODE_ENV:'production'})
 const exited=child=>new Promise((res,rej)=>{child.once('error',rej);child.once('close',res)})
 export function argumentsFor(args){
@@ -130,7 +131,7 @@ export async function apply(options){
     phase='migration88';const db=await connect(plan.target,{readOnly:false});let applied
     try{applied=await applyMigration(db,release,{beforeMigration:state=>assert.deepEqual(approvalState({...state,read_only:'on'}),approvalState(plan.database),'Locked data drift'),beforeCommit:receipt=>save(work+'/database-before-commit.json',receipt)})}finally{await db.end()}
     await save(work+'/database-applied.json',applied)
-    phase='activation';await save(work+'/runtime-after.json',await remote(plan,'activate',{approved:plan.seal,sql:{plan_sha256:plan.seal,migration_sha256:footerMigrationHash,schema:88,additive_schema:'PASS'}}))
+    phase='activation';await saveActivationReceipt(work,await remote(plan,'activate',{approved:plan.seal,sql:{plan_sha256:plan.seal,migration_sha256:footerMigrationHash,schema:88,additive_schema:'PASS'}}))
     phase='public verification';await save(work+'/http-after.json',await publicHealth(plan));assert.deepEqual(await authState(plan.target),plan.auth)
     phase='database preservation';const verified=await connect(plan.target)
     try{await verified.query('begin isolation level repeatable read read only');const state=await checkDatabase(verified,release,{after:true});assertAdditive(plan.database.schema,state.schema);const stableRows=applied.before.filter(t=>!['public.store_analytics_sessions','public.store_analytics_events'].includes(t.schema+'.'+t.name));await compareOriginal(verified,stableRows,{authSecurity:applied.auth_security});await verified.query('commit');await save(work+'/database-after.json',state)}finally{await verified.end()}

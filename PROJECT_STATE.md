@@ -8,15 +8,15 @@
   operators, seals and original 87 migration bytes remain unchanged. Relative to
   accepted production source, only 14 footer UI/locale files differ; server code,
   dependencies, previous locale namespaces and provider functions are identical.
-- New candidate `fa8d45ebea38b795`: 7,322,253-byte archive, 1,468 strict inventory
+- New candidate `d1b10bb664e15a67`: 7,319,708-byte archive, 1,468 strict inventory
   entries, 428 retained client assets. Clean Node 22.23.1/npm 10.9.8 build, empty dotenv,
   unchanged lockfile and independent full extraction/inventory checks PASS.
 - Final owner-review plan digest:
-  `d127ee4c2f1d53d392637125b5bd61337616abaf5ca0bdd75eafdab02cd61e2a`.
-  Private plan: parent modern-footer-release-preparation-20261021/prepared/plan.json.
+  `768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214`.
+  Private plan: parent modern-footer-release-preparation-20261021/prepared-final/plan.json.
   Qualification evidence, target, current runtime/data/security state, tool/source/
   migration/output/recovery hashes are bound. Do not edit/reseal/retry a consumed plan.
-- Fresh encrypted DB backup 9, 061,304 bytes and runtime backup 2,272,910 bytes/10 files
+- Fresh encrypted DB backup 9,067,458 bytes and runtime backup 2,272,910 bytes/10 files
   passed authenticated decryption and complete parser/file-byte readback. They
   include current Paymob-containing environment, units/Caddy and recovery tools.
   Existing release/media/private files remain untouched; another fresh encrypted
@@ -27,7 +27,7 @@
   pass 22 tests; three original mock email tests pass with a referenced loop handle.
   Retired Nginx source pins are not reapplied to Caddy. No historical guard or app
   code was weakened. Full original suite remains 996 pass/8 fail/2 cancelled/83 skips.
-- Current new-release/Paymob/PDC/COD native safety: 58 PASS, 0 fail/skips; remote phase
+- Current new-release/Paymob/PDC/COD native safety: 59 PASS, 0 fail/skips; remote phase
   failure/approval/corruption tests: 6 PASS. Exact asset-retaining artifact: 102 browser
   assertions/17 screenshots PASS, EN/AR/RTL, Light/Dark, three sizes, saves/reloads,
   permissions and actual SSR/hydration. No browser errors or real provider requests.
@@ -37,7 +37,7 @@
   old database restore or automatic rollback is authorized. Any recovery needs its
   own reviewed guard/approval after inspecting the exact failed phase.
 - Production stays `d2d7a8029b473e4a`/schema 87, Caddy and service unchanged. Read-only
-  preparation preserves 2,613 media files/410, 096,992 bytes, Auth/settings/products,
+  preparation preserves 2,613 media files/410,096,992 bytes, Auth/settings/products,
   Paymob/PDC configuration and disabled payment/provider/checkout/signup gates.
   No staging directory/new release was created remotely; no migration, restart,
   deployment attempt, Caddy edit, provider request, diagnostic retry or Git push.
@@ -47,9 +47,11 @@
   fresh backups, private candidate, locked 87→88 preservation, one app switch/restart
   and post-release health/hold/data checks are mandatory. STOP means preserve state;
   never repeat apply, delete receipts, invoke old operators or bypass drift guards.
+- The earlier preparation seal is superseded without execution. The final operator
+  preserves preparation/activation receipts separately and refuses overwriting.
 - Final post-commit read-only check and consolidated evidence are recorded in the
-  private review receipt. Owner production browser/save acceptance remains pending
-  successful deployment. Keep UI Improvement 2 held, PDC awaiting clarification/
+  private FINAL-PREPARATION-RECEIPT.json. Owner production browser/save acceptance
+  remains pending successful deployment. Keep UI Improvement 2 held, PDC awaiting clarification/
   support, WordPress identity/profile/address/history migration, controlled provider
   acceptance, verified stock/delivery and later public purchasing approval intact.
 

@@ -6,8 +6,8 @@ The owner approved preparing a separate guarded release for application commit
 `8181953a7678b36fd4643d1ce52a0b96f65d8136` and migration 88. This is a new binding
 through the established Caddy/systemd phases. Completed 82→85 and 85→87 tools,
 certificates and seals remain unchanged and are never invoked by this release.
-No production staging, migration, activation, restart, configuration edit, provider
-request or Git push occurred during preparation.
+This preparation performed no production staging, migration, activation, restart,
+configuration edit, provider request or Git push.
 
 ## Exact candidate and scope
 
@@ -15,24 +15,28 @@ request or Git push occurred during preparation.
 | --- | --- |
 | Application commit | `8181953a7678b36fd4643d1ce52a0b96f65d8136` |
 | Existing release/schema | `d2d7a8029b473e4a` / 87 |
-| Candidate release | `fa8d45ebea38b795` |
-| Final plan digest | `d127ee4c2f1d53d392637125b5bd61337616abaf5ca0bdd75eafdab02cd61e2a` |
+| Candidate release | `d1b10bb664e15a67` |
+| Final plan digest | `768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214` |
 | Migration 88 SHA256 | `4ebb4fc58ccd274116ab8c5f3a254cb3e1270489cf556f61abace0cbcc2db331` |
-| Release archive | 7,322,253 bytes; 1,468 inventory entries |
+| Release archive | 7,319,708 bytes; 1,468 inventory entries |
 | Retained immutable client assets | 428, each independently checked |
 | Production mutations/deployment attempts | 0 / 0 |
 
 | Verified artifact | SHA256 |
 | --- | --- |
-| Output archive | `fa8d45ebea38b795d63c45df51a4e1d7d1f85455ac480ee1f836491fd40f7cd4` |
-| Output inventory | `c91d7906969efdb695d7fdeb785de68be0d63e217fdb9209f50eb15b449c2613` |
-| Encrypted database backup | `a7a2cf4ab50e32ccb28e67f59c0021b3c4b4e086e3673534b924eeaaa59857eb` |
-| Encrypted runtime backup | `74e4d154942cdf4cfab6d60bd3add4fe4917d438b226021ed2d6103327df4f9f` |
+| Output archive | `d1b10bb664e15a6721d863ba05837a325f4f2764ba889ef8e36b5d31618c6a34` |
+| Output inventory | `d07eb8ed79f67bfaf2fd8643962a543de3d3be746d278d2c3951a01332973ea8` |
+| Encrypted database backup | `f3e21c094e7c5958753a1b6ff4d50fdd3a6ec8ceb5374b37d82a7393faa9492a` |
+| Encrypted runtime backup | `400387305a9e0302a76edd9a07c159216f5258ebcde096c858a3410274c993f1` |
 
 The private target configuration binds the existing machine, strict SSH identity,
 database/TLS identity, `/srv/storefront`, `storefront.service`, runtime environment,
 decoder, private directories and accepted Caddy configuration. No application
 store identity or deployment target is hardcoded in reusable application logic.
+
+Use only `prepared-final/plan.json`. The earlier `prepared/` seal was superseded
+before execution. Activation and preparation runtime receipts use separate,
+exclusive paths; the receipt preservation test passes.
 
 The new `scripts/footer-release/` operator permits only 87→88. It verifies the
 exact 88 migration membership/source bytes, all original 87 identities/statements,
@@ -53,7 +57,7 @@ as existing protected data/environment, never printed, entered or changed.
 ## Backup and artifact verification
 
 A fresh read-only full database dump was encrypted with the existing protected
-backup key: 9,061,304 encrypted bytes. Authenticated full decryption, `pg_restore`
+backup key: 9,067,458 encrypted bytes. Authenticated full decryption, `pg_restore`
 TOC inspection and a full `pg_restore --file=/dev/null` readback pass. The runtime
 recovery archive has 2,272,910 encrypted bytes covering 10 original files, including
 the current credential-containing runtime, units/drop-ins, Caddy configuration,
@@ -104,7 +108,7 @@ was found for this disabled, footer-only release:
 All adaptations are in disposable review contexts outside this checkout. Original
 application and historical tests/guards remain intact. The adapted fixture run
 passes 22 tests; the exact frozen 82 context passes 2. Additional native release,
-Paymob, PDC and COD safety verification passes 58 tests, zero failures/skips. Six
+Paymob, PDC and COD safety verification passes 59 tests, zero failures/skips. Six
 owned remote-phase tests cover approval/scope rejection, output corruption,
 uncommitted SQL refusal and failed-activation evidence/no retry/no rollback.
 These results do not certify live merchant payments, shipments, Daftra COD or
@@ -113,7 +117,7 @@ future provider acceptance. Those workstreams remain separately gated.
 ## Final approval and one execution
 
 Private plan:
-`/Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared/plan.json`.
+`/Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json`.
 
 The owner should pause Dashboard content/product/provider edits until release
 verification finishes. Normal anonymous storefront activity may continue: only
@@ -126,19 +130,19 @@ analytics, are locked where permitted and compared using their original columns.
 The exact owner approval phrase is:
 
 > APPROVE MODERN FOOTER DEPLOY
-> d127ee4c2f1d53d392637125b5bd61337616abaf5ca0bdd75eafdab02cd61e2a
+> 768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214
 
 This preparation approval does not authorize execution. After the final phrase,
 the agent runs these commands once from the repository, using the pinned Node:
 
 ```sh
-/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs check /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared/plan.json
+/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs check /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json
 ```
 
 The check is read-only and must pass. Then execute exactly:
 
 ```sh
-/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs apply /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared/plan.json --approved d127ee4c2f1d53d392637125b5bd61337616abaf5ca0bdd75eafdab02cd61e2a
+/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-release/operator.mjs apply /Users/imac/Documents/ELcomputer/modern-footer-release-preparation-20261021/prepared-final/plan.json --approved 768e8bdcc7a50dc5f8586ba907edde10a8e8a6a9261248668c4426918fcda214
 ```
 
 Execution first consumes one exclusive intent and repeats all live preservation
