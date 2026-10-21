@@ -34,7 +34,8 @@ for personal secret entry. PDC is saved and disabled. Its
 GetProducts HTTP500; no retry or city lookup ran.
 The owner reports all 24 Paymob configuration/safety checks passed; saved LIVE
 inputs still need loading. The [controlled app restart](docs/paymob-controlled-restart.md)
-is prepared and awaits separate owner approval. The earlier
+is approved. Helper staging and live read-only preflight passed; owner-console
+restart execution remains pending. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST

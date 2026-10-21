@@ -1,3 +1,41 @@
+# Paymob helper staging PASS; owner-console restart pending — 2026-10-21
+
+- Started clean at `5c2c4d7`, one commit ahead of origin/main. Owner explicitly
+  approved reviewed helper staging and exactly one guarded storefront.service
+  restart. Follow [approved short console steps](docs/paymob-controlled-restart.md).
+  No new approval is needed for that sequence; never execute a second attempt.
+- Pinned SSH verified the existing machine/current release, original unit/Caddy
+  hashes, root600 runtime custody, active services and absent staging target/guard.
+  Created ONLY /root/paymob-restart (root0700) and run.py (root0600), using exclusive
+  no-follow creation. Separate SSH readback matched full bytes/hash/ownership/mode.
+  Reviewed helper SHA256 remains
+  e7349870a6e35d5c9dbdd477ceb8f7120232342958eab1b0434064bc3365d831.
+- At 12:13:06 UTC, native production read-only `pre` returned PRE_RESTART PASS.
+  All prior configuration/disablement checks, saved-but-not-loaded state, service/
+  release bindings, Caddy stability and public/loopback health passed. No restart,
+  runtime guard, manager reload or attempt receipt was created by the agent.
+- Owner was given three short separate root-console commands: pre, once --approved,
+  post. Owner output is PENDING. Final CONTROLLED_RESTART PASS is NOT established.
+  After reported success, inspect receipts, health and original restart policy
+  read-only; do not rerun once or completed post. Any BLOCKED/uncertain result means
+  stop, preserve evidence, no automatic retry, rollback, restore or repair.
+- Private local evidence: parent paymob-approved-restart-staging-20261021/,
+  directory0700/files0600, outside Git. STAGING-RECEIPT.json SHA256
+  65d3fb61a7bd6ed5d8c232939e7ad29c2b3bc05b42863f999a90e5221cdadd47.
+  PRE-RESTART-RECEIPT.json SHA256
+  bebaddf941871297d3a41523b533dfb6face6f56c94f1fa4d94c328620c01052.
+  Service PIDs/states unchanged across staging. No production data/Auth/media/
+  inventory write, provider request, credential exposure, migration, deployment,
+  gate activation or push. Current app release remains d2d7a8029b473e4a; schema87
+  remains the accepted release baseline, not a new SQL schema observation.
+- ONE next owner action: execute the approved console sequence and return only
+  PASS/BLOCKED lines. Keep charging, PDC outbound/booking/automation, checkout and
+  signup disabled. Retain PDC GetProducts HTTP500 investigation under new bounded
+  approval, controlled provider acceptance and mandatory WordPress customer/Auth/
+  old-login/private-profile/address/historical-order migration. Preserve UUIDs,
+  avoid duplicate identities and prevent imported financial/commerce transactions
+  before unrestricted signup and the first public purchase.
+
 # Paymob controlled restart prepared; owner approval pending — 2026-10-21
 
 - Started clean at `9de4ec3`, main aligned with origin/main. Owner reports all

@@ -1,10 +1,15 @@
 # Paymob credential-loading restart preparation — 2026-10-21
 
-**Preparation PASS. Execution awaits separate owner approval. Nothing restarted.**
+**Owner approval received. Staging PASS. Read-only pre-restart checks PASS.**
+
+At 12:13:06 UTC, the staged helper passed production `pre`. No restart has been
+executed by the agent. The approved `pre`, `once --approved`, `post` sequence is
+reserved for the owner's Hostinger root console. Final restart/health/policy
+acceptance remains pending those results and read-only receipt verification.
 
 The owner reports all 24 configuration/safety checks PASS. Only
 `SAVED_VALUES_LOADED` was BLOCKED. This establishes the restart need from the
-owner's result; the agent has made no new production observation.
+owner's result. The agent subsequently verified staging and ran read-only `pre`.
 
 ## Exact service and scope
 
@@ -27,33 +32,34 @@ they do not restart Caddy or other services. The original service fragments,
 existing drop-ins and runtime.env remain unchanged. Environment-file edits alone
 would not require a daemon-reload; the temporary no-retry guard does.
 
-## Prepared helper and staging boundary
+## Reviewed helper and verified staging
 
-The helper is **local only**, not installed on production:
+The reviewed local source remains protected outside Git:
 
 `/Users/imac/Documents/ELcomputer/paymob-controlled-restart-20261021/run.py`
 
-After explicit approval, stage only that inert helper using the existing pinned
-SSH target/key/known-host binding. Require `/root/paymob-restart` to be absent;
-stop if it exists. Create root0700 directory and root0600 regular `run.py` with
-exclusive/no-follow creation. Independently read back full bytes, SHA256,
-ownership and permissions before execution. Do not stage credentials, recovered
-secret archives or runtime.env. Staging is diagnostic preparation, not a Nuxt
-release deployment. No root-console script block or encoded payload is needed.
+Owner-approved staging used the existing pinned SSH target/key/known-host binding.
+The target directory was absent. Exclusive/no-follow creation produced root0700
+directory and root0600 regular `run.py`. A separate SSH connection read back all
+bytes, SHA256, ownership and permissions; all matched the reviewed source. Both
+service PIDs/states stayed unchanged. Only the inert helper was transferred.
+No credential, recovered secret archive or runtime.env was staged. No Nuxt release
+deployment, service operation or provider call occurred. Do not repeat staging.
 
-Prepared staging target for the forthcoming approval:
+Verified production helper:
 `/root/paymob-restart/run.py`.
 Helper SHA256:
 `e7349870a6e35d5c9dbdd477ceb8f7120232342958eab1b0434064bc3365d831`.
 
-The approval scope must include this staging, the temporary app-only guard,
-the two manager definition reloads, exactly one application restart and an app-only
-containment stop if verification fails after that restart. No execution approval
-has been given for this task. The CLI approval flag is not permission by itself.
+The owner approved this staging, temporary app-only guard, two manager definition
+reloads, exactly one application restart and app-only containment stop on failure
+after restart. No further approval is needed for the documented owner sequence.
+The CLI approval flag is not permission by itself. Do not execute `once` from an
+agent session while the owner console attempt is pending.
 
 ## Short Hostinger root-console commands
 
-**Do not run these until owner approval and verified helper staging.**
+**Approval and verified helper staging are complete. Use the owner console.**
 Run one line at a time. Stop immediately on any BLOCKED, unexpected output,
 interruption, timeout or missing success line. Do not repeat a failed command.
 
@@ -167,13 +173,24 @@ restart or corrective file edit needs a separately reviewed owner instruction.
 
 Forty-nine local synthetic safety cases passed: 27 inherited validator cases,
 19 restart/containment cases and three exact runtime-guard verification cases.
-No real Linux service execution or production connection occurred in preparation.
+No Linux service operation or production connection occurred in local preparation.
+Approved staging has now passed on production, followed by native read-only `pre`.
 Private artifacts are directory0700/files0600, outside Git. Reviewed receipt:
 `paymob-controlled-restart-20261021/PREPARATION-RECEIPT-final.json`.
 Receipt SHA256:
 `0a148bba87242601ea563822d8e2c03d353a6950dc4141b48f4ba15c1f6f74bf`.
 
-Next action: owner approves this exact helper staging and controlled app restart.
+Staging evidence is protected outside Git, directory0700/files0600:
+`paymob-approved-restart-staging-20261021/`.
+`STAGING-RECEIPT.json` SHA256:
+`65d3fb61a7bd6ed5d8c232939e7ad29c2b3bc05b42863f999a90e5221cdadd47`.
+`PRE-RESTART-RECEIPT.json` SHA256:
+`bebaddf941871297d3a41523b533dfb6face6f56c94f1fa4d94c328620c01052`.
+No ATTEMPT/VERIFIED/SUCCESS receipt was created by the agent. Restart is unexecuted.
+
+Next action: owner runs the approved three short console commands, one at a time,
+and returns only PASS/BLOCKED lines. After success, verify receipts, health and
+original restart policy read-only; do not rerun `once` or completed `post`.
 Paymob loading is not payment acceptance. Charging, PDC booking/automation, customer
 checkout and signup remain disabled. PDC GetProducts HTTP500 investigation remains
 pending under a new bounded approval; the earlier one-run permission is consumed.
