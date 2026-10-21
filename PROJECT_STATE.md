@@ -1,3 +1,59 @@
+# Owner acceptance PASS; existing provider configuration pending — 2026-10-21
+
+- Owner reports release d2d7a8029b473e4a/schema87 passed Dashboard, Products/images,
+  Orders, Shipping, Quick Setup and browse-only browser acceptance. That deployment
+  milestone is complete. Do not request those checks again or rerun the release.
+- Current task is secure configuration of the owner's EXISTING Paymob/PDC accounts,
+  using existing Quick Setup/editors and protected runtime. No integration rebuild,
+  deployment, migration, service restart, provider request, live transaction,
+  inventory/Auth change, Caddy investigation or Git push was performed by this task.
+  Owner explicitly confirms credentials are NOT ENTERED; continue the private guide.
+- [Exact owner setup guide](docs/provider-configuration.md). Quick Setup Commerce & Payments →
+  Paymob → Open payment settings links to /dashboard/settings?tab=payments (Card/fee, no secret form).
+  Live Secret/Public/HMAC/integration ID plus both live modes belong in root 0600
+  /etc/storefront/runtime.env, personally edited in the owner's private console.
+  Existing sudoedit/vi/nano are available. Save first; masked gate/file verification
+  precedes a later controlled runtime reload. No secret values in chat/tool outputs/Git.
+- PDC: Quick Setup Shipping & ERP → Shipping configuration → /dashboard/commerce?tab=shipping → PDC API. Existing
+  password inputs/AES-256-GCM protect token and independent 32+ character webhook
+  secret. Blank replacements preserve secrets; successful saves clear entry fields.
+  Account/mode, actual pickup contact/address/phone/city, product, actual weight,
+  Normal (1), agreed PDF template and service choices require owner entry/confirmation.
+  Shipping Companies needs provider PDC, actual coverage and customer delivery price;
+  carrier/return costs are separate. Do not invent IDs, stock or free fees.
+- Pinned SSH + read-only database at 00:12:24 UTC confirm exact release/schema87,
+  running PID 25021, runtime root 0600, all four outbound flags off. Paymob keys/ID
+  absent, test-mode defaults. Shipping encryption ready; PDC token/webhook/company/
+  product/pickup absent, caches empty, shipping companies 0. Parcel/template defaults
+  exist but are not verified business facts. RLS and denied browser SELECT remain.
+  All five payment flags, provider, automatic labels and reverse remain off.
+  Orders/payment attempts/normal/reverse jobs/dispatches remain 0.
+- Five fresh public GETs at 00:13:49 UTC return 403 for Paymob/PDC callbacks,
+  capabilities, checkout and signup. Callback reachability is NOT accepted.
+  Exact future receivers/return URLs and Paymob Live Settings navigation are in
+  the guide. Preserve active WordPress callbacks until a controlled reachable cutover.
+- Diagnostics reviewed BEFORE use: Quick Setup/Paymob checks are local shape/
+  presence checks, not account authentication. No Paymob read-only connection
+  button exists. PDC Test GETs GetProducts; Sync GETs products/cities, writes local
+  caches; both claim a throttle and audit locally. Neither creates shipments/labels.
+  Calls were NOT_EXERCISED because server gate remains off. UI also requires
+  provider enabled, while API supports disabled-provider lookups with an approved
+  server gate: confirmed narrow UI/API mismatch, not fixed or redeployed here.
+  Do not enable providers/bookings or weaken the gate merely to make checks green.
+- Paymob BLOCKED / PDC BLOCKED pending personal owner entry. Private sanitized
+  evidence: provider-configuration-20261021/configuration-readiness.json, SHA256
+  2531850920e284dbced287a854c616ddbfdb9200f20ad1db827b03377ba9a347.
+  Masked inspection PASS; remote/provider connectivity remains NOT_VERIFIED.
+- ONE next action: follow the guide's personal entry steps; report only "PDC saved"
+  and/or "Paymob file saved; not restarted" for masked verification. Do not send
+  credentials, identifiers, addresses, screenshots of secrets or provider responses.
+- Prioritized roadmap remains existing-provider private configuration; REQUIRED
+  WordPress identity/old-login compatibility/private profiles/phones/addresses/
+  historical orders before unrestricted signup; controlled payment/shipment
+  acceptance; separately approved public checkout. Preserve Auth UUIDs, prevent
+  duplicate identities and all historical-import commerce effects. Verify real
+  stock, actual coverage/charges/parcels, customer access and callbacks first.
+
 # Paymob/PDC disabled production release PASS — 2026-10-21
 
 - Owner approved corrected seal

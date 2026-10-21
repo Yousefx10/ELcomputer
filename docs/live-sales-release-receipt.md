@@ -1,6 +1,12 @@
 # Paymob/PDC disabled production release — 2026-10-21
 
-**DEPLOY PASS. Owner browser acceptance pending. Do not rerun.**
+**DEPLOY PASS. Owner browser acceptance PASS. Do not rerun.**
+
+The owner subsequently reported all listed browser checks passed on 21 October:
+Dashboard, Products/images, Orders, Shipping, Quick Setup and browse-only holds.
+The original execution receipts retain their historical pending-browser state.
+Next is [private existing-account configuration](provider-configuration.md);
+the owner confirms provider credentials have not yet been entered.
 
 The owner approved the corrected release at `108d9df` and said Dashboard editing
 would be paused. The exact reviewed operator ran once using only
@@ -114,7 +120,9 @@ Do not rerun either release command or the completed 82→85 operator.
 On any later failure, preserve evidence for reviewed forward correction; the
 [recovery limits](live-sales-release.md#recovery-and-acceptance) still apply.
 
-## Short owner browser acceptance
+## Completed owner browser acceptance
+
+The owner reports PASS for these checks. No repeat is requested.
 
 Use the existing owner account at `https://elcomputer.net`. Inspect without saving,
 enabling providers, entering credentials or creating commerce transactions.
@@ -127,8 +135,8 @@ enabling providers, entering credentials or creating commerce transactions.
 3. In a private window, confirm storefront images load and checkout/signup remain
    blocked. Do not submit an order or payment.
 
-**One next action:** report PASS/FAIL for these three checks. After acceptance,
-immediately prioritize configuring the owner's existing Paymob/PDC accounts through
+The browser acceptance milestone is complete. Current work prioritizes
+configuring the owner's existing Paymob/PDC accounts through
 Quick Setup's existing destinations. PDC uses its protected settings editor;
 Paymob secrets use the existing protected runtime, not a new Quick Setup secret form.
 This deployment approval does not enable those accounts or authorize live calls.

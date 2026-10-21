@@ -2,7 +2,8 @@
 
 The corrected owner-approved deployment returned
 [DEPLOY PASS](live-sales-release-receipt.md): release `d2d7a8029b473e4a`, schema87.
-Owner browser acceptance remains pending. All purchase/provider gates remain off.
+Owner browser acceptance passed. All purchase/provider gates remain off.
+Current work is [private existing-account configuration](provider-configuration.md).
 The earlier [blocked attempt](live-sales-release-blocked-receipt.md) and subsequent
 [Auth correction](live-sales-auth-preflight-resolution.md) remain historical.
 Both approvals are consumed. Do not rerun either release command.

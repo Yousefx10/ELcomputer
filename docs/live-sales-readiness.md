@@ -2,7 +2,8 @@
 
 The [disabled production release](live-sales-release-receipt.md) passed with
 schema87, reusing both existing integrations and Quick Setup. Owner browser
-acceptance remains pending. No provider was enabled or contacted.
+acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
+Credentials are not yet entered; no provider was enabled or contacted.
 The owner accepted all six customer-access pages; that milestone stays closed.
 
 ## Existing implementation retained
@@ -93,9 +94,10 @@ coverage, disk persistence, a reachable callback or a running scheduler.
 
 ## First controlled purchase prerequisites
 
-1. Complete the [disabled release's owner browser acceptance](live-sales-release-receipt.md).
-   Migrations86–87, the exact application and private document runtime are deployed;
-   native Linux/systemd sandbox and read-only release checks passed.
+1. The [disabled release and owner browser acceptance](live-sales-release-receipt.md)
+   passed. Migrations86–87, the exact application and private document runtime are
+   deployed; native Linux/systemd sandbox and read-only release checks passed.
+   Continue [secure private provider configuration](provider-configuration.md).
 2. Physically verify saleable SKUs and receive actual units through existing
    procurement/inventory. Select active warehouses. Do not edit the original
    imports to fabricate stock. Last production observations showed no saleable
