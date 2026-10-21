@@ -1,3 +1,56 @@
+# Offline Paymob recovery PASS; current account confirmation pending — 2026-10-21
+
+- Started clean at `6f4eba7`. [Sanitized recovery report](docs/paymob-offline-recovery.md).
+  Offline data-only work: zero provider/production connections, production writes,
+  credential entry, WordPress/PHP/SQL execution, cron/email, deployment/restart,
+  callback activation or push. No new live-state probe. Last live release/schema
+  remains the preceding d2d7a8029b473e4a/schema87 evidence, not a fresh observation.
+- LIVE and TEST Secret/Public pairs, legacy API key and HMAC FOUND. Whole main/
+  legacy settings and all six credentials agree across both authenticated SQL
+  snapshots and original WPvivid. Main enabled=yes/mode=live; active pair equals
+  explicit LIVE fields. Separate TEST fields preserved; legacy gateway disabled.
+  No recovered credential was printed or copied to production. API key is NOT the
+  Nuxt Intention Secret Key. HMAC comes from legacy hmac_hidden/callback contract.
+- API key contains a profile_pk claim: private profile/account-reference candidate
+  FOUND, signature UNVERIFIED. Explicit merchant_id not separately found in
+  inspected settings/key claims. Historical store association is plausible; current
+  owner account identity, credential validity/rotation and permissions UNVERIFIED.
+- One LIVE and one TEST EGP Card integration FOUND. Each matches cached type/mode,
+  individual options, both later wp_paymob_gateways tables and original generated
+  gateway filenames. Two agreeing registry aliases share the LIVE ID; not a second
+  conflicting integration. Exact IDs remain private. Cached MOTO/3DS flags require
+  current confirmation; do not choose TEST by its Card label.
+- Active original plugin Paymob for WooCommerce 4.1.12. Its manual/partner setup
+  derives BOTH processed/response URLs from home_url plus wc-api=paymob_callback:
+  main/original https://elcomputer.net/?wc-api=paymob_callback; archive home differs
+  at old.elcomputer.net. Registration is NOT established by this source derivation.
+  Per-order WC()->api_request_url('wc-paymob-card') also present; no invented exact
+  registered URL. No callback was probed or changed.
+- Custody: 466/465-schema snapshots authenticate and match accepted pins; all 22
+  original WPvivid hashes pass, 43,949 bounded code/config reads. Three encrypted
+  home archives authenticate/match pins; 65,809 additional bounded reads (overlap),
+  84 protected config candidates total. No extra configured Paymob values detected
+  in protected configs. Existing source packages/encrypted custody remain untouched.
+- Protected local owner report: parent paymob-offline-recovery-20261021/
+  OWNER-RECOVERY-REPORT.md (directory0700/files0600). Exact profile/IDs and secret
+  fingerprints only; all secret values retained in authenticated encrypted evidence
+  and owner-recovered-credentials.json.enc. Nine new envelopes authenticate; exact
+  plaintext secret scan PASS. owner-secret-copy.py used ONLY --check, no clipboard.
+  RECOVERY-RECEIPT.json SHA256
+  6a6dd45572e08369ff25d4e64dee02c597241fd4ea78d315ec6fd138260c5e0b.
+- ONE next owner action: compare that private report with EXISTING Paymob Dashboard
+  LIVE account/profile, actual live Secret/Public pair, current HMAC and active
+  online EGP card ID/Intention compatibility. Reply only MATCHED/DIFFERENT/UNCLEAR
+  plus field names, never values. Then personal six-field root0600 server entry,
+  preserve other settings and all false gates, save without restart. No automatic
+  copy, payment, activation or deploy is authorized by historical recovery.
+- PDC prior GetProducts HTTP500 remains BLOCKED; consumed one-run approval must not
+  be retried. Required next workstream preserved: WordPress identities/old-login,
+  private details/profiles, billing/shipping addresses and historical orders into
+  Supabase, preserving Auth UUIDs, preventing duplicates and financial/commerce
+  effects, before unrestricted signup. Controlled acceptance/public purchases retain
+  separate owner approval and real stock/fee/parcel/customer/callback prerequisites.
+
 # Approved one-run PDC diagnostic BLOCKED; address resolved — 2026-10-21
 
 - Started clean at `f62830a`. Owner explicitly approved one isolated diagnostic

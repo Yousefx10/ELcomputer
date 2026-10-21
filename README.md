@@ -34,6 +34,8 @@ for personal secret entry. PDC is saved and disabled. Its
 GetProducts HTTP500; no retry or city lookup ran.
 Paymob entry is pending. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
+[Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST
+keys, HMAC and card IDs. Current-account confirmation remains owner-only.
 Historical PDC inputs are now available through
 [protected offline recovery](docs/pdc-offline-recovery.md); no automatic production copy ran.
 The [readiness guide](docs/live-sales-readiness.md) covers controlled configuration.

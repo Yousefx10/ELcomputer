@@ -15,6 +15,13 @@ The address difference is an Arabic HEH/TEH MARBUTA spelling variant, with match
 numeric details. No material location change was found; no address was changed.
 Product/city caches remain empty. No provider activation or credential entry ran.
 
+The later [offline Paymob recovery](paymob-offline-recovery.md) found matching
+LIVE/TEST Secret/Public pairs, legacy API key, HMAC and LIVE/TEST EGP card IDs in
+both preserved snapshots and original WPvivid settings. The profile reference is
+an unverified API-key claim; current account/credential validity remains unverified.
+The owner must compare the protected report with the existing LIVE Dashboard
+before personal entry. No historical credential was copied into production.
+
 [Offline WordPress recovery](pdc-offline-recovery.md) supplied the historical PDC
 account, pickup details, token and compatible webhook secret in three agreeing
 sources. Exact values are in the protected local owner report; credentials remain
