@@ -69,6 +69,12 @@ records the earlier access execution, acceptance and recovery.
 Migrations86–87 and their matching application are now deployed.
 Live charging, real booking and checkout remain disabled.
 
+The [Modern Footer replacement](docs/modern-footer.md) is implemented locally.
+Its [validation receipt](docs/modern-footer-validation.md) records responsive,
+localized Dashboard persistence and SSR checks. Deployment remains blocked on a
+separate reviewed schema87→88 binding; completed release operators stay unchanged.
+Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
+
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
 See [reproducible builds](docs/dependency-reproducibility.md) for the clean-install
 procedure, lockfile correction and release authority.

@@ -1362,7 +1362,7 @@
                 <input v-model="siteSettings.footer_style" type="radio" :value="option.value" class="mt-1">
                 <span>
                   <strong class="block text-gray-900">{{ $uiLabel(option.label) }}</strong>
-                  <span class="mt-1 block text-sm text-gray-500">{{ option.description }}</span>
+                  <span class="mt-1 block text-sm text-gray-500">{{ option.value === 'modern' ? $t('modernFooter.styleDescription') : $uiLabel(option.description) }}</span>
                 </span>
               </label>
             </div>
@@ -1403,118 +1403,13 @@
             </div>
           </div>
 
-          <div v-else class="mt-6 space-y-5">
-            <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">{{ $t('common.leftCard') }}</h4>
-              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.editTheImageMessageAndButton') }}</p>
-              <div class="mt-4 grid gap-5 md:grid-cols-2">
-                <DashboardMediaUploadField
-                  v-model="siteSettings.footer_modern_card_image_url"
-                  :label="$t('common.cardImage')"
-                  section="footer"
-                  :preview-alt="$t('common.footerCardImage')"
-                  preview-height-class="h-28"
-                  :help-text="$t('dashboard.settings.aTransparentOrSquareImageWorksBest')"
-                />
-                <div class="space-y-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.title') }}</label>
-                    <input v-model="siteSettings.footer_modern_card_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.text') }}</label>
-                    <textarea v-model="siteSettings.footer_modern_card_text" rows="3" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
-                  </div>
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.buttonText') }}</label>
-                  <input v-model="siteSettings.footer_modern_card_button_label" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.buttonLink') }}</label>
-                  <input v-model="siteSettings.footer_modern_card_button_url" type="text" placeholder="/help" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-              </div>
-            </section>
-
-            <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">{{ $t('common.communityLink') }}</h4>
-              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.customizeTheJoinOurSlackItem') }}</p>
-              <div class="mt-4 grid gap-5 md:grid-cols-2">
-                <DashboardMediaUploadField
-                  v-model="siteSettings.footer_modern_community_image_url"
-                  :label="$t('common.communityImage')"
-                  section="footer"
-                  :preview-alt="$t('common.communityImage')"
-                  preview-height-class="h-24"
-                  :help-text="$t('dashboard.settings.uploadTheSlackMarkOrAnotherCommunityIcon')"
-                />
-                <div class="space-y-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.text') }}</label>
-                    <input v-model="siteSettings.footer_modern_community_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.link') }}</label>
-                    <input v-model="siteSettings.footer_modern_community_url" type="text" placeholder="https://..." class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">{{ $t('common.bottomBanner') }}</h4>
-              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.theBannerIsHiddenUntilAnImageIsUploaded') }}</p>
-              <div class="mt-4 grid gap-5 md:grid-cols-2">
-                <DashboardMediaUploadField
-                  v-model="siteSettings.footer_modern_banner_image_url"
-                  :label="$t('common.bannerImage')"
-                  section="footer"
-                  :preview-alt="$t('common.footerBanner')"
-                  preview-image-class="object-cover"
-                  preview-height-class="h-28"
-                  :help-text="$t('dashboard.settings.useAWideImageForTheBestResult')"
-                />
-                <div class="space-y-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.imageAltText') }}</label>
-                    <input v-model="siteSettings.footer_modern_banner_alt" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.bannerLink') }}</label>
-                    <input v-model="siteSettings.footer_modern_banner_url" type="text" placeholder="/search" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="rounded-2xl border bg-gray-50 p-5">
-              <h4 class="font-bold text-gray-900">{{ $t('common.lowerDetails') }}</h4>
-              <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.settings.editTheThreeTextAreasBelowTheBanner') }}</p>
-              <div class="mt-4 grid gap-5 md:grid-cols-2">
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.leftText') }}</label>
-                  <input v-model="siteSettings.footer_modern_bottom_left_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.leftTextLink') }}</label>
-                  <input v-model="siteSettings.footer_modern_bottom_left_url" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-                <div class="md:col-span-2">
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.centerText') }}</label>
-                  <input v-model="siteSettings.footer_modern_bottom_center_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.rightTitle') }}</label>
-                  <input v-model="siteSettings.footer_modern_bottom_right_title" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.rightText') }}</label>
-                  <input v-model="siteSettings.footer_modern_bottom_right_text" type="text" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
-                </div>
-              </div>
-            </section>
-          </div>
+          <DashboardModernFooterEditor
+            v-else
+            v-model="siteSettings.footer_modern_config"
+            :settings="siteSettings"
+            :links="footerLinks"
+            :disabled="!canEditSettings || settingsLoading"
+          />
 
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-1">
@@ -2292,6 +2187,7 @@
 
 <script setup>
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
+import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
 const seoSiteUrlPlaceholder = useRuntimeConfig().public.siteUrl
 const { uiLabel, uiText } = useUiLocale()
 
@@ -2608,6 +2504,7 @@ const siteSettingsSectionFields = {
   ],
   footerSettings: [
     'footer_style',
+    'footer_modern_config',
     'footer_cta_title',
     'footer_cta_subtitle',
     'footer_cta_button_label',
@@ -2978,6 +2875,7 @@ const normalizeSiteSettings = (source = {}) => ({
   footer_phone: String(source.footer_phone || '').trim(),
   footer_address: String(source.footer_address || '').trim(),
   copyright_text: String(source.copyright_text || '').trim(),
+  footer_modern_config: source.footer_modern_config == null ? null : normalizeModernFooter(source.footer_modern_config),
   footer_style: String(source.footer_style || '').trim().toLowerCase() === 'modern' ? 'modern' : 'classic',
   footer_modern_card_image_url: String(source.footer_modern_card_image_url || '').trim(),
   footer_modern_card_title: String(source.footer_modern_card_title || '').trim(),
@@ -3078,7 +2976,7 @@ const isSettingsSectionDirty = (sectionName) => {
   const normalizedSettings = normalizeSiteSettings(siteSettings)
 
   return siteSettingsSectionFields[sectionName].some((field) => {
-    return normalizedSettings[field] !== siteSettingsSnapshot.value[field]
+    return JSON.stringify(normalizedSettings[field]) !== JSON.stringify(siteSettingsSnapshot.value[field])
   })
 }
 
@@ -3439,6 +3337,16 @@ const saveSiteSettings = async (sectionName) => {
       return
     }
   }
+  if (sectionName === 'footerSettings' && siteSettings.footer_modern_config != null) {
+    const footerError = validateModernFooter(siteSettings.footer_modern_config)
+    if (footerError) {
+      settingsSuccess.value = ''
+      settingsSuccessSection.value = ''
+      settingsError.value = useNuxtApp().$i18n.t(`modernFooter.validation.${footerError}`)
+      settingsErrorSection.value = sectionName
+      return
+    }
+  }
   const normalizedSettingsBeforeSave = normalizeSiteSettings(siteSettings)
 
   settingsError.value = ''
@@ -3475,7 +3383,7 @@ const saveSiteSettings = async (sectionName) => {
     }
 
     siteSettingsSectionFields[otherSectionName].forEach((field) => {
-      if (normalizedSettingsBeforeSave[field] !== siteSettingsSnapshot.value[field]) {
+      if (JSON.stringify(normalizedSettingsBeforeSave[field]) !== JSON.stringify(siteSettingsSnapshot.value[field])) {
         siteSettings[field] = normalizedSettingsBeforeSave[field]
       }
     })

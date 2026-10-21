@@ -1,3 +1,50 @@
+# Modern Footer local PASS; deployment BLOCKED — 2026-10-21
+
+- Started clean at `89743fa`, two unpushed PDC commits ahead of cached origin/main.
+  Both remain preserved. Read AGENTS, README, current state/shared handoff, Notes,
+  Git changes and current release contracts. No fetch or push.
+- [Modern Footer replacement](docs/modern-footer.md) replaces only Modern's layout.
+  Classic template/CSS are byte-identical to the start. Original selector, settings,
+  menus and legacy Modern fields remain stored. No checkout/provider/Auth change.
+- Existing Footer content settings now manage bilingual branding, theme logos,
+  social profiles, two nav columns/links/badges, newsletter hidden/disabled state,
+  support, actual apps, approved-method logos, copyright/year and legal links.
+  Reuses Settings RLS, footer media handling and recursive reference guards.
+  Empty defaults add no business claims. No newsletter backend or collection added.
+- Additive migration 88 adds nullable versioned `site_settings.footer_modern_config`.
+  NULL inherits legacy content; no old rows/settings are rewritten. Migration is
+  tested locally but NOT applied. Existing payment definitions gate footer logos;
+  footer saves cannot enable checkout, gateways, PDC, shipping or signup.
+- [Validation receipt](docs/modern-footer-validation.md): five focused tests PASS;
+  102 actual Vue/Settings/native PostgREST browser assertions and 17 screenshots PASS,
+  desktop/tablet/mobile, EN/AR/RTL and Light/Dark; real Nuxt SSR/hydration PASS.
+  Settings save/reload/reorder/toggle/remove, draft retention, URL rejection and
+  viewer/RLS denials passed locally. Synthetic Auth/media-selection adapter are
+  explicit; this is not authenticated hosted save/upload/provider acceptance.
+- Node 22.23.1/npm 10.9.8 typecheck, empty-dotenv build and diff check PASS.
+  Full regression: 996 pass, 8 fail, 2 cancelled, 83 optional skips. Original failing contexts are retained, not hidden.
+  Both completed release operators and certificate guards remain unchanged.
+- Fresh pinned-SSH/read-only SQL/Auth/HTTP baseline PASS: current release
+  d2d7a8029b473e4a/schema 87, Modern selected, 2,613 accepted public media files;
+  payment/provider/PDC/checkout/signup controls remain off. No production mutation,
+  restart, Caddy edit, deployment attempt, provider request or credential change.
+- DEPLOY BLOCKED: existing operators bind completed 82→85 and 85→87. New 88 is rejected;
+  old PM2/Nginx deploy scripts target retired infrastructure. The user prohibits
+  inventing a deployment mechanism or forcing guards. A new reviewed 87→88 footer
+  binding is required. Do not rerun, repurpose or weaken completed operators.
+- ONE next owner instruction: approve preparing a separately sealed 87→88 footer
+  release through existing Caddy/systemd phases, limited to 88 and this candidate.
+  Bind fresh recovery, current Paymob-containing runtime, immutable client assets,
+  exact source/output/SQL hashes and one execution intent before any activation.
+  Current local output is validation output, not an asset-retaining release package.
+- Protected evidence: parent modern-footer-review-20261021/. The local commit and
+  final source/output evidence are bound there. Owner browser checks are documented
+  for AFTER eventual deployment; no new production-footer acceptance is claimed.
+- Keep UI Improvement 2 held. PDC awaits clarification/support; consumed diagnostic
+  approvals remain consumed. Preserve WordPress identities/logins/private profiles/
+  addresses/history, controlled provider acceptance, verified stock/delivery and
+  later explicit purchasing approval. No Git push.
+
 # Deep PDC investigation COMPLETE; diagnostic ambiguity verified — 2026-10-21
 
 - Started clean at `6edd3df`, one commit ahead of cached origin/main. Read the

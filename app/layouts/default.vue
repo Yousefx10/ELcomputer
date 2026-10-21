@@ -14,6 +14,7 @@
 
 <script setup>
 import '~/assets/css/storefront.css'
+import '~/assets/css/modern-footer.css'
 
 const { data: siteContent } = await useSiteContent()
 const layoutStyle = computed(() => {

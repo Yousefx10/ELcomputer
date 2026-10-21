@@ -64,6 +64,7 @@ export const defaultSiteSettings = {
   footer_address: '',
   copyright_text: '',
   footer_style: 'classic',
+  footer_modern_config: null,
   footer_modern_card_image_url: '',
   footer_modern_card_title: '',
   footer_modern_card_text: '',
