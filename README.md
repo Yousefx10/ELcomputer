@@ -42,8 +42,10 @@ helper is approved and [independently staged](docs/pdc-getproducts-capture-stagi
 The owner consumed its single attempt: HTTP200 / RESPONSE_SCHEMA_REJECTED.
 [Encrypted archive verification and analysis](docs/pdc-getproducts-capture-analysis.md)
 are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md)
-found no verified live row schema; a values-free support question awaits separate
-approval. No code or account correction is confirmed. Both diagnostic approvals
+found no verified live row schema. The [deep investigation](docs/pdc-getproducts-deep-investigation.md)
+narrows the causes and prepares a tested [schema-only proposal](docs/pdc-getproducts-schema-diagnostic-proposal.md).
+It needs separate approval; support remains a fallback. No correction for the live
+failure is confirmed. Both diagnostic approvals
 are consumed. No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).

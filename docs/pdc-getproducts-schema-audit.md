@@ -2,6 +2,11 @@
 
 **PDC schema STILL UNKNOWN. Exact rejection cause UNKNOWN.**
 
+The subsequent [deep investigation](pdc-getproducts-deep-investigation.md) expands
+the historical search and reproduces diagnostic/application differences. Its
+[schema-only diagnostic proposal](pdc-getproducts-schema-diagnostic-proposal.md)
+is now the recommended next step; the support question below remains a fallback.
+
 The inspected evidence cannot establish the live row field names, their types,
 or any company echo. No application correction is justified. Clarification must
 precede development. The support question below is prepared, not sent.

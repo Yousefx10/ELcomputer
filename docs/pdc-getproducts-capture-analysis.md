@@ -2,6 +2,10 @@
 
 **ANALYSIS COMPLETE. Archive verification PASS. PDC connection remains BLOCKED.**
 
+The later [deep investigation](pdc-getproducts-deep-investigation.md) reproduces
+diagnostic-only echo rejection and narrows the remaining causes. The exact live
+failure remains unknown. Review its separately scoped schema-only proposal next.
+
 The subsequent [offline schema audit](pdc-getproducts-schema-audit.md) is complete.
 It found no authentic row schema in the inspected historical evidence. The live
 schema and exact rejection remain UNKNOWN. A values-free support question is

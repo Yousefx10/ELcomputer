@@ -1,0 +1,13 @@
+diff --git a/server/utils/pdcLookups.js b/server/utils/pdcLookups.js
+--- a/server/utils/pdcLookups.js
++++ b/server/utils/pdcLookups.js
+@@ -48,6 +48,8 @@ export const normalizePdcLookup = response => {
+   const seen = new Set()
+   return pdcResponseRows(response).map(row => {
+-    const id = Number(row?.id ?? row?.ID)
++    const rawId = row?.id ?? row?.ID
++    if (!['number', 'string'].includes(typeof rawId)) throw unavailable()
++    const id = Number(rawId)
+     const name = boundedPdcText(row?.name ?? row?.Name, 200, true)
+     if (!Number.isInteger(id) || id <= 0 || id > 2147483647 || seen.has(id)) throw unavailable()
+     seen.add(id)

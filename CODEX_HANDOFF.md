@@ -1,3 +1,51 @@
+# Deep PDC investigation COMPLETE; diagnostic ambiguity verified — 2026-10-21
+
+- Started clean at `6edd3df`, one commit ahead of cached origin/main. Read the
+  current application/callers/settings/security/SQL contracts, both consumed
+  diagnostics and retained evidence. No fetch, push or production connection.
+  [Deep findings and failure taxonomy](docs/pdc-getproducts-deep-investigation.md).
+- Exact live schema/rejection and original upstream500 cause remain UNKNOWN.
+  Confirmed: capture's broad catch can label a diagnostic-only company-echo
+  conversion failure as RESPONSE_SCHEMA_REJECTED after app normalization succeeds.
+  Dashboard Test has no saved-product/echo check; it is not merchant acceptance.
+  Scalar company mismatch or missing saved product alone yields a different
+  diagnostic classification. Configuration is not established as wrong.
+- Expanded beyond selected evidence: both full authenticated SQL exports
+  (936,715,338 plaintext bytes) contain no GetProducts reference. Original 22 pinned
+  backup parts yielded 44,941 text files/streams; 157 generic references occurred in
+  files without PDC markers. Extracted runtime supplementary scan: 7,387 text files.
+  Supplied courier PDFs remain the same documented id/name example, not live proof.
+  Binary/unexamined formats and other owner-held sources remain outside that claim.
+- Earlier masked checks and later guarded ID hashes tie company/product/city to
+  recovery. Different whole-row/projected fingerprints are not comparable evidence
+  of drift. No current account authorization or token validity is inferred.
+- 156 synthetic matrix cases PASS on pinned Node22.23.1; real network attempts zero.
+  43 focused tests PASS (14 new analyzer, 29 existing PDC). All 22 captured-bundle
+  inputs and accepted release lookup source still match. Old helpers remain untouched.
+- A minimal unapplied ID-type hardening patch is prepared/tested in memory:
+  current Number coercion accepts true/singleton arrays. This is not evidence of
+  the captured rejection and not an applied application fix. No aliases invented,
+  required fields/uniqueness/pagination/ownership guards relaxed or rows discarded.
+- [Schema-only proposal](docs/pdc-getproducts-schema-diagnostic-proposal.md) and
+  pure offline analyzer are prepared. No transport/operational runner/staging or
+  new approval exists. Analyzer separates normalization/echo/selection, excludes
+  scalar values and marks partial schema explicitly. Unknown keys remain confidential
+  until owner review; encrypted report/strict one-attempt custody remain required.
+- ONE next owner action: review the new schema-only diagnostic proposal for separate
+  approval. PDC support remains the prepared fallback, not the required next step.
+  Both previous approvals stay consumed; preserve markers/helpers/encrypted evidence.
+- Protected evidence: parent pdc-deep-investigation-20261021/, directory0700/files0600,
+  INVESTIGATION-RECEIPT.json SHA256
+  188e3b9f2064b9fa768f16e866efe75d3260648d85e1e47fa059cd91abd6c9d6.
+  Production/provider changes/calls/restarts/deployments
+  zero. Release d2d7a8029b473e4a/schema87 remains accepted baseline without live refresh.
+  Paymob configuration/restart stays closed; payment/shipping/signup/checkout gates off.
+- Preserve PDC connectivity/webhook/coverage/rates, controlled Paymob then shipping
+  acceptance, mandatory WordPress identities/login/reset/private profiles/phones/
+  addresses/history before unrestricted signup, stock/shipping/email/first purchase,
+  explicit checkout acceptance and later integrations/UI. Preserve Auth UUIDs,
+  avoid duplicates and imported inventory/payment/financial effects. No Git push.
+
 # PDC offline schema audit COMPLETE; schema STILL UNKNOWN — 2026-10-21
 
 - Codex 1 resumed the same clean checkout at `af06c9a`. HEAD and cached origin/main
