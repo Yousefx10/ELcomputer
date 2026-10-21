@@ -2,6 +2,11 @@
 
 **ANALYSIS COMPLETE. Archive verification PASS. PDC connection remains BLOCKED.**
 
+The subsequent [offline schema audit](pdc-getproducts-schema-audit.md) is complete.
+It found no authentic row schema in the inspected historical evidence. The live
+schema and exact rejection remain UNKNOWN. A values-free support question is
+prepared for separate owner approval; no implementation correction is justified.
+
 The owner consumed the [sealed capture approval](pdc-getproducts-capture-preparation.md)
 with one GetProducts GET at 13:46:52 UTC. Its status was200, classification
 `RESPONSE_SCHEMA_REJECTED`. Evidence encryption and state-preservation checks passed.

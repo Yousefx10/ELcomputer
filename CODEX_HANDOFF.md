@@ -1,3 +1,37 @@
+# PDC offline schema audit COMPLETE; schema STILL UNKNOWN — 2026-10-21
+
+- Codex 1 resumed the same clean checkout at `af06c9a`. HEAD and cached origin/main
+  matched, so no unpushed commits existed against that local ref. No fetch or push.
+  [Offline audit and exact support question](docs/pdc-getproducts-schema-audit.md).
+- Courier V4/V4-1 PDFs are identical copies. Page8 documents `id:number` and
+  `name:string`, already accepted by the parser; no company echo appears in that
+  example. The webhook PDF defines a separate protocol. None proves live row fields.
+- All three retained WordPress evidence envelopes authenticated and matched their
+  receipt pins. Their PDC snippet hashes agree; no GetProducts/GetCities references
+  or identifiable product-lookup cache options were found in these selected sources.
+  Private contents stayed in memory; only counts/hashes were emitted. This was not
+  a new archive-wide scan or proof that no other owner-held evidence exists.
+- All 22 sealed bundle inputs and prior capture/final-receipt pins still match.
+  Repository and previous replay fixtures are synthetic. Live capture was not
+  decrypted again; its original row keys/types and any company echo remain unknown.
+  Exact rejection and original HTTP500 causes stay UNKNOWN. No code fix justified.
+- Clarification must precede development. ONE next owner action: review the exact
+  values-free PDC support question for separate contact approval. Existing authoritative
+  account schema is an alternative. No message sent, helper prepared or request made.
+- Protected offline audit: parent pdc-getproducts-schema-audit-20261021/,
+  directory0700/files0600. AUDIT-RECEIPT.json SHA256
+  9141002440ed92b4cc70885bee890cf8c4c76483aa53ab4679fe74cce14173a2.
+- Production connections/changes, provider calls and diagnostic executions zero. Both
+  diagnostic approvals stay consumed; preserve helpers, markers and encrypted evidence.
+  No Test/Sync, shipment, label, activation, restart, deployment, migration or push.
+  Paymob configuration/restart stay closed. Release d2d7a8029b473e4a/schema87 and all
+  disabled gates remain accepted baseline only, without fresh live verification.
+- Full roadmap is retained in the audit: PDC connectivity/webhooks/coverage/rates,
+  controlled Paymob then PDC acceptance, mandatory WordPress identity/login/private
+  profiles/phones/addresses/history migration before unrestricted signup, stock/
+  shipping/email/first purchase, explicit checkout acceptance, then later integrations/UI.
+  Preserve Auth UUIDs, prevent duplicates and imported inventory/financial effects.
+
 # PDC diagnostic analysis COMPLETE; connection BLOCKED — 2026-10-21
 
 - Started clean at `61ecaca`, three commits ahead of origin/main. Owner ran the exact

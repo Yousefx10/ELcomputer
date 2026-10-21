@@ -41,8 +41,10 @@ found the cause remains unknown. The [bounded PDC capture](docs/pdc-getproducts-
 helper is approved and [independently staged](docs/pdc-getproducts-capture-staging-receipt.md).
 The owner consumed its single attempt: HTTP200 / RESPONSE_SCHEMA_REJECTED.
 [Encrypted archive verification and analysis](docs/pdc-getproducts-capture-analysis.md)
-are complete. Exact row rejection remains unknown; no code or account correction
-is confirmed. Both diagnostic approvals are consumed. No retry is authorized. The earlier
+are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md)
+found no verified live row schema; a values-free support question awaits separate
+approval. No code or account correction is confirmed. Both diagnostic approvals
+are consumed. No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST
