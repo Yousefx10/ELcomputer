@@ -82,33 +82,19 @@ Final test counts and protected evidence are recorded in the
 
 ## Production status and next release boundary
 
-**DEPLOY BLOCKED. No production mutation or deployment attempt ran.**
+**PREPARATION PASS. Final deployment approval is pending.**
 
-Fresh read-only checks confirm production release `d2d7a8029b473e4a`, schema 87,
-Modern selected, the accepted Caddy hash and all 2,613 public media files intact.
-All stored payment methods, provider outbound gates, PDC/automation, checkout and
-signup remain disabled. Paymob credentials and PDC settings were not changed.
+The owner approved preparation of a separate 87→88 release. The
+[sealed plan and exact approval/deployment procedure](modern-footer-release.md)
+are ready. Production remains on `d2d7a8029b473e4a`/schema 87; no migration,
+activation, restart, provider request or production configuration edit has run.
+The new binding retains all 428 current immutable client assets and verified fresh
+recovery backups. Historical operators and seals remain unchanged.
 
-The available guarded operators bind completed 82→85 and 85→87 plans. Their exact
-migration-membership guards reject 88. The latter succeeds at the starting checkout
-and rejects this candidate, as intended. Neither completed operator was invoked,
-repurposed or weakened. The legacy npm deploy/publisher commands target retired
-PM2/Nginx infrastructure and are unsuitable for this Caddy/systemd deployment.
-
-The owner's request explicitly prohibits inventing a deployment mechanism or
-forcing failed guards. A new, reviewed 87→88 footer release binding is therefore
-required before execution. The minimal next owner instruction is:
-
-> Approve preparing a separately sealed 87→88 footer release using the existing
-> Caddy/systemd release phases, restricted to migration 88 and this footer candidate.
-
-Preparation must reuse the existing backup-envelope, strict inventory/extraction,
-private candidate, data-preservation and atomic systemd-switch contracts. It must
-bind the current environment containing the accepted Paymob credentials, retained
-client assets, fresh authenticated recovery backups, exact source/output/migration
-hashes, current release/schema and one execution intent. No migration or restart
-command is offered until that concrete new plan passes review. Current `.output`
-is local validation output, not an asset-retaining deployment package.
+The minimal next owner instruction is the final digest approval in that release
+procedure. Do not run a completed operator or the retired PM2 scripts. The earlier
+local `.output` remains validation evidence; deployment uses only the new sealed,
+asset-retaining candidate. All purchase/provider/signup gates stay off.
 
 PDC remains awaiting schema/support clarification. Both consumed diagnostic
 approvals remain consumed. Preserve mandatory WordPress customer migration,

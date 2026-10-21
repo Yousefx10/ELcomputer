@@ -71,8 +71,8 @@ Live charging, real booking and checkout remain disabled.
 
 The [Modern Footer replacement](docs/modern-footer.md) is implemented locally.
 Its [validation receipt](docs/modern-footer-validation.md) records responsive,
-localized Dashboard persistence and SSR checks. Deployment remains blocked on a
-separate reviewed schema87→88 binding; completed release operators stay unchanged.
+localized Dashboard persistence and SSR checks. The [sealed 87→88 release](docs/modern-footer-release.md)
+is prepared and awaits final execution approval; completed release operators stay unchanged.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

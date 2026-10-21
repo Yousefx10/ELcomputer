@@ -1,6 +1,9 @@
 # Modern Footer validation receipt — 2026-10-21
 
-Status: local feature PASS; production DEPLOY BLOCKED.
+Historical feature receipt at commit `8181953`: local PASS; production unchanged.
+The later owner-approved [87→88 release preparation](modern-footer-release.md) is
+complete and awaits final execution approval. Its fresh backups, failure review,
+retained-asset artifact and checks are separate from this earlier feature receipt.
 See the [feature, configuration and release boundary](modern-footer.md).
 
 Started at clean `89743faa109e44450dfa24ec84c4ca3b6d96b6e2`, two commits ahead of
@@ -86,6 +89,6 @@ production. The existing release and recovery artifacts remain retained. A new
 87→88 plan must obtain fresh recovery and asset-retention evidence before execution.
 The current local output is not a sealed production package.
 
-ONE next owner action is in the [release boundary](modern-footer.md#production-status-and-next-release-boundary).
+ONE next owner action is the final digest approval in the [sealed release procedure](modern-footer-release.md#final-approval-and-one-execution).
 Keep UI Improvement 2 held. Preserve PDC clarification, WordPress customers,
 controlled provider acceptance, real stock and explicit public purchasing approval.

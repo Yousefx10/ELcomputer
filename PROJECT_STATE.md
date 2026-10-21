@@ -1,3 +1,58 @@
+# Modern Footer 87→88 preparation PASS; final deployment approval pending — 2026-10-21
+
+- Owner approved preparation only for footer commit `8181953`, migration 88 and the
+  established Caddy/systemd architecture. No production execution is approved.
+  [Sealed plan, failure review, recovery and exact commands](docs/modern-footer-release.md).
+- Application is exactly `8181953a7678b36fd4643d1ce52a0b96f65d8136`. New operational
+  tooling is separate in `scripts/footer-release/`; both completed release
+  operators, seals and original 87 migration bytes remain unchanged. Relative to
+  accepted production source, only 14 footer UI/locale files differ; server code,
+  dependencies, previous locale namespaces and provider functions are identical.
+- New candidate `fa8d45ebea38b795`: 7,322,253-byte archive, 1,468 strict inventory
+  entries, 428 retained client assets. Clean Node 22.23.1/npm 10.9.8 build, empty dotenv,
+  unchanged lockfile and independent full extraction/inventory checks PASS.
+- Final owner-review plan digest:
+  `d127ee4c2f1d53d392637125b5bd61337616abaf5ca0bdd75eafdab02cd61e2a`.
+  Private plan: parent modern-footer-release-preparation-20261021/prepared/plan.json.
+  Qualification evidence, target, current runtime/data/security state, tool/source/
+  migration/output/recovery hashes are bound. Do not edit/reseal/retry a consumed plan.
+- Fresh encrypted DB backup 9, 061,304 bytes and runtime backup 2,272,910 bytes/10 files
+  passed authenticated decryption and complete parser/file-byte readback. They
+  include current Paymob-containing environment, units/Caddy and recovery tools.
+  Existing release/media/private files remain untouched; another fresh encrypted
+  backup is mandatory in the later approved execution before any production write.
+- All 8 reported failures and 2 cancellations reviewed: historical membership seals
+  remain correctly closed; exact certified 82 context passes 2 original tests;
+  a fixture-only H3 auto-import correction and current COD/shipping expectations
+  pass 22 tests; three original mock email tests pass with a referenced loop handle.
+  Retired Nginx source pins are not reapplied to Caddy. No historical guard or app
+  code was weakened. Full original suite remains 996 pass/8 fail/2 cancelled/83 skips.
+- Current new-release/Paymob/PDC/COD native safety: 58 PASS, 0 fail/skips; remote phase
+  failure/approval/corruption tests: 6 PASS. Exact asset-retaining artifact: 102 browser
+  assertions/17 screenshots PASS, EN/AR/RTL, Light/Dark, three sizes, saves/reloads,
+  permissions and actual SSR/hydration. No browser errors or real provider requests.
+- Actual retained production archive serves Classic/Modern and EN/AR/Dashboard login
+  against disposable schema 88: 6 GET checks PASS. Old partial settings upserts retain
+  new JSON. A future app-only rollback can keep 88 and current data; no SQL reversal,
+  old database restore or automatic rollback is authorized. Any recovery needs its
+  own reviewed guard/approval after inspecting the exact failed phase.
+- Production stays `d2d7a8029b473e4a`/schema 87, Caddy and service unchanged. Read-only
+  preparation preserves 2,613 media files/410, 096,992 bytes, Auth/settings/products,
+  Paymob/PDC configuration and disabled payment/provider/checkout/signup gates.
+  No staging directory/new release was created remotely; no migration, restart,
+  deployment attempt, Caddy edit, provider request, diagnostic retry or Git push.
+- ONE next owner action: send the exact final digest approval in the release guide.
+  Pause Dashboard edits for execution. Agent must first pass the pinned read-only
+  `check`, then run exact `apply ... --approved DIGEST` ONCE. Exclusive intent,
+  fresh backups, private candidate, locked 87→88 preservation, one app switch/restart
+  and post-release health/hold/data checks are mandatory. STOP means preserve state;
+  never repeat apply, delete receipts, invoke old operators or bypass drift guards.
+- Final post-commit read-only check and consolidated evidence are recorded in the
+  private review receipt. Owner production browser/save acceptance remains pending
+  successful deployment. Keep UI Improvement 2 held, PDC awaiting clarification/
+  support, WordPress identity/profile/address/history migration, controlled provider
+  acceptance, verified stock/delivery and later public purchasing approval intact.
+
 # Modern Footer local PASS; deployment BLOCKED — 2026-10-21
 
 - Started clean at `89743fa`, two unpushed PDC commits ahead of cached origin/main.
