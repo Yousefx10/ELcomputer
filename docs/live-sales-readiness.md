@@ -5,7 +5,10 @@ schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
 PDC credentials/settings are saved; Paymob credential entry is pending.
 [Masked saved-state verification](pdc-connection-paymob-preparation.md) passed.
-PDC connection is BLOCKED by the disabled operator gate; no provider was contacted.
+The [approved one-run PDC exception](pdc-readonly-diagnostic-receipt.md) is consumed:
+GetProducts returned HTTP500, then stopped. GetCities was not attempted.
+Connection remains BLOCKED; saved product/city IDs are not remotely validated.
+All persistent provider/payment gates remain off. No shipment or payment request ran.
 Historical PDC account/pickup inputs and encrypted credentials were subsequently
 [recovered offline](pdc-offline-recovery.md). Currentness and provider acceptance
 remain separate; production settings were not populated automatically.

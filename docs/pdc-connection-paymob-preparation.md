@@ -1,5 +1,11 @@
 # Saved PDC verification and Paymob preparation — 2026-10-21
 
+**Historical preparation checkpoint.** The owner subsequently approved its one-run
+exception. The [execution receipt](pdc-readonly-diagnostic-receipt.md) records
+GetProducts HTTP500 and immediate stop. GetCities was not attempted. The approval
+is consumed; no retry is authorized. The address difference was resolved as Arabic
+HEH/TEH MARBUTA spelling variation, with unchanged numeric details.
+
 **PDC saved-state verification PASS. PDC CONNECTION BLOCKED.**
 **Paymob owner entry pending. No provider request or production write occurred.**
 
@@ -71,8 +77,9 @@ or an implemented alternate gate. Its requested scope is:
 5. Stop on any changed precondition or failed response. No retry or fallback.
 
 This requests an explicit one-run diagnostic exception to the false outbound gate;
-it does not authorize charging, booking or permanent provider activation. Approval
-has not been given. No executable bypass was created or used.
+it does not authorize charging, booking or permanent provider activation. At this
+preparation checkpoint, approval had not been given and no exception runner existed.
+The later owner-approved attempt is recorded above; do not reuse its consumed scope.
 
 ## PDC webhook still needs a controlled external cutover
 

@@ -3,7 +3,9 @@
 **OFFLINE RECOVERY PASS. No production change occurred during recovery.**
 The owner subsequently saved PDC personally. The
 [masked production verification](pdc-connection-paymob-preparation.md) confirms saved
-credentials/account IDs with provider gates still off. Connection remains blocked.
+credentials/account IDs with provider gates still off. The later
+[approved diagnostic](pdc-readonly-diagnostic-receipt.md) stopped at GetProducts
+HTTP500; the address difference is spelling only, not a material location change.
 
 Historical PDC account and pickup settings were recovered from three agreeing
 sources: the two verified encrypted WordPress exports and the original WPvivid

@@ -29,7 +29,9 @@ The [Paymob/PDC disabled production release](docs/live-sales-release-receipt.md)
 passed: release `d2d7a8029b473e4a`, schema87, with purchases and providers off.
 Owner browser acceptance passed. Do not rerun the release.
 Follow the [existing-account configuration guide](docs/provider-configuration.md)
-for personal secret entry. PDC is saved and disabled; connection remains gated.
+for personal secret entry. PDC is saved and disabled. Its
+[approved one-run diagnostic](docs/pdc-readonly-diagnostic-receipt.md) stopped at
+GetProducts HTTP500; no retry or city lookup ran.
 Paymob entry is pending. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 Historical PDC inputs are now available through

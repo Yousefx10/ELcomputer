@@ -1,3 +1,49 @@
+# Approved one-run PDC diagnostic BLOCKED; address resolved — 2026-10-21
+
+- Started clean at `f62830a`. Owner explicitly approved one isolated diagnostic
+  exception, GET GetProducts/GetCities only, with all persistent gates unchanged.
+  [Sanitized execution receipt](docs/pdc-readonly-diagnostic-receipt.md).
+- At 09:55:55 UTC, production GetProducts returned HTTP500. STOPPED after exactly
+  ONE authenticated GET. GetCities NOT_ATTEMPTED. No automatic retry, fallback,
+  shipment/status/label/payment request or webhook activation. Approval consumed;
+  never rerun that attempt/wrapper or continue to cities under this approval.
+- PDC CONNECTION BLOCKED at GetProducts/HTTP500. Product/city provider membership
+  NOT_VERIFIED. Authentication validity and the reason for HTTP500 remain unknown;
+  do not diagnose invalid credentials or provider outage from this status alone.
+  Existing saved company/product/city continue matching protected recovery evidence.
+- Reused existing lookup/decryption/normalization helpers in an isolated VPS process,
+  with exact GET allowlist, production URL/mode, bounded response/timeout, redirect
+  refusal and stop on response/ID mismatch. Fifteen offline contract checks PASS
+  before execution; no merchant acceptance inferred. Token decrypted only in VPS
+  memory. No webhook secret read/decrypted for the request; no secret output.
+- Pre/post guards PASS: release d2d7a8029b473e4a/schema87, active PID25021/NRestarts0,
+  root0600 runtime SHA437f42c9...fe1968 and saved-PDC SHAdfa35b3d...f7be61 unchanged.
+  All four outbound gates, all five payment methods and PDC provider/automatic/
+  reverse/COD switches remain false. Orders/attempts/normal/reverse jobs/dispatches0.
+  Settings RLS and denied anon/authenticated SELECT retained. No SQL/cache/settings/
+  environment write, deployment, service restart, Caddy/Auth/inventory/media change.
+- Address difference resolved: historical HEH versus saved TEH MARBUTA spelling.
+  Folding that variant makes normalized address text identical; numeric components
+  unchanged. No material location change found and no address change made. Backend
+  only trims the owner-entered string; the 09:27:33 UTC save audit does not record
+  spelling intent. Exact comparison remains owner-only, outside Git.
+- Protected local evidence: parent directory pdc-approved-readonly-diagnostic-20261021/
+  (0700/files0600). FINAL-RECEIPT.json SHA256
+  0acf036aac3b0d3d37742c01ed40aae4e9cd5611118b3d2fba6443dd93ccc41f.
+  Immutable preparation/recovery artifacts retained; exclusive attempt marker exists.
+- ONE next owner action / current priority: personally enter the six Paymob inputs
+  using [the protected guide](docs/pdc-connection-paymob-preparation.md#exact-next-owner-action-enter-paymob-privately-without-restarting).
+  Four credential/ID inputs remain absent; modes default test. Edit existing
+  root0600 /etc/storefront/runtime.env only, retain all other values and false gates,
+  save without restarting, reply only “Paymob file saved; not restarted.” Check
+  masked configuration/preservation hashes before any later controlled reload.
+- PDC remains disabled. No push. Callback registration/reachability, parcel/template,
+  actual coverage/prices and controlled merchant tests remain unaccepted.
+  Required next workstream: WordPress identities/old-login compatibility, private
+  profiles/details, addresses and historical orders into Supabase. Preserve Auth
+  UUIDs, prevent duplicates and historical financial/commerce effects, and keep
+  unrestricted signup off. Public purchases require separate controlled acceptance.
+
 # PDC saved-state PASS; connection BLOCKED; Paymob prepared — 2026-10-21
 
 - Started clean at `91c55a4`. Owner personally saved PDC and confirmed persistence.

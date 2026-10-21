@@ -8,9 +8,12 @@ acceptance. That release milestone is complete. Do not redeploy or rerun its ope
 The owner personally saved PDC and confirmed persistence. The
 [fresh masked verification](pdc-connection-paymob-preparation.md) confirms encrypted
 secret presence and matching recovered company/product/pickup-city settings.
-The pickup address differs; confirm it privately. Product/city caches remain empty,
-no shipping company exists, and the operator gate prevents connection diagnostics.
-No provider call, activation or credential entry was performed by the agent.
+The [approved isolated diagnostic](pdc-readonly-diagnostic-receipt.md) subsequently
+stopped after one GetProducts GET returned HTTP500. GetCities was not attempted;
+no remote identifier validation passed. The approval is consumed; no retries.
+The address difference is an Arabic HEH/TEH MARBUTA spelling variant, with matching
+numeric details. No material location change was found; no address was changed.
+Product/city caches remain empty. No provider activation or credential entry ran.
 
 [Offline WordPress recovery](pdc-offline-recovery.md) supplied the historical PDC
 account, pickup details, token and compatible webhook secret in three agreeing
@@ -188,9 +191,11 @@ owner confirmation before the controlled acceptance phase.
 | PDC Sync cities/products | `GET GetProducts` + `GET GetCities` | Also writes the two bounded caches/timestamps; no shipping/order/inventory transaction |
 
 Thus Test/Sync are provider-read-only, **not completely database-read-only**.
-Their reviewed handler cannot call SaveShipmentEx or ExportPDF. No diagnostic has
-been executed: the server outbound gate remains false. Do not enable that gate or
-provider enablement just to perform a connection check under this task's holds.
+Their reviewed handler cannot call SaveShipmentEx or ExportPDF. The Dashboard
+diagnostics have not run: the server outbound gate remains false. The separately
+owner-approved isolated GET attempt returned GetProducts HTTP500 and stopped.
+It wrote no cache or Dashboard metadata. Do not enable runtime or provider gates,
+or repeat that consumed exception, to force a connection badge.
 
 The current UI also disables both buttons unless provider enablement is true,
 although the protected API allows disabled-provider lookups when its server gate
@@ -219,14 +224,15 @@ into the report. No production setting, service, release, Auth, inventory, provi
 account, callback or shipment changed. No push occurred.
 
 PDC entry is now complete and independently verified through masked checks at
-09:37 UTC. The [current receipt and diagnostic approval scope](pdc-connection-paymob-preparation.md)
-supersede that earlier baseline. All outbound/provider/payment holds remain off.
+09:37 UTC. The [preparation record](pdc-connection-paymob-preparation.md) and subsequent
+[approved diagnostic receipt](pdc-readonly-diagnostic-receipt.md) supersede that earlier
+baseline. All outbound/provider/payment holds remain off.
 
 **One next owner action:** personally enter the six Paymob assignments above and
 report only **“Paymob file saved; not restarted”**. Then verify masked disk/process
 configuration, preservation hashes and retained holds before any runtime reload.
-PDC GetProducts/GetCities remain BLOCKED pending specific one-run diagnostic
-approval; no real charge or shipment is authorized.
+PDC remains BLOCKED after GetProducts HTTP500. The one-run approval is consumed;
+GetCities was not called. No retry, real charge or shipment is authorized.
 
 After provider configuration, the required workstream remains WordPress customer
 identities/old-login compatibility, private names/phones/profiles, billing/shipping
