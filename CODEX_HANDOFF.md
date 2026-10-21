@@ -1,3 +1,46 @@
+# Paymob controlled restart prepared; owner approval pending — 2026-10-21
+
+- Started clean at `9de4ec3`, main aligned with origin/main. Owner reports all
+  24 configuration/safety checks PASS; only SAVED_VALUES_LOADED BLOCKED. The saved
+  LIVE inputs need loading. This is owner-reported evidence, not a new agent live
+  observation. [Exact short commands and recovery](docs/paymob-controlled-restart.md).
+- Exact Nuxt unit: storefront.service. Prepared a private local helper for three
+  short Hostinger root-console lines: pre, once --approved, post. Helper is NOT
+  staged or executed. Separate owner approval must precede staging/execution.
+- The existing app policy Restart=on-failure would permit systemd retries. The
+  reviewed preparation temporarily uses app-only /run Restart=no, with two manager
+  daemon-reloads and no other service restart. All health/gate checks run before
+  restoring the original policy. One exclusive consumed marker prevents another
+  restart. A failure after restart triggers one app-only containment stop; no
+  retry, rollback, old-release activation, DB restore or automatic repair.
+- Reuses all earlier guards and requires saved/running six inputs to match after
+  restart. Requires exact unit/drop-in hashes, root600 runtime, unchanged runtime
+  bytes/machine/release/node, app PID transition, no automatic restarts, stable
+  Caddy PID/config/unit, payment/signup booleans off, public holds403 and app health.
+  Metadata GETs only to existing site/Supabase; no provider request or activation.
+- Forty-nine synthetic safety cases PASS on the final helper: 27 inherited checks,
+  19 orchestration/containment cases, three exact runtime-guard cases. Native Linux
+  execution remains unperformed. All artifacts outside Git, directory0700/files0600:
+  parent paymob-controlled-restart-20261021/. Helper SHA256
+  e7349870a6e35d5c9dbdd477ceb8f7120232342958eab1b0434064bc3365d831.
+  PREPARATION-RECEIPT-final.json SHA256
+  0a148bba87242601ea563822d8e2c03d353a6950dc4141b48f4ba15c1f6f74bf.
+- ONE next owner action: approve the documented inert helper staging, temporary
+  app guard and one controlled storefront.service restart. Do not run commands
+  before approval and independent helper verification. Return only PASS/BLOCKED
+  labels. A failed/uncertain attempt must not be repeated. Recovery keeps the app
+  stopped if needed; Caddy, Supabase and all stored data remain untouched.
+- No production connection, staging, write, deployment, migration, restart, new
+  credential read/decryption, provider request, gate change or push occurred here.
+  Existing release/schema remain prior observed d2d7a8029b473e4a/schema87. Charging,
+  PDC booking/automation, checkout and signup must remain disabled after loading.
+- Roadmap retained: bounded PDC GetProducts HTTP500 investigation under new
+  approval; controlled payment/shipping acceptance; mandatory WordPress customer
+  identities/old-login/private profiles/details/addresses/historical orders into
+  Supabase before unrestricted signup. Preserve Auth UUIDs, prevent duplicates and
+  historical commerce/financial transactions. Real stock, fees, delivery, parcel,
+  customer and callback acceptance remain prerequisites for first public purchase.
+
 # Paymob owner-reported saved; read-only validator prepared — 2026-10-21
 
 - Started clean at `f94b195`. Owner reports verified LIVE Paymob inputs entered

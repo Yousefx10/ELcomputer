@@ -32,8 +32,10 @@ Follow the [existing-account configuration guide](docs/provider-configuration.md
 for personal secret entry. PDC is saved and disabled. Its
 [approved one-run diagnostic](docs/pdc-readonly-diagnostic-receipt.md) stopped at
 GetProducts HTTP500; no retry or city lookup ran.
-The owner reports Paymob LIVE inputs saved. Production validation is pending the
-[owner-only root-console check](docs/paymob-owner-validation.md). Follow the
+The owner reports all 24 Paymob configuration/safety checks passed; saved LIVE
+inputs still need loading. The [controlled app restart](docs/paymob-controlled-restart.md)
+is prepared and awaits separate owner approval. The earlier
+[root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST
 keys, HMAC and card IDs. Current-account confirmation remains owner-only.

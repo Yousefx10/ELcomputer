@@ -5,8 +5,10 @@ schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
 PDC credentials/settings are saved. The owner reports verified LIVE Paymob inputs
 saved in root0600 runtime.env. The
-[owner-only validator](paymob-owner-validation.md) is prepared; production validation
-and any later controlled restart decision remain pending owner result lines.
+[owner-only validator](paymob-owner-validation.md) passed all 24 safety/configuration
+checks according to the owner; only saved-value loading was BLOCKED. The
+[controlled application restart](paymob-controlled-restart.md) is prepared and awaits
+separate owner approval. No restart or new production observation occurred here.
 [Offline Paymob recovery](paymob-offline-recovery.md) supplies protected historical
 LIVE/TEST keys, HMAC and EGP card IDs; the owner reports current verification and
 personal entry. No agent production credential copy or provider request occurred

@@ -1,6 +1,11 @@
 # Owner-only Paymob validation — 2026-10-21
 
-**Preparation PASS. Production validation PENDING owner execution.**
+**Owner reports 24 configuration/safety checks PASS; saved inputs not loaded.**
+
+The owner subsequently ran the command and reported only `SAVED_VALUES_LOADED`
+BLOCKED. Follow the [controlled restart preparation](paymob-controlled-restart.md).
+Restart execution awaits separate owner approval. The preparation record below
+describes the earlier read-only validation; it is not a new restart instruction.
 
 The owner reports verified LIVE inputs saved in `/etc/storefront/runtime.env`,
 owned by root, mode0600. The agent did not read that file, decrypt recovery
@@ -91,8 +96,9 @@ does not authorize automatic fixes, changes to permissions or a restart.
 
 Systemd reads EnvironmentFile when starting the process. Editing the file does
 not update the existing Nuxt process. A file-only edit needs no build, deployment
-or daemon-reload. No restart/reload command is included or authorized by this task.
-Actual restart need remains pending the owner's result, not inferred as a live PASS.
+or daemon-reload. No restart/reload command was included in that read-only check.
+The owner's reported loading difference is now handled by the separate
+controlled-restart preparation; execution still awaits owner approval.
 
 ## Preparation evidence and roadmap
 
@@ -115,8 +121,8 @@ Owner command SHA256:
 `PREPARATION-RECEIPT.json` SHA256:
 `36add9806296b1ee5b1a6f275adfe11842d13ae81f9fd1b4f09c820c267e79df`.
 
-Next: owner runs the read-only block, then review whether a controlled restart
-is needed. Charging, checkout, signup, shipping automation and callbacks must remain
+Next: owner reviews and approves the prepared controlled restart.
+Charging, checkout, signup, shipping automation and callbacks must remain
 held. PDC GetProducts HTTP500 investigation remains on the roadmap; its previous
 one-run approval is consumed and supplies no retry permission here.
 
