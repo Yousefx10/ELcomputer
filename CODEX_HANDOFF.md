@@ -1,3 +1,51 @@
+# Paymob owner-reported saved; read-only validator prepared — 2026-10-21
+
+- Started clean at `f94b195`. Owner reports verified LIVE Paymob inputs entered
+  personally in /etc/storefront/runtime.env, root600. Actual production validation
+  remains PENDING owner execution/results. No current process/key/loading PASS is
+  inferred from that report. [Exact owner procedure](docs/paymob-owner-validation.md).
+- Prepared one self-contained Python command block for Hostinger root console.
+  Owner copies it from the protected local file using the documented iMac pbcopy
+  command, then pastes it once. No remote script staging/install, permission change,
+  shell sourcing, secret file creation or credential-bearing shell argument.
+- Checks all six inputs/nonempty, canonical syntax, all-variable duplicates,
+  LIVE key formats/prefix agreement, HMAC, both live modes, one-way match with the
+  owner-confirmed recovered LIVE references/card ID, and preservation of all other
+  runtime values. No secret, ID, length, encoding or environment content is output.
+- Checks exact approved unit/drop-in hashes and effective required EnvironmentFile,
+  root0600 file, active service, no unexpected drop-in/daemon-reload requirement/
+  PassEnvironment/UnsetEnvironment, and saved/running outbound gates false. Compares
+  saved six values privately with /proc process environment; prints flags only.
+- Metadata network scope only: existing Supabase site_settings GET for five payment
+  booleans, Auth settings GET for disabled signup/anonymous signup/email confirmation,
+  and existing site EN/AR signup/checkout plus /api/checkout GET403 holds. Fixed
+  targets, verified TLS, no proxies/redirects/POST/retries; no Paymob/PDC endpoint.
+  Snapshot/unit/service stability required. Output is fixed check names + PASS/BLOCKED.
+- Twenty-seven synthetic safety cases PASS; no production execution/native runtime
+  result claimed. All binding/command files are local only, outside Git, directory
+  0700/files0600: parent paymob-owner-validation-20261021/. No new secret read or
+  recovery decryption occurred; binding uses existing fingerprints/metadata only.
+  OWNER-ROOT-CONSOLE-COMMAND.txt SHA256
+  2b718a541fdb9358aeac713c05199387ce58ccf43c085124d530255ff60fbfe4.
+  PREPARATION-RECEIPT.json SHA256
+  36add9806296b1ee5b1a6f275adfe11842d13ae81f9fd1b4f09c820c267e79df.
+- ONE next owner action: execute that block and return PASS/BLOCKED lines only.
+  If DISABLED_CONFIGURATION_VALID=PASS and SAVED_VALUES_LOADED=BLOCKED, a later
+  controlled restart is needed to load disk changes. If both PASS, no loading
+  restart is needed. If configuration BLOCKED, stop; no automatic correction or
+  restart. A file-only change needs no build/deployment/daemon-reload. No restart
+  is performed or authorized here; actual need awaits the owner result.
+- Preparation made no production connection/write, provider request, rotation,
+  deployment/restart, database change, gate activation, Auth/media/inventory change
+  or push. Current release/schema remain prior observed d2d7a8029b473e4a/schema87,
+  not a new live observation. Charging, checkout, signup and shipping must stay held.
+- Roadmap retained: PDC GetProducts HTTP500 requires a later bounded investigation;
+  prior one-run exception is consumed, no retry authorized here. Mandatory WordPress
+  customer identities/old-login/private details/profiles/addresses/historical orders
+  migration preserves Auth UUIDs, prevents duplicates and historical financial/
+  commerce effects, before unrestricted signup. Controlled acceptance/public purchase
+  remain separate stages with real stock, fees, parcel/customer/callback prerequisites.
+
 # Offline Paymob recovery PASS; current account confirmation pending — 2026-10-21
 
 - Started clean at `6f4eba7`. [Sanitized recovery report](docs/paymob-offline-recovery.md).

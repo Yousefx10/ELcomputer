@@ -3,10 +3,14 @@
 The [disabled production release](live-sales-release-receipt.md) passed with
 schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).
-PDC credentials/settings are saved; Paymob credential entry is pending.
+PDC credentials/settings are saved. The owner reports verified LIVE Paymob inputs
+saved in root0600 runtime.env. The
+[owner-only validator](paymob-owner-validation.md) is prepared; production validation
+and any later controlled restart decision remain pending owner result lines.
 [Offline Paymob recovery](paymob-offline-recovery.md) supplies protected historical
-LIVE/TEST keys, HMAC and EGP card IDs; current account/credential confirmation is
-still required. No production credential copy or provider request occurred in recovery.
+LIVE/TEST keys, HMAC and EGP card IDs; the owner reports current verification and
+personal entry. No agent production credential copy or provider request occurred
+in recovery. Read-only validation does not prove merchant payment acceptance.
 [Masked saved-state verification](pdc-connection-paymob-preparation.md) passed.
 The [approved one-run PDC exception](pdc-readonly-diagnostic-receipt.md) is consumed:
 GetProducts returned HTTP500, then stopped. GetCities was not attempted.

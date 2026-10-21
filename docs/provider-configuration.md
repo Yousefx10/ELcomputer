@@ -4,7 +4,10 @@ The owner reports that disabled release `d2d7a8029b473e4a`, schema87, passed
 Dashboard, Products/images, Orders, Shipping, Quick Setup and browse-only browser
 acceptance. That release milestone is complete. Do not redeploy or rerun its operator.
 
-**Current: PDC saved-state PASS; PDC CONNECTION BLOCKED; Paymob entry pending.**
+**Current: PDC saved-state PASS; PDC CONNECTION BLOCKED; Paymob saved by owner.**
+The owner reports verified LIVE inputs saved in root0600 runtime.env. The
+[owner-only read-only validation](paymob-owner-validation.md) is prepared but has
+not run in production. No process reload or merchant acceptance is inferred.
 The owner personally saved PDC and confirmed persistence. The
 [fresh masked verification](pdc-connection-paymob-preparation.md) confirms encrypted
 secret presence and matching recovered company/product/pickup-city settings.
@@ -19,8 +22,8 @@ The later [offline Paymob recovery](paymob-offline-recovery.md) found matching
 LIVE/TEST Secret/Public pairs, legacy API key, HMAC and LIVE/TEST EGP card IDs in
 both preserved snapshots and original WPvivid settings. The profile reference is
 an unverified API-key claim; current account/credential validity remains unverified.
-The owner must compare the protected report with the existing LIVE Dashboard
-before personal entry. No historical credential was copied into production.
+The owner subsequently reports completing private verification and personal entry.
+No historical credential was copied into production by the agent.
 
 [Offline WordPress recovery](pdc-offline-recovery.md) supplied the historical PDC
 account, pickup details, token and compatible webhook secret in three agreeing
@@ -235,9 +238,10 @@ PDC entry is now complete and independently verified through masked checks at
 [approved diagnostic receipt](pdc-readonly-diagnostic-receipt.md) supersede that earlier
 baseline. All outbound/provider/payment holds remain off.
 
-**One next owner action:** personally enter the six Paymob assignments above and
-report only **“Paymob file saved; not restarted”**. Then verify masked disk/process
-configuration, preservation hashes and retained holds before any runtime reload.
+**One next owner action:** execute the prepared
+[root-console validation](paymob-owner-validation.md) and return PASS/BLOCKED lines
+only. It verifies disk/process configuration, preservation and retained holds
+before any controlled restart decision. No restart was performed by preparation.
 PDC remains BLOCKED after GetProducts HTTP500. The one-run approval is consumed;
 GetCities was not called. No retry, real charge or shipment is authorized.
 
