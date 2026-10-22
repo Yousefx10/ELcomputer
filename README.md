@@ -88,12 +88,12 @@ The refinement plan is consumed. Owner Dashboard checks remain separate.
 The [Premium Product Page milestone](docs/premium-product-page.md) is locally validated.
 Classic stays the default; Premium shares existing commerce and SEO authority.
 Dashboard settings select either style; Product Editor manages presentation media
-and relationships. See [validation](docs/premium-product-validation.md). The sealed
-schema88→89 release `11f5aa80c67c81aa` stopped safely before migration or activation.
-Production remains on the accepted footer release and schema88. A separate guarded
-replacement `c9c68db4510d0dfe` fixes the transaction-mode comparison. Its14 release
-checks,266 exact-artifact browser checks and read-only production check pass.
-Its own final seal needs approval.
+and relationships. See [validation](docs/premium-product-validation.md). The
+PDP migration89 is committed and preserved all135 original table projections/Auth.
+The previous application remains live. Both earlier plans are consumed; the second
+stopped before activation when normal analytics advanced. A fresh application-only
+plan reuses the exact qualified artifact, applies the existing telemetry policy and
+performs no SQL writes. Its own final seal needs owner approval.
 See the [diagnosis and deployment procedure](docs/premium-product-release.md).
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 

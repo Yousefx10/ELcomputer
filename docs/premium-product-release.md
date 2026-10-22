@@ -1,139 +1,122 @@
-# Guarded Premium product page release
+# Guarded Premium product page activation
 
-Application commits: `ad7b03d`, then the sparse-layout refinement `a2e47a5`.
-The final application is pinned to the full `a2e47a5` commit in the dedicated
-operator. Both accepted footers and every completed release executor stay intact.
+Status: **schema89 committed; application-only activation preparation in progress**.
+The live application remains `40ebcf1f6d50a143` (`3b98164`). Migration89 committed
+under approved seal `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
+The application has not been activated. Classic remains selected.
 
-Status: **replacement ready for final owner approval**, release `c9c68db4510d0dfe`.
-New seal: `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
-Fresh verified encrypted DB/runtime backups, clean build, inventory1675 and626
-retained assets pass. The exact new package passes266 browser checks with zero
-runtime/hydration/REST errors or external requests. Final read-only check PASS;
-no replacement execution intent exists. Private plan: parent
-premium-pdp-20261022/prepared-recovery/plan.json. Final receipt:
-FINAL-RECOVERY-PREPARATION-RECEIPT.json; exact owner URLs:
-RECOVERY-OWNER-BROWSER-CHECKS.md in the same milestone directory.
+## Consumed plans and verified production state
 
-The consumed first release is `11f5aa80c67c81aa`, seal
-`aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
-Production remains `40ebcf1f6d50a143`, schema88. No migration89 DDL/ledger commit
-or application activation occurred. Fresh execution backups verified successfully.
+The first PDP plan (`11f5aa80c67c81aa`, seal beginning `aeb557dc`) stopped before
+migration DDL because it compared read-only and write transaction modes directly.
+Its transaction rolled back. The second (`c9c68db4510d0dfe`, seal beginning
+`90dbc370`) corrected that mode comparison and committed exactly migration89.
+Its commit receipt proves preservation of all135 original table projections,
+Auth and existing schema/security, with only the reviewed additive extensions.
 
-### Stopped attempt and independent correction
+The second plan then stopped before its schema89 candidate or activation. Its
+postcommit verifier compared live analytics with an earlier preparation snapshot.
+Events advanced2246→2265→2266 and sessions1645→1652→1653 across preparation,
+commit and diagnosis. This contradicted the existing approved `approvalState`
+policy, which already projects only the schema of these two telemetry tables.
+The full read-only comparison confirms every other protected field matches the
+committed state. No rollback, retry or application activation occurred.
 
-The original `operator.mjs` compared its approved read-only database snapshot
-(`read_only: on`) with the explicitly authorized write transaction (`off`). This
-mode-only assertion failed before migration SQL. The transaction rolled back.
-Read-only runtime, full protected database, schema, Auth and HTTP observations
-confirm the accepted production state. All stopped evidence remains under parent
-premium-pdp-20261022/prepared/ and STOP-DIAGNOSIS.json. No retry or rollback ran.
+Both plans, intent/STOP files, commit receipts, staged artifacts and executors
+remain immutable. Do not invoke `operator.mjs` or `recovery-operator.mjs` again.
+Private evidence is under parent premium-pdp-20261022/: prepared/, prepared-recovery/,
+SCHEMA89-STOP-DIAGNOSIS.json, SCHEMA89-PRESERVATION-VERIFICATION.json and the fresh
+ACTIVATION-READONLY-PRODUCTION-VERIFICATION.json. This is verified production evidence;
+local synthetic Auth/browser tests remain a separate evidence category.
 
-The original executor and every earlier release guard remain byte-identical.
-The independent `recovery-operator.mjs` requires a read-only approved observation
-and a write-enabled migration transaction separately, then compares every protected
-business/security/schema field exactly. Eight additional checks reproduce the
-original production callback, reject genuine drift and prove rollback/commit with
-an owned non-superuser database. All14 release checks pass; none skip or cancel.
+## Application-only scope
 
-New configuration input `stopped_plan` names the consumed plan. Preparation and
-execution bind its intent/STOP, read-only diagnosis, runtime/database/HTTP evidence,
-and unchanged tools. Any prior commit/activation evidence rejects this recovery.
-The replacement release identity hashes the artifact, predecessor seal and recovery
-version, preserving the abandoned artifact and staging directory. Its new plan,
-backups, artifact/readback and final owner approval are independent of the STOP.
+- Zero SQL writes and no pending migrations. Verify the complete exact89-row ledger.
+- Reuse the identical qualified Premium PDP artifact from `c9c68db4510d0dfe`, app
+  `a2e47a53b016051500180876b25feb2420d7038d`. Do not rebuild or change the application.
+- Classic remains selected. All three new metadata tables remain empty on release.
+- Only `public.store_analytics_events` and `public.store_analytics_sessions` use the
+  existing live-telemetry row projection. Their columns, ACL/RLS, constraints,
+  indexes, triggers and functions remain exact. Internal analytics tables remain
+  protected. Every other present/future business table and new metadata table,
+  settings, saved flags, ledger, Auth identity/security, schema and permissions
+  stay bound. Auth activity uses only the previously approved timestamp projection.
+- Caddy, runtime/systemd configuration, credentials, all media, both footers and
+  disabled purchasing/signup/Paymob/PDC gates remain unchanged. No provider calls.
+- An independent release identity and staging directory preserve both consumed plans.
+  No automatic retry, rollback, Caddy operation or Git push.
 
-## Reviewed scope
+The new `activation-operator.mjs` and `activation-remote.py` allow only schema89
+application activation. Database observations use read-only transactions. Remote
+mutation rejects SQL scope, a migration list, schema88, old plan formats or missing
+approval. Candidate proof binds the plan, artifact, inventory and migration hash;
+activation requires the exact approved read-only database-state digest.
 
-- Exactly migration89: `20261022100000_premium_product_pages.sql`.
-- Two nullable/defaulted presentation Settings columns and three private tables.
-- Classic default; no product/content configuration or Premium selection on deploy.
-- Exact media-reference and reset-coverage extensions; other existing schema,
-  ACL/RLS, functions, triggers and original-column row projections preserved.
-- One application switch using the established Caddy/systemd deployment phases.
-- Existing Caddy, runtime file, Auth security, credentials, saved flags, catalog,
-  public/private media and disabled commerce/provider gates remain unchanged.
-- No Git push, provider transaction, generic migration push or historical-seal reuse.
+The23 release checks and nine owned remote fault checks pass, with no failures,
+cancellations or skips. Tests use a non-superuser local database, real postcommit
+analytics growth, fresh read-only observations, protected data/Auth/schema drift,
+tampered artifacts, wrong scope/approval and failure-without-retry evidence.
 
-[Local validation](premium-product-validation.md) distinguishes genuine catalog
-snapshots, isolated fixtures, synthetic Auth and remaining hosted owner acceptance.
+## Prepare and verify
 
-## Prepare and review
-
-Use Node22.23.1, npm10.9.8 and deployment-specific private configuration. Do not
-use the retired PM2 deploy scripts. Commands from the repository root:
+Use the pinned Node22.23.1 and deployment-specific private configuration. Do not
+use retired PM2 deployment scripts. The new `committed_plan` configuration input
+names the consumed second plan. The operator verifies and seals its complete
+intent/STOP/commit/diagnosis/preservation evidence and original qualification.
 
 ```sh
-node scripts/premium-product-release/recovery-operator.mjs prepare PRIVATE_SPEC NEW_PRIVATE_DIRECTORY
-node scripts/premium-product-release/recovery-operator.mjs check NEW_PRIVATE_DIRECTORY/plan.json
+node scripts/premium-product-release/activation-operator.mjs prepare PRIVATE_SPEC NEW_PRIVATE_DIRECTORY
+node scripts/premium-product-release/activation-operator.mjs check NEW_PRIVATE_DIRECTORY/plan.json
 ```
 
-Preparation requires a clean, committed checkout and exact application/migration/
-tool inputs. It verifies the accepted production receipt/archive/schema, current
-runtime/media identities, Auth settings and strict-TLS read-only database state.
-Only reads, local files and backup generation occur before final approval.
+Preparation is read-only in production. It checks the running application, Auth,
+Caddy/runtime/media identities,89-row ledger, permissions and committed protected
+state. It captures fresh encrypted schema89 database and runtime backups, verifies
+authenticated decryption, full pg_restore readback and runtime member hashes.
+The exact existing archive, secret scan, inventory1675, retained626 assets and
+independent safe-extractor readback must agree. Its266 exact-artifact browser
+checks and qualification are hash-bound; no application changes invalidate them.
+[Application validation](premium-product-validation.md) retains full regression
+qualifications and distinguishes fixtures from hosted owner acceptance.
 
-A fresh custom-format database dump and runtime recovery archive are encrypted.
-Authenticated decryption, complete `pg_restore` readback and runtime member hashes
-are verified. Existing media is not rewritten; its complete file tree is bound to
-the plan. The accepted release artifact remains available for application rollback.
+## New final approval and execution
 
-The new artifact is built from its exact commit with a clean `npm ci`, an empty
-dotenv and no production secrets. Existing client assets are retained. Inventory,
-secret scan, archive hash and safe-extractor readback must all agree. Qualification,
-protected inputs, backup evidence, current data/schema and tools are sealed together.
-The read-only `check` refuses drift or any prior execution intent/STOP/completion.
-
-## Final approval and execution
-
-The owner must approve the exact new 64-character plan seal. This approval covers
-both the reviewed migration89 transaction and application activation. The consumed
-first PDP seal and earlier footer approvals do not authorize this replacement.
+A new full plan seal is required. This approval covers application activation only;
+schema89 is already committed and must not be reapplied. The two earlier approvals
+are consumed. Once the replacement is fully prepared, the owner reviews:
 
 ```text
 APPROVE PREMIUM PDP DEPLOY
-90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7
+NEW_APPLICATION_ONLY_SEAL
 ```
 
-Only after that approval:
+Only after that exact new approval:
 
 ```sh
-node scripts/premium-product-release/recovery-operator.mjs apply PRIVATE_PLAN --approved 90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7
+node scripts/premium-product-release/activation-operator.mjs apply PRIVATE_PLAN --approved NEW_APPLICATION_ONLY_SEAL
 ```
 
-The operator performs these guarded phases:
-
-1. Recheck committed inputs, approved state, Auth, HTTP holds and current runtime.
+1. Recheck immutable inputs, exact artifact, read-only schema89/data/Auth and holds.
 2. Capture and verify fresh encrypted execution backups.
-3. Stage and verify the artifact, leaving the current application running.
-4. Start a private systemd candidate against schema88; check safe SSR/Auth GETs.
-5. Lock/recheck protected data, apply only89 and its ledger row in one transaction.
-   Compare all old data/security/schema before committing. Any failed check rolls
-   back DDL and the ledger together.
-6. Start a second private candidate against schema89. Check new public metadata,
-   private API 401s, Classic SSR, SEO, and unchanged production runtime/media.
-7. Recheck the committed database, both candidate receipts and artifact bytes.
-   Atomically switch the application link and restart the storefront service once.
-8. Verify public routes/holds, new metadata, Classic/SEO, unchanged Caddy/runtime/
-   media, and exact protected database projections. Retain every receipt.
+3. Stage the artifact and run the private systemd candidate against schema89.
+   Verify Classic SSR/SEO, new metadata APIs, private API401s and unchanged live state.
+4. Recheck protected schema89 state read-only and bind its exact approved digest.
+5. Switch the application link atomically and restart the same storefront service once.
+6. Verify public routes/holds, Classic/SEO, metadata, runtime/Caddy/media and protected
+   database state. Retain receipts; never select Premium or configure content.
 
-Execution intent is one-use. Any failure writes STOP evidence. There is no automatic
-retry or rollback. An ambiguous commit must be investigated read-only before a new
-review; never reapply89 or rerun a consumed plan.
+Execution intent is one-use. A failure writes STOP evidence. There is no automatic
+retry or rollback. Inspect any uncertainty read-only before a new reviewed plan.
 
 ## Recovery plan
 
-The sealed plan records the exact previous release path/archive, runtime hashes,
-verified backups and application-only recovery scope. Before activation, the old
-application stays current and is backward-compatible with additive89. If SQL fails
-before commit, the transaction rolls back. If it committed but activation did not
-occur, keep89 and the existing application while reviewing the retained evidence.
-
-After activation, application rollback means verifying the failed current release,
-reverifying the accepted previous artifact/runtime/gates, atomically restoring the
-recorded previous application link, and restarting the same service once. Preserve
-schema89, presentation receipts, catalog/media, credentials and Auth. Do not drop
-new columns/tables or restore a database dump over newer business/Auth data. Recovery
-is a separate reviewed operation, using the exact sealed paths and retained files.
+The accepted previous application archive and runtime identities remain retained.
+Before activation it stays current and is backward-compatible with schema89.
+After activation, rollback is a separate reviewed application-only operation:
+verify the current failed release, verify the accepted previous archive/runtime,
+restore the recorded application link and restart the same service once. Preserve
+schema89, products, media, Auth, settings, receipts and credentials. Never drop89
+or restore an old database dump over newer data. No automatic recovery runs.
 
 ## Exact owner browser checks after deployment
 

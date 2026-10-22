@@ -1,34 +1,34 @@
-# Premium PDP replacement ready; original deployment stopped safely — 2026-10-22
+# Schema89 committed; Premium PDP application-only activation preparing — 2026-10-22
 
-- Owner approved seal `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
-  The one-use attempt stopped in the locked pre-migration guard, before migration89
-  DDL, ledger commit or app activation. Keep its intent, STOP and all staged files.
-  Never rerun that plan or alter its sealed executor.
-- Read-only diagnosis confirms production `40ebcf1f6d50a143`, schema88, unchanged.
-  All approved protected business/schema/security projections match, including
-  saved payment flags and Auth. Runtime, Caddy and all2627 media files match.
-  Fresh execution DB/runtime backups passed authenticated decryption and readback.
-- Confirmed release-tool defect: the old comparator includes `read_only`. The
-  approved observation is `on`; the authorized migration transaction must be `off`.
-  The new independent `recovery-operator.mjs` positively checks both modes, then
-  compares every protected field exactly. It does not change application/migration,
-  remote activation phases or historical guards. It binds all stopped-plan evidence
-  and uses a separate release identity to preserve the abandoned staged artifact.
-- Release tests:14 pass,0 fail/cancel/skip (eight recovery checks, six unchanged
-  release checks). The real non-superuser fixture reproduces the original STOP,
-  rejects protected payment drift, proves precommit rollback, and commits89 safely.
-- **Replacement ready for final approval:** release `c9c68db4510d0dfe`, same app
-  `a2e47a5`, same additive89. Seal: `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
-  New private plan: parent premium-pdp-20261022/prepared-recovery/plan.json.
-  Fresh encrypted backups/decryption/readback, clean npm-ci build, inventory1675,
-  retained626 assets and exact new artifact browser266 PASS. Final read-only check
-  PASS with zero production writes. No replacement intent/STOP/completion exists.
-  Final receipt: parent premium-pdp-20261022/FINAL-RECOVERY-PREPARATION-RECEIPT.json.
-  Exact owner URLs: RECOVERY-OWNER-BROWSER-CHECKS.md in that private directory.
-- Next owner action: `APPROVE PREMIUM PDP DEPLOY` plus the new exact seal above.
-  Only then use `recovery-operator.mjs apply PLAN --approved SEAL`. The old approval
-  cannot authorize a retry. Classic stays selected until explicit owner Dashboard
-  choice. No Git push, provider calls, settings changes or unrelated work.
+- Migration89 committed successfully under approved seal `90dbc370...f0950a7`.
+  All135 original table projections, Auth and old schema/security passed the locked
+  commit checks. Production application remains `40ebcf1f6d50a143` (`3b98164`).
+  No Premium PDP activation occurred. Classic remains selected.
+- Both PDP plans are consumed. Keep prepared/ and prepared-recovery/ intent/STOP,
+  encrypted backups, commit receipts and staged artifacts. Never rerun migration89,
+  `operator.mjs`, `recovery-operator.mjs` or either consumed approval.
+- The second postcommit verifier incorrectly required unchanged live analytics.
+  Existing `approvalState` already permits rows in exactly store_analytics_events
+  and store_analytics_sessions to advance, while binding their schema. Fresh
+  read-only proof confirms all other committed business/Auth/schema state matches.
+  Runtime, Caddy, media2627 files/411264665 bytes and disabled gates are unchanged.
+- Existing uncommitted generation completed. Continue the independent
+  `activation-operator.mjs`, `activation-approval.mjs`, `activation-remote.py`.
+  Scope: schema89 unchanged, no migrations, zero SQL writes, exact same qualified
+  c9 artifact/app a2e47a5. Retain every historical executor byte-for-byte.
+- New guards bind committed evidence, artifact qualification and full89-row ledger.
+  Only the existing two-table telemetry/Auth-activity projections apply; all other
+  business/Auth/data/security drift still rejects. Candidate/activation bind the
+  exact plan/artifact/inventory and approved read-only state digest.
+- Release suite:23 pass,0 fail/cancel/skip, including nine new activation checks.
+  Nine owned remote fault checks also pass. Prepare fresh verified encrypted
+  backups/artifact readback, seal the application-only plan and run its final
+  read-only check. Return its NEW seal
+  for owner approval. Do not activate before that approval. No Git push/providers.
+- Private evidence: parent premium-pdp-20261022/.
+  SCHEMA89-STOP-DIAGNOSIS.json, SCHEMA89-PRESERVATION-VERIFICATION.json,
+  ACTIVATION-READONLY-PRODUCTION-VERIFICATION.json and activation-production-*.json.
+  Both handoffs must record the final plan/seal and remaining owner acceptance.
 
 - Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
 - [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).
@@ -49,7 +49,7 @@
 - Production count reconciled read-only: 561 products, 225 published, 336 Draft;
   629 variants, 577 active. The earlier 225 count was published scope only.
   No catalog/media/stock/publication/Auth/provider data was changed.
-- Migration89 remains unapplied in production: two Settings columns, three private metadata tables.
+- Migration89 is committed in production: two Settings columns, three private metadata tables.
   It preserves old rows, Auth and ACL/RLS. Exact extensions add media-reference
   coverage and register these private tables with reset's existing unknown-table
   guard. Inherited reset locks remain; new writes coordinate with reset. Product
@@ -61,13 +61,13 @@
   three completed footer guards reject89; one concurrent catalog seed timeout passes
   its isolated original rerun. No whole-suite green claim or weakened old guard.
 - Both accepted footers, saved payment flags and all checkout/signup/Paymob/PDC holds
-  remain unchanged. Production remains40ebcf1f6d50a143/schema88 after the guarded STOP. No activation.
+  remain unchanged. Production remains40ebcf1f6d50a143/schema89 after the postcommit STOP. No activation.
 - Application commits: ad7b03d and a2e47a5 (final). The dedicated
   [release operator/procedure](docs/premium-product-release.md) is locally tested.
   Encrypted backups and artifact/readback are verified and the release is sealed.
   The plan pins the application commit,
-  tools and qualification in a NEW seal. Obtain final exact approval before SQL or
-  production staging/activation. Never invoke a consumed operator or generic push.
+  tools and qualification in a NEW seal. Obtain a new exact application-only approval before
+  production staging/activation; no further SQL writes. Never invoke a consumed operator or generic push.
 - Private evidence: parent premium-pdp-20261022/. Owner reference screenshots were
   absent; public references reviewed, without claiming exact screenshot matching.
   After approved deployment, owner explicitly chooses Premium and verifies browser
