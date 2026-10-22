@@ -18,6 +18,14 @@ class ShippingPreparationError extends Error {
 
 const cleanText = (value) => String(value || '').trim()
 
+const merchandiseMinor = value => {
+  const match = String(value).match(/^(\d{1,12})(?:\.(\d{1,2}))?$/)
+  if (!match) throw new ShippingPreparationError('The shipment value is invalid.')
+  const minor = Number(BigInt(match[1]) * BigInt(100) + BigInt((match[2] || '').padEnd(2, '0')))
+  if (!Number.isSafeInteger(minor)) throw new ShippingPreparationError('The shipment value is invalid.')
+  return minor
+}
+
 const getPdcHeaders = (settings) => ({
   AccessToken: decryptShippingSecret(settings.access_token_encrypted),
   CompanyID: cleanText(settings.company_id),
@@ -195,12 +203,16 @@ export const buildPdcShipment = async ({ settings, order, items, orderReference,
     .map((item) => `${cleanText(item.product_title) || 'Item'} x${Math.max(1, Number(item.quantity) || 1)}`)
     .join(', ')
     .slice(0, 500)
+  // Declared goods value is separate from COD, delivery and payment fees.
+  // The owner reviews this saved net merchandise value before controlled booking.
+  const declaredMinor = merchandiseMinor(order.subtotal_amount) - merchandiseMinor(order.discount_amount ?? 0)
+  if (declaredMinor < 0) throw new ShippingPreparationError('The shipment value is invalid.')
 
   return {
     fromCityID: Number(settings.origin_city_id),
     fromAddress: cleanText(settings.origin_address),
     fromPhone: cleanText(settings.origin_phone).replace(/\s+/g, ''),
-    fromContactName: cleanText(settings.origin_contact_name) || 'Store',
+    fromContactPerson: cleanText(settings.origin_contact_name) || 'Store',
     toCityID: toCityId,
     toConsigneeName: customerName,
     toAddress: address,
@@ -210,9 +222,10 @@ export const buildPdcShipment = async ({ settings, order, items, orderReference,
     weight: Number(settings.default_weight_kg),
     pieces,
     cod: codAmountMinor / 100,
+    declaredValue: declaredMinor / 100,
     shipmentTypeID: Number(settings.shipment_type_id),
-    specialInstuctions: contents,
-    allowToOpenPackage: Boolean(settings.allow_open_shipment)
+    contents,
+    allowToOpenShipment: Boolean(settings.allow_open_shipment)
   }
 }
 
