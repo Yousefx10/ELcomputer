@@ -393,8 +393,8 @@ const editPackage = (row, field, value) => {
 }
 
 const saveRow = (row) => saveSection(async () => {
-  const value = row.value.trim()
-  if (packageRow(row) && !packageEntryValue(packageInput(row).name, packageInput(row).quantity)) { setError(t('productFinishing.invalidContent')); return }
+  const value = packageRow(row) ? packageEntryValue(packageInput(row).name, packageInput(row).quantity) : row.value.trim()
+  if (packageRow(row) && !value) { setError(t('productFinishing.invalidContent')); return }
   const definition = definitionById(row.definition_id)
   if (!value || (row.definition_id && !definition)) { setError('Choose a name and enter a value.'); return }
 
