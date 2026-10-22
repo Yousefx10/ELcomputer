@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict'
-import {readFile,writeFile,mkdir,readdir,lstat,chmod,access} from 'node:fs/promises'
+import {readFile,writeFile,mkdir,readdir,lstat,chmod,access,cp} from 'node:fs/promises'
 import {resolve,dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {execFile,spawn} from 'node:child_process'
@@ -17,6 +17,7 @@ const scope={milestone:'controlled_purchase',schema:'90 unchanged',database_writ
 const save=(file,value)=>writeFile(file,JSON.stringify(value,null,2)+'\n',{flag:'wx',mode:0o600})
 const cleanEnv=()=>({PATH:dirname(process.execPath)+':/usr/local/bin:/usr/bin:/bin',HOME:process.env.HOME,LANG:'C',NODE_ENV:'production'})
 const exited=child=>new Promise((res,rej)=>{child.once('error',rej);child.once('close',res)})
+export const createReleaseArchive=(build,file)=>tarCreate({cwd:build,file,gzip:true,portable:true,noMtime:true,follow:false,onWriteEntry:entry=>{if(entry.type==='SymbolicLink')entry.stat.mode=(entry.stat.mode&~0o7777)|0o755}},['.output'])
 export function argumentsFor(args){
   if(args.length===3&&args[0]==='prepare')return {mode:'prepare',spec:resolve(args[1]),directory:resolve(args[2])}
   if(args.length===3&&args[0]==='seal')return {mode:'seal',candidate:resolve(args[1]),qualification:resolve(args[2])}
@@ -49,6 +50,16 @@ async function applicationInputs(){
   const actual=(await run('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:repo,maxBuffer:8e6})).stdout.trim().split('\n').filter(n=>/^(app|server|public|i18n)\//.test(n)||['package.json','package-lock.json','nuxt.config.ts','tsconfig.json'].includes(n));assert.deepEqual(actual.sort(),names.sort())
   return inputs
 }
+export async function reuseReviewedBuild(spec,app,build,work){
+    const original=resolve(spec.reuse_build.directory);assert.equal(spec.reuse_build.application_commit,applicationCommit)
+    assert.equal(hash(await readFile(dirname(original)+'/source.tar')),hash(await readFile(work+'/source.tar')),'Reused source archive must be the exact application commit')
+    for(const [name,sha]of Object.entries(app))assert.equal(hash(await readFile(original+'/'+name)),sha,'Reused build source changed')
+    assert.equal(digest(await inventory(original+'/.output')),spec.reuse_build.inventory_sha256,'Reused output changed')
+    assert.match(await readFile(dirname(original)+'/build.log','utf8'),/Build complete!/)
+    await cp(original+'/.output',build+'/.output',{recursive:true,verbatimSymlinks:true,errorOnExist:true,force:false})
+    assert.equal(digest(await inventory(build+'/.output')),spec.reuse_build.inventory_sha256)
+    await save(work+'/build-reuse.json',{application_commit:applicationCommit,original,inventory_sha256:spec.reuse_build.inventory_sha256,source_archive_sha256:hash(await readFile(work+'/source.tar')),build_log_sha256:hash(await readFile(dirname(original)+'/build.log')),npm_ci_log_sha256:hash(await readFile(dirname(original)+'/npm-ci.log')),rebuilds:0})
+}
 async function logged(command,args,cwd,file,{timeout=600000,env=cleanEnv()}={}){
   const child=spawn(command,args,{cwd,env,stdio:['ignore','pipe','pipe'],timeout}),chunks=[];child.stdout.on('data',b=>chunks.push(b));child.stderr.on('data',b=>chunks.push(b));const code=await exited(child)
   await writeFile(file,Buffer.concat(chunks),{flag:'wx',mode:0o600});assert.equal(code,0,'Local log retained: '+file)
@@ -67,12 +78,16 @@ export async function prepare(options){
   const build=work+'/build-source';await mkdir(build,{mode:0o700});await logged('git',['archive','--format=tar','--output='+work+'/source.tar',applicationCommit],repo,work+'/source-archive.log');await logged('tar',['-xf',work+'/source.tar','-C',build],repo,work+'/source-extract.log')
   await mkdir(build+'/public',{recursive:true});await logged('tar',['-xzf',work+'/retained-assets.tar.gz','-C',build+'/public'],repo,work+'/retained-assets-extract.log')
   assert.equal((await run(process.execPath,[spec.npm_cli,'--version'],{env:cleanEnv()})).stdout.trim(),'10.9.8');await writeFile(work+'/empty.env','',{flag:'wx',mode:0o600})
-  await logged(process.execPath,[spec.npm_cli,'ci','--no-audit','--no-fund'],build,work+'/npm-ci.log');assert.equal(hash(await readFile(build+'/package-lock.json')),app['package-lock.json'])
-  await logged(process.execPath,[build+'/node_modules/nuxt/bin/nuxt.mjs','build','--dotenv',work+'/empty.env'],build,work+'/build.log')
+  if(spec.reuse_build){
+    await reuseReviewedBuild(spec,app,build,work)
+  }else{
+    await logged(process.execPath,[spec.npm_cli,'ci','--no-audit','--no-fund'],build,work+'/npm-ci.log');assert.equal(hash(await readFile(build+'/package-lock.json')),app['package-lock.json'])
+    await logged(process.execPath,[build+'/node_modules/nuxt/bin/nuxt.mjs','build','--dotenv',work+'/empty.env'],build,work+'/build.log')
+  }
   const output=build+'/.output',retained=work+'/retained-readback';await mkdir(retained,{mode:0o700});await logged('tar',['-xzf',work+'/retained-assets.tar.gz','-C',retained],repo,work+'/retained-readback.log');await retainClientAssets(retained+'/_nuxt',output+'/public/_nuxt',before.assets); async function modes(path){const s=await lstat(path);if(s.isSymbolicLink())return;if(s.isDirectory()){await chmod(path,0o755);for(const n of await readdir(path))await modes(path+'/'+n)}else await chmod(path,0o644)}await modes(output)
   const c=await load(spec.target.credentials_file),entries=await inventory(output,{secrets:[c.database_password,c.service_role_key]})
   for(const[path,value]of Object.entries(before.assets))assert.equal(hash(await readFile(output+'/public/_nuxt/'+path)),value.sha256,'Retained client asset lost')
-  await save(work+'/inventory.json',entries);await tarCreate({cwd:build,file:work+'/release.tar.gz',gzip:true,portable:true,noMtime:true,follow:false},['.output']);await chmod(work+'/release.tar.gz',0o600)
+  await save(work+'/inventory.json',entries);await createReleaseArchive(build,work+'/release.tar.gz');await chmod(work+'/release.tar.gz',0o600)
   const readbackScript='import importlib.util,json,sys,pathlib; s=importlib.util.spec_from_file_location("extractor",sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);m.extract_release(sys.argv[2],pathlib.Path(sys.argv[3]),json.loads(pathlib.Path(sys.argv[4]).read_text()));print("PASS")'
   await logged('python3',['-B','-c',readbackScript,resolve(here,'../clean-reinstall/deploy.py'),work+'/release.tar.gz',work+'/archive-readback',work+'/inventory.json'],repo,work+'/archive-readback.log')
   assert.equal(digest(await inventory(work+'/archive-readback')),digest(entries));assert.deepEqual(await toolHashes(),tools)
