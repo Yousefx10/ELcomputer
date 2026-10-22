@@ -78,12 +78,27 @@
         </div>
       </div>
 
+      <div class="grid gap-5 border-t border-gray-200 pt-5 lg:grid-cols-2">
+        <form @submit.prevent="addMerchandisingRow('package')" class="space-y-3">
+          <h4 class="text-sm font-bold">{{ $t('productFinishing.inTheBox') }}</h4><p class="text-xs text-gray-600">{{ $t('productFinishing.confirmedOnly') }}</p>
+          <div class="flex flex-wrap gap-2"><label class="min-w-32 flex-1 text-xs font-semibold">{{ $t('productFinishing.itemName') }}<input v-model="packageName" maxlength="160" class="mt-1 w-full rounded-md border p-2.5 text-sm" required></label><label class="w-24 text-xs font-semibold">{{ $t('common.quantity') }}<input v-model="packageQuantity" type="number" min="1" max="999" step="1" required class="mt-1 w-full rounded-md border p-2.5 text-sm"></label></div>
+          <button type="submit" :disabled="saving || !packageEntryValue(packageName, packageQuantity)" class="rounded-md border border-blue-300 px-3 py-2 text-sm font-semibold text-blue-800 disabled:opacity-40">{{ $t('productFinishing.addItem') }}</button>
+        </form>
+        <form @submit.prevent="addMerchandisingRow('tag')" class="space-y-3">
+          <h4 class="text-sm font-bold">{{ $t('productFinishing.productTags') }}</h4><p class="text-xs text-gray-600">{{ $t('productFinishing.tagHelp') }}</p>
+          <label class="block text-xs font-semibold">{{ $t('productFinishing.tag') }}<input v-model="productTag" maxlength="64" required class="mt-1 w-full rounded-md border p-2.5 text-sm"></label>
+          <button type="submit" :disabled="saving || !productTag.trim()" class="rounded-md border border-blue-300 px-3 py-2 text-sm font-semibold text-blue-800 disabled:opacity-40">{{ $t('productFinishing.addTag') }}</button>
+        </form>
+        <p class="text-xs text-gray-600 lg:col-span-2">{{ $t('productFinishing.editOrderHelp') }}</p>
+      </div>
+
       <div>
         <h4 class="font-bold text-gray-900">{{ $t('dashboard.products.thisProductSSpecifications') }}</h4>
         <div v-if="rows.length" class="mt-3 space-y-2">
           <div v-for="(row, index) in rows" :key="row.id" class="grid gap-2 rounded-md border border-gray-200 p-3 md:grid-cols-[minmax(160px,0.8fr)_minmax(0,1.5fr)_auto]">
             <label class="min-w-0 text-xs font-semibold text-gray-600">{{ $t('common.name') }}<select v-model="row.definition_id" :aria-label="$t('dashboard.products.specificationValueName', { value0: (index + 1) })" class="mt-1 w-full rounded-md border p-2.5 text-sm"><option v-if="!row.original.definition_id" value="">{{ $t('common.legacyValue', { value0: (row.label) }) }}</option><option v-for="definition in definitions" :key="definition.id" :value="definition.id">{{ definition.name }}</option></select></label>
-            <label class="min-w-0 text-xs font-semibold text-gray-600">{{ $t('common.value') }}<input v-model="row.value" :aria-label="$t('dashboard.products.specificationValueValue', { value0: (index + 1) })" maxlength="500" class="mt-1 w-full rounded-md border p-2.5 text-sm" @keydown.enter.prevent="saveRow(row)"></label>
+            <div v-if="packageRow(row)" class="flex gap-2"><label class="min-w-0 flex-1 text-xs font-semibold">{{ $t('productFinishing.itemName') }}<input :value="packageInput(row).name" @input="editPackage(row, 'name', $event.target.value)" maxlength="160" class="mt-1 w-full rounded-md border p-2.5 text-sm"></label><label class="w-20 text-xs font-semibold">{{ $t('common.quantity') }}<input :value="packageInput(row).quantity" @input="editPackage(row, 'quantity', $event.target.value)" type="number" min="1" max="999" class="mt-1 w-full rounded-md border p-2.5 text-sm"></label></div>
+            <label v-else class="min-w-0 text-xs font-semibold text-gray-600">{{ $t('common.value') }}<input v-model="row.value" :aria-label="$t('dashboard.products.specificationValueValue', { value0: (index + 1) })" maxlength="500" class="mt-1 w-full rounded-md border p-2.5 text-sm" @keydown.enter.prevent="saveRow(row)"></label>
             <div class="flex flex-wrap items-end gap-2"><label class="me-1 inline-flex items-center gap-1 text-xs"><input v-model="row.is_highlight" type="checkbox"> {{ $t('common.highlight') }}</label><button type="button" :disabled="saving || index === 0" :aria-label="$t('dashboard.products.moveSpecificationValueUp', { value0: (index + 1) })" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, -1)">↑</button><button type="button" :disabled="saving || index === rows.length - 1" :aria-label="$t('dashboard.products.moveSpecificationValueDown', { value0: (index + 1) })" class="rounded-md border px-2 py-2 disabled:opacity-40" @click="moveRow(index, 1)">↓</button><button type="button" :disabled="saving || !rowDirty(row)" class="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" @click="saveRow(row)">{{ $t('common.save') }}</button><button type="button" :disabled="saving" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" @click="deleteRow(row)">{{ $t('common.delete') }}</button></div>
           </div>
         </div>
@@ -111,6 +126,7 @@
 const { uiLabel } = useUiLocale()
 
 import { matchOriginal, requireSavedRow, mergeSectionRows } from '~/utils/productSection'
+import { isPackageEntry, packageEntryValue } from '~/utils/productFinishing'
 import { duplicateSpecificationCandidates, matchSpecificationDefinitions, parsePastedSpecifications, parseSpecificationAliases, specificationKey } from '~/utils/specificationLibrary'
 
 const props = defineProps({
@@ -157,6 +173,7 @@ const showPaste = ref(false)
 const pasteText = ref('')
 const pasteRows = ref([])
 const newFeature = ref('')
+const packageName = ref(''), packageQuantity = ref(1), productTag = ref('')
 
 const selectedDefinition = computed(() => definitionById(selectedDefinitionId.value))
 const usedDefinitionIds = computed(() => new Set(rows.value.map((row) => row.definition_id
@@ -232,7 +249,7 @@ const definitionDirty = computed(() => {
     || definitionDraft.is_active !== item.is_active)
 })
 const sectionDirty = computed(() => sectionStatus.value === 'unknown' || rows.value.some(rowDirty) || features.value.some(item => item.body !== item.originalBody)
-  || Boolean(draftValue.value || newFeature.value || pasteText.value || pasteRows.value.length || definitionDirty.value)
+  || Boolean(packageName.value || productTag.value || draftValue.value || newFeature.value || pasteText.value || pasteRows.value.length || definitionDirty.value)
   || creatingDefinition.value && Boolean(newName.value || newGroup.value || newAliases.value || newHelp.value))
 watch([sectionDirty, saving, sectionStatus], () => emit('state', { dirty: sectionDirty.value, saving: saving.value }), { immediate: true })
 const reloadSection = async () => {
@@ -250,7 +267,7 @@ const reloadSection = async () => {
     rows.value = rows.value.map(row => ({ ...row, definition_id: row.originalData.definition_id || '',
       value: row.originalData.value, is_highlight: row.originalData.is_highlight }))
     features.value = features.value.map(item => ({ ...item, body: item.originalBody }))
-    draftValue.value = ''; newFeature.value = ''; pasteText.value = ''; pasteRows.value = []
+    packageName.value = ''; packageQuantity.value = 1; productTag.value = ''; draftValue.value = ''; newFeature.value = ''; pasteText.value = ''; pasteRows.value = []
     selectedDefinitionId.value = ''; creatingDefinition.value = false
     error.value = ''; notice.value = ''; resetSection()
   } catch { setError(t('productEditor.sectionFailed')) }
@@ -356,8 +373,28 @@ const addSpecification = () => saveSection(async () => {
   setNotice(`${definition.name} added.`)
 })
 
+const addMerchandisingRow = kind => saveSection(async () => {
+  const value = kind === 'package' ? packageEntryValue(packageName.value, packageQuantity.value) : productTag.value.trim()
+  if (!value || kind === 'tag' && (value.length > 64 || /[\n,،]/u.test(value))) { setError(t('productFinishing.invalidContent')); return }
+  const { error: queryError } = await supabase.from('product_specifications').insert({ product_id: props.productId,
+    definition_id: null, label: kind === 'package' ? 'Box contents' : 'Tags', value, is_highlight: false, sort_order: nextOrder(rows.value) })
+  if (queryError) throw queryError
+  markSectionSaved()
+  if (kind === 'package') { packageName.value = ''; packageQuantity.value = 1 } else productTag.value = ''
+  await loadRows()
+  await logChange('products.specifications.create', `Added authored product information.`, { kind })
+  setNotice(t('productFinishing.contentSaved'))
+})
+const packageRow = row => isPackageEntry({ ...row, value: row.original.value })
+const packageInput = row => { const [quantity, ...name] = row.value.split(' × '); return { quantity, name: name.join(' × ') } }
+const editPackage = (row, field, value) => {
+  const entry = packageInput(row)
+  row.value = `${field === 'quantity' ? value : entry.quantity} × ${field === 'name' ? value : entry.name}`
+}
+
 const saveRow = (row) => saveSection(async () => {
   const value = row.value.trim()
+  if (packageRow(row) && !packageEntryValue(packageInput(row).name, packageInput(row).quantity)) { setError(t('productFinishing.invalidContent')); return }
   const definition = definitionById(row.definition_id)
   if (!value || (row.definition_id && !definition)) { setError('Choose a name and enter a value.'); return }
 

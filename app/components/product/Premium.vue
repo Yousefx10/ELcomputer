@@ -1,5 +1,6 @@
 <script setup>
 import { normalizeProductPageConfig, formatProductPagePrice, premiumSpecificationContent } from '~/utils/productPage'
+import { curatedProductTags, isProductTag, parsePackageEntry } from '~/utils/productFinishing'
 import { productHighlights } from '~/utils/specificationLibrary'
 import { normalizeProductWarranty } from '~/utils/warranty'
 const { product, pending, error, productAppearance, premiumPurchasingEnabled, categoryName, intlLocale,
@@ -14,9 +15,10 @@ const { locale } = useI18n()
 const { uiLabel } = useUiLocale()
 const config = computed(() => normalizeProductPageConfig(productAppearance.value?.config))
 const price = value => formatProductPagePrice(value, intlLocale.value)
-const topHighlights = computed(() => config.value.sections.highlights ? productHighlights(visibleSpecifications.value, { minimum: 1, maximum: 4 }) : [])
+const topHighlights = computed(() => config.value.sections.highlights ? productHighlights(visibleSpecifications.value.filter(row => !isProductTag(row) && !specificationContent.value.included.some(item => item.id === row.id)), { minimum: 1, maximum: 4 }) : [])
 const specificationContent = computed(() => premiumSpecificationContent(visibleSpecifications.value))
-const premiumGroups = computed(() => specificationContent.value.groups)
+const premiumGroups = computed(() => specificationContent.value.groups.map(group => ({ ...group, items: group.items.filter(row => !isProductTag(row)) })).filter(group => group.items.length))
+const tags = computed(() => curatedProductTags(visibleSpecifications.value))
 const includedItems = computed(() => config.value.sections.included ? specificationContent.value.included : [])
 const quickSpecifications = computed(() => premiumGroups.value.flatMap(group => group.items).filter(row => !row.is_highlight).slice(0, 4))
 const policies = computed(() => config.value.policy_links.map(row => ({ ...row, label: locale.value === 'ar' ? row.label_ar.trim() || row.label.trim() : row.label.trim() || row.label_ar.trim() })))
@@ -62,15 +64,17 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
       <article v-else>
         <nav class="pdp-breadcrumb" :aria-label="$t('common.productLocation')"><NuxtLinkLocale to="/">{{ $t('common.home') }}</NuxtLinkLocale><Icon name="lucide:chevron-right" class="directional-icon" size="13" aria-hidden="true" /><NuxtLinkLocale v-if="product.category?.slug" :to="{ path: '/search', query: { category: product.category.slug } }">{{ categoryName(product.category) }}</NuxtLinkLocale><span v-else>{{ $t('common.products') }}</span></nav>
         <div class="pdp-main-grid" :class="{ 'pdp-main-minimal': !topHighlights.length && !(config.sections.specifications && quickSpecifications.length) && !showVariantChoices }">
-          <ProductPremiumGallery :items="media" v-model="selectedImage" :title="product.title" @image-error="markImageBroken" />
+          <ProductPremiumGallery :items="media" v-model="selectedImage" :title="product.title" @image-error="markImageBroken"><template #actions><ProductPremiumActions :key="product.id" :product="product" /></template></ProductPremiumGallery>
           <section class="pdp-information" :aria-label="product.title">
             <NuxtLinkLocale v-if="product.brand?.slug" :to="`/brand/${product.brand.slug}`" class="pdp-brand"><img v-if="product.brand.logo_url" :src="product.brand.logo_url" alt="" width="64" height="32" loading="lazy">{{ product.brand.name }}</NuxtLinkLocale>
+            <span v-else-if="product.brand?.name" class="pdp-brand">{{ product.brand.name }}</span>
             <h1>{{ product.title }}</h1>
             <div v-if="config.sections.reviews || currentSku || specificationContent.model" class="pdp-product-meta">
               <button v-if="config.sections.reviews" type="button" class="pdp-review-summary" @click="goToReviews"><span v-if="reviewSummary.total" class="pdp-stars" aria-hidden="true"><Icon v-for="star in 5" :key="star" name="lucide:star" :class="star <= Math.round(reviewSummary.average) ? 'fill-current' : ''" size="14" /></span><span>{{ reviewSummary.total === null ? $t('common.viewReviews') : reviewSummary.total ? `${reviewSummary.average.toFixed(1)} (${reviewSummary.total})` : $t('common.noReviewsYet') }}</span></button>
               <span v-if="specificationContent.model" class="pdp-sku">{{ $t('productPage.model') }} <bdi>{{ specificationContent.model }}</bdi></span>
               <span v-if="currentSku" class="pdp-sku">{{ $t('productPage.sku') }} <bdi>{{ currentSku }}</bdi></span>
             </div>
+            <ul v-if="tags.length" class="pdp-tags" :aria-label="$t('productFinishing.productTags')"><li v-for="tag in tags" :key="tag"><bdi>{{ tag }}</bdi></li></ul>
             <dl v-if="topHighlights.length" class="pdp-highlights"><div v-for="item in topHighlights" :key="item.label"><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div></dl>
             <div v-if="showVariantChoices" class="pdp-variants">
               <div class="pdp-variant-heading"><h2>{{ hasColorChoices ? $t('common.color') : $t('common.chooseAnOption') }}<span v-if="selectedVariant">: {{ hasColorChoices ? selectedVariant.color_name : selectedVariant.name }}</span></h2></div>
@@ -93,7 +97,7 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
             </div><div class="pdp-purchase-controls"><div v-if="premiumPurchasingEnabled && !isComingSoon" class="pdp-quantity" :aria-label="$t('common.quantity')"><button type="button" :disabled="!canPurchaseProduct || selectedQuantity <= 1" :aria-label="$t('common.decreaseQuantity')" @click="decreaseQuantity">−</button><output :aria-label="$t('common.selectedQuantity')">{{ selectedQuantity }}</output><button type="button" :disabled="!canPurchaseProduct || selectedQuantity >= maximumQuantity" :aria-label="$t('common.increaseQuantity')" @click="increaseQuantity">+</button></div>
             <button v-if="!isComingSoon" type="button" class="pdp-purchase-action" :disabled="!canOrder" @click="handleAddToCart"><Icon name="lucide:shopping-cart" size="18" aria-hidden="true" />{{ premiumPurchasingEnabled ? $uiLabel(addToCartLabel) : $t('productPage.buyingHeld') }}</button>
             <p v-if="cartMessage" class="pdp-cart-status" role="status">{{ $uiMessage(cartMessage) }}</p>
-            </div><div class="pdp-purchase-policies"><ProductWarranty :product="product" /><nav v-if="policies.length" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav></div>
+            </div><ProductPremiumHelp /><div class="pdp-purchase-policies"><ProductWarranty :product="product" /><nav v-if="policies.length" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav></div>
           </aside>
         </div>
         <p v-if="presentationError" class="pdp-hint" role="status">{{ $t('productPage.detailsUnavailable') }}</p>
@@ -101,7 +105,10 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
         <div class="pdp-details">
           <section v-if="hasOverview" id="pdp-overview" class="pdp-content-section"><div class="pdp-section-title"><span>{{ $t('common.aboutThisProduct') }}</span><h2>{{ $t('productPage.sections.overview') }}</h2></div><ProductPremiumDescription :blocks="descriptionContent" /></section>
           <section v-if="hasFeatures" class="pdp-content-section"><div class="pdp-section-title"><h2>{{ $t('productPage.sections.features') }}</h2></div><ul class="pdp-feature-list"><li v-for="item in product.features" :key="item.id"><Icon name="lucide:check" size="17" aria-hidden="true" />{{ item.body }}</li></ul></section>
-          <section v-if="includedItems.length" id="pdp-included" class="pdp-content-section"><div class="pdp-section-title"><h2>{{ $t('productPage.included') }}</h2></div><dl class="pdp-included"><div v-for="row in includedItems" :key="row.id"><dt>{{ row.displayLabel }}</dt><dd>{{ row.value }}</dd></div></dl></section>
+          <details v-if="includedItems.length" id="pdp-included" class="pdp-content-section pdp-package">
+            <summary><span><Icon name="lucide:package-open" size="21" aria-hidden="true" />{{ $t('productFinishing.inTheBox') }}</span><Icon name="lucide:chevron-down" size="19" aria-hidden="true" /></summary>
+            <dl class="pdp-package-items"><div v-for="row in includedItems" :key="row.id"><template v-if="parsePackageEntry(row.value)"><dt><bdi>{{ parsePackageEntry(row.value).name }}</bdi></dt><dd>{{ $t('productFinishing.itemQuantity', { count: parsePackageEntry(row.value).quantity }) }}</dd></template><template v-else><dt>{{ row.displayLabel }}</dt><dd class="pdp-package-legacy">{{ row.value }}</dd></template></div></dl>
+          </details>
           <section v-if="hasSpecifications" id="pdp-specifications" class="pdp-content-section"><div class="pdp-section-title"><h2>{{ $t('productPage.sections.specifications') }}</h2></div><div class="pdp-specification-groups"><div v-for="(group, groupIndex) in premiumGroups" :key="groupIndex"><h3 v-if="group.name">{{ group.name }}</h3><dl><div v-for="row in group.items" :key="row.id"><dt :title="row.definition?.help_text || undefined">{{ row.displayLabel }}</dt><dd>{{ row.value }}</dd></div></dl></div></div></section>
           <section v-if="config.sections.reviews" id="pdp-reviews" ref="reviewsSection" class="pdp-content-section pdp-reviews"><div class="pdp-section-title"><h2>{{ $t('productPage.sections.reviews') }}</h2></div><ProductReviews ref="reviewsComponent" :product-id="product.id" :product-name="product.title" @summary-change="updateReviewSummary" /></section>
           <section v-if="config.sections.related && compatible.length" class="pdp-recommendations"><h2>{{ $t('productPage.compatibility') }}</h2><div class="pdp-product-cards"><CardsProductCard v-for="item in compatible" :key="item.id" :product="item" /></div></section>

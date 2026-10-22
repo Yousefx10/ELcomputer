@@ -7,6 +7,11 @@ Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.
 
+The [Premium PDP finishing enhancements](docs/premium-product-finishing.md) add
+favorites, sharing, package contents, support access and curated tags.
+They reuse schema89 and existing services. A separate guarded release is being
+qualified; production activation still requires its new final approval.
+
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.
 The storefront remains browse-only; purchases and signup are disabled.

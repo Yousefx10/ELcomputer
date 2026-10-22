@@ -82,6 +82,7 @@ onBeforeUnmount(close)
         <img v-else :src="item.url" :alt="''" width="64" height="64" loading="lazy" decoding="async" @error="mediaError(item)">
       </button>
     </div>
+    <slot name="actions" />
     <Teleport to="body">
       <dialog v-if="expanded" ref="dialog" class="pdp-media-dialog" :aria-label="$t('productPage.gallery')" aria-describedby="pdp-gallery-help" @cancel.prevent="close" @click.self="close" @keydown="keydown">
         <div class="pdp-dialog-inner">

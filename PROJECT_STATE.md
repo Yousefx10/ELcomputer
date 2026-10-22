@@ -1,3 +1,22 @@
+# Premium PDP finishing enhancements — implementation and release qualification — 2026-10-22
+
+- Five Premium-only enhancements implemented; [architecture and controls](docs/premium-product-finishing.md).
+  No migration. Classic markup/shared route and both footers remain unchanged.
+- Fresh read-only production verification confirms cda41a7a13e0b61d/schema89,
+  Premium selected by the owner, all138 protected tables, and unchanged2627-file
+  media inventory. Current authored Settings and Auth state become the new baseline;
+  the previous deployment's Classic/empty-metadata assertions are not reused.
+- Guest favorites use bounded browser IDs; existing accounts use private Auth
+  preferences. Share reuses canonical URLs. Package items and tags use the existing
+  specification section/RLS/CAS saves. Help Center, configured contacts and signed-in
+  support tickets provide real support destinations. Chat remains held.
+- Local/browser/regression and new release guards are being qualified. No deployment,
+  production writes, provider request or Git push is authorized by this task alone.
+  Preserve every consumed release/receipt; final approval needs a NEW exact seal.
+- Private evidence: parent premium-pdp-finishing-20261022/. Preserve both accounts'
+  work. After approval, deploy this one milestone, verify and wait for acceptance.
+  Do not start PDC or WordPress migration during this task.
+
 # Premium PDP deployed; schema89 unchanged; owner browser acceptance pending — 2026-10-22
 
 - Owner approved exact application-only seal `d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
