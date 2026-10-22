@@ -4,14 +4,34 @@ Application commits: `ad7b03d`, then the sparse-layout refinement `a2e47a5`.
 The final application is pinned to the full `a2e47a5` commit in the dedicated
 operator. Both accepted footers and every completed release executor stay intact.
 
-Status: **prepared for final owner approval**, release `11f5aa80c67c81aa`.
-Seal: `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
-The exact packaged artifact passes266 browser checks; read-only release check PASS.
-Inventory1675, retained626 client assets, encrypted backups and archive readback pass.
-Private plan: parent premium-pdp-20261022/prepared/plan.json.
-Private final receipt and exact owner URLs are in that milestone directory.
-Production remains `40ebcf1f6d50a143`, schema88. This document is not approval to
-execute production SQL or change the running application.
+Status: **approved first attempt stopped safely; replacement preparation in progress**.
+The consumed first release is `11f5aa80c67c81aa`, seal
+`aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
+Production remains `40ebcf1f6d50a143`, schema88. No migration89 DDL/ledger commit
+or application activation occurred. Fresh execution backups verified successfully.
+
+### Stopped attempt and independent correction
+
+The original `operator.mjs` compared its approved read-only database snapshot
+(`read_only: on`) with the explicitly authorized write transaction (`off`). This
+mode-only assertion failed before migration SQL. The transaction rolled back.
+Read-only runtime, full protected database, schema, Auth and HTTP observations
+confirm the accepted production state. All stopped evidence remains under parent
+premium-pdp-20261022/prepared/ and STOP-DIAGNOSIS.json. No retry or rollback ran.
+
+The original executor and every earlier release guard remain byte-identical.
+The independent `recovery-operator.mjs` requires a read-only approved observation
+and a write-enabled migration transaction separately, then compares every protected
+business/security/schema field exactly. Eight additional checks reproduce the
+original production callback, reject genuine drift and prove rollback/commit with
+an owned non-superuser database. All14 release checks pass; none skip or cancel.
+
+New configuration input `stopped_plan` names the consumed plan. Preparation and
+execution bind its intent/STOP, read-only diagnosis, runtime/database/HTTP evidence,
+and unchanged tools. Any prior commit/activation evidence rejects this recovery.
+The replacement release identity hashes the artifact, predecessor seal and recovery
+version, preserving the abandoned artifact and staging directory. Its new plan,
+backups, artifact/readback and final owner approval are independent of the STOP.
 
 ## Reviewed scope
 
@@ -34,8 +54,8 @@ Use Node22.23.1, npm10.9.8 and deployment-specific private configuration. Do not
 use the retired PM2 deploy scripts. Commands from the repository root:
 
 ```sh
-node scripts/premium-product-release/operator.mjs prepare PRIVATE_SPEC NEW_PRIVATE_DIRECTORY
-node scripts/premium-product-release/operator.mjs check NEW_PRIVATE_DIRECTORY/plan.json
+node scripts/premium-product-release/recovery-operator.mjs prepare PRIVATE_SPEC NEW_PRIVATE_DIRECTORY
+node scripts/premium-product-release/recovery-operator.mjs check NEW_PRIVATE_DIRECTORY/plan.json
 ```
 
 Preparation requires a clean, committed checkout and exact application/migration/
@@ -57,8 +77,8 @@ The read-only `check` refuses drift or any prior execution intent/STOP/completio
 ## Final approval and execution
 
 The owner must approve the exact new 64-character plan seal. This approval covers
-both the reviewed migration89 transaction and application activation. Earlier footer
-approvals do not authorize this release.
+both the reviewed migration89 transaction and application activation. The consumed
+first PDP seal and earlier footer approvals do not authorize this replacement.
 
 ```text
 APPROVE PREMIUM PDP DEPLOY
@@ -68,7 +88,7 @@ EXACT_NEW_PLAN_SEAL
 Only after that approval:
 
 ```sh
-node scripts/premium-product-release/operator.mjs apply PRIVATE_PLAN --approved EXACT_NEW_PLAN_SEAL
+node scripts/premium-product-release/recovery-operator.mjs apply PRIVATE_PLAN --approved EXACT_NEW_PLAN_SEAL
 ```
 
 The operator performs these guarded phases:

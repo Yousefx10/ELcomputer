@@ -88,10 +88,11 @@ The refinement plan is consumed. Owner Dashboard checks remain separate.
 The [Premium Product Page milestone](docs/premium-product-page.md) is locally validated.
 Classic stays the default; Premium shares existing commerce and SEO authority.
 Dashboard settings select either style; Product Editor manages presentation media
-and relationships. See [validation](docs/premium-product-validation.md). A separately
-sealed schema88→89 release `11f5aa80c67c81aa` is prepared. See the
-[approval and deployment procedure](docs/premium-product-release.md). No PDP
-deployment has run; new final owner approval is required.
+and relationships. See [validation](docs/premium-product-validation.md). The sealed
+schema88→89 release `11f5aa80c67c81aa` stopped safely before migration or activation.
+Production remains on the accepted footer release and schema88. A separate guarded
+replacement fixes a transaction-mode comparison; its own final seal needs approval.
+See the [diagnosis and deployment procedure](docs/premium-product-release.md).
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
