@@ -249,7 +249,7 @@ const definitionDirty = computed(() => {
     || definitionDraft.is_active !== item.is_active)
 })
 const sectionDirty = computed(() => sectionStatus.value === 'unknown' || rows.value.some(rowDirty) || features.value.some(item => item.body !== item.originalBody)
-  || Boolean(packageName.value || productTag.value || draftValue.value || newFeature.value || pasteText.value || pasteRows.value.length || definitionDirty.value)
+  || Number(packageQuantity.value) !== 1 || Boolean(packageName.value || productTag.value || draftValue.value || newFeature.value || pasteText.value || pasteRows.value.length || definitionDirty.value)
   || creatingDefinition.value && Boolean(newName.value || newGroup.value || newAliases.value || newHelp.value))
 watch([sectionDirty, saving, sectionStatus], () => emit('state', { dirty: sectionDirty.value, saving: saving.value }), { immediate: true })
 const reloadSection = async () => {

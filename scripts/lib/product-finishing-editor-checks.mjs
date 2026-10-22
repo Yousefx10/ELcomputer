@@ -2,7 +2,7 @@ import {join} from 'node:path'
 export async function reviewFinishingEditor({page,f,product,dir,check}) {
  await page.evaluate(()=>{window.pdpDashboard.actor('owner');window.pdpDashboard.show('specifications');window.pdpDashboard.appearance('en',false)})
  await page.getByRole('button',{name:'Add package item',exact:true}).waitFor();await page.waitForFunction(()=>window.specificationEditor)
- await page.getByLabel('Item name',{exact:true}).fill('Owned package fixture');await page.getByLabel('Quantity',{exact:true}).fill('2');await page.getByRole('button',{name:'Add package item',exact:true}).click()
+ await page.getByLabel('Quantity',{exact:true}).fill('2');await page.waitForFunction(()=>window.specificationEditor.sectionDirty.value);check(true,'Quantity-only package draft participates in the existing navigation guard');await page.getByLabel('Item name',{exact:true}).fill('Owned package fixture');await page.getByRole('button',{name:'Add package item',exact:true}).click()
  await page.waitForFunction(()=>window.specificationEditor.rows.value.some(r=>r.value==='2 × Owned package fixture'))
  check((await f.db.query("select value from public.product_specifications where product_id=$1 and label='Box contents'",[product.id])).rows.some(r=>r.value==='2 × Owned package fixture'),'Actual Dashboard package name/quantity saves through existing RLS')
  await page.getByLabel('Tag',{exact:true}).fill('Owned factual tag');await page.getByRole('button',{name:'Add tag',exact:true}).click();await page.waitForFunction(()=>window.specificationEditor.rows.value.some(r=>r.value==='Owned factual tag'))
