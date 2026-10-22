@@ -96,7 +96,7 @@ Premium consolidates repeated authored specification groups, recognizes explicit
 box-content labels/groups, and displays an authored model when present. It never
 infers specifications, compatibility or variations from product names.
 
-Built-app browser validation passes 264 checks with no runtime/hydration errors,
+Built-app browser validation passes 266 checks with no runtime/hydration errors,
 HTTP failures or external requests. It covers seven genuine published catalog
 records, EN/AR, 1440/1024/768/390/320 widths, Light/Dark, OS-following System mode,
 Classic/Premium SSR and SEO parity, keyboard/modal/swipe behavior, current variants,

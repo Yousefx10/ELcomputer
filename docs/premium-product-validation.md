@@ -8,7 +8,7 @@ Modern Footer release `40ebcf1f6d50a143`, schema88, until new final approval.
 | Check | Result and boundary |
 | --- | --- |
 | Original Classic template and shared route script | Exact hash preservation |
-| Built-app browser matrix | 264 checks; zero runtime/hydration/HTTP errors; no external requests |
+| Built-app browser matrix | 266 checks; zero runtime/hydration/HTTP errors; no external requests |
 | Themes/locales/layouts | EN/AR, RTL/LTR, Light/Dark/System, desktop/tablet/320–390 mobile |
 | SEO | Same title, canonical, hreflang and JSON-LD in both styles |
 | Dashboard settings | Actual SFC, persistence, refresh, isolated section save, unsafe-link rejection, current native RLS |
@@ -21,7 +21,7 @@ Modern Footer release `40ebcf1f6d50a143`, schema88, until new final approval.
 | Hosted authenticated/browser writes | Owner acceptance after approved deployment; not claimed from synthetic Auth |
 | Real Paymob/PDC/checkout/signup | Disabled; no provider transaction or activation |
 
-Typecheck and the clean Node22 production build pass. The focused suite passes 38 tests with no skips or cancellations, including
+Typecheck and the clean Node22 production build pass. The focused suite passes 39 tests with no skips or cancellations, including
 Classic/data authority, presentation/SQL/API, footer and release guards. Private
 logs and the final qualification bind their exact counts and source inputs.
 

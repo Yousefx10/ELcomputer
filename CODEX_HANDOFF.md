@@ -11,7 +11,7 @@
   revisioned videos/curated-related/compatibility controls. Image Display order is
   exposed. Draft retention, current permission checks, exact retries and receipt
   recovery remain. No price/inventory/publication authority enters presentation data.
-- Built-app browser review passes 264 checks: genuine seven-product snapshots,
+- Built-app browser review passes 266 checks: genuine seven-product snapshots,
   EN/AR, desktop/tablet/320–390 mobile, Light/Dark/System, keyboard/modal/swipe,
   settings persistence, videos, actor changes, and explicit isolated missing/rich/
   preorder/coming-soon/permitted-cart scenarios. Synthetic Auth/native RLS is not
@@ -24,7 +24,7 @@
   coverage and register these private tables with reset's existing unknown-table
   guard. Inherited reset locks remain; new writes coordinate with reset. Product
   metadata/assets cascade; minimal non-replaying receipts and video files remain.
-- Focused suite: 38 pass, zero failures/cancellations/skips, plus six owned remote
+- Focused suite: 39 pass, zero failures/cancellations/skips, plus six owned remote
   phase checks. Native release/rollback and media/reset checks pass. Typecheck and
   clean production build pass. Full suite: 1254 pass/15 fail/2 cancelled/41 skips;
   baseline at69952dd:1242/11/2/41. Eleven failures/cancellations match baseline;

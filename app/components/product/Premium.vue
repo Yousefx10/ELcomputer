@@ -61,7 +61,7 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
       <p v-else-if="!product" class="pdp-empty">{{ $t('common.productNotFound') }}</p>
       <article v-else>
         <nav class="pdp-breadcrumb" :aria-label="$t('common.productLocation')"><NuxtLinkLocale to="/">{{ $t('common.home') }}</NuxtLinkLocale><Icon name="lucide:chevron-right" class="directional-icon" size="13" aria-hidden="true" /><NuxtLinkLocale v-if="product.category?.slug" :to="{ path: '/search', query: { category: product.category.slug } }">{{ categoryName(product.category) }}</NuxtLinkLocale><span v-else>{{ $t('common.products') }}</span></nav>
-        <div class="pdp-main-grid" :class="{ 'pdp-main-minimal': !topHighlights.length && !quickSpecifications.length && !showVariantChoices }">
+        <div class="pdp-main-grid" :class="{ 'pdp-main-minimal': !topHighlights.length && !(config.sections.specifications && quickSpecifications.length) && !showVariantChoices }">
           <ProductPremiumGallery :items="media" v-model="selectedImage" :title="product.title" @image-error="markImageBroken" />
           <section class="pdp-information" :aria-label="product.title">
             <NuxtLinkLocale v-if="product.brand?.slug" :to="`/brand/${product.brand.slug}`" class="pdp-brand"><img v-if="product.brand.logo_url" :src="product.brand.logo_url" alt="" width="64" height="32" loading="lazy">{{ product.brand.name }}</NuxtLinkLocale>
