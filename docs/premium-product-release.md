@@ -4,7 +4,16 @@ Application commits: `ad7b03d`, then the sparse-layout refinement `a2e47a5`.
 The final application is pinned to the full `a2e47a5` commit in the dedicated
 operator. Both accepted footers and every completed release executor stay intact.
 
-Status: **approved first attempt stopped safely; replacement preparation in progress**.
+Status: **replacement ready for final owner approval**, release `c9c68db4510d0dfe`.
+New seal: `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
+Fresh verified encrypted DB/runtime backups, clean build, inventory1675 and626
+retained assets pass. The exact new package passes266 browser checks with zero
+runtime/hydration/REST errors or external requests. Final read-only check PASS;
+no replacement execution intent exists. Private plan: parent
+premium-pdp-20261022/prepared-recovery/plan.json. Final receipt:
+FINAL-RECOVERY-PREPARATION-RECEIPT.json; exact owner URLs:
+RECOVERY-OWNER-BROWSER-CHECKS.md in the same milestone directory.
+
 The consumed first release is `11f5aa80c67c81aa`, seal
 `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
 Production remains `40ebcf1f6d50a143`, schema88. No migration89 DDL/ledger commit
@@ -82,13 +91,13 @@ first PDP seal and earlier footer approvals do not authorize this replacement.
 
 ```text
 APPROVE PREMIUM PDP DEPLOY
-EXACT_NEW_PLAN_SEAL
+90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7
 ```
 
 Only after that approval:
 
 ```sh
-node scripts/premium-product-release/recovery-operator.mjs apply PRIVATE_PLAN --approved EXACT_NEW_PLAN_SEAL
+node scripts/premium-product-release/recovery-operator.mjs apply PRIVATE_PLAN --approved 90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7
 ```
 
 The operator performs these guarded phases:

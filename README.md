@@ -91,7 +91,9 @@ Dashboard settings select either style; Product Editor manages presentation medi
 and relationships. See [validation](docs/premium-product-validation.md). The sealed
 schema88→89 release `11f5aa80c67c81aa` stopped safely before migration or activation.
 Production remains on the accepted footer release and schema88. A separate guarded
-replacement fixes a transaction-mode comparison; its own final seal needs approval.
+replacement `c9c68db4510d0dfe` fixes the transaction-mode comparison. Its14 release
+checks,266 exact-artifact browser checks and read-only production check pass.
+Its own final seal needs approval.
 See the [diagnosis and deployment procedure](docs/premium-product-release.md).
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 

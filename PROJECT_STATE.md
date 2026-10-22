@@ -1,4 +1,4 @@
-# Premium PDP deployment stopped safely; replacement preparing — 2026-10-22
+# Premium PDP replacement ready; original deployment stopped safely — 2026-10-22
 
 - Owner approved seal `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
   The one-use attempt stopped in the locked pre-migration guard, before migration89
@@ -17,9 +17,18 @@
 - Release tests:14 pass,0 fail/cancel/skip (eight recovery checks, six unchanged
   release checks). The real non-superuser fixture reproduces the original STOP,
   rejects protected payment drift, proves precommit rollback, and commits89 safely.
-- Replacement preparation is in progress. It needs its own reviewed seal and final
-  owner approval; the consumed approval cannot authorize a retry. No push/providers.
-  Classic remains selected until the owner's explicit Dashboard choice.
+- **Replacement ready for final approval:** release `c9c68db4510d0dfe`, same app
+  `a2e47a5`, same additive89. Seal: `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
+  New private plan: parent premium-pdp-20261022/prepared-recovery/plan.json.
+  Fresh encrypted backups/decryption/readback, clean npm-ci build, inventory1675,
+  retained626 assets and exact new artifact browser266 PASS. Final read-only check
+  PASS with zero production writes. No replacement intent/STOP/completion exists.
+  Final receipt: parent premium-pdp-20261022/FINAL-RECOVERY-PREPARATION-RECEIPT.json.
+  Exact owner URLs: RECOVERY-OWNER-BROWSER-CHECKS.md in that private directory.
+- Next owner action: `APPROVE PREMIUM PDP DEPLOY` plus the new exact seal above.
+  Only then use `recovery-operator.mjs apply PLAN --approved SEAL`. The old approval
+  cannot authorize a retry. Classic stays selected until explicit owner Dashboard
+  choice. No Git push, provider calls, settings changes or unrelated work.
 
 - Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
 - [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).
