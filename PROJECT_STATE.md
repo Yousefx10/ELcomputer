@@ -32,8 +32,10 @@
   its isolated original rerun. No whole-suite green claim or weakened old guard.
 - Both accepted footers, saved payment flags and all checkout/signup/Paymob/PDC holds
   remain unchanged. Production is still40ebcf1f6d50a143/schema88. No PDP SQL/deploy yet.
-- Prepare the dedicated scripts/premium-product-release operator, verified encrypted
-  backups, artifact/readback and rollback procedure. Pin the application commit,
+- Application commits: ad7b03d and a2e47a5 (final). The dedicated
+  [release operator/procedure](docs/premium-product-release.md) is locally tested.
+  Next: verify encrypted backups and artifact/readback, then seal the reviewed release.
+  Pin the application commit,
   tools and qualification in a NEW seal. Obtain final exact approval before SQL or
   production staging/activation. Never invoke a consumed operator or generic push.
 - Private evidence: parent premium-pdp-20261022/. Owner reference screenshots were
