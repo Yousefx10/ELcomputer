@@ -20,24 +20,33 @@ Fresh encrypted execution backups and final preservation checks passed during
 the owner-approved deployment. The execution intent is now consumed.
 See the [release boundary](pdc-shipment-contract-release.md).
 
+## Current setup clarification
+
+The latest [controlled purchase review](controlled-purchase-readiness.md) supersedes
+the former empty-stock/company snapshot. TESTproduct2026 has50 received test units
+and an intentional EGP1 test price; neither proves physical stock or market value.
+PDC now exists, but checkout delivery is off, governorates are empty and caches
+remain empty. Orders/attempts/dispatches remain zero. A minimal one-account purchase
+capability is locally qualified; its [inactive application release](controlled-purchase-release.md)
+is separate from the completed PDC correction. Public purchasing remains held.
+
 ## Eight owner actions and decisions
 
 | Item | Exact action / decision |
 | --- | --- |
-| 1. Correction release | **DONE.** The exact seal was approved and deployed once. Schema90, credentials, protected data and activation gates are preserved. Proceed to genuine business setup; no further release approval is needed for this completed deployment. |
-| 2. Dashboard stock | **CRM → Contacts:** create the genuine supplier; there are currently none. **Inventory → Warehouses:** use the existing active warehouse. **Products:** choose one real published, normal-sale product/model, confirm its actual selling price and primary warehouse. **Purchasing → Purchase invoices:** enter the real supplier reference, that warehouse, model, quantity1, actual unit cost and actual supplier payment only. Receive the physically verified unit. **Inventory → Serialized items:** verify its unique ID/QR and `in_stock` state; never type a quantity into a stock projection. |
-| 3. Delivery and fees | **Shipping → Shipping companies:** create one actual PDC option, Provider=PDC, Active, Offer delivery at checkout, the single supported Delivery governorate, explicit Shipping Price for Client, actual internal Shipping Cost and Return Cost. “Offer delivery at checkout” controls cash/card delivery; it does not enable PDC COD collection. One option has one customer price across its selected governorates. Confirm saved pickup privately, measured weight and dimensions, service40/type1/template1, allMustValid=true, and keep COD/reverse/auto-booking off. Separately approve one city-only lookup and bounded cache setup using the accepted products; do not click Test/Sync, which repeat GetProducts. Verify both city IDs and one exact destination mapping, then current service coverage and tariff. |
-| 4. Product and order | Select quantity1 of a genuine received unit and a real consenting recipient. Confirm the existing customer account, delivery address/mobile, exact city, selling price, any real discount, delivery fee and final payable EGP total. One confirmed active profile exists; there is no separate confirmed nonstaff customer yet. A genuine owner purchase may use the existing account through ordinary authorization, without a special exemption. Otherwise named customer onboarding needs separate authorization while broad signup stays closed. Use ordinary reviewed checkout and its durable order receipt; no direct inserts or manual paid flags. Complete **Orders → Confirm & pack**, including scans and validated private video, before booking. |
-| 5. PDC without Paymob? | **Supported for an already legitimately paid, eligible customer order; none exists now.** Current Dashboard cannot turn a normal transfer/InstaPay order or a manual sales invoice into that COD0 PDC order. Its verified-transfer recorder is preorder-only; normal cash requires COD enablement and genuine post-delivery collections. Do not manufacture a preorder or mark delivery/receipt early. The shortest existing path from today's empty state is one genuine live card order, then PDC. No added code/schema is needed for that path. |
+| 1. Correction release | **DONE.** The exact seal was approved and deployed once. Schema90, credentials, protected data and activation gates are preserved. Do not repeat it. Separately review the new inactive controlled-purchase capability; its approval enables no commerce. |
+| 2. Dashboard stock | Preserve the50 test entries; do not use them as evidence of physical stock. For the real shipment choose one actual item/model, verify its accurate price, physical unit/serial and legitimate receipt into the active warehouse. Use existing Products, Purchase invoices and Serialized items controls with genuine source records only. Do not invent a supplier, purchase, payment or stock adjustment for this test. |
+| 3. Delivery and fees | **Shipping → Shipping companies:** edit the existing active PDC option, Provider=PDC, Active, Offer delivery at checkout, the single supported Delivery governorate, explicit Shipping Price for Client, actual internal Shipping Cost and Return Cost. “Offer delivery at checkout” controls cash/card delivery; it does not enable PDC COD collection. One option has one customer price across its selected governorates. Confirm saved pickup privately, measured weight and dimensions, service40/type1/template1, allMustValid=true, and keep COD/reverse/auto-booking off. Separately approve one city-only lookup and bounded cache setup using the accepted products; do not click Test/Sync, which repeat GetProducts. Verify both city IDs and one exact destination mapping, then current service coverage and tariff. |
+| 4. Product and order | Select quantity1 of a genuine received unit and a real consenting recipient. Confirm the existing customer account, delivery address/mobile, exact city, selling price, any real discount, delivery fee and final payable EGP total. One confirmed active profile exists; there is no separate confirmed nonstaff customer yet. A genuine owner purchase may use the existing account through ordinary authorization, without a special exemption. Otherwise named customer onboarding needs separate authorization while broad signup stays closed. After separate inactive release and exact activation approval, use the controlled purchase page and its durable order receipt; no direct inserts or manual paid flags. Complete **Orders → Confirm & pack**, including scans and validated private video, before booking. |
+| 5. PDC without Paymob? | **Supported for an already legitimately paid, eligible customer order; none exists now.** Current Dashboard cannot turn a normal transfer/InstaPay order or a manual sales invoice into that COD0 PDC order. Its verified-transfer recorder is preorder-only; normal cash requires COD enablement and genuine post-delivery collections. Do not manufacture a preorder or mark delivery/receipt early. The shortest existing path from today's empty state is one genuine live card order, then PDC. No PDC or schema change is needed; the one-account purchasing capability is separately prepared and inactive. |
 | 6. Exact live approval | After deployment/setup, review one private packet containing the order/unit, exact charge, sender/recipient, both cities, measured kg and L×W×H, goods value, carrier tariff/approved charge, service40/type1, pieces1, COD0 and opening choice. Approve narrow customer/payment access and the signed Paymob POST receiver before one card submission. After verified payment and packing, approve narrow manual PDC activation, one SaveShipmentEx plus its automatic one-AWB ExportPDF, and one status poll. Conditional original-reference recovery must be included or separately approved; no booking retry. The current release approval authorizes none of these later effects. |
 | 7. Expected costs | Exact amounts are **unknown until genuine SKU and merchant tariffs are supplied**. Card charge = saved item subtotal − genuine discount + customer delivery + saved card fee (currently0). Merchant Paymob/acquirer fees are separate. PDC merchant freight, High Value/insurance, pickup/size/weight surcharges, taxes and possible return charges depend on the account's actual terms. COD0 means no customer cash collection, not free carriage. No documented API quote or enforceable maximum-charge field exists; approve the tariff contractually before booking. |
 | 8. Decisions now | **Release: DEPLOY PASS. PDC real shipment: BLOCKED** by genuine received stock, delivery/caches, eligible paid/packed order, details/costs and narrow execution authorization. **Paymob real charge: BLOCKED** by the genuine payable order/setup and approved signed-callback/access activation. Existing local qualification is reused; neither provider has passed this real transaction. PDC webhook may remain disabled; documented polling is sufficient for this first test. |
 
-Fresh read-only operational inspection found one active warehouse, zero suppliers,
-zero physical stock/balances, zero delivery companies and zero customer orders.
-There are223 priced, published serialized catalog candidates with an active model
-and warehouse. These catalog records do not prove physical availability or correct
-current prices. Payment attempts and durable PDC dispatches remain zero.
+The former zero-stock/company snapshot was taken before the owner's test setup.
+Current database projections agree on50 test units and the active PDC company.
+This is data consistency only. Actual physical stock, destination and tariff are
+still unconfirmed. No new customer order, payment attempt or dispatch exists.
 
 ## Codex preparation and execution boundaries
 
@@ -45,8 +54,11 @@ Codex has verified the existing release and administrative prerequisites, traced
 the supported payment/order paths, and prepared a private, non-executable details
 template. No business facts were filled in. The private directory is
 `../pdc-paymob-acceptance-readiness-20261023/`; the new template is
-`FIRST-LIVE-TRANSACTION.after-deploy.template.json`. Only its code-release approval
-is complete; transaction and activation approvals remain false. Do not put addresses, card data or secrets
+`FIRST-LIVE-TRANSACTION.after-deploy.template.json`. Its completed code-release
+approval refers only to the consumed PDC correction. The newer private
+`../controlled-checkout-readiness-20261023/business-details.template.json` records
+the owner's test-data clarification and all new release/activation/transaction
+approvals as false. Do not put addresses, card data or secrets
 in Git. After owner details are supplied, Codex can bind the exact order snapshot,
 configuration revision, provider request budget and activation/closure controls
 for review. City-only/cache and access/runtime execution still need concrete,

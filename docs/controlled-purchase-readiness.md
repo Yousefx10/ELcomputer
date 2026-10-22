@@ -2,7 +2,9 @@
 
 Production remains `03aa6e565f5b5ad3`, schema90. No gate, credential, Caddy,
 provider or business record was changed. The new purchase capability is local only.
-Its separate application release must stay inactive until exact activation approval.
+The [separate inactive application release](controlled-purchase-release.md) is
+prepared as `1088e036c4f81048`. Deployment and later activation require distinct
+owner approvals. Neither has been executed.
 
 ## Exact current blockers
 
@@ -76,7 +78,9 @@ GET/POST reuse normal customer authentication, quote/command RPCs, physical stoc
 allocation, one-per-order payment attempt and Paymob Pixel. Public Add to Cart,
 checkout, signup, payment APIs and PDC workers remain held.
 
-Private `NUXT_CONTROLLED_PURCHASE` defaults to `{}` and fails closed. A future
+Private `NUXT_CONTROLLED_PURCHASE` defaults to `{}` and fails closed. Nuxt may
+decode environment JSON to an object; both object and JSON-string inputs are
+validated identically in source and the exact compiled archive. A future
 reviewed grant binds one existing confirmed customer UUID, one persisted cart
 command UUID, one product/model, quantity1, one shipping company, exact EGP minor
 units and a hash of the approved billing/delivery fields. Its ISO UTC window is at
@@ -123,3 +127,11 @@ original reference; never blindly book again. PDC's public webhook may remain of
 
 Preserve the roadmap: WordPress customers/orders migration → complete payment/
 shipping reconciliation → actual inventory/delivery readiness → public checkout.
+
+## Final local qualification
+
+42 focused source checks, typecheck, clean build,20 exact-archive HTTP checks,
+release guards (including nine remote fault cases), and the two-host local Caddy
+policy pass. These use isolated/native fixtures and synthetic provider transports.
+They do not establish a real charge, signed live receipt or shipment.
+All production checks were read-only. Both handoffs retain the migration roadmap.

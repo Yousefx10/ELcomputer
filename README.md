@@ -28,11 +28,18 @@ found112 orders with matching booking and polling evidence. The
 [controlled acceptance plan](docs/provider-controlled-acceptance.md) permits initial
 PDC polling while its webhook remains disabled. The application-only shipment
 correction [deployed](docs/pdc-shipment-contract-deployment-receipt.md) as
-`03aa6e565f5b5ad3`, schema90 unchanged, with all gates held. Its plan is consumed. Actual stock,
-delivery configuration and owner-approved transaction details are still missing.
+`03aa6e565f5b5ad3`, schema90 unchanged, with all gates held. Its plan is consumed. Verified physical stock,
+delivery eligibility and owner-approved transaction details are still missing.
 The [first real shipment checklist](docs/pdc-first-live-shipment-checklist.md)
 records the completed release, exact Dashboard
 setup and why a new COD0 order currently uses the existing card-payment path.
+
+The [controlled purchasing review](docs/controlled-purchase-readiness.md) identifies
+the current runtime and Caddy holds. TESTproduct2026/EGP1/50 units are test data,
+not verified physical stock. Existing LIVE Paymob credentials remain runtime-only.
+A one-account/order purchase capability is locally qualified and
+[prepared as a separate inactive release](docs/controlled-purchase-release.md).
+It needs approval; no production access, charging or shipping is enabled.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.

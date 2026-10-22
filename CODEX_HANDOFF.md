@@ -1,3 +1,59 @@
+# Controlled purchase prepared; production unchanged — 2026-10-23
+
+- Production remains03aa6e565f5b5ad3/schema90. The PDC correction plan and
+  GetProducts acceptance are consumed. No repeat deploy/provider/PDP test or push.
+- [Exact blocker](docs/controlled-purchase-readiness.md): public purchasing defaults
+  false; Caddy holds cart/checkout/payment APIs/callbacks; both Paymob outbound
+  flags are false. Dashboard method flags do not override these controls. No
+  account-specific purchase exception exists in the deployed application.
+- Existing LIVE Paymob values match runtime and prior baseline, with valid local
+  format/mode/card-ID/HMAC presence checks. Secrets remain runtime-only at
+  /etc/storefront/runtime.env; Dashboard Settings → Payment methods edits flags,
+  fees/instructions, not credentials. No key replacement/editor/provider test.
+- Owner clarified TESTproduct2026/EGP1/50 received units are intentional test data,
+  not market price or verified physical stock. Database/model/warehouse/serial/
+  receipt projections agree structurally only. Preserve them; no fake procurement.
+- Existing active PDC company has checkout off, empty governorates and EGP10
+  customer fee; that is not the carrier tariff. Product40/type1/template1 preserved,
+  allMustValid true, both caches empty,382 aliases. Pickup present but city10 not
+  cached; saved customer mobile/mapping need correction. No real destination or
+  tariff selected. Orders/attempts/transactions/jobs/dispatches remain zero.
+- Minimal [one-account purchase capability](docs/controlled-purchase-release.md)
+  qualified locally, source32f152f3e75380db1f7ca9c054098231dbbd3226. It reuses ordinary bearer
+  customer Auth, quote/command/payment RPCs and private Pixel. One durable cart,
+  product/model, quantity1, carrier, address hash, exact EGP amount and ≤1-hour
+  grant; request-local Paymob configuration only. Default inactive; global gates
+  stay false. No schema/RLS/PDC/catalog/media/PDP/footer change or owner bypass.
+- Qualification:15 controlled native/UI +27 Paymob checks, typecheck, clean build,
+  20 exact compiled archive checks, four release guard tests/nine remote fault
+  cases and local Caddy policy on two configurable hostnames PASS. Normal decoded
+  JSON runtime objects and strings work; completion/cancel clears card fields and
+  reads server status. Synthetic concurrency/replay/receipt/closure checks pass.
+- New release1088e036c4f81048,2074 entries,1021 retained assets. Authenticated
+  encrypted backup/full readback, all138 protected projections/schema/Auth/runtime/
+  Caddy/media/gates and seal-stage read-only checks PASS. Format8 plan is private
+  controlled-checkout-readiness-20261023/prepared-4/plan.json. Exact seal:
+  d9ed612b03fbc146d4b6f5449448a4e1331ff155c267e8e70666e0bb2c98bf76
+- PREPARED FOR OWNER REVIEW ONLY. No execution intent/apply, runtime/Caddy change,
+  SQL write, credential change, order, provider request, charge, refund, booking,
+  PDF, poll, restart or Git push. Earlier prepared/2/3 local stops are preserved;
+  only prepared-4 is qualified. No consumed deployment retry was used.
+- Local exact Caddy candidate and private business-details.template.json exist,
+  all new approvals false. The inactive application deployment enables no purchase.
+  Later exact owner approval must bind real purpose/item/unit/address/EGP amount/
+  merchant+carrier costs/window, city-only read/cache/settings changes and callback
+  ingress. Callback reconciliation must remain available for outstanding attempts
+  after initiation closes. Cardholder enters details privately; no blind retry.
+- Both live tests remain BLOCKED. For PDC use one real parcel/recipient, actual
+  value, measured kg/dimensions/pieces, confirmed cities/coverage/tariff, paid order
+  and packing scans/private video, then separately approve40/type1/COD0 booking,
+  durable ORD-UUID/exact AWB, one private PDF and polling. EGP1 must not underdeclare
+  another parcel. PDC webhook can remain disabled. No fabricated manual paid order.
+- Next owner action: review/approve only the inactive controlled-purchase release.
+  Keep Dashboard setup unchanged while its sealed preservation baseline is pending.
+  Roadmap: WordPress customers/orders migration → payment/shipping reconciliation
+  → actual inventory/delivery readiness → public checkout acceptance.
+
 # PDC shipment contract DEPLOY PASS; genuine business setup next — 2026-10-23
 
 - Production is03aa6e565f5b5ad3, applicationaa5d2f31a1d1f286a34e275d133a0c475e4f8238,

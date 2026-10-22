@@ -10,6 +10,13 @@ The correction is now [deployed](pdc-shipment-contract-deployment-receipt.md) as
 `03aa6e565f5b5ad3`, schema90 unchanged. The release plan is consumed; all other
 activation and transaction approvals remain outstanding.
 
+The [current purchasing blocker review](controlled-purchase-readiness.md) supersedes
+the earlier empty-stock baseline below. The owner clarified that TESTproduct2026,
+its EGP1 price and50 received units are test data. They are not verified physical
+stock or a genuine-price sale. A new account/order-scoped capability is locally
+qualified; its [separate inactive release](controlled-purchase-release.md) needs
+approval. Neither the code release nor this document authorizes a live transaction.
+
 ## Current evidence and decision
 
 Before deployment, read-only inspection on2026-10-23 Asia/Riyadh confirmed release
@@ -18,10 +25,13 @@ allMustValid true,382 city aliases and empty lookup caches. Pickup fields and
 independent encrypted secrets are present. The saved1kg default is configuration,
 not evidence of the actual parcel's weight.
 
-There are **zero received/available serialized units, zero positive warehouse
-inventory rows, zero delivery companies and zero orders**. Payment attempts,
-transactions, shipping jobs/events and dispatches are zero. These concrete
-prerequisites block the existing safe flows, independently of PDC support.
+That earlier baseline had no stock or delivery company. The latest read-only
+inspection finds50 structurally consistent test units and one active PDC company.
+The company is not offered at checkout and has no delivery governorates. Its EGP10
+customer fee does not establish the carrier tariff. Both lookup caches remain
+empty. There are still zero customer orders, payment attempts, transactions,
+shipping jobs or dispatches. No physical unit, real destination or tariff has been
+confirmed. Preserve test entries; do not invent supplier transactions.
 
 Paymob LIVE key shapes, HMAC presence, matching live modes and positive card
 integration ID pass. Saved values equal the running process. The configured ID
@@ -39,7 +49,7 @@ These existing values were preserved. They do not enable charging or public acce
 | Paymob ready for one real charge? | **BLOCKED now.** No payment code defect found in focused checks. Real stock, a configured delivery option, valid verified card order, controlled customer access and the exact signed callback receiver must be ready before charge approval. |
 | Confirmed corrections | Normal PDC payload: fromContactPerson, contents, allowToOpenShipment and separate exact net-merchandise declaredValue. No speculative status/envelope aliases. |
 | Can PDC use polling first? | **YES.** POST GetShipmentsStatus is explicitly documented and historically exercised. Keep the PDC webhook403; exact REF/AWB matching and uncertainty guards remain. |
-| Code/schema required? | Small application-only PDC correction is deployed. **No further code/schema change, Paymob rewrite or shipping redesign** is needed for the existing card-to-PDC path. Current Dashboard/server support the single-item, single-parcel paid-order test. |
+| Code/schema required? | PDC contract correction is deployed. The deployed checkout lacks a safe one-account exception. A minimal account/cart/product/amount/address/window-scoped capability is locally qualified and separately prepared, inactive. **No schema change or PDC rewrite.** See the controlled-purchase release. |
 | PDC support needed before that test? | No unresolved optional-field/template/webhook contract question currently requires waiting. Ask only if actual city/account access fails, response matching/recovery is ambiguous, or the owner lacks current carrier terms/coverage. Automation questions remain separate. |
 | Owner inputs/approvals | Genuine SKU/stock, confirmed existing customer, pickup/recipient and city, measured parcel, declared goods value, exact EGP charge, delivery cost/maximum carrier charge, cardholder consent, narrow access/activation and exact one-charge/one-booking approval. Keep private details outside Git/chat. |
 | Public checkout after test success | Still held pending business stock/rates/coverage, payment and refund/reconciliation operations, guarded customer/packing/label acceptance, monitoring and access controls. WordPress identity/login/profile/address/history migration remains required before unrestricted signup. Automation and public opening need separate authorization. |
@@ -52,9 +62,12 @@ These existing values were preserved. They do not enable charging or public acce
    is complete, preserving all gates. Do not rerun this consumed deployment or
    the accepted GetProducts diagnostic. The [original PHP/PDF comparison](pdc-wordpress-contract-review.md)
    remains the contract evidence.
-2. Choose one genuine, correctly priced SKU and physically receive one real unit
-   through Procurement into an active warehouse. Do not edit catalog quantities,
-   fabricate inventory, use a synthetic production product or create a fake sale.
+2. For the combined real shipment, choose one genuine, correctly priced item and
+   verify its physical unit and legitimate receipt in an active warehouse. Do not
+   create fake procurement or treat the50 test entries as verified stock. Offline
+   qualification is complete. A nominal payment-only acceptance would require its
+   own truthful purpose/accounting, amount and explicit owner approval; it does
+   not prove physical fulfillment or authorize a shipment.
 3. Configure one existing Shipping Companies option for PDC with actual supported
    governorate/city and explicit customer charge, including explicit zero if agreed.
    The carrier's bill is separate from that customer price. Product40 remains
@@ -70,8 +83,11 @@ These existing values were preserved. They do not enable charging or public acce
    auto-label/reverse/COD off and shipping runtime still off. Checkout's existing
    SQL requires configured PDC cities/products even before payment. Verify no queued
    work can become eligible. Public PDC webhook remains held by Caddy.
-6. Approve narrow owner/customer acceptance access, payment initiation gates and
-   the exact Paymob POST callback receiver. Keep public checkout/signup closed,
+6. After the inactive capability release, approve the exact private grant and
+   Caddy candidate, including only the signed Paymob POST callback receiver. The
+   grant binds one confirmed account, one durable cart, one product/model, quantity1,
+   one carrier, exact EGP total, address hash and at most one-hour window. Global
+   purchasing/Paymob gates stay false. Keep public checkout/signup closed,
    all other providers/methods held, PDC worker and automatic booking disabled.
    Review exact deployment-specific configuration changes and rollback first.
    Do not broadly expose `/api/`, replace origins or weaken authentication.
@@ -99,7 +115,8 @@ delivery, receipt, paid flag, card attempt or imported active order to bypass th
 contracts. Adding a supported manual prepaid normal-order path would be a separate
 feature, not necessary for the currently qualified card-to-PDC acceptance path.
 
-Use the existing confirmed customer and ordinary quote/checkout transaction.
+Use the existing confirmed customer and the narrowly scoped purchase page. It
+reuses the ordinary quote/checkout transaction and payment safeguards.
 Record the real SKU/variant, quantity1, destination, courier, item/discount,
 customer shipping charge, card fee and final **EGP** total. The owner explicitly
 approves that exact small payable amount and possible merchant/acquirer fees.
