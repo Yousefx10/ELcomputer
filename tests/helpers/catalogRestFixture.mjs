@@ -24,6 +24,10 @@ export const createCatalogRestFixture = async ({ afterCatalog = null } = {}) => 
     const fixture = await createCatalogFixture({ database: db })
     await reproduceCatalogCorrection(db); await migrateCatalog(db)
     if (afterCatalog) await afterCatalog(db)
+    // Hosted grants are absent from the schema-only fixture. Built Dashboard
+    // handlers need the same server-role Auth lookup and audit access. Browser
+    // roles, permissions and RLS remain unchanged in this disposable database.
+    await db.exec('grant select on public.admin_users to service_role; grant select,insert,delete on public.admin_activity_logs to service_role')
     // Modern PostgREST provides request.jwt.claims; existing SQL fixtures also
     // support legacy individual claim GUCs. Only fixture auth functions change.
     await db.exec(`
