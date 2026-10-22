@@ -10,7 +10,7 @@
         <p>{{ purchase.order.orderNumber }} · {{ $uiLabel(purchase.order.paymentStatus) }}</p>
         <p v-if="purchase.attempt" class="text-sm">{{ $t('controlledPurchase.receiptPending') }}</p>
         <button v-if="purchase.active && purchase.paymentEnabled && !purchase.attempt && purchase.order.paymentStatus !== 'paid' && !paymentStarted" type="button" :disabled="busy" class="min-h-11 rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white disabled:opacity-50" @click="startPayment">{{ $t('paymob.openSecure') }}</button>
-        <ClientOnly><PaymentPaymobPixel v-if="session" :session="session" @complete="refresh" @cancel="refresh" /></ClientOnly>
+        <ClientOnly><PaymentPaymobPixel v-if="session" :session="session" @complete="finishPayment" @cancel="finishPayment" /></ClientOnly>
         <button type="button" :disabled="busy" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refresh">{{ $t('controlledPurchase.checkOrder') }}</button>
       </template>
       <form v-else-if="purchase.active && !orderPending" class="space-y-4" @submit.prevent="review">
@@ -65,9 +65,14 @@ const request = async body => {
 const refresh = async () => {
   if (busy.value) return
   busy.value = true; error.value = false
-  try { purchase.value = await request(); if (purchase.value.order) orderPending.value = false } catch { error.value = true }
+  try {
+    purchase.value = await request()
+    if (purchase.value.order) orderPending.value = false
+    if (purchase.value.order?.paymentStatus === 'paid') session.value = null
+  } catch { error.value = true }
   finally { busy.value = false }
 }
+const finishPayment = async () => { session.value = null; await refresh() }
 const review = async () => {
   if (busy.value) return
   busy.value = true; error.value = false; quote.value = null
