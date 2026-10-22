@@ -1,3 +1,7 @@
+> INCOMPLETE APPLICATION-ONLY CANDIDATE. Do not deploy or seal this scope.
+> Exact HTTP replay confirmed missing server RPC grants in schema89.
+> Use the [complete89→90 procedure](pdc-v6-rpc-release.md) after separate approval.
+
 # PDC V6 application release procedure
 
 Use only `scripts/pdc-v6-release/operator.mjs` for this correction. Historical PDP,
