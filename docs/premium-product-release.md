@@ -1,16 +1,25 @@
 # Guarded Premium product page activation
 
-Status: **application-only activation ready for final owner approval**.
-Release: `cda41a7a13e0b61d`. New seal:
-`d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
-Private plan: parent premium-pdp-20261022/prepared-activation/plan.json.
-Final receipt: FINAL-ACTIVATION-PREPARATION-RECEIPT.json; exact owner URLs:
-ACTIVATION-OWNER-BROWSER-CHECKS.md in that private directory. Fresh backups,
-artifact/readback and final read-only check PASS, with zero production writes.
-The plan is unconsumed; activation remains pending owner approval.
-The live application remains `40ebcf1f6d50a143` (`3b98164`). Migration89 committed
-under approved seal `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
-The application has not been activated. Classic remains selected.
+Status: **DEPLOY_PASS; hosted owner browser acceptance pending**.
+Active release `cda41a7a13e0b61d`, application `a2e47a5`, schema89 unchanged.
+Owner approved seal `d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
+The application-only operator completed ONCE at `2026-10-22T11:52:36.997Z` with zero SQL writes,
+zero migrations, no provider transactions and Classic still selected.
+
+Fresh execution backups, private schema89 candidate, public route/metadata/Auth
+holds and protected database/runtime/media checks pass. Live anonymous review
+passes279 checks/22 screenshots with no runtime/hydration errors. The browser
+intentionally blocked23 analytics POSTs;21 chat-status403s are the existing hold.
+No other HTTP failure was observed. Full post-browser preservation also passes.
+The archive is byte-identical to the266-check qualified artifact. Caddy/runtime,
+media, both footers, catalog/Auth, credentials and disabled gates remain preserved.
+
+Private evidence: parent premium-pdp-20261022/prepared-activation/completed.json,
+FINAL-ACTIVATION-DEPLOYMENT-RECEIPT.json and activation-live-browser-report.json.
+Exact owner URLs/checks: DEPLOYED-PDP-OWNER-BROWSER-CHECKS.md in that directory.
+README and both handoffs record deployment. Stop pending owner acceptance.
+All three plans are consumed. Commands below document the completed workflow;
+never rerun a consumed plan or migration89. Any recovery needs its own review.
 
 ## Consumed plans and verified production state
 
@@ -86,18 +95,18 @@ checks and qualification are hash-bound; no application changes invalidate them.
 [Application validation](premium-product-validation.md) retains full regression
 qualifications and distinguishes fixtures from hosted owner acceptance.
 
-## New final approval and execution
+## Completed owner approval and execution
 
-A new full plan seal is required. This approval covers application activation only;
-schema89 is already committed and must not be reapplied. The two earlier approvals
-are consumed. Once the replacement is fully prepared, the owner reviews:
+The owner approved the exact new seal below for application activation only.
+Schema89 was already committed and was not reapplied. Both earlier approvals and
+this completed application-only approval are consumed. Historical approval:
 
 ```text
 APPROVE PREMIUM PDP DEPLOY
 d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de
 ```
 
-Only after that exact new approval:
+The operator was invoked once using the pinned runtime. Historical command only:
 
 ```sh
 node scripts/premium-product-release/activation-operator.mjs apply PRIVATE_PLAN --approved d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de
@@ -117,9 +126,9 @@ retry or rollback. Inspect any uncertainty read-only before a new reviewed plan.
 
 ## Recovery plan
 
-The accepted previous application archive and runtime identities remain retained.
-Before activation it stays current and is backward-compatible with schema89.
-After activation, rollback is a separate reviewed application-only operation:
+The previous application archive and runtime identities remain retained and are
+backward-compatible with schema89. Rollback is a separate reviewed application-only
+operation:
 verify the current failed release, verify the accepted previous archive/runtime,
 restore the recorded application link and restart the same service once. Preserve
 schema89, products, media, Auth, settings, receipts and credentials. Never drop89

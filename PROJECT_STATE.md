@@ -1,46 +1,44 @@
-# Schema89 committed; Premium PDP application-only activation ready — 2026-10-22
+# Premium PDP deployed; schema89 unchanged; owner browser acceptance pending — 2026-10-22
 
-- Migration89 committed successfully under approved seal `90dbc370...f0950a7`.
-  All135 original table projections, Auth and old schema/security passed the locked
-  commit checks. Production application remains `40ebcf1f6d50a143` (`3b98164`).
-  No Premium PDP activation occurred. Classic remains selected.
-- Both PDP plans are consumed. Keep prepared/ and prepared-recovery/ intent/STOP,
-  encrypted backups, commit receipts and staged artifacts. Never rerun migration89,
-  `operator.mjs`, `recovery-operator.mjs` or either consumed approval.
-- The second postcommit verifier incorrectly required unchanged live analytics.
-  Existing `approvalState` already permits rows in exactly store_analytics_events
-  and store_analytics_sessions to advance, while binding their schema. Fresh
-  read-only proof confirms all other committed business/Auth/schema state matches.
-  Runtime, Caddy, media2627 files/411264665 bytes and disabled gates are unchanged.
-- Interrupted generation is completed and validated. The independent
-  `activation-operator.mjs`, `activation-approval.mjs`, `activation-remote.py` are complete.
-  Scope: schema89 unchanged, no migrations, zero SQL writes, exact same qualified
-  c9 artifact/app a2e47a5. Retain every historical executor byte-for-byte.
-- New guards bind committed evidence, artifact qualification and full89-row ledger.
-  Only the existing two-table telemetry/Auth-activity projections apply; all other
-  business/Auth/data/security drift still rejects. Candidate/activation bind the
-  exact plan/artifact/inventory and approved read-only state digest.
-- **Ready for final owner approval:** release `cda41a7a13e0b61d`, app `a2e47a5`.
-  Seal: `d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
-  Private plan: parent premium-pdp-20261022/prepared-activation/plan.json.
-  Fresh schema89 DB/runtime backups pass authenticated decryption/full readback.
-  Identical archive SHA/inventory1675, retained626 assets and extraction/secret scan
-  pass. The exact artifact's existing266 browser checks remain valid; no rebuild.
-  Final read-only `check` PASS, production_writes0. No new intent/STOP/completion.
-- Release suite:23 pass,0 fail/cancel/skip; nine owned remote fault checks pass.
-  README, both handoffs and the release procedure are updated. No application,
-  migration, footer or historical executor changed. No Git push/providers.
-- Next owner action: `APPROVE PREMIUM PDP DEPLOY` plus the new full seal above.
-  Only then execute `activation-operator.mjs apply PLAN --approved SEAL`, using
-  pinned Node22.23.1. This is application-only; never rerun migration89 or consumed
-  plans. Classic stays selected until the owner's explicit Dashboard choice.
-  Final receipt: FINAL-ACTIVATION-PREPARATION-RECEIPT.json; exact owner browser URLs:
-  ACTIVATION-OWNER-BROWSER-CHECKS.md in the private milestone directory.
-- Private evidence: parent premium-pdp-20261022/.
-  SCHEMA89-STOP-DIAGNOSIS.json, SCHEMA89-PRESERVATION-VERIFICATION.json,
-  ACTIVATION-READONLY-PRODUCTION-VERIFICATION.json and activation-production-*.json.
-  Hosted owner acceptance remains pending after approved activation. Stop after
-  this PDP milestone; PDC/WordPress remain later work.
+- Owner approved exact application-only seal `d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
+  Release `cda41a7a13e0b61d`, application `a2e47a5`, completed ONCE at `2026-10-22T11:52:36.997Z`
+  with DEPLOY_PASS. Zero migrations applied and zero SQL writes. The archive is
+  byte-identical to the qualified c9 artifact. No Git push or provider transaction.
+- **Classic is still selected.** The owner explicitly chooses Premium in Dashboard
+  Settings → Product page, saves and refreshes. Deployment did not configure
+  presentation content, publish products, upload media or select Premium.
+- Schema89 remains committed. All135 original table projections were preserved at
+  the migration commit. Post-activation and post-browser read-only checks preserve
+  all138 current protected tables under the existing two-table live analytics and
+  Auth-activity projections. Full schema/security, Auth identities, settings, saved
+  flags, stock, catalog and new metadata remain bound. No protection was broadened.
+- Caddy/service/runtime configuration, credentials, public/private media and all
+  checkout/signup/Paymob/PDC outbound holds match. Both footers and Classic PDP
+  remain unchanged. Media:2627 files/411264665 bytes. Previous application
+  40ebcf1f6d50a143 and verified archives/backups remain retained for separately
+  reviewed application-only recovery; preserve schema89 and newer data.
+- Fresh execution DB/runtime backups pass authenticated decryption and full readback.
+  Inventory1675, retained626 client assets and exact archive hashes pass. Private
+  final receipt: parent premium-pdp-20261022/FINAL-ACTIVATION-DEPLOYMENT-RECEIPT.json.
+  Other evidence: prepared-activation/completed.json, activation-*-after-browser.json,
+  activation-live-browser-report.json and activation-final-verification.log.
+- Qualification:23 release checks and nine owned remote fault checks pass; the same
+  artifact retains its266 local browser checks. Live anonymous review:279 checks,
+  22 screenshots, EN/AR,1440/900/390, Light/Dark/System; no runtime/hydration errors.
+  All non-GET/HEAD/provider/sensitive browser requests were blocked. The23 analytics
+  POST403s are deliberate harness blocks;21 chat-status403s are the existing hold.
+  This is not hosted authenticated Dashboard/RBAC acceptance or provider proof.
+- All three PDP plans are consumed: first STOP before SQL, second committed89 then
+  STOP on the contradictory analytics comparison, third application-only PASS.
+  Preserve every executor, intent/STOP/completion, backup and staged artifact. Never
+  rerun any consumed plan or migration89. No automatic retry/rollback ran.
+- **Next owner action:** follow DEPLOYED-PDP-OWNER-BROWSER-CHECKS.md in the private
+  milestone directory. Select/save/refresh Premium; verify the three real products,
+  EN/AR/RTL, widths/themes, gallery/options/specs, holds and unchanged footer. Switch
+  Classic and refresh, then explicitly leave the preferred style. Optional genuine
+  Draft video acceptance remains owner-only; no dummy production media is needed.
+- README and both handoffs record deployment. Stop pending owner browser acceptance.
+  PDC resolution and WordPress migration remain later work. No unrelated changes.
 
 - Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
 - [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).
@@ -73,16 +71,15 @@
   three completed footer guards reject89; one concurrent catalog seed timeout passes
   its isolated original rerun. No whole-suite green claim or weakened old guard.
 - Both accepted footers, saved payment flags and all checkout/signup/Paymob/PDC holds
-  remain unchanged. Production remains40ebcf1f6d50a143/schema89 after the postcommit STOP. No activation.
+  remain unchanged. Production is cda41a7a13e0b61d/schema89 after successful application-only activation.
 - Application commits: ad7b03d and a2e47a5 (final). The dedicated
   [release operator/procedure](docs/premium-product-release.md) is locally tested.
   Encrypted backups and artifact/readback are verified and the release is sealed.
-  The plan pins the application commit,
-  tools and qualification in a NEW seal. Obtain a new exact application-only approval before
-  production staging/activation; no further SQL writes. Never invoke a consumed operator or generic push.
+  The consumed plan pins the application commit, tools and qualification. Owner
+  browser acceptance is next. Never invoke a consumed operator, migration or generic push.
 - Private evidence: parent premium-pdp-20261022/. Owner reference screenshots were
   absent; public references reviewed, without claiming exact screenshot matching.
-  After approved deployment, owner explicitly chooses Premium and verifies browser
+  After deployment, owner explicitly chooses Premium and verifies browser
   behavior. Stop after this milestone's acceptance. PDC/WordPress remain later work.
 
 # Modern Footer refinement deployed; schema88 unchanged — 2026-10-22

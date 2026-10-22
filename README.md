@@ -85,18 +85,18 @@ The exact local artifact passes 533 browser checks/107 screenshots. Live review
 passes 318 checks/18 screenshots across EN/AR, three widths and Light/Dark/System.
 No page/hydration errors occurred; the existing chat-status 403 remains.
 The refinement plan is consumed. Owner Dashboard checks remain separate.
-The [Premium Product Page milestone](docs/premium-product-page.md) is locally validated.
-Classic stays the default; Premium shares existing commerce and SEO authority.
-Dashboard settings select either style; Product Editor manages presentation media
-and relationships. See [validation](docs/premium-product-validation.md). The
-PDP migration89 is committed and preserved all135 original table projections/Auth.
-The previous application remains live. Both earlier plans are consumed; the second
-stopped before activation when normal analytics advanced. A fresh application-only
-plan reuses the exact qualified artifact, applies the existing telemetry policy and
-performs no SQL writes. Release `cda41a7a13e0b61d` is ready:23 release checks,
-nine remote checks, verified backups and final read-only production check pass.
-Its new final seal needs owner approval.
-See the [diagnosis and deployment procedure](docs/premium-product-release.md).
+The [Premium Product Page milestone](docs/premium-product-page.md) is deployed as
+`cda41a7a13e0b61d`, application `a2e47a5`, schema89. Classic remains selected until the
+owner chooses Premium in Dashboard Settings → Product page. Both share existing
+commerce and SEO authority; Product Editor manages presentation media/relationships.
+The [application-only release](docs/premium-product-release.md) applied no SQL and
+preserved products/media/Auth, both footers, credentials and disabled gates. Its
+23 release checks, nine remote checks and266 qualified-artifact browser checks pass.
+Live anonymous verification passes279 checks/22 screenshots across EN/AR, widths
+and themes, with no runtime/hydration errors. Analytics writes were blocked by the
+browser harness; the existing chat-status403 remains. Hosted owner acceptance is
+pending. See [validation](docs/premium-product-validation.md) for evidence boundaries
+and full-suite qualification. All three PDP plans are consumed. No Git push.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.
