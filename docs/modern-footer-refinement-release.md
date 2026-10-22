@@ -1,11 +1,53 @@
-# Modern Footer refinement release — 2026-10-22
+# Modern Footer refinement deployment — 2026-10-22
 
-**Preparation PASS. Final owner approval is pending. No production deployment ran.**
+**Deployment PASS. Release `40ebcf1f6d50a143`, schema 88 unchanged.**
 
-Production remains `d1b10bb664e15a67`, application `8181953`, schema 88.
+The owner approved exact seal
+`4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d`.
+The reviewed apply ran once and completed `2026-10-22T07:13:26.437Z` with PASS.
+Application `3b98164` is active; retained `d1b10bb664e15a67` remains intact.
 The completed [87→88 release](modern-footer-release.md) and its approval are consumed.
 This separate application-only release uses the established Caddy/systemd phases.
 No historical executor, certificate or guard changes.
+
+## Deployment evidence
+
+- Read-only preflight passed against the exact approved target and protected state.
+  Fresh encrypted execution backups and complete authenticated readback passed:
+  database 9,341,045 bytes; runtime 2,278,038 bytes/10 files.
+- The staged private candidate passed before activation. One atomic current-link
+  switch and one controlled storefront restart passed. Systemd is active/running,
+  NRestarts=0. Caddy, runtime environment, units/drop-ins and provider gates stay exact.
+- All 14 public health/hold GETs and Auth signup settings pass. All 88 migration
+  source/history entries, schema, 135 protected table projections and Auth/access
+  contracts remain unchanged. No migration or SQL write ran.
+- Public browser review passes 318 checks/18 screenshots across EN/AR,
+  1440/900/390px and Light/Dark/System, including live OS theme/logo changes.
+  No page/hydration errors, overflow or broken footer image occurred. All 18
+  analytics POSTs were blocked locally; no sensitive/provider request was sent.
+  Each page recorded the existing chat-status 403 and its console network message.
+  This does not claim zero console messages or chat acceptance.
+- The first live browser attempt stopped on its own `control.disabled` check.
+  That property excludes inherited fieldset disabling. Native `:disabled` and
+  Playwright `isDisabled()` independently confirm both controls are disabled.
+  The final review uses native effective disabled state. The first attempt and
+  diagnostic remain preserved; no application or release guard changed.
+- All 2,627 media files/411,264,665 bytes and private files remain exact.
+  Retained `d1b10bb664e15a67` passes complete 1,468-entry inventory verification.
+  The temporary candidate is stopped and its temporary activation link is absent.
+- Independent post-browser target, schema/data, Auth/access and all 14 public
+  health/hold checks pass at `2026-10-22T07:18:08.297Z`. Existing activity exclusions
+  below remain explicit. No production mutation occurred in this verification.
+
+The plan is consumed. Never repeat apply/check, erase an intent/receipt, invoke
+a completed migration executor or initiate automatic rollback. Owner authenticated
+Dashboard acceptance remains separate from anonymous read-only browser proof.
+No Git push or provider request ran.
+
+Protected approval, apply/browser logs, initial harness failure/diagnostic,
+post-verification records and `FINAL-DEPLOYMENT-RECEIPT.json` remain in parent
+`modern-footer-refinement-20261022/approved-deployment/`. The immutable plan,
+both backup sets and execution phase receipts remain in `prepared-current/`.
 
 ## Reviewed candidate
 
@@ -57,9 +99,9 @@ reverse shipping remain false. No provider request or integration activation run
   All 2,627 media files/411,264,665 bytes remain exact. Existing analytics and the
   previously reviewed Auth activity timestamp exclusions remain explicit;
   between-observation comparison is not a global write-history audit.
-- Runtime environment, systemd units/drop-ins, Caddy, current output and running
-  process identities remain exact. All 14 public health/hold GETs and Auth signup
-  settings pass. The new candidate, staging path and temporary link remain absent.
+- Preparation preserved runtime environment, units/drop-ins, Caddy, current output
+  and running process identities. All 14 public health/hold GETs and Auth signup
+  settings passed. Candidate/staging/link were absent before approved execution.
 
 The immutable plan binds the initial 503-check/101-screenshot qualification.
 The final preparation receipt additionally binds the exact-artifact 533/107 review
@@ -81,8 +123,13 @@ credentials, keys and owner assets remain private review inputs.
 
 Authenticated full decryption, PostgreSQL TOC/full-parser readback and complete
 runtime file-byte comparison pass. These checks verify archives, not a hosted
-restore. Execution obtains another fresh encrypted recovery set before staging.
+restore. Execution obtained another fresh encrypted recovery set before staging.
 The existing release and all original client assets are retained.
+
+Execution backup hashes:
+
+- Database: `384a8e498fe5d2c39bcbb14dba47a3a682cf35b2d1a0b9ed23e8d0bc58c200be`.
+- Runtime: `5f6bbeb588f865adb7601aa0e8672b38998e4db682ab11548b936516eb9bfffa`.
 
 Recovery requires a separately reviewed app-only plan and approval. If activation
 has not occurred, leave the accepted release serving. If activation has occurred,
@@ -91,25 +138,27 @@ and one controlled storefront restart. Verify retained output, runtime, current
 state and closed gates first. Never restore an older database, reverse SQL, erase
 an intent, repeat an ambiguous apply or initiate automatic rollback.
 
-## Exact approval and deployment procedure
+## Exact approval and deployment procedure (consumed)
 
-Pause settings/catalog/provider edits during approval and execution. Protected
-drift stops this sealed release and requires review. Anonymous browsing may continue.
+Execution required unchanged settings/catalog/provider state. Protected drift
+stops a sealed release and requires review. Anonymous browsing remained allowed.
 
-The owner must approve this final candidate with:
+The owner supplied this exact approval:
 
 ```text
 APPROVE MODERN FOOTER REFINEMENT DEPLOY
 4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d
 ```
 
-From `/Users/imac/Documents/ELcomputer/ELcomputer`, first run the read-only check:
+The following commands ran once from `/Users/imac/Documents/ELcomputer/ELcomputer`.
+They are retained for audit. Do not repeat them on the consumed plan.
+The read-only check passed first:
 
 ```sh
 /Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-refinement-release/operator.mjs check /Users/imac/Documents/ELcomputer/modern-footer-refinement-20261022/prepared-current/plan.json
 ```
 
-After exact owner approval and a passing check, execute once:
+The single approved apply then passed:
 
 ```sh
 /Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node scripts/footer-refinement-release/operator.mjs apply /Users/imac/Documents/ELcomputer/modern-footer-refinement-20261022/prepared-current/plan.json --approved 4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d
@@ -129,11 +178,10 @@ Public health/hold GETs, Auth, schema/data, all media/private files and unchange
 configuration must pass. Any STOP preserves evidence and forbids automatic retry
 or rollback. Do not use retired PM2 tools or the consumed migration operators.
 
-The agent then verifies public EN/AR responsive/theme rendering with browser
-mutations blocked, verifies target/data preservation again and updates both handoffs.
+The public EN/AR responsive/theme review passed with browser mutations blocked.
 Known held endpoints remain held; an unrelated chat-status denial is not a footer
-hydration defect or proof of chat acceptance. Record hosted owner checks separately.
-Deploy this refinement immediately after approval, before unrelated tasks.
+hydration defect or proof of chat acceptance. Hosted owner checks remain separate.
+The approved refinement deployed immediately, before unrelated tasks or UI2.
 
 ## Owner browser checks after deployment
 

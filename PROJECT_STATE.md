@@ -1,52 +1,69 @@
-# Modern Footer refinement preparation PASS; final approval pending — 2026-10-22
+# Modern Footer refinement deployed; schema88 unchanged — 2026-10-22
 
-- [Design and evidence](docs/modern-footer-refinement.md): larger theme logos,
+- Owner approved exact seal
+  `4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d`.
+  The reviewed apply ran ONCE and completed `2026-10-22T07:13:26.437Z` with PASS.
+  [Deployment receipt, consumed procedure and owner checks](docs/modern-footer-refinement-release.md).
+- Active release `40ebcf1f6d50a143`, application `3b98164`, schema88 unchanged.
+  Release tooling remains exactly `1a70c86`; historical operators/seals are unchanged.
+  The plan is consumed. Never repeat apply/check, erase intent/receipts, invoke
+  completed migration executors, reverse SQL or initiate automatic rollback.
+- [Design refinement](docs/modern-footer-refinement.md): larger theme logos,
   content-aware main groups, balanced navigation, full-width tablet branding,
   contained newsletter and compact utility/legal rows. Sparse, partial, missing
-  branding and long-copy configurations have explicit coverage.
-- Application source `3b9816472157b3f45feaa43ac087115eef730384` changes exactly
-  ModernFooter.vue and modern-footer.css from deployed `8181953`. Classic, shared
-  branding, Dashboard model/editor, backend, locales and dependencies stay exact.
-- [Reviewed release and exact approval procedure](docs/modern-footer-refinement-release.md):
-  candidate `40ebcf1f6d50a143`, archive 8,003,829 bytes, independently extracted
-  1,566 entries and 528 retained client assets. Schema88 unchanged, no SQL writes.
-  Seal `4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d`.
-- Exact retained-asset candidate browser review: 533 checks/107 screenshots PASS.
-  EN/AR, 1440/900/390px, Light/Dark/System, real Nuxt SSR/hydration, actual saved
-  content/assets and live OS theme/logo changes pass. No page/hydration warning
-  or external/provider traffic. Dashboard persistence/permissions use native
-  disposable PostgreSQL/PostgREST; Auth/media adapters remain explicit. Hosted
-  owner save/upload/style acceptance is not claimed.
-- Five existing footer tests, typecheck/build, six native app-only release tests
-  and six remote-phase tests PASS. The actual SQL connection is read-only and
-  rejects writes. Original eight suite failures/two cancellations retain their
-  prior qualification; no full-suite green claim or historical guard relaxation.
-- Preparation preserves accepted schema88, all 135 protected table projections,
-  owner-configured Modern JSON, Auth/access contracts, settings, media and runtime.
-  Cash/Card/InstaPay availability is currently true; Bank/PayPal false. Preserve
-  these exact saved values. Checkout/signup and live Paymob/PDC transports stay
-  disabled; PDC/auto/reverse false. The first read-only preparation stopped on an
-  old off-only assumption; only the new app-only binding was corrected to preserve
-  current values. Completed migration release seals/operators remain unchanged.
-- Verified encrypted preparation backups: database 9,333,364 bytes; runtime
-  2,278,038 bytes/10 files. Authenticated full decryption, pg_restore TOC/full
-  parsing and runtime byte readback PASS; this is not a hosted restore exercise.
-  All 2,627 media files/411,264,665 bytes, private files, units/drop-ins, Caddy,
-  runtime environment and process identities remain exact. Fourteen public
-  health/hold GETs and Auth signup settings pass. Candidate/staging/link are absent.
-- Production remains `d1b10bb664e15a67`/schema88. No deployment or production write
-  ran for this refinement. Final exact new-seal approval precedes one guarded
-  apply. The prior 87→88 approval is consumed and cannot authorize this candidate.
-  After approval, deploy immediately before unrelated work; do not wait for UI2.
-  No retry, automatic rollback, SQL reversal, Caddy reload or provider request.
-- Protected evidence/plan/backups: parent modern-footer-refinement-20261022/,
-  prepared-current/plan.json. FINAL-PREPARATION-RECEIPT.json binds the artifact,
-  supplemental browser review, final read-only check and operational Git state.
-  The frozen initial qualification remains 503/101; the receipt adds exact-artifact
-  533/107 and its current-manifest CSS harness without modifying sealed inputs.
-- README and both handoffs updated. Owner post-deployment browser/Dashboard steps
-  are in the release guide. No Git push. Recovery keeps schema88/current data and
-  requires a separate reviewed app-only plan to retained d1b10bb664e15a67.
+  branding and long-copy configurations have explicit local presentation coverage.
+  Runtime diff from accepted `8181953` remains exactly ModernFooter.vue and
+  modern-footer.css. Classic, shared branding, Dashboard model/editor, backend,
+  locale data, dependencies and all 88 migration source/history entries stay exact.
+- Fresh read-only preflight and encrypted execution backups PASS: database
+  9,341,045 bytes; runtime 2,278,038 bytes/10 original files. Full authenticated
+  decryption, pg_restore TOC/full parsing and runtime byte readback PASS. Both
+  preparation/execution sets remain protected; no hosted restore is claimed.
+- Private candidate passed before activation, preserving the old current release
+  and process identities. Fresh exact schema88/data proof preceded one atomic
+  current-link switch and one controlled storefront restart. Systemd remains
+  active/running, NRestarts=0; Caddy, runtime environment and units/drop-ins exact.
+  No SQL write/migration, Caddy edit/reload or provider request ran.
+- Public browser: 318 checks/18 screenshots PASS across EN/AR, 1440/900/390px and
+  Light/Dark/System, including live OS theme/logo changes. Larger branding,
+  balanced navigation, mobile 4+3 payment rows, image loading, localization,
+  newsletter disabling, RTL and no overflow pass. No page/hydration errors.
+  All 18 analytics POSTs were blocked locally. The existing chat-status 403
+  produced 18 console network messages; this is not zero-console/chat acceptance.
+- The first live browser attempt stopped on a harness check of each control's own
+  disabled property. Native :disabled and Playwright isDisabled independently
+  verify the parent fieldset disables both controls. The final harness checks
+  effective disabled state. Initial failure/source and diagnostic are retained;
+  no application or release guard changed and no apply retry occurred.
+- Independent post-browser read-only preservation PASS at
+  `2026-10-22T07:18:08.297Z`: schema88, 135 protected table projections, current
+  Modern JSON, Auth security/access, products/settings/provider data remain exact.
+  Existing analytics and reviewed Auth activity timestamp exclusions remain
+  explicit; this does not claim a global write-history audit.
+- Cash/Card/InstaPay availability remains true; Bank/PayPal false. These are saved
+  availability values. Checkout/signup routes and live Paymob/PDC transports remain
+  disabled; PDC/auto/reverse false. All 14 public health/hold GETs and Auth signup
+  settings pass. No commerce activation, charging, booking or diagnostic retry.
+- All 2,627 media files/411,264,665 bytes and private files remain exact. Retained
+  d1b10bb664e15a67 passes complete 1,468-entry inventory/metadata verification.
+  The temporary candidate is stopped; temporary activation link absent. Recovery
+  preserves schema88/current data and needs a separate reviewed app-only plan and
+  approval; no database restore, SQL reversal or automatic rollback is authorized.
+- Local exact artifact: 533 checks/107 screenshots PASS, five existing footer tests,
+  six native app-only release tests, six remote-phase tests, typecheck/build PASS.
+  Auth/media adapters remain explicit. Original eight suite failures and two
+  cancellations retain their prior qualification; no full-suite green claim.
+- Owner checks: hard-refresh / and /ar at 1440/900/390px in Light/Dark/System;
+  check branding, grouping, RTL, links and newsletter status. Then make one
+  reversible Modern Footer edit, save/reload, restore it; briefly check Classic
+  and restore the preferred style. Hosted saves/uploads/style acceptance remain
+  owner checks; anonymous verification performed no such writes.
+- Protected evidence: parent modern-footer-refinement-20261022/approved-deployment/
+  and FINAL-DEPLOYMENT-RECEIPT.json. Immutable plan/backups/phase receipts remain in
+  prepared-current/. README and both handoffs updated; no Git push.
+- UI Improvement 2 has not started. Preserve separate PDC clarification/support,
+  consumed diagnostics, WordPress customer migration, provider acceptance and
+  later public purchasing approval boundaries.
 
 # Modern Footer deployed; schema88; commerce remains disabled — 2026-10-21
 

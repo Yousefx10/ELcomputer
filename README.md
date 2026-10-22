@@ -77,12 +77,14 @@ Live responsive/theme checks passed at the original deployment. The owner has si
 configured Modern content and contrasting theme logos. Authenticated Dashboard
 acceptance remains separate from anonymous and local fixture verification.
 The release is consumed; do not rerun its commands. Historical operators stay unchanged.
-The [Modern Footer design refinement](docs/modern-footer-refinement.md) and its
-[sealed application-only release](docs/modern-footer-refinement-release.md) are ready:
-larger branding, balanced columns and compact utility/legal rows. The exact artifact
-passes 533 browser checks/107 screenshots across EN/AR, three widths and Light/Dark/System.
-Candidate `40ebcf1f6d50a143` keeps schema88 and all saved content/gates unchanged.
-Production stays on the accepted release until this candidate's final approval.
+The [Modern Footer design refinement](docs/modern-footer-refinement.md) is deployed:
+larger branding, balanced columns and compact utility/legal rows.
+Its [approved application-only release](docs/modern-footer-refinement-release.md)
+`40ebcf1f6d50a143` preserves schema88, saved content, Classic and all existing gates.
+The exact local artifact passes 533 browser checks/107 screenshots. Live review
+passes 318 checks/18 screenshots across EN/AR, three widths and Light/Dark/System.
+No page/hydration errors occurred; the existing chat-status 403 remains.
+The refinement plan is consumed. Owner Dashboard checks remain separate.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

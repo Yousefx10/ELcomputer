@@ -1,9 +1,10 @@
 # Modern Footer design refinement — 2026-10-22
 
-**Local presentation and sealed release preparation PASS. Final approval is pending.**
+**Deployed PASS: `40ebcf1f6d50a143`, schema 88 unchanged.**
 
-Current production remains `d1b10bb664e15a67`/schema 88. The completed 87→88
-operator and its consumed approval are unchanged and cannot be reused.
+The owner approved the exact refinement seal. Application `3b98164` is active;
+retained `d1b10bb664e15a67` remains intact. Completed operators and consumed
+approvals are unchanged and cannot be reused.
 
 ## Presentation
 
@@ -66,12 +67,14 @@ when these availability values are exercised. No production runtime input is add
 
 ## Release and owner checks
 
-A new [sealed application-only release](modern-footer-refinement-release.md) is ready
-through the established Caddy/systemd phases. Candidate `40ebcf1f6d50a143` binds
-schema88, protected-state hashes, verified encrypted recovery backups and retained
-client assets. No migration executor or SQL write is used. Final reviewed digest
-approval must precede production activation. Once approved, deploy this refinement
-immediately, before unrelated work. Production remains unchanged during preparation.
+The [sealed application-only release](modern-footer-refinement-release.md) passed
+through the established Caddy/systemd phases after exact owner approval. Release
+`40ebcf1f6d50a143` preserves schema88, protected data, settings, all media, runtime
+configuration and client assets. No migration or SQL write ran. One controlled
+storefront restart followed the private candidate's success. Public browser review
+passes 318 checks/18 screenshots across both locales, three widths and all themes.
+No page/hydration errors or overflow occurred; analytics writes were blocked.
+The existing chat-status 403 remains. The plan is consumed; never repeat apply/check.
 
 After deployment, check `/` and `/ar` at desktop, tablet and mobile widths in
 Light/Dark/System. Check logo scale, navigation balance, newsletter status, compact
