@@ -1,6 +1,6 @@
 # Premium PDP finishing release
 
-Application commit: `89a7730`. Schema89 remains unchanged. No SQL writes,
+Application commit: `d01649a`. Schema89 remains unchanged. No SQL writes,
 provider transactions, Caddy changes or commerce activation are included.
 Production is still the accepted `cda41a7a13e0b61d` until final approval.
 
