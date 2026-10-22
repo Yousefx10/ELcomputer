@@ -76,6 +76,10 @@ passed: release `d1b10bb664e15a67`, schema88. Purchases, signup and providers re
 Live responsive/theme checks passed. Owner content and authenticated Dashboard
 acceptance remain pending; the saved white logo needs a contrasting Light variant.
 The release is consumed; do not rerun its commands. Historical operators stay unchanged.
+The [Modern Footer design refinement](docs/modern-footer-refinement.md) is locally
+validated: larger branding, content-aware columns and compact utility/legal rows.
+Its new application-only release is being prepared on schema88. Production stays
+on the accepted release until final reviewed approval and guarded activation.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

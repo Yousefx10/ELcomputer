@@ -11,6 +11,8 @@ import {build} from 'esbuild'
 import {createCatalogRestFixture} from '../tests/helpers/catalogRestFixture.mjs'
 import {normalizeModernFooter} from '../app/utils/modernFooter.js'
 const base=resolve('.'),dir=process.env.FOOTER_REVIEW_ARTIFACTS||'/private/tmp/elcomputer-modern-footer-browser'
+const productionContent=process.env.FOOTER_REVIEW_CONTENT ? JSON.parse(await readFile(process.env.FOOTER_REVIEW_CONTENT,'utf8')) : null
+const productionAssets=productionContent ? Object.fromEntries(await Promise.all(['light','dark'].map(async theme=>['/fixture-production-'+theme+'.png',await readFile(join(dirname(process.env.FOOTER_REVIEW_CONTENT),'logo-'+theme+'.png'))]))) : {}
 await mkdir(dir,{recursive:true})
 const {chromium}=await import(pathToFileURL(process.env.FOOTER_REVIEW_PLAYWRIGHT).href)
 const f=await createCatalogRestFixture({afterCatalog:async db=>{
@@ -51,11 +53,13 @@ window.footerTest={client,logs,content,editable,show:async s=>{await refresh();s
 await build({entryPoints:[join(dir,'entry.js')],bundle:true,format:'esm',outfile:join(dir,'bundle.js'),alias:{'~':join(base,'app')},nodePaths:[join(base,'node_modules')],define:{'import.meta.server':'false','import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'vue',setup(builder){builder.onLoad({filter:/\.vue$/},async({path})=>{let source=await readFile(path,'utf8');if(path.endsWith('/settings.vue'))source=source.replace('</script>',"onMounted(()=>{globalThis.footerSettingsPage={siteSettings,saveSiteSettings,isSettingsSectionDirty,settingsError,settingsSuccess};});\n</script>");const {descriptor}=parse(source,{filename:path});return {contents:compileScript(descriptor,{id:path,inlineTemplate:true}).content,loader:'js',resolveDir:dirname(path)}})}}]})
 // Use built Tailwind/Dashboard styles and the exact current footer CSS.
 const cssRoot=join(base,'.output/public/_nuxt'),css=(await Promise.all((await readdir(cssRoot)).filter(n=>n.endsWith('.css')).map(n=>readFile(join(cssRoot,n),'utf8')))).join('\n')+'\n'+await readFile(join(base,'app/assets/css/modern-footer.css'),'utf8')
-server=createServer(async(req,res)=>{if(req.url.startsWith('/rest/v1/')){if(req.method!=='GET'){res.writeHead(405);res.end();return}const upstream=await fetch(f.url+req.url.replace('/rest/v1',''));res.writeHead(upstream.status,{'content-type':upstream.headers.get('content-type')||'application/json'});res.end(await upstream.text());return}if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}else if(req.url.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="136" height="42"><rect width="136" height="42" rx="5" fill="#222"/><text x="10" y="27" fill="white" font-size="15">Fixture asset</text></svg>')}else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script type="module" src="/bundle.js"></script></body></html>')}})
+server=createServer(async(req,res)=>{if(productionAssets[req.url]){res.setHeader('content-type','image/png');res.end(productionAssets[req.url]);return}if(req.url.startsWith('/rest/v1/')){if(req.method!=='GET'){res.writeHead(405);res.end();return}const upstream=await fetch(f.url+req.url.replace('/rest/v1',''));res.writeHead(upstream.status,{'content-type':upstream.headers.get('content-type')||'application/json'});res.end(await upstream.text());return}if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}else if(req.url.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="136" height="42"><rect width="136" height="42" rx="5" fill="#222"/><text x="10" y="27" fill="white" font-size="15">Fixture asset</text></svg>')}else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script type="module" src="/bundle.js"></script></body></html>')}})
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port
 browser=await chromium.launch({executablePath:process.env.FOOTER_REVIEW_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const page=await browser.newPage(),errors=[],external=[],checks=[],httpErrors=[]
 page.on('response',r=>{if(r.status()>=400)httpErrors.push({url:r.url(),status:r.status()})});page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'||m.type()==='warning')errors.push(m.text())})
 await page.route('**/*',route=>[origin,f.url].some(url=>route.request().url().startsWith(url))?route.continue():(external.push(route.request().url()),route.abort()))
+let screens=0
+const screenshot=async(name,target=page)=>{await target.screenshot({path:join(dir,name+'.png'),fullPage:true,animations:'disabled'});screens++}
 const check=(v,label)=>{assert.ok(v,label);checks.push(label)}
 await page.goto(origin);await page.waitForFunction(()=>window.footerSettingsPage)
 await page.getByRole('button',{name:'Add link',exact:true}).first().waitFor()
@@ -88,27 +92,79 @@ await page.evaluate(async config=>{await window.footerTest.set({footer_modern_co
 for(const locale of ['en','ar'])for(const width of [1440,900,390])for(const color of ['light','dark']){
  await page.setViewportSize({width,height:1050});await page.evaluate(({locale,color})=>window.footerTest.appearance(locale,color),{locale,color});await page.locator('footer.store-footer-modern').waitFor()
  const grid=await page.locator('.store-footer-modern-main').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length)
- check(grid===(width>=1200?4:width>=640?2:1),`${locale}/${width}/${color} column count`)
+ check(grid===(width>=1100?3:width>=640?2:1),`${locale}/${width}/${color} column count`)
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${locale}/${width}/${color} no overflow`)
  check(await page.locator('input[type=email]').isDisabled(),`${locale}/${width}/${color} newsletter disabled`)
  check(await page.locator('.store-footer-modern-payments').count()===0,'Disabled checkout methods have no logos')
  check((await page.locator('.store-footer-modern-group a').first().getAttribute('href')).startsWith(locale==='ar'?'/ar/':'/search'),'Localized internal destinations')
- check(await page.locator('.store-footer-modern-group a').first().evaluate(el=>getComputedStyle(el).color===getComputedStyle(el.parentElement).color),'Link contrast inherits current theme');await page.screenshot({path:join(dir,`${locale}-${width}-${color}.png`),fullPage:true,animations:'disabled'})
+ check(await page.locator('.store-footer-modern-group a').first().evaluate(el=>getComputedStyle(el).color===getComputedStyle(el.parentElement).color),'Link contrast inherits current theme');await screenshot(`${locale}-${width}-${color}`)
 }
 await page.evaluate(async()=>{await window.footerTest.set({footer_style:'classic'});await window.footerTest.show('footer')});await page.locator('footer.store-footer').waitFor();check((await page.locator('footer').innerText()).includes('Saved copyright'),'Classic still uses its saved values')
 // Section visibility, approved method gating, and payment ordering on disposable data only.
 await page.evaluate(async config=>{await window.footerTest.set({footer_style:'modern',footer_modern_config:config,payment_cash_enabled:true});await window.footerTest.show('footer')},config)
 check(await page.locator('.store-footer-modern-payments img').count()===1,'Enabled method can display configured logo')
-for(const width of [1440,900,390]){await page.setViewportSize({width,height:1050});await page.evaluate(()=>window.footerTest.appearance('en','light'));const positions=await page.locator('.store-footer-modern-utility-grid > section').evaluateAll(nodes=>nodes.map(el=>el.getBoundingClientRect().top));check(width===1440?positions.every(top=>top===positions[0]):positions[0]<positions[1]&&positions[1]<positions[2],width+' three utility sections match reference flow');check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),width+' utility strip has no overflow');await page.screenshot({path:join(dir,'three-utility-'+width+'.png'),fullPage:true,animations:'disabled'})}
+for(const width of [1440,900,390]){await page.setViewportSize({width,height:1050});await page.evaluate(()=>window.footerTest.appearance('en','light'));const positions=await page.locator('.store-footer-modern-utility-grid > section').evaluateAll(nodes=>nodes.map(el=>el.getBoundingClientRect().top));check(width===1440?positions.every(top=>top===positions[0]):positions[0]<positions[1]&&positions[1]<positions[2],width+' three utility sections match reference flow');check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),width+' utility strip has no overflow');await screenshot('three-utility-'+width)}
+// Presentation variants use only owned fixture rows; no production settings writes.
+const variants=[
+ ['sparse',normalizeModernFooter({brand:{description:'Saved store description.'},columns:[{title:'Empty heading'}],bottom:{copyright:'Saved copyright'}}),1,0],
+ ['partial',normalizeModernFooter({...config,columns:[config.columns[0],{title:'Empty heading'}],newsletter:{state:'hidden'},apps:{enabled:false},payments:{enabled:false}}),2,1],
+ ['without-brand',normalizeModernFooter({...config,brand:{enabled:false},apps:{enabled:false},payments:{enabled:false}}),2,2],
+ ['support-only',normalizeModernFooter({brand:{enabled:false},support:{hours:'Saved support hours',label:'help@independent-store.example',url:'mailto:help@independent-store.example'}}),0,0],
+ ['long-copy',normalizeModernFooter({...config,brand:{...config.brand,description:'Saved long description '.repeat(15)},columns:config.columns.map(c=>({...c,links:c.links.map(l=>({...l,label:l.label+' '+'LongSavedLabel'.repeat(12),label_ar:'عنوان طويل '.repeat(20)}))})),apps:{enabled:false},payments:{enabled:false}}),3,2]
+]
+if(productionContent){
+ const settings=productionContent[0].data,c=normalizeModernFooter(settings.footer_modern_config)
+ c.brand.logo_url='/fixture-production-light.png';c.brand.logo_dark_url='/fixture-production-dark.png'
+ variants.push(['saved-production',c,3,2])
+}
+for(const [name,value,sections,navigations]of variants){
+ await page.evaluate(async config=>{await window.footerTest.set({footer_modern_config:config,payment_cash_enabled:false});await window.footerTest.show('footer')},value)
+ for(const locale of ['en','ar'])for(const width of [1440,900,390])for(const color of ['light','dark']){
+  const label=`${name}/${locale}/${width}/${color}`
+  await page.setViewportSize({width,height:1050});await page.evaluate(({locale,color})=>window.footerTest.appearance(locale,color),{locale,color})
+  const main=page.locator('.store-footer-modern-main')
+  check(sections ? await main.getAttribute('data-sections')===String(sections) : await main.count()===0,label+' populated sections only')
+  check(await page.locator('.store-footer-modern-group').count()===navigations,label+' no empty navigation column')
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),label+' no overflow')
+  check(await page.locator('.store-footer-modern-payments').count()===0,label+' unavailable gateways hidden')
+  if(value.brand.enabled){const logo=page.locator('.store-footer-modern-logo .brand-logo img:visible');if(await logo.count()){const bounds=await logo.first().boundingBox();check(bounds.height>=90&&bounds.width>=Math.min(240,width-40),label+' prominent logo')}}
+  if(name==='sparse'){check(await page.locator('footer').evaluate(el=>el.getBoundingClientRect().height)<330,label+' compact sparse footer');check(await page.locator('.store-footer-modern-logo .brand-logo > span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=24&&Number(getComputedStyle(el).fontWeight)>=700),label+' strong branding without an image')}
+  if(name==='saved-production'){
+   await page.waitForFunction(()=>[...document.querySelectorAll('.store-footer-modern-logo img')].every(img=>img.complete&&img.naturalWidth>0))
+   check(await page.locator('.store-footer-modern-logo img:visible').count()===1,label+' theme logo loaded')
+   if(width>=640){const support=await page.locator('.store-footer-modern-support').boundingBox(),bottom=await page.locator('.store-footer-modern-bottom').boundingBox();check(Math.abs((support.y+support.height/2)-(bottom.y+bottom.height/2))<2,label+' single support and legal content share compact bar')}
+  }
+  await screenshot(`${name}-${locale}-${width}-${color}`)
+ }
+}
+
 // Verify the actual Nuxt production output renders and hydrates this footer.
 await f.db.query("update public.site_settings set footer_modern_config=$1,payment_cash_enabled=false where key='default'",[JSON.stringify({...config,apps:{...config.apps,enabled:false}})])
 const portProbe=createServer();await new Promise(resolve=>portProbe.listen(0,'127.0.0.1',resolve));const port=portProbe.address().port;await new Promise(resolve=>portProbe.close(resolve));const nuxtOrigin='http://127.0.0.1:'+port
 nuxt=spawn(process.execPath,[join(base,'.output/server/index.mjs')],{cwd:base,env:{PATH:process.env.PATH,NODE_ENV:'production',NITRO_HOST:'127.0.0.1',NITRO_PORT:String(port),NUXT_PUBLIC_SUPABASE_URL:origin,NUXT_PUBLIC_SUPABASE_KEY:'local-fixture-public-key',NUXT_PUBLIC_SITE_URL:nuxtOrigin},stdio:['ignore','ignore','pipe']});const runtimeLog=[];nuxt.stderr.on('data',b=>runtimeLog.push(b))
 let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(nuxtOrigin+'/api/storefront/content');if(r.ok){ready=true;break}}catch{}await new Promise(resolve=>setTimeout(resolve,100))}check(ready,'Built Nuxt runtime ready')
-const ssrPage=await browser.newPage(),hydration=[];ssrPage.on('console',m=>{if(/hydration/i.test(m.text()))hydration.push(m.text())});ssrPage.on('pageerror',e=>hydration.push(e.message));await ssrPage.route('**/*',route=>[nuxtOrigin,origin].some(url=>route.request().url().startsWith(url))&&route.request().method()==='GET'?route.continue():route.abort())
-for(const locale of ['en','ar']){const path=locale==='ar'?'/ar':'/';const response=await fetch(nuxtOrigin+path);const html=await response.text();check(response.status===200&&html.includes('store-footer-modern')&&html.includes(locale==='ar'?'كل المنتجات':'All products'),locale+' built SSR contains localized footer');await ssrPage.goto(nuxtOrigin+path);await ssrPage.locator('footer.store-footer-modern').waitFor();await ssrPage.waitForTimeout(250);check(await ssrPage.locator('.store-footer-modern-group a').first().getAttribute('href')===(locale==='ar'?'/ar/search':'/search'),locale+' hydrated destination');await ssrPage.screenshot({path:join(dir,'nuxt-ssr-'+locale+'.png'),fullPage:true,animations:'disabled'})}
+const ssrPage=await browser.newPage(),hydration=[];ssrPage.on('console',m=>{if(/hydration/i.test(m.text()))hydration.push(m.text())});ssrPage.on('pageerror',e=>hydration.push(e.message));await ssrPage.route('**/*',route=>{const asset=productionAssets[new URL(route.request().url()).pathname];return asset?route.fulfill({contentType:'image/png',body:asset}):[nuxtOrigin,origin].some(url=>route.request().url().startsWith(url))&&route.request().method()==='GET'?route.continue():route.abort()})
+for(const locale of ['en','ar']){const path=locale==='ar'?'/ar':'/';const response=await fetch(nuxtOrigin+path);const html=await response.text();check(response.status===200&&html.includes('store-footer-modern')&&html.includes(locale==='ar'?'كل المنتجات':'All products'),locale+' built SSR contains localized footer');await ssrPage.goto(nuxtOrigin+path);await ssrPage.locator('footer.store-footer-modern').waitFor();await ssrPage.waitForTimeout(250);check(await ssrPage.locator('.store-footer-modern-group a').first().getAttribute('href')===(locale==='ar'?'/ar/search':'/search'),locale+' hydrated destination');await screenshot('nuxt-ssr-'+locale,ssrPage)}
+if(productionContent){
+ const c=normalizeModernFooter(productionContent[0].data.footer_modern_config);c.brand.logo_url='/fixture-production-light.png';c.brand.logo_dark_url='/fixture-production-dark.png'
+ await f.db.query("update public.site_settings set footer_modern_config=$1 where key='default'",[JSON.stringify(c)])
+ // A fresh owned process removes the content cache; production is never touched.
+ const stopped=new Promise(resolve=>nuxt.once('close',resolve));nuxt.kill('SIGTERM');await stopped
+ nuxt=spawn(process.execPath,[join(base,'.output/server/index.mjs')],{cwd:base,env:{PATH:process.env.PATH,NODE_ENV:'production',NITRO_HOST:'127.0.0.1',NITRO_PORT:String(port),NUXT_PUBLIC_SUPABASE_URL:origin,NUXT_PUBLIC_SUPABASE_KEY:'local-fixture-public-key',NUXT_PUBLIC_SITE_URL:nuxtOrigin},stdio:['ignore','ignore','pipe']});nuxt.stderr.on('data',b=>runtimeLog.push(b))
+ let fresh=false;for(let i=0;i<100;i++){try{const r=await fetch(nuxtOrigin+'/api/storefront/content');if(r.ok){fresh=true;break}}catch{}await new Promise(resolve=>setTimeout(resolve,100))}check(fresh,'Fresh real Nuxt runtime serves saved production configuration')
+ for(const locale of ['en','ar'])for(const width of [1440,900,390])for(const color of ['light','dark']){
+  await ssrPage.setViewportSize({width,height:1050});await ssrPage.context().addCookies([{name:'elcomputer-theme-choice',value:color,url:nuxtOrigin},{name:'elcomputer-color-mode',value:color,url:nuxtOrigin}])
+  await ssrPage.goto(nuxtOrigin+(locale==='ar'?'/ar':'/'),{waitUntil:'networkidle'});const footer=ssrPage.locator('footer.store-footer-modern');await footer.waitFor();await footer.scrollIntoViewIfNeeded()
+  await ssrPage.waitForFunction(expected=>document.documentElement.classList.contains('dark')===expected,color==='dark')
+  await ssrPage.waitForFunction(()=>[...document.querySelectorAll('footer img')].every(i=>i.complete&&i.naturalWidth>0))
+  check(await footer.locator('.store-footer-modern-group').count()===2,`real saved/${locale}/${width}/${color} navigation present`)
+  check(await ssrPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`real saved/${locale}/${width}/${color} no overflow`)
+  check(await footer.locator('input').isDisabled(),`real saved/${locale}/${width}/${color} unavailable newsletter cannot submit`)
+  await footer.screenshot({path:join(dir,`real-saved-${locale}-${width}-${color}.png`),animations:'disabled'});screens++
+ }
+}
 check(hydration.length===0,'Actual Nuxt output has no hydration errors: '+hydration.join('; '));await ssrPage.close();await writeFile(join(dir,'nuxt-runtime.log'),Buffer.concat(runtimeLog));
 check(external.length===0,'No external/provider traffic');check(errors.length===0,'No Vue/browser warnings: '+errors.join('; ')+' '+JSON.stringify(httpErrors))
-const result={result:'PASS',assertions:checks.length,screens:17,checks,errors,external,evidence:'actual Settings save/reload, Footer components, native disposable PostgREST/RLS; synthetic Auth; media selection adapter'}
+const result={result:'PASS',assertions:checks.length,screens,checks,errors,external,evidence:'actual Settings save/reload, Footer components, native disposable PostgREST/RLS; synthetic Auth; media selection adapter'}
 await writeFile(join(dir,'summary.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result))
 }finally{await browser?.close();if(nuxt&&nuxt.exitCode===null){nuxt.kill('SIGTERM');await new Promise(resolve=>nuxt.once('close',resolve))};if(server)await new Promise(resolve=>server.close(resolve));await f.close()}
