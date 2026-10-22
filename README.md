@@ -15,8 +15,9 @@ Its exact archive passed 425 browser checks; live smoke passed107 checks.
 Hosted owner acceptance remains pending. Local PDC correction is authorized separately.
 
 The [PDC V6 correction and focused compatibility review](docs/pdc-v6-compatibility.md)
-accept the newly support-confirmed product fields. Local tests pass; production
-PDC release and [webhook cutover](docs/pdc-webhook-cutover-plan.md) need separate approval.
+accept the newly support-confirmed product fields. The [complete release](docs/pdc-v6-release-preparation.md) is sealed for separate89→90
+approval, including two restored server RPC grants. Production stays schema89.
+[Webhook cutover](docs/pdc-webhook-cutover-plan.md) also needs separate approval.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.
@@ -52,11 +53,12 @@ found the cause remains unknown. The [bounded PDC capture](docs/pdc-getproducts-
 helper is approved and [independently staged](docs/pdc-getproducts-capture-staging-receipt.md).
 The owner consumed its single attempt: HTTP200 / RESPONSE_SCHEMA_REJECTED.
 [Encrypted archive verification and analysis](docs/pdc-getproducts-capture-analysis.md)
-are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md)
-found no verified live row schema. The [deep investigation](docs/pdc-getproducts-deep-investigation.md)
-narrows the causes and prepares a tested [schema-only proposal](docs/pdc-getproducts-schema-diagnostic-proposal.md).
-It needs separate approval; support remains a fallback. No correction for the live
-failure is confirmed. Both diagnostic approvals
+are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md) and
+[deep investigation](docs/pdc-getproducts-deep-investigation.md) record the earlier
+unknown contract. New support-confirmed fields now have a
+[tested local correction](docs/pdc-v6-compatibility.md), plus a confirmed server
+RPC access correction. The [complete release](docs/pdc-v6-release-preparation.md)
+is prepared, not deployed. The original HTTP500 remains unexplained. Both diagnostic approvals
 are consumed. No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).

@@ -1,3 +1,33 @@
+# PDC correction sealed for separate89→90 approval; production stays PDP/schema89 — 2026-10-22
+
+- Production: DEPLOY PASS, Premium finishing ea0dcc850b3a7d35/schema89.
+  [PDP deployment receipt](docs/premium-product-finishing-deployment-receipt.md).
+  Hosted owner account/native-share/authoring acceptance remains pending.
+- PDC local correction PASS: confirmed productID/productName aliases; legacy aliases,
+  strict IDs/names/duplicates/envelopes and separate diagnostic stages preserved.
+  Saved40=High Value(elc), General36 distinct;382 city aliases/configuration unchanged.
+- Exact built HTTP replay exposed a separate real ACL defect: migration65 revoked
+  lookup/refresh RPC EXECUTE from service_role. New migration90 restores only those
+  original server grants; function bodies/owners, RBAC/RLS, browser denials/data stay exact.
+- Final offline matrix176 pass/zero fail/cancel/skip; Dashboard499 assertions/48 shots;
+  exact-archive HTTP21 checks; typecheck/build and native/remote release faults PASS.
+  Historical whole-suite failures and failed fixture attempts remain documented.
+- [Prepared complete release](docs/pdc-v6-release-preparation.md):881aadcfd4942ef8,
+  application82ec667, migration1403cc5. Final seal:
+  303c68aa71eac6ccccfcac07ea95c53b7d79190d47655e8e908fb379d6f21dac
+  Final read-only check PASS;1873 entries/825 retained assets and verified backups.
+- PDC NOT DEPLOYED. Schema90 is local/prepared only. No phase2 production write,
+  provider lookup/sync/booking/label/callback/rotation/activation or execution intent.
+  All checkout/signup/Paymob/PDC/COD/automation/callback holds remain.
+- [Webhook/rotation plan](docs/pdc-webhook-cutover-plan.md) only. Public cutover BLOCKED;
+  optional booking fields, production mappings/timezone and pagination need clarification.
+  Earlier HTTP500 remains unexplained. No provider contact or automatic retries.
+- Use only scripts/pdc-v6-rpc-release/operator.mjs after separate final owner approval.
+  The earlier app-only PDC candidate is incomplete; all consumed PDP operators stay preserved.
+- No Git push command ran here. Shared origin/main independently advanced to bf9ebd3
+  via a recorded push at18:32:21 Asia/Riyadh; actor/cause not established. Source matches.
+- Next owner action: review and approve the separate PDC compatibility/RPC89→90 seal.
+
 # PDC V6 correction passes local checks; release preparation underway — 2026-10-22
 
 - Premium finishing remains deployed as ea0dcc850b3a7d35/schema89. No PDC deployment.
