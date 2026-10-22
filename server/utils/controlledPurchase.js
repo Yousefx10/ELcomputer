@@ -12,7 +12,10 @@ export const controlledAddressHash = order => createHash('sha256').update(JSON.s
 
 export const controlledPurchaseScope = (runtime, user, { now = Date.now(), readOnly = false } = {}) => {
   let scope
-  try { scope = JSON.parse(String(runtime.controlledPurchase || '{}')) } catch { fail() }
+  try {
+    const input = runtime.controlledPurchase
+    scope = typeof input === 'string' ? JSON.parse(input) : input
+  } catch { fail() }
   if (!scope || Array.isArray(scope) || Object.keys(scope).length !== fields.length || fields.some(k => !(k in scope)) || Object.keys(scope).some(k => !fields.includes(k))) fail()
   if (scope.enabled !== true || !['customer_id', 'cart_id', 'product_id', 'variant_id', 'shipping_company_id'].every(k => UUID.test(scope[k] || ''))
     || !Number.isSafeInteger(scope.total_minor) || scope.total_minor < 1 || scope.total_minor > 999999999999

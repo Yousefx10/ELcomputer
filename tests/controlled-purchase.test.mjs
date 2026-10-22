@@ -17,6 +17,7 @@ test('controlled purchase fails closed for default/config errors, other identiti
  const runtime=config(),g=grant();assert.throws(()=>controlledPurchaseScope(runtime,user))
  runtime.controlledPurchase=JSON.stringify(g)
  assert.equal(controlledPurchaseScope(runtime,user).customer_id,user.id)
+ assert.equal(controlledPurchaseScope({...runtime,controlledPurchase:{...g}},user).cart_id,g.cart_id)
  for(const change of [{enabled:false},{payment_enabled:'true'},{customer_id:randomUUID()},{total_minor:0},{total_minor:1.5},{review_key:'bad'},{address_sha256:'bad'},{extra:true},{expires_at:new Date(Date.now()+7200000).toISOString()},{starts_at:'yesterday'}])assert.throws(()=>controlledPurchaseScope({...runtime,controlledPurchase:JSON.stringify({...g,...change})},user))
  for(const actor of [null,{...user,id:randomUUID()},{...user,email_confirmed_at:null},{...user,is_anonymous:true}])assert.throws(()=>controlledPurchaseScope(runtime,actor))
  assert.throws(()=>controlledPurchaseScope(runtime,user,{now:Date.parse(g.starts_at)-1}))
@@ -53,6 +54,7 @@ test('native controlled purchase binds one stock-backed order and one intention 
    assert.equal((await f.call('/api/checkout/controlled',{actor:null})).response.status,401)
    assert.equal((await f.call('/api/checkout/controlled',{actor:'owner'})).response.status,403)
    runtime.controlledPurchase='{}';assert.equal((await post({action:'quote',address})).response.status,403);runtime.controlledPurchase=JSON.stringify(g)
+   runtime.controlledPurchase={...g};assert.equal((await f.call('/api/checkout/controlled')).response.status,200);runtime.controlledPurchase=JSON.stringify(g)
   })
   await t.test('actual SQL rejects the disabled PDC account, then missing cities, without provider calls',async()=>{
    assert.equal((await post({action:'quote',address})).response.status,409)
