@@ -1,5 +1,9 @@
 # PDC live GetProducts acceptance — 2026-10-22
 
+> Later: the [original PHP/PDF review](pdc-wordpress-contract-review.md) resolves
+> normal booking fields and template1. Use the [controlled acceptance plan](provider-controlled-acceptance.md)
+> for current blockers. The accepted GetProducts request remains consumed.
+
 **LIVE GETPRODUCTS ACCEPTANCE PASS.** Release `881aadcfd4942ef8`, schema90.
 One authenticated GET returned HTTP200. No retry was needed or performed.
 

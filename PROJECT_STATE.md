@@ -1,3 +1,44 @@
+# PDC/Paymob real acceptance preparation; concrete blockers and sealed correction — 2026-10-23
+
+- Production remains881aadcfd4942ef8/schema90. GetProducts PASS stays closed.
+  No PDP/GetProducts retest, provider request, production write or Git push.
+- [Original PHP/PDF review](docs/pdc-wordpress-contract-review.md): active global
+  Code Snippets entry34 found, identical across three authenticated sources.
+  Historical records show131 AWBs and112 orders with generated references,
+  matching created events and polling evidence; HPOS mirrors excluded. No original
+  raw provider transcript or PDF was found. WordPress was never executed/contacted.
+- [Controlled acceptance plan](docs/provider-controlled-acceptance.md): polling is
+  documented and historically exercised; PDC webhook may stay403 for the first test.
+  Optional booking names/template1 no longer require waiting for support. Full
+  pagination/status/timezone/retry/registration questions gate later automation.
+- Fresh read-only setup: zero stock units, positive warehouse rows, delivery
+  companies, orders, attempts, transactions, jobs or dispatches. Saved Product40,
+  type1/template1, allMustValid true,382 aliases and empty caches confirmed.
+  Paymob LIVE input shapes/modes, HMAC and saved/running match pass; integration ID
+  matches historical LIVE EGP card. Merchant entitlement is not provider-revalidated.
+  Existing Cash/Card/InstaPay presentation flags preserved; runtime gates remain off.
+- Confirmed normal-shipment correction aa5d2f3: canonical fromContactPerson,
+  contents, allowToOpenShipment and separate exact net-goods declaredValue.
+  No schema, Paymob, frontend or UI change. Reverse remains disabled/out of scope.
+- [Separate guarded release](docs/pdc-shipment-contract-release.md):03aa6e565f5b5ad3,
+  schema90 unchanged, seal eb104358167fa5c104054652177f3134db3471bf4ce4f7eade9c650f8377b4ed.
+ 68 focused checks, typecheck, one build,11 exact-artifact checks and release faults
+  pass. Fresh encrypted backups/full readback and preservation pass;923 assets retained.
+  Initial local source-guard stop is preserved; corrected preparation used a new
+  directory. No apply/staging/remote candidate/restart/activation ran.
+- Both real executions BLOCKED by actual business setup/access and owner approval.
+  Shortest path: approve code, receive a genuine unit, configure one PDC delivery
+  option and separately approved city-only/cache setup without another GetProducts;
+  one legitimate owner-approved card order, signed payment, packing, then manual
+  COD0 shipment/PDF/polling on that same order. Exact private details/costs first.
+- Paymob callback reachability is required before charging; PDC webhook can remain
+  held. Existing duplicate/uncertain/payment/refund/financial safeguards remain.
+  Private readiness evidence and non-executable owner template are outside Git.
+  WordPress identity/login/private profiles/addresses/inert order history, broader
+  merchant acceptance and later public checkout/signup/automation remain on roadmap.
+- Next owner action: review the sealed code release before business writes. Then
+  provide the genuine SKU/unit, destination, parcel and approved test costs privately.
+
 # Live PDC GetProducts acceptance PASS; one request; all gates held — 2026-10-22
 
 - [Acceptance receipt](docs/pdc-live-getproducts-acceptance.md): one authorized GET,

@@ -23,6 +23,13 @@ one GET, HTTP200, General36 and High Value40 normalized; saved40 unchanged.
 Dashboard HTTP lookup, GetCities, webhook and shipment acceptance remain pending.
 [Webhook cutover](docs/pdc-webhook-cutover-plan.md) also needs separate approval.
 
+The [original WordPress/PDC contract review](docs/pdc-wordpress-contract-review.md)
+found112 orders with matching booking and polling evidence. The
+[controlled acceptance plan](docs/provider-controlled-acceptance.md) permits initial
+PDC polling while its webhook remains disabled. A small local shipment-payload
+correction is prepared separately; production remains unchanged. Actual stock,
+delivery configuration and owner-approved transaction details are still missing.
+
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.
 The storefront remains browse-only; purchases and signup are disabled.

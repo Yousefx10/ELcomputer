@@ -1,5 +1,10 @@
 # Paymob and PDC controlled-sales readiness — 2026-10-21
 
+> Current2026-10-23: [controlled acceptance plan](provider-controlled-acceptance.md)
+> and [original PHP/PDF reconciliation](pdc-wordpress-contract-review.md).
+> Production is schema90; live GetProducts passed. The historical investigation
+> below is preserved. Do not repeat its consumed diagnostics or completed tests.
+
 The [disabled production release](live-sales-release-receipt.md) passed with
 schema87, reusing both existing integrations and Quick Setup. Owner browser
 acceptance passed. Follow the [private account-entry guide](provider-configuration.md).

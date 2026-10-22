@@ -1,6 +1,10 @@
 > Deployed:881aadcfd4942ef8/schema90. [Production receipt](pdc-v6-deployment-receipt.md).
 > [Live GetProducts acceptance PASS](pdc-live-getproducts-acceptance.md): HTTP200,
 > General36 and High Value40 normalized; saved40 unchanged. Other live operations remain pending.
+> [Original PHP/PDF reconciliation](pdc-wordpress-contract-review.md),2026-10-23,
+> resolves normal booking fields and standard template1. A local application-only
+> correction and [controlled test plan](provider-controlled-acceptance.md) replace
+> the earlier requirement to wait for optional-field clarification.
 
 # PDC V6 compatibility correction — 2026-10-22
 
@@ -75,11 +79,11 @@ API; the owner's new support evidence confirms production GetProducts only.
 | --- | --- | --- |
 | GetProducts | GET; exact production V6 URL; AccessToken/CompanyID; no Cookie/body. Support confirms two product fields and services. | Live acceptance PASS through deployed Nuxt lookup helpers: HTTP200, both services normalized, saved40 unchanged. Dashboard HTTP route not exercised; no cache write. |
 | GetCities | GET; PDF pp7–8 defines numeric `id` / string `name`, used for pickup/destination. | Existing aliases retained. No guessed city fields or live request. Current production rows/completeness remain unverified. |
-| SaveShipmentEx | POST; one shipment, `allMustValid`, `hasAWBs:false`, stable unique `toRef`; PDF pp2–5. `verifyReverseResult` checks general/row success, exact REF, one valid AWB. | Required transport/result contract agrees with PDF. Optional `fromContactName` / `allowToOpenPackage` differ from documented `fromContactPerson` / `allowToOpenShipment`. These existing outbound/reverse payload fields require production-provider clarification before booking acceptance; no speculative payload rewrite. |
-| Instructions | PDF table says `specialInstructions`; its example says `specialInstuctions`, matching existing code. | Provider ambiguity remains. Confirm exact optional field behavior. |
+| SaveShipmentEx | POST; one shipment, `allMustValid`, `hasAWBs:false`, stable unique `toRef`; PDF pp2–5. `verifyReverseResult` checks general/row success, exact REF, one valid AWB. | Original active PHP and112 matched booking/poll histories corroborate the normal contract. Local correction uses `fromContactPerson` and `allowToOpenShipment`, plus separate net-goods declaredValue. No support wait is needed for this first normal test. Reverse remains disabled and separately scoped. |
+| Instructions | PDF table says `specialInstructions`; its example says `specialInstuctions`. Original normal PHP uses `contents`. | Local correction sends actual item contents and omits ambiguous optional instructions. No invented courier note or guessed alias. |
 | Shipment identifiers | Product ID and pickup/destination cities come from saved configuration/cache and exact mappings; AWB/reference are unique and account identity is pinned. | Existing protection retained. A shipping service is not a shipment-type ID: type1 General /3 Reverse /5 Exchange is a separate field. |
 | GetShipmentsStatus | POST with comma-separated-string `awBs` / `reFs`; PDF pp6–7. Existing exact REF+AWB matching, bounded results, optional ID/time and name-only observations. | PDF omits a concrete response envelope, pagination controls, optional StatusID/date types and timezone. No new schema or pagination strategy invented. REF-only recovery remains blocked on absent/ambiguous results; never assume absence permits rebooking. |
-| ExportPDF | POST `{templateID, awBs:[awb]}`; PDF pp5–6; binary `application/pdf`. | Existing5MiB bound and `%PDF-` check retained. Template1 agrees with documented standard; real merchant label/printing acceptance remains pending. |
+| ExportPDF | POST `{templateID, awBs:[awb]}`; PDF pp5–6; binary `application/pdf`. | Existing5MiB bound and `%PDF-` check retained. Template1 is explicitly documented; no original PHP label implementation found. Real private PDF/printing acceptance remains pending, without a template support blocker. |
 | Authentication | HTTPS fixed mode-specific host; two credential headers; JSON Accept/Content-Type; redirects refused; bounded deadlines. | No session cookies or browser login required. Production/test hosts remain explicit; no account-specific application default. |
 | Duplicate/uncertain booking | SQL locks and unique dispatch/order/REF/AWB; durable lease/token, account/config snapshot; timeout/lost acknowledgement becomes uncertain. | Offline native races/replays exercise one create. Recovery uses original REF; PDF retry advice never overrides this durable guard. PDF retries never repeat booking. |
 | Tracking | Exact REF association then AWB verification; atomic event/current-state transaction; AWB+StatusID idempotency and event-time ordering. | Unknown statuses stay neutral. Status97 and PDF illustrative IDs conflict with supplied mapping; production mapping/timezone/repeated-status semantics still require provider confirmation. |
