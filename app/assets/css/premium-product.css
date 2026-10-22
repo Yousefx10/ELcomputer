@@ -29,7 +29,7 @@
 .product-premium .pdp-action-buttons button:hover, .product-premium .pdp-action-buttons button[aria-pressed="true"] { color: var(--brand-text); border-color: var(--brand-text); background: var(--surface-muted); }
 .product-premium .pdp-action-feedback { margin-top: 9px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); text-align: center; }
 .product-premium .pdp-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; list-style: none; padding: 0; }
-.product-premium .pdp-tags li { padding: 5px 9px; border: 1px solid var(--border); border-radius: 5px; font-size: 11px; line-height: 1.5; color: var(--text-secondary); background: var(--surface-muted); }
+.product-premium .pdp-tags li { max-width: 100%; overflow-wrap: anywhere; padding: 5px 9px; border: 1px solid var(--border); border-radius: 5px; font-size: 11px; line-height: 1.5; color: var(--text-secondary); background: var(--surface-muted); }
 .product-premium :is(.pdp-help,.pdp-package) summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; }
 .product-premium :is(.pdp-help,.pdp-package) summary::-webkit-details-marker { display: none; }
 .product-premium summary:focus-visible { outline: 2px solid var(--brand-text); outline-offset: 4px; }

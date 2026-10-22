@@ -31,8 +31,9 @@ export async function reviewFinishing({page,context,goto,screenshot,check,catalo
  await page.evaluate(key=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw Error('denied');return original.call(this,k,v)}},FAVORITES_KEY);await favorite().click();await page.getByRole('status').filter({hasText:'Could not confirm saving.'}).waitFor();check(await favorite().getAttribute('aria-pressed')==='false','Blocked guest storage does not claim a successful save')
  const rich=isolated.find(p=>p.kind==='rich'),empty=isolated.find(p=>p.kind==='no-media')
  await f.db.query("insert into public.product_specifications(product_id,label,value,sort_order) values($1,'Box contents','2 × Owned cable',10),($1,'Tags','Owned USB-C',11)",[rich.id])
+ await f.db.query("insert into public.product_specifications(product_id,label,value,sort_order) values($1,'Tags',$2,12)",[rich.id,'A'.repeat(64)])
  for(const locale of ['en','ar'])for(const width of [1440,768,390])for(const theme of ['light','dark','system']){
-  await goto(rich.id,{locale,width,theme});check(await page.locator('.pdp-tags li').innerText()==='Owned USB-C','Authored tag '+locale+'/'+width+'/'+theme)
+  await goto(rich.id,{locale,width,theme});check(await page.locator('.pdp-tags li').first().innerText()==='Owned USB-C','Authored tag '+locale+'/'+width+'/'+theme);check((await page.locator('.pdp-tags li').last().innerText()).length===64,'Maximum-length authored tag fits')
   const box=page.locator('#pdp-included');check(await box.getAttribute('open')===null,'Package initially compact');await box.locator('summary').focus();await page.keyboard.press('Enter');check((await box.innerText()).includes('Owned cable'),'Explicit package entry visible after keyboard expansion');check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Finishing sections fit '+locale+'/'+width+'/'+theme);await screenshot('finishing-rich-'+locale+'-'+width+'-'+theme)
  }
  await goto(empty.id);check(await page.locator('#pdp-included,.pdp-tags').count()===0,'Unconfirmed package contents and absent tags are hidden')
