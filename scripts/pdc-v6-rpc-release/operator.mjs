@@ -63,7 +63,7 @@ async function livePrepared(plan,release){assert.deepEqual(stable(await remote(p
 export async function prepare(options){
  assert.equal(process.version,'v22.23.1');assert.equal((await run('git',['status','--porcelain'],{cwd:repo})).stdout,'')
  const candidate=await load(options.candidate),{seal:artifactSeal,...body}=candidate;assert.equal(candidate.format,0);assert.equal(digest(body),artifactSeal);assert.equal(candidate.application_commit,applicationCommit);assert.deepEqual(await artifactTools(),candidate.tools);assert.deepEqual(await applicationInputs(),candidate.application_inputs)
- const artifact=dirname(options.candidate),release=await migrations(repo);await qualification(options.qualification,candidate.archive_sha256,candidate.inventory_sha256)
+ const artifact=dirname(options.candidate),release=await migrations(repo),q=await qualification(options.qualification,candidate.archive_sha256,candidate.inventory_sha256);assert.equal(q.migration_sha256,release.pending[0].sha256)
  const provisional={...candidate,artifact_directory:artifact};await verifyArtifact(provisional);await livePrepared(provisional,release)
  const database=await databaseState(candidate.target,release);assertPreserved(database,candidate.database);const tools=await toolHashes(),work=options.directory;await mkdir(work,{mode:0o700})
  const plan={...body,format:6,created_utc:new Date().toISOString(),schema_version:90,database_writes:1,migration_sha256:release.pending[0].sha256,migrations:release.pending.map(({filename,version,name,sha256})=>({filename,version,name,sha256})),scope,tools,database,database_state_sha256:digest(approvalState(database)),artifact_directory:artifact,artifact_candidate:{file:options.candidate,sha256:hash(await readFile(options.candidate)),seal:artifactSeal},qualification:{file:options.qualification,sha256:hash(await readFile(options.qualification))},rollback:{application_only:true,previous_release:candidate.before.current,preserve_schema:90,preserve_newer_data:true,requires_separate_review:true,automatic:false}}
@@ -75,7 +75,7 @@ async function localPrepared(file){
  assert.deepEqual(await toolHashes(),plan.tools);assert.deepEqual(await applicationInputs(),plan.application_inputs);const release=await migrations(repo);assert.deepEqual(plan.migrations,release.pending.map(({filename,version,name,sha256})=>({filename,version,name,sha256})));assert.equal(plan.migration_sha256,release.pending[0].sha256)
  assert.deepEqual(plan.database.history,release.history.map(({version,name})=>({version,name})));assert.equal(plan.database_state_sha256,digest(approvalState(plan.database)))
  for(const[f,sha]of Object.entries(plan.protected_inputs))assert.equal(hash(await readFile(f)),sha)
- await verifyArtifact(plan);await qualification(plan.qualification.file,plan.archive_sha256,plan.inventory_sha256)
+ await verifyArtifact(plan);const q=await qualification(plan.qualification.file,plan.archive_sha256,plan.inventory_sha256);assert.equal(q.migration_sha256,release.pending[0].sha256)
  const work=dirname(file);for(const name of ['execution-intent.json','STOP.json','completed.json']){try{await access(work+'/'+name);throw Error('Execution already attempted; never repeat')}catch(e){if(e.code!=='ENOENT')throw e}}return{plan,release,work}
 }
 export async function check(options){const{plan,release}=await localPrepared(options.plan);await livePrepared(plan,release);console.log(JSON.stringify({result:'READ_ONLY_CHECK_PASS',seal:plan.seal,release:plan.release_id,schema_from:89,schema_to:90,production_writes:0}))}
