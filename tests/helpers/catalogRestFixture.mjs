@@ -56,10 +56,16 @@ export const createCatalogRestFixture = async ({ afterCatalog = null } = {}) => 
       await new Promise(resolve => setTimeout(resolve, 50))
     }
     if (!ready) throw Error('Disposable PostgREST did not become ready: ' + logs)
+    // A fixture session keeps one token. Mock Auth maps and later requests must
+    // agree even when their setup crosses a wall-clock second.
+    const tokens = new Map()
     const token = name => {
+      if (tokens.has(name)) return tokens.get(name)
       const payload = Buffer.from(JSON.stringify({ role: name === 'service' ? 'service_role' : name === 'anon' ? 'anon' : 'authenticated', sub: fixture.actors[name], exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')
       const signed = Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url') + '.' + payload
-      return signed + '.' + createHmac('sha256', secret).update(signed).digest('base64url')
+      const value = signed + '.' + createHmac('sha256', secret).update(signed).digest('base64url')
+      tokens.set(name, value)
+      return value
     }
     const request = async (path, { actor = null, method = 'GET', body } = {}) => {
       const headers = { 'content-type': 'application/json' }
