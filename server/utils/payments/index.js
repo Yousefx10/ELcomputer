@@ -28,22 +28,33 @@ const rpc = async (db, name, params) => {
   if (result.error) throw new PaymentError('payment_database_unavailable', result.error.code === 'P0001' ? 409 : 503)
   return result.data
 }
-export const initiateOrderPayment = async ({ db, userId, orderId, locale, runtime, fetcher = fetch }) => {
+export const initiateOrderPayment = async ({ db, userId, orderId, locale, runtime, fetcher = fetch, authorizeOrder, returnPath }) => {
   const config = paymentProviders.paymob.configure(runtime)
-  const { data: order, error } = await db.from('customer_orders').select('id, user_id, order_number, status, payment_status, payment_method, is_preorder, total_amount, currency, first_name, last_name, email, phone, street_address, city, governorate')
+  const orderFields = 'id, user_id, checkout_cart_id, shipping_company_id, order_number, status, payment_status, payment_method, is_preorder, total_amount, currency, first_name, last_name, email, phone, street_address, city, governorate'
+  const { data: initialOrder, error } = await db.from('customer_orders').select(orderFields)
     .eq('id', orderId).eq('user_id', userId).maybeSingle()
+  let order = initialOrder
   if (error) throw new PaymentError('payment_database_unavailable')
   if (!order) throw new PaymentError('order_not_found', 404)
   if (order.payment_method !== 'card' || order.is_preorder) throw new PaymentError('order_not_payable', 409)
+  if (authorizeOrder) await authorizeOrder(order)
   const claimed = await rpc(db, 'commerce_claim_payment_attempt', { p_order_id: orderId, p_user_id: userId, p_mode: config.mode, p_integration_id: config.integrationId })
   const attempt = claimed.attempt
   if (attempt.mode !== config.mode || attempt.integration_id !== config.integrationId) throw new PaymentError('configuration_changed', 409)
+  if (authorizeOrder) {
+    // The claim freezes the financial context. Recheck the scoped snapshot before
+    // any provider POST or returning a previously persisted payment session.
+    const current = await db.from('customer_orders').select(orderFields).eq('id', orderId).eq('user_id', userId).maybeSingle()
+    if (current.error || !current.data) throw new PaymentError('payment_database_unavailable')
+    await authorizeOrder(current.data, attempt)
+    order = current.data
+  }
   if (!claimed.created) {
     if (!attempt.client_secret || !['pending', 'failed'].includes(attempt.status) || new Date(attempt.expires_at).getTime() <= Date.now()) throw new PaymentError('payment_requires_review', 409)
     return { provider: 'paymob', mode: config.mode, publicKey: config.publicKey, clientSecret: attempt.client_secret, methods: ['card'], orderId }
   }
   try {
-    const payload = buildIntentionRequest(config, order, attempt, locale)
+    const payload = buildIntentionRequest(config, order, attempt, locale, returnPath)
     const result = await paymentProviders.paymob.createIntention(config, payload, fetcher)
     await rpc(db, 'commerce_store_payment_intention', { p_attempt_id: attempt.id, p_intention_id: result.intentionId, p_provider_order_id: result.providerOrderId, p_client_secret: result.clientSecret })
     return { provider: 'paymob', mode: config.mode, publicKey: config.publicKey, clientSecret: result.clientSecret, methods: ['card'], orderId }

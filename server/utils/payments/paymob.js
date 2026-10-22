@@ -36,7 +36,8 @@ export const toMinorUnits = value => {
   return result
 }
 
-export const buildIntentionRequest = (config, order, attempt, locale = 'en') => {
+export const buildIntentionRequest = (config, order, attempt, locale = 'en', returnPath = '/checkout/payment-result') => {
+  if (!['/checkout/payment-result', '/account/controlled-purchase'].includes(returnPath)) throw new PaymentError('invalid_origin')
   const amount = toMinorUnits(order.total_amount)
   if (order.currency !== 'EGP' || amount !== Number(attempt.amount_minor)) throw new PaymentError('order_changed', 409)
   return {
@@ -50,7 +51,7 @@ export const buildIntentionRequest = (config, order, attempt, locale = 'en') => 
     },
     special_reference: attempt.id, expiration: 1800,
     notification_url: `${config.origin}/api/payments/paymob/webhook`,
-    redirection_url: `${config.origin}${locale === 'ar' ? '/ar' : ''}/checkout/payment-result?order_id=${order.id}`
+    redirection_url: `${config.origin}${locale === 'ar' ? '/ar' : ''}${returnPath}?order_id=${order.id}`
   }
 }
 

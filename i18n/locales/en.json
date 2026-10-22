@@ -1,4 +1,12 @@
 {
+  "controlledPurchase": {
+    "title": "Controlled purchase",
+    "unavailable": "Purchase unavailable. Check the saved order before continuing.",
+    "closed": "New purchases are closed. Saved receipts remain available.",
+    "receiptPending": "Check the saved order before continuing. Do not resubmit payment.",
+    "checkOrder": "Check saved order",
+    "review": "Review purchase"
+  },
   "common": {
     "internalNote": ", internal note",
     "orderValue": "· Order {value0}",

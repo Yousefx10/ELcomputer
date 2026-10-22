@@ -46,6 +46,7 @@ export default defineNuxtConfig({
     paymobCardIntegrationId: '',
     paymobCardIntegrationMode: 'test',
     paymobIntegrationIds: '{}',
+    controlledPurchase: '{}',
     aiSearchAllowed: true,
     aiTrainingAllowed: true,
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
