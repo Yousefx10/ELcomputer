@@ -9,10 +9,17 @@ import {pathToFileURL} from 'node:url'
 import {parse,compileScript} from '@vue/compiler-sfc'
 import {build} from 'esbuild'
 import {createCatalogRestFixture} from '../tests/helpers/catalogRestFixture.mjs'
-import {normalizeModernFooter} from '../app/utils/modernFooter.js'
+import {normalizeModernFooter,visibleFooterPayments} from '../app/utils/modernFooter.js'
 const base=resolve('.'),dir=process.env.FOOTER_REVIEW_ARTIFACTS||'/private/tmp/elcomputer-modern-footer-browser'
 const productionContent=process.env.FOOTER_REVIEW_CONTENT ? JSON.parse(await readFile(process.env.FOOTER_REVIEW_CONTENT,'utf8')) : null
-const productionAssets=productionContent ? Object.fromEntries(await Promise.all(['light','dark'].map(async theme=>['/fixture-production-'+theme+'.png',await readFile(join(dirname(process.env.FOOTER_REVIEW_CONTENT),'logo-'+theme+'.png'))]))) : {}
+const productionManifest=productionContent ? JSON.parse(await readFile(join(dirname(process.env.FOOTER_REVIEW_CONTENT),'review-assets.json'),'utf8').catch(error=>{if(error.code==='ENOENT')return '{}';throw error})) : {}
+const productionAssets={}
+if(productionContent){
+ await Promise.all(['light','dark'].map(async theme=>{productionAssets['/fixture-production-'+theme+'.png']={body:await readFile(join(dirname(process.env.FOOTER_REVIEW_CONTENT),'logo-'+theme+'.png')),contentType:'image/png'}}))
+ await Promise.all(Object.entries(productionManifest).map(async([url,asset])=>{productionAssets[url]={body:await readFile(join(dirname(process.env.FOOTER_REVIEW_CONTENT),asset.file)),contentType:asset.contentType}}))
+}
+const closedMethods=Object.fromEntries(['cash','card','instapay','paypal','bank_transfer'].map(name=>['payment_'+name+'_enabled',false]))
+const productionMethods=Object.fromEntries(Object.keys(closedMethods).map(key=>[key,productionContent?.[0]?.data?.[key]===true]))
 await mkdir(dir,{recursive:true})
 const {chromium}=await import(pathToFileURL(process.env.FOOTER_REVIEW_PLAYWRIGHT).href)
 const f=await createCatalogRestFixture({afterCatalog:async db=>{
@@ -53,7 +60,7 @@ window.footerTest={client,logs,content,editable,show:async s=>{await refresh();s
 await build({entryPoints:[join(dir,'entry.js')],bundle:true,format:'esm',outfile:join(dir,'bundle.js'),alias:{'~':join(base,'app')},nodePaths:[join(base,'node_modules')],define:{'import.meta.server':'false','import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'vue',setup(builder){builder.onLoad({filter:/\.vue$/},async({path})=>{let source=await readFile(path,'utf8');if(path.endsWith('/settings.vue'))source=source.replace('</script>',"onMounted(()=>{globalThis.footerSettingsPage={siteSettings,saveSiteSettings,isSettingsSectionDirty,settingsError,settingsSuccess};});\n</script>");const {descriptor}=parse(source,{filename:path});return {contents:compileScript(descriptor,{id:path,inlineTemplate:true}).content,loader:'js',resolveDir:dirname(path)}})}}]})
 // Use built Tailwind/Dashboard styles and the exact current footer CSS.
 const cssRoot=join(base,'.output/public/_nuxt'),css=(await Promise.all((await readdir(cssRoot)).filter(n=>n.endsWith('.css')).map(n=>readFile(join(cssRoot,n),'utf8')))).join('\n')+'\n'+await readFile(join(base,'app/assets/css/modern-footer.css'),'utf8')
-server=createServer(async(req,res)=>{if(productionAssets[req.url]){res.setHeader('content-type','image/png');res.end(productionAssets[req.url]);return}if(req.url.startsWith('/rest/v1/')){if(req.method!=='GET'){res.writeHead(405);res.end();return}const upstream=await fetch(f.url+req.url.replace('/rest/v1',''));res.writeHead(upstream.status,{'content-type':upstream.headers.get('content-type')||'application/json'});res.end(await upstream.text());return}if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}else if(req.url.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="136" height="42"><rect width="136" height="42" rx="5" fill="#222"/><text x="10" y="27" fill="white" font-size="15">Fixture asset</text></svg>')}else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script type="module" src="/bundle.js"></script></body></html>')}})
+server=createServer(async(req,res)=>{if(productionAssets[req.url]){res.setHeader('content-type',productionAssets[req.url].contentType);res.end(productionAssets[req.url].body);return}if(req.url.startsWith('/rest/v1/')){if(req.method!=='GET'){res.writeHead(405);res.end();return}const upstream=await fetch(f.url+req.url.replace('/rest/v1',''));res.writeHead(upstream.status,{'content-type':upstream.headers.get('content-type')||'application/json'});res.end(await upstream.text());return}if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}else if(req.url.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="136" height="42"><rect width="136" height="42" rx="5" fill="#222"/><text x="10" y="27" fill="white" font-size="15">Fixture asset</text></svg>')}else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script type="module" src="/bundle.js"></script></body></html>')}})
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port
 browser=await chromium.launch({executablePath:process.env.FOOTER_REVIEW_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const page=await browser.newPage(),errors=[],external=[],checks=[],httpErrors=[]
 page.on('response',r=>{if(r.status()>=400)httpErrors.push({url:r.url(),status:r.status()})});page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'||m.type()==='warning')errors.push(m.text())})
@@ -118,7 +125,8 @@ if(productionContent){
  variants.push(['saved-production',c,3,2])
 }
 for(const [name,value,sections,navigations]of variants){
- await page.evaluate(async config=>{await window.footerTest.set({footer_modern_config:config,payment_cash_enabled:false});await window.footerTest.show('footer')},value)
+ const methods=name==='saved-production'?productionMethods:closedMethods
+ await page.evaluate(async({config,methods})=>{await window.footerTest.set({footer_modern_config:config,...methods});await window.footerTest.show('footer')},{config:value,methods})
  for(const locale of ['en','ar'])for(const width of [1440,900,390])for(const color of ['light','dark']){
   const label=`${name}/${locale}/${width}/${color}`
   await page.setViewportSize({width,height:1050});await page.evaluate(({locale,color})=>window.footerTest.appearance(locale,color),{locale,color})
@@ -126,28 +134,30 @@ for(const [name,value,sections,navigations]of variants){
   check(sections ? await main.getAttribute('data-sections')===String(sections) : await main.count()===0,label+' populated sections only')
   check(await page.locator('.store-footer-modern-group').count()===navigations,label+' no empty navigation column')
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),label+' no overflow')
-  check(await page.locator('.store-footer-modern-payments').count()===0,label+' unavailable gateways hidden')
+  const visiblePayments=visibleFooterPayments(value,methods)
+  check(await page.locator('.store-footer-modern-payments img').count()===visiblePayments.length,label+' only available configured method logos')
   if(value.brand.enabled){const logo=page.locator('.store-footer-modern-logo .brand-logo img:visible');if(await logo.count()){const bounds=await logo.first().boundingBox();check(bounds.height>=90&&bounds.width>=Math.min(240,width-40),label+' prominent logo')}}
   if(name==='sparse'){check(await page.locator('footer').evaluate(el=>el.getBoundingClientRect().height)<330,label+' compact sparse footer');check(await page.locator('.store-footer-modern-logo .brand-logo > span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=24&&Number(getComputedStyle(el).fontWeight)>=700),label+' strong branding without an image')}
   if(name==='saved-production'){
-   await page.waitForFunction(()=>[...document.querySelectorAll('.store-footer-modern-logo img')].every(img=>img.complete&&img.naturalWidth>0))
+   await page.waitForFunction(()=>[...document.querySelectorAll('footer img')].every(img=>img.complete&&img.naturalWidth>0))
    check(await page.locator('.store-footer-modern-logo img:visible').count()===1,label+' theme logo loaded')
-   if(width>=640){const support=await page.locator('.store-footer-modern-support').boundingBox(),bottom=await page.locator('.store-footer-modern-bottom').boundingBox();check(Math.abs((support.y+support.height/2)-(bottom.y+bottom.height/2))<2,label+' single support and legal content share compact bar')}
+   if(!visiblePayments.length&&width>=640){const support=await page.locator('.store-footer-modern-support').boundingBox(),bottom=await page.locator('.store-footer-modern-bottom').boundingBox();check(Math.abs((support.y+support.height/2)-(bottom.y+bottom.height/2))<2,label+' single support and legal content share compact bar')}
+   check(await page.locator('.store-footer-modern-lower').getAttribute('data-utilities')===String(1+Number(!!visiblePayments.length)),label+' configured utility groups only')
   }
   await screenshot(`${name}-${locale}-${width}-${color}`)
  }
 }
 
 // Verify the actual Nuxt production output renders and hydrates this footer.
-await f.db.query("update public.site_settings set footer_modern_config=$1,payment_cash_enabled=false where key='default'",[JSON.stringify({...config,apps:{...config.apps,enabled:false}})])
+await f.db.query("update public.site_settings set footer_modern_config=$1,payment_cash_enabled=false,payment_card_enabled=false,payment_instapay_enabled=false,payment_paypal_enabled=false,payment_bank_transfer_enabled=false where key='default'",[JSON.stringify({...config,apps:{...config.apps,enabled:false}})])
 const portProbe=createServer();await new Promise(resolve=>portProbe.listen(0,'127.0.0.1',resolve));const port=portProbe.address().port;await new Promise(resolve=>portProbe.close(resolve));const nuxtOrigin='http://127.0.0.1:'+port
 nuxt=spawn(process.execPath,[join(base,'.output/server/index.mjs')],{cwd:base,env:{PATH:process.env.PATH,NODE_ENV:'production',NITRO_HOST:'127.0.0.1',NITRO_PORT:String(port),NUXT_PUBLIC_SUPABASE_URL:origin,NUXT_PUBLIC_SUPABASE_KEY:'local-fixture-public-key',NUXT_PUBLIC_SITE_URL:nuxtOrigin},stdio:['ignore','ignore','pipe']});const runtimeLog=[];nuxt.stderr.on('data',b=>runtimeLog.push(b))
 let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(nuxtOrigin+'/api/storefront/content');if(r.ok){ready=true;break}}catch{}await new Promise(resolve=>setTimeout(resolve,100))}check(ready,'Built Nuxt runtime ready')
-const ssrPage=await browser.newPage(),hydration=[];ssrPage.on('console',m=>{if(/hydration/i.test(m.text()))hydration.push(m.text())});ssrPage.on('pageerror',e=>hydration.push(e.message));await ssrPage.route('**/*',route=>{const asset=productionAssets[new URL(route.request().url()).pathname];return asset?route.fulfill({contentType:'image/png',body:asset}):[nuxtOrigin,origin].some(url=>route.request().url().startsWith(url))&&route.request().method()==='GET'?route.continue():route.abort()})
+const ssrPage=await browser.newPage(),hydration=[];ssrPage.on('console',m=>{if(/hydration/i.test(m.text()))hydration.push(m.text())});ssrPage.on('pageerror',e=>hydration.push(e.message));await ssrPage.route('**/*',route=>{const asset=productionAssets[new URL(route.request().url()).pathname];return asset?route.fulfill({contentType:asset.contentType,body:asset.body}):[nuxtOrigin,origin].some(url=>route.request().url().startsWith(url))&&route.request().method()==='GET'?route.continue():route.abort()})
 for(const locale of ['en','ar']){const path=locale==='ar'?'/ar':'/';const response=await fetch(nuxtOrigin+path);const html=await response.text();check(response.status===200&&html.includes('store-footer-modern')&&html.includes(locale==='ar'?'كل المنتجات':'All products'),locale+' built SSR contains localized footer');await ssrPage.goto(nuxtOrigin+path);await ssrPage.locator('footer.store-footer-modern').waitFor();await ssrPage.waitForTimeout(250);check(await ssrPage.locator('.store-footer-modern-group a').first().getAttribute('href')===(locale==='ar'?'/ar/search':'/search'),locale+' hydrated destination');await screenshot('nuxt-ssr-'+locale,ssrPage)}
 if(productionContent){
  const c=normalizeModernFooter(productionContent[0].data.footer_modern_config);c.brand.logo_url='/fixture-production-light.png';c.brand.logo_dark_url='/fixture-production-dark.png'
- await f.db.query("update public.site_settings set footer_modern_config=$1 where key='default'",[JSON.stringify(c)])
+ await f.db.query("update public.site_settings set footer_modern_config=$1,payment_cash_enabled=$2,payment_card_enabled=$3,payment_instapay_enabled=$4,payment_paypal_enabled=$5,payment_bank_transfer_enabled=$6 where key='default'",[JSON.stringify(c),productionMethods.payment_cash_enabled,productionMethods.payment_card_enabled,productionMethods.payment_instapay_enabled,productionMethods.payment_paypal_enabled,productionMethods.payment_bank_transfer_enabled])
  // A fresh owned process removes the content cache; production is never touched.
  const stopped=new Promise(resolve=>nuxt.once('close',resolve));nuxt.kill('SIGTERM');await stopped
  nuxt=spawn(process.execPath,[join(base,'.output/server/index.mjs')],{cwd:base,env:{PATH:process.env.PATH,NODE_ENV:'production',NITRO_HOST:'127.0.0.1',NITRO_PORT:String(port),NUXT_PUBLIC_SUPABASE_URL:origin,NUXT_PUBLIC_SUPABASE_KEY:'local-fixture-public-key',NUXT_PUBLIC_SITE_URL:nuxtOrigin},stdio:['ignore','ignore','pipe']});nuxt.stderr.on('data',b=>runtimeLog.push(b))
@@ -160,7 +170,12 @@ if(productionContent){
   check(await footer.locator('.store-footer-modern-group').count()===2,`real saved/${locale}/${width}/${color} navigation present`)
   check(await ssrPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`real saved/${locale}/${width}/${color} no overflow`)
   check(await footer.locator('input').isDisabled(),`real saved/${locale}/${width}/${color} unavailable newsletter cannot submit`)
-  await footer.screenshot({path:join(dir,`real-saved-${locale}-${width}-${color}.png`),animations:'disabled'});screens++
+  check(await footer.locator('.store-footer-modern-payments img').count()===visibleFooterPayments(c,productionMethods).length,`real saved/${locale}/${width}/${color} saved availability and logos preserved`)
+  if(width===390&&visibleFooterPayments(c,productionMethods).length===7){const rows=await footer.locator('.store-footer-modern-payments li').evaluateAll(nodes=>{const rows={};for(const n of nodes){const y=Math.round(n.getBoundingClientRect().top);rows[y]=(rows[y]||0)+1}return Object.values(rows)});check(rows.join(',')==='4,3',`real saved/${locale}/${width}/${color} balanced payment rows`)}
+  // Component capture excludes the unrelated sticky header overlay; normal page
+  // assertions above use the actual header and unchanged application behavior.
+  const captureStyle=await ssrPage.addStyleTag({content:'header { visibility: hidden !important; }'})
+  await footer.screenshot({path:join(dir,`real-saved-${locale}-${width}-${color}.png`),animations:'disabled'});await captureStyle.evaluate(el=>el.remove());screens++
  }
 }
 check(hydration.length===0,'Actual Nuxt output has no hydration errors: '+hydration.join('; '));await ssrPage.close();await writeFile(join(dir,'nuxt-runtime.log'),Buffer.concat(runtimeLog));

@@ -25,6 +25,7 @@ status. Its fieldset stays disabled; no subscription backend or collection is ad
 Support, app badges and approved-method logos retain their configurable grouping.
 A single utility section shares a compact lower bar with copyright/legal content.
 Multiple utility sections retain separate dividers and reflow on smaller screens.
+Mobile payment logos distribute into balanced rows based on the visible count.
 
 ## Preserved contracts
 
@@ -34,14 +35,18 @@ editor, URL validation, section ordering/toggles, EN/AR data, media references,
 SSR year handling and payment-availability filtering remain unchanged.
 
 No migration, stored content update, theme-logo replacement, gate change or provider
-request is part of this refinement. Current owner-configured JSON must remain intact.
+request is part of this refinement. Current owner-configured JSON must remain intact. Read-only verification found
+Cash/Card/InstaPay availability enabled, Bank/PayPal disabled. These saved values
+remain exact. They do not open the held checkout/signup routes or disabled live
+Paymob/PDC transports. The new app-only release binds actual availability values
+instead of changing them to the previous migration release's off-only baseline.
 
 ## Local validation
 
 - Five existing footer tests pass, including Classic preservation, Settings RLS,
   additive compatibility, media references, URL rejection and payment gating.
 - Node 22.23.1 typecheck and empty-dotenv production build pass.
-- Browser review passes 483 checks and captures 101 screenshots. It includes actual
+- Browser review passes 503 checks and captures 101 screenshots. It includes actual
   Dashboard saves/reloads/permissions on disposable native PostgreSQL/PostgREST,
   EN/AR, 1440/900/390px, Light/Dark, sparse/partial/brand-hidden/support-only/long-copy
   cases and the current saved public content with downloaded theme logos.
@@ -54,7 +59,9 @@ Protected evidence is outside Git in parent `modern-footer-refinement-20261022/`
 Actual saved content and assets remain private review inputs, never application
 defaults or committed business data. `FOOTER_REVIEW_CONTENT` optionally supplies
 the public content response plus sibling `logo-light.png`/`logo-dark.png` files to
-the local browser harness. No production runtime input is added.
+the local browser harness. An optional sibling `review-assets.json` maps configured
+image paths to private local copies and MIME types. Only owned fixture data changes
+when these availability values are exercised. No production runtime input is added.
 
 ## Release and owner checks
 

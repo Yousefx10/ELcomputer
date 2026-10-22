@@ -7,10 +7,15 @@
 - Application changes are confined to ModernFooter.vue and modern-footer.css.
   Classic, shared branding, Dashboard model/editor, provider/payment filtering,
   schema88 and stored content remain unchanged. No migration is required.
-- Local browser review: 483 checks, 101 screenshots PASS, including current saved
+- Local browser review: 503 checks, 101 screenshots PASS, including current saved
   owner content/logos in actual Nuxt SSR/hydration, both locales/themes and three
   widths. Five footer tests, typecheck/build and diff check PASS. Local Auth/media
   adapters are explicit; no hosted owner save/upload/style acceptance is claimed.
+- Fresh read-only schema88 verification matches the accepted schema exactly.
+  Cash/Card/InstaPay availability is currently true; Bank/PayPal false. Preserve
+  those saved values. Checkout/signup and live provider gates remain closed;
+  PDC/auto/reverse remain false. Earlier preparation stopped before writes on an
+  off-only assumption; the new app-only binding preserves exact current values.
 - Production remains d1b10bb664e15a67/schema88; no deployment or production write
   has run for this refinement. Prepare a new schema88 application-only seal through
   existing Caddy/systemd phases; never reuse the consumed 87→88 approval/operator.

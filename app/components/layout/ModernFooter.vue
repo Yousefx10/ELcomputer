@@ -45,7 +45,7 @@
       </section>
       <section v-if="payments.length" class="store-footer-modern-payments" :aria-label="copy(config.payments, 'title') || $t('modernFooter.paymentMethods')">
         <h2 v-if="copy(config.payments, 'title')">{{ copy(config.payments, 'title') }}</h2>
-        <ul><li v-for="item in payments" :key="item.id"><img :src="footerUrl(item.image_url)" :alt="item.label" loading="lazy" width="52" height="26"></li></ul>
+        <ul :style="{ '--footer-payment-columns': paymentColumns }"><li v-for="item in payments" :key="item.id"><img :src="footerUrl(item.image_url)" :alt="item.label" loading="lazy" width="52" height="26"></li></ul>
       </section>
     </div>
   </div>
@@ -76,6 +76,7 @@ const socials = computed(() => config.value.brand.socials.filter(item => item.en
 const hasSupport = computed(() => config.value.support.enabled && !!(copy(config.value.support, 'hours') || copy(config.value.support, 'label')))
 const apps = computed(() => config.value.apps.enabled ? config.value.apps.items.filter(item => item.enabled && footerUrl(item.url, 'external') && footerUrl(item.image_url)) : [])
 const payments = computed(() => visibleFooterPayments(config.value, props.settings))
+const paymentColumns = computed(() => payments.value.length ? Math.ceil(payments.value.length / Math.ceil(payments.value.length / 4)) : 1)
 const legalLinks = computed(() => visibleLinks(config.value.bottom.links))
 const utilityCount = computed(() => Number(hasSupport.value) + Number(!!apps.value.length) + Number(!!payments.value.length))
 const hasBottom = computed(() => config.value.bottom.enabled && !!(copyright.value || legalLinks.value.length))

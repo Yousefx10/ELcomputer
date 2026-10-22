@@ -88,6 +88,8 @@
   .storefront .store-footer-modern-newsletter { padding: 20px; }
   .storefront .store-footer-modern-newsletter fieldset { grid-template-columns: minmax(0, 1fr) auto; }
   .storefront .store-footer-modern-newsletter button { width: auto; }
+  .storefront .store-footer-modern-payments ul { display: grid; grid-template-columns: repeat(var(--footer-payment-columns, 4), minmax(0, 1fr)); align-items: center; gap: 12px 18px; }
+  .storefront .store-footer-modern-payments img { max-width: min(54px, 100%); }
   .storefront .store-footer-modern-bottom-inner { align-items: flex-start; flex-direction: column; gap: 8px; padding-block: 14px; }
   .storefront .store-footer-modern-bottom li { padding-inline: 12px; }
 }
