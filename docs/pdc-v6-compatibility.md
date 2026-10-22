@@ -11,7 +11,8 @@ names, envelope/row limits and partial-pagination rejection. IDs reject booleans
 arrays, objects and nondecimal string coercions. Invalid provider rows produce
 one confidential502 response. Product aliases are not accepted as city aliases.
 The Dashboard caller supplies the endpoint explicitly. No settings default,
-selection, city mapping, migration, commerce control or credential changes.
+selection, city mapping, commerce control or credential changes in the parser.
+A separate narrowly scoped migration90 restores two existing server RPC grants.
 
 The local schema analyzer uses the same fields and reports independent row,
 normalization, company-echo and saved-selection stages. Unsupported echo types
@@ -33,6 +34,29 @@ After the PDP deployment, an authenticated read-only transaction confirmed:
 
 Private before/after configuration and city-map fingerprints bind preservation.
 No private pickup, merchant, credential or customer values appear in this report.
+
+## Confirmed server RPC access defect
+
+Exact-archive HTTP replay exposed403/42501 before the provider transport.
+The preserved production schema snapshot independently confirms owner-only ACLs
+on `shipping_claim_pdc_lookup()` and `shipping_claim_pdc_refresh(uuid)`.
+Migration65's `shipping_claim_%` sweep revoked their original service-role grants
+without restoring them in its explicit allowlist. Earlier direct SQL/H3 fixtures
+ran as the database owner and did not exercise this PostgREST role boundary.
+
+New migration90 restores EXECUTE only on those two existing RPCs to `service_role`.
+Function bodies, owners, search paths, service-role claim checks, throttling,
+Dashboard permissions, table grants, RLS and browser denials remain unchanged.
+A native fixture verifies the defect before90, exact two-ACL correction, unchanged
+schema/data otherwise, runtime service-role checks and browser rejection.
+The same byte-identical archive then passes21 checks through real native
+PostgreSQL/PostgREST and actual built HTTP handlers. No production grant ran.
+
+The earlier application-only candidate is retained and cannot provide a complete
+PDC release on schema89. A separate reviewed89→90 grant-and-application release
+must bind this migration and its exact preservation tests before owner approval.
+The first replay's unstable synthetic Auth token and initial RPC-access failures
+remain preserved as qualified evidence; no production guard was bypassed.
 
 ## Focused endpoint review
 
