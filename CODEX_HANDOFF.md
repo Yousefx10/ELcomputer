@@ -1,21 +1,38 @@
-# Premium PDP finishing enhancements — implementation and release qualification — 2026-10-22
+# Premium PDP finishing enhancements sealed; final approval required — 2026-10-22
 
-- Five Premium-only enhancements implemented; [architecture and controls](docs/premium-product-finishing.md).
-  No migration. Classic markup/shared route and both footers remain unchanged.
-- Fresh read-only production verification confirms cda41a7a13e0b61d/schema89,
-  Premium selected by the owner, all138 protected tables, and unchanged2627-file
-  media inventory. Current authored Settings and Auth state become the new baseline;
-  the previous deployment's Classic/empty-metadata assertions are not reused.
-- Guest favorites use bounded browser IDs; existing accounts use private Auth
-  preferences. Share reuses canonical URLs. Package items and tags use the existing
-  specification section/RLS/CAS saves. Help Center, configured contacts and signed-in
-  support tickets provide real support destinations. Chat remains held.
-- Local/browser/regression and new release guards are being qualified. No deployment,
-  production writes, provider request or Git push is authorized by this task alone.
-  Preserve every consumed release/receipt; final approval needs a NEW exact seal.
-- Private evidence: parent premium-pdp-finishing-20261022/. Preserve both accounts'
-  work. After approval, deploy this one milestone, verify and wait for acceptance.
-  Do not start PDC or WordPress migration during this task.
+- Implementation is complete. Application `d01649a`; independent release `ea0dcc850b3a7d35`.
+  [Features/controls](docs/premium-product-finishing.md), [validation](docs/premium-product-finishing-validation.md),
+  [approval procedure/owner checks](docs/premium-product-finishing-release.md).
+- NEW final seal: `e44076ad264a45e8985c72de0d8c56a8936c6c7265dac1a3763fe63c9027e2fd`.
+  No production staging, activation, SQL write, provider request or Git push ran.
+  Production remains cda41a7a13e0b61d/schema89, with Premium selected by the owner.
+- All five features: guest/account favorites, canonical native/copy sharing,
+  confirmed expandable package contents, real support destinations and curated tags.
+  Product Editor → Specifications adds names/quantities/tags and reuses row
+  save/delete/order/RLS/CAS/draft controls. No schema migration. Classic/shared route
+  and both footers remain unchanged. Checkout/signup/Paymob/PDC gates remain held.
+- Exact extracted archive: 425 browser checks/193 screenshots, zero runtime,
+  hydration, external-request or REST failures. EN/AR, RTL/LTR, widths/themes,
+  persistence, account separation, leading-zero quantities, quantity-only drafts,
+  long tags and conflicts pass. Hosted Auth/native-device acceptance remains owner-only.
+- Focused:25 pass/one optional skip. New release guards:four pass, nine owned remote
+  faults. Typecheck/build pass. Final pinned full run:1284 pass/14 historical fail/
+  two existing email cancellations/41 skips,1341 tests across148 files. No new
+  functional blocker; no whole-suite-green claim or weakened historical guard.
+- Fresh encrypted DB/runtime backups pass authenticated decryption/full readback.
+  Inventory 1775; all 725 current client assets retained after clean build. The new
+  local merger rejects collisions and links. Current 138 protected table projections,
+  Auth security, full schema/RLS/ACL, media 2627 files and current settings/gates are
+  bound. Only established analytics/Auth activity projections may advance.
+- Private evidence: parent premium-pdp-finishing-20261022/. Final plan:
+  prepared-d01649a/plan.json. Exact artifact qualification and final preparation
+  receipt bind evidence. The final receipt records the required read-only check.
+- Preserve both older unsealed preparation stops and all historical consumed
+  operators/receipts. Never resume those directories or rerun migration89. This
+  release is application-only, single-use, with no automatic retry or rollback.
+- Next: obtain this NEW seal's owner approval, run the documented exact guarded
+  apply once, verify production, then wait for owner browser acceptance. Do not
+  start PDC or WordPress work automatically. No Git push.
 
 # Premium PDP deployed; schema89 unchanged; owner browser acceptance pending — 2026-10-22
 

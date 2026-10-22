@@ -1,5 +1,29 @@
 # Premium PDP finishing release
 
+Prepared release: `ea0dcc850b3a7d35`. Final approval seal:
+
+```text
+e44076ad264a45e8985c72de0d8c56a8936c6c7265dac1a3763fe63c9027e2fd
+```
+
+The extracted archive passes 425 checks/193 screenshots. All 725 retained assets,
+verified encrypted backups and independent archive readback pass.
+[Full qualification and baseline disposition](premium-product-finishing-validation.md).
+The owner must approve before production staging or activation.
+
+Reply with exactly:
+
+```text
+APPROVE PREMIUM PDP FINISHING DEPLOY
+e44076ad264a45e8985c72de0d8c56a8936c6c7265dac1a3763fe63c9027e2fd
+```
+
+The reviewed plan is in parent
+`premium-pdp-finishing-20261022/prepared-d01649a/plan.json`.
+The private `OWNER-RELEASE-REVIEW.md` contains exact check/apply commands.
+The final preparation receipt records the last read-only check.
+
+
 Application commit: `d01649a`. Schema89 remains unchanged. No SQL writes,
 provider transactions, Caddy changes or commerce activation are included.
 Production is still the accepted `cda41a7a13e0b61d` until final approval.
