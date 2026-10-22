@@ -29,6 +29,9 @@ found112 orders with matching booking and polling evidence. The
 PDC polling while its webhook remains disabled. A small local shipment-payload
 correction is prepared separately; production remains unchanged. Actual stock,
 delivery configuration and owner-approved transaction details are still missing.
+The [first real shipment checklist](docs/pdc-first-live-shipment-checklist.md)
+records the existing release seal, passed read-only preflight, exact Dashboard
+setup and why a new COD0 order currently uses the existing card-payment path.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.

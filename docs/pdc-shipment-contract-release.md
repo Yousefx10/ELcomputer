@@ -63,6 +63,10 @@ and newer business data. Do not use retired PM2/Git deployment scripts.
 
 No apply, staging, candidate service, restart, provider request or activation ran
 during preparation. The final read-only check is recorded privately.
+The first-shipment readiness pass repeated only the mandatory read-only preflight:
+`READ_ONLY_CHECK_PASS` for this same release/seal. No tests, build or release
+preparation were repeated. Its private log is
+`final-live-preflight-20261022T215236Z.log` in the acceptance-readiness directory.
 Business/configuration edits invalidate the sealed preservation baseline; deploy
 the approved code first or refresh the review before any later execution.
 

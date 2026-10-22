@@ -4,6 +4,8 @@
 The first shipment contract is established by the original PHP and PDC PDFs.
 Webhook automation is not a prerequisite for one manually polled shipment.
 The shortest path is one legitimate paid order used for both tests.
+The [first-shipment owner checklist](pdc-first-live-shipment-checklist.md) records
+the fresh release preflight, exact Dashboard setup and manual-payment boundary.
 
 ## Current evidence and decision
 
@@ -75,7 +77,23 @@ and activation packets require their own exact review; the code release seal doe
 not authorize them. Existing settings/edit permissions and revision/conflict guards
 remain required. No private account identifiers belong in reusable application code.
 
-### 2. One owner-operated Paymob card charge
+### 2. Choose an eligible paid order; otherwise one real card charge
+
+PDC itself does not require Paymob. `private.pdc_order_eligibility` accepts a
+fully paid noncash/noncard customer order with the same stock, carrier, city and
+packing safeguards, producing COD0. No such order exists in production today.
+This SQL branch is not a Dashboard manual-order or payment-recording facility.
+
+The current `POST /api/admin-orders/:id/payments` and its “Record verified
+payment” form call the preorder-only payment recorder. The normal checkout
+accepts a delivery-company selection only for cash/card; its insert guard also
+restricts that selection to nonpreorder cash/card. Manual Sales creates a separate
+`commerce_sales_orders` invoice, not the customer order used by PDC. Normal cash
+requires PDC COD enablement and genuine collections after delivery/completion.
+It is not a prepaid COD0 shortcut with COD disabled. Never fake a preorder,
+delivery, receipt, paid flag, card attempt or imported active order to bypass these
+contracts. Adding a supported manual prepaid normal-order path would be a separate
+feature, not necessary for the currently qualified card-to-PDC acceptance path.
 
 Use the existing confirmed customer and ordinary quote/checkout transaction.
 Record the real SKU/variant, quantity1, destination, courier, item/discount,

@@ -1,3 +1,45 @@
+# First genuine PDC shipment; existing release preflight PASS — 2026-10-23
+
+- Production remains881aadcfd4942ef8/schema90. No deployment or provider request.
+  Existing candidate03aa6e565f5b5ad3 is reused without build/test repetition.
+  Exact seal: eb104358167fa5c104054652177f3134db3471bf4ce4f7eade9c650f8377b4ed.
+- Mandatory existing-operator check returned READ_ONLY_CHECK_PASS with zero writes.
+  Clean application/source/plan/archive/tools/evidence, authenticated backup
+  readback, retained assets, unconsumed intent, pinned target/runtime/Caddy/service,
+  schema90/protected state/Auth/disabled gates and public health all pass.
+  Fresh execution backups/final preactivation checks still run only after approval.
+  Private final-live-preflight-20261022T215236Z.log preserves this check.
+- [Eight-item owner checklist](docs/pdc-first-live-shipment-checklist.md) names exact
+  Dashboard setup. Fresh read-only check: one active warehouse, zero suppliers,
+  stock units/positive balances/delivery companies/orders/attempts/dispatches.
+  223 priced catalog candidates do not prove physical stock or accurate prices.
+  One active confirmed profile exists; no confirmed nonstaff profile exists.
+- PDC supports an already paid eligible customer order without Paymob, but none
+  exists. Dashboard transfer receipt recording is preorder-only; Manual Sales
+  creates commerce_sales_orders, outside the customer/PDC flow. Normal cash needs
+  COD enabled and genuine post-delivery collections. No fabricated preorder,
+  delivery, paid flags, import activation or direct inserts are permitted.
+  The shortest existing new-order COD0 path is a genuine live card purchase,
+  signed payment receipt, physical allocation, packing scans/private video, then
+  one manual service40/type1 shipment/PDF/poll. No extra code/schema required.
+- Private FIRST-LIVE-TRANSACTION.template.json is incomplete/non-executable with
+  all approvals false. Includes actual supplier/stock/price, confirmed customer,
+  pickup/recipient/cities, measured kg/dimensions, goods value, exact card/carrier
+  costs, request budget and narrow activation controls. No genuine details assumed.
+- Both real provider transactions remain BLOCKED by concrete setup and execution
+  approval. PDC webhook can remain disabled; polling is supported. Current tariff
+  and merchant fees need owner confirmation; COD0 does not mean free shipping.
+  City-only lookup/cache setup must avoid consumed GetProducts; Test/Sync repeats it.
+  No city/cache/access/activation packet has been executed or newly sealed.
+- Next owner action: approve only this existing correction release before business
+  writes invalidate its preservation baseline. Then configure genuine setup and
+  review the exact private transaction/cost/access packet before real effects.
+- Schema90, catalog/media/Auth/Premium PDP/footers/Paymob credentials and disabled
+  gates preserved. No SQL/business write, charge, booking, label, callback change,
+  production mutation or Git push. Both handoffs retain the roadmap: WordPress
+  customers/orders migration → reconciliation → real inventory/delivery → public
+  checkout acceptance. Broad signup/public checkout/automatic booking remain off.
+
 # PDC/Paymob real acceptance preparation; concrete blockers and sealed correction — 2026-10-23
 
 - Production remains881aadcfd4942ef8/schema90. GetProducts PASS stays closed.
