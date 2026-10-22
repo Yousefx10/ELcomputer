@@ -4,7 +4,12 @@ Application commits: `ad7b03d`, then the sparse-layout refinement `a2e47a5`.
 The final application is pinned to the full `a2e47a5` commit in the dedicated
 operator. Both accepted footers and every completed release executor stay intact.
 
-Status: local qualification complete; a new sealed release is being prepared.
+Status: **prepared for final owner approval**, release `11f5aa80c67c81aa`.
+Seal: `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
+The exact packaged artifact passes266 browser checks; read-only release check PASS.
+Inventory1675, retained626 client assets, encrypted backups and archive readback pass.
+Private plan: parent premium-pdp-20261022/prepared/plan.json.
+Private final receipt and exact owner URLs are in that milestone directory.
 Production remains `40ebcf1f6d50a143`, schema88. This document is not approval to
 execute production SQL or change the running application.
 

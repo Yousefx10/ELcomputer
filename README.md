@@ -89,7 +89,9 @@ The [Premium Product Page milestone](docs/premium-product-page.md) is locally va
 Classic stays the default; Premium shares existing commerce and SEO authority.
 Dashboard settings select either style; Product Editor manages presentation media
 and relationships. See [validation](docs/premium-product-validation.md). A separately
-sealed schema88→89 release requires final owner approval. No PDP deployment has run.
+sealed schema88→89 release `11f5aa80c67c81aa` is prepared. See the
+[approval and deployment procedure](docs/premium-product-release.md). No PDP
+deployment has run; new final owner approval is required.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

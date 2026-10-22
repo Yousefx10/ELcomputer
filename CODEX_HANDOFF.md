@@ -1,5 +1,19 @@
 # Premium Product Page locally validated — 2026-10-22
 
+- **Prepared, not deployed:** release `11f5aa80c67c81aa`, app `a2e47a5`, schema89.
+  Exact approval seal: `aeb557dca3234064951a652cbd88c2a68f9dc4bb551c7bbb2df254bf5a3cee4e`.
+  Plan: parent premium-pdp-20261022/prepared/plan.json. Final preparation receipt
+  and exact owner URLs: parent premium-pdp-20261022/FINAL-PREPARATION-RECEIPT.json
+  and OWNER-BROWSER-CHECKS.md. Read-only `check` PASS; no execution intent exists.
+- Exact clean packaged artifact also passes 266 browser checks. Verified encrypted
+  DB/runtime backups, pg_restore/readback, inventory1675 and retained626 client
+  assets pass. Media remains2627 files/411264665 bytes, unchanged.
+- Next owner action: `APPROVE PREMIUM PDP DEPLOY` plus that exact seal. It covers
+  the reviewed migration89 and app switch. Do not deploy before this new approval.
+  Run the dedicated operator `apply PLAN --approved SEAL` only after approval; it
+  rechecks everything, verifies schema88 and89 candidates, then activates once.
+  Classic stays selected until the owner's explicit Dashboard choice. No push.
+
 - Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
 - [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).
   Classic markup AND original shared route script are hash-pinned. Premium uses
@@ -34,8 +48,8 @@
   remain unchanged. Production is still40ebcf1f6d50a143/schema88. No PDP SQL/deploy yet.
 - Application commits: ad7b03d and a2e47a5 (final). The dedicated
   [release operator/procedure](docs/premium-product-release.md) is locally tested.
-  Next: verify encrypted backups and artifact/readback, then seal the reviewed release.
-  Pin the application commit,
+  Encrypted backups and artifact/readback are verified and the release is sealed.
+  The plan pins the application commit,
   tools and qualification in a NEW seal. Obtain final exact approval before SQL or
   production staging/activation. Never invoke a consumed operator or generic push.
 - Private evidence: parent premium-pdp-20261022/. Owner reference screenshots were
