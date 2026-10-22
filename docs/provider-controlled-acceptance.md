@@ -6,10 +6,13 @@ Webhook automation is not a prerequisite for one manually polled shipment.
 The shortest path is one legitimate paid order used for both tests.
 The [first-shipment owner checklist](pdc-first-live-shipment-checklist.md) records
 the fresh release preflight, exact Dashboard setup and manual-payment boundary.
+The correction is now [deployed](pdc-shipment-contract-deployment-receipt.md) as
+`03aa6e565f5b5ad3`, schema90 unchanged. The release plan is consumed; all other
+activation and transaction approvals remain outstanding.
 
 ## Current evidence and decision
 
-Fresh read-only inspection on2026-10-23 Asia/Riyadh confirms release
+Before deployment, read-only inspection on2026-10-23 Asia/Riyadh confirmed release
 `881aadcfd4942ef8`, schema90, Premium selected, Product40/type1/template1,
 allMustValid true,382 city aliases and empty lookup caches. Pickup fields and
 independent encrypted secrets are present. The saved1kg default is configuration,
@@ -32,11 +35,11 @@ These existing values were preserved. They do not enable charging or public acce
 
 | Decision | Result / exact boundary |
 | --- | --- |
-| PDC ready for one real shipment? | **BLOCKED now.** Deploy only the qualified local contract correction after separate approval; then complete stock, delivery/cache, paid-order, packing and owner parcel/charge approval. |
+| PDC ready for one real shipment? | **BLOCKED now.** Contract correction is deployed; complete stock, delivery/cache, paid-order, packing and owner parcel/charge approval. |
 | Paymob ready for one real charge? | **BLOCKED now.** No payment code defect found in focused checks. Real stock, a configured delivery option, valid verified card order, controlled customer access and the exact signed callback receiver must be ready before charge approval. |
 | Confirmed corrections | Normal PDC payload: fromContactPerson, contents, allowToOpenShipment and separate exact net-merchandise declaredValue. No speculative status/envelope aliases. |
 | Can PDC use polling first? | **YES.** POST GetShipmentsStatus is explicitly documented and historically exercised. Keep the PDC webhook403; exact REF/AWB matching and uncertainty guards remain. |
-| Code/schema required? | Small application-only PDC correction prepared separately. **No schema migration, Paymob rewrite or shipping redesign.** Current Dashboard/server support the single-item, single-parcel paid-order test. |
+| Code/schema required? | Small application-only PDC correction is deployed. **No further code/schema change, Paymob rewrite or shipping redesign** is needed for the existing card-to-PDC path. Current Dashboard/server support the single-item, single-parcel paid-order test. |
 | PDC support needed before that test? | No unresolved optional-field/template/webhook contract question currently requires waiting. Ask only if actual city/account access fails, response matching/recovery is ambiguous, or the owner lacks current carrier terms/coverage. Automation questions remain separate. |
 | Owner inputs/approvals | Genuine SKU/stock, confirmed existing customer, pickup/recipient and city, measured parcel, declared goods value, exact EGP charge, delivery cost/maximum carrier charge, cardholder consent, narrow access/activation and exact one-charge/one-booking approval. Keep private details outside Git/chat. |
 | Public checkout after test success | Still held pending business stock/rates/coverage, payment and refund/reconciliation operations, guarded customer/packing/label acceptance, monitoring and access controls. WordPress identity/login/profile/address/history migration remains required before unrestricted signup. Automation and public opening need separate authorization. |
@@ -45,9 +48,10 @@ These existing values were preserved. They do not enable charging or public acce
 
 ### 1. Finish the one-time setup without transactions
 
-1. Review the [original PHP/PDF comparison](pdc-wordpress-contract-review.md)
-   and separately approve the application-only contract release. Do not rerun any
-   consumed deployment or GetProducts diagnostic. This release changes no gates.
+1. The [application-only contract release](pdc-shipment-contract-deployment-receipt.md)
+   is complete, preserving all gates. Do not rerun this consumed deployment or
+   the accepted GetProducts diagnostic. The [original PHP/PDF comparison](pdc-wordpress-contract-review.md)
+   remains the contract evidence.
 2. Choose one genuine, correctly priced SKU and physically receive one real unit
    through Procurement into an active warehouse. Do not edit catalog quantities,
    fabricate inventory, use a synthetic production product or create a fake sale.
@@ -208,6 +212,6 @@ while preserving Auth UUIDs, preventing duplicates and keeping imported history
 inert. Public purchase, automatic shipping/reverse/COD and other payment methods
 still require their own owner decision.
 
-Next owner action: review the prepared code release before business setup writes.
-Then select the genuine SKU/unit, destination and exact test costs privately.
+Next owner action: select the genuine SKU/unit, supplier receipt, destination and
+exact test costs privately, then authorize actual business setup as needed.
 No live test is authorized yet.

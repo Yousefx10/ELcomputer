@@ -26,11 +26,12 @@ Dashboard HTTP lookup, GetCities, webhook and shipment acceptance remain pending
 The [original WordPress/PDC contract review](docs/pdc-wordpress-contract-review.md)
 found112 orders with matching booking and polling evidence. The
 [controlled acceptance plan](docs/provider-controlled-acceptance.md) permits initial
-PDC polling while its webhook remains disabled. A small local shipment-payload
-correction is prepared separately; production remains unchanged. Actual stock,
+PDC polling while its webhook remains disabled. The application-only shipment
+correction [deployed](docs/pdc-shipment-contract-deployment-receipt.md) as
+`03aa6e565f5b5ad3`, schema90 unchanged, with all gates held. Its plan is consumed. Actual stock,
 delivery configuration and owner-approved transaction details are still missing.
 The [first real shipment checklist](docs/pdc-first-live-shipment-checklist.md)
-records the existing release seal, passed read-only preflight, exact Dashboard
+records the completed release, exact Dashboard
 setup and why a new COD0 order currently uses the existing card-payment path.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.

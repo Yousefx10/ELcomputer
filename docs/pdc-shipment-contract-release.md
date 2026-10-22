@@ -1,7 +1,9 @@
-# PDC shipment contract release — prepared, 2026-10-23
+# PDC shipment contract release — consumed, 2026-10-23
 
-**PREPARED FOR SEPARATE OWNER APPROVAL. NOT DEPLOYED.**
-Production remains `881aadcfd4942ef8`, schema90. GetProducts remains accepted.
+**DEPLOY PASS. This plan is consumed. Never rerun it.**
+Production is `03aa6e565f5b5ad3`, schema90 unchanged. GetProducts remains accepted.
+The [deployment receipt](pdc-shipment-contract-deployment-receipt.md) records
+execution and preservation. The preparation evidence below remains historical.
 
 Candidate release: `03aa6e565f5b5ad3`.
 Application commit: `aa5d2f31a1d1f286a34e275d133a0c475e4f8238`.
@@ -53,11 +55,11 @@ parent `pdc-paymob-acceptance-readiness-20261023/prepared-aa5d2f3-2/plan.json`.
 The operator is `scripts/pdc-shipment-contract-release/operator.mjs`.
 Its independent format7 seal cannot reuse a consumed PDP/PDC approval.
 
-After separate exact owner release approval, the operator must first recheck the
-clean source, hashes, target and all protected state. It creates a consumed intent,
-fresh verified encrypted execution backups, stages the qualified archive, checks
-one private candidate, rechecks schema90 read-only, then activates only the app.
-Failure stops with evidence; there is no automatic retry, rollback or SQL write.
+After exact owner approval, the operator rechecked the clean source, hashes,
+target and protected state. It created a consumed intent and fresh verified
+encrypted execution backups, staged the qualified archive, passed one private
+candidate, rechecked schema90 read-only and activated only the app. Final public
+health and database preservation passed. There was no retry, rollback or SQL write.
 Recovery requires a separately reviewed application-only plan preserving schema90
 and newer business data. Do not use retired PM2/Git deployment scripts.
 
@@ -67,10 +69,11 @@ The first-shipment readiness pass repeated only the mandatory read-only prefligh
 `READ_ONLY_CHECK_PASS` for this same release/seal. No tests, build or release
 preparation were repeated. Its private log is
 `final-live-preflight-20261022T215236Z.log` in the acceptance-readiness directory.
-Business/configuration edits invalidate the sealed preservation baseline; deploy
-the approved code first or refresh the review before any later execution.
+That preservation baseline was held through activation. Business/configuration
+edits now belong to the separately approved operational setup; they cannot authorize
+reusing this consumed plan or restoring an older database.
 
-This seal approves only a future application release. It does not approve a city
+This consumed seal authorized only this application release. It does not approve a city
 lookup/cache write, provider enablement, callback ingress, payment, shipment,
 label or public purchase. Those exact details/actions remain separately scoped in
 the [controlled acceptance plan](provider-controlled-acceptance.md).

@@ -1,3 +1,55 @@
+# PDC shipment contract DEPLOY PASS; genuine business setup next — 2026-10-23
+
+- Production is03aa6e565f5b5ad3, applicationaa5d2f31a1d1f286a34e275d133a0c475e4f8238,
+  schema90 unchanged. [Deployment receipt](docs/pdc-shipment-contract-deployment-receipt.md).
+- Owner approved exact seal
+  eb104358167fa5c104054652177f3134db3471bf4ce4f7eade9c650f8377b4ed.
+  Existing guarded plan ran ONCE and is CONSUMED. No automatic retry/rollback.
+  Never rerun its apply or any older consumed operator. No new artifact/build.
+- Fresh preflight, authenticated encrypted database/runtime execution backups and
+  full readback, exact archive staging, private schema90 candidate, read-only
+  preactivation preservation, app activation/restart,14 public health/safety routes
+  and final database preservation all pass. Existing qualification was reused.
+- All138 protected table projections, schema90/ACL/RLS/permissions and Auth
+  identity/security match. Catalog/settings/saved Product40, Premium PDP, both
+  footers and Paymob credentials remain preserved. Caddy/runtime/unit inputs and
+  Caddy process match; Nuxt restart verified. Media2627 files/411264665 bytes and
+  private files unchanged. All923 previous client assets retained; archive1971 entries.
+- Normal payload correction is deployed: fromContactPerson, contents,
+  allowToOpenShipment and separate exact net-goods declaredValue. No schema,
+  Paymob/frontend/UI/manual-order feature or unrelated application change.
+- SQL/migrations/business writes0; provider requests0. No charge, shipment, label,
+  GetProducts/GetCities, cache update, callback cutover or Git push. Checkout/signup,
+  Paymob/PDC outbound, auto-booking/reverse/COD and callback holds remain disabled.
+  Saved payment presentation flags were preserved; they do not enable commerce.
+- Private evidence: pdc-paymob-acceptance-readiness-20261023/, deployment log
+  shipment-contract-deployment-20261022T220217Z.log, prepared-aa5d2f3-2/execution/,
+  consumed intent/candidate/activation/completion/database/HTTP receipts and
+  deployment-verification-summary.json. A local receipt checker's old/new manifest
+  path mapping was corrected offline; both versions retained, no production replay.
+- Prior881aadcfd4942ef8 retained. Recovery needs a separately reviewed app-only
+  plan preserving schema90/newer business data; no DB rollback or retired PM2/Git deploy.
+- [First shipment checklist](docs/pdc-first-live-shipment-checklist.md): release step
+  DONE. Real PDC/Paymob acceptance remains BLOCKED by genuine stock/supplier receipt,
+  delivery/coverage/fees/caches, real eligible paid order, packing and exact private
+  details/cost/access authorization. One active warehouse but zero suppliers,
+  stock, delivery companies or orders remain the preserved observed baseline.
+- PDC can use an already-paid eligible customer order independently of Paymob,
+  but none exists and current Dashboard has no normal prepaid manual-order path.
+  The shortest existing path is a genuine LIVE card order, signed/HMAC payment,
+  physical allocation/packing/video, then manual service40/type1/COD0 booking,
+  exact REF/AWB/private PDF and polling. No further code/schema required for it.
+  PDC public webhook can remain disabled. Do not fake preorder/payment/delivery.
+- Next owner action: choose actual SKU/unit, accurate price, supplier receipt,
+  destination, measured parcel and carrier tariff privately. Enter genuine stock
+  through CRM/Purchase invoices/Serialized items and configure actual PDC delivery
+  after scoped business authorization. No repeated code-release approval required.
+  New FIRST-LIVE-TRANSACTION.after-deploy.template.json marks only code release
+  complete; every business/provider/access/transaction approval remains false.
+- Roadmap preserved: WordPress customers/orders migration → complete payment/
+  shipping reconciliation → actual inventory/delivery readiness → public checkout
+  acceptance. Public signup/checkout/payments and automatic booking remain held.
+
 # First genuine PDC shipment; existing release preflight PASS — 2026-10-23
 
 - Production remains881aadcfd4942ef8/schema90. No deployment or provider request.
