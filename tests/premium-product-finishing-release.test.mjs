@@ -1,6 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFile,readdir} from 'node:fs/promises'
+import {readFile,readdir,mkdtemp,mkdir,writeFile,symlink,rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
 import {execFile} from 'node:child_process'
 import {promisify} from 'node:util'
 import {argumentsFor} from '../scripts/premium-product-finishing-release/operator.mjs'
@@ -9,7 +11,19 @@ import {approvalState} from '../scripts/live-sales-release/operator.mjs'
 import {json as certificateJson} from '../scripts/lib/cleanBaseline.mjs'
 import {createEmailNativeDatabase,emailNativeAvailable} from './helpers/emailNativeDatabase.mjs'
 import {createProductSaveFixture} from './helpers/productSaveFixture.mjs'
+import {retainClientAssets} from '../scripts/premium-product-finishing-release/assets.mjs'
 const run=promisify(execFile)
+test('retained client assets merge after build without replacing new bytes or following links',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'pdp-retained-assets-')),source=join(root,'source'),output=join(root,'output')
+ try{
+  await mkdir(source);await mkdir(output);await writeFile(join(source,'old.js'),'old');await writeFile(join(source,'same.js'),'same');await writeFile(join(output,'same.js'),'same');await writeFile(join(output,'new.js'),'new')
+  await retainClientAssets(source,output,{'old.js':{sha256:hash('old')},'same.js':{sha256:hash('same')}})
+  assert.equal(await readFile(join(output,'old.js'),'utf8'),'old');assert.equal(await readFile(join(output,'new.js'),'utf8'),'new')
+  await writeFile(join(output,'old.js'),'different new bytes');await assert.rejects(retainClientAssets(source,output,{'old.js':{sha256:hash('old')}}),/collision/);assert.equal(await readFile(join(output,'old.js'),'utf8'),'different new bytes')
+  await assert.rejects(retainClientAssets(source,output,{'../escape.js':{sha256:hash('old')}}))
+  await symlink(join(source,'same.js'),join(source,'linked.js'));await assert.rejects(retainClientAssets(source,output,{'linked.js':{sha256:hash('same')}}))
+ }finally{await rm(root,{recursive:true,force:true})}
+})
 test('finishing release preserves consumed operators and requires its own final exact approval',async()=>{
  for(const file of ['activation-operator.mjs','activation-approval.mjs','activation-remote.py','database.mjs','operator.mjs','remote.py','recovery-operator.mjs','recovery-approval.mjs'])assert.equal(hash(await readFile('scripts/premium-product-release/'+file)),hash((await run('git',['show','fe3b495:scripts/premium-product-release/'+file],{encoding:'buffer'})).stdout))
  for(const args of [[],['apply','plan'],['apply','plan','--force','a'.repeat(64)],['apply','plan','--approved','short']])assert.throws(()=>argumentsFor(args))

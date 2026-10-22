@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url'
 import {execFile,spawn} from 'node:child_process'
 import {promisify} from 'node:util'
 import {create as tarCreate} from 'tar'
+import {retainClientAssets} from './assets.mjs'
 import {inventory} from '../publish/inventory.mjs'
 import {digest,stable,approvalState,publicHealth,validateAssets} from '../live-sales-release/operator.mjs'
 import {applicationCommit,previousApplicationCommit,hash,migrations,connect,checkDatabase,assertPreserved} from './database.mjs'
@@ -37,7 +38,7 @@ export async function remote(plan,mode,options={}){
   const code=await exited(child);assert.equal(code,0,'Pinned remote '+mode+' failed; no retry');assert.ok(size<=128*1024*1024)
   const bytes=Buffer.concat(output);return options.bytes?bytes:JSON.parse(bytes)
 }
-export async function toolHashes(){return Object.fromEntries(await Promise.all(['operator.mjs','database.mjs','remote.py','../premium-product-release/database.mjs','../premium-product-finishing-browser.mjs','../lib/premium-product-finishing-browser.mjs','../lib/premium-product-finishing-dashboard-browser.mjs','../lib/product-finishing-editor-checks.mjs','../footer-release/operator.mjs','../footer-release/database.mjs','../footer-release/remote.py','../live-sales-release/operator.mjs','../live-sales-release/database.mjs','../live-sales-release/auth.mjs','../live-sales-release/remote.py','../commerce-release/database.mjs','../commerce-release/operator.mjs','../commerce-release/remote.py','../clean-reinstall/deploy.py','../publish/inventory.mjs','../publish/contracts.mjs','../lib/cleanBaseline.mjs','../../docs/operations/backup-envelope.mjs'].map(async name=>[name,hash(await readFile(resolve(here,name)))])))}
+export async function toolHashes(){return Object.fromEntries(await Promise.all(['operator.mjs','database.mjs','remote.py','assets.mjs','../premium-product-release/database.mjs','../premium-product-finishing-browser.mjs','../lib/premium-product-finishing-browser.mjs','../lib/premium-product-finishing-dashboard-browser.mjs','../lib/product-finishing-editor-checks.mjs','../footer-release/operator.mjs','../footer-release/database.mjs','../footer-release/remote.py','../live-sales-release/operator.mjs','../live-sales-release/database.mjs','../live-sales-release/auth.mjs','../live-sales-release/remote.py','../commerce-release/database.mjs','../commerce-release/operator.mjs','../commerce-release/remote.py','../clean-reinstall/deploy.py','../publish/inventory.mjs','../publish/contracts.mjs','../lib/cleanBaseline.mjs','../../docs/operations/backup-envelope.mjs'].map(async name=>[name,hash(await readFile(resolve(here,name)))])))}
 async function applicationInputs(){
   const changed=(await run('git',['diff','--name-only',previousApplicationCommit,applicationCommit,'--','app','server','public','i18n','supabase','package.json','package-lock.json','nuxt.config.ts','tsconfig.json'],{cwd:repo})).stdout.trim().split('\n').sort()
   assert.deepEqual(changed,["app/assets/css/premium-product.css", "app/components/dashboard/products/SpecificationEditor.vue", "app/components/product/Premium.vue", "app/components/product/PremiumActions.vue", "app/components/product/PremiumGallery.vue", "app/components/product/PremiumHelp.vue", "app/composables/useProductFavorites.js", "app/utils/productFinishing.js", "i18n/locales/ar.json", "i18n/locales/en.json"],'Only the reviewed Premium enhancements and product authoring controls may change')
@@ -66,7 +67,7 @@ export async function prepare(options){
   assert.equal((await run(process.execPath,[spec.npm_cli,'--version'],{env:cleanEnv()})).stdout.trim(),'10.9.8');await writeFile(work+'/empty.env','',{flag:'wx',mode:0o600})
   await logged(process.execPath,[spec.npm_cli,'ci','--no-audit','--no-fund'],build,work+'/npm-ci.log');assert.equal(hash(await readFile(build+'/package-lock.json')),app['package-lock.json'])
   await logged(process.execPath,[build+'/node_modules/nuxt/bin/nuxt.mjs','build','--dotenv',work+'/empty.env'],build,work+'/build.log')
-  const output=build+'/.output';async function modes(path){const s=await lstat(path);if(s.isSymbolicLink())return;if(s.isDirectory()){await chmod(path,0o755);for(const n of await readdir(path))await modes(path+'/'+n)}else await chmod(path,0o644)}await modes(output)
+  const output=build+'/.output',retained=work+'/retained-readback';await mkdir(retained,{mode:0o700});await logged('tar',['-xzf',work+'/retained-assets.tar.gz','-C',retained],repo,work+'/retained-readback.log');await retainClientAssets(retained+'/_nuxt',output+'/public/_nuxt',before.assets); async function modes(path){const s=await lstat(path);if(s.isSymbolicLink())return;if(s.isDirectory()){await chmod(path,0o755);for(const n of await readdir(path))await modes(path+'/'+n)}else await chmod(path,0o644)}await modes(output)
   const c=await load(spec.target.credentials_file),entries=await inventory(output,{secrets:[c.database_password,c.service_role_key]})
   for(const[path,value]of Object.entries(before.assets))assert.equal(hash(await readFile(output+'/public/_nuxt/'+path)),value.sha256,'Retained client asset lost')
   await save(work+'/inventory.json',entries);await tarCreate({cwd:build,file:work+'/release.tar.gz',gzip:true,portable:true,noMtime:true,follow:false},['.output']);await chmod(work+'/release.tar.gz',0o600)
@@ -129,5 +130,5 @@ export async function apply(options){
   }catch(e){await save(work+'/STOP.json',{result:'STOP',phase,error_type:e.name,code:e.code,automatic_retry:false,automatic_rollback:false});throw Error('STOP in '+phase+'. Preserve evidence. No retry or rollback.')}finally{clearInterval(heartbeat)}
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  try{const o=argumentsFor(process.argv.slice(2));await({prepare,seal,check,apply}[o.mode])(o)}catch(e){console.error(JSON.stringify({result:'STOP',error_type:e.name,message:e.message?.startsWith('STOP in ')?e.message:'Footer refinement release guard failed; no production retry. Inspect private evidence.'}));process.exitCode=1}
+  try{const o=argumentsFor(process.argv.slice(2));await({prepare,seal,check,apply}[o.mode])(o)}catch(e){console.error(JSON.stringify({result:'STOP',error_type:e.name,message:e.message?.startsWith('STOP in ')?e.message:'Premium PDP finishing release guard failed; no production retry. Inspect private evidence.'}));process.exitCode=1}
 }

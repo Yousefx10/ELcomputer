@@ -6,7 +6,7 @@ import {connect as deployedConnect} from '../commerce-release/database.mjs'
 import {authSecurityFingerprint} from '../live-sales-release/auth.mjs'
 import {json as certificateJson} from '../lib/cleanBaseline.mjs'
 export {hash,schemaState,snapshot}
-export const applicationCommit='4c196e99da9f958c2fe0d9b2ae04ea892f652e3f'
+export const applicationCommit='89a7730c10b74af103a1e370269e205510d20d80'
 export const previousApplicationCommit='a2e47a53b016051500180876b25feb2420d7038d'
 export const connect=target=>deployedConnect(target,{readOnly:true})
 export async function migrations(repo){const r=await deployedMigrations(repo);return {history:[...r.history,...r.pending],certificate_history:r.certificate_history}}
