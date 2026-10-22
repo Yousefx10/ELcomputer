@@ -1,13 +1,14 @@
 # Inactive controlled-purchase application release — 2026-10-23
 
-**PREPARED FOR OWNER REVIEW. NOT DEPLOYED.**
-Production remains `03aa6e565f5b5ad3`, schema90. Both real provider transactions
-remain blocked. The consumed PDC correction approval authorizes no new deployment.
+**DEPLOY PASS. CAPABILITY REMAINS INACTIVE.**
+Production is `1088e036c4f81048`, schema90. [Deployment receipt](controlled-purchase-deployment-receipt.md).
+The owner approved the exact seal below; this plan ran once and is consumed.
+Both real provider transactions remain blocked. Never rerun the approved apply.
 
 | Bound item | Reviewed result |
 | --- | --- |
 | Application | `32f152f3e75380db1f7ca9c054098231dbbd3226` |
-| Candidate release | `1088e036c4f81048` |
+| Deployed release | `1088e036c4f81048` |
 | Archive SHA256 | `1088e036c4f81048bf78bdb218230d16f38d647477a43a7560990b3f6154ca41` |
 | Approval seal | `d9ed612b03fbc146d4b6f5449448a4e1331ff155c267e8e70666e0bb2c98bf76` |
 | Schema / writes | Schema90 unchanged; no migration or SQL write |
@@ -15,9 +16,9 @@ remain blocked. The consumed PDC correction approval authorizes no new deploymen
 | Preparation backup | Authenticated encrypted database/runtime backups and full readback PASS |
 | Preservation at seal | All138 protected table projections, schema/Auth, runtime/Caddy/service, media, assets and disabled gates PASS |
 | Final independent preflight | READ_ONLY_CHECK_PASS; clean source, bound evidence/backups and live target/preservation/held routes verified; zero writes |
-| Execution | Not attempted; no execution intent, automatic retry or automatic rollback |
+| Execution | Completed once; approval/intent consumed; no automatic retry or rollback |
 
-## What this approval would deploy
+## Deployed scope
 
 One private EN/AR account page and exact controlled checkout GET/POST handler.
 The server defaults to an inactive `NUXT_CONTROLLED_PURCHASE` value. Existing
@@ -27,7 +28,7 @@ address hash and a maximum one-hour window. No deployment-specific identity is
 hardcoded in reusable application code.
 
 Global purchasing, ordinary Paymob initiation, signup and PDC runtime remain off.
-This release changes no runtime file, Caddy rule, credential, catalog record,
+This release changed no runtime file, Caddy rule, credential, catalog record,
 stock, delivery setting, cache, payment or shipment. It preserves Premium PDP,
 Auth, footers and schema90. Public purchase controls will still display the hold.
 No provider request or card charge occurs merely by deploying this capability.
@@ -74,14 +75,14 @@ requires anonymous controlled API401 and global card-unavailable checks, then
 activates once. No consumed operator is changed or reused. A failed apply stops;
 there is no automatic retry or rollback.
 
-Owner approval phrase for this inactive application deployment only:
+Consumed approval for this inactive application deployment only; **do not rerun**:
 
 ```text
 APPROVE INACTIVE CONTROLLED PURCHASE DEPLOY
 d9ed612b03fbc146d4b6f5449448a4e1331ff155c267e8e70666e0bb2c98bf76
 ```
 
-**Do not apply until the owner explicitly gives that approval.**
+**Application approval is consumed. Do not apply this plan again.**
 This authorizes neither the private grant nor the Caddy candidate, city/cache or
 Dashboard writes, a payment intention/card submission, refund, booking, PDF or poll.
 Those require the completed private purpose/account/order/address/amount/cost/window
@@ -100,7 +101,8 @@ Earlier local preparation directories are retained and must not be deployed:
 `prepared` stopped on tar symlink header mode; `prepared-2` stopped when Dashboard
 setup/audit projections advanced; `prepared-3` was superseded after compiled Nuxt
 JSON decoding exposed the string-only parser. Confirmed local corrections were
-qualified before `prepared-4` received this seal. No failed production deployment,
+qualified before `prepared-4` received this seal and completed its approved deployment.
+No failed production deployment,
 provider retry or production write occurred. Do not delete or reuse those stops.
 
 See [current blockers and approvals](controlled-purchase-readiness.md) and

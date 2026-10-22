@@ -1,3 +1,48 @@
+# Inactive controlled purchase DEPLOY PASS — 2026-10-23
+
+- Production is1088e036c4f81048, application32f152f3e75380db1f7ca9c054098231dbbd3226,
+  schema90 unchanged. [Deployment receipt](docs/controlled-purchase-deployment-receipt.md).
+- Owner approved exact seal
+  d9ed612b03fbc146d4b6f5449448a4e1331ff155c267e8e70666e0bb2c98bf76.
+  The existing prepared-4 guarded apply ran ONCE and is CONSUMED. Never rerun it
+  or any older consumed operator. No automatic retry/rollback, build or test repeat.
+- Fresh live preflight, authenticated encrypted database/runtime execution backups
+  and full readback, exact archive/asset staging, private schema90 candidate,
+  read-only preactivation comparison, app switch/Nuxt restart,14 public health/
+  safety routes, Auth settings and final database preservation PASS. Independent
+  offline receipt verification PASS; all138 protected projections/schema/ACL/RLS/
+  Auth security and catalog/settings/test stock/caches/saved Product40 preserved.
+- Runtime credentials/configuration, Caddy/systemd inputs and Caddy process match.
+  Premium PDP, both footers, media2627 files/411264665 bytes and private files
+  preserved. All1021 previous client assets retained; archive2074 entries.
+- The new scoped page/API is DEPLOYED INACTIVE. No active runtime grant; no Caddy
+  candidate applied. Public purchasing/signup/ordinary checkout/payment/provider
+  gates, both callback holds, PDC auto/reverse/COD remain disabled. No SQL/business
+  write, provider request, order, charge, refund, booking, label, poll or Git push.
+- Existing source/native/UI/Paymob/compiled/Caddy qualification was reused. No real
+  payment, signed live receipt or shipment acceptance is claimed by deployment.
+  Existing Paymob credentials need no replacement or Dashboard secret editor.
+- Private controlled-checkout-readiness-20261023/ retains deployment-approved.log,
+  prepared-4 intent/execution backups/staging/candidate/activation/HTTP/database/
+  completed receipts and deployment-verification-summary.json. All old local stops
+  preserved. New business-details.after-inactive-deploy.template.json marks only
+  the application deployment complete; every activation/provider approval false.
+- Previous03aa6e565f5b5ad3 retained. Recovery needs separate reviewed app-only
+  authorization preserving schema90/newer business data; no DB restore/replay.
+- Both real provider tests remain BLOCKED by truthful transaction details and
+  exact activation/cost/execution approval. TESTproduct2026/EGP1/50 units remain
+  deliberate test records, not verified physical stock or actual parcel value.
+  Do not invent supplier transactions or silently underdeclare a real parcel.
+- Next: complete one private real item/unit/purpose/price/value, valid recipient,
+  destination/pickup cities, coverage, measured parcel, carrier tariff and exact
+  EGP total packet. City-only lookup/cache/settings and scoped grant/access/signed
+  callback need separate authorization; no repeated GetProducts/Test/Sync. Then
+  one explicitly approved card submission; signed payment/packing before separately
+  approved40/type1/COD0 booking, durable REF/AWB/private PDF and polling. PDC public
+  webhook may stay disabled. Never blindly retry an uncertain payment or booking.
+- Roadmap preserved: WordPress customers/orders migration → payment/shipping
+  reconciliation → actual inventory/delivery readiness → public checkout acceptance.
+
 # Controlled purchase prepared; production unchanged — 2026-10-23
 
 - Production remains03aa6e565f5b5ad3/schema90. The PDC correction plan and

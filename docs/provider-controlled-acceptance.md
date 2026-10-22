@@ -13,9 +13,10 @@ activation and transaction approvals remain outstanding.
 The [current purchasing blocker review](controlled-purchase-readiness.md) supersedes
 the earlier empty-stock baseline below. The owner clarified that TESTproduct2026,
 its EGP1 price and50 received units are test data. They are not verified physical
-stock or a genuine-price sale. A new account/order-scoped capability is locally
-qualified; its [separate inactive release](controlled-purchase-release.md) needs
-approval. Neither the code release nor this document authorizes a live transaction.
+stock or a genuine-price sale. A new account/order-scoped capability is qualified and
+[deployed inactive](controlled-purchase-deployment-receipt.md) as `1088e036c4f81048`,
+schema90. Its approval is consumed. Neither this deployment nor this document
+authorizes access activation or a live transaction.
 
 ## Current evidence and decision
 
@@ -49,7 +50,7 @@ These existing values were preserved. They do not enable charging or public acce
 | Paymob ready for one real charge? | **BLOCKED now.** No payment code defect found in focused checks. Real stock, a configured delivery option, valid verified card order, controlled customer access and the exact signed callback receiver must be ready before charge approval. |
 | Confirmed corrections | Normal PDC payload: fromContactPerson, contents, allowToOpenShipment and separate exact net-merchandise declaredValue. No speculative status/envelope aliases. |
 | Can PDC use polling first? | **YES.** POST GetShipmentsStatus is explicitly documented and historically exercised. Keep the PDC webhook403; exact REF/AWB matching and uncertainty guards remain. |
-| Code/schema required? | PDC contract correction is deployed. The deployed checkout lacks a safe one-account exception. A minimal account/cart/product/amount/address/window-scoped capability is locally qualified and separately prepared, inactive. **No schema change or PDC rewrite.** See the controlled-purchase release. |
+| Code/schema required? | PDC contract correction is deployed. The deployed checkout lacks a safe one-account exception. A minimal account/cart/product/amount/address/window-scoped capability is deployed inactive. Its code approval is consumed; access/grant/transaction approvals remain pending. **No schema change or PDC rewrite.** See the controlled-purchase release. |
 | PDC support needed before that test? | No unresolved optional-field/template/webhook contract question currently requires waiting. Ask only if actual city/account access fails, response matching/recovery is ambiguous, or the owner lacks current carrier terms/coverage. Automation questions remain separate. |
 | Owner inputs/approvals | Genuine SKU/stock, confirmed existing customer, pickup/recipient and city, measured parcel, declared goods value, exact EGP charge, delivery cost/maximum carrier charge, cardholder consent, narrow access/activation and exact one-charge/one-booking approval. Keep private details outside Git/chat. |
 | Public checkout after test success | Still held pending business stock/rates/coverage, payment and refund/reconciliation operations, guarded customer/packing/label acceptance, monitoring and access controls. WordPress identity/login/profile/address/history migration remains required before unrestricted signup. Automation and public opening need separate authorization. |
@@ -83,7 +84,7 @@ These existing values were preserved. They do not enable charging or public acce
    auto-label/reverse/COD off and shipping runtime still off. Checkout's existing
    SQL requires configured PDC cities/products even before payment. Verify no queued
    work can become eligible. Public PDC webhook remains held by Caddy.
-6. After the inactive capability release, approve the exact private grant and
+6. The inactive capability release is complete. Separately approve the exact private grant and
    Caddy candidate, including only the signed Paymob POST callback receiver. The
    grant binds one confirmed account, one durable cart, one product/model, quantity1,
    one carrier, exact EGP total, address hash and at most one-hour window. Global

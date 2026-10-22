@@ -37,9 +37,10 @@ setup and why a new COD0 order currently uses the existing card-payment path.
 The [controlled purchasing review](docs/controlled-purchase-readiness.md) identifies
 the current runtime and Caddy holds. TESTproduct2026/EGP1/50 units are test data,
 not verified physical stock. Existing LIVE Paymob credentials remain runtime-only.
-A one-account/order purchase capability is locally qualified and
-[prepared as a separate inactive release](docs/controlled-purchase-release.md).
-It needs approval; no production access, charging or shipping is enabled.
+A one-account/order purchase capability is qualified and
+[deployed inactive](docs/controlled-purchase-deployment-receipt.md) as
+`1088e036c4f81048`, schema90. Its approval is consumed. No purchase grant,
+callback access, charging or shipping was enabled.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.

@@ -1,10 +1,9 @@
-# One controlled purchase — local preparation, 2026-10-23
+# One controlled purchase — readiness, 2026-10-23
 
-Production remains `03aa6e565f5b5ad3`, schema90. No gate, credential, Caddy,
-provider or business record was changed. The new purchase capability is local only.
-The [separate inactive application release](controlled-purchase-release.md) is
-prepared as `1088e036c4f81048`. Deployment and later activation require distinct
-owner approvals. Neither has been executed.
+Production is `1088e036c4f81048`, schema90. The [inactive application release](controlled-purchase-deployment-receipt.md)
+deployed once under the approved seal. No gate, credential, Caddy, provider or
+business record was changed. The deployed capability has no active grant; its
+access/activation and every real transaction still require separate owner approval.
 
 ## Exact current blockers
 
@@ -18,7 +17,8 @@ owner approvals. Neither has been executed.
    `/api/checkout`, `/api/payments/capabilities` and the Paymob receiver all return403.
 3. `NUXT_PAYMOB_ENABLED` and `NUXT_PAYMOB_LIVE_REQUESTS_ENABLED` are false.
    Ordinary `getPaymobConfig()` therefore rejects initiation with `gateway_disabled`.
-   No account-specific purchasing exception exists in the deployed application.
+   The deployed one-account capability is inactive and its API remains held by
+   Caddy. No account currently has purchasing authorization.
 
 These are deliberate controls, not a broken inventory/PDC payload or bad API keys.
 Changing only the public presentation flag would not safely enable one purchase.
@@ -71,7 +71,7 @@ controlled API GET/POST and the EN/AR controlled page GET/HEAD. Authentication,
 HMAC, ownership and all other held routes remain unchanged. Keep that receiver
 available for outstanding receipts after the purchase window closes.
 
-## Minimal local correction
+## Deployed inactive correction
 
 A separate `/account/controlled-purchase` page and `/api/checkout/controlled`
 GET/POST reuse normal customer authentication, quote/command RPCs, physical stock
@@ -99,7 +99,7 @@ return alone never proves payment. Refunds remain outside this flow.
 The request-local payment configuration is available only after these exact Auth
 and scope checks. It does not change the global purchasing/Paymob flags or credentials.
 The shipping runtime, automatic booking and PDC public webhook remain disabled.
-The local access candidate is not deployed by the inactive application release.
+The local access candidate remains unexecuted.
 
 ## Exact future acceptance approval
 
@@ -135,3 +135,8 @@ release guards (including nine remote fault cases), and the two-host local Caddy
 policy pass. These use isolated/native fixtures and synthetic provider transports.
 They do not establish a real charge, signed live receipt or shipment.
 All production checks were read-only. Both handoffs retain the migration roadmap.
+
+The approved inactive application deployment now passes fresh backups/readback,
+private candidate, activation,14 health/safety routes and final protected-state
+preservation. No local qualification or provider acceptance was repeated. See
+the deployment receipt and the new private after-deployment details template.
