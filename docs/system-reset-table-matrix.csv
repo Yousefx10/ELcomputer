@@ -126,3 +126,6 @@ public.treasury_transactions,RETAIN,RETAIN,DELETE,RETAIN,RETAIN,RETAIN,RETAIN,DE
 private.salary_payment_commands,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone
 private.checkout_quotes,RETAIN retired quote,RETAIN retired quote,RETAIN retired quote,RETAIN subject to expiry,RETAIN subject to expiry,RETAIN retired quote,RETAIN subject to expiry,RETAIN retired quote
 private.checkout_commands,RETAIN live receipt,RETAIN retired tombstone,RETAIN retired tombstone,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN live receipt,RETAIN retired tombstone
+catalog_private.product_presentations,CASCADE with product deletion,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,CASCADE with product deletion
+catalog_private.product_video_assets,CASCADE metadata; RETAIN video files,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,CASCADE metadata; RETAIN video files
+catalog_private.product_presentation_receipts,RETAIN minimal non-replaying tombstone,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN,RETAIN minimal non-replaying tombstone

@@ -1,9 +1,11 @@
 import { createError, getQuery, sendStream, setHeader } from 'h3'
 import { openUploadImage, getBlankImageSvg, getUploadContentType } from '../../utils/uploads'
+import { productVideoPattern, serveProductVideo } from '../../utils/productVideos'
 
 export default defineEventHandler(async event => {
   const routePath=event.context.params?.path
   const path=Array.isArray(routePath)?routePath.join('/'):String(routePath||'')
+  if(productVideoPattern.test(path)) return serveProductVideo(event,path)
   try {
     const {handle,stat}=await openUploadImage(path)
     setHeader(event,'Content-Type',getUploadContentType(path))

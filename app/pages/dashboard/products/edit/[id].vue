@@ -26,7 +26,7 @@
         @submit.prevent="updateProduct"
         class="grid gap-5 rounded-2xl bg-white p-6 shadow md:grid-cols-2"
       >
-        <fieldset :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || !hasPermission('products.edit')" class="contents">
+        <fieldset :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || presentationState.busy || !hasPermission('products.edit')" class="contents">
         <div class="md:col-span-2 flex items-center justify-between rounded-2xl border bg-gray-50 p-4">
           <div>
             <p class="text-sm font-semibold text-gray-700">{{ $t('common.storeVisibility') }}</p>
@@ -539,6 +539,8 @@
                 preview-height-class="h-32"
               />
 
+              <label class="block text-sm font-medium">{{ $t('productPage.sequence') }}<input v-model.number="image.sort_order" type="number" min="0" max="9999" step="1" class="mt-1 w-28 rounded-lg border p-2"></label>
+
               <input
                 v-model="image.alt_text"
                 type="text"
@@ -578,6 +580,7 @@
       </section>
 
       <DashboardProductsSpecificationEditor :product-id="id" :product-title="product.title" :category-id="product.category_id || ''" @state="specificationState = $event" />
+      <DashboardProductsPresentationEditor :product-id="id" :variants="savedVariantOptions" :disabled="pending || formLoading || saving || saveUnconfirmed || refreshRequired || galleryLoading || specificationState.saving || !hasPermission('products.edit')" @state="presentationState = $event" />
     </div>
 
     <div v-else class="mx-auto max-w-6xl rounded-2xl bg-white p-6 text-center shadow">
@@ -713,11 +716,12 @@ const mainSaved = ref(false)
 const refreshRequired = ref(false)
 const restoredDraft = ref(false)
 const specificationState = ref({ dirty: false, saving: false })
-const galleryDirty = computed(() => Boolean(newImageUrl.value || newImageAlt.value || newImageVariantId.value) || productImages.value.some(image => image.image_url !== image.original_image_url || (image.alt_text || '') !== image.original_alt_text || (image.variant_id || '') !== image.original_variant_id))
+const presentationState = ref({ dirty: false, busy: false })
+const galleryDirty = computed(() => Boolean(newImageUrl.value || newImageAlt.value || newImageVariantId.value) || productImages.value.some(image => image.image_url !== image.original_image_url || (image.alt_text || '') !== image.original_alt_text || (image.variant_id || '') !== image.original_variant_id || image.sort_order !== image.original?.sort_order))
 const legacyStockQuantity = computed({ get: () => isSerialized.value ? undefined : stockQuantity.value,
   set: value => { if (!isSerialized.value) stockQuantity.value = value } })
-const editorBusy = computed(() => mainUploadsActive.value || pending.value || saving.value || galleryLoading.value || specificationState.value.saving || deleting.value)
-const { dirty: mainDirty, markSaved: markMainSaved, restore: restoreDraft, visitPrerequisite } = useProductEditor(`edit:${id}`, { seo, title, slug, description, longDescription, price, oldPrice, imageUrl, categoryId, brandId, defaultSupplierId, primaryWarehouseId, sku, sellingConfig, warrantyConfig, isPublished, productVariants, stockQuantity: legacyStockQuantity, colorName, colorHex, isSerialized }, { busy: editorBusy, revision: editorRevision, extraDirty: computed(() => !productDeleted.value && (saveUnconfirmed.value || galleryStatus.value === 'unknown' || galleryDirty.value || specificationState.value.dirty)) })
+const editorBusy = computed(() => mainUploadsActive.value || pending.value || saving.value || galleryLoading.value || specificationState.value.saving || presentationState.value.busy || deleting.value)
+const { dirty: mainDirty, markSaved: markMainSaved, restore: restoreDraft, visitPrerequisite } = useProductEditor(`edit:${id}`, { seo, title, slug, description, longDescription, price, oldPrice, imageUrl, categoryId, brandId, defaultSupplierId, primaryWarehouseId, sku, sellingConfig, warrantyConfig, isPublished, productVariants, stockQuantity: legacyStockQuantity, colorName, colorHex, isSerialized }, { busy: editorBusy, revision: editorRevision, extraDirty: computed(() => !productDeleted.value && (saveUnconfirmed.value || galleryStatus.value === 'unknown' || galleryDirty.value || specificationState.value.dirty || presentationState.value.dirty)) })
 const fieldErrors = computed(() => validationAttempted.value ? productEditorErrors({
   title: title.value, slug: slug.value.trim() || makeSlug(title.value), price: price.value,
   old_price: oldPrice.value, sku: sku.value, primary_warehouse_id: primaryWarehouseId.value,
@@ -910,6 +914,7 @@ const reloadProduct = async () => {
 }
 
 const updateProduct = async () => {
+  if (presentationState.value.busy) return
   if (mainUploadsActive.value || pending.value || saving.value || saveConflict.value || refreshRequired.value || formLoading.value) return
   actionError.value = ''
 
@@ -1004,7 +1009,7 @@ const addProductImage = () => saveGallery(async () => {
 const isProductImageDirty = (image) => {
   return image.image_url !== image.original_image_url ||
     (image.alt_text || '') !== image.original_alt_text ||
-    (image.variant_id || '') !== image.original_variant_id
+    (image.variant_id || '') !== image.original_variant_id || image.sort_order !== image.original?.sort_order
 }
 
 const saveProductImage = (image) => saveGallery(async () => {
@@ -1025,12 +1030,16 @@ const saveProductImage = (image) => saveGallery(async () => {
     return
   }
 
+  if (!Number.isInteger(image.sort_order) || image.sort_order < 0 || image.sort_order > 9999) {
+    galleryStatus.value = 'failed'; galleryError.value = 'Enter a valid display order.'
+    return
+  }
   if (!isProductImageDirty(image)) {
     return
   }
 
   const savedImage = requireSavedRow(await matchOriginal(supabase
-    .from('product_images').update({ variant_id: image.variant_id, image_url: image.image_url.trim(), alt_text: image.alt_text?.trim() || null })
+    .from('product_images').update({ variant_id: image.variant_id, image_url: image.image_url.trim(), alt_text: image.alt_text?.trim() || null, sort_order: image.sort_order })
     .eq('id', image.id).eq('product_id', id), image.original).select('*'))
   Object.assign(image, { ...savedImage,
     original: { variant_id: savedImage.variant_id, image_url: savedImage.image_url, alt_text: savedImage.alt_text, sort_order: savedImage.sort_order },

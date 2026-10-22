@@ -55,20 +55,24 @@ export async function createProductSaveHttpFixture(options = {}) {
       ['post', '/api/admin-products/transfer/import/approve', 'server/api/admin-products/transfer/import/approve.post.js'],
       ['post', '/api/admin-products/transfer/import/apply', 'server/api/admin-products/transfer/import/apply.post.js'],
       ['post', '/api/admin-products/transfer/import/cancel', 'server/api/admin-products/transfer/import/cancel.post.js'],
-      ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js']
+      ['get', '/api/admin-products/:id', 'server/api/admin-products/[id].get.js'],
+      ...(options.extraRoutes || [])
     ]) {
       const compiled = await build({ entryPoints: [resolve(file)], bundle: true, write: false,
-        format: 'esm', platform: 'node', banner: { js: `const useRuntimeConfig=()=>({uploadsDir:globalThis[${JSON.stringify(key)}]?.__ownedUploadsDir||'storage/uploads'});` }, alias: { '~': resolve('app') }, plugins: [{
+        format: 'esm', platform: 'node', banner: { js: `const useRuntimeConfig=()=>({uploadsDir:globalThis[${JSON.stringify(key)}]?.__ownedUploadsDir||'storage/uploads',...globalThis[${JSON.stringify(key)}]?.__ownedRuntimeConfig});` }, alias: { '~': resolve('app') }, plugins: [{
           name: 'owned-product-save-transport', setup(builder) {
             builder.onResolve({ filter: /\/supabaseAdmin$/ }, () => ({ path: key, namespace: key }))
             builder.onLoad({ filter: /.*/, namespace: key }, () => ({
               contents: `export const getSupabaseAdminClient=()=>globalThis[${JSON.stringify(key)}]`, loader: 'js'
             }))
+            builder.onResolve({ filter: /^@supabase\/supabase-js$/ }, () => ({ path: key+'-public', namespace: key+'-public' }))
+            builder.onLoad({ filter: /.*/, namespace: key+'-public' }, () => ({ contents: `export const createClient=()=>globalThis[${JSON.stringify(key)}]`, loader: 'js' }))
             builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
           }
         }] })
       const handler = (await import('data:text/javascript;base64,' + Buffer.from(compiled.outputFiles[0].text).toString('base64'))).default
       router[method](path, async event => {
+        options.mapParams?.(event, path)
         const write = method !== 'get'
         if (write) { controls.writes++; if (controls.delay) await new Promise(resolve => setTimeout(resolve, controls.delay)) }
         const result = await handler(event)
@@ -83,7 +87,7 @@ export async function createProductSaveHttpFixture(options = {}) {
     server = createServer((request, response) => {
       response.setHeader('Access-Control-Allow-Origin', '*')
       response.setHeader('Access-Control-Allow-Headers', 'authorization,content-type')
-      response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS')
+      response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,PUT,OPTIONS')
       if (request.method === 'OPTIONS') { response.writeHead(204); response.end(); return }
       listener(request, response)
     })

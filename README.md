@@ -85,6 +85,11 @@ The exact local artifact passes 533 browser checks/107 screenshots. Live review
 passes 318 checks/18 screenshots across EN/AR, three widths and Light/Dark/System.
 No page/hydration errors occurred; the existing chat-status 403 remains.
 The refinement plan is consumed. Owner Dashboard checks remain separate.
+The [Premium Product Page milestone](docs/premium-product-page.md) is locally validated.
+Classic stays the default; Premium shares existing commerce and SEO authority.
+Dashboard settings select either style; Product Editor manages presentation media
+and relationships. See [validation](docs/premium-product-validation.md). A separately
+sealed schema88→89 release requires final owner approval. No PDP deployment has run.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

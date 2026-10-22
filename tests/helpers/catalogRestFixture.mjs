@@ -53,7 +53,7 @@ export const createCatalogRestFixture = async ({ afterCatalog = null } = {}) => 
     }
     if (!ready) throw Error('Disposable PostgREST did not become ready: ' + logs)
     const token = name => {
-      const payload = Buffer.from(JSON.stringify({ role: name === 'service' ? 'service_role' : 'authenticated', sub: fixture.actors[name], exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')
+      const payload = Buffer.from(JSON.stringify({ role: name === 'service' ? 'service_role' : name === 'anon' ? 'anon' : 'authenticated', sub: fixture.actors[name], exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')
       const signed = Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url') + '.' + payload
       return signed + '.' + createHmac('sha256', secret).update(signed).digest('base64url')
     }

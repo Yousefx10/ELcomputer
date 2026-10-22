@@ -1722,6 +1722,16 @@
         </div>
       </section>
 
+      <section v-show="activeSettingsSection?.section === 'productPage'" class="overflow-hidden rounded-xl bg-white shadow">
+        <div class="border-b p-6"><h3 class="text-xl font-bold">{{ $t('productPage.settingsTitle') }}</h3><p class="mt-1 text-sm text-gray-500">{{ $t('productPage.settingsHelp') }}</p></div>
+        <div class="p-6">
+          <DashboardProductPageSettings v-model:page-style="siteSettings.product_page_style" v-model:config="siteSettings.product_page_config" :disabled="!canEditSettings || settingsLoading" />
+          <p v-if="settingsErrorSection === 'productPage' && settingsError" role="alert" class="mt-4 text-sm text-red-600">{{ settingsError.startsWith('productPage.validation.') ? $t(settingsError) : $uiMessage(settingsError) }}</p>
+          <p v-if="settingsSuccessSection === 'productPage' && settingsSuccess" role="status" class="mt-4 text-sm text-green-700">{{ $t('productPage.settingsSaved') }}</p>
+          <div class="mt-5 flex justify-end"><button type="button" :disabled="!canEditSettings || settingsLoading || !isSettingsSectionDirty('productPage')" class="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" @click="saveSiteSettings('productPage')">{{ settingsLoadingSection === 'productPage' ? $t('common.saving') : $t('common.saveAppearance') }}</button></div>
+        </div>
+      </section>
+
       <section v-show="activeSettingsSection?.section === 'accountDashboard'" class="overflow-hidden rounded-2xl bg-white shadow">
         <div class="p-6">
           <h3 class="text-2xl font-bold">{{ $t('common.customerAccountLayout') }}</h3>
@@ -2188,6 +2198,7 @@
 <script setup>
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
+import { productPageStyle, productPageEditorConfig, productPageConfigError } from '~/utils/productPage'
 const seoSiteUrlPlaceholder = useRuntimeConfig().public.siteUrl
 const { uiLabel, uiText } = useUiLocale()
 
@@ -2463,6 +2474,7 @@ const siteSettingsSectionFields = {
   accountDashboard: [
     'account_dashboard_style'
   ],
+  productPage: ['product_page_style', 'product_page_config'],
   authPage: [
     'auth_page_layout', 'auth_image_light_url', 'auth_image_dark_url', 'auth_image_position',
     'auth_show_visual_text', 'auth_visual_eyebrow', 'auth_visual_headline', 'auth_visual_supporting_text',
@@ -2537,6 +2549,7 @@ const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
   dashboardLayout: 'Dashboard appearance',
   accountDashboard: 'Customer account layout',
+  productPage: 'Product page',
   authPage: 'Authentication page',
   homepageReviews: 'Homepage reviews',
   heroSettings: 'Hero settings',
@@ -2843,6 +2856,8 @@ const normalizeSiteSettings = (source = {}) => ({
   account_dashboard_style: String(source.account_dashboard_style || '').trim().toLowerCase() === 'classic'
     ? 'classic'
     : 'modern',
+  product_page_style: productPageStyle(source.product_page_style),
+  product_page_config: productPageEditorConfig(source.product_page_config),
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
@@ -2993,6 +3008,8 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_background_color',
       'landing_page_title',
       'account_dashboard_style',
+      'product_page_style',
+      'product_page_config',
       'auth_page_layout',
       'auth_image_position',
       'auth_show_visual_text',
@@ -3334,6 +3351,15 @@ const saveSiteSettings = async (sectionName) => {
     } catch {
       settingsError.value = useNuxtApp().$i18n.t('seo.invalidUrl')
       settingsErrorSection.value = 'seoSettings'
+      return
+    }
+  }
+  if (sectionName === 'productPage') {
+    const invalid = productPageConfigError(siteSettings.product_page_config)
+    if (invalid) {
+      settingsSuccess.value = ''; settingsSuccessSection.value = ''
+      settingsError.value = `productPage.validation.${invalid}`
+      settingsErrorSection.value = sectionName
       return
     }
   }

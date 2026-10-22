@@ -5,9 +5,10 @@ export const resetRetainedAfterSalesTables = ['after_sales_policies', 'after_sal
 // Every scope retains installation identity, choices and append-only history.
 export const resetRetainedSetupTables = ['quick_setup_state', 'quick_setup_revisions', 'quick_setup_events']
 // Metadata tombstones survive. Only Products/Full close pending import authority.
+// Product presentations/assets cascade with their product; video files stay retained.
 export const resetRetainedPrivateTables = {
   private: ['installation_bootstrap', 'salary_payment_commands', 'checkout_quotes', 'checkout_commands', 'cod_collection_commands'],
-  catalog_private: ['product_revisions', 'product_save_receipts', 'media_paths', 'product_bulk_receipts', 'import_jobs', 'import_items']
+  catalog_private: ['product_revisions', 'product_save_receipts', 'media_paths', 'product_bulk_receipts', 'import_jobs', 'import_items', 'product_presentations', 'product_video_assets', 'product_presentation_receipts']
 }
 export const resetTableGroups = {
   chat: ['chat_attachments', 'chat_read_state', 'chat_events', 'chat_messages', 'chat_agent_availability', 'chat_rate_limits', 'chat_conversations', 'chat_settings'],

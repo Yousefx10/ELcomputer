@@ -152,3 +152,8 @@ the guarded library deletion endpoint.
 
 See [validation evidence](media-safety-validation.md) and
 [product transaction contract](product-save-safety.md).
+
+Product presentation metadata also uses the image reference guard and deletion
+scan. Its video assets use a separate immutable VPS namespace, bounded MP4/WebM
+validation and current publication/assignment checks. Private packing evidence is
+excluded. See [Premium PDP](premium-product-page.md#operational-and-compatibility-details).

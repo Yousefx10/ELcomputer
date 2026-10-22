@@ -1,3 +1,46 @@
+# Premium Product Page locally validated — 2026-10-22
+
+- Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
+- [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).
+  Classic markup AND original shared route script are hash-pinned. Premium uses
+  that one data/price/stock/variant/cart/Auth/SEO authority. No footer files changed.
+- Dashboard → Settings → Product page persists exactly Classic/Premium. Classic
+  remains the default until explicit owner selection. Fresh no-store SSR appearance
+  state avoids stale style selection; SEO/canonical/hreflang/JSON-LD parity passes.
+- Product Editor retains its independent core/gallery/spec saves and adds separately
+  revisioned videos/curated-related/compatibility controls. Image Display order is
+  exposed. Draft retention, current permission checks, exact retries and receipt
+  recovery remain. No price/inventory/publication authority enters presentation data.
+- Built-app browser review passes 264 checks: genuine seven-product snapshots,
+  EN/AR, desktop/tablet/320–390 mobile, Light/Dark/System, keyboard/modal/swipe,
+  settings persistence, videos, actor changes, and explicit isolated missing/rich/
+  preorder/coming-soon/permitted-cart scenarios. Synthetic Auth/native RLS is not
+  hosted owner acceptance. Zero runtime/hydration/HTTP errors or external requests.
+- Production count reconciled read-only: 561 products, 225 published, 336 Draft;
+  629 variants, 577 active. The earlier 225 count was published scope only.
+  No catalog/media/stock/publication/Auth/provider data was changed.
+- Migration89 remains local: two Settings columns, three private metadata tables.
+  It preserves old rows, Auth and ACL/RLS. Exact extensions add media-reference
+  coverage and register these private tables with reset's existing unknown-table
+  guard. Inherited reset locks remain; new writes coordinate with reset. Product
+  metadata/assets cascade; minimal non-replaying receipts and video files remain.
+- Focused suite: 38 pass, zero failures/cancellations/skips, plus six owned remote
+  phase checks. Native release/rollback and media/reset checks pass. Typecheck and
+  clean production build pass. Full suite: 1254 pass/15 fail/2 cancelled/41 skips;
+  baseline at69952dd:1242/11/2/41. Eleven failures/cancellations match baseline;
+  three completed footer guards reject89; one concurrent catalog seed timeout passes
+  its isolated original rerun. No whole-suite green claim or weakened old guard.
+- Both accepted footers, saved payment flags and all checkout/signup/Paymob/PDC holds
+  remain unchanged. Production is still40ebcf1f6d50a143/schema88. No PDP SQL/deploy yet.
+- Prepare the dedicated scripts/premium-product-release operator, verified encrypted
+  backups, artifact/readback and rollback procedure. Pin the application commit,
+  tools and qualification in a NEW seal. Obtain final exact approval before SQL or
+  production staging/activation. Never invoke a consumed operator or generic push.
+- Private evidence: parent premium-pdp-20261022/. Owner reference screenshots were
+  absent; public references reviewed, without claiming exact screenshot matching.
+  After approved deployment, owner explicitly chooses Premium and verifies browser
+  behavior. Stop after this milestone's acceptance. PDC/WordPress remain later work.
+
 # Modern Footer refinement deployed; schema88 unchanged — 2026-10-22
 
 - Owner approved exact seal

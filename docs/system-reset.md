@@ -85,3 +85,10 @@ Checkout retry protection requires additive migration82 and matching application
 ## Local certification
 
 Read [validation and evidence boundaries](system-reset-validation.md). Tests include actual disposable PostgreSQL, PostgREST, Auth, Storage and files, synthetic failure fixtures, full regression and browser checks. No production credentials, merchant data, providers or deployment are used. Hosted platform/workload/durability and real BETA acceptance remain separately authorized work.
+
+Premium PDP metadata is explicitly registered in reset coverage. Product
+presentations and video asset metadata cascade with product deletion; minimal
+presentation receipts remain as non-replaying tombstones. Video files are retained
+and lose public serving authority when their product/assignment is removed. The
+image Media/Full cleanup policy does not include `product_videos`. New metadata
+writes take the existing shared reset lock; no reset scope gains broader authority.

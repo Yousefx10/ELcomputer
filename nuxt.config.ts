@@ -62,6 +62,8 @@ export default defineNuxtConfig({
     shippingDocumentsDir: '',
     packingVideoProbePath: 'ffprobe',
     public: {
+      // Presentation only. Checkout/provider authorization remains authoritative.
+      purchasingEnabled: false,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
       supabaseUrl,
       supabase: {

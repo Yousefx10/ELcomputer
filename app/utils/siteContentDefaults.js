@@ -26,6 +26,8 @@ export const defaultSiteSettings = {
   landing_page_title: '',
   dashboard_layout: 'standard',
   account_dashboard_style: 'modern',
+  product_page_style: 'classic',
+  product_page_config: null,
   erp_mode: 'built_in',
   daftra_connection_status: 'disconnected',
   daftra_last_checked_at: null,

@@ -3113,5 +3113,8 @@
   "A valid packing upload is required.": "privatePacking.uploadRequired",
   "This video range is unavailable.": "privatePacking.rangeUnavailable",
   "This packing session is not active for this operator.": "privatePacking.operatorInactive",
-  "Save the private VPS video before completing this order.": "privatePacking.vpsBeforeCompletion"
+  "Save the private VPS video before completing this order.": "privatePacking.vpsBeforeCompletion",
+  "Product page": "productPage.navTitle",
+  "Choose the layout for every product.": "productPage.settingsHelp",
+  "Enter a valid display order.": "productPage.invalidOrder"
 }
