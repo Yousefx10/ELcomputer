@@ -9,14 +9,15 @@ Historical entries describe earlier targets and are not execution instructions.
 
 The [Premium PDP finishing enhancements](docs/premium-product-finishing.md) add
 favorites, sharing, package contents, support access and curated tags.
-They reuse schema89 and existing services. Release `ea0dcc850b3a7d35` is
-[deployed](docs/premium-product-finishing-deployment-receipt.md), preserving schema89.
+They reuse existing presentation metadata and services. Premium finishing release
+`ea0dcc850b3a7d35` [deployed](docs/premium-product-finishing-deployment-receipt.md) with schema89 unchanged.
 Its exact archive passed 425 browser checks; live smoke passed107 checks.
-Hosted owner acceptance remains pending. Local PDC correction is authorized separately.
+Hosted owner acceptance remains pending.
 
 The [PDC V6 correction and focused compatibility review](docs/pdc-v6-compatibility.md)
-accept the newly support-confirmed product fields. The [complete release](docs/pdc-v6-release-preparation.md) is sealed for separate89→90
-approval, including two restored server RPC grants. Production stays schema89.
+accept the newly support-confirmed product fields. The [complete release](docs/pdc-v6-deployment-receipt.md) is deployed as
+`881aadcfd4942ef8`, schema90, including two restored server RPC grants.
+Independent preservation and107 live browser checks pass. All commerce gates remain held.
 [Webhook cutover](docs/pdc-webhook-cutover-plan.md) also needs separate approval.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
@@ -57,8 +58,8 @@ are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md) a
 [deep investigation](docs/pdc-getproducts-deep-investigation.md) record the earlier
 unknown contract. New support-confirmed fields now have a
 [tested local correction](docs/pdc-v6-compatibility.md), plus a confirmed server
-RPC access correction. The [complete release](docs/pdc-v6-release-preparation.md)
-is prepared, not deployed. The original HTTP500 remains unexplained. Both diagnostic approvals
+RPC access correction. The [complete release](docs/pdc-v6-deployment-receipt.md)
+is deployed at schema90; live provider acceptance remains pending. The original HTTP500 remains unexplained. Both diagnostic approvals
 are consumed. No retry is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).

@@ -1,3 +1,6 @@
+> Deployed:881aadcfd4942ef8/schema90. [Production receipt](pdc-v6-deployment-receipt.md).
+> Audit and local validation below predate deployment. Live provider acceptance remains pending.
+
 # PDC V6 compatibility correction — 2026-10-22
 
 GetProducts now accepts the support-confirmed `productID` / `productName` fields.

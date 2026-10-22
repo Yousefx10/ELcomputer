@@ -1,3 +1,30 @@
+# PDC V6 correction deployed; schema90; all commerce gates held — 2026-10-22
+
+- DEPLOY PASS:881aadcfd4942ef8, application82ec667, schema90.
+  [Production receipt](docs/pdc-v6-deployment-receipt.md).
+- Owner approved exact seal303c68aa71eac6ccccfcac07ea95c53b7d79190d47655e8e908fb379d6f21dac.
+  Fresh preflight/verified encrypted execution backups and both private candidates pass.
+  The plan ran once and is consumed. Never rerun it or migration90.
+- Migration90 restores only the original two service-role lookup/refresh RPC grants.
+  Browser denials, function bodies/owners, RBAC/RLS and all other schema objects match.
+  One migration; zero business-data writes. All138 protected projections/Auth pass.
+- Saved40=High Value(elc),382 city aliases, credentials and empty caches remain exact.
+  Premium stays selected. Classic/Premium, finishing features, Product Editor and
+  both footer source hashes remain preserved. Caddy/runtime/systemd inputs unchanged.
+- Live anonymous smoke:107 checks/eight screenshots, EN/AR, desktop/mobile,
+  Light/Dark, zero runtime/hydration errors. Independent post-browser runtime,
+  database/schema/ACL, effective permissions, settings/Auth/media/public checks PASS.
+- Checkout/signup/Paymob/PDC outbound/COD/auto-label/reverse/callback holds remain.
+  No live provider lookup, sync, booking, label, callback, rotation or provider contact.
+  Current public webhook remains403. No automatic retry/rollback or push command.
+- Native-device/hosted account/editor acceptance and live PDC acceptance stay pending.
+  Optional booking fields, mapping/timezone and pagination remain provider questions;
+  earlier HTTP500 remains unexplained. WordPress/Paymob work did not start.
+- Private FINAL-DEPLOYMENT-RECEIPT.json binds all consumed receipts and backup custody.
+  Previous ea0dcc850b3a7d35 and all older artifacts remain for separately reviewed
+  application recovery preserving schema90 and newer data.
+- Next owner action: separately scope one controlled GetProducts acceptance request.
+
 # PDC correction sealed for separate89→90 approval; production stays PDP/schema89 — 2026-10-22
 
 - Production: DEPLOY PASS, Premium finishing ea0dcc850b3a7d35/schema89.

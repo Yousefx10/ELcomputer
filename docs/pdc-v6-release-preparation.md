@@ -1,3 +1,7 @@
+> DEPLOYED AND CONSUMED:881aadcfd4942ef8/schema90.
+> [Deployment receipt](pdc-v6-deployment-receipt.md).
+> Preparation/approval commands below are historical. Never rerun this plan.
+
 # PDC V6 release preparation receipt — 2026-10-22
 
 **READY for separate owner review. PDC has NOT deployed.**
