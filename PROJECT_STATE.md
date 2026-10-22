@@ -34,6 +34,8 @@
   Caddy/media/gates and seal-stage read-only checks PASS. Format8 plan is private
   controlled-checkout-readiness-20261023/prepared-4/plan.json. Exact seal:
   d9ed612b03fbc146d4b6f5449448a4e1331ff155c267e8e70666e0bb2c98bf76
+- Final independent operator check: READ_ONLY_CHECK_PASS, zero production writes.
+  Private preflight-final.log binds the same seal; execution remains unattempted.
 - PREPARED FOR OWNER REVIEW ONLY. No execution intent/apply, runtime/Caddy change,
   SQL write, credential change, order, provider request, charge, refund, booking,
   PDF, poll, restart or Git push. Earlier prepared/2/3 local stops are preserved;
