@@ -1,28 +1,52 @@
-# Modern Footer design refinement locally validated; app-only release preparation — 2026-10-22
+# Modern Footer refinement preparation PASS; final approval pending — 2026-10-22
 
-- [Refinement design and evidence](docs/modern-footer-refinement.md): larger theme
-  logos, content-aware main groups, two compact navigation columns, full-width
-  tablet branding, responsive newsletter and combined single-support/legal bar.
-  Sparse, partial and long-copy configurations have explicit presentation coverage.
-- Application changes are confined to ModernFooter.vue and modern-footer.css.
-  Classic, shared branding, Dashboard model/editor, provider/payment filtering,
-  schema88 and stored content remain unchanged. No migration is required.
-- Local browser review: 503 checks, 101 screenshots PASS, including current saved
-  owner content/logos in actual Nuxt SSR/hydration, both locales/themes and three
-  widths. Five footer tests, typecheck/build and diff check PASS. Local Auth/media
-  adapters are explicit; no hosted owner save/upload/style acceptance is claimed.
-- Fresh read-only schema88 verification matches the accepted schema exactly.
+- [Design and evidence](docs/modern-footer-refinement.md): larger theme logos,
+  content-aware main groups, balanced navigation, full-width tablet branding,
+  contained newsletter and compact utility/legal rows. Sparse, partial, missing
+  branding and long-copy configurations have explicit coverage.
+- Application source `3b9816472157b3f45feaa43ac087115eef730384` changes exactly
+  ModernFooter.vue and modern-footer.css from deployed `8181953`. Classic, shared
+  branding, Dashboard model/editor, backend, locales and dependencies stay exact.
+- [Reviewed release and exact approval procedure](docs/modern-footer-refinement-release.md):
+  candidate `40ebcf1f6d50a143`, archive 8,003,829 bytes, independently extracted
+  1,566 entries and 528 retained client assets. Schema88 unchanged, no SQL writes.
+  Seal `4320ada2c57d17aeb32539feb8a7f083297f0da669de221a780a61bd4d9cd10d`.
+- Exact retained-asset candidate browser review: 533 checks/107 screenshots PASS.
+  EN/AR, 1440/900/390px, Light/Dark/System, real Nuxt SSR/hydration, actual saved
+  content/assets and live OS theme/logo changes pass. No page/hydration warning
+  or external/provider traffic. Dashboard persistence/permissions use native
+  disposable PostgreSQL/PostgREST; Auth/media adapters remain explicit. Hosted
+  owner save/upload/style acceptance is not claimed.
+- Five existing footer tests, typecheck/build, six native app-only release tests
+  and six remote-phase tests PASS. The actual SQL connection is read-only and
+  rejects writes. Original eight suite failures/two cancellations retain their
+  prior qualification; no full-suite green claim or historical guard relaxation.
+- Preparation preserves accepted schema88, all 135 protected table projections,
+  owner-configured Modern JSON, Auth/access contracts, settings, media and runtime.
   Cash/Card/InstaPay availability is currently true; Bank/PayPal false. Preserve
-  those saved values. Checkout/signup and live provider gates remain closed;
-  PDC/auto/reverse remain false. Earlier preparation stopped before writes on an
-  off-only assumption; the new app-only binding preserves exact current values.
-- Production remains d1b10bb664e15a67/schema88; no deployment or production write
-  has run for this refinement. Prepare a new schema88 application-only seal through
-  existing Caddy/systemd phases; never reuse the consumed 87→88 approval/operator.
-  Final reviewed digest approval precedes activation. Do not postpone the approved
-  refinement release for unrelated work. Checkout/signup/Paymob/PDC remain off.
-- Protected review inputs/evidence: parent modern-footer-refinement-20261022/.
-  README and both handoffs updated. No Git push or provider request.
+  these exact saved values. Checkout/signup and live Paymob/PDC transports stay
+  disabled; PDC/auto/reverse false. The first read-only preparation stopped on an
+  old off-only assumption; only the new app-only binding was corrected to preserve
+  current values. Completed migration release seals/operators remain unchanged.
+- Verified encrypted preparation backups: database 9,333,364 bytes; runtime
+  2,278,038 bytes/10 files. Authenticated full decryption, pg_restore TOC/full
+  parsing and runtime byte readback PASS; this is not a hosted restore exercise.
+  All 2,627 media files/411,264,665 bytes, private files, units/drop-ins, Caddy,
+  runtime environment and process identities remain exact. Fourteen public
+  health/hold GETs and Auth signup settings pass. Candidate/staging/link are absent.
+- Production remains `d1b10bb664e15a67`/schema88. No deployment or production write
+  ran for this refinement. Final exact new-seal approval precedes one guarded
+  apply. The prior 87→88 approval is consumed and cannot authorize this candidate.
+  After approval, deploy immediately before unrelated work; do not wait for UI2.
+  No retry, automatic rollback, SQL reversal, Caddy reload or provider request.
+- Protected evidence/plan/backups: parent modern-footer-refinement-20261022/,
+  prepared-current/plan.json. FINAL-PREPARATION-RECEIPT.json binds the artifact,
+  supplemental browser review, final read-only check and operational Git state.
+  The frozen initial qualification remains 503/101; the receipt adds exact-artifact
+  533/107 and its current-manifest CSS harness without modifying sealed inputs.
+- README and both handoffs updated. Owner post-deployment browser/Dashboard steps
+  are in the release guide. No Git push. Recovery keeps schema88/current data and
+  requires a separate reviewed app-only plan to retained d1b10bb664e15a67.
 
 # Modern Footer deployed; schema88; commerce remains disabled — 2026-10-21
 

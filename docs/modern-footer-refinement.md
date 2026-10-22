@@ -1,6 +1,6 @@
 # Modern Footer design refinement — 2026-10-22
 
-**Local presentation PASS. Application-only release preparation is in progress.**
+**Local presentation and sealed release preparation PASS. Final approval is pending.**
 
 Current production remains `d1b10bb664e15a67`/schema 88. The completed 87→88
 operator and its consumed approval are unchanged and cannot be reused.
@@ -46,12 +46,13 @@ instead of changing them to the previous migration release's off-only baseline.
 - Five existing footer tests pass, including Classic preservation, Settings RLS,
   additive compatibility, media references, URL rejection and payment gating.
 - Node 22.23.1 typecheck and empty-dotenv production build pass.
-- Browser review passes 503 checks and captures 101 screenshots. It includes actual
+- Exact-artifact browser review passes 533 checks and captures 107 screenshots. It includes actual
   Dashboard saves/reloads/permissions on disposable native PostgreSQL/PostgREST,
-  EN/AR, 1440/900/390px, Light/Dark, sparse/partial/brand-hidden/support-only/long-copy
+  EN/AR, 1440/900/390px, Light/Dark/System, sparse/partial/brand-hidden/support-only/long-copy
   cases and the current saved public content with downloaded theme logos.
 - Real Nuxt output renders/hydrates the saved-content preview with actual icons,
-  both locales and three sizes. No page/hydration warning or external traffic occurs.
+  both locales and three sizes. Live OS theme changes also switch the theme logo.
+  No page/hydration warning or external traffic occurs.
 - Auth and media selection in the Dashboard fixture remain explicit local adapters.
   No authenticated hosted settings save/upload or Classic/Modern switch is claimed.
 
@@ -65,11 +66,12 @@ when these availability values are exercised. No production runtime input is add
 
 ## Release and owner checks
 
-Prepare a new sealed application-only release through the established Caddy/systemd
-phases. Bind schema 88, fresh protected-state hashes, verified recovery backups,
-the exact candidate and current client assets. Do not call a migration executor.
-Final reviewed digest approval must precede production activation. Once approved,
-deploy this refinement immediately, before unrelated work.
+A new [sealed application-only release](modern-footer-refinement-release.md) is ready
+through the established Caddy/systemd phases. Candidate `40ebcf1f6d50a143` binds
+schema88, protected-state hashes, verified encrypted recovery backups and retained
+client assets. No migration executor or SQL write is used. Final reviewed digest
+approval must precede production activation. Once approved, deploy this refinement
+immediately, before unrelated work. Production remains unchanged during preparation.
 
 After deployment, check `/` and `/ar` at desktop, tablet and mobile widths in
 Light/Dark/System. Check logo scale, navigation balance, newsletter status, compact

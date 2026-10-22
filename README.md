@@ -73,13 +73,16 @@ The [Modern Footer replacement](docs/modern-footer.md) is deployed.
 Its [validation receipt](docs/modern-footer-validation.md) records responsive,
 localized Dashboard persistence and SSR checks. The [sealed 87→88 release](docs/modern-footer-release.md)
 passed: release `d1b10bb664e15a67`, schema88. Purchases, signup and providers remain off.
-Live responsive/theme checks passed. Owner content and authenticated Dashboard
-acceptance remain pending; the saved white logo needs a contrasting Light variant.
+Live responsive/theme checks passed at the original deployment. The owner has since
+configured Modern content and contrasting theme logos. Authenticated Dashboard
+acceptance remains separate from anonymous and local fixture verification.
 The release is consumed; do not rerun its commands. Historical operators stay unchanged.
-The [Modern Footer design refinement](docs/modern-footer-refinement.md) is locally
-validated: larger branding, content-aware columns and compact utility/legal rows.
-Its new application-only release is being prepared on schema88. Production stays
-on the accepted release until final reviewed approval and guarded activation.
+The [Modern Footer design refinement](docs/modern-footer-refinement.md) and its
+[sealed application-only release](docs/modern-footer-refinement-release.md) are ready:
+larger branding, balanced columns and compact utility/legal rows. The exact artifact
+passes 533 browser checks/107 screenshots across EN/AR, three widths and Light/Dark/System.
+Candidate `40ebcf1f6d50a143` keeps schema88 and all saved content/gates unchanged.
+Production stays on the accepted release until this candidate's final approval.
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
 For the current application candidate, use Node 22.23.1 and npm 10.9.8.

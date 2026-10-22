@@ -59,7 +59,12 @@ window.footerTest={client,logs,content,editable,show:async s=>{await refresh();s
 `)
 await build({entryPoints:[join(dir,'entry.js')],bundle:true,format:'esm',outfile:join(dir,'bundle.js'),alias:{'~':join(base,'app')},nodePaths:[join(base,'node_modules')],define:{'import.meta.server':'false','import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'vue',setup(builder){builder.onLoad({filter:/\.vue$/},async({path})=>{let source=await readFile(path,'utf8');if(path.endsWith('/settings.vue'))source=source.replace('</script>',"onMounted(()=>{globalThis.footerSettingsPage={siteSettings,saveSiteSettings,isSettingsSectionDirty,settingsError,settingsSuccess};});\n</script>");const {descriptor}=parse(source,{filename:path});return {contents:compileScript(descriptor,{id:path,inlineTemplate:true}).content,loader:'js',resolveDir:dirname(path)}})}}]})
 // Use built Tailwind/Dashboard styles and the exact current footer CSS.
-const cssRoot=join(base,'.output/public/_nuxt'),css=(await Promise.all((await readdir(cssRoot)).filter(n=>n.endsWith('.css')).map(n=>readFile(join(cssRoot,n),'utf8')))).join('\n')+'\n'+await readFile(join(base,'app/assets/css/modern-footer.css'),'utf8')
+const cssRoot=join(base,'.output/public/_nuxt'),clientMetadata=(await import(pathToFileURL(join(base,'.output/server/chunks/build/client.precomputed.mjs')).href)).default
+// Retained assets support older clients. Only current-manifest styles belong in
+// this component preview; loading every retained stylesheet mixes old layouts.
+const activeCss=[...new Set(Object.values(clientMetadata.modules).filter(asset=>asset.resourceType==='style').map(asset=>asset.file))]
+assert.ok(activeCss.length&&activeCss.every(name=>/^[\w.-]+\.css$/.test(name)))
+const css=(await Promise.all(activeCss.map(name=>readFile(join(cssRoot,name),'utf8')))).join('\n')+'\n'+await readFile(join(base,'app/assets/css/modern-footer.css'),'utf8')
 server=createServer(async(req,res)=>{if(productionAssets[req.url]){res.setHeader('content-type',productionAssets[req.url].contentType);res.end(productionAssets[req.url].body);return}if(req.url.startsWith('/rest/v1/')){if(req.method!=='GET'){res.writeHead(405);res.end();return}const upstream=await fetch(f.url+req.url.replace('/rest/v1',''));res.writeHead(upstream.status,{'content-type':upstream.headers.get('content-type')||'application/json'});res.end(await upstream.text());return}if(req.url==='/bundle.js'){res.setHeader('content-type','text/javascript');res.end(await readFile(join(dir,'bundle.js')))}else if(req.url.endsWith('.svg')){res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="136" height="42"><rect width="136" height="42" rx="5" fill="#222"/><text x="10" y="27" fill="white" font-size="15">Fixture asset</text></svg>')}else{res.setHeader('content-type','text/html');res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script type="module" src="/bundle.js"></script></body></html>')}})
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port
 browser=await chromium.launch({executablePath:process.env.FOOTER_REVIEW_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const page=await browser.newPage(),errors=[],external=[],checks=[],httpErrors=[]
@@ -176,6 +181,16 @@ if(productionContent){
   // assertions above use the actual header and unchanged application behavior.
   const captureStyle=await ssrPage.addStyleTag({content:'header { visibility: hidden !important; }'})
   await footer.screenshot({path:join(dir,`real-saved-${locale}-${width}-${color}.png`),animations:'disabled'});await captureStyle.evaluate(el=>el.remove());screens++
+ }
+ for(const locale of ['en','ar'])for(const width of [1440,900,390]){
+  const label=`real System/${locale}/${width}`
+  await ssrPage.setViewportSize({width,height:1050});await ssrPage.emulateMedia({colorScheme:'light'});await ssrPage.context().addCookies([{name:'elcomputer-theme-choice',value:'system',url:nuxtOrigin},{name:'elcomputer-color-mode',value:'system',url:nuxtOrigin}])
+  await ssrPage.goto(nuxtOrigin+(locale==='ar'?'/ar':'/'),{waitUntil:'networkidle'});await ssrPage.waitForFunction(()=>!document.documentElement.classList.contains('dark'));check(true,label+' follows light')
+  await ssrPage.emulateMedia({colorScheme:'dark'});await ssrPage.waitForFunction(()=>document.documentElement.classList.contains('dark'));check(true,label+' follows dark')
+  check(await ssrPage.locator('footer .brand-logo-dark:visible').count()===1,label+' switches theme logo')
+  check(await ssrPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),label+' no overflow')
+  const captureStyle=await ssrPage.addStyleTag({content:'header { visibility: hidden !important; }'});await ssrPage.locator('footer.store-footer-modern').screenshot({path:join(dir,`real-system-${locale}-${width}.png`),animations:'disabled'});await captureStyle.evaluate(el=>el.remove());screens++
+  await ssrPage.emulateMedia({colorScheme:'light'});await ssrPage.waitForFunction(()=>!document.documentElement.classList.contains('dark'));check(true,label+' returns to light')
  }
 }
 check(hydration.length===0,'Actual Nuxt output has no hydration errors: '+hydration.join('; '));await ssrPage.close();await writeFile(join(dir,'nuxt-runtime.log'),Buffer.concat(runtimeLog));
