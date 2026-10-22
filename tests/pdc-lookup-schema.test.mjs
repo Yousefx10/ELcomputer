@@ -36,7 +36,7 @@ test('metadata distinguishes invalid names, IDs, conversions and duplicates', ()
   assert.equal(inspect([row(), row('01')]).validation.duplicate_ids, 1)
   assert.equal(inspect([row({ toString: null })]).validation.id_conversion_exceptions, 1)
   assert.equal(inspect([row(true)]).validation.nonprimitive_id_types, 1)
-  assert.equal(inspect([row(true)]).normalization, 'PASS')
+  assert.equal(inspect([row(true)]).normalization, 'REJECTED')
 })
 
 test('missing echoes, scalar mismatches and unsupported echo types are explicit', () => {

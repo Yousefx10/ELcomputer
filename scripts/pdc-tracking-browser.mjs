@@ -7,8 +7,10 @@ import { resolve, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { parse, compileScript } from '@vue/compiler-sfc'
 import { build } from 'esbuild'
+import { normalizePdcLookup } from '../server/utils/pdcLookups.js'
 const { chromium } = await import(process.env.PDC_REVIEW_PLAYWRIGHT ? pathToFileURL(process.env.PDC_REVIEW_PLAYWRIGHT).href : 'playwright')
 const base = resolve(new URL('..', import.meta.url).pathname)
+const confirmedProducts = normalizePdcLookup(JSON.parse(await readFile(join(base, 'tests/fixtures/pdc-v6-products.json'), 'utf8')), 'GetProducts')
 const dir = process.env.PDC_REVIEW_ARTIFACTS || '/tmp/elcomputer-pdc-audit/browser'
 await mkdir(dir, { recursive: true })
 for (const [name, file] of Object.entries({ Details: 'app/pages/account/orders/[id].vue', ItemWarranty: 'app/components/account/ItemWarranty.vue', Progress: 'app/components/account/OrderProgress.vue', Card: 'app/components/account/OrderCard.vue', Orders: 'app/pages/account/orders/index.vue', Shipping: 'app/components/dashboard/commerce/ShippingTab.vue' })) {
@@ -59,7 +61,7 @@ const fetcher=async(path,options={})=>{
   return {settings:JSON.parse(JSON.stringify(pdc)),mappings:JSON.parse(JSON.stringify(mappings))}
  }
  if(path==='/api/admin-shipping/lookups'){
-  if(options.body.action==='sync'){Object.assign(pdc,{cities_cache:[{id:1,name:'Cairo'},{id:2,name:'Giza'}],products_cache:[{id:64,name:'Fixture Service'}],cities_synced_at:'2026-10-05T10:00:00Z',products_synced_at:'2026-10-05T10:00:00Z'})}
+  if(options.body.action==='sync'){Object.assign(pdc,{cities_cache:[{id:1,name:'Cairo'},{id:2,name:'Giza'}],products_cache:${JSON.stringify(confirmedProducts)},cities_synced_at:'2026-10-05T10:00:00Z',products_synced_at:'2026-10-05T10:00:00Z'})}
   return {connected:true}
  }
  if(path==='/api/admin-shipping/mappings') {const found=mappings.find(m=>m.provider_status_id===options.body.provider_status_id);if(found)Object.assign(found,options.body);else mappings.push(options.body);return {saved:true}}
@@ -157,6 +159,13 @@ try{
  await page.getByRole('button',{name:'Sync cities and products',exact:true}).click()
  await page.getByText('Cities and products synced.',{exact:true}).waitFor()
  check(await page.locator('#pdc-product').inputValue()==='64','configured product retained after lookup')
+ check((await page.locator('#pdc-product option').allTextContents()).includes('General (36)'),'confirmed General service is selectable')
+ check((await page.locator('#pdc-product option').allTextContents()).includes('High Value(elc) (40)'),'confirmed High Value service is selectable')
+ await page.locator('#pdc-product').selectOption('40')
+ await page.getByRole('button',{name:/Save PDC settings/i}).click()
+ await page.waitForTimeout(100)
+ check(await page.evaluate(()=>Number(window.pdcTest.pdc.product_id))===40,'explicit owner fixture selection saves High Value')
+ check(await page.locator('#pdc-product').inputValue()==='40','saved service survives settings reload')
  check(await page.locator('#pdc-city-options option').count()===2,'city lookup displayed')
  await page.locator('summary').filter({hasText:'Courier status mappings'}).click()
  check((await content()).includes('Confirm status 97'),'ambiguity visible')

@@ -1,13 +1,13 @@
 // Proposed diagnostic analysis only: no transport, settings reads, secrets or writes.
 // Literal field names are untrusted. Keep reports encrypted until owner review.
-import { normalizePdcLookup, pdcResponseRows } from '../../server/utils/pdcLookups.js'
+import { normalizePdcLookup, pdcResponseRows, pdcLookupFields } from '../../server/utils/pdcLookups.js'
 import { boundedPdcText } from '../../server/utils/pdcTracking.js'
 
 const type = value => value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
 const scopeKeys = ['CompanyID', 'companyID', 'companyId', 'company_id']
 
 export function inspectPdcLookupBytes(bytes, { companyId, productId, privateValues = [] } = {}) {
-  const report = { version: 1, purpose: 'SCHEMA_ONLY', schema_complete: true,
+  const report = { version: 2, purpose: 'SCHEMA_ONLY', schema_complete: true,
     json: 'NOT_EVALUATED', row_extraction: 'NOT_EVALUATED', normalization: 'NOT_EVALUATED',
     company_echo: 'NOT_EVALUATED', saved_product: 'NOT_EVALUATED',
     account_ownership: 'UNPROVEN', provider_authentication: 'UNPROVEN' }
@@ -58,18 +58,18 @@ export function inspectPdcLookupBytes(bytes, { companyId, productId, privateValu
       invalid_names: 0, nonprimitive_id_types: 0, first_invalid_row: null }
     const seen = new Set()
     rows.forEach((row, index) => {
-      const rawId = row?.id ?? row?.ID
+      const { id: rawId, name: rawName } = pdcLookupFields(row, 'GetProducts')
       let invalid = false, id
       if (!['number', 'string'].includes(typeof rawId)) report.validation.nonprimitive_id_types++
       try { id = Number(rawId) } catch { report.validation.id_conversion_exceptions++; invalid = true }
-      if (!Number.isInteger(id) || id <= 0 || id > 2147483647) { report.validation.invalid_integer_ids++; invalid = true }
+      if ((typeof rawId !== 'number' && (typeof rawId !== 'string' || !/^\d+$/.test(rawId.trim()))) || !Number.isInteger(id) || id <= 0 || id > 2147483647) { report.validation.invalid_integer_ids++; invalid = true }
       else if (seen.has(id)) { report.validation.duplicate_ids++; invalid = true }
       else seen.add(id)
-      try { boundedPdcText(row?.name ?? row?.Name, 200, true) }
+      try { boundedPdcText(rawName, 200, true) }
       catch { report.validation.invalid_names++; invalid = true }
       if (invalid && report.validation.first_invalid_row === null) report.validation.first_invalid_row = index
     })
-    try { normalized = normalizePdcLookup(body); report.normalization = 'PASS' }
+    try { normalized = normalizePdcLookup(body, 'GetProducts'); report.normalization = 'PASS' }
     catch { report.normalization = 'REJECTED' }
     let echoes = 0, mismatch = false, unsupported = false
     for (const object of [body, ...rows]) {
@@ -85,6 +85,14 @@ export function inspectPdcLookupBytes(bytes, { companyId, productId, privateValu
       report.saved_product = normalized.some(row => row.id === Number(productId)) ? 'MATCH' : 'MISMATCH'
     }
   }
+  // Independent stages prevent an echo conversion failure becoming a row-schema
+  // failure. Echo absence never proves company ownership or authentication.
+  report.classification = report.row_extraction !== 'PASS' ? 'ROW_EXTRACTION_REJECTED'
+    : report.normalization !== 'PASS' ? 'NORMALIZATION_REJECTED'
+      : report.company_echo === 'UNSUPPORTED_TYPE' ? 'COMPANY_ECHO_TYPE_REJECTED'
+        : report.company_echo === 'MISMATCH' ? 'COMPANY_ECHO_MISMATCH'
+          : report.saved_product === 'MISMATCH' ? 'SAVED_PRODUCT_MISMATCH'
+            : 'LOOKUP_SCHEMA_ACCEPTED'
   report.capture = 'SCHEMA_ANALYZED'
   if (Buffer.byteLength(JSON.stringify(report)) > 8192) {
     report.schema_complete = false

@@ -17,10 +17,10 @@ export default defineEventHandler(async event => {
   const { data: claimed, error: claimError } = await supabaseAdmin.rpc('shipping_claim_pdc_lookup').abortSignal(AbortSignal.timeout(4000))
   if (claimError) throw createError({ statusCode: 503, statusMessage: 'Courier lookup is unavailable.' })
   if (!claimed) throw createError({ statusCode: 429, statusMessage: 'Try again in one minute.' })
-  const products = normalizePdcLookup(await requestPdcLookup(settings, 'GetProducts'))
+  const products = normalizePdcLookup(await requestPdcLookup(settings, 'GetProducts'), 'GetProducts')
   let cities = []
   if (body.action === 'sync') {
-    cities = normalizePdcLookup(await requestPdcLookup(settings, 'GetCities'))
+    cities = normalizePdcLookup(await requestPdcLookup(settings, 'GetCities'), 'GetCities')
     if (!cities.length || !products.length) throw createError({ statusCode: 502, statusMessage: 'Courier lookup is empty.' })
     const { data, error } = await supabaseAdmin.from('shipping_provider_settings').update({
       cities_cache: cities, products_cache: products, cities_synced_at: new Date().toISOString(), products_synced_at: new Date().toISOString()

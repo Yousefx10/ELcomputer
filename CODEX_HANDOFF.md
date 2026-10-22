@@ -1,3 +1,21 @@
+# PDC V6 correction passes local checks; release preparation underway — 2026-10-22
+
+- Premium finishing remains deployed as ea0dcc850b3a7d35/schema89. No PDC deployment.
+- [Compatibility review](docs/pdc-v6-compatibility.md): confirmed productID/productName
+  support is scoped to GetProducts; legacy aliases and strict confidential guards remain.
+  Local diagnostic stages distinguish normalization, company echo and saved selection.
+- Read-only saved Product ID40 matches High Value(elc). No settings write;382 city
+  aliases preserved. Provider/auto-label/reverse/COD remain false; caches are empty.
+- Guarded offline replay:160 pass, no failures/cancellations/skips. Dashboard component
+  fixtures:499 assertions/48 screenshots, no errors/external requests. Typecheck PASS.
+  Separate exact-artifact production build and guarded release preparation follow.
+- [Webhook/rotation plan](docs/pdc-webhook-cutover-plan.md): handler protections pass
+  offline; public cutover BLOCKED by Caddy hold/provider disablement and unresolved
+  actual status mappings. Optional booking field names and status pagination remain
+  provider-confirmation gaps. Earlier HTTP500 remains unexplained.
+- No provider calls, callbacks, bookings, labels, rotation, activation or Git push.
+  PDC production deployment requires a new final seal and separate owner approval.
+
 # Premium PDP finishing deployed; local PDC correction authorized — 2026-10-22
 
 - DEPLOY PASS: `ea0dcc850b3a7d35`, application `d01649a`, schema89 unchanged.

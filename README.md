@@ -14,6 +14,10 @@ They reuse schema89 and existing services. Release `ea0dcc850b3a7d35` is
 Its exact archive passed 425 browser checks; live smoke passed107 checks.
 Hosted owner acceptance remains pending. Local PDC correction is authorized separately.
 
+The [PDC V6 correction and focused compatibility review](docs/pdc-v6-compatibility.md)
+accept the newly support-confirmed product fields. Local tests pass; production
+PDC release and [webhook cutover](docs/pdc-webhook-cutover-plan.md) need separate approval.
+
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.
 The storefront remains browse-only; purchases and signup are disabled.

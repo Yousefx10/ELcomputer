@@ -44,11 +44,21 @@ export const pdcResponseRows = response => {
   return rows
 }
 
-export const normalizePdcLookup = response => {
+// Product aliases are provider-confirmed. They do not describe city responses.
+export const pdcLookupFields = (row, operation) => ({
+  id: row?.id ?? row?.ID ?? (operation === 'GetProducts' ? row?.productID : undefined),
+  name: row?.name ?? row?.Name ?? (operation === 'GetProducts' ? row?.productName : undefined)
+})
+
+export const normalizePdcLookup = (response, operation) => {
   const seen = new Set()
   return pdcResponseRows(response).map(row => {
-    const id = Number(row?.id ?? row?.ID)
-    const name = boundedPdcText(row?.name ?? row?.Name, 200, true)
+    if (!row || typeof row !== 'object' || Array.isArray(row)) throw unavailable()
+    const raw = pdcLookupFields(row, operation)
+    if (typeof raw.id !== 'number' && (typeof raw.id !== 'string' || !/^\d+$/.test(raw.id.trim()))) throw unavailable()
+    const id = Number(raw.id)
+    let name
+    try { name = boundedPdcText(raw.name, 200, true) } catch { throw unavailable() }
     if (!Number.isInteger(id) || id <= 0 || id > 2147483647 || seen.has(id)) throw unavailable()
     seen.add(id)
     return { id, name }
