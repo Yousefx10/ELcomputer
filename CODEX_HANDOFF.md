@@ -1,3 +1,20 @@
+# Premium PDP finishing deployed; local PDC correction authorized — 2026-10-22
+
+- DEPLOY PASS: `ea0dcc850b3a7d35`, application `d01649a`, schema89 unchanged.
+  [Deployment receipt](docs/premium-product-finishing-deployment-receipt.md).
+- The approved existing seal was applied once. No rebuild, migration or SQL write.
+  Fresh encrypted backups and all138 protected projections pass preservation.
+- Premium remains selected; Classic, both footers, Auth, products/media, settings,
+  credentials and all checkout/signup/Paymob/PDC/callback holds remain preserved.
+- Post-deployment anonymous smoke:107 checks/eight screenshots, EN/AR,
+  desktop/mobile, Light/Dark; zero runtime/hydration errors. Hosted account/native
+  share and owner authoring acceptance remain pending.
+- The plan is consumed. Preserve artifacts and receipts. Never rerun it.
+  No automatic retry/rollback or Git push ran.
+- The latest owner handoff supersedes older stop-after-PDP instructions:
+  proceed with local provider-confirmed PDC correction, offline audit/tests and
+  separately guarded release preparation. No PDC deployment/live call/activation.
+
 # Premium PDP finishing enhancements sealed; final approval required — 2026-10-22
 
 - Implementation is complete. Application `d01649a`; independent release `ea0dcc850b3a7d35`.

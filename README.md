@@ -10,8 +10,9 @@ Historical entries describe earlier targets and are not execution instructions.
 The [Premium PDP finishing enhancements](docs/premium-product-finishing.md) add
 favorites, sharing, package contents, support access and curated tags.
 They reuse schema89 and existing services. Release `ea0dcc850b3a7d35` is
-[sealed for owner approval](docs/premium-product-finishing-release.md). Its exact
-archive passes 425 browser checks. Production remains unchanged until approval.
+[deployed](docs/premium-product-finishing-deployment-receipt.md), preserving schema89.
+Its exact archive passed 425 browser checks; live smoke passed107 checks.
+Hosted owner acceptance remains pending. Local PDC correction is authorized separately.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
 Dashboard login, product creation, Draft saving and VPS uploads also passed.

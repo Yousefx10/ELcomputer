@@ -1,3 +1,7 @@
+> DEPLOYED: `ea0dcc850b3a7d35`, schema89 unchanged. This plan is consumed.
+> [Deployment receipt](premium-product-finishing-deployment-receipt.md).
+> Approval/preparation instructions below are historical; never rerun them.
+
 # Premium PDP finishing release
 
 Prepared release: `ea0dcc850b3a7d35`. Final approval seal:
