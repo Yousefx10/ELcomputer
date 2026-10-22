@@ -1,3 +1,29 @@
+# Live PDC GetProducts acceptance PASS; one request; all gates held — 2026-10-22
+
+- [Acceptance receipt](docs/pdc-live-getproducts-acceptance.md): one authorized GET,
+  HTTP200/application-json, complete array of two productID/productName objects.
+  Actual deployed Nuxt lookup/decryption/normalization declarations accepted
+  General36 and High Value(elc)40. Saved Product ID40 unchanged. Zero retries.
+- Release881aadcfd4942ef8/schema90 unchanged. Before/after read-only fingerprints
+  match across14 protected tables, including settings, mappings, jobs, dispatches,
+  events, admin audit, catalog, Auth identities and Storage metadata.
+  Runtime/Caddy/unit hashes and service identities match. Premium remains selected.
+- Existing isolated diagnostic mechanism reused with new consumed attempt state;
+  older diagnostics remain preserved. Credentials stayed in VPS memory. No cookies,
+  request body, raw response, secret logging, SQL/cache write or gate change.
+  No GetCities, booking, label, callback, transaction, deployment or Git push.
+- Nuxt HTTP Dashboard route/hosted UI NOT_EXERCISED: no connected authenticated
+  browser. Test/Sync remain disabled and would write throttle/audit/cache records.
+  Source inspection confirms empty caches retain40 and lookup buttons remain disabled.
+- Private pdc-live-getproducts-acceptance-20261022/FINAL-ACCEPTANCE-RECEIPT.json
+  binds authorization, exact compiled declarations, seven offline boundary cases,
+  sanitized provider result, consumed-marker readback and preservation fingerprints.
+  One attempt, no retry/BLOCKED marker. This successful authorization is consumed.
+- Remaining webhook/shipment requirements are listed in the receipt and existing
+  compatibility/cutover audits. Next owner action: resolve optional booking fields,
+  production status/timezone/pagination and callback retry semantics before separately
+  scoping webhook and one-shipment acceptance. No speculative correction or new release.
+
 # PDC V6 correction deployed; schema90; all commerce gates held — 2026-10-22
 
 - DEPLOY PASS:881aadcfd4942ef8, application82ec667, schema90.

@@ -18,6 +18,9 @@ The [PDC V6 correction and focused compatibility review](docs/pdc-v6-compatibili
 accept the newly support-confirmed product fields. The [complete release](docs/pdc-v6-deployment-receipt.md) is deployed as
 `881aadcfd4942ef8`, schema90, including two restored server RPC grants.
 Independent preservation and107 live browser checks pass. All commerce gates remain held.
+[Live GetProducts acceptance](docs/pdc-live-getproducts-acceptance.md) passed:
+one GET, HTTP200, General36 and High Value40 normalized; saved40 unchanged.
+Dashboard HTTP lookup, GetCities, webhook and shipment acceptance remain pending.
 [Webhook cutover](docs/pdc-webhook-cutover-plan.md) also needs separate approval.
 
 The owner reports the Ubuntu/Caddy/Nuxt restore and production health passed.
@@ -59,8 +62,10 @@ are complete. The [offline schema audit](docs/pdc-getproducts-schema-audit.md) a
 unknown contract. New support-confirmed fields now have a
 [tested local correction](docs/pdc-v6-compatibility.md), plus a confirmed server
 RPC access correction. The [complete release](docs/pdc-v6-deployment-receipt.md)
-is deployed at schema90; live provider acceptance remains pending. The original HTTP500 remains unexplained. Both diagnostic approvals
-are consumed. No retry is authorized. The earlier
+is deployed at schema90. The separate [live GetProducts acceptance](docs/pdc-live-getproducts-acceptance.md)
+passed with one request and zero retries. Other provider acceptance remains pending.
+The original HTTP500 remains unexplained. Historical and current diagnostic approvals
+are consumed. No further request is authorized. The earlier
 [root-console validation](docs/paymob-owner-validation.md) remains recorded. Follow the
 [masked verification and Paymob preparation](docs/pdc-connection-paymob-preparation.md).
 [Offline Paymob recovery](docs/paymob-offline-recovery.md) found agreeing LIVE/TEST

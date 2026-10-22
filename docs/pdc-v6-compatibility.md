@@ -1,5 +1,6 @@
 > Deployed:881aadcfd4942ef8/schema90. [Production receipt](pdc-v6-deployment-receipt.md).
-> Audit and local validation below predate deployment. Live provider acceptance remains pending.
+> [Live GetProducts acceptance PASS](pdc-live-getproducts-acceptance.md): HTTP200,
+> General36 and High Value40 normalized; saved40 unchanged. Other live operations remain pending.
 
 # PDC V6 compatibility correction — 2026-10-22
 
@@ -72,7 +73,7 @@ API; the owner's new support evidence confirms production GetProducts only.
 
 | Area | Code and evidence | Disposition |
 | --- | --- | --- |
-| GetProducts | GET; exact production V6 URL; AccessToken/CompanyID; no Cookie/body. Support confirms two product fields and services. | Confirmed correction implemented; live acceptance remains unexercised. |
+| GetProducts | GET; exact production V6 URL; AccessToken/CompanyID; no Cookie/body. Support confirms two product fields and services. | Live acceptance PASS through deployed Nuxt lookup helpers: HTTP200, both services normalized, saved40 unchanged. Dashboard HTTP route not exercised; no cache write. |
 | GetCities | GET; PDF pp7–8 defines numeric `id` / string `name`, used for pickup/destination. | Existing aliases retained. No guessed city fields or live request. Current production rows/completeness remain unverified. |
 | SaveShipmentEx | POST; one shipment, `allMustValid`, `hasAWBs:false`, stable unique `toRef`; PDF pp2–5. `verifyReverseResult` checks general/row success, exact REF, one valid AWB. | Required transport/result contract agrees with PDF. Optional `fromContactName` / `allowToOpenPackage` differ from documented `fromContactPerson` / `allowToOpenShipment`. These existing outbound/reverse payload fields require production-provider clarification before booking acceptance; no speculative payload rewrite. |
 | Instructions | PDF table says `specialInstructions`; its example says `specialInstuctions`, matching existing code. | Provider ambiguity remains. Confirm exact optional field behavior. |
@@ -88,7 +89,8 @@ API; the owner's new support evidence confirms production GetProducts only.
 
 Pagination guards recognize the existing documented-by-implementation outer fields
 `hasMore`, `nextPage`, `totalCount`. The PDF does not define nested/custom metadata.
-No claim of complete general pagination support or current live API acceptance.
+No claim of complete general pagination support. Live acceptance covers GetProducts
+only; GetCities, status, booking, labels and webhook acceptance remain pending.
 
 ## Validation and release boundary
 
@@ -103,6 +105,7 @@ both options, preservation of an absent saved choice, explicit selection/save,
 masked inputs, EN/AR, RTL, Light/Dark/System and compact mobile behavior.
 
 See the release preparation receipt for final counts, build/typecheck and hashes.
-Local fixtures are not hosted merchant acceptance. The PDC application release
-requires its own final owner approval. No live lookup, booking, label, callback,
-credential rotation, checkout/signup/provider/COD activation or Git push is authorized.
+Local fixtures are not hosted merchant acceptance. The complete application/RPC
+release is deployed at schema90. The separately authorized single GetProducts
+acceptance passed and is consumed. No further lookup, booking, label, callback,
+rotation, checkout/signup/provider/COD activation or Git push is authorized.
