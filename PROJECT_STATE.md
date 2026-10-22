@@ -1,4 +1,4 @@
-# Schema89 committed; Premium PDP application-only activation preparing — 2026-10-22
+# Schema89 committed; Premium PDP application-only activation ready — 2026-10-22
 
 - Migration89 committed successfully under approved seal `90dbc370...f0950a7`.
   All135 original table projections, Auth and old schema/security passed the locked
@@ -12,23 +12,35 @@
   and store_analytics_sessions to advance, while binding their schema. Fresh
   read-only proof confirms all other committed business/Auth/schema state matches.
   Runtime, Caddy, media2627 files/411264665 bytes and disabled gates are unchanged.
-- Existing uncommitted generation completed. Continue the independent
-  `activation-operator.mjs`, `activation-approval.mjs`, `activation-remote.py`.
+- Interrupted generation is completed and validated. The independent
+  `activation-operator.mjs`, `activation-approval.mjs`, `activation-remote.py` are complete.
   Scope: schema89 unchanged, no migrations, zero SQL writes, exact same qualified
   c9 artifact/app a2e47a5. Retain every historical executor byte-for-byte.
 - New guards bind committed evidence, artifact qualification and full89-row ledger.
   Only the existing two-table telemetry/Auth-activity projections apply; all other
   business/Auth/data/security drift still rejects. Candidate/activation bind the
   exact plan/artifact/inventory and approved read-only state digest.
-- Release suite:23 pass,0 fail/cancel/skip, including nine new activation checks.
-  Nine owned remote fault checks also pass. Prepare fresh verified encrypted
-  backups/artifact readback, seal the application-only plan and run its final
-  read-only check. Return its NEW seal
-  for owner approval. Do not activate before that approval. No Git push/providers.
+- **Ready for final owner approval:** release `cda41a7a13e0b61d`, app `a2e47a5`.
+  Seal: `d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
+  Private plan: parent premium-pdp-20261022/prepared-activation/plan.json.
+  Fresh schema89 DB/runtime backups pass authenticated decryption/full readback.
+  Identical archive SHA/inventory1675, retained626 assets and extraction/secret scan
+  pass. The exact artifact's existing266 browser checks remain valid; no rebuild.
+  Final read-only `check` PASS, production_writes0. No new intent/STOP/completion.
+- Release suite:23 pass,0 fail/cancel/skip; nine owned remote fault checks pass.
+  README, both handoffs and the release procedure are updated. No application,
+  migration, footer or historical executor changed. No Git push/providers.
+- Next owner action: `APPROVE PREMIUM PDP DEPLOY` plus the new full seal above.
+  Only then execute `activation-operator.mjs apply PLAN --approved SEAL`, using
+  pinned Node22.23.1. This is application-only; never rerun migration89 or consumed
+  plans. Classic stays selected until the owner's explicit Dashboard choice.
+  Final receipt: FINAL-ACTIVATION-PREPARATION-RECEIPT.json; exact owner browser URLs:
+  ACTIVATION-OWNER-BROWSER-CHECKS.md in the private milestone directory.
 - Private evidence: parent premium-pdp-20261022/.
   SCHEMA89-STOP-DIAGNOSIS.json, SCHEMA89-PRESERVATION-VERIFICATION.json,
   ACTIVATION-READONLY-PRODUCTION-VERIFICATION.json and activation-production-*.json.
-  Both handoffs must record the final plan/seal and remaining owner acceptance.
+  Hosted owner acceptance remains pending after approved activation. Stop after
+  this PDP milestone; PDC/WordPress remain later work.
 
 - Continued existing uncommitted work from 69952dd; no reset, overwrite or push.
 - [Architecture](docs/premium-product-page.md) and [validation](docs/premium-product-validation.md).

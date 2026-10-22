@@ -1,6 +1,13 @@
 # Guarded Premium product page activation
 
-Status: **schema89 committed; application-only activation preparation in progress**.
+Status: **application-only activation ready for final owner approval**.
+Release: `cda41a7a13e0b61d`. New seal:
+`d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de`.
+Private plan: parent premium-pdp-20261022/prepared-activation/plan.json.
+Final receipt: FINAL-ACTIVATION-PREPARATION-RECEIPT.json; exact owner URLs:
+ACTIVATION-OWNER-BROWSER-CHECKS.md in that private directory. Fresh backups,
+artifact/readback and final read-only check PASS, with zero production writes.
+The plan is unconsumed; activation remains pending owner approval.
 The live application remains `40ebcf1f6d50a143` (`3b98164`). Migration89 committed
 under approved seal `90dbc37085013435bc3ce1dc7ee2aed55f7a21965979817a15e477bd6f0950a7`.
 The application has not been activated. Classic remains selected.
@@ -87,13 +94,13 @@ are consumed. Once the replacement is fully prepared, the owner reviews:
 
 ```text
 APPROVE PREMIUM PDP DEPLOY
-NEW_APPLICATION_ONLY_SEAL
+d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de
 ```
 
 Only after that exact new approval:
 
 ```sh
-node scripts/premium-product-release/activation-operator.mjs apply PRIVATE_PLAN --approved NEW_APPLICATION_ONLY_SEAL
+node scripts/premium-product-release/activation-operator.mjs apply PRIVATE_PLAN --approved d903d3a7b737ab9fcd1738076d797b8f6583735a286f84f96bb16c8a011870de
 ```
 
 1. Recheck immutable inputs, exact artifact, read-only schema89/data/Auth and holds.

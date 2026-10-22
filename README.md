@@ -93,7 +93,9 @@ PDP migration89 is committed and preserved all135 original table projections/Aut
 The previous application remains live. Both earlier plans are consumed; the second
 stopped before activation when normal analytics advanced. A fresh application-only
 plan reuses the exact qualified artifact, applies the existing telemetry policy and
-performs no SQL writes. Its own final seal needs owner approval.
+performs no SQL writes. Release `cda41a7a13e0b61d` is ready:23 release checks,
+nine remote checks, verified backups and final read-only production check pass.
+Its new final seal needs owner approval.
 See the [diagnosis and deployment procedure](docs/premium-product-release.md).
 Do not use the retired PM2 deployment scripts for this Caddy/systemd target.
 
