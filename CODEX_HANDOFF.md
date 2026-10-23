@@ -1,3 +1,40 @@
+# Ramses ID10 verified; EGP101 setup/access approval pending — 2026-10-23
+
+- [Current receipt](docs/pdc-ramses-egp101-readiness.md) supersedes the stale city blocker below.
+  Approved encrypted capture442758… executed once; HTTP200/411 rows. No retry.
+  Root cause proven: actual cityID/cityName aliases were missing in GetCities.
+  Company echo MATCH. Raw response stays encrypted; inspection was local.
+- Owner selected Ramses. The explicitly authorized profile write changed only city.
+  Ramses/Cairo already maps to PDC10. Street/mobile/governorate/both lines preserved.
+  Fresh actual checkout-normalizer check passes; both lines reach the order address.
+- Local parser correction:6 focused tests +4 targeted compatibility tests PASS.
+  All411 captured rows replay correctly. Existing production parser accepts the
+  derived canonical cache, so no new GET/GetProducts/app deployment is required.
+  The local source correction is NOT deployed. Production stays0ea60833a5071f27/schema91.
+- Current private packet: ../owner-checkout-route-20261023/ramses-egp101-activation-1/AUTHORIZATION-PACKET.md.
+  Data seal e04c4ed56b2f01ff9f25d16cb3e1668a5c72e45000af566841c70721783b8944
+  binds two existing rows: canonical cities/accepted products, PDC checkout setting,
+  company customer fee100/Cairo checkout. Profile/aliases/tariffs unchanged.
+  Auto labels/COD/reverse and outbound PDC gates stay off. Not applied/approved.
+  Access seal873946f5b0becc6033da52cb91fca9770d5ef9d70672c35e594ff25e48e827ef
+  binds owner account/address, TESTproduct2026 quantity1, EGP101/10100 minor,
+  one-hour activation-relative window, qualified Caddy opening/closure and signed
+  late callbacks/owned reads. Public purchasing/signup remain closed. Not activated.
+- New operational checks8 PASS; existing Caddy172 reused; independent seals/hash
+  verification38 entries PASS. Do not repeat completed build/deploy/release tests.
+  Data setup checks closed runtime before/after one transaction, encrypted backup,
+  exact row/field preservation. No charge/intention/order is created by operators.
+- Owner alone uses normal Cart/Checkout/Paymob. After real signed paid reconciliation,
+  owner Dashboard packing precedes separate carrier-cost/parcel/REF/booking/AWB/
+  private PDF/poll approval. Carrier price is unconfirmed; customer delivery100 is
+  owner's selling price/subsidy decision. Draft tariffs remain inactive/unverified.
+- No new provider request after approved capture, no cache/rate/gate change,
+  restart/deployment/charge/booking/refund/reverse or Git push by this agent.
+  Refund remains unimplemented; reverse inactive/unaccepted; roadmap preserved.
+  Old city instruments are consumed; preliminary unapproved plans are superseded.
+
+Historical handoff follows unchanged.
+
 # GetCities consumed; city evidence capture awaits approval — 2026-10-23
 
 - [City lookup receipt](docs/pdc-city-lookup-receipt.md): owner-approved seal

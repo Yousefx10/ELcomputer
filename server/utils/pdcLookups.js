@@ -44,10 +44,10 @@ export const pdcResponseRows = response => {
   return rows
 }
 
-// Product aliases are provider-confirmed. They do not describe city responses.
+// Each endpoint keeps its independently confirmed field aliases.
 export const pdcLookupFields = (row, operation) => ({
-  id: row?.id ?? row?.ID ?? (operation === 'GetProducts' ? row?.productID : undefined),
-  name: row?.name ?? row?.Name ?? (operation === 'GetProducts' ? row?.productName : undefined)
+  id: row?.id ?? row?.ID ?? (operation === 'GetProducts' ? row?.productID : operation === 'GetCities' ? row?.cityID : undefined),
+  name: row?.name ?? row?.Name ?? (operation === 'GetProducts' ? row?.productName : operation === 'GetCities' ? row?.cityName : undefined)
 })
 
 export const normalizePdcLookup = (response, operation) => {

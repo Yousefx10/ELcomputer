@@ -1,3 +1,10 @@
+Current update: [Ramses ID10 is verified](pdc-ramses-egp101-readiness.md).
+The encrypted capture is consumed; missing cityID/cityName aliases caused rejection.
+The owner-authorized profile city update is complete; all other address fields remain.
+Fresh actual-validator and both-line checks pass. EGP101 setup/access approval is next.
+No additional provider GET, cache/rate/gate change or app deployment is required now.
+Public purchasing remains closed. Earlier evidence below is historical.
+
 # Single PDC city lookup consumed — 2026-10-23
 
 **OWNER CHECKOUT BLOCKED. EGP101 remains the approved payable target.**
