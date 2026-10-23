@@ -1,3 +1,5 @@
+Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
+
 # Shipping Company tariff manager
 
 Open **Commerce → Shipping → Shipping companies → Tariffs** on a PDC company.

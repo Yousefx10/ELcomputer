@@ -1,3 +1,5 @@
+Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
+
 # First genuine PDC shipment — owner checklist, 2026-10-23
 
 **DEPLOY PASS. PDC and Paymob live execution remain BLOCKED.**

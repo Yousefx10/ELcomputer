@@ -1,3 +1,40 @@
+# Tariff manager DEPLOY PASS — 2026-10-23
+
+- [Deployment receipt](docs/shipping-tariff-deployment-receipt.md): production is
+  08b45ffac0e524c8/applicationba05770/schema91. The owner-approved exact seal
+  a4217c90bf0ec1cc331a8842ab0f6042facce02fbf9e46bd5ada412a86fd1a4a
+  applied ONCE and is CONSUMED. Never rerun prepared-3 or any consumed plan.
+- Fresh preflight and authenticated encrypted execution backups/full readback,
+  exact archive staging, schema90/91 private candidates, one migration91
+  transaction, Nuxt switch/restart and final read-only preservation PASS.
+  All138 original projections/Auth/unrelated schema/ACL/RLS and runtime/Caddy/
+  systemd/media/private files preserved. Caddy process unchanged. Independent
+  receipt/schema comparison,14 health routes and six live asset byte checks PASS;
+  tariff API401 and held controlled checkout/capabilities403 verified.
+- Source/SQL/draft import and the exact approved repaired archive were unchanged.
+  No rebuild or feature-suite repeat. Both new tariff tables are empty: no business
+  import was authorized. Owner package remains editable/unverified/inactive, with
+  null effective date, unresolved Product40/rounding/suburbs and insurance off.
+  No checkout pricing, credential/provider setting or purchasing gate changed.
+- Private ../tariff-production-preparation-20261023/prepared-3/ retains consumed
+  intent, execution backups, migration/candidate/activation/final receipts and
+  completed.json. Independent-deployment-verification.json PASS. Old packages,
+  withdrawn plan/STOP and all previous handoff text remain preserved.
+- FIRST-REAL-TRANSACTION.after-tariff-deploy.template.json marks only deployment
+  complete. Access, city/cache/settings, order, payment, packing and booking/PDF/
+  poll authorizations remain false. NEXT-EXACT-AUTHORIZATION.json now points to
+  missing private inputs; it is not financial or gate activation approval.
+- Next inputs: truthful carrier-declared value and exact delivery city/governorate.
+  One real unit is owner-reported; actual value/unit/parcel details remain pending.
+  TESTproduct2026 net EGP1 would declare1; a different required value needs a
+  suitable real product/value path. Confirm valid phone, unit provenance, parcel,
+  route/cache, customer total and merchant/carrier quote before exact approvals.
+  Existing internal confirmed customer is a candidate through ordinary Auth/RLS.
+- No Paymob/PDC call, payment, shipment or Git push. Public checkout/signup and
+  all provider/automatic/reverse gates remain held. Preserve signed late receipts
+  and original-reference recovery without blind retries. Refund/reverse real
+  acceptance and the gateway/carrier/subsidy/loyalty roadmap remain separate.
+
 # Approved tariff packaging repair complete — 2026-10-23
 
 - [Repair/reseal receipt](docs/shipping-tariff-packaging-repair.md): owner approved

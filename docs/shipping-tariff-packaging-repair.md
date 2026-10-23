@@ -1,3 +1,5 @@
+Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
+
 # Approved tariff packaging repair — 2026-10-23
 
 The owner approved local repair/resealing under proposal

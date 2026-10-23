@@ -7,16 +7,15 @@ Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.
 
-The [Shipping Company tariff manager](docs/shipping-tariffs.md) is implemented
-locally with proposed migration91. The [owner-supplied six-zone package](docs/operations/shipping-tariffs/README.md)
-imports as an unverified draft; it does not change checkout prices. Production
-remains schema90. Its [local review artifact](docs/shipping-tariff-release.md) is sealed;
-the [approved local packaging repair](docs/shipping-tariff-packaging-repair.md)
-is complete in a new sealed archive. All1224 client URLs pass exact byte checks.
-The old archive is preserved. A fresh guarded deployment plan is sealed;
-production approval is still required. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
-keeps provider accounts, gateway settings, subsidies and promotions independent.
-The existing deployed path can support the separately approved first real test.
+The [Shipping Company tariff manager](docs/shipping-tariffs.md) is
+[deployed](docs/shipping-tariff-deployment-receipt.md) as `08b45ffac0e524c8`, schema91.
+The owner-supplied six-zone package remains an unverified inactive draft import;
+no business import or checkout price change ran. The approved packaging repair
+preserves all retained client bytes; production asset checks pass. Its deployment
+approval is consumed. The existing restricted purchase capability remains inactive.
+The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md) keeps
+provider accounts, gateways, subsidies and loyalty independent. They are not
+prerequisites for the separately approved first real payment/shipment.
 
 The [Premium PDP finishing enhancements](docs/premium-product-finishing.md) add
 favorites, sharing, package contents, support access and curated tags.

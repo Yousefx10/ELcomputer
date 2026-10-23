@@ -1,3 +1,5 @@
+Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
+
 Current successor: [approved local packaging repair and new release packet](shipping-tariff-packaging-repair.md). Earlier receipts and the withdrawn plan below remain historical.
 
 Current successor: [fresh guarded tariff deployment and first-transaction packet](tariff-deployment-and-first-transaction.md). The original local receipt below is preserved.
