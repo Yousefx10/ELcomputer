@@ -53,6 +53,11 @@ async function modes(path) {
   await chmod(path,stat.isDirectory()?0o755:0o644)
   if(stat.isDirectory())for(const name of await readdir(path))await modes(path+'/'+name)
 }
+export async function extractTariffReview(archive, inventoryFile, destination, log) {
+  // The existing verifier owns exclusive destination creation.
+  const script='import importlib.util,json,sys,pathlib; s=importlib.util.spec_from_file_location("extractor",sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);m.extract_release(sys.argv[2],pathlib.Path(sys.argv[3]),json.loads(pathlib.Path(sys.argv[4]).read_text()))'
+  await logged('python3',['-B','-c',script,repo+'/scripts/clean-reinstall/deploy.py',archive,destination,inventoryFile],repo,log)
+}
 async function compiledSmoke(output, work) {
   const probe=createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;await new Promise(r=>probe.close(r))
   // No provider/hosted access is needed for anonymous authorization boundaries.
@@ -116,9 +121,8 @@ export async function prepareTariffReview({ spec:specFile,directory:work }) {
   await retainClientAssets(resolve(spec.accepted_output)+'/public/_nuxt',output+'/public/_nuxt',assets);await modes(output)
   const entries=await inventory(output);await save(work+'/inventory.json',entries)
   await tarCreate({cwd:source,file:work+'/application.tar.gz',gzip:true,portable:true,noMtime:true,follow:false,onWriteEntry:entry=>{if(entry.type==='SymbolicLink')entry.stat.mode=(entry.stat.mode&~0o7777)|0o755}},['.output'])
-  await chmod(work+'/application.tar.gz',0o600);const readback=work+'/readback';await mkdir(readback,{mode:0o700})
-  const readbackScript='import importlib.util,json,sys,pathlib; s=importlib.util.spec_from_file_location("extractor",sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);m.extract_release(sys.argv[2],pathlib.Path(sys.argv[3]),json.loads(pathlib.Path(sys.argv[4]).read_text()))'
-  await logged('python3',['-B','-c',readbackScript,repo+'/scripts/clean-reinstall/deploy.py',work+'/application.tar.gz',readback,work+'/inventory.json'],repo,work+'/archive-readback.log')
+  await chmod(work+'/application.tar.gz',0o600);const readback=work+'/readback'
+  await extractTariffReview(work+'/application.tar.gz',work+'/inventory.json',readback,work+'/archive-readback.log')
   assert.equal(digest(await inventory(readback)),digest(entries));await compiledSmoke(readback,work)
   await cp(source+'/'+migration,work+'/migration91.sql',{errorOnExist:true,force:false})
   const importFile='docs/operations/shipping-tariffs/last-mile-owner-draft-v1.json'
