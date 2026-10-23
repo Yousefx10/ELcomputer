@@ -1,3 +1,35 @@
+# Real EGP2 payment VERIFIED; checkout CLOSED; PDC booking BLOCKED
+
+- [Current payment and shipment receipt](docs/first-real-payment-pdc-readiness.md) supersedes the active checkout notices below.
+- Owner completed normal card/3DS checkout for ORD-20261023-8C0C964CBD.
+  One live Paymob success559384846,200 minor units/EGP2; durable paid/processing
+  at22:07:16.491 Riyadh. No duplicate success found. Signed-callback path and
+  ledger verified; no raw-signature replay or independent provider inquiry claimed.
+- Approved closure1c01a8d8… completed once22:22:33.253 Riyadh. Grant empty,
+  qualified close Caddy installed, all global purchasing/provider gates false.
+  Exact signed Paymob ingress/keys/owned receipts remain for late reconciliation.
+  Opening and closure consumed; never rerun. Release0ea60833a5071f27/schema91 unchanged.
+- No shipping job, dispatch, AWB or packing session/video. Owner can use normal
+  Dashboard → Orders → Confirm Orders, scan the actual allocated unit, record
+  validated private video and complete Ready to Deliver. Do not click Book yet.
+- Existing Product40/pickup Ramses10 match archived live settings.131 historical
+  AWBs,112 matching created/polled orders; no destination10 booking or carrier
+  invoice found in selected sources. Caches reused; no new PDC GET/request.
+- Pickup: Elcomputer/Ramses10/phone ending1542; matches archive, including normalized
+  address/numbers. Owner confirms current physical pickup privately, without re-entry.
+- Remaining: real packed kg/L×W×H/truthful value, Ramses10 street coverage and
+  Product40 merchant VAT/surcharges/insurance/cancellation terms/cost approval.
+  Default1kg/declaredEGP1 are not confirmed physical facts;68.40 is not a quote.
+- Private ../first-real-pdc-shipment-20261023/OWNER-BOOKING-REVIEW.md and
+  BOOKING-READINESS.json contain exact fields and unsealed one-booking scope.
+  Final packet needs these facts plus qualified exact-order Caddy/runtime access
+  and closure. Owner should click normal Book after approval. Durable originalREF,
+  one SaveShipmentEx, matchingAWB/privatePDF/poll; uncertain → REF lookup, no rebook.
+- No PDC request, new charge, booking, cancellation, refund/reverse or deployment.
+  Broader roadmap held; both historical handoffs/consumed seals preserved; no push.
+
+Historical handoff follows unchanged.
+
 # EGP2 owner checkout ACTIVE — expires22:27:56.541 Riyadh,23October
 
 - [Current activation receipt](docs/owner-checkout-egp2-active-receipt.md) supersedes pending/101 notices below.

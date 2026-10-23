@@ -1,3 +1,5 @@
+Current status: [payment verified; restricted checkout closed; PDC booking preparation](first-real-payment-pdc-readiness.md). Opening and closure are consumed. Historical activation receipt follows unchanged.
+
 # EGP2 restricted owner checkout active — 2026-10-23
 
 Exact owner approval `1c01a8d87098c9145b5ad8844710941498bf412732a3841e8ddec759b359a945` executed once and is consumed for opening.
