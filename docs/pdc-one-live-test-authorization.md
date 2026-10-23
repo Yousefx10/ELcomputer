@@ -1,3 +1,5 @@
+Current status: [executed once; booking and reference lookup returned HTTP500; outcome uncertain](pdc-first-live-test-execution-receipt.md). Booking/status budgets are consumed. Do not execute again from this historical authorization.
+
 # One live PDC API test — exact approval pending
 
 The owner changed this acceptance to a nonphysical API test. No parcel will be

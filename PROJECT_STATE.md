@@ -1,3 +1,31 @@
+# PDC live booking UNCERTAIN — both approved calls consumed; do not retry
+
+- [Current execution receipt](docs/pdc-first-live-test-execution-receipt.md).
+  Owner approved seal5a03be551efea46477528467db6bd954b3e353617f28d93c641819427e43e4fb.
+- Exactly ONE SaveShipmentEx at23:27:50.247 Riyadh23October: HTTP500, generic error,
+  no AWB. Exactly ONE originalREF GetShipmentsStatus at23:30:06.166 after136seconds:
+  HTTP500 again. No ExportPDF was sent; no AWB/PDF/tracking acceptance established.
+- Original reference ORD-8b59b9e0-df2a-4269-a61d-4b3fe244e871 persisted before POST.
+  Job2ea28361-f56a-46c8-a2d7-9667f069f723 and matching dispatch remain uncertain,
+  attempt_count1, AWBnull. Do not clear the barrier, changeREF or rebook.
+- HTTP500 does not prove no shipment/pickup exists. Root cause unknown; no payload,
+  Product40/value/city/credential/parser cause is established. No corrective change.
+- Owner PDC Dashboard check requested by that exactREF/time; no portal visibility
+  claimed. Owner may manually cancel found shipment/linked pickup; agent never cancels.
+  If still unresolved, PDC must reconcile originalREF using the two private trace IDs.
+- Private ../first-live-pdc-test-20261023/EXECUTION-RESULT.json and
+  PRIVATE-PDC-INCIDENT.md; incident prepared, not sent.13 remote evidence files copied
+  over pinned SSH with hashes; raw request/response remains encrypted outside Git.
+- Paid order ORD-20261023-8C0C964CBD remains paidEGP2/Ready to Deliver; one Paymob
+  success, packing retained. No new payment/refund/reverse/extra pickup/GetProducts/
+  GetCities/booking retry. Booking+status budgets consumed, PDF unused but blocked.
+  No further provider request authorized by this consumed seal.
+- Public purchasing/global provider gates/Caddy/runtime/credentials/artifact unchanged
+  and closed. Private process exited. Release0ea60833a5071f27/schema91 preserved.
+  Both historical handoffs retained; roadmap held; no deployment/build/push.
+
+Historical handoff follows unchanged.
+
 # One live PDC API test prepared — exact booking approval pending
 
 - [Current sealed test packet](docs/pdc-one-live-test-authorization.md) supersedes
