@@ -1,7 +1,8 @@
-Current update: [approved preparation is complete](normal-checkout-preparation-receipt.md).
-Account/profile access is applied. Normal checkout corrections pass qualification.
-Their inactive archive and separate deployment plan are sealed.
-Application deployment and purchasing activation remain unapproved.
+Current update: [inactive deployment passed](normal-checkout-deployment-receipt.md).
+Production release is0ea60833a5071f27; schema91 and all gates remain unchanged.
+Account/profile access is available. Owner checkout remains BLOCKED.
+The saved mobile needs correction; PDC mapping and prices remain unapproved.
+Limited activation, owner payment and PDC booking need separate approvals.
 Earlier inspection/proposal text below is retained as history.
 
 # Normal owner checkout — BLOCKED, 2026-10-23

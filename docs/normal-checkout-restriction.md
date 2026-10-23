@@ -64,6 +64,9 @@ fields, choose PDC city IDs or approve any customer/carrier price.
 
 ## Release and acceptance
 
+The [inactive deployment](normal-checkout-deployment-receipt.md) passed on2026-10-23.
+The exact application release is0ea60833a5071f27; purchasing remains disabled.
+
 The owner-approved account/profile Caddy access is recorded in the
 [access receipt](account-profile-access-receipt.md). That access does not deploy
 these application changes or enable purchasing.

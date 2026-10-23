@@ -1,3 +1,43 @@
+# Inactive normal checkout DEPLOY PASS; owner checkout BLOCKED — 2026-10-23
+
+- [Deployment receipt](docs/normal-checkout-deployment-receipt.md): production
+  release0ea60833a5071f27, applicationae2f6df9d059a07b7aa24aa67f10a315d3bb721e,
+  schema91 unchanged. Exact approved deployment seal
+  248438ddb082fa37d3291e73e51526a556e39759427356a4e82b7e80bd0e4299
+  applied ONCE and is CONSUMED. Never rerun inactive-deployment-1/operator.mjs apply.
+- Fresh preflight and encrypted execution backups/full database/runtime readback
+  PASS. Exact archive reused; no rebuild or feature-suite repeat. Private candidate,
+  one Nuxt switch/restart and final read-only preservation PASS. No STOP/retry/rollback.
+  Caddy process, runtime/credentials, Auth/security/schema/RLS/ACL,140 protected
+  business/security projections, media/private files and1223 prior assets preserved.
+  Existing telemetry/Auth activity exclusions remain; no global-write-history claim.
+- Fourteen final GET checks PASS: EN/AR login200/profile302; commerce, callback,
+  signup and worker holds retained. Independent receipt/plan/input verification
+  and six live asset byte checks PASS (three retained, three new).
+  Public purchasing/provider gates remain off; private grant empty.
+  Zero orders/attempts/transactions/shipping order/claim jobs; no tariff import/activation.
+- Selected customer i***@elcomputer.net remains active/confirmed. Saved mobile
+  invalid; owner must update it privately in My Account → Profile. Actual owner
+  browser save is unproved. Do not request pasted full address/card/credentials.
+  No verified destination mapping or populated caches; PDC checkout off; stored
+  shipping10 unapproved. Exact payable total and merchant carrier charges unapproved.
+  TESTproduct2026 remains1EGP; owner reports one unit; truthful parcel value stays private.
+- Prepare the account/address/verified route/product/price/window normal activation
+  only after prerequisites. Required provider lookup and cache/company mutations
+  need separate reviewed approval. Reuse accepted GetProducts; no blind Test/Sync.
+  Signed Paymob callback ingress remains held. Opening/closure must preserve exact
+  signed late receipts and owned status reads. Never manually mark paid or retry
+  uncertain payment/booking. Owner personally completes Cart/Checkout/Paymob.
+- Limited activation, one real payment and one PDC booking remain separately
+  approved. Real Dashboard packing precedes one AWB/private PDF/bounded tracking.
+  Refund/void unimplemented; reverse inactive/unaccepted; separate acceptance needed.
+  Modular gateways/carriers/subsidies/loyalty remain independent roadmap releases.
+- Private approved-5d3181a2/inactive-deployment-1/ retains approval, consumed intent,
+  fresh encrypted backups, remote receipts and completed/independent evidence.
+  Original tariff artifact/consumed approvals and both historical handoffs preserved.
+  No Git push by this agent; local branch has no upstream. Earlier external
+  documentation-push observation remains recorded in the preparation receipt.
+
 # Normal-checkout preparation COMPLETE; application deployment pending — 2026-10-23
 
 - [Preparation receipt](docs/normal-checkout-preparation-receipt.md) supersedes the

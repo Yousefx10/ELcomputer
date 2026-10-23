@@ -1,3 +1,7 @@
+Current update: the [inactive application deployment passed](normal-checkout-deployment-receipt.md).
+Deployment seal248438dd is consumed. Owner checkout remains BLOCKED.
+The preparation receipt below is preserved as historical evidence.
+
 # Normal checkout preparation complete — 2026-10-23
 
 **BLOCKED FOR OWNER CHECKOUT.** The approved preparation is complete.
