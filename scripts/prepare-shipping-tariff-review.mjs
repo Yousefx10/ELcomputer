@@ -29,6 +29,17 @@ export const assertTariffScope = paths => {
   const application = paths.filter(p => /^(app|server|i18n|supabase)\//.test(p)).sort()
   assert.deepEqual(application, [...tariffApplicationFiles, migration].sort(), 'Review unrelated/missing application or schema changes')
 }
+export const immutableTariffAsset = path => path.startsWith('public/_nuxt/') && path !== 'public/_nuxt/builds/latest.json'
+export async function assertTariffBuildReuse(spec, source) {
+  const reuse=spec.reuse_build
+  assert.equal((await run('git',['diff','--name-only',reuse.application_commit,spec.application_commit,'--','app','server','i18n','public','nuxt.config.ts','package.json','package-lock.json','tsconfig.json'],{cwd:repo})).stdout,'','Reused build must have identical application inputs')
+  assert.equal(hash(await readFile(reuse.source_archive)),reuse.source_archive_sha256)
+  for(const [file,sha]of Object.entries(reuse.evidence_sha256))assert.equal(hash(await readFile(file)),sha)
+  assert.match(await readFile(reuse.build_log,'utf8'),/Build complete!/)
+  const names=(await run('git',['ls-tree','-r','--name-only',spec.application_commit,'--','app','server','i18n','public','nuxt.config.ts','package.json','package-lock.json','tsconfig.json'],{cwd:repo})).stdout.trim().split('\n')
+  for(const name of names)assert.equal(hash(await readFile(reuse.source+'/'+name)),hash(await readFile(source+'/'+name)),'Reused source changed: '+name)
+  assert.equal(digest(await inventory(resolve(reuse.source)+'/.output')),reuse.output_inventory_sha256,'Reused build output changed')
+}
 const save = (file, data) => writeFile(file, JSON.stringify(data, null, 2) + '\n', { flag:'wx', mode:0o600 })
 const cleanEnv = () => ({ PATH:dirname(process.execPath)+':/usr/local/bin:/usr/bin:/bin', HOME:process.env.HOME, LANG:'C', NODE_ENV:'production' })
 async function logged(command, args, cwd, path) {
@@ -90,11 +101,18 @@ export async function prepareTariffReview({ spec:specFile,directory:work }) {
   await logged('git',['archive','--format=tar','--output='+work+'/source.tar',spec.application_commit],repo,work+'/source.log')
   await logged('tar',['-xf',work+'/source.tar','-C',source],repo,work+'/extract-source.log')
   await writeFile(work+'/empty.env','',{flag:'wx',mode:0o600})
-  await logged(process.execPath,[spec.npm_cli,'ci','--no-audit','--no-fund'],source,work+'/npm-ci.log')
-  assert.equal(hash(await readFile(source+'/package-lock.json')),hash(await readFile(repo+'/package-lock.json')))
-  await logged(process.execPath,[source+'/node_modules/nuxt/bin/nuxt.mjs','build','--dotenv',work+'/empty.env'],source,work+'/build.log')
+  if(spec.reuse_build){
+    await assertTariffBuildReuse(spec,source)
+    await cp(spec.reuse_build.source+'/.output',source+'/.output',{recursive:true,verbatimSymlinks:true,errorOnExist:true,force:false})
+    assert.equal(digest(await inventory(source+'/.output')),spec.reuse_build.output_inventory_sha256)
+    await save(work+'/build-reuse.json',{...spec.reuse_build,rebuilds:0})
+  }else{
+    await logged(process.execPath,[spec.npm_cli,'ci','--no-audit','--no-fund'],source,work+'/npm-ci.log')
+    assert.equal(hash(await readFile(source+'/package-lock.json')),hash(await readFile(repo+'/package-lock.json')))
+    await logged(process.execPath,[source+'/node_modules/nuxt/bin/nuxt.mjs','build','--dotenv',work+'/empty.env'],source,work+'/build.log')
+  }
   const output=source+'/.output',assets={}
-  for(const entry of await inventory(resolve(spec.accepted_output)))if(entry.type==='file'&&entry.path.startsWith('public/_nuxt/'))assets[entry.path.slice('public/_nuxt/'.length)]={sha256:entry.sha256}
+  for(const entry of await inventory(resolve(spec.accepted_output)))if(entry.type==='file'&&immutableTariffAsset(entry.path))assets[entry.path.slice('public/_nuxt/'.length)]={sha256:entry.sha256}
   await retainClientAssets(resolve(spec.accepted_output)+'/public/_nuxt',output+'/public/_nuxt',assets);await modes(output)
   const entries=await inventory(output);await save(work+'/inventory.json',entries)
   await tarCreate({cwd:source,file:work+'/application.tar.gz',gzip:true,portable:true,noMtime:true,follow:false,onWriteEntry:entry=>{if(entry.type==='SymbolicLink')entry.stat.mode=(entry.stat.mode&~0o7777)|0o755}},['.output'])
@@ -111,6 +129,7 @@ export async function prepareTariffReview({ spec:specFile,directory:work }) {
     archive_sha256:hash(await readFile(work+'/application.tar.gz')),inventory_sha256:digest(entries),entries:entries.length,retained_assets:Object.keys(assets).length,
     qualification_sha256:hash(await readFile(spec.qualification)),compiled_smoke_sha256:hash(await readFile(work+'/compiled-smoke.json')),
     import_sha256:hash(await readFile(work+'/owner-draft.import.json')),business_import_in_deployment:false,provider_requests:0,
+    tools_sha256:Object.fromEntries(await Promise.all(['scripts/prepare-shipping-tariff-review.mjs','scripts/premium-product-finishing-release/assets.mjs','scripts/publish/inventory.mjs','scripts/publish/contracts.mjs','scripts/commerce-release/operator.mjs','scripts/clean-reinstall/deploy.py'].map(async name=>[name,hash(await readFile(repo+'/'+name))]))),
     production_application_authorized:false,production_business_writes_authorized:false,production_preflight:'REQUIRED',fresh_execution_backups:'REQUIRED',
     deployment_operator:'NOT_PREPARED',checkout_change:false,credential_change:false,caddy_change:false,automatic_retry:false,automatic_rollback:false}
   manifest.seal=digest(manifest);await save(work+'/review-manifest.json',manifest)
