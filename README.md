@@ -11,7 +11,10 @@ The [Shipping Company tariff manager](docs/shipping-tariffs.md) is implemented
 locally with proposed migration91. The [owner-supplied six-zone package](docs/operations/shipping-tariffs/README.md)
 imports as an unverified draft; it does not change checkout prices. Production
 remains schema90. Its [local review artifact](docs/shipping-tariff-release.md) is sealed;
-no production-applicable release plan or approval exists. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
+a [fresh guarded deployment packet](docs/tariff-deployment-and-first-transaction.md)
+was withdrawn before execution after retained client URLs returned404. The archive
+is unchanged. Local packaging repair/reseal needs approval before a new deployment
+review. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
 keeps provider accounts, gateway settings, subsidies and promotions independent.
 The existing deployed path can support the separately approved first real test.
 
@@ -43,8 +46,9 @@ records the completed release, exact Dashboard
 setup and why a new COD0 order currently uses the existing card-payment path.
 
 The [controlled purchasing review](docs/controlled-purchase-readiness.md) identifies
-the current runtime and Caddy holds. TESTproduct2026/EGP1/50 units are test data,
-not verified physical stock. Existing LIVE Paymob credentials remain runtime-only.
+the current runtime and Caddy holds. TESTproduct2026 is intentionally EGP1. The owner reports one real unit exists;
+its value and parcel details remain private and pending. The50 entered units do
+not establish50 physical units. Existing LIVE Paymob credentials remain runtime-only.
 A one-account/order purchase capability is qualified and
 [deployed inactive](docs/controlled-purchase-deployment-receipt.md) as
 `1088e036c4f81048`, schema90. Its approval is consumed. No purchase grant,

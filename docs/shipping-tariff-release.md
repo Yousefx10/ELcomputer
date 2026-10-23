@@ -1,3 +1,5 @@
+Current successor: [fresh guarded tariff deployment and first-transaction packet](tariff-deployment-and-first-transaction.md). The original local receipt below is preserved.
+
 # Tariff-only local review receipt — 2026-10-23
 
 **SEALED LOCAL REVIEW ARTIFACT. NOT A PRODUCTION DEPLOYMENT PLAN.**

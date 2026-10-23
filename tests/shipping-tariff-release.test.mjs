@@ -11,9 +11,9 @@ import {createEmailNativeDatabase,emailNativeAvailable} from './helpers/emailNat
 import {json as certificateJson} from '../scripts/lib/cleanBaseline.mjs'
 import {createProductSaveFixture} from './helpers/productSaveFixture.mjs'
 const run=promisify(execFile),artifact=JSON.parse(await readFile('../modular-commerce-planning-20261023/review-3/review-manifest.json'))
-test('existing sealed archive, extracted inventories and original reused-build evidence verify offline',async()=>{
+test('existing sealed archive is preserved and rejected offline when retained bytes have no serving registry entry',async()=>{
  const d=await mkdtemp(tmpdir()+'/tariff-artifact-guard-')
- try{await writeFile(d+'/credentials.json',JSON.stringify({database_password:'owned-artifact-canary-not-a-credential',service_role_key:'owned-other-artifact-canary-not-a-credential'}));const a=await artifactState(resolve('../modular-commerce-planning-20261023/review-3/review-manifest.json'),{credentials_file:d+'/credentials.json'});assert.equal(a.seal,artifact.seal)}finally{await rm(d,{recursive:true,force:true})}
+ try{await writeFile(d+'/credentials.json',JSON.stringify({database_password:'owned-artifact-canary-not-a-credential',service_role_key:'owned-other-artifact-canary-not-a-credential'}));await assert.rejects(()=>artifactState(resolve('../modular-commerce-planning-20261023/review-3/review-manifest.json'),{credentials_file:d+'/credentials.json'}),/retained_asset_missing_from_compiled_map/);assert.equal(hash(await readFile('../modular-commerce-planning-20261023/review-3/application.tar.gz')),artifact.archive_sha256)}finally{await rm(d,{recursive:true,force:true})}
 })
 test('fresh release rejects missing approval before SQL and preserves sealed application and historical operators',async()=>{
  for(const f of ['operator.mjs','database.mjs','remote.py'])assert.equal(hash(await readFile('scripts/controlled-purchase-release/'+f)),hash((await run('git',['show','4f36702:scripts/controlled-purchase-release/'+f],{encoding:'buffer'})).stdout))

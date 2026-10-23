@@ -49,7 +49,7 @@ async function authState(t){const c=await load(t.credentials_file),r=await fetch
 export async function databaseState(t,release,{after=false}={}){const db=await connect(t);try{await db.query('begin isolation level repeatable read read only');const s=await checkDatabase(db,release,{after});assert.equal(s.read_only,'on');await db.query('commit');return s}finally{await db.end()}}
 export async function artifactState(file,t){
  const a=await load(file),{seal,...body}=a;assert.equal(digest(body),seal);assert.equal(a.format,'shipping-tariff-review/v1');assert.equal(a.result,'SEALED_LOCAL_REVIEW_ARTIFACT');assert.equal(a.proposed_schema,91);assert.equal(a.business_import_in_deployment,false)
- const d=dirname(file);assert.equal(hash(await readFile(d+'/application.tar.gz')),a.archive_sha256);assert.equal(digest(await load(d+'/inventory.json')),a.inventory_sha256)
+ const d=dirname(file),entries=await load(d+'/inventory.json');assert.equal(hash(await readFile(d+'/application.tar.gz')),a.archive_sha256);assert.equal(digest(entries),a.inventory_sha256)
  const c=await load(t.credentials_file);for(const p of ['readback','source/.output'])assert.equal(digest(await inventory(d+'/'+p,{secrets:[c.database_password,c.service_role_key]})),a.inventory_sha256)
  assert.equal(hash(await readFile(d+'/migration91.sql')),a.migrations[0].sha256);assert.equal(hash(await readFile(d+'/owner-draft.import.json')),a.import_sha256)
  const qFile=resolve(d,'../source-qualification-3.json'),q=await load(qFile);assert.equal(hash(await readFile(qFile)),a.qualification_sha256);assert.equal(q.result,'PASS');assert.equal(q.application_commit,a.application_commit);assert.equal(q.typecheck,'PASS');assert.equal(q.unique_checks,96)
@@ -60,6 +60,13 @@ export async function artifactState(file,t){
  for(const[f,sha]of Object.entries(reuse.evidence_sha256))assert.equal(hash(await readFile(f)),sha)
  assert.equal(hash(await readFile(reuse.source_archive)),reuse.source_archive_sha256)
  assert.equal(digest(await inventory(reuse.source+'/.output')),reuse.output_inventory_sha256)
+ // File retention is insufficient: Nitro serves only its generated registry.
+ // Reject a sealed archive that would strand cached production clients, before SSH.
+ const nitro=await readFile(d+'/readback/server/chunks/nitro/nitro.mjs','utf8'),start=nitro.indexOf('const assets = {'),end=nitro.indexOf('\n};',start)
+ assert.ok(start>=0&&end>start,'Unknown compiled asset registry; do not guess or rewrite it')
+ const served=JSON.parse(nitro.slice(start+'const assets = '.length,end+2))
+ const missing=entries.filter(e=>e.type==='file'&&e.path.startsWith('public/_nuxt/')&&!served['/'+e.path.slice('public/'.length)])
+ assert.equal(missing.length,0,'retained_asset_missing_from_compiled_map: '+missing.length)
  for(const[f,sha]of Object.entries(a.tools_sha256))assert.equal(hash(await readFile(repo+'/'+f)),sha)
  return a
 }
@@ -90,12 +97,14 @@ export async function prepare(o){
  p.seal=digest(p);await save(w+'/plan.json',p);console.log(JSON.stringify({result:'PREPARED_FOR_OWNER_REVIEW',seal:p.seal,release:p.release_id,schema_from:90,schema_to:91,retained_assets:Object.keys(before.assets).length,production_writes:0,provider_calls:0,rebuilds:0}))
 }
 export async function localPrepared(file){
- assert.equal(process.version,'v22.23.1');assert.equal((await run('git',['status','--porcelain'],{cwd:repo})).stdout,'');const p=await load(file),{seal,...body}=p;assert.equal(digest(body),seal);assert.equal(p.format,9);assert.equal(p.schema_version,91);assert.equal(p.database_writes,1);assert.deepEqual(p.scope,scope)
+ assert.equal(process.version,'v22.23.1');assert.equal((await run('git',['status','--porcelain'],{cwd:repo})).stdout,'');const w=dirname(file)
+ for(const n of ['execution-intent.json','STOP.json','completed.json']){try{await access(w+'/'+n);throw Error('Plan stopped, withdrawn or already attempted; never repeat')}catch(e){if(e.code!=='ENOENT')throw e}}
+ const p=await load(file),{seal,...body}=p;assert.equal(digest(body),seal);assert.equal(p.format,9);assert.equal(p.schema_version,91);assert.equal(p.database_writes,1);assert.deepEqual(p.scope,scope)
  assert.deepEqual(await toolHashes(),p.tools);assert.deepEqual(await applicationInputs(p.application_commit),p.application_inputs);const a=await artifactState(p.artifact.file,p.target);assert.equal(a.seal,p.artifact.seal);assert.equal(p.archive_sha256,a.archive_sha256);assert.equal(p.inventory_sha256,a.inventory_sha256);assert.equal(p.application_commit,a.application_commit);assert.equal(p.release_id,a.archive_sha256.slice(0,16))
  const r=await migrations(repo,a);assert.deepEqual(p.migrations,r.pending.map(({filename,version,name,sha256})=>({filename,version,name,sha256})));assert.equal(p.migration_sha256,r.pending[0].sha256);assert.equal(p.database_state_sha256,digest(approvalState(p.database)))
  for(const[f,sha]of Object.entries(p.protected_inputs))assert.equal(hash(await readFile(f)),sha)
  const g=await load(p.guard_qualification.file);assert.equal(hash(await readFile(p.guard_qualification.file)),p.guard_qualification.sha256);assert.equal(g.result,'PASS');assert.deepEqual(g.schema_delta,p.expected_delta);for(const[f,sha]of Object.entries(g.evidence_sha256))assert.equal(hash(await readFile(f)),sha)
- const w=dirname(file);await verifyBackup(p,w);for(const n of ['execution-intent.json','STOP.json','completed.json']){try{await access(w+'/'+n);throw Error('Execution already attempted; never repeat')}catch(e){if(e.code!=='ENOENT')throw e}}return{plan:p,release:r,work:w}
+ await verifyBackup(p,w);return{plan:p,release:r,work:w}
 }
 export async function check(o){const{plan:p,release:r}=await localPrepared(o.plan);await livePrepared(p,r);console.log(JSON.stringify({result:'READ_ONLY_CHECK_PASS',seal:p.seal,release:p.release_id,schema_from:90,schema_to:91,production_writes:0,provider_calls:0}))}
 export async function apply(o){

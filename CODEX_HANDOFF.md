@@ -1,3 +1,52 @@
+# Tariff deployment preparation and first real transaction — 2026-10-23
+
+- [Fresh release and transaction packet](docs/tariff-deployment-and-first-transaction.md)
+  preserves the sealed tariff source/archive and reuses96 tests, typecheck/build
+  and compiled evidence. New independent release guards pass; no feature change.
+  Production remains1088e036c4f81048/schema90; no apply or provider call occurred.
+- Fresh plan prepared-2 passed read-only preflight,138 protected projections and
+  authenticated encrypted DB/runtime backup readback, then was WITHDRAWN before
+  execution. Seal edc87bde697cecf6918a8a0b7d050204eb8d54766767d2b6e5206594dc41a489
+  is not approvable; STOP.json blocks reuse. No execution intent/SQL/apply exists.
+- Exact candidate static serving is broken for retained clients:1082 file entries
+  missing from compiled registry,1064 previously indexed JS. Three URLs return200
+  with exact bytes on live baseline and404 from candidate. File retention alone
+  was insufficient. Original artifact/96 scoped tests/build remain preserved.
+- Next packet is local packaging repair/reseal only, proposal
+  ee0da9bb58b65c7a6b0ea505adc82bcde05cc674cb36c7e79d5feae565b249fa.
+  It enumerates exact metadata additions to a NEW copy using the completed build;
+  no repair/rebuild/new feature was performed. A separate fresh production seal
+  and approval follow qualification. New guards reject this artifact before SSH.
+- Imported six-zone rates remain editable/unverified/inactive, with null effective
+  date, unresolved Product40 applicability/rounding/suburbs and insurance off.
+  Exact company-bound production draft import requires separate approval.
+- Owner now reports one real TESTproduct2026 unit exists; actual value, unit/serial
+  and parcel details will be confirmed privately. Fresh read-only stock is50
+  structural entries/EGP1, not50 verified physical units. Application accepts100
+  minor units; the live merchant's exact minimum/entitlement remains unconfirmed.
+  Existing PDC declared value is net merchandise, so a different truthful parcel
+  value needs another suitable product/value path, never underdeclaration.
+- Existing confirmed internal customer is a candidate through ordinary Auth/RLS.
+  Phone/destination need valid checkout fields; PDC checkout is off, governorates
+  empty, caches empty, saved40/type1/template1 and pickup10 still uncached.
+  Customer shipping fee10 is stored, not approved carrier cost. Zero orders,
+  payment attempts/transactions, shipping jobs or dispatches. No provider repeated.
+- Private FIRST-REAL-TRANSACTION.private.template.json and local opening/receipt-only
+  Caddy candidates are under ../tariff-production-preparation-20261023/; all new
+  authorizations remain false. Exact account/unit/destination/city/cache/settings/
+  prices/merchant fees/parcel/window are required before access/order approval.
+  One intention/card submission and one packed COD0 booking/PDF/poll are separate.
+- Closing outbound access must retain exact signed Paymob POST ingress, keys and
+  authenticated owned receipt GET until late outcomes reconcile. Lost intention
+  persistence has no automatic provider-query repair; stop for exact-reference
+  review. Never retry uncertain payment/booking or infer paid from redirect.
+- Paymob refund/void functionality is absent and related callbacks are rejected.
+  PDC reverse code exists but is disabled, reverse type unset and real type3
+  acceptance unproved. Their implementation/activation and real tests are separate.
+- Gateway/multi-carrier/subsidy/loyalty roadmap remains independent after initial
+  provider acceptance. No Git push, production business write, transaction,
+  credential change, unrestricted purchasing or production gate activation.
+
 # Company tariff manager implemented locally — 2026-10-23
 
 - Inactive controlled-purchase deployment finished before this milestone began:
