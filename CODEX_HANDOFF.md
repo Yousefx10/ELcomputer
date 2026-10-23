@@ -14,7 +14,7 @@
   Sourceba05770, migration91 and draft import hashes unchanged. Fresh guarded
   plan prepared-3 sealed a4217c90bf0ec1cc331a8842ab0f6042facce02fbf9e46bd5ada412a86fd1a4a.
   Read-only preflight,138 protected projections and encrypted DB/runtime backup
-  readback PASS. Final read-only check follows the documentation commit.
+  readback PASS. Final exact-plan read-only check PASS; no execution intent exists.
   No production apply authorized; NEXT-EXACT-AUTHORIZATION.json is tariff-only.
 - Production remains1088e036c4f81048/schema90. Prices, draft tariff verification,
   gates, credentials and provider settings remain unchanged. Financial/access/

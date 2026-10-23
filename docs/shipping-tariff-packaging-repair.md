@@ -50,7 +50,8 @@ Fresh read-only preflight,138 protected projections, Auth/runtime/media/Caddy
 preservation and encrypted database/runtime backup readback PASS. The fresh plan is
 `../tariff-production-preparation-20261023/prepared-3/plan.json`; its authorization
 packet is `../tariff-production-preparation-20261023/NEXT-EXACT-AUTHORIZATION.json`.
-Final read-only checking follows the documentation commit. Production remains unchanged.
+Final read-only check PASS against this exact plan and unchanged tools/artifact.
+Production remains unchanged.
 
 The next owner approval text is:
 
