@@ -16,6 +16,8 @@ A draft edits all six zone prices, additional-weight rates, base weight, volumet
 divisor, percentages, fee/VAT bases, optional insurance/surcharges, invoice terms,
 effective dates, annual review date, shipping product and exact city mappings.
 Prices use fixed decimal strings. Empty amounts are invalid; zero is explicit.
+Zone and fixed-surcharge amounts are before VAT. VAT scope covers freight and,
+when selected, COD/insurance fees; surcharge VAT uses each explicit surcharge flag.
 Dates may remain unknown in a draft. Annual review never applies an increase.
 Optional surcharges inherit the version's effective dates; empty zone scope means
 all zones. Every text/numeric/list input is bounded. No arbitrary media/URLs/secrets.
@@ -83,3 +85,5 @@ are seeded; existing schema objects and migration history are preserved.
 This migration/application is one release unit. It must not be combined with account
 consolidation, gateway secret migration, checkout pricing or loyalty schema changes.
 Do not apply SQL or import the package without separate exact production approval.
+See the [sealed local review receipt](shipping-tariff-release.md) for artifact and
+validation evidence. A production-applicable deployment plan remains separate.

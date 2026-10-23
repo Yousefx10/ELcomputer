@@ -21,10 +21,18 @@
   one company,382 aliases,empty caches,saved40. No secret columns/provider requests.
   Private evidence: ../modular-commerce-planning-20261023/. Earlier release evidence
   is reused; no repeated production audit or browser/provider suite.
-- Latest17 tariff/native HTTP/SQL/UI/release-scope checks pass without skips;
-  unchanged Paymob/PDC/controlled-purchase regression checks also pass. Typecheck
-  passes on Node22.23.1/npm10.9.8. Exact clean build/local sealed review is next;
-  no production-applicable deployment operator or fresh execution preflight exists yet.
+- [Local review artifact](docs/shipping-tariff-release.md) sealed at sourceba05770:
+  96 tests pass (20 tariff/native HTTP/SQL/UI/review +76 unchanged provider/controlled
+  regressions), typecheck and one clean Node22.23.1/npm10.9.8 build PASS. Four exact
+  compiled anonymous checks and full archive readback PASS;2181 entries and1121
+  retained immutable client assets. Independent offline artifact verification PASS.
+  Seal64d3c96e5b8e7328867f2015d189d4d80fd909257c38ca40439ac3f5f86b0505.
+  Private review-3/ holds application, migration91 and a separate unapproved import.
+  Two local packaging stops are preserved; zero rebuilds or production attempts.
+  Hosted owner/theme/provider acceptance is not claimed. The review seal authorizes
+  nothing: no production-applicable operator/plan, fresh execution preflight or
+  backups exist. Next release preparation is B1 only; exact apply/import approvals
+  remain separate. Do not reuse consumed release operators.
 - [Independent architecture plan](docs/modular-payment-shipping-plan.md) covers A1
   company-owned provider accounts, D1 owner-only encrypted Payment Gateways/runtime
   fallback, C1 carrier/customer/subsidy/cap/rounding snapshots and C2 concurrent-safe
