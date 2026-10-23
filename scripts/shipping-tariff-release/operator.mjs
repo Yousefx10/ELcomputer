@@ -10,6 +10,7 @@ import {inventory} from '../publish/inventory.mjs'
 import {digest,stable,publicHealth} from '../live-sales-release/operator.mjs'
 import {hash,migrations,connect,checkDatabase,assertPreserved,applyMigration,approvalState,assertTariffOnlyDelta} from './database.mjs'
 import {backup,saveActivationReceipt} from '../footer-release/operator.mjs'
+import {verifyRepairArtifact} from './repair.mjs'
 export {digest,approvalState}
 const run=promisify(execFile),here=dirname(fileURLToPath(import.meta.url)),repo=resolve(here,'../..'),load=async f=>JSON.parse(await readFile(f,'utf8'))
 export const scope={milestone:'shipping_tariff_drafts',schema:'90 to 91',database_writes:true,business_import:false,payment_availability_change:false,runtime_change:false,caddy_change:false,provider_calls:false,public_checkout:false,signup:false}
@@ -35,7 +36,7 @@ export async function remote(plan,mode,{approved=null,database=null}={}){
 }
 export async function toolHashes(){
  const names=(await run('git',['ls-files','scripts'],{cwd:repo})).stdout.trim().split('\n').filter(n=>/\.(mjs|py)$/.test(n))
- names.push('scripts/shipping-tariff-release/operator.mjs','scripts/shipping-tariff-release/database.mjs','scripts/shipping-tariff-release/remote.py','tests/shipping-tariff-release.test.mjs','tests/shipping_tariff_release_test.py','docs/operations/backup-envelope.mjs')
+ names.push('scripts/shipping-tariff-release/operator.mjs','scripts/shipping-tariff-release/database.mjs','scripts/shipping-tariff-release/remote.py','scripts/shipping-tariff-release/repair.mjs','tests/shipping-tariff-release.test.mjs','tests/shipping-tariff-repair.test.mjs','tests/shipping_tariff_release_test.py','docs/operations/backup-envelope.mjs')
  return Object.fromEntries(await Promise.all([...new Set(names)].sort().map(async f=>[f,hash(await readFile(repo+'/'+f))])))
 }
 async function applicationInputs(commit){
@@ -48,7 +49,7 @@ async function applicationInputs(commit){
 async function authState(t){const c=await load(t.credentials_file),r=await fetch('https://'+t.project_ref+'.supabase.co/auth/v1/settings',{headers:{apikey:c.anon_key},signal:AbortSignal.timeout(15000)});assert.equal(r.status,200);const v=await r.json();assert.equal(v.disable_signup,true);assert.equal(v.mailer_autoconfirm,false);return {disable_signup:true,mailer_autoconfirm:false}}
 export async function databaseState(t,release,{after=false}={}){const db=await connect(t);try{await db.query('begin isolation level repeatable read read only');const s=await checkDatabase(db,release,{after});assert.equal(s.read_only,'on');await db.query('commit');return s}finally{await db.end()}}
 export async function artifactState(file,t){
- const a=await load(file),{seal,...body}=a;assert.equal(digest(body),seal);assert.equal(a.format,'shipping-tariff-review/v1');assert.equal(a.result,'SEALED_LOCAL_REVIEW_ARTIFACT');assert.equal(a.proposed_schema,91);assert.equal(a.business_import_in_deployment,false)
+ const a=await load(file),{seal,...body}=a;assert.equal(digest(body),seal);assert.ok(['shipping-tariff-review/v1','shipping-tariff-review/v2'].includes(a.format));assert.equal(a.result,'SEALED_LOCAL_REVIEW_ARTIFACT');assert.equal(a.proposed_schema,91);assert.equal(a.business_import_in_deployment,false)
  const d=dirname(file),entries=await load(d+'/inventory.json');assert.equal(hash(await readFile(d+'/application.tar.gz')),a.archive_sha256);assert.equal(digest(entries),a.inventory_sha256)
  const c=await load(t.credentials_file);for(const p of ['readback','source/.output'])assert.equal(digest(await inventory(d+'/'+p,{secrets:[c.database_password,c.service_role_key]})),a.inventory_sha256)
  assert.equal(hash(await readFile(d+'/migration91.sql')),a.migrations[0].sha256);assert.equal(hash(await readFile(d+'/owner-draft.import.json')),a.import_sha256)
@@ -67,6 +68,7 @@ export async function artifactState(file,t){
  const served=JSON.parse(nitro.slice(start+'const assets = '.length,end+2))
  const missing=entries.filter(e=>e.type==='file'&&e.path.startsWith('public/_nuxt/')&&!served['/'+e.path.slice('public/'.length)])
  assert.equal(missing.length,0,'retained_asset_missing_from_compiled_map: '+missing.length)
+ if(a.format==='shipping-tariff-review/v2')await verifyRepairArtifact(d,a)
  for(const[f,sha]of Object.entries(a.tools_sha256))assert.equal(hash(await readFile(repo+'/'+f)),sha)
  return a
 }
