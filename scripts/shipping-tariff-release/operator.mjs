@@ -47,7 +47,7 @@ async function applicationInputs(commit){
 }
 async function authState(t){const c=await load(t.credentials_file),r=await fetch('https://'+t.project_ref+'.supabase.co/auth/v1/settings',{headers:{apikey:c.anon_key},signal:AbortSignal.timeout(15000)});assert.equal(r.status,200);const v=await r.json();assert.equal(v.disable_signup,true);assert.equal(v.mailer_autoconfirm,false);return {disable_signup:true,mailer_autoconfirm:false}}
 export async function databaseState(t,release,{after=false}={}){const db=await connect(t);try{await db.query('begin isolation level repeatable read read only');const s=await checkDatabase(db,release,{after});assert.equal(s.read_only,'on');await db.query('commit');return s}finally{await db.end()}}
-async function artifactState(file,t){
+export async function artifactState(file,t){
  const a=await load(file),{seal,...body}=a;assert.equal(digest(body),seal);assert.equal(a.format,'shipping-tariff-review/v1');assert.equal(a.result,'SEALED_LOCAL_REVIEW_ARTIFACT');assert.equal(a.proposed_schema,91);assert.equal(a.business_import_in_deployment,false)
  const d=dirname(file);assert.equal(hash(await readFile(d+'/application.tar.gz')),a.archive_sha256);assert.equal(digest(await load(d+'/inventory.json')),a.inventory_sha256)
  const c=await load(t.credentials_file);for(const p of ['readback','source/.output'])assert.equal(digest(await inventory(d+'/'+p,{secrets:[c.database_password,c.service_role_key]})),a.inventory_sha256)
@@ -55,7 +55,11 @@ async function artifactState(file,t){
  const qFile=resolve(d,'../source-qualification-3.json'),q=await load(qFile);assert.equal(hash(await readFile(qFile)),a.qualification_sha256);assert.equal(q.result,'PASS');assert.equal(q.application_commit,a.application_commit);assert.equal(q.typecheck,'PASS');assert.equal(q.unique_checks,96)
  for(const[f,sha]of Object.entries(q.evidence_sha256))assert.equal(hash(await readFile(f)),sha)
  const smoke=await load(d+'/compiled-smoke.json');assert.equal(hash(await readFile(d+'/compiled-smoke.json')),a.compiled_smoke_sha256);assert.equal(smoke.result,'PASS')
- assert.match(await readFile(d+'/build.log','utf8'),/Build complete!/)
+ const reuse=await load(d+'/build-reuse.json');assert.equal(reuse.rebuilds,0)
+ assert.match(await readFile(reuse.build_log,'utf8'),/Build complete!/)
+ for(const[f,sha]of Object.entries(reuse.evidence_sha256))assert.equal(hash(await readFile(f)),sha)
+ assert.equal(hash(await readFile(reuse.source_archive)),reuse.source_archive_sha256)
+ assert.equal(digest(await inventory(reuse.source+'/.output')),reuse.output_inventory_sha256)
  for(const[f,sha]of Object.entries(a.tools_sha256))assert.equal(hash(await readFile(repo+'/'+f)),sha)
  return a
 }
@@ -79,7 +83,8 @@ export async function prepare(o){
  await save(w+'/runtime-before.json',before);await save(w+'/database-before.json',db);await save(w+'/auth-before.json',auth);await save(w+'/http-before.json',await publicHealth(base))
  for(const[n,v]of Object.entries(before.assets))assert.equal(hash(await readFile(dirname(s.artifact)+'/readback/public/_nuxt/'+n)),v.sha256,'Sealed artifact must retain every current immutable asset')
  const b=accepted.backup,backup_evidence=await backup({...base,before,backup:b},w)
- const files=[s.artifact,s.guard_qualification,s.accepted_plan,s.specification||o.spec,accepted.target.credentials_file,accepted.target.database.ca_file,accepted.target.identity,accepted.target.known_hosts,b.key,b.envelope,b.pg_dump,dirname(b.pg_dump)+'/pg_restore',dirname(s.artifact)+'/build.log',resolve(dirname(s.artifact),'../source-qualification-3.json')]
+ const reuse=await load(dirname(s.artifact)+'/build-reuse.json')
+ const files=[s.artifact,s.guard_qualification,s.accepted_plan,o.spec,accepted.target.credentials_file,accepted.target.database.ca_file,accepted.target.identity,accepted.target.known_hosts,b.key,b.envelope,b.pg_dump,dirname(b.pg_dump)+'/pg_restore',dirname(s.artifact)+'/build-reuse.json',...Object.keys(reuse.evidence_sha256),resolve(dirname(s.artifact),'../source-qualification-3.json')]
  const p={format:9,created_utc:new Date().toISOString(),application_commit:a.application_commit,application_inputs:app,release_id:a.archive_sha256.slice(0,16),archive_sha256:a.archive_sha256,archive_bytes:(await readFile(dirname(s.artifact)+'/application.tar.gz')).length,inventory_sha256:a.inventory_sha256,schema_version:91,database_writes:1,migration_sha256:r.pending[0].sha256,migrations:r.pending.map(({filename,version,name,sha256})=>({filename,version,name,sha256})),artifact:{file:s.artifact,seal:a.seal},guard_qualification:{file:s.guard_qualification,sha256:hash(await readFile(s.guard_qualification))},expected_delta:g.schema_delta,target:accepted.target,before,database:db,database_state_sha256:digest(approvalState(db)),auth,tools,backup:b,backup_evidence,protected_inputs:Object.fromEntries(await Promise.all([...new Set(files)].map(async f=>[f,hash(await readFile(f))]))),scope,automatic_retry:false,automatic_rollback:false,rollback:{application_only:true,previous_release:before.current,preserve_schema:91,preserve_newer_data:true,requires_separate_review:true,automatic:false},accepted_plan:{file:s.accepted_plan,seal:oldSeal}}
  await livePrepared(p,r);assert.deepEqual(await toolHashes(),tools);assert.deepEqual(await applicationInputs(a.application_commit),app)
  p.seal=digest(p);await save(w+'/plan.json',p);console.log(JSON.stringify({result:'PREPARED_FOR_OWNER_REVIEW',seal:p.seal,release:p.release_id,schema_from:90,schema_to:91,retained_assets:Object.keys(before.assets).length,production_writes:0,provider_calls:0,rebuilds:0}))
