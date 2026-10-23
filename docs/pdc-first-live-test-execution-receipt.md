@@ -1,6 +1,11 @@
 # First live PDC API test — uncertain outcome, execution stopped
 
 **PAYMOB remains VERIFIED. PDC booking remains UNCONFIRMED.**
+The owner subsequently checked their PDC Dashboard and reported that no matching
+shipment or pickup is visible. This is an owner-reported observation, not an
+authoritative provider reconciliation of the uncertain write. No further provider
+request or production change followed this report.
+
 The owner approved seal
 `5a03be551efea46477528467db6bd954b3e353617f28d93c641819427e43e4fb`.
 The sealed operation executed against existing paid/packed order
@@ -60,13 +65,13 @@ own explicit scope and approval; do not repeat the booking.
 
 ## Minimum next action
 
-The owner checks their existing PDC Dashboard for the exact client reference above,
-created around23:27:50 Riyadh. No authenticated PDC Dashboard session is available
-to Codex, so visual presence/absence is not claimed. If found, identify its AWB and
-any linked pickup, and cancel manually as intended. Do not create a replacement.
-Dashboard absence alone does not settle an ambiguous provider write.
+The owner has completed the requested PDC Dashboard check for the exact client
+reference above, created around23:27:50 Riyadh, and reports no matching shipment
+or pickup visible. Codex did not inspect the authenticated portal directly.
+Dashboard absence alone does not settle an ambiguous provider write. Do not ask
+the owner to repeat this completed check or create a replacement shipment.
 
-If no authoritative Dashboard record is available, ask PDC to reconcile that
+Next, ask PDC to reconcile that
 original reference using both trace IDs in the private incident packet. Ask whether
 an AWB/pickup was created and why both requests returned HTTP500. Codex has not
 contacted PDC. Provider confirmation is needed before any new booking is considered.

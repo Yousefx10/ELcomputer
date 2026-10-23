@@ -1,3 +1,19 @@
+# PDC follow-up — owner reports no matching shipment or pickup visible
+
+- Owner completed the requested PDC Dashboard search for original reference
+  ORD-8b59b9e0-df2a-4269-a61d-4b3fe244e871 and reports no matching shipment/pickup.
+  This is owner-reported portal evidence, not provider confirmation of no creation.
+- Do not repeat the Dashboard check or rebook. Both approved provider calls returned
+  HTTP500; the existing job/dispatch remains uncertain with its originalREF/barrier.
+- Next: PDC reconciles originalREF using the private incident packet and two trace
+  IDs. Packet updated, not sent. No further API call, production change or retry
+  followed this report. Approval budgets remain consumed; PDF blocked without AWB.
+- Current receipt: docs/pdc-first-live-test-execution-receipt.md. Private follow-up:
+  ../first-live-pdc-test-20261023/owner-dashboard-observation.json and
+  EXECUTION-RESULT.owner-dashboard-followup.json. Both handoffs preserved; no push.
+
+Historical handoff follows unchanged.
+
 # PDC live booking UNCERTAIN — both approved calls consumed; do not retry
 
 - [Current execution receipt](docs/pdc-first-live-test-execution-receipt.md).
