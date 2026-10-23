@@ -1,3 +1,30 @@
+# EGP2 owner checkout ACTIVE — expires22:27:56.541 Riyadh,23October
+
+- [Current activation receipt](docs/owner-checkout-egp2-active-receipt.md) supersedes pending/101 notices below.
+  Owner approved exact seal1c01a8d87098c9145b5ad8844710941498bf412732a3841e8ddec759b359a945.
+  Executed ONCE; OPEN consumed. Approved closure remains pending. Never rerun open.
+- Active22:00:58.398–22:27:56.541 Riyadh; prior deadline retained, no renewal.
+  Same i***@elcomputer.net/item/variant/qty1/PDC/saved Ramses address/command;
+  review key rotated and total200/EGP2 enforced. Item1 + customer delivery1 + card0.
+  Old101 grant revoked. Coupons remain forbidden. Owner refreshes Cart/no coupon.
+- One Nuxt and one Caddy restart. Grant loaded; global purchasing/providers false;
+  current release0ea60833a5071f27/schema91/compiled hash unchanged. Narrow open6c7d…
+  installed. Anonymous Cart403/Checkout302/login/capability closed/status401 and
+  signup/workers/non-POST callback403 verified. Exact signed callback POST available.
+- No assistant order/intention/card charge or provider booking. Owner alone performs
+  normal checkout/Paymob/3DS. Genuine merchant acceptance and paid result pending.
+  Keep fees/address unchanged; uncertain result means original-reference inspection.
+- Private ../owner-checkout-egp2-20261023/replacement-operator.mjs status/close only.
+  On paid/stop/expiry, clear grant/install qualified close7f6d… within same approval;
+  retain signed late callbacks/keys/owned status and receipts. No blind retries.
+- Before separately approving ONE real PDC booking, establish Ramses10 physically
+  covers the saved Al Azbakeya street, truthful declared parcel value and actual
+  charges. Packing/REF/AWB/private PDF/poll/PDC Dashboard visibility remain pending.
+  No cancellation/refund/reverse; tariffs inactive/unverified and roadmap held.
+- Both historical handoffs preserved; no build/deployment or Git push.
+
+Historical handoff follows unchanged.
+
 # EGP2 checkout BLOCKED — old grant revoked, replacement approval pending
 
 - [Current EGP2 receipt](docs/owner-checkout-egp2-readiness.md) supersedes the active101 header below.

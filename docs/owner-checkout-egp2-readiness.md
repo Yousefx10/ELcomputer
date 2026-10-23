@@ -1,3 +1,8 @@
+Current update: [EGP2 restricted checkout is active](owner-checkout-egp2-active-receipt.md).
+It expires22:27:56.541 Riyadh today,23October. The owner completes normal payment.
+Opening approval is consumed; closure remains approved. No payment or booking initiated.
+The EGP101 grant stays revoked. Earlier preparation/activation text is historical.
+
 # EGP2 owner checkout — BLOCKED pending replacement approval
 
 Read-only inspection confirms the owner changed customer delivery to EGP1.
