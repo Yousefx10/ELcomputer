@@ -18,7 +18,7 @@ Public probes used GET only; no live callback POST or provider API was sent.
 
 | Required result | Current evidence |
 | --- | --- |
-| Authorized account | No purchase grant is active. The sole current candidate is `i***@elcomputer.net`: active, confirmed, nonanonymous, with a customer profile. Its internal flag grants no checkout bypass. Owner account selection remains unconfirmed. |
+| Authorized account | Owner selected `i***@elcomputer.net`. Latest inspection found it active, confirmed and nonanonymous, with a customer profile. Its internal flag grants no checkout bypass. No purchase grant is active; account selection approves no preparation, access, payment or booking action. |
 | Saved address | One saved profile address exists, including line 2. Its phone fails the required Egyptian mobile format. Exact governorate/city mapping count is zero. Country is Egypt. Full details were not printed or copied into this document. |
 | My Account management | Profile read/upsert exists under own-row Auth/RLS. Live `/login` and `/account/profile`, including Arabic routes, return403. Successful owner browser loading/saving has not been established. |
 | Address continuity | Normal checkout prefills line 1, city, governorate and phone, but drops the populated line 2. This needs a small correction that also avoids duplicating or overwriting address lines during the post-order profile update. |
@@ -90,6 +90,8 @@ binds this account-only candidate and the two local normal-flow corrections.
 Proposal SHA256:
 `5d3181a2382ee4812b6fc0cf21d1759abfd2bb41d12b6dd77f92949a40c4aac9`.
 It authorizes neither application deployment nor purchasing/payment activation.
+The owner's later account-selection reply is recorded separately in private
+`owner-account-selection.json`. The sealed proposal remains unchanged and unapproved.
 
 After that access is authorized, the owner signs in and corrects the saved
 address privately in My Account. Read-only checks can then derive its hash and

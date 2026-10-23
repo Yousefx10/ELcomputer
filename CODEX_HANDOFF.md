@@ -7,8 +7,10 @@
   paid. PDC booking retains separate approval. No full private details in chat.
 - Fresh read-only schema91/runtime/public checks: release08b45ffac0e524c8 unchanged;
   runtime/Caddy hashes unchanged, grant empty, global purchasing/provider gates off.
-  Zero orders/attempts/transactions/jobs/dispatches. Candidate i***@elcomputer.net
-  is active/confirmed/nonanonymous; owner account selection remains pending.
+  Zero orders/attempts/transactions/jobs/dispatches. Owner selected i***@elcomputer.net
+  in the account-only reply; latest inspected account is active/confirmed/nonanonymous.
+  owner-account-selection.json records identity only. Proposal5d3181a2 and all
+  production access/purchasing/payment/booking approvals remain pending; no gate changed.
 - Saved address exists with line2, but mobile invalid and exact city mapping count0.
   Own-profile RLS exists; login/profile pages403, so owner browser save is unproved.
   Normal checkout DROPS line2. Existing scoped capability only protects its special
