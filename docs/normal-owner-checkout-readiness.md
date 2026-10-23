@@ -1,8 +1,10 @@
-Current update: [inactive deployment passed](normal-checkout-deployment-receipt.md).
-Production release is0ea60833a5071f27; schema91 and all gates remain unchanged.
-Account/profile access is available. Owner checkout remains BLOCKED.
-The saved mobile needs correction; PDC mapping and prices remain unapproved.
-Limited activation, owner payment and PDC booking need separate approvals.
+Current update: [the saved Al Azbakeya profile passes validation](owner-checkout-al-azbakeya-readiness.md).
+Both address lines persist and survive the deployed normal checkout helpers.
+The exact destination has no match among382 aliases; one city-only lookup is prepared.
+The owner approved customer delivery100 and total101 for one item; carrier cost
+is deferred to separately approved booking. The exact city ID remains unresolved.
+Production remains0ea60833a5071f27/schema91; all purchasing/provider gates stay closed.
+Owner checkout remains BLOCKED pending the city lookup and exact activation approval.
 Earlier inspection/proposal text below is retained as history.
 
 # Normal owner checkout — BLOCKED, 2026-10-23

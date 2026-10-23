@@ -1,3 +1,8 @@
+Current update: [the saved profile now passes checkout validation](owner-checkout-al-azbakeya-readiness.md).
+Both lines persist. Delivery100/total101 are approved; exact PDC city mapping
+and the separate purchasing activation remain pending.
+The deployment receipt and earlier profile snapshot below remain historical evidence.
+
 # Inactive normal checkout deployed — 2026-10-23
 
 **DEPLOY PASS. Owner checkout remains BLOCKED.**

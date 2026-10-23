@@ -1,3 +1,47 @@
+# Owner profile PASS; Al Azbakeya checkout BLOCKED — 2026-10-23
+
+- [Focused readiness](docs/owner-checkout-al-azbakeya-readiness.md) supplements the
+  same first-real-checkout task. Release0ea60833a5071f27/schema91 unchanged.
+  No deployment, build or completed application investigation/tests repeated.
+- Fresh pinned read-only checks: selected i***@elcomputer.net active/confirmed,
+  saved010 mobile passes the actual checkout normalizer; both lines persist and
+  survive normal prefill/order/profile helpers. Actual live checkout remains held.
+  No address/phone/card/credential values copied to Git or chat. Owner reports save.
+- Saved Al Azbakeya/Cairo/Egypt has zero exact or similarly named matches among382
+  aliases. No city ID invented or destination substituted. City/product caches empty;
+  PDC company active, checkout off/governorates empty, saved40/pickup10 retained.
+  Owner approved customer delivery100 and payable101 (item1/card fee0).
+  Saved customer delivery10 is not changed yet; saved carrier5 is unverified.
+  Owner accepts subsidizing the difference; carrier-cost confirmation is deferred
+  to separately approved shipment booking and does not block payment preparation.
+  TESTproduct2026 published normal-sale1EGP, active variant, structural quantity1
+  available; actual unit is owner-reported. Exact grant will enforce10100 minor units.
+- Accepted GetProducts receipt/hash reused; current entire PDC settings fingerprint
+  matches its accepted snapshot. Products36 General/40 High Value(elc) can be reused
+  after separately approved cache setup. No GetProducts/Test/Sync repeated.
+- Private ../owner-checkout-route-20261023/ prepares ONE GetCities-only request:
+  seal60117c9bf0f9051e50c885f0cc41b3dca2cf2b8a3f20c5d89d6aacb41fe67379.
+  AUTHORIZATION-PACKET.md is the next review packet; no outbound lookup approved/run.
+  Exact deployed helper/credential/target pinning;15 new offline boundary cases
+  and independent wrong-approval rejection PASS. No retry, SQL/cache write, gate
+  change, booking or payment is included. Review city response before alias/cache deltas.
+- Existing private grant preparation binds account/product/variant/quantity1/company/
+  saved-address hash and approved10100 total. Destination ID/window unset; no grant
+  installed. Local normal opening/closure Caddy drafts pass adaptation and172 new
+  local proxy checks across two hosts. Neither policy is installed.
+  Closure retains exact signed Paymob POST and owned receipts/status reads.
+- Still required for checkout: authoritative city mapping, reviewed bounded cache/
+  company/alias/fee100 deltas and account/EGP101/window/Caddy activation approval.
+  Product40 carrier charges and truthful private parcel/declared value stay separate
+  booking requirements. Real Paymob/provider acceptance remains the owner's test.
+  Global public purchasing/signup/provider gates remain closed; no automatic draft rates.
+  Owner alone creates the order and enters Paymob; no manual paid flags/uncertain retry.
+- Zero orders/payment attempts/transactions/shipping jobs/dispatches; no provider call,
+  database write, credential change or Git push. One paid/packed shipment remains
+  separately approved, including REF/AWB/private PDF/bounded poll. Refund/reverse and
+  modular gateway/carrier/pricing/tracking/customer migration remain independent later work.
+  Preserve all consumed approvals/artifacts and both historical handoffs.
+
 # Inactive normal checkout DEPLOY PASS; owner checkout BLOCKED — 2026-10-23
 
 - [Deployment receipt](docs/normal-checkout-deployment-receipt.md): production
