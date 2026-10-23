@@ -1,0 +1,4361 @@
+{
+  "format": "shipping-tariff/v1",
+  "provider": "pdc",
+  "currency": "EGP",
+  "title": "ELComputer / Last Mile Delivery — owner draft",
+  "source_note": "Owner-supplied tariff; no printed effective date. Product40 applicability, fractional additional-kg rounding, VAT scope for fees, surcharges and exact Cairo/Giza suburb boundaries remain unverified. Insurance is optional and disabled. Failed-delivery calculation base requires confirmation. No automatic annual increase.",
+  "product_id": 40,
+  "product_confirmed": false,
+  "validity_confirmed": false,
+  "effective_from": null,
+  "effective_until": null,
+  "base_weight_kg": "2.000",
+  "volumetric_divisor": 5000,
+  "extra_weight_rounding": "unverified",
+  "vat_percent": "14.00",
+  "vat_scope": "unverified",
+  "cod_percent": "0.50",
+  "insurance_percent": "0.70",
+  "insurance_enabled": false,
+  "failed_delivery_percent": "50.00",
+  "invoice_days": 14,
+  "annual_review_month_day": "01-01",
+  "automatic_annual_increase": false,
+  "surcharges_confirmed": false,
+  "zones": [
+    {
+      "id": 1,
+      "label": "Zone 1",
+      "base_price": "60.00",
+      "additional_kg_price": "5.00"
+    },
+    {
+      "id": 2,
+      "label": "Zone 2",
+      "base_price": "65.00",
+      "additional_kg_price": "5.00"
+    },
+    {
+      "id": 3,
+      "label": "Zone 3",
+      "base_price": "75.00",
+      "additional_kg_price": "5.00"
+    },
+    {
+      "id": 4,
+      "label": "Zone 4",
+      "base_price": "85.00",
+      "additional_kg_price": "5.00"
+    },
+    {
+      "id": 5,
+      "label": "Zone 5",
+      "base_price": "95.00",
+      "additional_kg_price": "5.00"
+    },
+    {
+      "id": 6,
+      "label": "Zone 6",
+      "base_price": "105.00",
+      "additional_kg_price": "5.00"
+    }
+  ],
+  "surcharges": [],
+  "mappings": [
+    {
+      "provider_city_id": 1,
+      "governorate": "Cairo",
+      "city": "Al Herafiyeen",
+      "city_arabic": "الحرفيين",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 2,
+      "governorate": "Cairo",
+      "city": "Zamalek",
+      "city_arabic": "الزمالك",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 3,
+      "governorate": "Cairo",
+      "city": "Boulak abul-Ela",
+      "city_arabic": "بولاق أبو العلا",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 4,
+      "governorate": "Cairo",
+      "city": "Down Town",
+      "city_arabic": "وسط البلد",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 5,
+      "governorate": "Cairo",
+      "city": "Garden City",
+      "city_arabic": "جاردن سيتي",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 6,
+      "governorate": "Cairo",
+      "city": "Manial",
+      "city_arabic": "المنيل",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 7,
+      "governorate": "Cairo",
+      "city": "Attaba",
+      "city_arabic": "العتبه",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 8,
+      "governorate": "Cairo",
+      "city": "Qasr el-Einy",
+      "city_arabic": "القصر العيني",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 9,
+      "governorate": "Cairo",
+      "city": "Dhaher",
+      "city_arabic": "الظاهر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 10,
+      "governorate": "Cairo",
+      "city": "Ramses",
+      "city_arabic": "رمسيس",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 11,
+      "governorate": "Cairo",
+      "city": "Shoubra Masr",
+      "city_arabic": "شبرا مصر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 12,
+      "governorate": "Cairo",
+      "city": "Darrasa",
+      "city_arabic": "الدراسة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 13,
+      "governorate": "Cairo",
+      "city": "Abbassiya",
+      "city_arabic": "العباسية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 14,
+      "governorate": "Cairo",
+      "city": "Darb el-Ahmar",
+      "city_arabic": "الدرب الأحمر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 15,
+      "governorate": "Cairo",
+      "city": "Bab el-Shiriya",
+      "city_arabic": "باب الشعرية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 16,
+      "governorate": "Cairo",
+      "city": "Sayeda Zeinab",
+      "city_arabic": "السيدة زينب",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 17,
+      "governorate": "Cairo",
+      "city": "Old Cairo",
+      "city_arabic": "مصر القديمة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 18,
+      "governorate": "Cairo",
+      "city": "Nasr City",
+      "city_arabic": "مدينة نصر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 19,
+      "governorate": "Cairo",
+      "city": "10th District",
+      "city_arabic": "الحى العاشر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 20,
+      "governorate": "Cairo",
+      "city": "Heliopolis",
+      "city_arabic": "مصر الجديدة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 21,
+      "governorate": "Cairo",
+      "city": "Gesr el-Suez",
+      "city_arabic": "جسر السويس",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 22,
+      "governorate": "Cairo",
+      "city": "Alf Maskan",
+      "city_arabic": "الألف مسكن",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 23,
+      "governorate": "Cairo",
+      "city": "Obour Buildings",
+      "city_arabic": "عمارات العبور",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 24,
+      "governorate": "Cairo",
+      "city": "Ard el-Golf",
+      "city_arabic": "ارض الجولف",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 25,
+      "governorate": "Cairo",
+      "city": "Hadayek el-Qobba",
+      "city_arabic": "حدائق القبة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 26,
+      "governorate": "Cairo",
+      "city": "Zaytoun",
+      "city_arabic": "الزيتون",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 27,
+      "governorate": "Cairo",
+      "city": "Ameeriya",
+      "city_arabic": "الأميرية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 28,
+      "governorate": "Cairo",
+      "city": "Matariya",
+      "city_arabic": "المطرية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 29,
+      "governorate": "Cairo",
+      "city": "Ain Shams",
+      "city_arabic": "عين شمس",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 30,
+      "governorate": "Cairo",
+      "city": "New Maadi",
+      "city_arabic": "المعادي الجديدة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 31,
+      "governorate": "Cairo",
+      "city": "Dar el-Salam",
+      "city_arabic": "دار السلام",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 32,
+      "governorate": "Cairo",
+      "city": "Maadi",
+      "city_arabic": "المعادي",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 33,
+      "governorate": "Cairo",
+      "city": "Moqattam",
+      "city_arabic": "المقطم",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 34,
+      "governorate": "Cairo",
+      "city": "El-Hadaba el-Sofla",
+      "city_arabic": "الهضبة السفلى",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 35,
+      "governorate": "Cairo",
+      "city": "Tora",
+      "city_arabic": "طرة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 36,
+      "governorate": "Cairo",
+      "city": "Maasara",
+      "city_arabic": "المعصرة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 37,
+      "governorate": "Cairo",
+      "city": "Helwan",
+      "city_arabic": "حلوان",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 38,
+      "governorate": "Cairo",
+      "city": "Kotsica",
+      "city_arabic": "كوتسيكا",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 39,
+      "governorate": "Cairo",
+      "city": "Qattamiya",
+      "city_arabic": "القطامية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 40,
+      "governorate": "Cairo",
+      "city": "New Cairo",
+      "city_arabic": "التجمع",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 41,
+      "governorate": "Cairo",
+      "city": "El Rehab",
+      "city_arabic": "الرحاب",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 42,
+      "governorate": "Cairo",
+      "city": "Madinty",
+      "city_arabic": "مدينتى",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 43,
+      "governorate": "Cairo",
+      "city": "Cairo Airport",
+      "city_arabic": "مطار القاهرة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 44,
+      "governorate": "Cairo",
+      "city": "Salam City",
+      "city_arabic": "مدينة السلام",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 45,
+      "governorate": "Cairo",
+      "city": "Obour City",
+      "city_arabic": "مدينة العبور",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 46,
+      "governorate": "Cairo",
+      "city": "Ezbet el-Haganna",
+      "city_arabic": "عزبة الهجانة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 47,
+      "governorate": "Cairo",
+      "city": "Tibeen",
+      "city_arabic": "التبين",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 48,
+      "governorate": "Cairo",
+      "city": "15th of May City",
+      "city_arabic": "مدينة 15 مايو",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 49,
+      "governorate": "Cairo",
+      "city": "Badr City",
+      "city_arabic": "مدينة بدر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 50,
+      "governorate": "Cairo",
+      "city": "Shourouq City",
+      "city_arabic": "الشروق",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 51,
+      "governorate": "Giza",
+      "city": "Dokki",
+      "city_arabic": "الدقي",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 52,
+      "governorate": "Giza",
+      "city": "Mohandiseen",
+      "city_arabic": "المهندسين",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 53,
+      "governorate": "Giza",
+      "city": "Agouza",
+      "city_arabic": "العجوزة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 54,
+      "governorate": "Giza",
+      "city": "Ard-el-Lewa",
+      "city_arabic": "ارض اللواء",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 55,
+      "governorate": "Giza",
+      "city": "Matar Imbaba",
+      "city_arabic": "مطار امبابه",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 56,
+      "governorate": "Giza",
+      "city": "Saft-e-Laban",
+      "city_arabic": "صفط اللبن",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 57,
+      "governorate": "Giza",
+      "city": "Imbaba",
+      "city_arabic": "امبابة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 58,
+      "governorate": "Giza",
+      "city": "Warraq",
+      "city_arabic": "الوراق",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 59,
+      "governorate": "Giza",
+      "city": "Bashteel",
+      "city_arabic": "بشتيل",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 60,
+      "governorate": "Giza",
+      "city": "Boulak-e-Dakrour",
+      "city_arabic": "بولاق الدكرور",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 61,
+      "governorate": "Giza",
+      "city": "Giza",
+      "city_arabic": "الجيزة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 62,
+      "governorate": "Giza",
+      "city": "Faisal",
+      "city_arabic": "فيصل",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 63,
+      "governorate": "Giza",
+      "city": "Haram",
+      "city_arabic": "الهرم",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 64,
+      "governorate": "Giza",
+      "city": "Monieb",
+      "city_arabic": "المنيب",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 65,
+      "governorate": "Giza",
+      "city": "Ahram Gardens",
+      "city_arabic": "حدائق الأهرام",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 66,
+      "governorate": "Giza",
+      "city": "Rimaya",
+      "city_arabic": "الرماية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 67,
+      "governorate": "Giza",
+      "city": "6th of October",
+      "city_arabic": "مدينة 6 أكتوبر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 68,
+      "governorate": "Giza",
+      "city": "Sheikh Zayed",
+      "city_arabic": "مدينة الشيخ زايد",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 69,
+      "governorate": "Giza",
+      "city": "Wahat Road",
+      "city_arabic": "طريق الواحات",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 70,
+      "governorate": "Giza",
+      "city": "Alex desert road till KM 28",
+      "city_arabic": "طريق إسكندرية الصحراوى حتى ك 28",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 71,
+      "governorate": "Giza",
+      "city": "Smart Village",
+      "city_arabic": "القرية الذكية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 72,
+      "governorate": "Giza",
+      "city": "Nahiya",
+      "city_arabic": "ناهيا البلد",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 73,
+      "governorate": "Giza",
+      "city": "Kafr Hakeem",
+      "city_arabic": "كفر حكيم",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 74,
+      "governorate": "Giza",
+      "city": "Abu Rawash",
+      "city_arabic": "أبو رواش",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 75,
+      "governorate": "Giza",
+      "city": "Saqqara",
+      "city_arabic": "سقارة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 76,
+      "governorate": "Giza",
+      "city": "Manial Sheeha",
+      "city_arabic": "منيل شيحة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 77,
+      "governorate": "Giza",
+      "city": "El-Manawat",
+      "city_arabic": "المنوات",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 78,
+      "governorate": "Alexandria",
+      "city": "Sidi Gaber",
+      "city_arabic": "سيدي جابر",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 79,
+      "governorate": "Alexandria",
+      "city": "Moharram Bek",
+      "city_arabic": "محرم بك",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 80,
+      "governorate": "Alexandria",
+      "city": "Mina El-Basal",
+      "city_arabic": "مينا البصل",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 81,
+      "governorate": "Alexandria",
+      "city": "Al Raml",
+      "city_arabic": "الرمل",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 82,
+      "governorate": "Alexandria",
+      "city": "Al Montaza",
+      "city_arabic": "المنتزه",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 83,
+      "governorate": "Alexandria",
+      "city": "Al Mansheya",
+      "city_arabic": "المنشية",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 84,
+      "governorate": "Alexandria",
+      "city": "Al Labban",
+      "city_arabic": "اللبان",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 85,
+      "governorate": "Alexandria",
+      "city": "Qetaa Maryout",
+      "city_arabic": "قطاع مريوط",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 86,
+      "governorate": "Alexandria",
+      "city": "Qetaa at Tarik Al Sahrawi",
+      "city_arabic": "قطاع الطريق الصحراوي",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 87,
+      "governorate": "Alexandria",
+      "city": "Bab Sharqi",
+      "city_arabic": "باب شرقي",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 88,
+      "governorate": "Alexandria",
+      "city": "Al Gomrok",
+      "city_arabic": "الجمرك",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 89,
+      "governorate": "Alexandria",
+      "city": "Al Attarin",
+      "city_arabic": "العطارين",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 90,
+      "governorate": "Alexandria",
+      "city": "New Borg Al Arab",
+      "city_arabic": "برج العرب الجديدة",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 91,
+      "governorate": "Alexandria",
+      "city": "Karmouz",
+      "city_arabic": "كرموز",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 92,
+      "governorate": "Alexandria",
+      "city": "Al king maryout (Sharq & Gharb)",
+      "city_arabic": "كينج مريوط (شرق وغرب)",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 93,
+      "governorate": "Alexandria",
+      "city": "Dekhela",
+      "city_arabic": "الدخيلة",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 94,
+      "governorate": "Alexandria",
+      "city": "Borg Al Arab",
+      "city_arabic": "برج العرب",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 95,
+      "governorate": "Alexandria",
+      "city": "Alexandria Desert",
+      "city_arabic": "الطريق الصحراوي",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 96,
+      "governorate": "Alexandria",
+      "city": "Al Amaria First",
+      "city_arabic": "العامرية أول",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 97,
+      "governorate": "Alexandria",
+      "city": "Al Daerah Al Gomrokeyah",
+      "city_arabic": "الدائرة الجمركية",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 98,
+      "governorate": "Alexandria 2",
+      "city": "North Coast",
+      "city_arabic": "الساحل الشمالي",
+      "candidate_zone_ids": [],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 99,
+      "governorate": "Al Behaira",
+      "city": "Shabrakhit",
+      "city_arabic": "شبراخيت",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 100,
+      "governorate": "Al Behaira",
+      "city": "Rashid",
+      "city_arabic": "رشيد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 101,
+      "governorate": "Al Behaira",
+      "city": "Mahmoudiyah",
+      "city_arabic": "المحمودية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 102,
+      "governorate": "Al Behaira",
+      "city": "Kom Hamada",
+      "city_arabic": "كوم حمادة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 103,
+      "governorate": "Al Behaira",
+      "city": "Kafr Al Dawwar",
+      "city_arabic": "كفر الدوار",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 104,
+      "governorate": "Al Behaira",
+      "city": "Itay Al Baroud",
+      "city_arabic": "إيتاي البارود",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 105,
+      "governorate": "Al Behaira",
+      "city": "Hosh Issa",
+      "city_arabic": "حوش عيسى",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 106,
+      "governorate": "Al Behaira",
+      "city": "Edco",
+      "city_arabic": "إدكو",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 107,
+      "governorate": "Al Behaira",
+      "city": "Damanhour",
+      "city_arabic": "دمنهور",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 108,
+      "governorate": "Al Behaira",
+      "city": "Badr",
+      "city_arabic": "بدر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 109,
+      "governorate": "Al Behaira",
+      "city": "Al delengaat",
+      "city_arabic": "الدلنجات",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 110,
+      "governorate": "Al Behaira",
+      "city": "Al Rahmaniyah",
+      "city_arabic": "الرحمانية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 111,
+      "governorate": "Al Behaira",
+      "city": "Al Nubaria al-gedida",
+      "city_arabic": "النوبارية الجديدة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 112,
+      "governorate": "Al Behaira",
+      "city": "Al Behaira",
+      "city_arabic": "البحيرة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 113,
+      "governorate": "Al Behaira",
+      "city": "Abu Hummus",
+      "city_arabic": "أبو حمص",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 114,
+      "governorate": "Al Behaira",
+      "city": "Abu al-Matamir",
+      "city_arabic": "أبو المطامير",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 115,
+      "governorate": "Al Behaira",
+      "city": "Wadi",
+      "city_arabic": "وادي",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 116,
+      "governorate": "Al Mounofia",
+      "city": "Tella",
+      "city_arabic": "تلا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 117,
+      "governorate": "Al Mounofia",
+      "city": "Shebeen Alkom",
+      "city_arabic": "شبين الكوم",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 118,
+      "governorate": "Al Mounofia",
+      "city": "Sarss",
+      "city_arabic": "سرس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 119,
+      "governorate": "Al Mounofia",
+      "city": "Qwessna",
+      "city_arabic": "قويسنا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 120,
+      "governorate": "Al Mounofia",
+      "city": "Menouf",
+      "city_arabic": "منوف",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 121,
+      "governorate": "Al Mounofia",
+      "city": "Hay Sharq",
+      "city_arabic": "حي شرق",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 122,
+      "governorate": "Al Mounofia",
+      "city": "Hay Gharb",
+      "city_arabic": "حي غرب",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 123,
+      "governorate": "Al Mounofia",
+      "city": "Ashmoun",
+      "city_arabic": "أشمون",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 124,
+      "governorate": "Al Mounofia",
+      "city": "Al shouhdaa",
+      "city_arabic": "الشهداء",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 125,
+      "governorate": "Al Mounofia",
+      "city": "Al sadat",
+      "city_arabic": "السادات",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 126,
+      "governorate": "Al Mounofia",
+      "city": "Al bagour",
+      "city_arabic": "الباجور",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 127,
+      "governorate": "Algharbia",
+      "city": "Al Mahalla el",
+      "city_arabic": "المحلة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 128,
+      "governorate": "Algharbia",
+      "city": "Tanta",
+      "city_arabic": "طنطا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 129,
+      "governorate": "Algharbia",
+      "city": "Kafr Al Zayat",
+      "city_arabic": "كفر الزيات",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 130,
+      "governorate": "Algharbia",
+      "city": "Samannoud",
+      "city_arabic": "سمنود",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 131,
+      "governorate": "Algharbia",
+      "city": "Zifta",
+      "city_arabic": "زفتى",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 132,
+      "governorate": "Algharbia",
+      "city": "Basyoun",
+      "city_arabic": "بسيون",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 133,
+      "governorate": "Algharbia",
+      "city": "Desouk",
+      "city_arabic": "دسوق",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 134,
+      "governorate": "Dakhahlia",
+      "city": "Tami Alamdid",
+      "city_arabic": "تمي الأمديد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 135,
+      "governorate": "Dakhahlia",
+      "city": "Talkha",
+      "city_arabic": "طلخا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 136,
+      "governorate": "Dakhahlia",
+      "city": "Sherbeen",
+      "city_arabic": "شربين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 137,
+      "governorate": "Dakhahlia",
+      "city": "Meniat Al Nassr",
+      "city_arabic": "منية النصر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 138,
+      "governorate": "Dakhahlia",
+      "city": "Meit Ghamr",
+      "city_arabic": "ميت غمر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 139,
+      "governorate": "Dakhahlia",
+      "city": "Meit Salseil",
+      "city_arabic": "ميت سلسيل",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 140,
+      "governorate": "Dakhahlia",
+      "city": "Mahla Demna",
+      "city_arabic": "محلة دمنة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 141,
+      "governorate": "Dakhahlia",
+      "city": "Gamassa",
+      "city_arabic": "جمصة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 142,
+      "governorate": "Dakhahlia",
+      "city": "Dekerness",
+      "city_arabic": "دكرنس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 143,
+      "governorate": "Dakhahlia",
+      "city": "Dakhahlia",
+      "city_arabic": "الدقهلية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 144,
+      "governorate": "Dakhahlia",
+      "city": "Belqass",
+      "city_arabic": "بلقاس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 145,
+      "governorate": "Dakhahlia",
+      "city": "Bani Ebeid",
+      "city_arabic": "بني عبيد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 146,
+      "governorate": "Dakhahlia",
+      "city": "Banbro",
+      "city_arabic": "منية النصر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 147,
+      "governorate": "Dakhahlia",
+      "city": "Al senbelaween",
+      "city_arabic": "السنبلاوين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 148,
+      "governorate": "Dakhahlia",
+      "city": "Al matria",
+      "city_arabic": "المطرية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 149,
+      "governorate": "Dakhahlia",
+      "city": "Al gamlia",
+      "city_arabic": "الجمالية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 150,
+      "governorate": "Dakhahlia",
+      "city": "Al Qourdi",
+      "city_arabic": "الكردي",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 151,
+      "governorate": "Dakhahlia",
+      "city": "Al Manzala",
+      "city_arabic": "المنزلة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 152,
+      "governorate": "Dakhahlia",
+      "city": "Al Mansoura",
+      "city_arabic": "المنصورة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 153,
+      "governorate": "Dakhahlia",
+      "city": "Aga",
+      "city_arabic": "أجا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 154,
+      "governorate": "Dammitta",
+      "city": "Rass Al Bar",
+      "city_arabic": "رأس البر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 155,
+      "governorate": "Dammitta",
+      "city": "Meet Abu Ghaleb",
+      "city_arabic": "ميت أبو غالب",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 156,
+      "governorate": "Dammitta",
+      "city": "Kafr Saad",
+      "city_arabic": "كفر سعد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 157,
+      "governorate": "Dammitta",
+      "city": "Kafr Albatekh",
+      "city_arabic": "كفر البطيخ",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 158,
+      "governorate": "Dammitta",
+      "city": "Faraskour",
+      "city_arabic": "فارسكور",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 159,
+      "governorate": "Dammitta",
+      "city": "Ezbat Al Borg",
+      "city_arabic": "عزبة البرج",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 160,
+      "governorate": "Dammitta",
+      "city": "Damietta  Al Gedida",
+      "city_arabic": "دمياط الجديدة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 161,
+      "governorate": "Dammitta",
+      "city": "Dammitta",
+      "city_arabic": "دمياط",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 162,
+      "governorate": "Dammitta",
+      "city": "Al zarqa",
+      "city_arabic": "الزرقا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 163,
+      "governorate": "Dammitta",
+      "city": "Al rawda",
+      "city_arabic": "الروضة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 164,
+      "governorate": "Dammitta",
+      "city": "Al Serou",
+      "city_arabic": "السرو",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 165,
+      "governorate": "Elsharqia",
+      "city": "Zaqazeq",
+      "city_arabic": "الزقازيق",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 166,
+      "governorate": "Elsharqia",
+      "city": "San Al Hagar Alqeblia",
+      "city_arabic": "صان الحجر القبلية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 167,
+      "governorate": "Elsharqia",
+      "city": "Monshaet Abu Omar",
+      "city_arabic": "منشأة أبو عمر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 168,
+      "governorate": "Elsharqia",
+      "city": "Menia Al Qamh",
+      "city_arabic": "منيا القمح",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 169,
+      "governorate": "Elsharqia",
+      "city": "Mashtoul Alsouk",
+      "city_arabic": "مشتول السوق",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 170,
+      "governorate": "Elsharqia",
+      "city": "Kafr Sakr",
+      "city_arabic": "كفر صقر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 171,
+      "governorate": "Elsharqia",
+      "city": "Hehia",
+      "city_arabic": "ههيا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 172,
+      "governorate": "Elsharqia",
+      "city": "faqouss",
+      "city_arabic": "فاقوس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 173,
+      "governorate": "Elsharqia",
+      "city": "Derb Negm",
+      "city_arabic": "ديرب نجم",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 174,
+      "governorate": "Elsharqia",
+      "city": "Belbass",
+      "city_arabic": "بلبيس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 175,
+      "governorate": "Elsharqia",
+      "city": "Awlaad sakr",
+      "city_arabic": "أولاد صقر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 176,
+      "governorate": "Elsharqia",
+      "city": "Alsalhia Algedieda",
+      "city_arabic": "الصالحية الجديدة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 177,
+      "governorate": "Elsharqia",
+      "city": "Alqarein",
+      "city_arabic": "القرين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 178,
+      "governorate": "Elsharqia",
+      "city": "Alqaniaat",
+      "city_arabic": "القنايات",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 179,
+      "governorate": "Elsharqia",
+      "city": "Al Ibrahemia",
+      "city_arabic": "الإبراهيمية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 180,
+      "governorate": "Elsharqia",
+      "city": "Al Hussania",
+      "city_arabic": "الحسينية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 181,
+      "governorate": "Elsharqia",
+      "city": "Abu Kbeir",
+      "city_arabic": "أبو كبير",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 182,
+      "governorate": "Elsharqia",
+      "city": "Abu Hamaad",
+      "city_arabic": "أبو حماد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 183,
+      "governorate": "Elsharqia",
+      "city": "10th of Ramadan city",
+      "city_arabic": "مدينة العاشر من رمضان",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 184,
+      "governorate": "Elsharqia",
+      "city": "Elsharqia",
+      "city_arabic": "الشرقية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 185,
+      "governorate": "Ismalia",
+      "city": "Qantara Sharq",
+      "city_arabic": "القنطرة شرق",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 186,
+      "governorate": "Ismalia",
+      "city": "Ismalia",
+      "city_arabic": "الإسماعيلية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 187,
+      "governorate": "Ismalia",
+      "city": "Fayed",
+      "city_arabic": "فايد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 188,
+      "governorate": "Ismalia",
+      "city": "alqasaasayn",
+      "city_arabic": "القصاصين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 189,
+      "governorate": "Ismalia",
+      "city": "Alahyaa Alawal Althany - Althaless",
+      "city_arabic": "الأحياء الأول والثاني والثالث",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 190,
+      "governorate": "Ismalia",
+      "city": "Al Tall Al Kbier",
+      "city_arabic": "التل الكبير",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 191,
+      "governorate": "Ismalia",
+      "city": "Abu Sir",
+      "city_arabic": "أبو صوير",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 192,
+      "governorate": "kafr Al Sheikh",
+      "city": "Sedi Salem",
+      "city_arabic": "سيدي سالم",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 193,
+      "governorate": "kafr Al Sheikh",
+      "city": "Sedi Ghazi",
+      "city_arabic": "سيدي غازي",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 194,
+      "governorate": "kafr Al Sheikh",
+      "city": "Qeleen",
+      "city_arabic": "قلين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 195,
+      "governorate": "kafr Al Sheikh",
+      "city": "Matobus",
+      "city_arabic": "مطوبس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 196,
+      "governorate": "kafr Al Sheikh",
+      "city": "Masseir",
+      "city_arabic": "مسير",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 197,
+      "governorate": "kafr Al Sheikh",
+      "city": "Massef Balteem",
+      "city_arabic": "مصيف بلطيم",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 198,
+      "governorate": "kafr Al Sheikh",
+      "city": "Kafr Al-sheikh",
+      "city_arabic": "كفر الشيخ",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 199,
+      "governorate": "kafr Al Sheikh",
+      "city": "Fewa",
+      "city_arabic": "فوه",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 200,
+      "governorate": "kafr Al Sheikh",
+      "city": "Borg Al Broloss",
+      "city_arabic": "برج البرلس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 201,
+      "governorate": "kafr Al Sheikh",
+      "city": "Bella",
+      "city_arabic": "بيلا",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 202,
+      "governorate": "kafr Al Sheikh",
+      "city": "Balteem",
+      "city_arabic": "بلطيم",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 203,
+      "governorate": "kafr Al Sheikh",
+      "city": "Al reyad",
+      "city_arabic": "الرياض",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 204,
+      "governorate": "kafr Al Sheikh",
+      "city": "Al hamoul",
+      "city_arabic": "الحامول",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 205,
+      "governorate": "Port Said",
+      "city": "Port Said",
+      "city_arabic": "بورسعيد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 206,
+      "governorate": "Port Said",
+      "city": "Port Fouad",
+      "city_arabic": "بورفؤاد",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 207,
+      "governorate": "Port Said",
+      "city": "Sharq-e-Tafrea'a",
+      "city_arabic": "شرق التفريعة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 208,
+      "governorate": "Qalyubia",
+      "city": "Toukh",
+      "city_arabic": "طوخ",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 209,
+      "governorate": "Qalyubia",
+      "city": "Shoubra Alkhaima",
+      "city_arabic": "شبرا الخيمة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 210,
+      "governorate": "Qalyubia",
+      "city": "Shebeen Alqanater",
+      "city_arabic": "شبين القناطر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 211,
+      "governorate": "Qalyubia",
+      "city": "Qaliub",
+      "city_arabic": "قليوب",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 212,
+      "governorate": "Qalyubia",
+      "city": "Qaha",
+      "city_arabic": "قها",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 213,
+      "governorate": "Qalyubia",
+      "city": "Kanater Khairia",
+      "city_arabic": "القناطر الخيرية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 214,
+      "governorate": "Qalyubia",
+      "city": "Kafr Shoukr",
+      "city_arabic": "كفر شكر",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 215,
+      "governorate": "Qalyubia",
+      "city": "Banha",
+      "city_arabic": "بنها",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 216,
+      "governorate": "Qalyubia",
+      "city": "Alobour",
+      "city_arabic": "العبور",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 217,
+      "governorate": "Qalyubia",
+      "city": "Alkhanka",
+      "city_arabic": "الخانكة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 218,
+      "governorate": "Qalyubia",
+      "city": "Al Khousoss",
+      "city_arabic": "الخصوص",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 219,
+      "governorate": "Qalyubia",
+      "city": "Qalyubia",
+      "city_arabic": "القليوبية",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 220,
+      "governorate": "Suez",
+      "city": "Suez",
+      "city_arabic": "السويس",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 221,
+      "governorate": "Suez",
+      "city": "Al Soukhna",
+      "city_arabic": "السخنة",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 222,
+      "governorate": "Suez",
+      "city": "El Ganayen",
+      "city_arabic": "الجناين",
+      "candidate_zone_ids": [
+        3
+      ],
+      "zone_id": 3,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 223,
+      "governorate": "Alfayoum",
+      "city": "Youssef Alsedeik",
+      "city_arabic": "يوسف الصديق",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 224,
+      "governorate": "Alfayoum",
+      "city": "waadi al rayaan",
+      "city_arabic": "وادي الريان",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 225,
+      "governorate": "Alfayoum",
+      "city": "Tamiea",
+      "city_arabic": "طامية",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 226,
+      "governorate": "Alfayoum",
+      "city": "Snourss",
+      "city_arabic": "سنورس",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 227,
+      "governorate": "Alfayoum",
+      "city": "madinat alfayuwm aljadida",
+      "city_arabic": "مدينة الفيوم الجديدة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 228,
+      "governorate": "Alfayoum",
+      "city": "Itsa",
+      "city_arabic": "إطسا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 229,
+      "governorate": "Alfayoum",
+      "city": "Abshuaa",
+      "city_arabic": "إبشواي",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 230,
+      "governorate": "Alfayoum",
+      "city": "Alfayoum",
+      "city_arabic": "الفيوم",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 231,
+      "governorate": "Assiut",
+      "city": "Sahel Seleim",
+      "city_arabic": "ساحل سليم",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 232,
+      "governorate": "Assiut",
+      "city": "Sadfaa",
+      "city_arabic": "صدفا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 233,
+      "governorate": "Assiut",
+      "city": "Manfalout",
+      "city_arabic": "منفلوط",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 234,
+      "governorate": "Assiut",
+      "city": "Dairout",
+      "city_arabic": "ديروط",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 235,
+      "governorate": "Assiut",
+      "city": "Assiut Algedida",
+      "city_arabic": "أسيوط الجديدة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 236,
+      "governorate": "Assiut",
+      "city": "Assiut",
+      "city_arabic": "أسيوط",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 237,
+      "governorate": "Assiut",
+      "city": "Alzaheir Alsahrawy",
+      "city_arabic": "الظهير الصحراوي",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 238,
+      "governorate": "Assiut",
+      "city": "Alqossya",
+      "city_arabic": "القوصية",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 239,
+      "governorate": "Assiut",
+      "city": "Alghaniem",
+      "city_arabic": "الغنايم",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 240,
+      "governorate": "Assiut",
+      "city": "Alfath",
+      "city_arabic": "الفتح",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 241,
+      "governorate": "Assiut",
+      "city": "Albadry",
+      "city_arabic": "البداري",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 242,
+      "governorate": "Assiut",
+      "city": "Abu Teih",
+      "city_arabic": "أبو تيج",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 243,
+      "governorate": "Assiut",
+      "city": "Abnoob",
+      "city_arabic": "أبنوب",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 244,
+      "governorate": "Beni Suef",
+      "city": "Smastta",
+      "city_arabic": "سمسطا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 245,
+      "governorate": "Beni Suef",
+      "city": "Nasser",
+      "city_arabic": "ناصر",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 246,
+      "governorate": "Beni Suef",
+      "city": "Ihnassya",
+      "city_arabic": "إهناسيا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 247,
+      "governorate": "Beni Suef",
+      "city": "Ben Suief Algedida",
+      "city_arabic": "بني سويف الجديدة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 248,
+      "governorate": "Beni Suef",
+      "city": "Ben Suief",
+      "city_arabic": "بني سويف",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 249,
+      "governorate": "Beni Suef",
+      "city": "Biba",
+      "city_arabic": "ببا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 250,
+      "governorate": "Beni Suef",
+      "city": "Alwastta",
+      "city_arabic": "الواسطي",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 251,
+      "governorate": "Beni Suef",
+      "city": "Alfeshin",
+      "city_arabic": "الفشن",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 252,
+      "governorate": "El Menia",
+      "city": "Samalout",
+      "city_arabic": "سمالوط",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 253,
+      "governorate": "El Menia",
+      "city": "Mattay",
+      "city_arabic": "مطاي",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 254,
+      "governorate": "El Menia",
+      "city": "Malawy",
+      "city_arabic": "ملوي",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 255,
+      "governorate": "El Menia",
+      "city": "Maghagha",
+      "city_arabic": "مغاغة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 256,
+      "governorate": "El Menia",
+      "city": "El Menia  Algedida",
+      "city_arabic": "المنيا الجديدة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 257,
+      "governorate": "El Menia",
+      "city": "El Menia",
+      "city_arabic": "المنيا",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 258,
+      "governorate": "El Menia",
+      "city": "Dirmouass",
+      "city_arabic": "ديرمواس",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 259,
+      "governorate": "El Menia",
+      "city": "Bani Mazar",
+      "city_arabic": "بني مزار",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 260,
+      "governorate": "El Menia",
+      "city": "Aladwa",
+      "city_arabic": "العدوة",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 261,
+      "governorate": "El Menia",
+      "city": "Abu Qorqass",
+      "city_arabic": "أبو قرقاص",
+      "candidate_zone_ids": [
+        4
+      ],
+      "zone_id": 4,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 262,
+      "governorate": "Aswan",
+      "city": "New toushka City",
+      "city_arabic": "توشكى الجديدة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 263,
+      "governorate": "Aswan",
+      "city": "New Aswan City",
+      "city_arabic": "أسوان الجديدة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 264,
+      "governorate": "Aswan",
+      "city": "Nassr Alnouba",
+      "city_arabic": "نصر النوبة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 265,
+      "governorate": "Aswan",
+      "city": "Kom Ambo",
+      "city_arabic": "كوم أمبو",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 266,
+      "governorate": "Aswan",
+      "city": "Kalabsha",
+      "city_arabic": "كلابشة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 267,
+      "governorate": "Aswan",
+      "city": "Edfo",
+      "city_arabic": "إدفو",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 268,
+      "governorate": "Aswan",
+      "city": "Drawo",
+      "city_arabic": "دراو",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 269,
+      "governorate": "Aswan",
+      "city": "Aswan",
+      "city_arabic": "أسوان",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 270,
+      "governorate": "Aswan",
+      "city": "Alsabaia",
+      "city_arabic": "السباعية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 271,
+      "governorate": "Aswan",
+      "city": "Albesaila",
+      "city_arabic": "البصيلية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 272,
+      "governorate": "Aswan",
+      "city": "Al Radessa",
+      "city_arabic": "الرديسية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 273,
+      "governorate": "Aswan",
+      "city": "Abu Sembal Alsayhia",
+      "city_arabic": "أبو سمبل السياحية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 274,
+      "governorate": "Aswan",
+      "city": "Abu Sembal",
+      "city_arabic": "أبو سمبل",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 275,
+      "governorate": "Aswan",
+      "city": "Toshka",
+      "city_arabic": "توشكى",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 276,
+      "governorate": "Luxor",
+      "city": "Teiba Algedida",
+      "city_arabic": "طيبة الجديدة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 277,
+      "governorate": "Luxor",
+      "city": "Luxor Algedida",
+      "city_arabic": "الأقصر الجديدة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 278,
+      "governorate": "Luxor",
+      "city": "Luxor",
+      "city_arabic": "الأقصر",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 279,
+      "governorate": "Luxor",
+      "city": "Issna",
+      "city_arabic": "إسنا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 280,
+      "governorate": "Luxor",
+      "city": "Armant",
+      "city_arabic": "أرمنت",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 281,
+      "governorate": "Luxor",
+      "city": "Altoud",
+      "city_arabic": "الطود",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 282,
+      "governorate": "Luxor",
+      "city": "Alqarna",
+      "city_arabic": "القرنة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 283,
+      "governorate": "Luxor",
+      "city": "Al Zeinya",
+      "city_arabic": "الزينية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 284,
+      "governorate": "Luxor",
+      "city": "Al bayada",
+      "city_arabic": "البياضية",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 285,
+      "governorate": "Qena",
+      "city": "Quoss",
+      "city_arabic": "قوص",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 286,
+      "governorate": "Qena",
+      "city": "Qena Algedida",
+      "city_arabic": "قنا الجديدة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 287,
+      "governorate": "Qena",
+      "city": "Qena",
+      "city_arabic": "قنا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 288,
+      "governorate": "Qena",
+      "city": "Qaft",
+      "city_arabic": "قفط",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 289,
+      "governorate": "Qena",
+      "city": "Naqada",
+      "city_arabic": "نقادة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 290,
+      "governorate": "Qena",
+      "city": "Naga Hamadi",
+      "city_arabic": "نجع حمادي",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 291,
+      "governorate": "Qena",
+      "city": "Farshout",
+      "city_arabic": "فرشوط",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 292,
+      "governorate": "Qena",
+      "city": "Dashna",
+      "city_arabic": "دشنا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 293,
+      "governorate": "Qena",
+      "city": "Alwakf",
+      "city_arabic": "الوقف",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 294,
+      "governorate": "Qena",
+      "city": "Abu tesht",
+      "city_arabic": "أبو تشت",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 295,
+      "governorate": "Red Sea",
+      "city": "Safaja",
+      "city_arabic": "سفاجا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 296,
+      "governorate": "Red Sea",
+      "city": "Ras Gharib",
+      "city_arabic": "رأس غارب",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 297,
+      "governorate": "Red Sea",
+      "city": "Marsa Allam",
+      "city_arabic": "مرسى علم",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 298,
+      "governorate": "Red Sea",
+      "city": "Hurghada",
+      "city_arabic": "الغردقة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 299,
+      "governorate": "Red Sea",
+      "city": "Halyeb",
+      "city_arabic": "حلايب",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 300,
+      "governorate": "Red Sea",
+      "city": "Alqussier",
+      "city_arabic": "القصير",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 301,
+      "governorate": "Red Sea",
+      "city": "Al shalatten",
+      "city_arabic": "الشلاتين",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 302,
+      "governorate": "Red Sea",
+      "city": "Red Sea",
+      "city_arabic": "البحر الأحمر",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 303,
+      "governorate": "Sohag",
+      "city": "Tama",
+      "city_arabic": "طما",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 304,
+      "governorate": "Sohag",
+      "city": "Tahtaa",
+      "city_arabic": "طهطا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 305,
+      "governorate": "Sohag",
+      "city": "Suhag",
+      "city_arabic": "سوهاج",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 306,
+      "governorate": "Sohag",
+      "city": "Saqalta",
+      "city_arabic": "ساقلتة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 307,
+      "governorate": "Sohag",
+      "city": "Hay Alqawssar",
+      "city_arabic": "حي الكوثر",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 308,
+      "governorate": "Sohag",
+      "city": "Gouhaina",
+      "city_arabic": "جهينة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 309,
+      "governorate": "Sohag",
+      "city": "Gerga",
+      "city_arabic": "جرجا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 310,
+      "governorate": "Sohag",
+      "city": "Dar Alsalam",
+      "city_arabic": "دار السلام",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 311,
+      "governorate": "Sohag",
+      "city": "Al manshaa",
+      "city_arabic": "المنشأة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 312,
+      "governorate": "Sohag",
+      "city": "Al Maragha",
+      "city_arabic": "المراغة",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 313,
+      "governorate": "Sohag",
+      "city": "Al Ballena",
+      "city_arabic": "البلينا",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 314,
+      "governorate": "Sohag",
+      "city": "Akhmiem",
+      "city_arabic": "أخميم",
+      "candidate_zone_ids": [
+        5
+      ],
+      "zone_id": 5,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 315,
+      "governorate": "New Valley",
+      "city": "Paris",
+      "city_arabic": "باريس",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 316,
+      "governorate": "New Valley",
+      "city": "Pallat",
+      "city_arabic": "بلاط",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 317,
+      "governorate": "New Valley",
+      "city": "Mout",
+      "city_arabic": "موط",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 318,
+      "governorate": "New Valley",
+      "city": "Al kharga",
+      "city_arabic": "الخارجة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 319,
+      "governorate": "New Valley",
+      "city": "Al Farafra",
+      "city_arabic": "الفرافرة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 320,
+      "governorate": "New Valley",
+      "city": "Siwa",
+      "city_arabic": "سيوة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 321,
+      "governorate": "New Valley",
+      "city": "Kharja Oases",
+      "city_arabic": "واحة الخارجة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 322,
+      "governorate": "New Valley",
+      "city": "Dakhla Oases",
+      "city_arabic": "واحة الداخلة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 323,
+      "governorate": "Matrouh",
+      "city": "North Coast Above 90Km",
+      "city_arabic": "الساحل الشمالي فوق 90 كم",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 324,
+      "governorate": "Matrouh",
+      "city": "Um Alrekhim",
+      "city_arabic": "أم الرخم",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 325,
+      "governorate": "Matrouh",
+      "city": "Sidi Heneish",
+      "city_arabic": "سيدي حنيش",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 326,
+      "governorate": "Matrouh",
+      "city": "Ras Alhikma",
+      "city_arabic": "رأس الحكمة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 327,
+      "governorate": "Matrouh",
+      "city": "Kashuk Emaara",
+      "city_arabic": "كشك عمارة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 328,
+      "governorate": "Matrouh",
+      "city": "Halazein",
+      "city_arabic": "الحلازين",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 329,
+      "governorate": "Matrouh",
+      "city": "Awlad Marii",
+      "city_arabic": "أولاد مري",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 330,
+      "governorate": "Matrouh",
+      "city": "Atnouh",
+      "city_arabic": "أتنوح",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 331,
+      "governorate": "Matrouh",
+      "city": "Al zayat",
+      "city_arabic": "الزيات",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 332,
+      "governorate": "Matrouh",
+      "city": "Al suynat",
+      "city_arabic": "السوينات",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 333,
+      "governorate": "Matrouh",
+      "city": "Al salom",
+      "city_arabic": "السلام",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 334,
+      "governorate": "Matrouh",
+      "city": "Al qawasim",
+      "city_arabic": "القواسم",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 335,
+      "governorate": "Matrouh",
+      "city": "Al qasr",
+      "city_arabic": "القصر",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 336,
+      "governorate": "Matrouh",
+      "city": "Al oush",
+      "city_arabic": "العوش",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 337,
+      "governorate": "Matrouh",
+      "city": "Al nasr",
+      "city_arabic": "النصر",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 338,
+      "governorate": "Matrouh",
+      "city": "Al grawla",
+      "city_arabic": "الجراولة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 339,
+      "governorate": "Matrouh",
+      "city": "Al dakhla",
+      "city_arabic": "الداخلة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 340,
+      "governorate": "Matrouh",
+      "city": "Abuluho Alganouby",
+      "city_arabic": "أبو لحو الجنوبي",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 341,
+      "governorate": "Matrouh",
+      "city": "Abuluho Albahri",
+      "city_arabic": "أبو لحو البحري",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 342,
+      "governorate": "Matrouh",
+      "city": "Abu Mareiq",
+      "city_arabic": "أبو مريق",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 343,
+      "governorate": "Matrouh",
+      "city": "Matrouh",
+      "city_arabic": "مطروح",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 344,
+      "governorate": "Matrouh",
+      "city": "Al Hammam",
+      "city_arabic": "الحمام",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 345,
+      "governorate": "Matrouh",
+      "city": "Al almeen",
+      "city_arabic": "العلمين",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 346,
+      "governorate": "Matrouh",
+      "city": "Brani",
+      "city_arabic": "براني",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 347,
+      "governorate": "Matrouh",
+      "city": "Negela",
+      "city_arabic": "النجيلة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 348,
+      "governorate": "Matrouh",
+      "city": "Salloum",
+      "city_arabic": "السلوم",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 349,
+      "governorate": "North Seina",
+      "city": "Rafah",
+      "city_arabic": "رفح",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 350,
+      "governorate": "North Seina",
+      "city": "Bir Alabd",
+      "city_arabic": "بئر العبد",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 351,
+      "governorate": "North Seina",
+      "city": "Al sheikh Zwayd",
+      "city_arabic": "الشيخ زويد",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 352,
+      "governorate": "North Seina",
+      "city": "Al nakhl",
+      "city_arabic": "النخل",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 353,
+      "governorate": "North Seina",
+      "city": "Al hassana",
+      "city_arabic": "الحسنة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 354,
+      "governorate": "North Seina",
+      "city": "Al Aresh",
+      "city_arabic": "العريش",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 355,
+      "governorate": "North Seina",
+      "city": "North Sinai",
+      "city_arabic": "شمال سيناء",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 356,
+      "governorate": "South Seina",
+      "city": "Tor Sinai",
+      "city_arabic": "طور سيناء",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 357,
+      "governorate": "South Seina",
+      "city": "Taba",
+      "city_arabic": "طابا",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 358,
+      "governorate": "South Seina",
+      "city": "Sharm Alsheikh",
+      "city_arabic": "شرم الشيخ",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 359,
+      "governorate": "South Seina",
+      "city": "Saint Katreen",
+      "city_arabic": "سانت كاترين",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 360,
+      "governorate": "South Seina",
+      "city": "Rass Sudr",
+      "city_arabic": "رأس سدر",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 361,
+      "governorate": "South Seina",
+      "city": "Nwabea",
+      "city_arabic": "نويبع",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 362,
+      "governorate": "South Seina",
+      "city": "Dahab",
+      "city_arabic": "دهب",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 363,
+      "governorate": "South Seina",
+      "city": "Abu Zeniema",
+      "city_arabic": "أبو زنيمة",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 364,
+      "governorate": "South Seina",
+      "city": "Abu Redeis",
+      "city_arabic": "أبو رديس",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 365,
+      "governorate": "South Seina",
+      "city": "South Sinai",
+      "city_arabic": "جنوب سيناء",
+      "candidate_zone_ids": [
+        6
+      ],
+      "zone_id": 6,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 366,
+      "governorate": "Cairo 2",
+      "city": "Others",
+      "city_arabic": "أخرى",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 367,
+      "governorate": "Cairo 2",
+      "city": "New capital",
+      "city_arabic": "العاصمة الإدارية الجديدة",
+      "candidate_zone_ids": [
+        2
+      ],
+      "zone_id": 2,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 368,
+      "governorate": "Cairo 2",
+      "city": "Manshiat Nasr",
+      "city_arabic": "منشأة ناصر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 369,
+      "governorate": "Cairo 2",
+      "city": "Al Waily",
+      "city_arabic": "الوايلي",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 370,
+      "governorate": "Cairo 2",
+      "city": "Al Marg",
+      "city_arabic": "المرج",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 371,
+      "governorate": "Cairo 2",
+      "city": "Al Zawya Elhamra",
+      "city_arabic": "الزاوية الحمراء",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 372,
+      "governorate": "Giza 2",
+      "city": "Al badrasheen",
+      "city_arabic": "البدرشين",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 373,
+      "governorate": "Giza 2",
+      "city": "Kerdassa",
+      "city_arabic": "كرداسة",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 374,
+      "governorate": "Giza 2",
+      "city": "Al Hawamdia",
+      "city_arabic": "الحوامدية",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 375,
+      "governorate": "Giza 2",
+      "city": "Al Wahat city",
+      "city_arabic": "مدينة الواحات",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 376,
+      "governorate": "Giza 2",
+      "city": "Atfeh",
+      "city_arabic": "أطفيح",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 377,
+      "governorate": "Giza 2",
+      "city": "Alsaff",
+      "city_arabic": "الصف",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 378,
+      "governorate": "Giza 2",
+      "city": "Monshaet Alqanater",
+      "city_arabic": "منشأة القناطر",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 379,
+      "governorate": "Giza 2",
+      "city": "Alayaat",
+      "city_arabic": "العياط",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 380,
+      "governorate": "Giza 2",
+      "city": "Awssem",
+      "city_arabic": "أوسيم",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 381,
+      "governorate": "Giza 2",
+      "city": "Abo AlNomross",
+      "city_arabic": "أبو النمرس",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    },
+    {
+      "provider_city_id": 382,
+      "governorate": "Giza 2",
+      "city": "Al barageel",
+      "city_arabic": "البراجيل",
+      "candidate_zone_ids": [
+        1,
+        2
+      ],
+      "zone_id": null,
+      "review_state": "unverified"
+    }
+  ],
+  "cod_basis": "unverified",
+  "failed_delivery_basis": "unverified"
+}

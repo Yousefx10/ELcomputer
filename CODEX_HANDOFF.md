@@ -1,3 +1,44 @@
+# Company tariff manager implemented locally — 2026-10-23
+
+- Inactive controlled-purchase deployment finished before this milestone began:
+  production1088e036c4f81048/application32f152f/schema90. Both prior approvals
+  remain consumed. No provider diagnostic/operator was repeated.
+- [B1 tariff manager](docs/shipping-tariffs.md) adds Tariffs under each PDC Shipping
+  Company: six editable zones/weights/percentages/fee and VAT bases/surcharges,
+  product/validity/effective-date controls, exact city review, version/history,
+  JSON import/preview/full diff/export, revision conflicts and durable save recovery.
+  Verified versions freeze; checkout has no reader/activation path for these rates.
+- Proposed single migration91 adds two private RLS tables, service-only commands
+  and narrow reset retention. No business seed or operational/credential change.
+  Existing PDC singleton editor remains unchanged; account consolidation is separate.
+- [Owner import package](docs/operations/shipping-tariffs/README.md) populates all six
+  price zones60/65/75/85/95/105 plus5/kg,14% VAT,0.5% COD,50% failed delivery,
+  optional0.7% insurance off,2kg base,divisor5000 and14-day invoices. No effective
+  date fabricated. Product40, rounding, fee bases/VAT scope and surcharges unverified.
+  All382 exact current alias rows remain unverified;93 Cairo/Giza candidates1|2,
+  city367 New capital candidate2, city98 North Coast unassigned. No aliases changed.
+- One targeted PostgreSQL read-only inspection confirmed90 migration identities,
+  one company,382 aliases,empty caches,saved40. No secret columns/provider requests.
+  Private evidence: ../modular-commerce-planning-20261023/. Earlier release evidence
+  is reused; no repeated production audit or browser/provider suite.
+- Latest17 tariff/native HTTP/SQL/UI/release-scope checks pass without skips;
+  unchanged Paymob/PDC/controlled-purchase regression checks also pass. Typecheck
+  passes on Node22.23.1/npm10.9.8. Exact clean build/local sealed review is next;
+  no production-applicable deployment operator or fresh execution preflight exists yet.
+- [Independent architecture plan](docs/modular-payment-shipping-plan.md) covers A1
+  company-owned provider accounts, D1 owner-only encrypted Payment Gateways/runtime
+  fallback, C1 carrier/customer/subsidy/cap/rounding snapshots and C2 concurrent-safe
+  repeat-purchase promotions. Do not combine these schema/application release units.
+- First legitimate payment/shipment can use the existing deployed architecture;
+  wider enhancements are not prerequisites. Genuine unit/value/recipient/coverage/
+  parcel/exact costs, city-only/cache/settings and narrow grant/callback approvals
+  remain required. Signed paid order plus packing precede separately approved
+  Product40/type1/COD0 booking, original REF/AWB/private VPS PDF and manual polling.
+- No production SQL/business write, import, gate/credential/Caddy/runtime change,
+  provider request, payment, booking, label, poll or Git push. New tariff release and
+  exact company-bound draft import need separate owner approvals. Public commerce,
+  signup, automatic booking/reverse and PDC webhook stay held. Roadmap preserved.
+
 # Inactive controlled purchase DEPLOY PASS — 2026-10-23
 
 - Production is1088e036c4f81048, application32f152f3e75380db1f7ca9c054098231dbbd3226,

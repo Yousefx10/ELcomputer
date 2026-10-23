@@ -1,5 +1,7 @@
 <template>
   <div class="space-y-6">
+    <DashboardCommerceShippingTariffManager v-if="tariffCompany && canConfigureShipping" ref="tariffManager" :key="tariffCompany.id" :company="tariffCompany" @close="tariffCompany = null" />
+
     <section class="rounded-2xl bg-white p-6 shadow">
       <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div class="dashboard-page-summary-copy">
@@ -490,6 +492,7 @@
             </div>
 
             <div class="flex gap-2">
+              <button v-if="canConfigureShipping && company.provider === 'pdc'" type="button" class="rounded-lg border px-4 py-3 text-sm font-medium" @click="openTariffs(company)">{{ $t('shippingTariffs.title') }}</button>
               <button
                 type="button"
                 class="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white hover:bg-gray-800"
@@ -529,6 +532,18 @@ const formError = ref('')
 const searchQuery = ref('')
 const editingId = ref('')
 const isFormOpen = ref(false)
+const tariffCompany = ref(null)
+const tariffManager = ref(null)
+const openTariffs = async company => {
+  if (tariffCompany.value?.id === company.id) {
+    tariffManager.value?.$el?.scrollIntoView({ block: 'start' })
+    return
+  }
+  if (tariffManager.value && !tariffManager.value.canLeave()) return
+  tariffCompany.value = company
+  await nextTick()
+  tariffManager.value?.$el?.scrollIntoView({ block: 'start' })
+}
 const pdcLoading = ref(false)
 const pdcSaving = ref(false)
 const pdcPageError = ref('')

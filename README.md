@@ -7,6 +7,13 @@ Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.
 
+The [Shipping Company tariff manager](docs/shipping-tariffs.md) is implemented
+locally with proposed migration91. The [owner-supplied six-zone package](docs/operations/shipping-tariffs/README.md)
+imports as an unverified draft; it does not change checkout prices. Production
+remains schema90. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
+keeps provider accounts, gateway settings, subsidies and promotions independent.
+The existing deployed path can support the separately approved first real test.
+
 The [Premium PDP finishing enhancements](docs/premium-product-finishing.md) add
 favorites, sharing, package contents, support access and curated tags.
 They reuse existing presentation metadata and services. Premium finishing release
