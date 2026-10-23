@@ -33,7 +33,7 @@ export async function createCodCheckoutFixture(options = {}) {
       finally { await connection.end() }
     }
     globalThis[key] = fixture.client
-    globalThis[key + 'Runtime'] = options.runtime || { paymobEnabled: false }
+    globalThis[key + 'Runtime'] = options.runtime || { paymobEnabled: false, public: { purchasingEnabled: true } }
     globalThis.defineEventHandler = handler => handler; globalThis.readBody = readBody; globalThis.setHeader = setHeader
     const controls = { loseResponse: false }, router = createRouter()
     for (const [method, path, file] of [

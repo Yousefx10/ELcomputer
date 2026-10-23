@@ -1,3 +1,8 @@
+Current update: [account/profile access applied](account-profile-access-receipt.md);
+[normal checkout corrections](normal-checkout-restriction.md) pass local qualification.
+Their isolated inactive build is pending. No purchasing or application deployment
+is authorized. Earlier inspection/proposal text below is retained as history.
+
 # Normal owner checkout — BLOCKED, 2026-10-23
 
 The owner will complete the normal customer journey personally:

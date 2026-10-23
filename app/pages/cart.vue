@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+definePageMeta({ middleware: 'purchasing' })
 const { uiLabel } = useUiLocale()
 
 const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
@@ -73,6 +74,7 @@ const { intlLocale } = useUiLocale()
 
 import { calculatePreorderAmounts, expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 const { items, itemCount, subtotal, isEmpty, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
+const { scope: purchaseScope } = usePurchaseAccess()
 const supabase = useSupabaseClient()
 const recommendations = ref([])
 const recommendationsLoading = ref(false)
@@ -81,7 +83,7 @@ let recommendationVersion = 0
 const formatCurrency = value => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
 const getProductLink = item => !item?.slug ? '/' : { path: `/products/${item.slug}`, query: item.variant_id ? { variant: item.variant_id } : {} }
 const getVariantColor = item => /^#[0-9a-f]{6}$/i.test(String(item?.variant_color_hex || '').trim()) ? item.variant_color_hex : ''
-const getMaximumQuantity = item => item?.selling_mode === 'preorder'
+const getMaximumQuantity = item => purchaseScope.value ? 1 : item?.selling_mode === 'preorder'
   ? Math.max(1, Math.min(99, Number(item.preorder_customer_limit || 99), Number(item.preorder_remaining ?? 99)))
   : item?.allow_out_of_stock_purchases ? 99 : Math.max(1, Number(item?.stock_quantity || 0))
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))

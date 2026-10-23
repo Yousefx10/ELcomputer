@@ -13,6 +13,12 @@ import { createPaymobIntention } from '../server/utils/payments/paymob.js'
 import { normalizePaymentMethod } from '../app/utils/paymentMethods.js'
 import { paymobPixelOptions } from '../app/utils/paymobPixel.js'
 import { requireCodCheckoutSchema } from '../server/utils/codCheckout.js'
+import { checkoutStreetAddress, checkoutProfileAddress } from '../app/utils/checkoutAddress.js'
+import { build } from 'esbuild'
+import { resolve } from 'node:path'
+
+const normalBundle = await build({entryPoints:[resolve('server/utils/normalPurchase.js')],bundle:true,write:false,format:'esm',platform:'node',alias:{'~':resolve('app')},plugins:[{name:'absolute-h3',setup(b){b.onResolve({filter:/^h3$/},()=>({path:import.meta.resolve('h3'),external:true}))}}]})
+const { authorizeNormalCheckout } = await import('data:text/javascript;base64,'+Buffer.from(normalBundle.outputFiles[0].text).toString('base64'))
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')
 const runtime = { paymobEnabled: true, paymobMode: 'test', paymobSecretKey: 'egy_sk_test_fixture', paymobPublicKey: 'egy_pk_test_fixture', paymobHmacSecret: 'fixture-hmac', paymobCardIntegrationId: '12345', paymobCardIntegrationMode: 'test', public: { siteUrl: 'https://staging.example.invalid' } }
@@ -35,8 +41,8 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
   const source = read('server/api/checkout/index.post.js').replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '').replace('export default defineEventHandler', 'captureHandler')
   runInNewContext(commandSource + '\n' + source, {
     captureHandler: fn => { handler = fn }, defineEventHandler: fn => fn,
-    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema,
-    readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, paymobEnabled: enabled }),
+    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema, checkoutStreetAddress, checkoutProfileAddress, authorizeNormalCheckout,
+    readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, public: { ...runtime.public, purchasingEnabled: true }, paymobEnabled: enabled }),
     requireCustomerRequest: async () => ({ authUser: { id: user, email: 'fixture@example.invalid' }, supabaseAdmin: db }),
     isStoreAnalyticsUuid: value => /^[0-9a-f-]{36}$/i.test(value), recordStoreOrderCreated: async () => {}, console
   })

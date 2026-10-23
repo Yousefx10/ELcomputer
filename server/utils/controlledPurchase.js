@@ -30,14 +30,14 @@ export const controlledPurchaseScope = (runtime, user, { now = Date.now(), readO
 
 // This runtime is request-local, after exact scope/Auth checks. The global gates
 // and the public purchase/provider routes remain unchanged.
-const paymentRuntime = runtime => {
+export const controlledPaymentRuntime = runtime => {
   if (runtime.paymobMode !== 'live' || runtime.paymobCardIntegrationMode !== 'live') fail()
   return { ...runtime, paymobEnabled: true, paymobLiveRequestsEnabled: true }
 }
-const token = (scope, quoteId) => createHmac('sha256', Buffer.from(scope.review_key, 'hex'))
+export const controlledReviewToken = (scope, quoteId) => createHmac('sha256', Buffer.from(scope.review_key, 'hex'))
   .update('controlled-purchase-quote-v1\n' + JSON.stringify(fields.filter(k => k !== 'review_key').map(k => scope[k])) + '\n' + quoteId).digest('hex')
 const validToken = (scope, quoteId, signature) => /^[a-f0-9]{64}$/.test(signature || '')
-  && timingSafeEqual(Buffer.from(token(scope, quoteId), 'hex'), Buffer.from(signature, 'hex'))
+  && timingSafeEqual(Buffer.from(controlledReviewToken(scope, quoteId), 'hex'), Buffer.from(signature, 'hex'))
 const rpc = async (db, name, args) => {
   const result = await db.rpc(name, args)
   if (result.error) throwCheckoutError(result.error)
@@ -50,7 +50,7 @@ const snapshot = async (db, scope, orderId) => {
   if (result.error) fail(503)
   return result.data
 }
-const verifyOrder = async (db, scope, order, attempt) => {
+export const verifyControlledOrder = async (db, scope, order, attempt) => {
   if (!order || order.user_id !== scope.customer_id || order.checkout_cart_id !== scope.cart_id || order.shipping_company_id !== scope.shipping_company_id
     || order.payment_method !== 'card' || order.is_preorder || order.currency !== 'EGP' || toMinorUnits(order.total_amount) !== scope.total_minor
     || controlledAddressHash(order) !== scope.address_sha256) fail(409)
@@ -68,7 +68,7 @@ export const controlledPurchase = async ({ db, user, runtime, action, input = {}
   const active = now >= Date.parse(scope.starts_at) && now < Date.parse(scope.expires_at)
   if (action === 'view') {
     const existing = await snapshot(db, scope)
-    if (existing) await verifyOrder(db, scope, existing)
+    if (existing) await verifyControlledOrder(db, scope, existing)
     const product = await db.from('products').select('id,title,price').eq('id', scope.product_id).maybeSingle()
     const variant = await db.from('product_variants').select('id,name').eq('id', scope.variant_id).eq('product_id', scope.product_id).maybeSingle()
     const company = await db.from('commerce_shipping_companies').select('id,name,client_shipping_price,checkout_governorates').eq('id', scope.shipping_company_id).maybeSingle()
@@ -82,18 +82,18 @@ export const controlledPurchase = async ({ db, user, runtime, action, input = {}
     return { active, paymentEnabled: active && scope.payment_enabled, expiresAt: scope.expires_at, quantity: 1,
       product: product.data, variant: variant.data, delivery: company.data, totalMinor: scope.total_minor, order: safeOrder(existing), attempt }
   }
-  const scopedRuntime = paymentRuntime(runtime)
+  const scopedRuntime = controlledPaymentRuntime(runtime)
   getPaymobConfig(scopedRuntime)
   if (action === 'pay') {
     if (!scope.payment_enabled || !UUID.test(input.order_id || '') || ![undefined, 'en', 'ar'].includes(input.locale)) fail()
     const order = await snapshot(db, scope, input.order_id)
-    await verifyOrder(db, scope, order)
+    await verifyControlledOrder(db, scope, order)
     return initiateOrderPayment({ db, userId: user.id, orderId: order.id, locale: input.locale, runtime: scopedRuntime, fetcher,
       authorizeOrder: async (current, attempt) => {
         // Recheck time on both sides of the durable claim. Callback reconciliation
         // deliberately does not depend on this grant or its expiration.
         controlledPurchaseScope(runtime, user)
-        await verifyOrder(db, scope, current, attempt)
+        await verifyControlledOrder(db, scope, current, attempt)
       }, returnPath: '/account/controlled-purchase' })
   }
   const { order, items } = normalizeCheckoutCommand({ cart_id: scope.cart_id,
@@ -104,13 +104,13 @@ export const controlledPurchase = async ({ db, user, runtime, action, input = {}
     const review = await rpc(db, 'commerce_checkout_quote', { p_user_id: user.id, p_cart_id: scope.cart_id, p_order: order, p_items: items })
     if (review.isPreorder !== false || review.lines?.length !== 1 || review.lines[0].productId !== scope.product_id
       || review.lines[0].variantId !== scope.variant_id || review.lines[0].quantity !== 1 || toMinorUnits(review.totalAmount) !== scope.total_minor) fail(409)
-    return { ...review, reviewToken: token(scope, review.quoteId) }
+    return { ...review, reviewToken: controlledReviewToken(scope, review.quoteId) }
   }
   if (!UUID.test(input.quote_id || '') || !validToken(scope, input.quote_id, input.review_token)) fail(409)
   order.order_number = `ORD-${new Date(now).toISOString().slice(0, 10).replace(/-/g, '')}-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`
   const result = await rpc(db, 'commerce_checkout_command', { p_user_id: user.id, p_cart_id: scope.cart_id, p_quote_id: input.quote_id, p_order: order, p_items: items })
   const created = result.order || result
   const saved = await snapshot(db, scope, created.id || result.order_id || result.orderId)
-  await verifyOrder(db, scope, saved)
+  await verifyControlledOrder(db, scope, saved)
   return { order: safeOrder(saved) }
 }

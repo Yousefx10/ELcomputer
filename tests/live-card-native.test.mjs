@@ -8,7 +8,7 @@ import { getPaymobConfig, hmacMessage } from '../server/utils/payments/paymob.js
 
 const runtime = () => ({ paymobEnabled: true, paymobLiveRequestsEnabled: true, paymobMode: 'live', paymobCardIntegrationMode: 'live',
   paymobSecretKey: 'egy_sk_live_owned_fixture', paymobPublicKey: 'egy_pk_live_owned_fixture', paymobHmacSecret: 'owned-isolated-hmac',
-  paymobCardIntegrationId: '12345', public: { siteUrl: 'https://orchid.example.invalid' } })
+  paymobCardIntegrationId: '12345', public: { siteUrl: 'https://orchid.example.invalid', purchasingEnabled: true } })
 const address = { first_name: 'Synthetic', last_name: 'Buyer', email: 'customer@product-save.example.invalid', phone: '01012345678', street_address: 'Owned fixture street', city: 'Fixture city', governorate: 'Cairo' }
 const receive = async (f, quantity = 6) => {
   const product = (await f.db.query("insert into public.products(title,slug,price,is_serialized,is_published,primary_warehouse_id) values('Synthetic card item',$1,100,true,true,$2) returning id", ['card-'+randomUUID(),f.warehouse])).rows[0].id

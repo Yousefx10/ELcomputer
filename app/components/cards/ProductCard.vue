@@ -17,9 +17,9 @@
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
         {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.preOrder') : isOutOfStock ? (isPurchasable ? $t('common.availableToOrder') : $t('common.outOfStock')) : $t('common.inStock') }}
       </p>
-      <button type="button" :disabled="!isPurchasable" :aria-label="requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" @click="handleAddToCart">
+      <button type="button" :disabled="!isPurchasable" :aria-label="!purchasingAllowed ? $t('productPage.buyingHeld') : requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" @click="handleAddToCart">
         <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
-        {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
+        {{ !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
       </button>
       <span class="sr-only" role="status">{{ $uiMessage(cartFeedback) }}</span>
     </div>
@@ -43,6 +43,7 @@ const props = defineProps({
 
 const { data: siteContent } = useSiteContent()
 const { addItem } = useCart()
+const { allowsProduct, scope: purchaseScope } = usePurchaseAccess()
 const addedToCart = ref(false)
 const cartFeedback = ref('')
 let feedbackTimeout
@@ -61,7 +62,8 @@ const allowOutOfStockPurchases = computed(() => {
   return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
     && !props.product.is_serialized
 })
-const isPurchasable = computed(() => isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value)
+const purchasingAllowed = computed(() => allowsProduct(props.product.id))
+const isPurchasable = computed(() => purchasingAllowed.value && (isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value))
 const embeddedVariants = computed(() => {
   if (Array.isArray(props.product.variants)) {
     return props.product.variants
@@ -74,6 +76,7 @@ const embeddedVariants = computed(() => {
   return null
 })
 const requiresOptionSelection = computed(() => {
+  if (purchaseScope.value) return true
   if (props.product.is_serialized) {
     return true
   }

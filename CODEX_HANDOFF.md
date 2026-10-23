@@ -1,3 +1,29 @@
+# Approved normal-checkout preparation — 2026-10-23
+
+- Owner approved proposal5d3181a2: local normal-flow corrections and the exact
+  account/profile Caddy access only. [Access receipt](docs/account-profile-access-receipt.md)
+  records one activation/restart. EN/AR login200, anonymous profile302; all commerce
+  holds remain. Nuxt/runtime/schema91/release08b45ffac0e524c8 unchanged.
+- Fresh preflight/backup/target validation and14 public checks passed. Row comparison
+  STOP from concurrent Auth/analytics activity is preserved; read-only review found
+  all138 other protected tables unchanged and Auth security matches deployed baseline.
+  PASS_AFTER_READONLY_REVIEW; no mutation retry, provider request or financial order.
+- [Normal checkout restriction](docs/normal-checkout-restriction.md) reuses the private
+  default-off grant on ordinary product/Cart/Checkout/capability/intention paths.
+  The browser keeps its cart/pending recovery; one signed durable command prevents
+  another cart creating a second order. Both saved address lines survive review,
+  order/provider payloads and profile saves. No schema/provider/credential change.
+- Local126 tests and typecheck PASS; one existing opt-in PostgreSQL test skipped.
+  Native real SQL and browser transport fixtures are not real provider acceptance.
+  A separate isolated inactive review build is pending. No application deployment,
+  purchasing/card/booking activation, tariff import/activation or Git push authorized.
+- Owner-selected i***@elcomputer.net can now sign in and update My Account → Profile.
+  Owner browser save, verified PDC mapping, approved delivery/gross/carrier charges
+  and truthful parcel terms remain required. Do not request pasted private details.
+- Preserve both historical handoffs, consumed tariff artifact/approvals and all
+  existing features. Normal owner checkout remains BLOCKED pending the inactive
+  application release and exact activation packet; payment and booking stay separate.
+
 # Normal customer journey required — 2026-10-23
 
 - [Normal owner checkout readiness](docs/normal-owner-checkout-readiness.md) supersedes

@@ -37,7 +37,7 @@ test('Classic retains its frozen markup and both styles use the one existing rou
   assert.equal(createHash('sha256').update(descriptor.template.content).digest('hex'), expected)
   const route = await readFile('app/pages/products/[slug].vue', 'utf8')
   const sharedScript = parse(route).descriptor.scriptSetup.content.split('const { data: productAppearance }')[0].trim()
-  assert.equal(createHash('sha256').update(sharedScript).digest('hex'), '485452286a4e0c00bcfe0b3a350934b9e1658de35d681e612d9e760670712fd4', 'Original fetching, stock, cart, Auth and SEO script is unchanged')
+  assert.equal(createHash('sha256').update(sharedScript).digest('hex'), '318c3eeb1fd7b42e5025d4d0aca6306ed49db3356c70c950b400032012d398c7', 'Shared route baseline includes the approved scoped purchasing guard')
   assert.equal((route.match(/const handleAddToCart\s*=/g) || []).length, 1)
   assert.match(route, /provideProductDetailContext/)
   assert.match(route, /productPageStyle === 'premium'/)

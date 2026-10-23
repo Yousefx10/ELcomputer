@@ -5,16 +5,20 @@ import { isStoreAnalyticsUuid, recordStoreOrderCreated } from '../../utils/store
 import { normalizeCheckoutCommand, throwCheckoutError } from '../../utils/checkoutCommand'
 import { getPaymobConfig } from '../../utils/payments/paymob.js'
 import { requireCodCheckoutSchema } from '../../utils/codCheckout'
+import { authorizeNormalCheckout } from '../../utils/normalPurchase.js'
+import { checkoutProfileAddress } from '~/utils/checkoutAddress'
 
 export default defineEventHandler(async event => {
+  setHeader(event, 'Cache-Control', 'private, no-store')
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
   const { cartId, order: orderPayload, items: orderItems } = normalizeCheckoutCommand(body, authUser)
   await requireCodCheckoutSchema(supabaseAdmin, orderPayload.payment_method)
   const quoteId = String(body?.quote_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(quoteId)) throw createError({ statusCode: 409, statusMessage: 'Review checkout before confirming.', data: { code: 'checkout:quote' } })
+  const context = authorizeNormalCheckout({ runtime: useRuntimeConfig(event), user: authUser, cartId, order: orderPayload, items: orderItems, commit: true, quoteId, signature: body.review_token })
   if (orderPayload.payment_method === 'card') {
-    try { getPaymobConfig(useRuntimeConfig(event)) }
+    try { getPaymobConfig(context.runtime) }
     catch {
       // A disabled gateway may recover a committed command. Only the guarded
       // RPC can verify its content; this lookup never returns an order itself.
@@ -25,10 +29,10 @@ export default defineEventHandler(async event => {
   orderPayload.order_number = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`
   setHeader(event, 'Cache-Control', 'private, no-store')
   const { data: orderResult, error: orderError } = await supabaseAdmin.rpc('commerce_checkout_command', {
-    p_user_id: authUser.id, p_cart_id: cartId, p_quote_id: quoteId, p_order: orderPayload, p_items: orderItems
+    p_user_id: authUser.id, p_cart_id: context.cartId, p_quote_id: quoteId, p_order: orderPayload, p_items: orderItems
   })
   if (orderError) throwCheckoutError(orderError)
-  const { first_name: firstName, last_name: lastName, email, phone, street_address: streetAddress, city, governorate } = orderPayload
+  const { first_name: firstName, last_name: lastName, email, phone, city, governorate } = orderPayload
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
   const rpcResult = Array.isArray(orderResult)
     ? orderResult[0]
@@ -84,7 +88,7 @@ export default defineEventHandler(async event => {
         email: authUser.email || email,
         full_name: fullName || authUser.email?.split('@')[0] || 'Customer',
         phone,
-        address_line_1: streetAddress,
+        ...checkoutProfileAddress(body.address),
         city,
         state: governorate,
         country: 'Egypt',

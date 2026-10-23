@@ -54,7 +54,8 @@
               <div class="mt-5 grid gap-5 md:grid-cols-2">
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.firstNameVariant2') }}</span><input v-model="address.first_name" autocomplete="given-name" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.lastName') }}</span><input v-model="address.last_name" autocomplete="family-name" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
-                <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.streetAddress') }}</span><input v-model="address.street_address" autocomplete="street-address" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
+                <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.streetAddress') }}</span><input v-model="address.street_address" maxlength="200" autocomplete="address-line1" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
+                <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.addressLine2') }}</span><input v-model="address.address_line_2" maxlength="200" autocomplete="address-line2" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.cityVariant2') }}</span><input v-model="address.city" autocomplete="address-level2" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.governorate') }}</span><select v-model="address.governorate" autocomplete="address-level1" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('common.selectGovernorate') }}</option><option v-for="governorate in egyptGovernorates" :key="governorate" :value="governorate">{{ $uiLabel(governorate) }}</option></select></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.phoneVariant2') }}</span><input v-model="address.phone" autocomplete="tel" inputmode="tel" type="tel" :placeholder="$t('common.01xxxxxxxxx')" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><span class="mt-2 block text-xs text-slate-500">{{ $t('checkout.11DigitsStartingWith01') }}</span></label>
@@ -78,7 +79,7 @@
 
           <template v-else>
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-wide text-emerald-700">{{ $t('common.addressSaved') }}</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ address.street_address }}, {{ address.city }}, {{ address.governorate }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">{{ $t('common.edit') }}</button></div>
+              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-wide text-emerald-700">{{ $t('common.addressSaved') }}</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ [address.street_address, address.address_line_2, address.city, address.governorate].filter(Boolean).join(', ') }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">{{ $t('common.edit') }}</button></div>
             </section>
 
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="payment-method-title">
@@ -142,14 +143,15 @@ import { readPendingCheckout, savePendingCheckout, removePendingCheckout, checko
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
 import { getAvailablePaymentMethods, getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
+import { checkoutAddressFromProfile } from '~/utils/checkoutAddress'
 
-definePageMeta({ middleware: 'customer-auth' })
+definePageMeta({ middleware: ['customer-auth', 'purchasing'] })
 
 const PHONE_PATTERN = /^01\d{9}$/
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
-const { data: paymentCapabilities } = await useFetch('/api/payments/capabilities')
+const { capabilities: paymentCapabilities, scope: purchaseScope, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
 const { items, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
@@ -177,12 +179,12 @@ let quoteSequence = 0
 const readPending = () => { pendingCheckout.value = readPendingCheckout(window.localStorage, customerId.value) }
 let checkoutStartedTracked = false
 
-const address = reactive({ first_name: '', last_name: '', street_address: '', city: '', phone: '', email: '', governorate: '' })
+const address = reactive({ first_name: '', last_name: '', street_address: '', address_line_2: '', city: '', phone: '', email: '', governorate: '' })
 
 const settings = computed(() => siteContent.value?.settings || {})
 const availableDeliveryOptions = computed(() => deliveryOptions.value.filter(option => option.governorates.some(area => area.trim().toLowerCase() === address.governorate.trim().toLowerCase())))
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
-const availablePaymentMethods = computed(() => getAvailablePaymentMethods(settings.value).filter(method => (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))))
+const availablePaymentMethods = computed(() => purchasingEnabled.value ? getAvailablePaymentMethods(settings.value).filter(method => (!purchaseScope.value || method.value === 'card') && (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))) : [])
 const discountAmount = computed(() => Number(quote.value?.discountAmount ?? appliedCoupon.value?.discountAmount ?? 0))
 const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
 const totalAmount = computed(() => quote.value?.totalAmount ?? Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
@@ -262,14 +264,8 @@ watch(availablePaymentMethods, methods => {
 const formatCurrency = value => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
 const getMethodFee = method => getPaymentMethodFee(settings.value, method)
 
-const splitFullName = (value = '') => {
-  const parts = String(value || '').trim().split(/\s+/).filter(Boolean)
-  return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') }
-}
-
 const fillAddressFromProfile = profile => {
-  const { firstName, lastName } = splitFullName(profile?.full_name)
-  Object.assign(address, { first_name: firstName, last_name: lastName, street_address: profile?.address_line_1 || '', city: profile?.city || '', phone: profile?.phone || '', email: profile?.email || user.value?.email || '', governorate: profile?.state || '' })
+  Object.assign(address, checkoutAddressFromProfile(profile, user.value?.email))
 }
 
 const loadCustomerProfile = async () => {
@@ -367,7 +363,7 @@ const placeOrder = async () => {
       if (pendingCheckout.value) return
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
       const command = JSON.parse(JSON.stringify({ version: 1, userId: customerId.value,
-        body: { ...checkoutBody(), quote_id: quote.value.quoteId }, cart: { id: cartId.value, revision: revision.value }, review: quote.value }))
+        body: { ...checkoutBody(), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value }, review: quote.value }))
       // Persist before sending; an uncertain acknowledgement keeps this exact request.
       savePendingCheckout(window.localStorage, command)
       await sendCommand(command)
@@ -398,7 +394,7 @@ onMounted(async () => {
   window.addEventListener('storage', storageChanged)
   couponCode.value = appliedCoupon.value?.code || ''
   if (isPreorderCart.value && appliedCoupon.value) resetCoupon()
-  await Promise.all([loadCustomerProfile(), loadDeliveryOptions()])
+  await Promise.all([refreshPurchaseAccess(), loadCustomerProfile(), loadDeliveryOptions()])
   await refreshQuote()
   if (!checkoutStartedTracked && !isEmpty.value && cartId.value) { checkoutStartedTracked = true; trackEvent('checkout_started', { cartId: cartId.value, quantity: itemCount.value, source: 'checkout_page' }) }
 })

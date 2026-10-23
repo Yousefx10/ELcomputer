@@ -57,7 +57,7 @@ export async function createResetPlatform({installedLab=null,applicationSource=n
   // The Realtime fixture needs its declared sender privilege. No hosted role or
   // managed service object ownership is changed by application migration79.
   await lab.root.query('grant insert on realtime.messages to postgres;grant usage on sequence realtime.messages_id_seq to postgres')
-  globalThis[key]={service,transport,config:{public:{supabaseUrl:lab.target.api_url},supabaseServiceRoleKey:lab.credentials.service_role_key,uploadsDir:uploads,shippingLiveRequestsEnabled:false,paymobEnabled:false,smsLiveRequestsEnabled:false}}
+  globalThis[key]={service,transport,config:{public:{supabaseUrl:lab.target.api_url,purchasingEnabled:true},supabaseServiceRoleKey:lab.credentials.service_role_key,uploadsDir:uploads,shippingLiveRequestsEnabled:false,paymobEnabled:false,smsLiveRequestsEnabled:false}}
   globalThis.defineEventHandler=h=>h;globalThis.readBody=readBody;globalThis.setHeader=setHeader
   const router=createRouter()
   const handlerRoot=resolve(applicationSource||root)

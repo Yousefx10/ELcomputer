@@ -4,6 +4,7 @@
 </template>
 <script setup>
 const { categoryName } = useCategoryLocale()
+const { t } = useI18n()
 
 import { selectWithSeo } from '~/utils/seoQuery'
 import { productSeoFields, productSchema, publicSiteUrl, breadcrumbs } from '~/utils/seo'
@@ -19,7 +20,8 @@ const supabase = useSupabaseClient()
 const route = useUiRoute()
 const slug = route.params.slug
 const { data: siteContent } = useSiteContent()
-const { addItem } = useCart()
+const { addItem, items: cartItems, syncCart } = useCart()
+const { scope: purchaseScope, allowsProduct } = usePurchaseAccess()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
   const { data: productData, error: productError } = await selectWithSeo(fields => supabase
@@ -221,6 +223,7 @@ const hasPurchasableVariants = computed(() => {
 })
 
 const maximumQuantity = computed(() => {
+  if (purchaseScope.value) return 1
   if (isPreorder.value) return Math.max(1, Math.min(99, Number(product.value?.preorder_customer_limit || 99), Number(preorderAvailability.value?.remaining ?? 99)))
   if (allowOutOfStockPurchases.value) {
     return 99
@@ -243,6 +246,7 @@ const isOutOfStock = computed(() => {
   return effectiveStockQuantity.value <= 0
 })
 const canPurchaseProduct = computed(() => {
+  if (!allowsProduct(product.value?.id, selectedVariantId.value || null)) return false
   if (isComingSoon.value) return false
   if (isPreorder.value) return Boolean(product.value?.preorder_active)
     && (!product.value.preorder_starts_at || new Date() >= new Date(product.value.preorder_starts_at))
@@ -289,6 +293,7 @@ const selectedVariantStockLabel = computed(() => {
   return allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
 })
 const addToCartLabel = computed(() => {
+  if (!allowsProduct(product.value?.id) || selectedVariantId.value && !allowsProduct(product.value?.id, selectedVariantId.value)) return t('productPage.buyingHeld')
   if (isComingSoon.value) return 'Coming Soon'
   if (isPreorder.value) return canPurchaseProduct.value ? 'Pre-order Now' : (preorderAvailability.value?.remaining === 0 ? 'Pre-order sold out' : 'Pre-order unavailable')
   if (requiresVariantSelection.value && !hasVariants.value) {
@@ -384,6 +389,11 @@ const handleAddToCart = () => {
   if (!canPurchaseProduct.value) {
     return
   }
+  syncCart()
+  if (purchaseScope.value && cartItems.value.some(item => item.id === product.value.id && item.variant_id === selectedVariantId.value)) {
+    cartMessage.value = 'Cart updated.'
+    return
+  }
 
   const result = addItem({
     ...product.value,
@@ -460,6 +470,7 @@ watch(selectedVariantId, (nextVariantId, previousVariantId) => {
 
 const { data: productAppearance } = await useAsyncData('product-page-appearance', () => $fetch('/api/storefront/product-appearance', { retry: 0 }), { getCachedData: (key, app) => app.isHydrating ? app.payload.data[key] : undefined })
 const productPageStyle = computed(() => productAppearance.value?.style === 'premium' ? 'premium' : 'classic')
-const premiumPurchasingEnabled = computed(() => seoConfig.public.purchasingEnabled === true || seoConfig.public.purchasingEnabled === 'true')
+const premiumPurchasingEnabled = computed(() => allowsProduct(product.value?.id))
+watch(maximumQuantity, maximum => { selectedQuantity.value = Math.min(selectedQuantity.value, maximum) })
 provideProductDetailContext({ activeImage, activeImageIndex, addToCartLabel, allowOutOfStockPurchases, canPurchaseProduct, cartMessage, categoryName, closeLightbox, decreaseQuantity, descriptionContent, discountPercent, error, expectedAvailabilityLabel, formatPrice, galleryImages, getVariantColor, getVariantMeta, getVariantPreview, goToReviews, handleAddToCart, hasColorChoices, hasDiscount, hasPurchasableVariants, highlights, increaseQuantity, isComingSoon, isOutOfStock, isPreorder, lightboxClose, lightboxDialog, lightboxOpen, markImageBroken, maximumQuantity, meaningfulVariantName, onLightboxKeydown, openLightbox, pending, preorderAmounts, preorderAvailability, product, productVariants, relatedProducts, reviewSummary, reviewsComponent, reviewsSection, savings, selectVariant, selectedImage, selectedQuantity, selectedVariant, selectedVariantId, selectedVariantStockLabel, showVariantChoices, specificationGroups, stepImage, stockLabel, updateReviewSummary, variantStockLabel, visibleSpecifications, siteContent, intlLocale, selectedVariantImages, canUseMainImage, productAppearance, premiumPurchasingEnabled })
 </script>

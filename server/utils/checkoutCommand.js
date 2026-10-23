@@ -1,10 +1,11 @@
 import { createError } from 'h3'
 import { isStoreAnalyticsUuid } from './storeAnalytics'
 import { normalizePaymentMethod } from '~/utils/paymentMethods'
+import { checkoutStreetAddress } from '~/utils/checkoutAddress'
 
 export const normalizeCheckoutCommand = (body, user, { review = false } = {}) => {
   const invalid = message => { throw createError({ statusCode: 400, statusMessage: message }) }
-  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale'].includes(key))) invalid('A valid checkout request is required.')
+  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'review_token', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale'].includes(key))) invalid('A valid checkout request is required.')
   const cartId = String(body?.cart_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(cartId)) invalid('Refresh your cart before checkout.')
   if (!Array.isArray(body?.items) || !body.items.length || body.items.length > 100) invalid('A valid cart is required.')
@@ -23,8 +24,10 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   const text = value => String(value || '').trim()
   const address = body?.address || {}
   const order = Object.fromEntries(['first_name', 'last_name', 'street_address', 'city', 'governorate', 'phone'].map(key => [key, text(address[key])]))
+  order.street_address = checkoutStreetAddress(address)
   order.email = text(address.email || user.email)
   if (!review) {
+    if (!text(address.street_address)) invalid('Complete your delivery details.')
     for (const key of ['first_name', 'street_address', 'city', 'governorate', 'email']) if (!order[key]) invalid('Complete your delivery details.')
     if (!/^01\d{9}$/.test(order.phone)) invalid('Phone number must start with 01 and contain 11 digits.')
   }
