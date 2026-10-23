@@ -1,3 +1,38 @@
+# Owner checkout ACTIVE — 2026-10-23, expires22:27:56.541 Riyadh
+
+- [Current activation receipt](docs/owner-checkout-active-receipt.md) is authoritative.
+  Owner approved datae04c4ed5… and access/closure873946f5…; both executed.
+  DATA/APPLY and OPEN are consumed: never rerun. Closure remains approved.
+- Data:2 existing rows only, canonical cities411/accepted products2/PDC checkout
+  setting, company Cairo/customer delivery100. Credentials/internal costs/tariffs
+  preserved. Labels/COD/reverse and outbound shipping/PDC gates remain off.
+- Private grant binds i***@elcomputer.net, TESTproduct2026/variant/qty1/PDC/saved
+  Ramses address/EGP101. Window21:27:56.541–22:27:56.541 Riyadh,23October.
+  UTC18:27:56.541–19:27:56.541. Do not extend without exact authority.
+  Public purchasing/global provider gates false. Narrow Caddy open6c7deab8… installed.
+  One Nuxt and one Caddy restart, protected artifact/other environment unchanged.
+- Original nonmutating stop: no NUXT_CONTROLLED_PURCHASE placeholder. Audited
+  continuation appended only the approved grant; original bytes preserved.
+  Later probe expected anonymous200 incorrectly; Cart403/Checkout302/login are
+  correct guards. Read-only evidence finalized READY without another restart.
+  Original intent/STOP/backup evidence retained. No blind retries occurred.
+- Owner alone performs normal sign-in/profile/cart/checkout/Paymob. No assistant
+  order, quote, intention, card charge or provider booking. Real acceptance pending.
+  After payment, inspect signed callback/live transaction/durable paid order.
+- New current operator is private ../owner-checkout-route-20261023/ramses-egp101-activation-1/access-continuation-operator.mjs.
+  Use STATUS/read-only or approved CLOSE only. It has the successful OPENED receipt.
+  Close on paid/stop/expiry: clear grant, install qualified close7f6d50ba…; retain
+  signed late callback ingress/keys/owned receipt/status reads. No uninstalled timer.
+- Before separate ONE shipment approval, establish that Ramses10 genuinely covers
+  saved physical Al Azbakeya street address. City-list presence/owner selection
+  are not street-level carrier confirmation. Stop booking if coverage is unknown.
+  Actual parcel/value/charges, Dashboard packing, original REF/AWB/private PDF/poll
+  remain separate. Refund/reverse are not authorized. Broader roadmap is held.
+- Source release0ea60833a5071f27/schema91 unchanged. No repeated build/deployment,
+  new PDC GET/GetProducts, provider call, charge/booking or Git push by this agent.
+
+Historical handoff follows unchanged.
+
 # Ramses ID10 verified; EGP101 setup/access approval pending — 2026-10-23
 
 - [Current receipt](docs/pdc-ramses-egp101-readiness.md) supersedes the stale city blocker below.

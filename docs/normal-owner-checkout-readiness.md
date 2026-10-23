@@ -1,3 +1,10 @@
+Current update: [restricted owner checkout is active](owner-checkout-active-receipt.md).
+The one-hour window expires22:27:56.541 Riyadh on2026-10-23. Public purchasing stays off.
+Data setup and opening are consumed; owner completes normal checkout personally.
+No charge/booking was initiated. Closure and late-event reconciliation remain pending.
+Before any separately approved booking, verify Ramses10 covers the actual Al Azbakeya address.
+Earlier preparation and approval text below is historical.
+
 Current update: [Ramses ID10 is verified](pdc-ramses-egp101-readiness.md).
 The encrypted capture is consumed; missing cityID/cityName aliases caused rejection.
 The owner-authorized profile city update is complete; all other address fields remain.
