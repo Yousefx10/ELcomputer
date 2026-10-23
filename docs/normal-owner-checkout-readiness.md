@@ -1,3 +1,9 @@
+Current update: [EGP2 replacement approval is required](owner-checkout-egp2-readiness.md).
+The owner changed customer delivery to1; intended item1 + delivery1 + card0 = EGP2.
+The incompatible EGP101 grant is revoked. Signed callbacks/owned reads remain open.
+No orders or payment attempts exist in the inspected application records.
+Public purchasing stays closed; earlier activation/preparation text below is historical.
+
 Current update: [restricted owner checkout is active](owner-checkout-active-receipt.md).
 The one-hour window expires22:27:56.541 Riyadh on2026-10-23. Public purchasing stays off.
 Data setup and opening are consumed; owner completes normal checkout personally.

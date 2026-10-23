@@ -1,3 +1,9 @@
+Current update: [EGP2 replacement approval is required](owner-checkout-egp2-readiness.md).
+The owner changed customer delivery to1; intended item1 + delivery1 + card0 = EGP2.
+The incompatible EGP101 grant is revoked. Signed callbacks/owned reads remain open.
+No orders or payment attempts exist in the inspected application records.
+Public purchasing stays closed; earlier activation/preparation text below is historical.
+
 # Owner checkout active — 2026-10-23
 
 Both owner-approved operations executed under their existing seals.

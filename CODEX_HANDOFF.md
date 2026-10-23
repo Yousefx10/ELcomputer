@@ -1,3 +1,34 @@
+# EGP2 checkout BLOCKED — old grant revoked, replacement approval pending
+
+- [Current EGP2 receipt](docs/owner-checkout-egp2-readiness.md) supersedes the active101 header below.
+  Owner changed customer fee to1; item1 + delivery1 + card0 = EGP2/200 minor units.
+  Account/address/selected variant/qty1/PDC/Ramses10 unchanged; no coupon allowed.
+- Read-only records:0 orders, attempts, transactions, shipment jobs and dispatches.
+  No provider request/inquiry or quote/order/intention call by this agent.
+  Merchant-specific Paymob minimum remains unconfirmed; public Intention docs
+  specify minor units but do not prove EGP2 acceptance. Owner live attempt pending.
+- Old101 access closed18:49:11.982753 UTC under existing approval and owner revoke
+  instruction. Grant cleared; qualified close7f6d50ba… installed; signed callback/
+  keys/owned reads retained. One restart each. Global purchasing/providers remain off.
+  Old close consumed; never rerun. Release0ea60833a5071f27/schema91 unchanged.
+- NEW private packet: ../owner-checkout-egp2-20261023/AUTHORIZATION-PACKET.md.
+  Exact replacement/closure seal1c01a8d87098c9145b5ad8844710941498bf412732a3841e8ddec759b359a945.
+  No DB/app/cache/profile/tariff/credential change. Same canonical cart identity,
+  fresh review key, total200, one account/item/address. No assistant checkout.
+  Reuse old deadline22:27:56.541 Riyadh if>=15minutes remain at activation;
+  otherwise approved policy allows one fresh hour. Actual times must be reported.
+  Replacement is unapproved/unactivated; opening and closure each max1 restart
+  per Nuxt/Caddy. Coupon403 stays held; owner refreshes and removes any coupon.
+- Window/grant tests3 PASS; Caddy172 reused; independent23-input/scope verification PASS.
+  No completed build/deployment/general investigation repeated. No Git push.
+- After owner real payment, verify signed callback/live transaction/durable paid order.
+  Separate ONE PDC booking approval requires genuine Ramses10/physical Al Azbakeya
+  coverage, truthful declared parcel value and actual charges. AWB/private PDF/poll
+  plus real PDC Dashboard visibility required. No automatic booking/cancel/refund/
+  reverse. Broader roadmap held. Both handoffs preserved below.
+
+Historical handoff follows unchanged.
+
 # Owner checkout ACTIVE — 2026-10-23, expires22:27:56.541 Riyadh
 
 - [Current activation receipt](docs/owner-checkout-active-receipt.md) is authoritative.
