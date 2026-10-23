@@ -1,3 +1,46 @@
+# GetCities consumed; city evidence capture awaits approval — 2026-10-23
+
+- [City lookup receipt](docs/pdc-city-lookup-receipt.md): owner-approved seal
+  60117c9bf0f9051e50c885f0cc41b3dca2cf2b8a3f20c5d89d6aacb41fe67379
+  executed ONCE and is CONSUMED. Never rerun its city-operator run.
+  Exactly one GetCities GET returnedHTTP200/28349 bytes and passed JSON parsing.
+  Later EXISTING_CITY_SCHEMA_AND_COMPLETENESS rejected the result.
+- The limited receipt lacks raw/shape data and combines normalization/empty-row/
+  company-echo/defensive checks. No specific root cause or city ID is established.
+  Do not invent city field aliases, assume credential failure or assert a proven
+  normalizer defect. Original instrument/report/source remain unchanged.
+  Read-only remote status confirms ATTEMPT/RESULT/POSTCHECK, request1/retry0 and
+  PDC settings/runtime/process preservation PASS. No additional provider call.
+- No database/profile/cache/gate/credential change, payment/order/intention,
+  shipment, restart, deployment or Git push by this agent. Actual destination
+  stays Al Azbakeya/Cairo/Egypt; preserve street/mobile/governorate/both lines.
+  Prepare one authoritative alias after evidence, rather than replacing the
+  physical destination with a nearby district. No profile correction justified now.
+- Separate private ../owner-checkout-route-20261023/city-schema-capture-1/
+  prepares ONE additional GetCities encrypted-response capture, unapproved/unexecuted:
+  seal4427582ccbde14541ee1362bdf6eda2d4525867cbb30f454a04b326f8131dde5.
+  AUTHORIZATION-PACKET.md is next review. No retries/GetProducts/SQL/cache/profile/
+  gate/payment/booking allowed. Old approval cannot execute it. Exact deployed
+  helpers, host/runtime/settings pins, TLS GET-only8s/1MiB retained.
+  Body encrypted before output using AES256-GCM/RSA3072-OAEP; private key local0600.
+- Twelve NEW offline capture cases/crypto roundtrip/stage separation PASS; no network.
+  Parsing/extraction/normalization/echo/pickup/destination are recorded separately;
+  unused stages NOT_EVALUATED. A capture PASS never implies city-mapping acceptance.
+  Fresh read-only preflight and independent wrong/old-approval rejection PASS.
+  No completed application validation/build/deployment repeated.
+- EGP101 remains approved: item1 + customer delivery100 + card0, quantity1/account/
+  saved-address hash. Carrier-cost/value confirmation stays before separately
+  approved booking; do not restart tariff work. Existing Caddy opening/closure172
+  tests reused. Coordinated setup/access template preserves separate approvals for
+  exact caches/alias/company100 data and account/window/10100 access/late callback
+  closure; ID/window unset while evidence is missing. Owner alone submits payment.
+- Public purchasing/signup/provider gates remain closed; no invoice/paid flag
+  manufactured. Real paid order → real Dashboard packing → separate one REF/AWB/
+  private PDF/poll approval. Refund/reverse and modular roadmap remain separate.
+  Both historical handoffs, prior artifacts and consumed approvals preserved.
+- Git recorded an external push of prior local branch6f66bb4; actor not attributed.
+  This agent issued no push. Follow-up is isolated on local/owner-checkout-city-followup-20261023.
+
 # Owner profile PASS; Al Azbakeya checkout BLOCKED — 2026-10-23
 
 - [Focused readiness](docs/owner-checkout-al-azbakeya-readiness.md) supplements the

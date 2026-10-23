@@ -1,10 +1,10 @@
-Current update: [the saved Al Azbakeya profile passes validation](owner-checkout-al-azbakeya-readiness.md).
-Both address lines persist and survive the deployed normal checkout helpers.
-The exact destination has no match among382 aliases; one city-only lookup is prepared.
-The owner approved customer delivery100 and total101 for one item; carrier cost
-is deferred to separately approved booking. The exact city ID remains unresolved.
-Production remains0ea60833a5071f27/schema91; all purchasing/provider gates stay closed.
-Owner checkout remains BLOCKED pending the city lookup and exact activation approval.
+Current update: [the single GetCities lookup is consumed](pdc-city-lookup-receipt.md).
+HTTP200/valid JSON failed later city validation; no authoritative ID was accepted.
+The limited receipt cannot isolate the failed check. No retry or data/gate change occurred.
+One encrypted-capture diagnostic is prepared but needs fresh approval.
+The saved profile remains valid; owner-approved delivery100/total101 are preserved.
+Carrier cost stays a separate booking requirement. Production remains0ea60833a5071f27/schema91.
+Owner checkout remains BLOCKED pending city evidence and exact setup/access approval.
 Earlier inspection/proposal text below is retained as history.
 
 # Normal owner checkout — BLOCKED, 2026-10-23

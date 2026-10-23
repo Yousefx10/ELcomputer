@@ -1,3 +1,10 @@
+Current update: the [single approved city lookup is consumed](pdc-city-lookup-receipt.md).
+HTTP200/valid JSON reached post-response validation, which rejected the result.
+No city ID was verified; no profile/cache/gate change occurred.
+The prepared encrypted-capture packet needs fresh approval; no retry was made.
+The EGP101 target and coordinated setup/access preparation remain preserved.
+Earlier preparation details below are historical evidence.
+
 # Owner checkout BLOCKED — Al Azbakeya, EGP101, 2026-10-23
 
 The customer profile update supplements the existing first-purchase task.
