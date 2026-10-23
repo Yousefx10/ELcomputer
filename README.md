@@ -1,4 +1,17 @@
+# Current priority: public customer purchasing
+
+PDC work is paused until explicit owner resumption.
+See the [focused commerce readiness assessment](docs/public-commerce-readiness.md).
+The first account/profile isolation fix is local; public purchasing remains closed.
+
 # Reusable ecommerce platform
+
+The [fresh PDC V6 documentation review](docs/pdc-v6-integration-review.md) and
+[field checklist](docs/pdc-v6-contract-checklist.md) supersede historical API-success
+inferences. The owner confirms WordPress shipments were managed manually.
+The first automated booking remains uncertain after two upstream HTTP500s.
+88 offline checks pass; no provider call, production change or runtime patch ran.
+PDC must reconcile the original reference before another live operation.
 
 Each business supplies its own branding, domains and configuration.
 Follow [AGENTS.md](AGENTS.md) before changing the project.

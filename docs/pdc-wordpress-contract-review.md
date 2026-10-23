@@ -1,3 +1,12 @@
+# Owner clarification — 24 October 2026
+
+The owner confirms historical WordPress shipments were managed manually.
+Historical AWBs, event labels and preserved code do not prove successful
+automated API creation. The historical-success interpretations below are
+superseded by the [fresh original-document review](pdc-v6-integration-review.md).
+The source inventory remains useful for configuration comparison only.
+The original review is retained below without modification.
+
 # Original WordPress PDC contract — 2026-10-23
 
 **Original integration FOUND. Historical successful shipping evidence YES.**

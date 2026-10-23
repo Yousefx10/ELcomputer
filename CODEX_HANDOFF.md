@@ -1,3 +1,44 @@
+# Public customer purchasing priority — 24 October 2026
+
+PDC development and investigation are PAUSED until explicit owner resumption.
+Preserve its original reference, uncertain dispatch and incident evidence.
+No further PDC API call, rebooking, webhook activation or incident edit is authorized.
+
+The [focused commerce assessment](docs/public-commerce-readiness.md) is current.
+The completed LIVE Paymob payment559384846/EGP2 remains preserved; checkout is closed.
+Read-only production checks confirm schema91, disabled signup, empty purchase grant,
+closed outbound gates and retained signed Paymob callback ingress.
+Only PDC delivery/testEGP1 is configured; no real non-PDC service or pickup is ready.
+Multi-customer cart/checkout isolation, physical stock, identity migration decisions,
+notifications and merchant refund handling remain launch prerequisites.
+
+First local feature: clear account profile/header state on customer changes,
+reject stale responses and bind profile saves to the loaded customer.
+Focused checks and validation are in the assessment. No production change,
+provider transaction, deployment, activation, commit, branch operation or push.
+Existing Codex 2 work and historical handoffs remain preserved below.
+
+# PDC V6 original-document review — 24 October 2026
+
+- Owner confirms historical WordPress shipments were managed manually.
+  Historical AWBs/metadata do not prove successful automated API creation.
+- [Fresh review](docs/pdc-v6-integration-review.md) and
+  [contract checklist](docs/pdc-v6-contract-checklist.md) cover both complete PDFs
+  and all three workbooks. All duplicate source copies are byte-identical.
+- Normal booking fields match the documented structure; production entitlement,
+  Product40 test limits, date filters and pickup behavior need PDC confirmation.
+  No application defect is established as either HTTP500's cause. No runtime fix.
+- Original booking outcome remains UNKNOWN. Preserve its original reference,
+  uncertain job/dispatch and duplicate-booking barrier. No additional API call.
+- Seven focused suites pass88 offline checks,0 failures/skips, including disposable
+  native booking/recovery/private-label and transactional tracking fixtures.
+- Revised private support draft and full evidence:
+  ../pdc-v6-full-contract-review-20261024/. Prepared, not sent.
+- This review made local documentation/tests changes only. No production access,
+  deployment, payment/gate changes, cancellation, commit or push.
+
+Historical handoff follows unchanged.
+
 # PDC follow-up — owner reports no matching shipment or pickup visible
 
 - Owner completed the requested PDC Dashboard search for original reference

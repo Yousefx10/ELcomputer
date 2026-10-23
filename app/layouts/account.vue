@@ -10,6 +10,7 @@ const profile = ref(null)
 const { data: accountAppearance } = await useAccountAppearance()
 const isModern = computed(() => accountAppearance.value?.account_dashboard_style === 'modern')
 const route = useUiRoute()
+let profileVersion = 0
 
 const displayName = computed(() => profile.value?.full_name
   || user.value?.user_metadata?.full_name
@@ -33,15 +34,18 @@ const accountSection = computed(() => {
 })
 
 const loadProfile = async () => {
+  const version = ++profileVersion
+  profile.value = null
   try {
     const currentUser = await resolveAccountUser(supabase, user.value)
+    if (version !== profileVersion) return
     if (!currentUser) return
     const { data } = await supabase.from('customer_profiles')
       .select('full_name, created_at').eq('id', currentUser.id).maybeSingle()
       .abortSignal(AbortSignal.timeout(20000))
-    profile.value = data || null
+    if (version === profileVersion) profile.value = data || null
   } catch {
-    profile.value = null
+    if (version === profileVersion) profile.value = null
   }
 }
 
@@ -54,8 +58,11 @@ onMounted(() => {
   loadProfile()
   window.addEventListener('account:profile-updated', loadProfile)
 })
-onBeforeUnmount(() => window.removeEventListener('account:profile-updated', loadProfile))
-watch(() => user.value?.sub || user.value?.id, loadProfile)
+onBeforeUnmount(() => {
+  ++profileVersion
+  window.removeEventListener('account:profile-updated', loadProfile)
+})
+watch(() => user.value?.sub || user.value?.id, loadProfile, { flush: 'sync' })
 </script>
 
 <template>
