@@ -1,3 +1,29 @@
+# Approved tariff packaging repair complete — 2026-10-23
+
+- [Repair/reseal receipt](docs/shipping-tariff-packaging-repair.md): owner approved
+  proposal ee0da9bb58b65c7a6b0ea505adc82bcde05cc674cb36c7e79d5feae565b249fa.
+  Local repair completed in a NEW review-4 package. Old review-3 and withdrawn
+  prepared-2/STOP remain preserved; no consumed deployment operator was reused.
+- Only compiled static registry metadata changed:1082 approved entries added,
+  existing entries/latest pointer and all other files unchanged. Full2181-entry
+  readback and1224 exact-archive HTTP byte checks PASS, including old failing URLs.
+  Four anonymous API checks401; five repair guards PASS. Original96 feature tests,
+  typecheck/build and unchanged native migration guard reused; zero rebuilds.
+- New archive08b45ffac0e524c8b1d2d308893842238ba396c2ec7a25ef140b6de7420f0d26;
+  review seal e8f57fa538f666d029c11ea80bf0448bb68e161ae1cacb860fb7cb91100a4336.
+  Sourceba05770, migration91 and draft import hashes unchanged. Fresh guarded
+  plan prepared-3 sealed a4217c90bf0ec1cc331a8842ab0f6042facce02fbf9e46bd5ada412a86fd1a4a.
+  Read-only preflight,138 protected projections and encrypted DB/runtime backup
+  readback PASS. Final read-only check follows the documentation commit.
+  No production apply authorized; NEXT-EXACT-AUTHORIZATION.json is tariff-only.
+- Production remains1088e036c4f81048/schema90. Prices, draft tariff verification,
+  gates, credentials and provider settings remain unchanged. Financial/access/
+  import approvals are separate; all transaction template approvals remain false.
+  Physical unit value/parcel details and exact route/costs remain private/pending.
+- Preserve signed late callbacks, original-reference recovery and no blind retry.
+  Refund/reverse acceptance and modular gateway/carrier/subsidy/loyalty roadmap
+  remain independent. Both earlier handoffs are preserved. No Git push.
+
 # Tariff deployment preparation and first real transaction — 2026-10-23
 
 - [Fresh release and transaction packet](docs/tariff-deployment-and-first-transaction.md)

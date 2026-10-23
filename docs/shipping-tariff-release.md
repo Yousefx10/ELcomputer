@@ -1,3 +1,5 @@
+Current successor: [approved local packaging repair and new release packet](shipping-tariff-packaging-repair.md). Earlier receipts and the withdrawn plan below remain historical.
+
 Current successor: [fresh guarded tariff deployment and first-transaction packet](tariff-deployment-and-first-transaction.md). The original local receipt below is preserved.
 
 # Tariff-only local review receipt — 2026-10-23

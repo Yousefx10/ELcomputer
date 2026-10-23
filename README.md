@@ -11,10 +11,10 @@ The [Shipping Company tariff manager](docs/shipping-tariffs.md) is implemented
 locally with proposed migration91. The [owner-supplied six-zone package](docs/operations/shipping-tariffs/README.md)
 imports as an unverified draft; it does not change checkout prices. Production
 remains schema90. Its [local review artifact](docs/shipping-tariff-release.md) is sealed;
-a [fresh guarded deployment packet](docs/tariff-deployment-and-first-transaction.md)
-was withdrawn before execution after retained client URLs returned404. The archive
-is unchanged. Local packaging repair/reseal needs approval before a new deployment
-review. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
+the [approved local packaging repair](docs/shipping-tariff-packaging-repair.md)
+is complete in a new sealed archive. All1224 client URLs pass exact byte checks.
+The old archive is preserved. A fresh guarded deployment plan is sealed;
+production approval is still required. The [modular payment/shipping plan](docs/modular-payment-shipping-plan.md)
 keeps provider accounts, gateway settings, subsidies and promotions independent.
 The existing deployed path can support the separately approved first real test.
 

@@ -1,3 +1,5 @@
+Current successor: [approved local packaging repair and new release packet](shipping-tariff-packaging-repair.md). Earlier receipts and the withdrawn plan below remain historical.
+
 # Tariff release and first provider acceptance — 2026-10-23
 
 The existing tariff artifact is preserved. No new application feature, rebuild,
