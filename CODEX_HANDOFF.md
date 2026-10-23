@@ -1,3 +1,43 @@
+# Normal-checkout preparation COMPLETE; application deployment pending — 2026-10-23
+
+- [Preparation receipt](docs/normal-checkout-preparation-receipt.md) supersedes the
+  pending-build notes below. Both historical handoffs remain preserved.
+  Approved proposal5d3181a2 is complete: local corrections plus exact login/profile
+  access only. Account access is live; public checkout remains BLOCKED.
+- Source ae2f6df9d059a07b7aa24aa67f10a315d3bb721e:126 tests PASS, one existing
+  opt-in skip, typecheck PASS, one isolated build. Exact extracted archive passed52
+  compiled API and1326 asset byte checks;1223 prior client assets retained.
+  Independent seal/archive/inventory/evidence verification PASS. No provider acceptance
+  is inferred from local SQL/browser/fake transport checks.
+- Archive0ea60833a5071f27101b768993aeaadfd1cd12e5d7eb1088147578850bf8aff8;
+  local review32319d8b0595a86b908d31ef29ae020fe1d66e2a9fcd208b56992ffbb544e5da.
+  Frozen artifact remains in private approved-5d3181a2/inactive-review-1/.
+  Reuse its completed build/tests; do not alter the consumed tariff artifact.
+- Fresh application-only deployment plan is prepared, not applied:
+  seal248438ddb082fa37d3291e73e51526a556e39759427356a4e82b7e80bd0e4299.
+  Private inactive-deployment-1/AUTHORIZATION-PACKET.md binds exact archive/target,
+  encrypted backup full readback, unchanged schema91/runtime/Caddy/gates and one
+  future Nuxt switch/restart. Fourteen guard tests and independent plan checks PASS.
+  Wrong or preparation-only approvals reject before intent/network.
+  Fresh preflight/execution backups required; drift requires a new packet.
+- Latest read-only readiness: selected i***@elcomputer.net active/confirmed,
+  saved address present/mobile invalid, exact city mapping0, lookup caches empty,
+  PDC checkout off and stored delivery10 unapproved. No approved payable total.
+  Owner should edit My Account → Profile privately; owner browser save unproved.
+  TESTproduct2026 remains1EGP; truthful declared value/parcel facts stay private.
+- Production still release08b45ffac0e524c8/schema91, no application deployment.
+  Global purchasing/provider gates off; grant empty; financial counts zero.
+  Login/profile Caddy approval was applied once; its original STOP/read-only
+  resolution remain preserved. No retry, credentials, tariff import/activation,
+  provider request, order, intention, payment or shipment occurred.
+- Normal checkout, signed callback/late-event closure, one owner-submitted payment
+  and one packed PDC shipment still need their respective exact approvals.
+  Refund is unimplemented; reverse code inactive/unaccepted. Modular gateways,
+  carriers, subsidies and loyalty remain independent subsequent roadmap releases.
+- No Git push issued by this agent. Git separately recorded a push of earlier
+  documentation b56cfa1; actor not established. Checkout source remains local on
+  local/normal-checkout-preparation-20261023 without an upstream.
+
 # Approved normal-checkout preparation — 2026-10-23
 
 - Owner approved proposal5d3181a2: local normal-flow corrections and the exact
