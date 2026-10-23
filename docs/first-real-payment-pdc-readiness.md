@@ -1,3 +1,5 @@
+Current scope: [one nonphysical live PDC API test; exact approval pending](pdc-one-live-test-authorization.md). Packing is complete. The owner now accepts test data and unquoted test fees; physical-delivery conditions below remain historical and do not block this API-only test.
+
 # First real payment verified; PDC booking preparation — 2026-10-23
 
 **PAYMOB VERIFIED. PDC BOOKING BLOCKED.**

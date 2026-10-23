@@ -1,3 +1,32 @@
+# One live PDC API test prepared — exact booking approval pending
+
+- [Current sealed test packet](docs/pdc-one-live-test-authorization.md) supersedes
+  physical-parcel/quoted-rate blockers below for this API-only/no-handover test.
+- Owner attests PDC allows test creation/cancellation, accepts unquoted test fees,
+  will cancel shipment and linked pickup manually. No real delivery acceptance claimed.
+- Order ORD-20261023-8C0C964CBD is paidEGP2 and Ready to Deliver. Owner completed
+  Dashboard packing22:51:31.314 Riyadh with validated private video. Fresh read-only
+  checks find zero job, dispatch and AWB. No PDC request/write yet.
+- Exact approval pending: 5a03be551efea46477528467db6bd954b3e353617f28d93c641819427e43e4fb.
+  Private ../first-live-pdc-test-20261023/AUTHORIZATION-PACKET.md and plan.json.
+- Existing Product40, saved pickup/recipient, Ramses10/10, one piece/type1, test1kg,
+  test declaredEGP1, COD0/open=false/template1.1×1×1cm recorded but not transmitted;
+  no dimensions field in current payload. Product40 test-range acceptance unknown;
+  stop if rejected/uncertain, never change values and rebook.
+- Private one-run process reuses deployed booking service and staff/SQL/packing
+  contracts for this existing order. No app deployment, credentials, Paymob, Caddy,
+  runtime-file, global provider gate or public purchasing change; no public window.
+- Persist original ORD-<existing UUID> reference and dispatch barrier before one
+  SaveShipmentEx; exclusive fsynced network intent, encrypted raw response evidence.
+  One matching-AWB privatePDF and one delayed status lookup, with originalREF lookup
+  instead of normal poll if uncertain. Max15minutes for follow-up; no blind retry.
+- No extra pickup, automatic cancel/refund/reverse or GetCities/GetProducts. Owner
+  verifies AWB/reference in actual PDC Dashboard and cancels shipment/linked pickup.
+- Seven focused guard tests + production read-only preflight PASS, zero provider
+  requests/writes. Existing app tests/build reused. Both handoffs preserved; no push.
+
+Historical handoff follows unchanged.
+
 # Real EGP2 payment VERIFIED; checkout CLOSED; PDC booking BLOCKED
 
 - [Current payment and shipment receipt](docs/first-real-payment-pdc-readiness.md) supersedes the active checkout notices below.
