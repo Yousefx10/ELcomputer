@@ -1,3 +1,8 @@
+Current direction: [normal owner checkout — BLOCKED](normal-owner-checkout-readiness.md).
+The owner will use My Account, Cart and ordinary Checkout personally. The separate
+controlled page below is historical and does not satisfy that request. No new
+purchase/provider/access activation is authorized.
+
 Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
 
 # One controlled purchase — readiness, 2026-10-23

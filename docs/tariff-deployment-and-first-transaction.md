@@ -1,3 +1,8 @@
+Current direction: [normal owner checkout — BLOCKED](normal-owner-checkout-readiness.md).
+The owner enters all delivery/card details and creates the order through ordinary
+storefront pages. Earlier special-page/private-address proposals below are
+superseded; their evidence is preserved. The tariff deployment remains complete.
+
 Current status: [tariff manager deployment PASS, schema91](shipping-tariff-deployment-receipt.md). The deployment approval is consumed; earlier preparation/snapshot text below is preserved. No purchase or provider activation followed.
 
 Current successor: [approved local packaging repair and new release packet](shipping-tariff-packaging-repair.md). Earlier receipts and the withdrawn plan below remain historical.

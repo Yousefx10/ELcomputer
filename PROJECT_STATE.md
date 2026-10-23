@@ -1,3 +1,39 @@
+# Normal customer journey required — 2026-10-23
+
+- [Normal owner checkout readiness](docs/normal-owner-checkout-readiness.md) supersedes
+  the special controlled-page proposal. Owner signs in, edits their saved address,
+  uses normal Cart/Checkout/Paymob and packs through Dashboard personally. Codex
+  must not enter addresses, create orders, initialize payment, submit cards or mark
+  paid. PDC booking retains separate approval. No full private details in chat.
+- Fresh read-only schema91/runtime/public checks: release08b45ffac0e524c8 unchanged;
+  runtime/Caddy hashes unchanged, grant empty, global purchasing/provider gates off.
+  Zero orders/attempts/transactions/jobs/dispatches. Candidate i***@elcomputer.net
+  is active/confirmed/nonanonymous; owner account selection remains pending.
+- Saved address exists with line2, but mobile invalid and exact city mapping count0.
+  Own-profile RLS exists; login/profile pages403, so owner browser save is unproved.
+  Normal checkout DROPS line2. Existing scoped capability only protects its special
+  API/page; opening ordinary endpoints alone cannot restrict purchasing by account.
+- PDC checkout off/governorates empty/caches empty; stored delivery10 is unapproved,
+  not a carrier quote. EGP1+10+0=11 is arithmetic, not a ready/approved payable quote.
+  App accepts100 minor units, merchant minimum unverified; current booking declares
+  net merchandise1, whose suitability needs private owner/carrier confirmation.
+- Private ../normal-owner-checkout-20261023/ preserves fresh read-only receipts and
+  an uninstalled account-only Caddy candidate (login/profile GET/HEAD, EN/AR).
+  Local Caddy adaptation and70 proxy checks/two hostnames PASS, not live owner
+  save acceptance. AUTHORIZATION-PACKET.md/proposal5d3181a2 binds only local normal
+  corrections and account/profile access; it remains unapproved. Purchasing/
+  callback/provider holds remain. Small normal-surface grant/address
+  corrections need separate local work/review, then an inactive release; do not
+  alter/rebuild/redeploy the completed tariff artifact or use the special page.
+- Status BLOCKED, no activation/financial approval. Owner must update address
+  through My Account after separately approved access. Derive mapping/hash privately;
+  never request a pasted address or construct an order. Normal-flow release, exact
+  scope/price/window/Caddy and closure must pass before READY FOR OWNER CHECKOUT.
+- Reuse existing provider evidence; no new GetProducts/GetCities, credential change,
+  tariff import/activation, production write or Git push. Signed late receipts,
+  no-blind-retry boundaries, separate refund/reverse acceptance and modular roadmap
+  remain required. All earlier handoff and consumed deployment receipts preserved.
+
 # Tariff manager DEPLOY PASS — 2026-10-23
 
 - [Deployment receipt](docs/shipping-tariff-deployment-receipt.md): production is
