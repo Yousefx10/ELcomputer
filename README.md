@@ -1,3 +1,36 @@
+# Consolidated customer-session deployment PASS — 24 October 2026
+
+The exact approved release `58e3083f4aa6a1f8` is deployed, schema 91.
+Approval `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e` is consumed; do not rerun it.
+One `storefront` restart changed PID 31273 → 32102.
+Private candidate qualification, fresh encrypted execution backups/full readback
+and protected database/schema/security/runtime/media/incident checks passed.
+Caddy and credentials are unchanged. PDC User-Agent/status-date fixes remain.
+All purchasing/signup/provider gates stay closed; no PDC request or payment ran.
+
+Hosted public smoke passed: 8 HTTP checks, 37 asset hashes, 3 browser checks and
+4 protected-route observations. Account A exists; no second Auth identity exists.
+[Hosted acceptance and Test B requirements](customer-session-hosted-acceptance.md)
+are prepared. B creation and authenticated A→B acceptance remain pending approval
+and secure sessions. No identity or authentication email was created or sent.
+
+Private authoritative receipt:
+`../customer-session-consolidated-20261024/DEPLOYMENT-RECEIPT.json`.
+The sealed approval packet below is retained unchanged as historical evidence.
+
+# Current customer-session release
+
+The [consolidated release](docs/customer-session-consolidated-release.md) is sealed.
+It preserves the PDC corrections deployed in `2573cdf1504bf559`.
+The earlier session artifact is obsolete. Deployment awaits exact new approval.
+Public commerce remains held; hosted isolation acceptance follows deployment.
+
+# Phase1 session isolation prepared
+
+The [combined session-isolation release](docs/customer-session-release.md) is sealed.
+[Account, Cart and Checkout isolation](docs/customer-session-isolation.md) passes local qualification.
+Deployment awaits exact owner approval. Public commerce stays closed; PDC stays paused.
+
 # Current priority: public customer purchasing
 
 PDC work is paused until explicit owner resumption.

@@ -17,7 +17,7 @@
 definePageMeta({ key: route => route.fullPath })
 const route = useRoute()
 const router = useRouter()
-const supabase = useSupabaseClient()
+const customerScope = useCustomerScope()
 const { t } = useI18n()
 const state = ref('processing')
 const mode = ref(null)
@@ -32,9 +32,8 @@ let refreshes = 0
 const refresh = async () => {
   if (disposed) return
   try {
-    const { data } = await supabase.auth.getSession()
-    if (!selector || !data.session?.access_token) throw new Error('Status unavailable')
-    const result = await $fetch('/api/payments/status', { headers: { authorization: `Bearer ${data.session.access_token}` }, query: selector, timeout: 10000 })
+    if (!selector) throw new Error('Status unavailable')
+    const result = await customerScope.request('/api/payments/status', { query: selector, timeout: 10000 })
     if (disposed) return
     state.value = result.status; mode.value = result.mode; orderId.value = result.orderId
     if (['initiated','pending','not_started','processing'].includes(result.status) && ++refreshes < 10) timer = setTimeout(refresh, 3000)
@@ -47,5 +46,9 @@ onMounted(async () => {
   await refresh()
 })
 onBeforeUnmount(() => { disposed = true; clearTimeout(timer) })
+customerScope.onInvalidate(() => {
+  disposed = true; clearTimeout(timer)
+  state.value = 'processing'; mode.value = null; orderId.value = ''
+})
 useHead(() => ({ title: t('paymob.resultTitle'), meta: [{ name: 'referrer', content: 'no-referrer' }] }))
 </script>

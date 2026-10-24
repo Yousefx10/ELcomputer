@@ -1,17 +1,18 @@
 const prefix = 'elcomputer-checkout-pending-'
 export const cartCompletionPrefix = 'elcomputer-cart-completed-'
+const completionKey = (id, owner = '') => cartCompletionPrefix + (owner ? encodeURIComponent(owner) + ':' : '') + id
 
 // Acknowledgements write only this marker, never the mutable cart envelope.
 // Concurrent cart edits therefore cannot be erased by a stale read/write pair.
-export const acknowledgeCart = (storage, snapshot, nextId) => {
-  const key = cartCompletionPrefix + snapshot.id
+export const acknowledgeCart = (storage, snapshot, nextId, owner = '') => {
+  const key = completionKey(snapshot.id, owner)
   if (!storage.getItem(key)) storage.setItem(key, JSON.stringify({ revision: snapshot.revision, nextId }))
 }
 
-export const restoreCart = (storage, state) => {
+export const restoreCart = (storage, state, owner = '') => {
   const restored = { ...state }
   for (let count = 0; restored.id && count < 32; count++) {
-    const marker = JSON.parse(storage.getItem(cartCompletionPrefix + restored.id) || 'null')
+    const marker = JSON.parse(storage.getItem(completionKey(restored.id, owner)) || 'null')
     if (!marker?.revision || !/^[0-9a-f-]{36}$/i.test(marker.nextId || '')) break
     if (marker.revision === restored.revision) {
       return { id: '', revision: restored.revision + ':completed', items: [], coupon: null }

@@ -1,9 +1,8 @@
 import { acknowledgeCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
+import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
+import { useCustomerIdentity } from './useCustomerIdentity'
 
-const CART_STATE_KEY = 'elcomputer-cart-state-v2'
-const CART_STORAGE_KEY = 'elcomputer-cart'
-const CART_COUPON_STORAGE_KEY = 'elcomputer-cart-coupon'
-const CART_ID_STORAGE_KEY = 'elcomputer-cart-id'
+const carts = new WeakMap()
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 const createCartIdentifier = () => {
@@ -124,34 +123,48 @@ const normalizeAppliedCoupon = (coupon) => {
 }
 
 export const useCart = () => {
+  const app = useNuxtApp()
+  if (carts.has(app)) {
+    const cart = carts.get(app)
+    if (import.meta.client) onMounted(cart.loadCart)
+    return cart
+  }
+  const identity = useCustomerIdentity()
   const items = useState('cart-items', () => [])
   const appliedCoupon = useState('cart-applied-coupon', () => null)
   const cartId = useState('cart-id', () => '')
   const revision = useState('cart-revision', () => '')
   const isReady = useState('cart-is-ready', () => false)
-  const syncStarted = useState('cart-sync-started', () => false)
+  const owner = useState('cart-owner', () => '')
+  const guestId = useState('cart-guest-id', () => '')
   const { trackEvent } = useStoreAnalytics()
 
+  const currentOwner = () => {
+    if (identity.accountId.value) {
+      // A later sign-out starts a fresh anonymous basket in this tab.
+      guestId.value = ''
+      try { window.sessionStorage.removeItem(guestCartSessionKey) } catch {}
+      return accountCartOwner(identity.accountId.value)
+    }
+    if (!guestId.value) {
+      try { guestId.value = window.sessionStorage.getItem(guestCartSessionKey) || '' } catch {}
+      if (!UUID_PATTERN.test(guestId.value)) guestId.value = createCartIdentifier()
+      try { window.sessionStorage.setItem(guestCartSessionKey, guestId.value) } catch {}
+    }
+    return 'guest:' + guestId.value
+  }
+  const resetMemory = () => {
+    items.value = []; appliedCoupon.value = null; cartId.value = ''; revision.value = ''
+  }
   const persistCart = () => {
     if (!import.meta.client) {
       return
     }
 
     try {
-      window.localStorage.setItem(CART_STATE_KEY, JSON.stringify({ version: 2, id: cartId.value, revision: revision.value, items: items.value, coupon: appliedCoupon.value }))
-      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
-
-      if (items.value.length && cartId.value) {
-        window.localStorage.setItem(CART_ID_STORAGE_KEY, cartId.value)
-      } else {
-        window.localStorage.removeItem(CART_ID_STORAGE_KEY)
-      }
-
-      if (appliedCoupon.value) {
-        window.localStorage.setItem(CART_COUPON_STORAGE_KEY, JSON.stringify(appliedCoupon.value))
-      } else {
-        window.localStorage.removeItem(CART_COUPON_STORAGE_KEY)
-      }
+      if (!owner.value || owner.value !== currentOwner()) return
+      window.localStorage.setItem(cartStateKey(owner.value), JSON.stringify({ version: 3, owner: owner.value,
+        id: cartId.value, revision: revision.value, items: items.value, coupon: appliedCoupon.value }))
     } catch {
       // Keep the in-memory cart usable when browser storage is unavailable.
     }
@@ -159,18 +172,21 @@ export const useCart = () => {
 
   const syncCart = () => {
     if (!import.meta.client) return
+    const expected = currentOwner()
+    if (expected !== owner.value) {
+      // Clear first, even if storage is unavailable or the next envelope is bad.
+      resetMemory()
+      owner.value = expected
+    }
     try {
-      const raw = window.localStorage.getItem(CART_STATE_KEY)
-      const stored = raw ? JSON.parse(raw) : null
-      const storedItems = stored?.version === 2 ? stored.items : JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]')
-      const storedCoupon = stored?.version === 2 ? stored.coupon : JSON.parse(window.localStorage.getItem(CART_COUPON_STORAGE_KEY) || 'null')
-      const storedId = stored?.version === 2 ? stored.id : window.localStorage.getItem(CART_ID_STORAGE_KEY)
+      const stored = readOwnedCart(window.localStorage, expected)
+      const storedItems = stored?.items, storedId = stored?.id
       const restored = restoreCart(window.localStorage, {
         id: Array.isArray(storedItems) && storedItems.length ? (UUID_PATTERN.test(storedId || '') ? storedId : createCartIdentifier()) : '',
         revision: stored?.revision || createCartIdentifier(),
         items: Array.isArray(storedItems) ? storedItems.map(normalizeCartItem).filter(Boolean) : [],
-        coupon: normalizeAppliedCoupon(storedCoupon)
-      })
+        coupon: normalizeAppliedCoupon(stored?.coupon)
+      }, expected)
       items.value = restored.items
       appliedCoupon.value = restored.coupon
       cartId.value = restored.id
@@ -181,7 +197,7 @@ export const useCart = () => {
     // An acknowledgement may arrive while this tab is editing in memory.
     // Fork the committed identity without replacing those edited items.
     if (import.meta.client && cartId.value) {
-      try { cartId.value = restoreCart(window.localStorage, { id: cartId.value, revision: createCartIdentifier() }).id }
+      try { cartId.value = restoreCart(window.localStorage, { id: cartId.value, revision: createCartIdentifier() }, owner.value).id }
       catch { /* Server receipts still reject incompatible command reuse. */ }
     }
     revision.value = createCartIdentifier()
@@ -191,19 +207,26 @@ export const useCart = () => {
     if (!import.meta.client || isReady.value) return
     syncCart()
     isReady.value = true
-    try { if (!window.localStorage.getItem(CART_STATE_KEY)) persistCart() }
+    try { if (!window.localStorage.getItem(cartStateKey(owner.value))) persistCart() }
     catch { /* Keep the in-memory cart usable without browser storage. */ }
   }
   if (import.meta.client) {
     onMounted(loadCart)
-    if (!syncStarted.value) {
-      syncStarted.value = true
-      window.addEventListener('storage', event => {
-        if (event.key === CART_STATE_KEY || event.key?.startsWith(cartCompletionPrefix) || event.key === null) syncCart()
-      })
-      window.addEventListener('focus', syncCart)
-      document.addEventListener('visibilitychange', () => { if (!document.hidden) syncCart() })
+    const scope = effectScope(true)
+    scope.run(() => watch(identity.key, syncCart, { flush: 'sync' }))
+    const storageChanged = event => {
+      if (event.key?.startsWith(cartStatePrefix) || event.key?.startsWith(cartCompletionPrefix) || event.key === null) syncCart()
     }
+    const visibilityChanged = () => { if (!document.hidden) syncCart() }
+    window.addEventListener('storage', storageChanged)
+    window.addEventListener('focus', syncCart)
+    document.addEventListener('visibilitychange', visibilityChanged)
+    app.vueApp?.onUnmount(() => {
+      scope.stop()
+      window.removeEventListener('storage', storageChanged)
+      window.removeEventListener('focus', syncCart)
+      document.removeEventListener('visibilitychange', visibilityChanged)
+    })
   }
   const renewCart = () => {
     syncCart()
@@ -211,7 +234,9 @@ export const useCart = () => {
     commitCart()
   }
   const completeCart = snapshot => {
-    acknowledgeCart(window.localStorage, snapshot, createCartIdentifier())
+    syncCart()
+    if (!snapshot?.owner || snapshot.owner !== owner.value) return
+    acknowledgeCart(window.localStorage, snapshot, createCartIdentifier(), snapshot.owner)
     syncCart()
   }
 
@@ -474,8 +499,9 @@ export const useCart = () => {
   const distinctItemsCount = computed(() => items.value.length)
   const isEmpty = computed(() => !items.value.length)
 
-  return {
+  const cart = {
     items,
+    owner,
     appliedCoupon,
     cartId,
     revision,
@@ -497,4 +523,6 @@ export const useCart = () => {
     resetCoupon,
     loadCart
   }
+  carts.set(app, cart)
+  return cart
 }

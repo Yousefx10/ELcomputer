@@ -7,7 +7,7 @@ import { supportDate as baseSupportDate, supportReference, supportStatusLabel } 
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 const route = useUiRoute()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
 const { request, upload, download, errorText } = useSupportClient()
 const loading = ref(true)
 const saving = ref(false)

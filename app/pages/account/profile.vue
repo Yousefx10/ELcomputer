@@ -7,7 +7,7 @@ definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 useHead(() => ({ title: uiLabel('Your Profile') }))
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')

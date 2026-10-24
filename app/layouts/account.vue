@@ -5,7 +5,7 @@ const { uiNavigateTo } = useUiNavigation()
 import { resolveAccountUser } from '~/utils/accountSession'
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
 const profile = ref(null)
 const { data: accountAppearance } = await useAccountAppearance()
 const isModern = computed(() => accountAppearance.value?.account_dashboard_style === 'modern')

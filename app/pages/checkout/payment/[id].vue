@@ -18,7 +18,7 @@ definePageMeta({ middleware: 'customer-auth' })
 const route = useRoute()
 const { locale, t } = useI18n()
 const { uiNavigateTo } = useUiNavigation()
-const supabase = useSupabaseClient()
+const customerScope = useCustomerScope()
 const orderId = String(route.params.id || '')
 const { capabilities, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
 const { data: siteContent } = await useSiteContent()
@@ -27,18 +27,17 @@ const session = shallowRef(null)
 const error = ref(false)
 const loading = ref(false)
 const attempted = ref(false)
-const showResult = () => uiNavigateTo({ path: '/checkout/payment-result', query: { order_id: orderId } })
+const showResult = () => { if (customerScope.isCurrent()) return uiNavigateTo({ path: '/checkout/payment-result', query: { order_id: orderId } }) }
 const start = async () => {
   if (loading.value || attempted.value || session.value || !cardAvailable.value) return
   attempted.value = true
   loading.value = true; error.value = false
   try {
-    const { data } = await supabase.auth.getSession()
-    if (!data.session?.access_token) throw new Error('Session required')
-    session.value = await $fetch('/api/payments/intentions', { method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: { order_id: orderId, locale: locale.value }, retry: 0 })
+    session.value = await customerScope.request('/api/payments/intentions', { method: 'POST', body: { order_id: orderId, locale: locale.value }, retry: 0 })
   } catch { error.value = true }
   finally { loading.value = false }
 }
+customerScope.onInvalidate(() => { session.value = null; attempted.value = true; error.value = false })
 // Explicit button initializes Pixel; merely viewing a pending order never initiates a charge.
 onMounted(refreshPurchaseAccess)
 useHead(() => ({ title: t('paymob.secureCard'), meta: [{ name: 'referrer', content: 'no-referrer' }] }))

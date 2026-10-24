@@ -37,7 +37,7 @@
 <script setup>
 definePageMeta({ middleware: 'customer-auth' })
 const { locale, t } = useI18n()
-const supabase = useSupabaseClient()
+const customerScope = useCustomerScope()
 const purchase = ref(null)
 const quote = ref(null)
 const session = shallowRef(null)
@@ -57,10 +57,8 @@ const addressFields = [
 ]
 const money = minor => new Intl.NumberFormat(locale.value === 'ar' ? 'ar-EG' : 'en-EG', { style: 'currency', currency: 'EGP' }).format(minor / 100)
 const request = async body => {
-  const { data } = await supabase.auth.getSession()
-  if (!data.session?.access_token) throw Error('Session required')
-  return $fetch('/api/checkout/controlled', { method: body ? 'POST' : 'GET', retry: 0,
-    headers: { authorization: `Bearer ${data.session.access_token}` }, ...(body ? { body } : {}) })
+  return customerScope.request('/api/checkout/controlled', { method: body ? 'POST' : 'GET', retry: 0,
+    ...(body ? { body } : {}) })
 }
 const refresh = async () => {
   if (busy.value) return
@@ -94,6 +92,11 @@ const startPayment = async () => {
   try { session.value = await request({ action: 'pay', order_id: purchase.value.order.id, locale: locale.value }) } catch { error.value = true }
   finally { busy.value = false }
 }
+customerScope.onInvalidate(() => {
+  purchase.value = null; quote.value = null; session.value = null
+  Object.keys(address).forEach(field => { address[field] = '' })
+  orderPending.value = false; paymentStarted.value = true
+})
 onMounted(refresh)
 useHead(() => ({ title: t('controlledPurchase.title'), meta: [{ name: 'robots', content: 'noindex,nofollow' }, { name: 'referrer', content: 'no-referrer' }] }))
 </script>

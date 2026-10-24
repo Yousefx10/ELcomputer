@@ -1,7 +1,7 @@
 import { getPdcSettings, requestPdcJson, requestPdcLabel, findShipmentResult, validatePdcBaseUrl } from './pdcShipping.js'
 import { getShippingDocumentsRoot, saveShippingDocument } from './privateShippingDocuments.js'
 import { decryptShippingSecret } from './shippingSecrets.js'
-import { requestPdcLookup, pdcResponseRows } from './pdcLookups.js'
+import { requestPdcLookup, pdcResponseRows, getPdcStatusFilters } from './pdcLookups.js'
 import { boundedPdcText, parsePdcStatusDate, persistPdcUpdate } from './pdcTracking.js'
 import { runClaimRpc as claimRpc } from './claimDatabase.js'
 import { claimError } from './afterSalesClaimValidation.js'
@@ -70,7 +70,8 @@ export const operatePdcReverse = async (actor, claim, operation, fetcher = fetch
   const settings = await getPdcSettings(actor.db), ready = pdcReverseReady(settings)
   const job = await claimRpc(actor.db, 'shipping_claim_operation', { p_admin: actor.id, p_claim: claim, p_job: operation.job, p_action: operation.action, p_ready: ready })
   if (operation.action === 'label') return job
-  const response = await requestPdcLookup(settings, 'GetShipmentsStatus', { awBs: job.awb || '', reFs: job.ref }, fetcher)
+  const filters = await getPdcStatusFilters(actor.db, { jobId: job.id, awb: job.awb || '', ref: job.ref })
+  const response = await requestPdcLookup(settings, 'GetShipmentsStatus', filters, fetcher)
   const matches = pdcResponseRows(response).filter(row => typeof row.Ref === 'string' && row.Ref === job.ref && (!job.awb || row.AWB === job.awb))
   if (matches.length !== 1 || typeof matches[0].AWB !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9-]{0,99}$/.test(matches[0].AWB)) claimError('reverseMatch', 409)
   const row = matches[0], rawId = row.StatusID

@@ -189,9 +189,11 @@ test('mocked city/product requests use configured headers and GET, with bounded 
 
 test('reconciliation filters by original REF and AWB, uses no made-up StatusID or provider timestamp', async () => {
   const writes = []
-  const db = { rpc(name,args) { writes.push({ name,args }); return { abortSignal: async () => ({ data: name === 'shipping_claim_pdc_refresh' ? { awb: 'EDC-FIXTURE', ref: 'ORDER-FIXTURE', observed_at: '2026-10-05T08:00:00Z' } : { received: true } }) } } }
+  const db = { from() { return builder({ data: { created_at: '2026-10-04T23:30:00+03:00' } }) }, rpc(name,args) { writes.push({ name,args }); return { abortSignal: async () => ({ data: name === 'shipping_claim_pdc_refresh' ? { awb: 'EDC-FIXTURE', ref: 'ORDER-FIXTURE', observed_at: '2026-10-05T08:00:00Z' } : { received: true } }) } } }
   const fetcher = async (_url, options) => {
-    assert.equal(options.method, 'POST'); assert.deepEqual(JSON.parse(options.body), { awBs: 'EDC-FIXTURE', reFs: 'ORDER-FIXTURE' })
+    const body = JSON.parse(options.body)
+    assert.equal(options.method, 'POST'); assert.equal(body.awBs, 'EDC-FIXTURE'); assert.equal(body.reFs, 'ORDER-FIXTURE')
+    assert.equal(body.fromDate, '2026-10-03T00:00:00.000Z'); assert.ok(Date.parse(body.toDate) > Date.now())
     return new Response(JSON.stringify([{ AWB: 'EDC-FIXTURE', Ref: 'ORDER-FIXTURE', Status: 'Delivered', Reason: '' }]))
   }
   assert.equal((await reconcilePdcShipment(db, settings(), 'order-fixture', fetcher)).received, true)

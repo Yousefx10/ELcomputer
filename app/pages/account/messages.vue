@@ -9,7 +9,7 @@ definePageMeta({
 })
 useHead(() => ({ title: uiLabel('Order Messages') }))
 
-const supabase = useSupabaseClient()
+const { request } = useCustomerScope()
 const loading = ref(true)
 const errorMessage = ref('')
 const messages = ref([])
@@ -25,18 +25,6 @@ const replyNotice = reactive({
   text: '',
   returnedToProcessing: false
 })
-
-const getAuthHeaders = async () => {
-  const { data } = await supabase.auth.getSession()
-
-  if (!data.session?.access_token) {
-    throw new Error('Your session expired. Please log in again.')
-  }
-
-  return {
-    authorization: `Bearer ${data.session.access_token}`
-  }
-}
 
 const isCustomerMessage = (message = {}) => {
   return String(message.sender_type || '').trim().toLowerCase() === 'customer'
@@ -64,12 +52,11 @@ const loadMessages = async ({ silent = false } = {}) => {
   errorMessage.value = ''
 
   try {
-    const response = await $fetch('/api/account/messages', {
+    const response = await request('/api/account/messages', {
       query: {
         page: 1,
         pageSize: 100
-      },
-      headers: await getAuthHeaders()
+      }
     })
 
     messages.value = response.items || []
@@ -101,9 +88,8 @@ const markAsRead = async (message) => {
   errorMessage.value = ''
 
   try {
-    const response = await $fetch(`/api/account/messages/${message.id}/read`, {
-      method: 'PATCH',
-      headers: await getAuthHeaders()
+    const response = await request(`/api/account/messages/${message.id}/read`, {
+      method: 'PATCH'
     })
     const updatedMessage = response.item
 
@@ -169,14 +155,13 @@ const submitReply = async (message) => {
   errorMessage.value = ''
 
   try {
-    const response = await $fetch(
+    const response = await request(
       `/api/account/messages/${encodeURIComponent(message.id)}/reply`,
       {
         method: 'POST',
         body: {
           message: body
-        },
-        headers: await getAuthHeaders()
+        }
       }
     )
     const returnedOrderStatus = String(

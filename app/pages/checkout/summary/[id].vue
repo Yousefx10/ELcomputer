@@ -185,13 +185,15 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const route = useUiRoute()
+const customerScope = useCustomerScope()
 
-const { data: orderData, pending, error } = await useAsyncData(`checkout-summary-${route.params.id}`, async () => {
+const { data: orderData, pending, error } = await useAsyncData(`checkout-summary-${customerScope.key}-${route.params.id}`, async () => {
+  customerScope.assertCurrent()
   const [orderResult, itemsResult] = await Promise.all([
     supabase
       .from('customer_orders')
       .select('*')
-      .eq('id', route.params.id)
+      .eq('id', route.params.id).eq('user_id', customerScope.accountId)
       .maybeSingle(),
     supabase
       .from('customer_order_items')
@@ -199,6 +201,7 @@ const { data: orderData, pending, error } = await useAsyncData(`checkout-summary
       .eq('order_id', route.params.id)
       .order('created_at')
   ])
+  customerScope.assertCurrent()
 
   if (orderResult.error) {
     throw orderResult.error

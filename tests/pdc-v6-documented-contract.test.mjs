@@ -62,7 +62,7 @@ test('V6 documentation cases use explicit provider doubles and no global network
     let calls=0
     const fetcher=async()=>{calls++;return Response.json({success:false,message:'Synthetic unspecified error.',traceId:'SYNTHETIC-TRACE'},{status:500})}
     if(operation==='SaveShipmentEx')await assert.rejects(()=>requestPdcJson({settings:fixtureSettings(),endpoint:operation,body,fetcher,bounded:true}))
-    else await assert.rejects(()=>requestPdcLookup(fixtureSettings(),operation,{awBs:'',reFs:reference},fetcher),{statusCode:502})
+    else await assert.rejects(()=>requestPdcLookup(fixtureSettings(),operation,{awBs:'',reFs:reference,fromDate:'2026-07-01T00:00:00Z',toDate:'2026-07-02T00:00:00Z'},fetcher),{statusCode:502})
     assert.equal(calls,1)
    }
    assert.equal(verifyReverseResult({success:false,message:'Synthetic error',traceId:'SYNTHETIC-TRACE'},reference).state,'uncertain')
@@ -89,7 +89,7 @@ test('V6 documentation cases use explicit provider doubles and no global network
     await assert.rejects(()=>requestPdcLabel({settings:fixtureSettings(),awb:'SYNTHETIC-AWB',bounded:true,fetcher:async()=>new Response(body,{headers})}))
   })
 
-  await t.test('date-filter examples serialize as documented without asserting that dates are mandatory',async()=>{
+  await t.test('engineer-confirmed date filters preserve explicit timezone-bearing values',async()=>{
    const filters={fromDate:'2026-07-01T00:00:00.000Z',toDate:'2026-07-01T23:59:59.999Z',awBs:'',reFs:reference}
    let calls=0
    await requestPdcLookup(fixtureSettings(),'GetShipmentsStatus',filters,async(url,options)=>{
@@ -100,7 +100,7 @@ test('V6 documentation cases use explicit provider doubles and no global network
   })
 
   await t.test('documented status rows need no invented StatusID or StatusDate and preserve Reason text',async()=>{
-   const writes=[],db={rpc(name,args){
+   const writes=[],db={from(){return {select(){return this},eq(){return this},maybeSingle(){return this},abortSignal(){return Promise.resolve({data:{created_at:'2026-07-01T10:00:00Z'}})}}},rpc(name,args){
     if(name==='shipping_claim_pdc_refresh')return rpcResult({awb:'SYNTHETIC-AWB',ref:reference,observed_at:'2026-07-01T12:00:00Z'})
     assert.equal(name,'shipping_record_pdc_event');writes.push(args.p_update);return rpcResult({received:true})
    }}

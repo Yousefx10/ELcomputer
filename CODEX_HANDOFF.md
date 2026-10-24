@@ -1,3 +1,219 @@
+# PDC inbound ingress PASS — 24 October 2026
+
+Owner-approved signal seal `fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024` completed once.
+Caddy's journal confirmed one SIGUSR1 reload at15:00:56.337 Riyadh.
+The single unauthenticated HTTPS POST to /api/webhooks/pdc returned401.
+No authenticated callback was sent. No PDC request, registration change, booking,
+payment/order write or service restart occurred. Both processes remain healthy:
+Caddy PID26652; Nuxt PID32102, release58e3083f4aa6a1f8. Runtime bytes and outbound/
+public-purchasing gates are unchanged. The admin API remains disabled.
+
+The exact Caddy candidate is now loaded; the earlier pending-reload condition is
+resolved. Both ingress approvals/operators are consumed. Never rerun them.
+The first unsupported systemd reload attempt and all evidence remain preserved.
+[Current ingress/recovery receipt](docs/pdc-webhook-ingress-recovery.md);
+private ../pdc-webhook-readiness-20261024/SIGNAL-EXECUTION-RECEIPT.json and
+signal-root-evidence/ retain the intent, journal, probe intent and completion.
+All4 protected root evidence files passed full-byte readback/hash verification.
+
+Provider cutover/authenticated verification remains blocked pending the existing
+account mapping/timezone review and a genuine assigned customerREF/AWB. Do not
+change PDC's destination or attach a standalone/static AWB to the uncertain order.
+The original uncertainty barrier and all paid-order/payment/incident history stay.
+Public-commerce session acceptance continues independently as the main priority.
+No application deployment, credential change, broad audit/build or Git push ran.
+Historical handoff bytes below are preserved unchanged.
+
+# PDC ingress STOP — installed configuration pending reload
+
+The owner-approved ingress attempt `cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05` validated and installed
+the exact Caddy candidate, then stopped: caddy.service has no reload action.
+The readiness preparation missed CanReload=no. No successful reload, signal,
+restart, authenticated callback or planned unauthenticated POST probe ran.
+Do not rerun the consumed original operator/approval. No automatic rollback.
+
+On-disk Caddy SHA is a23719140d8d6e8e2e159287d6b7bb5cefcc044299e1f8b27522c94b1a93e256.
+Activation of the POST exception is unconfirmed. GET remains403, which does not
+prove the active POST policy. A later Caddy start/reload can load this pending
+approved file; account for it before unrelated Caddy maintenance.
+Nuxt58e3083f4aa6a1f8/PID32102 and Caddy/PID26652 remain healthy. Runtime bytes,
+closed purchasing/provider gates, credentials, payment/order data and incidents
+are preserved by the action's scope. No PDC request or provider change occurred.
+
+[Failure receipt and prepared recovery](docs/pdc-webhook-ingress-recovery.md).
+The existing file-based Caddy2.11.7 process supports SIGUSR1 with admin off.
+12 local TLS signal-reload checks and3 replacement approval guards pass;
+production read-only recovery preflight, including journal confirmation access, passes.
+New plan `fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024` is sealed and NOT executed.
+Next approval: `APPROVE PDC WEBHOOK SIGNAL RELOAD fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024`.
+This authorizes one signal and the one still-unused missing-secret401 probe only;
+no configuration rewrite, restart, authenticated callback or provider registration.
+Original validation/failure evidence, candidate and protected baseline are retained.
+PDC cutover remains blocked pending its existing mapping/timezone and genuine
+assignedREF/AWB prerequisites. Public customer purchasing remains the priority.
+All earlier handoff bytes below are preserved unchanged.
+
+# PDC webhook readiness BLOCKED for provider cutover — 24 October 2026
+
+[Current comparison, blockers and exact ingress approval](docs/pdc-webhook-readiness.md).
+Fresh read-only checks confirm consolidated release58e3083f4aa6a1f8, schema91,
+healthy storefront PID32102 and Caddy PID26652. Consolidated deployment passed;
+public-commerce account-B/hosted authenticated acceptance remains independent.
+
+Authenticated original WordPress snippet34 was inspected as data only. Its saved
+48-character webhook secret matches the current encrypted Nuxt secret exactly;
+no credential bytes were disclosed. Canonical HTTPS POST/JSON/X-Webhook-Secret
+contract is compatible. HTTP200 ack body differs safely. Nuxt retains exactREF/AWB,
+validated dates, bounded input, atomic AWB+StatusID deduplication, chronological
+ordering, customer ownership and shipping-only persistence. No auth/parser rewrite.
+[Complete33-ID WordPress/Nuxt comparison](docs/pdc-webhook-status-comparison.csv)
+records label-heuristic differences and conflicting PDF/sheet examples. IDs11/97
+remain neutral; missing ID1 is neutral too. Review account mappings/timezone before
+provider cutover. No global order-state/financial mapping is copied from WordPress.
+
+Current public /api/webhooks/pdc remains403. One HTTPS POST-only,8KiB/no-store,
+no-retry Caddy exception is prepared; every other original Caddy byte is preserved.
+43 callback/database tests,36 real local TLS proxy checks across2 fixture domains
+and3 operator guards PASS. Production ingress read-only preflight PASS.
+No Nuxt deployment, SQL migration, runtime/PDC-setting/credential change is needed.
+The candidate/operator are sealed outside Git: ../pdc-webhook-readiness-20261024/.
+Ingress-only approval, unconsumed: `cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05`.
+Exact next authorization: `APPROVE PDC WEBHOOK INBOUND INGRESS cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05`.
+This permits one Caddy reload and one missing-secret POST expecting401 only.
+It does not authorize PDC registration, a valid callback, booking or application restart.
+
+Provider activation approval is NOT issued. There are0 customer jobs with an AWB;
+the original paid order/job/dispatch remain uncertain and cannot be reset/rebooked.
+Never attach standalone static AWBs or infer an order from a legacy REF/AWB.
+Keep PDC's destination unchanged until mappings and a separately authorized genuine
+assignedREF/AWB permit a bounded live verification packet. No provider contact/call,
+live callback, production change, payment, activation, full build or Git push occurred.
+Paymob and public purchasing safeguards, all incident history and unrelated work
+remain preserved. Public customer purchasing remains the main development priority.
+Historical handoffs below are retained unchanged.
+
+# Consolidated customer-session deployment PASS — 24 October 2026
+
+The exact approved release `58e3083f4aa6a1f8` is deployed, schema 91.
+Approval `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e` is consumed; do not rerun it.
+One `storefront` restart changed PID 31273 → 32102.
+Private candidate qualification, fresh encrypted execution backups/full readback
+and protected database/schema/security/runtime/media/incident checks passed.
+Caddy and credentials are unchanged. PDC User-Agent/status-date fixes remain.
+All purchasing/signup/provider gates stay closed; no PDC request or payment ran.
+
+Hosted public smoke passed: 8 HTTP checks, 37 asset hashes, 3 browser checks and
+4 protected-route observations. Account A exists; no second Auth identity exists.
+[Hosted acceptance and Test B requirements](customer-session-hosted-acceptance.md)
+are prepared. B creation and authenticated A→B acceptance remain pending approval
+and secure sessions. No identity or authentication email was created or sent.
+
+Private authoritative receipt:
+`../customer-session-consolidated-20261024/DEPLOYMENT-RECEIPT.json`.
+The sealed approval packet below is retained unchanged as historical evidence.
+
+# Consolidated session release READY — 24 October 2026
+
+The [fresh combined packet](docs/customer-session-consolidated-release.md) replaces
+obsolete session artifact `9418a11903830ae5` and its old approval. Production was
+verified at `2573cdf1504bf559`, schema 91. New release `58e3083f4aa6a1f8` is sealed,
+not deployed; exact approval seal `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e`.
+
+The deployed PDC User-Agent/status-date corrections are preserved: eight identical
+compiled edits, ten byte-identical PDC definitions. All session client bytes and
+1325 production retained assets remain. 16 focused tests and fresh archive checks
+pass: 16 browser checks, 12 screenshots, 1429 asset URL hashes, no page exceptions.
+83 security/15 source-browser/3 guard tests and clean typecheck/build are reused
+with verified bindings; no broad audit or full build repeated. Fresh encrypted
+backups/readback and schema 91 / 140-projection/Auth/runtime/media/incident checks pass.
+
+No deployment, provider request, payment, public activation, Git history change or push.
+All existing work and PDC incident records remain. Hosted isolation acceptance
+follows exact approved deployment. The separate PDC dynamic test remains pending.
+Historical handoffs and the consumed PDC deployment receipt follow unchanged.
+
+# PDC client deployment PASS — 24 October 2026
+
+Owner approved seal `ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`. The exact guarded operator
+completed once. Approval consumed; do not rerun the deployment.
+Release `2573cdf1504bf559` was healthy at12:47:38.785 Riyadh.
+One production service restart; private VPS candidate qualification and postflight PASS.
+Fresh encrypted database/runtime backups passed full readback. Schema91 and all140
+protected business/security projections remained unchanged. Caddy/runtime credentials,
+media, private incident evidence and1325 retained browser assets are preserved.
+Zero migrations, business-data writes, PDC requests, payment or public activation.
+Public purchasing, signup and provider gates remain closed. No Git push.
+[Deployment receipt](docs/pdc-http-client-release.md); private receipt and execution
+proof: ../pdc-client-fix-release-20261024/DEPLOYMENT-RECEIPT.json and execution/.
+
+Generic PDC User-Agent and required status-date filters are deployed. Product40
+remains configured, weight-only, no dimensions or pickup API/scheduling additions.
+Static AWB `EDC17983113EG` remains an independent diagnostic; no customer attachment.
+[Prepared private PDF/dated status commands](docs/pdc-static-booking-acceptance.md)
+remain unused. Dashboard visibility/cancellation remain owner checks.
+
+[Dynamic Dashboard test packet](docs/pdc-dynamic-dashboard-test.md) is prepared but
+not executable. A narrow read-only check found0 unbooked paid/packed PDC candidates.
+Original order ORD-20261023-8C0C964CBD remains paid/ready with its original uncertain
+job/dispatch and attempt_count1. Never reset its barrier or attach a cancelled/dummy AWB.
+Next: select another existing paid order for read-only eligibility review, then seal
+separate exact-order runtime/booking/PDF/tracking/closure authorization. No new payment.
+Unrelated customer-session work remains preserved; its earlier sealed deployment
+has an obsolete target baseline and must be rebound before any future application switch.
+Historical handoffs, including the consumed preparation approval, follow unchanged.
+
+# PDC static booking accepted; client release sealed — 24 October 2026
+
+Owner execution and retained VPS evidence confirm HTTP200, AWB `EDC17983113EG`,
+booking ID1071825, reference `ORD-24046ef1-b9a6-46bf-93ec-58df0c85503e`.
+Request12:14:33.372 Riyadh; one request, zero retries/database writes/customer attachments.
+Generic `Storefront-PDC/1.0` succeeded without cookies. Static acceptance is confirmed;
+normal Dashboard/dynamic-customer acceptance remains a separate future test.
+[Acceptance receipt](docs/pdc-static-booking-acceptance.md) includes prepared private
+PDF and dated tracking commands for this existing AWB. Neither was executed here.
+Dashboard visibility/cancellation of this new diagnostic remain owner checks.
+
+The [guarded PDC client release](docs/pdc-http-client-release.md) is sealed, not deployed.
+Release `2573cdf1504bf559`; approval `ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`.
+Shared headers cover all PDC operations. Tracking and both recovery paths now supply
+validated dates covering the matching saved job's lifetime. No migration or new config.
+86 focused/native/compiled/deployment tests and five exact-artifact HTTP checks pass.
+The accepted artifact is retained with one scoped server-file patch; all1325 client
+assets and unrelated application bytes are preserved. No full build was repeated.
+Fresh read-only schema91/140-projection/Auth/runtime/media/incident preservation passes.
+No provider call, shipping retry, production mutation, restart, deployment or push here.
+
+Next: `APPROVE PDC CLIENT FIX DEPLOY ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`.
+This permits one application switch/restart with fresh encrypted backups/private
+candidate qualification. All commerce/provider gates remain closed; no Paymob,
+customer-order, pickup, dimension, credential, Caddy or payment changes.
+Product40 stays configured; booking remains weight-only. Original uncertain jobs
+and all prior incident history remain untouched. Existing unrelated session-isolation
+work/package is preserved; any later deployment must rebind to its then-current target.
+After deployment, prepare separate authorization for genuine dynamic fields through
+normal Dashboard shipping; do not create a shipment or clear an uncertainty barrier now.
+
+This authorized PDC resumption supersedes earlier PAUSED/current-blocker notices.
+Historical handoffs follow unchanged.
+
+# Phase1 session isolation sealed — 24 October 2026
+
+[Session isolation](docs/customer-session-isolation.md) is locally PASS.
+The [one application approval packet](docs/customer-session-release.md) is ready:
+release `9418a11903830ae5`, schema91 unchanged, no deployment yet.
+Seal `07ff07e5fba22b8b6b4d58f40e80249aefa8f8c3dbbf894f45cd1c121c024860` requires exact owner approval.
+83 security + 15 source-browser + 3 deployment guard tests pass; typecheck/build pass.
+Exact archive: 16 browser checks, 12 screenshots, 1429 asset byte checks; no page exception.
+Fresh encrypted backups/readback and scoped read-only production preservation pass.
+Account/guest carts, checkout drafts, cached summaries and late responses are isolated.
+Original customer checkout commands remain recoverable under their own account.
+
+PDC remains PAUSED. Existing lookup work is preserved outside this release;
+all deployed server bytes, incident records and signed Paymob callback ingress stay.
+Signup/purchasing/coupons/provider initiation remain held. No charge, PDC request,
+production deployment, branch operation, commit or Git push ran.
+Historical handoffs and Codex work remain below unchanged.
+
 # Public customer purchasing priority — 24 October 2026
 
 PDC development and investigation are PAUSED until explicit owner resumption.

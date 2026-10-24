@@ -12,6 +12,7 @@ Object.assign(globalThis,{
   useNuxtApp:()=>active.app,
   useRuntimeConfig:()=>active.runtime,
   useSupabaseUser:()=>active.user,
+  useSupabaseSession:()=>active.sessionRef,
   useSupabaseClient:()=>{const owner=active;return {auth:{getSession:async()=>({data:{session:owner.session}})}}},
   useState:(name,initial)=>{if(!active.state.has(name))active.state.set(name,ref(initial()));return active.state.get(name)},
   $fetch:(path,options)=>transport(path,options),
@@ -23,6 +24,8 @@ const compile = async file => {
   return import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'))
 }
 const {usePurchaseAccess}=await compile('app/composables/usePurchaseAccess.js')
+const {useCustomerIdentity}=await compile('app/composables/useCustomerIdentity.js')
+globalThis.useCustomerIdentity=useCustomerIdentity
 globalThis.usePurchaseAccess=usePurchaseAccess
 const {default:middleware}=await compile('app/middleware/purchasing.js')
 const context = (siteUrl='https://orchid.example.invalid') => {

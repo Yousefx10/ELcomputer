@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { getPdcSettings, buildPdcShipment, requestPdcJson, requestPdcLabel } from './pdcShipping.js'
-import { requirePdcReadAccess, requestPdcLookup, pdcResponseRows } from './pdcLookups.js'
+import { requirePdcReadAccess, requestPdcLookup, pdcResponseRows, getPdcStatusFilters } from './pdcLookups.js'
 import { verifyReverseResult } from './pdcReverseLogistics.js'
 import { getShippingDocumentsRoot, saveShippingDocument } from './privateShippingDocuments.js'
 import { decryptShippingSecret, shippingSecretsMatch } from './shippingSecrets.js'
@@ -83,7 +83,8 @@ export const operatePdcOrder = async ({ db, adminId, orderId, action, runtime = 
   if (action === 'recover') {
     const { data: job, error } = await db.from('shipping_order_jobs').select('to_ref,state,provider_identity').eq('order_id', orderId).maybeSingle()
     if (error || !job || !['uncertain','submitting'].includes(job.state) || ['base_url','api_mode','company_id'].some(k => job.provider_identity?.[k] !== settings[k])) throw createError({ statusCode: 409, statusMessage: 'Courier booking cannot be reconciled.' })
-    const response = await requestPdcLookup(settings, 'GetShipmentsStatus', { awBs: '', reFs: job.to_ref }, fetcher)
+    const filters = await getPdcStatusFilters(db, { orderId, ref: job.to_ref })
+    const response = await requestPdcLookup(settings, 'GetShipmentsStatus', filters, fetcher)
     const matches = pdcResponseRows(response).filter(row => row.Ref === job.to_ref && typeof row.AWB === 'string' && /^[A-Za-z0-9][A-Za-z0-9-]{0,99}$/.test(row.AWB))
     if (matches.length !== 1) throw createError({ statusCode: 409, statusMessage: 'No unique booking found. Do not rebook.' })
     await authorize()

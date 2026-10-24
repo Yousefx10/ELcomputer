@@ -11,7 +11,7 @@ definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 useHead(() => ({ title: uiLabel('Your Wallet') }))
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
 const loading = ref(true)
 const error = ref('')
 const balance = ref(0)

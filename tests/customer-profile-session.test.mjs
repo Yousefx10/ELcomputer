@@ -26,7 +26,7 @@ for (const [name, path, exposed] of [
   const source = `${imports}\nexport default async function(deps) {
     const {ref, reactive, computed, watch, onMounted, onBeforeUnmount,
       useUiLocale, useUiNavigation, useUiRoute, useAccountAppearance,
-      useSupabaseClient, useSupabaseUser, definePageMeta, useHead, window} = deps;
+      useSupabaseClient, useSupabaseUser, useCustomerIdentity, definePageMeta, useHead, window} = deps;
     ${script.replace(/^import .*$/gm, '')}
     return {${exposed}};
   }`
@@ -63,6 +63,7 @@ const fixture = async (kind = 'profile') => {
     useUiLocale: () => ({ uiLabel: value => value }), useUiNavigation: () => ({ uiNavigateTo: () => {} }),
     useUiRoute: () => ({ path: '/account/profile' }), useAccountAppearance: () => ({ data: ref({}) }),
     useSupabaseClient: () => supabase, useSupabaseUser: () => user,
+    useCustomerIdentity: () => ({ user }),
     definePageMeta: () => {}, useHead: () => {},
     window: { dispatchEvent: event => events.push(event.type), addEventListener: () => {}, removeEventListener: () => {} }
   })

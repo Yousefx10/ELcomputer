@@ -3,6 +3,7 @@ import { decryptShippingSecret } from './shippingSecrets.js'
 
 export const PDC_PROVIDER_ID = 'pdc'
 export const PDC_PRODUCTION_BASE_URL = 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/'
+export const PDC_HTTP_USER_AGENT = 'Storefront-PDC/1.0'
 
 const PDC_ENDPOINTS = {
   createShipment: 'SaveShipmentEx',
@@ -26,11 +27,12 @@ const merchandiseMinor = value => {
   return minor
 }
 
-const getPdcHeaders = (settings) => ({
+export const getPdcHeaders = (settings) => ({
   AccessToken: decryptShippingSecret(settings.access_token_encrypted),
   CompanyID: cleanText(settings.company_id),
   'Content-Type': 'application/json',
-  Accept: 'application/json'
+  Accept: 'application/json',
+  'User-Agent': PDC_HTTP_USER_AGENT
 })
 
 export const PDC_TEST_BASE_URL = 'https://clientsapi-test.pdc-eg.com/api/ClientUsers/V6/'

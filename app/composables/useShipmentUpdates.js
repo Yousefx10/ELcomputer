@@ -1,6 +1,7 @@
 // Private Broadcast contains a change signal only. The owned-order API supplies data.
 export const useShipmentUpdates = (orderId, refresh) => {
   const supabase = useSupabaseClient()
+  const scope = useCustomerScope()
   let channel, timer, subscription, version = 0, disposed = false
   const stopChannel = () => {
     clearTimeout(timer)
@@ -9,15 +10,15 @@ export const useShipmentUpdates = (orderId, refresh) => {
   }
   const changed = () => {
     clearTimeout(timer)
-    timer = setTimeout(() => { if (!disposed) void refresh() }, 250)
+    timer = setTimeout(() => { if (!disposed && scope.isCurrent()) void refresh() }, 250)
   }
   const connect = async () => {
     const active = ++version
     stopChannel()
     const { data } = await supabase.auth.getSession()
-    if (disposed || active !== version || !data.session?.access_token || !orderId.value) return
+    if (disposed || !scope.isCurrent() || active !== version || data.session?.user?.id !== scope.accountId || !data.session?.access_token || !orderId.value) return
     await supabase.realtime.setAuth(data.session.access_token)
-    if (disposed || active !== version) return
+    if (disposed || !scope.isCurrent() || active !== version) return
     channel = supabase.channel(`shipping:order:${orderId.value}`, { config: { private: true } })
       .on('broadcast', { event: 'changed' }, changed).subscribe(status => { if (status === 'SUBSCRIBED') changed() })
   }
@@ -30,4 +31,5 @@ export const useShipmentUpdates = (orderId, refresh) => {
     }).data.subscription
   })
   onBeforeUnmount(() => { disposed = true; version++; stopChannel(); subscription?.unsubscribe() })
+  scope.onInvalidate(() => { disposed = true; version++; stopChannel(); subscription?.unsubscribe() })
 }

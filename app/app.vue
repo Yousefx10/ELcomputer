@@ -15,6 +15,10 @@ watch(
   value => { effectiveTheme.value = value; colorMode.preference = value }
 )
 const seoRoute = useRoute()
+const customerIdentity = useCustomerIdentity()
+const customerArea = computed(() => /^\/(?:ar\/)?(?:account|cart|checkout)(?:\/|$)/.test(seoRoute.path))
+const customerPageKey = route => `${route.fullPath}:${customerIdentity.key.value}`
+const customerLayoutKey = computed(() => customerArea.value ? customerIdentity.key.value : 'storefront')
 const { uiLabel } = useUiLocale()
 usePageSeo(() => ({ index: false }))
 useHead(() => ({
@@ -28,5 +32,5 @@ useHead(() => ({
 </script>
 
 <template>
-  <NuxtLayout><NuxtPage /></NuxtLayout>
+  <NuxtLayout :key="customerLayoutKey"><NuxtPage :page-key="customerArea ? customerPageKey : undefined" /></NuxtLayout>
 </template>

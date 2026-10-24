@@ -1,16 +1,6 @@
 export const useSupportClient = () => {
-  const supabase = useSupabaseClient()
-
-  const authHeaders = async () => {
-    const { data, error } = await supabase.auth.getSession()
-    if (error || !data.session?.access_token) throw new Error('Please sign in again.')
-    return { authorization: `Bearer ${data.session.access_token}` }
-  }
-
-  const request = async (url, options = {}) => $fetch(url, {
-    ...options,
-    headers: { ...(options.headers || {}), ...await authHeaders() }
-  })
+  const scope = useCustomerScope()
+  const request = scope.request
 
   const upload = async (url, messageId, file) => {
     const form = new FormData()
@@ -21,10 +11,12 @@ export const useSupportClient = () => {
 
   const downloadFrom = async (urlPath, name) => {
     const response = await fetch(urlPath, {
-      headers: await authHeaders(), cache: 'no-store'
+      headers: await scope.headers(), cache: 'no-store'
     })
+    scope.assertCurrent()
     if (!response.ok) throw new Error('Could not download this file.')
     const blob = await response.blob()
+    scope.assertCurrent()
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
@@ -40,5 +32,5 @@ export const useSupportClient = () => {
   const errorText = (error, fallback) => error?.data?.statusMessage
     || error?.statusMessage || error?.message || fallback
 
-  return { request, upload, download, downloadFrom, errorText }
+  return { request, upload, download, downloadFrom, errorText, assertCurrent: scope.assertCurrent }
 }

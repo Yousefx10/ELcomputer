@@ -54,7 +54,7 @@ test('normal checkout and payment pages preserve owner actions and browser cart 
         assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(),'Isolated street')
         assert.equal(await page.locator('input[autocomplete=address-line2]').inputValue(),'Isolated floor')
         assert.equal(await page.locator('html').getAttribute('dir'),locale==='ar'?'rtl':'ltr')
-        const result=await page.evaluate(()=>({requests:window.__requests,cart:JSON.parse(localStorage.getItem('elcomputer-cart-state-v2')),meta:window.__pageMeta}))
+        const result=await page.evaluate(()=>({requests:window.__requests,cart:JSON.parse(localStorage.getItem(window.__cartKey())),meta:window.__pageMeta}))
         assert.equal(result.cart.id,scenario.cart.id);assert.equal(result.cart.items[0].quantity,1)
         assert.ok(!result.requests.some(x=>x.path==='/api/checkout'||x.path==='/api/payments/intentions'))
         assert.deepEqual(result.meta.middleware,['customer-auth','purchasing'])

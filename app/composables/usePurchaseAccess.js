@@ -6,12 +6,11 @@ export const usePurchaseAccess = () => {
   const runtime = useRuntimeConfig()
   const nuxt = useNuxtApp()
   const supabase = useSupabaseClient()
-  const user = useSupabaseUser()
-  const sessionAccountId = useState('purchase-session-account', () => '')
+  const identity = useCustomerIdentity()
   const snapshot = useState('normal-purchase-access', () => ({ accountId: '', data: /** @type {any} */ (closed()) }))
   const now = ref(Date.now())
   const publicAccess = computed(() => runtime.public.purchasingEnabled === true || runtime.public.purchasingEnabled === 'true')
-  const accountId = computed(() => String(user.value?.id || user.value?.sub || sessionAccountId.value || ''))
+  const accountId = identity.accountId
   const capabilities = computed(() => snapshot.value.accountId === accountId.value ? snapshot.value.data : closed())
   const scope = computed(() => {
     const access = capabilities.value.purchase
@@ -24,12 +23,13 @@ export const usePurchaseAccess = () => {
 
   const refresh = async () => {
     now.value = Date.now()
+    const generation = identity.key.value
     let requestedAccountId
     try {
       const session = (await supabase.auth.getSession()).data.session
       const id = session?.user?.id || ''
       requestedAccountId = id
-      sessionAccountId.value = id
+      if (generation !== identity.key.value || id !== accountId.value) return closed()
       if (!publicAccess.value && !session?.access_token) {
         snapshot.value = { accountId: id, data: closed() }
         return capabilities.value
@@ -45,12 +45,12 @@ export const usePurchaseAccess = () => {
       try {
         const data = await job.promise
         const current = (await supabase.auth.getSession()).data.session
-        if ((current?.user?.id || '') !== id || current?.access_token !== session?.access_token) return closed()
+        if (generation !== identity.key.value || (current?.user?.id || '') !== id || current?.access_token !== session?.access_token) return closed()
         snapshot.value = { accountId: id, data }
         return data
       } finally { if (requests.get(nuxt) === job) requests.delete(nuxt) }
     } catch {
-      if (requestedAccountId === undefined || requestedAccountId === accountId.value) {
+      if (generation === identity.key.value && (requestedAccountId === undefined || requestedAccountId === accountId.value)) {
         snapshot.value = { accountId: accountId.value, data: closed() }
       }
       return closed()
@@ -59,11 +59,10 @@ export const usePurchaseAccess = () => {
   // Route middleware also uses this composable; it refreshes explicitly and
   // must not register component hooks or leave a watcher behind.
   if (getCurrentInstance()) {
-    watch(() => user.value?.id || user.value?.sub || '', () => {
-      sessionAccountId.value = ''
+    watch(identity.key, () => {
       snapshot.value = { accountId: '', data: closed() }
       if (import.meta.client) refresh()
-    })
+    }, { flush: 'sync' })
     let timer
     onMounted(() => {
       if (!publicAccess.value) refresh()

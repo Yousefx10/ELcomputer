@@ -12,7 +12,7 @@ definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 useHead(() => ({ title: uiLabel('My Support Tickets') }))
 
 const route = useUiRoute()
-const { request, upload, errorText } = useSupportClient()
+const { request, upload, errorText, assertCurrent } = useSupportClient()
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
@@ -69,6 +69,7 @@ const createTicket = async () => {
       }
     }
     submissionKey = ''
+    assertCurrent()
     await uiNavigateTo({ path: `/account/support/${response.item.id}`, query: notice.value ? { attachment: 'failed' } : {} })
   } catch (cause) { error.value = errorText(cause, 'Could not create ticket.') }
   finally { saving.value = false }

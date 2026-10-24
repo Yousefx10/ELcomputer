@@ -1,9 +1,11 @@
 export const useReorder = () => {
   const supabase = useSupabaseClient()
+  const scope = useCustomerScope()
   const { addItem, items } = useCart()
   const { data: siteContent } = useNuxtData('site-content')
 
   const addOrderToCart = async (orderItems = []) => {
+    scope.assertCurrent()
     const requestedItems = orderItems.filter(item => item?.product_id)
     if (!requestedItems.length) {
       return { success: false, message: 'These items are no longer available.' }
@@ -29,6 +31,7 @@ export const useReorder = () => {
       .in('id', productIds)
       .eq('is_published', true)
 
+    scope.assertCurrent()
     if (error) throw error
 
     const productsById = new Map((data || []).map(product => [String(product.id), product]))

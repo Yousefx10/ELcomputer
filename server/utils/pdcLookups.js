@@ -1,9 +1,34 @@
 import { createError } from 'h3'
-import { validatePdcBaseUrl } from './pdcShipping.js'
-import { decryptShippingSecret } from './shippingSecrets.js'
+import { validatePdcBaseUrl, getPdcHeaders } from './pdcShipping.js'
 import { boundedPdcText, parsePdcStatusDate, persistPdcUpdate } from './pdcTracking.js'
 
 const unavailable = () => createError({ statusCode: 502, statusMessage: 'Courier lookup is unavailable.' })
+
+// Cover this shipment's lifetime, including a day of timezone/clock margin.
+// Never use a rolling window that silently excludes an older shipment.
+export const getPdcStatusFilters = async (db, { orderId, jobId, ref, awb = '' }, now = new Date()) => {
+  if ((!orderId && !jobId) || (orderId && jobId) || !ref) throw unavailable()
+  const { data, error } = await db.from(jobId ? 'shipping_claim_jobs' : 'shipping_order_jobs')
+    .select('created_at').eq(jobId ? 'id' : 'order_id', jobId || orderId).eq('to_ref', ref)
+    .maybeSingle().abortSignal(AbortSignal.timeout(4000))
+  const created = Date.parse(data?.created_at)
+  if (error || !Number.isFinite(created) || !Number.isFinite(now.getTime()) || created > now.getTime()) throw unavailable()
+  const day = 86400000
+  return { awBs: awb, reFs: ref,
+    fromDate: new Date(Math.floor(created / day) * day - day).toISOString(),
+    toDate: new Date((Math.floor(now.getTime() / day) + 1) * day).toISOString() }
+}
+
+const requirePdcStatusDates = body => {
+  try {
+    for (const key of ['fromDate', 'toDate']) {
+      if (typeof body?.[key] !== 'string' || !/(?:Z|[+-]\d{2}:\d{2})$/.test(body[key])) throw unavailable()
+      parsePdcStatusDate(body[key], 'UTC')
+    }
+    if (Date.parse(body.fromDate) >= Date.parse(body.toDate)) throw unavailable()
+  } catch { throw unavailable() }
+}
+
 export const requirePdcReadAccess = (settings, runtime = useRuntimeConfig(), { allowDisabled = false } = {}) => {
   if (runtime.shippingLiveRequestsEnabled !== true || (!allowDisabled && !settings.is_enabled)) throw createError({ statusCode: 503, statusMessage: 'Courier calls are disabled.' })
   validatePdcBaseUrl(settings.base_url, settings.api_mode)
@@ -13,11 +38,12 @@ export const requirePdcReadAccess = (settings, runtime = useRuntimeConfig(), { a
 // This boundary accepts read-only operations only. It never creates a shipment/label.
 export const requestPdcLookup = async (settings, operation, body, fetcher = fetch) => {
   if (!['GetCities', 'GetProducts', 'GetShipmentsStatus'].includes(operation)) throw unavailable()
+  if (operation === 'GetShipmentsStatus') requirePdcStatusDates(body)
   validatePdcBaseUrl(settings.base_url, settings.api_mode)
   try {
     const response = await fetcher(new URL(operation, settings.base_url).toString(), {
       method: operation === 'GetShipmentsStatus' ? 'POST' : 'GET',
-      headers: { AccessToken: decryptShippingSecret(settings.access_token_encrypted), CompanyID: String(settings.company_id), Accept: 'application/json', 'Content-Type': 'application/json' },
+      headers: getPdcHeaders(settings),
       ...(body ? { body: JSON.stringify(body) } : {}), redirect: 'error', signal: AbortSignal.timeout(8000)
     })
     if (!response.ok || Number(response.headers.get('content-length')) > 1048576 || !response.body) throw unavailable()
@@ -70,7 +96,8 @@ export const reconcilePdcShipment = async (db, settings, orderId, fetcher = fetc
   if (error) throw unavailable()
   if (claim?.error) throw createError({ statusCode: claim.error === 'throttled' ? 429 : 404, statusMessage: claim.error === 'throttled' ? 'Try again in five minutes.' : 'Shipment not found.' })
   if (!claim?.awb || !claim.ref) throw unavailable()
-  const response = await requestPdcLookup(settings, 'GetShipmentsStatus', { awBs: claim.awb, reFs: claim.ref }, fetcher)
+  const filters = await getPdcStatusFilters(db, { orderId, awb: claim.awb, ref: claim.ref })
+  const response = await requestPdcLookup(settings, 'GetShipmentsStatus', filters, fetcher)
   const rows = pdcResponseRows(response)
   const matches = rows.filter(row => String(row?.AWB ?? '').trim() === claim.awb && String(row?.Ref ?? '').trim() === claim.ref)
   if (matches.length !== 1) throw createError({ statusCode: 409, statusMessage: 'Courier shipment could not be matched.' })

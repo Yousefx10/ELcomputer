@@ -137,15 +137,17 @@ const resultHarness = ({ query = { order_id: randomUUID(), success: 'true' }, st
   const mounted = [], unmount = [], timers = new Map(), requests = []
   let nextTimer = 0, meta
   const route = { path: '/checkout/payment-result', fullPath: '/checkout/payment-result?' + new URLSearchParams(query), query }
+  const request = async (url, options) => { requests.push({ url, options }); return fetcher ? fetcher() : { status: statuses[Math.min(requests.length - 1, statuses.length - 1)], mode: 'test', orderId: query.order_id } }
   const script = read('app/pages/checkout/payment-result.vue').split('<script setup>')[1].split('</script>')[0]
   const output = runInNewContext(script + '\n;({ state, mode, orderId })', {
     definePageMeta: value => { meta = value }, useRoute: () => route,
     useRouter: () => ({ replace: async value => { route.query = value.query } }),
     useSupabaseClient: () => ({ auth: { getSession: async () => ({ data: { session: { access_token: 'fixture' } } }) } }),
+    useCustomerScope: () => ({ request, onInvalidate() {} }),
     useI18n: () => ({ t: key => key }), ref, computed, useHead() {},
     onMounted: fn => mounted.push(fn), onBeforeUnmount: fn => unmount.push(fn),
     setTimeout: (fn, delay) => { const id = ++nextTimer; timers.set(id, { fn, delay }); return id }, clearTimeout: id => timers.delete(id),
-    $fetch: async (url, options) => { requests.push({ url, options }); return fetcher ? fetcher() : { status: statuses[Math.min(requests.length - 1, statuses.length - 1)], mode: 'test', orderId: query.order_id } }
+    $fetch: request
   })
   return { ...output, requests, timers, route, meta, mount: () => mounted[0](), unmount: () => unmount.forEach(fn => fn()),
     tick: async () => { const [id, timer] = timers.entries().next().value; timers.delete(id); await timer.fn() } }

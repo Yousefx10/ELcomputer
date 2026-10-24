@@ -9,7 +9,8 @@ useHead(() => ({ title: uiLabel('Your Orders') }))
 
 const route = useUiRoute()
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
+const customerScope = useCustomerScope()
 const filter = computed(() => getAccountOrderFilter(route.query.filter).value)
 const page = ref(1)
 const pageSize = 10
@@ -25,6 +26,7 @@ const load = async () => {
   error.value = ''
   try {
     const currentUser = await resolveAccountUser(supabase, user.value)
+    customerScope.assertCurrent()
     if (!currentUser) throw new Error('No customer session')
     const signal = AbortSignal.timeout(20000)
     let query = supabase.from('customer_orders')
@@ -45,7 +47,7 @@ const load = async () => {
       if (result.error) throw result.error
       items = result.data || []
     }
-    if (version !== loadVersion) return
+    if (version !== loadVersion || !customerScope.isCurrent()) return
     orders.value = rows.map(order => {
       const orderItems = items.filter(item => item.order_id === order.id)
       return { ...order, items: orderItems, itemCount: orderItems.reduce((sum, item) => sum + item.quantity, 0) }

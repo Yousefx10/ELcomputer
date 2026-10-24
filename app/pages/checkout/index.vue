@@ -149,10 +149,11 @@ definePageMeta({ middleware: ['customer-auth', 'purchasing'] })
 
 const PHONE_PATTERN = /^01\d{9}$/
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const customerScope = useCustomerScope()
+const user = useCustomerIdentity().user
 const { data: siteContent } = await useSiteContent()
 const { capabilities: paymentCapabilities, scope: purchaseScope, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
-const { items, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
+const { items, owner: cartOwner, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
 const checkoutStep = ref('shipping')
@@ -174,7 +175,7 @@ const quote = ref(null)
 const quoteError = ref('')
 const pendingCheckout = ref(null)
 const reviewRequired = ref('')
-const customerId = ref('')
+const customerId = ref(customerScope.accountId)
 let quoteSequence = 0
 const readPending = () => { pendingCheckout.value = readPendingCheckout(window.localStorage, customerId.value) }
 let checkoutStartedTracked = false
@@ -201,9 +202,7 @@ const loadDeliveryOptions = async () => {
   loadingDelivery.value = true
   deliveryError.value = ''
   try {
-    const { data } = await supabase.auth.getSession()
-    if (!data.session?.access_token) throw new Error('Your session expired. Please log in again.')
-    const result = await $fetch('/api/checkout/shipping', { headers: { authorization: `Bearer ${data.session.access_token}` } })
+    const result = await customerScope.request('/api/checkout/shipping')
     deliveryOptions.value = result.options
   } catch (error) {
     deliveryOptions.value = []
@@ -214,15 +213,14 @@ watch(availableDeliveryOptions, options => {
   if (!options.some(option => option.id === shippingCompanyId.value)) shippingCompanyId.value = ''
 })
 const refreshQuote = async () => {
+  if (!customerScope.isCurrent()) return false
   syncCart()
   if (!items.value.length) { quote.value = null; return false }
   if (requiresDelivery.value && !shippingCompanyId.value) { quote.value = null; quoteError.value = ''; return false }
   const sequence = ++quoteSequence, body = checkoutBody(), identity = JSON.stringify(body)
   const previous = quote.value
   try {
-    const { data } = await supabase.auth.getSession()
-    if (!data.session?.access_token) return false
-    const next = await $fetch('/api/checkout/quote', { method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body })
+    const next = await customerScope.request('/api/checkout/quote', { method: 'POST', body })
     syncCart()
     if (sequence !== quoteSequence || identity !== JSON.stringify(checkoutBody())) return false
     quote.value = next
@@ -270,9 +268,10 @@ const fillAddressFromProfile = profile => {
 
 const loadCustomerProfile = async () => {
   loadingProfile.value = true
-  const customerUserId = user.value?.id || (await supabase.auth.getUser()).data.user?.id
+  const customerUserId = customerScope.accountId
   if (!customerUserId) { loadingProfile.value = false; orderError.value = 'Could not load the authenticated customer account.'; return }
   const { data, error } = await supabase.from('customer_profiles').select('*').eq('id', customerUserId).maybeSingle()
+  if (!customerScope.isCurrent()) return
   loadingProfile.value = false
   if (error) { orderError.value = error.message; return }
   fillAddressFromProfile(data || {})
@@ -307,9 +306,9 @@ const applyCoupon = async () => {
   if (!couponCode.value.trim()) { couponError.value = 'Enter a coupon code first.'; return }
   applyingCoupon.value = true
   try {
-    const response = await $fetch('/api/checkout/coupon', { method: 'POST', body: { code: couponCode.value, subtotal: subtotal.value } })
+    const response = await customerScope.request('/api/checkout/coupon', { method: 'POST', body: { code: couponCode.value, subtotal: subtotal.value } })
     setAppliedCoupon(response.coupon); couponCode.value = response.coupon?.code || couponCode.value.trim().toUpperCase(); couponSuccess.value = 'Coupon applied.'
-  } catch (error) { resetCoupon(); couponError.value = error?.data?.statusMessage || error?.message || 'Could not apply the coupon.' } finally { applyingCoupon.value = false }
+  } catch (error) { if (customerScope.isCurrent()) { resetCoupon(); couponError.value = error?.data?.statusMessage || error?.message || 'Could not apply the coupon.' } } finally { applyingCoupon.value = false }
 }
 
 const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = '' }
@@ -319,11 +318,13 @@ const sendCommand = async command => {
   try {
     const { data } = await supabase.auth.getSession()
     if (!data.session?.access_token || data.session.user.id !== command.userId) throw new Error('Your session expired. Please log in again.')
-    const response = await $fetch('/api/checkout', {
+    customerScope.assertCurrent()
+    const response = await customerScope.request('/api/checkout', {
       method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: command.body, retry: 0
     })
     const current = (await supabase.auth.getSession()).data.session
-    if (current?.user.id === command.userId) completeCart(command.cart)
+    customerScope.assertCurrent()
+    if (current?.user.id === command.userId) completeCart({ ...command.cart, owner: 'account:' + command.userId })
     removePendingCheckout(window.localStorage, command)
     readPending()
     if (current?.user.id !== command.userId) {
@@ -359,11 +360,12 @@ const placeOrder = async () => {
     }
     if (!await refreshQuote()) return
     await checkoutLock(customerId.value, async () => {
+      customerScope.assertCurrent()
       readPending()
       if (pendingCheckout.value) return
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
       const command = JSON.parse(JSON.stringify({ version: 1, userId: customerId.value,
-        body: { ...checkoutBody(), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value }, review: quote.value }))
+        body: { ...checkoutBody(), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value, owner: cartOwner.value }, review: quote.value }))
       // Persist before sending; an uncertain acknowledgement keeps this exact request.
       savePendingCheckout(window.localStorage, command)
       await sendCommand(command)
@@ -374,7 +376,7 @@ const placeOrder = async () => {
 const recoverCheckout = async () => {
   if (placingOrder.value) return
   placingOrder.value = true
-  try { await checkoutLock(customerId.value, async () => { readPending(); if (pendingCheckout.value) await sendCommand(pendingCheckout.value) }) }
+  try { await checkoutLock(customerId.value, async () => { customerScope.assertCurrent(); readPending(); if (pendingCheckout.value) await sendCommand(pendingCheckout.value) }) }
   finally { placingOrder.value = false }
 }
 const reviewCart = () => {
@@ -386,16 +388,30 @@ const reviewCart = () => {
 }
 const storageChanged = () => { readPending() }
 onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
+customerScope.onInvalidate(() => {
+  ++quoteSequence
+  customerId.value = ''
+  pendingCheckout.value = null
+  quote.value = null
+  Object.keys(address).forEach(field => { address[field] = '' })
+  couponCode.value = ''; couponError.value = ''; couponSuccess.value = ''
+  selectedPaymentMethod.value = ''; shippingCompanyId.value = ''
+  deliveryOptions.value = []; deliveryError.value = ''; proofFile.value = null
+  orderError.value = ''; quoteError.value = ''; reviewRequired.value = ''
+  checkoutStep.value = 'shipping'
+})
 
 onMounted(async () => {
   loadCart()
-  customerId.value = (await supabase.auth.getUser()).data.user?.id || ''
+  if (!customerScope.isCurrent()) return
   readPending()
   window.addEventListener('storage', storageChanged)
   couponCode.value = appliedCoupon.value?.code || ''
   if (isPreorderCart.value && appliedCoupon.value) resetCoupon()
   await Promise.all([refreshPurchaseAccess(), loadCustomerProfile(), loadDeliveryOptions()])
+  if (!customerScope.isCurrent()) return
   await refreshQuote()
+  if (!customerScope.isCurrent()) return
   if (!checkoutStartedTracked && !isEmpty.value && cartId.value) { checkoutStartedTracked = true; trackEvent('checkout_started', { cartId: cartId.value, quantity: itemCount.value, source: 'checkout_page' }) }
 })
 

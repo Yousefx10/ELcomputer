@@ -12,7 +12,8 @@ definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 useHead(() => ({ title: uiLabel('Your Account') }))
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user = useCustomerIdentity().user
+const customerScope = useCustomerScope()
 const { data: accountAppearance } = await useAccountAppearance()
 const isModern = computed(() => accountAppearance.value?.account_dashboard_style === 'modern')
 const loading = ref(true)
@@ -37,6 +38,7 @@ const ensureProfile = async (currentUser, signal) => {
     .select('wallet_balance, full_name, phone, address_line_1, city, state, country')
     .eq('id', currentUser.id).maybeSingle().abortSignal(signal)
   if (lookupError) throw lookupError
+  customerScope.assertCurrent()
   if (data) return data
   const { data: created, error: createError } = await supabase.from('customer_profiles')
     .upsert({ id: currentUser.id, email: currentUser.email || '',
@@ -52,6 +54,7 @@ const load = async () => {
   error.value = ''
   try {
     const currentUser = await resolveAccountUser(supabase, user.value)
+    customerScope.assertCurrent()
     if (!currentUser) throw new Error('No customer session')
     const signal = AbortSignal.timeout(20000)
     const [profileResult, total, completed, activeOrders, recent] = await Promise.all([
@@ -72,7 +75,7 @@ const load = async () => {
       if (itemsResult.error) throw itemsResult.error
       itemRows = itemsResult.data || []
     }
-    if (!active || version !== loadVersion) return
+    if (!active || version !== loadVersion || !customerScope.isCurrent()) return
     stats.total = total.count || 0
     stats.completed = completed.count || 0
     stats.active = activeOrders.count || 0
