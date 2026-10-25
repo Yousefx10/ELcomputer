@@ -2,12 +2,13 @@
 
 Authoritative development and continuity index for both Codex accounts.
 Last evidence review: **2026-10-25, Asia/Riyadh**.
-Latest retained production observation: **2026-10-24**. No live probe ran here.
+Latest production observation: **2026-10-25**, bounded BETA-01 read-only checks.
+Other release/acceptance evidence retains its original date and scope.
 
 **Priority: public paid Beta. Production purchasing and registration remain closed.**
 Latest recorded production: **`58e3083f4aa6a1f8`, schema91**.
 The isolated Beta candidate targets schema93; it is not deployed.
-Next task: **BETA-01 — verify effective Supabase Auth SMTP readiness with Brevo**.
+Next task: **BETA-01 — resolve read-only access to effective Auth configuration**.
 
 **79 tracked tasks.** Priority: P0 25; P1 39; P2 14; PARKED 1.
 Status: PLANNED 35; IN PROGRESS 0; LOCAL PASS 11; DEPLOYED 11;
@@ -104,6 +105,7 @@ Private receipts are evidence locators, not portable release inputs or approval.
 | E19 | [Quick Setup](quick-setup.md), [publisher validation](application-publication-validation.md), [release82 validation](installation-release82-validation.md), [reproducible builds](dependency-reproducibility.md). Local installation certification is not portable hosted acceptance. |
 | E20 | [ERP report](erp-ownership-report.md), [Daftra](daftra-erp.md), [procurement options](procurement-product-options.md), [Dashboard navigation](dashboard-navigation.md), [read ingress](dashboard-read-ingress.md). |
 | E21 | [Dashboard production check](dashboard-read-production-check.md), historical PROJECT_STATE/CODEX_HANDOFF ADM-01 entries, [product bulk release](product-bulk-release.md). Functional smoke does not establish full RBAC/browser-write-safety acceptance. |
+| E22 | [Auth email acceptance](auth-email-acceptance.md), 2026-10-25; P:`auth-email-acceptance-20261025/` sanitized configuration/runtime/database/route receipts and two unexecuted test plans. Management config403; confirmation required/signup disabled verified live. Owner reports saved Brevo SMTP; effective SMTP/allowlist/limits remain unverified. |
 
 ### A. Project overview
 
@@ -125,21 +127,22 @@ Light/Dark/System, compact Dashboard components and responsive layouts.
 
 | Area | Latest reliable retained evidence |
 | --- | --- |
-| Application | E01: `58e3083f4aa6a1f8`, activated 2026-10-24 at 13:25:02.849 Riyadh. Consolidates customer session isolation and preserves deployed PDC corrections. Exact approval consumed. |
-| Schema | 91 applied migration identities. Latest: `20261023010000_shipping_tariff_drafts.sql`. E01/E03 preserved schema91. Current main has91 files; W has93. All91 historical migration files match byte-for-byte. |
+| Application | E01: `58e3083f4aa6a1f8`, activated 2026-10-24 at 13:25:02.849 Riyadh. E22 reobserved that release/service active on 2026-10-25. Consolidated session/PDC release; exact approval consumed. |
+| Schema | E22 read-only PostgreSQL check:91 applied identities, latest20261023010000, on 2026-10-25. Latest file `20261023010000_shipping_tariff_drafts.sql`. Main has91 files; W has93;91 historical files matched during roadmap review. |
 | Storefront | Healthy recorded runtime; browse-only. E01 hosted smoke:8 HTTP checks,37 asset hashes,3 browser checks,4 protected-route observations; no page exceptions. No fresh 2026-10-25 uptime claim. |
 | Dashboard/accounts | Existing Dashboard/products/inventory/orders and owner-reported creation/Draft/upload/profile checks retained. Login/profile access is deployed. Two confirmed active customer profiles were later observed; B has no admin record. Owner reports account switching passed. Independent hosted order-isolation/RBAC acceptance remains incomplete. |
-| Public gates | Signup disabled, confirmation required. New public purchases, ordinary checkout/coupon ingress and outbound payment/shipping initiation remain held. Saved enabled payment-method/provider settings do not open those gates. |
+| Public gates | E22 live Auth settings:signup disabled, confirmation required. Empty grant, purchasing default false and Paymob/PDC initiation flags false; Cart/Checkout403. Other held routes retain earlier evidence dates. Saved enabled method/provider settings do not open gates. |
 | Paymob | Existing LIVE card credentials retained privately. One EGP2 sale succeeded through normal checkout and signed-callback reconciliation. Keep exact signed POST ingress, original keys and owned receipt/status reads available for late events. No new initiation authorized. Refund/void readiness unverified. |
 | PDC | Product40 preferred; provider configuration may be enabled while outbound runtime gates remain closed. Generic User-Agent and dated status lookup correction deployed in `2573cdf1504bf559`, preserved by E01. One production static API booking succeeded; normal dynamic Dashboard booking remains unaccepted. Original uncertain dispatch remains guarded. |
 | PDC inbound security | E04: exact POST ingress loaded at15:00:56.337 Riyadh on 2026-10-24. Missing-secret probe401; no authenticated callback or registration change. Earlier pending-reload STOP is resolved. Provider mapping/timezone/cutover remains blocked. |
 | Delivery/tariffs | PDC is the only configured checkout company. Latest stored customer fee EGP1 is historical test configuration. Owner-approved configurable Beta fee EGP50 is local/unapplied. Schema91 tariff manager deployed; no business import/checkout tariff activation established. |
-| Notifications | Separate central Brevo adapter disabled; later inspection found no approved senders, key or retained delivery activity. SMS/order automation remains dormant. These facts do not establish effective Supabase Auth SMTP. |
+| Notifications | Central Brevo adapter/SMS remain dormant per prior evidence. On 2026-10-25 owner reports saved Custom SMTP using verified sender and dedicated Brevo key at smtp-relay.brevo.com:587. E22's effective Auth config read403; transport, redirects, limits and delivery remain unverified. |
 | Recovery | E01/E03 record verified encrypted execution backups and preserved schema/security/runtime/media/incidents/retained assets. Backups from completed releases are historical recovery evidence, not fresh approval for another release. |
 
-Production details above are evidence-backed **recorded state**, not a fresh live
-audit. No SSH, SQL, settings change, provider request, email, deployment or Git
-push ran during roadmap creation.
+Production details retain their individual evidence dates. E22 adds bounded live
+read-only Auth, runtime, PostgreSQL and route checks; it is not a full production
+audit. Roadmap creation itself made no live probes. Neither milestone changed
+settings, sent emails, ran commerce/provider transactions, deployed or pushed Git.
 
 ### C. Completed and deployed features
 
@@ -199,9 +202,9 @@ it does not waive multi-customer, email, destination or recovery acceptance.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| BETA-01 | Supabase Auth custom SMTP using Brevo | P0 | BLOCKED | Existing management read403; owner secure console inspection needed | Establish effective custom SMTP, verified sender/domain and configured transport privately; keep signup closed | E06; W:docs/beta-launch-candidate.md | 2026-10-25 | Inspect intended project's Auth SMTP settings read-only |
-| BETA-02 | Signup confirmation, recovery and redirect acceptance | P0 | BLOCKED | BETA-01; explicit external-send approval | External-mailbox verification/recovery complete on narrow configured origins; no token leakage or open redirects | E06; E15; app/pages/login.vue | 2026-10-25 | Review effective allowlist; prepare approved delivery cases |
-| BETA-03 | Public registration abuse controls and readiness | P0 | BLOCKED | BETA-02/04; hosted rate-limit/CAPTCHA evidence absent | Confirm effective limits/bot controls and ordinary confirmed-customer defaults before enabling signup | E06; E08 | 2026-10-25 | Record hosted controls without changing them |
+| BETA-01 | Supabase Auth custom SMTP using Brevo | P0 | BLOCKED | Owner reports SMTP saved; fresh effective-config GET403 | Effective host/port/sender/transport verified privately; keep signup closed; public settings already confirm required verification | E22; E06 | 2026-10-25 | Resolve scoped read-only config access or saved owner-console evidence |
+| BETA-02 | Signup confirmation, recovery and redirect acceptance | P0 | BLOCKED | BETA-01; recipient and create/send/redemption approvals missing | External-mailbox confirmation/recovery and exact redirects accepted; no secrets; no public-signup activation | E22; E15; app/pages/login.vue | 2026-10-25 | Finalize two prepared tests after config/recipient review; no email yet |
+| BETA-03 | Public registration abuse controls and readiness | P0 | BLOCKED | Effective quotas/resend/CAPTCHA/hook settings unreadable403 | Confirm hosted limits/challenge handling and ordinary customer defaults before enabling signup | E22; E06; E08 | 2026-10-25 | Obtain non-secret saved controls; no load probes or settings change |
 | BETA-04 | Legacy-customer identity protection for Beta | P0 | PLANNED | Owner accepted verified new identities with history deferred | Preserve existing UUIDs/credentials; ordinary signup/recovery; no guest-email ownership or silent legacy linking | E06; E11 | 2026-10-25 | Record conflict handling and acceptance cases; retain full migration |
 | BETA-05 | Authentic A/B customer-order/session acceptance | P0 | BLOCKED | Candidate deployed inactive; exact bounded access approval | Same-browser/two-tab customer data isolation, independent owned orders/recovery, denied cross-account access; held cases remain held | E05; E06 | 2026-10-25 | Prepare no-charge two-existing-account window; intention ingress closed |
 | BETA-06 | Legitimate publishing and backorder catalog | P0 | PLANNED | Owner reviews actual products/prices and backorder policy | Eligible published normal products have truthful terms/consent; exclude test/preorder; preserve stock and bulk receipts | E06; E07; E12 | 2026-10-25 | Review private eligible-model list; do not mass-publish |
@@ -326,7 +329,7 @@ acceptance. Do not revive already completed historical phases as new work.
 
 | Task | Actual blocker / why it matters | Evidence | Smallest next action |
 | --- | --- | --- | --- |
-| BETA-01/02/03 | Effective Auth SMTP, external verification/recovery, redirects and abuse controls unverified. Existing management token returned403. Central Brevo readiness cannot substitute. | E06 email inspection,2026-10-24 | Owner/authorized account inspects intended Auth SMTP and URL/rate-limit settings privately; no send/change yet. |
+| BETA-01/02/03 | Owner reports saved Brevo SMTP. Fresh configuration GET still403; effective SMTP/Site URL/allowlist/limits/CAPTCHA unverified. Confirmation required/signup disabled verified. Four entry routes200 do not prove link redemption. | E22,2026-10-25; E06 historical inspection | Resolve scoped read-only config access or inspect saved owner-console values; two recipient-bound email tests need separate approval. |
 | BETA-07 / SHIP-02 | Updated official location file missing. Free text,411-city API cache and six-zone tariffs are different evidence; unsafe mapping can accept unsupported delivery. | E06; E02 | Obtain official file, validate exact IDs and present bounded diff. |
 | BETA-08 | Merchant LIVE Refund/Void access and procedure not accepted. Local cancellation does not return funds. | E06 refund guide | Inspect intended LIVE merchant permissions/current transaction read-only. |
 | BETA-05 / CX-04 | Owner-reported switching passed, but independent hosted order/cart/recovery cases remain incomplete or held. | E05; later E06 | Bind two existing ordinary accounts and an approved no-charge acceptance window. |
@@ -345,23 +348,24 @@ activation. New money actions and shipment bookings retain separate approvals.
 
 ### N. Next exact action
 
-**BETA-01: verify effective Supabase Auth SMTP readiness using Brevo.**
+**BETA-01: resolve the read-only Auth configuration evidence gap.**
 
 - Responsible: next active Codex account, Auth/continuity workstream; owner uses
   secure Supabase/Brevo account surfaces where access is unavailable to Codex.
-- Prerequisites: read this roadmap and both handoffs; identify the intended
-  deployment privately; retain disabled signup and required confirmation.
-- Scope: inspect effective Auth custom SMTP, sender/domain verification and
-  current transport configuration without revealing credentials. Also record
-  the intended origin/redirect and hosted abuse-control readiness for BETA-02/03.
-- Definition of done: durable secret-free evidence identifies configured/unconfigured
-  state and remaining owner action; both handoffs/roadmap updated. A blocked API
-  read or unrelated central email configuration is not a successful SMTP check.
+- Prerequisites: read this roadmap, both handoffs and [E22](auth-email-acceptance.md).
+  Existing API credential returns403. Retain confirmed-email policy and closed gates.
+- Scope: use an authorized owner-console inspection or privately supplied project
+  access with auth_config_read. Record effective SMTP/sender, Site URL, the four
+  exact confirmation/recovery URLs, quotas/resend interval, CAPTCHA/email-hook state.
+  Do not repeat the completed public-policy/runtime/route checks without a reason.
+- Definition of done: secret-free effective configuration evidence closes the403
+  gap, or records the specific remaining setting correction. Then bind the external
+  mailbox and exact two-test approval; E22's prepared tests remain NOT RUN.
 - Approval: read-only inspection and documentation need no new production-write
   approval. Any SMTP/URL/rate-limit change, authentication email or signup activation
   requires its own concrete reviewed approval. External delivery belongs to BETA-02.
-- Stop boundary: no provider transaction, test email, credential change, deployment,
-  migration, public activation or Git push in this documentation task.
+- Stop boundary: no email, user creation, password/credential/settings change,
+  deployment, migration, public activation or Git push without its reviewed scope.
 
 ### O. Change history and evidence preservation
 
@@ -381,6 +385,7 @@ activation. New money actions and shipment bookings retain separate approvals.
 | 2026-10-24 | Owner selected PDC/EGP50, legitimate backorders, approved special-order notice and mixed parcels shipped together. Historical identity/order imports deferred beyond Beta while preserving verified Supabase identities. |
 | 2026-10-24 | W candidate/migrations92–93 locally qualified. SMTP management inspection403 and LIVE Refund/Void access remain unverified. Local review archive has no deployment/activation authority. |
 | 2026-10-25 | Master roadmap created from main, later branch, W source and retained receipts. New requirements preserved under stable IDs. AGENTS/README/both handoffs receive additive pointers; no implementation, merge, production change or push. |
+| 2026-10-25 | BETA-01: owner reports saved Brevo Custom SMTP. Fresh Auth settings200 verifies required confirmation/disabled signup; active release/schema91 and closed gates reobserved. Effective config403 blocks SMTP/allowlist/limits acceptance. Two external-mail tests prepared, zero sends/users/settings changes; see E22. |
 
 Non-sensitive fingerprints captured during this review:
 

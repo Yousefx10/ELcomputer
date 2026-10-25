@@ -1,3 +1,31 @@
+# BETA-01 Auth email verification — SMTP ACCEPTANCE BLOCKED, 2026-10-25
+
+- [Auth email report and two prepared tests](docs/auth-email-acceptance.md),
+  master roadmap E22/BETA-01–03. Owner reports saved Brevo Custom SMTP using a
+  dedicated active key, verified sender and smtp-relay.brevo.com:587. Credentials
+  remain private; the local SMTP file is an empty preparation template.
+- Fresh read-only effective Auth configuration GET returns403 with the existing
+  management credential. Host/port/sender, Site URL/allowlist, email quotas/resend
+  interval, CAPTCHA/hooks and actual delivery remain independently unverified.
+  No connected signed-in document/browser session was available.
+- Public Auth settings200 verifies email enabled, mailer_autoconfirm=false,
+  disable_signup=true and anonymous Auth disabled. Two existing permanent users
+  are confirmed; no unconfirmed identity exists. Neither account was modified.
+- Both EN/AR confirmation-entry and recovery-query routes return200; Cart and
+  Checkout403. Route availability is not hosted allowlist/link-redemption proof.
+  Existing application client uses PKCE; owner must open links in its browser.
+- Pinned runtime/read-only PostgreSQL checks confirm active58e3083f4aa6a1f8,
+  schema91, empty restricted grant, purchasing default false and payment/shipping
+  initiation flags false. No service operation or full production audit ran.
+- Private ../auth-email-acceptance-20261025/ retains sanitized receipts and the
+  two-case test plan. Recipient unset; identity/send/password-change approvals
+  false. Confirmation and recovery NOT RUN. No email, identity, settings change,
+  provider transaction, deployment, public activation or Git push ran.
+- ONE next action: close the effective-config evidence gap with scoped private
+  auth_config_read access or non-secret saved owner-console observations. Then
+  finalize exact recipient/identity/two-test approval. Do not enable public signup.
+  Both handoffs and roadmap updated; all earlier handoff bytes preserved below.
+
 # Master roadmap and cross-account reconciliation — 2026-10-25
 
 - Start with [docs/ELCOMPUTER_MASTER_ROADMAP.md](docs/ELCOMPUTER_MASTER_ROADMAP.md).
