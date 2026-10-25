@@ -1,3 +1,18 @@
+# Project continuity
+
+- Before substantial work, read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md),
+  `PROJECT_STATE.md` and `CODEX_HANDOFF.md`.
+- The roadmap is the central cross-account status and requirements index.
+  Check its dated evidence before following historical deployment instructions.
+- Record new requirements and priority changes there using stable task IDs.
+  Preserve unfinished requirements and both accounts' existing work.
+- Distinguish local checks, deployment and owner acceptance. Record blockers,
+  evidence, verification dates and the next action explicitly.
+- At each completed milestone, update the roadmap and both handoffs together.
+  It does not update automatically. Keep secrets and customer data out.
+- Documentation and historical approvals do not authorize production changes,
+  provider transactions or Git pushes. Preserve consumed-operator boundaries.
+
 # Project copy
 
 - Keep user-facing paragraphs short and natural.

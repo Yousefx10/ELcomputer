@@ -77,5 +77,6 @@ onMounted(load)
     <div v-else-if="!error && orders.length" class="space-y-3"><AccountOrderCard v-for="order in orders" :key="order.id" :order="order" /></div>
     <div v-else-if="!error" class="rounded-2xl border border-slate-200 bg-white p-8 text-center"><Icon name="lucide:package-open" size="28" class="mx-auto text-slate-400" aria-hidden="true" /><p class="mt-3 font-semibold text-slate-900">{{ $t('common.noValueOrders', { value0: (filter === 'all' ? '' : filter) }) }}</p><p class="mt-1 text-sm text-slate-600">{{ $t('account.orders.ordersInThisViewWillAppearHere') }}</p></div>
     <div v-if="!error && total > pageSize" class="flex items-center justify-between gap-3 text-sm"><button type="button" :disabled="page <= 1 || loading" class="min-h-10 rounded-lg px-3 font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-40" @click="page--">{{ $t('common.previous') }}</button><span class="text-slate-600">{{ $t('common.pageValueOfValue', { value0: (page), value1: (Math.ceil(total / pageSize)) }) }}</span><button type="button" :disabled="page * pageSize >= total || loading" class="min-h-10 rounded-lg px-3 font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-40" @click="page++">{{ $t('common.next') }}</button></div>
+    <AccountHistoricalOrders />
   </div>
 </template>

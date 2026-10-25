@@ -1,3 +1,7 @@
+Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) before substantial work.
+Current priority: email acceptance, customer migration, public signup, paid Beta.
+See [the local migration milestone](docs/customer-migration-release.md).
+
 # Public beta preparation — blocked
 
 [The local beta candidate](docs/beta-launch-candidate.md) preserves the deployed
