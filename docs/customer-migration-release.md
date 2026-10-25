@@ -1,9 +1,56 @@
 # Customer migration and public Beta — first local milestone
 
-Updated 2026-10-25. **LOCAL PASS. No production import or deployment.**
+**Production history import PASS — 2026-10-25,23:07:33.882 Riyadh.**
+[Current receipt](customer-history-import-receipt.md): exact3c9f5764 approval consumed,
+41 batches/516 customers/591 orders/6 refunds/1789 items/702 events.513 conditionally
+eligible,3 held; actual claims0. Three scoped history routes loaded/one Caddy signal,
+no app restart/schema deployment. Original140 projections and three current users/
+profiles preserved; signup/purchasing/provider initiation closed. Hosted ordinary
+ownership acceptance remains pending. Next: small EN/AR notice release before signup.
+Earlier READY/pending/source-only statuses below are retained historical evidence.
 
-Priority is now: email acceptance → customer/history migration → public signup →
-normal CARD orders/payments → guarded launch. The existing79 roadmap IDs remain.
+**Final import milestone — 2026-10-25:** [source-bound packet](customer-history-final-import.md)
+is READY for separate exact owner approval3c9f5764.516 customers/591 orders/6 refunds/
+1789 items/702 events;513 conditionally eligible identities (1 current verified,
+512 later signup),3 held.131 unlinked orders stay private. Fresh native94 recovery/
+final41 batches,140 original projections and seven operator checks PASS. The same
+approval covers three required history API routes/one Caddy signal. No production
+import/routing change/Auth creation has run. Earlier preview references below are
+retained history; final payloada34838d6 supersedes the zero-claim import candidate.
+Source/deployment decisions are complete; do not repeat them.
+
+## Retained earlier implementation and deployment evidence
+
+Updated 2026-10-25. **INACTIVE RELEASE DEPLOYED; HISTORY IMPORT NOT RUN.**
+Releasebc05eef266eeb7de/schema94 completed21:31:49.255 Riyadh, consumed seal4c332350.
+All140 original transaction projections/Auth passed; three current customers,
+orders/catalog/callbacks preserved. Fresh execution recovery/candidate/public smoke
+passed. Signup/purchasing/providers stay closed. See the [deployment result](inactive-history-release.md#production-result-and-consumed-approval).
+The temporary catalog pause can end. Historical eligibility/final payload/import
+approval and ordinary owned-history acceptance remain separate.
+
+**Current milestone:** recovery and controlled confirmation are ACCEPTED.
+[Next guarded source approval and release sequence](customer-migration-approval.md)
+bind the existing source and refreshed post-confirmation dry-run. The target now
+has three confirmed permanent identities; all are preserved. Counts and payload
+are unchanged, including702 fulfillment observations. Production is now schema94;
+all private history tables remain empty.
+The source/cutoff/exception seal is now owner-APPROVED. Its separate private
+receipt preserves the original packet. The combined inactive91→94 release is now
+qualified and sealed: [exact deployment packet](inactive-history-release.md),
+releasebc05eef266eeb7de. Its archive/operator, fresh encrypted recovery and native
+restored-data upgrade/rollback checks passed. The old deployment approval is
+recorded but held by later catalog drift. The pause is now confirmed; the unchanged
+archive deployed under consumed seal4c332350 with fresh recovery PASS. The prepared
+41-batch import check passed read-only against schema94; claims remain0 and no
+historical import is authorized. Do not rerun the deployment.
+
+Priority is now: inactive deployment → historical import/ordinary ownership →
+public signup/login → PDC/paid-checkout acceptance → public purchasing. The existing
+79 roadmap IDs remain. [Current access requirements and pending-work inventory](customer-access-release-plan.md)
+specify original-email signup/recovery and the EN/AR notice. The ordinary My Orders
+claim experience is already in the sealed application; the notice is the next
+small release before public signup and does not reopen inactive qualification.
 Management API403 is an inspection limit, not an SMTP defect or a reason to defer
 the approved recovery test. Do not repeat the configuration questionnaire.
 
@@ -36,11 +83,12 @@ Implemented files on that branch:
   archived-profile/address and fulfillment-history views under My Orders. Existing
   account/checkout session isolation remains; no new current-order/payment action.
 
-The proposed history migration follows the pending Beta92–93 files. The combined
-local source therefore contains94 migrations. Production remains schema91.
-**This is qualified source, not a sealed deployable artifact.** Exact archive,
-retained assets, compatible SQL/app deployment and current recovery bindings still
-belong to guarded release preparation. Old schema91-only operators cannot apply it.
+History94 follows the Beta92–93 files. The combined
+local source contains94 migrations, now installed in production without history data.
+The application source is unchanged. Its [separate inactive deployment packet](inactive-history-release.md)
+now seals the exact archive, retained assets, compatible SQL/app operator and fresh
+recovery bindings. Old schema91-only operators cannot apply it. The release remains
+deployed inactive, with no history import or public activation approval.
 
 ## Actual offline source and dry-run
 
@@ -166,17 +214,12 @@ No apply/resume mode was executed against production in this milestone.
 
 ## Email acceptance and shortest launch path
 
-Existing ordinary Test Customer B was uniquely verified read-only. Its one-email
-recovery plan is private in `recovery-b-plan.private.json`; owner approval is
-recorded in `recovery-b-approval.json`. No new identity is needed for recovery.
-The request must originate in the owner's normal application browser so PKCE
-redemption uses the same profile. Agent has not dispatched a recovery email.
-Owner delivery/link/password-update result remains pending; do not resend.
-
-One controlled confirmation test follows recovery. It needs its own exact test
-identity/send approval and must not unconfirm an existing customer. Diagnose
-Supabase service/Brevo logs only for a concrete failure; never use403 alone to
-declare SMTP broken. See [email acceptance](auth-email-acceptance.md).
+Test B recovery is owner-accepted: production email/redirect, password update
+and new-password login passed. Controlled confirmation is also ACCEPTED: owner
+receipt/PKCE redemption/access plus read-only confirmation and ordinary-profile
+verification. No repeat sends or configuration investigation are needed.
+Auth-only click-tracking suppression is recorded for follow-up; no SMTP/provider
+change ran. See [email acceptance](auth-email-acceptance.md).
 
 Then proceed through the approved history migration and identity safeguards,
 normal public signup/verification/login/recovery, final owned-order acceptance,

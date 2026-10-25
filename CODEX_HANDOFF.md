@@ -1,3 +1,535 @@
+# Codex2 handover READY — ten requirements and complete Git audit — 2026-10-25
+
+- Scope completed: documentation plus local read-only Git/source inspection only.
+  [Master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) now has88 tasks: original79
+  retained,9 new IDs; all ten owner requirements documented with dependencies,
+  acceptance/tests/security/performance/status/date/next action. P0 signup and real
+  paid orders unchanged. All ten additions remain POST-BETA; stock controls first.
+- Mapping:1 PROD-05 stock policy;2 PROD-06 admin grid/list;3 CHAT-01;4 DOC-01;
+  5 ORDER-06 actual KG plus existing ORDER-02 videos;6 DASH-01 settings navigation;
+  7 DASH-02 Overview;8 ERP-01 provider audit;9 ERP-02 mode switch;10 existing MIG-04
+  Google/legacy SEO expanded. FUT-08/09 delegate focused work, not duplicate tasks.
+- OD-20261025-STOCK-01 supersedes automatic zero-stock special-order labels as
+  future policy. Normal selling independent of recorded stock is separate from
+  backorders. No fake stock/quantity1, mass publication or availability promise;
+  genuine allocation/payment/cancellation safeguards remain. New controls are
+  post-Beta; no code, label, SQL, setting or live behavior changed here.
+- Source inspection found legacy chat and general Documents upload/download bytes
+  still reference Supabase Storage. CHAT-01/DOC-01 record VPS-only gaps. Private
+  packing videos/labels already have VPS adapters; do not claim universal migration.
+  No chat activation, file move/rename, provider/Google access or diagnostic now.
+- [Git audit](docs/GIT_WORKTREE_SYNC_AUDIT.md):9 worktrees/6 local branches, no
+  stashes; cached origin only, no fetch/network. SAFE TO SWITCH ACCOUNTS on this
+  same workspace while preserving files; no merge/push/clean/switch is needed.
+  Main documentation commit adding the audit is1 ahead cached origin/main.
+  Identify exact commit with git log -1 --format=%H -- docs/GIT_WORKTREE_SYNC_AUDIT.md.
+- Main still has91 migrations; deployed application1924ca0/descendants have94.
+  Do not build from stale main code or replace new main docs with feature copies.
+  Latest source local/customer-history-final-import-20261025 atde5c414 contains
+  history1924ca0, inactive operator724720a, snapshot2cd5418 and earlier owner/PDC
+  branches. Three feature branches have no upstream; only reviewed latest-lineage
+  integration is a future LOCAL-08 action, not separate blind merges.
+- Four feature commits and unique detached certified82 c3775e8 are absent cached
+  remotes, plus this new main docs commit. Preserve c3775e8 worktree: no named ref
+  contains it. Other dirty evidence:40 Beta paths (all equal2cd5418),4 failure-replay
+  fixtures, and two untracked main Auth source files. No cleanup or source commit.
+- Only13 reviewed documentation paths committed locally, including current schema94
+  deployment/import public packets and Auth/roadmap continuity. Existing Auth
+  confirmation-browser helper and redirect test remain untracked/unstaged; do not
+  run/delete them. Full before/final inventory/hashes and commit receipt are in
+  ../roadmap-git-audit-20261025/. Other worktree HEADs/indexes/source bytes preserved.
+- Production baseline is retained bc05eef266eeb7de/schema94. Historical import
+  PASS:516 customers/591 orders/6 refunds/1789 items/702 events;513 conditional/3
+  held,131 unlinked protected, claims0 at retained verification. Three exact routes
+  loaded; source/deployment/import scopes complete/consumed. No new live check in
+  this documentation task. Hosted ordinary-owner browser acceptance still pending.
+- Next P0 after handover: prepare small EN/AR returning-customer notice/public
+  self-service readiness under BETA-03, separate exact deployment/signup approval;
+  then delivery/PDC/EGP50/manual merchant refund/reconciliation/expiry/final paid
+  checkout acceptance and separate purchasing approval. Signup/purchasing/provider
+  initiation stay CLOSED; no repeat Auth tests, imports or consumed operators.
+- No feature implementation/deployment/import/public activation/merge/rebase/
+  cherry-pick/reset/clean/branch or worktree deletion/switch/push. All prior handoff
+  bytes retained below. Remote freshness unknown; same-machine handover does not
+  prove off-machine backup. Request scoped sync approval only if later needed.
+
+# Historical import production PASS; approval consumed — 2026-10-25
+
+- Owner approved3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad.
+  Exact operator executed once, completed23:07:33.882 Riyadh. [Public receipt](docs/customer-history-import-receipt.md).
+  Private ../customer-history-final-import-20261025/IMPORT-RECEIPT.json and
+  IMPORT-STATUS.json record HISTORY_IMPORT_PASS/CONSUMED_COMPLETE. Retain approval,
+  exclusive intent,41 local/database command receipts, import-verified, ingress,
+  completion and independent POST-IMPORT-VERIFICATION. Never rerun apply or the
+  pre-import check expecting empty history. Original sealed plan/template retained.
+- Imported516 customers/591 orders/6 refunds/1789 items/702 fulfillment observations.
+  All immutable snapshots/relationships/money/currency/dates/addresses/events and
+  source-bound eligibility flags exactly match.513 conditional identities/3 held
+  (2 primary-only/1 changed email), actual claims0;1 existing verified match/512
+  later verified signups. Eligible459 orders/6 refunds/1373 items;1 held order/3
+  items;131 unlinked orders/413 items (110 guest/21 missing-excluded). No billing-
+  email ownership. Two privileged users excluded; comparison-only2 not unioned;
+  duplicates0/0; one date conflict retains original variants.
+- Final read-only preflight PASS. Fresh execution exported-snapshot encrypted DB/
+  runtime backup authenticated/full readback PASS:11043268 DB bytes/10 files,
+  capture23:03:23.629, verified23:05:18.044 Riyadh. Encrypted DB SHA256
+  3e9ba3b3d706530538665b643cddff98b7af4db2853f6a3bd16485431bbe2911.
+  Root native94 restore/final41 shared-helper qualification remained fresh.
+- All140 original Auth/profile/commerce/Storage projections preserved in each
+  batch AND exactly equal execution backup in independent post-import comparison.
+  Three confirmed permanent users/three profiles/current orders/catalog intact.
+  Zero Auth accounts, password imports, current profile/commerce/inventory/ledger
+  writes, notifications, provider calls or automatic Auth links. No catalog pause.
+- Approved exact three history routes loaded after full record verification;
+  one SIGUSR1 journal-confirmed, same Caddy/application PIDs, app restarts0.
+  Caddy SHA90d9181a396ef69c46f2df1f69ca3991ac6eb2bb601fc6cb3aeb08cb7418511f;
+  all other runtime recovery files unchanged. Signed Paymob callbacks retained.
+  Independent11 live route checks PASS: EN/AR login200, Cart/Checkout403, anon/
+  invalid-token history401, disallowed methods/other-source403. Supabase signup
+  disabled/confirmation required verified separately. No broad API opening.
+- App remainsbc05eef266eeb7de/schema94; no deployment/migration/restart/push.
+  Source70e929ee/deployment4c332350/import3c9f5764 decisions complete/consumed.
+  Public signup/purchasing/Paymob/PDC initiation remain CLOSED. History is read-only;
+  PDC booking stays administrator-controlled after order confirmation.
+- Hosted ordinary customer claim/profile/order browser acceptance is PENDING.
+  Current verified match has no orders: it can verify archived profile/empty view
+  via My Account → My Orders → Connect previous orders. Order-detail acceptance
+  needs separately approved owner-controlled order-bearing signup, or an eligible
+  later public signup. Import approval authorizes no account creation/email.
+- NEXT: prepare only small EN/AR returning-customer notice/generic failed-login
+  help from docs/customer-access-release-plan.md; preserve Auth/security/layout/
+  RTL/themes and default-off portability. Exact app deployment and public signup
+  remain separately approved. Then PDC/EGP50/merchant refund/reconciliation/expiry/
+  final checkout acceptance and separate purchasing activation.
+- Master roadmap all79 IDs retained; MIG-01/02/03/05 and BETA-04 DEPLOYED, not
+  ACCEPTED. Status31 planned/6 local pass/23 deployed/4 accepted/11 blocked/4 held.
+  Previous handoff bytes/worktrees/40 original Beta paths preserved. No broad audit.
+  On any incident preserve receipts; no reimport/automatic retry/full restore.
+  Source hide/routing reversal needs separate scoped recovery approval.
+
+# Final historical import READY; exact approval pending — 2026-10-25
+
+- Production remainsbc05eef266eeb7de/schema94. Source70e929ee and inactive
+  deployment4c332350 approvals are complete/consumed; never repeat them.
+- [Final guarded packet](docs/customer-history-final-import.md) and private
+  ../customer-history-final-import-20261025/final-import-plan.json are sealed:
+  3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad.
+  ONE next owner approval:
+  APPROVE HISTORY IMPORT 3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad
+  This approves final source-bound eligibility BEFORE immutable import,41
+  history-only batches and three necessary history API routes/at most one Caddy
+  SIGUSR1. No schema/app deployment/restart or broad API wildcard. No apply yet.
+- Import516 customers/591 orders/6 refunds/1789 items/702 fulfillment observations.
+  513 conditionally eligible (1 current verified match/512 later verified signup),
+  3 held (2 primary-only/1 changed registered email). Eligible459 orders/6 refunds/
+  1373 items; held1 order/3 items; unlinked131 orders/413 items (110 guest plus21
+  missing/excluded).395 eligible customers have orders/118 do not. Duplicates0/0;
+  2 privileged users excluded,2 comparison-only identities not unioned,1 completion
+  date conflict retains both observations. No billing-email guest ownership.
+- Final payloada34838d6034f9d1cc5104a13d1960bff70b439b3d65000436f4a1f7abe6899bf;
+  eligibility4b4483965ab4077d0586d4e6c46fe572329c1929b5eb180d5fa7fcbc957991a3.
+  Encrypted review1045be1e/batch index57853837 and exact target/operator/tools/
+  evidence hashes bound. Private false template/READINESS saved; no approval
+  receipt or intent. Old zero-claim v3 preserved; never import it then change flags.
+- New isolated branch local/customer-history-final-import-20261025 at
+  de5c4142057c86f29a812af06cec9b9b566297ad adds only operator/tests; all663
+  frozen application inputs unchanged. Other worktrees/40 original Beta paths
+  retained. No push, app build or deployment repeated.
+- Fresh current94 exported-snapshot encrypted recovery/full readback PASS:
+  11042840 DB plaintext bytes/10 runtime files; capture22:23:51.699 Riyadh,
+  six-hour expiry2026-10-26 04:23:51.699 Riyadh. Actual native17.11 restore/final41
+  shared-helper batches PASS at22:47:06.087; zero schema migrations. All140
+  original Auth/profile/commerce/Storage projections and every historical snapshot/
+  total/date/currency/refund/item/address/event match. Local Vault10 TOC entries
+  excluded only, secret rows0;25 owner-only ACL representations restored locally.
+- Actual EN/AR component claim/list/detail, current verified match, denied guest/
+  held/cross-account/unverified/inactive reads, immutable changes, receipt replay
+  and source-hide denial PASS locally. All cloned identity fixtures rolled back;
+  Auth creation/final links0. Seven focused operator tests PASS. Existing69 Beta/
+  20 history/build/typecheck/archive evidence reused. Hosted owned acceptance pending.
+- Concrete Caddy hold precedes Nuxt. Exact one-line existing customer_access
+  matcher extension admits GET /api/account/history, source-UUID-only positive-ID
+  GET detail, POST /api/account/history/claim. Installed VPS parser/diff and154
+  offline route predicates PASS; all other adapted config unchanged. Not applied.
+  Backend JWT/confirmed/profile/RLS/service-only ownership guards remain intact.
+- On exact approval: fresh live/freshness/seal checks → exclusive intent → new
+  authenticated execution backup →41 bounded per-batch transactions protecting
+  all140 original projections → complete immutable/receipt reconciliation →
+  exact Caddy correction/one journal-confirmed SIGUSR1/same PIDs → ordinary-owner
+  archived-profile/empty-view acceptance. Current verified match has no orders;
+  hosted order-detail acceptance needs a separately authorized owner-controlled
+  order-bearing signup or eligible later public signup. No account under this scope.
+  Partial import remains behind original ingress hold.
+  No catalog pause needed; concurrent catalog/profile/password edits preserved.
+  Stop on uncertainty; no automatic retry, second signal, delete/reimport or full
+  restore over newer users/orders. Source hide/routing reversal separately approved.
+- No production import/routing change/Auth creation/password import/current profile
+  or commerce write/email/provider transaction/signup/purchase activation ran.
+  Public signup/purchasing/Paymob/PDC initiation stay CLOSED, confirmation required;
+  signed callbacks and current customers/orders remain. Owner explicitly claims
+  eligible history; no automatic Auth links and no privileged/guest takeover.
+- Next after import/owned acceptance: small EN/AR returning-customer notice release,
+  separate public signup approval, PDC/EGP50/refund/reconciliation/expiry/final paid
+  order acceptance, separate purchasing approval. PDC booking administrator-led.
+  Master roadmap/all79 task IDs/status counts preserved; no unrelated audit.
+
+# Inactive91→94 deployment PASS; seal consumed — 2026-10-25
+
+- Releasebc05eef266eeb7de/schema94 deployed at21:31:49.255 Riyadh. Owner's exact
+  replacement approval4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650
+  executed once. Intent/SQL/activation/completion/receipt retained. Never rerun apply
+  or preflight expecting91; original6474587 remains held/superseded, not reusable.
+- Same archivebc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6,
+  app1924ca0/operator724720a. Atomic migrations92–94 preserve all140 original
+  transaction projections/Auth security; three current customers, profiles/
+  credentials, orders and final catalog edits preserved. History tables/claims0;
+  private RLS/grants/service-only RPC checks PASS. No historical import ran.
+- Fresh encrypted execution backups authenticated/full-readback PASS:10935391 DB
+  plaintext bytes,10 runtime files. Prior actual native application/Auth/Storage
+  restore/91→94/rollback/replay-refusal proof retained (Vault0 excluded locally
+  only). Private candidate PASS; one storefront restart, service active/running;
+  Caddy/runtime/media/private incident files and signed callback authority preserved.
+- Public smoke PASS: EN/AR home/login200, Cart/Checkout403, anonymous history GET/
+  claim POST403, capabilities403; six retained/fresh asset byte hashes match.
+  These403s prove denial only. Authenticated history reachability/ownership and
+  normal hosted order/session acceptance remain unexercised; no admin bypass.
+- Private authoritative ../customer-migration-inactive-refresh-20261025/DEPLOYMENT-RECEIPT.json
+  and execution/completed.json record PASS; REFRESH-STATUS is DEPLOYED_INACTIVE_CONSUMED.
+  [Public receipt](docs/inactive-history-release.md#production-result-and-consumed-approval)
+  and roadmap updated. LOCAL-01–06/BETA-10 DEPLOYED; all79 IDs retained.
+- Temporary catalog deployment pause can end; resume already-authorized work.
+  Next milestone: privately reviewed eligible legacy IDs/source evidence and final
+  immutable payload/current94 recovery, then exact separate historical import
+  approval. Source/deployment decisions are complete; do not ask again.
+- Prepared import check against installed94 PASS read-only:41 batches, no Auth
+  creation or writes. Preview claims0 would expose no history. Never import then
+  replay changed customer records. Accept ordinary confirmed-owner claim/list/
+  details/refresh and denied guest/unverified/cross-account access after import.
+- Signup, purchasing, Paymob/PDC initiation remain CLOSED, confirmation required.
+  No new email, payment, shipment, provider action or push. Small EN/AR returning
+  notice/generic login guidance remains next before signup; PDC/refund/final order
+  acceptance and separate purchasing approval still required. Old WordPress stays
+  read-only. Preserve all prior handoff bytes/worktrees; no broad test repeat.
+
+# Catalog pause confirmed; replacement inactive release READY — 2026-10-25
+
+- Owner confirmed catalog imports/product edits are paused. Do not ask again;
+  maintain the pause through deployment. [Exact current packet](docs/inactive-history-release.md#current-replacement-deployment-packet)
+  is sealed in ../customer-migration-inactive-refresh-20261025/plan.json:
+  4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650.
+  Releasebc05eef266eeb7de, full archive SHA256
+  bc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6.
+  Same app1924ca0/operator724720a/migrations92–94; no rebuild or new feature.
+- Final pre-pause snapshot has105 import jobs/1262 items/2436 activity rows/5723
+  specifications;561 products/revisions retained. It includes45 fewer specs and
+  45 more audit rows since the prior backup. Runtime/schema/Auth/other business
+  projections matched. Preserve these latest edits and existing current customers.
+- New encrypted backup authenticated/full-readback PASS:10930479 DB plaintext
+  bytes,10 runtime files. Actual native application/Auth/Storage restore and91→94
+  preserve138 original tables/all140 transaction projections; rollback PASS,
+  duplicate upgrade refused, history/claims0. Managed Vault excluded locally only,
+  zero secret rows; production services untouched. Freshness starts2026-10-25
+  20:16:59.697 Riyadh, expires2026-10-26 02:16:59.697 Riyadh.
+- Seal checked() read-only PASS; saved local integrity PASS, production writes0.
+  Existing69 Beta/20 history/eight operator/build/typecheck/compiled/browser evidence
+  retained unchanged. CATALOG-PAUSE.receipt.json and new preparation/review hashes
+  are bound through qualification.json; older unsealed evidence is preserved in
+  pre-pause-evidence/. REFRESH-STATUS.json/READY-REVIEW.json record readiness.
+- ONE next owner approval, inactive application/schema91→94 only:
+  APPROVE INACTIVE BETA HISTORY DEPLOY 4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650
+  Replacement template remains false; no replacement approval or execution intent.
+  The original6474587 approval is recorded/held before apply; do not reuse it for
+  this changed baseline. Source approval remains complete; no repeat source decision.
+- On exact replacement approval: final freshness/drift check → fresh encrypted
+  execution backup → private candidate → atomic3 migrations → read-only94/data/
+  access checks → one app restart → gates verification. No automatic retry/rollback.
+  Keep schema94 after committed SQL; separately review any application rollback.
+- Production remains58e3083f4aa6a1f8/schema91. No apply/deployment/import/email/
+  provider/public activation or push. Signup/purchasing/shipment initiation closed;
+  existing customers/orders and signed callbacks preserved. Import/eligibility,
+  ordinary owned-history acceptance, small EN/AR notice/signup and purchasing
+  remain separate later milestones/approvals. BETA-10 LOCAL PASS; all79 IDs and
+  prior handoff bytes/worktrees preserved. Roadmap and release reports updated.
+
+# Approved deployment HELD before execution; catalog pause required — 2026-10-25
+
+- Owner supplied exact APPROVE INACTIVE BETA HISTORY DEPLOY for seal
+  6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+  Separate DEPLOYMENT-APPROVAL.receipt.json records it; original false template,
+  sealed plan and prior evidence remain unchanged. The final read-only check
+  stopped on newer catalog data. No execution intent/apply, SQL, staging, restart,
+  historical import, provider call, public activation or push ran.
+- Runtime/schema/Auth/current customers/orders and other business projections
+  matched. Catalog imports/products/revisions/audit logs changed; later snapshot
+  also contained specification edits. Counts advanced101→105 jobs,1242→1262 items,
+  2369→2391 audit rows,5769→5768 specs;561 products/revisions have changed values.
+  Preserve these live edits. Never bypass the guard or rerun the old exact seal.
+- Same qualified archivebc05eef266eeb7de (full hash unchanged), app1924ca0 and
+  operator724720a copied to ../customer-migration-inactive-refresh-20261025/.
+  Its detached eighth worktree is clean; original dirty work and all79 IDs remain.
+  No new application code, build or broad test repeat. Source approval is complete.
+- Fresh encrypted DB/runtime backups passed authenticated/full readback:10908495
+  database bytes,10 runtime files. Actual native application/Auth/Storage restore
+  and91→94 upgrade preserve138 original tables/all140 transaction projections;
+  rollback PASS, duplicate upgrade refused, history/claims0. Managed Vault excluded
+  locally only, zero secret rows; production services unchanged. Fresh recovery
+  starts2026-10-25 18:48:12.749 Riyadh, expires2026-10-26 00:48:12.749 Riyadh.
+- Replacement status is RECOVERY QUALIFIED, NOT SEALED. REFRESH-STATUS.json,
+  catalog-drift-review.json and recovery-upgrade-proof.json preserve the boundary.
+  Original DEPLOYMENT-HELD.receipt.json records zero production writes/no intent.
+  BETA-10 IN PROGRESS until the changed baseline is sealed; qualification otherwise
+  reused. No replacement deployment approval has been requested/received.
+- ONE next owner action: pause catalog imports/product edits and confirm
+  “Catalog edits are paused.” Async request remains pending. Keep edits paused
+  through deployment. After confirmation, check current data/freshness, seal the
+  unchanged archive against that baseline, then present its exact replacement
+  deployment approval. Do not execute a changed plan under the old approval.
+- [Current release hold/recovery](docs/inactive-history-release.md#current-hold-and-refreshed-recovery),
+  [requirements/inventory](docs/customer-access-release-plan.md), migration reports
+  and [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) updated. Public signup, purchasing
+  and shipment/provider initiation remain closed; accepted Auth stays accepted.
+  After inactive deployment: reviewed claim eligibility/final payload + separate
+  import approval → ordinary owned-history acceptance → small returning notice/
+  signup approval → final PDC/refund/checkout acceptance → purchasing approval.
+  All prior handoff bytes and consumed scopes remain intact.
+
+# Owner customer-access requirements recorded; inactive deployment GO — 2026-10-25
+
+- [Current requirements, release order and full pending-file inventory](docs/customer-access-release-plan.md)
+  extend BETA-03/04/10/11 and MIG-01/03/05. All79 task IDs/status counts remain.
+  Order: A inactive91→94 deployment → B import/verified ownership → C public
+  signup/login → D PDC/paid-checkout acceptance → E public purchasing. Existing
+  customer login/recovery remains available; each production scope needs approval.
+- Historical customers use their original registered email: missing current
+  accounts use ordinary verified signup/new password; existing accounts use login/
+  recovery. No incompatible WordPress hashes, duplicate Auth identity, current
+  password/profile overwrite, auto-confirmation or bulk invitations. Claims use
+  verified active current identity plus reviewed matching legacy eligibility.
+- Ordinary My Account → My Orders → Connect previous orders is already included
+  in sealed app1924ca0. No admin role/customer-selected identity is required.
+  After approved import/claim, verify owned list/detail/archived addresses/history,
+  refresh and denied cross-account/guest/unverified/held cases. No guest/unlinked
+  association solely by email; no live payment/inventory/shipping/notification.
+- The EN/AR returning-customer notice and generic failed-login help are PLANNED,
+  not implemented/qualified. Exact short copy and focused security/RTL/theme/
+  responsive checks are recorded. Make this the next small release afterA and
+  before public signup; store-configured/default-off, no email-existence lookup.
+  Adding it now would invalidate the sealed archive. No unrelated work joinsA.
+- All7 registered worktrees/5 local branches inventoried. Main has11 pending paths
+  including the plan. All40 original dirty Beta paths byte-match preserved2cd5418
+  and are represented in the combined source. History/operator sources are clean;
+  4 old failure-replay test/helper paths remain excluded/preserved. No growing
+  queue of separate qualified application releases is authorized.
+- Saved-plan check repeated read-only: READ_ONLY_CHECK_PASS, production writes0.
+  Exact inactive archive remainsbc05eef266eeb7de, operator724720a, plan seal
+  6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+  ONE next owner approval, inactive application/schema92–94 only:
+  APPROVE INACTIVE BETA HISTORY DEPLOY 6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d
+  Final freshness/drift guard remains; recovery expires2026-10-25 22:57:04.050 Riyadh.
+  No execution intent/deploy/import/push/activation ran. Signup, purchasing and
+  provider/shipment initiation stay closed; current customers/orders/callbacks safe.
+- Source approval is complete; do not repeat it. Freeze eligible IDs/source evidence
+  before final immutable import payload and separate import approval. Existing
+  verified matching owners can provide stageB acceptance; newly verified returning
+  customers complete the self-service path atC. Notice implementation does not
+  replace import, signup or purchasing approvals. Prior handoff bytes preserved.
+
+# Inactive91→94 release READY; separate deployment approval next — 2026-10-25
+
+- BETA-10 LOCAL PASS. [Exact inactive deployment packet](docs/inactive-history-release.md)
+  qualifies app1924ca06b2bf97426aba108f6da36cb7b7bd1287 and local operator
+  724720a50dab99f3e670798cafccfcebcb2e7c79. Releasebc05eef266eeb7de, archive SHA256
+  bc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6.
+  Private workspace: ../customer-migration-inactive-release-20261025/.
+  Exact plan.json seal6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+- Eight new operator checks pass (5 Node/3 Python, no skips), fresh clean Nuxt build,
+  exact archive/readback,15 HTTP/1534 asset/eight EN/AR desktop/mobile Light/Dark
+  browser checks pass; zero external/production requests. Reused69 Beta/20 history
+  checks/typecheck against unchanged663 inputs. No broad regression repeat.
+  Retained1428 production assets; signed Paymob authority3 files match production.
+- Fresh encrypted DB/runtime backups passed authenticated full readback. Actual
+  local application/Auth/Storage restore and91→94 upgrade preserve old data/Auth,
+  RLS/ACLs and callback reconciliation.138 original protected tables matched;
+  all140 original transaction projections preserved. Injected rollback passes;
+  duplicate upgrade refused; history/claims0. Managed Vault excluded locally only,
+  zero secret rows; complete encrypted backup retained, production Vault unchanged.
+  Qualification expires2026-10-25 22:57:04.050 Asia/Riyadh (six-hour guard).
+- Saved-plan READ_ONLY_CHECK_PASS, production writes0. Target remains58e3083f4aa6a1f8,
+  schema91, three confirmed permanent customers. Signup/confirmation policy,
+  existing credentials/profiles/orders and signed callbacks are preserved.
+  Signup, purchasing, Paymob initiation and shipping/PDC live requests remain closed.
+  No Caddy/runtime/fee/catalog/scheduler change, import, email, provider call or push.
+- ONE next owner approval (inactive application + migrations92–94 only):
+  APPROVE INACTIVE BETA HISTORY DEPLOY 6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d
+  Approval is not received; template remains false, no execution intent exists.
+  On approval, recheck freshness/drift and take fresh encrypted execution backups;
+  stage/candidate → atomic3-migration transaction → read-only94 check → one restart.
+  Any uncertainty stops; preserve receipts, no automatic retry/rollback. Reviewed
+  application rollback retains schema94; never restore over newer customer data.
+- Source approval70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  is complete; never re-request unchanged source approval. No historical import is
+  included. After deployment, freeze reviewed eligible IDs/evidence/final payload,
+  obtain separate import approval, reconcile and accept verified-owner history.
+  Public signup and final purchasing retain later acceptance/separate approvals.
+- [Roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md), release/source reports and both
+  handoffs updated together. All79 IDs, existing worktrees and prior handoff bytes
+  remain intact. Recovery and controlled confirmation remain ACCEPTED.
+
+# Migration source APPROVED; inactive release inputs frozen — 2026-10-25
+
+- Owner supplied the exact source approval phrase/seal:
+  APPROVE MIGRATION SOURCE 70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  It approves the primary archive/cutoff and exception treatment only. Claims
+  remain zero. No deployment/import, Auth changes, email or public activation.
+- The original source packet/template are unchanged. Separate private receipt:
+  ../customer-migration-launch-20261025/migration-source-approval.receipt.json.
+  Do not ask for this source decision again while its bound inputs/scope match.
+- Qualified1924ca0 and retained qualification hashes match. New private
+  migration-inactive-release-inputs-20261025.json freezes663 application inputs,
+  all94 migration hashes and pending92–94. Status INPUTS_FROZEN_NOT_DEPLOYABLE;
+  an archive, compatible operator and fresh restore qualification are not claimed.
+- BETA-10 is IN PROGRESS for local inactive91→94 release preparation. Next
+  production approval must name the qualified archive/operator and fresh recovery
+  evidence. Import remains separate, including final owner-reviewed eligibility.
+  No owner action remains for the completed source decision.
+- [Current packet](docs/customer-migration-approval.md), release report, WordPress
+  plan, [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and both handoffs updated.
+  Recovery/confirmation stay ACCEPTED. All79 IDs, three current identities,
+  source/data/qualified worktrees and prior handoff bytes are preserved.
+  No deployment, import, production operation or push ran in this milestone.
+
+# Confirmation ACCEPTED; guarded migration source review READY — 2026-10-25
+
+- Owner received/redeemed the Outlook confirmation in the originating profile and
+  reports account access/login. Fresh read-only check verifies exact UUID/email,
+  confirmed timestamp, matching active profile, one email identity, permanent
+  non-admin status and sign-in timestamp. Settings/admin/commerce fingerprints
+  match pre-test. BETA-02 confirmation ACCEPTED; recovery already ACCEPTED.
+  No password-based signup test is inferred from PKCE access. Do not send again.
+- Owner observed Brevo sendibt3.com/tr/cl wrapping. Follow up under BETA-03 for
+  Auth-only tracking suppression if supported; otherwise review a same-provider
+  email OTP alternative. No raw link/token retained, SMTP/provider/template change
+  made or new email sent. This does not reopen accepted Auth or delay migration prep.
+- [Migration source approval/release packet](docs/customer-migration-approval.md)
+  is READY for owner review, not production execution. One approval now selects
+  the frozen primary archive/cutoff and exceptions, with claims zero. Exact phrase:
+  APPROVE MIGRATION SOURCE 70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  It authorizes no deployment/import/claim enablement or public activation.
+- Fresh encrypted target includes all three confirmed permanent Supabase customers;
+  schema91, history absent. Qualified1924ca0 and12 source/31 evidence/91 old
+  migration hashes unchanged. Reused20 passing checks/build/rehearsal; refreshed
+  dry-run retains identical payload:516 customers,591 orders,6 refunds,1789 items,
+  702 fulfillment observations and41 batches. No new Auth/profile writes.
+- Exceptions:2 privileged users excluded;110 guest plus21 excluded/missing-customer
+  records unlinked;1 date conflict preserved. Comparison has2 IDs unique to each
+  snapshot and1 email change; never union. No WP passwords or current-profile edits.
+- Freeze reviewed claim IDs/evidence before final import payload. Current preview
+  has zero eligible claims and exposes no history. Do not import then replay changed
+  customer records; immutable guards reject that. Verified/active/unique current
+  owners explicitly claim only approved matching registered legacy identities.
+- Sequence: source decision → compatible sealed inactive91→94 artifact/operator
+  and fresh verified encrypted recovery → separate deploy approval → installed
+  history/read-only check → separate exact import approval → reconcile/owned-history
+  acceptance → guarded signup → final checkout/delivery/refund acceptance → paid
+  activation approval. Failure preserves receipts; review exact-source hide rather
+  than overwrite newer customers. No deploy/import/push/public purchasing ran.
+- [Roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md), Auth/release reports and both handoffs
+  updated. All79 IDs, original worktrees and historical handoff bytes are preserved.
+
+# One confirmation sent; owner browser redemption next — 2026-10-25
+
+- Owner explicitly approved one ordinary unconfirmed identity and one genuine
+  signup-confirmation email. Exact private mailbox has no Auth/profile/legacy
+  conflict. Supported Admin API created exactly one identity/profile without
+  invitation, auto-confirmation or supplied/displayed/recorded password. Provider
+  generated its undisclosed initial secret; private login setup is not yet tested.
+- The retained separate visible Chrome window was verified signed out at the
+  production login page. Its existing Nuxt/Supabase client sent exactly one
+  resend(type=signup) with production /login and browser-held PKCE. Request
+  accepted; new confirmation timestamp recorded, invited_at null, unconfirmed
+  at the bounded post-send check. Owner receipt/redemption/access are PENDING.
+- ONE browser action: owner opens the Outlook confirmation email, copies its link
+  into the address bar of that separate ELcomputer Chrome window and checks the
+  production account result. Keep that window/profile open; never share the link.
+- Both creation/send scopes are CONSUMED. No resend, retry, invitation, additional
+  recovery, configuration investigation or repeated approval. Private attempt/
+  result receipts and browser-session metadata are in ../auth-email-acceptance-20261025/.
+  Browser tool session98634 remains open without URL/session/password capture.
+- Existing Auth/profile/admin/settings/order/payment/present shipping-job
+  fingerprints unchanged. Public signup disabled, confirmation required, Cart/
+  Checkout403. No deployment/import, public activation, provider transaction or
+  Git push. Recovery stays ACCEPTED; BETA-02 stays IN PROGRESS for owner results.
+  Refresh future migration target snapshots for this new approved UUID; preserve
+  prior identities, transactions, qualified1924ca0 and all79 tasks/worktrees.
+- [Current report](docs/auth-email-acceptance.md#current-confirmation-request--one-send-accepted-owner-pending--2026-10-25)
+  supersedes owner-Dashboard creation/pending-approval instructions below. All
+  prior handoff bytes remain unchanged.
+
+# Recovery ACCEPTED; one confirmation test prepared — 2026-10-25
+
+- [Master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and
+  [current Auth acceptance/plan](docs/auth-email-acceptance.md#current-acceptance--recovery-accepted-confirmation-prepared--2026-10-25)
+  supersede every pending-recovery/configuration-save instruction below.
+- OWNER-VERIFIED PRODUCTION PASS: Test B received the email from info@elcomputer.net,
+  followed the production reset link, changed the password and logged in with the
+  new password. Site URL and all four Redirect URLs are saved. Mark
+  AUTH-RECOVER-B-01 ACCEPTED; BETA-01 SMTP transport ACCEPTED. No log recheck or
+  recovery repeat is required. This is scoped owner evidence, not an agent smoke.
+- BETA-02 remains IN PROGRESS for one new-identity confirmation. Owner selected an
+  unused external Outlook mailbox and says it is not yet added. Exact address is
+  private in ../auth-email-acceptance-20261025/confirmation-01-plan.private.json.
+  Creation/send approvals remain false; no new UUID exists in the prepared plan.
+- ONE next owner action: approve one ordinary unconfirmed test identity and one
+  confirmation email to that exact mailbox. After approval, collision-check Auth,
+  current profiles and legacy inventory; owner creates with Auto Confirm OFF and
+  a password entered privately. No invitation or existing-identity alteration.
+- Prepared scripts/auth-email-acceptance/confirmation-browser.mjs uses the existing
+  production browser client, explicit send approval, verified UUID and one-attempt
+  guard. Installed SDK supports PKCE on resend(type=signup). Public signup stays
+  closed; owner redeems in the same profile/device, checks account access, then
+  signs out and logs in privately. Confirmation request HTTP200 is not acceptance.
+- Ten focused checks PASS (real installed SDK/actual login SFC, closed fixtures),
+  including EN/AR confirmation PKCE and duplicate/unapproved sends. No hosted
+  confirmation test or normal public signup acceptance is claimed. No app change,
+  build, account creation, email, production write or Git push ran this milestone.
+- After confirmation, reuse qualified1924ca0 combined Beta/history source.
+  Guarded inactive92–94 deployment must precede historical import; exact import,
+  public signup and purchasing retain separate approvals. Identity safeguards,
+  delivery/EGP50, manual refunds/reconciliation and final checkout/order acceptance
+  remain. Preserve identities, transactions, schema91 production and all79 tasks.
+  Original prepared work/worktrees and all prior handoff bytes remain below.
+
+# Auth redirect correction — application GO, hosted reset pending — 2026-10-25
+
+- Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and the current
+  [Auth redirect report](docs/auth-email-acceptance.md#current-redirect-correction--2026-10-25).
+  This notice supersedes pending-delivery and configuration-access-first text below.
+- Owner reports the approved Test B recovery email arrived through Brevo, then
+  redirected to localhost; password recovery did not complete. Delivery is an
+  owner-reported PASS, old redirect FAIL, hosted reset/access still incomplete.
+- Owner found saved Site URL http://localhost:3000 and empty Redirect URLs, and
+  is correcting it. Saved corrected state has not been independently observed.
+  Prior one-email approval is consumed; no automatic resend or old-link reuse.
+- ONE owner action: save Site URL https://elcomputer.net and exactly these four
+  Redirect URLs: https://elcomputer.net/login, https://elcomputer.net/ar/login,
+  https://elcomputer.net/login?mode=recovery and
+  https://elcomputer.net/ar/login?mode=recovery. No wildcard or generated code.
+- Actual login SFC/installed SSR/Auth SDK:7 focused checks PASS. EN/AR signup
+  redirects, automatic PKCE exchange, recovery form retention, password update/
+  signout, confirmation account entry and missing-verifier rejection verified
+  against closed local fixtures. Login source matches retained deployed source.
+  Application code is unchanged; no build/deployment is needed for this correction.
+- Application readiness GO; next recovery execution HELD until owner saves values
+  and approves one fresh Test B email. Owner requests signed out and redeems in
+  the same browser profile/device; avoid overlapping signup/recovery flows.
+  Successful reset and subsequent owned access must be recorded before acceptance.
+  Separate controlled confirmation follows; historical Admin-create/resend PKCE
+  proposal remains unqualified. Public signup stays closed.
+- No SMTP403 investigation or credentials questionnaire is needed. No email,
+  settings write, deployment, import, payment/shipping action, public activation
+  or push ran in this review. Preserve schema91 production, qualified1924ca0
+  migration source and all79 tasks. All previous handoff bytes remain below.
+
 # Priority reset and customer migration LOCAL PASS — 2026-10-25
 
 - Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and

@@ -1,5 +1,44 @@
 # Required WordPress customer migration
 
+**Production history import PASS — 2026-10-25,23:07:33.882 Riyadh.**
+[Current receipt](customer-history-import-receipt.md): exact3c9f5764 approval consumed,
+41 batches/516 customers/591 orders/6 refunds/1789 items/702 events.513 conditionally
+eligible,3 held; actual claims0. Three scoped history routes loaded/one Caddy signal,
+no app restart/schema deployment. Original140 projections and three current users/
+profiles preserved; signup/purchasing/provider initiation closed. Hosted ordinary
+ownership acceptance remains pending. Next: small EN/AR notice release before signup.
+Earlier READY/pending/source-only statuses below are retained historical evidence.
+
+**Final import milestone — 2026-10-25:** [source-bound packet](customer-history-final-import.md)
+is READY for separate exact owner approval3c9f5764.516 customers/591 orders/6 refunds/
+1789 items/702 events;513 conditionally eligible identities (1 current verified,
+512 later signup),3 held.131 unlinked orders stay private. Fresh native94 recovery/
+final41 batches,140 original projections and seven operator checks PASS. The same
+approval covers three required history API routes/one Caddy signal. No production
+import/routing change/Auth creation has run. Earlier preview references below are
+retained history; final payloada34838d6 supersedes the zero-claim import candidate.
+Source/deployment decisions are complete; do not repeat them.
+
+## Retained earlier implementation and deployment evidence
+
+Current2026-10-25: recovery/controlled confirmation are ACCEPTED. Use the
+[next guarded approval packet](customer-migration-approval.md). The refreshed
+dry-run preserves three confirmed current customers and the original516 historical
+customers,591 orders, six refunds and1,789 items. This plan authorizes no import.
+The exact source/cutoff/exception seal is owner-approved. Claims remain zero;
+the [inactive91→94 deployment](inactive-history-release.md#production-result-and-consumed-approval)
+completed21:31:49.255 Riyadh as releasebc05eef266eeb7de/schema94. Replacement
+seal4c332350 is consumed; never rerun it. All history tables remain empty and the
+prepared41-batch import check passed read-only. Final reviewed eligibility/payload,
+fresh current-target recovery and separate import approval are next. The catalog
+deployment pause can end; do not repeat source or deployment approval.
+
+[Current owner requirements and release order](customer-access-release-plan.md)
+require original registered email via verified signup/recovery and an ordinary
+My Orders → Connect previous orders experience. That claim UI/API is already in
+the sealed inactive release. The EN/AR notice/generic login guidance follows in
+the next small release before public signup; no incompatible hash is imported.
+
 Current implementation and actual dry-run:
 [customer migration release](customer-migration-release.md), 2026-10-25.
 Customer/history migration is now on the public-launch path, after email

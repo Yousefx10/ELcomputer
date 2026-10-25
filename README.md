@@ -5,13 +5,19 @@ Follow [AGENTS.md](AGENTS.md) before changing the project.
 
 Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) for current
 cross-account priorities, production evidence and pending local work.
-Its 2026-10-25 reconciliation records the latest retained production baseline:
-`58e3083f4aa6a1f8`, schema91; the isolated schema93 Beta candidate is local only.
-Older release summaries below remain historical evidence.
+Current production is `bc05eef266eeb7de`, schema94, deployed inactive.
+The [historical customer import](docs/customer-history-import-receipt.md) passed
+with41 batches. Customer ownership remains explicit; hosted acceptance is pending.
+Signup and purchasing remain closed. Older release summaries below remain historical evidence.
 
 Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.
+
+Before switching Codex accounts, read the [Git/worktree audit](docs/GIT_WORKTREE_SYNC_AUDIT.md).
+The roadmap retains all79 original tasks and adds9 IDs for ten post-Beta requirements.
+Public signup and real paid orders remain P0. Main code and deployed-source branches
+remain separate; switching accounts on this workspace needs no merge or push.
 
 The [Shipping Company tariff manager](docs/shipping-tariffs.md) is
 [deployed](docs/shipping-tariff-deployment-receipt.md) as `08b45ffac0e524c8`, schema91.
