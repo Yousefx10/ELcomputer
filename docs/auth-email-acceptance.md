@@ -1,5 +1,30 @@
 # BETA-01 / BETA-02 — Auth email acceptance
 
+## Current priority reset — 2026-10-25
+
+The owner has approved **one recovery email for existing ordinary Test Customer B**.
+That account was identified uniquely and verified active/confirmed/non-admin.
+Use its normal application browser recovery flow first; the owner opens the link
+in that same browser profile and sets any password privately. Agent has not
+dispatched a recovery email. Owner request/delivery/redemption result is pending;
+do not resend while it is unknown. Purchasing and signup stay closed.
+
+The concrete private plan/approval are under
+`../customer-migration-launch-20261025/recovery-b-plan.private.json` and
+`recovery-b-approval.json`. This supersedes the recipient-unbound recovery proposal
+below. It does not approve account creation, another email, confirmation testing,
+production settings or bulk sends. Complete one controlled confirmation test next.
+
+**Management API403 is not evidence of broken SMTP and does not block this test.**
+The earlier six-setting questionnaire/config-access prerequisite is withdrawn.
+Use delivery/link/account evidence; inspect the specific settings or logs only
+if a concrete failure requires it. Preserve older findings below as history.
+[Customer migration and launch milestone](customer-migration-release.md).
+
+---
+
+Historical read-only preparation follows; its proposed ordering is superseded above.
+
 Status: **SMTP ACCEPTANCE BLOCKED**. Reviewed 2026-10-25, Asia/Riyadh.
 Scope: read-only verification and preparation of two controlled email tests.
 No email, user creation, password change, configuration change or deployment ran.

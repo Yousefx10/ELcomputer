@@ -1,3 +1,46 @@
+# Priority reset and customer migration LOCAL PASS — 2026-10-25
+
+- Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and
+  [customer migration release](docs/customer-migration-release.md). New order:
+  email acceptance → customer/history migration → public signup → orders/payments
+  → guarded launch. All79 task IDs remain; migration tasks are now P0.
+- Owner explicitly approved ONE recovery email for existing ordinary Test B.
+  Its exact identity is privately verified active/confirmed/non-admin. Use the
+  normal application browser request to retain PKCE; owner opens the link there.
+  No agent dispatch or new recovery timestamp was observed in the bounded check.
+  Owner request/delivery/redemption remains pending; never resend automatically.
+- Management config403 is not SMTP-failure evidence and no longer gates this
+  test. The earlier six-setting questionnaire/access-first instruction is
+  superseded. Inspect settings/logs only for a concrete delivery/link failure.
+  One separately approved controlled confirmation test follows recovery.
+- Authenticated offline primary:518 users,516 customer candidates,591 orders,
+  six refunds,1789 items and702 fulfillment events. All518 password hashes are
+  WordPress-prefixed bcrypt/pre-hash; no direct hash import or custom verifier.
+  Existing Nuxt UUIDs/credentials/profiles stay; missing users activate through
+  ordinary verified signup when approved, then explicit owner-reviewed claims.
+- Qualified local implementation:1924ca0; preserved Beta baseline:2cd5418.
+- Private history migration/API/EN-AR My Orders controls and guarded batch operator
+  are implemented on local/customer-history-launch-20261025, under
+  ../customer-migration-launch-20261025/source. Commit2cd5418 preserves the exact
+  original40-file Beta candidate before the additive history work. Original W,
+  both accounts' work, incident barriers and91 old migration files are preserved.
+- 20 focused checks PASS, including native PostgreSQL concurrency/full94-file
+  schema, real H3/SQL authorization and stale-customer UI tests. Typecheck/build
+  PASS. Local SQL rehearsal:41 batches,516 archived customer records,597 order/
+  refund records,1789 items; no Auth/current-profile creation or production import.
+  One completion-date conflict is preserved, not guessed or dropped. Guest/staff
+  exceptions stay unlinked; claim approvals default off. Full regression and
+  hosted/browser acceptance are not claimed. Qualified source is not a sealed
+  deployable archive or production approval.
+- Production remains recorded58e3083f4aa6a1f8/schema91. No deployment, customer
+  import, public signup/payment activation, provider operation, bulk email or
+  Git push ran. Migrations92–94 need a fresh compatible guarded release; import,
+  signup and purchasing have separate approvals. Preserve Paymob signed receipts,
+  real backorders, EGP50 configuration and administrator-confirmed PDC booking.
+- ONE owner action: request the approved Test B recovery email once through the
+  normal browser; then report receipt/link/account outcome. Continue local release
+  preparation independently. All previous handoff bytes remain below unchanged.
+
 # BETA-01 Auth email verification — SMTP ACCEPTANCE BLOCKED, 2026-10-25
 
 - [Auth email report and two prepared tests](docs/auth-email-acceptance.md),

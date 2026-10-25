@@ -7,12 +7,18 @@ Other release/acceptance evidence retains its original date and scope.
 
 **Priority: public paid Beta. Production purchasing and registration remain closed.**
 Latest recorded production: **`58e3083f4aa6a1f8`, schema91**.
-The isolated Beta candidate targets schema93; it is not deployed.
-Next task: **BETA-01 — resolve read-only access to effective Auth configuration**.
+The original isolated Beta candidate targets schema93. The new customer-history
+branch extends that candidate to94 migrations; neither candidate is deployed.
+Next task: **AUTH-RECOVER-B-01 — complete the approved Test Customer B recovery test**.
 
-**79 tracked tasks.** Priority: P0 25; P1 39; P2 14; PARKED 1.
-Status: PLANNED 35; IN PROGRESS 0; LOCAL PASS 11; DEPLOYED 11;
-ACCEPTED 2; BLOCKED 16; ON HOLD 4. Count each task row once;
+Owner priority reset: email acceptance → customer/history migration → public
+signup → normal orders/payments → guarded launch. API403 is an inspection limit,
+not an SMTP defect or a prerequisite for the approved email test. Do not repeat
+the withdrawn configuration questionnaire.
+
+**79 tracked tasks.** Priority: P0 29; P1 35; P2 14; PARKED 1.
+Status: PLANNED 31; IN PROGRESS 2; LOCAL PASS 17; DEPLOYED 11;
+ACCEPTED 2; BLOCKED 12; ON HOLD 4. Count each task row once;
 dependent tasks can cover different acceptance stages of the same feature.
 
 Navigate: [overview](#a-project-overview), [production](#b-current-production-baseline),
@@ -78,6 +84,12 @@ was deployed. The exact release archive and source bindings govern deployment.
 **P** means the private sibling evidence directories, also relative to root.
 W files are not committed in main or R. Preserve them; review consolidation
 explicitly rather than merging, replacing files or rebuilding incidentally.
+
+**H** is `local/customer-history-launch-20261025`, qualified implementation
+`1924ca06b2bf97426aba108f6da36cb7b7bd1287`, isolated under
+`../customer-migration-launch-20261025/source`. Its2cd5418 baseline preserves W
+exactly; the new history source extends it. H has94 migration files and local
+qualification. It is not the deployed application; main application is unchanged.
 Requirements and qualified results are summarized here so they survive a handoff.
 Private receipts are evidence locators, not portable release inputs or approval.
 
@@ -105,7 +117,8 @@ Private receipts are evidence locators, not portable release inputs or approval.
 | E19 | [Quick Setup](quick-setup.md), [publisher validation](application-publication-validation.md), [release82 validation](installation-release82-validation.md), [reproducible builds](dependency-reproducibility.md). Local installation certification is not portable hosted acceptance. |
 | E20 | [ERP report](erp-ownership-report.md), [Daftra](daftra-erp.md), [procurement options](procurement-product-options.md), [Dashboard navigation](dashboard-navigation.md), [read ingress](dashboard-read-ingress.md). |
 | E21 | [Dashboard production check](dashboard-read-production-check.md), historical PROJECT_STATE/CODEX_HANDOFF ADM-01 entries, [product bulk release](product-bulk-release.md). Functional smoke does not establish full RBAC/browser-write-safety acceptance. |
-| E22 | [Auth email acceptance](auth-email-acceptance.md), 2026-10-25; P:`auth-email-acceptance-20261025/` sanitized configuration/runtime/database/route receipts and two unexecuted test plans. Management config403; confirmation required/signup disabled verified live. Owner reports saved Brevo SMTP; effective SMTP/allowlist/limits remain unverified. |
+| E22 | [Auth email acceptance](auth-email-acceptance.md), 2026-10-25. Earlier config/route receipts remain bounded evidence; priority reset supersedes their configuration-access prerequisite. One recovery email for existing Test B is now approved; owner delivery/redemption result pending. |
+| E23 | [Customer migration release](customer-migration-release.md); branch `local/customer-history-launch-20261025`, qualified Beta baseline2cd5418; P:`customer-migration-launch-20261025/` encrypted sources/target/dry-run/exception records, SQL rehearsal and20 focused checks. History source is local only; no production import. |
 
 ### A. Project overview
 
@@ -186,7 +199,7 @@ There is no executable production approval or schema91→93 operator yet.
 | LOCAL-05 | Manual PDC AWB recording | P1 | LOCAL PASS | Administrator verifies actual AWB; paid/allocated/packed order | Existing RBAC/video/coverage/duplicate barriers preserved; uncertain dispatch cannot use fallback; label remains pending | E06; W:server/api/admin-shipping/orders/[id]/manual-awb.post.js | 2026-10-25 | Accept ORDER-03 separately without manufacturing shipment data |
 | LOCAL-06 | Special-order notices and mixed-parcel hold | P0 | LOCAL PASS | Owner approved wording and shipping together | Both PDP styles, Cart and Checkout disclose before payment; EN/AR settings editable; accepted terms retained | E06; W:app/utils/backorder.js | 2026-10-25 | Verify new controls in hosted browser |
 | LOCAL-07 | Configurable EGP50 Beta customer delivery fee | P0 | LOCAL PASS | Owner approved50; production still stores1 | Existing client_shipping_price owns fee; carrier costs/subsidy/VAT not inferred | E06; E10 | 2026-10-25 | Apply only through BETA-11's exact settings approval |
-| LOCAL-08 | Cross-account source and documentation consolidation | P0 | BLOCKED | Main older than production; W dirty; both accounts' work must survive | Review branch/W deltas and bindings; preserve history, incidents and91 migration hashes | E01–E07; Git branch/worktree status | 2026-10-25 | Plan reviewed source freeze within BETA-10; no incidental merge |
+| LOCAL-08 | Cross-account source and documentation consolidation | P0 | LOCAL PASS | Qualified Beta snapshot preserved as2cd5418 in isolated history branch; originals untouched | Exact original40-file snapshot plus additive history source retained; no main/application merge or deployment implied | E23; local/customer-history-launch-20261025 | 2026-10-25 | Freeze the qualified combined source for a later guarded92–94 release |
 
 Candidate runtime inputs already documented in W's `.env.example`:
 `NUXT_PUBLIC_PURCHASING_ENABLED`, `NUXT_PUBLIC_BETA_PURCHASING_ENABLED`,
@@ -202,17 +215,17 @@ it does not waive multi-customer, email, destination or recovery acceptance.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| BETA-01 | Supabase Auth custom SMTP using Brevo | P0 | BLOCKED | Owner reports SMTP saved; fresh effective-config GET403 | Effective host/port/sender/transport verified privately; keep signup closed; public settings already confirm required verification | E22; E06 | 2026-10-25 | Resolve scoped read-only config access or saved owner-console evidence |
-| BETA-02 | Signup confirmation, recovery and redirect acceptance | P0 | BLOCKED | BETA-01; recipient and create/send/redemption approvals missing | External-mailbox confirmation/recovery and exact redirects accepted; no secrets; no public-signup activation | E22; E15; app/pages/login.vue | 2026-10-25 | Finalize two prepared tests after config/recipient review; no email yet |
-| BETA-03 | Public registration abuse controls and readiness | P0 | BLOCKED | Effective quotas/resend/CAPTCHA/hook settings unreadable403 | Confirm hosted limits/challenge handling and ordinary customer defaults before enabling signup | E22; E06; E08 | 2026-10-25 | Obtain non-secret saved controls; no load probes or settings change |
-| BETA-04 | Legacy-customer identity protection for Beta | P0 | PLANNED | Owner accepted verified new identities with history deferred | Preserve existing UUIDs/credentials; ordinary signup/recovery; no guest-email ownership or silent legacy linking | E06; E11 | 2026-10-25 | Record conflict handling and acceptance cases; retain full migration |
+| BETA-01 | Supabase Auth custom SMTP using Brevo | P0 | IN PROGRESS | Brevo SMTP saved by owner; one Test B recovery email explicitly approved | Accept actual recovery delivery/link/account evidence first;403 does not establish SMTP failure | E22; E23; auth-email-acceptance.md | 2026-10-25 | Owner requests once through normal browser; inspect settings only for concrete failure |
+| BETA-02 | Signup confirmation, recovery and redirect acceptance | P0 | IN PROGRESS | Recovery for existing Test B approved; owner result pending; confirmation needs separate controlled identity approval | One real recovery then one confirmation accepted; preserve PKCE, exact redirects and owned access | E22; E23 | 2026-10-25 | Complete AUTH-RECOVER-B-01; do not create another recipient questionnaire |
+| BETA-03 | Public registration abuse controls and readiness | P0 | PLANNED | Email acceptance and reviewed legacy identity safeguards precede public signup | Normal self-service signup/confirmation/login/recovery; preserve restrictive origins, verification and effective abuse protections | E23; E22; current Auth/source contracts | 2026-10-25 | Prepare the exact signup activation after email and migration safeguards pass |
+| BETA-04 | Legacy-customer identity protection for Beta | P0 | LOCAL PASS | Owner moved history migration before public signup; reviewed claim policy still needs approval | Existing UUIDs/credentials/current profiles preserved; private history, explicit reviewed claims, verified email and no guest-email linking | E23; E11; history guard tests | 2026-10-25 | Approve exact source/claim exceptions during migration review; keep signup closed |
 | BETA-05 | Authentic A/B customer-order/session acceptance | P0 | BLOCKED | Candidate deployed inactive; exact bounded access approval | Same-browser/two-tab customer data isolation, independent owned orders/recovery, denied cross-account access; held cases remain held | E05; E06 | 2026-10-25 | Prepare no-charge two-existing-account window; intention ingress closed |
 | BETA-06 | Legitimate publishing and backorder catalog | P0 | PLANNED | Owner reviews actual products/prices and backorder policy | Eligible published normal products have truthful terms/consent; exclude test/preorder; preserve stock and bulk receipts | E06; E07; E12 | 2026-10-25 | Review private eligible-model list; do not mass-publish |
 | BETA-07 | Official PDC destinations and EGP50 configuration | P0 | BLOCKED | Updated official owner location file missing; LOCAL-07 unapplied | Validate exact IDs against accepted cache, approve bounded diff and supported destinations; apply configurable50 separately | E06; E09; REQ | 2026-10-25 | Obtain official file privately and prepare review-only mapping diff |
 | BETA-08 | Merchant refund/cancellation and stock-reconciliation readiness | P0 | BLOCKED | LIVE Refund/Void entitlement unverified; owner finance decision | Confirm merchant access read-only; approve full-refund procedure/private operation log and actual-stock disposition; no status-only refund claim | E06; W:docs/beta-refund-operations.md | 2026-10-25 | Inspect existing successful transaction read-only; submit no money action |
 | BETA-09 | Expiry scheduler, exception monitoring and closure | P0 | PLANNED | LOCAL-03 deployed; dedicated secret/loopback scheduler | Bounded worker, repeat-safe releases, late-callback review,15-minute Beta monitoring; closure stops new orders while preserving receipts | E06; E07 | 2026-10-25 | Prepare scheduler/runbook/alerts without installing or activating |
-| BETA-10 | Guarded inactive schema91→93 deployment preparation | P0 | BLOCKED | Reviewed W/branch source freeze and new exact operator/backups | Seal matching app/92–93, retained assets, native/new-control browser checks, schema compatibility, fresh recovery and disabled gates | E06; E07; E19 | 2026-10-25 | After prerequisite review, prepare one concrete inactive release; request approval last |
-| BETA-11 | Normal CARD checkout and guarded public activation | P0 | BLOCKED | BETA-01–10; distinct deployment/settings/activation approvals | Hosted order acceptance; approved catalog/cities/fee; ready monitoring/refunds; enable purchasing last; paid status only from signed callback | E02; E06; REQ | 2026-10-25 | Keep closed; present exact activation and emergency-closure packet |
+| BETA-10 | Guarded inactive schema91→94 deployment preparation | P0 | BLOCKED | Qualified Beta+history branch; new exact artifact/operator/recovery approval still needed | Seal matching app/92–94, retained assets, compatibility, fresh backups and disabled gates; do not reuse91-only operators | E23; E06; E07; E19 | 2026-10-25 | Use completed build/source qualification when preparing one compatible inactive release |
+| BETA-11 | Normal CARD checkout and guarded public activation | P0 | BLOCKED | Email, migration safeguards, catalog/delivery/refund/final order acceptance; separate import/signup/purchasing approvals | Normal verified customers can order CARD-only; preserve Paymob signed authority, fixed configurable50 and admin-controlled PDC booking | E23; E02; E06; owner priority reset | 2026-10-25 | Complete migration/signup sequence, then enable purchasing last under exact approval |
 | BETA-12 | Preserve LIVE payment, 3DS and callback reconciliation | P0 | PLANNED | DONE-04 retained; no incidental repeat charge | Candidate preserves HMAC/context/idempotency and owned reads; any new real sale has separate authorization and durable reconciliation | E02; E06; server/utils/payments | 2026-10-25 | Verify preserved code/config bindings during BETA-10 |
 
 ### F. WordPress / WooCommerce migration
@@ -224,11 +237,11 @@ older full-migration-before-signup language for the bounded Beta policy only.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| MIG-01 | Source inventory and durable customer identity mappings | P1 | PLANNED | Approved snapshot/cutoff and identity-conflict decisions | Fingerprinted sources; verified source-user→Auth UUID mapping; concurrent/retry-safe receipts; no auto-confirmation/role changes | E11; REQ | 2026-10-25 | Prepare encrypted offline inventory/dry-run |
-| MIG-02 | Historical customer profiles and saved addresses | P1 | PLANNED | MIG-01; owner conflict resolution | Preserve provenance/missing values; never overwrite newer Supabase profiles, credentials or addresses | E11; REQ | 2026-10-25 | Compare source fields against current verified mappings read-only |
-| MIG-03 | Historical orders, customer order history and Woo metadata | P1 | PLANNED | MIG-01; separate immutable historical representation | Preserve original items/money/refunds/dates/metadata; scope customer reads; leave guest orders unassigned without proof | E11; REQ | 2026-10-25 | Design bounded historical projection and exact metadata inventory |
+| MIG-01 | Source inventory and durable customer identity mappings | P0 | LOCAL PASS | Primary snapshot/cutoff and reviewed claim eligibility require import approval | Authenticated exact-prefix extraction and private dry-run;518 users,516 customer candidates; unique verified identities and source pins preserved | E23; scripts/customer-migration on history branch | 2026-10-25 | Review exact primary snapshot and identity/exception manifest before import |
+| MIG-02 | Historical customer profiles and saved addresses | P0 | LOCAL PASS | Historical profiles/addresses stay private until approved verified claim | Archived billing/delivery/profile facts available through owned history; zero current profile or credential overwrite | E23; history SQL/API/UI tests | 2026-10-25 | Accept archived profiles/addresses on the intended target after approved migration |
+| MIG-03 | Historical orders, customer order history and Woo metadata | P0 | LOCAL PASS | No guest/staff association without reviewed ownership; source records immutable | 591 orders,6 refunds,1789 items,702 fulfillment events staged; private owned projection and original customer/refund links preserved | E23; customer-dry-run-v2; local SQL rehearsal | 2026-10-25 | Deploy/import approved source separately, then accept customer-owned history |
 | MIG-04 | Product identity links and legacy URL continuity | P1 | PLANNED | Existing catalog mapping and final source reconciliation | Reuse source-product links; no duplicate catalog import; complete accepted URL/redirect/media mapping where needed | E11; PROJECT_STATE.md historical cutover entries | 2026-10-25 | Locate existing mapping/URL inventory and reconcile differences |
-| MIG-05 | Historical import safety and guarded acceptance | P1 | PLANNED | MIG-01–04; exact production-import approval | No payments/bookings/stock deductions/cash postings/emails/notifications; count/value reconciliation, isolation, backups and partial receipts | E11; REQ | 2026-10-25 | Test disposable fixtures; present exact dry-run before import |
+| MIG-05 | Historical import safety and guarded acceptance | P0 | LOCAL PASS | Exact source/target/claim approval, fresh recovery and compatible deployment pending | Bounded atomic batches/receipts, duplicate/race/ownership guards and hide-source recovery; no Auth/commerce/provider/notification effects | E23; native PostgreSQL and guarded operator tests | 2026-10-25 | Prepare exact guarded deployment/import packet without executing production writes |
 
 ### G. Payment gateways
 
@@ -329,7 +342,8 @@ acceptance. Do not revive already completed historical phases as new work.
 
 | Task | Actual blocker / why it matters | Evidence | Smallest next action |
 | --- | --- | --- | --- |
-| BETA-01/02/03 | Owner reports saved Brevo SMTP. Fresh configuration GET still403; effective SMTP/Site URL/allowlist/limits/CAPTCHA unverified. Confirmation required/signup disabled verified. Four entry routes200 do not prove link redemption. | E22,2026-10-25; E06 historical inspection | Resolve scoped read-only config access or inspect saved owner-console values; two recipient-bound email tests need separate approval. |
+| BETA-01/02/03 | Real email delivery/redemption/access acceptance remains pending. SMTP is owner-configured;403 is not an SMTP failure and no longer gates the test. | E22; E23; explicit recovery approval | Complete the one approved ordinary Test B recovery request in the owner browser; inspect logs only for an actual failure. |
+| MIG-01/02/03/05 | Source/cutoff, claim eligibility and exceptions need exact import review. All claims default closed; guest/staff records remain unlinked. Current production has no history migration/data. | E23 dry-run and local qualification | Prepare compatible inactive92–94 release and a separate frozen import approval; never restore over newer Nuxt records. |
 | BETA-07 / SHIP-02 | Updated official location file missing. Free text,411-city API cache and six-zone tariffs are different evidence; unsafe mapping can accept unsupported delivery. | E06; E02 | Obtain official file, validate exact IDs and present bounded diff. |
 | BETA-08 | Merchant LIVE Refund/Void access and procedure not accepted. Local cancellation does not return funds. | E06 refund guide | Inspect intended LIVE merchant permissions/current transaction read-only. |
 | BETA-05 / CX-04 | Owner-reported switching passed, but independent hosted order/cart/recovery cases remain incomplete or held. | E05; later E06 | Bind two existing ordinary accounts and an approved no-charge acceptance window. |
@@ -341,31 +355,28 @@ acceptance. Do not revive already completed historical phases as new work.
 | SHIP-07/10 | Dynamic paid/packed shipment acceptance and authenticated webhook cutover lack an eligible genuine linked REF/AWB; status/timezone questions remain. | E03; E04 | Review mapping/eligibility privately; no destination switch or static-AWB attachment. |
 | FUT-01 / CONT-01 | Public smoke, local/native fixtures and owner reports have different evidentiary scope. External W files/private receipts are not durable main-branch source. | Evidence registry; E06; E21 | Preserve source hashes and consolidate reviewed documents/code during a separate milestone. |
 
-Public Beta's required sequence remains: Auth readiness and identity protections,
-official delivery/refund readiness, exact inactive deployment, bounded no-charge
-customer acceptance, reviewed settings/scheduler/monitoring, then explicit public
-activation. New money actions and shipment bookings retain separate approvals.
+The owner's required sequence is email acceptance, customer/history migration and
+identity safeguards, normal public signup, then final order/refund/delivery/expiry
+acceptance and paid activation. Source implementation can proceed locally while
+email acceptance runs. Import, signup and purchasing retain separate approvals.
+Payment success never creates a shipment automatically.
 
 ### N. Next exact action
 
-**BETA-01: resolve the read-only Auth configuration evidence gap.**
+**AUTH-RECOVER-B-01: finish the one approved ordinary Test Customer B recovery test.**
 
-- Responsible: next active Codex account, Auth/continuity workstream; owner uses
-  secure Supabase/Brevo account surfaces where access is unavailable to Codex.
-- Prerequisites: read this roadmap, both handoffs and [E22](auth-email-acceptance.md).
-  Existing API credential returns403. Retain confirmed-email policy and closed gates.
-- Scope: use an authorized owner-console inspection or privately supplied project
-  access with auth_config_read. Record effective SMTP/sender, Site URL, the four
-  exact confirmation/recovery URLs, quotas/resend interval, CAPTCHA/email-hook state.
-  Do not repeat the completed public-policy/runtime/route checks without a reason.
-- Definition of done: secret-free effective configuration evidence closes the403
-  gap, or records the specific remaining setting correction. Then bind the external
-  mailbox and exact two-test approval; E22's prepared tests remain NOT RUN.
-- Approval: read-only inspection and documentation need no new production-write
-  approval. Any SMTP/URL/rate-limit change, authentication email or signup activation
-  requires its own concrete reviewed approval. External delivery belongs to BETA-02.
-- Stop boundary: no email, user creation, password/credential/settings change,
-  deployment, migration, public activation or Git push without its reviewed scope.
+- Responsible: owner uses the normal browser and mailbox; Codex records bounded
+  results while continuing migration/release work locally.
+- Prerequisites: existing confirmed non-admin Test B verified; one recovery email
+  explicitly approved. No new identity or configuration questionnaire is required.
+- ONE owner action: open the normal password-recovery form, enter Test B and
+  submit once. Open the delivered link in that same browser profile for PKCE.
+- Definition of done: delivery, recovery form/redirect, private owner password
+  update and account access are recorded separately. No automatic resend if unknown.
+- Next guarded stage: one controlled confirmation-identity/email approval; then
+  exact migration deployment/import, signup and purchasing approvals in that order.
+- Stop boundary: no new identity, second email, settings change, bulk notification,
+  production import, deployment, public activation or Git push without its scope.
 
 ### O. Change history and evidence preservation
 
@@ -385,7 +396,8 @@ activation. New money actions and shipment bookings retain separate approvals.
 | 2026-10-24 | Owner selected PDC/EGP50, legitimate backorders, approved special-order notice and mixed parcels shipped together. Historical identity/order imports deferred beyond Beta while preserving verified Supabase identities. |
 | 2026-10-24 | W candidate/migrations92–93 locally qualified. SMTP management inspection403 and LIVE Refund/Void access remain unverified. Local review archive has no deployment/activation authority. |
 | 2026-10-25 | Master roadmap created from main, later branch, W source and retained receipts. New requirements preserved under stable IDs. AGENTS/README/both handoffs receive additive pointers; no implementation, merge, production change or push. |
-| 2026-10-25 | BETA-01: owner reports saved Brevo Custom SMTP. Fresh Auth settings200 verifies required confirmation/disabled signup; active release/schema91 and closed gates reobserved. Effective config403 blocks SMTP/allowlist/limits acceptance. Two external-mail tests prepared, zero sends/users/settings changes; see E22. |
+| 2026-10-25 | BETA-01 read-only preparation recorded configuration403 and prepared tests. Its configuration-access-first prerequisite is superseded by the priority reset below;403 never established broken SMTP. |
+| 2026-10-25 | Owner priority reset: recovery for existing Test B first, controlled confirmation next, then customer/history migration before public signup/orders. Recovery email approved. Qualified local history implementation/dry-run extends preserved Beta source to94 migrations; no production deployment/import/activation or push. All79 task requirements remain intact. |
 
 Non-sensitive fingerprints captured during this review:
 

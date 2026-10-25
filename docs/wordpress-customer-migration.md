@@ -1,5 +1,14 @@
 # Required WordPress customer migration
 
+Current implementation and actual dry-run:
+[customer migration release](customer-migration-release.md), 2026-10-25.
+Customer/history migration is now on the public-launch path, after email
+acceptance and before public signup. Its local source lives on
+`local/customer-history-launch-20261025`; production import is not authorized.
+All518 inspected password hashes use WordPress's prefixed bcrypt/pre-hash format.
+The implemented transition uses supported verified signup/account recovery;
+it does not import these hashes or overwrite existing Nuxt identities.
+
 This follows the disabled Paymob/PDC release and controlled configuration.
 Prepare offline first. No customer import is authorized by release approval.
 Never rerun the completed product import or change the existing Auth project.
