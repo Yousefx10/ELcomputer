@@ -74,6 +74,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
     <p v-if="loading" role="status" class="rounded-2xl bg-white p-8 text-center text-sm text-slate-600">{{ $t('common.loadingOrder') }}</p>
 
     <template v-else-if="detail?.order">
+      <p v-if="detail.order.fulfillment_message" class="rounded-lg border border-amber-200 p-3 text-sm text-amber-800">{{ detail.order.fulfillment_message }}</p>
       <header class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="min-w-0"><p class="text-sm font-semibold text-blue-700">{{ $t('common.orderDetails') }}</p><h1 class="mt-1 break-all text-2xl font-bold text-slate-900">{{ detail.order.order_number || $t('common.orderValueVariant2', { value0: (detail.order.id.slice(0, 8)) }) }}</h1><p class="mt-1 text-sm text-slate-600">{{ $t('common.placedValue', { value0: (formatAccountDate(detail.order.created_at, true)) }) }}</p></div>

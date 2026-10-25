@@ -177,6 +177,8 @@
                   </div>
                 </div>
               </div>
+              <label class="md:col-span-2 block text-sm font-semibold">{{ $t('beta.expectationEn') }}<textarea v-model="siteSettings.backorder_fulfillment_message" maxlength="500" rows="2" class="mt-2 w-full rounded-lg border p-3" /></label>
+              <label class="md:col-span-2 block text-sm font-semibold">{{ $t('beta.expectationAr') }}<textarea v-model="siteSettings.backorder_fulfillment_message_ar" maxlength="500" rows="2" dir="rtl" class="mt-2 w-full rounded-lg border p-3" /></label>
             </div>
 
             <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -2466,7 +2468,9 @@ const siteSettingsSectionFields = {
     'site_theme_default',
     'site_background_color',
     'landing_page_title',
-    'allow_out_of_stock_purchases'
+    'allow_out_of_stock_purchases',
+    'backorder_fulfillment_message',
+    'backorder_fulfillment_message_ar'
   ],
   dashboardLayout: [
     'dashboard_layout'
@@ -2859,6 +2863,8 @@ const normalizeSiteSettings = (source = {}) => ({
   product_page_style: productPageStyle(source.product_page_style),
   product_page_config: productPageEditorConfig(source.product_page_config),
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
+  backorder_fulfillment_message: source.backorder_fulfillment_message ?? '',
+  backorder_fulfillment_message_ar: source.backorder_fulfillment_message_ar ?? '',
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
   hero_enabled: source.hero_enabled ?? false,
@@ -3016,6 +3022,8 @@ const buildSiteSettingsPayload = (sectionName) => {
       'auth_facebook_enabled',
       'footer_style',
       'allow_out_of_stock_purchases',
+      'backorder_fulfillment_message',
+      'backorder_fulfillment_message_ar',
       'homepage_reviews_enabled',
       'homepage_reviews_view_all_enabled',
       'hero_enabled',

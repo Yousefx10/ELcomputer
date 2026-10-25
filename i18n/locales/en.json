@@ -5506,5 +5506,22 @@
     "editOrderHelp": "Edit, save, remove or reorder items in the list below.",
     "invalidContent": "Check the item name, quantity or tag.",
     "contentSaved": "Product information saved."
+  },
+  "beta": {
+    "specialOrder": "Special order",
+    "wholeOrderWaits": "We assign stock when your complete order is available.",
+    "acceptTerms": "I accept the special-order delivery terms.",
+    "awaitingStock": "Awaiting physical stock",
+    "expectationEn": "Special-order delivery information (English)",
+    "expectationAr": "Special-order delivery information (Arabic)",
+    "pdcReference": "Use this reference in PDC:",
+    "actualAwb": "Actual PDC airway bill",
+    "verifyAwb": "I verified this airway bill belongs to this exact order.",
+    "recordAwb": "Record airway bill",
+    "stockError": "Stock could not be assigned. Review this order.",
+    "bookingError": "Review the original booking before recording an airway bill.",
+    "confirmAwbError": "Confirm the real airway bill for this order.",
+    "termsUnavailable": "Special-order delivery information is unavailable.",
+    "noCoupon": "Review this special order without a coupon."
   }
 }

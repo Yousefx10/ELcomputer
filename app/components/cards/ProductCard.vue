@@ -60,7 +60,6 @@ const isPreorder = computed(() => props.product.selling_mode === 'preorder')
 const isComingSoon = computed(() => props.product.selling_mode === 'coming_soon')
 const allowOutOfStockPurchases = computed(() => {
   return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
-    && !props.product.is_serialized
 })
 const purchasingAllowed = computed(() => allowsProduct(props.product.id))
 const isPurchasable = computed(() => purchasingAllowed.value && (isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value))

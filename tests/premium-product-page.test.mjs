@@ -31,17 +31,24 @@ test('presentation commands accept bounded metadata without price or inventory f
   assert.equal(presentationCommand(body).p_expected_revision, 0)
   for (const invalid of [{ ...body, price: 1 }, { ...body, expected_revision: -1 }, { ...body, request_id: 'bad' }, { ...body, content: { ...body.content, is_published: true } }, { ...body, content: { ...body.content, related: [id, id] } }]) assert.throws(() => presentationCommand(invalid))
 })
-test('Classic retains its frozen markup and both styles use the one existing route authority', async () => {
+test('Classic adds only the approved special-order notice; both styles retain shared authority', async () => {
   const source = await readFile('app/components/product/Classic.vue', 'utf8'), { descriptor } = parse(source)
   const expected = '021990c39cbab51f07ab84cce798d66c5f2c78eef886309eee62da917642b1fe'
-  assert.equal(createHash('sha256').update(descriptor.template.content).digest('hex'), expected)
+  const notice = '          <p v-if="backorderNotice" class="mt-2 text-sm" role="note">{{ backorderNotice }}</p>\n'
+  assert.ok(descriptor.template.content.includes(notice))
+  assert.equal(createHash('sha256').update(descriptor.template.content.replace(notice, '')).digest('hex'), expected)
   const route = await readFile('app/pages/products/[slug].vue', 'utf8')
-  const sharedScript = parse(route).descriptor.scriptSetup.content.split('const { data: productAppearance }')[0].trim()
+  const frozenRoute = route.replace("import { specialOrderNotice } from '~/utils/backorder'\n", '')
+    .replace("const backorderNotice = computed(() => allowOutOfStockPurchases.value && !isPreorder.value && !isComingSoon.value\n  && selectedQuantity.value > effectiveStockQuantity.value ? specialOrderNotice(siteContent.value?.settings, intlLocale.value) : '')\n", '')
+    .replace('return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)\n', 'return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)\n    && !product.value?.is_serialized\n')
+  const sharedScript = parse(frozenRoute).descriptor.scriptSetup.content.split('const { data: productAppearance }')[0].trim()
   assert.equal(createHash('sha256').update(sharedScript).digest('hex'), '318c3eeb1fd7b42e5025d4d0aca6306ed49db3356c70c950b400032012d398c7', 'Shared route baseline includes the approved scoped purchasing guard')
   assert.equal((route.match(/const handleAddToCart\s*=/g) || []).length, 1)
   assert.match(route, /provideProductDetailContext/)
   assert.match(route, /productPageStyle === 'premium'/)
   const premium = await readFile('app/components/product/Premium.vue', 'utf8')
+  assert.match(premium, /v-if="backorderNotice"/)
+  assert.match(await readFile('app/pages/cart.vue', 'utf8'), /v-if="backorderNotice"/)
   assert.match(premium, /useProductDetailContext\(\)/)
   assert.doesNotMatch(premium, /\.from\(['"](?:products|product_variants)|\.rpc\(['"]commerce_|addItem\(/)
   for (const text of [route, premium]) assert.doesNotMatch(text, /variant\.price|selectedVariant\.value\?\.price/)

@@ -14,6 +14,7 @@
 
       <div v-else class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_350px]">
         <main class="min-w-0 space-y-5">
+          <div v-if="backorderNotice" class="rounded-lg border border-amber-200 p-4 text-sm" role="note"><p>{{ backorderNotice }}</p><p class="mt-2">{{ $t('beta.wholeOrderWaits') }}</p></div>
           <p v-if="hasMixedSellingModes" role="status" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">{{ $t('cart.preOrderAndReadyToShipProductsNeedSeparateOrdersRemoveOneTypeBeforeCheckout') }}</p>
           <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="delivery-options-title">
             <div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:package-check" size="20" aria-hidden="true" /></span><div><h2 id="delivery-options-title" class="text-xl font-bold text-slate-950">{{ $t('common.deliveryOption') }}</h2><p class="mt-0.5 text-sm text-slate-600">{{ $t('cart.yourDeliveryAddressIsConfirmedAtCheckout') }}</p></div></div>
@@ -72,10 +73,13 @@ const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, 
 
 const { intlLocale } = useUiLocale()
 
+import { specialOrderNotice } from '~/utils/backorder'
 import { calculatePreorderAmounts, expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 const { items, itemCount, subtotal, isEmpty, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
 const { scope: purchaseScope } = usePurchaseAccess()
 const supabase = useSupabaseClient()
+const { data: siteContent } = useSiteContent()
+const backorderNotice = computed(() => siteContent.value?.settings?.allow_out_of_stock_purchases && items.value.some(item => item.selling_mode !== 'preorder' && item.quantity > Number(item.stock_quantity || 0)) ? specialOrderNotice(siteContent.value?.settings, intlLocale.value) : '')
 const recommendations = ref([])
 const recommendationsLoading = ref(false)
 let recommendationVersion = 0

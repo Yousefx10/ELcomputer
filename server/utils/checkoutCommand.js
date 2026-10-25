@@ -5,7 +5,7 @@ import { checkoutStreetAddress } from '~/utils/checkoutAddress'
 
 export const normalizeCheckoutCommand = (body, user, { review = false } = {}) => {
   const invalid = message => { throw createError({ statusCode: 400, statusMessage: message }) }
-  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'review_token', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale'].includes(key))) invalid('A valid checkout request is required.')
+  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'review_token', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale', 'backorder_accepted'].includes(key))) invalid('A valid checkout request is required.')
   const cartId = String(body?.cart_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(cartId)) invalid('Refresh your cart before checkout.')
   if (!Array.isArray(body?.items) || !body.items.length || body.items.length > 100) invalid('A valid cart is required.')
@@ -41,6 +41,7 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   order.coupon_code = text(body?.coupon_code).toUpperCase() || null
   if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) invalid('Choose a supported checkout language.')
   order.locale = body?.locale || 'en'
+  order.backorder_accepted = body.backorder_accepted === true
   return { cartId, order, items: [...lines.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, value]) => value) }
 }
 

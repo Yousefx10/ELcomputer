@@ -166,7 +166,7 @@ export function productSchema(product, base, locale, availability = null, settin
   if (canOffer && price != null && price !== '' && Number.isFinite(Number(price)) && Number(price) >= 0) {
     const variants = (product.variants || []).filter(variant => variant.is_active === true)
     const stock = product.is_serialized ? variants.reduce((sum, variant) => sum + Math.max(0, Number(variant.stock_quantity) || 0), 0) : Math.max(0, Number(product.stock_quantity) || 0)
-    schema.offers = { '@type': 'Offer', url, price: Number(price), priceCurrency: 'EGP', availability: `https://schema.org/${product.selling_mode === 'preorder' ? 'PreOrder' : stock > 0 ? 'InStock' : !product.is_serialized && settings.allow_out_of_stock_purchases === true ? 'BackOrder' : 'OutOfStock'}` }
+    schema.offers = { '@type': 'Offer', url, price: Number(price), priceCurrency: 'EGP', availability: `https://schema.org/${product.selling_mode === 'preorder' ? 'PreOrder' : stock > 0 ? 'InStock' : settings.allow_out_of_stock_purchases === true ? 'BackOrder' : 'OutOfStock'}` }
   }
   if (Number.isInteger(product.reviewCount) && product.reviewCount > 0 && Number(product.reviewAverage) >= 1 && Number(product.reviewAverage) <= 5) {
     schema.aggregateRating = { '@type': 'AggregateRating', ratingValue: Number(product.reviewAverage), reviewCount: product.reviewCount, bestRating: 5, worstRating: 1 }

@@ -10,6 +10,7 @@ export const usePurchaseAccess = () => {
   const snapshot = useState('normal-purchase-access', () => ({ accountId: '', data: /** @type {any} */ (closed()) }))
   const now = ref(Date.now())
   const publicAccess = computed(() => runtime.public.purchasingEnabled === true || runtime.public.purchasingEnabled === 'true')
+  const betaAccess = computed(() => runtime.public.betaPurchasingEnabled === true || runtime.public.betaPurchasingEnabled === 'true')
   const accountId = identity.accountId
   const capabilities = computed(() => snapshot.value.accountId === accountId.value ? snapshot.value.data : closed())
   const scope = computed(() => {
@@ -17,8 +18,8 @@ export const usePurchaseAccess = () => {
     return !publicAccess.value && access?.available === true && access.restricted === true
       && Date.parse(access.expiresAt) > now.value ? access : null
   })
-  const purchasingEnabled = computed(() => publicAccess.value || Boolean(scope.value))
-  const allowsProduct = (productId, variantId = undefined) => publicAccess.value || Boolean(scope.value
+  const purchasingEnabled = computed(() => publicAccess.value && (!betaAccess.value || capabilities.value.purchase?.available === true && capabilities.value.purchase?.beta === true) || Boolean(scope.value))
+  const allowsProduct = (productId, variantId = undefined) => publicAccess.value && purchasingEnabled.value && (!betaAccess.value || !capabilities.value.purchase.excludedProductIds?.includes(productId)) || Boolean(scope.value
     && scope.value.productId === productId && (variantId === undefined || scope.value.variantId === variantId))
 
   const refresh = async () => {
@@ -65,7 +66,7 @@ export const usePurchaseAccess = () => {
     }, { flush: 'sync' })
     let timer
     onMounted(() => {
-      if (!publicAccess.value) refresh()
+      if (!publicAccess.value || betaAccess.value) refresh()
       timer = setInterval(() => { now.value = Date.now() }, 1000)
     })
     onScopeDispose(() => clearInterval(timer))

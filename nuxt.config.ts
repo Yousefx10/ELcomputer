@@ -37,6 +37,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     smsWorkerSecret: '',
     emailWorkerSecret: '',
+    commerceWorkerSecret: '',
     paymobEnabled: false,
     paymobLiveRequestsEnabled: false,
     paymobMode: 'test',
@@ -47,6 +48,7 @@ export default defineNuxtConfig({
     paymobCardIntegrationMode: 'test',
     paymobIntegrationIds: '{}',
     controlledPurchase: '{}',
+    betaPurchasePolicy: '{}',
     aiSearchAllowed: true,
     aiTrainingAllowed: true,
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
@@ -65,6 +67,7 @@ export default defineNuxtConfig({
     public: {
       // Presentation only. Checkout/provider authorization remains authoritative.
       purchasingEnabled: false,
+      betaPurchasingEnabled: false,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
       supabaseUrl,
       supabase: {

@@ -1,3 +1,10 @@
+# Public beta preparation — blocked
+
+[The local beta candidate](docs/beta-launch-candidate.md) preserves the deployed
+session/PDC baseline. Signup, purchasing and deployment remain approval-gated.
+PDC/EGP50, truthful backorders, cancellation and manual refunds are prepared.
+The official city file, Auth email controls and merchant refund access remain pending.
+
 # Consolidated customer-session deployment PASS — 24 October 2026
 
 The exact approved release `58e3083f4aa6a1f8` is deployed, schema 91.

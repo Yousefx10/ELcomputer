@@ -1,3 +1,38 @@
+# Owner beta decisions and email inspection — 24 October 2026
+
+The owner approved the special-order wording and mixed parcels shipping together.
+The notice now appears on both PDP styles, Cart and Checkout before payment.
+Existing Dashboard controls retain configurable EN/AR messages and stock release.
+SMTP delivery and LIVE Paymob Refund/Void access remain explicitly UNVERIFIED.
+The read-only Supabase management config request returnedHTTP403. The central
+Brevo adapter is disabled, with zero approved senders and no retained delivery
+messages/attempts/events. Those facts do not establish external Auth SMTP state.
+No transactional email, charge, refund, void or booking was sent.
+The candidate/refund guides list the exact remaining owner-only inspections.
+
+# Public beta candidate BLOCKED — 24 October 2026
+
+Local preparation follows the owner's PDC/EGP50/backorder decisions.
+Production stays58e3083f4aa6a1f8/schema91; signup and purchasing stay closed.
+Both existing Auth profiles are confirmed/active; B has no admin record.
+The owner reports account switching passed. Hosted order isolation remains pending.
+No real charge, booking, refund, provider configuration or deployment ran.
+
+[Beta candidate and exact remaining gates](docs/beta-launch-candidate.md) documents
+proposed migrations92–93: truthful CARD backorders, paid physical-stock release,
+unpaid expiry/restoration, card-only/exclusion guards and protected manual PDC AWBs.
+Private ../eligible-sku-review.csv lists239 model rows:223 normal product candidates;
+TESTproduct2026 and one preorder are excluded. No publication/import was performed.
+The official city file, SMTP/abuse/delivery checks, merchant Refund/Void access and
+bounded existing-account order acceptance remain outstanding.
+[Manual refund procedure](docs/beta-refund-operations.md) is prepared without money actions.
+
+The isolated candidate is based on6440669. The older original worktree/main branch
+and all previous handoff bytes remain unchanged. The four deployed PDC utility
+source hashes match their accepted source pins. Existing incidents and transaction
+559384846 are preserved. No Git push, merge or reset. Local review archive and
+validation remain distinct from production deployment/activation authority.
+
 # PDC inbound ingress PASS — 24 October 2026
 
 Owner-approved signal seal `fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024` completed once.

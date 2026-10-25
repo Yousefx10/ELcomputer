@@ -3,7 +3,7 @@ import { normalizeProductPageConfig, formatProductPagePrice, premiumSpecificatio
 import { curatedProductTags, isProductTag, parsePackageEntry } from '~/utils/productFinishing'
 import { productHighlights } from '~/utils/specificationLibrary'
 import { normalizeProductWarranty } from '~/utils/warranty'
-const { product, pending, error, productAppearance, premiumPurchasingEnabled, categoryName, intlLocale,
+const { backorderNotice, product, pending, error, productAppearance, premiumPurchasingEnabled, categoryName, intlLocale,
   productVariants, selectedVariant, selectedVariantId, selectedImage, galleryImages, markImageBroken,
   showVariantChoices, hasColorChoices, meaningfulVariantName, getVariantPreview, getVariantColor, getVariantMeta,
   selectVariant, variantStockLabel, selectedVariantStockLabel, hasPurchasableVariants, visibleSpecifications,
@@ -93,6 +93,7 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
             <div class="pdp-purchase-summary"><div class="pdp-price"><bdi>{{ price(product.price) }}</bdi><del v-if="hasDiscount"><bdi>{{ price(product.old_price) }}</bdi></del></div>
             <p v-if="hasDiscount" class="pdp-saving">{{ $t('product.saveAmount', { value0: price(savings) }) }}<span v-if="discountPercent"> ({{ discountPercent }}%)</span></p>
             <div class="pdp-stock" :data-available="!isOutOfStock && !isPreorder && !isComingSoon"><Icon :name="isOutOfStock || isPreorder || isComingSoon ? 'lucide:clock-3' : 'lucide:circle-check'" size="18" aria-hidden="true" /><strong>{{ $uiLabel(stockLabel) }}</strong></div>
+            <p v-if="backorderNotice" class="pdp-availability-note" role="note">{{ backorderNotice }}</p>
             <div v-if="isPreorder || isComingSoon" class="pdp-availability-note"><p v-if="product.expected_availability_date">{{ $t('products.slug.expectedAvailabilityValue', { value0: expectedAvailabilityLabel(product.expected_availability_date) }) }}</p><p v-if="product.availability_message">{{ product.availability_message }}</p><p>{{ $t('products.slug.thisItemIsNotReadyForNormalDelivery') }}</p><template v-if="isPreorder"><p>{{ $t('common.requiredNow') }} <strong>{{ price(preorderAmounts.due) }}</strong></p><p v-if="preorderAmounts.balance">{{ $t('common.remainingBalance') }} <strong>{{ price(preorderAmounts.balance) }}</strong></p></template></div>
             </div><div class="pdp-purchase-controls"><div v-if="premiumPurchasingEnabled && !isComingSoon" class="pdp-quantity" :aria-label="$t('common.quantity')"><button type="button" :disabled="!canPurchaseProduct || selectedQuantity <= 1" :aria-label="$t('common.decreaseQuantity')" @click="decreaseQuantity">−</button><output :aria-label="$t('common.selectedQuantity')">{{ selectedQuantity }}</output><button type="button" :disabled="!canPurchaseProduct || selectedQuantity >= maximumQuantity" :aria-label="$t('common.increaseQuantity')" @click="increaseQuantity">+</button></div>
             <button v-if="!isComingSoon" type="button" class="pdp-purchase-action" :disabled="!canOrder" @click="handleAddToCart"><Icon name="lucide:shopping-cart" size="18" aria-hidden="true" />{{ premiumPurchasingEnabled ? $uiLabel(addToCartLabel) : $t('productPage.buyingHeld') }}</button>

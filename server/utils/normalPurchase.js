@@ -2,12 +2,16 @@ import { createError } from 'h3'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { controlledAddressHash, controlledPaymentRuntime, controlledPurchaseScope, controlledReviewToken, verifyControlledOrder } from './controlledPurchase.js'
 import { toMinorUnits } from './payments/paymob.js'
+import { authorizeBetaCheckout, authorizeBetaCustomer, betaPurchasePolicy } from './betaPurchase.js'
 
 export const publicPurchasingEnabled = runtime => runtime.public?.purchasingEnabled === true || runtime.public?.purchasingEnabled === 'true'
 const fail = (statusCode = 403) => { throw createError({ statusCode, statusMessage: 'This purchase is unavailable.' }) }
 
-export const normalPurchaseScope = (runtime, user, options) => publicPurchasingEnabled(runtime)
-  ? null : controlledPurchaseScope(runtime, user, options)
+export const normalPurchaseScope = (runtime, user, options) => {
+  if (!publicPurchasingEnabled(runtime)) return controlledPurchaseScope(runtime, user, options)
+  authorizeBetaCustomer(runtime, user)
+  return null
+}
 
 // The browser keeps its ordinary cart and recovery envelope. The grant's cart
 // UUID is the single durable command identity across tabs or replacement carts.
@@ -19,6 +23,7 @@ const reviewToken = (scope, quoteId, browserCartId) => createHmac('sha256', Buff
 
 export const authorizeNormalCheckout = ({ runtime, user, cartId, order, items, commit = false, quoteId, signature, now }) => {
   const scope = normalPurchaseScope(runtime, user, now === undefined ? undefined : { now })
+  if (!scope) authorizeBetaCheckout(runtime, order, items, user)
   if (!scope) return { scope: null, cartId, browserCartId: cartId, runtime }
   if (order.payment_method !== 'card' || order.shipping_method !== 'shipping' || order.shipping_company_id !== scope.shipping_company_id
     || order.coupon_code || controlledAddressHash(order) !== scope.address_sha256
@@ -38,7 +43,11 @@ export const authorizeNormalQuote = (context, review) => {
 
 export const normalPaymentAuthorization = ({ runtime, user, db }) => {
   const scope = normalPurchaseScope(runtime, user)
-  if (!scope) return { runtime }
+  if (!scope) return { runtime, ...(betaPurchasePolicy(runtime) ? { authorizeOrder: async order => {
+    const result = await db.from('customer_order_items').select('product_id,variant_id,quantity').eq('order_id', order.id).limit(101)
+    if (result.error || !result.data?.length || result.data.length > 100) fail()
+    authorizeBetaCheckout(runtime, order, result.data, user)
+  } } : {}) }
   if (!scope.payment_enabled) fail()
   return {
     runtime: controlledPaymentRuntime(runtime),

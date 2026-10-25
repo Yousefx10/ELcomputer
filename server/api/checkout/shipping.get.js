@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import { requireCustomerRequest } from '../../utils/customerRequest'
 import { normalPurchaseScope } from '../../utils/normalPurchase.js'
+import { betaPurchasePolicy } from '../../utils/betaPurchase.js'
 
 export default defineEventHandler(async event => {
   setHeader(event, 'Cache-Control', 'private, no-store')
@@ -10,6 +11,8 @@ export default defineEventHandler(async event => {
     .select('id,name,client_shipping_price,checkout_governorates')
     .eq('is_active', true).eq('checkout_enabled', true)
   if (scope) query = query.eq('id', scope.shipping_company_id)
+  const beta = betaPurchasePolicy(useRuntimeConfig(event))
+  if (beta) query = query.eq('id', beta.shipping_company_id)
   const { data, error } = await query.order('name').limit(50)
   if (error) throw createError({ statusCode: 503, statusMessage: 'Delivery options are unavailable.' })
   setHeader(event, 'Cache-Control', 'private, no-store')

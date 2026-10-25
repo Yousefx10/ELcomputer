@@ -3,6 +3,7 @@ import { paymentHandler, paymentNoStore } from '../../utils/payments/index.js'
 import { requireCustomerRequest } from '../../utils/customerRequest'
 import { controlledPaymentRuntime } from '../../utils/controlledPurchase.js'
 import { normalPurchaseScope, publicPurchasingEnabled, safePurchaseCapability } from '../../utils/normalPurchase.js'
+import { betaPurchaseCapability, betaPurchasePolicy } from '../../utils/betaPurchase.js'
 export default paymentHandler(async event => {
   paymentNoStore(event)
   const runtime = useRuntimeConfig(event)
@@ -13,7 +14,16 @@ export default paymentHandler(async event => {
       scope = normalPurchaseScope(runtime, authUser)
     } catch { return { card: { available: false }, express: [], purchase: { available: false } } }
   }
-  const purchase = safePurchaseCapability(scope)
+  let beta
+  try {
+    if (publicPurchasingEnabled(runtime) && betaPurchasePolicy(runtime)?.customer_ids) {
+      const { authUser } = await requireCustomerRequest(event)
+      normalPurchaseScope(runtime, authUser)
+    }
+    beta = betaPurchaseCapability(runtime)
+  }
+  catch { return { card: { available: false }, express: [], purchase: { available: false } } }
+  const purchase = { ...safePurchaseCapability(scope), ...beta }
   try {
     const config = getPaymobConfig(scope ? controlledPaymentRuntime(runtime) : runtime)
     const available = config.methods.some(method => method.method === 'card' && method.available)

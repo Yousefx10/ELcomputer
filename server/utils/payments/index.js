@@ -30,7 +30,7 @@ const rpc = async (db, name, params) => {
 }
 export const initiateOrderPayment = async ({ db, userId, orderId, locale, runtime, fetcher = fetch, authorizeOrder, returnPath }) => {
   const config = paymentProviders.paymob.configure(runtime)
-  const orderFields = 'id, user_id, checkout_cart_id, shipping_company_id, order_number, status, payment_status, payment_method, is_preorder, total_amount, currency, first_name, last_name, email, phone, street_address, city, governorate'
+  const orderFields = 'id, user_id, checkout_cart_id, shipping_method, shipping_company_id, coupon_code, order_number, status, payment_status, payment_method, is_preorder, total_amount, currency, first_name, last_name, email, phone, street_address, city, governorate'
   const { data: initialOrder, error } = await db.from('customer_orders').select(orderFields)
     .eq('id', orderId).eq('user_id', userId).maybeSingle()
   let order = initialOrder

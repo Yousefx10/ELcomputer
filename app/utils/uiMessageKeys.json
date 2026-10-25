@@ -3116,5 +3116,16 @@
   "Save the private VPS video before completing this order.": "privatePacking.vpsBeforeCompletion",
   "Product page": "productPage.navTitle",
   "Choose the layout for every product.": "productPage.settingsHelp",
-  "Enter a valid display order.": "productPage.invalidOrder"
+  "Enter a valid display order.": "productPage.invalidOrder",
+  "Stock could not be assigned. Review this order.": "beta.stockError",
+  "Stock could not be assigned.": "beta.stockError",
+  "Review the original booking before recording an airway bill.": "beta.bookingError",
+  "Review the original booking.": "beta.bookingError",
+  "Confirm the real airway bill for this order.": "beta.confirmAwbError",
+  "Backorder delivery information is unavailable.": "beta.termsUnavailable",
+  "Accept the special-order delivery terms.": "beta.acceptTerms",
+  "Review this special order without a coupon.": "beta.noCoupon",
+  "This special order is awaiting physical stock.": "beta.awaitingStock",
+  "Allocate physical stock before release.": "beta.awaitingStock"
+
 }

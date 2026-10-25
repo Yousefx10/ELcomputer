@@ -94,6 +94,12 @@
                 </label>
               </div>
               <p v-else class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('checkout.noPaymentMethodIsAvailablePleaseContactTheStore') }}</p>
+              <div v-if="quote?.stockFulfillmentState === 'awaiting_stock'" class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
+                <p class="font-semibold">{{ $t('beta.specialOrder') }}</p>
+                <p>{{ quote.fulfillmentMessage }}</p>
+                <p>{{ $t('beta.wholeOrderWaits') }}</p>
+                <label class="flex items-start gap-2"><input v-model="backorderAccepted" type="checkbox" class="mt-1">{{ $t('beta.acceptTerms') }}</label>
+              </div>
 
               <div v-if="selectedPaymentMethod === 'card'" class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
                 <h3 class="font-bold text-slate-950">{{ $t('paymob.secureCard') }}</h3>
@@ -130,7 +136,7 @@
 </template>
 
 <script setup>
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const { uiLabel } = useUiLocale()
 
 const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, intlLocale.value)
@@ -173,6 +179,7 @@ const deliveryError = ref('')
 const proofFile = ref(null)
 const quote = ref(null)
 const quoteError = ref('')
+const backorderAccepted = ref(false)
 const pendingCheckout = ref(null)
 const reviewRequired = ref('')
 const customerId = ref(customerScope.accountId)
@@ -185,7 +192,7 @@ const address = reactive({ first_name: '', last_name: '', street_address: '', ad
 const settings = computed(() => siteContent.value?.settings || {})
 const availableDeliveryOptions = computed(() => deliveryOptions.value.filter(option => option.governorates.some(area => area.trim().toLowerCase() === address.governorate.trim().toLowerCase())))
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
-const availablePaymentMethods = computed(() => purchasingEnabled.value ? getAvailablePaymentMethods(settings.value).filter(method => (!purchaseScope.value || method.value === 'card') && (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))) : [])
+const availablePaymentMethods = computed(() => purchasingEnabled.value ? getAvailablePaymentMethods(settings.value).filter(method => (!purchaseScope.value || method.value === 'card') && (!paymentCapabilities.value?.purchase?.beta || method.value === 'card') && (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))) : [])
 const discountAmount = computed(() => Number(quote.value?.discountAmount ?? appliedCoupon.value?.discountAmount ?? 0))
 const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
 const totalAmount = computed(() => quote.value?.totalAmount ?? Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
@@ -196,7 +203,8 @@ const checkoutBody = () => ({
   cart_id: cartId.value || null, coupon_code: isPreorderCart.value ? '' : appliedCoupon.value?.code || '',
   address: { ...address, email: address.email.trim() || user.value?.email || '' },
   shipping_method: 'shipping', payment_method: selectedPaymentMethod.value, locale: locale.value,
-  ...(requiresDelivery.value && shippingCompanyId.value ? { shipping_company_id: shippingCompanyId.value } : {})
+  ...(requiresDelivery.value && shippingCompanyId.value ? { shipping_company_id: shippingCompanyId.value } : {}),
+  backorder_accepted: backorderAccepted.value
 })
 const loadDeliveryOptions = async () => {
   loadingDelivery.value = true
@@ -224,7 +232,8 @@ const refreshQuote = async () => {
     syncCart()
     if (sequence !== quoteSequence || identity !== JSON.stringify(checkoutBody())) return false
     quote.value = next
-    if (previous && JSON.stringify([previous.totalAmount, previous.requiredNow, previous.lines, previous.shipping]) !== JSON.stringify([next.totalAmount, next.requiredNow, next.lines, next.shipping])) {
+    if (previous && JSON.stringify([previous.totalAmount, previous.requiredNow, previous.lines, previous.shipping, previous.stockFulfillmentState, previous.fulfillmentMessage]) !== JSON.stringify([next.totalAmount, next.requiredNow, next.lines, next.shipping, next.stockFulfillmentState, next.fulfillmentMessage])) {
+      backorderAccepted.value = false
       quoteError.value = 'Checkout changed. Review the updated summary, then continue.'
       return false
     }
@@ -239,6 +248,7 @@ const refreshQuote = async () => {
   }
 }
 watch([revision, address, locale, shippingCompanyId], () => {
+  backorderAccepted.value = false
   ++quoteSequence
   quote.value = null
   if (checkoutStep.value === 'payment') {
@@ -297,6 +307,7 @@ const continueToPayment = async () => {
 }
 
 const validatePayment = () => {
+  if (quote.value?.stockFulfillmentState === 'awaiting_stock' && !backorderAccepted.value) return t('beta.acceptTerms')
   if (!availablePaymentMethods.value.some(method => method.value === selectedPaymentMethod.value)) return 'Choose an available payment method.'
   return ''
 }
@@ -389,6 +400,7 @@ const reviewCart = () => {
 const storageChanged = () => { readPending() }
 onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
 customerScope.onInvalidate(() => {
+  backorderAccepted.value = false
   ++quoteSequence
   customerId.value = ''
   pendingCheckout.value = null

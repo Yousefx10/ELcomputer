@@ -112,6 +112,11 @@
 
             <DashboardOrderCodCash v-if="codCash" :order="orderDetail" :cash="codCash" :external-erp="externalErp" @updated="refreshCash" />
 
+            <section v-if="orderDetail.stock_fulfillment_state === 'awaiting_stock'" class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <p class="font-semibold">{{ $t('beta.awaitingStock') }}</p>
+              <p class="mt-2 text-sm">{{ orderDetail.fulfillment_message }}</p>
+              <button v-if="!externalErp && orderDetail.payment_status === 'paid' && orderDetail.status === 'on_hold'" type="button" :disabled="releaseSaving" class="mt-3 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50" @click="releaseBackorder">{{ $t('dashboard.OrderDetailsDialog.assignArrivedStockAndRelease') }}</button>
+            </section>
             <section v-if="orderDetail.is_preorder" class="rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
               <h4 class="text-lg font-bold text-gray-900">{{ $t('dashboard.OrderDetailsDialog.preOrderPaymentAndFulfillment') }}</h4>
               <p class="mt-1 text-sm text-gray-600">{{ orderDetail.preorder_fulfillment_state === 'ready' ? $t('dashboard.OrderDetailsDialog.physicalStockAssignedThisOrderCanProceedThroughNormalFulfillment') : $t('dashboard.OrderDetailsDialog.awaitingStockDoNotPackOrShipThisOrder') }}</p>
@@ -168,6 +173,12 @@
               </div>
               <p v-if="courierNotice" role="status" class="mt-3 text-sm text-gray-600">{{ $t(courierNotice) }}</p>
               <p v-if="shippingDetail.state === 'uncertain'" class="mt-3 text-sm text-amber-700">{{ $t('liveSales.uncertain') }}</p>
+              <form v-if="!shippingDetail.awb && ['not_booked','queued','blocked','failed'].includes(shippingDetail.state) && orderDetail.status === 'ready_to_deliver' && orderDetail.payment_status === 'paid'" class="mt-4 space-y-2 border-t pt-3 text-sm" @submit.prevent="recordManualAwb">
+                <p>{{ $t('beta.pdcReference') }} <span class="select-all font-mono">ORD-{{ orderId }}</span></p>
+                <label class="block">{{ $t('beta.actualAwb') }}<input v-model="manualAwb" required maxlength="100" pattern="[A-Za-z0-9][A-Za-z0-9-]*" class="mt-1 w-full rounded-lg border p-2"></label>
+                <label class="flex items-start gap-2"><input v-model="manualAwbConfirmed" type="checkbox" required class="mt-1">{{ $t('beta.verifyAwb') }}</label>
+                <button type="submit" :disabled="courierChecking" class="rounded-lg border px-3 py-2 font-semibold disabled:opacity-50">{{ $t('beta.recordAwb') }}</button>
+              </form>
               <details v-if="shippingDetail.events?.length" class="mt-4 rounded-lg border p-3">
                 <summary class="cursor-pointer text-sm font-semibold">{{ $t('shipment.history') }}</summary>
                 <ol class="mt-3 space-y-3"><li v-for="event in shippingDetail.events" :key="event.id" class="text-sm">
@@ -390,6 +401,8 @@ const statusLoading = ref(false)
 const labelLoading = ref(false)
 const courierChecking = ref(false)
 const courierNotice = ref('')
+const manualAwb = ref('')
+const manualAwbConfirmed = ref(false)
 const errorMessage = ref('')
 const statusMessage = ref('')
 const statusPanelOpen = ref(false)
@@ -758,6 +771,31 @@ const releasePreorder = async () => {
   } finally { releaseSaving.value = false }
 }
 
+const releaseBackorder = async () => {
+  if (releaseSaving.value) return
+  releaseSaving.value = true
+  errorMessage.value = ''
+  try {
+    const response = await $fetch(`/api/admin-orders/${props.orderId}/release-backorder`, { method: 'POST', headers: await getAuthHeaders() })
+    await loadOrderDetails()
+    emit('updated', response.order)
+  } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Stock could not be assigned.' }
+  finally { releaseSaving.value = false }
+}
+
+const recordManualAwb = async () => {
+  if (courierChecking.value || !manualAwbConfirmed.value) return
+  courierChecking.value = true
+  errorMessage.value = ''
+  try {
+    await $fetch(`/api/admin-shipping/orders/${props.orderId}/manual-awb`, { method: 'POST', headers: await getAuthHeaders(), body: { awb: manualAwb.value.trim(), confirmed: true }, retry: 0 })
+    manualAwb.value = ''; manualAwbConfirmed.value = false
+    await loadOrderDetails()
+    emit('updated', orderDetail.value)
+  } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Review the original booking.' }
+  finally { courierChecking.value = false }
+}
+
 const updateOrderStatus = async (nextStatus) => {
   if (!props.orderId || !orderDetail.value || orderDetail.value.status === nextStatus) {
     return
@@ -789,6 +827,7 @@ const updateOrderStatus = async (nextStatus) => {
 watch(
   () => [props.open, props.orderId],
   async ([isOpen, orderId]) => {
+    manualAwb.value = ''; manualAwbConfirmed.value = false
     if (!isOpen) {
       resetDialogState()
       return

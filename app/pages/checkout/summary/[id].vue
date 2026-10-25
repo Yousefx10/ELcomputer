@@ -23,6 +23,7 @@
             {{ orderData.order.order_number || $t('common.orderValueVariant3', { value0: (orderData.order.id.slice(0, 8)) }) }}
           </h1>
 
+          <p v-if="orderData.order.fulfillment_message" class="mt-3 text-sm text-amber-800">{{ orderData.order.fulfillment_message }}</p>
           <div class="mt-4 flex flex-wrap gap-3">
             <span v-if="orderData.order.is_preorder" class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
             <span class="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">

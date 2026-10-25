@@ -34,6 +34,8 @@ export const defaultSiteSettings = {
   daftra_connected_at: null,
   daftra_connection_error: null,
   allow_out_of_stock_purchases: false,
+  backorder_fulfillment_message: '',
+  backorder_fulfillment_message_ar: '',
   homepage_reviews_enabled: true,
   homepage_reviews_view_all_enabled: true,
   hero_enabled: false,
