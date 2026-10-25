@@ -19,6 +19,7 @@ export const safeCustomerReturnPath = (value, fallback = '/account') => {
 export const authErrorKey = (error, mode = 'login') => {
   const code = String(error?.code || '').toLowerCase()
   const message = String(error?.message || '').toLowerCase()
+  if (code === 'captcha_failed') return 'authPage.securityFailed'
   if (mode === 'login' && (['invalid_credentials', 'email_not_confirmed', 'user_not_found', 'user_already_exists'].includes(code)
     || /invalid login credentials|invalid email or password|email not confirmed|user not found|already registered|already exists/.test(message))) return 'authPage.invalidCredentials'
   if (mode === 'signup' && (code === 'user_already_exists' || /already registered|already exists/.test(message))) return 'authPage.checkEmail'

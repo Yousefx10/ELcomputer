@@ -7,6 +7,7 @@ const { uiNavigateTo } = useUiNavigation()
 const { locale, t } = useI18n()
 const supabase = useSupabaseClient()
 const config = useRuntimeConfig()
+const colorMode = useColorMode()
 const route = useUiRoute()
 const user = useSupabaseUser()
 const { data: siteContent } = await useSiteContent()
@@ -28,6 +29,11 @@ const authMode = ref(['signup', 'forgot', 'recovery'].includes(route.query.mode)
 const showReturningNotice = computed(() => signupAvailable.value
   && [true, 'true'].includes(config.public.returningCustomerNoticeEnabled)
   && ['login', 'signup'].includes(authMode.value))
+const captchaProvider = computed(() => String(config.public.authCaptchaProvider || '').trim())
+const captchaSiteKey = computed(() => String(config.public.turnstileSiteKey || '').trim())
+const captchaRequired = computed(() => !!captchaProvider.value && authMode.value !== 'recovery')
+const captchaSupported = computed(() => captchaProvider.value === 'turnstile' && !!captchaSiteKey.value)
+const captchaToken = ref(''), captchaResetKey = ref(0)
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
@@ -56,6 +62,8 @@ watch(() => route.query.mode, value => {
   successKey.value = ''
   password.value = ''
   showPassword.value = false
+  captchaToken.value = ''
+  captchaResetKey.value++
 })
 const changeMode = mode => {
   errorKey.value = ''
@@ -112,6 +120,10 @@ const completeSignIn = async () => {
 }
 const submitAuthForm = async () => {
   if (busy.value) return
+  if (captchaRequired.value && !captchaSupported.value) { errorKey.value = 'authPage.securityUnavailable'; return }
+  if (captchaRequired.value && !captchaToken.value) { errorKey.value = 'authPage.securityRequired'; return }
+  const captchaOptions = captchaRequired.value ? { captchaToken: captchaToken.value } : {}
+  let captchaUsed = false
   loading.value = true
   errorKey.value = ''
   successKey.value = ''
@@ -120,7 +132,8 @@ const submitAuthForm = async () => {
   try {
     if (authMode.value === 'forgot') {
       const redirectTo = `${window.location.origin}${localizedPath('/login?mode=recovery', locale.value)}`
-      const { error } = await supabase.auth.resetPasswordForEmail(email.value.trim(), { redirectTo })
+      captchaUsed = captchaRequired.value
+      const { error } = await supabase.auth.resetPasswordForEmail(email.value.trim(), { redirectTo, ...captchaOptions })
       if (error) throw error
       successKey.value = 'authPage.resetSent'
       return
@@ -138,9 +151,10 @@ const submitAuthForm = async () => {
     if (authMode.value === 'signup') {
       if (!signupAvailable.value) { errorKey.value = 'authPage.signupUnavailable'; return }
       const emailRedirectTo = `${window.location.origin}${localizedPath('/login', locale.value)}`
+      captchaUsed = captchaRequired.value
       const { data, error } = await supabase.auth.signUp({
         email: email.value.trim(), password: password.value,
-        options: { emailRedirectTo, data: { full_name: fullName.value.trim() || undefined } }
+        options: { emailRedirectTo, ...captchaOptions, data: { full_name: fullName.value.trim() || undefined } }
       })
       if (error) throw error
       if (data.session) { await completeSignIn(); return }
@@ -148,7 +162,8 @@ const submitAuthForm = async () => {
       password.value = ''
       return
     }
-    const { error } = await supabase.auth.signInWithPassword({ email: email.value.trim(), password: password.value })
+    captchaUsed = captchaRequired.value
+    const { error } = await supabase.auth.signInWithPassword({ email: email.value.trim(), password: password.value, ...(captchaRequired.value ? { options: captchaOptions } : {}) })
     if (error) throw error
     await completeSignIn()
   } catch (error) {
@@ -161,6 +176,7 @@ const submitAuthForm = async () => {
     emailError.value = ['authPage.invalidEmail', 'authPage.emailExists'].includes(errorKey.value)
     passwordError.value = ['authPage.invalidCredentials', 'authPage.weakPassword'].includes(errorKey.value)
   } finally {
+    if (captchaUsed) { captchaToken.value = ''; captchaResetKey.value++ }
     loading.value = false
   }
 }
@@ -257,11 +273,13 @@ onMounted(() => {
               <div class="auth-field-header"><label for="customer-password">{{ authMode === 'recovery' ? $t('authPage.newPassword') : $t('common.password') }}</label><button v-if="authMode === 'login'" type="button" class="auth-text-link" :disabled="busy" @click="changeMode('forgot')">{{ $t('authPage.forgotPassword') }}</button></div>
               <div class="auth-password-wrap"><input id="customer-password" v-model="password" :type="showPassword ? 'text' : 'password'" :autocomplete="authMode === 'login' ? 'current-password' : 'new-password'" required :minlength="authMode === 'login' ? undefined : 6" :disabled="busy" :aria-invalid="passwordError" :aria-describedby="passwordError ? 'auth-message' : undefined"><button type="button" class="auth-password-toggle" :aria-label="showPassword ? $t('authPage.hidePassword') : $t('authPage.showPassword')" :aria-pressed="showPassword" :disabled="busy" @click="showPassword = !showPassword"><Icon :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'" size="19" aria-hidden="true" /></button></div>
             </div>
+            <AuthTurnstile v-if="captchaRequired && captchaSupported" :key="authMode" v-model="captchaToken" :site-key="captchaSiteKey" :language="locale" :theme="colorMode.value" :reset-key="captchaResetKey" :disabled="busy" />
+            <p v-else-if="captchaRequired" role="alert" class="auth-login-help">{{ $t('authPage.securityUnavailable') }}</p>
             <p v-if="errorKey" id="auth-message" role="alert" class="auth-feedback auth-feedback--error">{{ $t(errorKey) }}</p>
             <p v-if="errorKey && authMode === 'login'" class="auth-login-help">{{ $t('authPage.loginHelp') }}</p>
             <p v-if="authMode === 'signup' && !signupAvailable" role="status" class="auth-login-help">{{ $t('authPage.signupUnavailable') }}</p>
             <p v-if="successKey" role="status" class="auth-feedback auth-feedback--success">{{ $t(successKey) }}</p>
-            <button type="submit" class="auth-submit" :disabled="busy || (authMode === 'signup' && !signupAvailable)">{{ loading || finishing ? $t('common.redirecting') : authMode === 'signup' ? $t('common.createAccount') : authMode === 'forgot' ? $t('authPage.sendResetLink') : authMode === 'recovery' ? $t('authPage.updatePassword') : $t('authPage.signIn') }}</button>
+            <button type="submit" class="auth-submit" :disabled="busy || (authMode === 'signup' && !signupAvailable) || (captchaRequired && !captchaToken)">{{ loading || finishing ? $t('common.redirecting') : authMode === 'signup' ? $t('common.createAccount') : authMode === 'forgot' ? $t('authPage.sendResetLink') : authMode === 'recovery' ? $t('authPage.updatePassword') : $t('authPage.signIn') }}</button>
           </form>
           <template v-if="authMode === 'login' || authMode === 'signup'">
             <div v-if="showGoogle || showFacebook" class="auth-divider"><span>{{ $t('authPage.orContinueWith') }}</span></div>

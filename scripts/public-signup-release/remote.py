@@ -65,6 +65,8 @@ def inspect(p):
     assert values.get('NUXT_PUBLIC_PURCHASING_ENABLED','false')=='false'
     assert values.get('NUXT_PUBLIC_BETA_PURCHASING_ENABLED','false')=='false'
     assert values.get('NUXT_PUBLIC_RETURNING_CUSTOMER_NOTICE_ENABLED','false')=='false'
+    assert values.get('NUXT_PUBLIC_AUTH_CAPTCHA_PROVIDER','')==''
+    assert values.get('NUXT_PUBLIC_TURNSTILE_SITE_KEY','')==''
     assert values.get('NUXT_CONTROLLED_PURCHASE','{}')=='{}'
     for key in ['NUXT_PAYMOB_ENABLED','NUXT_PAYMOB_LIVE_REQUESTS_ENABLED','NUXT_SHIPPING_LIVE_REQUESTS_ENABLED','PDC_LIVE_REQUESTS_ENABLED']:assert values[key]=='false'
     assert values['NUXT_UPLOADS_DIR']==str(root/'shared/uploads') and values['NUXT_PACKING_VIDEOS_DIR']==t['packing_dir'] and values['NUXT_SHIPPING_DOCUMENTS_DIR']==t['documents_dir'] and values['NUXT_PACKING_VIDEO_PROBE_PATH']==t['probe_path']

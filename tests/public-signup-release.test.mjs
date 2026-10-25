@@ -33,7 +33,7 @@ test('target rejects a differently scoped signed packet before staging', async (
 test('remote schema94 application qualification preserves all held gates and scoped routes', async () => {
   const text = await readFile('scripts/public-signup-release/remote.py', 'utf8')
   assert.match(text, /schema_version'\]==94/); assert.match(text, /public_signup_notice/)
-  for (const flag of ['NUXT_PUBLIC_BETA_PURCHASING_ENABLED', 'NUXT_PUBLIC_RETURNING_CUSTOMER_NOTICE_ENABLED', 'NUXT_PAYMOB_LIVE_REQUESTS_ENABLED', 'NUXT_SHIPPING_LIVE_REQUESTS_ENABLED']) assert.ok(text.includes(flag))
+  for (const flag of ['NUXT_PUBLIC_BETA_PURCHASING_ENABLED', 'NUXT_PUBLIC_RETURNING_CUSTOMER_NOTICE_ENABLED', 'NUXT_PUBLIC_AUTH_CAPTCHA_PROVIDER', 'NUXT_PUBLIC_TURNSTILE_SITE_KEY', 'NUXT_PAYMOB_LIVE_REQUESTS_ENABLED', 'NUXT_SHIPPING_LIVE_REQUESTS_ENABLED']) assert.ok(text.includes(flag))
   assert.match(text, /\('\/api\/account\/history',401\)/)
   assert.doesNotMatch(text, /systemctl','(?:restart|reload)','caddy/)
 })

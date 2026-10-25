@@ -9,11 +9,11 @@ import { localizedPath } from '../app/utils/appearance.js'
 const source = parse(await readFile('app/pages/login.vue', 'utf8')).descriptor.scriptSetup.content
   .replace(/^import .*\n/gm, '').replaceAll('import.meta.client', 'true')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
-const factory = new AsyncFunction('deps', `const {ref,computed,watch,onMounted,useI18n,useSupabaseClient,useRuntimeConfig,useUiRoute,useSupabaseUser,useSiteContent,useUiNavigation,$fetch,window,sessionStorage,authErrorKey,normalizeAuthImagePosition,normalizeAuthLayout,safeCustomerReturnPath,localizedPath,getConfiguredStoreImageUrl}=deps;
+const factory = new AsyncFunction('deps', `const {ref,computed,watch,onMounted,useI18n,useSupabaseClient,useRuntimeConfig,useColorMode,useUiRoute,useSupabaseUser,useSiteContent,useUiNavigation,$fetch,window,sessionStorage,authErrorKey,normalizeAuthImagePosition,normalizeAuthLayout,safeCustomerReturnPath,localizedPath,getConfiguredStoreImageUrl}=deps;
 ${source}
-return {signupAvailable,showReturningNotice,authMode,email,password,fullName,errorKey,successKey,submitAuthForm,changeMode};`)
+return {captchaToken,captchaResetKey,captchaRequired,captchaSupported,signupAvailable,showReturningNotice,authMode,email,password,fullName,errorKey,successKey,submitAuthForm,changeMode};`)
 const open = { disable_signup: false, mailer_autoconfirm: false, external: { email: true } }
-async function fixture(t, { settings = open, flag = true, mode = 'login', locale = 'en', signUp, signIn } = {}) {
+async function fixture(t, { settings = open, flag = true, mode = 'login', locale = 'en', provider = '', siteKey = '', signUp, signIn } = {}) {
   const calls = [], mounts = [], route = reactive({ query: { mode } }), scope = effectScope()
   const auth = {
     signUp: async body => { calls.push({ kind: 'signup', body }); return signUp ? signUp(body) : { data: { session: null }, error: null } },
@@ -23,8 +23,8 @@ async function fixture(t, { settings = open, flag = true, mode = 'login', locale
   const state = await scope.run(() => factory({
     ref, computed, watch, onMounted: fn => mounts.push(fn), useI18n: () => ({ locale: ref(locale), t: key => key }),
     useSupabaseClient: () => ({ auth, from: () => { throw Error('Unexpected identity lookup') } }),
-    useRuntimeConfig: () => ({ public: { returningCustomerNoticeEnabled: flag, supabase: { url: 'https://auth.example.invalid', key: 'synthetic' } } }),
-    useUiRoute: () => route, useSupabaseUser: () => ref(null), useSiteContent: async () => ({ data: ref({ settings: {} }) }),
+    useRuntimeConfig: () => ({ public: { returningCustomerNoticeEnabled: flag, authCaptchaProvider: provider, turnstileSiteKey: siteKey, supabase: { url: 'https://auth.example.invalid', key: 'synthetic' } } }),
+    useColorMode: () => ({ value: 'light' }), useUiRoute: () => route, useSupabaseUser: () => ref(null), useSiteContent: async () => ({ data: ref({ settings: {} }) }),
     useUiNavigation: () => ({ uiNavigateTo: async target => { route.query = target.query } }),
     $fetch: async () => { if (settings === null) throw Error('Offline'); return settings },
     window: { location: { origin: 'https://independent-store.example.invalid' } }, sessionStorage: { getItem: () => null },
@@ -108,4 +108,33 @@ test('existing recovery keeps localized same-origin password-reset destinations'
     assert.deepEqual(f.calls[0], { kind: 'recovery', args: ['original@example.test', { redirectTo: `https://independent-store.example.invalid/${locale === 'ar' ? 'ar/' : ''}login?mode=recovery` }] })
     assert.equal(f.state.successKey.value, 'authPage.resetSent')
   }
+})
+
+test('Turnstile gates signup, password login and recovery requests with a fresh token', async t => {
+  for (const [mode, kind] of [['signup', 'signup'], ['login', 'login'], ['forgot', 'recovery']]) {
+    const f = await fixture(t, { mode, provider: 'turnstile', siteKey: 'synthetic-sitekey' })
+    await f.state.submitAuthForm(); assert.equal(f.state.errorKey.value, 'authPage.securityRequired'); assert.equal(f.calls.length, 0)
+    f.state.captchaToken.value = 'synthetic-once'; const before = f.state.captchaResetKey.value
+    await f.state.submitAuthForm(); assert.equal(f.calls.length, 1); assert.equal(f.calls[0].kind, kind)
+    const options = kind === 'recovery' ? f.calls[0].args[1] : f.calls[0].body.options
+    assert.equal(options.captchaToken, 'synthetic-once')
+    assert.equal(f.state.captchaToken.value, ''); assert.equal(f.state.captchaResetKey.value, before + 1)
+    await f.state.submitAuthForm(); assert.equal(f.calls.length, 1)
+  }
+})
+
+test('missing/unsupported CAPTCHA configuration and denied tokens fail closed', async t => {
+  for (const options of [{ provider: 'turnstile' }, { provider: 'unsupported', siteKey: 'synthetic' }]) {
+    const f = await fixture(t, options); f.state.captchaToken.value = 'synthetic'
+    await f.state.submitAuthForm(); assert.equal(f.calls.length, 0); assert.equal(f.state.errorKey.value, 'authPage.securityUnavailable')
+  }
+  const f = await fixture(t, { provider: 'turnstile', siteKey: 'synthetic', signIn: async () => ({ error: { code: 'captcha_failed', message: 'PRIVATE' } }) })
+  f.state.captchaToken.value = 'denied'; await f.state.submitAuthForm()
+  assert.equal(f.state.errorKey.value, 'authPage.securityFailed'); assert.equal(f.state.captchaToken.value, '')
+})
+
+test('changing modes clears CAPTCHA tokens and password-update mode is not gated', async t => {
+  const f = await fixture(t, { provider: 'turnstile', siteKey: 'synthetic' }); f.state.captchaToken.value = 'old-mode-token'
+  await f.state.changeMode('forgot'); await nextTick(); assert.equal(f.state.captchaToken.value, '')
+  await f.state.changeMode('recovery'); await nextTick(); assert.equal(f.state.captchaRequired.value, false)
 })

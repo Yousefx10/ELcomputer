@@ -88,6 +88,9 @@ async function prepare(work) {
   const spec = await load(work + '/release-spec.private.json'), a = await load(work + '/artifact.json'), q = await load(work + '/browser-qualification.json')
   assert.equal(q.result, 'EXACT_ARCHIVE_LOCAL_PASS'); assert.equal(q.archive_sha256, a.archive_sha256)
   assert.equal(q.page_errors.length, 0); assert.equal(q.forbidden_backend_mutations.length, 0)
+  assert.equal(q.hosted_supabase_connections, 0); assert.equal(q.payment_shipping_provider_calls, 0)
+  assert.ok(q.external_Cloudflare_public_test_widget_requests > 0)
+  assert.ok(q.checks.includes('Dashboard_password_login_receives_test_Captcha_token'))
   const application = await inputs(), toolInputs = await tools(), commit = (await run('git', ['rev-parse', 'HEAD'], { cwd: repo })).stdout.trim()
   const built = await load(work + '/application-inputs.json')
   assert.equal(hash(JSON.stringify(built)), a.application_inputs_sha256)
@@ -102,7 +105,7 @@ async function prepare(work) {
   await mkdir(work + '/backups', { mode: 0o700 })
   const backupProof = await backup({ target: spec.target, release_id: 'preflight', archive_bytes: a.archive_bytes, before, backup: spec.backup }, work + '/backups')
   const backupVerified = new Date().toISOString()
-  const evidenceNames = ['artifact.json', 'inventory.json', 'application-inputs.json', 'browser-qualification.json', 'focused-tests.log', 'security-focused.log', 'native-history-corrected.log', 'release-operator-tests.log', 'typecheck.log', 'build.log', 'archive-readback.log', 'release-spec.private.json', 'backups/backup-verification.json', 'backups/database-before.dump.enc', 'backups/runtime-recovery.tar.gz.enc']
+  const evidenceNames = ['artifact.json', 'inventory.json', 'application-inputs.json', 'browser-qualification.json', 'focused-tests.log', 'security-focused.log', 'native-history-corrected.log', 'release-operator-tests.log', 'typecheck.log', 'build.log', 'archive-readback.log', 'release-spec.private.json', 'owner-abuse-settings.json', 'reused-validation.json', 'backups/backup-verification.json', 'backups/database-before.dump.enc', 'backups/runtime-recovery.tar.gz.enc']
   const evidence = Object.fromEntries(await Promise.all(evidenceNames.map(async n => [work + '/' + n, hash(await readFile(work + '/' + n))])))
   evidence[spec.previous_archive] = hash(await readFile(spec.previous_archive))
   const protectedFiles = [spec.target.credentials_file, spec.target.database.ca_file, spec.target.identity, spec.target.known_hosts, spec.backup.key, spec.backup.pg_dump, dirname(spec.backup.pg_dump) + '/pg_restore', spec.backup.envelope, process.execPath]
