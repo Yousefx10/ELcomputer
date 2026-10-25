@@ -10,11 +10,15 @@ import { inventory } from '../publish/inventory.mjs'
 import { backup } from '../footer-release/operator.mjs'
 import { connect } from '../commerce-release/database.mjs'
 import { baseline, historyTables } from '../customer-migration/final-db.mjs'
+import { approvalState } from '../live-sales-release/operator.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../..'), run = promisify(execFile)
 const hash = value => createHash('sha256').update(value).digest('hex')
 const sorted = value => value instanceof Date ? value.toISOString() : Array.isArray(value) ? value.map(sorted) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, sorted(value[key])])) : value
 export const digest = value => hash(JSON.stringify(sorted(value)))
+// Reuse the deployed approval rules for only live analytics rows and two Auth
+// activity timestamps. Identity/security, internal ledgers and history stay bound.
+export const comparableDatabase = approvalState
 const load = async path => JSON.parse(await readFile(path, 'utf8'))
 const save = (path, value) => writeFile(path, JSON.stringify(value, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
 const shell = value => "'" + value.replaceAll("'", "'\\''") + "'"
@@ -80,7 +84,7 @@ export async function localCheck(work, p) {
 async function checked(work, p) {
   await localCheck(work, p)
   assert.deepEqual(stable(await remote(p, 'inspect')), stable(p.before), 'Runtime drift')
-  assert.deepEqual(await databaseState(p.target), p.database, 'Data/schema/ownership drift')
+  assert.deepEqual(comparableDatabase(await databaseState(p.target)), comparableDatabase(p.database), 'Data/schema/ownership drift')
   assert.deepEqual(await authState(p.target), p.auth, 'Auth policy drift')
 }
 async function prepare(work) {
@@ -113,7 +117,7 @@ async function prepare(work) {
     target: spec.target, before, database, auth, schema_version: 94, migrations: [], database_writes: 0, public_signup_activation: false,
     archive_sha256: a.archive_sha256, archive_bytes: a.archive_bytes, release_id: a.archive_sha256.slice(0, 16), inventory_sha256: digest(await inventory(work + '/readback')),
     evidence_sha256: evidence, protected_inputs: Object.fromEntries(await Promise.all(protectedFiles.map(async f => [f, hash(await readFile(f))]))),
-    backup: spec.backup, backup_verified_utc: backupVerified, backup_proof: backupProof, database_state_sha256: digest(database),
+    backup: spec.backup, backup_verified_utc: backupVerified, backup_proof: backupProof, database_state_sha256: digest(comparableDatabase(database)),
     automatic_retry: false, automatic_rollback: false, provider_requests: 0, nuxt_restarts_max: 1, git_push: false,
     approval_phrase: 'APPROVE SIGNUP NOTICE DEPLOY', rollback: { previous_release: before.current, schema: 94, automatic: false, separate_review: true } }
   p.seal = digest(p); await checked(work, p); await save(work + '/plan.json', p)
@@ -134,7 +138,7 @@ async function apply(work, approved) {
     for (const mode of ['stage', 'candidate']) await save(execution + '/' + mode + '.json', await remote(p, mode, approved))
     await checked(work, p)
     await save(execution + '/activate.json', await remote(p, 'activate', approved, { plan_sha256: p.seal, schema: 94, read_only: true, migrations_applied: 0, business_data_writes: 0, preservation: 'PASS', state_sha256: p.database_state_sha256 }))
-    assert.deepEqual(await databaseState(p.target), p.database); assert.deepEqual(await authState(p.target), p.auth)
+    assert.deepEqual(comparableDatabase(await databaseState(p.target)), comparableDatabase(p.database)); assert.deepEqual(await authState(p.target), p.auth)
     for (const [path, status] of [['/login', 200], ['/ar/login', 200], ['/cart', 403], ['/checkout', 403], ['/api/account/history', 401]]) {
       const r = await fetch(p.target.origin + path, { redirect: 'manual', signal: AbortSignal.timeout(15000) }); await r.arrayBuffer(); assert.equal(r.status, status)
     }
