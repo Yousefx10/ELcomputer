@@ -147,9 +147,9 @@ try {
   }
   checks.push('real_test_widget_token_sent_by_SDK_signup_login_reset')
   await visit('/dashboard/login')
-  await page.waitForFunction(() => document.querySelector('form button[type=submit]')?.disabled === false, null, { timeout: 20000 })
+  await page.waitForFunction(() => document.querySelector('form:has(input[type=password]) button[type=submit]')?.disabled === false, null, { timeout: 20000 })
   await page.locator('input[type=email]').fill('staff@example.test'); await page.locator('input[type=password]').fill('Synthetic-password')
-  const dashboardBefore = requests.length; await page.locator('form button[type=submit]').click(); await page.locator('p[role=alert]').waitFor()
+  const dashboardBefore = requests.length; await page.locator('form:has(input[type=password]) button[type=submit]').click(); await page.locator('p[role=alert]').waitFor()
   assert.equal(requests.slice(dashboardBefore).filter(r => r.path === '/auth/v1/token').length, 1)
   assert.equal(requests.slice(dashboardBefore).find(r => r.path === '/auth/v1/token').captcha_present, true)
   checks.push('Dashboard_password_login_receives_test_Captcha_token')
