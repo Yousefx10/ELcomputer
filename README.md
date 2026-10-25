@@ -3,6 +3,12 @@
 Each business supplies its own branding, domains and configuration.
 Follow [AGENTS.md](AGENTS.md) before changing the project.
 
+Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) for current
+cross-account priorities, production evidence and pending local work.
+Its 2026-10-25 reconciliation records the latest retained production baseline:
+`58e3083f4aa6a1f8`, schema91; the isolated schema93 Beta candidate is local only.
+Older release summaries below remain historical evidence.
+
 Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
 Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
 Historical entries describe earlier targets and are not execution instructions.

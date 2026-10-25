@@ -1,3 +1,28 @@
+# Master roadmap and cross-account reconciliation — 2026-10-25
+
+- Start with [docs/ELCOMPUTER_MASTER_ROADMAP.md](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+  It is the authoritative requirements/status index for both Codex accounts.
+  Read it before substantial work; update it and both handoffs each milestone.
+- Latest retained production evidence is 2026-10-24: release58e3083f4aa6a1f8,
+  schema91. Signup/purchasing and outbound provider gates remain closed. Existing
+  signed Paymob ingress remains available. No fresh live probe ran on2026-10-25.
+- Newer branch6440669 and private deployment receipts supersede the older baseline
+  below: customer-session isolation and PDC client corrections are deployed;
+  one EGP2 LIVE payment is durably reconciled; one independent static PDC booking
+  succeeded. Original uncertain customer dispatch and dynamic acceptance remain
+  separate. PDC inbound missing-secret401 passed; authenticated cutover is pending.
+- The existing dirty ../beta-launch-preparation-20261024/source worktree contains
+  the locally qualified schema93 candidate/migrations92–93. It is not deployed.
+  Preserve both accounts' branches and all candidate bytes; no merge/reset here.
+- Current priority is public paid Beta. SMTP/verification/recovery, official city
+  mapping, LIVE refund readiness, inactive release preparation and authentic hosted
+  customer-order acceptance remain blockers. Owner-reported switching is bounded.
+- ONE next task: BETA-01, read-only effective Supabase Auth SMTP/Brevo inspection.
+  The roadmap defines prerequisites, responsibility, done criteria and approval
+  boundaries. No test email, production change, provider transaction or push ran.
+- Documentation only: AGENTS/README pointers and this matching handoff notice.
+  All prior handoff text below is preserved unchanged as historical evidence.
+
 # Approved normal-checkout preparation — 2026-10-23
 
 - Owner approved proposal5d3181a2: local normal-flow corrections and the exact
