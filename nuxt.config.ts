@@ -65,6 +65,8 @@ export default defineNuxtConfig({
     shippingDocumentsDir: '',
     packingVideoProbePath: 'ffprobe',
     public: {
+      // Display only. Auth settings determine whether registration is available.
+      returningCustomerNoticeEnabled: false,
       // Presentation only. Checkout/provider authorization remains authoritative.
       purchasingEnabled: false,
       betaPurchasingEnabled: false,

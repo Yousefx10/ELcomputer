@@ -3503,7 +3503,14 @@
     "resetSent": "If the account exists, check your email for a reset link.",
     "recoveryExpired": "This reset link is invalid or expired. Request a new one.",
     "passwordUpdated": "Password updated. You can sign in now.",
-    "checkEmail": "Check your email for next steps, or sign in if you already have an account."
+    "checkEmail": "Check your email for next steps, or sign in if you already have an account.",
+    "signupUnavailable": "Registration is currently unavailable. Please try again later.",
+    "loginHelp": "Check your email and password, or use Forgot Password.",
+    "returningHeading": "Customers from our previous website",
+    "returningRegister": "Register with your original email and create a new password.",
+    "returningPasswords": "Passwords from our previous website are not transferred.",
+    "returningVerify": "Verify your email, then securely connect your previous orders.",
+    "returningExisting": "If you already registered here, use Forgot Password."
   },
   "preorder": {
     "depositPercent": "{value0}% deposit"

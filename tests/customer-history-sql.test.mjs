@@ -50,6 +50,19 @@ test('claims default closed; hidden-source rollback stops access without touchin
   assert.equal((await db.query('select address from public.customer_profiles where id=$1',[alice])).rows[0].address,'New address')
  }finally{await db.close()}
 })
+test('an eligible verified customer without orders connects archived profile only',async()=>{
+ const db=await fixture();try{
+  const p=payload();p.orders=[];p.items=[];await apply(db,p)
+  const result=(await db.query('select public.customer_history_claim($1) value',[alice])).rows[0].value
+  assert.equal(result.connected,1)
+  const history=await read(db,alice)
+  assert.equal(history.total,0);assert.deepEqual(history.orders,[])
+  assert.equal(history.profiles.length,1);assert.equal(history.profiles[0].profile.first_name,'Alice')
+  assert.equal((await read(db,bob)).profiles.length,0)
+  assert.equal(await read(db,alice,source,'10'),null)
+  assert.equal((await db.query('select address from public.customer_profiles where id=$1',[alice])).rows[0].address,'New address')
+ }finally{await db.close()}
+})
 test('unreviewed/oversized/malformed commands roll back atomically; browser grants deny commands',async()=>{
  const db=await fixture();try{
   const missing=payload();missing.customers[0].review_evidence=null;await assert.rejects(apply(db,missing))

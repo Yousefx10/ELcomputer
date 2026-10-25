@@ -21,9 +21,13 @@ const usableDarkImage = computed(() => darkImage.value && !failedImages.value.ha
 const imagePosition = computed(() => ({ objectPosition: position.value }))
 const markImageFailed = url => { failedImages.value = new Set([...failedImages.value, url]) }
 const enabledProviders = ref({ google: false, facebook: false })
+const signupAvailable = ref(false)
 const showGoogle = computed(() => enabledProviders.value.google)
 const showFacebook = computed(() => settings.value.auth_facebook_enabled === true && enabledProviders.value.facebook)
 const authMode = ref(['signup', 'forgot', 'recovery'].includes(route.query.mode) ? route.query.mode : 'login')
+const showReturningNotice = computed(() => signupAvailable.value
+  && [true, 'true'].includes(config.public.returningCustomerNoticeEnabled)
+  && ['login', 'signup'].includes(authMode.value))
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
@@ -132,6 +136,7 @@ const submitAuthForm = async () => {
       return
     }
     if (authMode.value === 'signup') {
+      if (!signupAvailable.value) { errorKey.value = 'authPage.signupUnavailable'; return }
       const emailRedirectTo = `${window.location.origin}${localizedPath('/login', locale.value)}`
       const { data, error } = await supabase.auth.signUp({
         email: email.value.trim(), password: password.value,
@@ -148,6 +153,11 @@ const submitAuthForm = async () => {
     await completeSignIn()
   } catch (error) {
     errorKey.value = authErrorKey(error, authMode.value)
+    if (authMode.value === 'signup' && errorKey.value === 'authPage.checkEmail') {
+      errorKey.value = ''
+      successKey.value = 'authPage.checkEmail'
+      password.value = ''
+    }
     emailError.value = ['authPage.invalidEmail', 'authPage.emailExists'].includes(errorKey.value)
     passwordError.value = ['authPage.invalidCredentials', 'authPage.weakPassword'].includes(errorKey.value)
   } finally {
@@ -178,6 +188,8 @@ onMounted(() => {
   if (supabaseUrl && supabaseKey) {
     $fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/settings`, { headers: { apikey: supabaseKey } })
       .then(result => {
+        signupAvailable.value = result?.disable_signup === false
+          && result?.mailer_autoconfirm === false && result?.external?.email === true
         enabledProviders.value = {
           google: result?.external?.google === true,
           facebook: result?.external?.facebook === true
@@ -221,6 +233,17 @@ onMounted(() => {
             <h1>{{ authMode === 'forgot' ? $t('authPage.forgotHeading') : authMode === 'recovery' ? $t('authPage.recoveryHeading') : heading }}</h1>
             <p>{{ authMode === 'forgot' ? $t('authPage.forgotSupporting') : authMode === 'recovery' ? $t('authPage.recoverySupporting') : supporting }}</p>
           </div>
+          <section v-if="showReturningNotice" class="auth-returning" aria-labelledby="auth-returning-heading">
+            <h2 id="auth-returning-heading">{{ $t('authPage.returningHeading') }}</h2>
+            <p>{{ $t('authPage.returningRegister') }}</p>
+            <p>{{ $t('authPage.returningPasswords') }}</p>
+            <p>{{ $t('authPage.returningVerify') }}</p>
+            <p>{{ $t('authPage.returningExisting') }}</p>
+            <div class="auth-returning-actions">
+              <button v-if="authMode === 'login'" type="button" class="auth-text-link" :disabled="busy" @click="changeMode('signup')">{{ $t('common.createAccount') }}</button>
+              <button type="button" class="auth-text-link" :disabled="busy" @click="changeMode('forgot')">{{ $t('authPage.forgotPassword') }}</button>
+            </div>
+          </section>
           <form class="auth-form" @submit.prevent="submitAuthForm">
             <div v-if="authMode === 'signup'" class="auth-field">
               <label for="customer-full-name">{{ $t('common.fullName') }}</label>
@@ -235,8 +258,10 @@ onMounted(() => {
               <div class="auth-password-wrap"><input id="customer-password" v-model="password" :type="showPassword ? 'text' : 'password'" :autocomplete="authMode === 'login' ? 'current-password' : 'new-password'" required :minlength="authMode === 'login' ? undefined : 6" :disabled="busy" :aria-invalid="passwordError" :aria-describedby="passwordError ? 'auth-message' : undefined"><button type="button" class="auth-password-toggle" :aria-label="showPassword ? $t('authPage.hidePassword') : $t('authPage.showPassword')" :aria-pressed="showPassword" :disabled="busy" @click="showPassword = !showPassword"><Icon :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'" size="19" aria-hidden="true" /></button></div>
             </div>
             <p v-if="errorKey" id="auth-message" role="alert" class="auth-feedback auth-feedback--error">{{ $t(errorKey) }}</p>
+            <p v-if="errorKey && authMode === 'login'" class="auth-login-help">{{ $t('authPage.loginHelp') }}</p>
+            <p v-if="authMode === 'signup' && !signupAvailable" role="status" class="auth-login-help">{{ $t('authPage.signupUnavailable') }}</p>
             <p v-if="successKey" role="status" class="auth-feedback auth-feedback--success">{{ $t(successKey) }}</p>
-            <button type="submit" class="auth-submit" :disabled="busy">{{ loading || finishing ? $t('common.redirecting') : authMode === 'signup' ? $t('common.createAccount') : authMode === 'forgot' ? $t('authPage.sendResetLink') : authMode === 'recovery' ? $t('authPage.updatePassword') : $t('authPage.signIn') }}</button>
+            <button type="submit" class="auth-submit" :disabled="busy || (authMode === 'signup' && !signupAvailable)">{{ loading || finishing ? $t('common.redirecting') : authMode === 'signup' ? $t('common.createAccount') : authMode === 'forgot' ? $t('authPage.sendResetLink') : authMode === 'recovery' ? $t('authPage.updatePassword') : $t('authPage.signIn') }}</button>
           </form>
           <template v-if="authMode === 'login' || authMode === 'signup'">
             <div v-if="showGoogle || showFacebook" class="auth-divider"><span>{{ $t('authPage.orContinueWith') }}</span></div>
@@ -245,7 +270,7 @@ onMounted(() => {
               <button v-if="showFacebook" type="button" class="auth-social" :disabled="busy" @click="continueWithProvider('facebook')"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#1877F2" d="M24 12a12 12 0 1 0-13.875 11.855v-8.386H7.078V12h3.047V9.356c0-3.008 1.792-4.669 4.532-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.49 0-1.955.925-1.955 1.874V12h3.328l-.532 3.469h-2.796v8.386A12.003 12.003 0 0 0 24 12z"/></svg><span>{{ oauthLoading === 'facebook' ? $t('common.redirecting') : $t('authPage.continueWithFacebook') }}</span></button>
             </div>
           </template>
-          <p class="auth-switch"><template v-if="authMode === 'signup'">{{ $t('authPage.alreadyHaveAccount') }} <button type="button" @click="changeMode('login')">{{ $t('authPage.signIn') }}</button></template><template v-else>{{ authMode === 'login' ? $t('authPage.newHere') : $t('authPage.rememberPassword') }} <button type="button" @click="changeMode(authMode === 'login' ? 'signup' : 'login')">{{ authMode === 'login' ? $t('common.createAccount') : $t('authPage.signIn') }}</button></template></p>
+          <p v-if="authMode !== 'login' || signupAvailable" class="auth-switch"><template v-if="authMode === 'signup'">{{ $t('authPage.alreadyHaveAccount') }} <button type="button" @click="changeMode('login')">{{ $t('authPage.signIn') }}</button></template><template v-else>{{ authMode === 'login' ? $t('authPage.newHere') : $t('authPage.rememberPassword') }} <button type="button" @click="changeMode(authMode === 'login' ? 'signup' : 'login')">{{ authMode === 'login' ? $t('common.createAccount') : $t('authPage.signIn') }}</button></template></p>
         </div>
       </div>
     </div>
@@ -286,6 +311,11 @@ html.dark .auth-visual-copy span, .auth-visual--light-image .auth-visual-copy sp
 .auth-intro h1 { font-size: clamp(27px, 2.5vw, 34px); font-weight: 700; letter-spacing: -.035em; line-height: 1.2; }
 .auth-intro > p:last-child { margin-top: 10px; color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
 .auth-form { display: grid; gap: 17px; margin-top: 26px; }
+.auth-returning { margin-top: 20px; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; line-height: 1.5; }
+.auth-returning h2 { font-size: 13px; font-weight: 700; }
+.auth-returning p { margin-top: 7px; color: var(--text-secondary); }
+.auth-returning-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.auth-login-help { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
 .auth-field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 650; }
 .auth-field input { width: 100%; min-height: 46px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-primary); outline: none; transition: border-color .15s, box-shadow .15s; }
 .auth-field input:focus-visible { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent); }

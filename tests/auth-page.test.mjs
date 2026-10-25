@@ -12,7 +12,7 @@ test('customer return paths keep local destinations and reject external or privi
 
 test('common authentication failures resolve to safe customer messages', () => {
   assert.equal(authErrorKey({ code: 'invalid_credentials' }), 'authPage.invalidCredentials')
-  assert.equal(authErrorKey({ code: 'email_not_confirmed' }), 'authPage.emailNotConfirmed')
+  assert.equal(authErrorKey({ code: 'email_not_confirmed' }), 'authPage.invalidCredentials')
   assert.equal(authErrorKey({ code: 'provider_disabled' }, 'oauth'), 'authPage.providerUnavailable')
   assert.equal(authErrorKey({ message: 'backend credentials and details' }), 'authPage.requestFailed')
 })
