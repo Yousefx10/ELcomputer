@@ -2801,6 +2801,7 @@
   "Slug is required": "application.slugIsRequired",
   "Sohag": "application.sohag",
   "South Sinai": "application.southSinai",
+  "North Sinai": "application.northSinai",
   "Status: In Stock": "application.statusInStock",
   "Status: Unavailable": "application.statusUnavailable",
   "Stock and costs": "application.stockAndCosts",

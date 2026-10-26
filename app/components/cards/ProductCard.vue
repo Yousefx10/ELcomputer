@@ -13,7 +13,7 @@
       </div>
       <p v-if="brandName || categoryName" class="store-product-brand">{{ brandName || categoryName }}</p>
       <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-title"><h3>{{ product.title }}</h3></NuxtLinkLocale>
-      <p class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
+      <p v-if="!usesUnrecordedStockSales(product, siteContent?.settings)" class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
         {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.preOrder') : isOutOfStock ? (isPurchasable ? $t('common.availableToOrder') : $t('common.outOfStock')) : $t('common.inStock') }}
       </p>
@@ -34,6 +34,7 @@ const { intlLocale } = useUiLocale()
 const { uiNavigateTo } = useUiNavigation()
 
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
+import { usesUnrecordedStockSales } from '~/utils/backorder'
 const props = defineProps({
   product: {
     type: Object,
@@ -59,7 +60,7 @@ const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <=
 const isPreorder = computed(() => props.product.selling_mode === 'preorder')
 const isComingSoon = computed(() => props.product.selling_mode === 'coming_soon')
 const allowOutOfStockPurchases = computed(() => {
-  return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
+  return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases) || usesUnrecordedStockSales(props.product, siteContent.value?.settings)
 })
 const purchasingAllowed = computed(() => allowsProduct(props.product.id))
 const isPurchasable = computed(() => purchasingAllowed.value && (isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value))

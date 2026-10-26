@@ -478,7 +478,7 @@ export const getOrderPackingDetail = async ({
     return {
       ...item,
       product_sku: item.product_sku || product.sku || null,
-      is_serialized: item.is_serialized ?? product.is_serialized ?? Boolean(
+      is_serialized: orderResult.data.stock_fulfillment_state === 'untracked' ? false : item.is_serialized ?? product.is_serialized ?? Boolean(
         item.variant_id || serializedUnits.length
       ),
       serialized_units: serializedUnits,

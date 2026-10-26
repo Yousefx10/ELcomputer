@@ -35,7 +35,7 @@ export const useReorder = () => {
     if (error) throw error
 
     const productsById = new Map((data || []).map(product => [String(product.id), product]))
-    const allowOutOfStock = Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases)
+    const allowOutOfStock = Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases) || siteContent.value?.settings?.inventory_tracking_required === false
     let addedLines = 0
     let addedQuantity = 0
     let skippedLines = orderItems.length - requestedItems.length

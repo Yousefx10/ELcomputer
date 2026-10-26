@@ -94,6 +94,7 @@
                 </label>
               </div>
               <p v-else class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('checkout.noPaymentMethodIsAvailablePleaseContactTheStore') }}</p>
+              <p v-if="quote?.stockFulfillmentState === 'untracked' && quote.fulfillmentMessage" class="mt-4 border-t border-slate-200 pt-4 text-sm text-slate-600">{{ quote.fulfillmentMessage }}</p>
               <div v-if="quote?.stockFulfillmentState === 'awaiting_stock'" class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
                 <p class="font-semibold">{{ $t('beta.specialOrder') }}</p>
                 <p>{{ quote.fulfillmentMessage }}</p>

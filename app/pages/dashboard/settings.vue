@@ -145,7 +145,11 @@
                 >
               </div>
 
-              <div class="md:col-span-2 rounded-2xl border bg-gray-50 p-5">
+              <label class="md:col-span-2 flex items-start gap-3 rounded-2xl border bg-gray-50 p-5">
+                <input v-model="siteSettings.inventory_tracking_required" type="checkbox" class="mt-1">
+                <span><strong class="block text-gray-900">{{ $t('normalSales.requireInventory') }}</strong><span class="mt-1 block text-sm text-gray-500">{{ $t('normalSales.inventoryHelp') }}</span></span>
+              </label>
+              <div v-if="siteSettings.inventory_tracking_required" class="md:col-span-2 rounded-2xl border bg-gray-50 p-5">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p class="font-bold text-gray-900">{{ $t('dashboard.settings.allowOutOfStockPurchases') }}</p>
@@ -177,8 +181,8 @@
                   </div>
                 </div>
               </div>
-              <label class="md:col-span-2 block text-sm font-semibold">{{ $t('beta.expectationEn') }}<textarea v-model="siteSettings.backorder_fulfillment_message" maxlength="500" rows="2" class="mt-2 w-full rounded-lg border p-3" /></label>
-              <label class="md:col-span-2 block text-sm font-semibold">{{ $t('beta.expectationAr') }}<textarea v-model="siteSettings.backorder_fulfillment_message_ar" maxlength="500" rows="2" dir="rtl" class="mt-2 w-full rounded-lg border p-3" /></label>
+              <label class="md:col-span-2 block text-sm font-semibold">{{ $t(siteSettings.inventory_tracking_required ? 'beta.expectationEn' : 'normalSales.deliveryEn') }}<textarea v-model="siteSettings.backorder_fulfillment_message" maxlength="500" rows="2" class="mt-2 w-full rounded-lg border p-3" /></label>
+              <label class="md:col-span-2 block text-sm font-semibold">{{ $t(siteSettings.inventory_tracking_required ? 'beta.expectationAr' : 'normalSales.deliveryAr') }}<textarea v-model="siteSettings.backorder_fulfillment_message_ar" maxlength="500" rows="2" dir="rtl" class="mt-2 w-full rounded-lg border p-3" /></label>
             </div>
 
             <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -2469,6 +2473,7 @@ const siteSettingsSectionFields = {
     'site_background_color',
     'landing_page_title',
     'allow_out_of_stock_purchases',
+    'inventory_tracking_required',
     'backorder_fulfillment_message',
     'backorder_fulfillment_message_ar'
   ],
@@ -2863,6 +2868,7 @@ const normalizeSiteSettings = (source = {}) => ({
   product_page_style: productPageStyle(source.product_page_style),
   product_page_config: productPageEditorConfig(source.product_page_config),
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
+  inventory_tracking_required: source.inventory_tracking_required ?? true,
   backorder_fulfillment_message: source.backorder_fulfillment_message ?? '',
   backorder_fulfillment_message_ar: source.backorder_fulfillment_message_ar ?? '',
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
@@ -3022,6 +3028,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'auth_facebook_enabled',
       'footer_style',
       'allow_out_of_stock_purchases',
+      'inventory_tracking_required',
       'backorder_fulfillment_message',
       'backorder_fulfillment_message_ar',
       'homepage_reviews_enabled',

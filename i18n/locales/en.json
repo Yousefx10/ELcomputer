@@ -3321,6 +3321,7 @@
     "slugIsRequired": "Slug is required",
     "sohag": "Sohag",
     "southSinai": "South Sinai",
+    "northSinai": "North Sinai",
     "statusInStock": "Status: In Stock",
     "statusUnavailable": "Status: Unavailable",
     "stockAndCosts": "Stock and costs",
@@ -5536,5 +5537,11 @@
     "confirmAwbError": "Confirm the real airway bill for this order.",
     "termsUnavailable": "Special-order delivery information is unavailable.",
     "noCoupon": "Review this special order without a coupon."
+  },
+  "normalSales": {
+    "requireInventory": "Require recorded stock for normal sales",
+    "inventoryHelp": "Turn off to sell without warehouse quantities. Packing remains required.",
+    "deliveryEn": "Delivery information (English)",
+    "deliveryAr": "Delivery information (Arabic)"
   }
 }

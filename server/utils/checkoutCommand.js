@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import { isStoreAnalyticsUuid } from './storeAnalytics'
 import { normalizePaymentMethod } from '~/utils/paymentMethods'
-import { checkoutStreetAddress } from '~/utils/checkoutAddress'
+import { checkoutStreetAddress, hasDeliveryTestMarker } from '~/utils/checkoutAddress'
 
 export const normalizeCheckoutCommand = (body, user, { review = false } = {}) => {
   const invalid = message => { throw createError({ statusCode: 400, statusMessage: message }) }
@@ -23,6 +23,7 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   }
   const text = value => String(value || '').trim()
   const address = body?.address || {}
+  if (hasDeliveryTestMarker(address)) invalid('Complete your delivery details.')
   const order = Object.fromEntries(['first_name', 'last_name', 'street_address', 'city', 'governorate', 'phone'].map(key => [key, text(address[key])]))
   order.street_address = checkoutStreetAddress(address)
   order.email = text(address.email || user.email)

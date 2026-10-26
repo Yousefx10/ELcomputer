@@ -19,6 +19,7 @@ export const egyptGovernorates = [
   'Monufia',
   'New Valley',
   'North Coast',
+  'North Sinai',
   'Port Said',
   'Qena',
   'Red Sea',

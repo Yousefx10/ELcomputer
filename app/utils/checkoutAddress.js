@@ -12,6 +12,9 @@ export const checkoutAddressFromProfile = (profile, email = '') => {
 
 export const checkoutStreetAddress = address => [text(address?.street_address), text(address?.address_line_2)].filter(Boolean).join(', ')
 
+// QA profile markers are never delivery instructions, regardless of the account.
+export const hasDeliveryTestMarker = address => /\bsignup\s+isolation\s+[a-z]\b/i.test(checkoutStreetAddress(address).normalize('NFKC'))
+
 // Retain separate profile lines. Older retained clients omit line 2; their
 // checkout must not clear the saved value. New clients can explicitly clear it.
 export const checkoutProfileAddress = address => ({
