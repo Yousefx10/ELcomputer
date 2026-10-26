@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { scope, assertScope, assertFresh, publicWidget } from '../scripts/turnstile-runtime/operator.mjs'
+import { scope, assertScope, assertFresh, publicWidget, recoveryPlan } from '../scripts/turnstile-runtime/operator.mjs'
 const call = args => promisify(execFile)(process.execPath, [resolve('scripts/turnstile-runtime/operator.mjs'), ...args]).then(() => null, e => e)
 test('wrong or consumed configuration approval stops before target access and intent', async t => {
   const work = await mkdtemp(join(tmpdir(), 'turnstile-config-')); t.after(() => rm(work, { recursive: true, force: true }))
@@ -30,4 +30,14 @@ test('public input cannot accept a secret, another provider or hidden enforcemen
   const value = { site_key: '0x4' + 'A'.repeat(20), allowed_hostnames: ['shop.example.invalid'], mode: 'managed', enforcement_authorized: false }
   assert.deepEqual(publicWidget(value), { site_key: value.site_key, allowed_hostnames: value.allowed_hostnames, mode: 'managed' })
   for (const patch of [{ secret_key: 'never-accepted' }, { enforcement_authorized: true }, { mode: 'invisible' }, { allowed_hostnames: ['https://shop.example.invalid/path'] }]) assert.throws(() => publicWidget({ ...value, ...patch }))
+})
+test('approved recovery adapts the sealed plan for the actual shared remote capacity guard', async () => {
+  const p = { format: 13, scope, changed_keys: ['NUXT_PUBLIC_AUTH_CAPTCHA_PROVIDER', 'NUXT_PUBLIC_TURNSTILE_SITE_KEY'], git_push: false, seal: 'a'.repeat(64), before: { free_bytes: 2 ** 31 } }
+  const original = JSON.stringify(p), adapted = recoveryPlan(p)
+  assert.equal(JSON.stringify(p), original); assert.equal(adapted.seal, p.seal)
+  const script = 'import importlib.util,json,sys; s=importlib.util.spec_from_file_location("shared_recovery",sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);p=json.loads(sys.argv[2]);m.inspect=lambda _:p["before"];m.baseline(p);print("PASS")'
+  const remote = resolve('scripts/footer-release/remote.py'), run = promisify(execFile)
+  await assert.rejects(run('python3', ['-B', '-c', script, remote, JSON.stringify(p)]), e => /KeyError: .archive_bytes./.test(e.stderr))
+  assert.equal((await run('python3', ['-B', '-c', script, remote, JSON.stringify(adapted)])).stdout.trim(), 'PASS')
+  assert.throws(() => recoveryPlan({ ...p, scope: { ...scope, application_deployment: true } }))
 })

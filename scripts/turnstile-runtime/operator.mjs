@@ -24,6 +24,9 @@ export function publicWidget(owner) {
   return { site_key: owner.site_key, allowed_hostnames: owner.allowed_hostnames, mode: owner.mode }
 }
 export function assertScope(p) { assert.equal(p.format, 13); assert.deepEqual(p.scope, scope); assert.deepEqual(p.changed_keys, ['NUXT_PUBLIC_AUTH_CAPTCHA_PROVIDER', 'NUXT_PUBLIC_TURNSTILE_SITE_KEY']); assert.equal(p.git_push, false) }
+// Read-only shared recovery requires a capacity hint even without an app archive.
+// Adapt its input without modifying the sealed plan used for runtime activation.
+export function recoveryPlan(p) { assertScope(p); return { ...p, archive_bytes: 0 } }
 export function assertFresh(p, now = Date.now()) { const t = Date.parse(p.backup_verified_utc); assert.ok(Number.isFinite(t) && t <= now && now - t <= 6 * 3600000, 'Recovery evidence expired'); assert.equal(p.backup_proof.database.pg_restore_full_readback, 'PASS'); assert.equal(p.backup_proof.runtime.full_byte_readback, true) }
 const load = async path => JSON.parse(await readFile(path, 'utf8'))
 const save = (path, value) => writeFile(path, JSON.stringify(value, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
@@ -103,7 +106,7 @@ async function apply(work, approved) {
   try { await access(work + '/execution-intent.json'); throw Error('Consumed approval; inspect only') } catch (e) { if (e.code !== 'ENOENT') throw e }
   await checked(work, p); await save(work + '/execution-intent.json', { seal: p.seal, utc: new Date().toISOString(), automatic_retry: false }); const execution = work + '/execution'; await mkdir(execution, { mode: 0o700 })
   try {
-    await backup(p, execution); await checked(work, p)
+    await backup(recoveryPlan(p), execution); await checked(work, p)
     for (const mode of ['prepare', 'candidate']) await save(execution + '/' + mode + '.json', await remote(p, mode, approved))
     await checked(work, p); await save(execution + '/activate.json', await remote(p, 'activate', approved, { seal: p.seal, state_sha256: p.database_state_sha256, schema: 94, read_only: true }))
     assert.deepEqual(approvalState(await databaseState(p.target)), approvalState(p.database)); assert.deepEqual(await authState(p.target), p.auth)
