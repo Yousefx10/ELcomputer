@@ -3515,7 +3515,7 @@
     "returningHeading": "Customers from our previous website",
     "returningRegister": "Register with your original email and create a new password.",
     "returningPasswords": "Passwords from our previous website are not transferred.",
-    "returningVerify": "Verify your email, then securely connect your previous orders.",
+    "returningVerify": "Your previous orders may not appear in your account yet. Historical purchases require account verification before they can be securely linked to your profile.",
     "returningExisting": "If you already registered here, use Forgot Password."
   },
   "preorder": {
