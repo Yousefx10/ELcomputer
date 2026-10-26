@@ -1,3 +1,109 @@
+## E62 — owner-authorized safe local commits and separate location source
+
+Opening161 dirty paths across15 worktrees inventoried; no staged changes. New16th
+worktree/13th branch local/location-reference-20261026 fromb37 holds default-off96
+featurea9a5c6f, separate package and qualification. Main3b7070d preserves two
+Auth fixtures; reviewed current docs follow separately. No merge/rebase/reset/delete/
+push. All15 original contexts retained; other14 HEADs and135 frozen dirty paths
+unchanged. Old95 b37/candidate archive/migration/config untouched; detachedc3775e8
+and both accounts' commits remain. Main91 is continuity only, not release source.
+
+[Full review/exclusions](git-local-commit-review-20261026.md),
+[all161 opening file dispositions](git-local-commit-file-review-20261026.csv).
+No real keys/private customer files or generated artifacts staged. Raw spreadsheets/
+cache/incident evidence and qualification archives remain outside Git. Returning to
+95 guard qualification does not authorize production action or reuse consumed tools.
+
+## E59 — authorized untracked-stock Beta feature, 2026-10-26
+
+Same15 worktrees/12 branches. This account's unsealed signup-commerce-next branch
+moves9b7564f→b37be43 for19 explicit app/schema/test files; all other worktree
+HEADs and unrelated dirty bytes retained. Main remains ea113e9/schema91; selected
+source full95 is additive to deployed94, not a stale91 checkout. No merge/rebase/
+reset/worktree deletion/push. E58/consumed sources/detachedc3775e8 retained. Continuity
+updates in main+current source only; private opening snapshot under
+../public-beta-minimum-20261026/. New95 is LOCAL, never applied to production here.
+
+## 2026-10-26 focused signup/manual-checkout preparation
+
+One additive full94 worktree ../signup-commerce-next-20261026/source, branch
+local/signup-commerce-next-20261026, base51cbeef/new9b7564f.15 worktrees/12 local
+branches. All14 opening HEADs/indexes/dirty bytes retained except authorized main
+continuity updates. Main remains91/ea113e9; no broad merge/rebase/reset/delete/push.
+Application changes only EN/AR notice copy; new local guards/manual-native tests,
+no backend/schema/PDC changes. E58 report carries pending owner access/business
+inputs and qualification scope. Consumed acceptance sources/seals remain untouched.
+
+## 2026-10-26 scoped Turnstile Auth acceptance completed
+
+E50 [Auth acceptance](turnstile-auth-acceptance-receipt.md) PASS: existing customer/
+staff/recovery owner results and independent missing/invalid token denial.7c1/1
+and2f2/2 request allowances consumed;0 app/source/schema/deployment changes here.
+Same installed5a/source3001cd6/schema94, correct operational31ecdd2 source retained.
+All13 worktree heads/indexes/source bytes,10 branches/original46 source paths and
+unique detachedc3775e8 retained; main remainsea113e9/91 migrations. Only continuity
+docs/private receipts updated, no merge/reset/delete/push. Signup/purchases stay
+closed pending separate launch approval; PDC paused. Historical READY/gap text
+below is not current authorization or a reason to rerun consumed helpers.
+
+## 2026-10-26 frontend runtime configuration completed
+
+E45 [execution](turnstile-runtime-deployment-receipt.md) PASS: exact7b approval
+consumed/1 app restart/2 public runtime values. Same5a/source3001cd6/schema94;
+no app deployment or Git source action. Sealed31ecdd2 tools/plan/evidence retained;
+never rerun apply or old-baseline check. E46 manual backend step is prepared only.
+All13 opening worktree heads/indexes/source bytes and original46 dirty source paths
+retained; only main/current-source continuity documents updated.13 worktrees/10
+branches unchanged; main remainsea113e9/91 migrations, detachedc3775e8 retained.
+No merge/rebase/reset/worktree delete/push or unrelated implementation.
+
+## 2026-10-26 consumed STOP and isolated recovery adapter correction
+
+E43 [approved attempt](turnstile-runtime-stop-receipt.md) stopped before any target
+mutation/restart; sealed9d6508c source/plan/failed evidence preserved. No rerun.
+One additive worktree../turnstile-runtime-recovery-fix-20261026/source on
+local/turnstile-runtime-recovery-fix-20261026 at31ecdd2 corrects only the operational
+backup adapter plus its regression.13 worktrees/10 branches now. All12 opening
+heads/indexes/source bytes retained; main continuity documents alone updated.
+All759 application inputs still equal deployed3001cd6/schema94; main remains
+schema91 source/ea113e9. No merge/rebase/reset/delete/push, and detachedc3775e8
+retained. E44 replacement is prepared only and needs its NEW exact approval.
+
+## 2026-10-26 Turnstile runtime-only preparation addendum
+
+E42 [frontend configuration packet](turnstile-runtime-configuration.md) adds one
+isolated operational worktree at../turnstile-runtime-preparation-20261026/source,
+branchlocal/turnstile-runtime-preparation-20261026, commit9d6508c.
+12 worktrees/9 local branches now; all original11 HEADs/indexes and79 opening dirty
+paths preserved before the authorized continuity-document update. Original46
+source paths and detachedc3775e8 retained. Main remainsea113e9/schema91 source;
+all759 new-source application inputs equal deployed3001cd6/schema94.
+Only new runtime tools/tests committed locally; no app deployment, merge/rebase/
+reset/cleanup/worktree deletion/push. Old consumed packet/source unchanged.
+Frontend runtime seal is pending approval; no production setting changed.
+
+## 2026-10-26 completed code deployment — 2026-10-26 02:02:04.416 Riyadh
+
+[Exact deployment](public-signup-deployment-receipt.md) PASS:5a38201292763325 /
+schema94, source3001cd6, approvale9d1d4bb consumed once. Runtime/Caddy/Auth/signup/
+CAPTCHA/purchasing gates unchanged. No merge/reset/cleanup/worktree deletion/push;
+all original source bytes and refs remain. Current source lineage still contains
+94 migrations; main remains the91-migration continuity checkout. Earlier READY/
+approval-pending notes below are historical; never rerun the consumed operator.
+
+## 2026-10-26 bounded signup preparation addendum
+
+The original audit below is historical and remains intact. Current main/cached
+origin/main wereea113e9 at opening (0/0); no fetch/push or broad merge occurred.
+All original9 worktrees/dirty bytes/HEADs/indexes remain. Two additive worktrees
+retain the held notice-only574bb86 packet and replacement branch
+local/public-signup-turnstile-20261026 at3001cd6 (11 worktrees/8 local branches).
+Main remains the continuity checkout with91 migrations; reviewed source has94.
+The [release/readiness report](public-signup-release.md) identifies the exact
+archive, finalreview-2 seal, approval boundary and fresh checks. Main handoffs/
+roadmap/docs are updated locally, not pushed. The two consumed untracked main
+Auth sources remain untouched. No unsafe branch situation was silently merged.
+
 # Git, worktrees and sequential Codex handover
 
 Reviewed2026-10-25, Asia/Riyadh. **SAFE TO SWITCH CODEX ACCOUNTS in this same

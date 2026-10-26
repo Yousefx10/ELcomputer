@@ -3,21 +3,31 @@
 Each business supplies its own branding, domains and configuration.
 Follow [AGENTS.md](AGENTS.md) before changing the project.
 
-Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) for current
-cross-account priorities, production evidence and pending local work.
-Current production is `bc05eef266eeb7de`, schema94, deployed inactive.
-The [historical customer import](docs/customer-history-import-receipt.md) passed
-with41 batches. Customer ownership remains explicit; hosted acceptance is pending.
-Signup and purchasing remain closed. Older release summaries below remain historical evidence.
+**Public customer signup is OPEN; public purchasing is disabled.**
+[Signup activation](docs/public-signup-activation-receipt.md) passed2026-10-26;
+email confirmation and accepted Turnstile/Brevo controls remain. Do not repeat
+accepted signup, CAPTCHA, login/recovery or owner-payment tests.
 
-Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
-Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
-Historical entries describe earlier targets and are not execution instructions.
+Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md),
+[PROJECT_STATE.md](PROJECT_STATE.md) and [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
+Use the [consolidated deferred-test register](docs/DEFERRED_TEST_REGISTER.md) for
+uncompleted acceptance. Deferral does not waive later completion.
 
-Before switching Codex accounts, read the [Git/worktree audit](docs/GIT_WORKTREE_SYNC_AUDIT.md).
-The roadmap retains all79 original tasks and adds9 IDs for ten post-Beta requirements.
-Public signup and real paid orders remain P0. Main code and deployed-source branches
-remain separate; switching accounts on this workspace needs no merge or push.
+Production is release `5a38201292763325`, schema94. The original schema95 Beta
+candidate is packaged locally and unchanged; no deployment is authorized. Offline
+[location reference/selectors](docs/pdc-location-reference-review.md) are a separate
+local96 branch, with no PDC API calls or provider activation. PDC remains PAUSED.
+The [historical import](docs/customer-history-import-receipt.md) remains accepted;
+identity linkage is verified and explicit, never based on unverified email.
+
+Before account switching or Git integration, read the
+[Git/worktree audit](docs/GIT_WORKTREE_SYNC_AUDIT.md). Main is the continuity
+checkout with91 migrations; it is not the full release source. Preserve all
+worktrees and both accounts' commits. No automatic merge, rebase, cleanup or push.
+The roadmap retains89 tasks and adds LOC-01 for90.
+
+The release summaries below are dated historical evidence, not current activation
+instructions. Public signup is already open; commerce/provider approvals are separate.
 
 The [Shipping Company tariff manager](docs/shipping-tariffs.md) is
 [deployed](docs/shipping-tariff-deployment-receipt.md) as `08b45ffac0e524c8`, schema91.

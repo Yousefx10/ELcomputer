@@ -1,3 +1,24 @@
+## 2026-10-26 completed code deployment — 2026-10-26 02:02:04.416 Riyadh
+
+[Exact deployment](public-signup-deployment-receipt.md) PASS:5a38201292763325 /
+schema94, source3001cd6, approvale9d1d4bb consumed once. Runtime/Caddy/Auth/signup/
+CAPTCHA/purchasing gates unchanged. No merge/reset/cleanup/worktree deletion/push;
+all original source bytes and refs remain. Current source lineage still contains
+94 migrations; main remains the91-migration continuity checkout. Earlier READY/
+approval-pending notes below are historical; never rerun the consumed operator.
+
+## 2026-10-26 next milestone — signup preparation
+
+Historical import/three-route deployment remains complete and consumed. The
+[notice/Turnstile replacement release](public-signup-release.md) is locally
+qualified, with a separate exact application-only approval. Public signup remains
+closed pending real widget/key/configuration and hosted normal Auth acceptance.
+Existing owner-controlled historical match has no orders; profile/empty-view
+acceptance remains owner pending. Actual order-bearing customers require their
+authorization; no account creation, claim, email or impersonation was performed.
+Owner verified abuse settings; accepted Brevo/recovery/confirmation stand and
+Management API403 investigation is closed. No production activation or Git push.
+
 # Customer migration and public Beta — first local milestone
 
 **Production history import PASS — 2026-10-25,23:07:33.882 Riyadh.**

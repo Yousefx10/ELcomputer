@@ -1,0 +1,5269 @@
+{
+  "source_sha256": "0201a05d3fb724e06c208b10379caecc5087fe9db4e98ec3d1bd64d97b25a04e",
+  "governorates": [
+    {
+      "code": "eg-cairo",
+      "name_en": "Cairo",
+      "name_ar": "القاهرة",
+      "checkout_name": "Cairo",
+      "aliases": [
+        "Cairo",
+        "Cairo 2"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-giza",
+      "name_en": "Giza",
+      "name_ar": "الجيزة",
+      "checkout_name": "Giza",
+      "aliases": [
+        "Giza",
+        "Giza 2"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria",
+      "name_en": "Alexandria",
+      "name_ar": "الإسكندرية",
+      "checkout_name": "Alexandria",
+      "aliases": [
+        "Alexandria",
+        "Alexandria 2"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira",
+      "name_en": "Behaira",
+      "name_ar": "البحيرة",
+      "checkout_name": "Behira",
+      "aliases": [
+        "Al Behaira",
+        "Behaira",
+        "Behira"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia",
+      "name_en": "Mounofia",
+      "name_ar": "المنوفية",
+      "checkout_name": "Monufia",
+      "aliases": [
+        "Al Mounofia",
+        "Monufia",
+        "Mounofia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia",
+      "name_en": "Gharbia",
+      "name_ar": "الغربية",
+      "checkout_name": "Gharbia",
+      "aliases": [
+        "Algharbia",
+        "Gharbia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia",
+      "name_en": "Dakhahlia",
+      "name_ar": "الدقهلية",
+      "checkout_name": "Dakahlia",
+      "aliases": [
+        "Dakahlia",
+        "Dakhahlia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta",
+      "name_en": "Dammitta",
+      "name_ar": "دمياط",
+      "checkout_name": "Damietta",
+      "aliases": [
+        "Damietta",
+        "Dammitta"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia",
+      "name_en": "Sharqia",
+      "name_ar": "الشرقية",
+      "checkout_name": "Sharqia",
+      "aliases": [
+        "Elsharqia",
+        "Sharqia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia",
+      "name_en": "Ismalia",
+      "name_ar": "الإسماعيلية",
+      "checkout_name": "Ismailia",
+      "aliases": [
+        "Ismailia",
+        "Ismalia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh",
+      "name_en": "Kafr Al Sheikh",
+      "name_ar": "كفر الشيخ",
+      "checkout_name": "Kafr Alsheikh",
+      "aliases": [
+        "Kafr Al Sheikh",
+        "Kafr Alsheikh",
+        "kafr Al Sheikh"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-port-said",
+      "name_en": "Port Said",
+      "name_ar": "بورسعيد",
+      "checkout_name": "Port Said",
+      "aliases": [
+        "Port Said"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia",
+      "name_en": "Qalyubia",
+      "name_ar": "القليوبية",
+      "checkout_name": "El Kalioubia",
+      "aliases": [
+        "El Kalioubia",
+        "Qalyubia"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-suez",
+      "name_en": "Suez",
+      "name_ar": "السويس",
+      "checkout_name": "Suez",
+      "aliases": [
+        "Suez"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum",
+      "name_en": "Fayoum",
+      "name_ar": "الفيوم",
+      "checkout_name": "Fayoum",
+      "aliases": [
+        "Alfayoum",
+        "Fayoum"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut",
+      "name_en": "Assiut",
+      "name_ar": "أسيوط",
+      "checkout_name": "Assuit",
+      "aliases": [
+        "Assiut",
+        "Assuit"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef",
+      "name_en": "Beni Suef",
+      "name_ar": "بني سويف",
+      "checkout_name": "Bani Suif",
+      "aliases": [
+        "Bani Suif",
+        "Beni Suef"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-menia",
+      "name_en": "Menia",
+      "name_ar": "المنيا",
+      "checkout_name": "Menya",
+      "aliases": [
+        "El Menia",
+        "Menia",
+        "Menya"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan",
+      "name_en": "Aswan",
+      "name_ar": "أسوان",
+      "checkout_name": "Aswan",
+      "aliases": [
+        "Aswan"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor",
+      "name_en": "Luxor",
+      "name_ar": "الأقصر",
+      "checkout_name": "Luxor",
+      "aliases": [
+        "Luxor"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-qena",
+      "name_en": "Qena",
+      "name_ar": "قنا",
+      "checkout_name": "Qena",
+      "aliases": [
+        "Qena"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea",
+      "name_en": "Red Sea",
+      "name_ar": "البحر الأحمر",
+      "checkout_name": "Red Sea",
+      "aliases": [
+        "Red Sea"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag",
+      "name_en": "Sohag",
+      "name_ar": "سوهاج",
+      "checkout_name": "Sohag",
+      "aliases": [
+        "Sohag",
+        "Suhag",
+        "suhag"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley",
+      "name_en": "New Valley",
+      "name_ar": "الوادي الجديد",
+      "checkout_name": "New Valley",
+      "aliases": [
+        "New Valley"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh",
+      "name_en": "Matrouh",
+      "name_ar": "مطروح",
+      "checkout_name": "Matrouh",
+      "aliases": [
+        "Matrouh"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai",
+      "name_en": "North Sinai",
+      "name_ar": "شمال سيناء",
+      "checkout_name": "North Sinai",
+      "aliases": [
+        "North Seina",
+        "North Sinai"
+      ],
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai",
+      "name_en": "South Sinai",
+      "name_ar": "جنوب سيناء",
+      "checkout_name": "South Sinai",
+      "aliases": [
+        "South Seina",
+        "South Sinai"
+      ],
+      "is_active": true
+    }
+  ],
+  "cities": [
+    {
+      "code": "eg-cairo-al-herafiyeen",
+      "governorate_code": "eg-cairo",
+      "name_en": "Al Herafiyeen",
+      "name_ar": "الحرفيين",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-zamalek",
+      "governorate_code": "eg-cairo",
+      "name_en": "Zamalek",
+      "name_ar": "الزمالك",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-boulak-abul-ela",
+      "governorate_code": "eg-cairo",
+      "name_en": "Boulak abul-Ela",
+      "name_ar": "بولاق أبو العلا",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-down-town",
+      "governorate_code": "eg-cairo",
+      "name_en": "Down Town",
+      "name_ar": "وسط البلد",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-garden-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Garden City",
+      "name_ar": "جاردن سيتي",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-manial",
+      "governorate_code": "eg-cairo",
+      "name_en": "Manial",
+      "name_ar": "المنيل",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-attaba",
+      "governorate_code": "eg-cairo",
+      "name_en": "Attaba",
+      "name_ar": "العتبه",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-qasr-el-einy",
+      "governorate_code": "eg-cairo",
+      "name_en": "Qasr el-Einy",
+      "name_ar": "القصر العيني",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-dhaher",
+      "governorate_code": "eg-cairo",
+      "name_en": "Dhaher",
+      "name_ar": "الظاهر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-ramses",
+      "governorate_code": "eg-cairo",
+      "name_en": "Ramses",
+      "name_ar": "رمسيس",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-shoubra-masr",
+      "governorate_code": "eg-cairo",
+      "name_en": "Shoubra Masr",
+      "name_ar": "شبرا مصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-darrasa",
+      "governorate_code": "eg-cairo",
+      "name_en": "Darrasa",
+      "name_ar": "الدراسة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-abbassiya",
+      "governorate_code": "eg-cairo",
+      "name_en": "Abbassiya",
+      "name_ar": "العباسية",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-darb-el-ahmar",
+      "governorate_code": "eg-cairo",
+      "name_en": "Darb el-Ahmar",
+      "name_ar": "الدرب الأحمر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-bab-el-shiriya",
+      "governorate_code": "eg-cairo",
+      "name_en": "Bab el-Shiriya",
+      "name_ar": "باب الشعرية",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-sayeda-zeinab",
+      "governorate_code": "eg-cairo",
+      "name_en": "Sayeda Zeinab",
+      "name_ar": "السيدة زينب",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-old-cairo",
+      "governorate_code": "eg-cairo",
+      "name_en": "Old Cairo",
+      "name_ar": "مصر القديمة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-nasr-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Nasr City",
+      "name_ar": "مدينة نصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-10th-district",
+      "governorate_code": "eg-cairo",
+      "name_en": "10th District",
+      "name_ar": "الحى العاشر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-heliopolis",
+      "governorate_code": "eg-cairo",
+      "name_en": "Heliopolis",
+      "name_ar": "مصر الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-gesr-el-suez",
+      "governorate_code": "eg-cairo",
+      "name_en": "Gesr el-Suez",
+      "name_ar": "جسر السويس",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-alf-maskan",
+      "governorate_code": "eg-cairo",
+      "name_en": "Alf Maskan",
+      "name_ar": "الألف مسكن",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-obour-buildings",
+      "governorate_code": "eg-cairo",
+      "name_en": "Obour Buildings",
+      "name_ar": "عمارات العبور",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-ard-el-golf",
+      "governorate_code": "eg-cairo",
+      "name_en": "Ard el-Golf",
+      "name_ar": "ارض الجولف",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-hadayek-el-qobba",
+      "governorate_code": "eg-cairo",
+      "name_en": "Hadayek el-Qobba",
+      "name_ar": "حدائق القبة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-zaytoun",
+      "governorate_code": "eg-cairo",
+      "name_en": "Zaytoun",
+      "name_ar": "الزيتون",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-ameeriya",
+      "governorate_code": "eg-cairo",
+      "name_en": "Ameeriya",
+      "name_ar": "الأميرية",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-matariya",
+      "governorate_code": "eg-cairo",
+      "name_en": "Matariya",
+      "name_ar": "المطرية",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-ain-shams",
+      "governorate_code": "eg-cairo",
+      "name_en": "Ain Shams",
+      "name_ar": "عين شمس",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-new-maadi",
+      "governorate_code": "eg-cairo",
+      "name_en": "New Maadi",
+      "name_ar": "المعادي الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-dar-el-salam",
+      "governorate_code": "eg-cairo",
+      "name_en": "Dar el-Salam",
+      "name_ar": "دار السلام",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-maadi",
+      "governorate_code": "eg-cairo",
+      "name_en": "Maadi",
+      "name_ar": "المعادي",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-moqattam",
+      "governorate_code": "eg-cairo",
+      "name_en": "Moqattam",
+      "name_ar": "المقطم",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-el-hadaba-el-sofla",
+      "governorate_code": "eg-cairo",
+      "name_en": "El-Hadaba el-Sofla",
+      "name_ar": "الهضبة السفلى",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-tora",
+      "governorate_code": "eg-cairo",
+      "name_en": "Tora",
+      "name_ar": "طرة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-maasara",
+      "governorate_code": "eg-cairo",
+      "name_en": "Maasara",
+      "name_ar": "المعصرة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-helwan",
+      "governorate_code": "eg-cairo",
+      "name_en": "Helwan",
+      "name_ar": "حلوان",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-kotsica",
+      "governorate_code": "eg-cairo",
+      "name_en": "Kotsica",
+      "name_ar": "كوتسيكا",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-qattamiya",
+      "governorate_code": "eg-cairo",
+      "name_en": "Qattamiya",
+      "name_ar": "القطامية",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-new-cairo",
+      "governorate_code": "eg-cairo",
+      "name_en": "New Cairo",
+      "name_ar": "التجمع",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-el-rehab",
+      "governorate_code": "eg-cairo",
+      "name_en": "El Rehab",
+      "name_ar": "الرحاب",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-madinty",
+      "governorate_code": "eg-cairo",
+      "name_en": "Madinty",
+      "name_ar": "مدينتى",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-cairo-airport",
+      "governorate_code": "eg-cairo",
+      "name_en": "Cairo Airport",
+      "name_ar": "مطار القاهرة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-salam-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Salam City",
+      "name_ar": "مدينة السلام",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-obour-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Obour City",
+      "name_ar": "مدينة العبور",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-ezbet-el-haganna",
+      "governorate_code": "eg-cairo",
+      "name_en": "Ezbet el-Haganna",
+      "name_ar": "عزبة الهجانة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-tibeen",
+      "governorate_code": "eg-cairo",
+      "name_en": "Tibeen",
+      "name_ar": "التبين",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-15th-of-may-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "15th of May City",
+      "name_ar": "مدينة 15 مايو",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-badr-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Badr City",
+      "name_ar": "مدينة بدر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-shourouq-city",
+      "governorate_code": "eg-cairo",
+      "name_en": "Shourouq City",
+      "name_ar": "الشروق",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-dokki",
+      "governorate_code": "eg-giza",
+      "name_en": "Dokki",
+      "name_ar": "الدقي",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-mohandiseen",
+      "governorate_code": "eg-giza",
+      "name_en": "Mohandiseen",
+      "name_ar": "المهندسين",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-agouza",
+      "governorate_code": "eg-giza",
+      "name_en": "Agouza",
+      "name_ar": "العجوزة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-ard-el-lewa",
+      "governorate_code": "eg-giza",
+      "name_en": "Ard-el-Lewa",
+      "name_ar": "ارض اللواء",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-matar-imbaba",
+      "governorate_code": "eg-giza",
+      "name_en": "Matar Imbaba",
+      "name_ar": "مطار امبابه",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-saft-e-laban",
+      "governorate_code": "eg-giza",
+      "name_en": "Saft-e-Laban",
+      "name_ar": "صفط اللبن",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-imbaba",
+      "governorate_code": "eg-giza",
+      "name_en": "Imbaba",
+      "name_ar": "امبابة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-warraq",
+      "governorate_code": "eg-giza",
+      "name_en": "Warraq",
+      "name_ar": "الوراق",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-bashteel",
+      "governorate_code": "eg-giza",
+      "name_en": "Bashteel",
+      "name_ar": "بشتيل",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-boulak-e-dakrour",
+      "governorate_code": "eg-giza",
+      "name_en": "Boulak-e-Dakrour",
+      "name_ar": "بولاق الدكرور",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-giza",
+      "governorate_code": "eg-giza",
+      "name_en": "Giza",
+      "name_ar": "الجيزة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-faisal",
+      "governorate_code": "eg-giza",
+      "name_en": "Faisal",
+      "name_ar": "فيصل",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-haram",
+      "governorate_code": "eg-giza",
+      "name_en": "Haram",
+      "name_ar": "الهرم",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-monieb",
+      "governorate_code": "eg-giza",
+      "name_en": "Monieb",
+      "name_ar": "المنيب",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-ahram-gardens",
+      "governorate_code": "eg-giza",
+      "name_en": "Ahram Gardens",
+      "name_ar": "حدائق الأهرام",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-rimaya",
+      "governorate_code": "eg-giza",
+      "name_en": "Rimaya",
+      "name_ar": "الرماية",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-6th-of-october",
+      "governorate_code": "eg-giza",
+      "name_en": "6th of October",
+      "name_ar": "مدينة 6 أكتوبر",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-sheikh-zayed",
+      "governorate_code": "eg-giza",
+      "name_en": "Sheikh Zayed",
+      "name_ar": "مدينة الشيخ زايد",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-wahat-road",
+      "governorate_code": "eg-giza",
+      "name_en": "Wahat Road",
+      "name_ar": "طريق الواحات",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-alex-desert-road-till-km-28",
+      "governorate_code": "eg-giza",
+      "name_en": "Alex desert road till KM 28",
+      "name_ar": "طريق إسكندرية الصحراوى حتى ك 28",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-smart-village",
+      "governorate_code": "eg-giza",
+      "name_en": "Smart Village",
+      "name_ar": "القرية الذكية",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-nahiya",
+      "governorate_code": "eg-giza",
+      "name_en": "Nahiya",
+      "name_ar": "ناهيا البلد",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-kafr-hakeem",
+      "governorate_code": "eg-giza",
+      "name_en": "Kafr Hakeem",
+      "name_ar": "كفر حكيم",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-abu-rawash",
+      "governorate_code": "eg-giza",
+      "name_en": "Abu Rawash",
+      "name_ar": "أبو رواش",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-saqqara",
+      "governorate_code": "eg-giza",
+      "name_en": "Saqqara",
+      "name_ar": "سقارة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-manial-sheeha",
+      "governorate_code": "eg-giza",
+      "name_en": "Manial Sheeha",
+      "name_ar": "منيل شيحة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-el-manawat",
+      "governorate_code": "eg-giza",
+      "name_en": "El-Manawat",
+      "name_ar": "المنوات",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-sidi-gaber",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Sidi Gaber",
+      "name_ar": "سيدي جابر",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-moharram-bek",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Moharram Bek",
+      "name_ar": "محرم بك",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-mina-el-basal",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Mina El-Basal",
+      "name_ar": "مينا البصل",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-raml",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Raml",
+      "name_ar": "الرمل",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-montaza",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Montaza",
+      "name_ar": "المنتزه",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-mansheya",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Mansheya",
+      "name_ar": "المنشية",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-labban",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Labban",
+      "name_ar": "اللبان",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-qetaa-maryout",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Qetaa Maryout",
+      "name_ar": "قطاع مريوط",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-qetaa-at-tarik-al-sahrawi",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Qetaa at Tarik Al Sahrawi",
+      "name_ar": "قطاع الطريق الصحراوي",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-bab-sharqi",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Bab Sharqi",
+      "name_ar": "باب شرقي",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-gomrok",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Gomrok",
+      "name_ar": "الجمرك",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-attarin",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Attarin",
+      "name_ar": "العطارين",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-new-borg-al-arab",
+      "governorate_code": "eg-alexandria",
+      "name_en": "New Borg Al Arab",
+      "name_ar": "برج العرب الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-karmouz",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Karmouz",
+      "name_ar": "كرموز",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-king-maryout-sharq-gharb",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al king maryout (Sharq & Gharb)",
+      "name_ar": "كينج مريوط (شرق وغرب)",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-dekhela",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Dekhela",
+      "name_ar": "الدخيلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-borg-al-arab",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Borg Al Arab",
+      "name_ar": "برج العرب",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-alexandria-desert",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Alexandria Desert",
+      "name_ar": "الطريق الصحراوي",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-amaria-first",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Amaria First",
+      "name_ar": "العامرية أول",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-al-daerah-al-gomrokeyah",
+      "governorate_code": "eg-alexandria",
+      "name_en": "Al Daerah Al Gomrokeyah",
+      "name_ar": "الدائرة الجمركية",
+      "is_active": true
+    },
+    {
+      "code": "eg-alexandria-north-coast",
+      "governorate_code": "eg-alexandria",
+      "name_en": "North Coast",
+      "name_ar": "الساحل الشمالي",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-shabrakhit",
+      "governorate_code": "eg-behaira",
+      "name_en": "Shabrakhit",
+      "name_ar": "شبراخيت",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-rashid",
+      "governorate_code": "eg-behaira",
+      "name_en": "Rashid",
+      "name_ar": "رشيد",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-mahmoudiyah",
+      "governorate_code": "eg-behaira",
+      "name_en": "Mahmoudiyah",
+      "name_ar": "المحمودية",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-kom-hamada",
+      "governorate_code": "eg-behaira",
+      "name_en": "Kom Hamada",
+      "name_ar": "كوم حمادة",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-kafr-al-dawwar",
+      "governorate_code": "eg-behaira",
+      "name_en": "Kafr Al Dawwar",
+      "name_ar": "كفر الدوار",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-itay-al-baroud",
+      "governorate_code": "eg-behaira",
+      "name_en": "Itay Al Baroud",
+      "name_ar": "إيتاي البارود",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-hosh-issa",
+      "governorate_code": "eg-behaira",
+      "name_en": "Hosh Issa",
+      "name_ar": "حوش عيسى",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-edco",
+      "governorate_code": "eg-behaira",
+      "name_en": "Edco",
+      "name_ar": "إدكو",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-damanhour",
+      "governorate_code": "eg-behaira",
+      "name_en": "Damanhour",
+      "name_ar": "دمنهور",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-badr",
+      "governorate_code": "eg-behaira",
+      "name_en": "Badr",
+      "name_ar": "بدر",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-al-delengaat",
+      "governorate_code": "eg-behaira",
+      "name_en": "Al delengaat",
+      "name_ar": "الدلنجات",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-al-rahmaniyah",
+      "governorate_code": "eg-behaira",
+      "name_en": "Al Rahmaniyah",
+      "name_ar": "الرحمانية",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-al-nubaria-al-gedida",
+      "governorate_code": "eg-behaira",
+      "name_en": "Al Nubaria al-gedida",
+      "name_ar": "النوبارية الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-al-behaira",
+      "governorate_code": "eg-behaira",
+      "name_en": "Al Behaira",
+      "name_ar": "البحيرة",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-abu-hummus",
+      "governorate_code": "eg-behaira",
+      "name_en": "Abu Hummus",
+      "name_ar": "أبو حمص",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-abu-al-matamir",
+      "governorate_code": "eg-behaira",
+      "name_en": "Abu al-Matamir",
+      "name_ar": "أبو المطامير",
+      "is_active": true
+    },
+    {
+      "code": "eg-behaira-wadi",
+      "governorate_code": "eg-behaira",
+      "name_en": "Wadi",
+      "name_ar": "وادي",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-tella",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Tella",
+      "name_ar": "تلا",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-shebeen-alkom",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Shebeen Alkom",
+      "name_ar": "شبين الكوم",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-sarss",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Sarss",
+      "name_ar": "سرس",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-qwessna",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Qwessna",
+      "name_ar": "قويسنا",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-menouf",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Menouf",
+      "name_ar": "منوف",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-hay-sharq",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Hay Sharq",
+      "name_ar": "حي شرق",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-hay-gharb",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Hay Gharb",
+      "name_ar": "حي غرب",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-ashmoun",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Ashmoun",
+      "name_ar": "أشمون",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-al-shouhdaa",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Al shouhdaa",
+      "name_ar": "الشهداء",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-al-sadat",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Al sadat",
+      "name_ar": "السادات",
+      "is_active": true
+    },
+    {
+      "code": "eg-mounofia-al-bagour",
+      "governorate_code": "eg-mounofia",
+      "name_en": "Al bagour",
+      "name_ar": "الباجور",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-al-mahalla-el",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Al Mahalla el",
+      "name_ar": "المحلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-tanta",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Tanta",
+      "name_ar": "طنطا",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-kafr-al-zayat",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Kafr Al Zayat",
+      "name_ar": "كفر الزيات",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-samannoud",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Samannoud",
+      "name_ar": "سمنود",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-zifta",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Zifta",
+      "name_ar": "زفتى",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-basyoun",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Basyoun",
+      "name_ar": "بسيون",
+      "is_active": true
+    },
+    {
+      "code": "eg-gharbia-desouk",
+      "governorate_code": "eg-gharbia",
+      "name_en": "Desouk",
+      "name_ar": "دسوق",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-tami-alamdid",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Tami Alamdid",
+      "name_ar": "تمي الأمديد",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-talkha",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Talkha",
+      "name_ar": "طلخا",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-sherbeen",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Sherbeen",
+      "name_ar": "شربين",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-meniat-al-nassr",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Meniat Al Nassr",
+      "name_ar": "",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-meit-ghamr",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Meit Ghamr",
+      "name_ar": "ميت غمر",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-meit-salseil",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Meit Salseil",
+      "name_ar": "ميت سلسيل",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-mahla-demna",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Mahla Demna",
+      "name_ar": "محلة دمنة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-gamassa",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Gamassa",
+      "name_ar": "جمصة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-dekerness",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Dekerness",
+      "name_ar": "دكرنس",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-dakhahlia",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Dakhahlia",
+      "name_ar": "الدقهلية",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-belqass",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Belqass",
+      "name_ar": "بلقاس",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-bani-ebeid",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Bani Ebeid",
+      "name_ar": "بني عبيد",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-banbro",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Banbro",
+      "name_ar": "",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-senbelaween",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al senbelaween",
+      "name_ar": "السنبلاوين",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-matria",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al matria",
+      "name_ar": "المطرية",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-gamlia",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al gamlia",
+      "name_ar": "الجمالية",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-qourdi",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al Qourdi",
+      "name_ar": "الكردي",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-manzala",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al Manzala",
+      "name_ar": "المنزلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-al-mansoura",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Al Mansoura",
+      "name_ar": "المنصورة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dakhahlia-aga",
+      "governorate_code": "eg-dakhahlia",
+      "name_en": "Aga",
+      "name_ar": "أجا",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-rass-al-bar",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Rass Al Bar",
+      "name_ar": "رأس البر",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-meet-abu-ghaleb",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Meet Abu Ghaleb",
+      "name_ar": "ميت أبو غالب",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-kafr-saad",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Kafr Saad",
+      "name_ar": "كفر سعد",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-kafr-albatekh",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Kafr Albatekh",
+      "name_ar": "كفر البطيخ",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-faraskour",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Faraskour",
+      "name_ar": "فارسكور",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-ezbat-al-borg",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Ezbat Al Borg",
+      "name_ar": "عزبة البرج",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-damietta-al-gedida",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Damietta Al Gedida",
+      "name_ar": "دمياط الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-dammitta",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Dammitta",
+      "name_ar": "دمياط",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-al-zarqa",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Al zarqa",
+      "name_ar": "الزرقا",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-al-rawda",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Al rawda",
+      "name_ar": "الروضة",
+      "is_active": true
+    },
+    {
+      "code": "eg-dammitta-al-serou",
+      "governorate_code": "eg-dammitta",
+      "name_en": "Al Serou",
+      "name_ar": "السرو",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-zaqazeq",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Zaqazeq",
+      "name_ar": "الزقازيق",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-san-al-hagar-alqeblia",
+      "governorate_code": "eg-sharqia",
+      "name_en": "San Al Hagar Alqeblia",
+      "name_ar": "صان الحجر القبلية",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-monshaet-abu-omar",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Monshaet Abu Omar",
+      "name_ar": "منشأة أبو عمر",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-menia-al-qamh",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Menia Al Qamh",
+      "name_ar": "منيا القمح",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-mashtoul-alsouk",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Mashtoul Alsouk",
+      "name_ar": "مشتول السوق",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-kafr-sakr",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Kafr Sakr",
+      "name_ar": "كفر صقر",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-hehia",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Hehia",
+      "name_ar": "ههيا",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-faqouss",
+      "governorate_code": "eg-sharqia",
+      "name_en": "faqouss",
+      "name_ar": "فاقوس",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-derb-negm",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Derb Negm",
+      "name_ar": "ديرب نجم",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-belbass",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Belbass",
+      "name_ar": "بلبيس",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-awlaad-sakr",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Awlaad sakr",
+      "name_ar": "أولاد صقر",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-alsalhia-algedieda",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Alsalhia Algedieda",
+      "name_ar": "الصالحية الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-alqarein",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Alqarein",
+      "name_ar": "القرين",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-alqaniaat",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Alqaniaat",
+      "name_ar": "القنايات",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-al-ibrahemia",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Al Ibrahemia",
+      "name_ar": "الإبراهيمية",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-al-hussania",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Al Hussania",
+      "name_ar": "الحسينية",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-abu-kbeir",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Abu Kbeir",
+      "name_ar": "أبو كبير",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-abu-hamaad",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Abu Hamaad",
+      "name_ar": "أبو حماد",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-10th-of-ramadan-city",
+      "governorate_code": "eg-sharqia",
+      "name_en": "10th of Ramadan city",
+      "name_ar": "مدينة العاشر من رمضان",
+      "is_active": true
+    },
+    {
+      "code": "eg-sharqia-elsharqia",
+      "governorate_code": "eg-sharqia",
+      "name_en": "Elsharqia",
+      "name_ar": "الشرقية",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-qantara-sharq",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Qantara Sharq",
+      "name_ar": "القنطرة شرق",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-ismalia",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Ismalia",
+      "name_ar": "الإسماعيلية",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-fayed",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Fayed",
+      "name_ar": "فايد",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-alqasaasayn",
+      "governorate_code": "eg-ismalia",
+      "name_en": "alqasaasayn",
+      "name_ar": "القصاصين",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-alahyaa-alawal-althany-althaless",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Alahyaa Alawal Althany - Althaless",
+      "name_ar": "الأحياء الأول والثاني والثالث",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-al-tall-al-kbier",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Al Tall Al Kbier",
+      "name_ar": "التل الكبير",
+      "is_active": true
+    },
+    {
+      "code": "eg-ismalia-abu-sir",
+      "governorate_code": "eg-ismalia",
+      "name_en": "Abu Sir",
+      "name_ar": "أبو صوير",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-sedi-salem",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Sedi Salem",
+      "name_ar": "سيدي سالم",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-sedi-ghazi",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Sedi Ghazi",
+      "name_ar": "سيدي غازي",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-qeleen",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Qeleen",
+      "name_ar": "قلين",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-matobus",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Matobus",
+      "name_ar": "مطوبس",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-masseir",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Masseir",
+      "name_ar": "مسير",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-massef-balteem",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Massef Balteem",
+      "name_ar": "مصيف بلطيم",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-kafr-al-sheikh",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Kafr Al-sheikh",
+      "name_ar": "كفر الشيخ",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-fewa",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Fewa",
+      "name_ar": "فوه",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-borg-al-broloss",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Borg Al Broloss",
+      "name_ar": "برج البرلس",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-bella",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Bella",
+      "name_ar": "بيلا",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-balteem",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Balteem",
+      "name_ar": "بلطيم",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-al-reyad",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Al reyad",
+      "name_ar": "الرياض",
+      "is_active": true
+    },
+    {
+      "code": "eg-kafr-al-sheikh-al-hamoul",
+      "governorate_code": "eg-kafr-al-sheikh",
+      "name_en": "Al hamoul",
+      "name_ar": "الحامول",
+      "is_active": true
+    },
+    {
+      "code": "eg-port-said-port-said",
+      "governorate_code": "eg-port-said",
+      "name_en": "Port Said",
+      "name_ar": "بورسعيد",
+      "is_active": true
+    },
+    {
+      "code": "eg-port-said-port-fouad",
+      "governorate_code": "eg-port-said",
+      "name_en": "Port Fouad",
+      "name_ar": "بورفؤاد",
+      "is_active": true
+    },
+    {
+      "code": "eg-port-said-sharq-e-tafrea-a",
+      "governorate_code": "eg-port-said",
+      "name_en": "Sharq-e-Tafrea'a",
+      "name_ar": "شرق التفريعة",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-toukh",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Toukh",
+      "name_ar": "طوخ",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-shoubra-alkhaima",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Shoubra Alkhaima",
+      "name_ar": "شبرا الخيمة",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-shebeen-alqanater",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Shebeen Alqanater",
+      "name_ar": "شبين القناطر",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-qaliub",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Qaliub",
+      "name_ar": "قليوب",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-qaha",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Qaha",
+      "name_ar": "قها",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-kanater-khairia",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Kanater Khairia",
+      "name_ar": "القناطر الخيرية",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-kafr-shoukr",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Kafr Shoukr",
+      "name_ar": "كفر شكر",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-banha",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Banha",
+      "name_ar": "بنها",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-alobour",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Alobour",
+      "name_ar": "العبور",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-alkhanka",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Alkhanka",
+      "name_ar": "الخانكة",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-al-khousoss",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Al Khousoss",
+      "name_ar": "الخصوص",
+      "is_active": true
+    },
+    {
+      "code": "eg-qalyubia-qalyubia",
+      "governorate_code": "eg-qalyubia",
+      "name_en": "Qalyubia",
+      "name_ar": "القليوبية",
+      "is_active": true
+    },
+    {
+      "code": "eg-suez-suez",
+      "governorate_code": "eg-suez",
+      "name_en": "Suez",
+      "name_ar": "السويس",
+      "is_active": true
+    },
+    {
+      "code": "eg-suez-al-soukhna",
+      "governorate_code": "eg-suez",
+      "name_en": "Al Soukhna",
+      "name_ar": "السخنة",
+      "is_active": true
+    },
+    {
+      "code": "eg-suez-el-ganayen",
+      "governorate_code": "eg-suez",
+      "name_en": "El Ganayen",
+      "name_ar": "الجناين",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-youssef-alsedeik",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Youssef Alsedeik",
+      "name_ar": "يوسف الصديق",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-waadi-al-rayaan",
+      "governorate_code": "eg-fayoum",
+      "name_en": "waadi al rayaan",
+      "name_ar": "وادي الريان",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-tamiea",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Tamiea",
+      "name_ar": "طامية",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-snourss",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Snourss",
+      "name_ar": "سنورس",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-madinat-alfayuwm-aljadida",
+      "governorate_code": "eg-fayoum",
+      "name_en": "madinat alfayuwm aljadida",
+      "name_ar": "مدينة الفيوم الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-itsa",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Itsa",
+      "name_ar": "إطسا",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-abshuaa",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Abshuaa",
+      "name_ar": "إبشواي",
+      "is_active": true
+    },
+    {
+      "code": "eg-fayoum-alfayoum",
+      "governorate_code": "eg-fayoum",
+      "name_en": "Alfayoum",
+      "name_ar": "الفيوم",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-sahel-seleim",
+      "governorate_code": "eg-assiut",
+      "name_en": "Sahel Seleim",
+      "name_ar": "ساحل سليم",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-sadfaa",
+      "governorate_code": "eg-assiut",
+      "name_en": "Sadfaa",
+      "name_ar": "صدفا",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-manfalout",
+      "governorate_code": "eg-assiut",
+      "name_en": "Manfalout",
+      "name_ar": "منفلوط",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-dairout",
+      "governorate_code": "eg-assiut",
+      "name_en": "Dairout",
+      "name_ar": "ديروط",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-assiut-algedida",
+      "governorate_code": "eg-assiut",
+      "name_en": "Assiut Algedida",
+      "name_ar": "أسيوط الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-assiut",
+      "governorate_code": "eg-assiut",
+      "name_en": "Assiut",
+      "name_ar": "أسيوط",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-alzaheir-alsahrawy",
+      "governorate_code": "eg-assiut",
+      "name_en": "Alzaheir Alsahrawy",
+      "name_ar": "الظهير الصحراوي",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-alqossya",
+      "governorate_code": "eg-assiut",
+      "name_en": "Alqossya",
+      "name_ar": "القوصية",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-alghaniem",
+      "governorate_code": "eg-assiut",
+      "name_en": "Alghaniem",
+      "name_ar": "الغنايم",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-alfath",
+      "governorate_code": "eg-assiut",
+      "name_en": "Alfath",
+      "name_ar": "الفتح",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-albadry",
+      "governorate_code": "eg-assiut",
+      "name_en": "Albadry",
+      "name_ar": "البداري",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-abu-teih",
+      "governorate_code": "eg-assiut",
+      "name_en": "Abu Teih",
+      "name_ar": "أبو تيج",
+      "is_active": true
+    },
+    {
+      "code": "eg-assiut-abnoob",
+      "governorate_code": "eg-assiut",
+      "name_en": "Abnoob",
+      "name_ar": "أبنوب",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-smastta",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Smastta",
+      "name_ar": "سمسطا",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-nasser",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Nasser",
+      "name_ar": "ناصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-ihnassya",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Ihnassya",
+      "name_ar": "إهناسيا",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-ben-suief-algedida",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Ben Suief Algedida",
+      "name_ar": "بني سويف الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-ben-suief",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Ben Suief",
+      "name_ar": "بني سويف",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-biba",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Biba",
+      "name_ar": "ببا",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-alwastta",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Alwastta",
+      "name_ar": "الواسطي",
+      "is_active": true
+    },
+    {
+      "code": "eg-beni-suef-alfeshin",
+      "governorate_code": "eg-beni-suef",
+      "name_en": "Alfeshin",
+      "name_ar": "الفشن",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-samalout",
+      "governorate_code": "eg-menia",
+      "name_en": "Samalout",
+      "name_ar": "سمالوط",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-mattay",
+      "governorate_code": "eg-menia",
+      "name_en": "Mattay",
+      "name_ar": "مطاي",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-malawy",
+      "governorate_code": "eg-menia",
+      "name_en": "Malawy",
+      "name_ar": "ملوي",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-maghagha",
+      "governorate_code": "eg-menia",
+      "name_en": "Maghagha",
+      "name_ar": "مغاغة",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-el-menia-algedida",
+      "governorate_code": "eg-menia",
+      "name_en": "El Menia Algedida",
+      "name_ar": "المنيا الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-el-menia",
+      "governorate_code": "eg-menia",
+      "name_en": "El Menia",
+      "name_ar": "المنيا",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-dirmouass",
+      "governorate_code": "eg-menia",
+      "name_en": "Dirmouass",
+      "name_ar": "ديرمواس",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-bani-mazar",
+      "governorate_code": "eg-menia",
+      "name_en": "Bani Mazar",
+      "name_ar": "بني مزار",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-aladwa",
+      "governorate_code": "eg-menia",
+      "name_en": "Aladwa",
+      "name_ar": "العدوة",
+      "is_active": true
+    },
+    {
+      "code": "eg-menia-abu-qorqass",
+      "governorate_code": "eg-menia",
+      "name_en": "Abu Qorqass",
+      "name_ar": "أبو قرقاص",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-new-toushka-city",
+      "governorate_code": "eg-aswan",
+      "name_en": "New toushka City",
+      "name_ar": "توشكى الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-new-aswan-city",
+      "governorate_code": "eg-aswan",
+      "name_en": "New Aswan City",
+      "name_ar": "أسوان الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-nassr-alnouba",
+      "governorate_code": "eg-aswan",
+      "name_en": "Nassr Alnouba",
+      "name_ar": "نصر النوبة",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-kom-ambo",
+      "governorate_code": "eg-aswan",
+      "name_en": "Kom Ambo",
+      "name_ar": "كوم أمبو",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-kalabsha",
+      "governorate_code": "eg-aswan",
+      "name_en": "Kalabsha",
+      "name_ar": "كلابشة",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-edfo",
+      "governorate_code": "eg-aswan",
+      "name_en": "Edfo",
+      "name_ar": "إدفو",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-drawo",
+      "governorate_code": "eg-aswan",
+      "name_en": "Drawo",
+      "name_ar": "دراو",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-aswan",
+      "governorate_code": "eg-aswan",
+      "name_en": "Aswan",
+      "name_ar": "أسوان",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-alsabaia",
+      "governorate_code": "eg-aswan",
+      "name_en": "Alsabaia",
+      "name_ar": "السباعية",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-albesaila",
+      "governorate_code": "eg-aswan",
+      "name_en": "Albesaila",
+      "name_ar": "البصيلية",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-al-radessa",
+      "governorate_code": "eg-aswan",
+      "name_en": "Al Radessa",
+      "name_ar": "الرديسية",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-abu-sembal-alsayhia",
+      "governorate_code": "eg-aswan",
+      "name_en": "Abu Sembal Alsayhia",
+      "name_ar": "أبو سمبل السياحية",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-abu-sembal",
+      "governorate_code": "eg-aswan",
+      "name_en": "Abu Sembal",
+      "name_ar": "أبو سمبل",
+      "is_active": true
+    },
+    {
+      "code": "eg-aswan-toshka",
+      "governorate_code": "eg-aswan",
+      "name_en": "Toshka",
+      "name_ar": "توشكى",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-teiba-algedida",
+      "governorate_code": "eg-luxor",
+      "name_en": "Teiba Algedida",
+      "name_ar": "طيبة الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-luxor-algedida",
+      "governorate_code": "eg-luxor",
+      "name_en": "Luxor Algedida",
+      "name_ar": "الأقصر الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-luxor",
+      "governorate_code": "eg-luxor",
+      "name_en": "Luxor",
+      "name_ar": "الأقصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-issna",
+      "governorate_code": "eg-luxor",
+      "name_en": "Issna",
+      "name_ar": "إسنا",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-armant",
+      "governorate_code": "eg-luxor",
+      "name_en": "Armant",
+      "name_ar": "أرمنت",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-altoud",
+      "governorate_code": "eg-luxor",
+      "name_en": "Altoud",
+      "name_ar": "الطود",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-alqarna",
+      "governorate_code": "eg-luxor",
+      "name_en": "Alqarna",
+      "name_ar": "القرنة",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-al-zeinya",
+      "governorate_code": "eg-luxor",
+      "name_en": "Al Zeinya",
+      "name_ar": "الزينية",
+      "is_active": true
+    },
+    {
+      "code": "eg-luxor-al-bayada",
+      "governorate_code": "eg-luxor",
+      "name_en": "Al bayada",
+      "name_ar": "البياضية",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-quoss",
+      "governorate_code": "eg-qena",
+      "name_en": "Quoss",
+      "name_ar": "قوص",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-qena-algedida",
+      "governorate_code": "eg-qena",
+      "name_en": "Qena Algedida",
+      "name_ar": "قنا الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-qena",
+      "governorate_code": "eg-qena",
+      "name_en": "Qena",
+      "name_ar": "قنا",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-qaft",
+      "governorate_code": "eg-qena",
+      "name_en": "Qaft",
+      "name_ar": "قفط",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-naqada",
+      "governorate_code": "eg-qena",
+      "name_en": "Naqada",
+      "name_ar": "نقادة",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-naga-hamadi",
+      "governorate_code": "eg-qena",
+      "name_en": "Naga Hamadi",
+      "name_ar": "نجع حمادي",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-farshout",
+      "governorate_code": "eg-qena",
+      "name_en": "Farshout",
+      "name_ar": "فرشوط",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-dashna",
+      "governorate_code": "eg-qena",
+      "name_en": "Dashna",
+      "name_ar": "دشنا",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-alwakf",
+      "governorate_code": "eg-qena",
+      "name_en": "Alwakf",
+      "name_ar": "الوقف",
+      "is_active": true
+    },
+    {
+      "code": "eg-qena-abu-tesht",
+      "governorate_code": "eg-qena",
+      "name_en": "Abu tesht",
+      "name_ar": "أبو تشت",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-safaja",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Safaja",
+      "name_ar": "سفاجا",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-ras-gharib",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Ras Gharib",
+      "name_ar": "رأس غارب",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-marsa-allam",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Marsa Allam",
+      "name_ar": "مرسى علم",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-hurghada",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Hurghada",
+      "name_ar": "الغردقة",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-halyeb",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Halyeb",
+      "name_ar": "حلايب",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-alqussier",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Alqussier",
+      "name_ar": "القصير",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-al-shalatten",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Al shalatten",
+      "name_ar": "الشلاتين",
+      "is_active": true
+    },
+    {
+      "code": "eg-red-sea-red-sea",
+      "governorate_code": "eg-red-sea",
+      "name_en": "Red Sea",
+      "name_ar": "البحر الأحمر",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-tama",
+      "governorate_code": "eg-sohag",
+      "name_en": "Tama",
+      "name_ar": "طما",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-tahtaa",
+      "governorate_code": "eg-sohag",
+      "name_en": "Tahtaa",
+      "name_ar": "طهطا",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-suhag",
+      "governorate_code": "eg-sohag",
+      "name_en": "Suhag",
+      "name_ar": "سوهاج",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-saqalta",
+      "governorate_code": "eg-sohag",
+      "name_en": "Saqalta",
+      "name_ar": "ساقلتة",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-hay-alqawssar",
+      "governorate_code": "eg-sohag",
+      "name_en": "Hay Alqawssar",
+      "name_ar": "حي الكوثر",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-gouhaina",
+      "governorate_code": "eg-sohag",
+      "name_en": "Gouhaina",
+      "name_ar": "جهينة",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-gerga",
+      "governorate_code": "eg-sohag",
+      "name_en": "Gerga",
+      "name_ar": "جرجا",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-dar-alsalam",
+      "governorate_code": "eg-sohag",
+      "name_en": "Dar Alsalam",
+      "name_ar": "دار السلام",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-al-manshaa",
+      "governorate_code": "eg-sohag",
+      "name_en": "Al manshaa",
+      "name_ar": "المنشأة",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-al-maragha",
+      "governorate_code": "eg-sohag",
+      "name_en": "Al Maragha",
+      "name_ar": "المراغة",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-al-ballena",
+      "governorate_code": "eg-sohag",
+      "name_en": "Al Ballena",
+      "name_ar": "البلينا",
+      "is_active": true
+    },
+    {
+      "code": "eg-sohag-akhmiem",
+      "governorate_code": "eg-sohag",
+      "name_en": "Akhmiem",
+      "name_ar": "أخميم",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-paris",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Paris",
+      "name_ar": "باريس",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-pallat",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Pallat",
+      "name_ar": "بلاط",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-mout",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Mout",
+      "name_ar": "موط",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-al-kharga",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Al kharga",
+      "name_ar": "الخارجة",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-al-farafra",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Al Farafra",
+      "name_ar": "الفرافرة",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-siwa",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Siwa",
+      "name_ar": "سيوة",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-kharja-oases",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Kharja Oases",
+      "name_ar": "واحة الخارجة",
+      "is_active": true
+    },
+    {
+      "code": "eg-new-valley-dakhla-oases",
+      "governorate_code": "eg-new-valley",
+      "name_en": "Dakhla Oases",
+      "name_ar": "واحة الداخلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-north-coast-above-90km",
+      "governorate_code": "eg-matrouh",
+      "name_en": "North Coast Above 90Km",
+      "name_ar": "الساحل الشمالي فوق 90 كم",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-um-alrekhim",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Um Alrekhim",
+      "name_ar": "أم الرخم",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-sidi-heneish",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Sidi Heneish",
+      "name_ar": "سيدي حنيش",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-ras-alhikma",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Ras Alhikma",
+      "name_ar": "رأس الحكمة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-kashuk-emaara",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Kashuk Emaara",
+      "name_ar": "كشك عمارة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-halazein",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Halazein",
+      "name_ar": "الحلازين",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-awlad-marii",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Awlad Marii",
+      "name_ar": "أولاد مري",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-atnouh",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Atnouh",
+      "name_ar": "أتنوح",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-zayat",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al zayat",
+      "name_ar": "الزيات",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-suynat",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al suynat",
+      "name_ar": "السوينات",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-salom",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al salom",
+      "name_ar": "السلام",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-qawasim",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al qawasim",
+      "name_ar": "القواسم",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-qasr",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al qasr",
+      "name_ar": "القصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-oush",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al oush",
+      "name_ar": "العوش",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-nasr",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al nasr",
+      "name_ar": "النصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-grawla",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al grawla",
+      "name_ar": "الجراولة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-dakhla",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al dakhla",
+      "name_ar": "الداخلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-abuluho-alganouby",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Abuluho Alganouby",
+      "name_ar": "أبو لحو الجنوبي",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-abuluho-albahri",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Abuluho Albahri",
+      "name_ar": "أبو لحو البحري",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-abu-mareiq",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Abu Mareiq",
+      "name_ar": "أبو مريق",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-matrouh",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Matrouh",
+      "name_ar": "مطروح",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-hammam",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al Hammam",
+      "name_ar": "الحمام",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-al-almeen",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Al almeen",
+      "name_ar": "العلمين",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-brani",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Brani",
+      "name_ar": "براني",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-negela",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Negela",
+      "name_ar": "النجيلة",
+      "is_active": true
+    },
+    {
+      "code": "eg-matrouh-salloum",
+      "governorate_code": "eg-matrouh",
+      "name_en": "Salloum",
+      "name_ar": "السلوم",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-rafah",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Rafah",
+      "name_ar": "رفح",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-bir-alabd",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Bir Alabd",
+      "name_ar": "بئر العبد",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-al-sheikh-zwayd",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Al sheikh Zwayd",
+      "name_ar": "الشيخ زويد",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-al-nakhl",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Al nakhl",
+      "name_ar": "النخل",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-al-hassana",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Al hassana",
+      "name_ar": "الحسنة",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-al-aresh",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "Al Aresh",
+      "name_ar": "العريش",
+      "is_active": true
+    },
+    {
+      "code": "eg-north-sinai-north-sinai",
+      "governorate_code": "eg-north-sinai",
+      "name_en": "North Sinai",
+      "name_ar": "شمال سيناء",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-tor-sinai",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Tor Sinai",
+      "name_ar": "طور سيناء",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-taba",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Taba",
+      "name_ar": "طابا",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-sharm-alsheikh",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Sharm Alsheikh",
+      "name_ar": "شرم الشيخ",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-saint-katreen",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Saint Katreen",
+      "name_ar": "سانت كاترين",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-rass-sudr",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Rass Sudr",
+      "name_ar": "رأس سدر",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-nwabea",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Nwabea",
+      "name_ar": "نويبع",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-dahab",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Dahab",
+      "name_ar": "دهب",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-abu-zeniema",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Abu Zeniema",
+      "name_ar": "أبو زنيمة",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-abu-redeis",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "Abu Redeis",
+      "name_ar": "أبو رديس",
+      "is_active": true
+    },
+    {
+      "code": "eg-south-sinai-south-sinai",
+      "governorate_code": "eg-south-sinai",
+      "name_en": "South Sinai",
+      "name_ar": "جنوب سيناء",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-others",
+      "governorate_code": "eg-cairo",
+      "name_en": "Others",
+      "name_ar": "أخرى",
+      "is_active": false
+    },
+    {
+      "code": "eg-cairo-new-capital",
+      "governorate_code": "eg-cairo",
+      "name_en": "New capital",
+      "name_ar": "العاصمة الإدارية الجديدة",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-manshiat-nasr",
+      "governorate_code": "eg-cairo",
+      "name_en": "Manshiat Nasr",
+      "name_ar": "منشأة ناصر",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-al-waily",
+      "governorate_code": "eg-cairo",
+      "name_en": "Al Waily",
+      "name_ar": "الوايلي",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-al-marg",
+      "governorate_code": "eg-cairo",
+      "name_en": "Al Marg",
+      "name_ar": "المرج",
+      "is_active": true
+    },
+    {
+      "code": "eg-cairo-al-zawya-elhamra",
+      "governorate_code": "eg-cairo",
+      "name_en": "Al Zawya Elhamra",
+      "name_ar": "الزاوية الحمراء",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-al-badrasheen",
+      "governorate_code": "eg-giza",
+      "name_en": "Al badrasheen",
+      "name_ar": "البدرشين",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-kerdassa",
+      "governorate_code": "eg-giza",
+      "name_en": "Kerdassa",
+      "name_ar": "كرداسة",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-al-hawamdia",
+      "governorate_code": "eg-giza",
+      "name_en": "Al Hawamdia",
+      "name_ar": "الحوامدية",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-al-wahat-city",
+      "governorate_code": "eg-giza",
+      "name_en": "Al Wahat city",
+      "name_ar": "مدينة الواحات",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-atfeh",
+      "governorate_code": "eg-giza",
+      "name_en": "Atfeh",
+      "name_ar": "أطفيح",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-alsaff",
+      "governorate_code": "eg-giza",
+      "name_en": "Alsaff",
+      "name_ar": "الصف",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-monshaet-alqanater",
+      "governorate_code": "eg-giza",
+      "name_en": "Monshaet Alqanater",
+      "name_ar": "منشأة القناطر",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-alayaat",
+      "governorate_code": "eg-giza",
+      "name_en": "Alayaat",
+      "name_ar": "العياط",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-awssem",
+      "governorate_code": "eg-giza",
+      "name_en": "Awssem",
+      "name_ar": "أوسيم",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-abo-alnomross",
+      "governorate_code": "eg-giza",
+      "name_en": "Abo AlNomross",
+      "name_ar": "أبو النمرس",
+      "is_active": true
+    },
+    {
+      "code": "eg-giza-al-barageel",
+      "governorate_code": "eg-giza",
+      "name_en": "Al barageel",
+      "name_ar": "البراجيل",
+      "is_active": true
+    }
+  ],
+  "provider_mappings": [
+    {
+      "provider": "pdc",
+      "provider_city_id": "1",
+      "city_code": "eg-cairo-al-herafiyeen",
+      "source_label_ar": "الحرفيين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "2",
+      "city_code": "eg-cairo-zamalek",
+      "source_label_ar": "الزمالك"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "3",
+      "city_code": "eg-cairo-boulak-abul-ela",
+      "source_label_ar": "بولاق أبو العلا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "4",
+      "city_code": "eg-cairo-down-town",
+      "source_label_ar": "وسط البلد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "5",
+      "city_code": "eg-cairo-garden-city",
+      "source_label_ar": "جاردن سيتي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "6",
+      "city_code": "eg-cairo-manial",
+      "source_label_ar": "المنيل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "7",
+      "city_code": "eg-cairo-attaba",
+      "source_label_ar": "العتبه"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "8",
+      "city_code": "eg-cairo-qasr-el-einy",
+      "source_label_ar": "القصر العيني"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "9",
+      "city_code": "eg-cairo-dhaher",
+      "source_label_ar": "الظاهر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "10",
+      "city_code": "eg-cairo-ramses",
+      "source_label_ar": "رمسيس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "11",
+      "city_code": "eg-cairo-shoubra-masr",
+      "source_label_ar": "شبرا مصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "12",
+      "city_code": "eg-cairo-darrasa",
+      "source_label_ar": "الدراسة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "13",
+      "city_code": "eg-cairo-abbassiya",
+      "source_label_ar": "العباسية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "14",
+      "city_code": "eg-cairo-darb-el-ahmar",
+      "source_label_ar": "الدرب الأحمر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "15",
+      "city_code": "eg-cairo-bab-el-shiriya",
+      "source_label_ar": "باب الشعرية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "16",
+      "city_code": "eg-cairo-sayeda-zeinab",
+      "source_label_ar": "السيدة زينب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "17",
+      "city_code": "eg-cairo-old-cairo",
+      "source_label_ar": "مصر القديمة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "18",
+      "city_code": "eg-cairo-nasr-city",
+      "source_label_ar": "مدينة نصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "19",
+      "city_code": "eg-cairo-10th-district",
+      "source_label_ar": "الحى العاشر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "20",
+      "city_code": "eg-cairo-heliopolis",
+      "source_label_ar": "مصر الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "21",
+      "city_code": "eg-cairo-gesr-el-suez",
+      "source_label_ar": "جسر السويس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "22",
+      "city_code": "eg-cairo-alf-maskan",
+      "source_label_ar": "الألف مسكن"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "23",
+      "city_code": "eg-cairo-obour-buildings",
+      "source_label_ar": "عمارات العبور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "24",
+      "city_code": "eg-cairo-ard-el-golf",
+      "source_label_ar": "ارض الجولف"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "25",
+      "city_code": "eg-cairo-hadayek-el-qobba",
+      "source_label_ar": "حدائق القبة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "26",
+      "city_code": "eg-cairo-zaytoun",
+      "source_label_ar": "الزيتون"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "27",
+      "city_code": "eg-cairo-ameeriya",
+      "source_label_ar": "الأميرية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "28",
+      "city_code": "eg-cairo-matariya",
+      "source_label_ar": "المطرية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "29",
+      "city_code": "eg-cairo-ain-shams",
+      "source_label_ar": "عين شمس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "30",
+      "city_code": "eg-cairo-new-maadi",
+      "source_label_ar": "المعادي الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "31",
+      "city_code": "eg-cairo-dar-el-salam",
+      "source_label_ar": "دار السلام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "32",
+      "city_code": "eg-cairo-maadi",
+      "source_label_ar": "المعادي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "33",
+      "city_code": "eg-cairo-moqattam",
+      "source_label_ar": "المقطم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "34",
+      "city_code": "eg-cairo-el-hadaba-el-sofla",
+      "source_label_ar": "الهضبة السفلى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "35",
+      "city_code": "eg-cairo-tora",
+      "source_label_ar": "طرة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "36",
+      "city_code": "eg-cairo-maasara",
+      "source_label_ar": "المعصرة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "37",
+      "city_code": "eg-cairo-helwan",
+      "source_label_ar": "حلوان"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "38",
+      "city_code": "eg-cairo-kotsica",
+      "source_label_ar": "كوتسيكا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "39",
+      "city_code": "eg-cairo-qattamiya",
+      "source_label_ar": "القطامية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "40",
+      "city_code": "eg-cairo-new-cairo",
+      "source_label_ar": "التجمع"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "41",
+      "city_code": "eg-cairo-el-rehab",
+      "source_label_ar": "الرحاب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "42",
+      "city_code": "eg-cairo-madinty",
+      "source_label_ar": "مدينتى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "43",
+      "city_code": "eg-cairo-cairo-airport",
+      "source_label_ar": "مطار القاهرة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "44",
+      "city_code": "eg-cairo-salam-city",
+      "source_label_ar": "مدينة السلام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "45",
+      "city_code": "eg-cairo-obour-city",
+      "source_label_ar": "مدينة العبور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "46",
+      "city_code": "eg-cairo-ezbet-el-haganna",
+      "source_label_ar": "عزبة الهجانة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "47",
+      "city_code": "eg-cairo-tibeen",
+      "source_label_ar": "التبين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "48",
+      "city_code": "eg-cairo-15th-of-may-city",
+      "source_label_ar": "مدينة 15 مايو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "49",
+      "city_code": "eg-cairo-badr-city",
+      "source_label_ar": "مدينة بدر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "50",
+      "city_code": "eg-cairo-shourouq-city",
+      "source_label_ar": "الشروق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "51",
+      "city_code": "eg-giza-dokki",
+      "source_label_ar": "الدقي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "52",
+      "city_code": "eg-giza-mohandiseen",
+      "source_label_ar": "المهندسين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "53",
+      "city_code": "eg-giza-agouza",
+      "source_label_ar": "العجوزة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "54",
+      "city_code": "eg-giza-ard-el-lewa",
+      "source_label_ar": "ارض اللواء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "55",
+      "city_code": "eg-giza-matar-imbaba",
+      "source_label_ar": "مطار امبابه"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "56",
+      "city_code": "eg-giza-saft-e-laban",
+      "source_label_ar": "صفط اللبن"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "57",
+      "city_code": "eg-giza-imbaba",
+      "source_label_ar": "امبابة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "58",
+      "city_code": "eg-giza-warraq",
+      "source_label_ar": "الوراق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "59",
+      "city_code": "eg-giza-bashteel",
+      "source_label_ar": "بشتيل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "60",
+      "city_code": "eg-giza-boulak-e-dakrour",
+      "source_label_ar": "بولاق الدكرور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "61",
+      "city_code": "eg-giza-giza",
+      "source_label_ar": "الجيزة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "62",
+      "city_code": "eg-giza-faisal",
+      "source_label_ar": "فيصل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "63",
+      "city_code": "eg-giza-haram",
+      "source_label_ar": "الهرم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "64",
+      "city_code": "eg-giza-monieb",
+      "source_label_ar": "المنيب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "65",
+      "city_code": "eg-giza-ahram-gardens",
+      "source_label_ar": "حدائق الأهرام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "66",
+      "city_code": "eg-giza-rimaya",
+      "source_label_ar": "الرماية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "67",
+      "city_code": "eg-giza-6th-of-october",
+      "source_label_ar": "مدينة 6 أكتوبر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "68",
+      "city_code": "eg-giza-sheikh-zayed",
+      "source_label_ar": "مدينة الشيخ زايد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "69",
+      "city_code": "eg-giza-wahat-road",
+      "source_label_ar": "طريق الواحات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "70",
+      "city_code": "eg-giza-alex-desert-road-till-km-28",
+      "source_label_ar": "طريق إسكندرية الصحراوى حتى ك 28"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "71",
+      "city_code": "eg-giza-smart-village",
+      "source_label_ar": "القرية الذكية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "72",
+      "city_code": "eg-giza-nahiya",
+      "source_label_ar": "ناهيا البلد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "73",
+      "city_code": "eg-giza-kafr-hakeem",
+      "source_label_ar": "كفر حكيم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "74",
+      "city_code": "eg-giza-abu-rawash",
+      "source_label_ar": "أبو رواش"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "75",
+      "city_code": "eg-giza-saqqara",
+      "source_label_ar": "سقارة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "76",
+      "city_code": "eg-giza-manial-sheeha",
+      "source_label_ar": "منيل شيحة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "77",
+      "city_code": "eg-giza-el-manawat",
+      "source_label_ar": "المنوات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "78",
+      "city_code": "eg-alexandria-sidi-gaber",
+      "source_label_ar": "سيدي جابر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "79",
+      "city_code": "eg-alexandria-moharram-bek",
+      "source_label_ar": "محرم بك"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "80",
+      "city_code": "eg-alexandria-mina-el-basal",
+      "source_label_ar": "مينا البصل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "81",
+      "city_code": "eg-alexandria-al-raml",
+      "source_label_ar": "الرمل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "82",
+      "city_code": "eg-alexandria-al-montaza",
+      "source_label_ar": "المنتزه"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "83",
+      "city_code": "eg-alexandria-al-mansheya",
+      "source_label_ar": "المنشية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "84",
+      "city_code": "eg-alexandria-al-labban",
+      "source_label_ar": "اللبان"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "85",
+      "city_code": "eg-alexandria-qetaa-maryout",
+      "source_label_ar": "قطاع مريوط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "86",
+      "city_code": "eg-alexandria-qetaa-at-tarik-al-sahrawi",
+      "source_label_ar": "قطاع الطريق الصحراوي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "87",
+      "city_code": "eg-alexandria-bab-sharqi",
+      "source_label_ar": "باب شرقي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "88",
+      "city_code": "eg-alexandria-al-gomrok",
+      "source_label_ar": "الجمرك"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "89",
+      "city_code": "eg-alexandria-al-attarin",
+      "source_label_ar": "العطارين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "90",
+      "city_code": "eg-alexandria-new-borg-al-arab",
+      "source_label_ar": "برج العرب الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "91",
+      "city_code": "eg-alexandria-karmouz",
+      "source_label_ar": "كرموز"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "92",
+      "city_code": "eg-alexandria-al-king-maryout-sharq-gharb",
+      "source_label_ar": "كينج مريوط (شرق وغرب)"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "93",
+      "city_code": "eg-alexandria-dekhela",
+      "source_label_ar": "الدخيلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "94",
+      "city_code": "eg-alexandria-borg-al-arab",
+      "source_label_ar": "برج العرب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "95",
+      "city_code": "eg-alexandria-alexandria-desert",
+      "source_label_ar": "الطريق الصحراوي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "96",
+      "city_code": "eg-alexandria-al-amaria-first",
+      "source_label_ar": "العامرية أول"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "97",
+      "city_code": "eg-alexandria-al-daerah-al-gomrokeyah",
+      "source_label_ar": "الدائرة الجمركية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "98",
+      "city_code": "eg-alexandria-north-coast",
+      "source_label_ar": "الساحل الشمالي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "99",
+      "city_code": "eg-behaira-shabrakhit",
+      "source_label_ar": "شبراخيت"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "100",
+      "city_code": "eg-behaira-rashid",
+      "source_label_ar": "رشيد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "101",
+      "city_code": "eg-behaira-mahmoudiyah",
+      "source_label_ar": "المحمودية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "102",
+      "city_code": "eg-behaira-kom-hamada",
+      "source_label_ar": "كوم حمادة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "103",
+      "city_code": "eg-behaira-kafr-al-dawwar",
+      "source_label_ar": "كفر الدوار"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "104",
+      "city_code": "eg-behaira-itay-al-baroud",
+      "source_label_ar": "إيتاي البارود"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "105",
+      "city_code": "eg-behaira-hosh-issa",
+      "source_label_ar": "حوش عيسى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "106",
+      "city_code": "eg-behaira-edco",
+      "source_label_ar": "إدكو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "107",
+      "city_code": "eg-behaira-damanhour",
+      "source_label_ar": "دمنهور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "108",
+      "city_code": "eg-behaira-badr",
+      "source_label_ar": "بدر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "109",
+      "city_code": "eg-behaira-al-delengaat",
+      "source_label_ar": "الدلنجات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "110",
+      "city_code": "eg-behaira-al-rahmaniyah",
+      "source_label_ar": "الرحمانية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "111",
+      "city_code": "eg-behaira-al-nubaria-al-gedida",
+      "source_label_ar": "النوبارية الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "112",
+      "city_code": "eg-behaira-al-behaira",
+      "source_label_ar": "البحيرة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "113",
+      "city_code": "eg-behaira-abu-hummus",
+      "source_label_ar": "أبو حمص"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "114",
+      "city_code": "eg-behaira-abu-al-matamir",
+      "source_label_ar": "أبو المطامير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "115",
+      "city_code": "eg-behaira-wadi",
+      "source_label_ar": "وادي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "116",
+      "city_code": "eg-mounofia-tella",
+      "source_label_ar": "تلا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "117",
+      "city_code": "eg-mounofia-shebeen-alkom",
+      "source_label_ar": "شبين الكوم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "118",
+      "city_code": "eg-mounofia-sarss",
+      "source_label_ar": "سرس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "119",
+      "city_code": "eg-mounofia-qwessna",
+      "source_label_ar": "قويسنا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "120",
+      "city_code": "eg-mounofia-menouf",
+      "source_label_ar": "منوف"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "121",
+      "city_code": "eg-mounofia-hay-sharq",
+      "source_label_ar": "حي شرق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "122",
+      "city_code": "eg-mounofia-hay-gharb",
+      "source_label_ar": "حي غرب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "123",
+      "city_code": "eg-mounofia-ashmoun",
+      "source_label_ar": "أشمون"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "124",
+      "city_code": "eg-mounofia-al-shouhdaa",
+      "source_label_ar": "الشهداء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "125",
+      "city_code": "eg-mounofia-al-sadat",
+      "source_label_ar": "السادات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "126",
+      "city_code": "eg-mounofia-al-bagour",
+      "source_label_ar": "الباجور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "127",
+      "city_code": "eg-gharbia-al-mahalla-el",
+      "source_label_ar": "المحلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "128",
+      "city_code": "eg-gharbia-tanta",
+      "source_label_ar": "طنطا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "129",
+      "city_code": "eg-gharbia-kafr-al-zayat",
+      "source_label_ar": "كفر الزيات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "130",
+      "city_code": "eg-gharbia-samannoud",
+      "source_label_ar": "سمنود"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "131",
+      "city_code": "eg-gharbia-zifta",
+      "source_label_ar": "زفتى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "132",
+      "city_code": "eg-gharbia-basyoun",
+      "source_label_ar": "بسيون"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "133",
+      "city_code": "eg-gharbia-desouk",
+      "source_label_ar": "دسوق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "134",
+      "city_code": "eg-dakhahlia-tami-alamdid",
+      "source_label_ar": "تمي الأمديد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "135",
+      "city_code": "eg-dakhahlia-talkha",
+      "source_label_ar": "طلخا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "136",
+      "city_code": "eg-dakhahlia-sherbeen",
+      "source_label_ar": "شربين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "137",
+      "city_code": "eg-dakhahlia-meniat-al-nassr",
+      "source_label_ar": "منية النصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "138",
+      "city_code": "eg-dakhahlia-meit-ghamr",
+      "source_label_ar": "ميت غمر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "139",
+      "city_code": "eg-dakhahlia-meit-salseil",
+      "source_label_ar": "ميت سلسيل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "140",
+      "city_code": "eg-dakhahlia-mahla-demna",
+      "source_label_ar": "محلة دمنة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "141",
+      "city_code": "eg-dakhahlia-gamassa",
+      "source_label_ar": "جمصة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "142",
+      "city_code": "eg-dakhahlia-dekerness",
+      "source_label_ar": "دكرنس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "143",
+      "city_code": "eg-dakhahlia-dakhahlia",
+      "source_label_ar": "الدقهلية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "144",
+      "city_code": "eg-dakhahlia-belqass",
+      "source_label_ar": "بلقاس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "145",
+      "city_code": "eg-dakhahlia-bani-ebeid",
+      "source_label_ar": "بني عبيد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "146",
+      "city_code": "eg-dakhahlia-banbro",
+      "source_label_ar": "منية النصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "147",
+      "city_code": "eg-dakhahlia-al-senbelaween",
+      "source_label_ar": "السنبلاوين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "148",
+      "city_code": "eg-dakhahlia-al-matria",
+      "source_label_ar": "المطرية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "149",
+      "city_code": "eg-dakhahlia-al-gamlia",
+      "source_label_ar": "الجمالية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "150",
+      "city_code": "eg-dakhahlia-al-qourdi",
+      "source_label_ar": "الكردي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "151",
+      "city_code": "eg-dakhahlia-al-manzala",
+      "source_label_ar": "المنزلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "152",
+      "city_code": "eg-dakhahlia-al-mansoura",
+      "source_label_ar": "المنصورة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "153",
+      "city_code": "eg-dakhahlia-aga",
+      "source_label_ar": "أجا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "154",
+      "city_code": "eg-dammitta-rass-al-bar",
+      "source_label_ar": "رأس البر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "155",
+      "city_code": "eg-dammitta-meet-abu-ghaleb",
+      "source_label_ar": "ميت أبو غالب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "156",
+      "city_code": "eg-dammitta-kafr-saad",
+      "source_label_ar": "كفر سعد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "157",
+      "city_code": "eg-dammitta-kafr-albatekh",
+      "source_label_ar": "كفر البطيخ"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "158",
+      "city_code": "eg-dammitta-faraskour",
+      "source_label_ar": "فارسكور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "159",
+      "city_code": "eg-dammitta-ezbat-al-borg",
+      "source_label_ar": "عزبة البرج"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "160",
+      "city_code": "eg-dammitta-damietta-al-gedida",
+      "source_label_ar": "دمياط الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "161",
+      "city_code": "eg-dammitta-dammitta",
+      "source_label_ar": "دمياط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "162",
+      "city_code": "eg-dammitta-al-zarqa",
+      "source_label_ar": "الزرقا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "163",
+      "city_code": "eg-dammitta-al-rawda",
+      "source_label_ar": "الروضة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "164",
+      "city_code": "eg-dammitta-al-serou",
+      "source_label_ar": "السرو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "165",
+      "city_code": "eg-sharqia-zaqazeq",
+      "source_label_ar": "الزقازيق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "166",
+      "city_code": "eg-sharqia-san-al-hagar-alqeblia",
+      "source_label_ar": "صان الحجر القبلية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "167",
+      "city_code": "eg-sharqia-monshaet-abu-omar",
+      "source_label_ar": "منشأة أبو عمر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "168",
+      "city_code": "eg-sharqia-menia-al-qamh",
+      "source_label_ar": "منيا القمح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "169",
+      "city_code": "eg-sharqia-mashtoul-alsouk",
+      "source_label_ar": "مشتول السوق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "170",
+      "city_code": "eg-sharqia-kafr-sakr",
+      "source_label_ar": "كفر صقر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "171",
+      "city_code": "eg-sharqia-hehia",
+      "source_label_ar": "ههيا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "172",
+      "city_code": "eg-sharqia-faqouss",
+      "source_label_ar": "فاقوس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "173",
+      "city_code": "eg-sharqia-derb-negm",
+      "source_label_ar": "ديرب نجم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "174",
+      "city_code": "eg-sharqia-belbass",
+      "source_label_ar": "بلبيس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "175",
+      "city_code": "eg-sharqia-awlaad-sakr",
+      "source_label_ar": "أولاد صقر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "176",
+      "city_code": "eg-sharqia-alsalhia-algedieda",
+      "source_label_ar": "الصالحية الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "177",
+      "city_code": "eg-sharqia-alqarein",
+      "source_label_ar": "القرين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "178",
+      "city_code": "eg-sharqia-alqaniaat",
+      "source_label_ar": "القنايات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "179",
+      "city_code": "eg-sharqia-al-ibrahemia",
+      "source_label_ar": "الإبراهيمية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "180",
+      "city_code": "eg-sharqia-al-hussania",
+      "source_label_ar": "الحسينية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "181",
+      "city_code": "eg-sharqia-abu-kbeir",
+      "source_label_ar": "أبو كبير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "182",
+      "city_code": "eg-sharqia-abu-hamaad",
+      "source_label_ar": "أبو حماد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "183",
+      "city_code": "eg-sharqia-10th-of-ramadan-city",
+      "source_label_ar": "مدينة العاشر من رمضان"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "184",
+      "city_code": "eg-sharqia-elsharqia",
+      "source_label_ar": "الشرقية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "185",
+      "city_code": "eg-ismalia-qantara-sharq",
+      "source_label_ar": "القنطرة شرق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "186",
+      "city_code": "eg-ismalia-ismalia",
+      "source_label_ar": "الإسماعيلية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "187",
+      "city_code": "eg-ismalia-fayed",
+      "source_label_ar": "فايد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "188",
+      "city_code": "eg-ismalia-alqasaasayn",
+      "source_label_ar": "القصاصين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "189",
+      "city_code": "eg-ismalia-alahyaa-alawal-althany-althaless",
+      "source_label_ar": "الأحياء الأول والثاني والثالث"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "190",
+      "city_code": "eg-ismalia-al-tall-al-kbier",
+      "source_label_ar": "التل الكبير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "191",
+      "city_code": "eg-ismalia-abu-sir",
+      "source_label_ar": "أبو صوير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "192",
+      "city_code": "eg-kafr-al-sheikh-sedi-salem",
+      "source_label_ar": "سيدي سالم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "193",
+      "city_code": "eg-kafr-al-sheikh-sedi-ghazi",
+      "source_label_ar": "سيدي غازي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "194",
+      "city_code": "eg-kafr-al-sheikh-qeleen",
+      "source_label_ar": "قلين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "195",
+      "city_code": "eg-kafr-al-sheikh-matobus",
+      "source_label_ar": "مطوبس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "196",
+      "city_code": "eg-kafr-al-sheikh-masseir",
+      "source_label_ar": "مسير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "197",
+      "city_code": "eg-kafr-al-sheikh-massef-balteem",
+      "source_label_ar": "مصيف بلطيم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "198",
+      "city_code": "eg-kafr-al-sheikh-kafr-al-sheikh",
+      "source_label_ar": "كفر الشيخ"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "199",
+      "city_code": "eg-kafr-al-sheikh-fewa",
+      "source_label_ar": "فوه"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "200",
+      "city_code": "eg-kafr-al-sheikh-borg-al-broloss",
+      "source_label_ar": "برج البرلس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "201",
+      "city_code": "eg-kafr-al-sheikh-bella",
+      "source_label_ar": "بيلا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "202",
+      "city_code": "eg-kafr-al-sheikh-balteem",
+      "source_label_ar": "بلطيم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "203",
+      "city_code": "eg-kafr-al-sheikh-al-reyad",
+      "source_label_ar": "الرياض"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "204",
+      "city_code": "eg-kafr-al-sheikh-al-hamoul",
+      "source_label_ar": "الحامول"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "205",
+      "city_code": "eg-port-said-port-said",
+      "source_label_ar": "بورسعيد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "206",
+      "city_code": "eg-port-said-port-fouad",
+      "source_label_ar": "بورفؤاد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "207",
+      "city_code": "eg-port-said-sharq-e-tafrea-a",
+      "source_label_ar": "شرق التفريعة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "208",
+      "city_code": "eg-qalyubia-toukh",
+      "source_label_ar": "طوخ"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "209",
+      "city_code": "eg-qalyubia-shoubra-alkhaima",
+      "source_label_ar": "شبرا الخيمة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "210",
+      "city_code": "eg-qalyubia-shebeen-alqanater",
+      "source_label_ar": "شبين القناطر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "211",
+      "city_code": "eg-qalyubia-qaliub",
+      "source_label_ar": "قليوب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "212",
+      "city_code": "eg-qalyubia-qaha",
+      "source_label_ar": "قها"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "213",
+      "city_code": "eg-qalyubia-kanater-khairia",
+      "source_label_ar": "القناطر الخيرية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "214",
+      "city_code": "eg-qalyubia-kafr-shoukr",
+      "source_label_ar": "كفر شكر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "215",
+      "city_code": "eg-qalyubia-banha",
+      "source_label_ar": "بنها"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "216",
+      "city_code": "eg-qalyubia-alobour",
+      "source_label_ar": "العبور"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "217",
+      "city_code": "eg-qalyubia-alkhanka",
+      "source_label_ar": "الخانكة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "218",
+      "city_code": "eg-qalyubia-al-khousoss",
+      "source_label_ar": "الخصوص"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "219",
+      "city_code": "eg-qalyubia-qalyubia",
+      "source_label_ar": "القليوبية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "220",
+      "city_code": "eg-suez-suez",
+      "source_label_ar": "السويس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "221",
+      "city_code": "eg-suez-al-soukhna",
+      "source_label_ar": "السخنة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "222",
+      "city_code": "eg-suez-el-ganayen",
+      "source_label_ar": "الجناين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "223",
+      "city_code": "eg-fayoum-youssef-alsedeik",
+      "source_label_ar": "يوسف الصديق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "224",
+      "city_code": "eg-fayoum-waadi-al-rayaan",
+      "source_label_ar": "وادي الريان"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "225",
+      "city_code": "eg-fayoum-tamiea",
+      "source_label_ar": "طامية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "226",
+      "city_code": "eg-fayoum-snourss",
+      "source_label_ar": "سنورس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "227",
+      "city_code": "eg-fayoum-madinat-alfayuwm-aljadida",
+      "source_label_ar": "مدينة الفيوم الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "228",
+      "city_code": "eg-fayoum-itsa",
+      "source_label_ar": "إطسا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "229",
+      "city_code": "eg-fayoum-abshuaa",
+      "source_label_ar": "إبشواي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "230",
+      "city_code": "eg-fayoum-alfayoum",
+      "source_label_ar": "الفيوم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "231",
+      "city_code": "eg-assiut-sahel-seleim",
+      "source_label_ar": "ساحل سليم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "232",
+      "city_code": "eg-assiut-sadfaa",
+      "source_label_ar": "صدفا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "233",
+      "city_code": "eg-assiut-manfalout",
+      "source_label_ar": "منفلوط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "234",
+      "city_code": "eg-assiut-dairout",
+      "source_label_ar": "ديروط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "235",
+      "city_code": "eg-assiut-assiut-algedida",
+      "source_label_ar": "أسيوط الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "236",
+      "city_code": "eg-assiut-assiut",
+      "source_label_ar": "أسيوط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "237",
+      "city_code": "eg-assiut-alzaheir-alsahrawy",
+      "source_label_ar": "الظهير الصحراوي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "238",
+      "city_code": "eg-assiut-alqossya",
+      "source_label_ar": "القوصية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "239",
+      "city_code": "eg-assiut-alghaniem",
+      "source_label_ar": "الغنايم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "240",
+      "city_code": "eg-assiut-alfath",
+      "source_label_ar": "الفتح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "241",
+      "city_code": "eg-assiut-albadry",
+      "source_label_ar": "البداري"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "242",
+      "city_code": "eg-assiut-abu-teih",
+      "source_label_ar": "أبو تيج"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "243",
+      "city_code": "eg-assiut-abnoob",
+      "source_label_ar": "أبنوب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "244",
+      "city_code": "eg-beni-suef-smastta",
+      "source_label_ar": "سمسطا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "245",
+      "city_code": "eg-beni-suef-nasser",
+      "source_label_ar": "ناصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "246",
+      "city_code": "eg-beni-suef-ihnassya",
+      "source_label_ar": "إهناسيا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "247",
+      "city_code": "eg-beni-suef-ben-suief-algedida",
+      "source_label_ar": "بني سويف الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "248",
+      "city_code": "eg-beni-suef-ben-suief",
+      "source_label_ar": "بني سويف"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "249",
+      "city_code": "eg-beni-suef-biba",
+      "source_label_ar": "ببا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "250",
+      "city_code": "eg-beni-suef-alwastta",
+      "source_label_ar": "الواسطي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "251",
+      "city_code": "eg-beni-suef-alfeshin",
+      "source_label_ar": "الفشن"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "252",
+      "city_code": "eg-menia-samalout",
+      "source_label_ar": "سمالوط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "253",
+      "city_code": "eg-menia-mattay",
+      "source_label_ar": "مطاي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "254",
+      "city_code": "eg-menia-malawy",
+      "source_label_ar": "ملوي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "255",
+      "city_code": "eg-menia-maghagha",
+      "source_label_ar": "مغاغة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "256",
+      "city_code": "eg-menia-el-menia-algedida",
+      "source_label_ar": "المنيا الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "257",
+      "city_code": "eg-menia-el-menia",
+      "source_label_ar": "المنيا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "258",
+      "city_code": "eg-menia-dirmouass",
+      "source_label_ar": "ديرمواس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "259",
+      "city_code": "eg-menia-bani-mazar",
+      "source_label_ar": "بني مزار"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "260",
+      "city_code": "eg-menia-aladwa",
+      "source_label_ar": "العدوة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "261",
+      "city_code": "eg-menia-abu-qorqass",
+      "source_label_ar": "أبو قرقاص"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "262",
+      "city_code": "eg-aswan-new-toushka-city",
+      "source_label_ar": "توشكى الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "263",
+      "city_code": "eg-aswan-new-aswan-city",
+      "source_label_ar": "أسوان الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "264",
+      "city_code": "eg-aswan-nassr-alnouba",
+      "source_label_ar": "نصر النوبة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "265",
+      "city_code": "eg-aswan-kom-ambo",
+      "source_label_ar": "كوم أمبو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "266",
+      "city_code": "eg-aswan-kalabsha",
+      "source_label_ar": "كلابشة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "267",
+      "city_code": "eg-aswan-edfo",
+      "source_label_ar": "إدفو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "268",
+      "city_code": "eg-aswan-drawo",
+      "source_label_ar": "دراو"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "269",
+      "city_code": "eg-aswan-aswan",
+      "source_label_ar": "أسوان"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "270",
+      "city_code": "eg-aswan-alsabaia",
+      "source_label_ar": "السباعية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "271",
+      "city_code": "eg-aswan-albesaila",
+      "source_label_ar": "البصيلية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "272",
+      "city_code": "eg-aswan-al-radessa",
+      "source_label_ar": "الرديسية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "273",
+      "city_code": "eg-aswan-abu-sembal-alsayhia",
+      "source_label_ar": "أبو سمبل السياحية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "274",
+      "city_code": "eg-aswan-abu-sembal",
+      "source_label_ar": "أبو سمبل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "275",
+      "city_code": "eg-aswan-toshka",
+      "source_label_ar": "توشكى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "276",
+      "city_code": "eg-luxor-teiba-algedida",
+      "source_label_ar": "طيبة الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "277",
+      "city_code": "eg-luxor-luxor-algedida",
+      "source_label_ar": "الأقصر الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "278",
+      "city_code": "eg-luxor-luxor",
+      "source_label_ar": "الأقصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "279",
+      "city_code": "eg-luxor-issna",
+      "source_label_ar": "إسنا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "280",
+      "city_code": "eg-luxor-armant",
+      "source_label_ar": "أرمنت"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "281",
+      "city_code": "eg-luxor-altoud",
+      "source_label_ar": "الطود"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "282",
+      "city_code": "eg-luxor-alqarna",
+      "source_label_ar": "القرنة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "283",
+      "city_code": "eg-luxor-al-zeinya",
+      "source_label_ar": "الزينية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "284",
+      "city_code": "eg-luxor-al-bayada",
+      "source_label_ar": "البياضية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "285",
+      "city_code": "eg-qena-quoss",
+      "source_label_ar": "قوص"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "286",
+      "city_code": "eg-qena-qena-algedida",
+      "source_label_ar": "قنا الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "287",
+      "city_code": "eg-qena-qena",
+      "source_label_ar": "قنا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "288",
+      "city_code": "eg-qena-qaft",
+      "source_label_ar": "قفط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "289",
+      "city_code": "eg-qena-naqada",
+      "source_label_ar": "نقادة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "290",
+      "city_code": "eg-qena-naga-hamadi",
+      "source_label_ar": "نجع حمادي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "291",
+      "city_code": "eg-qena-farshout",
+      "source_label_ar": "فرشوط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "292",
+      "city_code": "eg-qena-dashna",
+      "source_label_ar": "دشنا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "293",
+      "city_code": "eg-qena-alwakf",
+      "source_label_ar": "الوقف"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "294",
+      "city_code": "eg-qena-abu-tesht",
+      "source_label_ar": "أبو تشت"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "295",
+      "city_code": "eg-red-sea-safaja",
+      "source_label_ar": "سفاجا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "296",
+      "city_code": "eg-red-sea-ras-gharib",
+      "source_label_ar": "رأس غارب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "297",
+      "city_code": "eg-red-sea-marsa-allam",
+      "source_label_ar": "مرسى علم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "298",
+      "city_code": "eg-red-sea-hurghada",
+      "source_label_ar": "الغردقة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "299",
+      "city_code": "eg-red-sea-halyeb",
+      "source_label_ar": "حلايب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "300",
+      "city_code": "eg-red-sea-alqussier",
+      "source_label_ar": "القصير"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "301",
+      "city_code": "eg-red-sea-al-shalatten",
+      "source_label_ar": "الشلاتين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "302",
+      "city_code": "eg-red-sea-red-sea",
+      "source_label_ar": "البحر الأحمر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "303",
+      "city_code": "eg-sohag-tama",
+      "source_label_ar": "طما"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "304",
+      "city_code": "eg-sohag-tahtaa",
+      "source_label_ar": "طهطا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "305",
+      "city_code": "eg-sohag-suhag",
+      "source_label_ar": "سوهاج"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "306",
+      "city_code": "eg-sohag-saqalta",
+      "source_label_ar": "ساقلتة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "307",
+      "city_code": "eg-sohag-hay-alqawssar",
+      "source_label_ar": "حي الكوثر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "308",
+      "city_code": "eg-sohag-gouhaina",
+      "source_label_ar": "جهينة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "309",
+      "city_code": "eg-sohag-gerga",
+      "source_label_ar": "جرجا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "310",
+      "city_code": "eg-sohag-dar-alsalam",
+      "source_label_ar": "دار السلام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "311",
+      "city_code": "eg-sohag-al-manshaa",
+      "source_label_ar": "المنشأة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "312",
+      "city_code": "eg-sohag-al-maragha",
+      "source_label_ar": "المراغة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "313",
+      "city_code": "eg-sohag-al-ballena",
+      "source_label_ar": "البلينا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "314",
+      "city_code": "eg-sohag-akhmiem",
+      "source_label_ar": "أخميم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "315",
+      "city_code": "eg-new-valley-paris",
+      "source_label_ar": "باريس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "316",
+      "city_code": "eg-new-valley-pallat",
+      "source_label_ar": "بلاط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "317",
+      "city_code": "eg-new-valley-mout",
+      "source_label_ar": "موط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "318",
+      "city_code": "eg-new-valley-al-kharga",
+      "source_label_ar": "الخارجة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "319",
+      "city_code": "eg-new-valley-al-farafra",
+      "source_label_ar": "الفرافرة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "320",
+      "city_code": "eg-new-valley-siwa",
+      "source_label_ar": "سيوة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "321",
+      "city_code": "eg-new-valley-kharja-oases",
+      "source_label_ar": "واحة الخارجة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "322",
+      "city_code": "eg-new-valley-dakhla-oases",
+      "source_label_ar": "واحة الداخلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "323",
+      "city_code": "eg-matrouh-north-coast-above-90km",
+      "source_label_ar": "الساحل الشمالي فوق 90 كم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "324",
+      "city_code": "eg-matrouh-um-alrekhim",
+      "source_label_ar": "أم الرخم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "325",
+      "city_code": "eg-matrouh-sidi-heneish",
+      "source_label_ar": "سيدي حنيش"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "326",
+      "city_code": "eg-matrouh-ras-alhikma",
+      "source_label_ar": "رأس الحكمة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "327",
+      "city_code": "eg-matrouh-kashuk-emaara",
+      "source_label_ar": "كشك عمارة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "328",
+      "city_code": "eg-matrouh-halazein",
+      "source_label_ar": "الحلازين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "329",
+      "city_code": "eg-matrouh-awlad-marii",
+      "source_label_ar": "أولاد مري"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "330",
+      "city_code": "eg-matrouh-atnouh",
+      "source_label_ar": "أتنوح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "331",
+      "city_code": "eg-matrouh-al-zayat",
+      "source_label_ar": "الزيات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "332",
+      "city_code": "eg-matrouh-al-suynat",
+      "source_label_ar": "السوينات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "333",
+      "city_code": "eg-matrouh-al-salom",
+      "source_label_ar": "السلام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "334",
+      "city_code": "eg-matrouh-al-qawasim",
+      "source_label_ar": "القواسم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "335",
+      "city_code": "eg-matrouh-al-qasr",
+      "source_label_ar": "القصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "336",
+      "city_code": "eg-matrouh-al-oush",
+      "source_label_ar": "العوش"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "337",
+      "city_code": "eg-matrouh-al-nasr",
+      "source_label_ar": "النصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "338",
+      "city_code": "eg-matrouh-al-grawla",
+      "source_label_ar": "الجراولة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "339",
+      "city_code": "eg-matrouh-al-dakhla",
+      "source_label_ar": "الداخلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "340",
+      "city_code": "eg-matrouh-abuluho-alganouby",
+      "source_label_ar": "أبو لحو الجنوبي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "341",
+      "city_code": "eg-matrouh-abuluho-albahri",
+      "source_label_ar": "أبو لحو البحري"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "342",
+      "city_code": "eg-matrouh-abu-mareiq",
+      "source_label_ar": "أبو مريق"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "343",
+      "city_code": "eg-matrouh-matrouh",
+      "source_label_ar": "مطروح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "344",
+      "city_code": "eg-matrouh-al-hammam",
+      "source_label_ar": "الحمام"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "345",
+      "city_code": "eg-matrouh-al-almeen",
+      "source_label_ar": "العلمين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "346",
+      "city_code": "eg-matrouh-brani",
+      "source_label_ar": "براني"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "347",
+      "city_code": "eg-matrouh-negela",
+      "source_label_ar": "النجيلة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "348",
+      "city_code": "eg-matrouh-salloum",
+      "source_label_ar": "السلوم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "349",
+      "city_code": "eg-north-sinai-rafah",
+      "source_label_ar": "رفح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "350",
+      "city_code": "eg-north-sinai-bir-alabd",
+      "source_label_ar": "بئر العبد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "351",
+      "city_code": "eg-north-sinai-al-sheikh-zwayd",
+      "source_label_ar": "الشيخ زويد"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "352",
+      "city_code": "eg-north-sinai-al-nakhl",
+      "source_label_ar": "النخل"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "353",
+      "city_code": "eg-north-sinai-al-hassana",
+      "source_label_ar": "الحسنة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "354",
+      "city_code": "eg-north-sinai-al-aresh",
+      "source_label_ar": "العريش"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "355",
+      "city_code": "eg-north-sinai-north-sinai",
+      "source_label_ar": "شمال سيناء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "356",
+      "city_code": "eg-south-sinai-tor-sinai",
+      "source_label_ar": "طور سيناء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "357",
+      "city_code": "eg-south-sinai-taba",
+      "source_label_ar": "طابا"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "358",
+      "city_code": "eg-south-sinai-sharm-alsheikh",
+      "source_label_ar": "شرم الشيخ"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "359",
+      "city_code": "eg-south-sinai-saint-katreen",
+      "source_label_ar": "سانت كاترين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "360",
+      "city_code": "eg-south-sinai-rass-sudr",
+      "source_label_ar": "رأس سدر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "361",
+      "city_code": "eg-south-sinai-nwabea",
+      "source_label_ar": "نويبع"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "362",
+      "city_code": "eg-south-sinai-dahab",
+      "source_label_ar": "دهب"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "363",
+      "city_code": "eg-south-sinai-abu-zeniema",
+      "source_label_ar": "أبو زنيمة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "364",
+      "city_code": "eg-south-sinai-abu-redeis",
+      "source_label_ar": "أبو رديس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "365",
+      "city_code": "eg-south-sinai-south-sinai",
+      "source_label_ar": "جنوب سيناء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "366",
+      "city_code": "eg-cairo-others",
+      "source_label_ar": "أخرى"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "367",
+      "city_code": "eg-cairo-new-capital",
+      "source_label_ar": "العاصمة الإدارية الجديدة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "368",
+      "city_code": "eg-cairo-manshiat-nasr",
+      "source_label_ar": "منشأة ناصر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "369",
+      "city_code": "eg-cairo-al-waily",
+      "source_label_ar": "الوايلي"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "370",
+      "city_code": "eg-cairo-al-marg",
+      "source_label_ar": "المرج"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "371",
+      "city_code": "eg-cairo-al-zawya-elhamra",
+      "source_label_ar": "الزاوية الحمراء"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "372",
+      "city_code": "eg-giza-al-badrasheen",
+      "source_label_ar": "البدرشين"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "373",
+      "city_code": "eg-giza-kerdassa",
+      "source_label_ar": "كرداسة"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "374",
+      "city_code": "eg-giza-al-hawamdia",
+      "source_label_ar": "الحوامدية"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "375",
+      "city_code": "eg-giza-al-wahat-city",
+      "source_label_ar": "مدينة الواحات"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "376",
+      "city_code": "eg-giza-atfeh",
+      "source_label_ar": "أطفيح"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "377",
+      "city_code": "eg-giza-alsaff",
+      "source_label_ar": "الصف"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "378",
+      "city_code": "eg-giza-monshaet-alqanater",
+      "source_label_ar": "منشأة القناطر"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "379",
+      "city_code": "eg-giza-alayaat",
+      "source_label_ar": "العياط"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "380",
+      "city_code": "eg-giza-awssem",
+      "source_label_ar": "أوسيم"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "381",
+      "city_code": "eg-giza-abo-alnomross",
+      "source_label_ar": "أبو النمرس"
+    },
+    {
+      "provider": "pdc",
+      "provider_city_id": "382",
+      "city_code": "eg-giza-al-barageel",
+      "source_label_ar": "البراجيل"
+    }
+  ]
+}

@@ -1,3 +1,25 @@
+## 2026-10-26 completed code deployment — 2026-10-26 02:02:04.416 Riyadh
+
+[Exact deployment](public-signup-deployment-receipt.md) PASS:5a38201292763325 /
+schema94, source3001cd6, approvale9d1d4bb consumed once. Runtime/Caddy/Auth/signup/
+CAPTCHA/purchasing gates unchanged. No merge/reset/cleanup/worktree deletion/push;
+all original source bytes and refs remain. Current source lineage still contains
+94 migrations; main remains the91-migration continuity checkout. Earlier READY/
+approval-pending notes below are historical; never rerun the consumed operator.
+
+## 2026-10-26 BETA-03 update — accepted mail preserved
+
+Owner personally verified effective abuse settings:30 Auth emails/hour project,
+60s/address, signup/sign-in30/5min/IP, verification30/5min/IP; CAPTCHA/provider off/
+none and leaked-password protection off. Do not repeat Management API403 checks.
+Keep30/hour initially; inspect real demand/Brevo headroom before proposing an
+increase. No SMTP/template/settings/send changed. Accepted recovery/confirmation
+stand. Optional Turnstile frontend is locally qualified for customer signup/login/
+reset and Dashboard login; runtime/provider activation remains off. See the
+[current signup release](public-signup-release.md) for exact code-only approval
+and separate real key/configuration/hosted acceptance gates. Do not enable CAPTCHA
+before deploying/configuring the frontend. No new actual Auth account/email.
+
 # BETA-01 / BETA-02 — Auth email acceptance
 
 ## Confirmation ACCEPTED — read-only verified — 2026-10-25

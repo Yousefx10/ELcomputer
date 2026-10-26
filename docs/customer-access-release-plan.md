@@ -1,3 +1,24 @@
+## 2026-10-26 completed code deployment — 2026-10-26 02:02:04.416 Riyadh
+
+[Exact deployment](public-signup-deployment-receipt.md) PASS:5a38201292763325 /
+schema94, source3001cd6, approvale9d1d4bb consumed once. Runtime/Caddy/Auth/signup/
+CAPTCHA/purchasing gates unchanged. No merge/reset/cleanup/worktree deletion/push;
+all original source bytes and refs remain. Current source lineage still contains
+94 migrations; main remains the91-migration continuity checkout. Earlier READY/
+approval-pending notes below are historical; never rerun the consumed operator.
+
+## 2026-10-26 implementation and owner policy update
+
+The next small notice is now implemented with optional Turnstile support, including
+Dashboard password login to avoid lockout. The [current replacement packet](public-signup-release.md)
+qualifies the actual archive while runtime notice/CAPTCHA and public signup remain
+off. Source3001cd6; the earlier notice-only seal is held, unapproved and superseded.
+Owner-verified abuse values close the old unknown-settings blocker; no Management
+API403/SMTP repeat. Hosted profile/empty view uses the owner's accepted-recovery
+ordinary match, which has no orders. Any future actual order-bearing customer
+must authorize use; no impersonation or automatic guest ownership. All historical
+approved/consumed source/deployment/import bytes and evidence remain unchanged.
+
 # Customer access requirements and pending release inventory
 
 **Current handover inventory:** [complete Git audit](GIT_WORKTREE_SYNC_AUDIT.md)
