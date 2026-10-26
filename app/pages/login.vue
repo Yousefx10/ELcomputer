@@ -2,6 +2,7 @@
 import { authErrorKey, normalizeAuthImagePosition, normalizeAuthLayout, safeCustomerReturnPath } from '~/utils/authPage'
 import { localizedPath } from '~/utils/appearance'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
+import { createPasswordRecovery } from '~/utils/passwordRecovery'
 
 const { uiNavigateTo } = useUiNavigation()
 const { locale, t } = useI18n()
@@ -10,6 +11,11 @@ const config = useRuntimeConfig()
 const colorMode = useColorMode()
 const route = useUiRoute()
 const user = useSupabaseUser()
+const recovery = import.meta.client ? createPasswordRecovery({
+  auth: supabase.auth, href: window.location.href,
+  replaceUrl: path => window.history.replaceState(window.history.state, '', path)
+}) : null
+onScopeDispose(() => recovery?.dispose())
 const { data: siteContent } = await useSiteContent()
 const settings = computed(() => siteContent.value?.settings || {})
 const layout = computed(() => normalizeAuthLayout(settings.value.auth_page_layout))
@@ -139,10 +145,8 @@ const submitAuthForm = async () => {
       return
     }
     if (authMode.value === 'recovery') {
-      const { data } = await supabase.auth.getSession()
-      if (!data.session) { errorKey.value = 'authPage.recoveryExpired'; return }
-      const { error } = await supabase.auth.updateUser({ password: password.value })
-      if (error) throw error
+      if (!recovery) { errorKey.value = 'authPage.recoveryExpired'; return }
+      await recovery.updatePassword(password.value)
       password.value = ''
       successKey.value = 'authPage.passwordUpdated'
       await supabase.auth.signOut()
@@ -199,6 +203,7 @@ watch(user, current => {
   if (import.meta.client && current?.sub && current.is_anonymous !== true && authMode.value !== 'recovery') completeSignIn()
 }, { immediate: true })
 onMounted(() => {
+  if (recovery?.invalid) errorKey.value = 'authPage.recoveryExpired'
   const supabaseUrl = config.public.supabase?.url || config.public.supabaseUrl
   const supabaseKey = config.public.supabase?.key
   if (supabaseUrl && supabaseKey) {
@@ -214,7 +219,7 @@ onMounted(() => {
       .catch(() => {})
   }
   if (route.query.error === 'account-disabled') errorKey.value = 'authPage.accountDisabled'
-  if (route.query.error_description || (route.query.error && route.query.error !== 'account-disabled')) errorKey.value = 'authPage.oauthFailed'
+  if (route.query.error_description || (route.query.error && route.query.error !== 'account-disabled')) errorKey.value = authMode.value === 'recovery' ? 'authPage.recoveryExpired' : 'authPage.oauthFailed'
   if (route.query.oauth === 'callback') {
     supabase.auth.getUser()
       .then(({ data }) => {
@@ -276,6 +281,7 @@ onMounted(() => {
             <AuthTurnstile v-if="captchaRequired && captchaSupported" :key="authMode" v-model="captchaToken" :site-key="captchaSiteKey" :language="locale" :theme="colorMode.value" :reset-key="captchaResetKey" :disabled="busy" />
             <p v-else-if="captchaRequired" role="alert" class="auth-login-help">{{ $t('authPage.securityUnavailable') }}</p>
             <p v-if="errorKey" id="auth-message" role="alert" class="auth-feedback auth-feedback--error">{{ $t(errorKey) }}</p>
+            <button v-if="authMode === 'recovery' && errorKey === 'authPage.recoveryExpired'" type="button" class="auth-text-link" :disabled="busy" @click="changeMode('forgot')">{{ $t('authPage.requestNewReset') }}</button>
             <p v-if="errorKey && authMode === 'login'" class="auth-login-help">{{ $t('authPage.loginHelp') }}</p>
             <p v-if="authMode === 'signup' && !signupAvailable" role="status" class="auth-login-help">{{ $t('authPage.signupUnavailable') }}</p>
             <p v-if="successKey" role="status" class="auth-feedback auth-feedback--success">{{ $t(successKey) }}</p>
