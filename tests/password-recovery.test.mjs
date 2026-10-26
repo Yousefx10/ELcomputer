@@ -126,3 +126,40 @@ for (const prefix of ['', '/ar']) test(`installed SDK redeems an email hash in a
   assert.equal((await sdk.auth.getSession()).data.session.user.id, user.id)
   recovery.dispose()
 })
+
+// Wire the actual customer SFC to the recovery controller. This compares the
+// deployed defect and fix entirely inside a synthetic transport.
+async function formFactory(script) {
+  const {build}=await import('esbuild'),{resolve}=await import('node:path'),{createRequire}=await import('node:module')
+  const imports=(script.match(/^import .*$/gm)||[]).join('\n')
+  const code=imports+`\nexport default async function(deps){
+    const {ref,computed,watch,onMounted,onScopeDispose,useUiNavigation,useI18n,useSupabaseClient,useRuntimeConfig,useColorMode,useUiRoute,useSupabaseUser,useSiteContent,window,sessionStorage,$fetch}=deps;
+    ${script.replace(/^import .*$/gm,'')}
+    return {authMode,password,submitAuthForm,errorKey,successKey};
+  }`
+  const built=await build({stdin:{contents:code,resolveDir:resolve('.'),loader:'js'},bundle:true,write:false,platform:'node',format:'cjs',alias:{'~':resolve('app')},define:{'import.meta.client':'true','import.meta.server':'false'}})
+  const mod={exports:{}};new Function('require','module','exports',built.outputFiles[0].text)(createRequire(import.meta.url),mod,mod.exports);return mod.exports.default
+}
+async function recoveryForm(t,factory,locale,url,f) {
+  const {ref,computed,watch}=await import('vue'),stops=[],location=new URL(url),history={state:{},replaceState:(_a,_b,p)=>{location.href=new URL(p,location).href}}
+  f.auth.signOut=async()=>{f.calls.push(['logout']);return {error:null}}
+  const page=await factory({ref,computed,watch:(...args)=>{const stop=watch(...args);stops.push(stop);return stop},onMounted(){},onScopeDispose:fn=>stops.push(fn),
+    useUiNavigation:()=>({uiNavigateTo:async()=>assert.fail('Recovery must stay on its form')}),useI18n:()=>({locale:ref(locale),t:k=>k}),useSupabaseClient:()=>({auth:f.auth}),useRuntimeConfig:()=>({public:{authCaptchaProvider:'turnstile',turnstileSiteKey:'fixture-public-site-key'}}),useColorMode:()=>({value:'light'}),
+    useUiRoute:()=>({query:{mode:'recovery',...(location.searchParams.has('code')?{code:'fixture-unredeemed'}:{})}}),useSupabaseUser:()=>ref(null),useSiteContent:async()=>({data:ref({settings:{}})}),window:{location,history},sessionStorage:{getItem:()=>null,removeItem(){}},$fetch:async()=>({})})
+  t.after(()=>stops.forEach(stop=>stop()));return page
+}
+let currentForm
+for(const locale of ['en','ar'])test(`actual ${locale} form verifies once on user submit, clears the password and signs out`,async t=>{
+  const {readFile}=await import('node:fs/promises'),{parse}=await import('@vue/compiler-sfc')
+  currentForm ||= await formFactory(parse(await readFile('app/pages/login.vue','utf8')).descriptor.scriptSetup.content)
+  const f=fake(),page=await recoveryForm(t,currentForm,locale,href(locale==='ar'?'/ar':''),f)
+  assert.deepEqual(f.calls,[]);page.password.value='Synthetic-fixture-password-1';await page.submitAuthForm()
+  assert.deepEqual(f.calls,[['verify','recovery'],['update',f.user.id],['logout']]);assert.equal(page.password.value,'');assert.equal(page.successKey.value,'authPage.passwordUpdated')
+})
+test('actual deployed recovery form updates an unrelated session after unresolved PKCE; corrected form refuses',async t=>{
+  const {execFileSync}=await import('node:child_process'),{parse}=await import('@vue/compiler-sfc')
+  const original=execFileSync('git',['show','b37be43ac6a24a663a12a5a56aaaa7e801827963:app/pages/login.vue'],{encoding:'utf8'})
+  const oldFactory=await formFactory(parse(original).descriptor.scriptSetup.content),url='https://independent-shop.example.invalid/login?mode=recovery&code=unredeemed'
+  const old=fake(),before=await recoveryForm(t,oldFactory,'en',url,old);before.password.value='Synthetic-fixture-password-1';await before.submitAuthForm();assert.deepEqual(old.calls,[['update',old.user.id],['logout']])
+  const fixed=fake(),after=await recoveryForm(t,currentForm,'en',url,fixed);after.password.value='Synthetic-fixture-password-1';await after.submitAuthForm();assert.deepEqual(fixed.calls,[]);assert.equal(after.errorKey.value,'authPage.recoveryExpired')
+})
