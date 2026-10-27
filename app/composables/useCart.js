@@ -113,12 +113,17 @@ const normalizeAppliedCoupon = (coupon) => {
     return null
   }
 
+  const total = Number(coupon.discountAmount ?? coupon.discount_amount ?? 0)
+  const delivery = Number(coupon.deliveryDiscountAmount ?? coupon.delivery_discount_amount ?? 0)
+  const discountAmount = Number.isFinite(total) ? Math.max(0, total) : 0
+
   return {
     code: String(coupon.code || '').trim().toUpperCase(),
     description: String(coupon.description || ''),
     discountType: String(coupon.discountType || coupon.discount_type || ''),
     discountValue: Number(coupon.discountValue ?? coupon.discount_value ?? 0),
-    discountAmount: Number(coupon.discountAmount ?? coupon.discount_amount ?? 0)
+    discountAmount,
+    deliveryDiscountAmount: Number.isFinite(delivery) ? Math.min(discountAmount, Math.max(0, delivery)) : 0
   }
 }
 

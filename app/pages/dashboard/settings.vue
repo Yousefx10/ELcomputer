@@ -1913,6 +1913,21 @@
                 <input v-model="newCoupon.delivery_discount_value" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
               </div>
 
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleCustomerId') }}</label>
+                  <input v-model="newCoupon.eligible_customer_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleProductId') }}</label>
+                  <input v-model="newCoupon.eligible_product_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleDeliveryId') }}</label>
+                  <input v-model="newCoupon.eligible_shipping_company_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+
               <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.minimumOrderAmount') }}</label>
                 <input
@@ -2034,6 +2049,21 @@
                 <div>
                   <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.deliveryDiscount') }}</label>
                   <input v-model="coupon.delivery_discount_value" type="number" min="0" step="0.01" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleCustomerId') }}</label>
+                  <input v-model="coupon.eligible_customer_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleProductId') }}</label>
+                  <input v-model="coupon.eligible_product_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleDeliveryId') }}</label>
+                  <input v-model="coupon.eligible_shipping_company_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
 
                 <div>
@@ -2345,6 +2375,9 @@ const newCoupon = reactive({
   discount_type: 'fixed',
   discount_value: '',
   delivery_discount_value: '',
+  eligible_shipping_company_id: '',
+  eligible_product_id: '',
+  eligible_customer_id: '',
   minimum_order_amount: '',
   usage_limit: '',
   starts_at: '',
@@ -2814,6 +2847,9 @@ const normalizeCouponPayload = (coupon) => {
     discount_type: coupon.discount_type === 'percentage' ? 'percentage' : 'fixed',
     discount_value: discountValue,
     delivery_discount_value: Number(coupon.delivery_discount_value || 0),
+    eligible_shipping_company_id: String(coupon.eligible_shipping_company_id || '').trim().toLowerCase() || null,
+    eligible_product_id: String(coupon.eligible_product_id || '').trim().toLowerCase() || null,
+    eligible_customer_id: String(coupon.eligible_customer_id || '').trim().toLowerCase() || null,
     minimum_order_amount: minimumOrderAmount,
     usage_limit: usageLimit ? Number(usageLimit) : null,
     starts_at: toIsoDateTimeValue(coupon.starts_at),
@@ -2840,6 +2876,9 @@ const mapCoupon = (coupon) => {
     original_discount_type: normalizedCoupon.discount_type,
     original_discount_value: String(normalizedCoupon.discount_value || ''),
     original_delivery_discount_value: String(normalizedCoupon.delivery_discount_value || ''),
+    original_eligible_shipping_company_id: normalizedCoupon.eligible_shipping_company_id || '',
+    original_eligible_product_id: normalizedCoupon.eligible_product_id || '',
+    original_eligible_customer_id: normalizedCoupon.eligible_customer_id || '',
     original_minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
     original_usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
     original_starts_at: toDateTimeLocalValue(coupon.starts_at),
@@ -4149,6 +4188,13 @@ const deleteSiteLink = async (linkId) => {
 const validateCouponForm = (coupon, isNewCoupon = false) => {
   const normalizedCoupon = normalizeCouponPayload(coupon)
 
+  for (const field of ['eligible_customer_id', 'eligible_product_id', 'eligible_shipping_company_id']) {
+    if (normalizedCoupon[field] && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(normalizedCoupon[field])) {
+      couponError.value = 'Enter a valid eligibility ID.'
+      return null
+    }
+  }
+
   if (!normalizedCoupon.code) {
     couponError.value = 'Coupon code is required.'
     return null
@@ -4196,6 +4242,9 @@ const isCouponDirty = (coupon) => {
     String(coupon.discount_type || '') !== coupon.original_discount_type ||
     String(coupon.discount_value || '') !== coupon.original_discount_value ||
     String(coupon.delivery_discount_value || '') !== coupon.original_delivery_discount_value ||
+    String(coupon.eligible_shipping_company_id || '').trim().toLowerCase() !== coupon.original_eligible_shipping_company_id ||
+    String(coupon.eligible_product_id || '').trim().toLowerCase() !== coupon.original_eligible_product_id ||
+    String(coupon.eligible_customer_id || '').trim().toLowerCase() !== coupon.original_eligible_customer_id ||
     String(coupon.minimum_order_amount || '') !== coupon.original_minimum_order_amount ||
     String(coupon.usage_limit || '') !== coupon.original_usage_limit ||
     String(coupon.starts_at || '') !== coupon.original_starts_at ||
@@ -4209,6 +4258,9 @@ const resetNewCoupon = () => {
   newCoupon.discount_type = 'fixed'
   newCoupon.discount_value = ''
   newCoupon.delivery_discount_value = ''
+  newCoupon.eligible_shipping_company_id = ''
+  newCoupon.eligible_product_id = ''
+  newCoupon.eligible_customer_id = ''
   newCoupon.minimum_order_amount = ''
   newCoupon.usage_limit = ''
   newCoupon.starts_at = ''
