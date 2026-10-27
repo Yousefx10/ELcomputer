@@ -1,3 +1,38 @@
+## E70 — recovery redemption/password/new login ACCEPTED — 2026-10-27
+
+[New bounded acceptance receipt](password-recovery-acceptance-receipt.md): owner
+reports correct unchanged Site URL/approved redirects, updated recovery template,
+password update PASS and sign-in with the new password PASS. These are owner-reported
+functional smoke-test results; fresh same-customer metadata supports recent sign-in.
+This is the new post-E69 recovery acceptance, not a revalidation of older claims.
+No password/token/link capture, extra Auth request/email or reset by Codex.
+BETA-02 recovery blocker resolved. Preserve confirmation/Turnstile/A-B acceptance;
+resume the same-customer EGP75 purchase after the real address/mobile is saved.
+
+## E69 — recovery app deployed; owner redemption still pending — 2026-10-27
+
+[Deployment receipt and approved owner steps](password-recovery-deployment-receipt.md):
+11cb391b2497b703/schema95 PASS,02:26:23.176 Riyadh. App seal20d5 consumed complete;
+one restart/zero SQL/runtime/Caddy/Auth/email changes; all preservation/assets PASS.
+No real recovery email, password update or login was exercised. Owner-only template/
+exact redirects and ONE fresh reset/password/new-login acceptance are approved,
+pending and unused. No repeat app deployment or new approval for those exact steps.
+Recovery EMAIL DELIVERY stays accepted; redemption/password/login remain NOT ACCEPTED.
+
+## E68 correction — 2026-10-27 — recovery redemption NOT ACCEPTED
+
+The owner clarifies that previous password-recovery acceptance verified EMAIL
+DELIVERY ONLY. Link redemption, password updating and subsequent new-password login
+were never accepted. This supersedes every earlier recovery-redemption/password/
+login ACCEPTED claim below, including the historical owner-acceptance receipt.
+Historical evidence remains preserved; it must not be used as a public-launch PASS.
+Signup email confirmation and other completed tests remain accepted.
+
+[Focused recovery repair and exact guarded approval](password-recovery-repair-review.md)
+is E68/BETA-02, a public-launch blocker. Local fix/tests/build/retained archive PASS;
+production deployment, recovery-only template change and ONE owner recovery email/
+redemption/password update/new login are pending. No email or Auth write occurred.
+
 ## 2026-10-26 completed code deployment — 2026-10-26 02:02:04.416 Riyadh
 
 [Exact deployment](public-signup-deployment-receipt.md) PASS:5a38201292763325 /

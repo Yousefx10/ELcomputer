@@ -1,3 +1,1192 @@
+# E103 — MON-01 final timer completion deployed; automatic operation PASS — 2026-10-28
+
+- Exact owner approval `ed9b89ee356adad2f92b58bdc0c4ef1ab5b1d4609768d43a0973aed57283c3a2`
+  recorded/consumed; final procedure executed once. [Completion receipt](docs/mon01-final-timer-completion-receipt.md).
+  Existing timer enabled once, **active/waiting**. First persistent catch-up
+  checkseq4 complete02:42:13Riyadh; regular checkseq5 complete02:45:05. Next systemd
+  trigger02:50:04 at postflight. Typed timestamp observer handled real nonzero
+  values; no failure stop, manual worker start, app restart or replay occurred.
+- **MON-01 DEPLOYED / AUTOMATIC OPERATION PASS**. Hosted owner Dashboard observation
+  remains pending and separate. Two automatic worker runs verified; regular run
+  new_alert_events0/new_paid_order_count0. Original alert identity not duplicated.
+  Current report fresh/complete/WARNING with two provider-UNVERIFIED exceptions.
+- Production **b4b502a03207713a/schema98/PID58599**, Caddy PID26652 unchanged.
+  **ZERO app restarts**, rebuild/deploy/direct business SQL/migration/Caddy/unit/
+  runtime/credential/email/provider actions. Actual worker checks Manual EGP50;
+  public/local CARD/cart/login200; signup OPEN; PDC PAUSED; callback Caddy/HMAC/
+  runtime unchanged, expected public GET403. No payment or callback replay.
+- Report0640/SQLite0600 and actual app-reader/private-state separation retained.
+  Anonymous monitor401/private-no-store/no order leakage; projection available/
+  complete/not stale. Five durable checks, six dedup identities and two journal
+  gaps retained. Missed-interval alert resolved at regular run; historical gap/
+  staffing evidence is not retroactively repaired. No live failure was injected.
+- Fresh independent scheduled-run/completed/global intent receipts belong only to
+  final completion. All older consumed plans, approvals/intents and missing old
+  receipts remain immutable. Original emergency purchasing-close budget1 unused;
+  existing recovery close path still matches. Email OFF, Auth SMTP untouched.
+  Existing27 focused checks/host qualification retained; broad tests not repeated.
+- GET-only staffed financial checkpoint02:42:24: orders4, succeeded attempts/
+  transactions2, pending1/cancelled1, critical0, Manual50 available; no State/run/
+  check call, state write, manual worker start or SQL/provider action. Staffed
+  monitoring was retained through actual automatic verification. Continue staffed
+  Dashboard attention/fulfillment; email/off-host outage coverage is not claimed.
+- **BETA WARNING:** pending2649/ORD-20261027-6E27BA3BD3 overdue/provider-UNVERIFIED;
+  abandoned friend3149/ORD-20261027-A5FC5269EA terminal/provider-UNVERIFIED.
+  No automatic retry/cancel/charge/refund/fulfillment. WOLF remains Processing and
+  earlier paid order remains staff backlog. No invented fulfillment.
+- DTR-33/STOR-01/original32/all deferred work preserved/open. MIG-04 remains
+  separately queued READ-ONLY; no SEO work started. **NEXT: owner observes fresh
+  Dashboard warnings/backlog with existing Orders permission; retain staff coverage.**
+  All MON-01 execution authorities are consumed; never replay completion.
+
+---
+
+# E102 — MON-01 timestamp observer corrected; final timer approval ready — 2026-10-28
+
+- User authorizes observer correction/preparation only. [Review](docs/mon01-final-timer-completion-review.md).
+  Replaced parsing of formatted systemctl timestamps with typed D-Bus uint64 JSON.
+  Exact decimal strings preserve unsigned64 sentinel through JavaScript transport.
+  Human/localized durations never determine trigger proof; missing/invalid typed
+  fields stop explicitly. Observer/worker failure classes are distinct, with the
+  same single timer-only safety stop. No safety guard bypass or policy activation.
+- **27 focused tests PASS**, including observed format, C/EN/AR host JSON, display
+  locale variants, invalid/missing/overflow/type cases, precision, source failures,
+  worker/parser distinction, real trigger/freshness/history/dedup and failure stop.
+  Corrected reader's read-only host qualification PASS with zero/nonzero states.
+  Tests and host qualification passed BEFORE the sole fresh packet was sealed.
+- Fresh private packet `../mon01-final-timer-completion-20261028/`,35 sealed inputs.
+  Seal `ed9b89ee356adad2f92b58bdc0c4ef1ab5b1d4609768d43a0973aed57283c3a2`;
+  expires **28 October06:08:53.653Riyadh**; start before06:00:53.653 for observation.
+  Final preflight **02:28:07Riyadh PASS**; **NO APPROVAL / NO EXECUTION**.
+  Existing timer remains disabled; application **b4b502a03207713a/schema98/PID58599**,
+  Caddy PID26652, worker/units/runtime/credentials unchanged; original kill budget1.
+- Proposed fresh action: enable existing timer once, verify active/waiting and
+  typed next trigger, automatic worker run/new durable report/no duplicate old
+  alerts, unchanged checkout/callback/privacy. **ZERO app restarts/manual worker
+  starts**, no rebuild/deploy/unit/Caddy/credential/SQL/email/provider action.
+  Prior consumed global intent and failure-stop receipts remain immutable and
+  hash-bound; final independent intent prevents replay. No old receipt fabricated.
+- Overdue payment checkpoint **02:18:11–12Riyadh** completed read-only. The02:05:04
+  due check has no timely evidence; catch-up does not repair historical coverage.
+  Latest checkpoint **02:29:20Riyadh**: CARD/cart/login200, monitor401, signup OPEN,
+  Manual EGP50 available/PDC PAUSED; critical ledger exceptions0, overdue1;
+  new orders1/attempts1/transactions0. Next staffed review due **02:44:20Riyadh**.
+- **BETA WARNING:** new ORD-20261027-6E27BA3BD3/EGP2649, locally pending/paid0,
+  matching pending attempt expired02:12:13, no signed transaction/shipping job;
+  provider outcome UNVERIFIED. No Paymob query, cancellation/retry/refund/fulfillment.
+  Separate abandoned friend3149 remains Cancelled/paid0/provider-UNVERIFIED. WOLF
+  remains Processing; earlier paid backlog retained. Last automatic report01:50:04
+  is stale; keep staffed15-minute checks until timer actually verified operational.
+- Both accounts' artifacts, history/dedup/report permissions, DTR-33/STOR-01/
+  original32/all deferred work preserved. MIG-04 queued separately READ-ONLY;
+  no SEO/unrelated work. **NEXT: exact FINAL TIMER COMPLETION approval in review.**
+
+---
+
+# E101 — MON-01 timer completion consumed; observer defect; timer disabled — 2026-10-28
+
+- Exact owner approval `91fadbc1dbb46c47658c3c951d700bcabfd806fccf7a85794a50b6aff4296a15`
+  recorded and executed once. [Stop receipt](docs/mon01-timer-completion-stop-receipt.md).
+  Original installer, journal recovery and timer completion are all consumed.
+  **MON-01 BLOCKED / TIMER DISABLED / NOT OPERATIONAL.** No replay or retry.
+- Existing timer enabled01:48:26Riyadh and triggered one worker at01:50. Observer
+  failed01:50:02; approved failure stop disabled/stopped only the timer once at
+  01:50:03. Worker already started by that timer finished successfully01:50:08;
+  checkseq3 observed01:50:04 is durable/complete/WARNING. No manual worker start.
+- Guard defect: systemctl prints nonzero LastTriggerUSecMonotonic as a formatted
+  duration; sealed observer int(...) raises ValueError. Actual host output on12
+  timers and a local reproduction identify first_run line116. Codex1's10 fixtures
+  missed this host format. Original stop reason is generic; no original traceback
+  was retained. Consumed sealed source stays unchanged. No correction deployed.
+- New independent failure-stop intent/receipt prove one containment command, not
+  another activation. Timer disabled/inactive/no next trigger; scheduled-run and
+  completed files remain absent in timer packet and both older consumed operators.
+  Global activation intent remains consumed. No manufactured completion proof.
+- Application **b4b502a03207713a / PID58599** and Caddy PID26652 unchanged;
+  schema98 is the pre-approval verified baseline. **ZERO app restarts**, direct
+  business SQL statements, SQL writes/migrations, Caddy/unit/runtime/credential
+  changes, emails, SMTP access or provider actions in timer completion.
+  Public/local CARD/cart/login200; anonymous monitor401; signup OPEN; Manual EGP50
+  verified by complete worker check; PDC PAUSED; callbacks/runtime/HMAC preserved.
+  Original emergency-close shared budget1 remains unused; no purchasing closure.
+- Original two check rows and three dedup identities/fingerprints retained. New
+  check3 adds only missed-interval warning/event; journal gap1 records unscanned
+  history. Current report projection available/complete/not stale at01:53:38;
+  report0640/SQLite0600 retained. Hosted owner observation and recurring cadence
+  remain unaccepted. No historical staffing/scan coverage reconstructed.
+- Friend3149 still provider-UNVERIFIED; intentional abandonment is owner report.
+  WOLF remains Processing and older paid order remains backlog. No fulfillment,
+  charge, refund, stock or order action. DTR-33/STOR-01/original32/all deferred
+  tests stay open; MIG-04 remains separately queued READ-ONLY, no SEO work.
+- **NEXT: qualify timestamp observer correction against real systemd output and
+  separately review a fresh existing-timer route with0 app restarts.** No further
+  production action now. Keep staffed15-minute monitoring; last real worker
+  check01:50:04, next staffed check due no later02:05:04Riyadh (not a staffing claim).
+
+---
+
+# E100 — MON-01 existing-timer completion ready; exact approval pending — 2026-10-28
+
+- Owner authorizes preparation only of minimal timer completion. [Review](docs/mon01-timer-completion-review.md).
+  Existing original installer and recovery remain consumed; no replay, deployment,
+  app restart or missing parent receipt fabrication. Production remains
+  **b4b502a03207713a / schema98 / PID58599**; Caddy PID26652 unchanged.
+- Fresh timer-completion preflight **01:36:46 Riyadh PASS**. Exact installed worker,
+  both unit bytes and loaded timer schedule match reviewed MON-01. Timer disabled;
+  worker idle/success; two durable check records/three dedup identities preserved.
+  Ten new isolated completion-guard checks PASS; no completed broad tests repeated.
+- Separate private packet `../mon01-timer-completion-20261028/`;26 sealed inputs.
+  Seal `91fadbc1dbb46c47658c3c951d700bcabfd806fccf7a85794a50b6aff4296a15`;
+  expires **28 October06:08:53.653 Riyadh**; start before06:00:53.653 for observation.
+  **NO OWNER APPROVAL / NO EXECUTION.** Original single-use emergency-close budget1
+  remains unused and shared through the existing recovery close path.
+- Proposed action: enable/start **existing commerce-monitor.timer once**, observe
+  a genuine timer-triggered worker run and fresh durable report. **ZERO application
+  restarts, ZERO manual worker starts**. No direct SQL in the approved path, unit/
+  runtime/credential/Caddy change, email, SMTP access or provider transaction.
+  On activation/first-run failure, stop/disable only that timer once, preserve
+  evidence and stop. Independent global/specific exclusive intents prevent replay;
+  new receipts never fill either consumed operator's switched/completed files.
+- Staffed read-only checkpoint **01:37:03 Riyadh**: CARD/cart/login200,
+  monitor anonymous401, signup OPEN, Manual EGP50 available, PDC PAUSED; critical
+  ledger exceptions0 and new orders/attempts/transactions0. Next due **01:52:03**.
+  Last automatic report01:18:32 is stale; keep15-minute staffed monitoring until
+  actual timer operation is verified. No retrospective historical coverage claim.
+- Friend intentionally abandoned3149 remains Cancelled/pending/paid0/no signed
+  transaction: provider outcome UNVERIFIED. WOLF and earlier fulfillment backlog
+  remain staff work. DTR-33/STOR-01/original32/all deferred work remain open;
+  MIG-04 remains separately queued READ-ONLY. No SEO work combined.
+- **NEXT: owner sends the exact TIMER COMPLETION approval in the linked review.**
+  Only then use the sealed completion once and verify timer/first run/privacy/
+  freshness and preserved commerce controls. Hosted owner observation stays separate.
+
+---
+
+# E99 — MON-01 recovery consumed after cutover; timer completion blocked — 2026-10-28
+
+- Exact owner recovery approval `6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4`
+  recorded and executed **once**. [Stop receipt](docs/mon01-journal-recovery-stop-receipt.md).
+  Current production **b4b502a03207713a / schema98 / PID58599**; one approved app
+  restart consumed. Caddy PID26652 unchanged. Never replay either installer.
+- Worker fix and private report/runtime reader binding deployed. Corrected first
+  worker check01:18:32 complete/WARNING; original failed check retained in SQLite.
+  Immediate post-restart capabilities GET502 preceded Nuxt listening by103.182ms.
+  Guard stopped at APPLICATION_HEALTH_STOP before timer enable. No second restart,
+  rollback, retry, closure or fabricated switched/completion receipt.
+- Read-only01:20 checks: public/local CARD capabilities/cart/login200, monitor
+  anonymous401; Manual EGP50/signup OPEN/PDC PAUSED. Critical financial exceptions0;
+  new orders/attempts/transactions0. All2268 deployed asset hashes PASS01:21:21.
+  Original single-use emergency-close budget1 remains unused; callbacks/runtime/
+  HMAC/Caddy preserved. No payment, callback POST, provider or SMTP action.
+- **MON-01 BLOCKED / PARTIALLY DEPLOYED / NOT ACCEPTED:** timer disabled/inactive,
+  no next trigger. Existing verify cannot enable it and requires the missing
+  switched receipt. Scheduled dedup/cadence and hosted staff-browser acceptance
+  remain unexercised. No live failure injected. Staffed monitoring remains needed;
+  last full read-only checkpoint01:20:40, next due no later01:35:40Riyadh.
+- Friend EGP3149 Cancelled/pending/paid0/no signed transaction; owner confirms
+  intentional abandonment, provider nonpayment still UNVERIFIED. WOLF stays
+  Paid/Processing/untracked/unpacked/no shipping job. No fulfillment invented.
+- All sealed inputs, original parent receipts,135 frozen worktree files and
+  original32 deferred rows remain preserved. DTR-33/STOR-01/all deferred work open.
+  Email OFF; no Auth SMTP access. Existing tests retained, broad tests not repeated.
+- **NEXT: separately review timer completion with zero additional app restarts**;
+  existing units/worker/state/report/app only, no replacement installer, no replay
+  or invented receipt. No further production step taken after the guarded stop.
+  MIG-04 remains READ-ONLY queued after MON-01; no combined SEO change/audit.
+
+---
+
+# E98 — Codex 1 takeover; MON-01 recovery ready for exact approval — 2026-10-28
+
+- Read-only takeover preflight **28 October 01:15:10 Riyadh PASS**.
+  Seal `6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4`;
+  expires **28 October 2026, 06:08:53.653 Riyadh**. All sealed input/archive hashes
+  match. Scope unchanged; no recovery approval or execution exists.
+- Production **a402cf24a9685e0d / schema98 / PID55343**. Original runtime, service
+  and Caddy identities match; zero MON-01 app restarts; timer remains inactive.
+  Signup OPEN; CARD capabilities/Manual EGP50 available; PDC PAUSED.
+  Critical amount, success-ledger, duplicate and ownership exceptions: zero.
+  Evidence: private recovery packet `preflight-1793139310665.json`. No payment created.
+- Original `cd1ed359…` approval and local/remote execution intents are consumed.
+  Parent operator also rejects the intentional worker-input hash change.
+  Never replay the original installer or re-record its approval. Recovery reuses
+  staged **b4b502a03207713a**, permits one unused app restart and preserves the
+  original unused **single emergency-close budget**. No new installer or budget.
+- Inspected all22 worktrees/branches/statuses; existing135-file preservation guard
+  PASS. Both accounts' artifacts remain preserved. No checkout, cleanup, merge,
+  push, production write, worker run or restart. Existing22 worker/5 recovery
+  checks and prior API/build/archive evidence retained; broad tests not repeated.
+  Email OFF; no SMTP credential access. Hosted acceptance remains pending.
+- Owner explicitly confirms the friend intentionally abandoned payment. Its last
+  specific ledger observation is Cancelled; merchant/provider nonpayment remains
+  **UNVERIFIED**. No retry, charge, refund or fulfillment. WOLF remains Processing
+  at its last specific observation; no invented fulfillment. DTR-33, STOR-01 and
+  all other deferred tests remain open. Historical monitoring gaps remain.
+- **MIG-04 queued READ-ONLY immediately after MON-01**, separately: Search Console
+  readiness; robots/sitemap/canonicals/hreflang/indexing; legacy WooCommerce
+  product/category/page mappings and301/308 redirects;404s/chains/broken links;
+  storefront “under maintenance” text; preservation of old-to-new URLs.
+  Google access/indexing remains unverified. No SEO change joins this deployment.
+- **NEXT: separate exact owner recovery approval** in the
+  [E97 review](docs/mon01-journal-recovery-review.md), then existing recovery once
+  with fresh live guards. Postflight must cover release/schema, five-minute timer,
+  durable reports/journal continuity, staff-only Dashboard permissions,
+  deduplication/heartbeat/failure behavior and CARD/Manual50/callback/kill controls
+  without payment creation. Staffed coverage and owner acceptance stay explicit.
+
+---
+
+# E97 — MON-01 guarded stop; minimal journal recovery ready — 2026-10-28
+
+- Owner approval cd1ed359 was recorded once. The single guarded installation
+  stopped at its first worker check, before application cutover. Never rerun it.
+  Existing monitoring user/group, private credentials/state, service/timer and
+  staged candidate remain installed. Worker failed; timer inactive; app restarts0.
+- [Recovery review](docs/mon01-journal-recovery-review.md): original journal JSON
+  exceeded the4MiB worker bound (5,838,505bytes). Projecting MESSAGE/PRIORITY retained
+  all5,563 records in2,199,632bytes. No larger limits, extra privilege or raw export.
+  Worker-only commit568c8ddb:22worker checks PASS;5new recovery guard checks PASS.
+- Application artifact b4b502a03207713a is unchanged, still inactive. Reuse its
+  archive, inventory and all2268 qualified assets; no rebuild. Recovery changes
+  only the worker, then qualifies the existing service/candidate before finishing
+  the one unused app cutover/restart. No credential rewrite, SQL, Caddy, email,
+  new payment, order/stock action, public activation or original-operator retry.
+- Production a402cf24a9685e0d/schema98/PID55343 remains live. Runtime and Caddy
+  unchanged; signup/CARD/Manual50 remain available; PDC PAUSED. Existing single-use
+  emergency kill budget remains1, shared by recovery after its approved cutover.
+- Latest full read-only checkpoint28Oct00:54:45Riyadh: new orders/payments0,
+  no critical ownership/amount/success-ledger/duplicate mismatch. Friend3149 changed
+  locally to Cancelled at00:44:01; paid0, no provider transaction/callback evidence.
+  Provider outcome remains UNVERIFIED, not confirmed unpaid. No agent order action.
+  Worker already detects terminal-provider-uncertain cases. WOLF Paid/Processing,
+  untracked/unpacked, no shipment. Journals show no identified checkout/callback
+  failure;4generic markers are not proof of checkout failures; access logs absent.
+- Public Beta WARNING: automation is not active; staff must keep15-minute checks.
+  The00:15 checkpoint was missed; first worker failed before timer activation.
+  No full timely00:15/00:30 check is evidenced.
+  Catch-up completed00:37; next full00:54 check was17m23s later, also late.
+  Preserve earlier15historical missing points. Next checkpoint01:09Riyadh.
+- Fresh recovery preflight00:51:54 PASS, no production writes. New exact seal
+  6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4;
+  expires28Oct06:08:53Riyadh, unchanged from parent. RECOVERY NOT APPROVED/EXECUTED.
+  Fresh approval is needed because the sealed installer is consumed and its worker
+  changes. Keep parent approvals, intents, certificates and stop evidence immutable.
+- Original32deferred rows/DTR-33/STOR-01/location96/storage audit and all existing
+  branches/commits/changes preserved. Auth SMTP untouched; no notification or push.
+  NEXT: exact recovery approval in linked review, followed by fresh live guards.
+
+---
+
+# E96 — MON-01 Dashboard core ready; email optional/off; exact approval pending — 2026-10-28
+
+- Owner prioritizes secure Dashboard alerts and durable monitoring. Email is no
+  longer a core prerequisite. Do not extract/copy/reuse hosted Auth SMTP credentials.
+  Read-only app/VPS metadata: no configured application sender or SMTP transport;
+  hosted Auth SMTP was not inspected. No credential generated or notification sent.
+- [Dashboard-core review](docs/mon01-dashboard-core-review.md): sourcefeea512 on
+  deployed113b313, candidateb4b502a03207713a. Persistent5-minute worker, SQLite
+  receipts/deduplication, private report and Orders-permission Dashboard alerts.
+  Email disabled and no email backlog. Optional recipient field remains available.
+- 36 focused checks PASS (21 worker/7 API-settings-UI/8 guard), production build PASS,
+  2268 served local asset hashes PASS incl2161 retained; safe archive readback PASS.
+  Read-only VPS functions23:48:32 and final guarded preflight00:09:02 on28October PASS.
+  Installed service/group/timer and owner browser acceptance remain pending.
+- Publica402/schema98/PID55343 unchanged, signup/CARD/Manual50 LIVE; PDC PAUSED.
+  Checks22:58/23:13/23:30/23:45 found no new orders/payments, no critical mismatch.
+  Friend3149 remains UNVERIFIED; WOLF remains Paid/Processing/unpacked, no shipment.
+  Public Beta WARNING while that exception and staffed/manual coverage remain.
+  Historical15 missing points preserved;23:13–23:30 review was late (16m52s).
+- Core approval proposes one app restart, monitoring user/service/timer, one private
+  report-path runtime value/read-only report group; no SQL/Caddy/email/charge/push.
+  Preserve/rebind original remaining single-use kill using its shared intent marker,
+  without rerunning consumed activation or creating another kill budget.
+- READY FOR EXACT OWNER APPROVAL, NOT DEPLOYED. Sealcd1ed3593135056015cdfa14b5cf4059702866a3802a49819b202fbda8ed691f;
+  exact phrase in linked review. Expires28Oct06:08:53Riyadh; fresh live check mandatory.
+  No MON-01 approval or execution intent recorded. Do not use old E95 readiness or
+  superseded unapproved packets. Current private pointer: dashboard-core-readiness.json.
+  Final full health28Oct00:08:57: no new orders/payments or critical exception;
+  next staffed00:15Riyadh. Earlier historical gaps remain recorded.
+- NEXT: owner reviews/approves the exact Dashboard-core packet. Keep staffed15-minute
+  Dashboard/fulfillment coverage; email setup is separate and optional. No test mail.
+- Original32 rows/DTR-33/STOR-01/location96/storage audit and all existing work remain
+  preserved. Roadmap + both handoffs synchronized. No Git push or production change.
+
+---
+
+# E95 — MON-01 locally qualified; existing SMTP access/release guards pending — 2026-10-27
+
+- Owner promotes MON-01 to P0 and binds alerts to info@elcomputer.net, with a
+  Dashboard-editable address. Reuse approved email credentials only; no new key,
+  test notification or production deployment is authorized by this work request.
+- [MON-01 review](docs/mon01-automated-monitoring-review.md): isolated source
+  5ea264a on deployed113b313; one GET-only worker + persistent5-minute timer,
+  durable heartbeat/report/deduplication and permission-protected EN/AR email field.
+  No automatic order/payment/stock action; provider-uncertain remains UNVERIFIED.
+  Unit-only follow-up60e9fdd uses a private config credential; hosted unit acceptance pending.
+- 17 worker +2 settings/UI tests PASS; production build PASS; all2267 local served
+  browser assets status/hash PASS, including2161 retained. In-memory production
+  function qualification22:47:21Riyadh read3 known orders; no writes or notification.
+  Installed sandbox/timer, SMTP delivery and browser save are NOT accepted yet.
+- Immediate Beta checks22:24/22:32/22:45: new orders/attempts/transactions0 since
+  21:51. Sole aged friend3149 attempt remains pending/UNVERIFIED. WOLF paid order
+  remains Processing/untracked/unpacked, no shipment. Public Beta WARNING;
+  a402/schema98/PID55343, signup/CARD/Manual50/callbacks/PDC pause/kill unchanged.
+- Two more missing timely checkpoints22:06/22:21;15 historical gaps recorded.
+  NEXT staffed23:00:52Riyadh. No automatic monitoring was activated.
+- DEPLOYMENT BLOCKED / exact approval NOT ISSUED: app Brevo sender is dormant,
+  with no key or approved sender; secure access to existing Auth SMTP is pending.
+  Before a future app switch, qualify a fresh installer and preserve/rebind the
+  original single-use kill guard (currently bound to a402), without a second budget.
+  No old approval/operator is reused. No production files/SQL/restart/provider call.
+- NEXT owner input: secure file reference for the existing approved SMTP profile,
+  or confirmation it exists only in Supabase; never paste credentials in chat.
+  Then finish/seal the guarded release and return one exact deployment approval.
+- PDC paused; original32 deferred tests/DTR-33/STOR-01/location96/storage audit
+  preserved. Existing worktrees, commits and changes preserved; no push.
+
+---
+
+# E94 — merchant inquiry STILL UNCERTAIN; access/history missing; automation P0 — 2026-10-27
+
+- [Read-only merchant inquiry/checkpoint](docs/paymob-640878234-inquiry-review.md): existing LIVE intention credentials
+  used for one supported-SDK GET; Paymob returned405, no history obtained. This is
+  not paid/unpaid/failed evidence. No additional provider payment/auth/retry call.
+- Legacy Inquiry API key absent from checked runtime/operator record; no matching
+  configured DB credential/vault name. No connected merchant browser; local metadata
+  probe timed out. Official management inquiry needs a separate API-key auth token,
+  then existing order640878234 with ALL transactions. Secure location/Dashboard
+  history requested; no key/token/cookie requested in chat or exposed.
+- ORD-20261027-A5FC5269EA remains pending_payment/pending, paid0, one matching
+  owned LIVE314900minor attempt, no signed transaction. Owner reports incomplete
+  friend test; not a completed genuine public sale. Cleanup/reconciliation blocked
+  pending provider history, no paid or unpaid conclusion from expiry/405 alone.
+- Conditional normal scoped cancellation reviewed, NOT approved/executed. Untracked
+  order has0 allocated units/sale-out/packing/shipments. Once nonpayment is verified,
+  exact approval can cancel only this order, clear unsucceeded attempt secret and
+  stamp once-only release without fabricating stock. Do not run batch expiry25.
+- Public checkpoint through21:51:28Riyadh: new orders/payments0 since priorreview,
+  earlier2 LIVE successes intact; known aged friend test is sole financial warning.
+  Appa402/schema98/PID55343, signup/CARD/Manual50 live; callbacks/owned reads/PDCpause/
+  kill preserved. No critical integrity issue established; public Beta remains OPEN.
+- 13 historical recorded checkpoints missing; current scheduled checkpoint documented.
+  NEXT staffed **22:06:18 Riyadh**. User promotes MON-01 to P0 next: read-only
+  scheduled exceptions + durable receipts/heartbeat/missed-run detection, reviewed
+  alert channel and guarded scheduler activation. No automated mutation/expiry,
+  message send or scheduler installed; broader deferred automation remains open.
+- DTR-33/STOR-01/all original32 rows/frozen135/location96/storage/provider incident/
+  shared Git work preserved. No production/stock/order/refund/shipment/replay/redeploy.
+
+# E93 — EGP3149 owner-reported incomplete friend test; after-expiry review — 2026-10-27
+
+- Owner clarifies ORD-20261027-A5FC5269EA was a friend testing; payment not completed.
+  Do not count it as genuine public-customer payment acceptance. [Order receipt](docs/public-beta-a5fc5269ea-reconciliation.md).
+- Fresh read-only checks20:31:54,20:36:32 and after recorded20:40:15 expiry at20:40:47
+  Riyadh. Outcome UNCERTAIN; actual order/payment statuses
+  pending_payment/pending, paidEGP0,
+  successful transactions0/failed0.
+  One owned command/attempt, amount314900EGPminor matches total3149. No replay/retry.
+- Existing Paymob order640878234/intention/special-reference retained privately.
+  Provider status not independently queried. Expiry alone is not proof of failure.
+  Before any cleanup/release/retry or definite customer payment conclusion, obtain
+  merchant read-only order/transaction status, exact amount/currency/integration,
+  and match original signed callback/ledger. Never manually assert paid or infer failed.
+- Stock-release timestampNone, packingNone,
+  shipment jobs0; no order/stock/payment/refund/fulfillment change.
+- Four historical proxy GET events all predate this order; no recognized store
+  checkout/payment/auth route matched,3 closed/cancelled streams+1 reset. No proven
+  impact on payment/auth, no claim these were checkout errors or harmless events.
+- Public CARD remains OPEN while staffed; currenta402/schema98/PID55343, Caddy/
+  callback key/source/runtime unchanged. Signed late callbacks/owned reads retained;
+  PDC PAUSED, kill unconsumed. No verified critical payment/privacy defect identified.
+- Nine historical scheduled checkpoints lack receipts (prior8 plus20:21:18).
+  Current active documented checks restore this turn's cadence; no background job
+  installed or future unattended coverage claimed. NEXT staffed **20:51:18 Riyadh**.
+  If staffing/reconciliation cannot be maintained recommend authorized stop, keeping
+  callbacks/owned access. DTR-33/STOR-01/all deferred/location/storage/Git preserved.
+
+# E92 — continued payment review WARNING: cadence gap; one new pending order — 2026-10-27
+
+- [Read-only catch-up receipt](docs/public-beta-second-payment-review.md): ledger covered18:04:45→20:15:57
+  Riyadh; runtime/journals through20:15:58. Eight scheduled checkpoints18:19:45→
+  20:04:45 have no stored review receipts. Catch-up does not prove timely monitoring.
+- Initial20:06 snapshot0 new commerce; closing snapshot finds ONE new public order
+  ORD-20261027-A5FC5269EA, merchandise3099+Manual50=EGP3149, one LIVE pending
+  intention/attempt, no transaction/signed success yet, expiry20:40:15. Owned
+  command/customer/amount/line totals match; no duplicate/orphan/overdue/uncertain/
+  amount/ownership reconciliation exception. Do not retry or fulfill while unpaid.
+- Prior WOLF ORD-20261027-D42FA123A8 stays paid5/processing/untracked, packing
+  incomplete, shipping jobs0, unchanged since16:57:21. No actual dispatch/delivery
+  inferred; no test goods marked fulfilled. Two prior LIVE successes remain paid.
+- Currenta402/schema98/PID55343/restarts0; signup OPEN, CARD LIVE, Manual50/28areas
+  available; runtime/Caddy/callback key/source/policy preserved, PDC PAUSED. Kill
+  remains unconsumed. No critical payment/privacy issue identified in observed data.
+- Available journals:4 incomplete proxy responses, one reset, no identified
+  checkout/payment route among them;122 generic app error markers remain unclassified.
+  No specific checkout/callback failure pattern, no truncation. Request-level access
+  logging absent; do not claim all requests succeeded or that warnings are harmless.
+- NEXT restore documented15-minute staffing; checkpoint **20:21:18 Riyadh today**.
+  Hold new pending order for paid reconciliation; actual fulfillment evidence before
+  any dispatch/delivery status. If staffing/reconciliation cannot be maintained,
+  use existing authorized stop procedure retaining callbacks/owned reads. No kill,
+  order/refund/shipment/payment/provider/replay/production change was performed.
+- DTR-33/STOR-01/all original32 rows/frozen135/location96/storage/provider incident/
+  shared Git work preserved. No unrelated application development or accepted retests.
+
+# E91 — first public Beta payment review HEALTHY (observed records) — 2026-10-27
+
+- [Read-only monitoring receipt](docs/public-beta-first-payment-review.md): database checked through 18:04:45
+  Riyadh, journals/runtime through 18:06:25, since activation17:48:34. New orders0,
+  attempts0, transactions0, successful/failed/pending payments0. Two earlier LIVE
+  successes remain reconciled; no prior attempt/transaction updates since activation.
+- Recorded exceptions0: successful-charge/unpaid mismatch, duplicates, orphans,
+  amount/currency, command ownership, overdue/uncertain and error-coded attempts.
+  No new order exists to accept as a public customer ownership/fulfillment case.
+- Public CARD/Manual50 available, coverage28; appa402/schema98/PID55343/restarts0,
+  runtime/Caddy/callback key/approved source unchanged. PDC PAUSED, coupon/test
+  exclusion policy retained. No logged checkout/callback/upstream errors in4625
+  app+1 Caddy entries. Per-request access logging is absent: journal silence does
+  NOT prove every API request succeeded. DTR-33 and broader browser tests stay open.
+- Staff action: prior paid WOLF order ORD-20261027-D42FA123A8 is processing,
+  untracked, packing incomplete; arrange normal Manual fulfillment. No order,
+  payment/refund/shipment/provider/callback write or replay; no restart/kill.
+- NEXT staffed review **18:19:45 Riyadh27Oct2026**, continuing15-minute cadence.
+  Original payment identities on uncertainty; recommend existing authorized kill
+  on a critical issue, retaining callbacks/owned reads. No background job installed.
+- Original32 deferred rows plus DTR-33, STOR-01/Storage audit, frozen135/location96/
+  existing provider incident and both accounts' branches/commits/work preserved.
+
+# E90 — public CARD Beta ACTIVE / activation verified — 2026-10-27
+
+- Exact 1707a5ba public approval recorded once. Fresh approved preflight, encrypted
+  execution recovery and postflight PASS; APPLY CONSUMED_COMPLETE, never replay.
+  [Activation receipt](docs/public-card-beta-activation-receipt.md): active 17:48:34 Riyadh27Oct2026,
+  independently verified 17:49:10; one app restart PID54674→55343.
+- Public purchasing ON, Paymob CARD LIVE, owner-managed Manual EGP50. Existing
+  eligible normal/published/active/positive-price rules retained; TESTproduct2026
+  excluded, all coupons disabled for Beta. Signup OPEN, Turnstile/confirmation
+  preserved, PDC PAUSED. Only five reviewed runtime values changed; no app deploy,
+  SQL/migration, stock/price/coupon, Caddy, Auth or credential write.
+- Appa402cf24a9685e0d/source113b313/schema98 unchanged. Actual public capabilities
+  and critical HTTP/Auth/closed-route checks PASS; compiled inventory/assets/fixed
+  files/edge preserved. Protected schema/security/history/settings/company and
+  prior paid5 remain intact. Legitimate public commerce rows may now advance.
+- Signed callbacks/owned receipts/late reconciliation retained. Sealed read-only
+  monitor shows0 recorded exceptions. Owner-confirmed15-minute staffed monitoring
+  and manual cancellation/reimbursement process apply; no agent quote/order/card/
+  provider call or repeated real payment/Auth tests. No new public order claimed.
+- One SAME-APPROVAL emergency runtime kill remains AUTHORIZED_PENDING, including
+  after the preparation deadline. It closes purchasing/CARD initiation with one
+  restart, retaining callbacks/receipts; no money action/SQL/Caddy/rollback.
+- E88 genuine EGP5 remains VERIFIED, restricted grant CLOSED/consumed. Original
+  browser field remains UNCONFIRMED; DTR-33/CX-07 deferred, focused local3 PASS,
+  broader browser matrix unfinished. A valid public reproduction or unmaintainable
+  payment reconciliation/monitoring escalates immediately and closes purchasing.
+- Original32 deferred rows retained verbatim plus DTR-33; frozen135/location4843754/
+  undeployed26190000/Storage audit/provider incident/branches/commits/work preserved.
+- NEXT accept genuine customer orders with staffed15-minute exceptions/manual
+  fulfillment. Reconcile original payment identities; never create a duplicate
+  charge to diagnose uncertainty. Preserve all remaining deferred requirements.
+
+# E89 — genuine EGP5 VERIFIED/CLOSED; public CARD Beta GO FOR APPROVAL — 2026-10-27
+
+- E88 [payment/closure receipt](docs/egp5-genuine-payment-verification.md): order ORD-20261027-D42FA123A8,
+  Paymob561728044, LIVE500minor EGP, paid/processing/untracked. Correct
+  selected customer/recipient/WOLF Default1/Manual50; discounts25+45; final5.
+  One order/attempt/intention/successful transaction, no recorded duplicate or
+  uncertain attempt. Signed-callback-only service ledger and unchanged HMAC route
+  verified; no raw callback/signature replay or new provider transaction.
+- Owner confirms My Account and Dashboard display correctly. Same e239 approval
+  closed ONCE; closure PID54442→54674, runtime restored byte-for-byte, callbacks/
+  owned receipts retained. Both activation and closure CONSUMED_COMPLETE.
+- Original browser v3 cart owner/product/variant/qty1 valid, no pending command,
+  FRE5 not stored as applied. Actual rejected field/client version UNCONFIRMED.
+  New focused actual Vue/server-guard browser3 PASS: restored cart reaches5;
+  changed address reproduces restricted deny; normal public address reaches75;
+  stale Beta coupon can be removed safely. No proven general app defect/code fix.
+  New DTR-33/CX-07 deferred controlled-grant discrepancy; broader browser matrix
+  remains open. Promote to launch blocker and close purchasing on valid public repro.
+- [Public activation review](docs/public-card-beta-activation-review.md) READY, NOT APPROVED or ACTIVE.
+  Seal `1707a5baf28702cd8670951bea3747446aedc118623e09f6ca185b4d755cabc6`; deadline27Oct23:23:23.842Riyadh.
+  Five runtime values only, one restart; CARD/Manual50,223 eligible catalog products,
+  test product excluded, coupons disabled, PDC PAUSED. No app/SQL/Caddy/stock/coupon/
+  Auth change or agent order/payment/provider call. Same approval includes ONE later
+  emergency runtime kill retaining callbacks and receipts. Partial uncertainty STOP.
+- Fresh encrypted98 DB/full readback +10 runtime files PASS; operator remote8/local3
+  guard groups PASS; final sealed preflight PASS; monitor0 exceptions/global2 prior
+  LIVE successes. Owner confirms15-minute staffed review and manual remedy available.
+  New public activation/postflight remains NOT EXERCISED until separate approval.
+- Current a402cf24a9685e0d/source113b313/schema98/PID54674. Signup OPEN, purchasing
+  OFF, PDC PAUSED. Original32 deferred rows preserved verbatim, DTR-33 added;
+  location4843754/version26190000/frozen135/Storage/branches/existing work preserved.
+- NEXT exact PUBLIC CARD BETA approval → fresh preflight/recovery → activation ONCE.
+  Never repeat either genuine card payment, prior deployment/grant or broad Auth tests.
+
+# E87 — approved secure EGP5 window ACTIVE; genuine purchase PENDING — 2026-10-27
+
+- Exact e239dbb7 approval recorded once. Fresh preflight/recovery/postflight PASS.
+  APPLY CONSUMED_COMPLETE; never replay. Authorized later closure remains pending.
+- [Activation receipt](docs/egp5-secure-checkout-window-activation-receipt.md): owner window **16:50:56–17:50:56 Riyadh,
+  27 October 2026**, verified 16:51:49. Only grant dates changed; one restart,
+  PID 53535 → 54442. No application deployment or SQL/Caddy/coupon/stock change.
+- Original customer/recipient/WOLF Default1/Manual50/FRE5/500-minor/fixed cart/
+  review key/one-charge budget retained, zero retries. Fresh preactivation commerce
+  counts0 and coupon unused. Exposed older sessions/refresh rows remain revoked;
+  intentional fresh login retained. No exposed credential read/reuse.
+- Current a402cf24a9685e0d/source113b313/schema98. Signup OPEN, public purchasing
+  OFF, PDC PAUSED. All32 deferrals/frozen135/location4843754/version26190000/
+  Storage/branches/commits/uncommitted work preserved. Agent quote/order/payment/
+  provider calls0. Prior successful tests retained, not repeated.
+- Original after-FRE5 rejection remains UNCONFIRMED; no speculative app change.
+  Initial no-coupon denial is expected; canonical SQL/HTTP proof supports EGP5.
+  Chat/status403 is a separate Caddy deny. Hosted quote/payment acceptance PENDING.
+- NEXT owner confirms saved recipient/Manual50, applies FRE5 before Continue,
+  verifies final EGP5 and pays ONCE before 17:50:56. If blocked, stop and return
+  path/status/match flags only, never cookies or headers. Reconcile provider/
+  callback/paid ownership/Manual fulfillment, close runtime, then separate public
+  purchasing approval. No silent extension or uncertain payment retry.
+
+# E86 — session containment verified; fresh EGP5 window READY, NOT ACTIVE — 2026-10-27
+
+- E85 [revocation receipt](docs/session-exposure-checkout-receipt.md): both older
+  sessions/refresh rows removed by owner global sign-out; one owner-confirmed
+  fresh login remains. No exposed credentials read/reused. Issued JWT stateless
+  expiry caveat retained; hostedAuthv2.197.0 getUser checks session existence.
+- [Fresh runtime-only packet](docs/egp5-secure-checkout-window-review.md) READY,
+  NOT APPROVED: `e239dbb76fed3311eed3c67606f0f06b9e749eaa93d23562ea5b8bab79ba92db`.
+  Deadline27Oct19:11:48Riyadh matches unchanged FRE5. Proposed window≤1h from
+  activation; only dates change, one runtime/app restart, no app/SQL/Caddy/coupon/
+  stock/settings/global changes. Previous15:59:04 window is expired, never replayed.
+- Original customer/recipient/WOLF Default1/Manual50/FRE5/500-minor/fixed cart/
+  review key/one-charge budget retained, zero retries. Fresh16:35 baseline0 commerce
+  commands/quotes/orders/attempts/transactions, FRE5 unchanged/unused. Old sessions
+  still absent and direct anonymous/authenticated checkout RPC execution denied.
+- Three new security guard groups/eight local cases PASS. Read-only text/UUID
+  cast stop corrected before sealing, evidence retained. Fresh encrypted98 DB/
+  full pg_restore and ten runtime-file full-byte recovery PASS. Final read-only
+  preflight PASS at 16:40:44 Riyadh; diagnostics empty.
+  Prior application/Paymob qualifications retained, not repeated. No activation.
+- Root after original FRE5 failure remains UNCONFIRMED. Initial missing coupon
+  denied before SQL; canonical exact SQL/HTTP fixture and live arithmetic support5.
+  No retained scoped failure log. Confirmed chat/status403 is a separate Caddy deny.
+  No speculative app correction. Owner uses Apply FRE5 after selecting Manual and
+  saved recipient; if failure recurs, return match flags only, never cookie/headers.
+- Currenta402/source113b313/schema98/PID53535; signup OPEN/public purchasing OFF/
+  PDC PAUSED. All32 deferrals/location4843754/version26190000/frozen135/Storage/
+  branches/commits/uncommitted work preserved. No agent quote/order/payment/provider.
+- NEXT exact NEW approval → fresh security/preflight/recovery/runtime activation.
+  Owner waits for ACTIVE, applies FRE5 before Continue, verifies5 and pays once.
+  Actual provider/callback/paid ownership/Manual fulfillment, runtime closure and
+  separate public purchasing approval remain pending.
+
+# E85 — exposed-session containment VERIFIED; checkout window expired — 2026-10-27
+
+- OD-20261027-SESSION-EXPOSURE-01: owner reported exposed customer Auth cookie.
+  [Containment receipt](docs/session-exposure-checkout-receipt.md) verified16:26:06
+  Riyadh. Owner used supported global Sign out, then confirmed a fresh login.
+  Both older sessions and all older unrevoked refresh rows are gone. One intentional
+  new session from16:20:57 remains. Agent never read/decoded/reused exposed tokens.
+- JWTs can remain valid for stateless checks until exp; exposed expiry not read.
+  Hosted Authv2.197.0 source checks session_id existence on getUser; checkout uses
+  server getUser. This is source-based assurance, not an exposed-token replay.
+- Latest16:21 read-only commerce counts0 commands/quotes/orders/attempts/transactions.
+  Current a402/source113b313/schema98/PID53535, runtime/Caddy/assets unchanged.
+  FRE5 unchanged/unused. Purchase window expired15:59:04; no extension/activation.
+- Owner's confirmed GET /api/chat/status403 is separate Caddy @commerce denial:
+  plain “Unavailable”; launcher poll blocked before Nuxt. Quote/coupon paths reach
+  Nuxt.12,000 bounded journal entries provide no retained customer checkout error;
+  original after-FRE5 rejected field still UNCONFIRMED. E84 exact SQL/handler test
+  and live arithmetic support5; no production quote or repeated Paymob test.
+- NEXT prepare fresh exact EGP5 runtime-window authorization after security
+  containment, preserving original cart/review key/account/address/product/Manual/
+  FRE5/500-minor/one-charge budget. No guessed app fix or chat/public activation.
+  Three new security guard groups and eight local cases qualify the new packet;
+  its read-only SQL text/UUID cast stop was corrected before any seal/activation.
+- Signup OPEN/public purchasing OFF/PDC PAUSED. All32 deferrals, frozen135 paths,
+  clean location4843754/version26190000, Storage and both accounts' work preserved.
+
+# E84 — EGP5 checkout blocked; read-only checks PASS, browser request needed — 2026-10-27
+
+- OD-20261027-EGP5-CHECKOUT-01 continues BETA-11. Owner stopped on “This purchase
+  is unavailable.” before/after FRE5; no intentional new payment. Latest15:51:19
+  Riyadh read-only counts:0 commands/quotes/orders/attempts/transactions.
+- [Focused diagnosis](docs/egp5-checkout-rejection-review.md): both quote/coupon
+  routes reach Nuxt (anonymous JSON401); Caddy plain403 is distinct. Normal guard
+  requires exact granted coupon BEFORE quote RPC. No-coupon initial403 confirmed.
+  A matching FRE5 Apply request can run independently; no inherent coupon cycle.
+- Live grant/customer/product/variant/Manual/FRE5/500-minor/saved address bindings
+  match; runtime/process/assets unchanged. Live read-only pricing is25+50−25−45=5.
+  Five focused native HTTP/SQL checks PASS/0skip, SIX deployed definitions exact:
+  full coupon request and quote5 succeed; browser cart ID changes alone succeed.
+  No production quote RPC, order, payment or provider call; no successful Paymob
+  tests repeated. This does not establish hosted owner quote/payment acceptance.
+- Post-coupon field remains UNCONFIRMED: actual browser request/local cart/pending
+  state not available. Requested redacted path/status and only item IDs/quantity,
+  coupon/payment/Manual fields. Private read-only browser match-flag check prepared.
+  No code/production change or speculative release packet. Preserve final5,
+  account/address restrictions, fixed cart/review key and one-charge budget.
+- Current a402/source113b313/schema98/PID53535; grant ends15:59:04 Riyadh today.
+  No extension. Signup OPEN/public purchases OFF/PDC PAUSED; FRE5 unchanged/unused.
+  All32 deferrals/location4843754/version26190000/frozen135/Storage/work preserved.
+- NEXT receive actual failed FRE5 request/match flags, identify exact condition,
+  then minimum binding recovery or qualified code correction and fresh approval.
+  Any purchase after15:59:04 needs a renewed grant; public activation stays separate.
+
+# E83 — renewed restricted EGP5 window ACTIVE — 2026-10-27
+
+- Exact af7112e2 approval recorded/applied ONCE. APPLY CONSUMED_COMPLETE; never
+  replay. Same approval retains one later runtime-only closure; closure PENDING.
+- [Activation receipt](docs/egp5-purchase-window-activation-receipt.md): verified
+  14:59:38 Riyadh. New owner window 14:59:04–15:59:04 Riyadh today.
+  Only grant dates changed; same original fixed cart/review key/customer/recipient/
+  WOLF Default1/Manual50/FRE5/EGP5 and unused one-charge budget, zero retries.
+- Current a402cf24a9685e0d/source113b313/schema98; one renewal restart, PID53535.
+  No app redeployment, SQL, coupon, stock, business setting, Caddy or global change.
+  Fresh preflight/5,067 inputs/encrypted98 DB and10 runtime full readback passed.
+  Auth/capabilities/route health/full protected DB postflight PASS. Independent
+  release/runtime/process/Caddy/assets/media/private preservation check PASS.
+- At activation customer commands/quotes/orders/attempts/transactions remain zero,
+  FRE5 unchanged/unused. Signup OPEN, public purchasing OFF, PDC PAUSED. No agent
+  order/payment/provider request. Genuine owner Paymob acceptance stays PENDING.
+- All32 deferrals, frozen135 paths, clean location4843754/version26190000,
+  Storage work, branches, commits and uncommitted work preserved; no Git push.
+- NEXT owner reloads selected Outlook account, WOLF Default1/Manual50/FRE5,
+  verifies5 and pays once privately BEFORE 15:59:04 Riyadh today. Report outcome;
+  never retry uncertain payment. Verify actual provider/signed callback/paid owned
+  order/coupon use/Manual fulfillment, close this renewed grant, then prepare
+  separate PUBLIC purchasing approval. No further activation is authorized.
+
+# E82 — repair deployed; renewed EGP5 grant READY, NOT ACTIVE — 2026-10-27
+
+- [E81 repair deployment](docs/pdp-cart-repair-deployment-receipt.md) remains PASS:
+  a402cf24a9685e0d/source113b313/schema98/PID52880, one app restart. ddcd approval
+  CONSUMED_COMPLETE. Original14:21:33 purchase window remains expired; no extension.
+- [Separate EGP5 renewal](docs/egp5-purchase-window-renewal-review.md) READY, NOT APPROVED:
+  seal `af7112e281d0f2c7e58a232ec05f15bc87b1c2d598830718802f3649609b361c`.
+  Packet expires27Oct19:11:48 Riyadh, FRE5's unchanged expiry. Proposed window ≤1h
+  from future activation. Change only original grant dates, one runtime/app restart;
+  no app deployment, SQL, stock, coupon, settings, Caddy or public gate changes.
+- Preserve same verified customer/recipient/WOLF Default1/Manual50/FRE5/EGP5,
+  original fixed cart/review key and unused one-order/intention/card-submission
+  budget, zero retries. Fresh14:44 read-only baseline confirms zero commands,
+  quotes, orders, attempts and transactions; FRE5 unchanged and unused.
+- Seven new remote guard groups and twelve local cases PASS. Fresh encrypted98 DB
+  full pg_restore and ten runtime-file full-byte recovery PASS. Final read-only
+  preflight PASS at 14:48:24 Riyadh; diagnostics empty.
+  Prior app/Auth/payment qualifications retained, not repeated. Same NEW approval
+  proposes later runtime-only closure restoring expired grant, one restart, callbacks/
+  owned reads retained; no SQL/Caddy/coupon changes, refund, retry or cancellation.
+- Signup OPEN, public purchasing OFF, PDC PAUSED. New grant NOT ACTIVE; no agent
+  order/payment/provider request. All32 deferrals, clean location4843754/version
+  26190000, frozen135 paths, Storage work, branches/commits/uncommitted work preserved.
+- NEXT exact renewed-window approval → fresh preflight/recovery/runtime activation.
+  Owner waits for ACTIVE confirmation, reloads WOLF1/Manual50/FRE5/check5/pays once.
+  Actual provider/callback/paid ownership/Manual fulfillment, safe closure and then
+  separate public purchasing approval remain pending.
+
+# E81 — PDP/cart repair DEPLOYED; EGP5 window remains expired — 2026-10-27
+
+- Exact ddcd0056 recovery approval was recorded and executed ONCE. It is
+  CONSUMED_COMPLETE; never replay apply. Original expired a40b packet is untouched.
+- [Deployment receipt](docs/pdp-cart-repair-deployment-receipt.md): verified14:39:09
+  Riyadh. Active a402cf24a9685e0d/source113b313/schema98. One app restart, PID52880.
+  Fresh preflight,5,055 inputs, encrypted98 DB/full pg_restore and10 runtime-file
+  full-byte recovery checks passed. Same archive, no rebuild. Private candidate,
+  retained assets, six live asset bodies/cache, Auth/capabilities and full protected
+  database postflight PASS. Independent release/runtime/Caddy/media/assets check PASS.
+- Zero SQL, stock, coupon, runtime, production Caddy or grant changes. FRE5 remains
+  unchanged and unused. Original grant expired14:21:33 Riyadh; no extension or new
+  purchase window. Signup OPEN/public purchasing OFF/PDC PAUSED. No agent order,
+  payment or provider request. Owner acceptance of the repaired purchase is pending.
+- All32 deferred tests, frozen135 paths, clean location4843754/version26190000,
+  Storage work, branches, commits and uncommitted changes remain preserved.
+- NEXT: prepare a separately approved renewed EGP5 grant for this repaired release.
+  Owner alone purchases after activation; verify actual provider/signed callback/
+  owned paid order/Manual fulfillment before separate public purchasing approval.
+
+# E80 — interrupted repair inspected; original approval EXPIRED — 2026-10-27
+
+- OD-20261027-PDP-CART-RESUME-01 continues E79 and BETA-11. Original approval was
+  recorded at 14:11:38 Riyadh; preflight passed at 14:12:19 with empty diagnostics.
+  All 5,044 sealed inputs and the archive match. No local execution records, locks,
+  remote repair stage or proposed release exist. No repair deployment or restart
+  occurred. Production remains fcce022d9ac76e49, source7e563bf, schema98, PID51346.
+- Both original deadlines expired on 27 October at 14:21:33 Riyadh. The sealed
+  operator couples repair and purchase expiry. No independent repair authorization
+  remains valid. The original approval file and all receipts remain unchanged.
+- [Fresh repair-only packet](docs/pdp-cart-repair-recovery-review.md) is READY, NOT APPROVED.
+  Seal: `ddcd0056784d5f3005e6e5288571bdc1ff51b6b338785be1965b656e569916f8`.
+  Repair deadline: 27 October, 20:27:43 Riyadh. It reuses the exact original archive
+  a402cf24a9685e0d and source113b313. One app switch and one production restart;
+  zero SQL, stock, coupon, runtime, production Caddy, grant or provider changes.
+  The expired grant stays unchanged. No closure or renewal mode is provided.
+- Six new remote recovery guard groups and seven local cases pass. Prior application,
+  Auth and payment qualifications were retained, not repeated. Fresh encrypted
+  schema98 database full pg_restore and ten runtime-file full-byte checks pass.
+  Final read-only preflight PASS at 14:28:32 Riyadh; diagnostics empty.
+- The 14:25 read-only baseline matches. The selected customer has zero commands,
+  quotes, orders, attempts and transactions. FRE5 stays unchanged and unused.
+  Signup OPEN, public purchasing OFF, PDC PAUSED. All 32 deferred tests, clean
+  location4843754/version26190000, frozen135 paths, Storage work, branches, commits
+  and uncommitted work remain preserved. No production writes or agent money action.
+- NEXT: approve the NEW repair-only packet; run fresh preflight/recovery and deploy.
+  After deployment, prepare a separately approved renewed EGP5 purchase grant.
+  The owner then pays once privately. Actual provider/callback/owned paid order/
+  Manual fulfillment acceptance and separate public purchasing approval stay pending.
+
+# E79 — WOLF cart blocker CONFIRMED; application-only repair READY — 2026-10-27
+
+- OD-20261027-PDP-CART-01: owner stopped on stock rejection, no payment. Read-only
+  confirms0 cart commands/quotes/orders/attempts/transactions, WOLF published normal/
+  serialized Default active/25/stock0, trackingfalse/CARD/fee0/Manual50/FRE5 unused.
+  WOLF VALID under approved untracked rules; no product/stock/config change needed.
+- Exact client cause useCart.normalizeCartItem removes allowance for serialization,
+  then addItem rejects0. PDP already honors untracked mode; SQL quote/order correctly
+  allow it. Local113b313 reuses cached policy in cart/restore; stock remains0. Initial
+  unavailable flicker is unresolved capability treated as denial. Neutral account-bound
+  loading now applies to Classic/Premium/cards, retaining denial/expiry/isolation.
+- [Exact app repair](docs/pdp-cart-stock-repair-review.md): seal a40b16c9cc83aa2ab3288516c5ecaf9ed088d91892d9658497e6bdc750fa5d53; expires
+  27 October 2026,14:21:33.006 Riyadh, ORIGINAL grant expiry, no extension/new grant. Proposeda402cf24a9685e0d/
+  schema98 unchanged.1 app restart,0 SQL/stock/coupon/address/settings/runtime/Caddy
+  writes. Final preflight PASS/all5044 inputs. Currentfcce/source7e/schema98 and417c unchanged;0 production writes.
+- Policy/access5+PDP browser8 ENAR/Classic/Premium+native stock/CARD/FRE5 regression13,
+  typecheck/build/remote8/routes16/six assets PASS/0skip.3133 entries/all2057 retained;
+  fresh encrypted98 DB/full pg_restore+10runtime full readback PASS. Real test PENDING.
+- NEXT exact repair approval before original14:21 expiry → fresh preflight/recovery,
+  app-only switch → owner reload/add WOLF1/Manual50/FRE5/check5/pay once → real provider/
+  callback/owned paid order/Manual Dashboard → new sealed closure → PUBLIC packet.
+  On expiry STOP/new exact authorization; never extend implicitly. SignupOPEN/public
+  purchasesOFF/PDC PAUSED. All32 deferrals/location/frozen135/branches/Storage retained.
+
+# E78 — scoped EGP5 coupon DEPLOYED; owner checkout ACTIVE — 2026-10-27
+
+- Exact owner417c approval executed ONCE. [Deployment receipt](docs/controlled-egp5-deployment-receipt.md):
+  activefcce022d9ac76e49/source7e563bf/schema98; only27100000 eligibility migration.
+  Apply CONSUMED; never replay. Same approval retains closure plus disabling only
+  FRE5. Old EGP50 grant remains CLOSED; no95/96/97 replay/location seed.
+- Fresh preflight/all4244 inputs/current bindings, encrypted97 DB/full pg_restore
+  and10 runtime full-byte recovery PASS. Staged3029 entries/private app/static
+  candidate/all1953 retained assets/six live bodies-cache checks PASS.1 app restart/
+  PID51346,1 CaddySIGUSR1/same PID26652. Independent postcheck
+  preserves all145 original projections/Auth/permissions/old coupons/payments/orders.
+- ONE scoped FRE5 created: merchandise25+store-funded delivery45; one verified
+  customer/whole-cart product/Manual option, usage limit1/expiry; usage0 at postcheck.
+  Existing FRE/site settings/couriers/Manual50 unchanged.25+50−25−45+fee0=5; full50
+  shipping and45 discount remain separate. Selected customer0 orders/attempts.
+- Exact recipient/product/model/coupon/500-minor private grant ACTIVE from 27 October 2026, 13:21:33 Riyadh
+  until 27 October 2026, 14:21:33 Riyadh;≤1h,1 order/1 intention/1 owner card submission,0 retries. SignupOPEN/
+  public purchasesOFF/PDC PAUSED.0 agent orders/quotes/payments/Auth/email/provider
+  requests. Normal CARD/untracked/Manual; no PDC job or fabricated stock.
+- BETA-11/CX-01 DEPLOYED, real owner EGP5 purchase PENDING. Owner alone signs into
+  recovered Outlook, reloads, adds WOLF Default1, checks real saved recipient/Manual50,
+  applies FRE5, verifies5 and submits own card once. Then actual provider/signed
+  callback/paid owned order/FRE5 once/Manual Dashboard reconciliation, grant closure/
+  FRE5 disable, then separate PUBLIC purchasing packet. Late callbacks stay accepted.
+- All32 deferred rows/frozen135 paths/branches/worktrees/local commits/Storage kept.
+  Clean location4843754/version26190000 remains undeployed; later ordering/history
+  qualification against98 mandatory. Main91 is continuity, not a release source.
+
+# E77 — scoped combined EGP5 coupon READY for exact approval — 2026-10-27
+
+- [Exact EGP5 review](docs/controlled-egp5-coupon-review.md): seal 417c4b1d9e9383fa4b7a3b9003daa65cb9d17ccf1595ecd132d208f856f1476e; expires
+  27 October 2026, 19:11:48 Riyadh. Old33779 EGP50 grant CLOSED; existingffd191/schema97 and accepted fixes
+  retained. Post-seal final preflight PASS/all4244 inputs; no replacement activation.
+- Existing Dashboard combined amounts work, but lack audience eligibility. Minimal
+  source7e563bf adds optional customer/product/delivery scopes and preserves cart
+  delivery split. Proposedfcce022d9ac76e49/schema98 by ONLY27100000: three nullable
+  references/two existing bodies. No95/96/97 replay or location change. Blank scopes
+  preserve existing coupons; server identity/whole-cart/courier checks are final.
+- New proposed one-use FRE5 combines25 item+45 store-funded delivery discount:
+  WOLF/Default1/25 +unchangedManual50 −25 −45 +fee0 =5. Existing FRE untouched.
+  Exact account/product/model/address/company/coupon/500-minor grant≤1h;1 order/
+  intention/owner card submission,0 retries. Same approval permits grant closure and
+  disabling only FRE5, retaining callback/owned receipt/late-event authority.
+- Local native13, ENAR apply/remove/reload/reapply, Dashboard save/readback1,
+  typecheck/build, config/closure8, migration5, runtime10, Caddy16/six assets PASS.
+  Synthetic EGP5 signed reconciliation after grant revocation PASS, no live provider.
+  Exact3029-entry archive retains1953 current assets; fresh encrypted97 DB/full
+  pg_restore +10runtime full-byte recovery PASS.32deferrals/frozen135/Storage retained.
+- BETA-11/CX-01 READY FOR NEW APPROVAL, local only; real EGP5 purchase PENDING. Signup
+  OPEN/public purchasesOFF/PDC PAUSED. NEXT exact approval → fresh preflight/recovery,
+  scoped migration/app/coupon/grant → owner alone applies FRE5/checks5/pays once →
+  actual provider/callback/owned paid order/Manual Dashboard → closure → PUBLIC packet.
+  Clean location4843754 remains undeployed, later ordering review against98 required.
+
+# E76 — incompatible EGP50 grant CLOSED; exact EGP5 correction preparing — 2026-10-27
+
+- OD-20261027-COUPON-EGP5-01: owner reconfirms25 merchandise+50 Manual−25 item−45
+  store-funded delivery discount+fee0 =5.33779 scope is incompatible and CLOSED
+  under its authorized closure. Original runtime/edge restored, callback/owned reads
+  retained. Activeffd191/schema97 retained,1 closure restart/PID50469 and1SIGUSR1;
+  no schema/application rollback, coupon edit, order/payment/provider action.
+- Fresh12:57 read-only: verified recipient ready, product25/Manual50, selected
+  customer0 orders/attempts, FRE unchanged/usage0/delivery discount0. SignupOPEN,
+  CartCheckout403/public purchasingOFF/PDC PAUSED. No replacement grant active.
+- Existing Dashboard combined discount amounts work; genuine coupon eligibility is
+  missing. Minimal isolated source7e563bf adds optional customer/product/delivery
+  scopes and preserves cart delivery-discount display. Native13/UI ENAR apply/remove/
+  reload/reapply/Dashboard save1/typecheck/build/config8/migration5/remote10/route16
+  checks PASS. Proposedfcce022d9ac76e49/schema98,3029 entries/all1953 current assets.
+  Only new eligibility migration27100000; original95/96/97 and location26190000
+  excluded. Existing FRE stays unchanged; proposed one-use scoped FRE5 combines25+45.
+- Private preparation ../controlled-scoped-coupon-20261027; fresh recovery/seal IN
+  PROGRESS, no authorization yet. Do not activate/deploy/create coupon until NEW
+  exact approval. Both prior apply and closure consumed; never replay33779.
+  All32 deferred rows/frozen135/branches/worktrees/clean location/Storage preserved.
+
+# E75 — coupon release DEPLOYED; restricted EGP50 checkout ACTIVE — 2026-10-27
+
+- Exact owner33779 approval executed ONCE. [Deployment receipt](docs/controlled-coupon-deployment-receipt.md):
+  activeffd191251d1800d0/source df905f1/schema97; only27004500 then27090000 coupon
+  migrations, no95 replay/location seed. Apply CONSUMED; never retry. Closure remains
+  authorized under the same seal, including after expiry from proven runtime state.
+- Fresh preflight/all3435 inputs/current bindings and encrypted95 DB/full pg_restore
+  plus10 runtime full-byte recovery PASS. Staged2925 entries/private app/static
+  candidate, all1849 retained assets/six live bodies-cache checks PASS. One app
+  restart/PID50339; one CaddySIGUSR1/same PID26652. Independent
+  postcheck preserves all145 original protected projections,
+  Auth/permissions/existing payments/orders, media/private files and fixed runtime.
+- Reviewed three settings+one Manual50 row+shipping generation1 committed;0 coupon
+  edits. FRE existing fixed100 caps25 item, delivery discount0/cardfee0 → payable50.
+  Selected verified recipient/customer still0 orders/attempts/FRE uses0.0 agent
+  hosted quotes/orders/payments/Auth/email/provider calls. Manual cannot book PDC.
+- Exact one-hour account/product/model/recipient/FRE/5000-minor-unit grant ACTIVE:
+  starts 27 October 2026, 12:43:12 Riyadh; expires 27 October 2026, 13:43:12 Riyadh.
+  Budget1 order/1 intention/1 owner card submission/0 retries. SignupOPEN, public
+  purchases/Beta/Paymob globalsOFF, PDC PAUSED. Signed callback ingress/owned receipts,
+  payment idempotency/isolation/late reconciliation retained. Owner alone pays.
+- BETA-11/CX-01 DEPLOYED, OWNER PURCHASE ACCEPTANCE PENDING. Owner signs into recovered
+  Outlook, adds mousepad WOLF/Default1, selects Manual50, applies FRE/checks50 and
+  submits own card once. Then verify real provider/signed callback/owned paid order/
+  FRE once/Manual-untracked Dashboard, close grant and prepare separate PUBLIC packet.
+  No completed acceptance repeated; no public activation or money retry authorized.
+- All32 deferrals/frozen135 paths/branches/worktrees/local commits/Storage preserved.
+  Clean location4843754/version26190000 remains undeployed; later ordering/history
+  qualification against97 mandatory. Main91 remains continuity, never release source.
+
+# E74 — interrupted coupon release resumed; EGP50 READY for new approval — 2026-10-27
+
+- OD-20261027-COUPON-RESUME-01: latest owner request explicitly returns payable50,
+  superseding earlier5 for this attempt. Existing FRE caps25 item discount; Manual50,
+  delivery discount0/cardfee0 →50. No coupon edit. EGP5 work/evidence remain preserved.
+  Expired81ce held UNEXECUTED; no invalid approval reuse or production activation.
+- Restart audit: commitdf905f1/artifactffd191251d1800d0/source97 and prior build,
+  typecheck/native/UI/migration rollback/replay/route proofs intact. Old backup was
+  incomplete20 bytes, no final seal/intent. Reused tests; fresh six config cases+
+  eight runtime guard groups PASS for50/zero coupon edits.2925 archive entries/all1849
+  retained assets match. Frozen135 paths and all32 deferred rows/Storage unchanged.
+- [New exact review](docs/controlled-coupon-resume-review.md): seal 33779f1054323464ab00dd4e9f12d13b8c3806b11556f7f96cadc30621a08170.
+  Fresh encrypted95 DB/full pg_restore readback +10runtime full-byte readback PASS;
+  verified 12:30:11 Riyadh, expires 27 October 2026, 18:30:11 Riyadh. Post-seal final preflight PASS;3435 inputs match. Recheck before execution.
+  Current production11cb/source5b09077/schema95 unchanged; verified recipient ready,
+  current genuine mousepad WOLF/Default1/25; selected customer0 orders/attempts.
+- Proposedffd191/source df905f1,95→97 ONLY coupon versions20261027004500 then27090000.
+  Zero-default delivery extension remains dormant; all coupon metadata unchanged.
+  Two new columns/checks/three existing bodies only; no schema95 replay. Location
+  version20261026190000 excluded, clean4843754 unchanged; IDs distinct but later
+  location integration MUST requalify ordering/history against97. No location seed.
+- BETA-11/CX-01 READY FOR NEW EXACT APPROVAL, LOCAL ONLY; hosted purchase NOT ACCEPTED.
+  One-hour exact customer/product/address/FRE/5000-minor-unit grant after activation;
+  one order/one intention/one owner card submission/zero retries. Codex never orders,
+  quotes or pays. Signed callbacks/idempotency/isolation/late events preserved.
+  Manual cannot book PDC. SignupOPEN/public purchasesOFF/Paymob restricted/PDC PAUSED.
+- NEXT: exact new approval → fresh recovery/preflight → guarded two-coupon release,
+  reviewed Manual/untracked settings and scoped activation → owner alone applies FRE,
+  checks50/pays once → actual provider/callback/owned paid order/Manual Dashboard
+  reconciliation → closure → separate PUBLIC purchasing packet. All32 deferred
+  tests/location/branches/worktrees/VPS Storage audit stay open.0 production writes.
+
+# E73 — extra FRE discount requested; amount clarification and fresh seal required — 2026-10-27
+
+- Owner repeats81ce approval with “EXTRA45 EGP discount.” That exact packet fixes
+  FRE/EGP50 and permits no coupon editing. It also expired27Oct10:05:09.143Riyadh;
+  current verification11:37Riyadh is later. STOP: held UNEXECUTED, no activation
+  intent. Preserve its files/artifact/evidence; never apply or extend that approval.
+- Existing FRE fixed100 already caps at the entire25 merchandise; delivery50 is
+  unchanged. Raising coupon value to145 still discounts only25 under current code.
+  Literal EXTRA45 would require a separate delivery discount and EGP5 payable
+  (25 merchandise−25 merchandise discount+50 delivery−45 delivery discount).
+  If owner means45 discount in total against original75, payable would instead30.
+  Targeted owner amount question pending; neither interpretation silently executed.
+- Fresh READONLY11:37 confirms production11cb/source5b09077/schema95, same verified
+  active ordinary customer/real saved address, mousepad WOLF/Default1/current25,
+  customer0 orders/attempts, Manual row absent/inventory tracking still required.
+  SignupOPEN/confirmationrequired/Turnstile retained, CartCheckout403/history401,
+  global purchasesOFF/PDC PAUSED.0 coupon/config/schema/deploy/Auth/email/order/
+  payment/provider writes. Original95/recovery acceptances remain accepted.
+- BETA-11/CX-01: owner confirms payable5 versus30; then design/qualify the smallest
+  reusable delivery-discount extension with truthful product25/delivery50 snapshots,
+  exact FRE edit/discount/amount/one-charge scope, new recovery/preflight and seal.
+  Do not invent price, stock, carrier cost or silently change merchandise-only coupon
+  semantics. Prepared E72 coupon repair remains LOCAL PASS, not deployed/accepted.
+- All32 deferred rows, both workstreams/frozen135 paths, existing Git branches/
+  worktrees, untouched location96 branch4843754 and deferred Storage audit preserved.
+  No new seal while amount is unresolved; no owner payment until fresh activation.
+  After the one real controlled PASS, return to separate public purchasing packet.
+
+# E72 — coupon repair and EGP50 purchase READY for replacement approval — 2026-10-27
+
+- Owner supplied E71 approval plus a coupon/lower-total condition. The sealed75
+  packet forbids coupons; it was held UNEXECUTED, no activation intent, and is
+  superseded for the requested discount. Do not apply75 or alter/reuse its seal.
+- Read-only existing FRE coupon: active fixed100/minimum1, valid through31Oct,
+  unlimited uses/current0. Merchandise25 discount caps at25; Manual delivery50 is
+  unaffected, cardfee0 → proposedEGP50. Same verified customer/real address bound,
+  current product/model25, customer0 orders/attempts. No coupon creation/edit/use.
+- [Replacement coupon review](docs/controlled-coupon-purchase-review.md): confirmed
+  route/controlled-scope exclusions and schema95 quote-success/order-rejection.
+  Small reusable fix authenticates/scopes full-cart coupon preview, reuses SQL
+  pricing, optionally binds the exact coupon in review/payment grants, and adds
+  one guarded SQL correction for untracked CARD discount snapshot/usage once.
+  Preorder/backorder restrictions, RLS/RBAC, Auth/Turnstile and callbacks retained.
+- Current production UNCHANGED11cb/source5b09077/schema95. Proposed f4d6716b13ffeace/
+  source381adde,95→96 by ONLY20261027004500_untracked_card_coupons. This is a new
+  coupon migration, not the separate96 location migration; location branch4843754
+  stays clean/unchanged/undeployed. Never replay95 or promote/seed location work.
+- Local9 native coupon tests(8 cases), EN/AR actual checkout display/payload,
+  migration5/configuration7/remote8 guards, typecheck/build PASS/0skip. One function
+  body only; rows/grants and old12-field grants preserved; coupon use once across
+  repeated commits, exact50 synthetic intention, no stock/PDC jobs. New Caddy16
+  routes/six assets/identical other policy PASS. Full2925-entry archive readback
+  retains all1849 current assets. Original local failures retained; no live repeats.
+- Exact replacement seal 81ce158e718fdab675381fcd811ea002f61077e05bee67dfcfc07be713831e68; fresh encrypted95 DB/full pg_restore readback and10
+  runtime files/full-byte readback PASS at04:05:09.143Riyadh; expires27Oct10:05:09.143.
+  One migration, reviewed Manual/untracked settings, one app deployment/restart,
+  one edgeSIGUSR1, one-hour exact account/product/address/FRE/5000-minor-unit grant,
+  one order/one intention/one owner card submission/zero retries. Codex never orders,
+  quotes or pays. Closure clears grant/restores edge, retains callback/owned reads
+  and late reconciliation; no SQL rollback/automatic retry or money action.
+- SignupOPEN/publicpurchasesOFF/PDC PAUSED.0 production/config/schema/Auth/email/
+  order/payment/provider writes here. All32 deferred rows, original/frozen135 paths,
+  worktrees/branches and deferred Storage audit retained. CX-01 local narrow proof
+  does not complete DTR-08 or broader public coupon acceptance. NEXT: replacement
+  approval → fresh preflight/recovery → guarded repair+scoped activation → owner
+  applies FRE/reviews50/pays once → provider/callback/owned paid order/Manual Dashboard
+  verification → closure → separate PUBLIC packet with monitoring/kill switch/remedy.
+
+# E71 — recipient verified; EGP75 controlled purchase READY for exact approval — 2026-10-27
+
+- Owner saved the real recipient privately. Read-only validation confirms the same
+  verified active ordinary customer, usable Egyptian mobile/address/city/governorate,
+  Egypt and approved Manual coverage; no QA marker. Exact normalized address bound
+  privately; selected customer still has0 orders/payment attempts. No recovery retest.
+- [Sealed purchase review](docs/final-controlled-purchase-review.md): current11cb/
+  source5b09077/schema95; genuine mousepad WOLF/Default1/current25 +Manual50/cardfee0
+  =EGP75. Owner's physical-availability confirmation retained; no invented stock.
+  Exact new seal d2314973ea37625e7fd662b0e7c55bbd0d4050cf3c8bf2d38364367822663e93. Recovery verified03:31:26.486Riyadh;
+  expires27Oct09:31:26.486Riyadh. NOT ACTIVATED; fresh preflight/recovery mandatory.
+- Independent guarded operator: only three reviewed settings, one Manual company
+  and its mandatory shipping generation+1; no migrations/app deployment. One private
+  account/product/model/address/7500-minor-unit/durable-cart grant≤1h starting on
+  activation,1 order/1 intention/1 owner card submission/0 retries. Codex never
+  orders or pays. Globals remainfalse; signupOPEN/PDC PAUSED; no PDC API calls.
+- New native6 configuration cases(7 with parent)+8 remote guards PASS/0skip;
+  rollback, drift, trigger side effects, ambiguous COMMIT/no retry and one-signal
+  closure covered. Prior identical Caddy15-route/six-asset/full-other-policy proof
+  retained; completed acceptance tests not repeated. Fresh encrypted95 DB/full
+  pg_restore readback and10-file runtime byte readback PASS;1833 inputs sealed,
+  all145 protected projections and1849 assets verified read-only. Original local
+  fixture/guard stops preserved; zero production/config/Auth/provider/order/payment
+  writes. Activation/closure each budget1 app restart+1 CaddySIGUSR1; no retry or
+  automatic rollback. Callbacks/owned receipts and late reconciliation retained.
+- Owner reminds city/governorate dropdowns are missing on deployed95. LOC-01 already
+  implements dependent EN/AR selectors locally in separate96; NOT DEPLOYED/ACCEPTED.
+  Preserve that branch and DTR-19; no96 migration/reference seed/provider activation.
+- NEXT: exact controlled approval → fresh preflight → scoped activation → owner
+  alone checks saved recipient/Manual50/CARD/EGP75 and pays once → verify provider,
+  signed callback/owned paid order/Manual-untracked Dashboard state → close grant.
+  Then prepare separate PUBLIC purchasing packet with kill switch/monitoring/manual
+  remedy. All32 deferrals/frozen135 paths/branches/worktrees/Storage audit preserved.
+
+# E70 — recovery ACCEPTED; EGP75 purchase awaits saved recipient — 2026-10-27
+
+- [Acceptance receipt](docs/password-recovery-acceptance-receipt.md): owner reports
+  Site URL/approved redirects already correct/unchanged, reset template updated,
+  password update PASS and new-password sign-in PASS. Record as owner-reported
+  functional smoke-test results. Same confirmed active ordinary customer/read-only
+  recent02:55 sign-in supports report; no password/link/token/hash capture or retest.
+  AUTH-RECOVER-OUTLOOK-01/BETA-02 ACCEPTED for this scope; previous E68 correction
+  remains history. Exact original trigger still unconfirmed, no longer a launch gate.
+- Fresh03:01 readonly active11cb/source5b09077/schema95/runtime/Caddy/gates preserved.
+  SignupOPEN/confirmationrequired/Turnstile retained; CartCheckout403/history401,
+  new Paymob initiationOFF/PDC PAUSED.0 agent Auth/email/password/config/provider/
+  deployment/order/payment action. Recovery app+owner acceptance consumed complete.
+- Returned directly to BETA-11: current mousepad WOLF/Default1/25 +approved Manual50
+  +cardfee0 =proposedEGP75; selected customer0 orders/attempts. Saved address/city/
+  governorate/valid mobile still missing at02:59. Owner saves My Profile privately;
+  no invented address/A marker. Manual/untracked/ENAR configuration remains unapplied.
+- Unsigned draft refreshed to current11cb with same unused durable command; Caddy
+  proposal unchanged from qualified prior policy. No exact purchase seal until real
+  recipient binding; then qualify fresh recovery/operator/closure and one-charge
+  scope. Owner alone orders/pays after separate approval; public opening later.
+  All32 deferrals/clean96/frozen worktrees/Storage audit preserved; no completed tests
+  repeated. Main91 remains continuity; both handoffs/master/fix source synchronized.
+
+# E69 — recovery application DEPLOYED PASS; owner test pending — 2026-10-27
+
+- [Deployment receipt](docs/password-recovery-deployment-receipt.md): exact owner20d5
+  approved, fresh02:22 preflight/unexpired seal/artifact PASS, new encrypted95 DB/
+  10-file runtime full readback PASS. Private app/static candidate/real Caddy UID
+  reads PASS. Completed02:26:23.176Riyadh; active11cb391b2497b703/source5b09077/schema95,
+  1 app restart/PID46871;0 SQL/runtime/Caddy/Auth/email/provider/order/payment writes.
+- All145 protected projections/schema/Auth/history/ledger/media/private/runtime
+  retained. All1,744 previous assets unchanged;1,849 current entries. Public33 ENAR
+  references/six old+new JS bodies+HEAD/cache/latest/denials PASS at02:27:18.090.
+  SignupOPEN/confirmationrequired/Turnstile retained, CartCheckout403/history401,
+  new Paymob initiationOFF/PDC PAUSED.32 deferrals/clean96/frozen135/Storage unchanged.
+- App operator CONSUMED_COMPLETE; never replay apply or older consumed helpers.
+  Owner-only template/exact ENAR redirects/ONE fresh private reset→password→new-login
+  phase is approved, PENDING, email budget unused. No new approval for these exact
+  owner steps; no credential/token/link capture, admin reset or CAPTCHA disable.
+- BETA-02 recovery acceptance remains BLOCKED; delivery-only correction preserved.
+  Exact prior hosted trigger still UNCONFIRMED; confirmed code defect now deployed,
+  not yet owner-accepted. After owner recovery PASS, real profile address/mobile,
+  then same Outlook/mousepad WOLF1/25+Manual50=proposed75; refresh bindings to new11cb
+  before separate one-charge purchase approval. Public purchasing stays closed.
+  Both handoffs/master/new fix source updated; original branches/worktrees intact.
+
+# E68 — recovery redemption is a PUBLIC LAUNCH BLOCKER — 2026-10-27
+
+- Owner correction OD-20261027-AUTH-RECOVERY-01: earlier recovery acceptance was
+  EMAIL DELIVERY ONLY. Redemption/password update/new-password login NEVER accepted;
+  reopen BETA-02 only. Preserve confirmation/Turnstile/A-B/payment/95 acceptance.
+- [Recovery review](docs/password-recovery-repair-review.md): exact hosted trigger
+  UNCONFIRMED; sanitized recent recovery/no later sign-in/no matching audit rows.
+  Owner template uses ConfirmationURL; cross-browser PKCE and scanner consumption
+  are documented failure paths, not proof of this Outlook attempt's exact cause.
+  Confirmed deployed-SFC defect: unrelated session accepted after unresolved callback.
+- Isolated full95 source5b09077 fixes recovery proof, explicit owner-submitted hash
+  verification/current-user binding, no auto consumption/retry and ENAR retry action.
+  New15 SDK/SFC recovery checks+17 release guards+6 Python groups/typecheck/build/
+  full2,820-entry archive readback PASS;1,744 current assets retained. No schema96,
+  server/CAPTCHA/session-isolation change; original branches/frozen135 paths retained.
+- Exact approval in review:20d5432cdafad2250c97a8a1b5a672c47ecf63398ebb499218a212ba0d6bfebc.
+  Proposed11cb391b2497b703/schema95; fresh encrypted95 DB/runtime full readback PASS,
+  expiry27Oct08:10:31.184Riyadh. NOT executed; current81 remains.1 app restart/0 SQL,
+  runtime/Caddy/Auth/provider/email writes by Codex. Owner then edits recovery-only
+  link/adds only missing exact ENAR redirects and performs ONE fresh private reset/
+  password update/new login. No password/token/link capture, admin bypass or CAPTCHA
+  disable. Fresh execution preflight/backups mandatory; no retry/automatic rollback.
+- Public signupOPEN/purchasingOFF/PDC PAUSED;0 live email/account/password/order/
+  payment/provider action here.32 deferrals/clean96/Storage audit unchanged. NEXT:
+  approve exact recovery packet → owner redemption PASS → real saved address → resume
+  same Outlook customer/mousepad WOLF1/25+Manual50=proposed75, separate purchase seal.
+  Public activation remains separately gated. Main91 is continuity; full95 supplies app.
+
+# E67 — final controlled purchase drafted; recipient missing — 2026-10-27
+
+- [Current review](docs/final-controlled-purchase-review.md): existing published
+  mousepad WOLF/Default/qty1 at25 +approved Manual50 +cardfee0 =proposedEGP75.
+  Owner's catalog-wide physical availability retained; no fake inventory or stock
+  census. Manual company/untracked mode/approved ENAR delivery text remain unapplied.
+- Owner named two candidate accounts; selected existing verified ordinary Outlook
+  customer privately. Earlier Yahoo-labelledB is not the selected purchase account;
+  both lack real recipient details. Outlook profile must be saved by owner before
+  its exact address hash/seal. No account creation, Auth test or A-profile change.
+- Fresh01:35 production READONLY retains81/sourceb37/schema95/runtime/Caddy/assets;
+  01:39 account/catalog/settings read-only;01:45 recipient still missing. Local16
+  draft guards/15 route cases/
+  six asset bodies/latest cache PASS, full other adapted policy identical. Preserve
+  initial fixture failures. These are not activation, new payment or hosted acceptance.
+- BLOCKED on saved recipient/mobile; no activation seal issued. Private unsigned
+  draft ../final-controlled-purchase-20261027/controlled-scope-draft-outlook-v2.private.json.
+  Future exact packet binds customer/product/model/address/Manual50/EGP75/one durable
+  command/≤1h/one intention+one owner card submission/zero retries and safe closure.
+  Qualify final operator/fresh recovery/preflight after recipient binding; no draft
+  hash authorizes anything. Codex creates no order or payment; owner pays personally.
+- Public signupOPEN/purchasingOFF/new PaymobOFF/PDC PAUSED.0 production/config/data/
+  provider/order/payment changes. Accepted tests not repeated;32 deferrals, clean96,
+  all branches/frozen worktrees and deferred Storage audit preserved. NEXT BETA-11:
+  owner saves selected profile, exact controlled authorization, one purchase; then
+  separate public activation with monitoring/manual remedy/kill switch after PASS.
+
+# E66 — SCHEMA95 DEPLOYMENT PASS; purchasing held — 2026-10-27
+
+- [Recovery receipt](docs/schema95-asset-recovery-receipt.md): exact owner60b1fee
+  approval executed once; fresh01:16 Riyadh preflight, unexpired authenticated
+  recovery chain and staged artifact matched. Completed01:18:48.829 Riyadh.
+  Active81becf54218a8e14/sourceb37/schema95;0 SQL replay/data writes,1 main restart,
+  1 Caddy SIGUSR1/original Caddy PID. Approval CONSUMED_COMPLETE; never rerun.
+- Private candidate/current+retained assets PASS; all1,639 previous entries retained.
+  Public six JS bodies/hash+HEAD/cache and33 EN/AR referenced asset bytes PASS;
+  latest short cache/missing+hidden denial PASS at01:19:14.017. No rebuild.
+  All145 protected projections/exact95/Auth/history/runtime/media/private files
+  preserved. SignupOPEN/confirmationrequired/Turnstile retained; CartCheckout403,
+  anonymoushistory401. New Paymob initiation OFF; PDC PAUSED;0 provider/payment.
+- Both branches/135 frozen paths/clean96 preserved;32 deferred rows byte-identical.
+  Main91 remains continuity/tools only; deployed source is frozen full95b37.
+  No merge/reset/deletion/push, schema96 work or repeated accepted Auth tests.
+  Original failed receipts and original archive/SQL/Manual draft remain intact.
+- NEXT P0 BETA-11: separate exact authorization for ONE genuine new-customer
+  normal CARD purchase: real product/model/address, Manual50, explicit untracked
+  configuration, exact total/durable command/one-charge budget and bounded window.
+  Then separate public purchasing activation after PASS, with monitoring/manual
+  remedy/kill switch. Keep public purchasing OFF and PDC paused until authorized.
+  Master and both handoffs updated; no Git housekeeping or deferred work started.
+
+# E64/E65 —95 SQL installed; application STOP; separate asset recovery ready — 2026-10-27
+
+- [Deployment STOP](docs/schema95-deployment-stop-receipt.md): ownera510 approved;
+ matching preflight/fresh encrypted backups/staging passed, atomic95 committed once
+ at26Oct23:48 Riyadh.145 original projections/Auth/history/old94 ledger/expected
+ schema preserved. Candidate retained-asset check failed; oldapp5a/source3001cd6
+ remains current with original main PID/Caddy config.0 main restarts,0 Caddy reloads,
+ no business settings/payment/PDC changes. SignupOPEN/confirmation/Turnstile held;
+ purchasingOFF. Originala510 CONSUMED_STOP; never rerun apply/check/candidate/SQL.
+- Exact cause locally reproduced: retained file exists but Nitro compiled manifest
+ omits its URL, giving404; current generated asset200. Original81 archive/SQLfd9c/
+ Manual draft untouched. Separate companion alone did not provide HTTP serving.
+- [New recovery review](docs/schema95-asset-recovery-review.md) READY, NOT executed:
+ seal60b1fee08340d437a88dcb66093cdd18aa0b8544ae6d16c067a2cf505168d48f. Adds only
+ GET/HEAD public/_nuxt file serving after existing guards, current+retained fallback.
+ Full adapted policy otherwise identical. Exact-version local asset/rollback/cache/
+ denial cases PASS;22 scope+10 remote/actual-adapter guards PASS/0skip. Actual Caddy
+ user can read staged public bytes; direct HTTPS loopback proof passes. Candidate
+ explicit127.0.0.1/adminoff/no TLS/persistence and isolated XDG. No old Auth/provider
+ acceptance repeated. Initial local fixture failures/unapproved211a preserved.
+- New exact owner approval required because a510 excluded Caddy changes and is
+ consumed. Scope1 SIGUSR1/1 main restart/new loopback candidate, staged app81 reused,
+ installed95 verified/0 migrations. No runtime/Auth/business settings/provider/Git
+ changes. Backup chain reverified/reused; expiry27Oct05:46:05 Riyadh. Keep95 even on
+ separately reviewed old-app recovery; no automatic retry/rollback/dump restore.
+- Main91 is continuity/tools only, full95b37 remains source; all135 frozen paths,
+ original branches/commits/detachedc3775e8 and clean96 preserved.32 deferred rows
+ unchanged/pending. Current private STOP ../schema95-beta-release-20261026/review-2/;
+ new unexecuted packet ../schema95-asset-recovery-20261026/plan.json.
+- NEXT: approve only the new asset-recovery seal, then ONE separately scoped genuine
+ new-customer CARD purchase with real address/product/Manual50/untracked configuration
+ and exact charge budget. Only after PASS request public purchasing activation with
+ monitoring/manual remedy/kill switch. No PDC, history/private-window/cosmetic/storage
+ work started. Both current handoffs/master updated here; frozen95/96 not rewritten.
+
+# E63 — original schema95 deployment qualified; approval pending — 2026-10-26
+
+- [Exact deployment review](docs/schema95-beta-deployment-review.md): sourceb37,
+ original archive81becf54…/SQLfd9c0284… unchanged; new target-bound95 operator
+ qualified. Separate asset companion5ed2d468… preserves1,598 missing old client
+ files without rewriting the frozen archive; all1,639 retained assets checked.
+ First local missing-asset STOP preserved; zero production writes in preparation.
+- New local18 scope+12 remote/extraction+6 native migration operator cases PASS,
+ zero skipped; exact95 schema footprint PASS. Reused original15 transaction tests,
+ typecheck/build. No accepted Auth/session/owner-payment tests repeated.
+- Fresh23:04 Riyadh encrypted database full pg_restore readback and ten runtime
+ file byte checks PASS;145 protected projections/history/Auth/ledger/schema bound.
+ Current5a/schema94, signupOPEN/confirmationrequired/Turnstile preserved, purchases
+ OFF. No deployment/restart/migration/Auth/config/payment/shipment/provider action.
+- Exact deployment seal a510a04dd2d55b0b39c22c1b88437008ecaefbc1cc94ca3872305209840febab.
+ Requires separate owner approval; recovery expires2026-10-27 05:04:49 Riyadh and
+ fresh preflight remains mandatory. Scope: unchanged app+companion+atomic95 only,
+ one main restart, no commerce configuration or activation. Tracking defaulttrue;
+ Manual50/CARD/unrecorded-stock settings belong to the later scoped purchase.
+- Main91 holds new tooling and current continuity only; frozen full95 supplies
+ application bytes. Both existing branches, all135 dirty paths/14 frozen contexts,
+ detachedc3775e8 and existing commits preserved. Separate96 clean/unchanged; no
+ merge/reset/cherry-pick/push.32 deferred rows unchanged; pending is never PASS.
+- NEXT: exact approved inactive95 deployment, then ONE separately scoped owner
+ new-customer normal storefront card purchase/real address/product/total; no charge
+ without owner action. After PASS, separate public-purchase activation with manual
+ remedy/monitoring/kill switch. PDC remains PAUSED; storage/96/coupons/history stay
+ deferred. Private packet ../schema95-beta-release-20261026/review-2/plan.json.
+
 # E62 — offline locations complete locally; safe commits; Beta95 remains next — 2026-10-26
 
 - Owner requested offline workbook review, minimal location selectors/server checks,

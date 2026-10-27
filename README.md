@@ -1,3 +1,61 @@
+# MON-01 automatic payment monitoring active - E103, 28 October 2026
+
+The [final timer completion](docs/mon01-final-timer-completion-receipt.md) passed.
+The existing five-minute timer is active; two automatic reports verified.
+Production remains b4b502a03207713a/schema98; zero additional app restarts.
+Alerts are Dashboard-first; email OFF. Keep staffed Dashboard/fulfillment coverage.
+Both2649 and3149 provider outcomes remain UNVERIFIED. Kill budget1; PDC PAUSED.
+Owner Dashboard observation is pending. All execution approvals are consumed.
+
+# MON-01 observer corrected; final timer approval ready - E102, 28 October 2026
+
+The [final timer review](docs/mon01-final-timer-completion-review.md) is ready.
+27 focused checks and read-only host qualification pass. No approval or activation.
+Production remains b4b502a03207713a/schema98; zero app restarts required.
+Timer disabled; keep staffed15-minute payment checks. New pending2649 remains
+provider-unverified. CARD/Manual50/signup LIVE; PDC PAUSED; email OFF.
+
+# MON-01 observer stop; timer disabled - E101, 28 October 2026
+
+The [timer completion was consumed](docs/mon01-timer-completion-stop-receipt.md).
+One scheduled worker succeeded; its observer failed and disabled the timer once.
+Production remains b4b502a03207713a/schema98; zero additional app restarts.
+Keep staffed15-minute monitoring. Never replay any consumed operator.
+CARD/signup/Manual EGP50 remain available; PDC PAUSED; email OFF.
+
+# MON-01 timer completion ready for separate approval - E100, 28 October 2026
+
+The [existing-timer completion](docs/mon01-timer-completion-review.md) is prepared.
+No approval or activation exists. Production remains b4b502a03207713a/schema98.
+Zero app restarts are proposed; keep staffed15-minute payment monitoring.
+The original installer and journal recovery are consumed. Never replay them.
+
+# MON-01 partial deployment; timer completion blocked - E99, 28 October 2026
+
+Current production is `b4b502a03207713a`, schema98. Public CARD Beta remains live.
+The [recovery stopped after cutover](docs/mon01-journal-recovery-stop-receipt.md).
+One app restart was consumed; timer remains disabled. Never replay recovery.
+Staffed monitoring is still required; the original emergency-close budget remains1.
+Email OFF; signup OPEN; Manual EGP50; PDC PAUSED. Deferred tests remain open.
+Earlier dated production/readiness summaries below are historical.
+
+# Public CARD Beta ACTIVE — E90, 27 October2026
+
+[Activation verified](docs/public-card-beta-activation-receipt.md): public CARD checkout
+and owner-managed Manual EGP50 are OPEN. Signup OPEN; PDC PAUSED; coupons disabled.
+Currenta402/schema98 unchanged. Staff payment checks every15min; one approved
+emergency kill remains available. DTR-33 and all other deferred work remain open.
+The dated milestones below are historical.
+
+# Current purchasing status — E89, 27 October 2026
+
+The [genuine EGP5 payment](docs/egp5-genuine-payment-verification.md) is VERIFIED.
+The restricted grant is CLOSED; callbacks and owned receipts remain available.
+[Public CARD Beta](docs/public-card-beta-activation-review.md) is ready for separate approval.
+Signup OPEN; purchasing OFF; PDC PAUSED. Currenta402/schema98.
+DTR-33 records the browser discrepancy; all original32 rows remain intact.
+The milestones below are retained as dated history.
+
 # Reusable ecommerce platform
 
 Each business supplies its own branding, domains and configuration.
@@ -13,8 +71,21 @@ Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md),
 Use the [consolidated deferred-test register](docs/DEFERRED_TEST_REGISTER.md) for
 uncompleted acceptance. Deferral does not waive later completion.
 
-Production is release `5a38201292763325`, schema94. The original schema95 Beta
-candidate is packaged locally and unchanged; no deployment is authorized. Offline
+Current production is `a402cf24a9685e0d`, schema98.
+The [PDP/cart repair deployed](docs/pdp-cart-repair-deployment-receipt.md) with one app restart.
+Its approval is consumed. The original EGP5 window expired at14:21:33 Riyadh,27 October.
+The [restricted EGP5 window](docs/egp5-purchase-window-activation-receipt.md) expired
+at **15:59:04 Riyadh,27 October2026**. Genuine owner acceptance is pending.
+[Exposed-session revocation](docs/session-exposure-checkout-receipt.md) is verified.
+The [secure EGP5 window](docs/egp5-secure-checkout-window-activation-receipt.md) is ACTIVE until **17:50:56 Riyadh,27 October2026**.
+Activation is consumed; authorized runtime-only closure remains pending.
+The owner [reported a checkout rejection](docs/egp5-checkout-rejection-review.md); diagnosis is pending the browser request.
+FRE5 remains unchanged. Public purchasing stays disabled.
+The prior EGP50 grant is closed. Public purchasing remains disabled.
+Password recovery remains owner-accepted.
+The earlier [schema95 stop](docs/schema95-deployment-stop-receipt.md) and
+[asset recovery](docs/schema95-asset-recovery-review.md) are historical evidence.
+Never replay schema95 or a consumed operator. Offline
 [location reference/selectors](docs/pdc-location-reference-review.md) are a separate
 local96 branch, with no PDC API calls or provider activation. PDC remains PAUSED.
 The [historical import](docs/customer-history-import-receipt.md) remains accepted;

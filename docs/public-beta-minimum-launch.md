@@ -1,3 +1,78 @@
+# E90 — public CARD Beta ACTIVE
+
+See [the current activation receipt](public-card-beta-activation-receipt.md).
+Signup OPEN; CARD/Manual50 open; coupons disabled; PDC PAUSED. Staff15-minute
+payment checks and preserve all deferred work. Earlier preparation below is history.
+
+# E89 — genuine payment verified; final public activation review ready
+
+See [the exact current public CARD review](public-card-beta-activation-review.md).
+E88 paid order and grant closure passed. Public purchasing remains OFF pending
+separate exact approval. Earlier blockers below are historical; preserve deferrals.
+
+# E70 — recovery accepted; return directly to the EGP75 purchase
+
+[Owner recovery acceptance PASS](password-recovery-acceptance-receipt.md): correct
+existing Site URL/redirects, template updated, password update/new-password login
+PASS. Owner-reported functional smoke-test results; no extra Auth request or test.
+Current11cb/schema95/signupOPEN/purchasingOFF/PDC PAUSED retained. Fresh mousepad
+WOLF/Default1 price25 +approved Manual50/cardfee0 =proposed75. Saved recipient/mobile
+is still missing; owner saves My Profile, then exact one-charge purchase approval.
+No purchase authorization, order, payment, provider/configuration change now.
+All32 deferrals/schema96/Storage audit/worktrees remain preserved and incomplete.
+
+# E69 — recovery app deployed; one owner recovery acceptance remains
+
+[Deployment PASS and approved owner steps](password-recovery-deployment-receipt.md):
+active11cb391b2497b703/schema95 at27Oct02:26:23.176Riyadh.20d5 app approval consumed;
+zero SQL/runtime/Caddy/Auth/email/provider changes. SignupOPEN/purchasingOFF/PDCpaused.
+Owner-only recovery template/exact redirects and ONE fresh private reset/password/
+new login remain approved/pending; no repeat deployment or new approval is needed.
+After PASS, real saved recipient, then same mousepad WOLF1/25 +Manual50 =proposed75
+under a separate purchase seal. Recovery redemption remains a P0 blocker;32 deferred
+tests and every other accepted scope are preserved, with no public activation.
+
+# E68 — recovery redemption must pass before the controlled purchase
+
+Owner corrects earlier recovery acceptance to EMAIL DELIVERY ONLY. Reset-link
+redemption, password updating and new-password login never passed and are now
+BETA-02/P0 PUBLIC LAUNCH BLOCKER. [Focused repair/exact approval](password-recovery-repair-review.md).
+Current81/schema95/signupOPEN/purchasingOFF/PDC PAUSED remain unchanged. Local fix,
+tests/build/retained archive/fresh recovery/preflight PASS; no deployment or email.
+After approved repair and ONE owner reset/new login PASS, save the real recipient
+and resume mousepad WOLF1/25 +Manual50 =proposed75. No purchase approval yet.
+All other accepted scopes and32 deferred tests remain intact; no public activation.
+
+# E66 — schema95 application deployed; one controlled purchase is next
+
+[Recovery PASS](schema95-asset-recovery-receipt.md),2026-10-27 01:18:48.829 Riyadh:
+active81becf54218a8e14/sourceb37/schema95. Exact60b1 approval consumed complete;
+0 SQL replay/data writes,1 main restart/1 Caddy SIGUSR1. Current+retained assets,
+all145 protected projections and public frontend HTTP postflight PASS.
+Signup OPEN/confirmation required; purchasing OFF/new Paymob initiation OFF/PDC PAUSED.
+No repeat deployment, Auth tests or provider transaction. All32 deferrals unchanged.
+Next: one separately authorized genuine new-customer CARD purchase with real
+product/model/address, Manual50, explicit untracked configuration, exact total,
+durable command/one-charge budget and bounded window; then separate public opening.
+
+# E64/E65 —95 migration installed; asset recovery approval is next
+
+[STOP receipt](schema95-deployment-stop-receipt.md): application remains5a, schema95
+installed safely; a510 consumed. [Separate recovery](schema95-asset-recovery-review.md)
+qualifies public-asset serving without changing the frozen archive or replaying SQL.
+No recovery activation yet. Signup OPEN/purchasing OFF/PDC PAUSED. After recovery,
+one exact new-customer purchase, then separate public activation;32 deferrals retained.
+
+# E63 — inactive95 deployment ready for exact approval
+
+[Sealed deployment review](schema95-beta-deployment-review.md): original95 archive
+and SQL unchanged; separate client-asset preservation/new guarded operator/recovery
+qualified. No deployment or activation yet. Signup OPEN; purchasing OFF. Approve
+only the exact inactive95 packet, then scope one genuine new-customer purchase and
+request public purchasing separately. Original Manual configuration draft remains
+unapplied; public-open stage has no authority under the deployment-only token.
+All32 deferred tests and the separate96 release remain pending.
+
 # E62 — locations isolated; return to the unchanged95 path
 
 Offline location/reference work is local96 on its own branch/package. It is not

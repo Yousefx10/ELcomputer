@@ -1,5 +1,10 @@
 # Consolidated deferred-test and acceptance register
 
+27 October 2026 — E88: the scoped genuine EGP5 purchase and paid order are verified.
+The original32 rows remain intact below; E88 satisfies DTR-04's one-customer payment
+acceptance for its exact scope. Public activation and broader edge tests are separate.
+DTR-33 records the original-browser discrepancy without another live payment.
+
 2026-10-26. This is the single register for unfinished acceptance/features.
 It supplements stable roadmap IDs; original evidence and both accounts' work remain.
 **Deferral never waives completion. Unexecuted tests are never PASS.**
@@ -53,6 +58,7 @@ all B/C acceptance remains required later. See [current Beta plan](public-beta-m
 | DTR-30 | ERP/Daftra/treasury/HR and mode switching (ERP-01/02;FUT-04/08) | Owner post-Beta audit/compatibility requirements | High/B | Authorized owner and real account scope, provider requests separately approved | Backend ownership, locks, accounting reconciliation and mode-safe routes with no duplicate inventory/finance | PB5 ERP | PLANNED/PARTIAL foundations; full provider/hosted acceptance pending |
 | DTR-31 | Installer/recovery/portability/future protocols (FUT-07/10;CONT-01) | No broad reinstall/integration needed for current VPS launch | High/B; backups/kill switch A | Separate installation/restore target and exact approval | Qualified recovery/cutover, portable config and preserved Supabase/Auth/media; no destructive reuse of old seals | PB5 installation; PB1 release-specific recovery | Local certification retained; remaining hosted/target cases unaccepted |
 | DTR-32 | Google/legacy redirects/discovery/catalog migration follow-up (MIG-04;DONE-01) | Owner placed after Beta; no new migration or SEO work now | Medium/B | Authorized Search Console/domain evidence for private metrics; redirect changes separately approved | Real URL/data mapping, safe canonical/redirects and observed metrics; no invented rankings or identity links | PB5 discovery | PLANNED; private indexing metrics NOT MEASURED |
+| DTR-33 | Original-browser controlled-checkout rejection versus successful Incognito purchase (OD-20261027-BROWSER-STATE-01) | Exact rejected request/form/client version was not retained; do not infer all normal-browser paths safe | B controlled-grant discrepancy; promote to A and stop public purchasing if a valid public CARD/Manual request reproduces | Safe match flags and no extra card transaction; normal-browser local reproduction first | Identify exact address/delivery/client mismatch or reusable defect; preserve command recovery, account isolation, trusted pricing and zero uncertain retries | PB2 focused browser-state follow-up; public incident escalates immediately | DEFERRED/UNCONFIRMED original field. E88 original v3 cart owner/product/variant/qty1 valid; no pending command; coupon not applied. Actual Vue + server-guard local3 PASS: restored cart EGP5, restricted address mismatch denial, public normal-address EGP75 and stale-coupon removal. Genuine Incognito paid5 accepted. No proven general public checkout code defect; broader browser matrix remains open. |
 
 Before closing any row, record date, source/deployed release, local versus hosted
 scope, exact approved actor/order/provider context, result/evidence, residual

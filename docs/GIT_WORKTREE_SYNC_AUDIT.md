@@ -1,3 +1,22 @@
+## E64/E65 — partial deployment and asset recovery preparation
+
+All135 frozen paths/14 original contexts and separate96 rechecked unchanged. Main
+HEAD88747c8 and all other heads/commits/16 worktrees/13 branches retained. Main adds
+new asset-recovery tooling and continuity only; original95 source/archives/SQL and
+old consumed tooling are untouched. No merge/reset/rebase/cherry-pick/push. Both
+current handoffs/master updated on main; frozen95/96 documents deliberately retained.
+[Current STOP/recovery scope](schema95-asset-recovery-review.md).
+
+## E63 — preserved frozen sources; additive95 operator on main
+
+All135 frozen dirty paths/14 original contexts rechecked unchanged, including the
+full95 b37 source and detachedc3775e8. Separate96 remains clean at4843754; its code,
+archive and SQL are excluded. Same16 worktrees/13 branches, existing commits intact.
+Main adds only reviewed95 deployment tooling and continuity; its application remains
+schema91 and is never deployed. No merge/rebase/reset/cherry-pick/deletion/push.
+[Exact scope and private packet](schema95-beta-deployment-review.md). Both current
+handoffs/master updated on main; frozen95/96 documents deliberately not rewritten.
+
 ## E62 — owner-authorized safe local commits and separate location source
 
 Opening161 dirty paths across15 worktrees inventoried; no staged changes. New16th
