@@ -111,7 +111,7 @@ export const getValidatedCoupon = async (supabaseAdmin, code, subtotal) => {
   }
 }
 
-export const buildCouponResponse = (coupon, discountAmount) => {
+export const buildCouponResponse = (coupon, discountAmount, deliveryDiscountAmount = 0) => {
   if (!coupon) {
     return null
   }
@@ -123,6 +123,7 @@ export const buildCouponResponse = (coupon, discountAmount) => {
     discountType: coupon.discount_type,
     discountValue: Number(coupon.discount_value || 0),
     minimumOrderAmount: Number(coupon.minimum_order_amount || 0),
-    discountAmount: Number(discountAmount || 0)
+    discountAmount: Number(discountAmount || 0),
+    deliveryDiscountAmount: Number(deliveryDiscountAmount || 0)
   }
 }

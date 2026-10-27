@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'private, no-store')
   const { order, supabaseAdmin, review } = await reviewCheckout(event, { requireCoupon: true })
   const validated = await getValidatedCoupon(supabaseAdmin, order.coupon_code, Number(review.orderValue))
-  return { coupon: buildCouponResponse(validated.coupon, Number(review.discountAmount)) }
+  return { coupon: buildCouponResponse(validated.coupon, Number(review.discountAmount), Number(review.deliveryDiscountAmount || 0)) }
 })

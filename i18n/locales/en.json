@@ -117,6 +117,7 @@
     "review": "Review purchase"
   },
   "common": {
+    "deliveryDiscount": "Delivery discount",
     "internalNote": ", internal note",
     "orderValue": "· Order {value0}",
     "returnedValue": "· Returned {value0}",

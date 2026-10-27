@@ -1909,6 +1909,11 @@
               </div>
 
               <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.deliveryDiscount') }}</label>
+                <input v-model="newCoupon.delivery_discount_value" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+              </div>
+
+              <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.minimumOrderAmount') }}</label>
                 <input
                   v-model="newCoupon.minimum_order_amount"
@@ -2024,6 +2029,11 @@
                     step="0.01"
                     class="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
                   >
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.deliveryDiscount') }}</label>
+                  <input v-model="coupon.delivery_discount_value" type="number" min="0" step="0.01" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
                 </div>
 
                 <div>
@@ -2334,6 +2344,7 @@ const newCoupon = reactive({
   description: '',
   discount_type: 'fixed',
   discount_value: '',
+  delivery_discount_value: '',
   minimum_order_amount: '',
   usage_limit: '',
   starts_at: '',
@@ -2802,6 +2813,7 @@ const normalizeCouponPayload = (coupon) => {
     description: String(coupon.description || '').trim() || null,
     discount_type: coupon.discount_type === 'percentage' ? 'percentage' : 'fixed',
     discount_value: discountValue,
+    delivery_discount_value: Number(coupon.delivery_discount_value || 0),
     minimum_order_amount: minimumOrderAmount,
     usage_limit: usageLimit ? Number(usageLimit) : null,
     starts_at: toIsoDateTimeValue(coupon.starts_at),
@@ -2817,6 +2829,7 @@ const mapCoupon = (coupon) => {
     ...coupon,
     ...normalizedCoupon,
     discount_value: String(normalizedCoupon.discount_value || ''),
+    delivery_discount_value: String(normalizedCoupon.delivery_discount_value || ''),
     minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
     usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
     starts_at: toDateTimeLocalValue(coupon.starts_at),
@@ -2826,6 +2839,7 @@ const mapCoupon = (coupon) => {
     original_description: normalizedCoupon.description || '',
     original_discount_type: normalizedCoupon.discount_type,
     original_discount_value: String(normalizedCoupon.discount_value || ''),
+    original_delivery_discount_value: String(normalizedCoupon.delivery_discount_value || ''),
     original_minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
     original_usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
     original_starts_at: toDateTimeLocalValue(coupon.starts_at),
@@ -4150,6 +4164,11 @@ const validateCouponForm = (coupon, isNewCoupon = false) => {
     return null
   }
 
+  if (!Number.isFinite(normalizedCoupon.delivery_discount_value) || normalizedCoupon.delivery_discount_value < 0) {
+    couponError.value = 'Enter a valid delivery discount.'
+    return null
+  }
+
   if (normalizedCoupon.minimum_order_amount < 0) {
     couponError.value = 'Minimum order amount cannot be negative.'
     return null
@@ -4176,6 +4195,7 @@ const isCouponDirty = (coupon) => {
     String(coupon.description || '').trim() !== coupon.original_description ||
     String(coupon.discount_type || '') !== coupon.original_discount_type ||
     String(coupon.discount_value || '') !== coupon.original_discount_value ||
+    String(coupon.delivery_discount_value || '') !== coupon.original_delivery_discount_value ||
     String(coupon.minimum_order_amount || '') !== coupon.original_minimum_order_amount ||
     String(coupon.usage_limit || '') !== coupon.original_usage_limit ||
     String(coupon.starts_at || '') !== coupon.original_starts_at ||
@@ -4188,6 +4208,7 @@ const resetNewCoupon = () => {
   newCoupon.description = ''
   newCoupon.discount_type = 'fixed'
   newCoupon.discount_value = ''
+  newCoupon.delivery_discount_value = ''
   newCoupon.minimum_order_amount = ''
   newCoupon.usage_limit = ''
   newCoupon.starts_at = ''

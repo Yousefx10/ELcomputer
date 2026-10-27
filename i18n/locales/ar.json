@@ -117,6 +117,7 @@
     "review": "مراجعة الشراء"
   },
   "common": {
+    "deliveryDiscount": "خصم التوصيل",
     "internalNote": "، ملاحظة داخلية",
     "orderValue": "· الطلب {value0}",
     "returnedValue": "· المرتجع {value0}",
