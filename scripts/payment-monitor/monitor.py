@@ -262,7 +262,7 @@ def journal(unit, since, until):
     if not re.fullmatch(r'[A-Za-z0-9_.@-]+\.service', unit):
         raise Stop('UNIT_INVALID')
     fmt = lambda value: when(value).strftime('%Y-%m-%d %H:%M:%S.%f UTC')
-    raw = command(['journalctl', '--quiet', '--no-pager', '--output=json', '-n', '10001', '--unit=' + unit,
+    raw = command(['journalctl', '--quiet', '--no-pager', '--output=json', '--output-fields=MESSAGE,PRIORITY', '-n', '10001', '--unit=' + unit,
                    '--since=' + fmt(since), '--until=' + fmt(until)])
     lines = raw.splitlines()
     if len(lines) > 10000:

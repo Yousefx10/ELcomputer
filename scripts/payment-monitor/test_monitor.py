@@ -270,6 +270,27 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(value['sensitive_records_omitted'], 1)
         self.assertNotIn('CANARY', json.dumps(value))
 
+    def test_journal_projection_keeps_all_events_under_the_same_byte_bound(self):
+        # Native journal metadata can exceed the cap while the messages fit.
+        # Emulate journalctl's documented projection, retaining every event.
+        rows = [{'MESSAGE': 'Could not confirm checkout', 'PRIORITY': '3',
+                 '_UNNEEDED_METADATA': 'PRIVATE-METADATA-CANARY' * 60}] * 4000
+        full = b'\n'.join(json.dumps(row).encode() for row in rows)
+        self.assertGreater(len(full), m.MAX_BYTES)
+        def journalctl(args, **_):
+            fields = next((arg.split('=', 1)[1].split(',') for arg in args if arg.startswith('--output-fields=')), None)
+            selected = [{key: value for key, value in row.items() if fields is None or key in fields} for row in rows]
+            return type('Result', (), {'returncode': 0, 'stdout': b'\n'.join(json.dumps(row).encode() for row in selected), 'stderr': b''})()
+        with patch.object(m.subprocess, 'run', side_effect=journalctl):
+            result = m.journal('app.service', NOW.isoformat(), NOW.isoformat())
+        self.assertEqual(result['checkout_failure'], 4000)
+        self.assertNotIn('PRIVATE-METADATA-CANARY', json.dumps(result))
+        # Large message bodies still stop; the privacy/resource limit is unchanged.
+        rows = [{'MESSAGE': 'x' * (m.MAX_BYTES + 1), 'PRIORITY': '3'}]
+        with patch.object(m.subprocess, 'run', side_effect=journalctl):
+            with self.assertRaisesRegex(m.Stop, 'JOURNAL_OR_SERVICE_UNAVAILABLE'):
+                m.journal('app.service', NOW.isoformat(), NOW.isoformat())
+
     def test_dashboard_monitor_does_not_require_or_read_email_configuration(self):
         with tempfile.TemporaryDirectory() as root:
             state, ledger = m.State(root), FakeLedger([order(False)])
