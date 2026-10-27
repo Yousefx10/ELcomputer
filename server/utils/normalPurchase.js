@@ -26,7 +26,7 @@ export const authorizeNormalCheckout = ({ runtime, user, cartId, order, items, c
   if (!scope) authorizeBetaCheckout(runtime, order, items, user)
   if (!scope) return { scope: null, cartId, browserCartId: cartId, runtime }
   if (order.payment_method !== 'card' || order.shipping_method !== 'shipping' || order.shipping_company_id !== scope.shipping_company_id
-    || order.coupon_code || controlledAddressHash(order) !== scope.address_sha256
+    || (order.coupon_code || '') !== (scope.coupon_code || '') || controlledAddressHash(order) !== scope.address_sha256
     || items.length !== 1 || items[0].product_id !== scope.product_id || items[0].variant_id !== scope.variant_id || items[0].quantity !== 1) fail()
   if (commit && (!/^[a-f0-9]{64}$/.test(signature || '')
     || !timingSafeEqual(Buffer.from(reviewToken(scope, quoteId, cartId), 'hex'), Buffer.from(signature, 'hex')))) fail(409)

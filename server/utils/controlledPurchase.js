@@ -16,7 +16,9 @@ export const controlledPurchaseScope = (runtime, user, { now = Date.now(), readO
     const input = runtime.controlledPurchase
     scope = typeof input === 'string' ? JSON.parse(input) : input
   } catch { fail() }
-  if (!scope || Array.isArray(scope) || Object.keys(scope).length !== fields.length || fields.some(k => !(k in scope)) || Object.keys(scope).some(k => !fields.includes(k))) fail()
+  if (!scope || Array.isArray(scope) || fields.some(k => !(k in scope)) || Object.keys(scope).some(k => ![...fields, 'coupon_code'].includes(k))) fail()
+  if ('coupon_code' in scope && (typeof scope.coupon_code !== 'string' || !scope.coupon_code || scope.coupon_code.length > 120
+    || scope.coupon_code !== scope.coupon_code.trim().toUpperCase() || /[\u0000-\u001f\u007f]/.test(scope.coupon_code))) fail()
   if (scope.enabled !== true || !['customer_id', 'cart_id', 'product_id', 'variant_id', 'shipping_company_id'].every(k => UUID.test(scope[k] || ''))
     || !Number.isSafeInteger(scope.total_minor) || scope.total_minor < 1 || scope.total_minor > 999999999999
     || !/^[a-f0-9]{64}$/.test(scope.address_sha256) || !/^[a-f0-9]{64}$/.test(scope.review_key) || typeof scope.payment_enabled !== 'boolean') fail()
@@ -35,7 +37,7 @@ export const controlledPaymentRuntime = runtime => {
   return { ...runtime, paymobEnabled: true, paymobLiveRequestsEnabled: true }
 }
 export const controlledReviewToken = (scope, quoteId) => createHmac('sha256', Buffer.from(scope.review_key, 'hex'))
-  .update('controlled-purchase-quote-v1\n' + JSON.stringify(fields.filter(k => k !== 'review_key').map(k => scope[k])) + '\n' + quoteId).digest('hex')
+  .update('controlled-purchase-quote-v1\n' + JSON.stringify([...fields.filter(k => k !== 'review_key'), ...('coupon_code' in scope ? ['coupon_code'] : [])].map(k => scope[k])) + '\n' + quoteId).digest('hex')
 const validToken = (scope, quoteId, signature) => /^[a-f0-9]{64}$/.test(signature || '')
   && timingSafeEqual(Buffer.from(controlledReviewToken(scope, quoteId), 'hex'), Buffer.from(signature, 'hex'))
 const rpc = async (db, name, args) => {
@@ -44,7 +46,7 @@ const rpc = async (db, name, args) => {
   return result.data
 }
 const snapshot = async (db, scope, orderId) => {
-  const query = db.from('customer_orders').select('id,user_id,checkout_cart_id,shipping_company_id,order_number,status,payment_status,payment_method,is_preorder,total_amount,currency,first_name,last_name,email,phone,street_address,city,governorate')
+  const query = db.from('customer_orders').select('id,user_id,checkout_cart_id,shipping_company_id,coupon_code,order_number,status,payment_status,payment_method,is_preorder,total_amount,currency,first_name,last_name,email,phone,street_address,city,governorate')
     .eq('user_id', scope.customer_id).eq('checkout_cart_id', scope.cart_id)
   const result = await (orderId ? query.eq('id', orderId) : query).maybeSingle()
   if (result.error) fail(503)
@@ -52,6 +54,7 @@ const snapshot = async (db, scope, orderId) => {
 }
 export const verifyControlledOrder = async (db, scope, order, attempt) => {
   if (!order || order.user_id !== scope.customer_id || order.checkout_cart_id !== scope.cart_id || order.shipping_company_id !== scope.shipping_company_id
+    || (order.coupon_code || '') !== (scope.coupon_code || '')
     || order.payment_method !== 'card' || order.is_preorder || order.currency !== 'EGP' || toMinorUnits(order.total_amount) !== scope.total_minor
     || controlledAddressHash(order) !== scope.address_sha256) fail(409)
   const items = await db.from('customer_order_items').select('product_id,variant_id,quantity').eq('order_id', order.id)
@@ -98,7 +101,7 @@ export const controlledPurchase = async ({ db, user, runtime, action, input = {}
   }
   const { order, items } = normalizeCheckoutCommand({ cart_id: scope.cart_id,
     items: [{ id: scope.product_id, variant_id: scope.variant_id, quantity: 1 }], address: input.address,
-    shipping_method: 'shipping', shipping_company_id: scope.shipping_company_id, payment_method: 'card', locale: input.locale }, user)
+    shipping_method: 'shipping', shipping_company_id: scope.shipping_company_id, payment_method: 'card', coupon_code: scope.coupon_code || '', locale: input.locale }, user)
   if (controlledAddressHash(order) !== scope.address_sha256) fail(409)
   if (action === 'quote') {
     const review = await rpc(db, 'commerce_checkout_quote', { p_user_id: user.id, p_cart_id: scope.cart_id, p_order: order, p_items: items })

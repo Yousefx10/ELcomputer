@@ -318,7 +318,7 @@ const applyCoupon = async () => {
   if (!couponCode.value.trim()) { couponError.value = 'Enter a coupon code first.'; return }
   applyingCoupon.value = true
   try {
-    const response = await customerScope.request('/api/checkout/coupon', { method: 'POST', body: { code: couponCode.value, subtotal: subtotal.value } })
+    const response = await customerScope.request('/api/checkout/coupon', { method: 'POST', body: { ...checkoutBody(), coupon_code: couponCode.value } })
     setAppliedCoupon(response.coupon); couponCode.value = response.coupon?.code || couponCode.value.trim().toUpperCase(); couponSuccess.value = 'Coupon applied.'
   } catch (error) { if (customerScope.isCurrent()) { resetCoupon(); couponError.value = error?.data?.statusMessage || error?.message || 'Could not apply the coupon.' } } finally { applyingCoupon.value = false }
 }
