@@ -1,117 +1,89 @@
-# Payment exception monitoring (MON-01)
+# MON-01: Dashboard alerts and durable payment monitoring
 
-This worker observes commerce evidence. It never calls Paymob, posts a callback,
-invokes a business RPC, or changes an order, payment, reservation or shipment.
-Deploying it and the Dashboard field requires a separately sealed owner approval.
+The core runs without email. Do not extract or reuse Supabase Auth SMTP secrets.
+The worker never invokes business RPCs, Paymob inquiry, callbacks or payment APIs.
+It never marks paid, cancels, releases stock, retries or fulfills an order.
 
-The systemd timer runs every five minutes, catches up after reboot, and avoids
-overlapping runs. SQLite persists the successful observation time, event identities,
-notification claims and 288 compact check receipts. Unscanned journal gaps are
-retained separately (512 maximum). At capacity, stop and require staff review.
-Do not delete state to clear a warning: that also destroys alert deduplication.
+A persistent five-minute systemd timer runs one bounded worker. SQLite stores alert
+identities, dispatch state, 288 compact receipts, and up to512 uncovered journal
+intervals. Overlap is locked. Late callbacks remain discoverable through bounded
+full ledger scans. Pending or locally expired outcomes remain UNVERIFIED.
 
-## Evidence and bounds
+The existing Supabase server credential permits GET-only projections over fixed
+commerce tables. Database authority itself is unchanged: this is not a new read-only
+SQL role. Root-owned code and systemd credentials protect the existing key; no
+customer session, Auth SMTP credential or full application runtime enters the worker.
 
-The worker uses the existing Supabase service credential for GET requests against
-five fixed tables. It has no RPC or write transport. This credential still has its
-existing database authority; the worker does not create a database read-only role.
-Root-owned code, a dynamic service user, systemd credentials, and a filesystem
-sandbox protect that authority. The journal group allows reading system journals;
-only the reviewed application/proxy units are inspected or summarized.
+Limits:40 pages of250 orders,500 children per relation,4MiB per response,10000
+journal records per unit,70-second worker deadline and80-second service timeout.
+Exact global counts detect embedded truncation. Each order's embedded ledger shares
+one statement; cross-order scans are not a global repeatable-read snapshot.
+Concurrent insertions can cause a conservative incomplete check rather than a pass.
 
-Each embedded order/attempt/transaction result shares one database statement.
-Global exact attempt/transaction counts detect hidden children and orphans.
-Concurrent creation can produce a conservative incomplete check; a later full scan
-recovers it. There is no permanent creation-time watermark that loses late events.
-Limits: 40 pages of 250 orders, 500 children per relation, 4 MiB per HTTP or command
-response, 10,000 journal records per unit, a 70-second worker deadline and an
-80-second service timeout. Exceeding a bound is an incomplete check, never a pass.
-The report never claims a transactionally consistent snapshot across all orders.
+The worker has a locked, non-login system user. Private state/SQLite files remain0600.
+A separate group-readable0640 atomic report publishes at most100 alerts/orders,
+with full counts and an explicit display limit. Only the application gets the
+reader group through its reviewed systemd drop-in. The group cannot write reports
+or read SQLite/credentials. No public static route serves this directory.
 
-Pending/expired/cancelled attempts with no authoritative provider outcome remain
-UNVERIFIED. A late signed success is checked against the current order. The legacy
-merchant Inquiry API is **not configured** and is never called by this worker.
-Only the existing authenticated signed-callback ledger supplies charge evidence.
-Full provider history and missing provider-side transactions remain unobservable.
+`NUXT_PAYMENT_MONITOR_REPORT_PATH` binds the report in the application. The existing
+Orders permission (`dashboard.orders`) guards the GET endpoint and Dashboard banner.
+The endpoint rejects unsafe modes, symlinks, oversized/malformed files and unknown
+schemas. It returns only allowlisted operational fields, with private/no-store
+headers. It never runs the worker, reads credentials or modifies alert state.
+The Dashboard recomputes stale heartbeat age, uses bounded visible-page polling,
+and clears/remounts private state on session changes. No repeating toast is used.
+Unresolved alerts remain visible; failed checks preserve last-known details.
 
-HTTP checks use GET only: capabilities, Cart, Login and the callback route's known
-method-denial response. The callback check also compares the proxy configuration
-hash. A denied GET does **not** prove POST ingress or valid HMAC processing. Existing
-positive callback evidence, new signed ledger events and callback journal errors
-provide the other evidence. No synthetic or replayed callback is sent.
-Proxy journals provide limited error evidence; absent access logging is not proof
-that every checkout request succeeded. Missing intervals are reported explicitly.
+Application health, callback proxy configuration and available journal categories
+are checked. Callback GET method denial is not proof of signed POST acceptance.
+No synthetic callback is sent. No merchant inquiry is configured. Proxy journals
+are incomplete evidence when per-request access logging is absent.
 
-## Owner email and Dashboard
+## Core configuration
 
-The owner changes **Payment alert email** under Dashboard → Email → Settings.
-Existing `email.settings.view` / `email.settings.manage`, request protection,
-revision checks and audit apply. Blank pauses email alerts and raises a warning;
-checks continue. The existing Email settings save contract retires its queued
-messages. No general Email worker, marketing or historical backlog is activated.
+The reviewed private config includes: `origin`, `application_unit`, `proxy_unit`,
+`manual_company_id`, `manual_price`, `callback_get_status`, `caddy_sha256`,
+`paid_alerts_since_utc`, `report_path`, and **`email_enabled:false`**.
+Deployment binds paths, IDs and the existing Supabase credential separately.
+The core unit has no SMTP credential and never reads the email-recipient setting.
+No SQL migration, email-settings initialization or general Email activation is needed.
 
-The monitor reads `config.monitor_recipient` from `email_provider_settings`.
-Deployment must initialize that one field through the existing audited settings
-command, using an authorized staff actor and the exact current revision. Preserve
-all provider, sender, credential and activation settings. Do not use a new provider
-key, select a recipient from customer records or route alerts through Auth emails.
-
-Reuse an existing approved SMTP profile through the root-private `smtp` credential.
-Require its approved host, port (465 with TLS, or 587 with mandatory STARTTLS),
-sender, username and existing password. No plaintext fallback or debug logging.
-If this profile is available only inside hosted Auth configuration, activation is
-blocked until its existing configuration can be securely reused. A dormant Brevo
-API configuration is not evidence that API sending is available.
-
-Alerts contain counts, severity, observation time and the existing Dashboard link.
-No customer names, contacts, address, amount, order/provider identifiers or secrets
-enter the email. One batch covers new paid orders and changed exceptions. The
-configured paid-alert start time separates existing staff backlog from new orders.
-
-Persist a dispatch claim before SMTP. SMTP acceptance is not inbox delivery.
-An ambiguous send or crash stays UNVERIFIED and is never automatically resent.
-Staff must reconcile it; changing recipient does not resend an uncertain batch.
-Unchanged exceptions do not send again. Resolution followed by recurrence can send
-one new alert. Tests use fake transports; real test email needs explicit approval.
-
-## Operator configuration and report
-
-Reviewed `/etc/commerce-monitor/config.json` inputs:
-
-```json
-{
-  "origin": "https://store.example.invalid",
-  "application_unit": "storefront.service",
-  "proxy_unit": "caddy.service",
-  "manual_company_id": "REVIEWED_DEPLOYMENT_UUID",
-  "manual_price": "50.00",
-  "callback_get_status": 403,
-  "caddy_sha256": "REVIEWED_CONFIGURATION_HASH",
-  "paid_alerts_since_utc": "REVIEWED_BETA_START_TIME",
-  "bootstrap_recipient": "REVIEWED_OWNER_EMAIL"
-}
-```
-
-Root-only credential sources: `ledger.json` containing the existing Supabase URL
-and service key, and `smtp.json` containing only the reused SMTP profile. Neither
-the entire application runtime nor a customer session is copied into the worker.
-All credential paths and target bindings belong in the reviewed deployment packet.
-
-Read the last committed status without acquiring the worker lock or sending mail:
+Operator CLI (reads committed state without locking the worker):
 
 ```sh
 sudo python3 -I -B /opt/commerce-monitor/monitor.py report \
   --config /etc/commerce-monitor/config.json --state /var/lib/commerce-monitor
 ```
 
-The command recalculates heartbeat staleness (15 minutes). `status.json` is a
-private atomic snapshot; its stored timestamp must be checked when read directly.
-An on-host worker cannot email during VPS or network failure. No external deadman
-channel is currently configured: staff must independently verify the heartbeat
-and fulfillment coverage every 15 minutes until that requirement is addressed.
-This worker does not staff the business or establish merchant-side nonpayment.
+Staff must keep Dashboard coverage and inspect fulfillment. A host-local worker
+cannot notify during a full VPS/network outage. Missing/stale reports must remain
+visible as warnings; the worker does not automatically close public purchasing.
 
-The existing purchasing kill switch must remain operable. Before any application
-release, qualify its binding to the new release while preserving its original
-single-use budget, signed callbacks and owned order access. Never edit or rerun a
-consumed activation operator. Closing purchasing is not an automatic monitor action.
+## Optional email, separately approved
+
+The Dashboard Email settings field stores one recipient using existing named
+permissions, revision checks and audit. Its default is blank. Existing Email
+settings save behavior retires queued messages; this contract is unchanged.
+An address alone does not enable delivery. Core health does not depend on email.
+
+If email is wanted later, the owner can configure a **separate** approved SMTP key
+for monitoring through Brevo's SMTP settings, without touching the Auth key.
+Keep it in a root-private configuration reference, never chat/Git. Minimum fields:
+approved sender, SMTP host, port587 with mandatory STARTTLS or465 with TLS,
+SMTP login and its dedicated SMTP key. SMTP keys and API keys are different.
+[Official SMTP setup](https://help.brevo.com/hc/en-us/articles/7924908994450-Send-transactional-emails-using-Brevo-SMTP)
+and [SMTP key management](https://help.brevo.com/hc/en-us/articles/7959631848850-Create-and-manage-your-SMTP-keys).
+
+A separate reviewed email activation would bind that private profile and recipient
+(default proposal: the owner-approved deployment address), explicitly load its
+credential, and set `email_enabled:true`. No key, activation or test email is created
+by core preparation/deployment. A test message still needs explicit approval.
+
+Email payloads contain counts, severity, check time and a Dashboard link only.
+No customer contact/address, order/provider identifiers, amount or secret is sent.
+A persisted claim precedes SMTP. Uncertain delivery stays UNVERIFIED without an
+automatic resend. Core-only historical events do not become an email backlog.
+
+Every deployment needs a fresh exact approval. Preserve the existing single-use
+purchasing kill budget across an app release; never rerun a consumed operator.

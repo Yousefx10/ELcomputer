@@ -113,6 +113,7 @@
         >
           <p v-if="route.query.blocked === 'built_in'" class="mb-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800" role="alert">{{ $t('erp.blockedLocal') }}</p>
           <p v-if="erpError" class="mb-5 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">{{ $t('erp.loadBeforeActions') }}</p>
+          <DashboardPaymentMonitor v-if="hasPermission('dashboard.orders') && monitorIdentity.accountId.value" :key="monitorIdentity.key.value" />
           <slot />
         </main>
       </div>
@@ -136,8 +137,10 @@ const [siteContentResult, dashboardAppearanceResult] = await Promise.all([
 const { data: siteContent } = siteContentResult
 const { data: dashboardAppearance } = dashboardAppearanceResult
 const {
-  clearAdminAccess
+  clearAdminAccess,
+  hasPermission
 } = useAdminAccess()
+const monitorIdentity = useCustomerIdentity()
 const {
   documentTitle,
   groupTitle,

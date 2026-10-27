@@ -5,12 +5,12 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-DynamicUser=yes
+User=commerce-monitor
+Group=commerce-monitor
 SupplementaryGroups=systemd-journal
-StateDirectory=commerce-monitor
-StateDirectoryMode=0700
+StateDirectory=commerce-monitor commerce-monitor-report
+StateDirectoryMode=0750
 LoadCredential=ledger:/etc/commerce-monitor/ledger.json
-LoadCredential=smtp:/etc/commerce-monitor/smtp.json
 LoadCredential=config:/etc/commerce-monitor/config.json
 LoadCredential=caddy-config:/etc/caddy/Caddyfile
 ExecStart=/usr/bin/python3 -I -B /opt/commerce-monitor/monitor.py check --config %d/config --state /var/lib/commerce-monitor

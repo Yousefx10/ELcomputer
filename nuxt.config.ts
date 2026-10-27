@@ -35,6 +35,7 @@ export default defineNuxtConfig({
     cookieAttrs: { maxAge: 31536000, path: '/', sameSite: 'lax' }
   },
   runtimeConfig: {
+    paymentMonitorReportPath: '',
     smsWorkerSecret: '',
     emailWorkerSecret: '',
     commerceWorkerSecret: '',

@@ -20,6 +20,7 @@ import smtplib
 import sqlite3
 import ssl
 import subprocess
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -354,7 +355,7 @@ class State:
     def put(self, key, value):
         self.db.execute('insert into meta values(?,?) on conflict(key) do update set value=excluded.value', (key, json.dumps(value)))
 
-    def stage(self, events, now, complete=True):
+    def stage(self, events, now, complete=True, email_enabled=True):
         """Unchanged events do not alert; recurrence after resolution does.
 
         Event history is bounded by refusing intake, never by deleting dedup keys
@@ -372,10 +373,11 @@ class State:
                 current.add(key)
                 old = self.db.execute('select fingerprint,active,dispatch from events where key=?', (key,)).fetchone()
                 if not old or old[0] != mark or not old[1]:
-                    added.append(key)
+                    if email_enabled:
+                        added.append(key)
                     self.changed_keys.add(key)
-                    self.db.execute('insert into events values(?,?,1,?,?) on conflict(key) do update set fingerprint=excluded.fingerprint,active=1,dispatch=excluded.dispatch,updated=excluded.updated', (key, mark, 'ready', now))
-                elif old[2] == 'ready':
+                    self.db.execute('insert into events values(?,?,1,?,?) on conflict(key) do update set fingerprint=excluded.fingerprint,active=1,dispatch=excluded.dispatch,updated=excluded.updated', (key, mark, 'ready' if email_enabled else 'dashboard_only', now))
+                elif old[2] == 'ready' and email_enabled:
                     added.append(key)
             if complete:
                 for (key,) in self.db.execute('select key from events where active=1').fetchall():
@@ -413,7 +415,7 @@ class State:
         value['unverified_notification_events'] = self.db.execute("select count(*) from events where dispatch='uncertain'").fetchone()[0]
         value['retained_checks'] = self.db.execute('select count(*) from checks').fetchone()[0]
         value['unscanned_journal_gap_count'] = self.db.execute('select count(*) from gaps').fetchone()[0]
-        if value['unverified_notification_events'] and value.get('status') != 'CRITICAL':
+        if value['unverified_notification_events'] and value.get('email_enabled') is True and value.get('status') != 'CRITICAL':
             value['status'] = 'WARNING'
         return value
 
@@ -451,12 +453,14 @@ def run(config, ledger, state, collect=operational, sender=None, now=None):
     now = now or dt.datetime.now(UTC)
     at = now.isoformat()
     prior = state.read('last_successful_check')
+    previous_report = state.read('report') or {}
+    email_enabled = config.get('email_enabled') is True
     issues, staff, stats, health, complete = [], [], {}, {}, False
     uncovered = None
     try:
         orders = ledger.orders()
         issues, staff, stats = inspect_orders(orders, now)
-        recipient = ledger.recipient()
+        recipient = ledger.recipient() if email_enabled else ''
         if not ledger.manual(config['manual_company_id'], config['manual_price']):
             issues.append({'key': 'manual', 'code': 'MANUAL_DELIVERY_UNAVAILABLE', 'severity': 'CRITICAL'})
         since = prior or (now - dt.timedelta(minutes=15)).isoformat()
@@ -470,7 +474,7 @@ def run(config, ledger, state, collect=operational, sender=None, now=None):
         issues.extend(op)
         complete = True
     except Exception as error:
-        recipient = state.read('last_recipient')
+        recipient = state.read('last_recipient') if email_enabled else ''
         if recipient is None:
             recipient = address(config['bootstrap_recipient']) if config.get('bootstrap_recipient') else ''
         reason = str(error) if isinstance(error, Stop) and re.fullmatch('[A-Z_]+', str(error)) else 'DATA_OR_TRANSPORT_FAILURE'
@@ -478,30 +482,38 @@ def run(config, ledger, state, collect=operational, sender=None, now=None):
     gap = round((now - when(prior)).total_seconds()) if prior else None
     if gap is not None and gap > 900:
         issues.append({'key': fingerprint(['missed-check', prior]), 'code': 'MISSED_MONITORING_INTERVAL', 'severity': 'WARNING'})
-    channel_ready = bool(recipient and sender)
-    if not channel_ready:
+    channel_ready = bool(email_enabled and recipient and sender)
+    if email_enabled and not channel_ready:
         issues.append({'key': 'notification-config', 'code': 'OWNER_NOTIFICATION_NOT_CONFIGURED', 'severity': 'WARNING'})
     status = 'CRITICAL' if any(x['severity'] == 'CRITICAL' for x in issues) else 'WARNING' if issues else 'HEALTHY'
     paid_to_alert = [x for x in staff if x['paid_at'] and when(x['paid_at']) >= when(config['paid_alerts_since_utc'])]
     events = issues + [{'key': x['key'], 'order': x['order'], 'code': 'PAID_ORDER_REQUIRES_STAFF', 'severity': 'INFO'} for x in paid_to_alert]
-    keys = state.stage(events, at, complete=complete)
+    keys = state.stage(events, at, complete=complete, email_enabled=email_enabled)
+    visible_issues = [{**{k: v for k, v in x.items() if k != 'key'}, 'id': x['key']} for x in issues]
+    visible_staff = [{**{k: v for k, v in x.items() if k != 'key'}, 'id': x['key']} for x in staff]
+    if not complete:
+        # Preserve last-known unresolved details; an unavailable source cannot
+        # resolve an exception or make a staff order disappear from Dashboard.
+        visible_issues = list({x['id']: x for x in previous_report.get('exceptions', []) + visible_issues}.values())
+        visible_staff = visible_staff or previous_report.get('staff_attention', [])
     report = {'version': VERSION, 'status': status, 'observed_utc': at,
               'last_successful_check': at if complete else prior,
               'previous_successful_check': prior, 'gap_seconds': gap,
               'unscanned_journal_interval': uncovered,
-              'complete': complete, 'new_alert_events': len(keys), 'statistics': stats,
+              'complete': complete, 'new_alert_events': len(state.changed_keys), 'statistics': stats if complete else previous_report.get('statistics', {}),
               'new_paid_order_count': sum(x['key'] in state.changed_keys for x in paid_to_alert),
-              'staff_attention': [{k: v for k, v in x.items() if k != 'key'} for x in staff],
-              'exceptions': [{k: v for k, v in x.items() if k != 'key'} for x in issues],
+              'staff_attention': visible_staff,
+              'exceptions': visible_issues,
               'health': health, 'merchant_inquiry': 'NOT_CONFIGURED',
               'provider_pending_outcomes': 'UNVERIFIED', 'notification_configured': channel_ready,
+              'email_enabled': email_enabled,
               'next_check_due_utc': (now + dt.timedelta(minutes=5)).isoformat(),
               'business_writes': 0, 'provider_inquiry_calls': 0}
     text = ('Payment monitoring: ' + status + '\nCheck: ' + at +
             '\nNew operational events: ' + str(len(keys)) + '\nUnresolved exceptions: ' + str(len(issues)) +
             '\nPaid orders requiring staff: ' + str(len(staff)) + '\nOpen Dashboard: ' +
             https_origin(config['origin']) + '/dashboard/orders\nProvider-uncertain payments require merchant evidence.\n')
-    report['notification_dispatch'] = state.dispatch(keys, recipient, text, sender)
+    report['notification_dispatch'] = state.dispatch(keys, recipient, text, sender) if email_enabled else 'disabled'
     if report['notification_dispatch'] == 'uncertain':
         report['status'] = 'WARNING' if status == 'HEALTHY' else status
     with state.db:
@@ -520,12 +532,61 @@ def run(config, ledger, state, collect=operational, sender=None, now=None):
             if state.db.execute('select count(*) from gaps').fetchone()[0] >= 512 and not state.db.execute('select 1 from gaps where key=?', (key,)).fetchone():
                 raise Stop('GAP_HISTORY_CAPACITY')
             state.db.execute('insert or replace into gaps values(?,?)', (key, json.dumps(uncovered)))
-    # Atomically publish a root-private operator report. CLI recalculates stale heartbeat.
+    if config.get('report_path'):
+        try:
+            publish_dashboard(state.report(), config['report_path'])
+        except (OSError, Stop):
+            # A failed publication is not a successful monitoring delivery.
+            # Keep the old Dashboard snapshot and its original timestamp.
+            report['status'], report['complete'], report['last_successful_check'] = 'CRITICAL', False, prior
+            report['exceptions'].append({'id': 'dashboard-publication', 'code': 'DASHBOARD_REPORT_UNAVAILABLE', 'severity': 'CRITICAL'})
+            with state.db:
+                state.put('last_successful_check', prior)
+                state.put('report', report)
+                state.db.execute('update checks set summary=? where seq=(select max(seq) from checks)',
+                                 (json.dumps({'observed_utc': at, 'status': 'CRITICAL', 'complete': False,
+                                              'reason': 'DASHBOARD_REPORT_UNAVAILABLE'}),))
+    # Atomically publish a private operator report. CLI recalculates stale heartbeat.
     temp = state.root / 'status.tmp'
     temp.write_text(json.dumps(state.report(), sort_keys=True, indent=2) + '\n')
     os.chmod(temp, 0o600)
     os.replace(temp, state.root / 'status.json')
     return state.report()
+
+
+def publish_dashboard(report, destination):
+    """Separate read-only publication; SQLite and credential files stay private."""
+    path = pathlib.Path(destination)
+    if not path.is_absolute() or '..' in path.parts:
+        raise Stop('REPORT_PATH_INVALID')
+    value = {k: report.get(k) for k in ('version', 'status', 'observed_utc', 'last_successful_check',
+             'complete', 'new_paid_order_count', 'new_alert_events', 'next_check_due_utc',
+             'retained_checks', 'unscanned_journal_gap_count', 'email_enabled', 'notification_configured')}
+    value['exception_count'] = len(report['exceptions'])
+    value['staff_attention_count'] = len(report['staff_attention'])
+    value['exceptions'] = [{k: x[k] for k in ('id', 'code', 'severity', 'order', 'provider_evidence') if k in x}
+                           for x in report['exceptions'][:100]]
+    value['staff_attention'] = [{k: x[k] for k in ('id', 'order', 'status', 'stock_fulfillment_state') if k in x}
+                                for x in report['staff_attention'][:100]]
+    value['display_limited'] = value['exception_count'] > 100 or value['staff_attention_count'] > 100
+    temp_name = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, prefix='.status-', delete=False) as target:
+            temp_name = target.name
+            json.dump(value, target, separators=(',', ':'))
+            target.flush()
+            os.fsync(target.fileno())
+            os.fchmod(target.fileno(), 0o640)
+        os.replace(temp_name, path)
+        temp_name = None
+        fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    finally:
+        if temp_name:
+            os.unlink(temp_name)
 
 
 def main():
@@ -547,7 +608,7 @@ def main():
             credentials = pathlib.Path(os.environ['CREDENTIALS_DIRECTORY'])
             ledger = Ledger(json.loads((credentials / 'ledger').read_text()))
             smtp = credentials / 'smtp'
-            sender = smtp_sender(json.loads(smtp.read_text())) if smtp.exists() else None
+            sender = smtp_sender(json.loads(smtp.read_text())) if config.get('email_enabled') is True and smtp.exists() else None
             result = run(config, ledger, state, sender=sender)
         print(json.dumps(result, sort_keys=True))
         return 0 if result.get('complete', False) else 1

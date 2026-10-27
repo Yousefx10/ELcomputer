@@ -11,7 +11,7 @@ spec = importlib.util.spec_from_file_location('monitor', pathlib.Path(__file__).
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 NOW = dt.datetime(2026, 10, 27, 19, 0, tzinfo=dt.timezone.utc)
-CONFIG = {'origin': 'https://store.example.invalid', 'manual_company_id': 'manual', 'manual_price': '50.00', 'paid_alerts_since_utc': '2026-01-01T00:00:00Z'}
+CONFIG = {'origin': 'https://store.example.invalid', 'manual_company_id': 'manual', 'manual_price': '50.00', 'paid_alerts_since_utc': '2026-01-01T00:00:00Z', 'email_enabled': True}
 
 
 def order(paid=True, suffix='1'):
@@ -269,6 +269,66 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(value['callback_reconciliation'], 1)
         self.assertEqual(value['sensitive_records_omitted'], 1)
         self.assertNotIn('CANARY', json.dumps(value))
+
+    def test_dashboard_monitor_does_not_require_or_read_email_configuration(self):
+        with tempfile.TemporaryDirectory() as root:
+            state, ledger = m.State(root), FakeLedger([order(False)])
+            config = {**CONFIG, 'email_enabled': False, 'report_path': str(pathlib.Path(root)/'dashboard.json')}
+            with patch.object(ledger, 'recipient', side_effect=AssertionError('No email configuration read')):
+                result = m.run(config, ledger, state, operations, lambda *_: self.fail('No email send'), NOW)
+            self.assertEqual(result['notification_dispatch'], 'disabled')
+            self.assertNotIn('OWNER_NOTIFICATION_NOT_CONFIGURED', [x['code'] for x in result['exceptions']])
+            published = json.loads(pathlib.Path(config['report_path']).read_text())
+            self.assertEqual(published['exception_count'], 1)
+            self.assertEqual(published['exceptions'][0]['provider_evidence'], 'UNVERIFIED')
+            self.assertEqual(pathlib.Path(config['report_path']).stat().st_mode & 0o777, 0o640)
+            self.assertTrue(all(row[0]=='dashboard_only' for row in state.db.execute('select dispatch from events')))
+            state.close()
+            state = m.State(root)
+            result = m.run(config, ledger, state, operations, now=NOW+dt.timedelta(minutes=5))
+            self.assertEqual(result['new_alert_events'], 0)
+            self.assertEqual(result['exception_count'] if 'exception_count' in result else len(result['exceptions']), 1)
+            state.close()
+
+    def test_disabled_email_is_not_a_health_failure_and_creates_no_email_backlog(self):
+        with tempfile.TemporaryDirectory() as root:
+            state, ledger = m.State(root), FakeLedger([order()])
+            config = {**CONFIG, 'email_enabled': False}
+            live = dt.datetime.now(dt.timezone.utc)
+            result = m.run(config, ledger, state, operations, now=live)
+            self.assertEqual(result['status'], 'HEALTHY')
+            self.assertEqual(result['new_paid_order_count'], 1)
+            sent=[]
+            result = m.run(CONFIG, ledger, state, operations, lambda *args:sent.append(args), live+dt.timedelta(minutes=5))
+            self.assertEqual(sent, [])
+            self.assertEqual(result['notification_dispatch'], 'unchanged')
+            state.close()
+
+    def test_incomplete_dashboard_check_preserves_last_known_exceptions(self):
+        with tempfile.TemporaryDirectory() as root:
+            state, ledger = m.State(root), FakeLedger([order(False)])
+            config={**CONFIG,'email_enabled':False}
+            m.run(config, ledger, state, operations, now=NOW)
+            with patch.object(ledger,'orders',side_effect=OSError('SECRET-CANARY')):
+                result=m.run(config, ledger, state, operations, now=NOW+dt.timedelta(minutes=5))
+            self.assertFalse(result['complete'])
+            self.assertIn('OVERDUE_PAYMENT_UNVERIFIED',[x['code'] for x in result['exceptions']])
+            self.assertNotIn('SECRET-CANARY',json.dumps(result))
+            state.close()
+
+    def test_failed_dashboard_publication_does_not_advance_success_heartbeat(self):
+        with tempfile.TemporaryDirectory() as root:
+            state, ledger = m.State(root), FakeLedger([])
+            config={**CONFIG,'email_enabled':False,'report_path':str(pathlib.Path(root)/'dashboard.json')}
+            first=m.run(config, ledger, state, operations, now=NOW)
+            before=pathlib.Path(config['report_path']).read_bytes()
+            with patch.object(m,'publish_dashboard',side_effect=PermissionError('PRIVATE-PATH-CANARY')):
+                result=m.run(config, ledger, state, operations, now=NOW+dt.timedelta(minutes=5))
+            self.assertFalse(result['complete']);self.assertEqual(result['status'],'CRITICAL')
+            self.assertEqual(result['last_successful_check'],first['last_successful_check'])
+            self.assertEqual(pathlib.Path(config['report_path']).read_bytes(),before)
+            self.assertNotIn('PRIVATE-PATH-CANARY',json.dumps(result))
+            state.close()
 
 
 if __name__ == '__main__':
