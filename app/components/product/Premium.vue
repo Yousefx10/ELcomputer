@@ -10,7 +10,7 @@ const { stockIndependentSale, backorderNotice, product, pending, error, productA
   specificationGroups, descriptionContent, relatedProducts, reviewSummary, reviewsSection, reviewsComponent,
   updateReviewSummary, goToReviews, hasDiscount, savings, discountPercent, isOutOfStock, isPreorder, isComingSoon,
   stockLabel, expectedAvailabilityLabel, preorderAmounts, preorderAvailability, selectedQuantity, maximumQuantity,
-  decreaseQuantity, increaseQuantity, canPurchaseProduct, handleAddToCart, addToCartLabel, cartMessage } = useProductDetailContext()
+  purchasingPending, decreaseQuantity, increaseQuantity, canPurchaseProduct, handleAddToCart, addToCartLabel, cartMessage } = useProductDetailContext()
 const { locale } = useI18n()
 const { uiLabel } = useUiLocale()
 const config = computed(() => normalizeProductPageConfig(productAppearance.value?.config))
@@ -96,7 +96,7 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
             <p v-if="backorderNotice && !stockIndependentSale" class="pdp-availability-note" role="note">{{ backorderNotice }}</p>
             <div v-if="isPreorder || isComingSoon" class="pdp-availability-note"><p v-if="product.expected_availability_date">{{ $t('products.slug.expectedAvailabilityValue', { value0: expectedAvailabilityLabel(product.expected_availability_date) }) }}</p><p v-if="product.availability_message">{{ product.availability_message }}</p><p>{{ $t('products.slug.thisItemIsNotReadyForNormalDelivery') }}</p><template v-if="isPreorder"><p>{{ $t('common.requiredNow') }} <strong>{{ price(preorderAmounts.due) }}</strong></p><p v-if="preorderAmounts.balance">{{ $t('common.remainingBalance') }} <strong>{{ price(preorderAmounts.balance) }}</strong></p></template></div>
             </div><div class="pdp-purchase-controls"><div v-if="premiumPurchasingEnabled && !isComingSoon" class="pdp-quantity" :aria-label="$t('common.quantity')"><button type="button" :disabled="!canPurchaseProduct || selectedQuantity <= 1" :aria-label="$t('common.decreaseQuantity')" @click="decreaseQuantity">−</button><output :aria-label="$t('common.selectedQuantity')">{{ selectedQuantity }}</output><button type="button" :disabled="!canPurchaseProduct || selectedQuantity >= maximumQuantity" :aria-label="$t('common.increaseQuantity')" @click="increaseQuantity">+</button></div>
-            <button v-if="!isComingSoon" type="button" class="pdp-purchase-action" :disabled="!canOrder" @click="handleAddToCart"><Icon name="lucide:shopping-cart" size="18" aria-hidden="true" />{{ premiumPurchasingEnabled ? $uiLabel(addToCartLabel) : $t('productPage.buyingHeld') }}</button>
+            <button v-if="!isComingSoon" type="button" class="pdp-purchase-action" :aria-busy="purchasingPending" :disabled="!canOrder" @click="handleAddToCart"><Icon name="lucide:shopping-cart" size="18" aria-hidden="true" />{{ purchasingPending ? $t('productPage.checkingPurchase') : premiumPurchasingEnabled ? $uiLabel(addToCartLabel) : $t('productPage.buyingHeld') }}</button>
             <p v-if="cartMessage" class="pdp-cart-status" role="status">{{ $uiMessage(cartMessage) }}</p>
             </div><ProductPremiumHelp /><div class="pdp-purchase-policies"><ProductWarranty :product="product" /><nav v-if="policies.length" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav></div>
           </aside>

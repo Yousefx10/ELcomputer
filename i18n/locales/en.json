@@ -5438,6 +5438,7 @@
       "invalidLink": "Enter a valid HTTPS or store page URL.",
       "linkLabel": "Add a label of up to 100 characters."
     },
+    "checkingPurchase": "Checking availability…",
     "buyingHeld": "Purchasing is currently unavailable.",
     "purchaseTitle": "Price and availability",
     "sku": "SKU",

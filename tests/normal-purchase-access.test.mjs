@@ -77,3 +77,13 @@ test('normal middleware rejects default, anonymous, expired and denied access wi
   transport=()=>{throw Error('Public cart should not require a capability request')}
   await middleware()
 })
+
+test('capability loading is neutral and account-bound until a real response resolves',async()=>{
+ active=context();let finish
+ transport=()=>new Promise(resolve=>{finish=resolve})
+ const access=usePurchaseAccess();assert.equal(access.pending.value,true);assert.equal(access.purchasingEnabled.value,false)
+ const request=access.refresh();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(access.pending.value,true)
+ finish(allowed());await request;assert.equal(access.pending.value,false);assert.equal(access.purchasingEnabled.value,true)
+ active=context();transport=async()=>{throw Error('Fixture network failure')};const denied=usePurchaseAccess();assert.equal(denied.pending.value,true);await denied.refresh();assert.equal(denied.pending.value,false);assert.equal(denied.purchasingEnabled.value,false)
+ active=context();active.runtime.public.purchasingEnabled=true;const publicAccess=usePurchaseAccess();assert.equal(publicAccess.pending.value,false);assert.equal(publicAccess.purchasingEnabled.value,true)
+})

@@ -7,12 +7,14 @@ export const usePurchaseAccess = () => {
   const nuxt = useNuxtApp()
   const supabase = useSupabaseClient()
   const identity = useCustomerIdentity()
-  const snapshot = useState('normal-purchase-access', () => ({ accountId: '', data: /** @type {any} */ (closed()) }))
+  const snapshot = useState('normal-purchase-access', () => ({ accountId: '', data: /** @type {any} */ (closed()), status: 'unknown' }))
   const now = ref(Date.now())
   const publicAccess = computed(() => runtime.public.purchasingEnabled === true || runtime.public.purchasingEnabled === 'true')
   const betaAccess = computed(() => runtime.public.betaPurchasingEnabled === true || runtime.public.betaPurchasingEnabled === 'true')
   const accountId = identity.accountId
-  const capabilities = computed(() => snapshot.value.accountId === accountId.value ? snapshot.value.data : closed())
+  const resolved = computed(() => snapshot.value.accountId === accountId.value && snapshot.value.status === 'resolved')
+  const pending = computed(() => (!publicAccess.value || betaAccess.value) && !resolved.value)
+  const capabilities = computed(() => resolved.value ? snapshot.value.data : closed())
   const scope = computed(() => {
     const access = capabilities.value.purchase
     return !publicAccess.value && access?.available === true && access.restricted === true
@@ -25,6 +27,7 @@ export const usePurchaseAccess = () => {
   const refresh = async () => {
     now.value = Date.now()
     const generation = identity.key.value
+    snapshot.value = { accountId: accountId.value, data: closed(), status: 'pending' }
     let requestedAccountId
     try {
       const session = (await supabase.auth.getSession()).data.session
@@ -32,7 +35,7 @@ export const usePurchaseAccess = () => {
       requestedAccountId = id
       if (generation !== identity.key.value || id !== accountId.value) return closed()
       if (!publicAccess.value && !session?.access_token) {
-        snapshot.value = { accountId: id, data: closed() }
+        snapshot.value = { accountId: id, data: closed(), status: 'resolved' }
         return capabilities.value
       }
       let job = requests.get(nuxt)
@@ -47,12 +50,12 @@ export const usePurchaseAccess = () => {
         const data = await job.promise
         const current = (await supabase.auth.getSession()).data.session
         if (generation !== identity.key.value || (current?.user?.id || '') !== id || current?.access_token !== session?.access_token) return closed()
-        snapshot.value = { accountId: id, data }
+        snapshot.value = { accountId: id, data, status: 'resolved' }
         return data
       } finally { if (requests.get(nuxt) === job) requests.delete(nuxt) }
     } catch {
       if (generation === identity.key.value && (requestedAccountId === undefined || requestedAccountId === accountId.value)) {
-        snapshot.value = { accountId: accountId.value, data: closed() }
+        snapshot.value = { accountId: accountId.value, data: closed(), status: 'resolved' }
       }
       return closed()
     }
@@ -61,7 +64,7 @@ export const usePurchaseAccess = () => {
   // must not register component hooks or leave a watcher behind.
   if (getCurrentInstance()) {
     watch(identity.key, () => {
-      snapshot.value = { accountId: '', data: closed() }
+      snapshot.value = { accountId: '', data: closed(), status: 'unknown' }
       if (import.meta.client) refresh()
     }, { flush: 'sync' })
     let timer
@@ -71,5 +74,5 @@ export const usePurchaseAccess = () => {
     })
     onScopeDispose(() => clearInterval(timer))
   }
-  return { capabilities, scope, purchasingEnabled, allowsProduct, refresh }
+  return { capabilities, scope, purchasingEnabled, allowsProduct, pending, refresh }
 }

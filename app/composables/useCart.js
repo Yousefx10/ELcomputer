@@ -1,5 +1,6 @@
 import { acknowledgeCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
 import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
+import { usesUnrecordedStockSales } from '~/utils/backorder'
 import { useCustomerIdentity } from './useCustomerIdentity'
 
 const carts = new WeakMap()
@@ -54,7 +55,7 @@ const getMaximumCartQuantity = (stockQuantity, allowOutOfStockPurchases = false,
   return Math.max(1, normalizedStockQuantity)
 }
 
-const normalizeCartItem = (item) => {
+const normalizeCartItem = (item, settings = {}) => {
   if (!item?.id) {
     return null
   }
@@ -71,7 +72,7 @@ const normalizeCartItem = (item) => {
   )
   const isSerialized = Boolean(item.is_serialized)
   const sellingMode = ['normal', 'coming_soon', 'preorder'].includes(item.selling_mode) ? item.selling_mode : 'normal'
-  const allowOutOfStockPurchases = Boolean(item.allow_out_of_stock_purchases)
+  const allowOutOfStockPurchases = usesUnrecordedStockSales(item, settings) || Boolean(item.allow_out_of_stock_purchases)
     && !isSerialized || sellingMode === 'preorder'
   const preorderLimit = sellingMode === 'preorder' ? Math.min(
     Number(item.preorder_customer_limit || 99), Number(item.preorder_remaining ?? 99)
@@ -128,6 +129,8 @@ const normalizeAppliedCoupon = (coupon) => {
 }
 
 export const useCart = () => {
+  const { data: siteContent } = useNuxtData('site-content')
+  const normalizeItem = item => normalizeCartItem(item, siteContent.value?.settings)
   const app = useNuxtApp()
   if (carts.has(app)) {
     const cart = carts.get(app)
@@ -189,7 +192,7 @@ export const useCart = () => {
       const restored = restoreCart(window.localStorage, {
         id: Array.isArray(storedItems) && storedItems.length ? (UUID_PATTERN.test(storedId || '') ? storedId : createCartIdentifier()) : '',
         revision: stored?.revision || createCartIdentifier(),
-        items: Array.isArray(storedItems) ? storedItems.map(normalizeCartItem).filter(Boolean) : [],
+        items: Array.isArray(storedItems) ? storedItems.map(normalizeItem).filter(Boolean) : [],
         coupon: normalizeAppliedCoupon(stored?.coupon)
       }, expected)
       items.value = restored.items
@@ -404,7 +407,7 @@ export const useCart = () => {
 
   const addItem = (product, quantity = 1, options = {}) => {
     syncCart()
-    const normalizedProduct = normalizeCartItem({
+    const normalizedProduct = normalizeItem({
       ...product,
       quantity
     })

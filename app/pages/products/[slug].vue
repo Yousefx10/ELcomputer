@@ -22,7 +22,7 @@ const route = useUiRoute()
 const slug = route.params.slug
 const { data: siteContent } = useSiteContent()
 const { addItem, items: cartItems, syncCart } = useCart()
-const { scope: purchaseScope, allowsProduct } = usePurchaseAccess()
+const { scope: purchaseScope, allowsProduct, pending: purchasingPending } = usePurchaseAccess()
 
 const { data: product, pending, error } = await useAsyncData(`product-${slug}`, async () => {
   const { data: productData, error: productError } = await selectWithSeo(fields => supabase
@@ -297,6 +297,7 @@ const selectedVariantStockLabel = computed(() => {
   return allowOutOfStockPurchases.value ? 'Available on backorder' : 'Out of stock'
 })
 const addToCartLabel = computed(() => {
+  if (purchasingPending.value) return t('productPage.checkingPurchase')
   if (!allowsProduct(product.value?.id) || selectedVariantId.value && !allowsProduct(product.value?.id, selectedVariantId.value)) return t('productPage.buyingHeld')
   if (isComingSoon.value) return 'Coming Soon'
   if (isPreorder.value) return canPurchaseProduct.value ? 'Pre-order Now' : (preorderAvailability.value?.remaining === 0 ? 'Pre-order sold out' : 'Pre-order unavailable')
@@ -476,5 +477,5 @@ const { data: productAppearance } = await useAsyncData('product-page-appearance'
 const productPageStyle = computed(() => productAppearance.value?.style === 'premium' ? 'premium' : 'classic')
 const premiumPurchasingEnabled = computed(() => allowsProduct(product.value?.id))
 watch(maximumQuantity, maximum => { selectedQuantity.value = Math.min(selectedQuantity.value, maximum) })
-provideProductDetailContext({ stockIndependentSale, backorderNotice, activeImage, activeImageIndex, addToCartLabel, allowOutOfStockPurchases, canPurchaseProduct, cartMessage, categoryName, closeLightbox, decreaseQuantity, descriptionContent, discountPercent, error, expectedAvailabilityLabel, formatPrice, galleryImages, getVariantColor, getVariantMeta, getVariantPreview, goToReviews, handleAddToCart, hasColorChoices, hasDiscount, hasPurchasableVariants, highlights, increaseQuantity, isComingSoon, isOutOfStock, isPreorder, lightboxClose, lightboxDialog, lightboxOpen, markImageBroken, maximumQuantity, meaningfulVariantName, onLightboxKeydown, openLightbox, pending, preorderAmounts, preorderAvailability, product, productVariants, relatedProducts, reviewSummary, reviewsComponent, reviewsSection, savings, selectVariant, selectedImage, selectedQuantity, selectedVariant, selectedVariantId, selectedVariantStockLabel, showVariantChoices, specificationGroups, stepImage, stockLabel, updateReviewSummary, variantStockLabel, visibleSpecifications, siteContent, intlLocale, selectedVariantImages, canUseMainImage, productAppearance, premiumPurchasingEnabled })
+provideProductDetailContext({ purchasingPending, stockIndependentSale, backorderNotice, activeImage, activeImageIndex, addToCartLabel, allowOutOfStockPurchases, canPurchaseProduct, cartMessage, categoryName, closeLightbox, decreaseQuantity, descriptionContent, discountPercent, error, expectedAvailabilityLabel, formatPrice, galleryImages, getVariantColor, getVariantMeta, getVariantPreview, goToReviews, handleAddToCart, hasColorChoices, hasDiscount, hasPurchasableVariants, highlights, increaseQuantity, isComingSoon, isOutOfStock, isPreorder, lightboxClose, lightboxDialog, lightboxOpen, markImageBroken, maximumQuantity, meaningfulVariantName, onLightboxKeydown, openLightbox, pending, preorderAmounts, preorderAvailability, product, productVariants, relatedProducts, reviewSummary, reviewsComponent, reviewsSection, savings, selectVariant, selectedImage, selectedQuantity, selectedVariant, selectedVariantId, selectedVariantStockLabel, showVariantChoices, specificationGroups, stepImage, stockLabel, updateReviewSummary, variantStockLabel, visibleSpecifications, siteContent, intlLocale, selectedVariantImages, canUseMainImage, productAppearance, premiumPurchasingEnabled })
 </script>
