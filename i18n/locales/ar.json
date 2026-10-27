@@ -4403,6 +4403,8 @@
     "marketing_sender": "مرسل التسويق",
     "choose": "اختر",
     "replyTo": "عنوان الرد",
+    "monitorRecipient": "بريد تنبيهات الدفع",
+    "monitorRecipientHint": "يستقبل التنبيهات التشغيلية. اتركه فارغًا لإيقاف التنبيهات البريدية.",
     "timeout": "المهلة بالمللي ثانية",
     "unsubscribeOrigin": "عنوان موقع إلغاء الاشتراك المعتمد",
     "api_key": "مفتاح Brevo",

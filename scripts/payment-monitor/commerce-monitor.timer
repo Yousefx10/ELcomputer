@@ -1,0 +1,12 @@
+[Unit]
+Description=Check commerce payment exceptions every five minutes
+
+[Timer]
+OnCalendar=*-*-* *:00/5:00 UTC
+Persistent=yes
+AccuracySec=10s
+RandomizedDelaySec=5s
+Unit=commerce-monitor.service
+
+[Install]
+WantedBy=timers.target

@@ -4403,6 +4403,8 @@
     "marketing_sender": "Marketing sender",
     "choose": "Choose",
     "replyTo": "Reply-To address",
+    "monitorRecipient": "Payment alert email",
+    "monitorRecipientHint": "Receives operational alerts. Leave blank to pause email alerts.",
     "timeout": "Timeout (milliseconds)",
     "unsubscribeOrigin": "Approved unsubscribe site origin",
     "api_key": "Brevo API key",

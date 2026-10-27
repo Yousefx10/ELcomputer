@@ -1,0 +1,36 @@
+[Unit]
+Description=Read-only commerce payment exception monitor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+DynamicUser=yes
+SupplementaryGroups=systemd-journal
+StateDirectory=commerce-monitor
+StateDirectoryMode=0700
+LoadCredential=ledger:/etc/commerce-monitor/ledger.json
+LoadCredential=smtp:/etc/commerce-monitor/smtp.json
+LoadCredential=caddy-config:/etc/caddy/Caddyfile
+ExecStart=/usr/bin/python3 -I -B /opt/commerce-monitor/monitor.py check --config /etc/commerce-monitor/config.json --state /var/lib/commerce-monitor
+TimeoutStartSec=80
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryMax=192M
+CPUQuota=20%
+StandardOutput=null
+StandardError=journal
+

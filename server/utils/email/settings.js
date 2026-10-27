@@ -2,7 +2,7 @@ import { encryptCredentialSecret, isCredentialEncryptionReady } from '../credent
 import { emailAddress, emailLine } from '../../../app/utils/email.js'
 import { emailFail, validateEmail } from './core.js'
 export const EMAIL_API_URL = 'https://api.brevo.com/v3/smtp/email'
-export const emailDefaults = Object.freeze({ is_enabled:false,marketing_enabled:false,approved_senders:[],transactional_sender:'',marketing_sender:'',reply_to:'',brand_name:'',account_approved:false,activation_confirmed:false,webhook_enabled:false,timeout_ms:10000,unsubscribe_origin:'' })
+export const emailDefaults = Object.freeze({ is_enabled:false,marketing_enabled:false,approved_senders:[],transactional_sender:'',marketing_sender:'',reply_to:'',monitor_recipient:'',brand_name:'',account_approved:false,activation_confirmed:false,webhook_enabled:false,timeout_ms:10000,unsubscribe_origin:'' })
 export const getEmailSettings = async db => {
  const {data,error}=await db.from('email_provider_settings').select('*').eq('id','brevo').maybeSingle()
  if(error || !data) emailFail('Email settings are unavailable.',503)
@@ -24,6 +24,7 @@ export const validateEmailSettings = (body,current) => validateEmail(()=>{
  if(Object.keys(body).some(k=>!allowed.has(k))) emailFail('Invalid email settings.')
  for(const key of ['is_enabled','marketing_enabled','account_approved','activation_confirmed','webhook_enabled']) if(body[key]!==undefined){if(typeof body[key]!=='boolean') throw Error('Invalid email settings.');c[key]=body[key]}
  for(const key of ['transactional_sender','marketing_sender','reply_to']) if(body[key]!==undefined)c[key]=body[key]?emailAddress(body[key]):''
+ if(body.monitor_recipient!==undefined){if(typeof body.monitor_recipient!=='string') throw Error('Invalid email address.');c.monitor_recipient=body.monitor_recipient?emailAddress(body.monitor_recipient):''}
  if(body.brand_name!==undefined)c.brand_name=emailLine(body.brand_name,100,false)
  if(body.timeout_ms!==undefined){if(!Number.isInteger(body.timeout_ms)||body.timeout_ms<1000||body.timeout_ms>30000) throw Error('Invalid email timeout.');c.timeout_ms=body.timeout_ms}
  if(body.unsubscribe_origin!==undefined){
