@@ -1,3 +1,126 @@
+# E115 — Homepage direct Add to Cart DEPLOYED; hosted postflight PASS — 2026-10-28
+
+- Owner exact babea828… approval executed ONCE and is CONSUMED COMPLETE. Current
+  **42a61d03f3aba831/schema98**, source d69d68d from deployedbb21a16. Cutover
+  15:32:55Riyadh; exactly1 ordinary app restart, PID66270. Caddy26652 unchanged.
+  [Deployment receipt](docs/homepage-direct-cart-receipt.md). New independent real
+  approval/intent/switched/verification/completion receipts exist; never replay.
+- **HOSTED POSTFLIGHT PASS; OWNER ACCEPTANCE PENDING.** EN/AR desktop1440/mobile390:
+  37 Add/3preorder among40 cards; real active variant selected, double click qty1,
+  local anonymous cart survives reload, RTL/responsive/page errors0. Genuine
+  multi-configuration listing retains Options in EN/AR. No real order/payment or
+  account write; business-write requests blocked, browser-local baskets only.
+- Scoped privacy/entry checks PASS: CARD/card-only methods available, Manual50,
+  signup entry200, anonymous EN/AR checkout302/login, monitor401, unsigned callback403.
+  Existing signed callback/server purchase/stock/ownership authority unchanged.
+  Critical payment mismatch/unreconciled/duplicate/ownership0; overdue-unverified2.
+- MON remains enabled/active/waiting; automatic reports after cutover15:40/15:50,
+  fresh final inspection15:54; worker success/exit0/report0640/email OFF,3warnings.
+  Typed D-Bus next-trigger proof; no timer/worker lifecycle or config change, no
+  history/dedup/report permission reset. Original emergency kill budget1 unused,
+  rebound to new release and callbacks retained. No extra app restart.
+- Full3452-entry deployed inventory/certificate/fixed runtime/unit/Caddy checks
+  PASS;2373 retained hashed assets preserved,131 HTTP asset samples exact. No SQL,
+  stock, migrations/RLS, Caddy/runtime/unit/credentials/Auth SMTP edit, provider
+  call/inquiry, customer email, COD/Pay Again/PDC activation or Git push.
+- Local postflight observer corrected a dynamic label locator and used an ordinary
+  shorter product query after a full-title wait; no deployed source change/restart.
+  No general full-title-search acceptance or cause inferred. Final6 scenarios PASS.
+  Prior67 local checks/typecheck/build retained; native concurrency unexercised.
+- Inquiry evidence/contract draft unchanged;2649/3149 outcomes UNVERIFIED. Paid
+  orders/fulfillment backlog retained. COD OFF, PDC PAUSED, email OFF, Pay Again OFF.
+  Original32/DTR-33/STOR-01/full deferred register, frozen135/location work and all
+  prior worktrees preserved. New source is the active lineage; do not deploy main36.
+- NEXT: owner review remains pending; prepare safe COD separately next, without
+  Merchant Inquiry as a dependency. Include awaiting collection/confirmation/
+  Dashboard permissions/Manual eligibility; never mark Paid before actual collection.
+  Existing uncertain CARD method changes remain P0-3 independently BLOCKED.
+  Queue: COD, Pay Again hold, emails, saved address, LOC-01 checkout AND profile,
+  navbar username, MIG-04 Google/WooCommerce. No other feature begun in this release.
+
+---
+
+# E114 — Homepage direct Add to Cart LOCAL PASS; guarded approval ready — 2026-10-28
+
+- **CX-CART-01 P0-1 LOCAL PASS / PREFLIGHT PASS / NOT DEPLOYED OR OWNER-ACCEPTED.**
+  Single active unambiguous reference adds its real ID/stock to the existing cart;
+  bulk without choices adds directly. Multiple references/real choices keep Options,
+  even if only one is stocked. Preorders/restricted grants retain their PDP flows.
+  Missing/error data never guesses an ID; pending disables action, errors offer
+  localized product-page guidance; guarded click/Added state prevents double adds.
+- Root cause: card forced Options for any serialized item/active reference; home
+  lacked variants. Public view now read per exact product/active/max2/10s timeout,
+  simultaneous reads deduplicated per Nuxt app; no private warehouse/cost fields.
+  Existing stock expression shared unchanged with cart. Legitimate unrecorded-
+  stock sales retain stock0; recorded serialized stock and server validation retained.
+- Readonly public sample100:86 single/14multiple active references. Live home40
+  Options/preorder at desktop1440/mobile390 EN/AR/RTL. Final built LOCAL real-public-
+  catalog home:37 Add/3preorder in all4 cases; local guest cart only, live writes
+  blocked, page errors0. Genuine choices tested with actual Vue section/card/cart.
+- 24 policy/cart/access/session +25 browser +13 server/SQL +5 release-guard checks
+  PASS; typecheck/build PASS. Native competing-stock concurrency case unavailable,
+  SKIPPED/NOT EXERCISED and remains deferred. Original32/DTR-33/STOR-01 untouched.
+- Commit `d69d68dca9df1f2403f6022ecf712aaa7019ebb8` on isolated local/homepage-direct-cart-
+  20261028 from deployedbb21a16. No server/SQL/RLS/package/lock/config changes;12
+  committed files include focused tests/review. Main36a7669/all24 prior worktrees,
+  dirty artifacts, frozen135/location4843754 and consumed inquiry packets preserved.
+- Candidate **42a61d03f3aba831/schema98**; archive20984598bytes,
+  full3452-entry guarded readback/secret scan PASS,2480 browser assets/2373retained
+  hashes preserved; latest-build pointer updated only in LOCAL candidate archive.
+- 15:14:12Riyadh scoped readonly preflight PASS: baselineacfc97/schema98/PID61817,
+  runtime/Caddy/units/certificate/inventory unchanged; CARD available, Manual50,
+  critical payment mismatch/unreconciled/duplicate/ownership0, overdue-unverified2.
+  MON active/enabled/waiting fresh15:10 report/3warnings; shared kill budget1 unused.
+- [Review](docs/homepage-direct-cart-review.md); [exact approval](docs/homepage-direct-cart-approval.md).
+  `APPROVE CX-CART-01 DIRECT ADD TO CART babea828ba63763f502a627119885534148f16032ff71768d709325300f3c336`.
+  Expires2026-10-28 19:13:21.476Riyadh/2026-10-28T16:13:21.476Z.
+  Fresh scope permits ONE ordinary app cutover/restart only after exact approval;
+  original emergency budget1 rebound, callbacks retained, no timer/SQL/Caddy edit.
+  New approval/intent/cutover NOT recorded. Production restarts/writes/provider calls0.
+- E113 queue stands: after this fix COD separately (awaiting collection/confirmation/
+  Dashboard/Manual eligibility; no premature Paid); Pay Again/method changes P0-3
+  independently BLOCKED; P1-4 emails; P1-5 saved address collapse; P1-6 LOC-01 checkout
+  AND profile; P2-7 username; P2-8 MIG-04. No other feature begun. CARD/Manual/signup
+  live; COD OFF/PDC PAUSED/email OFF. Paid backlog and2649/3149 provider-UNVERIFIED.
+- NEXT: exact scoped deployment approval. Keep all consumed operators non-replayable.
+
+---
+
+# E113 — Customer shopping queue reprioritized; homepage cart first — 2026-10-28
+
+- Owner explicitly decouples customer improvements from Paymob investigation.
+  Work ONE feature at a time. New exact queue: P0-1 CX-CART-01 homepage direct
+  Add to Cart; P0-2 CX-COD-01 safe COD; P0-3 CX-PAY-01 Pay Again/method changes
+  independently BLOCKED on provider reconciliation; P1-4 CX-EMAIL-01 truthful
+  order/payment delivery; P1-5 CX-ADDR-01 collapsed saved checkout address;
+  P1-6 LOC-01 validated governorate/city at checkout AND account/profile;
+  P2-7 CX-NAV-01 welcome username; P2-8 MIG-04 Google/WooCommerce redirects.
+- STARTED CX-CART-01 only, from deployed bb21a16 in isolated
+  local/homepage-direct-cart-20261028. Main36a7669 is different/older application
+  lineage and is preserved; no unrelated merge/reset/clean. All24 prior worktrees
+  and dirty artifacts privately inventoried before the new25th worktree.
+- Root cause found: ProductCard forces Options for every serialized product and
+  any active variant, including one Default; homepage does not load variants.
+  Resolve exact single active configuration through the existing public view,
+  pass its real variant/stock identity to existing cart, preserve genuine choices,
+  published/server/purchase/stock/session rules, EN/AR/RTL and safe busy/error states.
+- Scope LOCAL implementation/tests/typecheck/build/scoped release preflight only.
+  Separate exact deployment approval required. No stock/database edit, COD opening,
+  app restart, MON timer change, payment credential/inquiry/provider/email action.
+- E112 evidence/consumed approvals/provider contract draft preserved. Auth PASS;
+  complete history BLOCKED. Receipt cannot distinguish missing/non-list/over20
+  history; owner describes missing array but this is not a new raw-schema capture.
+  EGP2649/3149 remain provider-UNVERIFIED; Pay Again stays OFF, without gating cart/COD.
+- Production read-only guard PASS: acfc97/schema98; MON enabled/active/waiting with
+  fresh14:30 report/3 warnings; shared kill budget1. Public CARD/Manual50/signup
+  maintained; PDC PAUSED, COD/email OFF. Paid/fulfillment backlog and all original32/
+  DTR-33/STOR-01/deferred rows/location work retained. No SEO work in this feature.
+- NEXT: complete local direct-cart validation and prepare exact guarded approval;
+  after this fix prepare COD separately, including awaiting collection (not Paid),
+  confirmation, Dashboard handling and Manual-delivery eligibility.
+
+---
+
 # E112 — Merchant authentication PASS; full-history inquiry BLOCKED — 2026-10-28
 
 - Owner exact approval971e6750… executed ONCE and consumed. At14:23:58Riyadh auth

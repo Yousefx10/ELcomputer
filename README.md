@@ -1,3 +1,7 @@
+> 2026-10-28 E115: Homepage direct Add to Cart DEPLOYED on42a61d03f3aba831/schema98; hosted postflight PASS, owner acceptance pending. Exactly1 app restart; CARD/Manual50/MON/kill1 preserved. Approval consumed. [Receipt](docs/homepage-direct-cart-receipt.md). Safe COD preparation is next, independent from Inquiry.
+
+> 2026-10-28 E114: Homepage direct Add to Cart LOCAL/PREFLIGHT PASS; candidate42a61d03f3aba831/schema98 awaits separate approval. Production acfc97 remains unchanged. One app restart if approved; MON/CARD/Manual50/kill1 preserved. [Review](docs/homepage-direct-cart-review.md), [approval](docs/homepage-direct-cart-approval.md).
+
 > 2026-10-28 E112: Merchant authentication PASS. Full-history inquiry BLOCKED at the first paid-control history-array guard; both approvals consumed. Unpaid outcomes stay UNVERIFIED. No restart or payment-state change. [Stop receipt](docs/paymob-merchant-inquiry-history-stop-receipt.md), [contract request draft](docs/paymob-merchant-history-contract-request.md).
 
 > 2026-10-28 E111: Inquiry stopped safely at authentication HTTP201; original approval consumed. Auth201-only correction LOCAL25/PREFLIGHT PASS; fresh approval required. No payment/order changes or app restart. [Stop receipt](docs/paymob-merchant-inquiry-stop-receipt.md), [fresh review](docs/paymob-merchant-inquiry-auth201-review.md).
