@@ -3120,7 +3120,9 @@
   },
   "cards": {
     "ProductCard": {
-      "chooseOptionsForValue": "Choose options for {value0}"
+      "chooseOptionsForValue": "Choose options for {value0}",
+      "optionsCheckFailed": "Could not check options. View the product.",
+      "cartUpdateFailed": "Could not update your cart. Try again."
     },
     "HeroCard": {
       "headsetsCablesAndOtherDeskAccessories": "Headsets, cables and other desk accessories."

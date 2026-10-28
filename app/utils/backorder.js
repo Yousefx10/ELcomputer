@@ -8,3 +8,10 @@ export const specialOrderNotice = (settings = {}, locale = 'en') => {
 // Checkout still enforces the configured delivery terms and physical allocation.
 export const usesUnrecordedStockSales = (product, settings = {}) =>
   settings?.inventory_tracking_required === false && (product?.selling_mode || 'normal') === 'normal'
+
+// Shared with cart normalization: a serialized item cannot use the ordinary
+// bulk backorder switch when inventory tracking is required.
+export const allowsCartBackorder = (product, settings = {}) =>
+  usesUnrecordedStockSales(product, settings)
+  || Boolean(product?.allow_out_of_stock_purchases) && !product?.is_serialized
+  || product?.selling_mode === 'preorder'

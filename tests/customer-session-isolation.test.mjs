@@ -9,6 +9,7 @@ import { readPendingCheckout, savePendingCheckout, restoreCart } from '../app/ut
 
 let active, transport
 Object.assign(globalThis, { ref, computed, watch, effectScope, onScopeDispose,
+  useNuxtData: () => ({ data: ref({ settings: {} }) }),
   onMounted: action => action(), useNuxtApp: () => active.app,
   useSupabaseSession: () => active.session, useSupabaseUser: () => active.claims,
   useSupabaseClient: () => { const f = active; return { auth: { getSession: () => f.getSession() } } },

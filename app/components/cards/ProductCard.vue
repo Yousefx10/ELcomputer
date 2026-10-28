@@ -13,14 +13,16 @@
       </div>
       <p v-if="brandName || categoryName" class="store-product-brand">{{ brandName || categoryName }}</p>
       <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-title"><h3>{{ product.title }}</h3></NuxtLinkLocale>
-      <p v-if="!usesUnrecordedStockSales(product, siteContent?.settings)" class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
+      <p v-if="!usesUnrecordedStockSales(product, siteContent?.settings) && !checkingAvailability && !requiresOptionSelection" class="store-product-stock" :class="{ 'store-product-stock-unavailable': isOutOfStock && !isPreorder }">
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
         {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.preOrder') : isOutOfStock ? (isPurchasable ? $t('common.availableToOrder') : $t('common.outOfStock')) : $t('common.inStock') }}
       </p>
-      <button type="button" :disabled="!isPurchasable" :aria-label="purchasingPending ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" :aria-busy="purchasingPending" @click="handleAddToCart">
-        <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
-        {{ purchasingPending ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
+      <button type="button" :disabled="!isPurchasable || actionPending || addedToCart" :aria-label="checkingAvailability ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" :aria-busy="checkingAvailability || actionPending" @click="handleAddToCart">
+        <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection || isPreorder ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
+        {{ checkingAvailability ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
       </button>
+      <p v-if="optionsError" class="mt-2 text-xs text-[var(--text-secondary)]" role="status">{{ $t('cards.ProductCard.optionsCheckFailed') }}</p>
+      <p v-if="cartError" class="mt-2 text-xs text-[var(--text-secondary)]" role="alert">{{ $uiMessage(cartError) }}</p>
       <span class="sr-only" role="status">{{ $uiMessage(cartFeedback) }}</span>
     </div>
   </article>
@@ -35,6 +37,8 @@ const { uiNavigateTo } = useUiNavigation()
 
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import { usesUnrecordedStockSales } from '~/utils/backorder'
+import { productCardPurchase } from '~/utils/productCardPurchase'
+import { useProductCardVariants } from '~/composables/useProductCardVariants'
 const props = defineProps({
   product: {
     type: Object,
@@ -43,12 +47,17 @@ const props = defineProps({
 })
 
 const { data: siteContent } = useSiteContent()
+const { t } = useI18n()
 const { addItem } = useCart()
 const { allowsProduct, scope: purchaseScope, pending: purchasingPending } = usePurchaseAccess()
 const addedToCart = ref(false)
 const cartFeedback = ref('')
+const cartError = ref('')
+const actionPending = ref(false)
+const { variants: cardVariants, pending: optionsPending, error: optionsError } = useProductCardVariants(computed(() => props.product))
 let feedbackTimeout
 onBeforeUnmount(() => clearTimeout(feedbackTimeout))
+watch(() => props.product.id, () => { clearTimeout(feedbackTimeout); addedToCart.value = false; cartFeedback.value = ''; cartError.value = '' })
 
 const priceFormatter = computed(() => new Intl.NumberFormat(intlLocale.value))
 
@@ -56,45 +65,15 @@ const numericPrice = computed(() => Number(props.product.price || 0))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
 const brandName = computed(() => String(props.product.brand?.name || '').trim())
 const categoryName = computed(() => localizedCategoryName(props.product.category))
-const isOutOfStock = computed(() => Number(props.product.stock_quantity || 0) <= 0)
+const purchase = computed(() => productCardPurchase(props.product, siteContent.value?.settings, cardVariants.value, Boolean(purchaseScope.value)))
+const isOutOfStock = computed(() => Number(purchase.value.stock ?? props.product.stock_quantity ?? 0) <= 0)
 const isPreorder = computed(() => props.product.selling_mode === 'preorder')
 const isComingSoon = computed(() => props.product.selling_mode === 'coming_soon')
-const allowOutOfStockPurchases = computed(() => {
-  return Boolean(siteContent.value?.settings?.allow_out_of_stock_purchases) || usesUnrecordedStockSales(props.product, siteContent.value?.settings)
-})
+const allowOutOfStockPurchases = computed(() => purchase.value.allowBackorder)
 const purchasingAllowed = computed(() => allowsProduct(props.product.id))
-const isPurchasable = computed(() => purchasingAllowed.value && (isComingSoon.value ? false : isPreorder.value ? true : !isOutOfStock.value || allowOutOfStockPurchases.value))
-const embeddedVariants = computed(() => {
-  if (Array.isArray(props.product.variants)) {
-    return props.product.variants
-  }
-
-  if (Array.isArray(props.product.product_variants)) {
-    return props.product.product_variants
-  }
-
-  return null
-})
-const requiresOptionSelection = computed(() => {
-  if (purchaseScope.value) return true
-  if (props.product.is_serialized) {
-    return true
-  }
-
-  if (embeddedVariants.value) {
-    return embeddedVariants.value.some((variant) => variant?.is_active !== false)
-  }
-
-  if (typeof props.product.has_variants === 'boolean') {
-    return props.product.has_variants
-  }
-
-  if (Number(props.product.variant_count || 0) > 0) {
-    return true
-  }
-
-  return false
-})
+const checkingAvailability = computed(() => purchasingPending.value || optionsPending.value)
+const isPurchasable = computed(() => !checkingAvailability.value && purchasingAllowed.value && purchase.value.kind !== 'unavailable')
+const requiresOptionSelection = computed(() => purchase.value.kind === 'options')
 
 const hasDiscount = computed(() => {
   return numericOldPrice.value > numericPrice.value
@@ -126,24 +105,29 @@ const openProductOptions = async () => {
 }
 
 const handleAddToCart = async () => {
-  if (!isPurchasable.value) {
+  if (!isPurchasable.value || actionPending.value || addedToCart.value) {
     return
   }
 
-  if (isPreorder.value || requiresOptionSelection.value) {
-    await openProductOptions()
-    return
-  }
-
-  const result = addItem({
-    ...props.product,
-    allow_out_of_stock_purchases: allowOutOfStockPurchases.value
-  }, 1, {
-    source: 'product_card'
-  })
-  cartFeedback.value = result.success ? `${props.product.title} added to cart.` : result.message
-  addedToCart.value = result.success
-  clearTimeout(feedbackTimeout)
-  feedbackTimeout = setTimeout(() => { addedToCart.value = false }, 2200)
+  actionPending.value = true
+  cartError.value = ''
+  try {
+    if (isPreorder.value || requiresOptionSelection.value) { await openProductOptions(); return }
+    const selected = purchase.value
+    if (!allowsProduct(props.product.id, selected.variant?.id || null)) return
+    const result = addItem({
+      ...props.product, variant: selected.variant, variant_id: selected.variant?.id || null,
+      stock_quantity: selected.stock, variant_stock_quantity: selected.stock,
+      allow_out_of_stock_purchases: allowOutOfStockPurchases.value
+    }, 1, { source: 'product_card' })
+    cartFeedback.value = result.success ? t('common.addedToCart') : result.message
+    cartError.value = result.success ? '' : result.message
+    addedToCart.value = result.success
+    clearTimeout(feedbackTimeout)
+    feedbackTimeout = setTimeout(() => { addedToCart.value = false }, 2200)
+  } catch {
+    cartError.value = t('cards.ProductCard.cartUpdateFailed')
+    cartFeedback.value = cartError.value
+  } finally { actionPending.value = false }
 }
 </script>

@@ -3120,7 +3120,9 @@
   },
   "cards": {
     "ProductCard": {
-      "chooseOptionsForValue": "اختر خيارات {value0}"
+      "chooseOptionsForValue": "اختر خيارات {value0}",
+      "optionsCheckFailed": "تعذّر التحقق من الخيارات. افتح صفحة المنتج.",
+      "cartUpdateFailed": "تعذّر تحديث السلة. حاول مرة أخرى."
     },
     "HeroCard": {
       "headsetsCablesAndOtherDeskAccessories": "سماعات وكابلات وملحقات مكتب أخرى."

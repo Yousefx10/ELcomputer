@@ -1,6 +1,6 @@
 import { acknowledgeCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
 import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
-import { usesUnrecordedStockSales } from '~/utils/backorder'
+import { allowsCartBackorder } from '~/utils/backorder'
 import { useCustomerIdentity } from './useCustomerIdentity'
 
 const carts = new WeakMap()
@@ -72,8 +72,7 @@ const normalizeCartItem = (item, settings = {}) => {
   )
   const isSerialized = Boolean(item.is_serialized)
   const sellingMode = ['normal', 'coming_soon', 'preorder'].includes(item.selling_mode) ? item.selling_mode : 'normal'
-  const allowOutOfStockPurchases = usesUnrecordedStockSales(item, settings) || Boolean(item.allow_out_of_stock_purchases)
-    && !isSerialized || sellingMode === 'preorder'
+  const allowOutOfStockPurchases = allowsCartBackorder(item, settings)
   const preorderLimit = sellingMode === 'preorder' ? Math.min(
     Number(item.preorder_customer_limit || 99), Number(item.preorder_remaining ?? 99)
   ) : null
