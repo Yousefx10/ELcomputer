@@ -1,3 +1,43 @@
+# E119 — COD inactive deployment COMPLETE; production9c74/schema100 — 2026-10-28
+
+- Owner exacte3176505… approval recorded once and **CONSUMED COMPLETE**. Fresh guarded
+  preflight passed; migrations99/100 committed17:25:48.719Riyadh, approved app switch
+  passed17:26:11.200. Exactly1 app restart. Production **9c74cf4d2c22a267/schema100**,
+  source3911124; all98 previous history entries and145 original projections plus
+  Auth/history/ACL/RLS/expected schema footprint preserved. Never rerun this operator.
+- **DEPLOYED INACTIVE / TECHNICAL POSTFLIGHT PASS / COD OFF.** Zero Manual cash
+  collection flags enabled; runtime Beta remains CARD-only. Existing cash toggle
+  TRUE/fee0, Manual50 and inventory_tracking_required=FALSE unchanged. Normal untracked
+  COD code is present; no stock is fabricated or required to be recorded for opening.
+  Existing employee collection is the business premise, not activation authority.
+- All3566 installed entries/certificate/running-directory checks PASS; every2592
+  browser asset public HTTP/hash PASS and2479 retained hashes preserved. Same runtime,
+  Caddy/units/config/credentials and Caddy process; callbacks retained, original
+  purchasing kill budget1 unused/rebound. No MON lifecycle or report/dedup reset.
+- EN/AR public entry/privacy guards PASS; correct signup route is login?mode=signup.
+  Auxiliary observer's unsupported /signup assumption was corrected locally from
+  source/prior receipt; failed evidence kept. No application correction/extra restart,
+  sealed guard bypass, deployment retry or automatic rollback occurred.
+- 17:30:04Riyadh automatic MON report succeeded AFTER cutover; enabled/active/waiting,
+  WARNING3 unchanged/emailOFF. Critical payment amount/attempt mismatch, unreconciled
+  signed success, duplicate success and ownership0; overdue provider-unverified2.
+  Original2649/3149 uncertainty and successful payment/fulfillment records retained.
+- [Deployment receipt](cod-inactive-deployment-receipt.md); private completion,
+  approval/intent/migration/switch/postflight receipts exist. All27 opening HEADs and
+  pending-file inventories preserved before continuity updates;65eed27 and separate
+  location4843754 untouched. DTR-33/STOR-01/all original deferrals retained.
+- No real order/payment/refund/email, Paymob inquiry/PDC call/booking/activation,
+  business/settings/stock write, Caddy/runtime/unit edit, Git push or public COD
+  activation. No hosted COD/employee cash/owner acceptance claimed; cart owner review
+  remains pending.95 native/46 browser local qualification retained without reruns.
+- NEXT customer feature: transactional order/payment emails; then collapsed saved
+  address, offline checkout AND profile locations, navbar username. Preserve one
+  feature at a time; no diversion into Paymob/PDC. COD controlled-order acceptance
+  and cash coverage/fee/collection/Treasury activation need later separate exact
+  approval. Deployment authority is consumed; no new activation seal is issued.
+
+---
+
 # E118 — Untracked COD qualified; sealed inactive deployment READY — 2026-10-28
 
 - Owner selects existing sell-without-recorded-stock behavior for normal COD,
@@ -2606,9 +2646,9 @@ it does not waive multi-customer, email, destination or recovery acceptance.
 | BETA-07 | Owner-approved launch delivery and configurable EGP50 shipping | P0 | LOCAL PASS | Owner-managed delivery/all cities and governorates/EGP50 CONFIRMED | Prepare separate Manual company and reviewed coverage/fee; old PDC identity/barriers preserved | E59; OD-20261026-DELIVERY-02 | 2026-10-26 | Install approved Manual configuration through guarded Beta plan; PDC calls remain paused |
 | BETA-08 | Merchant refund/cancellation and stock-reconciliation readiness | P0 | MANUAL REMEDY OPERATIONALLY CONFIRMED | Owner confirms documented manual process available; no refund/transfer executed | Consent/original transaction/unique private operation/remaining amount and reconciliation required; capture history preserved | E89; E59; OD-20261026-REFUND-02 | 2026-10-27 | Use supported remedy only for an authorized actual case; automation remains deferred |
 | BETA-09 | Payment exception monitoring and closure | P0 | LIVE WARNING; FIVE-MINUTE AUTOMATION ACTIVE | E103 two automatic checks/fresh report/dedup PASS; critical0; pending2649 and abandoned3149 provider outcomes UNVERIFIED; two paid staff-backlog orders | Timer/heartbeat/history/private alerts verified; no automatic money/order/stock action; callbacks/original kill retained | E103; E102; E101 | 2026-10-28 02:45 regular worker/02:46 postflight | Staff attends Dashboard exceptions and real fulfillment; actual merchant outcomes require evidence; email OFF; owner Dashboard operation accepted E107; optional email separate |
-| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | P0 OWNER-PROMOTED | DEPLOYED / AUTOMATIC PASS / OWNER ACCEPTED FOR OPERATION | E107 owner operation/access accepted; E115 automatic reports after app cutover | Existing five-minute timer active; fresh durable report/private API; no worker/timer/config/email change; original kill1 retained | E115; E108; E107; E106; E103 | 2026-10-28 deployed operational postflight; owner scope E107 retained | Explain panel; retain staff attention and separate optional email; never replay consumed authorities |
+| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | P0 OWNER-PROMOTED | DEPLOYED / AUTOMATIC PASS / OWNER ACCEPTED FOR OPERATION | E119 next automatic17:30 report after inactive COD cutover; owner operational acceptance retained | Existing five-minute timer active; fresh durable report/private API; no worker/timer/config/email change; original kill1 retained | E119; E115; E108; E107; E106; E103 | 2026-10-28 automatic operation after9c74/schema100 PASS | Explain panel; retain staff attention and separate optional email; never replay consumed authorities |
 | BETA-10 | Guarded inactive schema91→94 deployment preparation | P0 | DEPLOYED | Exact replacement4c332350 approved/executed once; catalog pause may end; seal consumed | Releasebc05eef266eeb7de/schema94 active, atomic92–94, all140 original projections/Auth preserved; backups/candidate/RLS/gates/public smoke PASS, history/claims0 | E35; E34; E33; E31 | 2026-10-25 | Never rerun consumed apply; E37 historical import/three-route change also completed; ordinary acceptance/notice/signup are next |
-| BETA-11 | Normal CARD checkout and guarded public activation | P0 | PUBLIC CARD BETA ACTIVE | E88 genuine paid5/closure; E90 exact approved runtime activation verified | CARD/Manual50/signup entry/test exclusion/no coupons; app42a61d03f3aba831/schema98; Caddy/security/history retained; DTR-33 remains | E115; E90; E88; docs/homepage-direct-cart-receipt.md | 2026-10-28 current app postflight; original paid acceptance retained | Accept genuine customer orders; staff15min exceptions/manual fulfillment; one approved kill on valid public defect or unmaintainable reconciliation |
+| BETA-11 | Normal CARD checkout and guarded public activation | P0 | PUBLIC CARD BETA ACTIVE | E88 genuine paid5/closure; E90 exact approved runtime activation verified | CARD/Manual50/signup entry/test exclusion/no coupons; app9c74cf4d2c22a267/schema100; Caddy/security/history retained; DTR-33 remains | E119; E115; E90; E88; docs/homepage-direct-cart-receipt.md | 2026-10-28 inactive COD cutover postflight; original paid acceptance retained | Accept genuine customer orders; staff15min exceptions/manual fulfillment; one approved kill on valid public defect or unmaintainable reconciliation |
 | BETA-12 | Preserve LIVE payment, 3DS and callback reconciliation | P0 | ACCEPTED | Prior real LIVE card payment/signed callback accepted; preserved | No repeat integration charge; new native customer-to-paid flow PASS with0 external calls | E59; DONE-04; E02 | 2026-10-26 | Preserve binding; verify next single authorized genuine customer sale only |
 
 ### F. WordPress / WooCommerce migration
@@ -2712,9 +2752,9 @@ uncertain shipment creation or attach an unrelated diagnostic/cancelled AWB.
 | CX-06 | Help Center, support, returns and warranty improvements | P2 | PLANNED | Existing ticket/article/claims contracts and owner policy | Preserve owned support/private evidence; review remaining accessibility, article helpfulness and communication needs | E17; E18; PROJECT_STATE.md Help Center entries; REQ | 2026-10-25 | Select one concrete improvement after Beta |
 | CX-07 | Original-browser controlled-checkout rejection (OD-20261027-BROWSER-STATE-01) | P1/B; public repro escalates A | DEFERRED FIELD UNCONFIRMED | DTR-33 original valid v3 cart/no pending; fresh Incognito genuine5 success; actual Vue/server-guard local3 PASS | Identify actual failed request/address/delivery/client state without another charge; preserve recovery/security | E88; DTR-33; docs/egp5-genuine-payment-verification.md | 2026-10-27 | Safe diagnostic follow-up; stop public purchasing on valid public reproduction |
 | CX-PAY-01 | Live customer payment completion and safe recovery | QUEUE 6 / SAFETY HOLD | FIRST FIX ACCEPTED IN OBSERVED SCOPE / MERCHANT AUTH PASS / FULL-HISTORY INQUIRY BLOCKED | Current98; complete provider history/session finality not qualified | Required history list≤20 contract failed; two consumed approvals; no retry/local reconciliation; email separate | E112; E111; E110; E107; E106 | 2026-10-28 E116 priority; auth PASS/full history blocked | After tasks1-5, highest-priority integration before PDC; NO FURTHER INQUIRY NOW; preserve history guard/consumed evidence and Pay Again hold |
-| CX-EMAIL-01 | Truthful customer order/payment email delivery | QUEUE 2 | REQUIRED / OFF / NOT ACCEPTED | After COD; independent of Merchant Inquiry; Auth SMTP separate | Durable idempotent truthful order/payment events, secure sender and actual delivery acceptance; no backlog replay | E116; E107; E106 | 2026-10-28 priority updated; no email work begun | After COD prepare emails next; never divert into Paymob/PDC first |
+| CX-EMAIL-01 | Truthful customer order/payment email delivery | QUEUE 2 | NEXT / OFF / NOT ACCEPTED | After E119 inactive COD deployment; independent of Merchant Inquiry; Auth SMTP separate | Durable idempotent truthful order/payment events, secure sender and actual delivery acceptance; no backlog replay | E119; E116; E107; E106 | 2026-10-28 priority updated; no email work begun | Prepare transactional emails next; no customer send/provider activation or backlog replay without its own qualified scope |
 | CX-CART-01 | Homepage Add to Cart versus Options | DEPLOYED / OWNER REVIEW | DEPLOYED / HOSTED PASS / OWNER ACCEPTANCE PENDING | Existing stock/capability/cart/server guards; independent from Merchant Inquiry | Single configuration direct; genuine Options;37 Add/3preorder; real variant/double-click/reload/EN-AR-RTL desktop-mobile PASS; native concurrency remains deferred | E115; E114; E113; docs/homepage-direct-cart-receipt.md | 2026-10-28 deployed42a61d/schema98; owner review pending | Owner review; separate COD preparation next without inquiry dependency |
-| CX-COD-01 | Safe COD availability and collection workflow | QUEUE 1 | LOCAL PASS / INACTIVE DEPLOYMENT READY / COD OFF | E118 owner confirms normal untracked policy and employee collection; exact inactive deployment and later activation separate | Reuse optional inventory mode; normal purchase labels; no invented stock; scans/video, cash/Treasury and guarded cancellation retained | E118; docs/cod-inactive-deployment-review.md | 2026-10-28 17:11 preflight PASS; production42a61d/schema98 unchanged | Exact inactive seale3176505 approval before21:15Riyadh; later acceptance/collection scope activation separately; emails next, no Paymob/PDC diversion |
+| CX-COD-01 | Safe COD availability and collection workflow | QUEUE 1 | DEPLOYED INACTIVE / COD OFF / OWNER ACCEPTANCE PENDING | E119 consumed exact inactive deployment; later controlled acceptance/activation separate | Normal untracked policy; no fake stock or availability copy; cash flagsFALSE/BetaCARD; scans/video/cash/Treasury/cancellation retained | E119; docs/cod-inactive-deployment-receipt.md | 2026-10-28 schema100/app9c74 deployed; public assets and17:30 MON PASS | Prepare emails next; later exact COD order/collection coverage-fees-receipt responsibilities and public activation approval required; never replay inactive operator |
 | CX-ADDR-01 | Collapse saved checkout shipping address | QUEUE 3 | QUEUED | After transactional emails; owned saved address/order snapshots | Compact saved address with explicit editing | E116; E107 | 2026-10-28 priority updated | After CX-EMAIL-01; preserve ownership and saved-order history |
 | CX-NAV-01 | Authenticated username in navbar | QUEUE 5 | QUEUED | After LOC-01 checkout AND profile; customer isolation | Correct signed-in name without cross-account leakage | E116; E107 | 2026-10-28 priority updated | After LOC-01; Paymob/PDC integrations become immediate priorities after tasks1-5 |
 

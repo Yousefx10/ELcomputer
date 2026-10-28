@@ -1,3 +1,43 @@
+# E119 — COD inactive deployment COMPLETE; production9c74/schema100 — 2026-10-28
+
+- Owner exacte3176505… approval recorded once and **CONSUMED COMPLETE**. Fresh guarded
+  preflight passed; migrations99/100 committed17:25:48.719Riyadh, approved app switch
+  passed17:26:11.200. Exactly1 app restart. Production **9c74cf4d2c22a267/schema100**,
+  source3911124; all98 previous history entries and145 original projections plus
+  Auth/history/ACL/RLS/expected schema footprint preserved. Never rerun this operator.
+- **DEPLOYED INACTIVE / TECHNICAL POSTFLIGHT PASS / COD OFF.** Zero Manual cash
+  collection flags enabled; runtime Beta remains CARD-only. Existing cash toggle
+  TRUE/fee0, Manual50 and inventory_tracking_required=FALSE unchanged. Normal untracked
+  COD code is present; no stock is fabricated or required to be recorded for opening.
+  Existing employee collection is the business premise, not activation authority.
+- All3566 installed entries/certificate/running-directory checks PASS; every2592
+  browser asset public HTTP/hash PASS and2479 retained hashes preserved. Same runtime,
+  Caddy/units/config/credentials and Caddy process; callbacks retained, original
+  purchasing kill budget1 unused/rebound. No MON lifecycle or report/dedup reset.
+- EN/AR public entry/privacy guards PASS; correct signup route is login?mode=signup.
+  Auxiliary observer's unsupported /signup assumption was corrected locally from
+  source/prior receipt; failed evidence kept. No application correction/extra restart,
+  sealed guard bypass, deployment retry or automatic rollback occurred.
+- 17:30:04Riyadh automatic MON report succeeded AFTER cutover; enabled/active/waiting,
+  WARNING3 unchanged/emailOFF. Critical payment amount/attempt mismatch, unreconciled
+  signed success, duplicate success and ownership0; overdue provider-unverified2.
+  Original2649/3149 uncertainty and successful payment/fulfillment records retained.
+- [Deployment receipt](docs/cod-inactive-deployment-receipt.md); private completion,
+  approval/intent/migration/switch/postflight receipts exist. All27 opening HEADs and
+  pending-file inventories preserved before continuity updates;65eed27 and separate
+  location4843754 untouched. DTR-33/STOR-01/all original deferrals retained.
+- No real order/payment/refund/email, Paymob inquiry/PDC call/booking/activation,
+  business/settings/stock write, Caddy/runtime/unit edit, Git push or public COD
+  activation. No hosted COD/employee cash/owner acceptance claimed; cart owner review
+  remains pending.95 native/46 browser local qualification retained without reruns.
+- NEXT customer feature: transactional order/payment emails; then collapsed saved
+  address, offline checkout AND profile locations, navbar username. Preserve one
+  feature at a time; no diversion into Paymob/PDC. COD controlled-order acceptance
+  and cash coverage/fee/collection/Treasury activation need later separate exact
+  approval. Deployment authority is consumed; no new activation seal is issued.
+
+---
+
 # E118 — Untracked COD qualified; sealed inactive deployment READY — 2026-10-28
 
 - Owner selects existing sell-without-recorded-stock behavior for normal COD,

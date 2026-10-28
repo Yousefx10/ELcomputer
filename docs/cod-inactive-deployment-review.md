@@ -1,3 +1,5 @@
+> E119: exact approval CONSUMED COMPLETE. Release9c74cf4d2c22a267/schema100 is deployed INACTIVE; COD remains OFF. [Final receipt](cod-inactive-deployment-receipt.md). Never replay the approval or operator.
+
 # Inactive COD deployment review — E118
 
 28 October 2026. **DEPLOYMENT READY FOR SEPARATE EXACT APPROVAL.**

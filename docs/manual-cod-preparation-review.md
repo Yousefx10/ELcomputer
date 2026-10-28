@@ -1,3 +1,5 @@
+> E119: exact approval CONSUMED COMPLETE. Release9c74cf4d2c22a267/schema100 is deployed INACTIVE; COD remains OFF. [Final receipt](cod-inactive-deployment-receipt.md). Never replay the approval or operator.
+
 > E118 supersedes the stock-recording prerequisite below. The owner selected normal untracked COD and employee cash collection. [Current qualified inactive deployment](cod-inactive-deployment-review.md) is ready for separate exact approval; production COD remains OFF.
 
 # CX-COD-01 local implementation review — E116
