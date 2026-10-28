@@ -1,3 +1,5 @@
+> E118 supersedes the stock-recording prerequisite below. The owner selected normal untracked COD and employee cash collection. [Current qualified inactive deployment](cod-inactive-deployment-review.md) is ready for separate exact approval; production COD remains OFF.
+
 # CX-COD-01 local implementation review — E116
 
 28 October 2026. LOCAL PASS. Not deployed, activated or owner-accepted.

@@ -1,3 +1,80 @@
+# E118 — Untracked COD qualified; sealed inactive deployment READY — 2026-10-28
+
+- Owner selects existing sell-without-recorded-stock behavior for normal COD,
+  confirms employees collect cash, wants normal purchase labels and manual product
+  deactivation. Recording quantities is not an opening prerequisite. E116's business
+  blocker is corrected:223 published normal priced products/237 active models have
+  zero recorded stock;49 recorded units belong solely to draft/excluded TESTproduct2026.
+  Existing owner-confirmed physical catalog availability remains the premise.
+- Preserve65eed27 and all26 original worktrees. New27th source branch
+  local/cod-untracked-readiness-20261028 at **3911124** adds migration100 atop99:
+  existing inventory_tracking_required=FALSE allows ordinary COD without fabricated
+  stock; TRUE retains physical allocation. Actual scans/video, cash/Treasury ledger,
+  ownership, duplicate/receipt recovery, cancellation and CARD safeguards retained.
+  No old CARD-to-COD conversion, Pay Again, stock claims or new availability copy.
+- **INACTIVE DEPLOYMENT READY / NOT DEPLOYED / COD OFF.** Candidate9c74cf4d2c22a267,
+  exact schema98→100 (only two named migrations), one app switch/restart. Existing
+  collection capability defaultsFALSE and runtime Beta remains CARD-only. No setting,
+  runtime/Caddy/unit/credential/MON/provider/email/order/payment change authorized.
+- 95 focused native/SQL/CARD/cash/monitor/cart checks +46 browser/policy PASS/0skip;
+  native schema footprint/rollback and live98 definition match PASS; typecheck/build,
+  secret scan/archive readback and every2592 browser asset HTTP/hash PASS. All2479
+  retained assets preserved;7 missing Nitro serving entries repaired only locally
+  using existing guarded helper. Initial failed packaging evidence retained.
+- Fresh encrypted DB full pg_restore readback and11 runtime files authenticated/hash
+  readback PASS. Sealed state guards145 original projections plus Auth/history/ACL/RLS.
+  No production-data restore or hosted COD/actual collection acceptance claimed.
+- 17:15Riyadh fresh read-only preflight: **42a61d03f3aba831/schema98**, CARD/Manual50/
+  signup maintained, cash unavailable. MON enabled/active/waiting with17:15 report,
+  WARNING3 (2overdue unverified/1terminal unverified), staff-attention2. Critical
+  mismatch/unreconciled signed success/duplicate/ownership0; original kill1 retained.
+- [Exact inactive review/approval](docs/cod-inactive-deployment-review.md), seal
+  **e3176505e22006ea79a65540889c730921952d31fc009f9797f181c8ceffefd9**;
+  expires28Oct21:15:22.032Riyadh. No owner approval, execution intent, SQL application,
+  cutover or restart recorded. Single-use; stop on guard/transport/checkpoint mismatch;
+  no retry/automatic rollback. Migration commit followed by cutover stop requires
+  separate recovery approval. Original kill budget rebound; callbacks stay available.
+- Later activation must bind employee cash-collection coverage, existing EGP50 and
+  zero COD fee, receipt/Treasury responsibilities and controlled owner acceptance.
+  It is separate from inactive deployment. No PDC cash collection assumed.
+- NEXT: exact sealed inactive deployment approval only when owner chooses execution.
+  Next customer-facing feature preparation is transactional emails, then collapsed
+  address, offline checkout AND profile selectors, navbar username. Do not divert
+  into Paymob/PDC; they follow tasks1–5. Preserve unpaid2649/3149 evidence, successful
+  payments, PDC barriers, DTR-33/STOR-01/all deferrals/location source/shared work.
+
+---
+
+# E117 — COD business policy clarified; local extension in progress — 2026-10-28
+
+- Owner confirms existing employees collect COD and explicitly selects existing
+  sell-without-recorded-stock behavior for normal COD products. No warehouse census,
+  fake balances or mandatory procurement is required for opening. All active,
+  published normal positive-price products/models use normal purchase labels;
+  staff manually deactivate unavailable products. Keep genuine preorder/draft rules.
+- Read-only16:45Riyadh:42a61d03f3aba831/schema98 unchanged;223 published normal priced
+  products/237 active models have zero recorded product stock. Recorded49 units
+  belong solely to unpublished/Beta-excluded TESTproduct2026. This is not evidence
+  the commercial catalog lacks physical goods. E59 owner availability confirmation
+  and current inventory_tracking_required=FALSE remain the business premise.
+- Correction to E116: mandatory recorded stock was too restrictive for the owner's
+  established opening model. Native diagnosis7 checks PASS: CARD untracked works,
+  cash currently fails stock; enabling collection alone cannot change that policy.
+- MON enabled/active/waiting;16:45 report complete/WARNING3:2 overdue unverified,
+  1 terminal unverified. Critical mismatch/unreconciled-success/duplicate/ownership0.
+  No provider outcome inferred; no Paymob/PDC inquiry or operational change.
+- Preserve65eed27 byte-for-byte in its existing worktree. New additive27th worktree
+  `../cod-readiness-20261028/source`, branch local/cod-untracked-readiness-20261028,
+  extends the existing inventory policy locally. No new availability-to-order copy,
+  no automatic activation. Manual50/zero COD fee remain current settings, no edits.
+- Prepare focused SQL/cancellation/packing/cash/browser tests, then a sealed inactive
+  deployment only if qualified. Separate exact approval still required to execute;
+  later COD activation/real-order acceptance remain separate. No production changes.
+- Customer queue retained: emails, saved address, checkout/profile locations,
+  navbar; Paymob/PDC only afterward. DTR-33/STOR-01/all prior work retained.
+
+---
+
 # E116 — Codex2 takeover; COD LOCAL PASS; owner queue replaced — 2026-10-28
 
 - Read AGENTS/README/current roadmap and both handoffs. Audited25 worktrees,

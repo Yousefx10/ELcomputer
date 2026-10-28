@@ -1,3 +1,5 @@
+> 2026-10-28 E118: Normal untracked COD3911124 qualified; sealed inactive9c74cf4d2c22a267/schema100 READY for separate approval. Production remains42a61d/schema98/COD OFF. Employees collect cash after later activation; no stock census or availability-to-order copy. [Exact scoped review](docs/cod-inactive-deployment-review.md).
+
 > 2026-10-28 E116: Codex2 takeover verified42a61d03f3aba831/schema98 and MON active. COD implementation65eed27 is LOCAL PASS only; zero eligible recorded stock, Manual collection scope and sealed deployment/acceptance remain blockers. [COD review](docs/manual-cod-preparation-review.md). New queue: COD → emails → saved address → checkout/profile locations → navbar → Paymob → PDC → SEO → deferred work. No deployment or activation.
 
 > 2026-10-28 E115: Homepage direct Add to Cart DEPLOYED on42a61d03f3aba831/schema98; hosted postflight PASS, owner acceptance pending. Exactly1 app restart; CARD/Manual50/MON/kill1 preserved. Approval consumed. [Receipt](docs/homepage-direct-cart-receipt.md). Safe COD preparation is next, independent from Inquiry.

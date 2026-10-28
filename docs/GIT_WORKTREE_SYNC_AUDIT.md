@@ -1,3 +1,14 @@
+## E118 — business-compatible COD candidate and inactive seal — 2026-10-28
+
+All26 opening worktree HEADs and unrelated pending inventories are preserved.
+The original65eed27 implementation remains unchanged in cod-preparation/source.
+Additive27th worktree cod-readiness-20261028/source on
+local/cod-untracked-readiness-20261028 contains3911124 (untracked COD policy).
+Only main/current candidate handoffs and review docs are updated. No prior branch,
+location4843754, frozen source, deferred register or provider evidence changed.
+The candidate is not deployed; exact inactive approval is pending. No push/reset/
+merge/rebase/deletion occurred. [Current review](cod-inactive-deployment-review.md).
+
 ## E116 — Codex2 takeover; COD source isolated — 2026-10-28
 
 Fresh read-only audit:25 opening worktrees,17 with pending files; main6cfaadc.
