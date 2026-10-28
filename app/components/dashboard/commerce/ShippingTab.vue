@@ -393,6 +393,10 @@
           <input v-model="form.cod_collection_enabled" type="checkbox" :disabled="form.provider !== 'manual'">
           {{ $t('codCheckout.confirmManualCollection') }}
         </label>
+        <label v-if="form.provider === 'manual'" class="mt-4 block text-sm font-semibold text-gray-700">{{ $t('codCheckout.collectionProvider') }}
+          <select v-model="form.cod_collection_provider" class="mt-2 w-full rounded-lg border bg-white p-3"><option value="manual">{{ $t('codCheckout.storeStaff') }}</option><option value="pdc">PDC</option></select>
+        </label>
+        <p v-if="form.provider === 'manual' && form.cod_collection_provider === 'pdc'" class="mt-2 text-sm text-gray-600">{{ $t('codCheckout.staffRequestPdc') }}</p>
         <label class="mt-4 block text-sm text-gray-600">
           <span class="mb-2 block font-semibold">{{ $t('codCheckout.governorates') }}</span>
           <select v-model="form.checkout_governorates" multiple class="h-28 w-full rounded-lg border p-3">
@@ -715,6 +719,7 @@ const createEmptyForm = () => ({
   client_shipping_price: '',
   checkout_enabled: false,
   cod_collection_enabled: false,
+  cod_collection_provider: 'manual',
   checkout_governorates: [],
   notes: '',
   is_active: true
@@ -773,6 +778,7 @@ const mapPayload = () => ({
   client_shipping_price: Number(form.client_shipping_price || 0),
   checkout_enabled: Boolean(form.checkout_enabled),
   cod_collection_enabled: form.provider === 'manual' && form.cod_collection_enabled === true,
+  cod_collection_provider: form.provider === 'manual' && form.cod_collection_provider === 'pdc' ? 'pdc' : 'manual',
   checkout_governorates: [...form.checkout_governorates],
   notes: String(form.notes || '').trim() || null,
   is_active: Boolean(form.is_active),
@@ -791,6 +797,7 @@ const startEdit = (company) => {
     client_shipping_price: String(Number(company.client_shipping_price || 0)),
     checkout_enabled: company.checkout_enabled === true,
     cod_collection_enabled: company.cod_collection_enabled === true,
+    cod_collection_provider: company.cod_collection_provider || 'manual',
     checkout_governorates: [...(company.checkout_governorates || [])],
     notes: company.notes || '',
     is_active: company.is_active ?? true

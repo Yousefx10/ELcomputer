@@ -5246,7 +5246,10 @@
     "confirmEmail": "Confirm your account email before ordering.",
     "readyStock": "COD requires ready stock in the built-in inventory.",
     "explicitPrice": "Enter a delivery price, including zero for free delivery.",
-    "confirmManualCollection": "I confirm manual delivery can collect cash.",
+    "confirmManualCollection": "I confirm COD collection for these destinations.",
+    "collectionProvider": "COD collector",
+    "storeStaff": "Store staff",
+    "staffRequestPdc": "Staff request PDC after packing.",
     "payOnDelivery": "Pay the order total when your delivery arrives.",
     "status": {
       "awaiting": "Awaiting COD collection",

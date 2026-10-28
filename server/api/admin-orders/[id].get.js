@@ -170,9 +170,13 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!shipping && orderRecord.shipping_company_id && orderRecord.status === 'ready_to_deliver') {
-    const { data: courier, error } = await supabaseAdmin.from('commerce_shipping_companies').select('provider,is_active').eq('id', orderRecord.shipping_company_id).maybeSingle()
+    const { data: courier, error } = await supabaseAdmin.from('commerce_shipping_companies').select('provider,is_active,checkout_enabled,cod_collection_enabled,cod_collection_provider').eq('id', orderRecord.shipping_company_id).maybeSingle()
     if (error) throw createError({ statusCode: 503, statusMessage: 'Courier selection is unavailable.' })
-    if (courier?.provider === 'pdc' && courier.is_active) shipping = { provider: 'pdc', state: 'not_booked', awb: null, label_ready: false, events: [] }
+    const manualCod = courier?.provider === 'manual' && courier.cod_collection_enabled && courier.checkout_enabled
+      && courier.cod_collection_provider === 'pdc'
+      && orderRecord.payment_method === 'cash' && !orderRecord.is_preorder && orderRecord.erp_owner === 'built_in'
+      && ['ready', 'untracked'].includes(orderRecord.stock_fulfillment_state)
+    if (courier?.is_active && (courier.provider === 'pdc' || manualCod)) shipping = { provider: 'pdc', state: 'not_booked', awb: null, label_ready: false, events: [] }
   }
   return {
     order: normalizeAdminOrderRecord(orderRecord),

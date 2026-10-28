@@ -157,7 +157,7 @@
                   <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
                     {{ $t(`liveSales.states.${shippingDetail.state}`) }}
                   </span>
-                  <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
+                  <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking || orderDetail.status !== 'ready_to_deliver'" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
                   <button v-if="['uncertain','submitting'].includes(shippingDetail.state) && !shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('recover')">{{ $t('liveSales.recover') }}</button>
                   <button v-if="shippingDetail.awb && !shippingDetail.label_ready" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('label')">{{ $t('liveSales.label') }}</button>
                   <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
