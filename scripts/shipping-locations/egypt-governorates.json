@@ -1,0 +1,296 @@
+[
+  {
+    "code": "eg-cairo",
+    "name_en": "Cairo",
+    "name_ar": "القاهرة",
+    "checkout_name": "Cairo",
+    "aliases": [
+      "Cairo",
+      "Cairo 2"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-giza",
+    "name_en": "Giza",
+    "name_ar": "الجيزة",
+    "checkout_name": "Giza",
+    "aliases": [
+      "Giza",
+      "Giza 2"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-alexandria",
+    "name_en": "Alexandria",
+    "name_ar": "الإسكندرية",
+    "checkout_name": "Alexandria",
+    "aliases": [
+      "Alexandria",
+      "Alexandria 2"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-behaira",
+    "name_en": "Behaira",
+    "name_ar": "البحيرة",
+    "checkout_name": "Behira",
+    "aliases": [
+      "Al Behaira",
+      "Behaira",
+      "Behira"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-mounofia",
+    "name_en": "Mounofia",
+    "name_ar": "المنوفية",
+    "checkout_name": "Monufia",
+    "aliases": [
+      "Al Mounofia",
+      "Monufia",
+      "Mounofia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-gharbia",
+    "name_en": "Gharbia",
+    "name_ar": "الغربية",
+    "checkout_name": "Gharbia",
+    "aliases": [
+      "Algharbia",
+      "Gharbia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-dakhahlia",
+    "name_en": "Dakhahlia",
+    "name_ar": "الدقهلية",
+    "checkout_name": "Dakahlia",
+    "aliases": [
+      "Dakahlia",
+      "Dakhahlia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-dammitta",
+    "name_en": "Dammitta",
+    "name_ar": "دمياط",
+    "checkout_name": "Damietta",
+    "aliases": [
+      "Damietta",
+      "Dammitta"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-sharqia",
+    "name_en": "Sharqia",
+    "name_ar": "الشرقية",
+    "checkout_name": "Sharqia",
+    "aliases": [
+      "Elsharqia",
+      "Sharqia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-ismalia",
+    "name_en": "Ismalia",
+    "name_ar": "الإسماعيلية",
+    "checkout_name": "Ismailia",
+    "aliases": [
+      "Ismailia",
+      "Ismalia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-kafr-al-sheikh",
+    "name_en": "Kafr Al Sheikh",
+    "name_ar": "كفر الشيخ",
+    "checkout_name": "Kafr Alsheikh",
+    "aliases": [
+      "Kafr Al Sheikh",
+      "Kafr Alsheikh",
+      "kafr Al Sheikh"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-port-said",
+    "name_en": "Port Said",
+    "name_ar": "بورسعيد",
+    "checkout_name": "Port Said",
+    "aliases": [
+      "Port Said"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-qalyubia",
+    "name_en": "Qalyubia",
+    "name_ar": "القليوبية",
+    "checkout_name": "El Kalioubia",
+    "aliases": [
+      "El Kalioubia",
+      "Qalyubia"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-suez",
+    "name_en": "Suez",
+    "name_ar": "السويس",
+    "checkout_name": "Suez",
+    "aliases": [
+      "Suez"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-fayoum",
+    "name_en": "Fayoum",
+    "name_ar": "الفيوم",
+    "checkout_name": "Fayoum",
+    "aliases": [
+      "Alfayoum",
+      "Fayoum"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-assiut",
+    "name_en": "Assiut",
+    "name_ar": "أسيوط",
+    "checkout_name": "Assuit",
+    "aliases": [
+      "Assiut",
+      "Assuit"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-beni-suef",
+    "name_en": "Beni Suef",
+    "name_ar": "بني سويف",
+    "checkout_name": "Bani Suif",
+    "aliases": [
+      "Bani Suif",
+      "Beni Suef"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-menia",
+    "name_en": "Menia",
+    "name_ar": "المنيا",
+    "checkout_name": "Menya",
+    "aliases": [
+      "El Menia",
+      "Menia",
+      "Menya"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-aswan",
+    "name_en": "Aswan",
+    "name_ar": "أسوان",
+    "checkout_name": "Aswan",
+    "aliases": [
+      "Aswan"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-luxor",
+    "name_en": "Luxor",
+    "name_ar": "الأقصر",
+    "checkout_name": "Luxor",
+    "aliases": [
+      "Luxor"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-qena",
+    "name_en": "Qena",
+    "name_ar": "قنا",
+    "checkout_name": "Qena",
+    "aliases": [
+      "Qena"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-red-sea",
+    "name_en": "Red Sea",
+    "name_ar": "البحر الأحمر",
+    "checkout_name": "Red Sea",
+    "aliases": [
+      "Red Sea"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-sohag",
+    "name_en": "Sohag",
+    "name_ar": "سوهاج",
+    "checkout_name": "Sohag",
+    "aliases": [
+      "Sohag",
+      "Suhag",
+      "suhag"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-new-valley",
+    "name_en": "New Valley",
+    "name_ar": "الوادي الجديد",
+    "checkout_name": "New Valley",
+    "aliases": [
+      "New Valley"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-matrouh",
+    "name_en": "Matrouh",
+    "name_ar": "مطروح",
+    "checkout_name": "Matrouh",
+    "aliases": [
+      "Matrouh"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-north-sinai",
+    "name_en": "North Sinai",
+    "name_ar": "شمال سيناء",
+    "checkout_name": "North Sinai",
+    "aliases": [
+      "North Seina",
+      "North Sinai"
+    ],
+    "is_active": true
+  },
+  {
+    "code": "eg-south-sinai",
+    "name_en": "South Sinai",
+    "name_ar": "جنوب سيناء",
+    "checkout_name": "South Sinai",
+    "aliases": [
+      "South Seina",
+      "South Sinai"
+    ],
+    "is_active": true
+  }
+]

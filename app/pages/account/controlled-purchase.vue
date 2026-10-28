@@ -19,6 +19,7 @@
             {{ $t(field.label) }}
             <input v-model="address[field.key]" :type="field.type || 'text'" :autocomplete="field.autocomplete" :required="field.key !== 'last_name'" maxlength="300" class="mt-1 w-full rounded-lg border bg-transparent p-3" @input="quote = null">
           </label>
+          <AddressLocationFields :model-value="address" :disabled="busy" @update:model-value="value => { Object.assign(address, value); quote = null }" />
         </div>
         <button type="submit" :disabled="busy" class="min-h-11 rounded-lg border px-4 py-2 font-semibold disabled:opacity-50">{{ $t('controlledPurchase.review') }}</button>
         <div v-if="quote" class="space-y-3 border-t pt-4">
@@ -51,9 +52,7 @@ const addressFields = [
   { key: 'last_name', label: 'common.lastName', autocomplete: 'family-name' },
   { key: 'email', label: 'common.email', type: 'email', autocomplete: 'email' },
   { key: 'phone', label: 'common.phoneVariant2', type: 'tel', autocomplete: 'tel' },
-  { key: 'street_address', label: 'common.streetAddress', autocomplete: 'street-address' },
-  { key: 'city', label: 'common.cityVariant2', autocomplete: 'address-level2' },
-  { key: 'governorate', label: 'common.governorate', autocomplete: 'address-level1' }
+  { key: 'street_address', label: 'common.streetAddress', autocomplete: 'street-address' }
 ]
 const money = minor => new Intl.NumberFormat(locale.value === 'ar' ? 'ar-EG' : 'en-EG', { style: 'currency', currency: 'EGP' }).format(minor / 100)
 const request = async body => {

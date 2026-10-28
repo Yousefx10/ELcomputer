@@ -1,5 +1,7 @@
-import { createApp, ref, reactive, computed, watch, effectScope, onMounted, onBeforeUnmount, onScopeDispose, getCurrentInstance, nextTick, shallowRef, h, Suspense } from 'vue'
+import { createApp, ref, reactive, computed, watch, effectScope, onMounted, onBeforeUnmount, onScopeDispose, getCurrentInstance, nextTick, shallowRef, useId, h, Suspense } from 'vue'
 import Component from 'normal-purchase-page'
+import LocationFields from '../../app/components/address/LocationFields.vue'
+import LocationSelect from '../../app/components/address/LocationSearchSelect.vue'
 import { useCart } from '../../app/composables/useCart.js'
 import { usePurchaseAccess } from '../../app/composables/usePurchaseAccess.js'
 import { useCustomerIdentity } from '../../app/composables/useCustomerIdentity.js'
@@ -54,7 +56,10 @@ const supabase = {
       const count = Array.isArray(data) ? data.length : 1
       return { data: single && Array.isArray(data) ? data[0] || null : data, count: selections.head ? count : count, error: null }
     }
-    const query = { select: (_, options) => { Object.assign(selections, options); return query },
+    const query = { upsert: values => {
+      if (table !== 'customer_profiles' || values.id !== actor) throw Error('Foreign profile write')
+      window.__profileSaves ||= []; window.__profileSaves.push(structuredClone(values)); fixture.profile = { ...fixture.profile, ...values }; return query
+    }, select: (_, options) => { Object.assign(selections, options); return query },
       eq: (column, value) => { filters[column] = value; return query }, in: () => query,
       maybeSingle: () => { single = true; return query }, single: () => { single = true; return query },
       order: () => query, range: () => query, limit: () => query, abortSignal: () => query,
@@ -131,7 +136,7 @@ const request = async (path, options = {}) => {
 }
 
 Object.assign(globalThis, {
-  ref, reactive, computed, watch, effectScope, onMounted, onBeforeUnmount, onScopeDispose, getCurrentInstance, nextTick, shallowRef,
+  ref, reactive, computed, watch, effectScope, onMounted, onBeforeUnmount, onScopeDispose, getCurrentInstance, nextTick, shallowRef, useId,
   useCart, usePurchaseAccess, useCustomerIdentity, useCustomerScope, useSupportClient, useReorder, $fetch: request,
   useShipmentUpdates: () => {},
   useAccountAppearance: () => ({ data: ref({ account_dashboard_style: 'modern' }) }),
@@ -172,6 +177,8 @@ window.addEventListener('storage', event => { if (event.key === 'synthetic-auth-
 window.__cartMemory = () => ({ items: state.get('cart-items')?.value, coupon: state.get('cart-applied-coupon')?.value, owner: state.get('cart-owner')?.value })
 const app = createApp({ setup() { const identity = useCustomerIdentity(); const cart = useCart(); window.__addCartItem = item => cart.addItem(item); return () => h(Suspense, { key: identity.key.value }, { default: () => h(Component, fixture.pageProps || {}), fallback: () => h('p', 'Loading') }) } })
 nuxt.vueApp = app
+app.component('AddressLocationFields', LocationFields)
+app.component('AddressLocationSearchSelect', LocationSelect)
 app.component('Icon', { render: () => h('span') })
 app.component('NuxtLinkLocale', { props: ['to'], setup: (_, context) => () => h('a', context.slots.default?.()) })
 app.component('ClientOnly', { setup: (_, context) => () => context.slots.default?.() })

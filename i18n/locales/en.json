@@ -5672,5 +5672,33 @@
     "limitReached": "You can save up to 20 addresses.",
     "useSavedVersion": "Replace edits with saved version",
     "keepAsNew": "Keep edits as a new address"
+  },
+  "deliveryLocations": {
+    "search": "Search and select",
+    "noMatch": "No matching location. Contact us if yours is missing.",
+    "saved": "Saved location:",
+    "error": "Locations are unavailable. Try again.",
+    "invalid": "Select a current governorate and city.",
+    "loading": "Loading locations…",
+    "reload": "Retry",
+    "manage": "Delivery locations",
+    "referenceOnly": "Location data does not enable shipping or set prices.",
+    "referenceFile": "Reviewed location reference JSON",
+    "changeMode": "Change the location selection requirement",
+    "enable": "Require selected governorate and city",
+    "review": "Review reference",
+    "apply": "Apply reviewed reference",
+    "retry": "Recover the same import",
+    "pending": "An import is pending. Keep its original command.",
+    "counts": "Governorates: {governorates}. Cities: {cities}. Current revision: {revision}.",
+    "noDeletion": "Missing records are preserved. Nothing is deleted.",
+    "confirm": "Apply this reviewed location reference.",
+    "applied": "Location reference saved. Revision {revision}.",
+    "invalidFile": "Choose a valid reference JSON under 900 KB.",
+    "reviewFailed": "Could not review the reference. Check its mappings.",
+    "retainFailed": "Could not retain the import command. Nothing was submitted.",
+    "applyUncertain": "Result unconfirmed. Recover the same import command.",
+    "legacy": "Choose a supported location to change these values.",
+    "select": "Select a supported governorate and city."
   }
 }

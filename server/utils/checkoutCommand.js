@@ -48,6 +48,9 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
 
 export const throwCheckoutError = error => {
   const code = String(error?.message || '')
+  if (error?.code === '22023' && code === 'Select a supported governorate and city.') {
+    throw createError({ statusCode: 400, statusMessage: 'Select a supported governorate and city.', data: { code: 'checkout:location' } })
+  }
   const conflicts = {
     'checkout:conflict': 'This checkout changed. Review your cart before ordering.',
     'checkout:legacy': 'Review this order in My Account before ordering again.',

@@ -37,6 +37,7 @@ export const normalizeSavedAddress = value => {
 }
 export const throwSavedAddressError = error => {
   const code = error?.code
+  if (code === '22023' && error?.message === 'Select a supported governorate and city.') invalid('Select a supported governorate and city.')
   if (['40001', '23505'].includes(code)) throw createError({ statusCode: 409, statusMessage: 'Saved address changed. Reload it before saving.' })
   if (code === 'P0002') throw createError({ statusCode: 404, statusMessage: 'Saved address unavailable.' })
   if (code === '54000') throw createError({ statusCode: 409, statusMessage: 'You can save up to 20 addresses.' })

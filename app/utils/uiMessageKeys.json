@@ -3127,6 +3127,6 @@
   "Accept the special-order delivery terms.": "beta.acceptTerms",
   "Review this special order without a coupon.": "beta.noCoupon",
   "This special order is awaiting physical stock.": "beta.awaitingStock",
-  "Allocate physical stock before release.": "beta.awaitingStock"
-
+  "Allocate physical stock before release.": "beta.awaitingStock",
+  "Select a supported governorate and city.": "deliveryLocations.select"
 }

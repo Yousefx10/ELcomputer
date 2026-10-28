@@ -29,10 +29,10 @@ test('actual checkout address selection, explicit saves and private drafts', asy
   let scenario
   const fixture = locale => {
     const actorId = randomUUID(), productId = randomUUID(), variantId = randomUUID()
-    const saved = (label, phone) => ({ id: randomUUID(), revision: 1, label, first_name: label, last_name: 'Buyer', street_address: label + ' owned street', address_line_2: label + ' unit', city: 'Fixture city', governorate: 'Cairo', phone, created_at: '2026-10-28T00:00:00Z', updated_at: '2026-10-28T00:00:00Z' })
+    const saved = (label, phone) => ({ id: randomUUID(), revision: 1, label, first_name: label, last_name: 'Buyer', street_address: label + ' owned street', address_line_2: label + ' unit', city: 'Ramses', governorate: 'Cairo', phone, created_at: '2026-10-28T00:00:00Z', updated_at: '2026-10-28T00:00:00Z' })
     const home = saved('Home', '01011111111'), work = saved('Work', '01022222222')
     return { locale, messages: messages[locale], uiKeys, publicAccess: true, actorId, allowedId: actorId, productId, variantId, orderId: randomUUID(), companyId: randomUUID(), quoteId: randomUUID(), siteUrl: 'https://store.example.invalid', home, work,
-      profile: { full_name: 'Synthetic Buyer', phone: '01012345678', email: 'fixture@example.invalid', address_line_1: 'Profile owned street', address_line_2: 'Profile unit', city: 'Fixture city', state: 'Cairo' },
+      profile: { full_name: 'Synthetic Buyer', phone: '01012345678', email: 'fixture@example.invalid', address_line_1: 'Profile owned street', address_line_2: 'Profile unit', city: 'Ramses', state: 'Cairo' },
       addressesByActor: { [actorId]: [home, work] }, ordersByActor: {}, orderItems: [],
       cart: { version: 3, id: randomUUID(), revision: randomUUID(), coupon: null, items: [{ id: productId, variant_id: variantId, quantity: 1, price: 100, stock_quantity: 5, allow_out_of_stock_purchases: true, is_serialized: true, selling_mode: 'normal', title: 'Synthetic item' }] } }
   }
@@ -60,8 +60,10 @@ test('actual checkout address selection, explicit saves and private drafts', asy
     await page.getByTestId('saved-address-select').waitFor()
     await page.getByTestId('saved-address-select').selectOption('new')
     await page.locator('input[autocomplete=address-line1]').fill('New owned street')
-    await page.locator('input[autocomplete=address-level2]').fill('Fixture city')
-    await page.locator('select[autocomplete=address-level1]').selectOption('Cairo')
+    await page.getByRole('combobox').filter({ hasNot: page.locator('option') }).nth(0).fill('Cairo')
+    await page.getByRole('combobox').filter({ hasNot: page.locator('option') }).nth(0).press('Enter')
+    await page.getByRole('combobox').filter({ hasNot: page.locator('option') }).nth(1).fill('Ramses')
+    await page.getByRole('combobox').filter({ hasNot: page.locator('option') }).nth(1).press('Enter')
     await page.getByTestId('saved-address-label').fill('New owned address')
   }
   try {
@@ -114,6 +116,29 @@ test('actual checkout address selection, explicit saves and private drafts', asy
         assert.equal(await page.evaluate(() => window.__requests.some(x => ['POST', 'PUT'].includes(x.method) && x.path.includes('/addresses'))), false)
         await page.getByTestId('saved-address-select').selectOption(scenario.home.id)
         assert.match(await page.getByTestId('saved-address-summary').textContent(), /Home owned street/)
+        await check(context)
+      } finally { await page.close() }
+    })
+    for (const mode of ['single', 'none', 'legacy']) await t.test(`${mode} saved-address compatibility and dependent selection`, async () => {
+      scenario = fixture('en')
+      if (mode === 'single') scenario.addressesByActor[scenario.actorId] = [scenario.home]
+      if (mode === 'none') { scenario.addressesByActor[scenario.actorId] = []; scenario.profile = { full_name: 'New Buyer', email: 'fixture@example.invalid', phone: '01012345678' } }
+      if (mode === 'legacy') scenario.profile.city = 'Unmatched preserved locality'
+      const context = await open(390), { page } = context
+      try {
+        if (mode !== 'none') { await page.getByTestId('saved-address-summary').waitFor(); await button(page, 'common.edit').click() }
+        const fields = page.locator('input[role=combobox]')
+        await fields.nth(0).waitFor()
+        if (mode === 'legacy') { await page.getByText('Unmatched preserved locality', { exact: false }).waitFor(); await page.locator('input[autocomplete=tel]').fill('01011111111'); assert.equal(await fields.nth(1).inputValue(), '') }
+        await fields.nth(0).fill('Giza'); await fields.nth(0).press('Enter')
+        assert.equal(await fields.nth(1).inputValue(), '')
+        await fields.nth(1).fill('Ramses'); assert.equal(await page.getByRole('listbox').getByRole('option').filter({hasText:'Ramses'}).count(), 0)
+        await fields.nth(1).press('Escape'); await fields.nth(1).fill('Dokki'); await fields.nth(1).press('Enter')
+        assert.equal(await fields.nth(1).inputValue(), 'Dokki')
+        await fields.nth(0).fill('Cairo 2'); await fields.nth(0).press('Enter')
+        assert.equal(await fields.nth(1).inputValue(), '')
+        await fields.nth(1).fill('رمسيس'); await fields.nth(1).press('Enter')
+        assert.equal(await fields.nth(1).inputValue(), 'Ramses')
         await check(context)
       } finally { await page.close() }
     })
@@ -178,7 +203,7 @@ test('actual checkout address selection, explicit saves and private drafts', asy
       } finally { await page.close() }
     })
     await t.test('a different governorate invalidates the old delivery selection', async () => {
-      scenario = fixture('en'); scenario.work.governorate = 'Giza'
+      scenario = fixture('en'); scenario.work.governorate = 'Giza'; scenario.work.city = 'Dokki'
       const context = await open(390), { page } = context
       try {
         await page.getByTestId('saved-address-select').waitFor(); await page.locator('select').last().selectOption(scenario.companyId)

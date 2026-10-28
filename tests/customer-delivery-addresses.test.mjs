@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { createCodCheckoutFixture } from './helpers/codCheckoutFixture.mjs'
 import { emailNativeAvailable } from './helpers/emailNativeDatabase.mjs'
 
-const address = overrides => ({ label: 'Synthetic home', first_name: 'Synthetic', last_name: 'Buyer', street_address: 'Owned street', address_line_2: 'Owned unit', city: 'Fixture city', governorate: 'Cairo', phone: '01012345678', ...overrides })
+const address = overrides => ({ label: 'Synthetic home', first_name: 'Synthetic', last_name: 'Buyer', street_address: 'Owned street', address_line_2: 'Owned unit', city: 'Ramses', governorate: 'Cairo', phone: '01012345678', ...overrides })
 test('owned address book: actual PostgreSQL, RLS and HTTP commands', { skip: !emailNativeAvailable }, async t => {
   const f = await createCodCheckoutFixture({ routes: [
     ['get', '/api/account/addresses', 'server/api/account/addresses/index.get.js'],
@@ -71,7 +71,7 @@ test('owned address book: actual PostgreSQL, RLS and HTTP commands', { skip: !em
       }
     })
     await t.test('Arabic recipient, label and address remain intact without modifying the profile', async () => {
-      const arabicId = randomUUID(), values = address({ label: 'المنزل', first_name: 'عميل', last_name: 'تجريبي', street_address: 'شارع تجريبي', city: 'مدينة تجريبية', address_line_2: 'شقة تجريبية' })
+      const arabicId = randomUUID(), values = address({ label: 'المنزل', first_name: 'عميل', last_name: 'تجريبي', street_address: 'شارع تجريبي', city: 'رمسيس', address_line_2: 'شقة تجريبية' })
       const saved = await create({ id: arabicId, address: values })
       assert.equal(saved.response.status, 200); assert.equal(saved.body.address.street_address, values.street_address)
       assert.equal(saved.body.address.first_name, values.first_name)

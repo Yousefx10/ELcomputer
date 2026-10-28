@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { createCodCheckoutFixture } from './helpers/codCheckoutFixture.mjs'
 import { emailNativeAvailable } from './helpers/emailNativeDatabase.mjs'
@@ -8,7 +9,7 @@ import { hmacMessage } from '../server/utils/payments/paymob.js'
 
 test('ordinary checkout uses the existing scoped grant with native durable SQL and signed late receipts', { skip: !emailNativeAvailable }, async t => {
   const runtime = { paymobEnabled: false, paymobLiveRequestsEnabled: false, paymobMode: 'live', paymobCardIntegrationMode: 'live', paymobSecretKey: 'sk_live_isolated_normal', paymobPublicKey: 'pk_live_isolated_normal', paymobHmacSecret: 'isolated-normal-hmac', paymobCardIntegrationId: '12345', public: { purchasingEnabled: false, siteUrl: 'https://orchid.example.invalid' } }
-  const f = await createCodCheckoutFixture({ runtime, routes: [
+  const f = await createCodCheckoutFixture({ stopBefore: '20261029010000_customer_delivery_locations.sql', runtime, routes: [
     ['get','/api/payments/capabilities','server/api/payments/capabilities.get.js'],
     ['post','/api/payments/intentions','server/api/payments/intentions.post.js'],
     ['get','/api/payments/status','server/api/payments/status.get.js'],
@@ -38,8 +39,8 @@ test('ordinary checkout uses the existing scoped grant with native durable SQL a
     const company = (await f.db.query("insert into public.commerce_shipping_companies(name,provider,client_shipping_price,checkout_enabled,checkout_governorates) values('Isolated normal PDC','pdc',10,true,array['Cairo']) returning id")).rows[0].id
     await f.db.query("update public.shipping_provider_settings set is_enabled=true,product_id=40,origin_city_id=1,origin_address='Isolated pickup',origin_contact_name='Isolated sender',origin_phone='01000000000',access_token_encrypted='fixture',webhook_secret_encrypted='independent-fixture',cod_enabled=false,auto_create_labels=false,cities_cache='[{\"id\":1,\"name\":\"Origin\"},{\"id\":2,\"name\":\"Destination\"}]',products_cache='[{\"id\":40,\"name\":\"Fixture high value\"}]'")
     await f.db.query('delete from public.shipping_city_mappings')
-    await f.db.query("insert into public.shipping_city_mappings(provider,governorate,city,provider_city_id) values('pdc','Cairo','Fixture city',2)")
-    const address = {first_name:'Synthetic',last_name:'Buyer',email:'customer@product-save.example.invalid',phone:'01012345678',street_address:'Isolated street',address_line_2:'Isolated floor',city:'Fixture city',governorate:'Cairo'}
+    await f.db.query("insert into public.shipping_city_mappings(provider,governorate,city,provider_city_id) values('pdc','Cairo','Legacy checkout locality',2)")
+    const address = {first_name:'Synthetic',last_name:'Buyer',email:'customer@product-save.example.invalid',phone:'01012345678',street_address:'Isolated street',address_line_2:'Isolated floor',city:'Legacy checkout locality',governorate:'Cairo'}
     const fields = ['first_name','last_name','email','phone','street_address','city','governorate']
     const normalized = {...address,street_address:checkoutStreetAddress(address)}
     const grant = { enabled:true,customer_id:f.actors.customer,cart_id:randomUUID(),product_id:product,variant_id:variant,shipping_company_id:company,total_minor:11000,address_sha256:createHash('sha256').update(JSON.stringify(fields.map(k=>normalized[k]))).digest('hex'),starts_at:new Date(Date.now()-1000).toISOString(),expires_at:new Date(Date.now()+600000).toISOString(),payment_enabled:true,review_key:'44'.repeat(32) }
@@ -91,6 +92,13 @@ test('ordinary checkout uses the existing scoped grant with native durable SQL a
       assert.equal((await f.db.query('select count(*)::int n from public.commerce_serialized_units where customer_order_id=$1',[orderId])).rows[0].n,1)
       assert.deepEqual(await counts(),{orders:1,attempts:0,jobs:0});assert.equal(providerCalls,0)
     })
+    await t.test('schema102-to103 preserves the exact legacy CARD receipt and fingerprint',async()=>{
+      const before=(await f.db.query('select encode(intent_hash,\'hex\') hash from private.checkout_commands where user_id=$1',[f.actors.customer])).rows
+      await f.db.exec(await readFile(new URL('../supabase/migrations/20261029010000_customer_delivery_locations.sql',import.meta.url),'utf8'))
+      assert.equal((await post('/api/checkout',command)).body.order.id,orderId)
+      assert.deepEqual((await f.db.query('select encode(intent_hash,\'hex\') hash from private.checkout_commands where user_id=$1',[f.actors.customer])).rows,before)
+      assert.deepEqual(await counts(),{orders:1,attempts:0,jobs:0})
+    })
     await t.test('a fresh browser cart cannot create a second order under the same grant',async()=>{
       const other={...body,cart_id:randomUUID()}
       const quote=await post('/api/checkout/quote',other);assert.equal(quote.response.status,200)
@@ -129,6 +137,13 @@ test('ordinary checkout uses the existing scoped grant with native durable SQL a
       runtime.paymobEnabled=true;runtime.paymobLiveRequestsEnabled=true
       const result=await f.call('/api/payments/capabilities',{actor:null})
       assert.equal(result.body.purchase.restricted,false);assert.equal(result.body.card.available,true)
+      assert.equal(providerCalls,1)
+    })
+    await t.test('exact old recovery survives removal of the legacy saved pair',async()=>{
+      runtime.public.purchasingEnabled=false;runtime.controlledPurchase=grant
+      await f.db.query('update public.customer_profiles set city=null,state=null where id=$1',[f.actors.customer])
+      assert.equal((await post('/api/checkout',command)).body.order.id,orderId)
+      assert.deepEqual(await counts(),{orders:1,attempts:1,jobs:0})
       assert.equal(providerCalls,1)
     })
   } finally { globalThis.fetch=originalFetch;await f.close() }
