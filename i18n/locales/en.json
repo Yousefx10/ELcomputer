@@ -5649,5 +5649,28 @@
       "unable": "Check your order or contact the store before paying again.",
       "not_applicable": "Order placement does not confirm payment."
     }
+  },
+  "checkoutAddressBook": {
+    "savedAddresses": "Saved addresses",
+    "currentAddress": "Current checkout address",
+    "newAddress": "New address",
+    "loading": "Loading saved addresses…",
+    "reload": "Reload saved addresses",
+    "label": "Address name (optional)",
+    "save": "Save address",
+    "saved": "Address saved.",
+    "remove": "Remove saved address",
+    "confirmRemove": "Remove this saved address? Your order addresses stay unchanged.",
+    "confirmRemoveButton": "Remove address",
+    "removedKept": "Address removed. Your checkout details are kept.",
+    "loadFailed": "Could not load saved addresses. Please try again.",
+    "saveFailed": "Could not confirm the save. Your edits are kept.",
+    "removeFailed": "Could not confirm removal. Reload saved addresses to check.",
+    "completeAddress": "Complete your delivery address before saving.",
+    "conflict": "The saved address changed. Your edits are kept.",
+    "unavailableKept": "This saved address is unavailable. Your edits are kept.",
+    "limitReached": "You can save up to 20 addresses.",
+    "useSavedVersion": "Replace edits with saved version",
+    "keepAsNew": "Keep edits as a new address"
   }
 }

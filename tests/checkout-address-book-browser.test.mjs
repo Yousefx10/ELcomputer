@@ -1,0 +1,221 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { randomUUID } from 'node:crypto'
+import { readFile, readdir } from 'node:fs/promises'
+import { resolve, dirname } from 'node:path'
+import { createServer } from 'node:http'
+import { build } from 'esbuild'
+import { parse, compileScript } from '@vue/compiler-sfc'
+
+test('actual checkout address selection, explicit saves and private drafts', async t => {
+  const { chromium } = await import(process.env.COD_REVIEW_PLAYWRIGHT)
+  let helper = await readFile('tests/helpers/normalPurchaseBrowser.js', 'utf8')
+  helper = helper.replaceAll('value => value', 'value => fixture.uiKeys[value] ? translate(fixture.uiKeys[value]) : value')
+    .replace('payment_cash_enabled: true', 'payment_cash_enabled: false')
+    .replace('payment_bank_transfer_enabled: true, payment_instapay_enabled: true', 'payment_bank_transfer_enabled: false, payment_instapay_enabled: false')
+    .replace("name: 'Synthetic PDC', price: 10", "name: 'Synthetic manual delivery', price: 50")
+    .replace('totalAmount: 110', 'totalAmount: 150').replace('shippingFee: 10', 'shippingFee: 50')
+  const compiled = await build({ entryPoints: [resolve('tests/helpers/normalPurchaseBrowser.js')], bundle: true, write: false, format: 'iife', platform: 'browser', alias: { '~': resolve('app') },
+    define: { 'import.meta.client': 'true', 'process.env.NODE_ENV': '"test"', __VUE_OPTIONS_API__: 'true', __VUE_PROD_DEVTOOLS__: 'false', __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false' },
+    plugins: [{ name: 'address-book-browser', setup(b) {
+      b.onResolve({ filter: /^normal-purchase-page$/ }, () => ({ path: resolve('app/pages/checkout/index.vue') }))
+      b.onLoad({ filter: /normalPurchaseBrowser\.js$/ }, () => ({ contents: helper, resolveDir: resolve('tests/helpers'), loader: 'js' }))
+      b.onLoad({ filter: /\.vue$/ }, async ({ path }) => ({ contents: compileScript(parse(await readFile(path, 'utf8'), { filename: path }).descriptor, { id: path, inlineTemplate: true }).content, resolveDir: dirname(path), loader: 'js' }))
+    } }] })
+  const cssDir = process.env.CHECKOUT_REVIEW_CSS_DIR || resolve('.output/public/_nuxt')
+  const css = (await Promise.all((await readdir(cssDir)).filter(x => x.endsWith('.css')).map(x => readFile(cssDir + '/' + x, 'utf8')))).join('\n')
+  const messages = Object.fromEntries(await Promise.all(['en', 'ar'].map(async lang => [lang, JSON.parse(await readFile('i18n/locales/' + lang + '.json', 'utf8'))])))
+  const uiKeys = JSON.parse(await readFile('app/utils/uiMessageKeys.json', 'utf8'))
+  let scenario
+  const fixture = locale => {
+    const actorId = randomUUID(), productId = randomUUID(), variantId = randomUUID()
+    const saved = (label, phone) => ({ id: randomUUID(), revision: 1, label, first_name: label, last_name: 'Buyer', street_address: label + ' owned street', address_line_2: label + ' unit', city: 'Fixture city', governorate: 'Cairo', phone, created_at: '2026-10-28T00:00:00Z', updated_at: '2026-10-28T00:00:00Z' })
+    const home = saved('Home', '01011111111'), work = saved('Work', '01022222222')
+    return { locale, messages: messages[locale], uiKeys, publicAccess: true, actorId, allowedId: actorId, productId, variantId, orderId: randomUUID(), companyId: randomUUID(), quoteId: randomUUID(), siteUrl: 'https://store.example.invalid', home, work,
+      profile: { full_name: 'Synthetic Buyer', phone: '01012345678', email: 'fixture@example.invalid', address_line_1: 'Profile owned street', address_line_2: 'Profile unit', city: 'Fixture city', state: 'Cairo' },
+      addressesByActor: { [actorId]: [home, work] }, ordersByActor: {}, orderItems: [],
+      cart: { version: 3, id: randomUUID(), revision: randomUUID(), coupon: null, items: [{ id: productId, variant_id: variantId, quantity: 1, price: 100, stock_quantity: 5, allow_out_of_stock_purchases: true, is_serialized: true, selling_mode: 'normal', title: 'Synthetic item' }] } }
+  }
+  const server = createServer((req, res) => {
+    res.setHeader('content-type', req.url === '/fixture.js' ? 'text/javascript' : 'text/html;charset=utf-8')
+    res.end(req.url === '/fixture.js' ? compiled.outputFiles[0].text : '<!doctype html><html lang="' + scenario.locale + '" dir="' + (scenario.locale === 'ar' ? 'rtl' : 'ltr') + '" class="' + (scenario.dark ? 'dark' : '') + '"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>' + css + '</style></head><body><div id="app"></div><script>window.__fixture=' + JSON.stringify(scenario) + '</script><script src="/fixture.js"></script></body></html>')
+  })
+  await new Promise(r => server.listen(0, '127.0.0.1', r))
+  const origin = 'http://127.0.0.1:' + server.address().port, browser = await chromium.launch({ headless: true, channel: 'chrome' })
+  const open = async width => {
+    const page = await browser.newPage({ viewport: { width, height: 900 } }), errors = [], blocked = []
+    page.setDefaultTimeout(8000); page.on('pageerror', error => errors.push(error.message))
+    await page.route('**/*', r => r.request().url().startsWith(origin) && r.request().method() === 'GET' ? r.continue() : (blocked.push(r.request().method()), r.abort()))
+    await page.goto(origin); return { page, errors, blocked }
+  }
+  const button = (page, key) => page.getByRole('button', { name: key.split('.').reduce((v, p) => v[p], scenario.messages), exact: true })
+  const check = async ({ page, errors, blocked }) => {
+    assert.deepEqual(errors, []); assert.deepEqual(blocked, [])
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
+    const requests = await page.evaluate(() => window.__requests)
+    assert.equal(requests.filter(x => x.path === '/api/checkout' || x.path === '/api/payments/intentions').length, 0)
+    assert.equal(await page.evaluate(() => Object.values(localStorage).some(value => /Home owned street|Work owned street|Profile owned street/.test(value))), false)
+  }
+  const newDraft = async page => {
+    await page.getByTestId('saved-address-select').waitFor()
+    await page.getByTestId('saved-address-select').selectOption('new')
+    await page.locator('input[autocomplete=address-line1]').fill('New owned street')
+    await page.locator('input[autocomplete=address-level2]').fill('Fixture city')
+    await page.locator('select[autocomplete=address-level1]').selectOption('Cairo')
+    await page.getByTestId('saved-address-label').fill('New owned address')
+  }
+  try {
+    for (const locale of ['en', 'ar']) for (const width of [1440, 390]) for (const dark of [false, true]) await t.test(`${locale} ${width} ${dark ? 'dark' : 'light'} owned selection, draft, save and removal preserve CARD/Manual50`, async () => {
+      scenario = { ...fixture(locale), dark }; const context = await open(width), { page } = context
+      try {
+        const select = page.getByTestId('saved-address-select'), summary = page.getByTestId('saved-address-summary')
+        await select.waitFor(); assert.match(await summary.textContent(), /Profile owned street/)
+        await select.selectOption(scenario.home.id); assert.match(await summary.textContent(), /Home owned street/)
+        assert.match(await summary.textContent(), /01011111111/)
+        await button(page, 'common.edit').click(); await page.locator('input[autocomplete=address-line1]').fill('Home revised draft')
+        await page.getByTestId('saved-address-label').fill('Revised home')
+        await select.selectOption(scenario.work.id); assert.match(await summary.textContent(), /Work owned street/)
+        await select.selectOption(scenario.home.id)
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'Home revised draft')
+        assert.equal(await page.getByTestId('saved-address-label').inputValue(), 'Revised home')
+        await page.locator('select').last().selectOption(scenario.companyId)
+        await button(page, 'checkoutAddressBook.save').click(); await page.getByText(scenario.messages.checkoutAddressBook.saved, { exact: true }).waitFor()
+        assert.match(await summary.textContent(), /Home revised draft/)
+        assert.equal(await select.inputValue(), scenario.home.id)
+        assert.equal(await page.locator('select').last().inputValue(), scenario.companyId)
+        await button(page, 'common.edit').click(); await button(page, 'checkoutAddressBook.remove').click()
+        assert.equal(await page.evaluate(() => window.__requests.filter(x => x.method === 'DELETE').length), 0)
+        await button(page, 'common.cancel').click(); await button(page, 'checkoutAddressBook.remove').click()
+        await button(page, 'checkoutAddressBook.confirmRemoveButton').click()
+        await page.getByText(scenario.messages.checkoutAddressBook.removedKept, { exact: true }).waitFor()
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'Home revised draft')
+        assert.equal(await select.inputValue(), 'new')
+        await button(page, 'common.continueToPayment').click()
+        await page.getByRole('heading', { name: scenario.messages.common.paymentMethod, exact: true }).waitFor()
+        assert.equal(await page.locator('input[name=payment-method]').count(), 1)
+        assert.equal(await page.locator('input[value=card]').count(), 1)
+        const requests = await page.evaluate(() => window.__requests)
+        const quote = requests.filter(x => x.path === '/api/checkout/quote').at(-1)
+        assert.equal(quote.body.shipping_company_id, scenario.companyId)
+        assert.equal(quote.body.address.street_address, 'Home revised draft')
+        assert.equal(quote.body.payment_method, 'card')
+        assert.equal(await page.locator('html').getAttribute('dir'), locale === 'ar' ? 'rtl' : 'ltr')
+        await check(context)
+      } finally { await page.close() }
+    })
+    for (const locale of ['en', 'ar']) await t.test(`${locale} incomplete profile stays expanded and can select a complete owned address`, async () => {
+      scenario = fixture(locale); scenario.profile.phone = ''; scenario.profile.address_line_1 = ''
+      const context = await open(390), { page } = context
+      try {
+        await page.getByTestId('saved-address-select').waitFor(); assert.equal(await page.locator('#checkout-address-fields').isVisible(), true)
+        assert.equal(await page.getByTestId('saved-address-summary').count(), 0)
+        await button(page, 'checkoutAddressBook.save').click()
+        await page.getByText(scenario.messages.checkoutAddressBook.completeAddress, { exact: true }).waitFor()
+        assert.equal(await page.evaluate(() => window.__requests.some(x => ['POST', 'PUT'].includes(x.method) && x.path.includes('/addresses'))), false)
+        await page.getByTestId('saved-address-select').selectOption(scenario.home.id)
+        assert.match(await page.getByTestId('saved-address-summary').textContent(), /Home owned street/)
+        await check(context)
+      } finally { await page.close() }
+    })
+    await t.test('failed list remains an error; retry restores owned choices', async () => {
+      scenario = fixture('en'); scenario.holdPaths = ['/api/account/addresses']
+      const context = await open(390), { page } = context
+      try {
+        await page.getByText(scenario.messages.checkoutAddressBook.loading, { exact: true }).waitFor()
+        await page.evaluate(() => { window.__addressControls.listFailure = true; window.__release('/api/account/addresses') })
+        await page.getByText(scenario.messages.checkoutAddressBook.loadFailed, { exact: true }).waitFor()
+        assert.match(await page.getByTestId('saved-address-summary').textContent(), /Profile owned street/)
+        await page.evaluate(() => { window.__addressControls.listFailure = false })
+        await button(page, 'checkoutAddressBook.reload').click(); await page.getByTestId('saved-address-select').waitFor()
+        await check(context)
+      } finally { await page.close() }
+    })
+    await t.test('lost save acknowledgement retains drafts and retries the same creation ID explicitly', async () => {
+      scenario = fixture('en'); const context = await open(390), { page } = context
+      try {
+        await newDraft(page); await page.evaluate(() => { window.__addressControls.loseSaveOnce = true })
+        await button(page, 'checkoutAddressBook.save').click(); await page.getByText(scenario.messages.checkoutAddressBook.saveFailed, { exact: true }).waitFor()
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'New owned street')
+        await page.waitForTimeout(100)
+        assert.equal(await page.evaluate(() => window.__requests.filter(x => x.path === '/api/account/addresses' && x.method === 'POST').length), 1)
+        await button(page, 'checkoutAddressBook.save').click(); await page.getByText(scenario.messages.checkoutAddressBook.saved, { exact: true }).waitFor()
+        const creates = await page.evaluate(() => window.__requests.filter(x => x.method === 'POST' && x.path === '/api/account/addresses'))
+        assert.equal(creates.length, 2); assert.equal(creates[0].body.id, creates[1].body.id)
+        assert.equal(await page.evaluate(id => window.__savedAddresses[id].filter(x => x.street_address === 'New owned street').length, scenario.actorId), 1)
+        await check(context)
+      } finally { await page.close() }
+    })
+    await t.test('revision conflict retains edits; explicit saved-version review loads the current revision', async () => {
+      scenario = fixture('en'); const context = await open(390), { page } = context
+      try {
+        await page.getByTestId('saved-address-select').selectOption(scenario.home.id); await button(page, 'common.edit').click()
+        await page.locator('input[autocomplete=address-line1]').fill('Unsaved retained edit')
+        await page.evaluate(() => { window.__addressControls.conflictOnce = true })
+        await button(page, 'checkoutAddressBook.save').click(); await page.getByText(scenario.messages.checkoutAddressBook.conflict, { exact: true }).waitFor()
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'Unsaved retained edit')
+        await button(page, 'checkoutAddressBook.reload').click()
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'Unsaved retained edit')
+        await button(page, 'checkoutAddressBook.useSavedVersion').click()
+        await page.waitForFunction(() => document.querySelector('input[autocomplete=address-line1]').value === 'Remotely updated owned street')
+        await page.locator('input[autocomplete=address-line1]').fill('Reviewed owned edit')
+        await button(page, 'checkoutAddressBook.save').click(); await page.getByText(scenario.messages.checkoutAddressBook.saved, { exact: true }).waitFor()
+        const puts = await page.evaluate(() => window.__requests.filter(x => x.method === 'PUT'))
+        assert.equal(puts.length, 2); assert.equal(puts[0].body.revision, 1); assert.equal(puts[1].body.revision, 2)
+        await check(context)
+      } finally { await page.close() }
+    })
+    await t.test('uncertain removal reload keeps the current checkout draft', async () => {
+      scenario = fixture('en'); const context = await open(390), { page } = context
+      try {
+        await page.getByTestId('saved-address-select').selectOption(scenario.work.id); await button(page, 'common.edit').click()
+        await button(page, 'checkoutAddressBook.remove').click(); await page.evaluate(() => { window.__addressControls.loseRemoveOnce = true })
+        await button(page, 'checkoutAddressBook.confirmRemoveButton').click(); await page.getByText(scenario.messages.checkoutAddressBook.removeFailed, { exact: true }).waitFor()
+        await button(page, 'checkoutAddressBook.reload').click()
+        await page.getByText(scenario.messages.checkoutAddressBook.unavailableKept, { exact: true }).waitFor()
+        assert.equal(await page.getByTestId('saved-address-select').inputValue(), 'new')
+        assert.equal(await page.locator('input[autocomplete=address-line1]').inputValue(), 'Work owned street')
+        await check(context)
+      } finally { await page.close() }
+    })
+    await t.test('a different governorate invalidates the old delivery selection', async () => {
+      scenario = fixture('en'); scenario.work.governorate = 'Giza'
+      const context = await open(390), { page } = context
+      try {
+        await page.getByTestId('saved-address-select').waitFor(); await page.locator('select').last().selectOption(scenario.companyId)
+        await page.getByTestId('saved-address-select').selectOption(scenario.work.id)
+        assert.equal(await page.locator('select').last().inputValue(), '')
+        await button(page, 'common.continueToPayment').click()
+        assert.equal(await page.getByRole('heading', { name: scenario.messages.common.paymentMethod, exact: true }).count(), 0)
+        await check(context)
+      } finally { await page.close() }
+    })
+    for (const pending of ['list', 'save']) await t.test(`account switch clears private rows and drafts during a pending ${pending}`, async () => {
+      scenario = fixture('en'); const second = randomUUID()
+      scenario.profiles = { [scenario.actorId]: scenario.profile, [second]: { ...scenario.profile, full_name: 'Second Buyer', address_line_1: 'Second owned street' } }
+      scenario.addressesByActor[second] = [{ ...scenario.work, id: randomUUID(), label: 'Second private address', street_address: 'Second private street' }]
+      scenario.holdPaths = ['profile:' + second, ...(pending === 'list' ? ['/api/account/addresses'] : [])]
+      const context = await open(390), { page } = context
+      try {
+        if (pending === 'list') await page.getByText(scenario.messages.checkoutAddressBook.loading, { exact: true }).waitFor()
+        else {
+          await newDraft(page); await page.evaluate(() => window.__holdPath('/api/account/addresses'))
+          await button(page, 'checkoutAddressBook.save').click()
+          await page.waitForFunction(() => window.__requests.some(x => x.path === '/api/account/addresses' && x.method === 'POST'))
+        }
+        await page.evaluate(({ id, cart }) => {
+          localStorage.setItem(window.__cartKey(id), JSON.stringify({ ...cart, id: crypto.randomUUID(), revision: crypto.randomUUID(), owner: 'account:' + id }))
+          window.__switchAccount(id)
+        }, { id: second, cart: scenario.cart })
+        await page.getByText(scenario.messages.common.loadingAccount, { exact: true }).waitFor()
+        assert.equal(await page.getByTestId('saved-address-select').count(), 0)
+        assert.equal(await page.getByText('Home owned street', { exact: true }).count(), 0)
+        await page.evaluate(id => { window.__release('/api/account/addresses'); window.__release('profile:' + id) }, second)
+        await page.getByTestId('saved-address-select').waitFor()
+        const options = await page.getByTestId('saved-address-select').textContent()
+        assert.match(options, /Second private address/); assert.doesNotMatch(options, /Home owned street|New owned address/)
+        assert.match(await page.getByTestId('saved-address-summary').textContent(), /Second owned street/)
+        await check(context)
+      } finally { await page.close() }
+    })
+  } finally { await browser.close(); await new Promise(r => server.close(r)) }
+})

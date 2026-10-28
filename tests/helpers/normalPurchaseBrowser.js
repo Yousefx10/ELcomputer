@@ -24,6 +24,9 @@ const translate = (key, values = {}) => {
 const session = () => fixture.actorId ? { access_token: 'synthetic-' + fixture.actorId, user: { id: fixture.actorId } } : null
 const sessionState = ref(session())
 const holds = new Map()
+const savedAddresses = structuredClone(fixture.addressesByActor || { [fixture.actorId]: [] })
+window.__savedAddresses = savedAddresses
+window.__addressControls = { listFailure: false, saveFailureOnce: false, loseSaveOnce: false, loseRemoveOnce: false, conflictOnce: false }
 window.__hold = key => { let done; const promise = new Promise(resolve => { done = resolve }); holds.set(key, promise); return () => { done(); holds.delete(key) } }
 window.__release = key => window.__releases?.[key]?.()
 window.__holdPath = key => { window.__releases ||= {}; window.__releases[key] = window.__hold(key) }
@@ -62,6 +65,35 @@ const supabase = {
 const request = async (path, options = {}) => {
   window.__requests.push({ path, method: options.method || 'GET', body: options.body === undefined ? undefined : JSON.parse(JSON.stringify(options.body)), retry: options.retry })
   await holds.get(path)
+  if (path === '/api/account/addresses' || path.startsWith('/api/account/addresses/')) {
+    const actor = options.headers?.authorization?.replace('Bearer synthetic-', '')
+    if (!actor) throw Object.assign(Error('Synthetic session unavailable'), { statusCode: 401 })
+    const rows = savedAddresses[actor] ||= [], controls = window.__addressControls
+    const failed = statusCode => Object.assign(Error('Synthetic address request failed'), { statusCode })
+    const method = options.method || 'GET'
+    if (method === 'GET') { if (controls.listFailure) throw failed(503); return { addresses: structuredClone(rows), limit: 20 } }
+    if (options.retry !== 0) throw Error('Address writes must not retry automatically')
+    if (controls.saveFailureOnce) { controls.saveFailureOnce = false; throw failed(503) }
+    const id = method === 'POST' ? options.body.id : path.split('/').at(-1)
+    const index = rows.findIndex(row => row.id === id), previous = rows[index]
+    if (method === 'DELETE') {
+      if (!previous) throw failed(404)
+      if (previous.revision !== options.body.revision) throw failed(409)
+      rows.splice(index, 1)
+      if (controls.loseRemoveOnce) { controls.loseRemoveOnce = false; throw failed(503) }
+      return { id, deleted: true }
+    }
+    const address = Object.fromEntries(Object.entries(options.body.address).map(([key, value]) => [key, value.trim()]))
+    if (controls.conflictOnce && previous) { previous.revision++; previous.street_address = 'Remotely updated owned street'; controls.conflictOnce = false; throw failed(409) }
+    if (previous && Object.keys(address).every(key => previous[key] === address[key])) return { address: structuredClone(previous) }
+    if (previous && (method === 'POST' || previous.revision !== options.body.revision)) throw failed(409)
+    if (!previous && method !== 'POST') throw failed(404)
+    const row = { ...address, id, revision: previous ? previous.revision + 1 : 1, created_at: previous?.created_at || new Date().toISOString(), updated_at: new Date().toISOString() }
+    if (previous) rows[index] = row
+    else rows.push(row)
+    if (controls.loseSaveOnce) { controls.loseSaveOnce = false; throw failed(503) }
+    return { address: structuredClone(row) }
+  }
   if (path === '/api/payments/capabilities') {
     if (fixture.publicAccess) return { card: { available: true, initiationAvailable: true, mode: 'live' }, purchase: { available: true, restricted: false } }
     if (options.headers?.authorization !== 'Bearer synthetic-' + fixture.allowedId) return { card: { available: false }, purchase: { available: false } }
