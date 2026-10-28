@@ -1,68 +1,141 @@
-Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) before substantial work.
-Current priority: email acceptance, customer migration, public signup, paid Beta.
-See [the local migration milestone](docs/customer-migration-release.md).
+> 2026-10-28 E116: Codex2 takeover verified42a61d03f3aba831/schema98 and MON active. COD implementation65eed27 is LOCAL PASS only; zero eligible recorded stock, Manual collection scope and sealed deployment/acceptance remain blockers. [COD review](docs/manual-cod-preparation-review.md). New queue: COD → emails → saved address → checkout/profile locations → navbar → Paymob → PDC → SEO → deferred work. No deployment or activation.
 
-# Public beta preparation — blocked
+> 2026-10-28 E115: Homepage direct Add to Cart DEPLOYED on42a61d03f3aba831/schema98; hosted postflight PASS, owner acceptance pending. Exactly1 app restart; CARD/Manual50/MON/kill1 preserved. Approval consumed. [Receipt](docs/homepage-direct-cart-receipt.md). Safe COD preparation is next, independent from Inquiry.
 
-[The local beta candidate](docs/beta-launch-candidate.md) preserves the deployed
-session/PDC baseline. Signup, purchasing and deployment remain approval-gated.
-PDC/EGP50, truthful backorders, cancellation and manual refunds are prepared.
-The official city file, Auth email controls and merchant refund access remain pending.
+> 2026-10-28 E114: Homepage direct Add to Cart LOCAL/PREFLIGHT PASS; candidate42a61d03f3aba831/schema98 awaits separate approval. Production acfc97 remains unchanged. One app restart if approved; MON/CARD/Manual50/kill1 preserved. [Review](docs/homepage-direct-cart-review.md), [approval](docs/homepage-direct-cart-approval.md).
 
-# Consolidated customer-session deployment PASS — 24 October 2026
+> 2026-10-28 E112: Merchant authentication PASS. Full-history inquiry BLOCKED at the first paid-control history-array guard; both approvals consumed. Unpaid outcomes stay UNVERIFIED. No restart or payment-state change. [Stop receipt](docs/paymob-merchant-inquiry-history-stop-receipt.md), [contract request draft](docs/paymob-merchant-history-contract-request.md).
 
-The exact approved release `58e3083f4aa6a1f8` is deployed, schema 91.
-Approval `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e` is consumed; do not rerun it.
-One `storefront` restart changed PID 31273 → 32102.
-Private candidate qualification, fresh encrypted execution backups/full readback
-and protected database/schema/security/runtime/media/incident checks passed.
-Caddy and credentials are unchanged. PDC User-Agent/status-date fixes remain.
-All purchasing/signup/provider gates stay closed; no PDC request or payment ran.
+> 2026-10-28 E111: Inquiry stopped safely at authentication HTTP201; original approval consumed. Auth201-only correction LOCAL25/PREFLIGHT PASS; fresh approval required. No payment/order changes or app restart. [Stop receipt](docs/paymob-merchant-inquiry-stop-receipt.md), [fresh review](docs/paymob-merchant-inquiry-auth201-review.md).
 
-Hosted public smoke passed: 8 HTTP checks, 37 asset hashes, 3 browser checks and
-4 protected-route observations. Account A exists; no second Auth identity exists.
-[Hosted acceptance and Test B requirements](customer-session-hosted-acceptance.md)
-are prepared. B creation and authenticated A→B acceptance remain pending approval
-and secure sessions. No identity or authentication email was created or sent.
+> 2026-10-28 E110: Merchant key storage metadata PASS; read-only Inquiry packet READY for separate approval. Provider authentication/history untested. No restart/deployment/Pay Again. See [scoped review](docs/paymob-merchant-inquiry-qualification-review.md) and [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
 
-Private authoritative receipt:
-`../customer-session-consolidated-20261024/DEPLOYMENT-RECEIPT.json`.
-The sealed approval packet below is retained unchanged as historical evidence.
+# Merchant API Key owner entry ready — E109, 28 October 2026
 
-# Current customer-session release
+[Use the private SSH entry instructions](docs/paymob-merchant-key-private-entry.md).
+The key file is not yet stored. Inquiry remains held until separate approval.
+No production settings changed or app restart occurred. Production acfc97/schema98.
 
-The [consolidated release](docs/customer-session-consolidated-release.md) is sealed.
-It preserves the PDC corrections deployed in `2573cdf1504bf559`.
-The earlier session artifact is obsolete. Deployment awaits exact new approval.
-Public commerce remains held; hosted isolation acceptance follows deployment.
+# Scoped owner acceptance and Inquiry preparation — E108, 28 October 2026
 
-# Phase1 session isolation prepared
+MON-01 operation and observed unpaid wording are owner-accepted.
+CARD-field rendering/payment/retry/email delivery are not accepted by that report.
+[Merchant Inquiry setup](docs/paymob-merchant-inquiry-setup.md) and the
+[recovery design](docs/paymob-inquiry-pay-again-design.md) are prepared.
+The separate API Key is not configured. No production change or approval issued.
+Production remains acfc97b72fe85237/schema98; MON active, PDC paused, kill budget1.
 
-The [combined session-isolation release](docs/customer-session-release.md) is sealed.
-[Account, Cart and Checkout isolation](docs/customer-session-isolation.md) passes local qualification.
-Deployment awaits exact owner approval. Public commerce stays closed; PDC stays paused.
+# CX-PAY-01 first fix deployed — E106, 28 October 2026
 
-# Current priority: public customer purchasing
+[Technical postflight passed](docs/customer-payment-first-fix-receipt.md).
+Production is acfc97b72fe85237/schema98. Exactly one app restart completed.
+MON-01 stayed active; its03:50 automatic report passed. CARD/Manual EGP50/signup
+remain available; PDC paused, COD/email off. Both unpaid exceptions remain
+provider-unverified. Full Pay Again and email delivery stay held.
+Customer acceptance is pending. Approval consumed; never replay it.
+The dated entries below are historical.
 
-PDC work is paused until explicit owner resumption.
-See the [focused commerce readiness assessment](docs/public-commerce-readiness.md).
-The first account/profile isolation fix is local; public purchasing remains closed.
+# MON-01 automatic payment monitoring active - E103, 28 October 2026
+
+The [final timer completion](docs/mon01-final-timer-completion-receipt.md) passed.
+The existing five-minute timer is active; two automatic reports verified.
+Production remains b4b502a03207713a/schema98; zero additional app restarts.
+Alerts are Dashboard-first; email OFF. Keep staffed Dashboard/fulfillment coverage.
+Both2649 and3149 provider outcomes remain UNVERIFIED. Kill budget1; PDC PAUSED.
+Owner Dashboard observation is pending. All execution approvals are consumed.
+
+# MON-01 observer corrected; final timer approval ready - E102, 28 October 2026
+
+The [final timer review](docs/mon01-final-timer-completion-review.md) is ready.
+27 focused checks and read-only host qualification pass. No approval or activation.
+Production remains b4b502a03207713a/schema98; zero app restarts required.
+Timer disabled; keep staffed15-minute payment checks. New pending2649 remains
+provider-unverified. CARD/Manual50/signup LIVE; PDC PAUSED; email OFF.
+
+# MON-01 observer stop; timer disabled - E101, 28 October 2026
+
+The [timer completion was consumed](docs/mon01-timer-completion-stop-receipt.md).
+One scheduled worker succeeded; its observer failed and disabled the timer once.
+Production remains b4b502a03207713a/schema98; zero additional app restarts.
+Keep staffed15-minute monitoring. Never replay any consumed operator.
+CARD/signup/Manual EGP50 remain available; PDC PAUSED; email OFF.
+
+# MON-01 timer completion ready for separate approval - E100, 28 October 2026
+
+The [existing-timer completion](docs/mon01-timer-completion-review.md) is prepared.
+No approval or activation exists. Production remains b4b502a03207713a/schema98.
+Zero app restarts are proposed; keep staffed15-minute payment monitoring.
+The original installer and journal recovery are consumed. Never replay them.
+
+# MON-01 partial deployment; timer completion blocked - E99, 28 October 2026
+
+Current production is `b4b502a03207713a`, schema98. Public CARD Beta remains live.
+The [recovery stopped after cutover](docs/mon01-journal-recovery-stop-receipt.md).
+One app restart was consumed; timer remains disabled. Never replay recovery.
+Staffed monitoring is still required; the original emergency-close budget remains1.
+Email OFF; signup OPEN; Manual EGP50; PDC PAUSED. Deferred tests remain open.
+Earlier dated production/readiness summaries below are historical.
+
+# Public CARD Beta ACTIVE — E90, 27 October2026
+
+[Activation verified](docs/public-card-beta-activation-receipt.md): public CARD checkout
+and owner-managed Manual EGP50 are OPEN. Signup OPEN; PDC PAUSED; coupons disabled.
+Currenta402/schema98 unchanged. Staff payment checks every15min; one approved
+emergency kill remains available. DTR-33 and all other deferred work remain open.
+The dated milestones below are historical.
+
+# Current purchasing status — E89, 27 October 2026
+
+The [genuine EGP5 payment](docs/egp5-genuine-payment-verification.md) is VERIFIED.
+The restricted grant is CLOSED; callbacks and owned receipts remain available.
+[Public CARD Beta](docs/public-card-beta-activation-review.md) is ready for separate approval.
+Signup OPEN; purchasing OFF; PDC PAUSED. Currenta402/schema98.
+DTR-33 records the browser discrepancy; all original32 rows remain intact.
+The milestones below are retained as dated history.
 
 # Reusable ecommerce platform
-
-The [fresh PDC V6 documentation review](docs/pdc-v6-integration-review.md) and
-[field checklist](docs/pdc-v6-contract-checklist.md) supersede historical API-success
-inferences. The owner confirms WordPress shipments were managed manually.
-The first automated booking remains uncertain after two upstream HTTP500s.
-88 offline checks pass; no provider call, production change or runtime patch ran.
-PDC must reconcile the original reference before another live operation.
 
 Each business supplies its own branding, domains and configuration.
 Follow [AGENTS.md](AGENTS.md) before changing the project.
 
-Use [PROJECT_STATE.md](PROJECT_STATE.md) for current verified status.
-Use [CODEX_HANDOFF.md](CODEX_HANDOFF.md) when switching Codex accounts.
-Historical entries describe earlier targets and are not execution instructions.
+**Public customer signup is OPEN; public purchasing is disabled.**
+[Signup activation](docs/public-signup-activation-receipt.md) passed2026-10-26;
+email confirmation and accepted Turnstile/Brevo controls remain. Do not repeat
+accepted signup, CAPTCHA, login/recovery or owner-payment tests.
+
+Start with [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md),
+[PROJECT_STATE.md](PROJECT_STATE.md) and [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
+Use the [consolidated deferred-test register](docs/DEFERRED_TEST_REGISTER.md) for
+uncompleted acceptance. Deferral does not waive later completion.
+
+Current production is `a402cf24a9685e0d`, schema98.
+The [PDP/cart repair deployed](docs/pdp-cart-repair-deployment-receipt.md) with one app restart.
+Its approval is consumed. The original EGP5 window expired at14:21:33 Riyadh,27 October.
+The [restricted EGP5 window](docs/egp5-purchase-window-activation-receipt.md) expired
+at **15:59:04 Riyadh,27 October2026**. Genuine owner acceptance is pending.
+[Exposed-session revocation](docs/session-exposure-checkout-receipt.md) is verified.
+The [secure EGP5 window](docs/egp5-secure-checkout-window-activation-receipt.md) is ACTIVE until **17:50:56 Riyadh,27 October2026**.
+Activation is consumed; authorized runtime-only closure remains pending.
+The owner [reported a checkout rejection](docs/egp5-checkout-rejection-review.md); diagnosis is pending the browser request.
+FRE5 remains unchanged. Public purchasing stays disabled.
+The prior EGP50 grant is closed. Public purchasing remains disabled.
+Password recovery remains owner-accepted.
+The earlier [schema95 stop](docs/schema95-deployment-stop-receipt.md) and
+[asset recovery](docs/schema95-asset-recovery-review.md) are historical evidence.
+Never replay schema95 or a consumed operator. Offline
+[location reference/selectors](docs/pdc-location-reference-review.md) are a separate
+local96 branch, with no PDC API calls or provider activation. PDC remains PAUSED.
+The [historical import](docs/customer-history-import-receipt.md) remains accepted;
+identity linkage is verified and explicit, never based on unverified email.
+
+Before account switching or Git integration, read the
+[Git/worktree audit](docs/GIT_WORKTREE_SYNC_AUDIT.md). Main is the continuity
+checkout with91 migrations; it is not the full release source. Preserve all
+worktrees and both accounts' commits. No automatic merge, rebase, cleanup or push.
+The roadmap retains89 tasks and adds LOC-01 for90.
+
+The release summaries below are dated historical evidence, not current activation
+instructions. Public signup is already open; commerce/provider approvals are separate.
 
 The [Shipping Company tariff manager](docs/shipping-tariffs.md) is
 [deployed](docs/shipping-tariff-deployment-receipt.md) as `08b45ffac0e524c8`, schema91.

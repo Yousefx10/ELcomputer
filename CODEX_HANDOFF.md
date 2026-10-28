@@ -1,3 +1,3169 @@
+# E116 — Codex2 takeover; COD LOCAL PASS; owner queue replaced — 2026-10-28
+
+- Read AGENTS/README/current roadmap and both handoffs. Audited25 worktrees,
+  main6cfaadc, deployed-source d69d68d and Codex1 pending files. No prior work
+  overwritten/discarded; additive26th worktree `../cod-preparation-20261028/source`
+  on `local/cod-preparation-20261028`, implementation **65eed27** from deployed d69.
+- Fresh read-only16:19Riyadh confirms **42a61d03f3aba831/schema98**, CARD/Manual50
+  live, MON enabled/active/waiting with16:15 report/WARNING3 and original kill1.
+  CX-CART-01 hosted PASS/37 direct-add; owner acceptance pending. SignupOPEN;
+  couponsOFF/PDCpaused/PayAgainOFF/application-emailOFF preserved.
+- COD remains OFF through the Beta CARD-only gate, although Dashboard cash toggle
+  is alreadyTRUE/fee0. Recorded stock is absent: **0 of223 published normal products
+  meet the positive recorded-stock/active-warehouse gate**. Do not invent stock.
+- **CX-COD-01 LOCAL IMPLEMENTATION PASS / NOT DEPLOYED / NOT ACTIVATION READY.**
+  Optional runtime methods defaultCARD; new defaultFALSE Manual-only cash capability,
+  existing Dashboard settings/shipping checkbox; locked SQL eligibility/coverage/
+  inventory/confirmed ownership; truthful Placed/Awaiting COD collection and reused
+  immutable cash/Treasury ledger. No Paymob charge for cash. Existing CARD safeguards
+  retained. Unfulfilled unpaid COD cancellation now returns original stock once;
+  collected/shipped/packed/uncertain cases require review. No untracked COD allowance.
+- One new migration `20261028170000_manual_cod_eligibility.sql` only; original98
+  and separate location migration/source unchanged. Migration-first/app-second
+  release required; no SQL execution or deployment occurred. Existing receipts
+  retain recovery under disabled cash/delivery flags. No payment-method-change route.
+- Focused runs49 PASS, cash/CARD/monitor regressions62 PASS, final additional32 PASS
+  (overlapping; native PostgreSQL17.11 + fixture Auth/transport; actual Vue browsers).
+  EN/AR desktop1440/mobile390/light/dark/RTL checkout+confirmation and CARD-only Beta
+  passed; typecheck/build/diff PASS. Hosted COD/physical cash acceptance NOT exercised.
+  [Review and activation blockers](docs/manual-cod-preparation-review.md).
+- Exact owner work order supersedes E113–115: **1 COD;2 transactional emails;
+  3 collapsed saved checkout address;4 LOC-01 validated offline selectors at checkout
+  AND profile;5 navbar username;6 Paymob inquiry/retry/method changes/abandonment;
+  7 PDC creation/configuration/tracking/operations;8 MIG-04 SEO/GSC/redirects/sitemap/
+  canonical/404;9 admin/WooCommerce data migration/STOR-01/other deferred work.**
+  One feature at a time. Tasks2–5 do not wait for Merchant Inquiry. After1–5,
+  Paymob/PDC become immediate top integrations. No new inquiry now.
+- Preserve successful payments, unpaid2649/3149 provider-UNVERIFIED, Merchant API Key/
+  inquiry evidence, original PDC dispatch barrier, MON/kill, DTR-33/STOR-01/all deferred
+  tests/location-reference/frozen sources. No email delivery assumed. Zero production
+  writes/restarts/provider calls/emails/activation/Git pushes. Consumed operators stay
+  consumed. Current main application differs from active lineage; use the COD branch.
+- NEXT: owner identifies genuine received COD stock and confirms Manual collection
+  responsibility/coverage/fees. No exact approval packet is issued. A fresh sealed
+  inactive migration/app deployment packet is still required; deployment and later
+  controlled-order/public COD activation each need separate exact approval. Do not
+  start another feature or silently weaken stock to make an acceptance order possible.
+
+---
+
+# E115 — Homepage direct Add to Cart DEPLOYED; hosted postflight PASS — 2026-10-28
+
+- Owner exact babea828… approval executed ONCE and is CONSUMED COMPLETE. Current
+  **42a61d03f3aba831/schema98**, source d69d68d from deployedbb21a16. Cutover
+  15:32:55Riyadh; exactly1 ordinary app restart, PID66270. Caddy26652 unchanged.
+  [Deployment receipt](docs/homepage-direct-cart-receipt.md). New independent real
+  approval/intent/switched/verification/completion receipts exist; never replay.
+- **HOSTED POSTFLIGHT PASS; OWNER ACCEPTANCE PENDING.** EN/AR desktop1440/mobile390:
+  37 Add/3preorder among40 cards; real active variant selected, double click qty1,
+  local anonymous cart survives reload, RTL/responsive/page errors0. Genuine
+  multi-configuration listing retains Options in EN/AR. No real order/payment or
+  account write; business-write requests blocked, browser-local baskets only.
+- Scoped privacy/entry checks PASS: CARD/card-only methods available, Manual50,
+  signup entry200, anonymous EN/AR checkout302/login, monitor401, unsigned callback403.
+  Existing signed callback/server purchase/stock/ownership authority unchanged.
+  Critical payment mismatch/unreconciled/duplicate/ownership0; overdue-unverified2.
+- MON remains enabled/active/waiting; automatic reports after cutover15:40/15:50,
+  fresh final inspection15:54; worker success/exit0/report0640/email OFF,3warnings.
+  Typed D-Bus next-trigger proof; no timer/worker lifecycle or config change, no
+  history/dedup/report permission reset. Original emergency kill budget1 unused,
+  rebound to new release and callbacks retained. No extra app restart.
+- Full3452-entry deployed inventory/certificate/fixed runtime/unit/Caddy checks
+  PASS;2373 retained hashed assets preserved,131 HTTP asset samples exact. No SQL,
+  stock, migrations/RLS, Caddy/runtime/unit/credentials/Auth SMTP edit, provider
+  call/inquiry, customer email, COD/Pay Again/PDC activation or Git push.
+- Local postflight observer corrected a dynamic label locator and used an ordinary
+  shorter product query after a full-title wait; no deployed source change/restart.
+  No general full-title-search acceptance or cause inferred. Final6 scenarios PASS.
+  Prior67 local checks/typecheck/build retained; native concurrency unexercised.
+- Inquiry evidence/contract draft unchanged;2649/3149 outcomes UNVERIFIED. Paid
+  orders/fulfillment backlog retained. COD OFF, PDC PAUSED, email OFF, Pay Again OFF.
+  Original32/DTR-33/STOR-01/full deferred register, frozen135/location work and all
+  prior worktrees preserved. New source is the active lineage; do not deploy main36.
+- NEXT: owner review remains pending; prepare safe COD separately next, without
+  Merchant Inquiry as a dependency. Include awaiting collection/confirmation/
+  Dashboard permissions/Manual eligibility; never mark Paid before actual collection.
+  Existing uncertain CARD method changes remain P0-3 independently BLOCKED.
+  Queue: COD, Pay Again hold, emails, saved address, LOC-01 checkout AND profile,
+  navbar username, MIG-04 Google/WooCommerce. No other feature begun in this release.
+
+---
+
+# E114 — Homepage direct Add to Cart LOCAL PASS; guarded approval ready — 2026-10-28
+
+- **CX-CART-01 P0-1 LOCAL PASS / PREFLIGHT PASS / NOT DEPLOYED OR OWNER-ACCEPTED.**
+  Single active unambiguous reference adds its real ID/stock to the existing cart;
+  bulk without choices adds directly. Multiple references/real choices keep Options,
+  even if only one is stocked. Preorders/restricted grants retain their PDP flows.
+  Missing/error data never guesses an ID; pending disables action, errors offer
+  localized product-page guidance; guarded click/Added state prevents double adds.
+- Root cause: card forced Options for any serialized item/active reference; home
+  lacked variants. Public view now read per exact product/active/max2/10s timeout,
+  simultaneous reads deduplicated per Nuxt app; no private warehouse/cost fields.
+  Existing stock expression shared unchanged with cart. Legitimate unrecorded-
+  stock sales retain stock0; recorded serialized stock and server validation retained.
+- Readonly public sample100:86 single/14multiple active references. Live home40
+  Options/preorder at desktop1440/mobile390 EN/AR/RTL. Final built LOCAL real-public-
+  catalog home:37 Add/3preorder in all4 cases; local guest cart only, live writes
+  blocked, page errors0. Genuine choices tested with actual Vue section/card/cart.
+- 24 policy/cart/access/session +25 browser +13 server/SQL +5 release-guard checks
+  PASS; typecheck/build PASS. Native competing-stock concurrency case unavailable,
+  SKIPPED/NOT EXERCISED and remains deferred. Original32/DTR-33/STOR-01 untouched.
+- Commit `d69d68dca9df1f2403f6022ecf712aaa7019ebb8` on isolated local/homepage-direct-cart-
+  20261028 from deployedbb21a16. No server/SQL/RLS/package/lock/config changes;12
+  committed files include focused tests/review. Main36a7669/all24 prior worktrees,
+  dirty artifacts, frozen135/location4843754 and consumed inquiry packets preserved.
+- Candidate **42a61d03f3aba831/schema98**; archive20984598bytes,
+  full3452-entry guarded readback/secret scan PASS,2480 browser assets/2373retained
+  hashes preserved; latest-build pointer updated only in LOCAL candidate archive.
+- 15:14:12Riyadh scoped readonly preflight PASS: baselineacfc97/schema98/PID61817,
+  runtime/Caddy/units/certificate/inventory unchanged; CARD available, Manual50,
+  critical payment mismatch/unreconciled/duplicate/ownership0, overdue-unverified2.
+  MON active/enabled/waiting fresh15:10 report/3warnings; shared kill budget1 unused.
+- [Review](docs/homepage-direct-cart-review.md); [exact approval](docs/homepage-direct-cart-approval.md).
+  `APPROVE CX-CART-01 DIRECT ADD TO CART babea828ba63763f502a627119885534148f16032ff71768d709325300f3c336`.
+  Expires2026-10-28 19:13:21.476Riyadh/2026-10-28T16:13:21.476Z.
+  Fresh scope permits ONE ordinary app cutover/restart only after exact approval;
+  original emergency budget1 rebound, callbacks retained, no timer/SQL/Caddy edit.
+  New approval/intent/cutover NOT recorded. Production restarts/writes/provider calls0.
+- E113 queue stands: after this fix COD separately (awaiting collection/confirmation/
+  Dashboard/Manual eligibility; no premature Paid); Pay Again/method changes P0-3
+  independently BLOCKED; P1-4 emails; P1-5 saved address collapse; P1-6 LOC-01 checkout
+  AND profile; P2-7 username; P2-8 MIG-04. No other feature begun. CARD/Manual/signup
+  live; COD OFF/PDC PAUSED/email OFF. Paid backlog and2649/3149 provider-UNVERIFIED.
+- NEXT: exact scoped deployment approval. Keep all consumed operators non-replayable.
+
+---
+
+# E113 — Customer shopping queue reprioritized; homepage cart first — 2026-10-28
+
+- Owner explicitly decouples customer improvements from Paymob investigation.
+  Work ONE feature at a time. New exact queue: P0-1 CX-CART-01 homepage direct
+  Add to Cart; P0-2 CX-COD-01 safe COD; P0-3 CX-PAY-01 Pay Again/method changes
+  independently BLOCKED on provider reconciliation; P1-4 CX-EMAIL-01 truthful
+  order/payment delivery; P1-5 CX-ADDR-01 collapsed saved checkout address;
+  P1-6 LOC-01 validated governorate/city at checkout AND account/profile;
+  P2-7 CX-NAV-01 welcome username; P2-8 MIG-04 Google/WooCommerce redirects.
+- STARTED CX-CART-01 only, from deployed bb21a16 in isolated
+  local/homepage-direct-cart-20261028. Main36a7669 is different/older application
+  lineage and is preserved; no unrelated merge/reset/clean. All24 prior worktrees
+  and dirty artifacts privately inventoried before the new25th worktree.
+- Root cause found: ProductCard forces Options for every serialized product and
+  any active variant, including one Default; homepage does not load variants.
+  Resolve exact single active configuration through the existing public view,
+  pass its real variant/stock identity to existing cart, preserve genuine choices,
+  published/server/purchase/stock/session rules, EN/AR/RTL and safe busy/error states.
+- Scope LOCAL implementation/tests/typecheck/build/scoped release preflight only.
+  Separate exact deployment approval required. No stock/database edit, COD opening,
+  app restart, MON timer change, payment credential/inquiry/provider/email action.
+- E112 evidence/consumed approvals/provider contract draft preserved. Auth PASS;
+  complete history BLOCKED. Receipt cannot distinguish missing/non-list/over20
+  history; owner describes missing array but this is not a new raw-schema capture.
+  EGP2649/3149 remain provider-UNVERIFIED; Pay Again stays OFF, without gating cart/COD.
+- Production read-only guard PASS: acfc97/schema98; MON enabled/active/waiting with
+  fresh14:30 report/3 warnings; shared kill budget1. Public CARD/Manual50/signup
+  maintained; PDC PAUSED, COD/email OFF. Paid/fulfillment backlog and all original32/
+  DTR-33/STOR-01/deferred rows/location work retained. No SEO work in this feature.
+- NEXT: complete local direct-cart validation and prepare exact guarded approval;
+  after this fix prepare COD separately, including awaiting collection (not Paid),
+  confirmation, Dashboard handling and Manual-delivery eligibility.
+
+---
+
+# E112 — Merchant authentication PASS; full-history inquiry BLOCKED — 2026-10-28
+
+- Owner exact approval971e6750… executed ONCE and consumed. At14:23:58Riyadh auth
+  returned201 and validated profile/token; **MERCHANT KEY/AUTHENTICATION PASS**.
+  First known paid EGP2 order GET returned200 and matched identity/reference/
+  amount context, then `HISTORY_ARRAY_OR_LIMIT_STOP` stopped the run.
+- Required list≤20 contract failed. Safe receipt does not retain actual field
+  type/presence/count; do not claim missing history versus over-limit. No individual
+  transaction, second paid-control or2649/3149 provider reads occurred. This run2
+  provider calls; both consumed runs total3 (2auth/1order); no fallback/retry.
+- **FULL-HISTORY INQUIRY BLOCKED / NO RECONCILIATION APPLIED.** Local before/after
+  financial snapshots identical;2649 on_hold/pending/paid0 and3149 cancelled/pending/
+  paid0/no transactions stay provider-UNVERIFIED. Prior paid/succeeded controls,
+  WOLF Processing and fulfillment backlog retained. No provider failure inferred.
+- Real approval/intent/observation/receipt preserved in private auth201 packet.
+  Both seals32093a55…/971e6750… consumed; never replay, alter sources or fabricate
+  completed history. [History stop receipt](docs/paymob-merchant-inquiry-history-stop-receipt.md).
+- Refreshed primary docs only establish latest-order inquiry and known-transaction
+  inquiry; no complete-history binding/filter/pagination contract qualified for
+  this merchant. Preserve the history guard and Pay Again hold. No replacement
+  probe/approval seal issued. [Contract request draft](docs/paymob-merchant-history-contract-request.md)
+  is NOT SENT; exact supported contract/completeness evidence is needed next.
+- Afterflight14:24:04Riyadh: acfc97b72fe85237/schema98/PID61817/Caddy26652; CARD
+  Live available, public storefront/cart/signup200, anonymous monitor401, unsigned
+  callback403. MON active/enabled/fresh14:20:06/3 warnings; original kill budget1.
+  Zero app restarts/deploys/SQL/runtime/unit/Caddy/credential/payment-state writes,
+  charges/refunds/cancellations/emails; key never exported/logged and stays app-unbound.
+- MON/unpaid-wording owner acceptance remains narrow; no new owner browser or
+  signed callback claimed. Pay Again OFF/COD OFF/PDC PAUSED. CX-EMAIL-01 separate.
+  After qualification: COD then homepage cart, address, LOC-01 checkout AND profile,
+  navbar; MIG-04 later. DTR-33/STOR-01/original32/all deferred work preserved.
+- NEXT: obtain supported full attempt-history contract/complete scoped evidence,
+  then prepare an exact separately approved bounded inquiry. No blind third run.
+
+---
+
+# E111 — Inquiry stopped safely at auth201; local correction ready — 2026-10-28
+
+- Owner exact approval32093a55… consumed once. At14:16:06Riyadh the only provider
+  request (auth POST) returned201; local transport accepted200 only and stopped
+  before body validation. **INQUIRY BLOCKED; authentication UNQUALIFIED; zero order
+  or transaction reads.** No provider/customer-payment failure inferred from this.
+- Real independent original approval/intent/observation/receipt preserved. Local
+  financial snapshots identical; no local-state writes, payment actions, retries,
+  credential changes, deployments, restarts or emails. Both unpaid outcomes remain
+  UNVERIFIED; original paid controls/WOLF and all fulfillment backlog unchanged.
+  [Stop receipt](docs/paymob-merchant-inquiry-stop-receipt.md).
+- Separate local auth201 correction accepts200/201 only for auth; GET still200,
+  mandatory profile/token and original history/context/paid-control guards retained.
+  Original sealed packet untouched and cannot be replayed. **25 focused synthetic
+  tests PASS; fresh sealed read-only preflight PASS; correction NOT EXECUTED.**
+- Production14:19:33Riyadh stillacfc97b72fe85237/schema98/PID61817; Caddy26652;
+  public CARD/signup routes healthy, anonymous monitor401, unsigned callback403.
+  MON active/enabled, fresh14:15 report/3 warnings; original shared kill budget1.
+  Existing systemd/report permissions/dedup/runtime/LIVE keys/Auth SMTP unchanged.
+- Same four targets and same maximum25requests; one auth POST/four full-order GETs/
+  at most20 transaction reads; no fallback, broad listing or automatic retry.
+  Fresh private packet paymob-merchant-inquiry-auth201-20261028 binds original
+  consumed artifacts and exact original immutable order/attempt contexts.
+- Fresh exact approval: `APPROVE PAYMOB READ-ONLY MERCHANT INQUIRY 971e67503c7f4649b32fa662309bad7fcf84bac83808623a6d6ca3ee0b3c4997`.
+  Expires2026-10-28 18:18:52.258Riyadh/2026-10-28T15:18:52.258Z; must start before
+  18:15:52.258Riyadh. [Scoped correction review](docs/paymob-merchant-inquiry-auth201-review.md).
+  No new approval/intent/provider call yet. Prior32093a55… MUST NOT be rerun.
+- Pay Again OFF, COD OFF, PDC PAUSED. Email delivery CX-EMAIL-01 remains REQUIRED.
+  No next customer feature begun: after inquiry qualification, COD then homepage
+  cart/address/LOC-01 checkout AND profile/navbar; MIG-04 later. Preserve original32,
+  DTR-33, STOR-01, all deferred work and both accounts'24 worktrees/dirty artifacts.
+- NEXT: fresh separate owner approval for corrected read-only inquiry only.
+
+---
+
+# E110 — Merchant key stored; read-only Inquiry packet ready — 2026-10-28
+
+- Owner privately stored `/etc/storefront/paymob-merchant-api-key`. Independent
+  metadata-only SSH PASS: root:root0600/nonempty, parent0700. Key contents not read/
+  exported; runtime/env/Secret/Public/HMAC unchanged; API Key remains unbound to app.
+- **INQUIRY PREPARATION LOCAL PASS / PRODUCTION PREFLIGHT PASS; PROVIDER INQUIRY
+  NOT EXERCISED / AWAITING SEPARATE APPROVAL.** 20 focused synthetic checks PASS;
+  fixed target and request allowlists, secret redaction, history/context checks,
+  paid controls, expiry180second margin and bounded failures. No broad test repeat.
+- Read-only production14:09:21Riyadh: acfc97b72fe85237/schema98/PID61817; CARD Live
+  available, public signup entry200, anonymous monitor401, unsigned callback403;
+  existing MON enabled/active with fresh14:05 report/3 warnings. Manual50 retained
+  in13:50 financial checkpoint; emergency budget1 unconsumed. Zero provider calls,
+  application restarts, runtime/unit/Caddy/SQL edits, orders or payment-state writes.
+- Sealed14:08 known-order snapshot: two original paid/succeeded controls unchanged;
+  EGP2649 on_hold/pending/paid0/no tx; EGP3149 cancelled/pending/paid0/no tx.
+  Both unpaid provider outcomes remain UNVERIFIED; intentional abandonment/local
+  cancellation never proves provider finality. WOLF/earlier fulfillment stays open.
+- Fresh independent packet: one auth POST, four full-order GETs, at most20 history
+  transaction GETs,25 requests maximum, no retries/redirects/latest-only fallback.
+  Full history contract must qualify; missing/mismatched/incomplete responses STOP.
+  Safe projected private receipts only; no secrets/raw billing/card responses.
+- Exact next approval: `APPROVE PAYMOB READ-ONLY MERCHANT INQUIRY 32093a558586264347e7c902939ebc94a1f51fec6b4efd34662369294f54f5e5`.
+  Expires2026-10-28 18:08:56.703 Riyadh/2026-10-28T15:08:56.703Z; must start before
+  18:05:56.703 Riyadh. [Scoped review](docs/paymob-merchant-inquiry-qualification-review.md).
+  No owner approval/intent/provider receipt yet. Consumed operators are NOT replayed;
+  existing first-fix `inspect` only verifies baseline, never its write modes.
+- Pay Again OFF; read-only results cannot authorize retry or silently rewrite paid/
+  unpaid states. Durable reconciliation, serialized/idempotent recovery, customer
+  ownership, session finality and duplicate-charge prevention still required.
+- MON/unpaid-wording acceptance remains narrow; email delivery CX-EMAIL-01 separate.
+  PDC PAUSED, COD OFF. After qualification: COD then homepage cart, checkout address,
+  LOC-01 checkout AND profile, navbar; MIG-04 later. All original32/DTR-33/STOR-01/
+  deferred tests, both accounts'24 worktrees and prior dirty work preserved.
+- NEXT: owner gives fresh exact approval for read-only production Inquiry only.
+
+---
+
+# E109 — Owner-only VPS Merchant API Key entry prepared; inquiry held — 2026-10-28
+
+- Owner clarifies API Key is viewable in Paymob Dashboard but **not yet saved on
+  VPS**. Earlier reference text was a placeholder, not usable credential access.
+  Current scope is private owner entry instructions only; no Inquiry authentication/
+  query or application restart until separate approval. [Entry instructions](docs/paymob-merchant-key-private-entry.md).
+- Proposed actual credential reference `/etc/storefront/paymob-merchant-api-key`.
+  Existing service directory verified root:root0700; current runtime.env root:root
+ 0600. Separate new key file root:root0600; runtime.env/working Secret/Public/HMAC
+  remain unchanged and the file is not automatically loaded by the app.
+- Reviewed local Python SSH launcher uses existing pinned host/key, checks machine
+  and runtime identity, reads twice from hidden terminal input, exclusively/atomically
+  creates the private file and privately verifies bytes. No argv/env/history/Git/
+  source/archive/log secret. Existing files/symlinks/racing targets are refused.
+- 10 focused security checks PASS, including real no-echo/restoration, overwrite/
+  race/symlink refusal, restrictive modes, mismatch and safe failures. Initial local
+  Darwin terminal harness corrected before PASS. Exact launcher metadata-only SSH
+  PASS: correct parent/target, destination ABSENT, runtime unchanged; no real key read.
+  Owner must run --enter in their own Terminal; agent did NOT run it.
+- **KEY ENTRY READY / NOT EXECUTED; MERCHANT INQUIRY BLOCKED / NOT EXERCISED.**
+  No provider request, order-state update, credential replacement, app restart,
+  deployment or inquiry activation. No new inquiry/deployment approval issued.
+- 13:06:02Riyadh read-only financial checkpoint: schema98, critical mismatch/
+  unreconciled/duplicate/ownership0; overdue-unverified2. MON13:05:05 fresh with3
+  warnings, active/waiting; new overdue attempt is not provider failure evidence.
+  Production guard still acfc97b72fe85237/schema98, runtime/Caddy/kill budget1 intact.
+- Scoped read-only known-order snapshot13:08:23:2649 now locally on_hold/pending/
+  paid0,3149 cancelled/pending/paid0, both no transaction rows/provider-UNVERIFIED.
+  Two earlier genuine paid records remain paid with succeeded transaction evidence;
+  WOLF Processing and older fulfillment backlog retained. No provider outcome or
+  actor attribution inferred from local state. No cancellation/refund/retry/fulfillment.
+- Metadata-only checks: no matching Merchant key in known operator credential JSON,
+  six named local environment references or Paymob-named Vault entries. This does
+  not prove absence from other private storage. No secret values exported.
+- Existing MON operation/unpaid-wording owner acceptance preserved; CARD fields/
+  payment/retry/email acceptance not broadened. PDC PAUSED, COD OFF, all original32/
+  DTR-33/STOR-01/deferred tests preserved. Customer notification email separate.
+- Latest owner ordering: after READ-ONLY Inquiry qualification, return to safe COD
+  preparation then homepage cart. Pay Again remains off pending its safeguards;
+  no queued feature is implemented here. NEXT: owner stores key with reviewed SSH
+  launcher, provides path, then separately authorizes Merchant Inquiry qualification.
+
+---
+
+# E108 — Credential-independent Inquiry preparation complete; no production change — 2026-10-28
+
+- Owner confirms Merchant Inquiry API key **NOT CONFIGURED**; working LIVE Secret/
+  Public keys must stay unchanged. Preparation is documentation/contracts only;
+  implementation follows secure credential and merchant-contract qualification.
+  [Secure setup](docs/paymob-merchant-inquiry-setup.md),
+  [reconciliation/retry design](docs/paymob-inquiry-pay-again-design.md),
+  [scoped acceptance](docs/mon01-cx-pay01-owner-acceptance.md).
+- Exact official path: existing Paymob Accept Dashboard, Settings → Developers →
+  API Keys → View beside **API Key**. View/copy the existing key into private local
+  storage or an existing secret manager; share reference only. No regenerate,
+  callback/payment-method edit, Save/Apply, production environment change or restart.
+  If the key row is unavailable, confirm merchant role/access with Paymob.
+- Current official credential guide says API Key is the SAME across Test/Live;
+  Secret/Public keys and integration IDs are mode-specific. Do not infer inquiry
+  mode from the token/key. Validate returned Live flag, merchant, original order/
+  special reference, integration and immutable amount/currency. This supersedes
+  conflicting mode assumptions in generic older provider reference notes.
+- Design specifies complete historical inquiry (latest-transaction-only cannot
+  prove nonpayment), sanitized durable inquiry-source receipts, atomic idempotent
+  shared settlement, order locks/version fencing, one active recovery reservation,
+  preserved attempt history and held ambiguous sends. No fake HMAC/callback proof.
+- Core blocker beyond credentials: a clean snapshot cannot close an old checkout
+  or stop an in-flight3DS payment. Require qualified provider terminality/finality
+  before any replacement; no invented cancellation endpoint or lease-expiry retry.
+  Audit all singleton-attempt assumptions before any additive schema changes.
+- Status **DESIGN PREPARED / IMPLEMENTATION NOT STARTED / NOT DEPLOYMENT READY**.
+  No new migration number, runtime setting, adapter, customer endpoint, installer
+  or approval seal. Proposed scenarios are a future test matrix, NOT executed tests.
+  Existing64/5 first-fix tests are not evidence for this new design. Docs integrity/
+  source/deferral preservation checks only; no broad tests/build repeated.
+- E107 narrow acceptances retained: MON visible operation/access OWNER ACCEPTED;
+  unpaid wording OWNER ACCEPTED within observed scope. Owner clicked Confirm
+  checkout; CARD fields require the separate Open secure payment action. Fields,
+  real charge/3DS/provider callback, Inquiry, retries and customer email NOT accepted.
+- Final read-only recheck12:36Riyadh: production guard matches; timer active/waiting,
+  fresh report12:35:05 and the same2 exceptions. No production mutation.
+- Production remains acfc97b72fe85237/schema98; MON active; original shared kill1
+  unspent.0 production changes/restarts/provider calls/order or payment retries,
+  emails/SMTP access, live credential changes or Git pushes. All deferred tests,
+  PDC PAUSED, COD OFF and paid fulfillment backlog preserved.
+- Separate CX-EMAIL-01 remains REQUIRED. Next customer queue: COD, homepage cart,
+  checkout address, LOC-01 checkout AND profile, navbar; MIG-04 later. Only this
+  payment recovery preparation was worked. NEXT: owner retrieves existing API Key
+  privately and provides its secure reference; then qualify read-only merchant
+  inquiry before implementation and a separate exact deployment approval.
+
+---
+
+# E107 — Scoped owner acceptance; Inquiry / Pay Again preparation — 2026-10-28
+
+- Owner confirms MON-01 Dashboard works and reports no problems: **OWNER ACCEPTED
+  for visible operation/access**. Panel interpretation explained; understanding
+  is not silently accepted. Actual read-only12:21:40Riyadh API200, fresh/complete
+  report12:20:06; timer active/waiting and the same2 exceptions/backlog2.
+- **CX-PAY-01 truthful unpaid wording OWNER ACCEPTED, narrowly:** owner observes
+  Order awaiting payment and Payment is not confirmed. No Paid/Completed claim.
+  Owner clarifies the clicked button was Confirm checkout. This places the order;
+  Paymob fields require the separate Open secure payment action. Actual CARD field
+  rendering, provider checkout/3DS, payment and retry are NOT EXERCISED/NOT ACCEPTED.
+  Do not ask for a new payment or retry merely to prove acceptance.
+- New aggregate order1/attempt1 since prior postflight,0 signed transactions;
+  authorship/click sequence cannot be inferred from totals. No actor attribution or
+  provider outcome invented. Reported no-fields screen is not proven to be a defect;
+  retain any actual Open secure payment/render failure as a P0 follow-up.
+- Production acfc97b72fe85237/schema98 unchanged. Read-only12:20:44 checkpoint:
+  critical mismatch/unreconciled/duplicate/ownership0; Manual50/signup OPEN, PDC
+  PAUSED, callbacks and original shared emergency budget1 preserved. Friend3149
+  remains locally cancelled/provider-UNVERIFIED;2649 provider-UNVERIFIED; WOLF and
+  older paid fulfillment backlog preserved.0 restarts/deployments/provider writes.
+- Proceed with preparation only of Paymob Merchant Inquiry and Pay Again under
+  CX-PAY-01, using isolated local/paymob-inquiry-recovery-20261028 from deployed
+  sourcebb21a160. Do not edit the sealed first-fix source or replay its authority.
+  Provider inquiry credentials/complete-history/terminality and durable leases
+  need qualification. A negative snapshot alone cannot authorize another charge.
+- Customer order/payment email delivery is a **separate required task** (CX-EMAIL-01,
+  ORDER-04/FUT-05). Merchant email remains OFF/unconfigured; MON optional email OFF
+  and accepted Supabase Auth SMTP stay separate. No credential pasted or extracted.
+- Latest owner queue order supersedes E104: P1 COD first (OFF until separate approval,
+  never Paid before collection), homepage Add to Cart second (keep real Options),
+  checkout address improvements third, LOC-01 checkout AND profile dropdowns fourth,
+  navbar username fifth. MIG-04 remains later. No queued feature is started here.
+- All original32/DTR-33/STOR-01/deferred requirements and prior23 worktrees preserved.
+  NEXT: prepare offline inquiry/evidence/duplicate-charge controls; no production
+  deployment or live payment/retry without new appropriate scope and approval.
+
+---
+
+# E106 — CX-PAY-01 first fix deployed; technical postflight PASS — 2026-10-28
+
+- [Deployment receipt](docs/customer-payment-first-fix-receipt.md). Exact owner
+  approval ac46dec13101b94ab12f71dfda2c07966733bc5db6066a50d632b5b8de575e0d
+  recorded03:45:42Riyadh, consumed once. Guarded cutover03:46:19, exactly ONE app
+  restart. New production **acfc97b72fe85237/schema98/PID61817**, Caddy26652 unchanged.
+  Sourcebb21a160 on isolated customer-payment branch; main remains docs/older app.
+- Truthful payment projection/screens deployed: coherent live signed ledger and
+  settlement before Paid, separate order/payment/fulfillment states, neutral
+  prepayment cues. Existing attempts HELD before unchecked reopening; first CARD
+  payment retains existing authorization/immutable amount/idempotent claim guards.
+  Exact reported green CONFIRMED text remains unreproduced; do not invent its source.
+- MON unchanged/enabled/active/waiting. Real scheduled03:50:05 check18 completed
+ 03:50:09 after cutover; next03:55:02 at observation. All17 prior check identities/
+  timestamps and6 dedup keys retained; new alert events0, historical gaps2 retained.
+  Report0640/state0600; no manual worker start, timer stop or unit/worker change.
+- Owner Dashboard API20003:50:32 fresh/complete/not stale; visible panel/expanded
+  alerts after deployment. Browser business writes blocked; no credentials exported.
+  Anonymous payment/monitor APIs401. Owner/customer business acceptance still PENDING.
+- Public CARD LIVE/cart/login/home/Arabic pass; Manual EGP50 and signup OPEN.
+  Signup uses /login?mode=signup200; /signup403 was an incorrect probe path, not a
+  regression. Callback Caddy/runtime/HMAC context unchanged; GET403 is method-denial
+  evidence, not a new signed callback/payment test. Planned130 public assets PASS.
+- Read-only financial checkpoint03:51:13: schema98, critical mismatch/unreconciled/
+  duplicate/ownership0, totals unchanged from preflight. Pending2649 and abandoned
+  friend3149 remain provider-UNVERIFIED. Friend locally cancelled only; WOLF still
+  Processing and older paid backlog2 retained. No historical payment/fulfillment action.
+- Original shared emergency-close budget1 unused and rebound to new app. Runtime,
+  Caddy, units, timer/worker, credentials unchanged;0 SQL writes/migrations, emails,
+  Auth SMTP access, agent orders/provider transactions or Git push/merge. Existing
+  b4 release/runtime recovery retained. No restart retry/rollback or MON replay.
+- Independent new app receipts only; all old consumed/missing MON receipt boundaries
+  preserved. Prior64 app checks/5 guards/typecheck/build remain valid and were not
+  repeated; exact archive local assets2374 verified earlier,2267 old hashes retained.
+- Full Pay Again HELD pending merchant inquiry/durable reconciliation/concurrency
+  history contract. Email preparation dormant; application email OFF/unconfigured,
+  no delivery claim. COD disabled; PDC PAUSED. The entire P0 is not marked accepted.
+- DTR-33/STOR-01/original32/full deferred register and E104 ordered queue preserved.
+  No SEO, PDC, location, COD or homepage work combined. NEXT: read-only customer/
+  owner acceptance, then qualify safe provider reconciliation within CX-PAY-01.
+
+---
+
+# E105 — CX-PAY-01 first fix LOCAL PASS; separate production approval ready — 2026-10-28
+
+- [Audit and local correction](docs/customer-payment-safety-review.md);
+  [exact first-fix approval review](docs/customer-payment-first-fix-approval.md).
+  Local branch customer-payment-recovery-20261028/commitbb21a160 from MON568c8dd.
+  No unrelated merge/push;22 prior worktrees' heads/work preserved, apart from
+  intended additive continuity. Main0a61ab1 is not the deployed app source.
+- Confirmed defects: local order cancellation/attempt expiry mislabeled payment
+  outcome; raw Paid field trusted without private ledger proof; green address/
+  check cues before payment. Exact customer's recalled green CONFIRMED at
+  /checkout is still NOT reproduced; do not invent its precise source.
+- Local reusable correction: matching live signed ledger/order settlement before
+  Paid; separate order/payment/fulfillment states, neutral prepayment UI, shared
+  EN/AR status across result/account/summary and late-callback polling. Uncertain
+  existing attempts held before another session/charge; first CARD path keeps
+  normal ownership, purchasing, serializing claim and immutable totals.
+- Existing Pay Again PARTIAL/unsafe unchecked same-session reopen is held by this
+  first fix. Full reconciled retry needs qualified merchant inquiry, durable
+  evidence/concurrency lease and reviewed history schema against98. No inquiry
+  credential configured. No historical retries or invented nonpayment proof.
+- Truthful created/paid/failed/pending notification preparation only; no hooks,
+  queue or delivery activation. Application email metadata03:21:24: disabled,
+  no key/senders/account approval. Auth SMTP untouched; no email delivery claimed.
+-64 focused app checks PASS, including actual Chrome EN/AR, ownership, abandonment,
+  cancel/failed/success/late callback, double-click, outage and disposable native
+  SQL concurrency.5 release guards PASS; Node22.23.1 typecheck/build PASS. Exact
+  archive readback/all2374 asset GET+hash checks PASS;2267 prior hashed assets kept.
+  Initial old harness/polling expectations corrected; no broad suite repeated.
+- Proposed archive acfc97b72fe85237/schema98. Seal
+  `ac46dec13101b94ab12f71dfda2c07966733bc5db6066a50d632b5b8de575e0d`;
+  expiry28October07:33:32.216Riyadh. Preflight03:34:15 PASS; approval/intents ABSENT.
+  If separately approved: one app switch/restart,0 SQL/Caddy/runtime/unit/timer/
+  worker/credential/email/provider changes. Single-use receipts; bounded startup
+  health polling; failure stops without restart retry/rollback. Existing shared
+  emergency-close budget1 rebound to candidate, never replenished.
+- Production stays b4b502a03207713a/schema98/PID58599, Caddy26652. MON active/waiting,
+  report03:30:06 fresh/complete. Owner-session API200 and actual visible expanded
+  Dashboard alerts verified03:24:53, both warnings/backlog2 present, business writes
+  blocked; no browser secrets exported. Technical visibility PASS; do not invent
+  independent owner business acceptance. Anonymous401/privacy retained.
+- Financial checkpoint03:28:58: mismatch/unreconciled/duplicate/ownership0; new
+  order1/attempt1/transactions0. Proposed projection on real read-only snapshot
+ 03:30:15 holds2649 and abandoned3149 as UNVERIFIED; both genuine payments stay
+  verified Paid. Friend remains locally cancelled only; WOLF Processing and older
+  paid backlog retained. CARD/Manual50/signup OPEN, PDC PAUSED, COD/email OFF.
+- DTR-33/STOR-01/original32/full deferred register preserved. Ordered P1/P2 queue
+  from E104 retained; no SEO/PDC/COD/location/other development started.
+  **NEXT: exact CX-PAY-01 FIRST FIX approval in review. NOT DEPLOYED.**
+
+---
+
+# E104 — Customer payment safety P0; read-only audit and local preparation — 2026-10-28
+
+- Owner promotes CX-PAY-01 above SEO, PDC and historical work. Scope: truthful
+  payment/order states, owned reconciled recovery, dormant truthful notifications,
+  focused failure/concurrency/security tests. NO deployment or provider writes.
+- Dedicated owner-signed-in browser, business writes blocked: protected monitor
+  HTTP200 at03:10:21Riyadh, fresh complete report03:10:06; two UNVERIFIED warnings,
+  staff backlog2, email OFF. This establishes actual authorized-session API access;
+  user identity is owner-reported. Anonymous401 remains separately verified.
+- Production b4b502a03207713a/schema98; timer active/waiting. EGP2649 overdue and
+  intentionally abandoned EGP3149 remain provider-UNVERIFIED. WOLF Processing and
+  older paid backlog retained. No retries, charges, refunds or fulfillment.
+- Reported approximate green CONFIRMED appears at /checkout. Exact literal/source
+  not reproduced. Source has green saved-address/check-step cues before payment;
+  status endpoint also conflates local cancellation/expiry with payment outcome.
+  Do not claim either is the proven reported message without reproduction.
+- Isolated local/customer-payment-recovery-20261028 starts from MON source568c8dd;
+  main0a61ab1 has older application lineage. No unrelated merge/reset/push. Both
+  accounts' worktrees/artifacts and all consumed approvals remain preserved.
+- Next priorities, one at a time: CX-CART-01 homepage direct cart for single eligible
+  configuration, retain Options for real choices; CX-COD-01 safe collection with
+  no premature Paid; CX-ADDR-01 collapsed saved checkout address; LOC-01 validated
+  checkout/profile selectors from separate local reference work, freshly ordered
+  against98; CX-NAV-01 authenticated navbar username; MIG-04 read-only SEO/redirects.
+- DTR-33/STOR-01/original32 and complete deferred register stay open. PDC PAUSED,
+  COD disabled, purchasing authorization and shared emergency budget1 unchanged.
+  NEXT: local reusable P0 correction/tests; prepare concrete separate deployment
+  review only after qualification. Owner browser access authorizes no money action.
+
+---
+
+# E103 — MON-01 final timer completion deployed; automatic operation PASS — 2026-10-28
+
+- Exact owner approval `ed9b89ee356adad2f92b58bdc0c4ef1ab5b1d4609768d43a0973aed57283c3a2`
+  recorded/consumed; final procedure executed once. [Completion receipt](docs/mon01-final-timer-completion-receipt.md).
+  Existing timer enabled once, **active/waiting**. First persistent catch-up
+  checkseq4 complete02:42:13Riyadh; regular checkseq5 complete02:45:05. Next systemd
+  trigger02:50:04 at postflight. Typed timestamp observer handled real nonzero
+  values; no failure stop, manual worker start, app restart or replay occurred.
+- **MON-01 DEPLOYED / AUTOMATIC OPERATION PASS**. Hosted owner Dashboard observation
+  remains pending and separate. Two automatic worker runs verified; regular run
+  new_alert_events0/new_paid_order_count0. Original alert identity not duplicated.
+  Current report fresh/complete/WARNING with two provider-UNVERIFIED exceptions.
+- Production **b4b502a03207713a/schema98/PID58599**, Caddy PID26652 unchanged.
+  **ZERO app restarts**, rebuild/deploy/direct business SQL/migration/Caddy/unit/
+  runtime/credential/email/provider actions. Actual worker checks Manual EGP50;
+  public/local CARD/cart/login200; signup OPEN; PDC PAUSED; callback Caddy/HMAC/
+  runtime unchanged, expected public GET403. No payment or callback replay.
+- Report0640/SQLite0600 and actual app-reader/private-state separation retained.
+  Anonymous monitor401/private-no-store/no order leakage; projection available/
+  complete/not stale. Five durable checks, six dedup identities and two journal
+  gaps retained. Missed-interval alert resolved at regular run; historical gap/
+  staffing evidence is not retroactively repaired. No live failure was injected.
+- Fresh independent scheduled-run/completed/global intent receipts belong only to
+  final completion. All older consumed plans, approvals/intents and missing old
+  receipts remain immutable. Original emergency purchasing-close budget1 unused;
+  existing recovery close path still matches. Email OFF, Auth SMTP untouched.
+  Existing27 focused checks/host qualification retained; broad tests not repeated.
+- GET-only staffed financial checkpoint02:42:24: orders4, succeeded attempts/
+  transactions2, pending1/cancelled1, critical0, Manual50 available; no State/run/
+  check call, state write, manual worker start or SQL/provider action. Staffed
+  monitoring was retained through actual automatic verification. Continue staffed
+  Dashboard attention/fulfillment; email/off-host outage coverage is not claimed.
+- **BETA WARNING:** pending2649/ORD-20261027-6E27BA3BD3 overdue/provider-UNVERIFIED;
+  abandoned friend3149/ORD-20261027-A5FC5269EA terminal/provider-UNVERIFIED.
+  No automatic retry/cancel/charge/refund/fulfillment. WOLF remains Processing and
+  earlier paid order remains staff backlog. No invented fulfillment.
+- DTR-33/STOR-01/original32/all deferred work preserved/open. MIG-04 remains
+  separately queued READ-ONLY; no SEO work started. **NEXT: owner observes fresh
+  Dashboard warnings/backlog with existing Orders permission; retain staff coverage.**
+  All MON-01 execution authorities are consumed; never replay completion.
+
+---
+
+# E102 — MON-01 timestamp observer corrected; final timer approval ready — 2026-10-28
+
+- User authorizes observer correction/preparation only. [Review](docs/mon01-final-timer-completion-review.md).
+  Replaced parsing of formatted systemctl timestamps with typed D-Bus uint64 JSON.
+  Exact decimal strings preserve unsigned64 sentinel through JavaScript transport.
+  Human/localized durations never determine trigger proof; missing/invalid typed
+  fields stop explicitly. Observer/worker failure classes are distinct, with the
+  same single timer-only safety stop. No safety guard bypass or policy activation.
+- **27 focused tests PASS**, including observed format, C/EN/AR host JSON, display
+  locale variants, invalid/missing/overflow/type cases, precision, source failures,
+  worker/parser distinction, real trigger/freshness/history/dedup and failure stop.
+  Corrected reader's read-only host qualification PASS with zero/nonzero states.
+  Tests and host qualification passed BEFORE the sole fresh packet was sealed.
+- Fresh private packet `../mon01-final-timer-completion-20261028/`,35 sealed inputs.
+  Seal `ed9b89ee356adad2f92b58bdc0c4ef1ab5b1d4609768d43a0973aed57283c3a2`;
+  expires **28 October06:08:53.653Riyadh**; start before06:00:53.653 for observation.
+  Final preflight **02:28:07Riyadh PASS**; **NO APPROVAL / NO EXECUTION**.
+  Existing timer remains disabled; application **b4b502a03207713a/schema98/PID58599**,
+  Caddy PID26652, worker/units/runtime/credentials unchanged; original kill budget1.
+- Proposed fresh action: enable existing timer once, verify active/waiting and
+  typed next trigger, automatic worker run/new durable report/no duplicate old
+  alerts, unchanged checkout/callback/privacy. **ZERO app restarts/manual worker
+  starts**, no rebuild/deploy/unit/Caddy/credential/SQL/email/provider action.
+  Prior consumed global intent and failure-stop receipts remain immutable and
+  hash-bound; final independent intent prevents replay. No old receipt fabricated.
+- Overdue payment checkpoint **02:18:11–12Riyadh** completed read-only. The02:05:04
+  due check has no timely evidence; catch-up does not repair historical coverage.
+  Latest checkpoint **02:29:20Riyadh**: CARD/cart/login200, monitor401, signup OPEN,
+  Manual EGP50 available/PDC PAUSED; critical ledger exceptions0, overdue1;
+  new orders1/attempts1/transactions0. Next staffed review due **02:44:20Riyadh**.
+- **BETA WARNING:** new ORD-20261027-6E27BA3BD3/EGP2649, locally pending/paid0,
+  matching pending attempt expired02:12:13, no signed transaction/shipping job;
+  provider outcome UNVERIFIED. No Paymob query, cancellation/retry/refund/fulfillment.
+  Separate abandoned friend3149 remains Cancelled/paid0/provider-UNVERIFIED. WOLF
+  remains Processing; earlier paid backlog retained. Last automatic report01:50:04
+  is stale; keep staffed15-minute checks until timer actually verified operational.
+- Both accounts' artifacts, history/dedup/report permissions, DTR-33/STOR-01/
+  original32/all deferred work preserved. MIG-04 queued separately READ-ONLY;
+  no SEO/unrelated work. **NEXT: exact FINAL TIMER COMPLETION approval in review.**
+
+---
+
+# E101 — MON-01 timer completion consumed; observer defect; timer disabled — 2026-10-28
+
+- Exact owner approval `91fadbc1dbb46c47658c3c951d700bcabfd806fccf7a85794a50b6aff4296a15`
+  recorded and executed once. [Stop receipt](docs/mon01-timer-completion-stop-receipt.md).
+  Original installer, journal recovery and timer completion are all consumed.
+  **MON-01 BLOCKED / TIMER DISABLED / NOT OPERATIONAL.** No replay or retry.
+- Existing timer enabled01:48:26Riyadh and triggered one worker at01:50. Observer
+  failed01:50:02; approved failure stop disabled/stopped only the timer once at
+  01:50:03. Worker already started by that timer finished successfully01:50:08;
+  checkseq3 observed01:50:04 is durable/complete/WARNING. No manual worker start.
+- Guard defect: systemctl prints nonzero LastTriggerUSecMonotonic as a formatted
+  duration; sealed observer int(...) raises ValueError. Actual host output on12
+  timers and a local reproduction identify first_run line116. Codex1's10 fixtures
+  missed this host format. Original stop reason is generic; no original traceback
+  was retained. Consumed sealed source stays unchanged. No correction deployed.
+- New independent failure-stop intent/receipt prove one containment command, not
+  another activation. Timer disabled/inactive/no next trigger; scheduled-run and
+  completed files remain absent in timer packet and both older consumed operators.
+  Global activation intent remains consumed. No manufactured completion proof.
+- Application **b4b502a03207713a / PID58599** and Caddy PID26652 unchanged;
+  schema98 is the pre-approval verified baseline. **ZERO app restarts**, direct
+  business SQL statements, SQL writes/migrations, Caddy/unit/runtime/credential
+  changes, emails, SMTP access or provider actions in timer completion.
+  Public/local CARD/cart/login200; anonymous monitor401; signup OPEN; Manual EGP50
+  verified by complete worker check; PDC PAUSED; callbacks/runtime/HMAC preserved.
+  Original emergency-close shared budget1 remains unused; no purchasing closure.
+- Original two check rows and three dedup identities/fingerprints retained. New
+  check3 adds only missed-interval warning/event; journal gap1 records unscanned
+  history. Current report projection available/complete/not stale at01:53:38;
+  report0640/SQLite0600 retained. Hosted owner observation and recurring cadence
+  remain unaccepted. No historical staffing/scan coverage reconstructed.
+- Friend3149 still provider-UNVERIFIED; intentional abandonment is owner report.
+  WOLF remains Processing and older paid order remains backlog. No fulfillment,
+  charge, refund, stock or order action. DTR-33/STOR-01/original32/all deferred
+  tests stay open; MIG-04 remains separately queued READ-ONLY, no SEO work.
+- **NEXT: qualify timestamp observer correction against real systemd output and
+  separately review a fresh existing-timer route with0 app restarts.** No further
+  production action now. Keep staffed15-minute monitoring; last real worker
+  check01:50:04, next staffed check due no later02:05:04Riyadh (not a staffing claim).
+
+---
+
+# E100 — MON-01 existing-timer completion ready; exact approval pending — 2026-10-28
+
+- Owner authorizes preparation only of minimal timer completion. [Review](docs/mon01-timer-completion-review.md).
+  Existing original installer and recovery remain consumed; no replay, deployment,
+  app restart or missing parent receipt fabrication. Production remains
+  **b4b502a03207713a / schema98 / PID58599**; Caddy PID26652 unchanged.
+- Fresh timer-completion preflight **01:36:46 Riyadh PASS**. Exact installed worker,
+  both unit bytes and loaded timer schedule match reviewed MON-01. Timer disabled;
+  worker idle/success; two durable check records/three dedup identities preserved.
+  Ten new isolated completion-guard checks PASS; no completed broad tests repeated.
+- Separate private packet `../mon01-timer-completion-20261028/`;26 sealed inputs.
+  Seal `91fadbc1dbb46c47658c3c951d700bcabfd806fccf7a85794a50b6aff4296a15`;
+  expires **28 October06:08:53.653 Riyadh**; start before06:00:53.653 for observation.
+  **NO OWNER APPROVAL / NO EXECUTION.** Original single-use emergency-close budget1
+  remains unused and shared through the existing recovery close path.
+- Proposed action: enable/start **existing commerce-monitor.timer once**, observe
+  a genuine timer-triggered worker run and fresh durable report. **ZERO application
+  restarts, ZERO manual worker starts**. No direct SQL in the approved path, unit/
+  runtime/credential/Caddy change, email, SMTP access or provider transaction.
+  On activation/first-run failure, stop/disable only that timer once, preserve
+  evidence and stop. Independent global/specific exclusive intents prevent replay;
+  new receipts never fill either consumed operator's switched/completed files.
+- Staffed read-only checkpoint **01:37:03 Riyadh**: CARD/cart/login200,
+  monitor anonymous401, signup OPEN, Manual EGP50 available, PDC PAUSED; critical
+  ledger exceptions0 and new orders/attempts/transactions0. Next due **01:52:03**.
+  Last automatic report01:18:32 is stale; keep15-minute staffed monitoring until
+  actual timer operation is verified. No retrospective historical coverage claim.
+- Friend intentionally abandoned3149 remains Cancelled/pending/paid0/no signed
+  transaction: provider outcome UNVERIFIED. WOLF and earlier fulfillment backlog
+  remain staff work. DTR-33/STOR-01/original32/all deferred work remain open;
+  MIG-04 remains separately queued READ-ONLY. No SEO work combined.
+- **NEXT: owner sends the exact TIMER COMPLETION approval in the linked review.**
+  Only then use the sealed completion once and verify timer/first run/privacy/
+  freshness and preserved commerce controls. Hosted owner observation stays separate.
+
+---
+
+# E99 — MON-01 recovery consumed after cutover; timer completion blocked — 2026-10-28
+
+- Exact owner recovery approval `6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4`
+  recorded and executed **once**. [Stop receipt](docs/mon01-journal-recovery-stop-receipt.md).
+  Current production **b4b502a03207713a / schema98 / PID58599**; one approved app
+  restart consumed. Caddy PID26652 unchanged. Never replay either installer.
+- Worker fix and private report/runtime reader binding deployed. Corrected first
+  worker check01:18:32 complete/WARNING; original failed check retained in SQLite.
+  Immediate post-restart capabilities GET502 preceded Nuxt listening by103.182ms.
+  Guard stopped at APPLICATION_HEALTH_STOP before timer enable. No second restart,
+  rollback, retry, closure or fabricated switched/completion receipt.
+- Read-only01:20 checks: public/local CARD capabilities/cart/login200, monitor
+  anonymous401; Manual EGP50/signup OPEN/PDC PAUSED. Critical financial exceptions0;
+  new orders/attempts/transactions0. All2268 deployed asset hashes PASS01:21:21.
+  Original single-use emergency-close budget1 remains unused; callbacks/runtime/
+  HMAC/Caddy preserved. No payment, callback POST, provider or SMTP action.
+- **MON-01 BLOCKED / PARTIALLY DEPLOYED / NOT ACCEPTED:** timer disabled/inactive,
+  no next trigger. Existing verify cannot enable it and requires the missing
+  switched receipt. Scheduled dedup/cadence and hosted staff-browser acceptance
+  remain unexercised. No live failure injected. Staffed monitoring remains needed;
+  last full read-only checkpoint01:20:40, next due no later01:35:40Riyadh.
+- Friend EGP3149 Cancelled/pending/paid0/no signed transaction; owner confirms
+  intentional abandonment, provider nonpayment still UNVERIFIED. WOLF stays
+  Paid/Processing/untracked/unpacked/no shipping job. No fulfillment invented.
+- All sealed inputs, original parent receipts,135 frozen worktree files and
+  original32 deferred rows remain preserved. DTR-33/STOR-01/all deferred work open.
+  Email OFF; no Auth SMTP access. Existing tests retained, broad tests not repeated.
+- **NEXT: separately review timer completion with zero additional app restarts**;
+  existing units/worker/state/report/app only, no replacement installer, no replay
+  or invented receipt. No further production step taken after the guarded stop.
+  MIG-04 remains READ-ONLY queued after MON-01; no combined SEO change/audit.
+
+---
+
+# E98 — Codex 1 takeover; MON-01 recovery ready for exact approval — 2026-10-28
+
+- Read-only takeover preflight **28 October 01:15:10 Riyadh PASS**.
+  Seal `6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4`;
+  expires **28 October 2026, 06:08:53.653 Riyadh**. All sealed input/archive hashes
+  match. Scope unchanged; no recovery approval or execution exists.
+- Production **a402cf24a9685e0d / schema98 / PID55343**. Original runtime, service
+  and Caddy identities match; zero MON-01 app restarts; timer remains inactive.
+  Signup OPEN; CARD capabilities/Manual EGP50 available; PDC PAUSED.
+  Critical amount, success-ledger, duplicate and ownership exceptions: zero.
+  Evidence: private recovery packet `preflight-1793139310665.json`. No payment created.
+- Original `cd1ed359…` approval and local/remote execution intents are consumed.
+  Parent operator also rejects the intentional worker-input hash change.
+  Never replay the original installer or re-record its approval. Recovery reuses
+  staged **b4b502a03207713a**, permits one unused app restart and preserves the
+  original unused **single emergency-close budget**. No new installer or budget.
+- Inspected all22 worktrees/branches/statuses; existing135-file preservation guard
+  PASS. Both accounts' artifacts remain preserved. No checkout, cleanup, merge,
+  push, production write, worker run or restart. Existing22 worker/5 recovery
+  checks and prior API/build/archive evidence retained; broad tests not repeated.
+  Email OFF; no SMTP credential access. Hosted acceptance remains pending.
+- Owner explicitly confirms the friend intentionally abandoned payment. Its last
+  specific ledger observation is Cancelled; merchant/provider nonpayment remains
+  **UNVERIFIED**. No retry, charge, refund or fulfillment. WOLF remains Processing
+  at its last specific observation; no invented fulfillment. DTR-33, STOR-01 and
+  all other deferred tests remain open. Historical monitoring gaps remain.
+- **MIG-04 queued READ-ONLY immediately after MON-01**, separately: Search Console
+  readiness; robots/sitemap/canonicals/hreflang/indexing; legacy WooCommerce
+  product/category/page mappings and301/308 redirects;404s/chains/broken links;
+  storefront “under maintenance” text; preservation of old-to-new URLs.
+  Google access/indexing remains unverified. No SEO change joins this deployment.
+- **NEXT: separate exact owner recovery approval** in the
+  [E97 review](docs/mon01-journal-recovery-review.md), then existing recovery once
+  with fresh live guards. Postflight must cover release/schema, five-minute timer,
+  durable reports/journal continuity, staff-only Dashboard permissions,
+  deduplication/heartbeat/failure behavior and CARD/Manual50/callback/kill controls
+  without payment creation. Staffed coverage and owner acceptance stay explicit.
+
+---
+
+# E97 — MON-01 guarded stop; minimal journal recovery ready — 2026-10-28
+
+- Owner approval cd1ed359 was recorded once. The single guarded installation
+  stopped at its first worker check, before application cutover. Never rerun it.
+  Existing monitoring user/group, private credentials/state, service/timer and
+  staged candidate remain installed. Worker failed; timer inactive; app restarts0.
+- [Recovery review](docs/mon01-journal-recovery-review.md): original journal JSON
+  exceeded the4MiB worker bound (5,838,505bytes). Projecting MESSAGE/PRIORITY retained
+  all5,563 records in2,199,632bytes. No larger limits, extra privilege or raw export.
+  Worker-only commit568c8ddb:22worker checks PASS;5new recovery guard checks PASS.
+- Application artifact b4b502a03207713a is unchanged, still inactive. Reuse its
+  archive, inventory and all2268 qualified assets; no rebuild. Recovery changes
+  only the worker, then qualifies the existing service/candidate before finishing
+  the one unused app cutover/restart. No credential rewrite, SQL, Caddy, email,
+  new payment, order/stock action, public activation or original-operator retry.
+- Production a402cf24a9685e0d/schema98/PID55343 remains live. Runtime and Caddy
+  unchanged; signup/CARD/Manual50 remain available; PDC PAUSED. Existing single-use
+  emergency kill budget remains1, shared by recovery after its approved cutover.
+- Latest full read-only checkpoint28Oct00:54:45Riyadh: new orders/payments0,
+  no critical ownership/amount/success-ledger/duplicate mismatch. Friend3149 changed
+  locally to Cancelled at00:44:01; paid0, no provider transaction/callback evidence.
+  Provider outcome remains UNVERIFIED, not confirmed unpaid. No agent order action.
+  Worker already detects terminal-provider-uncertain cases. WOLF Paid/Processing,
+  untracked/unpacked, no shipment. Journals show no identified checkout/callback
+  failure;4generic markers are not proof of checkout failures; access logs absent.
+- Public Beta WARNING: automation is not active; staff must keep15-minute checks.
+  The00:15 checkpoint was missed; first worker failed before timer activation.
+  No full timely00:15/00:30 check is evidenced.
+  Catch-up completed00:37; next full00:54 check was17m23s later, also late.
+  Preserve earlier15historical missing points. Next checkpoint01:09Riyadh.
+- Fresh recovery preflight00:51:54 PASS, no production writes. New exact seal
+  6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4;
+  expires28Oct06:08:53Riyadh, unchanged from parent. RECOVERY NOT APPROVED/EXECUTED.
+  Fresh approval is needed because the sealed installer is consumed and its worker
+  changes. Keep parent approvals, intents, certificates and stop evidence immutable.
+- Original32deferred rows/DTR-33/STOR-01/location96/storage audit and all existing
+  branches/commits/changes preserved. Auth SMTP untouched; no notification or push.
+  NEXT: exact recovery approval in linked review, followed by fresh live guards.
+
+---
+
+# E96 — MON-01 Dashboard core ready; email optional/off; exact approval pending — 2026-10-28
+
+- Owner prioritizes secure Dashboard alerts and durable monitoring. Email is no
+  longer a core prerequisite. Do not extract/copy/reuse hosted Auth SMTP credentials.
+  Read-only app/VPS metadata: no configured application sender or SMTP transport;
+  hosted Auth SMTP was not inspected. No credential generated or notification sent.
+- [Dashboard-core review](docs/mon01-dashboard-core-review.md): sourcefeea512 on
+  deployed113b313, candidateb4b502a03207713a. Persistent5-minute worker, SQLite
+  receipts/deduplication, private report and Orders-permission Dashboard alerts.
+  Email disabled and no email backlog. Optional recipient field remains available.
+- 36 focused checks PASS (21 worker/7 API-settings-UI/8 guard), production build PASS,
+  2268 served local asset hashes PASS incl2161 retained; safe archive readback PASS.
+  Read-only VPS functions23:48:32 and final guarded preflight00:09:02 on28October PASS.
+  Installed service/group/timer and owner browser acceptance remain pending.
+- Publica402/schema98/PID55343 unchanged, signup/CARD/Manual50 LIVE; PDC PAUSED.
+  Checks22:58/23:13/23:30/23:45 found no new orders/payments, no critical mismatch.
+  Friend3149 remains UNVERIFIED; WOLF remains Paid/Processing/unpacked, no shipment.
+  Public Beta WARNING while that exception and staffed/manual coverage remain.
+  Historical15 missing points preserved;23:13–23:30 review was late (16m52s).
+- Core approval proposes one app restart, monitoring user/service/timer, one private
+  report-path runtime value/read-only report group; no SQL/Caddy/email/charge/push.
+  Preserve/rebind original remaining single-use kill using its shared intent marker,
+  without rerunning consumed activation or creating another kill budget.
+- READY FOR EXACT OWNER APPROVAL, NOT DEPLOYED. Sealcd1ed3593135056015cdfa14b5cf4059702866a3802a49819b202fbda8ed691f;
+  exact phrase in linked review. Expires28Oct06:08:53Riyadh; fresh live check mandatory.
+  No MON-01 approval or execution intent recorded. Do not use old E95 readiness or
+  superseded unapproved packets. Current private pointer: dashboard-core-readiness.json.
+  Final full health28Oct00:08:57: no new orders/payments or critical exception;
+  next staffed00:15Riyadh. Earlier historical gaps remain recorded.
+- NEXT: owner reviews/approves the exact Dashboard-core packet. Keep staffed15-minute
+  Dashboard/fulfillment coverage; email setup is separate and optional. No test mail.
+- Original32 rows/DTR-33/STOR-01/location96/storage audit and all existing work remain
+  preserved. Roadmap + both handoffs synchronized. No Git push or production change.
+
+---
+
+# E95 — MON-01 locally qualified; existing SMTP access/release guards pending — 2026-10-27
+
+- Owner promotes MON-01 to P0 and binds alerts to info@elcomputer.net, with a
+  Dashboard-editable address. Reuse approved email credentials only; no new key,
+  test notification or production deployment is authorized by this work request.
+- [MON-01 review](docs/mon01-automated-monitoring-review.md): isolated source
+  5ea264a on deployed113b313; one GET-only worker + persistent5-minute timer,
+  durable heartbeat/report/deduplication and permission-protected EN/AR email field.
+  No automatic order/payment/stock action; provider-uncertain remains UNVERIFIED.
+  Unit-only follow-up60e9fdd uses a private config credential; hosted unit acceptance pending.
+- 17 worker +2 settings/UI tests PASS; production build PASS; all2267 local served
+  browser assets status/hash PASS, including2161 retained. In-memory production
+  function qualification22:47:21Riyadh read3 known orders; no writes or notification.
+  Installed sandbox/timer, SMTP delivery and browser save are NOT accepted yet.
+- Immediate Beta checks22:24/22:32/22:45: new orders/attempts/transactions0 since
+  21:51. Sole aged friend3149 attempt remains pending/UNVERIFIED. WOLF paid order
+  remains Processing/untracked/unpacked, no shipment. Public Beta WARNING;
+  a402/schema98/PID55343, signup/CARD/Manual50/callbacks/PDC pause/kill unchanged.
+- Two more missing timely checkpoints22:06/22:21;15 historical gaps recorded.
+  NEXT staffed23:00:52Riyadh. No automatic monitoring was activated.
+- DEPLOYMENT BLOCKED / exact approval NOT ISSUED: app Brevo sender is dormant,
+  with no key or approved sender; secure access to existing Auth SMTP is pending.
+  Before a future app switch, qualify a fresh installer and preserve/rebind the
+  original single-use kill guard (currently bound to a402), without a second budget.
+  No old approval/operator is reused. No production files/SQL/restart/provider call.
+- NEXT owner input: secure file reference for the existing approved SMTP profile,
+  or confirmation it exists only in Supabase; never paste credentials in chat.
+  Then finish/seal the guarded release and return one exact deployment approval.
+- PDC paused; original32 deferred tests/DTR-33/STOR-01/location96/storage audit
+  preserved. Existing worktrees, commits and changes preserved; no push.
+
+---
+
+# E94 — merchant inquiry STILL UNCERTAIN; access/history missing; automation P0 — 2026-10-27
+
+- [Read-only merchant inquiry/checkpoint](docs/paymob-640878234-inquiry-review.md): existing LIVE intention credentials
+  used for one supported-SDK GET; Paymob returned405, no history obtained. This is
+  not paid/unpaid/failed evidence. No additional provider payment/auth/retry call.
+- Legacy Inquiry API key absent from checked runtime/operator record; no matching
+  configured DB credential/vault name. No connected merchant browser; local metadata
+  probe timed out. Official management inquiry needs a separate API-key auth token,
+  then existing order640878234 with ALL transactions. Secure location/Dashboard
+  history requested; no key/token/cookie requested in chat or exposed.
+- ORD-20261027-A5FC5269EA remains pending_payment/pending, paid0, one matching
+  owned LIVE314900minor attempt, no signed transaction. Owner reports incomplete
+  friend test; not a completed genuine public sale. Cleanup/reconciliation blocked
+  pending provider history, no paid or unpaid conclusion from expiry/405 alone.
+- Conditional normal scoped cancellation reviewed, NOT approved/executed. Untracked
+  order has0 allocated units/sale-out/packing/shipments. Once nonpayment is verified,
+  exact approval can cancel only this order, clear unsucceeded attempt secret and
+  stamp once-only release without fabricating stock. Do not run batch expiry25.
+- Public checkpoint through21:51:28Riyadh: new orders/payments0 since priorreview,
+  earlier2 LIVE successes intact; known aged friend test is sole financial warning.
+  Appa402/schema98/PID55343, signup/CARD/Manual50 live; callbacks/owned reads/PDCpause/
+  kill preserved. No critical integrity issue established; public Beta remains OPEN.
+- 13 historical recorded checkpoints missing; current scheduled checkpoint documented.
+  NEXT staffed **22:06:18 Riyadh**. User promotes MON-01 to P0 next: read-only
+  scheduled exceptions + durable receipts/heartbeat/missed-run detection, reviewed
+  alert channel and guarded scheduler activation. No automated mutation/expiry,
+  message send or scheduler installed; broader deferred automation remains open.
+- DTR-33/STOR-01/all original32 rows/frozen135/location96/storage/provider incident/
+  shared Git work preserved. No production/stock/order/refund/shipment/replay/redeploy.
+
+# E93 — EGP3149 owner-reported incomplete friend test; after-expiry review — 2026-10-27
+
+- Owner clarifies ORD-20261027-A5FC5269EA was a friend testing; payment not completed.
+  Do not count it as genuine public-customer payment acceptance. [Order receipt](docs/public-beta-a5fc5269ea-reconciliation.md).
+- Fresh read-only checks20:31:54,20:36:32 and after recorded20:40:15 expiry at20:40:47
+  Riyadh. Outcome UNCERTAIN; actual order/payment statuses
+  pending_payment/pending, paidEGP0,
+  successful transactions0/failed0.
+  One owned command/attempt, amount314900EGPminor matches total3149. No replay/retry.
+- Existing Paymob order640878234/intention/special-reference retained privately.
+  Provider status not independently queried. Expiry alone is not proof of failure.
+  Before any cleanup/release/retry or definite customer payment conclusion, obtain
+  merchant read-only order/transaction status, exact amount/currency/integration,
+  and match original signed callback/ledger. Never manually assert paid or infer failed.
+- Stock-release timestampNone, packingNone,
+  shipment jobs0; no order/stock/payment/refund/fulfillment change.
+- Four historical proxy GET events all predate this order; no recognized store
+  checkout/payment/auth route matched,3 closed/cancelled streams+1 reset. No proven
+  impact on payment/auth, no claim these were checkout errors or harmless events.
+- Public CARD remains OPEN while staffed; currenta402/schema98/PID55343, Caddy/
+  callback key/source/runtime unchanged. Signed late callbacks/owned reads retained;
+  PDC PAUSED, kill unconsumed. No verified critical payment/privacy defect identified.
+- Nine historical scheduled checkpoints lack receipts (prior8 plus20:21:18).
+  Current active documented checks restore this turn's cadence; no background job
+  installed or future unattended coverage claimed. NEXT staffed **20:51:18 Riyadh**.
+  If staffing/reconciliation cannot be maintained recommend authorized stop, keeping
+  callbacks/owned access. DTR-33/STOR-01/all deferred/location/storage/Git preserved.
+
+# E92 — continued payment review WARNING: cadence gap; one new pending order — 2026-10-27
+
+- [Read-only catch-up receipt](docs/public-beta-second-payment-review.md): ledger covered18:04:45→20:15:57
+  Riyadh; runtime/journals through20:15:58. Eight scheduled checkpoints18:19:45→
+  20:04:45 have no stored review receipts. Catch-up does not prove timely monitoring.
+- Initial20:06 snapshot0 new commerce; closing snapshot finds ONE new public order
+  ORD-20261027-A5FC5269EA, merchandise3099+Manual50=EGP3149, one LIVE pending
+  intention/attempt, no transaction/signed success yet, expiry20:40:15. Owned
+  command/customer/amount/line totals match; no duplicate/orphan/overdue/uncertain/
+  amount/ownership reconciliation exception. Do not retry or fulfill while unpaid.
+- Prior WOLF ORD-20261027-D42FA123A8 stays paid5/processing/untracked, packing
+  incomplete, shipping jobs0, unchanged since16:57:21. No actual dispatch/delivery
+  inferred; no test goods marked fulfilled. Two prior LIVE successes remain paid.
+- Currenta402/schema98/PID55343/restarts0; signup OPEN, CARD LIVE, Manual50/28areas
+  available; runtime/Caddy/callback key/source/policy preserved, PDC PAUSED. Kill
+  remains unconsumed. No critical payment/privacy issue identified in observed data.
+- Available journals:4 incomplete proxy responses, one reset, no identified
+  checkout/payment route among them;122 generic app error markers remain unclassified.
+  No specific checkout/callback failure pattern, no truncation. Request-level access
+  logging absent; do not claim all requests succeeded or that warnings are harmless.
+- NEXT restore documented15-minute staffing; checkpoint **20:21:18 Riyadh today**.
+  Hold new pending order for paid reconciliation; actual fulfillment evidence before
+  any dispatch/delivery status. If staffing/reconciliation cannot be maintained,
+  use existing authorized stop procedure retaining callbacks/owned reads. No kill,
+  order/refund/shipment/payment/provider/replay/production change was performed.
+- DTR-33/STOR-01/all original32 rows/frozen135/location96/storage/provider incident/
+  shared Git work preserved. No unrelated application development or accepted retests.
+
+# E91 — first public Beta payment review HEALTHY (observed records) — 2026-10-27
+
+- [Read-only monitoring receipt](docs/public-beta-first-payment-review.md): database checked through 18:04:45
+  Riyadh, journals/runtime through 18:06:25, since activation17:48:34. New orders0,
+  attempts0, transactions0, successful/failed/pending payments0. Two earlier LIVE
+  successes remain reconciled; no prior attempt/transaction updates since activation.
+- Recorded exceptions0: successful-charge/unpaid mismatch, duplicates, orphans,
+  amount/currency, command ownership, overdue/uncertain and error-coded attempts.
+  No new order exists to accept as a public customer ownership/fulfillment case.
+- Public CARD/Manual50 available, coverage28; appa402/schema98/PID55343/restarts0,
+  runtime/Caddy/callback key/approved source unchanged. PDC PAUSED, coupon/test
+  exclusion policy retained. No logged checkout/callback/upstream errors in4625
+  app+1 Caddy entries. Per-request access logging is absent: journal silence does
+  NOT prove every API request succeeded. DTR-33 and broader browser tests stay open.
+- Staff action: prior paid WOLF order ORD-20261027-D42FA123A8 is processing,
+  untracked, packing incomplete; arrange normal Manual fulfillment. No order,
+  payment/refund/shipment/provider/callback write or replay; no restart/kill.
+- NEXT staffed review **18:19:45 Riyadh27Oct2026**, continuing15-minute cadence.
+  Original payment identities on uncertainty; recommend existing authorized kill
+  on a critical issue, retaining callbacks/owned reads. No background job installed.
+- Original32 deferred rows plus DTR-33, STOR-01/Storage audit, frozen135/location96/
+  existing provider incident and both accounts' branches/commits/work preserved.
+
+# E90 — public CARD Beta ACTIVE / activation verified — 2026-10-27
+
+- Exact 1707a5ba public approval recorded once. Fresh approved preflight, encrypted
+  execution recovery and postflight PASS; APPLY CONSUMED_COMPLETE, never replay.
+  [Activation receipt](docs/public-card-beta-activation-receipt.md): active 17:48:34 Riyadh27Oct2026,
+  independently verified 17:49:10; one app restart PID54674→55343.
+- Public purchasing ON, Paymob CARD LIVE, owner-managed Manual EGP50. Existing
+  eligible normal/published/active/positive-price rules retained; TESTproduct2026
+  excluded, all coupons disabled for Beta. Signup OPEN, Turnstile/confirmation
+  preserved, PDC PAUSED. Only five reviewed runtime values changed; no app deploy,
+  SQL/migration, stock/price/coupon, Caddy, Auth or credential write.
+- Appa402cf24a9685e0d/source113b313/schema98 unchanged. Actual public capabilities
+  and critical HTTP/Auth/closed-route checks PASS; compiled inventory/assets/fixed
+  files/edge preserved. Protected schema/security/history/settings/company and
+  prior paid5 remain intact. Legitimate public commerce rows may now advance.
+- Signed callbacks/owned receipts/late reconciliation retained. Sealed read-only
+  monitor shows0 recorded exceptions. Owner-confirmed15-minute staffed monitoring
+  and manual cancellation/reimbursement process apply; no agent quote/order/card/
+  provider call or repeated real payment/Auth tests. No new public order claimed.
+- One SAME-APPROVAL emergency runtime kill remains AUTHORIZED_PENDING, including
+  after the preparation deadline. It closes purchasing/CARD initiation with one
+  restart, retaining callbacks/receipts; no money action/SQL/Caddy/rollback.
+- E88 genuine EGP5 remains VERIFIED, restricted grant CLOSED/consumed. Original
+  browser field remains UNCONFIRMED; DTR-33/CX-07 deferred, focused local3 PASS,
+  broader browser matrix unfinished. A valid public reproduction or unmaintainable
+  payment reconciliation/monitoring escalates immediately and closes purchasing.
+- Original32 deferred rows retained verbatim plus DTR-33; frozen135/location4843754/
+  undeployed26190000/Storage audit/provider incident/branches/commits/work preserved.
+- NEXT accept genuine customer orders with staffed15-minute exceptions/manual
+  fulfillment. Reconcile original payment identities; never create a duplicate
+  charge to diagnose uncertainty. Preserve all remaining deferred requirements.
+
+# E89 — genuine EGP5 VERIFIED/CLOSED; public CARD Beta GO FOR APPROVAL — 2026-10-27
+
+- E88 [payment/closure receipt](docs/egp5-genuine-payment-verification.md): order ORD-20261027-D42FA123A8,
+  Paymob561728044, LIVE500minor EGP, paid/processing/untracked. Correct
+  selected customer/recipient/WOLF Default1/Manual50; discounts25+45; final5.
+  One order/attempt/intention/successful transaction, no recorded duplicate or
+  uncertain attempt. Signed-callback-only service ledger and unchanged HMAC route
+  verified; no raw callback/signature replay or new provider transaction.
+- Owner confirms My Account and Dashboard display correctly. Same e239 approval
+  closed ONCE; closure PID54442→54674, runtime restored byte-for-byte, callbacks/
+  owned receipts retained. Both activation and closure CONSUMED_COMPLETE.
+- Original browser v3 cart owner/product/variant/qty1 valid, no pending command,
+  FRE5 not stored as applied. Actual rejected field/client version UNCONFIRMED.
+  New focused actual Vue/server-guard browser3 PASS: restored cart reaches5;
+  changed address reproduces restricted deny; normal public address reaches75;
+  stale Beta coupon can be removed safely. No proven general app defect/code fix.
+  New DTR-33/CX-07 deferred controlled-grant discrepancy; broader browser matrix
+  remains open. Promote to launch blocker and close purchasing on valid public repro.
+- [Public activation review](docs/public-card-beta-activation-review.md) READY, NOT APPROVED or ACTIVE.
+  Seal `1707a5baf28702cd8670951bea3747446aedc118623e09f6ca185b4d755cabc6`; deadline27Oct23:23:23.842Riyadh.
+  Five runtime values only, one restart; CARD/Manual50,223 eligible catalog products,
+  test product excluded, coupons disabled, PDC PAUSED. No app/SQL/Caddy/stock/coupon/
+  Auth change or agent order/payment/provider call. Same approval includes ONE later
+  emergency runtime kill retaining callbacks and receipts. Partial uncertainty STOP.
+- Fresh encrypted98 DB/full readback +10 runtime files PASS; operator remote8/local3
+  guard groups PASS; final sealed preflight PASS; monitor0 exceptions/global2 prior
+  LIVE successes. Owner confirms15-minute staffed review and manual remedy available.
+  New public activation/postflight remains NOT EXERCISED until separate approval.
+- Current a402cf24a9685e0d/source113b313/schema98/PID54674. Signup OPEN, purchasing
+  OFF, PDC PAUSED. Original32 deferred rows preserved verbatim, DTR-33 added;
+  location4843754/version26190000/frozen135/Storage/branches/existing work preserved.
+- NEXT exact PUBLIC CARD BETA approval → fresh preflight/recovery → activation ONCE.
+  Never repeat either genuine card payment, prior deployment/grant or broad Auth tests.
+
+# E87 — approved secure EGP5 window ACTIVE; genuine purchase PENDING — 2026-10-27
+
+- Exact e239dbb7 approval recorded once. Fresh preflight/recovery/postflight PASS.
+  APPLY CONSUMED_COMPLETE; never replay. Authorized later closure remains pending.
+- [Activation receipt](docs/egp5-secure-checkout-window-activation-receipt.md): owner window **16:50:56–17:50:56 Riyadh,
+  27 October 2026**, verified 16:51:49. Only grant dates changed; one restart,
+  PID 53535 → 54442. No application deployment or SQL/Caddy/coupon/stock change.
+- Original customer/recipient/WOLF Default1/Manual50/FRE5/500-minor/fixed cart/
+  review key/one-charge budget retained, zero retries. Fresh preactivation commerce
+  counts0 and coupon unused. Exposed older sessions/refresh rows remain revoked;
+  intentional fresh login retained. No exposed credential read/reuse.
+- Current a402cf24a9685e0d/source113b313/schema98. Signup OPEN, public purchasing
+  OFF, PDC PAUSED. All32 deferrals/frozen135/location4843754/version26190000/
+  Storage/branches/commits/uncommitted work preserved. Agent quote/order/payment/
+  provider calls0. Prior successful tests retained, not repeated.
+- Original after-FRE5 rejection remains UNCONFIRMED; no speculative app change.
+  Initial no-coupon denial is expected; canonical SQL/HTTP proof supports EGP5.
+  Chat/status403 is a separate Caddy deny. Hosted quote/payment acceptance PENDING.
+- NEXT owner confirms saved recipient/Manual50, applies FRE5 before Continue,
+  verifies final EGP5 and pays ONCE before 17:50:56. If blocked, stop and return
+  path/status/match flags only, never cookies or headers. Reconcile provider/
+  callback/paid ownership/Manual fulfillment, close runtime, then separate public
+  purchasing approval. No silent extension or uncertain payment retry.
+
+# E86 — session containment verified; fresh EGP5 window READY, NOT ACTIVE — 2026-10-27
+
+- E85 [revocation receipt](docs/session-exposure-checkout-receipt.md): both older
+  sessions/refresh rows removed by owner global sign-out; one owner-confirmed
+  fresh login remains. No exposed credentials read/reused. Issued JWT stateless
+  expiry caveat retained; hostedAuthv2.197.0 getUser checks session existence.
+- [Fresh runtime-only packet](docs/egp5-secure-checkout-window-review.md) READY,
+  NOT APPROVED: `e239dbb76fed3311eed3c67606f0f06b9e749eaa93d23562ea5b8bab79ba92db`.
+  Deadline27Oct19:11:48Riyadh matches unchanged FRE5. Proposed window≤1h from
+  activation; only dates change, one runtime/app restart, no app/SQL/Caddy/coupon/
+  stock/settings/global changes. Previous15:59:04 window is expired, never replayed.
+- Original customer/recipient/WOLF Default1/Manual50/FRE5/500-minor/fixed cart/
+  review key/one-charge budget retained, zero retries. Fresh16:35 baseline0 commerce
+  commands/quotes/orders/attempts/transactions, FRE5 unchanged/unused. Old sessions
+  still absent and direct anonymous/authenticated checkout RPC execution denied.
+- Three new security guard groups/eight local cases PASS. Read-only text/UUID
+  cast stop corrected before sealing, evidence retained. Fresh encrypted98 DB/
+  full pg_restore and ten runtime-file full-byte recovery PASS. Final read-only
+  preflight PASS at 16:40:44 Riyadh; diagnostics empty.
+  Prior application/Paymob qualifications retained, not repeated. No activation.
+- Root after original FRE5 failure remains UNCONFIRMED. Initial missing coupon
+  denied before SQL; canonical exact SQL/HTTP fixture and live arithmetic support5.
+  No retained scoped failure log. Confirmed chat/status403 is a separate Caddy deny.
+  No speculative app correction. Owner uses Apply FRE5 after selecting Manual and
+  saved recipient; if failure recurs, return match flags only, never cookie/headers.
+- Currenta402/source113b313/schema98/PID53535; signup OPEN/public purchasing OFF/
+  PDC PAUSED. All32 deferrals/location4843754/version26190000/frozen135/Storage/
+  branches/commits/uncommitted work preserved. No agent quote/order/payment/provider.
+- NEXT exact NEW approval → fresh security/preflight/recovery/runtime activation.
+  Owner waits for ACTIVE, applies FRE5 before Continue, verifies5 and pays once.
+  Actual provider/callback/paid ownership/Manual fulfillment, runtime closure and
+  separate public purchasing approval remain pending.
+
+# E85 — exposed-session containment VERIFIED; checkout window expired — 2026-10-27
+
+- OD-20261027-SESSION-EXPOSURE-01: owner reported exposed customer Auth cookie.
+  [Containment receipt](docs/session-exposure-checkout-receipt.md) verified16:26:06
+  Riyadh. Owner used supported global Sign out, then confirmed a fresh login.
+  Both older sessions and all older unrevoked refresh rows are gone. One intentional
+  new session from16:20:57 remains. Agent never read/decoded/reused exposed tokens.
+- JWTs can remain valid for stateless checks until exp; exposed expiry not read.
+  Hosted Authv2.197.0 source checks session_id existence on getUser; checkout uses
+  server getUser. This is source-based assurance, not an exposed-token replay.
+- Latest16:21 read-only commerce counts0 commands/quotes/orders/attempts/transactions.
+  Current a402/source113b313/schema98/PID53535, runtime/Caddy/assets unchanged.
+  FRE5 unchanged/unused. Purchase window expired15:59:04; no extension/activation.
+- Owner's confirmed GET /api/chat/status403 is separate Caddy @commerce denial:
+  plain “Unavailable”; launcher poll blocked before Nuxt. Quote/coupon paths reach
+  Nuxt.12,000 bounded journal entries provide no retained customer checkout error;
+  original after-FRE5 rejected field still UNCONFIRMED. E84 exact SQL/handler test
+  and live arithmetic support5; no production quote or repeated Paymob test.
+- NEXT prepare fresh exact EGP5 runtime-window authorization after security
+  containment, preserving original cart/review key/account/address/product/Manual/
+  FRE5/500-minor/one-charge budget. No guessed app fix or chat/public activation.
+  Three new security guard groups and eight local cases qualify the new packet;
+  its read-only SQL text/UUID cast stop was corrected before any seal/activation.
+- Signup OPEN/public purchasing OFF/PDC PAUSED. All32 deferrals, frozen135 paths,
+  clean location4843754/version26190000, Storage and both accounts' work preserved.
+
+# E84 — EGP5 checkout blocked; read-only checks PASS, browser request needed — 2026-10-27
+
+- OD-20261027-EGP5-CHECKOUT-01 continues BETA-11. Owner stopped on “This purchase
+  is unavailable.” before/after FRE5; no intentional new payment. Latest15:51:19
+  Riyadh read-only counts:0 commands/quotes/orders/attempts/transactions.
+- [Focused diagnosis](docs/egp5-checkout-rejection-review.md): both quote/coupon
+  routes reach Nuxt (anonymous JSON401); Caddy plain403 is distinct. Normal guard
+  requires exact granted coupon BEFORE quote RPC. No-coupon initial403 confirmed.
+  A matching FRE5 Apply request can run independently; no inherent coupon cycle.
+- Live grant/customer/product/variant/Manual/FRE5/500-minor/saved address bindings
+  match; runtime/process/assets unchanged. Live read-only pricing is25+50−25−45=5.
+  Five focused native HTTP/SQL checks PASS/0skip, SIX deployed definitions exact:
+  full coupon request and quote5 succeed; browser cart ID changes alone succeed.
+  No production quote RPC, order, payment or provider call; no successful Paymob
+  tests repeated. This does not establish hosted owner quote/payment acceptance.
+- Post-coupon field remains UNCONFIRMED: actual browser request/local cart/pending
+  state not available. Requested redacted path/status and only item IDs/quantity,
+  coupon/payment/Manual fields. Private read-only browser match-flag check prepared.
+  No code/production change or speculative release packet. Preserve final5,
+  account/address restrictions, fixed cart/review key and one-charge budget.
+- Current a402/source113b313/schema98/PID53535; grant ends15:59:04 Riyadh today.
+  No extension. Signup OPEN/public purchases OFF/PDC PAUSED; FRE5 unchanged/unused.
+  All32 deferrals/location4843754/version26190000/frozen135/Storage/work preserved.
+- NEXT receive actual failed FRE5 request/match flags, identify exact condition,
+  then minimum binding recovery or qualified code correction and fresh approval.
+  Any purchase after15:59:04 needs a renewed grant; public activation stays separate.
+
+# E83 — renewed restricted EGP5 window ACTIVE — 2026-10-27
+
+- Exact af7112e2 approval recorded/applied ONCE. APPLY CONSUMED_COMPLETE; never
+  replay. Same approval retains one later runtime-only closure; closure PENDING.
+- [Activation receipt](docs/egp5-purchase-window-activation-receipt.md): verified
+  14:59:38 Riyadh. New owner window 14:59:04–15:59:04 Riyadh today.
+  Only grant dates changed; same original fixed cart/review key/customer/recipient/
+  WOLF Default1/Manual50/FRE5/EGP5 and unused one-charge budget, zero retries.
+- Current a402cf24a9685e0d/source113b313/schema98; one renewal restart, PID53535.
+  No app redeployment, SQL, coupon, stock, business setting, Caddy or global change.
+  Fresh preflight/5,067 inputs/encrypted98 DB and10 runtime full readback passed.
+  Auth/capabilities/route health/full protected DB postflight PASS. Independent
+  release/runtime/process/Caddy/assets/media/private preservation check PASS.
+- At activation customer commands/quotes/orders/attempts/transactions remain zero,
+  FRE5 unchanged/unused. Signup OPEN, public purchasing OFF, PDC PAUSED. No agent
+  order/payment/provider request. Genuine owner Paymob acceptance stays PENDING.
+- All32 deferrals, frozen135 paths, clean location4843754/version26190000,
+  Storage work, branches, commits and uncommitted work preserved; no Git push.
+- NEXT owner reloads selected Outlook account, WOLF Default1/Manual50/FRE5,
+  verifies5 and pays once privately BEFORE 15:59:04 Riyadh today. Report outcome;
+  never retry uncertain payment. Verify actual provider/signed callback/paid owned
+  order/coupon use/Manual fulfillment, close this renewed grant, then prepare
+  separate PUBLIC purchasing approval. No further activation is authorized.
+
+# E82 — repair deployed; renewed EGP5 grant READY, NOT ACTIVE — 2026-10-27
+
+- [E81 repair deployment](docs/pdp-cart-repair-deployment-receipt.md) remains PASS:
+  a402cf24a9685e0d/source113b313/schema98/PID52880, one app restart. ddcd approval
+  CONSUMED_COMPLETE. Original14:21:33 purchase window remains expired; no extension.
+- [Separate EGP5 renewal](docs/egp5-purchase-window-renewal-review.md) READY, NOT APPROVED:
+  seal `af7112e281d0f2c7e58a232ec05f15bc87b1c2d598830718802f3649609b361c`.
+  Packet expires27Oct19:11:48 Riyadh, FRE5's unchanged expiry. Proposed window ≤1h
+  from future activation. Change only original grant dates, one runtime/app restart;
+  no app deployment, SQL, stock, coupon, settings, Caddy or public gate changes.
+- Preserve same verified customer/recipient/WOLF Default1/Manual50/FRE5/EGP5,
+  original fixed cart/review key and unused one-order/intention/card-submission
+  budget, zero retries. Fresh14:44 read-only baseline confirms zero commands,
+  quotes, orders, attempts and transactions; FRE5 unchanged and unused.
+- Seven new remote guard groups and twelve local cases PASS. Fresh encrypted98 DB
+  full pg_restore and ten runtime-file full-byte recovery PASS. Final read-only
+  preflight PASS at 14:48:24 Riyadh; diagnostics empty.
+  Prior app/Auth/payment qualifications retained, not repeated. Same NEW approval
+  proposes later runtime-only closure restoring expired grant, one restart, callbacks/
+  owned reads retained; no SQL/Caddy/coupon changes, refund, retry or cancellation.
+- Signup OPEN, public purchasing OFF, PDC PAUSED. New grant NOT ACTIVE; no agent
+  order/payment/provider request. All32 deferrals, clean location4843754/version
+  26190000, frozen135 paths, Storage work, branches/commits/uncommitted work preserved.
+- NEXT exact renewed-window approval → fresh preflight/recovery/runtime activation.
+  Owner waits for ACTIVE confirmation, reloads WOLF1/Manual50/FRE5/check5/pays once.
+  Actual provider/callback/paid ownership/Manual fulfillment, safe closure and then
+  separate public purchasing approval remain pending.
+
+# E81 — PDP/cart repair DEPLOYED; EGP5 window remains expired — 2026-10-27
+
+- Exact ddcd0056 recovery approval was recorded and executed ONCE. It is
+  CONSUMED_COMPLETE; never replay apply. Original expired a40b packet is untouched.
+- [Deployment receipt](docs/pdp-cart-repair-deployment-receipt.md): verified14:39:09
+  Riyadh. Active a402cf24a9685e0d/source113b313/schema98. One app restart, PID52880.
+  Fresh preflight,5,055 inputs, encrypted98 DB/full pg_restore and10 runtime-file
+  full-byte recovery checks passed. Same archive, no rebuild. Private candidate,
+  retained assets, six live asset bodies/cache, Auth/capabilities and full protected
+  database postflight PASS. Independent release/runtime/Caddy/media/assets check PASS.
+- Zero SQL, stock, coupon, runtime, production Caddy or grant changes. FRE5 remains
+  unchanged and unused. Original grant expired14:21:33 Riyadh; no extension or new
+  purchase window. Signup OPEN/public purchasing OFF/PDC PAUSED. No agent order,
+  payment or provider request. Owner acceptance of the repaired purchase is pending.
+- All32 deferred tests, frozen135 paths, clean location4843754/version26190000,
+  Storage work, branches, commits and uncommitted changes remain preserved.
+- NEXT: prepare a separately approved renewed EGP5 grant for this repaired release.
+  Owner alone purchases after activation; verify actual provider/signed callback/
+  owned paid order/Manual fulfillment before separate public purchasing approval.
+
+# E80 — interrupted repair inspected; original approval EXPIRED — 2026-10-27
+
+- OD-20261027-PDP-CART-RESUME-01 continues E79 and BETA-11. Original approval was
+  recorded at 14:11:38 Riyadh; preflight passed at 14:12:19 with empty diagnostics.
+  All 5,044 sealed inputs and the archive match. No local execution records, locks,
+  remote repair stage or proposed release exist. No repair deployment or restart
+  occurred. Production remains fcce022d9ac76e49, source7e563bf, schema98, PID51346.
+- Both original deadlines expired on 27 October at 14:21:33 Riyadh. The sealed
+  operator couples repair and purchase expiry. No independent repair authorization
+  remains valid. The original approval file and all receipts remain unchanged.
+- [Fresh repair-only packet](docs/pdp-cart-repair-recovery-review.md) is READY, NOT APPROVED.
+  Seal: `ddcd0056784d5f3005e6e5288571bdc1ff51b6b338785be1965b656e569916f8`.
+  Repair deadline: 27 October, 20:27:43 Riyadh. It reuses the exact original archive
+  a402cf24a9685e0d and source113b313. One app switch and one production restart;
+  zero SQL, stock, coupon, runtime, production Caddy, grant or provider changes.
+  The expired grant stays unchanged. No closure or renewal mode is provided.
+- Six new remote recovery guard groups and seven local cases pass. Prior application,
+  Auth and payment qualifications were retained, not repeated. Fresh encrypted
+  schema98 database full pg_restore and ten runtime-file full-byte checks pass.
+  Final read-only preflight PASS at 14:28:32 Riyadh; diagnostics empty.
+- The 14:25 read-only baseline matches. The selected customer has zero commands,
+  quotes, orders, attempts and transactions. FRE5 stays unchanged and unused.
+  Signup OPEN, public purchasing OFF, PDC PAUSED. All 32 deferred tests, clean
+  location4843754/version26190000, frozen135 paths, Storage work, branches, commits
+  and uncommitted work remain preserved. No production writes or agent money action.
+- NEXT: approve the NEW repair-only packet; run fresh preflight/recovery and deploy.
+  After deployment, prepare a separately approved renewed EGP5 purchase grant.
+  The owner then pays once privately. Actual provider/callback/owned paid order/
+  Manual fulfillment acceptance and separate public purchasing approval stay pending.
+
+# E79 — WOLF cart blocker CONFIRMED; application-only repair READY — 2026-10-27
+
+- OD-20261027-PDP-CART-01: owner stopped on stock rejection, no payment. Read-only
+  confirms0 cart commands/quotes/orders/attempts/transactions, WOLF published normal/
+  serialized Default active/25/stock0, trackingfalse/CARD/fee0/Manual50/FRE5 unused.
+  WOLF VALID under approved untracked rules; no product/stock/config change needed.
+- Exact client cause useCart.normalizeCartItem removes allowance for serialization,
+  then addItem rejects0. PDP already honors untracked mode; SQL quote/order correctly
+  allow it. Local113b313 reuses cached policy in cart/restore; stock remains0. Initial
+  unavailable flicker is unresolved capability treated as denial. Neutral account-bound
+  loading now applies to Classic/Premium/cards, retaining denial/expiry/isolation.
+- [Exact app repair](docs/pdp-cart-stock-repair-review.md): seal a40b16c9cc83aa2ab3288516c5ecaf9ed088d91892d9658497e6bdc750fa5d53; expires
+  27 October 2026,14:21:33.006 Riyadh, ORIGINAL grant expiry, no extension/new grant. Proposeda402cf24a9685e0d/
+  schema98 unchanged.1 app restart,0 SQL/stock/coupon/address/settings/runtime/Caddy
+  writes. Final preflight PASS/all5044 inputs. Currentfcce/source7e/schema98 and417c unchanged;0 production writes.
+- Policy/access5+PDP browser8 ENAR/Classic/Premium+native stock/CARD/FRE5 regression13,
+  typecheck/build/remote8/routes16/six assets PASS/0skip.3133 entries/all2057 retained;
+  fresh encrypted98 DB/full pg_restore+10runtime full readback PASS. Real test PENDING.
+- NEXT exact repair approval before original14:21 expiry → fresh preflight/recovery,
+  app-only switch → owner reload/add WOLF1/Manual50/FRE5/check5/pay once → real provider/
+  callback/owned paid order/Manual Dashboard → new sealed closure → PUBLIC packet.
+  On expiry STOP/new exact authorization; never extend implicitly. SignupOPEN/public
+  purchasesOFF/PDC PAUSED. All32 deferrals/location/frozen135/branches/Storage retained.
+
+# E78 — scoped EGP5 coupon DEPLOYED; owner checkout ACTIVE — 2026-10-27
+
+- Exact owner417c approval executed ONCE. [Deployment receipt](docs/controlled-egp5-deployment-receipt.md):
+  activefcce022d9ac76e49/source7e563bf/schema98; only27100000 eligibility migration.
+  Apply CONSUMED; never replay. Same approval retains closure plus disabling only
+  FRE5. Old EGP50 grant remains CLOSED; no95/96/97 replay/location seed.
+- Fresh preflight/all4244 inputs/current bindings, encrypted97 DB/full pg_restore
+  and10 runtime full-byte recovery PASS. Staged3029 entries/private app/static
+  candidate/all1953 retained assets/six live bodies-cache checks PASS.1 app restart/
+  PID51346,1 CaddySIGUSR1/same PID26652. Independent postcheck
+  preserves all145 original projections/Auth/permissions/old coupons/payments/orders.
+- ONE scoped FRE5 created: merchandise25+store-funded delivery45; one verified
+  customer/whole-cart product/Manual option, usage limit1/expiry; usage0 at postcheck.
+  Existing FRE/site settings/couriers/Manual50 unchanged.25+50−25−45+fee0=5; full50
+  shipping and45 discount remain separate. Selected customer0 orders/attempts.
+- Exact recipient/product/model/coupon/500-minor private grant ACTIVE from 27 October 2026, 13:21:33 Riyadh
+  until 27 October 2026, 14:21:33 Riyadh;≤1h,1 order/1 intention/1 owner card submission,0 retries. SignupOPEN/
+  public purchasesOFF/PDC PAUSED.0 agent orders/quotes/payments/Auth/email/provider
+  requests. Normal CARD/untracked/Manual; no PDC job or fabricated stock.
+- BETA-11/CX-01 DEPLOYED, real owner EGP5 purchase PENDING. Owner alone signs into
+  recovered Outlook, reloads, adds WOLF Default1, checks real saved recipient/Manual50,
+  applies FRE5, verifies5 and submits own card once. Then actual provider/signed
+  callback/paid owned order/FRE5 once/Manual Dashboard reconciliation, grant closure/
+  FRE5 disable, then separate PUBLIC purchasing packet. Late callbacks stay accepted.
+- All32 deferred rows/frozen135 paths/branches/worktrees/local commits/Storage kept.
+  Clean location4843754/version26190000 remains undeployed; later ordering/history
+  qualification against98 mandatory. Main91 is continuity, not a release source.
+
+# E77 — scoped combined EGP5 coupon READY for exact approval — 2026-10-27
+
+- [Exact EGP5 review](docs/controlled-egp5-coupon-review.md): seal 417c4b1d9e9383fa4b7a3b9003daa65cb9d17ccf1595ecd132d208f856f1476e; expires
+  27 October 2026, 19:11:48 Riyadh. Old33779 EGP50 grant CLOSED; existingffd191/schema97 and accepted fixes
+  retained. Post-seal final preflight PASS/all4244 inputs; no replacement activation.
+- Existing Dashboard combined amounts work, but lack audience eligibility. Minimal
+  source7e563bf adds optional customer/product/delivery scopes and preserves cart
+  delivery split. Proposedfcce022d9ac76e49/schema98 by ONLY27100000: three nullable
+  references/two existing bodies. No95/96/97 replay or location change. Blank scopes
+  preserve existing coupons; server identity/whole-cart/courier checks are final.
+- New proposed one-use FRE5 combines25 item+45 store-funded delivery discount:
+  WOLF/Default1/25 +unchangedManual50 −25 −45 +fee0 =5. Existing FRE untouched.
+  Exact account/product/model/address/company/coupon/500-minor grant≤1h;1 order/
+  intention/owner card submission,0 retries. Same approval permits grant closure and
+  disabling only FRE5, retaining callback/owned receipt/late-event authority.
+- Local native13, ENAR apply/remove/reload/reapply, Dashboard save/readback1,
+  typecheck/build, config/closure8, migration5, runtime10, Caddy16/six assets PASS.
+  Synthetic EGP5 signed reconciliation after grant revocation PASS, no live provider.
+  Exact3029-entry archive retains1953 current assets; fresh encrypted97 DB/full
+  pg_restore +10runtime full-byte recovery PASS.32deferrals/frozen135/Storage retained.
+- BETA-11/CX-01 READY FOR NEW APPROVAL, local only; real EGP5 purchase PENDING. Signup
+  OPEN/public purchasesOFF/PDC PAUSED. NEXT exact approval → fresh preflight/recovery,
+  scoped migration/app/coupon/grant → owner alone applies FRE5/checks5/pays once →
+  actual provider/callback/owned paid order/Manual Dashboard → closure → PUBLIC packet.
+  Clean location4843754 remains undeployed, later ordering review against98 required.
+
+# E76 — incompatible EGP50 grant CLOSED; exact EGP5 correction preparing — 2026-10-27
+
+- OD-20261027-COUPON-EGP5-01: owner reconfirms25 merchandise+50 Manual−25 item−45
+  store-funded delivery discount+fee0 =5.33779 scope is incompatible and CLOSED
+  under its authorized closure. Original runtime/edge restored, callback/owned reads
+  retained. Activeffd191/schema97 retained,1 closure restart/PID50469 and1SIGUSR1;
+  no schema/application rollback, coupon edit, order/payment/provider action.
+- Fresh12:57 read-only: verified recipient ready, product25/Manual50, selected
+  customer0 orders/attempts, FRE unchanged/usage0/delivery discount0. SignupOPEN,
+  CartCheckout403/public purchasingOFF/PDC PAUSED. No replacement grant active.
+- Existing Dashboard combined discount amounts work; genuine coupon eligibility is
+  missing. Minimal isolated source7e563bf adds optional customer/product/delivery
+  scopes and preserves cart delivery-discount display. Native13/UI ENAR apply/remove/
+  reload/reapply/Dashboard save1/typecheck/build/config8/migration5/remote10/route16
+  checks PASS. Proposedfcce022d9ac76e49/schema98,3029 entries/all1953 current assets.
+  Only new eligibility migration27100000; original95/96/97 and location26190000
+  excluded. Existing FRE stays unchanged; proposed one-use scoped FRE5 combines25+45.
+- Private preparation ../controlled-scoped-coupon-20261027; fresh recovery/seal IN
+  PROGRESS, no authorization yet. Do not activate/deploy/create coupon until NEW
+  exact approval. Both prior apply and closure consumed; never replay33779.
+  All32 deferred rows/frozen135/branches/worktrees/clean location/Storage preserved.
+
+# E75 — coupon release DEPLOYED; restricted EGP50 checkout ACTIVE — 2026-10-27
+
+- Exact owner33779 approval executed ONCE. [Deployment receipt](docs/controlled-coupon-deployment-receipt.md):
+  activeffd191251d1800d0/source df905f1/schema97; only27004500 then27090000 coupon
+  migrations, no95 replay/location seed. Apply CONSUMED; never retry. Closure remains
+  authorized under the same seal, including after expiry from proven runtime state.
+- Fresh preflight/all3435 inputs/current bindings and encrypted95 DB/full pg_restore
+  plus10 runtime full-byte recovery PASS. Staged2925 entries/private app/static
+  candidate, all1849 retained assets/six live bodies-cache checks PASS. One app
+  restart/PID50339; one CaddySIGUSR1/same PID26652. Independent
+  postcheck preserves all145 original protected projections,
+  Auth/permissions/existing payments/orders, media/private files and fixed runtime.
+- Reviewed three settings+one Manual50 row+shipping generation1 committed;0 coupon
+  edits. FRE existing fixed100 caps25 item, delivery discount0/cardfee0 → payable50.
+  Selected verified recipient/customer still0 orders/attempts/FRE uses0.0 agent
+  hosted quotes/orders/payments/Auth/email/provider calls. Manual cannot book PDC.
+- Exact one-hour account/product/model/recipient/FRE/5000-minor-unit grant ACTIVE:
+  starts 27 October 2026, 12:43:12 Riyadh; expires 27 October 2026, 13:43:12 Riyadh.
+  Budget1 order/1 intention/1 owner card submission/0 retries. SignupOPEN, public
+  purchases/Beta/Paymob globalsOFF, PDC PAUSED. Signed callback ingress/owned receipts,
+  payment idempotency/isolation/late reconciliation retained. Owner alone pays.
+- BETA-11/CX-01 DEPLOYED, OWNER PURCHASE ACCEPTANCE PENDING. Owner signs into recovered
+  Outlook, adds mousepad WOLF/Default1, selects Manual50, applies FRE/checks50 and
+  submits own card once. Then verify real provider/signed callback/owned paid order/
+  FRE once/Manual-untracked Dashboard, close grant and prepare separate PUBLIC packet.
+  No completed acceptance repeated; no public activation or money retry authorized.
+- All32 deferrals/frozen135 paths/branches/worktrees/local commits/Storage preserved.
+  Clean location4843754/version26190000 remains undeployed; later ordering/history
+  qualification against97 mandatory. Main91 remains continuity, never release source.
+
+# E74 — interrupted coupon release resumed; EGP50 READY for new approval — 2026-10-27
+
+- OD-20261027-COUPON-RESUME-01: latest owner request explicitly returns payable50,
+  superseding earlier5 for this attempt. Existing FRE caps25 item discount; Manual50,
+  delivery discount0/cardfee0 →50. No coupon edit. EGP5 work/evidence remain preserved.
+  Expired81ce held UNEXECUTED; no invalid approval reuse or production activation.
+- Restart audit: commitdf905f1/artifactffd191251d1800d0/source97 and prior build,
+  typecheck/native/UI/migration rollback/replay/route proofs intact. Old backup was
+  incomplete20 bytes, no final seal/intent. Reused tests; fresh six config cases+
+  eight runtime guard groups PASS for50/zero coupon edits.2925 archive entries/all1849
+  retained assets match. Frozen135 paths and all32 deferred rows/Storage unchanged.
+- [New exact review](docs/controlled-coupon-resume-review.md): seal 33779f1054323464ab00dd4e9f12d13b8c3806b11556f7f96cadc30621a08170.
+  Fresh encrypted95 DB/full pg_restore readback +10runtime full-byte readback PASS;
+  verified 12:30:11 Riyadh, expires 27 October 2026, 18:30:11 Riyadh. Post-seal final preflight PASS;3435 inputs match. Recheck before execution.
+  Current production11cb/source5b09077/schema95 unchanged; verified recipient ready,
+  current genuine mousepad WOLF/Default1/25; selected customer0 orders/attempts.
+- Proposedffd191/source df905f1,95→97 ONLY coupon versions20261027004500 then27090000.
+  Zero-default delivery extension remains dormant; all coupon metadata unchanged.
+  Two new columns/checks/three existing bodies only; no schema95 replay. Location
+  version20261026190000 excluded, clean4843754 unchanged; IDs distinct but later
+  location integration MUST requalify ordering/history against97. No location seed.
+- BETA-11/CX-01 READY FOR NEW EXACT APPROVAL, LOCAL ONLY; hosted purchase NOT ACCEPTED.
+  One-hour exact customer/product/address/FRE/5000-minor-unit grant after activation;
+  one order/one intention/one owner card submission/zero retries. Codex never orders,
+  quotes or pays. Signed callbacks/idempotency/isolation/late events preserved.
+  Manual cannot book PDC. SignupOPEN/public purchasesOFF/Paymob restricted/PDC PAUSED.
+- NEXT: exact new approval → fresh recovery/preflight → guarded two-coupon release,
+  reviewed Manual/untracked settings and scoped activation → owner alone applies FRE,
+  checks50/pays once → actual provider/callback/owned paid order/Manual Dashboard
+  reconciliation → closure → separate PUBLIC purchasing packet. All32 deferred
+  tests/location/branches/worktrees/VPS Storage audit stay open.0 production writes.
+
+# E73 — extra FRE discount requested; amount clarification and fresh seal required — 2026-10-27
+
+- Owner repeats81ce approval with “EXTRA45 EGP discount.” That exact packet fixes
+  FRE/EGP50 and permits no coupon editing. It also expired27Oct10:05:09.143Riyadh;
+  current verification11:37Riyadh is later. STOP: held UNEXECUTED, no activation
+  intent. Preserve its files/artifact/evidence; never apply or extend that approval.
+- Existing FRE fixed100 already caps at the entire25 merchandise; delivery50 is
+  unchanged. Raising coupon value to145 still discounts only25 under current code.
+  Literal EXTRA45 would require a separate delivery discount and EGP5 payable
+  (25 merchandise−25 merchandise discount+50 delivery−45 delivery discount).
+  If owner means45 discount in total against original75, payable would instead30.
+  Targeted owner amount question pending; neither interpretation silently executed.
+- Fresh READONLY11:37 confirms production11cb/source5b09077/schema95, same verified
+  active ordinary customer/real saved address, mousepad WOLF/Default1/current25,
+  customer0 orders/attempts, Manual row absent/inventory tracking still required.
+  SignupOPEN/confirmationrequired/Turnstile retained, CartCheckout403/history401,
+  global purchasesOFF/PDC PAUSED.0 coupon/config/schema/deploy/Auth/email/order/
+  payment/provider writes. Original95/recovery acceptances remain accepted.
+- BETA-11/CX-01: owner confirms payable5 versus30; then design/qualify the smallest
+  reusable delivery-discount extension with truthful product25/delivery50 snapshots,
+  exact FRE edit/discount/amount/one-charge scope, new recovery/preflight and seal.
+  Do not invent price, stock, carrier cost or silently change merchandise-only coupon
+  semantics. Prepared E72 coupon repair remains LOCAL PASS, not deployed/accepted.
+- All32 deferred rows, both workstreams/frozen135 paths, existing Git branches/
+  worktrees, untouched location96 branch4843754 and deferred Storage audit preserved.
+  No new seal while amount is unresolved; no owner payment until fresh activation.
+  After the one real controlled PASS, return to separate public purchasing packet.
+
+# E72 — coupon repair and EGP50 purchase READY for replacement approval — 2026-10-27
+
+- Owner supplied E71 approval plus a coupon/lower-total condition. The sealed75
+  packet forbids coupons; it was held UNEXECUTED, no activation intent, and is
+  superseded for the requested discount. Do not apply75 or alter/reuse its seal.
+- Read-only existing FRE coupon: active fixed100/minimum1, valid through31Oct,
+  unlimited uses/current0. Merchandise25 discount caps at25; Manual delivery50 is
+  unaffected, cardfee0 → proposedEGP50. Same verified customer/real address bound,
+  current product/model25, customer0 orders/attempts. No coupon creation/edit/use.
+- [Replacement coupon review](docs/controlled-coupon-purchase-review.md): confirmed
+  route/controlled-scope exclusions and schema95 quote-success/order-rejection.
+  Small reusable fix authenticates/scopes full-cart coupon preview, reuses SQL
+  pricing, optionally binds the exact coupon in review/payment grants, and adds
+  one guarded SQL correction for untracked CARD discount snapshot/usage once.
+  Preorder/backorder restrictions, RLS/RBAC, Auth/Turnstile and callbacks retained.
+- Current production UNCHANGED11cb/source5b09077/schema95. Proposed f4d6716b13ffeace/
+  source381adde,95→96 by ONLY20261027004500_untracked_card_coupons. This is a new
+  coupon migration, not the separate96 location migration; location branch4843754
+  stays clean/unchanged/undeployed. Never replay95 or promote/seed location work.
+- Local9 native coupon tests(8 cases), EN/AR actual checkout display/payload,
+  migration5/configuration7/remote8 guards, typecheck/build PASS/0skip. One function
+  body only; rows/grants and old12-field grants preserved; coupon use once across
+  repeated commits, exact50 synthetic intention, no stock/PDC jobs. New Caddy16
+  routes/six assets/identical other policy PASS. Full2925-entry archive readback
+  retains all1849 current assets. Original local failures retained; no live repeats.
+- Exact replacement seal 81ce158e718fdab675381fcd811ea002f61077e05bee67dfcfc07be713831e68; fresh encrypted95 DB/full pg_restore readback and10
+  runtime files/full-byte readback PASS at04:05:09.143Riyadh; expires27Oct10:05:09.143.
+  One migration, reviewed Manual/untracked settings, one app deployment/restart,
+  one edgeSIGUSR1, one-hour exact account/product/address/FRE/5000-minor-unit grant,
+  one order/one intention/one owner card submission/zero retries. Codex never orders,
+  quotes or pays. Closure clears grant/restores edge, retains callback/owned reads
+  and late reconciliation; no SQL rollback/automatic retry or money action.
+- SignupOPEN/publicpurchasesOFF/PDC PAUSED.0 production/config/schema/Auth/email/
+  order/payment/provider writes here. All32 deferred rows, original/frozen135 paths,
+  worktrees/branches and deferred Storage audit retained. CX-01 local narrow proof
+  does not complete DTR-08 or broader public coupon acceptance. NEXT: replacement
+  approval → fresh preflight/recovery → guarded repair+scoped activation → owner
+  applies FRE/reviews50/pays once → provider/callback/owned paid order/Manual Dashboard
+  verification → closure → separate PUBLIC packet with monitoring/kill switch/remedy.
+
+# E71 — recipient verified; EGP75 controlled purchase READY for exact approval — 2026-10-27
+
+- Owner saved the real recipient privately. Read-only validation confirms the same
+  verified active ordinary customer, usable Egyptian mobile/address/city/governorate,
+  Egypt and approved Manual coverage; no QA marker. Exact normalized address bound
+  privately; selected customer still has0 orders/payment attempts. No recovery retest.
+- [Sealed purchase review](docs/final-controlled-purchase-review.md): current11cb/
+  source5b09077/schema95; genuine mousepad WOLF/Default1/current25 +Manual50/cardfee0
+  =EGP75. Owner's physical-availability confirmation retained; no invented stock.
+  Exact new seal d2314973ea37625e7fd662b0e7c55bbd0d4050cf3c8bf2d38364367822663e93. Recovery verified03:31:26.486Riyadh;
+  expires27Oct09:31:26.486Riyadh. NOT ACTIVATED; fresh preflight/recovery mandatory.
+- Independent guarded operator: only three reviewed settings, one Manual company
+  and its mandatory shipping generation+1; no migrations/app deployment. One private
+  account/product/model/address/7500-minor-unit/durable-cart grant≤1h starting on
+  activation,1 order/1 intention/1 owner card submission/0 retries. Codex never
+  orders or pays. Globals remainfalse; signupOPEN/PDC PAUSED; no PDC API calls.
+- New native6 configuration cases(7 with parent)+8 remote guards PASS/0skip;
+  rollback, drift, trigger side effects, ambiguous COMMIT/no retry and one-signal
+  closure covered. Prior identical Caddy15-route/six-asset/full-other-policy proof
+  retained; completed acceptance tests not repeated. Fresh encrypted95 DB/full
+  pg_restore readback and10-file runtime byte readback PASS;1833 inputs sealed,
+  all145 protected projections and1849 assets verified read-only. Original local
+  fixture/guard stops preserved; zero production/config/Auth/provider/order/payment
+  writes. Activation/closure each budget1 app restart+1 CaddySIGUSR1; no retry or
+  automatic rollback. Callbacks/owned receipts and late reconciliation retained.
+- Owner reminds city/governorate dropdowns are missing on deployed95. LOC-01 already
+  implements dependent EN/AR selectors locally in separate96; NOT DEPLOYED/ACCEPTED.
+  Preserve that branch and DTR-19; no96 migration/reference seed/provider activation.
+- NEXT: exact controlled approval → fresh preflight → scoped activation → owner
+  alone checks saved recipient/Manual50/CARD/EGP75 and pays once → verify provider,
+  signed callback/owned paid order/Manual-untracked Dashboard state → close grant.
+  Then prepare separate PUBLIC purchasing packet with kill switch/monitoring/manual
+  remedy. All32 deferrals/frozen135 paths/branches/worktrees/Storage audit preserved.
+
+# E70 — recovery ACCEPTED; EGP75 purchase awaits saved recipient — 2026-10-27
+
+- [Acceptance receipt](docs/password-recovery-acceptance-receipt.md): owner reports
+  Site URL/approved redirects already correct/unchanged, reset template updated,
+  password update PASS and new-password sign-in PASS. Record as owner-reported
+  functional smoke-test results. Same confirmed active ordinary customer/read-only
+  recent02:55 sign-in supports report; no password/link/token/hash capture or retest.
+  AUTH-RECOVER-OUTLOOK-01/BETA-02 ACCEPTED for this scope; previous E68 correction
+  remains history. Exact original trigger still unconfirmed, no longer a launch gate.
+- Fresh03:01 readonly active11cb/source5b09077/schema95/runtime/Caddy/gates preserved.
+  SignupOPEN/confirmationrequired/Turnstile retained; CartCheckout403/history401,
+  new Paymob initiationOFF/PDC PAUSED.0 agent Auth/email/password/config/provider/
+  deployment/order/payment action. Recovery app+owner acceptance consumed complete.
+- Returned directly to BETA-11: current mousepad WOLF/Default1/25 +approved Manual50
+  +cardfee0 =proposedEGP75; selected customer0 orders/attempts. Saved address/city/
+  governorate/valid mobile still missing at02:59. Owner saves My Profile privately;
+  no invented address/A marker. Manual/untracked/ENAR configuration remains unapplied.
+- Unsigned draft refreshed to current11cb with same unused durable command; Caddy
+  proposal unchanged from qualified prior policy. No exact purchase seal until real
+  recipient binding; then qualify fresh recovery/operator/closure and one-charge
+  scope. Owner alone orders/pays after separate approval; public opening later.
+  All32 deferrals/clean96/frozen worktrees/Storage audit preserved; no completed tests
+  repeated. Main91 remains continuity; both handoffs/master/fix source synchronized.
+
+# E69 — recovery application DEPLOYED PASS; owner test pending — 2026-10-27
+
+- [Deployment receipt](docs/password-recovery-deployment-receipt.md): exact owner20d5
+  approved, fresh02:22 preflight/unexpired seal/artifact PASS, new encrypted95 DB/
+  10-file runtime full readback PASS. Private app/static candidate/real Caddy UID
+  reads PASS. Completed02:26:23.176Riyadh; active11cb391b2497b703/source5b09077/schema95,
+  1 app restart/PID46871;0 SQL/runtime/Caddy/Auth/email/provider/order/payment writes.
+- All145 protected projections/schema/Auth/history/ledger/media/private/runtime
+  retained. All1,744 previous assets unchanged;1,849 current entries. Public33 ENAR
+  references/six old+new JS bodies+HEAD/cache/latest/denials PASS at02:27:18.090.
+  SignupOPEN/confirmationrequired/Turnstile retained, CartCheckout403/history401,
+  new Paymob initiationOFF/PDC PAUSED.32 deferrals/clean96/frozen135/Storage unchanged.
+- App operator CONSUMED_COMPLETE; never replay apply or older consumed helpers.
+  Owner-only template/exact ENAR redirects/ONE fresh private reset→password→new-login
+  phase is approved, PENDING, email budget unused. No new approval for these exact
+  owner steps; no credential/token/link capture, admin reset or CAPTCHA disable.
+- BETA-02 recovery acceptance remains BLOCKED; delivery-only correction preserved.
+  Exact prior hosted trigger still UNCONFIRMED; confirmed code defect now deployed,
+  not yet owner-accepted. After owner recovery PASS, real profile address/mobile,
+  then same Outlook/mousepad WOLF1/25+Manual50=proposed75; refresh bindings to new11cb
+  before separate one-charge purchase approval. Public purchasing stays closed.
+  Both handoffs/master/new fix source updated; original branches/worktrees intact.
+
+# E68 — recovery redemption is a PUBLIC LAUNCH BLOCKER — 2026-10-27
+
+- Owner correction OD-20261027-AUTH-RECOVERY-01: earlier recovery acceptance was
+  EMAIL DELIVERY ONLY. Redemption/password update/new-password login NEVER accepted;
+  reopen BETA-02 only. Preserve confirmation/Turnstile/A-B/payment/95 acceptance.
+- [Recovery review](docs/password-recovery-repair-review.md): exact hosted trigger
+  UNCONFIRMED; sanitized recent recovery/no later sign-in/no matching audit rows.
+  Owner template uses ConfirmationURL; cross-browser PKCE and scanner consumption
+  are documented failure paths, not proof of this Outlook attempt's exact cause.
+  Confirmed deployed-SFC defect: unrelated session accepted after unresolved callback.
+- Isolated full95 source5b09077 fixes recovery proof, explicit owner-submitted hash
+  verification/current-user binding, no auto consumption/retry and ENAR retry action.
+  New15 SDK/SFC recovery checks+17 release guards+6 Python groups/typecheck/build/
+  full2,820-entry archive readback PASS;1,744 current assets retained. No schema96,
+  server/CAPTCHA/session-isolation change; original branches/frozen135 paths retained.
+- Exact approval in review:20d5432cdafad2250c97a8a1b5a672c47ecf63398ebb499218a212ba0d6bfebc.
+  Proposed11cb391b2497b703/schema95; fresh encrypted95 DB/runtime full readback PASS,
+  expiry27Oct08:10:31.184Riyadh. NOT executed; current81 remains.1 app restart/0 SQL,
+  runtime/Caddy/Auth/provider/email writes by Codex. Owner then edits recovery-only
+  link/adds only missing exact ENAR redirects and performs ONE fresh private reset/
+  password update/new login. No password/token/link capture, admin bypass or CAPTCHA
+  disable. Fresh execution preflight/backups mandatory; no retry/automatic rollback.
+- Public signupOPEN/purchasingOFF/PDC PAUSED;0 live email/account/password/order/
+  payment/provider action here.32 deferrals/clean96/Storage audit unchanged. NEXT:
+  approve exact recovery packet → owner redemption PASS → real saved address → resume
+  same Outlook customer/mousepad WOLF1/25+Manual50=proposed75, separate purchase seal.
+  Public activation remains separately gated. Main91 is continuity; full95 supplies app.
+
+# E67 — final controlled purchase drafted; recipient missing — 2026-10-27
+
+- [Current review](docs/final-controlled-purchase-review.md): existing published
+  mousepad WOLF/Default/qty1 at25 +approved Manual50 +cardfee0 =proposedEGP75.
+  Owner's catalog-wide physical availability retained; no fake inventory or stock
+  census. Manual company/untracked mode/approved ENAR delivery text remain unapplied.
+- Owner named two candidate accounts; selected existing verified ordinary Outlook
+  customer privately. Earlier Yahoo-labelledB is not the selected purchase account;
+  both lack real recipient details. Outlook profile must be saved by owner before
+  its exact address hash/seal. No account creation, Auth test or A-profile change.
+- Fresh01:35 production READONLY retains81/sourceb37/schema95/runtime/Caddy/assets;
+  01:39 account/catalog/settings read-only;01:45 recipient still missing. Local16
+  draft guards/15 route cases/
+  six asset bodies/latest cache PASS, full other adapted policy identical. Preserve
+  initial fixture failures. These are not activation, new payment or hosted acceptance.
+- BLOCKED on saved recipient/mobile; no activation seal issued. Private unsigned
+  draft ../final-controlled-purchase-20261027/controlled-scope-draft-outlook-v2.private.json.
+  Future exact packet binds customer/product/model/address/Manual50/EGP75/one durable
+  command/≤1h/one intention+one owner card submission/zero retries and safe closure.
+  Qualify final operator/fresh recovery/preflight after recipient binding; no draft
+  hash authorizes anything. Codex creates no order or payment; owner pays personally.
+- Public signupOPEN/purchasingOFF/new PaymobOFF/PDC PAUSED.0 production/config/data/
+  provider/order/payment changes. Accepted tests not repeated;32 deferrals, clean96,
+  all branches/frozen worktrees and deferred Storage audit preserved. NEXT BETA-11:
+  owner saves selected profile, exact controlled authorization, one purchase; then
+  separate public activation with monitoring/manual remedy/kill switch after PASS.
+
+# E66 — SCHEMA95 DEPLOYMENT PASS; purchasing held — 2026-10-27
+
+- [Recovery receipt](docs/schema95-asset-recovery-receipt.md): exact owner60b1fee
+  approval executed once; fresh01:16 Riyadh preflight, unexpired authenticated
+  recovery chain and staged artifact matched. Completed01:18:48.829 Riyadh.
+  Active81becf54218a8e14/sourceb37/schema95;0 SQL replay/data writes,1 main restart,
+  1 Caddy SIGUSR1/original Caddy PID. Approval CONSUMED_COMPLETE; never rerun.
+- Private candidate/current+retained assets PASS; all1,639 previous entries retained.
+  Public six JS bodies/hash+HEAD/cache and33 EN/AR referenced asset bytes PASS;
+  latest short cache/missing+hidden denial PASS at01:19:14.017. No rebuild.
+  All145 protected projections/exact95/Auth/history/runtime/media/private files
+  preserved. SignupOPEN/confirmationrequired/Turnstile retained; CartCheckout403,
+  anonymoushistory401. New Paymob initiation OFF; PDC PAUSED;0 provider/payment.
+- Both branches/135 frozen paths/clean96 preserved;32 deferred rows byte-identical.
+  Main91 remains continuity/tools only; deployed source is frozen full95b37.
+  No merge/reset/deletion/push, schema96 work or repeated accepted Auth tests.
+  Original failed receipts and original archive/SQL/Manual draft remain intact.
+- NEXT P0 BETA-11: separate exact authorization for ONE genuine new-customer
+  normal CARD purchase: real product/model/address, Manual50, explicit untracked
+  configuration, exact total/durable command/one-charge budget and bounded window.
+  Then separate public purchasing activation after PASS, with monitoring/manual
+  remedy/kill switch. Keep public purchasing OFF and PDC paused until authorized.
+  Master and both handoffs updated; no Git housekeeping or deferred work started.
+
+# E64/E65 —95 SQL installed; application STOP; separate asset recovery ready — 2026-10-27
+
+- [Deployment STOP](docs/schema95-deployment-stop-receipt.md): ownera510 approved;
+ matching preflight/fresh encrypted backups/staging passed, atomic95 committed once
+ at26Oct23:48 Riyadh.145 original projections/Auth/history/old94 ledger/expected
+ schema preserved. Candidate retained-asset check failed; oldapp5a/source3001cd6
+ remains current with original main PID/Caddy config.0 main restarts,0 Caddy reloads,
+ no business settings/payment/PDC changes. SignupOPEN/confirmation/Turnstile held;
+ purchasingOFF. Originala510 CONSUMED_STOP; never rerun apply/check/candidate/SQL.
+- Exact cause locally reproduced: retained file exists but Nitro compiled manifest
+ omits its URL, giving404; current generated asset200. Original81 archive/SQLfd9c/
+ Manual draft untouched. Separate companion alone did not provide HTTP serving.
+- [New recovery review](docs/schema95-asset-recovery-review.md) READY, NOT executed:
+ seal60b1fee08340d437a88dcb66093cdd18aa0b8544ae6d16c067a2cf505168d48f. Adds only
+ GET/HEAD public/_nuxt file serving after existing guards, current+retained fallback.
+ Full adapted policy otherwise identical. Exact-version local asset/rollback/cache/
+ denial cases PASS;22 scope+10 remote/actual-adapter guards PASS/0skip. Actual Caddy
+ user can read staged public bytes; direct HTTPS loopback proof passes. Candidate
+ explicit127.0.0.1/adminoff/no TLS/persistence and isolated XDG. No old Auth/provider
+ acceptance repeated. Initial local fixture failures/unapproved211a preserved.
+- New exact owner approval required because a510 excluded Caddy changes and is
+ consumed. Scope1 SIGUSR1/1 main restart/new loopback candidate, staged app81 reused,
+ installed95 verified/0 migrations. No runtime/Auth/business settings/provider/Git
+ changes. Backup chain reverified/reused; expiry27Oct05:46:05 Riyadh. Keep95 even on
+ separately reviewed old-app recovery; no automatic retry/rollback/dump restore.
+- Main91 is continuity/tools only, full95b37 remains source; all135 frozen paths,
+ original branches/commits/detachedc3775e8 and clean96 preserved.32 deferred rows
+ unchanged/pending. Current private STOP ../schema95-beta-release-20261026/review-2/;
+ new unexecuted packet ../schema95-asset-recovery-20261026/plan.json.
+- NEXT: approve only the new asset-recovery seal, then ONE separately scoped genuine
+ new-customer CARD purchase with real address/product/Manual50/untracked configuration
+ and exact charge budget. Only after PASS request public purchasing activation with
+ monitoring/manual remedy/kill switch. No PDC, history/private-window/cosmetic/storage
+ work started. Both current handoffs/master updated here; frozen95/96 not rewritten.
+
+# E63 — original schema95 deployment qualified; approval pending — 2026-10-26
+
+- [Exact deployment review](docs/schema95-beta-deployment-review.md): sourceb37,
+ original archive81becf54…/SQLfd9c0284… unchanged; new target-bound95 operator
+ qualified. Separate asset companion5ed2d468… preserves1,598 missing old client
+ files without rewriting the frozen archive; all1,639 retained assets checked.
+ First local missing-asset STOP preserved; zero production writes in preparation.
+- New local18 scope+12 remote/extraction+6 native migration operator cases PASS,
+ zero skipped; exact95 schema footprint PASS. Reused original15 transaction tests,
+ typecheck/build. No accepted Auth/session/owner-payment tests repeated.
+- Fresh23:04 Riyadh encrypted database full pg_restore readback and ten runtime
+ file byte checks PASS;145 protected projections/history/Auth/ledger/schema bound.
+ Current5a/schema94, signupOPEN/confirmationrequired/Turnstile preserved, purchases
+ OFF. No deployment/restart/migration/Auth/config/payment/shipment/provider action.
+- Exact deployment seal a510a04dd2d55b0b39c22c1b88437008ecaefbc1cc94ca3872305209840febab.
+ Requires separate owner approval; recovery expires2026-10-27 05:04:49 Riyadh and
+ fresh preflight remains mandatory. Scope: unchanged app+companion+atomic95 only,
+ one main restart, no commerce configuration or activation. Tracking defaulttrue;
+ Manual50/CARD/unrecorded-stock settings belong to the later scoped purchase.
+- Main91 holds new tooling and current continuity only; frozen full95 supplies
+ application bytes. Both existing branches, all135 dirty paths/14 frozen contexts,
+ detachedc3775e8 and existing commits preserved. Separate96 clean/unchanged; no
+ merge/reset/cherry-pick/push.32 deferred rows unchanged; pending is never PASS.
+- NEXT: exact approved inactive95 deployment, then ONE separately scoped owner
+ new-customer normal storefront card purchase/real address/product/total; no charge
+ without owner action. After PASS, separate public-purchase activation with manual
+ remedy/monitoring/kill switch. PDC remains PAUSED; storage/96/coupons/history stay
+ deferred. Private packet ../schema95-beta-release-20261026/review-2/plan.json.
+
+# E62 — offline locations complete locally; safe commits; Beta95 remains next — 2026-10-26
+
+- Owner requested offline workbook review, minimal location selectors/server checks,
+ safe local commits and a consolidated deferred-test register. No PDC API/booking/
+ activation, production deployment/settings/data change, provider/money action or
+ Git push is authorized/performed. Signup OPEN remains E61/current owner report;
+ purchasing held. No fresh hosted acceptance or Auth/owner-payment retest here.
+- [Location review](docs/pdc-location-reference-review.md): all sheets inspected,
+ 2×382 same unique cityIDs,27 governorates after aliases, no governorate/zone/area
+ IDs or price/coverage evidence. Sheet1 matches381 retained-cache names; cache411
+ has30 extras383–412 without parent evidence and lacks366 Others. ID21 English
+ conflict resolved from Sheet1/cache; Arabic collision137/146 uses honest English
+ fallback while original cells retained. Others366 inactive; do not guess extra IDs.
+- Separate16th worktree local/location-reference-20261026 ata9a5c6f148507ffd273937413d2f9704aeadb7ed; source96
+ from frozen95b37. Neutral UUIDs and provider mappings separate; OFF by default,
+ no seed/activation. Reviewed metadata import/update under existing settings.view/
+ settings.edit, preview/hash/revision/idempotent receipt and bounded locks; unknown
+ replies retain command, confirmed stale rollback returns to review. Missing rows
+ preserved, no parent/provider rebind. No legacy PDC cache/map/tariff mutation.
+- EN/AR searchable dependent Gov/City in Profile/Checkout when enabled. Both address
+ lines stay editable. Server canonicalization +transactional ID/parent/active checks,
+ selected IDs bound in durable intent/new immutable snapshots; old committed
+ commands recover after cutover/deactivation, old addresses unchanged. No hardcoded
+ checkout city list. Actual UI4 theme/locale/320px/1280 scenarios PASS, native8
+ location+7 default transaction regression PASS, typecheck/build PASS. All LOCAL,
+ no96 hosted import/customer/provider acceptance. Initial retry failure retained
+ and fixed; qualified logs govern. No actual recorded stock or provider request.
+- [Status/template review](docs/pdc-status-template-reference-review.md):33 rows/
+ 32 distinct statusIDs, duplicate97 conflicting descriptions, no transitions applied.
+ Templates1/5/6 print layouts understood,3 reverse-only; account binding/units/output
+ unaccepted, implementation deferred. Original XLSX bytes/hashes retained outsideGit.
+- [Deferred-test register](docs/DEFERRED_TEST_REGISTER.md):32 explicit rows include
+ all owner-listed cases plus remaining roadmap acceptance. Each has deferral/risk,
+ owner scope, criteria, milestone/status. Deferral is NOT waiver; no unexecuted
+ hosted test is PASS. Completed E50/E57/E61/owner payment stay accepted, not repeated.
+- [Safe Git review](docs/git-local-commit-review-20261026.md) inventories all161
+ opening dirty files across15 original worktrees, zero staged.3b7070d commits the
+ 2 untouched legacy Auth fixtures on main (syntax-only validation). Location feature
+ has its own25-file code commit; current docs committed separately, no merge/rebase/
+ reset/deletion/push.135 frozen/consumed historical paths deliberately excluded and
+ preserved byte-for-byte, including40 Beta paths,4 failure-replay fixtures,91 other
+ continuity files. Source raw XLSX/cache/incident/secrets/build artifacts excluded.
+ Main remains91; original95source/17 dirty docs and exact artifacts remain frozen.
+- New96 artifact/reference/migration is PRIVATE and requires its OWN future sealed
+ release; never swap it into95. Original95 archive81becf54… and migrationfd9c0284…
+ unchanged. Reference JSON is reviewed source data; original binaries not committed.
+ Current master now90 tasks (89 retained+LOC-01); both handoffs/main/new source sync.
+- NEXT P0 returns directly to the original95 guarded deployment/recovery packet
+ and ONE scoped new-customer real Paymob acceptance, preserving signup OPEN.
+ Do not reopen account housekeeping/history/CAPTCHA tests, PDC incident or STOR-01.
+ No executable95 deployment/real-payment/public-purchase approval exists yet: its
+ new target-bound operator/recovery and transaction budget still need qualification.
+ No new owner approval phrase is issued for an unqualified action.96 remains separate.
+ Private evidence ../pdc-location-reference-20261026/; consumed helpers remain consumed.
+
+# E61 — PUBLIC CUSTOMER SIGNUP OPEN; purchasing held — 2026-10-26 21:18:33 Riyadh
+
+- [Activation receipt](docs/public-signup-activation-receipt.md): exactf5e08021
+ signup-only approval received, plan hash/target matched, fresh21:16 preflight PASS.
+ Owner reports signup ENABLED only. Fresh21:18:33.481 postflight PASS: signupenabled,
+ emailconfirmationrequired/emailproviderenabled, same5a/schema94/runtime/process/
+ output; EN/ARlogin200,CartCheckout403,anonymoushistory401. PDC paused.
+- Approval CONSUMED_COMPLETE. PUBLIC SIGNUP REMAINS OPEN. Do not request this
+ approval again, close signup for old disabled-baseline guards, or replay old
+ controlled-signup/Turnstile operators. New95 Beta preparation must preserve OPEN
+ signup. No new account/email/login/CAPTCHA test; earlier acceptance remains valid.
+- Agent0 production/config writes/deploys/restarts/migrations/payments/provider/
+ shipment/refund/push; owner1 reported Auth toggle only. Other Auth settings were
+ owner-retained; accepted frontend config independently unchanged. New customer
+ activity/profiles not enumerated; no claim that fresh customers registered now.
+- Owner monitors existing Auth/Brevo quotas/delivery/abuse; emergency close signup
+ only on an actual issue, retaining login/recovery and CAPTCHA. Purchases stay
+ held. Next P0: guarded95 unrecorded-stock/Manual50 release and one scoped actual
+ new-customer order/payment before public purchasing. No authority for those
+ operations here. Optional notice/housekeeping/history/UX remain deferred.
+- STOR-01 remains AFTER Beta, not started. PDC incident/call pause unchanged.
+ Private evidence ../public-signup-activation-20261026-f5e08021/; code b37be43/full95
+ still local, production94/main91. Both handoffs/master/current source mirrored,
+ Git refs/app/source unchanged; preserve all unique and dirty work, no push.
+
+# E60 — VPS-only file-storage audit queued after public Beta — 2026-10-26
+
+- New STOR-01 / OD-20261026-STORAGE-01 records the six-bucket READ-ONLY audit in
+ [the audit scope](docs/vps-storage-audit-plan.md). It starts AFTER the current
+ public Beta milestone; B/deferable, not a new launch gate. Beta/E59 remains P0.
+- Architecture: PostgreSQL records/metadata, VPS actual upload bytes. Check current
+ object counts/sizes/recent uploads and every active Supabase/VPS file path before
+ calling any bucket ACTIVE, LEGACY or EMPTY. No current classifications are claimed.
+- No production audit, file enumeration, upload, signed URL issuance, download,
+ migration, deletion, permissions/config change or provider call occurred here.
+ Source/hosted workflow evidence must stay distinct; read-only cannot establish
+ successful new uploads. Inspect GET side effects before any future route check.
+- Preserve private owner/staff authorization, RLS, download controls and existing
+ data. If dependencies exist, prepare only a minimal integrity/backup/private-access/
+ rollback plan; separate approval for implementation or migration. Actual security
+ or active-upload defects get a separate finding, not a broad launch postponement.
+- Master roadmap now89 stable tasks: original88 retained plus STOR-01. Both handoffs
+ and current full95 source mirrored. No app/schema/branch/commit changes or push.
+ PDC remains paused and its preserved incident is untouched. E59 signup-only and
+ Beta deployment/payment approvals remain separate and have not been exercised.
+
+# E59 — minimum public Beta priority; signup can open separately — 2026-10-26
+
+This entry supersedes E58's housekeeping/history/notice launch blockers below.
+[Single focused Beta plan and all88 task classifications](docs/public-beta-minimum-launch.md).
+[Separate exact signup approval](docs/public-signup-activation-review.md).
+
+- Owner confirms ALL catalog products physically available/can ship without counts;
+ owner-managed delivery, all cities/governorates, EGP50. No SKU census/fake inventory
+ required. Preserve drafts/unpriced/inactive/coming-soon/test-product exclusions.
+ PDC webhook tracking requested and owner reports labels/daily pickups; these are
+ not new acceptance or authority for calls, booking or uncertain-incident changes.
+ PDC remains technically paused; keep all incident evidence/consumed operators.
+- Accepted signup, Turnstile, customer/staff login/recovery, A/B profile/session/logout,
+ deployed cart isolation, real Paymob/signed callback and order packing retained.
+ DO NOT repeat. Both private browser windows timed out0 Auth/writes and closed;
+ no more housekeeping login requests. A marker cleanup/historical empty browser/
+ notice deployment and cosmetic success UX are C/DEFERRED, no signup gate.
+- Fresh19:34 Riyadh readonly same5a/schema94/runtime/process/output, signupdisabled/
+ confirmationrequired/CartCheckout403/history401.0 Auth/emails/writes/providers.
+ Public signup is READY for independent owner-operated Auth toggle approval; exact
+ hash in review doc. Keep CAPTCHA/Brevo/origins/quotas/users/permissions and purchasing
+ holds unchanged. Notice display/private cleanup are not prerequisites. Not activated.
+- Critical gap fixed LOCALLY: prior zero-stock payment was awaiting allocation and
+ could not pack without recorded units. New95 explicit inventory_tracking_required
+ defaulttrue preserves existing contracts; approvedfalse normal CARD orders snapshot
+ untracked, no quantity/receipt/unit/movement creation or stock hold. No old order
+ rewrite. Normal Add to cart pages omit quantity/backorder labels in this mode.
+ Matching SKU/count, paid order, named operator, active session and private video
+ still required for packing. Tracked orders keep exact-unit checks. Settings control
+ is bilingual/portable; no per-product override/ERP/Dashboard redesign. Missing
+ North Sinai added; legacy North Coast retained, no PDC mappings.
+- A QA marker now rejected server-side in both address lines at quote/commit. Must
+ deploy before real purchase window; no need to edit the profile now. Use a real
+ address within the one authorized actual transaction, not another housekeeping test.
+- Native15 tests PASS/no skips: public-mode two owners, amount/50fee/ownership and
+ foreign404/read/payment-initiation, one order/command, one synthetic intention and
+ replayed signed paid confirmation, SKU packing without units, unpaid/wrong actor/
+ wrong code/duplicate/video denials, mode snapshot persistence, manual commercial
+ closure preserving capture/no phantom stock, plus existing tracked flow preservation.
+ Zero external calls/actual money/recording. Initial fixture-only metadata/cast errors
+ retained; qualified -3 log governs. Typecheck PASS; build/artifact receipts separate.
+- Refund automation/PAY-03 deferred B per owner. Minimum remedy A remains: owner
+ proposes direct transfer, which is separate reimbursement, not a Paymob card refund.
+ Require verified original transaction/customer agreement/destination/private unique
+ operation/evidence/remaining-value and duplicate-compensation review before money;
+ preserve captured-payment history and reconcile later reversals/disputes. Native
+ commercial status/audit closure verified; NO real reimbursement/refund/void executed
+ and NO automatic refund ledger claimed. Full workflow/limits in current Beta plan.
+- PUBLIC BETA still BLOCKED on guarded95 deployment/recovery qualification, approved
+ exact Manual/mode/delivery config and ONE scoped genuine new-customer order/payment
+ acceptance. Existing local A/B plus accepted session isolation avoid a second paid
+ order/repeated browser/provider audit. No executable Beta token before sealed
+ artifact/target/operator and exact payment budget; one conditional activation plan
+ includes emergency close preserving callbacks/owned receipts. Manual15min exception
+ monitoring initial, scheduler automation deferred. No public purchasing activation.
+- Final95 build/typecheck/native15 PASS; candidate archive and migration hashes
+ recorded in the E59 plan/private artifacts manifest. No executable Beta operator
+ qualified/sealed yet; separate signup-only approval is ready.
+- Source b37be43ac6a24a663a12a5a56aaaa7e801827963, local/signup-commerce-next-20261026, full95 from9b; main91/ea113e9
+ unchanged.15 worktrees/12 branches retained; no merge/rebase/reset/delete/push.
+ Only this unsealed working branch moves for the authorized feature; other heads/
+ unique source and both accounts' work remain. Both handoffs/master synchronized.
+ Private evidence ../public-beta-minimum-20261026/, no customer secrets in Git.
+
+# Signup notice + manual CARD milestone prepared; owner inputs/access pending — 2026-10-26
+
+Current private-access step: a FRESH dedicated guarded Chrome window is ready for
+owner A's private sign-in, followed automatically by B's private sign-in for the
+readonly empty view. The first window expired BEFORE Auth (all counts0), not a
+failed login or CAPTCHA test. New live status: ../signup-commerce-next-20261026/
+owner-browser-live-status.json; runner session59171, result2/stop2 files. No password
+in chat, one A-only restoration, no history claim or other write. Authorization
+already exists; owner entry is the only access prerequisite. The prepared script
+cleans up its own browser profile after success/timeout. Do not rerun old operators.
+
+- [Current focused report](docs/signup-commerce-next-milestone.md), roadmapE58,
+  [signup review](docs/public-signup-activation-review.md), [manual acceptance/recovery](docs/manual-delivery-purchase-acceptance.md).
+  E50/E57 Auth/signup/profile/session/logout accepted; do NOT repeat tests.
+- Owner clarified history IS imported. OD-20261026-SIGNUP-02 exact new English
+  notice and professional Arabic implemented in existing returningVerify key.
+  Only2 application JSON inputs change;4 real template/CSS local EN/AR/RTL/themes/
+ 320px/desktop renders PASS, no Auth/Cloudflare requests. Initial incomplete CSS
+  preview retained; styled proof governs. Existing layout/visibility/claims unchanged.
+  Production still5a/schema94/flagfalse/old copy; hosted visibility BLOCKED until
+  guarded copy/notice-runtime deployment and separate signup activation approval.
+- Correct historical match is existing ordinary B (private qualified binding),
+  NOT the separate earlier confirmation-only candidate. Verified/active/nonstaff,
+ 1 eligible UNLINKED profile,0 current/matching orders. Readonly owned history
+  payload0 orders/profiles/total; all immutable records/linkage fingerprints intact.
+  Authenticated empty browser/linked archived-profile/actual order detail not inferred.
+  No Connect/claim/history mutation allowed in this milestone.
+- A marker remains; latest owner explicitly authorized normal self-profile restore.
+  User offered passwords; never request them in chat. A tightly guarded dedicated
+  Chrome private-signin workflow was prepared/tested, but owner did not sign in
+  before15min timeout. Closed browser/deleted only owned temp profile.0 Auth
+  submissions/profile writes/emails. No privileged SQL/RLS bypass or session forgery.
+  Authorized A edit/B readonly view still PENDING owner private access, no new
+  approval needed for those already authorized actions. Do not retry expired window
+  automatically or run consumed008c; this is new maintenance, not Auth testing.
+- OD-20261026-MANUAL-01: Manual/non-PDC launch path. Only saved company is PDC;
+  do NOT convert/reassign/delete it or use PDC Manual AWB uncertain-booking endpoint.
+  Existing provider=manual quote/coverage/customer-fee/fulfillment controls already
+  deployed. Need actual courier/own driver and covered governorates/cities. Earlier
+  configurable EGP50 customer fee retained as draft; merchant actual cost separate.
+  No PDC files, lookups, mappings, credential tests or booking. SHIP-02 retained/paused,
+  no longer current Manual-launch dependency. No broad provider registry redesign.
+- OD-20261026-STOCK-02: owner wants option to sell without recorded stock. Existing
+  CARD foundation supports it and live allow_out_of_stock_purchases=true. Do NOT
+  require fake quantities/invoices/serials or recorded stock just to accept payment.
+  Current EN/AR fulfillment texts BLANK: owner must approve truthful sourcing/timing
+  before zero-stock quotes. Keep current consent/awaiting-stock/real allocation and
+  packing contract; unrestricted no-hold/no-label PROD-05 remains separate/future.
+ 561 product records/225 published positive price, ONLY recorded stock TESTproduct2026
+ 49 units/EGP1. Exclude it; not real availability evidence. Published normal/model
+  candidates exist at real catalog prices but owner product/price/sourcing approval
+  still pending. Do not claim physical stock or merchant fee from saved values.
+-12 new automated checks PASS/no skips:4 owner-browser exact-write/secret guards,
+ 8 native PostgreSQL17/full94 actual HTTP manual CARD/two-customer checks. Includes
+  ready/zero recorded stock, missing-expectation refusal, coverage/fee snapshot,
+  owned positive details/foreign404, same-command lost-ack recovery, uncertain
+  gateway result one attempt/no second intention, deferred cancellation no fake
+  stock and zero PDC jobs. One synthetic timeout intercepted,0 external provider
+  requests. Fixtures NOT hosted/physical stock/payment acceptance; no Paymob rewrite.
+- Smallest next purchasing milestone: two sequential exact-account NO-CHARGE normal
+  checkout windows with existing capability, qty1 each, approved genuine item/model/
+  manual company/private address hash/exact total/≤1hour, payment_enabled=false.
+  Runtime/edge/order-creation approval needed once facts concrete. Actual Paymob
+  payment, manual dispatch/refund and public purchasing stay separate authorizations.
+  Practical merchant cancellation/refund/reconciliation flow prepared, official
+  Refund/Void docs rechecked; LIVE merchant permission still unverified. No money
+  action. Preserve callbacks, idempotency, stock protections and emergency close.
+- Fresh16:47 readonly same5a/schema94/runtime/process/output and signup disabled/
+  confirmation required/CartCheckout403/history401.16:52 profile/security/order/
+  payment/dispatch and all history fingerprints unchanged; no claims/data changes.
+  All production Auth submissions/emails/provider calls/updates/deploys0; signup/
+  purchasing CLOSED/PDC PAUSED. No executable approval packet while gates/inputs
+  unqualified. Coupons/CX-01 and broad Dashboard work stay subsequent. Auth success
+  screen OD-20261026-AUTH-UX-01 deferred next functional Auth UI, not a gate.
+- Isolated full94 branch local/signup-commerce-next-20261026, base51cbeef, new
+  commit9b7564fce0952a796249b47494af4e66a4a68c38.15 worktrees/12 branches, all14
+  opening heads/dirty bytes preserved except authorized main continuity edits.
+  Main stays91/ea113e9. No merge/rebase/reset/delete/push. Old detachedc3775e8 and
+  both accounts' work retained. Both handoffs/master synchronized; private evidence
+  in ../signup-commerce-next-20261026/, no credentials/customer snapshots in Git.
+  Earlier gate plans assuming PDC or compulsory recorded stock are superseded here.
+
+# Genuine signup and hosted profile/session/logout ACCEPTED — 2026-10-26 15:49:45 Riyadh
+
+- [Scoped completion receipt](docs/customer-registration-acceptance.md), roadmapE57.
+  Owner before-click marker clearing YES; final logout/protected refresh PASS.
+  Fresh final read-only postflight PASS at2026-10-26T12:49:45.759Z: A/B session0,
+ 4 exact identities/verified active ordinary profiles/no duplicates. Only A Address
+  line1 equals approved marker; B ALL fields/original profiles/nonactivity credential/
+  email-identity/permission/business/history state preserved. Same5a/schema94/759
+  inputs/runtime/process/output. Signup disabled/confirmation required,
+  CartCheckout403/history401; purchasing held/PDC paused. Agent0 Auth/email/writes.
+- ACCEPTED: genuine new A registration/owner email verification/sign-in (earlier),
+  distinct ordinary owner A/B profile ownership, same-profile/two-tab account
+  switching/refresh/marker restoration, before-click clearing and final logout.
+  Owner-observed browser results distinguished from independent SQL/gate evidence;
+  no session/credential material inspected. One new +one existing, not two new.
+- 008c CONSUMED_COMPLETE, no further test actions/retry/cleanup under it. Original
+  five-PASS report, A→B→A clarification, first overstrict optional-timestamp guard,
+  qualified A1/B0 STOP and final precise report/fresh postflight retained. No silent
+  waiver/rewrite; final remaining original case closes interaction/logout gap.
+- BETA-03 REGISTRATION ACCEPTANCE COMPLETE; LAUNCH still BLOCKED pending separate
+  returning-notice visibility/runtime/public activation packet and outstanding
+  historical owner profile/empty view. Notice code deployed but flagfalse. No public
+  launch inferred; do not repeat accepted CAPTCHA/login/recovery or new signup email.
+  UI success screen OD-20261026-AUTH-UX-01 deferred next Auth UI update, not a gate.
+- DONE-03 implementation deployed; BETA-05/CX-04 profile switching subset accepted,
+  POSITIVE hosted baskets/checkout/original recovery/real order/cross-order URL
+  cases remain HELD/NOT EXERCISED.403/empty lists are not positive acceptance.
+  Keep provider initiation closed. Historical actual order detail requires later
+  legitimate authorized order-bearing identity; no guest attach or impersonation.
+- Next toward public signup: prepare smallest guarded returning-notice runtime
+  configuration and separately approved signup activation, keeping purchasing/
+  Paymob/PDC initiation held and existing signed callbacks/stock protections intact.
+  No post-Beta work, no PDC booking or mapping work while paused. Owner historical
+  archived-profile/empty-orders acceptance is still pending under the original task.
+- Evidence in ../customer-signup-acceptance-preparation-20261026/:
+  CUSTOMER-REGISTRATION-ISOLATION-ACCEPTANCE-COMPLETE.json,
+  OWNER-EXISTING-B-FINAL-CASE-RESULTS.json, existing-b-final-postflight.json/log,
+  existing-b-final-postflight-baseline.private.json and consumed continuation status.
+  Original sealed inputs preserved; both handoffs/master updated. Main91 vs full94
+  source51cbeef retained; worktrees untouched, no merge/reset/delete/push/deploy/restart.
+  Older pending-owner-step entries below are historical, superseded by this PASS.
+
+# Profile/security preservation PASS; finish original final B/logout case — 2026-10-26
+
+- [Current qualification/precise remaining step](docs/customer-isolation-continuation.md),
+  roadmapE56. Owner first reports5 PASS. Follow-up describes A→B→A, returning to
+  tab1/clicking and data updating correctly without manual refresh. No mixed data
+  reported. Clearing BEFORE interaction and final B/logout are not yet established.
+  Do not claim all browser/logout acceptance from the initial generic PASS alone.
+- Read-only postflight validates same5a/schema94/759 inputs/runtime/process/output,
+  exact4 identities. A ONLY Address line1 changed to exact approved marker. B ALL
+  profile fields/original profiles preserved; nonactivity Auth/email identity/
+  credential/permission/business/history state unchanged. Initial local assertion
+  incorrectly required updated_at change; corrected to optional per approved scope,
+  original source/log preserved. Qualified check then stops on A session1/B0.
+- Metadata14:43 Riyadh: current A session created14:33:55, B last signin14:33:02.
+  Consistent with described final A login; not global/session-closure PASS.
+  Fresh14:47 signup disabled/confirmation required/CartCheckout403/history401,
+  purchasing held/PDC paused.0 agent Auth submissions/email/production mutation.
+- Owner NEXT under received008c: tab2 logout A/signin bound B ONCE (remaining
+  original B login, total≤4). Return tab1; wait3sec WITHOUT CLICK/REFRESH, record
+  AUTOMATIC / ONLY AFTER CLICK / NOT CLEARED. Then logout B and refresh protected
+  Profile in BOTH normal tabs; each requires signin. Report final logout PASS/FAIL.
+  No further login/Save/marker cleanup/email/retry. No additional approval needed.
+  These are the original final case, not a new test or repetition of earlier switches.
+- Private evidence packet: OWNER-EXISTING-B-ISOLATION-RESULTS.json,
+  OWNER-ISOLATION-CONTEXT-CLARIFICATION.json,
+  EXISTING-B-PRESERVATION-PARTIAL-RECEIPT.json, both postflight sources/logs,
+  remaining-session-readonly.json, existing-b-postflight-closed-gates.json/status.
+  Preserve STOPs. Final postflight not PASS yet; after owner case use a fresh
+  read-only observation, no Auth retry or automatic session revocation.
+- Genuine A registration/confirmation/sign-in remains accepted. BETA-03 still
+  BLOCKED for remaining qualification/launch activation; BETA-05/CX-04 positive
+  hosted baskets/checkout/order/recovery held. Empty/403 do not accept positives.
+  OD-20261026-AUTH-UX-01 next Auth UI update remains deferred, not the cause of
+  this qualification. No CAPTCHA/SMTP/ManagementAPI403/provider investigation.
+- Both handoffs/master updated; original seals/source/worktrees retained. Main91
+  versus full94 source51cbeef preserved. No app change/deploy/restart/config/schema/
+  existing B edit/claims/providers/Git merge/reset/delete/push. PDC booking untouched.
+  Earlier owner-test-pending and unqualified all-case PASS interpretations are history.
+
+# A/B continuation approved; fresh preflight PASS; owner test pending — 2026-10-26
+
+- Exact008c owner approval RECEIVED. [Current execution schedule](docs/customer-isolation-continuation.md),
+  roadmapE55. Do not ask for this approval again. Signup/purchasing stay closed/PDC
+  paused; no deployment/Auth/CAPTCHA/provider change. Original a2ca stays consumed.
+- Fresh14:15 Riyadh read-only PASS: same5a38201292763325/schema94/759 inputs,
+  runtime/process/output. Exact4 identities, distinct bound owner A/B confirmed
+  active ordinary/nonstaff, wallet0; original identity/security/profile/permission/
+  business/history preserved. A Address line1 blank. Captured full schema/business/
+  history/Auth fingerprints plus per-column A/B profile hashes privately.
+- Owner NEXT: one dedicated Chrome profile/two NORMAL tabs, staff Dashboard separate.
+  Use A's current session or sign in A once. Verify A email; save only Address line1
+  marker Signup isolation A once, then open Profile in both tabs. Tab2 signout A,
+  signin B; inspect tab1 BEFORE refresh, A data/marker must clear. Do not Save B.
+  Refresh both/read B Profile/My Orders; no Connect previous orders. Switch B→A,
+  verify A marker restores and refresh; switch A→B, marker absent, logout B and
+  verify private data clears in both tabs/after refresh. No retry on any failure.
+- Scope arithmetic: first A→B signout also checks signup-context logout. Do NOT
+  add a separate preparatory logout.3 or4 password logins (initial A if needed),
+  exactly4 signouts; max4/4 preserved. One A marker Save only/no cleanup, no B
+  profile/credential/permission edits. Normal bound A/B session/activity can advance.
+- Owner tests NOT EXERCISED yet, profiles unchanged. Generic case results then
+  read-only postflight. No agent Auth requests/email/settings/production writes,
+  deploy/restart/schema/provider/Git push or repeated accepted CAPTCHA tests.
+  Cart/Checkout403/history401; held positive checkout/order/recovery cases remain.
+- Private packet ../customer-signup-acceptance-preparation-20261026/:
+  OWNER-EXISTING-B-CONTINUATION-APPROVAL.json, existing-b-preflight.json/log,
+  existing-b-preflight-baseline.private.json,
+  EXISTING-B-APPROVED-PREFLIGHT-RECEIPT.json and continuation status. Sealed plan/
+  original evidence hashes unchanged. B bound privately; no credentials/customer
+  data in Git. Do not run old failed/consumed helpers or reopen signup.
+- Genuine new A signup/confirmation/sign-in accepted; original two-new-account
+  case not claimed. BETA-03 launch remains BLOCKED pending owner isolation/logout;
+  BETA-05/CX-04 positive hosted checkout/recovery still held, DONE-03 deployed.
+  Next Auth UI OD-20261026-AUTH-UX-01 deferred, no delay/no extra email. Historical
+  order acceptance separate; no claims/guest attachment. PDC booking untouched.
+- Roadmap and both handoffs updated; main91 vs full94 source51cbeef/worktrees
+  preserved. No merge/reset/delete/push. Earlier approval-pending text is history.
+
+# One genuine signup ACCEPTED; existing B bound; isolation continuation prepared — 2026-10-26
+
+- [Registration receipt](docs/customer-registration-acceptance.md), roadmapE54.
+  Owner confirms sole new A identity is theirs and they confirmed/signed in.
+  Accept one genuine new customer signup/confirmation/sign-in, owner-observed and
+  exact backend-supported. Do not repeat signup/email/confirmation/login regression.
+- Owner says other address already present; identifies their ordinary existing B.
+  Exact A/B UUIDs privately bound, distinct/verified/permanent/active/nonstaff,
+  own profiles/wallet0. Browser used: new Chrome profile and incognito. Those are
+  separate contexts; remaining acceptance needs two NORMAL tabs in ONE profile.
+- Fresh13:56 Riyadh read-only PASS:4 identities/profiles, no normalized duplicates,
+  original3 security/identity/profile fingerprints intact. Signup disabled/confirmation
+  required, CartCheckout403/history401, purchasing held/PDC paused.0 agent Auth/email/
+  settings/production writes. No CAPTCHA investigation/provider/old helper repeated.
+- Original a2ca expected TWO NEW identities; actual ONE new +ONE existing. Count
+  discrepancy now consistent with owner's explanation, not a security failure.
+  Original STOP retained; do not claim two-new-account acceptance or two deliveries.
+  a2ca signup2/2 and its one window remain consumed/closed, no reopen or retry.
+- [Concrete isolation continuation](docs/customer-isolation-continuation.md) prepared
+  NOT APPROVED/EXECUTED: original budget says maximum_password_logins_new_test_customers_only;
+  existing B login changes that scope. Do not silently extend the sealed packet.
+  Proposed maximum4 bound owner A/B logins, one new-A-only synthetic Address line1
+  marker save; B profile/credentials/permissions unchanged. Auth activity/session
+  timestamps may advance normally, other protected state unchanged. No emails,
+  confirmation/recovery, new account, settings/deployment/purchase/provider changes.
+- Exact NEXT approval: APPROVE CUSTOMER A-B ISOLATION CONTINUATION 008cdaecd43b4bcafb47b65ff83a92083d408067a2f8706d7042808098e49007
+  Private plan existing-b-continuation-plan.private.json/status and owner binding
+  in ../customer-signup-acceptance-preparation-20261026/. Fresh preflight after
+  approval, then same-profile/two-tab switch/refresh/marker/logout acceptance and
+  read-only postflight. No staff login/accepted CAPTCHA tests. Stop without retry.
+- BETA-03 still BLOCKED pending hosted owned profile/logout/isolation acceptance;
+  no need another signup window merely to get two ordinary customers. BETA-05/
+  CX-04 positive hosted cart/checkout/recovery/order cases remain HELD, DONE-03
+  deployed. Empty orders/403 cannot accept order detail or positive baskets.
+- OD-20261026-AUTH-UX-01 remains next Auth UI update: success hides fields/CAPTCHA,
+  compact generic email confirmation; EN/AR/RTL/themes/mobile; no extra sends.
+  Deferred, not an acceptance blocker. Historical ownership/detail separate,
+  no claims/guest attachment. PDC uncertain booking untouched, no unrelated work.
+- Master roadmap/both handoffs updated; original sealed inputs and all worktrees
+  retained. Main91 vs full94 source51cbeef preserved; no merge/reset/delete/push.
+  Earlier E53 confirmation/link questions and unexplained STOP are superseded here.
+
+# Signup closed VERIFIED; two-customer acceptance STOPPED — 2026-10-26
+
+- [Current receipt and next owner action](docs/customer-registration-acceptance.md),
+  roadmapE53. Owner reports two successful CHECK EMAIL forms and signupOFF.
+  Fresh13:43 Riyadh settings prove disable_signup=true/confirmation required.
+  Do not reopen signup, repeat a submission/resend or request the old approval again.
+- Guard expected3 old +2 new identities/profiles, found3 old +1 new (4 total),
+  with1 new-customer session. No normalized duplicates/missing/mismatched profiles.
+  Masked diagnostic13:44 Riyadh: sole new user already confirmed/signed in,
+  ordinary/permanent/active/nonstaff/noninternal, own matching profile/email identity,
+  wallet0. Do not put its email/UUID/customer data into repository docs.
+- This is NOT two-customer signup/confirmation/browser acceptance. Owner had not
+  reported opening links or signing in. Pause confirmation/login/logout steps;
+  do not replay the already confirmed link or create/auto-confirm/delete accounts.
+  Owner questions pending: does masked identity match a test inbox and were link/
+  login already used; is the other entered email already present/absent/reused,
+  which browser? Addresses/credentials/links stay private. No Auth audit action
+  rows were returned; absence is non-diagnostic. Do not invent a cause.
+- Read-only source/runtime/schema94/history/business/staff-permission and original3
+  Auth security/identity/profile checks passed before count guard stopped. Same5a/
+ 759 inputs, purchasing held/PDC paused. Agent0 Auth/email/settings/production
+  writes/deploy/restart/providers/push; failed guard and diagnostics preserved.
+- a2ca scope: owner2/2 signup submissions reported consumed;0 remaining. One window
+  completed/closed by owner and verified. Remaining originally approved acceptance
+  steps are HELD pending reconciliation; actual redemptions/logins need owner
+  attestation, not assumed from reports. Any additional signup/send/window would
+  require separate reviewed scope. Do not bypass the stop or rerun failed helper.
+- Private evidence in ../customer-signup-acceptance-preparation-20261026/:
+  OWNER-SIGNUP-SUBMISSION-RESULTS.json, signup-closed-settings.json,
+  signup-closure-readonly.log, signup-mismatch.private.json,
+  SIGNUP-CLOSURE-STOP-RECEIPT.json, APPROVAL-STATUS.json. Original sealed plan/
+  qualification/approval files unchanged. No old CAPTCHA/login/recovery retest.
+- New owner requirement OD-20261026-AUTH-UX-01, tracked under BETA-03: NEXT Auth UI
+  update only. Successful signup/Forgot Password hides fields and CAPTCHA, shows
+  clean confirmation only. Preserve EN/AR/RTL/themes/mobile/accessibility, generic
+  messages and zero extra submissions/emails/retries. Deferred; does not block or
+  delay this acceptance. No UI code/deployment or CAPTCHA reconfiguration now.
+- Roadmap and both handoffs updated. DONE-03 deployed; BETA-03/05/CX-04 acceptance
+  blocked/held. Main91 vs complete94 source51cbeef preserved, all worktrees retained.
+  No merge/rebase/reset/delete/push. Historical real order-detail remains separate;
+  no claims/guest attachment. PDC uncertain booking untouched; no unrelated scope.
+  Earlier owner-action/preflight-only entries below are superseded by this STOP.
+
+# Controlled signup approved — preflight PASS; owner action pending — 2026-10-26
+
+- Owner approved exact a2ca5a3bbc5edf5b63f710ce0f5b9c20446c53e645d7e5e055ee090f2dcb1c39.
+  [Current registration packet](docs/customer-registration-acceptance.md), roadmapE52.
+  Do not ask for this approval again. One owner-operated global signup window only;
+  no application deployment, permanent public signup, CAPTCHA change or purchase grant.
+- Fresh read-only preflight PASS at2026-10-26T10:28:16.145Z (13:28 Riyadh): same
+ 5a38201292763325/schema94,759 app inputs/runtime/process/output unchanged,3 old
+  accounts/profiles matching/no duplicates; original business/history preserved.
+  Signup disabled, confirmation required, CartCheckout403/history401. PDC PAUSED.
+- Two unused owner-controlled inboxes are confirmed available. Owner enters all
+  addresses/passwords privately. No account/email/Auth request or setting mutation
+  has run under this approval yet. Signup acceptance remains NOT EXERCISED.
+- NEXT owner action under the received approval: keep Supabase Dashboard open;
+  enable only Allow new users to sign up. Submit A once and B once using genuinely
+  separate browser contexts (for example Chrome private and Safari private, NOT
+  two Chrome incognito windows, which share state). Maximum20min, then disable
+  signup immediately after both submissions or any failure; do not wait for email.
+  Report generic A/B results and signupOFF. Keep both signup contexts open for
+  later confirmations, but wait for closure/provisioning check before redemption.
+- Limits unchanged:2 signups/confirmation emails,2 redemptions, maximum4 new-account
+  password logins, no resend/recovery/existing-account edits/order/payment/history
+  claim/provider/retry. Fresh tokens only through existing accepted widget. Global
+  signup is not email-allowlisted; unexpected new identities block acceptance.
+  No bypass of held Cart/Checkout; hosted positive A/B checkout/recovery still held.
+- After closure check, continue the approved confirmations in each original signup
+  browser/profile, then new-account login/logout and same-browser/two-tab profile
+  switching. Do not request passwords, confirmation links, tokens or mailbox access.
+  Read-only postflight must prove exact ordinary profiles/verified ownership and
+  preservation of existing identities, staff permissions, commerce/history and gates.
+- Private evidence: ../customer-signup-acceptance-preparation-20261026/
+  OWNER-CONTROLLED-SIGNUP-APPROVAL.json, accepted-preflight.json/log,
+  accepted-preflight-baseline.private.json, APPROVED-PREFLIGHT-RECEIPT.json and
+  APPROVAL-STATUS.json. Original sealed files/hashes unchanged. No old operator or
+  accepted Auth/CAPTCHA test repeated; no settings/deploy/restart/schema/provider/push.
+- Both handoffs/master roadmap updated. Main remains schema91; complete94 local
+  branch/test-only51cbeef preserved. No merge/rebase/reset/worktree cleanup/push.
+  Older approval-pending entries below are preparation history, superseded here.
+
+# Genuine customer registration — prepared; production closed — 2026-10-26
+
+- [Authoritative preparation](docs/customer-registration-acceptance.md), roadmapE51,
+  supersedes the earlier next-action text. Owner confirms CAPTCHA acceptance COMPLETE;
+  do not repeat any accepted existing-account login/recovery/negative-token test.
+- Cart/checkout/session Phase1 is COMPLETE and DEPLOYED in the schema94 lineage.
+  Fresh29 session/browser tests PASS. Full hosted positive A/B baskets, checkout,
+  original recovery and real order access remain HELD/BLOCKED by purchase gates.
+  DONE-03 stays DEPLOYED; BETA-05/CX-04 remain BLOCKED. No implementation gap found,
+  no app rewrite/deployment or checkout bypass. Empty data/403 are not acceptance.
+- New focused native PostgreSQL17 schema94 test6/6 PASS: ordinary profiles once,
+  no metadata-derived staff/wallet, cross-account profile/order/item denials,
+  unverified history denied, explicit verified linkage only/no profile overwrite.
+  Initial missing platform grant was corrected in fixture only; failure retained.
+ 5 selected signup/redirect tests PASS;40 fresh total, no skips/provider requests.
+  Fixtures do not prove hosted GoTrue/signup/confirmation or real historical detail.
+- Fresh read-only13:15:58 Riyadh PASS: same5a38201292763325/source3001cd6/schema94,
+  all759 app inputs/runtime/process/output;3 accounts/3 matching profiles, no
+  normalized duplicate/missing/mismatched identities. Profile-only Auth trigger.
+  Original business/profiles/history preserved; old audit prefix verified with2
+  new dashboard.login records and live telemetry in a fresh baseline. Auth security
+  baseline refreshed for accepted activity; no original evidence overwritten.
+  Signup disabled/confirmation required/email enabled, EN/AR signup200, CartCheckout
+ 403, history401.0 Auth requests/emails/settings/deploy/restart/provider/push.
+- No new application release is required for controlled registration acceptance.
+  New local worktree ../customer-signup-acceptance-preparation-20261026/source,
+  branch local/customer-signup-acceptance-20261026, complete94 base31ecdd2,
+  test-only commit51cbeef2c55f8f5ad663f7cadb242e9486a9d61c. Main remains schema91.
+  All13 original worktrees/HEADs/dirty bytes preserved before continuity updates;
+ 14 worktrees/11 branches now. Detachedc3775e8 and both accounts' work retained.
+  No merge/rebase/reset/delete/push. Only native test code added; app unchanged.
+- BETA-03 launch remains BLOCKED. Sealed manual controlled test is PREPARED,
+  NOT APPROVED/EXECUTED. Owner confirms two unused controlled inboxes are available;
+  no addresses received or independently checked. Separate window approval pending.
+  No info mailbox access, admin creation/auto-confirm/password reset/secret/token
+  sharing. Owner globally opens signup only after fresh preflight, maximum20min,
+  closes immediately after2 signup submissions BEFORE redeeming confirmations.
+  Two confirmation emails/redemptions, up to4 new-account-only password logins,
+  same-browser/two-tab profile/logout checks. The switch is GLOBAL, no allowlist;
+  outside signup is possible. Purchasing stays held; no order/payment/claim/retry.
+- Exact next approval: APPROVE CONTROLLED CUSTOMER SIGNUP ACCEPTANCE a2ca5a3bbc5edf5b63f710ce0f5b9c20446c53e645d7e5e055ee090f2dcb1c39
+  Private sealed plan and approval status in the new packet root. Approval permits
+  only the bounded owner-operated signup window, no deployment/permanent signup.
+  Fresh pre/postflight, exact two ordinary verified profiles and existing-identity/
+  permission/business/history preservation required. Unexpected extra account or
+  failure: close signup/stop; no automatic retry/deletion or CAPTCHA change.
+- Returning notice is already deployed; visibility flag staysfalse. Public notice
+  activation/permanent signup remains separate after acceptance. Historical owner
+  profile/zero-order view pending; legitimate authorized order-bearing acceptance
+  separate. No impersonation/guest attachment. Positive hosted cart/checkout/paid
+  order gates remain; next purchasing acceptance should be its own no-charge A/B
+  window, provider initiation closed. Shipping/refund/Paymob paid gates remain.
+  PDC PAUSED, uncertain booking untouched; no post-Beta scope or changed stock policy.
+- Master roadmap and both handoffs updated together. All88 stable tasks retained;
+  consumed deployment/Auth operators and old approvals remain single-use.
+
+# Turnstile authentication ACCEPTED for tested scope — 2026-10-26 11:51:32.836 Riyadh
+
+- [Authoritative acceptance receipt](docs/turnstile-auth-acceptance-receipt.md), roadmap
+  E50, supersedes prior missing-token-gap/approval-pending entries below.
+  Exact owner7c one-request approval executed once/exit0/PASS/CONSUMED_COMPLETE:
+  HTTP400/structuredcaptcha_failed/no session. Exactly1/1 authorized request,
+  no email/real customer/settings/key entry/deploy/restart/schema change or retry.
+- All five bounded cases now ACCEPTED: owner existing-customer login PASS,
+  authorized Dashboard login PASS, recovery email RECEIVED, independent invalid-
+  token400/captcha_failed/no session, independent missing-token400/captcha_failed/
+  no session. Owner observations remain distinguished from captured HTTP evidence;
+  no credentials, cookies/sessions or Secret Key inspected. No password change.
+  Signup SDK wiring retains local qualification; genuine new signup still closed/
+  NOT EXERCISED, not accepted by these existing-account results.
+- Original2f scope stays2/2 negative requests; separate7c used1/1 (3 across distinct
+  approvals). Original unqualified400/helper STOP retained, not rewritten. New
+  response closes the diagnostic gap. No more Auth requests under either budget;
+  do not repeat helpers or accepted owner login/recovery tests. No new approvals
+  or Secret Key entry are needed to close this completed Auth milestone.
+- Pre-dispatch settings/signup-disabled/confirmation-required and configured public
+  Site Key checks PASS; postflight Cart/Checkout403/history401. No activation.
+  Same5a38201292763325/source3001cd6/schema94; all759 app inputs unchanged, no app
+  implementation, runtime/Caddy change, account/password/permissions/claim/provider
+  action or Git push.8 local diagnostic guards/SDK contracts retained, not rerun.
+- NEXT separate milestone: public signup launch readiness/preparation, bounded
+  genuinely new customer registration/confirmation and historical owner profile/
+  empty-history acceptance. Do not claim actual historical order detail or cross-
+  account hosted acceptance from Auth tests. Authorized order-bearing case stays
+  separate; no impersonation, guest linking or automatic claims.
+- Public signup and purchasing remain DISABLED until a separately approved launch
+  milestone, as owner instructed. PDC PAUSED; no launch approval phrase issued.
+  Purchasing next milestone remains BETA-07 official PDC destination mappings,
+  after signup readiness/resumption authorization. No post-Beta work.
+- Both handoffs/master roadmap updated together; all88 task IDs/statuses retained.
+  13 worktrees/10 branches, original46 dirty source paths/detachedc3775e8 preserved.
+  Main91 vs complete94 source distinction retained. No merge/reset/delete/push;
+  all consumed7b/a8 deployment operators and Auth helpers remain single-use.
+
+# Owner Turnstile flows ACCEPTED; one negative-case qualification open — 2026-10-26
+
+- [Current acceptance receipt](docs/turnstile-auth-acceptance-receipt.md), roadmap E49,
+  supersedes the earlier owner-positive-PENDING entries below. Owner reports
+  customer login PASS, authorized Dashboard login PASS and recovery email RECEIVED;
+  each applicable test once in fresh private windows, no password/credential change.
+  Recorded as owner-observed hosted acceptance; no session/credential inspection.
+  Do not repeat these successful tests, reset links or recovery emails under2f.
+- Normal customer/staff/recovery request flows are ACCEPTED. Structured invalid-token
+  400/captcha_failed/no-session was independently recorded. Full Turnstile closure
+  still has ONE gap: original missing-token400/no-session reason not recorded.
+  Owner positive results do not supply its missing error code. Full acceptance
+  remains pending that qualification; no silent waiver or repeated negative call.
+- Fresh read-only evaluation PASS: same5a38201292763325/runtime/process/output and
+  759 app inputs; login/AR/Dashboard200, Cart/Checkout403, anonymous history401.
+  Signup disabled/confirmation required. No new password Auth request/email/
+  settings/deployment/restart/schema change; Secret Key never received.
+- Original2f scope is CONSUMED_WITH_DIAGNOSTIC_GAP_OWNER_FLOWS_ACCEPTED. Exactly2/2
+  negative password requests used; no third request or positive test repeat.
+  E48 one-request missing-token check is READY_PENDING_SEPARATE_EXACT_APPROVAL;
+  owner-positive prerequisite now met, no approval or request intent yet.
+  Next exact approval: APPROVE ONE MISSING-TOKEN CAPTCHA CHECK 7c232640a8433b84a167e0bfea6a59cd5ad0cb21337e2d9441417a31f7087017
+  Only1 anonymous missing-token request/no email/no settings or launch change.
+  No Secret Key/configuration repeat. All supporting helper/SDK proofs stay bound.
+- Public signup/purchasing remain DISABLED until a separately approved launch
+  milestone; PDC PAUSED as reaffirmed by owner. Normal new signup/confirmation and
+  historical ownership/empty view/order-bearing detail remain separate. Customer
+  login success does not claim history or accept an order detail. No impersonation.
+- All88 task IDs/statuses and both handoffs updated together.13 worktrees/10 branches,
+  original46 source paths/detachedc3775e8 retained. Main91 vs complete94 source
+  distinction preserved; no Git merge/reset/delete/push or app implementation.
+  One next purchasing milestone stays BETA-07 official destination mapping; do not
+  resume PDC or purchasing work during this acceptance check.
+
+# Supabase Turnstile enabled; invalid-token denial PASS; owner checks PENDING — 2026-10-26
+
+- [Current Auth acceptance receipt](docs/turnstile-auth-acceptance-receipt.md), roadmap
+  E47, supersedes E46 approval-pending/backend-OFF statements below. Owner exact2f
+  approval received and owner confirmed CAPTCHA enabled directly in Supabase.
+  Secret never shared;0 agent settings/Management API calls/403 reinvestigation.
+- Fresh read-only preflight PASS before configuration and before requests: same
+  5a38201292763325/process/runtime/output/schema94/759 app inputs and protected
+  DB/Auth/business/history/ownership; login/AR/Dashboard200, Cart/Checkout403,
+  anonymous history401. Signup disabled/confirmation required/purchasing/PDC held.
+  No app deployment/restart/runtime/Caddy/schema change for this stage.
+- Exactly2/2 approved anonymous password requests used the reserved invalid-domain
+  fixture/public anon-publishable key, no cookies/bearer sessions/service role.
+  Missing token:400/no session, specific reason NOT RECORDED/UNQUALIFIED.
+  Invalid synthetic token:400/captcha_failed/no session, CAPTCHA denial PASS.
+  No agent sessions/emails/customer impersonation. No additional Auth request
+  under2f, no missing-token retry or original helper rerun.
+- Diagnostic helper omitted API-version header that the deployed SDK already sends.
+  Original helper stopped; local native-SDK review/tests corrected diagnostic only.
+  One unused distinct originally approved invalid-token case ran once after review.
+  Local pre-request key-format correction supports publishable/legacy anon keys.
+  Original STOP/incomplete evidence preserved;3 guard+4 contract tests PASS.
+  Missing-denial cause remains unqualified; a recheck needs separate authorization.
+- Approved owner customer login/staff login/one recovery email results PENDING.
+  Asked for reports only, fresh private test windows/current Dashboard retained;
+  no password change/reset redemption/new accounts/permissions/claims. If legitimate
+  login blocked, approved owner may disable newly enabled CAPTCHA once/stop review.
+  Do not claim the secret pair/normal Auth accepted from invalid-token denial.
+- BETA-03 public signup remains BLOCKED. No activation/purchasing/PDC or extra
+  email/worker/provider/Git push. Accepted Brevo/redirects/quota controls preserved;
+  history empty-profile and authorized order-bearing detail remain distinct.
+  ONE next purchasing milestone stays BETA-07 official PDC mapping, paused now.
+- E48 [one missing-token recheck](docs/turnstile-missing-token-recheck.md) prepared
+  only, not approved/requested/exercised. Requires owner positive checks first,
+  then new one-request approval; original2f budget stays exhausted. Native SDK
+  missing-payload/version mock test1 PASS (8 local diagnostic tests total),0 live
+  calls. No new Secret Key/settings step or third Auth request. Do not execute yet.
+- Both handoffs/roadmap updated together, all88 IDs/statuses retained.13 worktrees/
+  10 branches and original46 source paths/detachedc3775e8 preserved; main91 vs
+  complete94 source distinction retained. Consumed7b/a8 operators/checks never rerun.
+
+# Turnstile frontend configuration DEPLOY PASS — 2026-10-26 03:48:38.214862 Riyadh
+
+- [Current execution/browser receipt](docs/turnstile-runtime-deployment-receipt.md),
+  roadmap E45, supersedes all READY/approval-pending frontend entries below.
+  Exact owner7b approval executed once, exit0/CONSUMED_COMPLETE. Never rerun its
+  apply or old-baseline check; earliera8 STOP remains preserved/consumed.
+- Installed ONLY NUXT_PUBLIC_AUTH_CAPTCHA_PROVIDER=turnstile and owner public Site Key
+  in /etc/storefront/runtime.env, root0600, exactly1 app restart. Same application
+  release5a38201292763325/source3001cd6/schema94;0 SQL/app deployment/Caddy change.
+  Existing accounts/passwords/ownership/history/media/private assets/callbacks and
+  purchasing/provider holds passed mandatory preflight/postflight preservation.
+- Fresh execution encrypted12841108-byte DB authenticated/full readback/10 runtime
+  files full byte readback PASS; private candidate and mandatory public postflight
+  PASS (EN/AR/Dashboard200, Cart/Checkout403, anonymous history401).
+  Deployed app759 inputs incl Phase1 session isolation unchanged;30 focused checks
+  and existing qualified artifact/security/native94/build proof reused unchanged.
+- Configured frontend acceptance PASS: EN login/Light/1280, AR recovery/RTL/Dark/320,
+  actual Dashboard password form/Light/1280. Each real widget returned a token,
+  boolean only. Translated labels/no raw keys/no overflow/page errors; no runtime
+  override, fresh anonymous profiles/credential inputs disabled/Auth mutations
+  blocked before navigation, profiles removed. Auth submissions/emails/secrets0.
+  Initial inspection omitted locale reads/used a storefront search selector;
+  incomplete/raw evidence retained. Qualified EN/AR plus password-form-bound final
+  Dashboard proof is authoritative, not the initial broad PASS. No production fix.
+- Public signup/confirmation policy unchanged (disabled/required); notice runtime
+  stilloff, purchases/PDC/payment/shipping held. Supabase CAPTCHA enforcement OFF:
+  no Secret Key received, backend setting or token redemption/login/recovery
+  request attempted. Widget success is not server enforcement acceptance.
+- NEXT: [manual Supabase enforcement acceptance](docs/turnstile-auth-acceptance-plan.md),
+  E46 prepared only at private auth-enforcement-acceptance-plan.json, pending separate
+  approval. Owner enters secret only in Supabase CAPTCHA settings/providerTurnstile,
+  once approved; no automated Supabase setting operator/403 investigation. Scope:
+  2 bounded no-email negative Auth requests only after owner confirms configuration,
+  existing owner customer/staff logins and max1 owner recovery email/no redemption
+  or password change; signup/purchasing/PDC remain closed. Conditional owner-only
+  CAPTCHA disable once if legitimate login is blocked; no automatic retry/rollback.
+  Exact next approval: APPROVE SUPABASE TURNSTILE ENFORCEMENT ACCEPTANCE 2f716d6351e8dc638817af08f2776792796fd79fef66b8c933174d074ed67f34
+- Public signup activation remains BLOCKED for server enforcement/hosted Auth and
+  ordinary signup/ownership acceptance. Owner historical match has0 orders; empty
+  profile/order-bearing detail remain separate, no impersonation/automatic claims.
+  Keep accepted Brevo/redirects/quota controls. No account/password/claim/provider/
+  worker/import or push action. One next purchasing milestone remains BETA-07
+  official PDC mappings after signup readiness; PDC stays paused.
+- Source31ecdd2 sealed operator/evidence retained at
+  ../turnstile-runtime-recovery-fix-20261026/source; installed app source3001cd6.
+  All13 opening worktrees/heads/indexes/source bytes, original46 dirty source paths,
+  detachedc3775e8 retained. Main remainsea113e9 with91 migrations; use94 source.
+  No merge/rebase/reset/delete/push. All88 task IDs/statuses preserved; both handoffs
+  and roadmap updated together. No new application implementation or unrelated work.
+
+# Turnstile attempt STOPPED; replacement READY — 2026-10-26
+
+- [Exact STOP receipt and replacement approval](docs/turnstile-runtime-stop-receipt.md)
+  and [current configuration packet](docs/turnstile-runtime-configuration.md), roadmap
+  E43/E44, are authoritative. Earlier READY/a8 approval-pending entries below are
+  historical. Originala8 approval was executed once and CONSUMED_STOPPED.
+- Original operator9d6508c passed initial exact read-only checks, wrote exclusive
+  intent03:32:23.528 Riyadh, then stopped during fresh runtime recovery. DB dump
+  authenticated/full readback12839012 bytes; runtime file contains only generic
+  STOP/KeyError, not a valid recovery tar. Shared helper required archive_bytes;
+  preparation supplied0, sealed apply omitted it. No candidate/staging/runtime
+  write/restart/SQL/Auth action occurred. No retry or rollback.
+- Independent pinned read-only verification03:36:32.931 Riyadh PASS: runtime hash,
+  exact app process/release5a38201292763325, Caddy/output/media/private files,
+  schema94/protected DB/Auth/history/ownership unchanged. CAPTCHA public values
+  empty, signup disabled/confirmation required, purchasing/provider holds retained.
+  Production mutations0/app restarts0. Do not rerun consumed a8 apply/check.
+- Corrected ONLY the read-only backup adapter in a new isolated source at
+  ../turnstile-runtime-recovery-fix-20261026/source, branch
+  local/turnstile-runtime-recovery-fix-20261026, commit31ecdd2e4256b603b2455c37e3aefc00df031063.
+  Adds archive_bytes:0 for shared recovery without changing sealed activation plan.
+  Regression exercises the actual shared Python guard: old missing field fails,
+  adapted input passes, expanded scope rejects.23 JS +7 Python focused checks PASS,
+  no failures/skips. All759 application inputs equal deployed3001cd6 incl session
+  isolation;94 migrations, no app build/deployment/UI/package/schema change.
+- New private packet:../turnstile-runtime-recovery-fix-20261026/plan.json.
+  Fresh encrypted12839997-byte DB/10 runtime files full readback PASS, verified
+  2026-10-26 03:40:02.140 Riyadh; expires09:40:02.140 Riyadh. Sealing and
+  independent read-only checks PASS/0 target writes;
+  replacement has no execution intent and has NOT been applied.
+  Exact next approval: APPROVE TURNSTILE FRONTEND CONFIG 7b9038186919a03ca16138845e90642dffdc53a49cd0eaa303654fdc9a413f15
+  Same scope: ONLY2 public runtime values/private candidate/1 app restart. New
+  exact approval is required because the changed operator has a new seal and the
+  original single-use attempt stopped. No implied retry or old approval reuse.
+- Supabase CAPTCHA enforcement, normal hosted Auth/signup/negative-token acceptance,
+  public signup activation and purchasing remain separately approved/BLOCKED.
+  Secret Key remains owner-held; no credential/account/password/email/claim action.
+  Actual-host widget pass from E42 and accepted Brevo/confirmation/recovery remain
+  bounded evidence, not enforced Auth acceptance. No repeated widget/SMTP/403 test.
+- All12 opening worktrees/heads/indexes and original46 source paths preserved;
+  this additive correction makes13 worktrees/10 branches. Main remainsea113e9 /
+  91 migration files; use the94 descendant above. Detachedc3775e8 retained.
+  No merge/rebase/reset/delete/push. All88 task IDs/statuses retained; roadmap and
+  both handoffs updated together. PDC paused; ONE next purchasing milestone remains
+  BETA-07 official destination mappings after signup readiness.
+
+# Turnstile frontend configuration READY — approval pending — 2026-10-26
+
+- [Current packet and acceptance boundaries](docs/turnstile-runtime-configuration.md),
+  roadmap E42, supersede the earlier request for a public Site Key below.
+  Owner supplied the public key and confirmed Managed mode / elcomputer.net.
+  No Secret Key was requested or received; no production setting changed.
+- Production stays5a38201292763325/schema94, deployed source3001cd6.
+  All759 application inputs still match the consumed deployed plan, including
+  Phase1 session isolation. No new app build/deployment, schema or Caddy change.
+  Shared widget already covers signup/login/recovery and Dashboard password login;
+  expiry/errors/retry/reset, EN/AR/RTL/themes/mobile and generic denials retained.
+- Fresh22 JavaScript +7 Python focused checks PASS, no failures/skips. Earlier
+  deployed28 focused/33 security-session/6 guards/native94/build/browser evidence
+  reused unchanged. Real public-key widget PASS on actual deployed HTTPS origin
+  in a fresh anonymous Chrome tab;6 Cloudflare client requests, token boolean only.
+  All Auth submissions intercepted/blocked; credentials disabled,0 production writes.
+  Local/automated owner-observed failed preview retained; no error cause invented.
+  Anonymous-profile cleanup race corrected and only task profile removed.
+- This does NOT accept Supabase verification or the secret/key pair. Hosted CAPTCHA
+  login/signup/recovery, negative tokens, owner history and real order detail remain
+  pending their bounded approval/identities. No accounts/passwords/claims/emails.
+- New private packet:../turnstile-runtime-preparation-20261026/plan.json.
+  Operational source9d6508cdbf00fcd9159e5266ddf02f45c8aad0ce on isolated branch
+  local/turnstile-runtime-preparation-20261026. New single-use scope: ONLY two public
+  runtime keys in /etc/storefront/runtime.env plus1 app restart/private candidate.
+  Captcha enforcement/Auth/signup/purchases/notice/Caddy/schema/release stay bound.
+  Exact next approval: APPROVE TURNSTILE FRONTEND CONFIG a8aec16a72d59972812a459c00b3e7b1029c6ebe8257e60e3ef642b03ce66c67
+- Fresh encrypted recovery/full readback12835600 DB bytes/10 runtime files PASS,
+  verified2026-10-26 03:24:22.724 Riyadh; expires09:24:22.724 Riyadh. Sealing and
+  independent read-only checks PASS/0 target writes; no execution intent. Recheck immediately before any separately approved
+  execution; stop on drift/expiry/attempt. No automatic retry/rollback/Git push.
+  Consumed olde9d1d4bb deployment is never rerun or repurposed.
+- Public Site Key is installed by that guarded operator only after new approval.
+  Secret Key goes directly into Supabase Authentication → Bot and Abuse Protection
+  → CAPTCHA protection/providerTurnstile only at a LATER separately approved
+  enforcement step after configured frontend verification. Do not send it in chat,
+  Nuxt, Git or public runtime. No enforcement or signup activation approved now.
+- BETA-03 remains BLOCKED for backend configuration and hosted acceptance. Keep
+  accepted Brevo/confirmation/recovery and30/hour/60s/30-per5min-IP limits; no403
+  or SMTP repetition. Owner ordinary historical match has0 orders; profile/empty
+  acceptance pending, real detail needs an authorized order-bearing customer.
+- Original11 worktrees/79 opening dirty paths were byte-preserved before this
+  continuity update; original heads/indexes unchanged. New addition makes12
+  worktrees/9 branches, original46 source paths preserved, detachedc3775e8 retained.
+  Main remains91 migrations at ea113e9; use the94-migration descendant above.
+  No merge/rebase/reset/worktree deletion/push. All88 IDs preserved; both handoffs
+  and roadmap updated together. PDC paused; ONE next purchasing milestone remains
+  BETA-07 official destination mappings, not implementation during signup work.
+
+# Signup notice/optional Turnstile DEPLOY PASS — approval consumed — 2026-10-26 02:02:04.416 Riyadh
+
+- Production is now `5a38201292763325` / schema94, source3001cd6, replacing retained
+  bc05eef266eeb7de. [Deployment receipt](docs/public-signup-deployment-receipt.md)
+  and roadmap E41 are current. Earlier READY/approval-pending entries below are
+  historical; never rerun the consumed operator or its old-baseline check.
+- Owner exact approval e9d1d4bb798919e79aa5a70641801f1f99a1e3cd4623e35a4f923df7598988b0 executed once via
+  scripts/public-signup-release/operator.mjs. Private review-2 owner approval,
+  read-only preflight, exclusive intent and execution receipts establish
+  DEPLOY_PASS / CONSUMED_COMPLETE / exit0. No rebuild/install/test rerun or push.
+- Fresh execution recovery full authenticated readback PASS:12822782 DB bytes/
+  10 runtime files. Private candidate PASS,1533 prior immutable assets retained,
+  installed output verified, one production app restart. Schema/Auth security/
+  business/history/ownership postflight PASS,140 original projections captured,
+  5 history tables bound; standard live analytics/Auth activity rules only.
+  Internal ledgers/password/email/account membership/current commerce stay bound.
+- Caddy/runtime/credentials/media/private files and signed Paymob callback ingress
+  unchanged. Public postflight EN/AR login200, Cart/Checkout403, anon history401.
+  Auth signup disabled/confirmation required; notice runtime off, CAPTCHA provider/
+  sitekey empty, purchasing/grants/payment/shipping initiation held. No SQL/import,
+  account/password/claim/email/provider/worker action or automatic retry/rollback.
+- BETA-03 remains BLOCKED for activation. NEXT owner input: public Turnstile
+  sitekey and allowed hostnames only; matching secret stays only in Supabase.
+  Prepare separate runtime/CAPTCHA configuration and hosted acceptance approval.
+  Verify configured frontend on customer signup/login/reset and Dashboard login
+  before enabling Supabase CAPTCHA. No activation authority is inferred here.
+- Accepted Brevo/recovery/confirmation and owner-verified30/hour/60s/30-per5min-IP
+  limits stand. No SMTP/template/quota/origin/Management API403 investigation.
+  Owner archived-profile/empty-history result remains pending; matched account has
+  no orders. Real order-detail acceptance needs an authorized actual customer/
+  verified original mailbox; no impersonation or guest automatic ownership.
+- All88 task IDs, original worktree heads/indexes and46 original dirty source
+  files remain preserved. Main still91 migrations; deployed source94. No merge,
+  reset, cleanup, worktree deletion, branch rewrite or Git push. Both handoffs/
+  roadmap updated together. ONE next purchasing milestone remains BETA-07 official
+  PDC destination mappings; all other paid and post-Beta gates remain separate.
+
+# Public signup preparation — code release READY, activation BLOCKED — 2026-10-26
+
+- P0 unchanged: normal real customer registration, then genuine paid orders.
+  [Current release/readiness](docs/public-signup-release.md), roadmap E40 /
+  BETA-03 / OD-20261026-AUTH-01 are authoritative for this milestone.
+- One replacement application-only release5a38201292763325, source3001cd6
+  (app34167fe, browser toolinge7bf90f), branchlocal/public-signup-turnstile-20261026
+  at../public-signup-turnstile-preparation-20261026/source. Eight app inputs:
+  EN/AR returning-customer notice, safe errors, default-off portable configuration,
+  shared Turnstile widget/loader and both customer/Dashboard password login.
+  Dashboard layout/active-admin permission/audit and existing commerce are retained.
+  No migrations, ERP/Live Chat/SEO redesign or stock-contract changes.
+- Frontend passes28 focused Auth/widget/admin/history tests,33 current session/
+  checkout/Paymob checks incl local A/B browser components (no skips),6 guards,
+  typecheck/build and reused unchanged native94 concurrency proof. Exact archive
+  passes15 scenarios/36 screenshots/1640 client-byte checks.44 official Cloudflare
+  public dummy-widget requests prove SDK token forwarding for signup/login/reset/
+  Dashboard, EN/AR/themes/320px;0 hosted Supabase/emails/payment/shipping calls.
+  Actual hosted CAPTCHA, new self-signup and customer acceptance are separate.
+- Authoritative private packet:../public-signup-turnstile-preparation-20261026/review-2/.
+  Exact approval: APPROVE SIGNUP NOTICE DEPLOY e9d1d4bb798919e79aa5a70641801f1f99a1e3cd4623e35a4f923df7598988b0
+  Fresh recovery/full readback verified2026-10-26 01:05:19 Riyadh (12818743 DB
+  bytes/10 files), expires2026-10-26 07:05:19 Riyadh. Sealed read-only
+  check PASS. All140 projections and5 history tables captured; all2620 extracted
+  entries secret-scan PASS. Guards stop on drift/expiry/attempt; no retry/rollback.
+  Initial preparation stopped on live analytics/internal-cart ledger drift before
+  sealing. Its evidence is retained; review-2 refreshes baseline, reuses existing
+  telemetry/Auth activity rules and fully binds internal ledgers/security/history.
+- No release approval or execution exists. The code-only approval permits fresh
+  preflight/execution recovery, private candidate, one app restart and postflight;
+  runtime notice/CAPTCHA remain off, Auth signup/purchasing/Paymob/PDC initiation
+  closed, schema94/Caddy/SMTP/Auth/password/history/media/signed callbacks unchanged.
+  Earlier notice-only packet574bb86/archive4d6817e7/seal1f4ea24b is superseded,
+  held/unapproved/unexecuted, retained intact. Do not approve or deploy it.
+- Owner personally verified:30 Auth emails/hour project-wide,60s/address;
+  signup/sign-in30/5min/IP, verification30/5min/IP; CAPTCHA/provider none/disabled,
+  leaked-password protection disabled. This closes the unknown-settings blocker;
+  do not repeat Management API403 or accepted Brevo/recovery/confirmation tests.
+  Keep30/hour for low-volume Beta; check actual demand and Brevo headroom before
+  any separate increase. No provider/template/tracking/password-policy setting changed.
+- Exact historical match identified read-only and returned masked only in chat.
+  It equals the owner's accepted2026-10-25 recovery/new-password-login account:
+  confirmed, active, permanent, ordinary/non-admin,0 historical orders. Claims0
+  at current bound baseline. Owner My Orders → Connect previous orders → archived
+  profile/empty list/refresh result PENDING. This cannot accept an order detail.
+  Future actual order-bearing customer must authorize use/control original email;
+  no impersonation, Admin-created substitute, automatic guest claim or contact.
+- Public signup activation approval NOT READY: real hostname/public key binding,
+  separately approved runtime/Supabase CAPTCHA configuration and hosted normal
+  Auth/ordinary signup acceptance remain. Deploy frontend before enabling CAPTCHA;
+  public key may be supplied, matching secret stays only in Supabase. No executable
+  signup activation phrase issued. Existing accepted origins/PKCE/email stand.
+- ONE next purchasing milestone after signup: BETA-07 official PDC destination file
+  and exact review-only mapping diff. EGP50/CARD/callbacks/zero-stock foundation/
+  Dashboard booking/manual refund/reconciliation/expiry/final paid order/emergency
+  closure remain separate; all post-Beta work stays deferred.
+- Main remains ea113e9 with current docs updated locally; cached origin alignment
+  at opening0/0, no fetch/push. Main still91 migrations; candidate94. All original
+  nine worktrees/dirty source/indexes/refs retained plus two isolated additions
+  (11 total/8 local branches). Both new source commits and artifact are local;
+  no broad merge. Untracked consumed Auth helper/test remain unchanged.
+- No production deployment, runtime/Caddy/Auth change, account creation/password/
+  claim/email/payment/shipment or Git push. Historical source/deploy/import/Auth
+  approvals remain consumed. All88 task IDs and original handoff bytes remain.
+
+# Codex2 handover READY — ten requirements and complete Git audit — 2026-10-25
+
+- Scope completed: documentation plus local read-only Git/source inspection only.
+  [Master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) now has88 tasks: original79
+  retained,9 new IDs; all ten owner requirements documented with dependencies,
+  acceptance/tests/security/performance/status/date/next action. P0 signup and real
+  paid orders unchanged. All ten additions remain POST-BETA; stock controls first.
+- Mapping:1 PROD-05 stock policy;2 PROD-06 admin grid/list;3 CHAT-01;4 DOC-01;
+  5 ORDER-06 actual KG plus existing ORDER-02 videos;6 DASH-01 settings navigation;
+  7 DASH-02 Overview;8 ERP-01 provider audit;9 ERP-02 mode switch;10 existing MIG-04
+  Google/legacy SEO expanded. FUT-08/09 delegate focused work, not duplicate tasks.
+- OD-20261025-STOCK-01 supersedes automatic zero-stock special-order labels as
+  future policy. Normal selling independent of recorded stock is separate from
+  backorders. No fake stock/quantity1, mass publication or availability promise;
+  genuine allocation/payment/cancellation safeguards remain. New controls are
+  post-Beta; no code, label, SQL, setting or live behavior changed here.
+- Source inspection found legacy chat and general Documents upload/download bytes
+  still reference Supabase Storage. CHAT-01/DOC-01 record VPS-only gaps. Private
+  packing videos/labels already have VPS adapters; do not claim universal migration.
+  No chat activation, file move/rename, provider/Google access or diagnostic now.
+- [Git audit](docs/GIT_WORKTREE_SYNC_AUDIT.md):9 worktrees/6 local branches, no
+  stashes; cached origin only, no fetch/network. SAFE TO SWITCH ACCOUNTS on this
+  same workspace while preserving files; no merge/push/clean/switch is needed.
+  Main documentation commit adding the audit is1 ahead cached origin/main.
+  Identify exact commit with git log -1 --format=%H -- docs/GIT_WORKTREE_SYNC_AUDIT.md.
+- Main still has91 migrations; deployed application1924ca0/descendants have94.
+  Do not build from stale main code or replace new main docs with feature copies.
+  Latest source local/customer-history-final-import-20261025 atde5c414 contains
+  history1924ca0, inactive operator724720a, snapshot2cd5418 and earlier owner/PDC
+  branches. Three feature branches have no upstream; only reviewed latest-lineage
+  integration is a future LOCAL-08 action, not separate blind merges.
+- Four feature commits and unique detached certified82 c3775e8 are absent cached
+  remotes, plus this new main docs commit. Preserve c3775e8 worktree: no named ref
+  contains it. Other dirty evidence:40 Beta paths (all equal2cd5418),4 failure-replay
+  fixtures, and two untracked main Auth source files. No cleanup or source commit.
+- Only13 reviewed documentation paths committed locally, including current schema94
+  deployment/import public packets and Auth/roadmap continuity. Existing Auth
+  confirmation-browser helper and redirect test remain untracked/unstaged; do not
+  run/delete them. Full before/final inventory/hashes and commit receipt are in
+  ../roadmap-git-audit-20261025/. Other worktree HEADs/indexes/source bytes preserved.
+- Production baseline is retained bc05eef266eeb7de/schema94. Historical import
+  PASS:516 customers/591 orders/6 refunds/1789 items/702 events;513 conditional/3
+  held,131 unlinked protected, claims0 at retained verification. Three exact routes
+  loaded; source/deployment/import scopes complete/consumed. No new live check in
+  this documentation task. Hosted ordinary-owner browser acceptance still pending.
+- Next P0 after handover: prepare small EN/AR returning-customer notice/public
+  self-service readiness under BETA-03, separate exact deployment/signup approval;
+  then delivery/PDC/EGP50/manual merchant refund/reconciliation/expiry/final paid
+  checkout acceptance and separate purchasing approval. Signup/purchasing/provider
+  initiation stay CLOSED; no repeat Auth tests, imports or consumed operators.
+- No feature implementation/deployment/import/public activation/merge/rebase/
+  cherry-pick/reset/clean/branch or worktree deletion/switch/push. All prior handoff
+  bytes retained below. Remote freshness unknown; same-machine handover does not
+  prove off-machine backup. Request scoped sync approval only if later needed.
+
+# Historical import production PASS; approval consumed — 2026-10-25
+
+- Owner approved3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad.
+  Exact operator executed once, completed23:07:33.882 Riyadh. [Public receipt](docs/customer-history-import-receipt.md).
+  Private ../customer-history-final-import-20261025/IMPORT-RECEIPT.json and
+  IMPORT-STATUS.json record HISTORY_IMPORT_PASS/CONSUMED_COMPLETE. Retain approval,
+  exclusive intent,41 local/database command receipts, import-verified, ingress,
+  completion and independent POST-IMPORT-VERIFICATION. Never rerun apply or the
+  pre-import check expecting empty history. Original sealed plan/template retained.
+- Imported516 customers/591 orders/6 refunds/1789 items/702 fulfillment observations.
+  All immutable snapshots/relationships/money/currency/dates/addresses/events and
+  source-bound eligibility flags exactly match.513 conditional identities/3 held
+  (2 primary-only/1 changed email), actual claims0;1 existing verified match/512
+  later verified signups. Eligible459 orders/6 refunds/1373 items;1 held order/3
+  items;131 unlinked orders/413 items (110 guest/21 missing-excluded). No billing-
+  email ownership. Two privileged users excluded; comparison-only2 not unioned;
+  duplicates0/0; one date conflict retains original variants.
+- Final read-only preflight PASS. Fresh execution exported-snapshot encrypted DB/
+  runtime backup authenticated/full readback PASS:11043268 DB bytes/10 files,
+  capture23:03:23.629, verified23:05:18.044 Riyadh. Encrypted DB SHA256
+  3e9ba3b3d706530538665b643cddff98b7af4db2853f6a3bd16485431bbe2911.
+  Root native94 restore/final41 shared-helper qualification remained fresh.
+- All140 original Auth/profile/commerce/Storage projections preserved in each
+  batch AND exactly equal execution backup in independent post-import comparison.
+  Three confirmed permanent users/three profiles/current orders/catalog intact.
+  Zero Auth accounts, password imports, current profile/commerce/inventory/ledger
+  writes, notifications, provider calls or automatic Auth links. No catalog pause.
+- Approved exact three history routes loaded after full record verification;
+  one SIGUSR1 journal-confirmed, same Caddy/application PIDs, app restarts0.
+  Caddy SHA90d9181a396ef69c46f2df1f69ca3991ac6eb2bb601fc6cb3aeb08cb7418511f;
+  all other runtime recovery files unchanged. Signed Paymob callbacks retained.
+  Independent11 live route checks PASS: EN/AR login200, Cart/Checkout403, anon/
+  invalid-token history401, disallowed methods/other-source403. Supabase signup
+  disabled/confirmation required verified separately. No broad API opening.
+- App remainsbc05eef266eeb7de/schema94; no deployment/migration/restart/push.
+  Source70e929ee/deployment4c332350/import3c9f5764 decisions complete/consumed.
+  Public signup/purchasing/Paymob/PDC initiation remain CLOSED. History is read-only;
+  PDC booking stays administrator-controlled after order confirmation.
+- Hosted ordinary customer claim/profile/order browser acceptance is PENDING.
+  Current verified match has no orders: it can verify archived profile/empty view
+  via My Account → My Orders → Connect previous orders. Order-detail acceptance
+  needs separately approved owner-controlled order-bearing signup, or an eligible
+  later public signup. Import approval authorizes no account creation/email.
+- NEXT: prepare only small EN/AR returning-customer notice/generic failed-login
+  help from docs/customer-access-release-plan.md; preserve Auth/security/layout/
+  RTL/themes and default-off portability. Exact app deployment and public signup
+  remain separately approved. Then PDC/EGP50/merchant refund/reconciliation/expiry/
+  final checkout acceptance and separate purchasing activation.
+- Master roadmap all79 IDs retained; MIG-01/02/03/05 and BETA-04 DEPLOYED, not
+  ACCEPTED. Status31 planned/6 local pass/23 deployed/4 accepted/11 blocked/4 held.
+  Previous handoff bytes/worktrees/40 original Beta paths preserved. No broad audit.
+  On any incident preserve receipts; no reimport/automatic retry/full restore.
+  Source hide/routing reversal needs separate scoped recovery approval.
+
+# Final historical import READY; exact approval pending — 2026-10-25
+
+- Production remainsbc05eef266eeb7de/schema94. Source70e929ee and inactive
+  deployment4c332350 approvals are complete/consumed; never repeat them.
+- [Final guarded packet](docs/customer-history-final-import.md) and private
+  ../customer-history-final-import-20261025/final-import-plan.json are sealed:
+  3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad.
+  ONE next owner approval:
+  APPROVE HISTORY IMPORT 3c9f5764901005600c8a3c22900975bdeed9199f277bb8299d2d8b0a771b70ad
+  This approves final source-bound eligibility BEFORE immutable import,41
+  history-only batches and three necessary history API routes/at most one Caddy
+  SIGUSR1. No schema/app deployment/restart or broad API wildcard. No apply yet.
+- Import516 customers/591 orders/6 refunds/1789 items/702 fulfillment observations.
+  513 conditionally eligible (1 current verified match/512 later verified signup),
+  3 held (2 primary-only/1 changed registered email). Eligible459 orders/6 refunds/
+  1373 items; held1 order/3 items; unlinked131 orders/413 items (110 guest plus21
+  missing/excluded).395 eligible customers have orders/118 do not. Duplicates0/0;
+  2 privileged users excluded,2 comparison-only identities not unioned,1 completion
+  date conflict retains both observations. No billing-email guest ownership.
+- Final payloada34838d6034f9d1cc5104a13d1960bff70b439b3d65000436f4a1f7abe6899bf;
+  eligibility4b4483965ab4077d0586d4e6c46fe572329c1929b5eb180d5fa7fcbc957991a3.
+  Encrypted review1045be1e/batch index57853837 and exact target/operator/tools/
+  evidence hashes bound. Private false template/READINESS saved; no approval
+  receipt or intent. Old zero-claim v3 preserved; never import it then change flags.
+- New isolated branch local/customer-history-final-import-20261025 at
+  de5c4142057c86f29a812af06cec9b9b566297ad adds only operator/tests; all663
+  frozen application inputs unchanged. Other worktrees/40 original Beta paths
+  retained. No push, app build or deployment repeated.
+- Fresh current94 exported-snapshot encrypted recovery/full readback PASS:
+  11042840 DB plaintext bytes/10 runtime files; capture22:23:51.699 Riyadh,
+  six-hour expiry2026-10-26 04:23:51.699 Riyadh. Actual native17.11 restore/final41
+  shared-helper batches PASS at22:47:06.087; zero schema migrations. All140
+  original Auth/profile/commerce/Storage projections and every historical snapshot/
+  total/date/currency/refund/item/address/event match. Local Vault10 TOC entries
+  excluded only, secret rows0;25 owner-only ACL representations restored locally.
+- Actual EN/AR component claim/list/detail, current verified match, denied guest/
+  held/cross-account/unverified/inactive reads, immutable changes, receipt replay
+  and source-hide denial PASS locally. All cloned identity fixtures rolled back;
+  Auth creation/final links0. Seven focused operator tests PASS. Existing69 Beta/
+  20 history/build/typecheck/archive evidence reused. Hosted owned acceptance pending.
+- Concrete Caddy hold precedes Nuxt. Exact one-line existing customer_access
+  matcher extension admits GET /api/account/history, source-UUID-only positive-ID
+  GET detail, POST /api/account/history/claim. Installed VPS parser/diff and154
+  offline route predicates PASS; all other adapted config unchanged. Not applied.
+  Backend JWT/confirmed/profile/RLS/service-only ownership guards remain intact.
+- On exact approval: fresh live/freshness/seal checks → exclusive intent → new
+  authenticated execution backup →41 bounded per-batch transactions protecting
+  all140 original projections → complete immutable/receipt reconciliation →
+  exact Caddy correction/one journal-confirmed SIGUSR1/same PIDs → ordinary-owner
+  archived-profile/empty-view acceptance. Current verified match has no orders;
+  hosted order-detail acceptance needs a separately authorized owner-controlled
+  order-bearing signup or eligible later public signup. No account under this scope.
+  Partial import remains behind original ingress hold.
+  No catalog pause needed; concurrent catalog/profile/password edits preserved.
+  Stop on uncertainty; no automatic retry, second signal, delete/reimport or full
+  restore over newer users/orders. Source hide/routing reversal separately approved.
+- No production import/routing change/Auth creation/password import/current profile
+  or commerce write/email/provider transaction/signup/purchase activation ran.
+  Public signup/purchasing/Paymob/PDC initiation stay CLOSED, confirmation required;
+  signed callbacks and current customers/orders remain. Owner explicitly claims
+  eligible history; no automatic Auth links and no privileged/guest takeover.
+- Next after import/owned acceptance: small EN/AR returning-customer notice release,
+  separate public signup approval, PDC/EGP50/refund/reconciliation/expiry/final paid
+  order acceptance, separate purchasing approval. PDC booking administrator-led.
+  Master roadmap/all79 task IDs/status counts preserved; no unrelated audit.
+
+# Inactive91→94 deployment PASS; seal consumed — 2026-10-25
+
+- Releasebc05eef266eeb7de/schema94 deployed at21:31:49.255 Riyadh. Owner's exact
+  replacement approval4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650
+  executed once. Intent/SQL/activation/completion/receipt retained. Never rerun apply
+  or preflight expecting91; original6474587 remains held/superseded, not reusable.
+- Same archivebc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6,
+  app1924ca0/operator724720a. Atomic migrations92–94 preserve all140 original
+  transaction projections/Auth security; three current customers, profiles/
+  credentials, orders and final catalog edits preserved. History tables/claims0;
+  private RLS/grants/service-only RPC checks PASS. No historical import ran.
+- Fresh encrypted execution backups authenticated/full-readback PASS:10935391 DB
+  plaintext bytes,10 runtime files. Prior actual native application/Auth/Storage
+  restore/91→94/rollback/replay-refusal proof retained (Vault0 excluded locally
+  only). Private candidate PASS; one storefront restart, service active/running;
+  Caddy/runtime/media/private incident files and signed callback authority preserved.
+- Public smoke PASS: EN/AR home/login200, Cart/Checkout403, anonymous history GET/
+  claim POST403, capabilities403; six retained/fresh asset byte hashes match.
+  These403s prove denial only. Authenticated history reachability/ownership and
+  normal hosted order/session acceptance remain unexercised; no admin bypass.
+- Private authoritative ../customer-migration-inactive-refresh-20261025/DEPLOYMENT-RECEIPT.json
+  and execution/completed.json record PASS; REFRESH-STATUS is DEPLOYED_INACTIVE_CONSUMED.
+  [Public receipt](docs/inactive-history-release.md#production-result-and-consumed-approval)
+  and roadmap updated. LOCAL-01–06/BETA-10 DEPLOYED; all79 IDs retained.
+- Temporary catalog deployment pause can end; resume already-authorized work.
+  Next milestone: privately reviewed eligible legacy IDs/source evidence and final
+  immutable payload/current94 recovery, then exact separate historical import
+  approval. Source/deployment decisions are complete; do not ask again.
+- Prepared import check against installed94 PASS read-only:41 batches, no Auth
+  creation or writes. Preview claims0 would expose no history. Never import then
+  replay changed customer records. Accept ordinary confirmed-owner claim/list/
+  details/refresh and denied guest/unverified/cross-account access after import.
+- Signup, purchasing, Paymob/PDC initiation remain CLOSED, confirmation required.
+  No new email, payment, shipment, provider action or push. Small EN/AR returning
+  notice/generic login guidance remains next before signup; PDC/refund/final order
+  acceptance and separate purchasing approval still required. Old WordPress stays
+  read-only. Preserve all prior handoff bytes/worktrees; no broad test repeat.
+
+# Catalog pause confirmed; replacement inactive release READY — 2026-10-25
+
+- Owner confirmed catalog imports/product edits are paused. Do not ask again;
+  maintain the pause through deployment. [Exact current packet](docs/inactive-history-release.md#current-replacement-deployment-packet)
+  is sealed in ../customer-migration-inactive-refresh-20261025/plan.json:
+  4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650.
+  Releasebc05eef266eeb7de, full archive SHA256
+  bc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6.
+  Same app1924ca0/operator724720a/migrations92–94; no rebuild or new feature.
+- Final pre-pause snapshot has105 import jobs/1262 items/2436 activity rows/5723
+  specifications;561 products/revisions retained. It includes45 fewer specs and
+  45 more audit rows since the prior backup. Runtime/schema/Auth/other business
+  projections matched. Preserve these latest edits and existing current customers.
+- New encrypted backup authenticated/full-readback PASS:10930479 DB plaintext
+  bytes,10 runtime files. Actual native application/Auth/Storage restore and91→94
+  preserve138 original tables/all140 transaction projections; rollback PASS,
+  duplicate upgrade refused, history/claims0. Managed Vault excluded locally only,
+  zero secret rows; production services untouched. Freshness starts2026-10-25
+  20:16:59.697 Riyadh, expires2026-10-26 02:16:59.697 Riyadh.
+- Seal checked() read-only PASS; saved local integrity PASS, production writes0.
+  Existing69 Beta/20 history/eight operator/build/typecheck/compiled/browser evidence
+  retained unchanged. CATALOG-PAUSE.receipt.json and new preparation/review hashes
+  are bound through qualification.json; older unsealed evidence is preserved in
+  pre-pause-evidence/. REFRESH-STATUS.json/READY-REVIEW.json record readiness.
+- ONE next owner approval, inactive application/schema91→94 only:
+  APPROVE INACTIVE BETA HISTORY DEPLOY 4c332350ae6fea14f9dabf1cc0b10d87750f5c2950fcff84b8538b570e1e9650
+  Replacement template remains false; no replacement approval or execution intent.
+  The original6474587 approval is recorded/held before apply; do not reuse it for
+  this changed baseline. Source approval remains complete; no repeat source decision.
+- On exact replacement approval: final freshness/drift check → fresh encrypted
+  execution backup → private candidate → atomic3 migrations → read-only94/data/
+  access checks → one app restart → gates verification. No automatic retry/rollback.
+  Keep schema94 after committed SQL; separately review any application rollback.
+- Production remains58e3083f4aa6a1f8/schema91. No apply/deployment/import/email/
+  provider/public activation or push. Signup/purchasing/shipment initiation closed;
+  existing customers/orders and signed callbacks preserved. Import/eligibility,
+  ordinary owned-history acceptance, small EN/AR notice/signup and purchasing
+  remain separate later milestones/approvals. BETA-10 LOCAL PASS; all79 IDs and
+  prior handoff bytes/worktrees preserved. Roadmap and release reports updated.
+
+# Approved deployment HELD before execution; catalog pause required — 2026-10-25
+
+- Owner supplied exact APPROVE INACTIVE BETA HISTORY DEPLOY for seal
+  6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+  Separate DEPLOYMENT-APPROVAL.receipt.json records it; original false template,
+  sealed plan and prior evidence remain unchanged. The final read-only check
+  stopped on newer catalog data. No execution intent/apply, SQL, staging, restart,
+  historical import, provider call, public activation or push ran.
+- Runtime/schema/Auth/current customers/orders and other business projections
+  matched. Catalog imports/products/revisions/audit logs changed; later snapshot
+  also contained specification edits. Counts advanced101→105 jobs,1242→1262 items,
+  2369→2391 audit rows,5769→5768 specs;561 products/revisions have changed values.
+  Preserve these live edits. Never bypass the guard or rerun the old exact seal.
+- Same qualified archivebc05eef266eeb7de (full hash unchanged), app1924ca0 and
+  operator724720a copied to ../customer-migration-inactive-refresh-20261025/.
+  Its detached eighth worktree is clean; original dirty work and all79 IDs remain.
+  No new application code, build or broad test repeat. Source approval is complete.
+- Fresh encrypted DB/runtime backups passed authenticated/full readback:10908495
+  database bytes,10 runtime files. Actual native application/Auth/Storage restore
+  and91→94 upgrade preserve138 original tables/all140 transaction projections;
+  rollback PASS, duplicate upgrade refused, history/claims0. Managed Vault excluded
+  locally only, zero secret rows; production services unchanged. Fresh recovery
+  starts2026-10-25 18:48:12.749 Riyadh, expires2026-10-26 00:48:12.749 Riyadh.
+- Replacement status is RECOVERY QUALIFIED, NOT SEALED. REFRESH-STATUS.json,
+  catalog-drift-review.json and recovery-upgrade-proof.json preserve the boundary.
+  Original DEPLOYMENT-HELD.receipt.json records zero production writes/no intent.
+  BETA-10 IN PROGRESS until the changed baseline is sealed; qualification otherwise
+  reused. No replacement deployment approval has been requested/received.
+- ONE next owner action: pause catalog imports/product edits and confirm
+  “Catalog edits are paused.” Async request remains pending. Keep edits paused
+  through deployment. After confirmation, check current data/freshness, seal the
+  unchanged archive against that baseline, then present its exact replacement
+  deployment approval. Do not execute a changed plan under the old approval.
+- [Current release hold/recovery](docs/inactive-history-release.md#current-hold-and-refreshed-recovery),
+  [requirements/inventory](docs/customer-access-release-plan.md), migration reports
+  and [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) updated. Public signup, purchasing
+  and shipment/provider initiation remain closed; accepted Auth stays accepted.
+  After inactive deployment: reviewed claim eligibility/final payload + separate
+  import approval → ordinary owned-history acceptance → small returning notice/
+  signup approval → final PDC/refund/checkout acceptance → purchasing approval.
+  All prior handoff bytes and consumed scopes remain intact.
+
+# Owner customer-access requirements recorded; inactive deployment GO — 2026-10-25
+
+- [Current requirements, release order and full pending-file inventory](docs/customer-access-release-plan.md)
+  extend BETA-03/04/10/11 and MIG-01/03/05. All79 task IDs/status counts remain.
+  Order: A inactive91→94 deployment → B import/verified ownership → C public
+  signup/login → D PDC/paid-checkout acceptance → E public purchasing. Existing
+  customer login/recovery remains available; each production scope needs approval.
+- Historical customers use their original registered email: missing current
+  accounts use ordinary verified signup/new password; existing accounts use login/
+  recovery. No incompatible WordPress hashes, duplicate Auth identity, current
+  password/profile overwrite, auto-confirmation or bulk invitations. Claims use
+  verified active current identity plus reviewed matching legacy eligibility.
+- Ordinary My Account → My Orders → Connect previous orders is already included
+  in sealed app1924ca0. No admin role/customer-selected identity is required.
+  After approved import/claim, verify owned list/detail/archived addresses/history,
+  refresh and denied cross-account/guest/unverified/held cases. No guest/unlinked
+  association solely by email; no live payment/inventory/shipping/notification.
+- The EN/AR returning-customer notice and generic failed-login help are PLANNED,
+  not implemented/qualified. Exact short copy and focused security/RTL/theme/
+  responsive checks are recorded. Make this the next small release afterA and
+  before public signup; store-configured/default-off, no email-existence lookup.
+  Adding it now would invalidate the sealed archive. No unrelated work joinsA.
+- All7 registered worktrees/5 local branches inventoried. Main has11 pending paths
+  including the plan. All40 original dirty Beta paths byte-match preserved2cd5418
+  and are represented in the combined source. History/operator sources are clean;
+  4 old failure-replay test/helper paths remain excluded/preserved. No growing
+  queue of separate qualified application releases is authorized.
+- Saved-plan check repeated read-only: READ_ONLY_CHECK_PASS, production writes0.
+  Exact inactive archive remainsbc05eef266eeb7de, operator724720a, plan seal
+  6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+  ONE next owner approval, inactive application/schema92–94 only:
+  APPROVE INACTIVE BETA HISTORY DEPLOY 6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d
+  Final freshness/drift guard remains; recovery expires2026-10-25 22:57:04.050 Riyadh.
+  No execution intent/deploy/import/push/activation ran. Signup, purchasing and
+  provider/shipment initiation stay closed; current customers/orders/callbacks safe.
+- Source approval is complete; do not repeat it. Freeze eligible IDs/source evidence
+  before final immutable import payload and separate import approval. Existing
+  verified matching owners can provide stageB acceptance; newly verified returning
+  customers complete the self-service path atC. Notice implementation does not
+  replace import, signup or purchasing approvals. Prior handoff bytes preserved.
+
+# Inactive91→94 release READY; separate deployment approval next — 2026-10-25
+
+- BETA-10 LOCAL PASS. [Exact inactive deployment packet](docs/inactive-history-release.md)
+  qualifies app1924ca06b2bf97426aba108f6da36cb7b7bd1287 and local operator
+  724720a50dab99f3e670798cafccfcebcb2e7c79. Releasebc05eef266eeb7de, archive SHA256
+  bc05eef266eeb7de890d48ca30be562136474ddc90a8ebb91d71dcec9ea462c6.
+  Private workspace: ../customer-migration-inactive-release-20261025/.
+  Exact plan.json seal6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d.
+- Eight new operator checks pass (5 Node/3 Python, no skips), fresh clean Nuxt build,
+  exact archive/readback,15 HTTP/1534 asset/eight EN/AR desktop/mobile Light/Dark
+  browser checks pass; zero external/production requests. Reused69 Beta/20 history
+  checks/typecheck against unchanged663 inputs. No broad regression repeat.
+  Retained1428 production assets; signed Paymob authority3 files match production.
+- Fresh encrypted DB/runtime backups passed authenticated full readback. Actual
+  local application/Auth/Storage restore and91→94 upgrade preserve old data/Auth,
+  RLS/ACLs and callback reconciliation.138 original protected tables matched;
+  all140 original transaction projections preserved. Injected rollback passes;
+  duplicate upgrade refused; history/claims0. Managed Vault excluded locally only,
+  zero secret rows; complete encrypted backup retained, production Vault unchanged.
+  Qualification expires2026-10-25 22:57:04.050 Asia/Riyadh (six-hour guard).
+- Saved-plan READ_ONLY_CHECK_PASS, production writes0. Target remains58e3083f4aa6a1f8,
+  schema91, three confirmed permanent customers. Signup/confirmation policy,
+  existing credentials/profiles/orders and signed callbacks are preserved.
+  Signup, purchasing, Paymob initiation and shipping/PDC live requests remain closed.
+  No Caddy/runtime/fee/catalog/scheduler change, import, email, provider call or push.
+- ONE next owner approval (inactive application + migrations92–94 only):
+  APPROVE INACTIVE BETA HISTORY DEPLOY 6474587b004ab0a5ac9d55e04e55f1e57a73760ced15b4dd26f3314a353a801d
+  Approval is not received; template remains false, no execution intent exists.
+  On approval, recheck freshness/drift and take fresh encrypted execution backups;
+  stage/candidate → atomic3-migration transaction → read-only94 check → one restart.
+  Any uncertainty stops; preserve receipts, no automatic retry/rollback. Reviewed
+  application rollback retains schema94; never restore over newer customer data.
+- Source approval70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  is complete; never re-request unchanged source approval. No historical import is
+  included. After deployment, freeze reviewed eligible IDs/evidence/final payload,
+  obtain separate import approval, reconcile and accept verified-owner history.
+  Public signup and final purchasing retain later acceptance/separate approvals.
+- [Roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md), release/source reports and both
+  handoffs updated together. All79 IDs, existing worktrees and prior handoff bytes
+  remain intact. Recovery and controlled confirmation remain ACCEPTED.
+
+# Migration source APPROVED; inactive release inputs frozen — 2026-10-25
+
+- Owner supplied the exact source approval phrase/seal:
+  APPROVE MIGRATION SOURCE 70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  It approves the primary archive/cutoff and exception treatment only. Claims
+  remain zero. No deployment/import, Auth changes, email or public activation.
+- The original source packet/template are unchanged. Separate private receipt:
+  ../customer-migration-launch-20261025/migration-source-approval.receipt.json.
+  Do not ask for this source decision again while its bound inputs/scope match.
+- Qualified1924ca0 and retained qualification hashes match. New private
+  migration-inactive-release-inputs-20261025.json freezes663 application inputs,
+  all94 migration hashes and pending92–94. Status INPUTS_FROZEN_NOT_DEPLOYABLE;
+  an archive, compatible operator and fresh restore qualification are not claimed.
+- BETA-10 is IN PROGRESS for local inactive91→94 release preparation. Next
+  production approval must name the qualified archive/operator and fresh recovery
+  evidence. Import remains separate, including final owner-reviewed eligibility.
+  No owner action remains for the completed source decision.
+- [Current packet](docs/customer-migration-approval.md), release report, WordPress
+  plan, [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and both handoffs updated.
+  Recovery/confirmation stay ACCEPTED. All79 IDs, three current identities,
+  source/data/qualified worktrees and prior handoff bytes are preserved.
+  No deployment, import, production operation or push ran in this milestone.
+
+# Confirmation ACCEPTED; guarded migration source review READY — 2026-10-25
+
+- Owner received/redeemed the Outlook confirmation in the originating profile and
+  reports account access/login. Fresh read-only check verifies exact UUID/email,
+  confirmed timestamp, matching active profile, one email identity, permanent
+  non-admin status and sign-in timestamp. Settings/admin/commerce fingerprints
+  match pre-test. BETA-02 confirmation ACCEPTED; recovery already ACCEPTED.
+  No password-based signup test is inferred from PKCE access. Do not send again.
+- Owner observed Brevo sendibt3.com/tr/cl wrapping. Follow up under BETA-03 for
+  Auth-only tracking suppression if supported; otherwise review a same-provider
+  email OTP alternative. No raw link/token retained, SMTP/provider/template change
+  made or new email sent. This does not reopen accepted Auth or delay migration prep.
+- [Migration source approval/release packet](docs/customer-migration-approval.md)
+  is READY for owner review, not production execution. One approval now selects
+  the frozen primary archive/cutoff and exceptions, with claims zero. Exact phrase:
+  APPROVE MIGRATION SOURCE 70e929ee9934b1e04d149266819ef2e3403be2a3cd27c03491803ebf837608d8
+  It authorizes no deployment/import/claim enablement or public activation.
+- Fresh encrypted target includes all three confirmed permanent Supabase customers;
+  schema91, history absent. Qualified1924ca0 and12 source/31 evidence/91 old
+  migration hashes unchanged. Reused20 passing checks/build/rehearsal; refreshed
+  dry-run retains identical payload:516 customers,591 orders,6 refunds,1789 items,
+  702 fulfillment observations and41 batches. No new Auth/profile writes.
+- Exceptions:2 privileged users excluded;110 guest plus21 excluded/missing-customer
+  records unlinked;1 date conflict preserved. Comparison has2 IDs unique to each
+  snapshot and1 email change; never union. No WP passwords or current-profile edits.
+- Freeze reviewed claim IDs/evidence before final import payload. Current preview
+  has zero eligible claims and exposes no history. Do not import then replay changed
+  customer records; immutable guards reject that. Verified/active/unique current
+  owners explicitly claim only approved matching registered legacy identities.
+- Sequence: source decision → compatible sealed inactive91→94 artifact/operator
+  and fresh verified encrypted recovery → separate deploy approval → installed
+  history/read-only check → separate exact import approval → reconcile/owned-history
+  acceptance → guarded signup → final checkout/delivery/refund acceptance → paid
+  activation approval. Failure preserves receipts; review exact-source hide rather
+  than overwrite newer customers. No deploy/import/push/public purchasing ran.
+- [Roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md), Auth/release reports and both handoffs
+  updated. All79 IDs, original worktrees and historical handoff bytes are preserved.
+
+# One confirmation sent; owner browser redemption next — 2026-10-25
+
+- Owner explicitly approved one ordinary unconfirmed identity and one genuine
+  signup-confirmation email. Exact private mailbox has no Auth/profile/legacy
+  conflict. Supported Admin API created exactly one identity/profile without
+  invitation, auto-confirmation or supplied/displayed/recorded password. Provider
+  generated its undisclosed initial secret; private login setup is not yet tested.
+- The retained separate visible Chrome window was verified signed out at the
+  production login page. Its existing Nuxt/Supabase client sent exactly one
+  resend(type=signup) with production /login and browser-held PKCE. Request
+  accepted; new confirmation timestamp recorded, invited_at null, unconfirmed
+  at the bounded post-send check. Owner receipt/redemption/access are PENDING.
+- ONE browser action: owner opens the Outlook confirmation email, copies its link
+  into the address bar of that separate ELcomputer Chrome window and checks the
+  production account result. Keep that window/profile open; never share the link.
+- Both creation/send scopes are CONSUMED. No resend, retry, invitation, additional
+  recovery, configuration investigation or repeated approval. Private attempt/
+  result receipts and browser-session metadata are in ../auth-email-acceptance-20261025/.
+  Browser tool session98634 remains open without URL/session/password capture.
+- Existing Auth/profile/admin/settings/order/payment/present shipping-job
+  fingerprints unchanged. Public signup disabled, confirmation required, Cart/
+  Checkout403. No deployment/import, public activation, provider transaction or
+  Git push. Recovery stays ACCEPTED; BETA-02 stays IN PROGRESS for owner results.
+  Refresh future migration target snapshots for this new approved UUID; preserve
+  prior identities, transactions, qualified1924ca0 and all79 tasks/worktrees.
+- [Current report](docs/auth-email-acceptance.md#current-confirmation-request--one-send-accepted-owner-pending--2026-10-25)
+  supersedes owner-Dashboard creation/pending-approval instructions below. All
+  prior handoff bytes remain unchanged.
+
+# Recovery ACCEPTED; one confirmation test prepared — 2026-10-25
+
+- [Master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and
+  [current Auth acceptance/plan](docs/auth-email-acceptance.md#current-acceptance--recovery-accepted-confirmation-prepared--2026-10-25)
+  supersede every pending-recovery/configuration-save instruction below.
+- OWNER-VERIFIED PRODUCTION PASS: Test B received the email from info@elcomputer.net,
+  followed the production reset link, changed the password and logged in with the
+  new password. Site URL and all four Redirect URLs are saved. Mark
+  AUTH-RECOVER-B-01 ACCEPTED; BETA-01 SMTP transport ACCEPTED. No log recheck or
+  recovery repeat is required. This is scoped owner evidence, not an agent smoke.
+- BETA-02 remains IN PROGRESS for one new-identity confirmation. Owner selected an
+  unused external Outlook mailbox and says it is not yet added. Exact address is
+  private in ../auth-email-acceptance-20261025/confirmation-01-plan.private.json.
+  Creation/send approvals remain false; no new UUID exists in the prepared plan.
+- ONE next owner action: approve one ordinary unconfirmed test identity and one
+  confirmation email to that exact mailbox. After approval, collision-check Auth,
+  current profiles and legacy inventory; owner creates with Auto Confirm OFF and
+  a password entered privately. No invitation or existing-identity alteration.
+- Prepared scripts/auth-email-acceptance/confirmation-browser.mjs uses the existing
+  production browser client, explicit send approval, verified UUID and one-attempt
+  guard. Installed SDK supports PKCE on resend(type=signup). Public signup stays
+  closed; owner redeems in the same profile/device, checks account access, then
+  signs out and logs in privately. Confirmation request HTTP200 is not acceptance.
+- Ten focused checks PASS (real installed SDK/actual login SFC, closed fixtures),
+  including EN/AR confirmation PKCE and duplicate/unapproved sends. No hosted
+  confirmation test or normal public signup acceptance is claimed. No app change,
+  build, account creation, email, production write or Git push ran this milestone.
+- After confirmation, reuse qualified1924ca0 combined Beta/history source.
+  Guarded inactive92–94 deployment must precede historical import; exact import,
+  public signup and purchasing retain separate approvals. Identity safeguards,
+  delivery/EGP50, manual refunds/reconciliation and final checkout/order acceptance
+  remain. Preserve identities, transactions, schema91 production and all79 tasks.
+  Original prepared work/worktrees and all prior handoff bytes remain below.
+
+# Auth redirect correction — application GO, hosted reset pending — 2026-10-25
+
+- Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and the current
+  [Auth redirect report](docs/auth-email-acceptance.md#current-redirect-correction--2026-10-25).
+  This notice supersedes pending-delivery and configuration-access-first text below.
+- Owner reports the approved Test B recovery email arrived through Brevo, then
+  redirected to localhost; password recovery did not complete. Delivery is an
+  owner-reported PASS, old redirect FAIL, hosted reset/access still incomplete.
+- Owner found saved Site URL http://localhost:3000 and empty Redirect URLs, and
+  is correcting it. Saved corrected state has not been independently observed.
+  Prior one-email approval is consumed; no automatic resend or old-link reuse.
+- ONE owner action: save Site URL https://elcomputer.net and exactly these four
+  Redirect URLs: https://elcomputer.net/login, https://elcomputer.net/ar/login,
+  https://elcomputer.net/login?mode=recovery and
+  https://elcomputer.net/ar/login?mode=recovery. No wildcard or generated code.
+- Actual login SFC/installed SSR/Auth SDK:7 focused checks PASS. EN/AR signup
+  redirects, automatic PKCE exchange, recovery form retention, password update/
+  signout, confirmation account entry and missing-verifier rejection verified
+  against closed local fixtures. Login source matches retained deployed source.
+  Application code is unchanged; no build/deployment is needed for this correction.
+- Application readiness GO; next recovery execution HELD until owner saves values
+  and approves one fresh Test B email. Owner requests signed out and redeems in
+  the same browser profile/device; avoid overlapping signup/recovery flows.
+  Successful reset and subsequent owned access must be recorded before acceptance.
+  Separate controlled confirmation follows; historical Admin-create/resend PKCE
+  proposal remains unqualified. Public signup stays closed.
+- No SMTP403 investigation or credentials questionnaire is needed. No email,
+  settings write, deployment, import, payment/shipping action, public activation
+  or push ran in this review. Preserve schema91 production, qualified1924ca0
+  migration source and all79 tasks. All previous handoff bytes remain below.
+
 # Priority reset and customer migration LOCAL PASS — 2026-10-25
 
 - Read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md) and
@@ -18,6 +3184,7 @@
   WordPress-prefixed bcrypt/pre-hash; no direct hash import or custom verifier.
   Existing Nuxt UUIDs/credentials/profiles stay; missing users activate through
   ordinary verified signup when approved, then explicit owner-reviewed claims.
+- Qualified local implementation:1924ca0; preserved Beta baseline:2cd5418.
 - Private history migration/API/EN-AR My Orders controls and guarded batch operator
   are implemented on local/customer-history-launch-20261025, under
   ../customer-migration-launch-20261025/source. Commit2cd5418 preserves the exact
@@ -40,699 +3207,58 @@
   normal browser; then report receipt/link/account outcome. Continue local release
   preparation independently. All previous handoff bytes remain below unchanged.
 
-# Owner beta decisions and email inspection — 24 October 2026
-
-The owner approved the special-order wording and mixed parcels shipping together.
-The notice now appears on both PDP styles, Cart and Checkout before payment.
-Existing Dashboard controls retain configurable EN/AR messages and stock release.
-SMTP delivery and LIVE Paymob Refund/Void access remain explicitly UNVERIFIED.
-The read-only Supabase management config request returnedHTTP403. The central
-Brevo adapter is disabled, with zero approved senders and no retained delivery
-messages/attempts/events. Those facts do not establish external Auth SMTP state.
-No transactional email, charge, refund, void or booking was sent.
-The candidate/refund guides list the exact remaining owner-only inspections.
-
-# Public beta candidate BLOCKED — 24 October 2026
-
-Local preparation follows the owner's PDC/EGP50/backorder decisions.
-Production stays58e3083f4aa6a1f8/schema91; signup and purchasing stay closed.
-Both existing Auth profiles are confirmed/active; B has no admin record.
-The owner reports account switching passed. Hosted order isolation remains pending.
-No real charge, booking, refund, provider configuration or deployment ran.
-
-[Beta candidate and exact remaining gates](docs/beta-launch-candidate.md) documents
-proposed migrations92–93: truthful CARD backorders, paid physical-stock release,
-unpaid expiry/restoration, card-only/exclusion guards and protected manual PDC AWBs.
-Private ../eligible-sku-review.csv lists239 model rows:223 normal product candidates;
-TESTproduct2026 and one preorder are excluded. No publication/import was performed.
-The official city file, SMTP/abuse/delivery checks, merchant Refund/Void access and
-bounded existing-account order acceptance remain outstanding.
-[Manual refund procedure](docs/beta-refund-operations.md) is prepared without money actions.
-
-The isolated candidate is based on6440669. The older original worktree/main branch
-and all previous handoff bytes remain unchanged. The four deployed PDC utility
-source hashes match their accepted source pins. Existing incidents and transaction
-559384846 are preserved. No Git push, merge or reset. Local review archive and
-validation remain distinct from production deployment/activation authority.
-
-# PDC inbound ingress PASS — 24 October 2026
-
-Owner-approved signal seal `fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024` completed once.
-Caddy's journal confirmed one SIGUSR1 reload at15:00:56.337 Riyadh.
-The single unauthenticated HTTPS POST to /api/webhooks/pdc returned401.
-No authenticated callback was sent. No PDC request, registration change, booking,
-payment/order write or service restart occurred. Both processes remain healthy:
-Caddy PID26652; Nuxt PID32102, release58e3083f4aa6a1f8. Runtime bytes and outbound/
-public-purchasing gates are unchanged. The admin API remains disabled.
-
-The exact Caddy candidate is now loaded; the earlier pending-reload condition is
-resolved. Both ingress approvals/operators are consumed. Never rerun them.
-The first unsupported systemd reload attempt and all evidence remain preserved.
-[Current ingress/recovery receipt](docs/pdc-webhook-ingress-recovery.md);
-private ../pdc-webhook-readiness-20261024/SIGNAL-EXECUTION-RECEIPT.json and
-signal-root-evidence/ retain the intent, journal, probe intent and completion.
-All4 protected root evidence files passed full-byte readback/hash verification.
-
-Provider cutover/authenticated verification remains blocked pending the existing
-account mapping/timezone review and a genuine assigned customerREF/AWB. Do not
-change PDC's destination or attach a standalone/static AWB to the uncertain order.
-The original uncertainty barrier and all paid-order/payment/incident history stay.
-Public-commerce session acceptance continues independently as the main priority.
-No application deployment, credential change, broad audit/build or Git push ran.
-Historical handoff bytes below are preserved unchanged.
-
-# PDC ingress STOP — installed configuration pending reload
-
-The owner-approved ingress attempt `cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05` validated and installed
-the exact Caddy candidate, then stopped: caddy.service has no reload action.
-The readiness preparation missed CanReload=no. No successful reload, signal,
-restart, authenticated callback or planned unauthenticated POST probe ran.
-Do not rerun the consumed original operator/approval. No automatic rollback.
-
-On-disk Caddy SHA is a23719140d8d6e8e2e159287d6b7bb5cefcc044299e1f8b27522c94b1a93e256.
-Activation of the POST exception is unconfirmed. GET remains403, which does not
-prove the active POST policy. A later Caddy start/reload can load this pending
-approved file; account for it before unrelated Caddy maintenance.
-Nuxt58e3083f4aa6a1f8/PID32102 and Caddy/PID26652 remain healthy. Runtime bytes,
-closed purchasing/provider gates, credentials, payment/order data and incidents
-are preserved by the action's scope. No PDC request or provider change occurred.
-
-[Failure receipt and prepared recovery](docs/pdc-webhook-ingress-recovery.md).
-The existing file-based Caddy2.11.7 process supports SIGUSR1 with admin off.
-12 local TLS signal-reload checks and3 replacement approval guards pass;
-production read-only recovery preflight, including journal confirmation access, passes.
-New plan `fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024` is sealed and NOT executed.
-Next approval: `APPROVE PDC WEBHOOK SIGNAL RELOAD fcd86364c92338c4fc85205664e3d97254b5bd44bde5d53d6e4ffb15073b8024`.
-This authorizes one signal and the one still-unused missing-secret401 probe only;
-no configuration rewrite, restart, authenticated callback or provider registration.
-Original validation/failure evidence, candidate and protected baseline are retained.
-PDC cutover remains blocked pending its existing mapping/timezone and genuine
-assignedREF/AWB prerequisites. Public customer purchasing remains the priority.
-All earlier handoff bytes below are preserved unchanged.
-
-# PDC webhook readiness BLOCKED for provider cutover — 24 October 2026
-
-[Current comparison, blockers and exact ingress approval](docs/pdc-webhook-readiness.md).
-Fresh read-only checks confirm consolidated release58e3083f4aa6a1f8, schema91,
-healthy storefront PID32102 and Caddy PID26652. Consolidated deployment passed;
-public-commerce account-B/hosted authenticated acceptance remains independent.
-
-Authenticated original WordPress snippet34 was inspected as data only. Its saved
-48-character webhook secret matches the current encrypted Nuxt secret exactly;
-no credential bytes were disclosed. Canonical HTTPS POST/JSON/X-Webhook-Secret
-contract is compatible. HTTP200 ack body differs safely. Nuxt retains exactREF/AWB,
-validated dates, bounded input, atomic AWB+StatusID deduplication, chronological
-ordering, customer ownership and shipping-only persistence. No auth/parser rewrite.
-[Complete33-ID WordPress/Nuxt comparison](docs/pdc-webhook-status-comparison.csv)
-records label-heuristic differences and conflicting PDF/sheet examples. IDs11/97
-remain neutral; missing ID1 is neutral too. Review account mappings/timezone before
-provider cutover. No global order-state/financial mapping is copied from WordPress.
-
-Current public /api/webhooks/pdc remains403. One HTTPS POST-only,8KiB/no-store,
-no-retry Caddy exception is prepared; every other original Caddy byte is preserved.
-43 callback/database tests,36 real local TLS proxy checks across2 fixture domains
-and3 operator guards PASS. Production ingress read-only preflight PASS.
-No Nuxt deployment, SQL migration, runtime/PDC-setting/credential change is needed.
-The candidate/operator are sealed outside Git: ../pdc-webhook-readiness-20261024/.
-Ingress-only approval, unconsumed: `cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05`.
-Exact next authorization: `APPROVE PDC WEBHOOK INBOUND INGRESS cd3b7ccf8f657e72acafe8d6016af52bf1c6ab0640e9d6d17b353c11217c1c05`.
-This permits one Caddy reload and one missing-secret POST expecting401 only.
-It does not authorize PDC registration, a valid callback, booking or application restart.
-
-Provider activation approval is NOT issued. There are0 customer jobs with an AWB;
-the original paid order/job/dispatch remain uncertain and cannot be reset/rebooked.
-Never attach standalone static AWBs or infer an order from a legacy REF/AWB.
-Keep PDC's destination unchanged until mappings and a separately authorized genuine
-assignedREF/AWB permit a bounded live verification packet. No provider contact/call,
-live callback, production change, payment, activation, full build or Git push occurred.
-Paymob and public purchasing safeguards, all incident history and unrelated work
-remain preserved. Public customer purchasing remains the main development priority.
-Historical handoffs below are retained unchanged.
-
-# Consolidated customer-session deployment PASS — 24 October 2026
-
-The exact approved release `58e3083f4aa6a1f8` is deployed, schema 91.
-Approval `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e` is consumed; do not rerun it.
-One `storefront` restart changed PID 31273 → 32102.
-Private candidate qualification, fresh encrypted execution backups/full readback
-and protected database/schema/security/runtime/media/incident checks passed.
-Caddy and credentials are unchanged. PDC User-Agent/status-date fixes remain.
-All purchasing/signup/provider gates stay closed; no PDC request or payment ran.
-
-Hosted public smoke passed: 8 HTTP checks, 37 asset hashes, 3 browser checks and
-4 protected-route observations. Account A exists; no second Auth identity exists.
-[Hosted acceptance and Test B requirements](customer-session-hosted-acceptance.md)
-are prepared. B creation and authenticated A→B acceptance remain pending approval
-and secure sessions. No identity or authentication email was created or sent.
-
-Private authoritative receipt:
-`../customer-session-consolidated-20261024/DEPLOYMENT-RECEIPT.json`.
-The sealed approval packet below is retained unchanged as historical evidence.
-
-# Consolidated session release READY — 24 October 2026
-
-The [fresh combined packet](docs/customer-session-consolidated-release.md) replaces
-obsolete session artifact `9418a11903830ae5` and its old approval. Production was
-verified at `2573cdf1504bf559`, schema 91. New release `58e3083f4aa6a1f8` is sealed,
-not deployed; exact approval seal `0971019ee41acefef4435d2fec2c262444bcdb7c3965111ca70f356ed069181e`.
-
-The deployed PDC User-Agent/status-date corrections are preserved: eight identical
-compiled edits, ten byte-identical PDC definitions. All session client bytes and
-1325 production retained assets remain. 16 focused tests and fresh archive checks
-pass: 16 browser checks, 12 screenshots, 1429 asset URL hashes, no page exceptions.
-83 security/15 source-browser/3 guard tests and clean typecheck/build are reused
-with verified bindings; no broad audit or full build repeated. Fresh encrypted
-backups/readback and schema 91 / 140-projection/Auth/runtime/media/incident checks pass.
-
-No deployment, provider request, payment, public activation, Git history change or push.
-All existing work and PDC incident records remain. Hosted isolation acceptance
-follows exact approved deployment. The separate PDC dynamic test remains pending.
-Historical handoffs and the consumed PDC deployment receipt follow unchanged.
-
-# PDC client deployment PASS — 24 October 2026
-
-Owner approved seal `ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`. The exact guarded operator
-completed once. Approval consumed; do not rerun the deployment.
-Release `2573cdf1504bf559` was healthy at12:47:38.785 Riyadh.
-One production service restart; private VPS candidate qualification and postflight PASS.
-Fresh encrypted database/runtime backups passed full readback. Schema91 and all140
-protected business/security projections remained unchanged. Caddy/runtime credentials,
-media, private incident evidence and1325 retained browser assets are preserved.
-Zero migrations, business-data writes, PDC requests, payment or public activation.
-Public purchasing, signup and provider gates remain closed. No Git push.
-[Deployment receipt](docs/pdc-http-client-release.md); private receipt and execution
-proof: ../pdc-client-fix-release-20261024/DEPLOYMENT-RECEIPT.json and execution/.
-
-Generic PDC User-Agent and required status-date filters are deployed. Product40
-remains configured, weight-only, no dimensions or pickup API/scheduling additions.
-Static AWB `EDC17983113EG` remains an independent diagnostic; no customer attachment.
-[Prepared private PDF/dated status commands](docs/pdc-static-booking-acceptance.md)
-remain unused. Dashboard visibility/cancellation remain owner checks.
-
-[Dynamic Dashboard test packet](docs/pdc-dynamic-dashboard-test.md) is prepared but
-not executable. A narrow read-only check found0 unbooked paid/packed PDC candidates.
-Original order ORD-20261023-8C0C964CBD remains paid/ready with its original uncertain
-job/dispatch and attempt_count1. Never reset its barrier or attach a cancelled/dummy AWB.
-Next: select another existing paid order for read-only eligibility review, then seal
-separate exact-order runtime/booking/PDF/tracking/closure authorization. No new payment.
-Unrelated customer-session work remains preserved; its earlier sealed deployment
-has an obsolete target baseline and must be rebound before any future application switch.
-Historical handoffs, including the consumed preparation approval, follow unchanged.
-
-# PDC static booking accepted; client release sealed — 24 October 2026
-
-Owner execution and retained VPS evidence confirm HTTP200, AWB `EDC17983113EG`,
-booking ID1071825, reference `ORD-24046ef1-b9a6-46bf-93ec-58df0c85503e`.
-Request12:14:33.372 Riyadh; one request, zero retries/database writes/customer attachments.
-Generic `Storefront-PDC/1.0` succeeded without cookies. Static acceptance is confirmed;
-normal Dashboard/dynamic-customer acceptance remains a separate future test.
-[Acceptance receipt](docs/pdc-static-booking-acceptance.md) includes prepared private
-PDF and dated tracking commands for this existing AWB. Neither was executed here.
-Dashboard visibility/cancellation of this new diagnostic remain owner checks.
-
-The [guarded PDC client release](docs/pdc-http-client-release.md) is sealed, not deployed.
-Release `2573cdf1504bf559`; approval `ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`.
-Shared headers cover all PDC operations. Tracking and both recovery paths now supply
-validated dates covering the matching saved job's lifetime. No migration or new config.
-86 focused/native/compiled/deployment tests and five exact-artifact HTTP checks pass.
-The accepted artifact is retained with one scoped server-file patch; all1325 client
-assets and unrelated application bytes are preserved. No full build was repeated.
-Fresh read-only schema91/140-projection/Auth/runtime/media/incident preservation passes.
-No provider call, shipping retry, production mutation, restart, deployment or push here.
-
-Next: `APPROVE PDC CLIENT FIX DEPLOY ac7685b6c05dc01f0b887a448c21ecea321b78419fc440330cdbd37a0a2b6786`.
-This permits one application switch/restart with fresh encrypted backups/private
-candidate qualification. All commerce/provider gates remain closed; no Paymob,
-customer-order, pickup, dimension, credential, Caddy or payment changes.
-Product40 stays configured; booking remains weight-only. Original uncertain jobs
-and all prior incident history remain untouched. Existing unrelated session-isolation
-work/package is preserved; any later deployment must rebind to its then-current target.
-After deployment, prepare separate authorization for genuine dynamic fields through
-normal Dashboard shipping; do not create a shipment or clear an uncertainty barrier now.
-
-This authorized PDC resumption supersedes earlier PAUSED/current-blocker notices.
-Historical handoffs follow unchanged.
-
-# Phase1 session isolation sealed — 24 October 2026
-
-[Session isolation](docs/customer-session-isolation.md) is locally PASS.
-The [one application approval packet](docs/customer-session-release.md) is ready:
-release `9418a11903830ae5`, schema91 unchanged, no deployment yet.
-Seal `07ff07e5fba22b8b6b4d58f40e80249aefa8f8c3dbbf894f45cd1c121c024860` requires exact owner approval.
-83 security + 15 source-browser + 3 deployment guard tests pass; typecheck/build pass.
-Exact archive: 16 browser checks, 12 screenshots, 1429 asset byte checks; no page exception.
-Fresh encrypted backups/readback and scoped read-only production preservation pass.
-Account/guest carts, checkout drafts, cached summaries and late responses are isolated.
-Original customer checkout commands remain recoverable under their own account.
-
-PDC remains PAUSED. Existing lookup work is preserved outside this release;
-all deployed server bytes, incident records and signed Paymob callback ingress stay.
-Signup/purchasing/coupons/provider initiation remain held. No charge, PDC request,
-production deployment, branch operation, commit or Git push ran.
-Historical handoffs and Codex work remain below unchanged.
-
-# Public customer purchasing priority — 24 October 2026
-
-PDC development and investigation are PAUSED until explicit owner resumption.
-Preserve its original reference, uncertain dispatch and incident evidence.
-No further PDC API call, rebooking, webhook activation or incident edit is authorized.
-
-The [focused commerce assessment](docs/public-commerce-readiness.md) is current.
-The completed LIVE Paymob payment559384846/EGP2 remains preserved; checkout is closed.
-Read-only production checks confirm schema91, disabled signup, empty purchase grant,
-closed outbound gates and retained signed Paymob callback ingress.
-Only PDC delivery/testEGP1 is configured; no real non-PDC service or pickup is ready.
-Multi-customer cart/checkout isolation, physical stock, identity migration decisions,
-notifications and merchant refund handling remain launch prerequisites.
-
-First local feature: clear account profile/header state on customer changes,
-reject stale responses and bind profile saves to the loaded customer.
-Focused checks and validation are in the assessment. No production change,
-provider transaction, deployment, activation, commit, branch operation or push.
-Existing Codex 2 work and historical handoffs remain preserved below.
-
-# PDC V6 original-document review — 24 October 2026
-
-- Owner confirms historical WordPress shipments were managed manually.
-  Historical AWBs/metadata do not prove successful automated API creation.
-- [Fresh review](docs/pdc-v6-integration-review.md) and
-  [contract checklist](docs/pdc-v6-contract-checklist.md) cover both complete PDFs
-  and all three workbooks. All duplicate source copies are byte-identical.
-- Normal booking fields match the documented structure; production entitlement,
-  Product40 test limits, date filters and pickup behavior need PDC confirmation.
-  No application defect is established as either HTTP500's cause. No runtime fix.
-- Original booking outcome remains UNKNOWN. Preserve its original reference,
-  uncertain job/dispatch and duplicate-booking barrier. No additional API call.
-- Seven focused suites pass88 offline checks,0 failures/skips, including disposable
-  native booking/recovery/private-label and transactional tracking fixtures.
-- Revised private support draft and full evidence:
-  ../pdc-v6-full-contract-review-20261024/. Prepared, not sent.
-- This review made local documentation/tests changes only. No production access,
-  deployment, payment/gate changes, cancellation, commit or push.
-
-Historical handoff follows unchanged.
-
-# PDC follow-up — owner reports no matching shipment or pickup visible
-
-- Owner completed the requested PDC Dashboard search for original reference
-  ORD-8b59b9e0-df2a-4269-a61d-4b3fe244e871 and reports no matching shipment/pickup.
-  This is owner-reported portal evidence, not provider confirmation of no creation.
-- Do not repeat the Dashboard check or rebook. Both approved provider calls returned
-  HTTP500; the existing job/dispatch remains uncertain with its originalREF/barrier.
-- Next: PDC reconciles originalREF using the private incident packet and two trace
-  IDs. Packet updated, not sent. No further API call, production change or retry
-  followed this report. Approval budgets remain consumed; PDF blocked without AWB.
-- Current receipt: docs/pdc-first-live-test-execution-receipt.md. Private follow-up:
-  ../first-live-pdc-test-20261023/owner-dashboard-observation.json and
-  EXECUTION-RESULT.owner-dashboard-followup.json. Both handoffs preserved; no push.
-
-Historical handoff follows unchanged.
-
-# PDC live booking UNCERTAIN — both approved calls consumed; do not retry
-
-- [Current execution receipt](docs/pdc-first-live-test-execution-receipt.md).
-  Owner approved seal5a03be551efea46477528467db6bd954b3e353617f28d93c641819427e43e4fb.
-- Exactly ONE SaveShipmentEx at23:27:50.247 Riyadh23October: HTTP500, generic error,
-  no AWB. Exactly ONE originalREF GetShipmentsStatus at23:30:06.166 after136seconds:
-  HTTP500 again. No ExportPDF was sent; no AWB/PDF/tracking acceptance established.
-- Original reference ORD-8b59b9e0-df2a-4269-a61d-4b3fe244e871 persisted before POST.
-  Job2ea28361-f56a-46c8-a2d7-9667f069f723 and matching dispatch remain uncertain,
-  attempt_count1, AWBnull. Do not clear the barrier, changeREF or rebook.
-- HTTP500 does not prove no shipment/pickup exists. Root cause unknown; no payload,
-  Product40/value/city/credential/parser cause is established. No corrective change.
-- Owner PDC Dashboard check requested by that exactREF/time; no portal visibility
-  claimed. Owner may manually cancel found shipment/linked pickup; agent never cancels.
-  If still unresolved, PDC must reconcile originalREF using the two private trace IDs.
-- Private ../first-live-pdc-test-20261023/EXECUTION-RESULT.json and
-  PRIVATE-PDC-INCIDENT.md; incident prepared, not sent.13 remote evidence files copied
-  over pinned SSH with hashes; raw request/response remains encrypted outside Git.
-- Paid order ORD-20261023-8C0C964CBD remains paidEGP2/Ready to Deliver; one Paymob
-  success, packing retained. No new payment/refund/reverse/extra pickup/GetProducts/
-  GetCities/booking retry. Booking+status budgets consumed, PDF unused but blocked.
-  No further provider request authorized by this consumed seal.
-- Public purchasing/global provider gates/Caddy/runtime/credentials/artifact unchanged
-  and closed. Private process exited. Release0ea60833a5071f27/schema91 preserved.
-  Both historical handoffs retained; roadmap held; no deployment/build/push.
-
-Historical handoff follows unchanged.
-
-# One live PDC API test prepared — exact booking approval pending
-
-- [Current sealed test packet](docs/pdc-one-live-test-authorization.md) supersedes
-  physical-parcel/quoted-rate blockers below for this API-only/no-handover test.
-- Owner attests PDC allows test creation/cancellation, accepts unquoted test fees,
-  will cancel shipment and linked pickup manually. No real delivery acceptance claimed.
-- Order ORD-20261023-8C0C964CBD is paidEGP2 and Ready to Deliver. Owner completed
-  Dashboard packing22:51:31.314 Riyadh with validated private video. Fresh read-only
-  checks find zero job, dispatch and AWB. No PDC request/write yet.
-- Exact approval pending: 5a03be551efea46477528467db6bd954b3e353617f28d93c641819427e43e4fb.
-  Private ../first-live-pdc-test-20261023/AUTHORIZATION-PACKET.md and plan.json.
-- Existing Product40, saved pickup/recipient, Ramses10/10, one piece/type1, test1kg,
-  test declaredEGP1, COD0/open=false/template1.1×1×1cm recorded but not transmitted;
-  no dimensions field in current payload. Product40 test-range acceptance unknown;
-  stop if rejected/uncertain, never change values and rebook.
-- Private one-run process reuses deployed booking service and staff/SQL/packing
-  contracts for this existing order. No app deployment, credentials, Paymob, Caddy,
-  runtime-file, global provider gate or public purchasing change; no public window.
-- Persist original ORD-<existing UUID> reference and dispatch barrier before one
-  SaveShipmentEx; exclusive fsynced network intent, encrypted raw response evidence.
-  One matching-AWB privatePDF and one delayed status lookup, with originalREF lookup
-  instead of normal poll if uncertain. Max15minutes for follow-up; no blind retry.
-- No extra pickup, automatic cancel/refund/reverse or GetCities/GetProducts. Owner
-  verifies AWB/reference in actual PDC Dashboard and cancels shipment/linked pickup.
-- Seven focused guard tests + production read-only preflight PASS, zero provider
-  requests/writes. Existing app tests/build reused. Both handoffs preserved; no push.
-
-Historical handoff follows unchanged.
-
-# Real EGP2 payment VERIFIED; checkout CLOSED; PDC booking BLOCKED
-
-- [Current payment and shipment receipt](docs/first-real-payment-pdc-readiness.md) supersedes the active checkout notices below.
-- Owner completed normal card/3DS checkout for ORD-20261023-8C0C964CBD.
-  One live Paymob success559384846,200 minor units/EGP2; durable paid/processing
-  at22:07:16.491 Riyadh. No duplicate success found. Signed-callback path and
-  ledger verified; no raw-signature replay or independent provider inquiry claimed.
-- Approved closure1c01a8d8… completed once22:22:33.253 Riyadh. Grant empty,
-  qualified close Caddy installed, all global purchasing/provider gates false.
-  Exact signed Paymob ingress/keys/owned receipts remain for late reconciliation.
-  Opening and closure consumed; never rerun. Release0ea60833a5071f27/schema91 unchanged.
-- No shipping job, dispatch, AWB or packing session/video. Owner can use normal
-  Dashboard → Orders → Confirm Orders, scan the actual allocated unit, record
-  validated private video and complete Ready to Deliver. Do not click Book yet.
-- Existing Product40/pickup Ramses10 match archived live settings.131 historical
-  AWBs,112 matching created/polled orders; no destination10 booking or carrier
-  invoice found in selected sources. Caches reused; no new PDC GET/request.
-- Pickup: Elcomputer/Ramses10/phone ending1542; matches archive, including normalized
-  address/numbers. Owner confirms current physical pickup privately, without re-entry.
-- Remaining: real packed kg/L×W×H/truthful value, Ramses10 street coverage and
-  Product40 merchant VAT/surcharges/insurance/cancellation terms/cost approval.
-  Default1kg/declaredEGP1 are not confirmed physical facts;68.40 is not a quote.
-- Private ../first-real-pdc-shipment-20261023/OWNER-BOOKING-REVIEW.md and
-  BOOKING-READINESS.json contain exact fields and unsealed one-booking scope.
-  Final packet needs these facts plus qualified exact-order Caddy/runtime access
-  and closure. Owner should click normal Book after approval. Durable originalREF,
-  one SaveShipmentEx, matchingAWB/privatePDF/poll; uncertain → REF lookup, no rebook.
-- No PDC request, new charge, booking, cancellation, refund/reverse or deployment.
-  Broader roadmap held; both historical handoffs/consumed seals preserved; no push.
-
-Historical handoff follows unchanged.
-
-# EGP2 owner checkout ACTIVE — expires22:27:56.541 Riyadh,23October
-
-- [Current activation receipt](docs/owner-checkout-egp2-active-receipt.md) supersedes pending/101 notices below.
-  Owner approved exact seal1c01a8d87098c9145b5ad8844710941498bf412732a3841e8ddec759b359a945.
-  Executed ONCE; OPEN consumed. Approved closure remains pending. Never rerun open.
-- Active22:00:58.398–22:27:56.541 Riyadh; prior deadline retained, no renewal.
-  Same i***@elcomputer.net/item/variant/qty1/PDC/saved Ramses address/command;
-  review key rotated and total200/EGP2 enforced. Item1 + customer delivery1 + card0.
-  Old101 grant revoked. Coupons remain forbidden. Owner refreshes Cart/no coupon.
-- One Nuxt and one Caddy restart. Grant loaded; global purchasing/providers false;
-  current release0ea60833a5071f27/schema91/compiled hash unchanged. Narrow open6c7d…
-  installed. Anonymous Cart403/Checkout302/login/capability closed/status401 and
-  signup/workers/non-POST callback403 verified. Exact signed callback POST available.
-- No assistant order/intention/card charge or provider booking. Owner alone performs
-  normal checkout/Paymob/3DS. Genuine merchant acceptance and paid result pending.
-  Keep fees/address unchanged; uncertain result means original-reference inspection.
-- Private ../owner-checkout-egp2-20261023/replacement-operator.mjs status/close only.
-  On paid/stop/expiry, clear grant/install qualified close7f6d… within same approval;
-  retain signed late callbacks/keys/owned status and receipts. No blind retries.
-- Before separately approving ONE real PDC booking, establish Ramses10 physically
-  covers the saved Al Azbakeya street, truthful declared parcel value and actual
-  charges. Packing/REF/AWB/private PDF/poll/PDC Dashboard visibility remain pending.
-  No cancellation/refund/reverse; tariffs inactive/unverified and roadmap held.
-- Both historical handoffs preserved; no build/deployment or Git push.
-
-Historical handoff follows unchanged.
-
-# EGP2 checkout BLOCKED — old grant revoked, replacement approval pending
-
-- [Current EGP2 receipt](docs/owner-checkout-egp2-readiness.md) supersedes the active101 header below.
-  Owner changed customer fee to1; item1 + delivery1 + card0 = EGP2/200 minor units.
-  Account/address/selected variant/qty1/PDC/Ramses10 unchanged; no coupon allowed.
-- Read-only records:0 orders, attempts, transactions, shipment jobs and dispatches.
-  No provider request/inquiry or quote/order/intention call by this agent.
-  Merchant-specific Paymob minimum remains unconfirmed; public Intention docs
-  specify minor units but do not prove EGP2 acceptance. Owner live attempt pending.
-- Old101 access closed18:49:11.982753 UTC under existing approval and owner revoke
-  instruction. Grant cleared; qualified close7f6d50ba… installed; signed callback/
-  keys/owned reads retained. One restart each. Global purchasing/providers remain off.
-  Old close consumed; never rerun. Release0ea60833a5071f27/schema91 unchanged.
-- NEW private packet: ../owner-checkout-egp2-20261023/AUTHORIZATION-PACKET.md.
-  Exact replacement/closure seal1c01a8d87098c9145b5ad8844710941498bf412732a3841e8ddec759b359a945.
-  No DB/app/cache/profile/tariff/credential change. Same canonical cart identity,
-  fresh review key, total200, one account/item/address. No assistant checkout.
-  Reuse old deadline22:27:56.541 Riyadh if>=15minutes remain at activation;
-  otherwise approved policy allows one fresh hour. Actual times must be reported.
-  Replacement is unapproved/unactivated; opening and closure each max1 restart
-  per Nuxt/Caddy. Coupon403 stays held; owner refreshes and removes any coupon.
-- Window/grant tests3 PASS; Caddy172 reused; independent23-input/scope verification PASS.
-  No completed build/deployment/general investigation repeated. No Git push.
-- After owner real payment, verify signed callback/live transaction/durable paid order.
-  Separate ONE PDC booking approval requires genuine Ramses10/physical Al Azbakeya
-  coverage, truthful declared parcel value and actual charges. AWB/private PDF/poll
-  plus real PDC Dashboard visibility required. No automatic booking/cancel/refund/
-  reverse. Broader roadmap held. Both handoffs preserved below.
-
-Historical handoff follows unchanged.
-
-# Owner checkout ACTIVE — 2026-10-23, expires22:27:56.541 Riyadh
-
-- [Current activation receipt](docs/owner-checkout-active-receipt.md) is authoritative.
-  Owner approved datae04c4ed5… and access/closure873946f5…; both executed.
-  DATA/APPLY and OPEN are consumed: never rerun. Closure remains approved.
-- Data:2 existing rows only, canonical cities411/accepted products2/PDC checkout
-  setting, company Cairo/customer delivery100. Credentials/internal costs/tariffs
-  preserved. Labels/COD/reverse and outbound shipping/PDC gates remain off.
-- Private grant binds i***@elcomputer.net, TESTproduct2026/variant/qty1/PDC/saved
-  Ramses address/EGP101. Window21:27:56.541–22:27:56.541 Riyadh,23October.
-  UTC18:27:56.541–19:27:56.541. Do not extend without exact authority.
-  Public purchasing/global provider gates false. Narrow Caddy open6c7deab8… installed.
-  One Nuxt and one Caddy restart, protected artifact/other environment unchanged.
-- Original nonmutating stop: no NUXT_CONTROLLED_PURCHASE placeholder. Audited
-  continuation appended only the approved grant; original bytes preserved.
-  Later probe expected anonymous200 incorrectly; Cart403/Checkout302/login are
-  correct guards. Read-only evidence finalized READY without another restart.
-  Original intent/STOP/backup evidence retained. No blind retries occurred.
-- Owner alone performs normal sign-in/profile/cart/checkout/Paymob. No assistant
-  order, quote, intention, card charge or provider booking. Real acceptance pending.
-  After payment, inspect signed callback/live transaction/durable paid order.
-- New current operator is private ../owner-checkout-route-20261023/ramses-egp101-activation-1/access-continuation-operator.mjs.
-  Use STATUS/read-only or approved CLOSE only. It has the successful OPENED receipt.
-  Close on paid/stop/expiry: clear grant, install qualified close7f6d50ba…; retain
-  signed late callback ingress/keys/owned receipt/status reads. No uninstalled timer.
-- Before separate ONE shipment approval, establish that Ramses10 genuinely covers
-  saved physical Al Azbakeya street address. City-list presence/owner selection
-  are not street-level carrier confirmation. Stop booking if coverage is unknown.
-  Actual parcel/value/charges, Dashboard packing, original REF/AWB/private PDF/poll
-  remain separate. Refund/reverse are not authorized. Broader roadmap is held.
-- Source release0ea60833a5071f27/schema91 unchanged. No repeated build/deployment,
-  new PDC GET/GetProducts, provider call, charge/booking or Git push by this agent.
-
-Historical handoff follows unchanged.
-
-# Ramses ID10 verified; EGP101 setup/access approval pending — 2026-10-23
-
-- [Current receipt](docs/pdc-ramses-egp101-readiness.md) supersedes the stale city blocker below.
-  Approved encrypted capture442758… executed once; HTTP200/411 rows. No retry.
-  Root cause proven: actual cityID/cityName aliases were missing in GetCities.
-  Company echo MATCH. Raw response stays encrypted; inspection was local.
-- Owner selected Ramses. The explicitly authorized profile write changed only city.
-  Ramses/Cairo already maps to PDC10. Street/mobile/governorate/both lines preserved.
-  Fresh actual checkout-normalizer check passes; both lines reach the order address.
-- Local parser correction:6 focused tests +4 targeted compatibility tests PASS.
-  All411 captured rows replay correctly. Existing production parser accepts the
-  derived canonical cache, so no new GET/GetProducts/app deployment is required.
-  The local source correction is NOT deployed. Production stays0ea60833a5071f27/schema91.
-- Current private packet: ../owner-checkout-route-20261023/ramses-egp101-activation-1/AUTHORIZATION-PACKET.md.
-  Data seal e04c4ed56b2f01ff9f25d16cb3e1668a5c72e45000af566841c70721783b8944
-  binds two existing rows: canonical cities/accepted products, PDC checkout setting,
-  company customer fee100/Cairo checkout. Profile/aliases/tariffs unchanged.
-  Auto labels/COD/reverse and outbound PDC gates stay off. Not applied/approved.
-  Access seal873946f5b0becc6033da52cb91fca9770d5ef9d70672c35e594ff25e48e827ef
-  binds owner account/address, TESTproduct2026 quantity1, EGP101/10100 minor,
-  one-hour activation-relative window, qualified Caddy opening/closure and signed
-  late callbacks/owned reads. Public purchasing/signup remain closed. Not activated.
-- New operational checks8 PASS; existing Caddy172 reused; independent seals/hash
-  verification38 entries PASS. Do not repeat completed build/deploy/release tests.
-  Data setup checks closed runtime before/after one transaction, encrypted backup,
-  exact row/field preservation. No charge/intention/order is created by operators.
-- Owner alone uses normal Cart/Checkout/Paymob. After real signed paid reconciliation,
-  owner Dashboard packing precedes separate carrier-cost/parcel/REF/booking/AWB/
-  private PDF/poll approval. Carrier price is unconfirmed; customer delivery100 is
-  owner's selling price/subsidy decision. Draft tariffs remain inactive/unverified.
-- No new provider request after approved capture, no cache/rate/gate change,
-  restart/deployment/charge/booking/refund/reverse or Git push by this agent.
-  Refund remains unimplemented; reverse inactive/unaccepted; roadmap preserved.
-  Old city instruments are consumed; preliminary unapproved plans are superseded.
-
-Historical handoff follows unchanged.
-
-# GetCities consumed; city evidence capture awaits approval — 2026-10-23
-
-- [City lookup receipt](docs/pdc-city-lookup-receipt.md): owner-approved seal
-  60117c9bf0f9051e50c885f0cc41b3dca2cf2b8a3f20c5d89d6aacb41fe67379
-  executed ONCE and is CONSUMED. Never rerun its city-operator run.
-  Exactly one GetCities GET returnedHTTP200/28349 bytes and passed JSON parsing.
-  Later EXISTING_CITY_SCHEMA_AND_COMPLETENESS rejected the result.
-- The limited receipt lacks raw/shape data and combines normalization/empty-row/
-  company-echo/defensive checks. No specific root cause or city ID is established.
-  Do not invent city field aliases, assume credential failure or assert a proven
-  normalizer defect. Original instrument/report/source remain unchanged.
-  Read-only remote status confirms ATTEMPT/RESULT/POSTCHECK, request1/retry0 and
-  PDC settings/runtime/process preservation PASS. No additional provider call.
-- No database/profile/cache/gate/credential change, payment/order/intention,
-  shipment, restart, deployment or Git push by this agent. Actual destination
-  stays Al Azbakeya/Cairo/Egypt; preserve street/mobile/governorate/both lines.
-  Prepare one authoritative alias after evidence, rather than replacing the
-  physical destination with a nearby district. No profile correction justified now.
-- Separate private ../owner-checkout-route-20261023/city-schema-capture-1/
-  prepares ONE additional GetCities encrypted-response capture, unapproved/unexecuted:
-  seal4427582ccbde14541ee1362bdf6eda2d4525867cbb30f454a04b326f8131dde5.
-  AUTHORIZATION-PACKET.md is next review. No retries/GetProducts/SQL/cache/profile/
-  gate/payment/booking allowed. Old approval cannot execute it. Exact deployed
-  helpers, host/runtime/settings pins, TLS GET-only8s/1MiB retained.
-  Body encrypted before output using AES256-GCM/RSA3072-OAEP; private key local0600.
-- Twelve NEW offline capture cases/crypto roundtrip/stage separation PASS; no network.
-  Parsing/extraction/normalization/echo/pickup/destination are recorded separately;
-  unused stages NOT_EVALUATED. A capture PASS never implies city-mapping acceptance.
-  Fresh read-only preflight and independent wrong/old-approval rejection PASS.
-  No completed application validation/build/deployment repeated.
-- EGP101 remains approved: item1 + customer delivery100 + card0, quantity1/account/
-  saved-address hash. Carrier-cost/value confirmation stays before separately
-  approved booking; do not restart tariff work. Existing Caddy opening/closure172
-  tests reused. Coordinated setup/access template preserves separate approvals for
-  exact caches/alias/company100 data and account/window/10100 access/late callback
-  closure; ID/window unset while evidence is missing. Owner alone submits payment.
-- Public purchasing/signup/provider gates remain closed; no invoice/paid flag
-  manufactured. Real paid order → real Dashboard packing → separate one REF/AWB/
-  private PDF/poll approval. Refund/reverse and modular roadmap remain separate.
-  Both historical handoffs, prior artifacts and consumed approvals preserved.
-- Git recorded an external push of prior local branch6f66bb4; actor not attributed.
-  This agent issued no push. Follow-up is isolated on local/owner-checkout-city-followup-20261023.
-
-# Owner profile PASS; Al Azbakeya checkout BLOCKED — 2026-10-23
-
-- [Focused readiness](docs/owner-checkout-al-azbakeya-readiness.md) supplements the
-  same first-real-checkout task. Release0ea60833a5071f27/schema91 unchanged.
-  No deployment, build or completed application investigation/tests repeated.
-- Fresh pinned read-only checks: selected i***@elcomputer.net active/confirmed,
-  saved010 mobile passes the actual checkout normalizer; both lines persist and
-  survive normal prefill/order/profile helpers. Actual live checkout remains held.
-  No address/phone/card/credential values copied to Git or chat. Owner reports save.
-- Saved Al Azbakeya/Cairo/Egypt has zero exact or similarly named matches among382
-  aliases. No city ID invented or destination substituted. City/product caches empty;
-  PDC company active, checkout off/governorates empty, saved40/pickup10 retained.
-  Owner approved customer delivery100 and payable101 (item1/card fee0).
-  Saved customer delivery10 is not changed yet; saved carrier5 is unverified.
-  Owner accepts subsidizing the difference; carrier-cost confirmation is deferred
-  to separately approved shipment booking and does not block payment preparation.
-  TESTproduct2026 published normal-sale1EGP, active variant, structural quantity1
-  available; actual unit is owner-reported. Exact grant will enforce10100 minor units.
-- Accepted GetProducts receipt/hash reused; current entire PDC settings fingerprint
-  matches its accepted snapshot. Products36 General/40 High Value(elc) can be reused
-  after separately approved cache setup. No GetProducts/Test/Sync repeated.
-- Private ../owner-checkout-route-20261023/ prepares ONE GetCities-only request:
-  seal60117c9bf0f9051e50c885f0cc41b3dca2cf2b8a3f20c5d89d6aacb41fe67379.
-  AUTHORIZATION-PACKET.md is the next review packet; no outbound lookup approved/run.
-  Exact deployed helper/credential/target pinning;15 new offline boundary cases
-  and independent wrong-approval rejection PASS. No retry, SQL/cache write, gate
-  change, booking or payment is included. Review city response before alias/cache deltas.
-- Existing private grant preparation binds account/product/variant/quantity1/company/
-  saved-address hash and approved10100 total. Destination ID/window unset; no grant
-  installed. Local normal opening/closure Caddy drafts pass adaptation and172 new
-  local proxy checks across two hosts. Neither policy is installed.
-  Closure retains exact signed Paymob POST and owned receipts/status reads.
-- Still required for checkout: authoritative city mapping, reviewed bounded cache/
-  company/alias/fee100 deltas and account/EGP101/window/Caddy activation approval.
-  Product40 carrier charges and truthful private parcel/declared value stay separate
-  booking requirements. Real Paymob/provider acceptance remains the owner's test.
-  Global public purchasing/signup/provider gates remain closed; no automatic draft rates.
-  Owner alone creates the order and enters Paymob; no manual paid flags/uncertain retry.
-- Zero orders/payment attempts/transactions/shipping jobs/dispatches; no provider call,
-  database write, credential change or Git push. One paid/packed shipment remains
-  separately approved, including REF/AWB/private PDF/bounded poll. Refund/reverse and
-  modular gateway/carrier/pricing/tracking/customer migration remain independent later work.
-  Preserve all consumed approvals/artifacts and both historical handoffs.
-
-# Inactive normal checkout DEPLOY PASS; owner checkout BLOCKED — 2026-10-23
-
-- [Deployment receipt](docs/normal-checkout-deployment-receipt.md): production
-  release0ea60833a5071f27, applicationae2f6df9d059a07b7aa24aa67f10a315d3bb721e,
-  schema91 unchanged. Exact approved deployment seal
-  248438ddb082fa37d3291e73e51526a556e39759427356a4e82b7e80bd0e4299
-  applied ONCE and is CONSUMED. Never rerun inactive-deployment-1/operator.mjs apply.
-- Fresh preflight and encrypted execution backups/full database/runtime readback
-  PASS. Exact archive reused; no rebuild or feature-suite repeat. Private candidate,
-  one Nuxt switch/restart and final read-only preservation PASS. No STOP/retry/rollback.
-  Caddy process, runtime/credentials, Auth/security/schema/RLS/ACL,140 protected
-  business/security projections, media/private files and1223 prior assets preserved.
-  Existing telemetry/Auth activity exclusions remain; no global-write-history claim.
-- Fourteen final GET checks PASS: EN/AR login200/profile302; commerce, callback,
-  signup and worker holds retained. Independent receipt/plan/input verification
-  and six live asset byte checks PASS (three retained, three new).
-  Public purchasing/provider gates remain off; private grant empty.
-  Zero orders/attempts/transactions/shipping order/claim jobs; no tariff import/activation.
-- Selected customer i***@elcomputer.net remains active/confirmed. Saved mobile
-  invalid; owner must update it privately in My Account → Profile. Actual owner
-  browser save is unproved. Do not request pasted full address/card/credentials.
-  No verified destination mapping or populated caches; PDC checkout off; stored
-  shipping10 unapproved. Exact payable total and merchant carrier charges unapproved.
-  TESTproduct2026 remains1EGP; owner reports one unit; truthful parcel value stays private.
-- Prepare the account/address/verified route/product/price/window normal activation
-  only after prerequisites. Required provider lookup and cache/company mutations
-  need separate reviewed approval. Reuse accepted GetProducts; no blind Test/Sync.
-  Signed Paymob callback ingress remains held. Opening/closure must preserve exact
-  signed late receipts and owned status reads. Never manually mark paid or retry
-  uncertain payment/booking. Owner personally completes Cart/Checkout/Paymob.
-- Limited activation, one real payment and one PDC booking remain separately
-  approved. Real Dashboard packing precedes one AWB/private PDF/bounded tracking.
-  Refund/void unimplemented; reverse inactive/unaccepted; separate acceptance needed.
-  Modular gateways/carriers/subsidies/loyalty remain independent roadmap releases.
-- Private approved-5d3181a2/inactive-deployment-1/ retains approval, consumed intent,
-  fresh encrypted backups, remote receipts and completed/independent evidence.
-  Original tariff artifact/consumed approvals and both historical handoffs preserved.
-  No Git push by this agent; local branch has no upstream. Earlier external
-  documentation-push observation remains recorded in the preparation receipt.
-
-# Normal-checkout preparation COMPLETE; application deployment pending — 2026-10-23
-
-- [Preparation receipt](docs/normal-checkout-preparation-receipt.md) supersedes the
-  pending-build notes below. Both historical handoffs remain preserved.
-  Approved proposal5d3181a2 is complete: local corrections plus exact login/profile
-  access only. Account access is live; public checkout remains BLOCKED.
-- Source ae2f6df9d059a07b7aa24aa67f10a315d3bb721e:126 tests PASS, one existing
-  opt-in skip, typecheck PASS, one isolated build. Exact extracted archive passed52
-  compiled API and1326 asset byte checks;1223 prior client assets retained.
-  Independent seal/archive/inventory/evidence verification PASS. No provider acceptance
-  is inferred from local SQL/browser/fake transport checks.
-- Archive0ea60833a5071f27101b768993aeaadfd1cd12e5d7eb1088147578850bf8aff8;
-  local review32319d8b0595a86b908d31ef29ae020fe1d66e2a9fcd208b56992ffbb544e5da.
-  Frozen artifact remains in private approved-5d3181a2/inactive-review-1/.
-  Reuse its completed build/tests; do not alter the consumed tariff artifact.
-- Fresh application-only deployment plan is prepared, not applied:
-  seal248438ddb082fa37d3291e73e51526a556e39759427356a4e82b7e80bd0e4299.
-  Private inactive-deployment-1/AUTHORIZATION-PACKET.md binds exact archive/target,
-  encrypted backup full readback, unchanged schema91/runtime/Caddy/gates and one
-  future Nuxt switch/restart. Fourteen guard tests and independent plan checks PASS.
-  Wrong or preparation-only approvals reject before intent/network.
-  Fresh preflight/execution backups required; drift requires a new packet.
-- Latest read-only readiness: selected i***@elcomputer.net active/confirmed,
-  saved address present/mobile invalid, exact city mapping0, lookup caches empty,
-  PDC checkout off and stored delivery10 unapproved. No approved payable total.
-  Owner should edit My Account → Profile privately; owner browser save unproved.
-  TESTproduct2026 remains1EGP; truthful declared value/parcel facts stay private.
-- Production still release08b45ffac0e524c8/schema91, no application deployment.
-  Global purchasing/provider gates off; grant empty; financial counts zero.
-  Login/profile Caddy approval was applied once; its original STOP/read-only
-  resolution remain preserved. No retry, credentials, tariff import/activation,
-  provider request, order, intention, payment or shipment occurred.
-- Normal checkout, signed callback/late-event closure, one owner-submitted payment
-  and one packed PDC shipment still need their respective exact approvals.
-  Refund is unimplemented; reverse code inactive/unaccepted. Modular gateways,
-  carriers, subsidies and loyalty remain independent subsequent roadmap releases.
-- No Git push issued by this agent. Git separately recorded a push of earlier
-  documentation b56cfa1; actor not established. Checkout source remains local on
-  local/normal-checkout-preparation-20261023 without an upstream.
+# BETA-01 Auth email verification — SMTP ACCEPTANCE BLOCKED, 2026-10-25
+
+- [Auth email report and two prepared tests](docs/auth-email-acceptance.md),
+  master roadmap E22/BETA-01–03. Owner reports saved Brevo Custom SMTP using a
+  dedicated active key, verified sender and smtp-relay.brevo.com:587. Credentials
+  remain private; the local SMTP file is an empty preparation template.
+- Fresh read-only effective Auth configuration GET returns403 with the existing
+  management credential. Host/port/sender, Site URL/allowlist, email quotas/resend
+  interval, CAPTCHA/hooks and actual delivery remain independently unverified.
+  No connected signed-in document/browser session was available.
+- Public Auth settings200 verifies email enabled, mailer_autoconfirm=false,
+  disable_signup=true and anonymous Auth disabled. Two existing permanent users
+  are confirmed; no unconfirmed identity exists. Neither account was modified.
+- Both EN/AR confirmation-entry and recovery-query routes return200; Cart and
+  Checkout403. Route availability is not hosted allowlist/link-redemption proof.
+  Existing application client uses PKCE; owner must open links in its browser.
+- Pinned runtime/read-only PostgreSQL checks confirm active58e3083f4aa6a1f8,
+  schema91, empty restricted grant, purchasing default false and payment/shipping
+  initiation flags false. No service operation or full production audit ran.
+- Private ../auth-email-acceptance-20261025/ retains sanitized receipts and the
+  two-case test plan. Recipient unset; identity/send/password-change approvals
+  false. Confirmation and recovery NOT RUN. No email, identity, settings change,
+  provider transaction, deployment, public activation or Git push ran.
+- ONE next action: close the effective-config evidence gap with scoped private
+  auth_config_read access or non-secret saved owner-console observations. Then
+  finalize exact recipient/identity/two-test approval. Do not enable public signup.
+  Both handoffs and roadmap updated; all earlier handoff bytes preserved below.
+
+# Master roadmap and cross-account reconciliation — 2026-10-25
+
+- Start with [docs/ELCOMPUTER_MASTER_ROADMAP.md](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+  It is the authoritative requirements/status index for both Codex accounts.
+  Read it before substantial work; update it and both handoffs each milestone.
+- Latest retained production evidence is 2026-10-24: release58e3083f4aa6a1f8,
+  schema91. Signup/purchasing and outbound provider gates remain closed. Existing
+  signed Paymob ingress remains available. No fresh live probe ran on2026-10-25.
+- Newer branch6440669 and private deployment receipts supersede the older baseline
+  below: customer-session isolation and PDC client corrections are deployed;
+  one EGP2 LIVE payment is durably reconciled; one independent static PDC booking
+  succeeded. Original uncertain customer dispatch and dynamic acceptance remain
+  separate. PDC inbound missing-secret401 passed; authenticated cutover is pending.
+- The existing dirty ../beta-launch-preparation-20261024/source worktree contains
+  the locally qualified schema93 candidate/migrations92–93. It is not deployed.
+  Preserve both accounts' branches and all candidate bytes; no merge/reset here.
+- Current priority is public paid Beta. SMTP/verification/recovery, official city
+  mapping, LIVE refund readiness, inactive release preparation and authentic hosted
+  customer-order acceptance remain blockers. Owner-reported switching is bounded.
+- ONE next task: BETA-01, read-only effective Supabase Auth SMTP/Brevo inspection.
+  The roadmap defines prerequisites, responsibility, done criteria and approval
+  boundaries. No test email, production change, provider transaction or push ran.
+- Documentation only: AGENTS/README pointers and this matching handoff notice.
+  All prior handoff text below is preserved unchanged as historical evidence.
 
 # Approved normal-checkout preparation — 2026-10-23
 
