@@ -4,10 +4,12 @@
       <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-8">
         <h1 class="text-2xl font-bold text-slate-950">{{ $t('paymob.secureCard') }}</h1>
         <p class="mt-2 text-sm text-slate-600">{{ $t('paymob.secureFields') }}</p>
+        <PaymentOrderStatus v-if="order" :order="order" :actions="false" />
         <p v-if="capabilities?.card?.mode === 'test'" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('paymob.testOnly') }}</p>
         <p v-if="error || !cardAvailable" role="alert" class="mt-5 text-sm text-red-700">{{ $t('paymob.unavailable') }}</p>
+        <p v-if="error" class="mt-2 text-sm text-slate-600">{{ $t('paymentStatus.detail.provider_uncertain') }}</p>
         <ClientOnly><PaymentPaymobPixel v-if="session && cardAvailable" :session="session" class="mt-6" @complete="showResult" @cancel="showResult" /></ClientOnly>
-        <button v-if="!session && cardAvailable && !attempted" type="button" :disabled="loading" class="mt-6 min-h-12 rounded-full bg-blue-600 px-6 font-semibold text-white disabled:opacity-50" @click="start">{{ loading ? $t('paymob.loading') : $t('paymob.openSecure') }}</button>
+        <button v-if="!session && cardAvailable && !attempted && payment?.recovery === 'start'" type="button" :disabled="loading" class="mt-6 min-h-12 rounded-full bg-blue-600 px-6 font-semibold text-white disabled:opacity-50" @click="start">{{ loading ? $t('paymob.loading') : $t('paymob.openSecure') }}</button>
         <NuxtLinkLocale :to="`/account/orders/${orderId}`" class="mt-6 block text-sm font-semibold text-blue-700">{{ $t('paymob.viewOrder') }}</NuxtLinkLocale>
       </section>
     </main>
@@ -23,22 +25,31 @@ const orderId = String(route.params.id || '')
 const { capabilities, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
 const { data: siteContent } = await useSiteContent()
 const cardAvailable = computed(() => purchasingEnabled.value && capabilities.value?.card?.available === true && capabilities.value?.card?.initiationAvailable !== false && siteContent.value?.settings?.payment_card_enabled === true)
+const payment = shallowRef(null)
+const order = computed(() => payment.value ? { id: orderId, customer_payment: payment.value } : null)
 const session = shallowRef(null)
 const error = ref(false)
 const loading = ref(false)
 const attempted = ref(false)
 const showResult = () => { if (customerScope.isCurrent()) return uiNavigateTo({ path: '/checkout/payment-result', query: { order_id: orderId } }) }
 const start = async () => {
-  if (loading.value || attempted.value || session.value || !cardAvailable.value) return
+  if (loading.value || attempted.value || session.value || !cardAvailable.value || payment.value?.recovery !== 'start') return
   attempted.value = true
   loading.value = true; error.value = false
   try {
     session.value = await customerScope.request('/api/payments/intentions', { method: 'POST', body: { order_id: orderId, locale: locale.value }, retry: 0 })
-  } catch { error.value = true }
+    payment.value = { status: 'pending', recovery: 'review' }
+  } catch { error.value = true; payment.value = { status: 'provider_uncertain', recovery: 'review' } }
   finally { loading.value = false }
 }
-customerScope.onInvalidate(() => { session.value = null; attempted.value = true; error.value = false })
+customerScope.onInvalidate(() => { session.value = null; payment.value = null; attempted.value = true; error.value = false })
 // Explicit button initializes Pixel; merely viewing a pending order never initiates a charge.
-onMounted(refreshPurchaseAccess)
+onMounted(async () => {
+  await refreshPurchaseAccess()
+  try {
+    const result = await customerScope.request('/api/payments/status', { query: { order_id: orderId }, timeout: 10000 })
+    if (customerScope.isCurrent()) payment.value = result
+  } catch { if (customerScope.isCurrent()) payment.value = { status: 'unable', recovery: 'review' } }
+})
 useHead(() => ({ title: t('paymob.secureCard'), meta: [{ name: 'referrer', content: 'no-referrer' }] }))
 </script>

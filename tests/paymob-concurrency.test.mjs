@@ -1,3 +1,4 @@
+import { projectCustomerPayment } from '../server/utils/payments/customerStatus.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
@@ -98,6 +99,9 @@ test('native PostgreSQL concurrent claims, webhook replay, transaction binding a
       assert.equal((await db.query('select count(*)::int n from public.review_paid_events where order_id=$1', [id])).rows[0].n, 1)
       assert.equal((await db.query('select count(*)::int n from public.shipping_order_jobs where order_id=$1', [id])).rows[0].n, 0)
       const paid = (await db.query('select * from public.customer_orders where id=$1', [id])).rows[0]
+      const settledAttempt = (await db.query('select * from public.payment_attempts where order_id=$1', [id])).rows[0]
+      const settledTransactions = (await db.query('select * from public.payment_transactions where attempt_id=$1', [settledAttempt.id])).rows
+      assert.equal(projectCustomerPayment(paid, settledAttempt, settledTransactions).verified, true)
       await Promise.all(workers.map(client => reconcile(client, { mode: 'live' })))
       assert.deepEqual((await db.query('select * from public.customer_orders where id=$1', [id])).rows[0], paid)
       assert.deepEqual(await snapshot(), before)

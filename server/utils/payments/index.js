@@ -50,8 +50,10 @@ export const initiateOrderPayment = async ({ db, userId, orderId, locale, runtim
     order = current.data
   }
   if (!claimed.created) {
-    if (!attempt.client_secret || !['pending', 'failed'].includes(attempt.status) || new Date(attempt.expires_at).getTime() <= Date.now()) throw new PaymentError('payment_requires_review', 409)
-    return { provider: 'paymob', mode: config.mode, publicKey: config.publicKey, clientSecret: attempt.client_secret, methods: ['card'], orderId }
+    // A live client secret does not prove nonpayment. A separately qualified
+    // reconciliation and concurrency lease is required before recovery.
+    // Preserve the unique claim; never mint or overwrite a replacement attempt.
+    throw new PaymentError('payment_reconciliation_required', 409)
   }
   try {
     const payload = buildIntentionRequest(config, order, attempt, locale, returnPath)

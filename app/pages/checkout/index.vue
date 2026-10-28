@@ -7,11 +7,11 @@
         </button>
         <p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">{{ $t('common.secureCheckout') }}</p>
         <h1 class="mt-2 text-3xl font-bold text-slate-950 sm:text-4xl">{{ checkoutStep === 'shipping' ? $t('common.deliveryDetails') : $t('common.paymentMethod') }}</h1>
-        <p class="mt-2 text-sm text-slate-600">{{ checkoutStep === 'shipping' ? $t('checkout.tellUsWhereToDeliverYourOrder') : $t('checkout.chooseHowYouWouldLikeToPay') }}</p>
+        <p class="mt-2 text-sm text-slate-600">{{ checkoutStep === 'shipping' ? $t('checkout.tellUsWhereToDeliverYourOrder') : $t('paymentStatus.beforeOrder') }}</p>
 
         <ol class="mt-6 grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-white" :aria-label="$t('common.checkoutProgress')">
-          <li class="flex min-h-16 items-center gap-3 px-4 sm:px-6" :class="checkoutStep === 'shipping' ? 'bg-blue-50 text-blue-800' : 'text-emerald-700'">
-            <span class="grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold" :class="checkoutStep === 'shipping' ? 'bg-blue-600 text-white' : 'bg-emerald-100'"><Icon v-if="checkoutStep === 'payment'" name="lucide:check" size="17" aria-hidden="true" /><span v-else>1</span></span>
+          <li class="flex min-h-16 items-center gap-3 px-4 sm:px-6" :class="checkoutStep === 'shipping' ? 'bg-blue-50 text-blue-800' : 'text-slate-600'">
+            <span class="grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold" :class="checkoutStep === 'shipping' ? 'bg-blue-600 text-white' : 'bg-slate-100'"><Icon v-if="checkoutStep === 'payment'" name="lucide:check" size="17" aria-hidden="true" /><span v-else>1</span></span>
             <span class="font-semibold">{{ $t('common.delivery') }}</span>
           </li>
           <li class="flex min-h-16 items-center gap-3 border-s border-slate-200 px-4 text-slate-500 sm:px-6" :class="checkoutStep === 'payment' ? 'bg-blue-50 !text-blue-800' : ''">
@@ -79,7 +79,7 @@
 
           <template v-else>
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-wide text-emerald-700">{{ $t('common.addressSaved') }}</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ [address.street_address, address.address_line_2, address.city, address.governorate].filter(Boolean).join(', ') }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">{{ $t('common.edit') }}</button></div>
+              <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold text-slate-600">{{ $t('paymentStatus.deliverySelected') }}</p><h2 class="mt-1 text-lg font-bold text-slate-950">{{ address.first_name }} {{ address.last_name }}</h2><p class="mt-1 text-sm text-slate-600">{{ [address.street_address, address.address_line_2, address.city, address.governorate].filter(Boolean).join(', ') }}</p></div><button type="button" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="checkoutStep = 'shipping'">{{ $t('common.edit') }}</button></div>
             </section>
 
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="payment-method-title">

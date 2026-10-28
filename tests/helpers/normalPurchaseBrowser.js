@@ -94,7 +94,7 @@ const request = async (path, options = {}) => {
     return { order, items: (fixture.orderItems || []).filter(item => item.order_id === order.id) }
   }
   if (path === '/api/account/messages') return { items: fixture.messagesByActor?.[actor] || [], total: 1, unreadCount: 0 }
-  if (path === '/api/payments/status') return { status: 'paid', mode: 'live', orderId: fixture.orderId }
+  if (path === '/api/payments/status') { if (fixture.statusUnavailable) throw Error('Synthetic provider/status unavailable'); return { status: 'awaiting_payment', recovery: 'start', verified: false, mode: 'live', orderId: fixture.orderId, ...fixture.paymentStatus } }
   throw Error('Unexpected browser request: ' + path)
 }
 

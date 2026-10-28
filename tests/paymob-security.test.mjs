@@ -13,7 +13,7 @@ import { createPaymobIntention } from '../server/utils/payments/paymob.js'
 import { normalizePaymentMethod } from '../app/utils/paymentMethods.js'
 import { paymobPixelOptions } from '../app/utils/paymobPixel.js'
 import { requireCodCheckoutSchema } from '../server/utils/codCheckout.js'
-import { checkoutStreetAddress, checkoutProfileAddress } from '../app/utils/checkoutAddress.js'
+import { checkoutStreetAddress, checkoutProfileAddress, hasDeliveryTestMarker } from '../app/utils/checkoutAddress.js'
 import { build } from 'esbuild'
 import { resolve } from 'node:path'
 
@@ -41,7 +41,7 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
   const source = read('server/api/checkout/index.post.js').replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '').replace('export default defineEventHandler', 'captureHandler')
   runInNewContext(commandSource + '\n' + source, {
     captureHandler: fn => { handler = fn }, defineEventHandler: fn => fn,
-    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema, checkoutStreetAddress, checkoutProfileAddress, authorizeNormalCheckout,
+    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema, checkoutStreetAddress, checkoutProfileAddress, hasDeliveryTestMarker, authorizeNormalCheckout,
     readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, public: { ...runtime.public, purchasingEnabled: true }, paymobEnabled: enabled }),
     requireCustomerRequest: async () => ({ authUser: { id: user, email: 'fixture@example.invalid' }, supabaseAdmin: db }),
     isStoreAnalyticsUuid: value => /^[0-9a-f-]{36}$/i.test(value), recordStoreOrderCreated: async () => {}, console
@@ -128,7 +128,7 @@ test('native provider fetch timeout also covers a stalled JSON body after respon
   const server = createServer((_req, res) => { calls++; res.writeHead(201, { 'Content-Type': 'application/json' }); res.flushHeaders(); res.write('{') })
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   try {
-    await assert.rejects(() => createPaymobIntention(getPaymobConfig(runtime), {}, (_url, options) => fetch(`http://127.0.0.1:${server.address().port}`, options), 40), /intention_uncertain/)
+    await assert.rejects(() => createPaymobIntention(getPaymobConfig(runtime), {}, (_url, options) => fetch(`http://127.0.0.1:${server.address().port}`, options), 250), /intention_uncertain/)
     assert.equal(calls, 1)
   } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)) }
 })
@@ -162,7 +162,7 @@ test('result page ignores redirect proof, polls at most ten times at three secon
     assert.equal([...fixture.timers.values()][0].delay, 3000)
     await fixture.tick()
   }
-  assert.equal(fixture.requests.length, 10); assert.equal(fixture.state.value, 'unable')
+  assert.equal(fixture.requests.length, 10); assert.equal(fixture.state.value, 'pending')
   assert.equal(fixture.requests[0].options.timeout, 10000)
   assert.equal(Object.hasOwn(fixture.requests[0].options.query, 'success'), false)
   const active = resultHarness(); await active.mount(); active.unmount(); assert.equal(active.timers.size, 0)
@@ -178,7 +178,7 @@ test('query navigation keys a new result page; stale in-flight responses cannot 
   fixture.unmount()
   release({ status: 'paid', mode: 'live', orderId: 'old-order' })
   await loading
-  assert.equal(fixture.state.value, 'processing'); assert.equal(fixture.orderId.value, ''); assert.equal(fixture.timers.size, 0)
+  assert.equal(fixture.state.value, 'checking'); assert.equal(fixture.orderId.value, ''); assert.equal(fixture.timers.size, 0)
   assert.notEqual(fixture.meta.key({ fullPath: '/checkout/payment-result?order_id=A' }), fixture.meta.key({ fullPath: '/checkout/payment-result?order_id=B' }))
 })
 

@@ -5607,5 +5607,33 @@
       "OWNER_NOTIFICATION_NOT_CONFIGURED": "Email alerts are unavailable.",
       "DASHBOARD_REPORT_UNAVAILABLE": "Dashboard alerts could not be published."
     }
+  },
+  "paymentStatus": {
+    "deliverySelected": "Delivery address selected",
+    "beforeOrder": "Your order is not placed or paid yet.",
+    "checkStatus": "Check payment status",
+    "orderCancelled": "Your order is cancelled. Payment remains unverified.",
+    "title": {
+      "checking": "Checking payment status…",
+      "awaiting_payment": "Order placed — awaiting payment",
+      "pending": "Payment pending",
+      "provider_uncertain": "Payment needs verification",
+      "paid": "Payment confirmed",
+      "failed": "Last payment attempt failed",
+      "test_succeeded": "Test payment confirmed",
+      "unable": "Payment status unavailable",
+      "not_applicable": "Check your order payment details"
+    },
+    "detail": {
+      "checking": "",
+      "awaiting_payment": "Your order is saved. Payment has not started.",
+      "pending": "Payment is not confirmed. Check before trying again.",
+      "provider_uncertain": "Contact the store before paying again or changing payment method.",
+      "paid": "Your payment is verified. Order progress is shown separately.",
+      "failed": "Contact the store before trying another payment.",
+      "test_succeeded": "This test did not pay for your order.",
+      "unable": "Check your order or contact the store before paying again.",
+      "not_applicable": "Order placement does not confirm payment."
+    }
   }
 }

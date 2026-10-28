@@ -140,8 +140,7 @@ test('initiation stores identifiers then returns public key/client secret, never
 test('existing intention reuse and uncertain/expired/mode-changed attempts never send another POST', async () => {
   let network = 0
   const fetcher = async () => { network++; throw Error('must not call') }
-  const result = await initiateOrderPayment({ db: dbMock({ created: false }), userId: order.user_id, orderId: order.id, runtime, fetcher })
-  assert.equal(result.clientSecret, response.client_secret)
+  await assert.rejects(() => initiateOrderPayment({ db: dbMock({ created: false }), userId: order.user_id, orderId: order.id, runtime, fetcher }), /payment_reconciliation_required/)
   for (const change of [{ client_secret: null }, { status: 'succeeded' }, { expires_at: '2020-01-01' }, { mode: 'live' }, { integration_id: 2 }]) await assert.rejects(() => initiateOrderPayment({ db: dbMock({ created: false, attemptChange: change }), userId: order.user_id, orderId: order.id, runtime, fetcher }))
   assert.equal(network, 0)
 })
