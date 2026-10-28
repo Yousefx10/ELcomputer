@@ -49,9 +49,15 @@
               <div class="flex flex-wrap items-start justify-between gap-3">
                 <div><h2 id="delivery-address-title" class="text-xl font-bold text-slate-950">{{ $t('common.shippingAddress') }}</h2><p class="mt-1 text-sm text-slate-600">{{ hasSavedAddress ? $t('checkout.checkYourSavedAddress') : $t('checkout.enterYourDeliveryAddress') }}</p></div>
                 <span v-if="loadingProfile" class="text-sm text-slate-500">{{ $t('common.loadingAccount') }}</span>
+                <button v-else-if="!addressExpanded" type="button" aria-controls="checkout-address-fields" :aria-expanded="false" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" @click="editAddress">{{ $t('common.edit') }}</button>
               </div>
 
-              <div class="mt-5 grid gap-5 md:grid-cols-2">
+              <div v-if="!loadingProfile && !addressExpanded" class="mt-4 space-y-1 text-sm text-slate-600" data-testid="saved-address-summary">
+                <p class="font-semibold text-slate-900">{{ [address.first_name, address.last_name].filter(Boolean).join(' ') }}</p>
+                <p>{{ [address.street_address, address.address_line_2, address.city, $uiLabel(address.governorate)].filter(Boolean).join(', ') }}</p>
+                <p>{{ address.phone }}</p>
+              </div>
+              <div v-show="addressExpanded && !loadingProfile" id="checkout-address-fields" class="mt-5 grid gap-5 md:grid-cols-2">
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.firstNameVariant2') }}</span><input v-model="address.first_name" autocomplete="given-name" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.lastName') }}</span><input v-model="address.last_name" autocomplete="family-name" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
                 <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.streetAddress') }}</span><input v-model="address.street_address" maxlength="200" autocomplete="address-line1" type="text" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
@@ -60,12 +66,13 @@
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.governorate') }}</span><select v-model="address.governorate" autocomplete="address-level1" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('common.selectGovernorate') }}</option><option v-for="governorate in egyptGovernorates" :key="governorate" :value="governorate">{{ $uiLabel(governorate) }}</option></select></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.phoneVariant2') }}</span><input v-model="address.phone" autocomplete="tel" inputmode="tel" type="tel" :placeholder="$t('common.01xxxxxxxxx')" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><span class="mt-2 block text-xs text-slate-500">{{ $t('checkout.11DigitsStartingWith01') }}</span></label>
                 <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('common.email') }}</span><input v-model="address.email" autocomplete="email" type="email" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"></label>
-                <div v-if="requiresDelivery" class="md:col-span-2">
-                  <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('codCheckout.deliveryOption') }}</span><select v-model="shippingCompanyId" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('codCheckout.chooseDelivery') }}</option><option v-for="option in availableDeliveryOptions" :key="option.id" :value="option.id">{{ option.name }} · {{ formatCurrency(option.price) }}</option></select></label>
-                  <p v-if="deliveryError" role="alert" class="mt-2 text-sm text-red-700">{{ $uiMessage(deliveryError) }}</p>
-                  <p v-else-if="address.governorate && !loadingDelivery && !availableDeliveryOptions.length" class="mt-2 text-sm text-slate-600">{{ $t('codCheckout.noDelivery') }}</p>
-                  <button v-if="deliveryError" type="button" class="mt-2 text-sm font-semibold text-blue-700" @click="loadDeliveryOptions">{{ $t('codCheckout.reloadDelivery') }}</button>
-                </div>
+                <button v-if="addressComplete" type="button" class="min-h-10 justify-self-start rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 md:col-span-2" aria-controls="checkout-address-fields" :aria-expanded="true" @click="addressExpanded = false">{{ $t('common.hideDetails') }}</button>
+              </div>
+              <div v-if="requiresDelivery" class="mt-5">
+                <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">{{ $t('codCheckout.deliveryOption') }}</span><select v-model="shippingCompanyId" class="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-600"><option value="">{{ $t('codCheckout.chooseDelivery') }}</option><option v-for="option in availableDeliveryOptions" :key="option.id" :value="option.id">{{ option.name }} · {{ formatCurrency(option.price) }}</option></select></label>
+                <p v-if="deliveryError" role="alert" class="mt-2 text-sm text-red-700">{{ $uiMessage(deliveryError) }}</p>
+                <p v-else-if="address.governorate && !loadingDelivery && !availableDeliveryOptions.length" class="mt-2 text-sm text-slate-600">{{ $t('codCheckout.noDelivery') }}</p>
+                <button v-if="deliveryError" type="button" class="mt-2 text-sm font-semibold text-blue-700" @click="loadDeliveryOptions">{{ $t('codCheckout.reloadDelivery') }}</button>
               </div>
             </section>
 
@@ -151,7 +158,7 @@ import { egyptGovernorates } from '~/utils/egyptGovernorates'
 import { getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
 import { checkoutPaymentMethods, checkoutDeliveryOptions } from '~/utils/codCheckout'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
-import { checkoutAddressFromProfile } from '~/utils/checkoutAddress'
+import { checkoutAddressFromProfile, hasDeliveryTestMarker } from '~/utils/checkoutAddress'
 
 definePageMeta({ middleware: ['customer-auth', 'purchasing'] })
 
@@ -166,6 +173,7 @@ const { trackEvent } = useStoreAnalytics()
 
 const checkoutStep = ref('shipping')
 const loadingProfile = ref(false)
+const addressExpanded = ref(true)
 const applyingCoupon = ref(false)
 const placingOrder = ref(false)
 const couponCode = ref('')
@@ -265,6 +273,9 @@ watch(selectedPaymentMethod, () => {
   if (checkoutStep.value === 'payment') refreshQuote()
 }, { flush: 'sync' })
 const hasSavedAddress = computed(() => Boolean(address.street_address && address.city && address.governorate))
+const addressComplete = computed(() => Boolean(address.first_name.trim() && address.street_address.trim() && address.city.trim()
+  && egyptGovernorates.includes(address.governorate.trim()) && PHONE_PATTERN.test(address.phone.trim())
+  && (!address.email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address.email.trim())) && !hasDeliveryTestMarker(address)))
 const paymentInstructions = computed(() => selectedPaymentMethod.value === 'bank_transfer' ? settings.value.payment_bank_transfer_instructions : settings.value.payment_instapay_instructions)
 
 watch(availablePaymentMethods, methods => {
@@ -277,6 +288,12 @@ const getMethodFee = method => getPaymentMethodFee(settings.value, method)
 
 const fillAddressFromProfile = profile => {
   Object.assign(address, checkoutAddressFromProfile(profile, user.value?.email))
+  addressExpanded.value = !addressComplete.value
+}
+const editAddress = async () => {
+  addressExpanded.value = true
+  await nextTick()
+  document.getElementById('checkout-address-fields')?.querySelector('input')?.focus()
 }
 
 const loadCustomerProfile = async () => {
@@ -286,7 +303,7 @@ const loadCustomerProfile = async () => {
   const { data, error } = await supabase.from('customer_profiles').select('*').eq('id', customerUserId).maybeSingle()
   if (!customerScope.isCurrent()) return
   loadingProfile.value = false
-  if (error) { orderError.value = error.message; return }
+  if (error) { addressExpanded.value = true; orderError.value = error.message; return }
   fillAddressFromProfile(data || {})
 }
 
@@ -302,7 +319,7 @@ const validateAddress = () => {
 
 const continueToPayment = async () => {
   orderError.value = ''
-  if (!validateAddress()) return
+  if (!validateAddress()) { addressExpanded.value = true; return }
   if (!await refreshQuote()) return
   if (!availablePaymentMethods.value.length) { orderError.value = 'No payment method is available. Please contact the store.'; return }
   checkoutStep.value = 'payment'
@@ -409,6 +426,7 @@ customerScope.onInvalidate(() => {
   pendingCheckout.value = null
   quote.value = null
   Object.keys(address).forEach(field => { address[field] = '' })
+  addressExpanded.value = true
   couponCode.value = ''; couponError.value = ''; couponSuccess.value = ''
   selectedPaymentMethod.value = ''; shippingCompanyId.value = ''
   deliveryOptions.value = []; deliveryError.value = ''; proofFile.value = null
