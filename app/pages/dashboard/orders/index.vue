@@ -168,9 +168,10 @@
                 <td class="whitespace-nowrap px-4 py-4">
                   <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium" :class="getCustomerOrderStatusClass(order.status)">
                     <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
-                    {{ $uiLabel(formatCustomerOrderStatus(order.status)) }}
+                    {{ $uiLabel(formatCustomerOrderStatus(order.status, order.payment_method)) }}
                   </span>
                   <span v-if="order.is_preorder" class="ms-2 rounded-full bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
+                  <span v-if="order.payment_method === 'cash'" class="ms-2 text-xs text-gray-500">{{ $t('codCheckout.cash') }}</span>
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-end text-xs font-semibold tabular-nums text-gray-900">{{ formatCurrency(order.total_amount) }}</td>
                 <td class="pe-5 text-gray-300 transition-colors group-hover:text-gray-900"><Icon name="lucide:chevron-right" size="16" aria-hidden="true" class="directional-icon" /></td>
@@ -184,9 +185,10 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="text-sm font-semibold text-gray-900">{{ orderLabel(order) }}</span>
               <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium" :class="getCustomerOrderStatusClass(order.status)">
-                <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />{{ $uiLabel(formatCustomerOrderStatus(order.status)) }}
+                <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />{{ $uiLabel(formatCustomerOrderStatus(order.status, order.payment_method)) }}
               </span>
               <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
+              <span v-if="order.payment_method === 'cash'" class="text-xs text-gray-500">{{ $t('codCheckout.cash') }}</span>
             </div>
             <div class="flex items-end justify-between gap-3">
               <div class="min-w-0">

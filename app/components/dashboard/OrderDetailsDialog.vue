@@ -23,7 +23,7 @@
                   class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                   :class="getCustomerOrderStatusClass(orderDetail?.status)"
                 >
-                  {{ $uiLabel(formatCustomerOrderStatus(orderDetail?.status)) }}
+                  {{ $uiLabel(formatCustomerOrderStatus(orderDetail?.status, orderDetail?.payment_method)) }}
                 </span>
 
                 <span class="text-sm text-gray-500">
@@ -110,6 +110,7 @@
               </div>
             </section>
 
+            <PaymentCodStatus v-if="orderDetail.payment_method === 'cash' && !orderDetail.is_preorder" :order="orderDetail" />
             <DashboardOrderCodCash v-if="codCash" :order="orderDetail" :cash="codCash" :external-erp="externalErp" @updated="refreshCash" />
 
             <section v-if="orderDetail.stock_fulfillment_state === 'awaiting_stock'" class="rounded-xl border border-amber-200 bg-amber-50 p-4">
@@ -538,7 +539,7 @@ const buildPrintableOrderHtml = () => {
         <div>
           <p class="muted">${escapeHtml(uiLabel('Order Details'))}</p>
           <h1>${escapeHtml(orderDetail.value.order_number || orderTitle.value)}</h1>
-          <span class="status">${escapeHtml(uiLabel(formatCustomerOrderStatus(orderDetail.value.status)))}</span>
+          <span class="status">${escapeHtml(uiLabel(formatCustomerOrderStatus(orderDetail.value.status, orderDetail.value.payment_method)))}</span>
         </div>
 
         <div class="muted">

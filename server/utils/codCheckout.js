@@ -6,4 +6,8 @@ export const requireCodCheckoutSchema = async (supabaseAdmin, method) => {
   if (!['cash', 'card'].includes(method)) return
   const { error } = await supabaseAdmin.from('customer_orders').select(method === 'card' ? 'shipping_fee_amount,card_checkout_verified' : 'shipping_fee_amount').limit(0)
   if (error) throw createError({ statusCode: 503, statusMessage: 'Checkout is not ready.' })
+  if (method === 'cash') {
+    const schema = await supabaseAdmin.from('commerce_shipping_companies').select('cod_collection_enabled').limit(0)
+    if (schema.error) throw createError({ statusCode: 503, statusMessage: 'Checkout is not ready.' })
+  }
 }

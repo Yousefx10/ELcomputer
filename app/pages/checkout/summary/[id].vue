@@ -27,7 +27,7 @@
           <div class="mt-4 flex flex-wrap gap-3">
             <span v-if="orderData.order.is_preorder" class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
             <span class="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">
-              {{ $uiLabel(formatStatus(orderData.order.status)) }}
+              {{ $uiLabel(formatCustomerOrderStatus(orderData.order.status, orderData.order.payment_method)) }}
             </span>
 
             <span class="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700">
@@ -56,6 +56,7 @@
               <h2 class="text-2xl font-bold text-gray-900">{{ $t('common.payment') }}</h2>
               <p v-if="orderData.order.is_preorder" class="mt-2 text-sm text-gray-700">{{ $t('checkout.summary.requiredNowValueVerifiedPaidValueTheBalanceRemainsDueWhenArrangedWithTheStore', { value0: (formatCurrency(orderData.order.initial_amount_due)), value1: (formatCurrency(orderData.order.amount_paid)) }) }}</p>
               <p class="mt-3 text-sm font-semibold text-gray-900">{{ $uiLabel(getPaymentMethodLabel(orderData.order.payment_method)) }}</p>
+              <PaymentCodStatus v-if="orderData.order.payment_method === 'cash' && !orderData.order.is_preorder" :order="orderData.order" />
               <PaymentOrderStatus v-if="orderData.order.payment_method === 'card' && !orderData.order.is_preorder" :order="orderData.order" />
               <div v-if="orderData.order.is_preorder" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{{ $t('checkout.summary.theStoreWillVerifyYourBankOrInstapayTransferAndRecordTheActualAmountPaidKeepYourTransferReference') }}</div>
               <div v-else-if="paymentMethodNeedsProof(orderData.order.payment_method)" class="mt-4 rounded-xl bg-amber-50 p-4">
@@ -177,6 +178,7 @@ const expectedAvailabilityLabel = value => baseExpectedAvailabilityLabel(value, 
 
 const { intlLocale } = useUiLocale()
 
+import { formatCustomerOrderStatus } from '~/utils/orderStatus'
 import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass, paymentProofStatusLabel } from '~/utils/paymentMethods'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 
@@ -235,14 +237,6 @@ const formatDate = (value) => {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(value))
-}
-
-const formatStatus = (value) => {
-  if (value === 'in_progress') {
-    return 'In Progress'
-  }
-
-  return String(value || 'Unknown').replace(/_/g, ' ')
 }
 
 const isValidColor = (value) => {

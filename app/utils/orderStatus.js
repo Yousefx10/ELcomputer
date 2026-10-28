@@ -37,7 +37,8 @@ export const activeCustomerOrderStatuses = [
 ]
 export const openOrderStatuses = [...activeCustomerOrderStatuses]
 
-export const formatCustomerOrderStatus = (value) => {
+export const formatCustomerOrderStatus = (value, paymentMethod) => {
+  if (value === 'pending_payment' && paymentMethod === 'cash') return 'Placed'
   if (!value) {
     return 'Unknown'
   }

@@ -148,7 +148,8 @@ const { uiNavigateTo } = useUiNavigation()
 
 import { readPendingCheckout, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
-import { getAvailablePaymentMethods, getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
+import { getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
+import { checkoutPaymentMethods, checkoutDeliveryOptions } from '~/utils/codCheckout'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 import { checkoutAddressFromProfile } from '~/utils/checkoutAddress'
 
@@ -191,9 +192,9 @@ let checkoutStartedTracked = false
 const address = reactive({ first_name: '', last_name: '', street_address: '', address_line_2: '', city: '', phone: '', email: '', governorate: '' })
 
 const settings = computed(() => siteContent.value?.settings || {})
-const availableDeliveryOptions = computed(() => deliveryOptions.value.filter(option => option.governorates.some(area => area.trim().toLowerCase() === address.governorate.trim().toLowerCase())))
+const availableDeliveryOptions = computed(() => checkoutDeliveryOptions(deliveryOptions.value, address.governorate, selectedPaymentMethod.value))
 const isPreorderCart = computed(() => items.value.length > 0 && items.value.every(item => item.selling_mode === 'preorder'))
-const availablePaymentMethods = computed(() => purchasingEnabled.value ? getAvailablePaymentMethods(settings.value).filter(method => (!purchaseScope.value || method.value === 'card') && (!paymentCapabilities.value?.purchase?.beta || method.value === 'card') && (method.value !== 'card' || paymentCapabilities.value?.card?.available === true) && (!isPreorderCart.value || ['bank_transfer', 'instapay'].includes(method.value))) : [])
+const availablePaymentMethods = computed(() => purchasingEnabled.value ? checkoutPaymentMethods(settings.value, paymentCapabilities.value, { restricted: Boolean(purchaseScope.value), preorder: isPreorderCart.value }) : [])
 const discountAmount = computed(() => Number(quote.value?.discountAmount ?? appliedCoupon.value?.discountAmount ?? 0))
 const deliveryDiscountAmount = computed(() => Number(quote.value?.deliveryDiscountAmount ?? appliedCoupon.value?.deliveryDiscountAmount ?? 0))
 const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))

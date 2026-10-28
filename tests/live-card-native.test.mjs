@@ -79,10 +79,10 @@ test('live card uses trusted physical stock/delivery and only signed authoritati
       assert.throws(()=>getPaymobConfig({...config,paymobPublicKey:'egy_pk_test_fixture'}))
       assert.equal(getPaymobConfig({...config,paymobSecretKey:'sk_live_fixture',paymobPublicKey:'pk_live_fixture',public:{siteUrl:'https://cedar.example.invalid'}}).origin,'https://cedar.example.invalid')
     })
-    await t.test('concurrent initiations create one provider intention and a stable saved session', async () => {
+    await t.test('concurrent initiations create one intention and hold further retries for reconciliation', async () => {
       const results=await Promise.allSettled(Array.from({length:8},()=>initiate()))
       assert.ok(results.some(r=>r.status==='fulfilled'));assert.equal(posts,1)
-      assert.equal((await initiate()).clientSecret,'egy_csk_live_owned_fixture');assert.equal(posts,1)
+      await assert.rejects(initiate, error => error.code === 'payment_reconciliation_required');assert.equal(posts,1)
       assert.equal((await f.db.query('select count(*)::int n from public.payment_attempts')).rows[0].n,1)
     })
     await t.test('invalid HMAC and correctly signed wrong amount cannot settle', async () => {

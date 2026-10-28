@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import { createCodCheckoutFixture } from './helpers/codCheckoutFixture.mjs'
 import { emailNativeAvailable } from './helpers/emailNativeDatabase.mjs'
 
@@ -28,7 +28,9 @@ test('COD migration preserves exact82 receipts and rejects premature application
     assert.equal(quote.error, null, JSON.stringify(quote.error))
     const original = await f.client.rpc('commerce_checkout_command', { p_user_id: f.actors.customer, p_cart_id: body.cart_id, p_quote_id: quote.data.quoteId, p_order, p_items })
     assert.equal(original.error, null, JSON.stringify(original.error))
-    await f.db.exec(await readFile(new URL('../supabase/migrations/' + migration, import.meta.url), 'utf8'))
+    for (const name of (await readdir(new URL('../supabase/migrations/', import.meta.url))).filter(name => name.endsWith('.sql') && name >= migration).sort()) {
+      await f.db.exec(await readFile(new URL('../supabase/migrations/' + name, import.meta.url), 'utf8'))
+    }
     const replay = await f.call('/api/checkout', { method: 'POST', body: { ...body, quote_id: quote.data.quoteId } })
     assert.equal(replay.response.status, 200, JSON.stringify(replay.body))
     assert.equal(replay.body.order.id, original.data.order.id)
@@ -42,7 +44,7 @@ test('COD uses received stock, reviewed delivery and durable order commands', { 
   const f = await createCodCheckoutFixture()
   try {
     const stock = await setupStock(f)
-    const company = (await f.db.query("insert into public.commerce_shipping_companies(name,client_shipping_price,shipping_cost,return_cost,notes,checkout_enabled,checkout_governorates) values('Fixture carrier',40,17,9,'PRIVATE INTERNAL NOTES',true,array['Cairo']) returning id")).rows[0].id
+    const company = (await f.db.query("insert into public.commerce_shipping_companies(name,client_shipping_price,shipping_cost,return_cost,notes,checkout_enabled,checkout_governorates,cod_collection_enabled) values('Fixture carrier',40,17,9,'PRIVATE INTERNAL NOTES',true,array['Cairo'],true) returning id")).rows[0].id
     await f.db.query("insert into public.site_coupons(code,discount_type,discount_value,is_active) values('COD10','fixed',10,true)")
     const quote = async body => {
       const r = await f.call('/api/checkout/quote', { method: 'POST', body }); assert.equal(r.response.status, 200, JSON.stringify(r.body))
@@ -53,7 +55,7 @@ test('COD uses received stock, reviewed delivery and durable order commands', { 
     let command, stored
     await t.test('authenticated delivery projection excludes costs and secrets', async () => {
       const options = await f.call('/api/checkout/shipping')
-      assert.deepEqual(options.body.options, [{ id: company, name: 'Fixture carrier', price: 40, governorates: ['Cairo'] }])
+      assert.deepEqual(options.body.options, [{ id: company, name: 'Fixture carrier', price: 40, governorates: ['Cairo'], cashAvailable: true }])
       assert.equal(options.response.headers.get('cache-control'), 'private, no-store')
       assert.equal((await f.call('/api/checkout/shipping', { actor: null })).response.status, 401)
       assert.equal((await f.call('/api/checkout/shipping', { actor: 'invalid' })).response.status, 401)
@@ -135,7 +137,7 @@ test('COD uses received stock, reviewed delivery and durable order commands', { 
       await f.db.query("update public.site_settings set payment_cash_enabled=true where key='default'")
     })
     await t.test('another configured area supports explicit free delivery and multiple units', async () => {
-      const alternate = (await f.db.query("insert into public.commerce_shipping_companies(name,client_shipping_price,checkout_enabled,checkout_governorates) values('Other fixture delivery',0,true,array['Giza']) returning id")).rows[0].id
+      const alternate = (await f.db.query("insert into public.commerce_shipping_companies(name,client_shipping_price,checkout_enabled,checkout_governorates,cod_collection_enabled) values('Other fixture delivery',0,true,array['Giza'],true) returning id")).rows[0].id
       const body = { ...input(stock, alternate), address: { ...address, governorate: 'Giza' }, items: [{ id: stock.product, variant_id: stock.variant, quantity: 2 }] }
       const r = await send(await quote(body))
       assert.equal(r.response.status, 200, JSON.stringify(r.body))
@@ -170,10 +172,10 @@ test('COD uses received stock, reviewed delivery and durable order commands', { 
       }
       assert.equal((await f.db.query('select count(*)::int n from auth.users')).rows[0].n, Object.keys(f.actors).length)
     })
-    await t.test('private helpers and legacy creators remain unavailable to browser roles', async () => {
+    await t.test('private helpers stay private and the current creator is service-only', async () => {
       for (const role of ['anon', 'authenticated', 'service_role']) {
         const privileges = await f.db.query("select has_function_privilege($1,'private.cod_shipping(uuid,text)','EXECUTE') helper,has_function_privilege($1,'public.commerce_create_normal_customer_order(uuid,jsonb,jsonb,boolean,uuid)','EXECUTE') creator", [role])
-        assert.deepEqual(privileges.rows[0], { helper: false, creator: false })
+        assert.deepEqual(privileges.rows[0], { helper: false, creator: role === 'service_role' })
       }
       assert.equal((await counts()).provider_jobs, 0)
     })

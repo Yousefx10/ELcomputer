@@ -52,6 +52,8 @@ export default defineEventHandler(async (event) => {
         is_preorder,
         initial_amount_due,
         amount_paid,
+        payment_method,
+        payment_status,
         status,
         created_at,
         updated_at

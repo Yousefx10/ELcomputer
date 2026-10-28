@@ -5245,7 +5245,16 @@
     "notReady": "COD checkout is not ready.",
     "confirmEmail": "Confirm your account email before ordering.",
     "readyStock": "COD requires ready stock in the built-in inventory.",
-    "explicitPrice": "Enter a delivery price, including zero for free delivery."
+    "explicitPrice": "Enter a delivery price, including zero for free delivery.",
+    "confirmManualCollection": "I confirm manual delivery can collect cash.",
+    "payOnDelivery": "Pay the order total when your delivery arrives.",
+    "status": {
+      "awaiting": "Awaiting COD collection",
+      "partial": "Cash partially collected",
+      "collected": "Cash collected",
+      "closed": "Order closed",
+      "review": "Cash balance needs review"
+    }
   },
   "privatePacking": {
     "storageUnsafe": "Private packing storage is not safe.",

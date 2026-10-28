@@ -389,6 +389,10 @@
         <label class="mt-4 block text-sm font-semibold text-gray-700">{{ $t('liveSales.provider') }}
           <select v-model="form.provider" class="mt-2 w-full rounded-lg border bg-white p-3"><option value="manual">{{ $t('liveSales.manual') }}</option><option value="pdc">PDC</option></select>
         </label>
+        <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+          <input v-model="form.cod_collection_enabled" type="checkbox" :disabled="form.provider !== 'manual'">
+          {{ $t('codCheckout.confirmManualCollection') }}
+        </label>
         <label class="mt-4 block text-sm text-gray-600">
           <span class="mb-2 block font-semibold">{{ $t('codCheckout.governorates') }}</span>
           <select v-model="form.checkout_governorates" multiple class="h-28 w-full rounded-lg border p-3">
@@ -710,6 +714,7 @@ const createEmptyForm = () => ({
   return_cost: '',
   client_shipping_price: '',
   checkout_enabled: false,
+  cod_collection_enabled: false,
   checkout_governorates: [],
   notes: '',
   is_active: true
@@ -767,6 +772,7 @@ const mapPayload = () => ({
   return_cost: Number(form.return_cost || 0),
   client_shipping_price: Number(form.client_shipping_price || 0),
   checkout_enabled: Boolean(form.checkout_enabled),
+  cod_collection_enabled: form.provider === 'manual' && form.cod_collection_enabled === true,
   checkout_governorates: [...form.checkout_governorates],
   notes: String(form.notes || '').trim() || null,
   is_active: Boolean(form.is_active),
@@ -784,6 +790,7 @@ const startEdit = (company) => {
     return_cost: String(Number(company.return_cost || 0)),
     client_shipping_price: String(Number(company.client_shipping_price || 0)),
     checkout_enabled: company.checkout_enabled === true,
+    cod_collection_enabled: company.cod_collection_enabled === true,
     checkout_governorates: [...(company.checkout_governorates || [])],
     notes: company.notes || '',
     is_active: company.is_active ?? true
