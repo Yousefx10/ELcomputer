@@ -59,6 +59,7 @@ export default defineNuxtConfig({
     credentialsEncryptionKey: process.env.CREDENTIALS_ENCRYPTION_KEY || process.env.SHIPPING_CREDENTIALS_ENCRYPTION_KEY || '',
     shippingCredentialsEncryptionKey: process.env.SHIPPING_CREDENTIALS_ENCRYPTION_KEY || '',
     shippingLiveRequestsEnabled: process.env.PDC_LIVE_REQUESTS_ENABLED === 'true',
+    pdcManualCodEnabled: false,
     shippingWorkerSecret: process.env.SHIPPING_WORKER_SECRET || '',
     erpWorkerSecret: process.env.ERP_WORKER_SECRET || '',
     uploadsDir: process.env.UPLOADS_DIR || 'storage/uploads',

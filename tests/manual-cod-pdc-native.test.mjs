@@ -9,6 +9,8 @@ import {createPrivatePackingFixture} from './helpers/privatePackingFixture.mjs'
 import {emailNativeAvailable} from './helpers/emailNativeDatabase.mjs'
 import {encryptShippingSecret} from '../server/utils/shippingSecrets.js'
 import {operatePdcOrder,processPdcOutboundQueue} from '../server/utils/pdcOrderShipping.js'
+import {requirePdcReadAccess} from '../server/utils/pdcLookups.js'
+import {processPdcReverseQueue} from '../server/utils/pdcReverseLogistics.js'
 
 test('staff-approved Manual COD uses existing PDC Dashboard dispatch without prepaid or invented stock',{skip:!emailNativeAvailable},async t=>{
  const f=await createPrivatePackingFixture({extraRoutes:[
@@ -152,6 +154,26 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    const remit={command_id:randomUUID(),action:'reconcile',collection_id:response.body.collection_id,amount:'200',reference:'SYNTHETIC-PDC-REMITTANCE',received_on:receiptDate,confirmed:true}
    const posted=await f.call('/api/admin-orders/'+ready+'/cod-cash',{actor:'owner',method:'POST',body:remit});assert.equal(posted.response.status,200,JSON.stringify(posted.body))
    assert.equal((await f.db.query('select count(*)::int n from public.treasury_transactions where customer_order_id=$1',[ready])).rows[0].n,1)
+  })
+  await t.test('staff COD switch allows only explicit COD booking and PDF while global PDC remains paused',async()=>{
+   const fresh=await packed(),count=posts();f.config.shippingLiveRequestsEnabled=false;f.config.pdcManualCodEnabled=true
+   assert.equal((await processPdcOutboundQueue({supabaseAdmin:f.client,runtime:f.config,fetcher})).active,false)
+   assert.equal((await processPdcReverseQueue({supabaseAdmin:f.client,runtime:f.config,fetcher})).active,false)
+   assert.throws(()=>requirePdcReadAccess({is_enabled:true},f.config),/disabled/)
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'recover',runtime:f.config,fetcher}),/disabled/)
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:randomUUID(),action:'book',runtime:f.config,fetcher}),/unavailable/)
+   assert.equal(posts(),count)
+   const original=globalThis.fetch
+   globalThis.fetch=(url,options)=>String(url).startsWith(f.url+'/')?original(url,options):fetcher(url,options)
+   try{
+    const path='/api/admin-shipping/orders/'+fresh+'/booking'
+    assert.equal((await f.call(path,{actor:'customer',method:'POST',body:{action:'book'}})).response.status,403)
+    const response=await f.call(path,{actor:'owner',method:'POST',body:{action:'book'}})
+    assert.equal(response.response.status,200,JSON.stringify(response.body));assert.equal(response.body.state,'ready')
+   }finally{globalThis.fetch=original}
+   assert.equal(posts(),count+1);assert.equal((await order(fresh)).payment_status,'pending')
+   assert.equal(f.config.shippingLiveRequestsEnabled,false)
+   f.config.pdcManualCodEnabled=false;f.config.shippingLiveRequestsEnabled=true
   })
  }finally{globalThis.useRuntimeConfig=previous;await f.close()}
 })
