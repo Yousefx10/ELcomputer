@@ -1,3 +1,34 @@
+> 2026-10-28 E112: Merchant authentication PASS. Full-history inquiry BLOCKED at the first paid-control history-array guard; both approvals consumed. Unpaid outcomes stay UNVERIFIED. No restart or payment-state change. [Stop receipt](docs/paymob-merchant-inquiry-history-stop-receipt.md), [contract request draft](docs/paymob-merchant-history-contract-request.md).
+
+> 2026-10-28 E111: Inquiry stopped safely at authentication HTTP201; original approval consumed. Auth201-only correction LOCAL25/PREFLIGHT PASS; fresh approval required. No payment/order changes or app restart. [Stop receipt](docs/paymob-merchant-inquiry-stop-receipt.md), [fresh review](docs/paymob-merchant-inquiry-auth201-review.md).
+
+> 2026-10-28 E110: Merchant key storage metadata PASS; read-only Inquiry packet READY for separate approval. Provider authentication/history untested. No restart/deployment/Pay Again. See [scoped review](docs/paymob-merchant-inquiry-qualification-review.md) and [roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+# Merchant API Key owner entry ready — E109, 28 October 2026
+
+[Use the private SSH entry instructions](docs/paymob-merchant-key-private-entry.md).
+The key file is not yet stored. Inquiry remains held until separate approval.
+No production settings changed or app restart occurred. Production acfc97/schema98.
+
+# Scoped owner acceptance and Inquiry preparation — E108, 28 October 2026
+
+MON-01 operation and observed unpaid wording are owner-accepted.
+CARD-field rendering/payment/retry/email delivery are not accepted by that report.
+[Merchant Inquiry setup](docs/paymob-merchant-inquiry-setup.md) and the
+[recovery design](docs/paymob-inquiry-pay-again-design.md) are prepared.
+The separate API Key is not configured. No production change or approval issued.
+Production remains acfc97b72fe85237/schema98; MON active, PDC paused, kill budget1.
+
+# CX-PAY-01 first fix deployed — E106, 28 October 2026
+
+[Technical postflight passed](docs/customer-payment-first-fix-receipt.md).
+Production is acfc97b72fe85237/schema98. Exactly one app restart completed.
+MON-01 stayed active; its03:50 automatic report passed. CARD/Manual EGP50/signup
+remain available; PDC paused, COD/email off. Both unpaid exceptions remain
+provider-unverified. Full Pay Again and email delivery stay held.
+Customer acceptance is pending. Approval consumed; never replay it.
+The dated entries below are historical.
+
 # MON-01 automatic payment monitoring active - E103, 28 October 2026
 
 The [final timer completion](docs/mon01-final-timer-completion-receipt.md) passed.

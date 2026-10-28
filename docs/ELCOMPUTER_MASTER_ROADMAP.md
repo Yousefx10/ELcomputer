@@ -1,3 +1,369 @@
+# E112 — Merchant authentication PASS; full-history inquiry BLOCKED — 2026-10-28
+
+- Owner exact approval971e6750… executed ONCE and consumed. At14:23:58Riyadh auth
+  returned201 and validated profile/token; **MERCHANT KEY/AUTHENTICATION PASS**.
+  First known paid EGP2 order GET returned200 and matched identity/reference/
+  amount context, then `HISTORY_ARRAY_OR_LIMIT_STOP` stopped the run.
+- Required list≤20 contract failed. Safe receipt does not retain actual field
+  type/presence/count; do not claim missing history versus over-limit. No individual
+  transaction, second paid-control or2649/3149 provider reads occurred. This run2
+  provider calls; both consumed runs total3 (2auth/1order); no fallback/retry.
+- **FULL-HISTORY INQUIRY BLOCKED / NO RECONCILIATION APPLIED.** Local before/after
+  financial snapshots identical;2649 on_hold/pending/paid0 and3149 cancelled/pending/
+  paid0/no transactions stay provider-UNVERIFIED. Prior paid/succeeded controls,
+  WOLF Processing and fulfillment backlog retained. No provider failure inferred.
+- Real approval/intent/observation/receipt preserved in private auth201 packet.
+  Both seals32093a55…/971e6750… consumed; never replay, alter sources or fabricate
+  completed history. [History stop receipt](paymob-merchant-inquiry-history-stop-receipt.md).
+- Refreshed primary docs only establish latest-order inquiry and known-transaction
+  inquiry; no complete-history binding/filter/pagination contract qualified for
+  this merchant. Preserve the history guard and Pay Again hold. No replacement
+  probe/approval seal issued. [Contract request draft](paymob-merchant-history-contract-request.md)
+  is NOT SENT; exact supported contract/completeness evidence is needed next.
+- Afterflight14:24:04Riyadh: acfc97b72fe85237/schema98/PID61817/Caddy26652; CARD
+  Live available, public storefront/cart/signup200, anonymous monitor401, unsigned
+  callback403. MON active/enabled/fresh14:20:06/3 warnings; original kill budget1.
+  Zero app restarts/deploys/SQL/runtime/unit/Caddy/credential/payment-state writes,
+  charges/refunds/cancellations/emails; key never exported/logged and stays app-unbound.
+- MON/unpaid-wording owner acceptance remains narrow; no new owner browser or
+  signed callback claimed. Pay Again OFF/COD OFF/PDC PAUSED. CX-EMAIL-01 separate.
+  After qualification: COD then homepage cart, address, LOC-01 checkout AND profile,
+  navbar; MIG-04 later. DTR-33/STOR-01/original32/all deferred work preserved.
+- NEXT: obtain supported full attempt-history contract/complete scoped evidence,
+  then prepare an exact separately approved bounded inquiry. No blind third run.
+
+---
+
+# E111 — Inquiry stopped safely at auth201; local correction ready — 2026-10-28
+
+- Owner exact approval32093a55… consumed once. At14:16:06Riyadh the only provider
+  request (auth POST) returned201; local transport accepted200 only and stopped
+  before body validation. **INQUIRY BLOCKED; authentication UNQUALIFIED; zero order
+  or transaction reads.** No provider/customer-payment failure inferred from this.
+- Real independent original approval/intent/observation/receipt preserved. Local
+  financial snapshots identical; no local-state writes, payment actions, retries,
+  credential changes, deployments, restarts or emails. Both unpaid outcomes remain
+  UNVERIFIED; original paid controls/WOLF and all fulfillment backlog unchanged.
+  [Stop receipt](paymob-merchant-inquiry-stop-receipt.md).
+- Separate local auth201 correction accepts200/201 only for auth; GET still200,
+  mandatory profile/token and original history/context/paid-control guards retained.
+  Original sealed packet untouched and cannot be replayed. **25 focused synthetic
+  tests PASS; fresh sealed read-only preflight PASS; correction NOT EXECUTED.**
+- Production14:19:33Riyadh stillacfc97b72fe85237/schema98/PID61817; Caddy26652;
+  public CARD/signup routes healthy, anonymous monitor401, unsigned callback403.
+  MON active/enabled, fresh14:15 report/3 warnings; original shared kill budget1.
+  Existing systemd/report permissions/dedup/runtime/LIVE keys/Auth SMTP unchanged.
+- Same four targets and same maximum25requests; one auth POST/four full-order GETs/
+  at most20 transaction reads; no fallback, broad listing or automatic retry.
+  Fresh private packet paymob-merchant-inquiry-auth201-20261028 binds original
+  consumed artifacts and exact original immutable order/attempt contexts.
+- Fresh exact approval: `APPROVE PAYMOB READ-ONLY MERCHANT INQUIRY 971e67503c7f4649b32fa662309bad7fcf84bac83808623a6d6ca3ee0b3c4997`.
+  Expires2026-10-28 18:18:52.258Riyadh/2026-10-28T15:18:52.258Z; must start before
+  18:15:52.258Riyadh. [Scoped correction review](paymob-merchant-inquiry-auth201-review.md).
+  No new approval/intent/provider call yet. Prior32093a55… MUST NOT be rerun.
+- Pay Again OFF, COD OFF, PDC PAUSED. Email delivery CX-EMAIL-01 remains REQUIRED.
+  No next customer feature begun: after inquiry qualification, COD then homepage
+  cart/address/LOC-01 checkout AND profile/navbar; MIG-04 later. Preserve original32,
+  DTR-33, STOR-01, all deferred work and both accounts'24 worktrees/dirty artifacts.
+- NEXT: fresh separate owner approval for corrected read-only inquiry only.
+
+---
+
+# E110 — Merchant key stored; read-only Inquiry packet ready — 2026-10-28
+
+- Owner privately stored `/etc/storefront/paymob-merchant-api-key`. Independent
+  metadata-only SSH PASS: root:root0600/nonempty, parent0700. Key contents not read/
+  exported; runtime/env/Secret/Public/HMAC unchanged; API Key remains unbound to app.
+- **INQUIRY PREPARATION LOCAL PASS / PRODUCTION PREFLIGHT PASS; PROVIDER INQUIRY
+  NOT EXERCISED / AWAITING SEPARATE APPROVAL.** 20 focused synthetic checks PASS;
+  fixed target and request allowlists, secret redaction, history/context checks,
+  paid controls, expiry180second margin and bounded failures. No broad test repeat.
+- Read-only production14:09:21Riyadh: acfc97b72fe85237/schema98/PID61817; CARD Live
+  available, public signup entry200, anonymous monitor401, unsigned callback403;
+  existing MON enabled/active with fresh14:05 report/3 warnings. Manual50 retained
+  in13:50 financial checkpoint; emergency budget1 unconsumed. Zero provider calls,
+  application restarts, runtime/unit/Caddy/SQL edits, orders or payment-state writes.
+- Sealed14:08 known-order snapshot: two original paid/succeeded controls unchanged;
+  EGP2649 on_hold/pending/paid0/no tx; EGP3149 cancelled/pending/paid0/no tx.
+  Both unpaid provider outcomes remain UNVERIFIED; intentional abandonment/local
+  cancellation never proves provider finality. WOLF/earlier fulfillment stays open.
+- Fresh independent packet: one auth POST, four full-order GETs, at most20 history
+  transaction GETs,25 requests maximum, no retries/redirects/latest-only fallback.
+  Full history contract must qualify; missing/mismatched/incomplete responses STOP.
+  Safe projected private receipts only; no secrets/raw billing/card responses.
+- Exact next approval: `APPROVE PAYMOB READ-ONLY MERCHANT INQUIRY 32093a558586264347e7c902939ebc94a1f51fec6b4efd34662369294f54f5e5`.
+  Expires2026-10-28 18:08:56.703 Riyadh/2026-10-28T15:08:56.703Z; must start before
+  18:05:56.703 Riyadh. [Scoped review](paymob-merchant-inquiry-qualification-review.md).
+  No owner approval/intent/provider receipt yet. Consumed operators are NOT replayed;
+  existing first-fix `inspect` only verifies baseline, never its write modes.
+- Pay Again OFF; read-only results cannot authorize retry or silently rewrite paid/
+  unpaid states. Durable reconciliation, serialized/idempotent recovery, customer
+  ownership, session finality and duplicate-charge prevention still required.
+- MON/unpaid-wording acceptance remains narrow; email delivery CX-EMAIL-01 separate.
+  PDC PAUSED, COD OFF. After qualification: COD then homepage cart, checkout address,
+  LOC-01 checkout AND profile, navbar; MIG-04 later. All original32/DTR-33/STOR-01/
+  deferred tests, both accounts'24 worktrees and prior dirty work preserved.
+- NEXT: owner gives fresh exact approval for read-only production Inquiry only.
+
+---
+
+# E109 — Owner-only VPS Merchant API Key entry prepared; inquiry held — 2026-10-28
+
+- Owner clarifies API Key is viewable in Paymob Dashboard but **not yet saved on
+  VPS**. Earlier reference text was a placeholder, not usable credential access.
+  Current scope is private owner entry instructions only; no Inquiry authentication/
+  query or application restart until separate approval. [Entry instructions](paymob-merchant-key-private-entry.md).
+- Proposed actual credential reference `/etc/storefront/paymob-merchant-api-key`.
+  Existing service directory verified root:root0700; current runtime.env root:root
+ 0600. Separate new key file root:root0600; runtime.env/working Secret/Public/HMAC
+  remain unchanged and the file is not automatically loaded by the app.
+- Reviewed local Python SSH launcher uses existing pinned host/key, checks machine
+  and runtime identity, reads twice from hidden terminal input, exclusively/atomically
+  creates the private file and privately verifies bytes. No argv/env/history/Git/
+  source/archive/log secret. Existing files/symlinks/racing targets are refused.
+- 10 focused security checks PASS, including real no-echo/restoration, overwrite/
+  race/symlink refusal, restrictive modes, mismatch and safe failures. Initial local
+  Darwin terminal harness corrected before PASS. Exact launcher metadata-only SSH
+  PASS: correct parent/target, destination ABSENT, runtime unchanged; no real key read.
+  Owner must run --enter in their own Terminal; agent did NOT run it.
+- **KEY ENTRY READY / NOT EXECUTED; MERCHANT INQUIRY BLOCKED / NOT EXERCISED.**
+  No provider request, order-state update, credential replacement, app restart,
+  deployment or inquiry activation. No new inquiry/deployment approval issued.
+- 13:06:02Riyadh read-only financial checkpoint: schema98, critical mismatch/
+  unreconciled/duplicate/ownership0; overdue-unverified2. MON13:05:05 fresh with3
+  warnings, active/waiting; new overdue attempt is not provider failure evidence.
+  Production guard still acfc97b72fe85237/schema98, runtime/Caddy/kill budget1 intact.
+- Scoped read-only known-order snapshot13:08:23:2649 now locally on_hold/pending/
+  paid0,3149 cancelled/pending/paid0, both no transaction rows/provider-UNVERIFIED.
+  Two earlier genuine paid records remain paid with succeeded transaction evidence;
+  WOLF Processing and older fulfillment backlog retained. No provider outcome or
+  actor attribution inferred from local state. No cancellation/refund/retry/fulfillment.
+- Metadata-only checks: no matching Merchant key in known operator credential JSON,
+  six named local environment references or Paymob-named Vault entries. This does
+  not prove absence from other private storage. No secret values exported.
+- Existing MON operation/unpaid-wording owner acceptance preserved; CARD fields/
+  payment/retry/email acceptance not broadened. PDC PAUSED, COD OFF, all original32/
+  DTR-33/STOR-01/deferred tests preserved. Customer notification email separate.
+- Latest owner ordering: after READ-ONLY Inquiry qualification, return to safe COD
+  preparation then homepage cart. Pay Again remains off pending its safeguards;
+  no queued feature is implemented here. NEXT: owner stores key with reviewed SSH
+  launcher, provides path, then separately authorizes Merchant Inquiry qualification.
+
+---
+
+# E108 — Credential-independent Inquiry preparation complete; no production change — 2026-10-28
+
+- Owner confirms Merchant Inquiry API key **NOT CONFIGURED**; working LIVE Secret/
+  Public keys must stay unchanged. Preparation is documentation/contracts only;
+  implementation follows secure credential and merchant-contract qualification.
+  [Secure setup](paymob-merchant-inquiry-setup.md),
+  [reconciliation/retry design](paymob-inquiry-pay-again-design.md),
+  [scoped acceptance](mon01-cx-pay01-owner-acceptance.md).
+- Exact official path: existing Paymob Accept Dashboard, Settings → Developers →
+  API Keys → View beside **API Key**. View/copy the existing key into private local
+  storage or an existing secret manager; share reference only. No regenerate,
+  callback/payment-method edit, Save/Apply, production environment change or restart.
+  If the key row is unavailable, confirm merchant role/access with Paymob.
+- Current official credential guide says API Key is the SAME across Test/Live;
+  Secret/Public keys and integration IDs are mode-specific. Do not infer inquiry
+  mode from the token/key. Validate returned Live flag, merchant, original order/
+  special reference, integration and immutable amount/currency. This supersedes
+  conflicting mode assumptions in generic older provider reference notes.
+- Design specifies complete historical inquiry (latest-transaction-only cannot
+  prove nonpayment), sanitized durable inquiry-source receipts, atomic idempotent
+  shared settlement, order locks/version fencing, one active recovery reservation,
+  preserved attempt history and held ambiguous sends. No fake HMAC/callback proof.
+- Core blocker beyond credentials: a clean snapshot cannot close an old checkout
+  or stop an in-flight3DS payment. Require qualified provider terminality/finality
+  before any replacement; no invented cancellation endpoint or lease-expiry retry.
+  Audit all singleton-attempt assumptions before any additive schema changes.
+- Status **DESIGN PREPARED / IMPLEMENTATION NOT STARTED / NOT DEPLOYMENT READY**.
+  No new migration number, runtime setting, adapter, customer endpoint, installer
+  or approval seal. Proposed scenarios are a future test matrix, NOT executed tests.
+  Existing64/5 first-fix tests are not evidence for this new design. Docs integrity/
+  source/deferral preservation checks only; no broad tests/build repeated.
+- E107 narrow acceptances retained: MON visible operation/access OWNER ACCEPTED;
+  unpaid wording OWNER ACCEPTED within observed scope. Owner clicked Confirm
+  checkout; CARD fields require the separate Open secure payment action. Fields,
+  real charge/3DS/provider callback, Inquiry, retries and customer email NOT accepted.
+- Final read-only recheck12:36Riyadh: production guard matches; timer active/waiting,
+  fresh report12:35:05 and the same2 exceptions. No production mutation.
+- Production remains acfc97b72fe85237/schema98; MON active; original shared kill1
+  unspent.0 production changes/restarts/provider calls/order or payment retries,
+  emails/SMTP access, live credential changes or Git pushes. All deferred tests,
+  PDC PAUSED, COD OFF and paid fulfillment backlog preserved.
+- Separate CX-EMAIL-01 remains REQUIRED. Next customer queue: COD, homepage cart,
+  checkout address, LOC-01 checkout AND profile, navbar; MIG-04 later. Only this
+  payment recovery preparation was worked. NEXT: owner retrieves existing API Key
+  privately and provides its secure reference; then qualify read-only merchant
+  inquiry before implementation and a separate exact deployment approval.
+
+---
+
+# E107 — Scoped owner acceptance; Inquiry / Pay Again preparation — 2026-10-28
+
+- Owner confirms MON-01 Dashboard works and reports no problems: **OWNER ACCEPTED
+  for visible operation/access**. Panel interpretation explained; understanding
+  is not silently accepted. Actual read-only12:21:40Riyadh API200, fresh/complete
+  report12:20:06; timer active/waiting and the same2 exceptions/backlog2.
+- **CX-PAY-01 truthful unpaid wording OWNER ACCEPTED, narrowly:** owner observes
+  Order awaiting payment and Payment is not confirmed. No Paid/Completed claim.
+  Owner clarifies the clicked button was Confirm checkout. This places the order;
+  Paymob fields require the separate Open secure payment action. Actual CARD field
+  rendering, provider checkout/3DS, payment and retry are NOT EXERCISED/NOT ACCEPTED.
+  Do not ask for a new payment or retry merely to prove acceptance.
+- New aggregate order1/attempt1 since prior postflight,0 signed transactions;
+  authorship/click sequence cannot be inferred from totals. No actor attribution or
+  provider outcome invented. Reported no-fields screen is not proven to be a defect;
+  retain any actual Open secure payment/render failure as a P0 follow-up.
+- Production acfc97b72fe85237/schema98 unchanged. Read-only12:20:44 checkpoint:
+  critical mismatch/unreconciled/duplicate/ownership0; Manual50/signup OPEN, PDC
+  PAUSED, callbacks and original shared emergency budget1 preserved. Friend3149
+  remains locally cancelled/provider-UNVERIFIED;2649 provider-UNVERIFIED; WOLF and
+  older paid fulfillment backlog preserved.0 restarts/deployments/provider writes.
+- Proceed with preparation only of Paymob Merchant Inquiry and Pay Again under
+  CX-PAY-01, using isolated local/paymob-inquiry-recovery-20261028 from deployed
+  sourcebb21a160. Do not edit the sealed first-fix source or replay its authority.
+  Provider inquiry credentials/complete-history/terminality and durable leases
+  need qualification. A negative snapshot alone cannot authorize another charge.
+- Customer order/payment email delivery is a **separate required task** (CX-EMAIL-01,
+  ORDER-04/FUT-05). Merchant email remains OFF/unconfigured; MON optional email OFF
+  and accepted Supabase Auth SMTP stay separate. No credential pasted or extracted.
+- Latest owner queue order supersedes E104: P1 COD first (OFF until separate approval,
+  never Paid before collection), homepage Add to Cart second (keep real Options),
+  checkout address improvements third, LOC-01 checkout AND profile dropdowns fourth,
+  navbar username fifth. MIG-04 remains later. No queued feature is started here.
+- All original32/DTR-33/STOR-01/deferred requirements and prior23 worktrees preserved.
+  NEXT: prepare offline inquiry/evidence/duplicate-charge controls; no production
+  deployment or live payment/retry without new appropriate scope and approval.
+
+---
+
+# E106 — CX-PAY-01 first fix deployed; technical postflight PASS — 2026-10-28
+
+- [Deployment receipt](customer-payment-first-fix-receipt.md). Exact owner
+  approval ac46dec13101b94ab12f71dfda2c07966733bc5db6066a50d632b5b8de575e0d
+  recorded03:45:42Riyadh, consumed once. Guarded cutover03:46:19, exactly ONE app
+  restart. New production **acfc97b72fe85237/schema98/PID61817**, Caddy26652 unchanged.
+  Sourcebb21a160 on isolated customer-payment branch; main remains docs/older app.
+- Truthful payment projection/screens deployed: coherent live signed ledger and
+  settlement before Paid, separate order/payment/fulfillment states, neutral
+  prepayment cues. Existing attempts HELD before unchecked reopening; first CARD
+  payment retains existing authorization/immutable amount/idempotent claim guards.
+  Exact reported green CONFIRMED text remains unreproduced; do not invent its source.
+- MON unchanged/enabled/active/waiting. Real scheduled03:50:05 check18 completed
+ 03:50:09 after cutover; next03:55:02 at observation. All17 prior check identities/
+  timestamps and6 dedup keys retained; new alert events0, historical gaps2 retained.
+  Report0640/state0600; no manual worker start, timer stop or unit/worker change.
+- Owner Dashboard API20003:50:32 fresh/complete/not stale; visible panel/expanded
+  alerts after deployment. Browser business writes blocked; no credentials exported.
+  Anonymous payment/monitor APIs401. Owner/customer business acceptance still PENDING.
+- Public CARD LIVE/cart/login/home/Arabic pass; Manual EGP50 and signup OPEN.
+  Signup uses /login?mode=signup200; /signup403 was an incorrect probe path, not a
+  regression. Callback Caddy/runtime/HMAC context unchanged; GET403 is method-denial
+  evidence, not a new signed callback/payment test. Planned130 public assets PASS.
+- Read-only financial checkpoint03:51:13: schema98, critical mismatch/unreconciled/
+  duplicate/ownership0, totals unchanged from preflight. Pending2649 and abandoned
+  friend3149 remain provider-UNVERIFIED. Friend locally cancelled only; WOLF still
+  Processing and older paid backlog2 retained. No historical payment/fulfillment action.
+- Original shared emergency-close budget1 unused and rebound to new app. Runtime,
+  Caddy, units, timer/worker, credentials unchanged;0 SQL writes/migrations, emails,
+  Auth SMTP access, agent orders/provider transactions or Git push/merge. Existing
+  b4 release/runtime recovery retained. No restart retry/rollback or MON replay.
+- Independent new app receipts only; all old consumed/missing MON receipt boundaries
+  preserved. Prior64 app checks/5 guards/typecheck/build remain valid and were not
+  repeated; exact archive local assets2374 verified earlier,2267 old hashes retained.
+- Full Pay Again HELD pending merchant inquiry/durable reconciliation/concurrency
+  history contract. Email preparation dormant; application email OFF/unconfigured,
+  no delivery claim. COD disabled; PDC PAUSED. The entire P0 is not marked accepted.
+- DTR-33/STOR-01/original32/full deferred register and E104 ordered queue preserved.
+  No SEO, PDC, location, COD or homepage work combined. NEXT: read-only customer/
+  owner acceptance, then qualify safe provider reconciliation within CX-PAY-01.
+
+---
+
+# E105 — CX-PAY-01 first fix LOCAL PASS; separate production approval ready — 2026-10-28
+
+- [Audit and local correction](docs/customer-payment-safety-review.md);
+  [exact first-fix approval review](docs/customer-payment-first-fix-approval.md).
+  Local branch customer-payment-recovery-20261028/commitbb21a160 from MON568c8dd.
+  No unrelated merge/push;22 prior worktrees' heads/work preserved, apart from
+  intended additive continuity. Main0a61ab1 is not the deployed app source.
+- Confirmed defects: local order cancellation/attempt expiry mislabeled payment
+  outcome; raw Paid field trusted without private ledger proof; green address/
+  check cues before payment. Exact customer's recalled green CONFIRMED at
+  /checkout is still NOT reproduced; do not invent its precise source.
+- Local reusable correction: matching live signed ledger/order settlement before
+  Paid; separate order/payment/fulfillment states, neutral prepayment UI, shared
+  EN/AR status across result/account/summary and late-callback polling. Uncertain
+  existing attempts held before another session/charge; first CARD path keeps
+  normal ownership, purchasing, serializing claim and immutable totals.
+- Existing Pay Again PARTIAL/unsafe unchecked same-session reopen is held by this
+  first fix. Full reconciled retry needs qualified merchant inquiry, durable
+  evidence/concurrency lease and reviewed history schema against98. No inquiry
+  credential configured. No historical retries or invented nonpayment proof.
+- Truthful created/paid/failed/pending notification preparation only; no hooks,
+  queue or delivery activation. Application email metadata03:21:24: disabled,
+  no key/senders/account approval. Auth SMTP untouched; no email delivery claimed.
+-64 focused app checks PASS, including actual Chrome EN/AR, ownership, abandonment,
+  cancel/failed/success/late callback, double-click, outage and disposable native
+  SQL concurrency.5 release guards PASS; Node22.23.1 typecheck/build PASS. Exact
+  archive readback/all2374 asset GET+hash checks PASS;2267 prior hashed assets kept.
+  Initial old harness/polling expectations corrected; no broad suite repeated.
+- Proposed archive acfc97b72fe85237/schema98. Seal
+  `ac46dec13101b94ab12f71dfda2c07966733bc5db6066a50d632b5b8de575e0d`;
+  expiry28October07:33:32.216Riyadh. Preflight03:34:15 PASS; approval/intents ABSENT.
+  If separately approved: one app switch/restart,0 SQL/Caddy/runtime/unit/timer/
+  worker/credential/email/provider changes. Single-use receipts; bounded startup
+  health polling; failure stops without restart retry/rollback. Existing shared
+  emergency-close budget1 rebound to candidate, never replenished.
+- Production stays b4b502a03207713a/schema98/PID58599, Caddy26652. MON active/waiting,
+  report03:30:06 fresh/complete. Owner-session API200 and actual visible expanded
+  Dashboard alerts verified03:24:53, both warnings/backlog2 present, business writes
+  blocked; no browser secrets exported. Technical visibility PASS; do not invent
+  independent owner business acceptance. Anonymous401/privacy retained.
+- Financial checkpoint03:28:58: mismatch/unreconciled/duplicate/ownership0; new
+  order1/attempt1/transactions0. Proposed projection on real read-only snapshot
+ 03:30:15 holds2649 and abandoned3149 as UNVERIFIED; both genuine payments stay
+  verified Paid. Friend remains locally cancelled only; WOLF Processing and older
+  paid backlog retained. CARD/Manual50/signup OPEN, PDC PAUSED, COD/email OFF.
+- DTR-33/STOR-01/original32/full deferred register preserved. Ordered P1/P2 queue
+  from E104 retained; no SEO/PDC/COD/location/other development started.
+  **NEXT: exact CX-PAY-01 FIRST FIX approval in review. NOT DEPLOYED.**
+
+---
+
+# E104 — Customer payment safety P0; read-only audit and local preparation — 2026-10-28
+
+- Owner promotes CX-PAY-01 above SEO, PDC and historical work. Scope: truthful
+  payment/order states, owned reconciled recovery, dormant truthful notifications,
+  focused failure/concurrency/security tests. NO deployment or provider writes.
+- Dedicated owner-signed-in browser, business writes blocked: protected monitor
+  HTTP200 at03:10:21Riyadh, fresh complete report03:10:06; two UNVERIFIED warnings,
+  staff backlog2, email OFF. This establishes actual authorized-session API access;
+  user identity is owner-reported. Anonymous401 remains separately verified.
+- Production b4b502a03207713a/schema98; timer active/waiting. EGP2649 overdue and
+  intentionally abandoned EGP3149 remain provider-UNVERIFIED. WOLF Processing and
+  older paid backlog retained. No retries, charges, refunds or fulfillment.
+- Reported approximate green CONFIRMED appears at /checkout. Exact literal/source
+  not reproduced. Source has green saved-address/check-step cues before payment;
+  status endpoint also conflates local cancellation/expiry with payment outcome.
+  Do not claim either is the proven reported message without reproduction.
+- Isolated local/customer-payment-recovery-20261028 starts from MON source568c8dd;
+  main0a61ab1 has older application lineage. No unrelated merge/reset/push. Both
+  accounts' worktrees/artifacts and all consumed approvals remain preserved.
+- Next priorities, one at a time: CX-CART-01 homepage direct cart for single eligible
+  configuration, retain Options for real choices; CX-COD-01 safe collection with
+  no premature Paid; CX-ADDR-01 collapsed saved checkout address; LOC-01 validated
+  checkout/profile selectors from separate local reference work, freshly ordered
+  against98; CX-NAV-01 authenticated navbar username; MIG-04 read-only SEO/redirects.
+- DTR-33/STOR-01/original32 and complete deferred register stay open. PDC PAUSED,
+  COD disabled, purchasing authorization and shared emergency budget1 unchanged.
+  NEXT: local reusable P0 correction/tests; prepare concrete separate deployment
+  review only after qualification. Owner browser access authorizes no money action.
+
+---
+
 # E103 — MON-01 final timer completion deployed; automatic operation PASS — 2026-10-28
 
 - Exact owner approval `ed9b89ee356adad2f92b58bdc0c4ef1ab5b1d4609768d43a0973aed57283c3a2`
@@ -1990,8 +2356,8 @@ it does not waive multi-customer, email, destination or recovery acceptance.
 | BETA-06 | Legitimate publishing and fulfillment catalog | P0 | LOCAL PASS | Owner confirms entire catalog physically available/can ship at listed prices, no counts | Only published normal positive-price active-model genuine items; exclude test inventory, preserve drafts | E59; OD-20261026-STOCK-03 | 2026-10-26 | Use confirmed catalog with95 untracked mode; no SKU census or fabricated balances |
 | BETA-07 | Owner-approved launch delivery and configurable EGP50 shipping | P0 | LOCAL PASS | Owner-managed delivery/all cities and governorates/EGP50 CONFIRMED | Prepare separate Manual company and reviewed coverage/fee; old PDC identity/barriers preserved | E59; OD-20261026-DELIVERY-02 | 2026-10-26 | Install approved Manual configuration through guarded Beta plan; PDC calls remain paused |
 | BETA-08 | Merchant refund/cancellation and stock-reconciliation readiness | P0 | MANUAL REMEDY OPERATIONALLY CONFIRMED | Owner confirms documented manual process available; no refund/transfer executed | Consent/original transaction/unique private operation/remaining amount and reconciliation required; capture history preserved | E89; E59; OD-20261026-REFUND-02 | 2026-10-27 | Use supported remedy only for an authorized actual case; automation remains deferred |
-| BETA-09 | Payment exception monitoring and closure | P0 | LIVE WARNING; FIVE-MINUTE AUTOMATION ACTIVE | E103 two automatic checks/fresh report/dedup PASS; critical0; pending2649 and abandoned3149 provider outcomes UNVERIFIED; two paid staff-backlog orders | Timer/heartbeat/history/private alerts verified; no automatic money/order/stock action; callbacks/original kill retained | E103; E102; E101 | 2026-10-28 02:45 regular worker/02:46 postflight | Staff attends Dashboard exceptions and real fulfillment; actual merchant outcomes require evidence; email OFF; owner Dashboard observation pending |
-| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | P0 OWNER-PROMOTED | DEPLOYED; AUTOMATIC OPERATION PASS; OWNER OBSERVATION PENDING | E103 exact final approval consumed; real catch-up02:42/regular02:45 runs and fresh reports PASS; typed next trigger02:50 | Existing timer active/waiting; no duplicate alerts;0 app restarts/SQL/Caddy/email/provider action; original kill budget1; strict privacy retained | E103; docs/mon01-final-timer-completion-receipt.md; E102 | 2026-10-28 02:46 Riyadh postflight | Owner observes protected Dashboard exceptions/backlog; keep staffed attention/fulfillment; never replay any consumed operator; optional email separate |
+| BETA-09 | Payment exception monitoring and closure | P0 | LIVE WARNING; FIVE-MINUTE AUTOMATION ACTIVE | E103 two automatic checks/fresh report/dedup PASS; critical0; pending2649 and abandoned3149 provider outcomes UNVERIFIED; two paid staff-backlog orders | Timer/heartbeat/history/private alerts verified; no automatic money/order/stock action; callbacks/original kill retained | E103; E102; E101 | 2026-10-28 02:45 regular worker/02:46 postflight | Staff attends Dashboard exceptions and real fulfillment; actual merchant outcomes require evidence; email OFF; owner Dashboard operation accepted E107; optional email separate |
+| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | P0 OWNER-PROMOTED | DEPLOYED / AUTOMATIC PASS / OWNER ACCEPTED FOR OPERATION | E107 owner operation/access accepted; fresh12:20 report and protected owner API200; timer active | Existing timer active/waiting; no duplicate alerts;0 app restarts/SQL/Caddy/email/provider action; original kill budget1; strict privacy retained | E108; E107; E106; E103 | 2026-10-28 owner acceptance | Explain panel; retain staff attention and separate optional email; never replay consumed authorities |
 | BETA-10 | Guarded inactive schema91→94 deployment preparation | P0 | DEPLOYED | Exact replacement4c332350 approved/executed once; catalog pause may end; seal consumed | Releasebc05eef266eeb7de/schema94 active, atomic92–94, all140 original projections/Auth preserved; backups/candidate/RLS/gates/public smoke PASS, history/claims0 | E35; E34; E33; E31 | 2026-10-25 | Never rerun consumed apply; E37 historical import/three-route change also completed; ordinary acceptance/notice/signup are next |
 | BETA-11 | Normal CARD checkout and guarded public activation | P0 | PUBLIC CARD BETA ACTIVE | E88 genuine paid5/closure; E90 exact approved runtime activation verified | CARD/Manual50/test exclusion/no coupons; appa402/schema98/Caddy/security/history unchanged; DTR-33 remains | E90; E88; docs/public-card-beta-activation-receipt.md | 2026-10-27 hosted activation PASS | Accept genuine customer orders; staff15min exceptions/manual fulfillment; one approved kill on valid public defect or unmaintainable reconciliation |
 | BETA-12 | Preserve LIVE payment, 3DS and callback reconciliation | P0 | ACCEPTED | Prior real LIVE card payment/signed callback accepted; preserved | No repeat integration charge; new native customer-to-paid flow PASS with0 external calls | E59; DONE-04; E02 | 2026-10-26 | Preserve binding; verify next single authorized genuine customer sale only |
@@ -2010,7 +2376,7 @@ deployment, import, signup and purchasing retain their separate approvals.
 | MIG-01 | Source inventory and durable customer identity mappings | P0 | DEPLOYED | Source and final eligibility/import approved and executed once; actual Auth claims0 | 516 imported/513 conditionally eligible/3 held; one current verified match has no orders,512 later verified signups; zero Auth creation/hash import/automatic links/current edits | E37; E36; E30; E23 | 2026-10-25 | Preserve source/import receipts; verify explicit ordinary ownership without changing immutable flags |
 | MIG-02 | Historical customer profiles and saved addresses | P0 | DEPLOYED | All516 archived customer snapshots imported; verified explicit claim required for reads | Every approved historical snapshot/address preserved; all140 original projections/current profiles/credentials unchanged | E37; E36; E23 | 2026-10-25 | Existing eligible customer accepts archived profile/empty order view; hosted acceptance remains pending |
 | MIG-03 | Historical orders, customer order history and Woo metadata | P0 | DEPLOYED | Data/API/My Orders and three scoped routes live; claims0, hosted owned acceptance pending | 591 orders/6 refunds/1789 items/702 events reconciled exactly;459 orders/6 refunds eligible,1 held order/131 unlinked remain private; no live provider action | E37; E36; E35; E23 | 2026-10-25 | Accept hosted ordinary claim/list/detail/refresh with an eligible order-bearing customer after separately approved signup |
-| MIG-04 | Product identity links, legacy URL continuity and post-migration SEO | P1 NEXT AFTER MON-01 | QUEUED READ-ONLY | E98 owner requests separate post-recovery audit; no Google access established | GSC readiness; robots/sitemap/canonical/hreflang/indexing; WooCommerce product/category/page301/308 mappings;404s/chains/broken links; maintenance text; preserve old-to-new URLs | E98; E38; E14; E11; L1 requirement10 | 2026-10-28 requirements; audit pending | After MON-01, audit source and deployed URLs read-only; label unmeasured Google evidence; propose changes separately, no deployment/import/redirect edits |
+| MIG-04 | Product identity links, legacy URL continuity and post-migration SEO | P2 AFTER CUSTOMER P0/P1 | QUEUED READ-ONLY | E98 owner requests separate post-recovery audit; no Google access established | GSC readiness; robots/sitemap/canonical/hreflang/indexing; WooCommerce product/category/page301/308 mappings;404s/chains/broken links; maintenance text; preserve old-to-new URLs | E98; E38; E14; E11; L1 requirement10 | 2026-10-28 requirements; audit pending | After customer payment/queue priorities, audit source and deployed URLs read-only; label unmeasured Google evidence; propose changes separately, no deployment/import/redirect edits |
 | MIG-05 | Historical import safety and guarded acceptance | P0 | DEPLOYED | Exact3c9f5764 approval consumed;41 durable batches/completion and independent verification PASS | Fresh encrypted execution recovery/full readback; every immutable record and140 original projections preserved; no Auth/current-commerce/provider/notification writes; one scoped Caddy signal/0 app restart | E37; E36; seven operator tests | 2026-10-25 | Never rerun consumed apply/check expecting empty history; retain receipts and complete hosted ordinary-owner acceptance |
 
 ### G. Payment gateways
@@ -2096,6 +2462,12 @@ uncertain shipment creation or attach an unrelated diagnostic/cancelled AWB.
 | CX-05 | Reliable EN/AR desktop/mobile checkout | P0 | PLANNED | Existing candidate needs hosted acceptance; new post-Beta toggles are not prerequisites | Accurate fulfillment/fee/error states across RTL/themes/widths; no false quantity-based availability promises, hydration errors or cross-account data | E38; E06; E14; REQ | 2026-10-25 | Qualify the exact current candidate and report label conflicts without implementing post-Beta features |
 | CX-06 | Help Center, support, returns and warranty improvements | P2 | PLANNED | Existing ticket/article/claims contracts and owner policy | Preserve owned support/private evidence; review remaining accessibility, article helpfulness and communication needs | E17; E18; PROJECT_STATE.md Help Center entries; REQ | 2026-10-25 | Select one concrete improvement after Beta |
 | CX-07 | Original-browser controlled-checkout rejection (OD-20261027-BROWSER-STATE-01) | P1/B; public repro escalates A | DEFERRED FIELD UNCONFIRMED | DTR-33 original valid v3 cart/no pending; fresh Incognito genuine5 success; actual Vue/server-guard local3 PASS | Identify actual failed request/address/delivery/client state without another charge; preserve recovery/security | E88; DTR-33; docs/egp5-genuine-payment-verification.md | 2026-10-27 | Safe diagnostic follow-up; stop public purchasing on valid public reproduction |
+| CX-PAY-01 | Live customer payment completion and safe recovery | P0 FIRST | FIRST FIX ACCEPTED IN OBSERVED SCOPE / MERCHANT AUTH PASS / FULL-HISTORY INQUIRY BLOCKED | Current98; complete provider history/session finality not qualified | Required history list≤20 contract failed; two consumed approvals; no retry/local reconciliation; email separate | E112; E111; E110; E107; E106 | 2026-10-28 auth PASS; known-order GET200 then history guard STOP; both unpaid UNVERIFIED | Obtain supported complete-history contract/evidence; only then fresh bounded inquiry approval; no Pay Again activation |
+| CX-EMAIL-01 | Truthful customer order/payment email delivery | P0 separate required task | REQUIRED / OFF / NOT ACCEPTED | Existing email foundation; ORDER-04/FUT-05; Auth SMTP separate | Durable idempotent event producers, truthful created/paid/failed/pending content, secure sender/provider activation and actual delivery acceptance; no backlog replay | E107; E106 | 2026-10-28 | Prepare separately after payment safety; no MON email or Auth SMTP activation implied |
+| CX-CART-01 | Homepage Add to Cart versus Options | P1 NEXT2 | QUEUED | CX-PAY-01 first | Direct cart only for single eligible purchasable configuration; retain genuine required selections | E107; E104 | 2026-10-28 | After COD; preserve Options for real selections |
+| CX-COD-01 | Safe COD availability and collection workflow | P1 NEXT1 | QUEUED / COD OFF | Separate approval and actual collection authority | Never mark Paid before actual cash collection; no premature COD opening | E107; E104 | 2026-10-28 | First customer feature after P0; keep COD OFF |
+| CX-ADDR-01 | Collapse saved checkout shipping address | P1 NEXT3 | QUEUED | Preserve address ownership and order snapshots | Compact saved address with explicit editing | E107; E104 | 2026-10-28 | After homepage cart |
+| CX-NAV-01 | Authenticated username in navbar | P2 NEXT5 | QUEUED | Customer session isolation | Correct signed-in name without cross-account leakage | E107; E104 | 2026-10-28 | After LOC-01 checkout AND profile selectors; MIG-04 follows |
 
 ### L. Future features and retained unfinished commitments
 
@@ -2426,7 +2798,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 
 | ID | Task | Priority | Status | Dependencies | Scope / acceptance | Evidence | Last verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| LOC-01 | Provider-neutral governed locations and dependent EN/AR selectors | P0 local milestone | LOCAL PASS; NOT DEPLOYED | Separate96 source based on frozen95; no provider activation or coverage inference | Neutral core IDs/separate provider refs; controlled Dashboard preview/apply, server and SQL ID/parent validation, history/receipt preservation; defaultOFF. E71 owner reminds deployed95 Profile city/governorate are still free text | E71; E62; OD-20261026-LOC-01; SHIP-02; docs/pdc-location-reference-review.md | 2026-10-27 reminder; local evidence E62 | Keep96 separate for future exact approval; E78 coupon-only production98;27004500/27090000/27100000 deployed; location26190000 remains excluded/undeployed, future integration needs fresh ordering/history qualification against98. Never infer location deployment from migration count. Hosted selectors remain open in DTR-19 |
+| LOC-01 | Provider-neutral governed locations and dependent EN/AR selectors | P1 NEXT4 / existing local milestone | LOCAL PASS; NOT DEPLOYED | Separate96 source based on frozen95; no provider activation or coverage inference | Neutral core IDs/separate provider refs; controlled Dashboard preview/apply, server and SQL ID/parent validation, history/receipt preservation; defaultOFF. E71 owner reminds deployed95 Profile city/governorate are still free text | E71; E62; OD-20261026-LOC-01; SHIP-02; docs/pdc-location-reference-review.md | 2026-10-27 reminder; local evidence E62 | Keep96 separate for future exact approval; E78 coupon-only production98;27004500/27090000/27100000 deployed; location26190000 remains excluded/undeployed, future integration needs fresh ordering/history qualification against98. Never infer location deployment from migration count. Hosted selectors remain open in DTR-19 |
 
 ### M. Risks and blockers
 
