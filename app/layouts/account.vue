@@ -2,21 +2,18 @@
 const { uiLabel } = useUiLocale()
 const { uiNavigateTo } = useUiNavigation()
 
-import { resolveAccountUser } from '~/utils/accountSession'
+import { customerDisplayName } from '~/utils/customerDisplayName'
 
 const supabase = useSupabaseClient()
-const user = useCustomerIdentity().user
-const profile = ref(null)
+const identity = useCustomerIdentity()
+const hydrated = ref(false)
+const user = computed(() => hydrated.value ? identity.user.value : null)
+const { profile: sharedProfile, ready: profileReady } = useCustomerDisplayProfile()
+const profile = computed(() => hydrated.value ? sharedProfile.value : null)
 const { data: accountAppearance } = await useAccountAppearance()
 const isModern = computed(() => accountAppearance.value?.account_dashboard_style === 'modern')
 const route = useUiRoute()
-let profileVersion = 0
-
-const displayName = computed(() => profile.value?.full_name
-  || user.value?.user_metadata?.full_name
-  || user.value?.user_metadata?.name
-  || user.value?.email?.split('@')[0]
-  || uiLabel('Your account'))
+const displayName = computed(() => profileReady.value ? customerDisplayName(profile.value, user.value, uiLabel('Your account')) : uiLabel('Your account'))
 const initials = computed(() => displayName.value.trim().split(/\s+/).slice(0, 2)
   .map(part => part[0]?.toUpperCase()).join(''))
 const memberYear = computed(() => {
@@ -33,36 +30,13 @@ const accountSection = computed(() => {
   return 'Home'
 })
 
-const loadProfile = async () => {
-  const version = ++profileVersion
-  profile.value = null
-  try {
-    const currentUser = await resolveAccountUser(supabase, user.value)
-    if (version !== profileVersion) return
-    if (!currentUser) return
-    const { data } = await supabase.from('customer_profiles')
-      .select('full_name, created_at').eq('id', currentUser.id).maybeSingle()
-      .abortSignal(AbortSignal.timeout(20000))
-    if (version === profileVersion) profile.value = data || null
-  } catch {
-    if (version === profileVersion) profile.value = null
-  }
-}
-
 const logout = async () => {
   await supabase.auth.signOut()
   await uiNavigateTo('/')
 }
 
-onMounted(() => {
-  loadProfile()
-  window.addEventListener('account:profile-updated', loadProfile)
-})
-onBeforeUnmount(() => {
-  ++profileVersion
-  window.removeEventListener('account:profile-updated', loadProfile)
-})
-watch(() => user.value?.sub || user.value?.id, loadProfile, { flush: 'sync' })
+onMounted(() => { hydrated.value = true })
+
 </script>
 
 <template>

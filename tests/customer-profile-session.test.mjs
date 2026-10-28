@@ -18,8 +18,7 @@ const deferred = () => {
 const settle = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); await nextTick() }
 const factories = new Map()
 for (const [name, path, exposed] of [
-  ['profile', 'app/pages/account/profile.vue', 'form, loading, saving, error, notice, save'],
-  ['layout', 'app/layouts/account.vue', 'profile, displayName']
+  ['profile', 'app/pages/account/profile.vue', 'form, loading, saving, error, notice, save']
 ]) {
   const script = parse(await readFile(path, 'utf8')).descriptor.scriptSetup.content
   const imports = script.match(/^import .*$/gm).join('\n')
@@ -131,17 +130,5 @@ test('late save acknowledgements cannot announce success or disturb the next cus
   assert.deepEqual(f.events, ['account:profile-updated'])
 })
 
-test('account header clears immediately and ignores late identity responses', async t => {
-  const f = await fixture('layout'); t.after(f.dispose)
-  f.reads[0].resolve({ data: alice }); await settle()
-  assert.equal(f.state.displayName.value, 'Alice')
-  f.user.value = { sub: 'bob', email: 'bob@example.invalid' }
-  assert.equal(f.state.profile.value, null)
-  await settle()
-  f.user.value = { sub: 'carol', email: 'carol@example.invalid' }; await settle()
-  f.reads[2].resolve({ data: { full_name: 'Carol' } }); await settle()
-  f.reads[1].resolve({ data: bob }); await settle()
-  assert.equal(f.state.displayName.value, 'Carol')
-  f.user.value = null
-  assert.equal(f.state.profile.value, null)
-})
+// Account header isolation now runs against the actual shared profile composable
+// and actual layout/navbar in navbar-customer-name tests.

@@ -12,9 +12,9 @@
           <Icon name="lucide:package" size="25" />
           <span class="store-action-copy"><small>{{ $t('common.trackManage') }}</small><strong>{{ $t('common.myOrders') }}</strong></span>
         </NuxtLinkLocale>
-        <NuxtLinkLocale :to="customerAccountPath" class="store-header-action" :aria-label="customerUser ? $t('common.myAccount') : $t('common.signInToYourAccount')">
+        <NuxtLinkLocale :to="customerAccountPath" class="store-header-action" :class="{ 'store-customer-action': customerUser }" :aria-label="customerUser ? (profileReady ? `${$t('common.myAccount')}: ${accountName}` : $t('common.myAccount')) : $t('common.signInToYourAccount')" :aria-busy="customerUser && !profileReady ? true : undefined">
           <Icon name="lucide:user-round" size="25" />
-          <span class="store-action-copy"><small>{{ customerUser ? $t('common.welcomeBack') : $t('common.helloSignIn') }}</small><strong>{{ $t('common.account') }}</strong></span>
+          <span class="store-action-copy"><small>{{ customerUser ? $t('common.welcomeBack') : $t('common.helloSignIn') }}</small><strong :class="{ 'store-customer-name': customerUser, 'store-customer-name-pending': customerUser && !profileReady }"><bdi>{{ accountName }}</bdi></strong></span>
         </NuxtLinkLocale>
         <NuxtLinkLocale to="/cart" class="store-header-action store-cart-action" :aria-label="$t('common.cartValueItems', { value0: (itemCount) })">
           <span class="store-cart-icon">
@@ -67,8 +67,14 @@ const { categoryName } = useCategoryLocale()
 const { intlLocale } = useUiLocale()
 
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
+import { customerDisplayName } from '~/utils/customerDisplayName'
 const route = useUiRoute()
-const customerUser = useSupabaseUser()
+const identity = useCustomerIdentity()
+const hydrated = ref(false)
+const customerUser = computed(() => hydrated.value && identity.accountId.value ? identity.user.value : null)
+const { profile, ready: profileReady } = useCustomerDisplayProfile()
+const { t } = useI18n()
+const accountName = computed(() => customerUser.value && profileReady.value ? customerDisplayName(profile.value, customerUser.value, t('common.account')) : t('common.account'))
 const { data: siteContent } = await useSiteContent()
 const { itemCount, subtotal, loadCart } = useCart()
 
@@ -98,6 +104,7 @@ const onFocusOutside = (event) => {
 }
 watch(() => route.fullPath, () => closeDepartments())
 onMounted(() => {
+  hydrated.value = true
   loadCart()
   document.addEventListener('pointerdown', onOutsidePointer)
   document.addEventListener('focusin', onFocusOutside)

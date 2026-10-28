@@ -72,6 +72,14 @@
 .storefront .store-header-action:hover strong { text-decoration: underline; }
 .storefront .store-header-action small { display: block; margin-bottom: 1px; font-size: 11px; font-weight: 400; }
 .storefront .store-header-action strong { display: block; font-size: 14px; line-height: 1.3; }
+.storefront .store-customer-name { width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.storefront .store-customer-name-pending { color: transparent; background: #ffffff26; border-radius: 3px; }
+@media (max-width: 900px) {
+  .storefront .store-customer-action { flex-direction: column; gap: 2px; }
+  .storefront .store-header-action.store-customer-action > .store-action-copy { display: block; }
+  .storefront .store-customer-action .store-action-copy small { display: none; }
+  .storefront .store-customer-action .store-customer-name { width: 3.5rem; font-size: 10px; text-align: center; }
+}
 .storefront .store-cart-icon { position: relative; display: flex; }
 .storefront .store-cart-count { position: absolute; top: -10px; inset-inline-end: -8px; min-width: 19px; height: 19px; display: grid; place-items: center; padding: 0 4px; background: #ffd54f; color: var(--store-navy); border-radius: 20px; font-size: 11px; font-weight: 700; }
 .storefront .store-cart-currency { font-size: 11px; }
