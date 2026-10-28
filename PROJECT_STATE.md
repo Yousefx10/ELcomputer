@@ -1,3 +1,73 @@
+# E130 — LOC-01 DEPLOYED/schema103; technical postflight PASS — 2026-10-29
+
+- Exact owner **661e429c…** approval recorded01:10:24Riyadh and executed once:
+  **CONSUMED_COMPLETE**, never replay. Current **57a5b31dd4d82156/schema103**, source
+ 34022ae/appPID71861. [Deployment receipt](docs/loc01-delivery-locations-deployment-receipt.md). Owner visual acceptance remains
+  **PENDING / NOT EXERCISED**, including the earlier saved summary/address book.
+- Only20261029010000 committed01:11:34.869Riyadh;27 governorates/382 reference cities,
+ 381selectable. **146 protected data projections/schema/Auth/history preserved**;
+  no customer/address/order backfill, ownership/revision/RLS weakening or intent hash
+  change. Old location96 and deployed102 were not replayed.
+- One exact app cutover/ordinary restart01:12:03.756Riyadh. All2911 public HTTP/hash
+  assets/private/held-route guards PASS. CaddyPID26652/runtime/fixed files unchanged.
+  Next **AUTOMATIC01:15:05.952Riyadh MON PASS**, completeTRUE/WARNING3/critical0;
+  timer enabled/active/waiting, no manual scan/reset/restart/history change.
+- CARD-only/Manual EGP50/signup/email confirmation LIVE; COD/PDC booking OFF.
+  Financial/ownership/signed-success/duplicate mismatch counters0; original overdue-
+  unverified2 and warning3 retained. No provider outcomes inferred. Original unused
+  emergency-close budget1/callbacks preserved and rebound; no new allowance created.
+- **0 Caddy writes/signals/restarts, runtime/MON/unit/credential/settings/stock edits,
+  provider/payment/order/email actions or Git pushes.** Only the approved103 reference
+  migration and one app switch/restart occurred; no retry or rollback.
+- All32 opening HEAD/status inventories/**11132 pending-file hashes** match before
+  main/source continuity updates. Old4843754/all Codex1/Codex2 sources retained; no
+  merge/reset/rebase/cleanup. Parentc86 consumed-stop/recovery17c complete remain
+  historical; DTR-33/STOR-01/original deferrals and REF/AWB/provider barriers retained.
+- **ONE NEXT OWNER ACTION:** visually review governorate/city dropdowns in checkout
+  and `/account/profile`, existing/multiple addresses and EN/AR/mobile; record acceptance
+  separately without a charge/order/PDC request. Then CX-NAV-01 navbar welcome/name;
+  COD after written PDC cash units → Paymob → PDC tracking → emails → SEO → deferred work.
+
+---
+
+# E129 — LOC-01 READY; schema103/app-only guarded release — 2026-10-29
+
+- **OD-20261029-LOC-01 / Codex1 takeover:** implement and qualify now; no automatic
+  deployment. LOC-01 **READY / LOCAL PASS / SEALED READ-ONLY PREFLIGHT PASS / NOT DEPLOYED**.
+  [Review and ONE exact approval](docs/loc01-delivery-locations-review.md). Candidate57a5b31dd4d82156, source34022ae,
+  new32nd `loc01-20261029/source`; original31 HEAD/status inventories/331 pending-file
+  hashes preserved. Old location4843754/a9a5c6f reused, never overwritten or deployed.
+- Latest offline workbook hash0201a05d unchanged;27 governorates/381supported cities,
+  bilingual aliases/search and dependent selection across checkout/address book/profile/
+  shared customer editor. Existing stored values/ownership/revisions/intents retained;
+  unmatched legacy values visible and usable only through an active customer's owned
+  pair. No live PDC dependency, booking, new API ingress or customer backfill.
+- Only proposed **103**,20261029010000; two private reference tables/409reference rows,
+  six private functions/two triggers and one validation call per quote/command. Actual
+  history102 ends20261028210000. Never apply historical96 or replay102.
+- **32 native/API +35 actual-browser +7 operator checks PASS/0skip**; migration/rollback
+ 145 protected projections, exact pre103 receipt recovery, typecheck/build/diff PASS.
+ 3891-entry exact archive/readback/secret scan;2803retained/2911served HTTP/hash assets
+  PASS. Fresh encrypted102 DB/full pg_restore and11fixed-file readbacks PASS.
+- **01:04:32Riyadh read-only preflight:** productiona7fa8e8e3b7870d4/schema102/app70394
+  unchanged; CARD-only/Manual50/signup live, MON active WARNING3/critical0/complete,
+  finance/ownership/duplicate/signed-success mismatches0, overdue-unverified2 retained.
+  COD/PDC booking OFF. Original unused emergency-close budget1 and callbacks preserved.
+- Sealed approval **661e429c7ba968065ec537ddb7af66be669da6017d68d661f7665759de3182ce**,
+  expires **29October2026,05:03:49.596Riyadh**. If separately approved: one103 migration,
+  one app switch/restart;0 Caddy/runtime/MON/unit/credential/settings/provider/email edits.
+  No approval/apply/stage yet. Stop on drift/expiry/partial/uncertain outcome; no retries,
+  repeated restart, automatic rollback or consumed-packet replay. Exact statement in review.
+- Owner's address-book visual acceptance remains **PENDING**; hosted LOC-01 acceptance
+  **NOT EXERCISED**. Do not equate local checks with deployed/owner/provider acceptance.
+  c86 remains CONSUMED_STOP; recovery17c remains CONSUMED_COMPLETE. DTR-33/STOR-01/
+  all original deferrals and uncertain provider/payment/REF/AWB barriers preserved.
+- **ONE NEXT ACTION:** owner exact LOC-01 approval before expiry. After LOC-01: navbar
+  username → COD only after PDC written cash units → Paymob Inquiry/Pay Again/methods →
+  PDC shipping/tracking → transactional emails → SEO/legacy redirects → deferred work.
+
+---
+
 # E128 — Address-book monitor recovery COMPLETE; technical closeout PASS — 2026-10-28
 
 - Exact owner **17c438…** recovery accepted/executed once, **CONSUMED_COMPLETE**;

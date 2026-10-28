@@ -1,3 +1,11 @@
+## E130 — approved LOC-01 deployment complete;32 worktrees preserved — 2026-10-29
+
+Exact661 approval consumed-complete; source34022ae/current57a5b31d/schema103. All32 opening HEAD/status inventories and11132 pending-file hashes matched before main/source continuity updates. Main137cfd6 and every existing source HEAD unchanged; no merge/rebase/reset/cleanup/push or code edits. One approved migration/app restart, no Caddy/runtime/MON/provider action. Old location4843754 and Codex1/Codex2 work intact. [Receipt](loc01-delivery-locations-deployment-receipt.md).
+
+## E129 — LOC-01 isolated; original31 worktrees preserved — 2026-10-29
+
+New32nd worktree `../loc01-20261029/source`, branch `local/loc01-20261029`, source34022ae on deployed2236497. Original31 HEAD/status inventories and331 pending-file hashes passed preservation before main continuity updates. Main137cfd6 and old location4843754 remain unchanged in HEAD. No merge/rebase/reset/cleanup/push; generated retained assets belong only to the new worktree. Offline selectors/data/validation reused. Productiona7fa8e8e/schema102 unchanged;103/app-only release READY, no approval/execution. [Scope and exact approval](loc01-delivery-locations-review.md).
+
 ## E128 — one-field recovery complete;31 worktrees preserved — 2026-10-28
 
 All31 opening HEAD/status inventories/8334 pending-file hashes matched before continuity updates. Source2236497/main6cfaadc unchanged. Recovery17c changes one target config field only; no app restart/signal/SQL/provider action, push/merge/rebase/reset/cleanup or source edit. Parentc86 consumed-stop retained. Main/current source receive the completion receipt and matching handoffs; original location484 and all other worktrees/deferrals remain intact. [Receipt](checkout-address-book-monitor-recovery-receipt.md).
