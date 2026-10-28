@@ -8,7 +8,7 @@ import { emailNativeAvailable } from './helpers/emailNativeDatabase.mjs'
 const migration = '20261028170000_manual_cod_eligibility.sql'
 const address = { first_name: 'Synthetic', last_name: 'Buyer', email: 'customer@product-save.example.invalid', street_address: 'Fixture street', city: 'Fixture city', governorate: 'Cairo', phone: '01012345678' }
 const setup = async f => {
-  await f.db.query("update public.site_settings set payment_cash_enabled=true,payment_cash_fee=0,payment_card_enabled=true,allow_out_of_stock_purchases=true,inventory_tracking_required=false where key='default'")
+  await f.db.query("update public.site_settings set payment_cash_enabled=true,payment_cash_fee=0,payment_card_enabled=true,allow_out_of_stock_purchases=true,inventory_tracking_required=true where key='default'")
   const product = (await f.db.query("insert into public.products(title,slug,price,is_serialized,is_published,primary_warehouse_id) values('Synthetic COD item',$1,100,true,true,$2) returning id", ['cod-' + randomUUID(), f.warehouse])).rows[0].id
   const variant = (await f.db.query('select id from public.product_variants where product_id=$1', [product])).rows[0].id
   const received = await f.client.rpc('commerce_create_procurement_order', { p_supplier_id: f.supplier, p_warehouse_id: f.warehouse, p_invoice_number: randomUUID(), p_notes: 'Owned synthetic receipt', p_paid_amount: 0, p_items: [{ product_id: product, variant_id: variant, quantity: 20, unit_cost: 60 }] })
@@ -61,7 +61,7 @@ test('Manual COD gates, transactions and cancellation on current schema', { skip
       assert.equal((await send(f, command)).response.status, 409)
       await f.db.query("update public.site_settings set payment_cash_enabled=true where key='default'")
     })
-    await t.test('zero recorded stock remains ineligible despite untracked CARD sales', async () => {
+    await t.test('zero recorded stock remains ineligible when tracking is required', async () => {
       const unavailable = (await f.db.query("insert into public.products(title,slug,price,is_serialized,is_published,primary_warehouse_id) values('Synthetic unavailable item',$1,100,true,true,$2) returning id", ['unavailable-' + randomUUID(), f.warehouse])).rows[0].id
       const variant = (await f.db.query('select id from public.product_variants where product_id=$1', [unavailable])).rows[0].id
       const request = { ...body(), items: [{ id: unavailable, variant_id: variant, quantity: 1 }] }

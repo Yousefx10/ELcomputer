@@ -12,6 +12,9 @@ test('actual COD checkout and saved confirmation in EN/AR desktop/mobile', async
   const { chromium } = await import(process.env.COD_REVIEW_PLAYWRIGHT)
   let helper = await readFile('tests/helpers/normalPurchaseBrowser.js', 'utf8')
   helper = "import CodStatus from '../../app/components/payment/CodStatus.vue';\n" + helper
+  helper = helper.replace('settings: {}', 'settings: { inventory_tracking_required: false }')
+    .replace('payment_card_enabled: true, payment_card_fee: 0', 'inventory_tracking_required: false, payment_card_enabled: true, payment_card_fee: 0')
+    .replace('isPreorder: false,', "isPreorder: false, stockFulfillmentState: 'untracked', fulfillmentMessage: 'Delivery timing depends on your address.',")
   helper = helper.replace('available: true, restricted: false }', "available: true, restricted: false, beta: true, paymentMethods: fixture.paymentMethods || ['card', 'cash'] }")
     .replace("name: 'Synthetic PDC', price: 10, governorates: ['Cairo']", "name: 'Synthetic manual delivery', price: 50, governorates: ['Cairo'], cashAvailable: fixture.cashAvailable !== false")
     .replace('totalAmount: 110', 'totalAmount: 150').replace('shippingFee: 10', 'shippingFee: 50')
@@ -40,7 +43,7 @@ test('actual COD checkout and saved confirmation in EN/AR desktop/mobile', async
     return { locale, messages: messages[locale], uiKeys, publicAccess: true, actorId, allowedId: actorId, productId, variantId, orderId, companyId: randomUUID(), quoteId: randomUUID(), siteUrl: 'https://store.example.invalid',
       profile: { full_name: 'Synthetic Buyer', phone: '01012345678', email: 'fixture@example.invalid', address_line_1: 'Fixture street', city: 'Fixture city', state: 'Cairo' },
       ordersByActor: { [actorId]: [order] }, orderItems: [],
-      cart: { version: 3, id: randomUUID(), revision: randomUUID(), coupon: null, items: [{ id: productId, variant_id: variantId, quantity: 1, price: 100, stock_quantity: 3, is_serialized: true, selling_mode: 'normal', title: 'Synthetic item' }] } }
+      cart: { version: 3, id: randomUUID(), revision: randomUUID(), coupon: null, items: [{ id: productId, variant_id: variantId, quantity: 1, price: 100, stock_quantity: 0, allow_out_of_stock_purchases: true, is_serialized: true, selling_mode: 'normal', title: 'Synthetic item' }] } }
   }
   const server = createServer((req, res) => {
     res.setHeader('content-type', req.url === '/fixture.js' ? 'text/javascript' : 'text/html; charset=utf-8')
