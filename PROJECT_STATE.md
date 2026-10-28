@@ -1,3 +1,538 @@
+# E128 — Address-book monitor recovery COMPLETE; technical closeout PASS — 2026-10-28
+
+- Exact owner **17c438…** recovery accepted/executed once, **CONSUMED_COMPLETE**;
+  never replay. Only one MON config field changed23:15:55Riyadh: caddy_sha256
+  af9720…→already approved1c12f6…. Config e8653c…→93f343…,470 bytes/mode0600;
+  every other byte/value unchanged. Before-copy/readback PASS; full drift detection retained.
+- Next **AUTOMATIC23:20:06Riyadh MON PASS**: completeTRUE, **WARNING3/critical0**.
+  Known hash alert resolved naturally; original2 overdue/1 terminal unverified
+  warnings retained. No monitor manual run/restart/state/dedup/report/history reset.
+- **a7fa8e8e3b7870d4/schema102**, source2236497 unchanged; appPID70394 and CaddyPID26652
+  unchanged. Recovery used **0 restarts, signals, migrations, database/business writes,
+  provider/email calls or service actions**. CARD/Manual EGP50/signupOPEN/email confirmation retained;
+  COD/PDC booking OFF, email alerts OFF, original unused emergency budget1 rebound.
+- Exact installed archive/inventory/certificate/schema and unchanged files PASS;
+  payment/ownership/signed-success/duplicate mismatches0, overdue-unverified2.
+  Reuse the same2804 public HTTP/hash asset receipt; no broad tests/asset sweeps
+  repeated. [Completion receipt](docs/checkout-address-book-monitor-recovery-receipt.md).
+- **DEPLOYED / RECOVERED TECHNICAL POSTFLIGHT PASS / OWNER ACCEPTANCE PENDING.**
+  c86 parent remains **CONSUMED_STOP**, with historical absent completion receipts
+  left absent. Its one102 commit/one app restart/one Caddy signal are not replayed.
+  No actual Caddy restart; exact transient property remains unrecorded. New recovery
+  closes the issue through its own receipts. No fake parent PASS or automatic rollback.
+- All31 opening HEAD/status inventories/8334 pending-file hashes preserved before
+  continuity updates; no push/merge/rebase/reset/cleanup. DTR-33/STOR-01/all deferrals,
+  paid/unverified attempts, REF/AWB barriers, rejected6922 and location484 preserved.
+- **ONE NEXT OWNER ACTION:** review checkout saved-summary/Edit/address selection;
+  record acceptance separately, no transaction needed. Next feature LOC-01 offline
+  searchable checkout AND profile governorate/city, then navbar; derive new migration
+  order from actual102/repository and never deploy old96 or replay102. Keep COD
+  units/workflow/fresh-baseline approval held, no renewed Paymob/PDC investigation.
+
+---
+
+# E127 — Address book live/schema102; parent STOP; MON hash recovery READY — 2026-10-28
+
+- Exact owner c86 approval accepted once; **CONSUMED_STOP**, never replay. Only
+ 20261028210000 committed22:24:22Riyadh;145 original projections/schema/Auth/history
+  preserved, no backfill/business writes. Current **a7fa8e8e3b7870d4/schema102**,
+  source2236497/appPID70394. Exactly1 ordinary app restart and1 Caddyfile/SIGUSR1.
+- Parent stopped **CADDY_RESTART_STOP** after signal, before completion receipts.
+  Read-only current properties/start time/journal confirm **Caddy did NOT restart**:
+  originalPID26652/NRestarts0, one successful reload. Exact immediate differing
+  property was not captured; transient reload state is an inference only. No retry,
+  second signal/restart, automatic rollback, fake completion or Git push.
+- **LIVE CODE / TECHNICAL CLOSEOUT BLOCKED / OWNER ACCEPTANCE PENDING**.
+  All2804 public HTTP/hash assets, private address401/held-route403 gates and
+  schema102/financial configuration PASS. CARD/signup/Manual50 live; COD/PDC OFF.
+  Critical financial/ownership/signed-success/duplicate counts0; overdue-unverified2.
+  [Consumed stop receipt](docs/checkout-address-book-deployment-stop-receipt.md).
+- MON automatic scans remain enabled/active/complete. New sole critical alert:
+  **CALLBACK_PROXY_CONFIGURATION_CHANGED**, old expectedCaddyaf9720… vs approved/
+  actual1c12f6…. Total4 exceptions = original3 warnings + that alert. This pinned-hash
+  dependency was missed in release prep. No monitor reset/restart/manual run, state/
+  dedup/history/credential edit, provider inquiry or email. No actual callback/charge
+  acceptance claimed. Existing original emergency budget1 unused; coverage complete.
+- New **ONE-FIELD RECOVERY READY / NOT APPROVED**, seal
+  **17c438d8ad889431bcf92f53daf4496a3a8e0aa04c516154022b239cf90f67ab**, expires **29Oct02:50:14.813Riyadh**.
+  Only /etc/commerce-monitor/config.json caddy_sha256 old→reviewed1c12f6…;
+  every other byte/value unchanged, file470 bytes/mode0600. Config hash e8653c…→93f343….
+  **No new app deploy/restart, SQL/migration, Caddy change/signal, service/timer action,
+  provider/payment/email or data write**. New approval required; c86 excluded this.
+  [Exact scoped recovery review/approval](docs/checkout-address-book-monitor-recovery-review.md).
+- Three focused guards/monitor tests and22:51Riyadh fresh read-only preflight PASS.
+  Known sole hash critical/complete scan, financial0/cardLive preserved. Await the
+  NEW approval before any config write; then next AUTOMATIC non-critical MON report.
+  Reuse existing2804 asset receipt with unchanged installed hashes. Preserve/rebind
+  ORIGINAL kill1, callbacks, all old critical/check/dedup history; no new allowance.
+- All31 opening HEAD/status inventories/8330 pending-file hashes matched before
+  continuity updates. Preserve all original branches/worktrees/uncommitted work,
+  DTR-33/STOR-01/original deferrals, uncertain2649/3149/provider/REF barriers and
+  location4843754. Old single-address6922 remains rejected. No hosted owner acceptance.
+- **ONE NEXT OWNER ACTION:** exact one-field monitor recovery approval after review.
+  No old operator retry. LOC-01/Task2 stays queued until closeout; actual schema is
+  already102, so never replay102 or deploy old96. Then navbar and original priorities.
+
+---
+
+# E126 — Multiple saved addresses and schema102 review READY — 2026-10-28
+
+- **OD-20261028-ADDR-02**: owner includes multiple saved addresses in Task1 and
+  requests a separate SQL review. CX-ADDR-01/02 now **LOCAL PASS / PREFLIGHT PASS /
+  READY FOR REVIEW / NOT DEPLOYED**. No address-book deferral or owner acceptance.
+- Reused4a3cd25→fb824d4 on deployed e47 lineage; additive31st source
+  checkout-address-book-20261028/source, branch local/checkout-address-book-20261028,
+  local **2236497**. Complete selected/current address collapses; Edit/new/incomplete
+  expands. Owned selection, explicit named saves/removals,20-address bound, revision/
+  lost-ack recovery, in-memory drafts and account isolation. Profile/order snapshots,
+  checkout/payment authorization/totals and provider/MON code retained.
+- Proposed **102**, only20261028210000: one empty owned-address table/13 columns,
+  two functions/one RLS policy/two indexes, no backfill or old object/data changes.
+  Version absent across30 original worktrees and actual live101. Native PostgreSQL
+  preserves144 original projections/security/Auth/history; rollback restores101.
+  [Separate migration review](docs/checkout-address-book-migration-review.md).
+- 34 focused browser/12 native SQL-API checks/0skip,2 DB guards/6 runtime-ingress guards,
+  wrong-approval rejection, Node22 typecheck/build/diff PASS. Exact3783-entry archive,
+  secret scan,2697 retained bytes/all2804 local HTTP+SHA256 assets and4 compiled
+  unauthenticated API denials PASS. Fresh encrypted101 DB/full pg_restore and11
+  runtime-file byte/hash readbacks PASS; Merchant Inquiry key not read/collected.
+- Current Caddy blocks new API routes. Proposed ONE existing customer-access matcher
+  adds ONLY GET/POST addresses collection and PUT/DELETE UUID item paths. Real
+  adapter PASS: one expression/two generated listener copies; other adapted fields
+  unchanged. Verified CanReload=no/adminOFF/exact process; ONE SIGUSR1 proposed,
+  zero Caddy restarts. No Caddy/runtime/unit/provider changes executed.
+- Fresh **22:03:52Riyadh read-only preflight PASS**: production615506cd7c047ca8/
+  schema101, sourcee47/PID68874; CARD/signup/Manual50/MON/original kill1 preserved.
+  MON22:00 automatic WARNING3, critical0/overdue-unverified2; COD/PDC outbound OFF.
+- Exact candidate **a7fa8e8e3b7870d4**, source2236497, schema101→102;
+  one app restart + one narrow Caddyfile write/SIGUSR1 only after NEW exact approval.
+  Seal **c86b92dced4747116223b0dba50ecea9a255a328130aaf5f9e8dc0db9c80ac2b**, expiry **29Oct02:00:25.349Riyadh**.
+  [Full scoped release/approval](docs/checkout-address-book-release-review.md).
+  No owner approval/apply attempt/migration/restart/signal/provider/customer email.
+- Old single-address6922b6d is **REJECTED_SCOPE_CHANGED**; its acceptedFALSE/
+  statementNULL owner receipt prevents approve/apply. c82 and all consumed releases
+  remain non-replayable. Future102 release also requires requalifying held COD
+  activation bindings before any new separate approval; provider units still missing.
+- All30 original HEAD/status inventories/5623 pending-file hashes preserved except
+  authorized main docs. No merge/rebase/reset/cleanup/push. Original4a/fb/location484
+  and every DTR-33/STOR-01/deferred test, paid/unverified attempt and shipment barrier
+  retained. Hosted migration/ingress/customer acceptance is separate and pending.
+- **ONE NEXT OWNER ACTION:** review the separate102 SQL and give the exact combined
+  address-book/schema/app/four-route approval only if accepted. Fresh mandatory
+  guards, all-public-assets postflight and next automatic MON remain required;
+  no retry/rollback or replay. Then LOC-01 checkout AND profile, then navbar; preserve
+  Task1→2→3 and the E125 latest provider/email/SEO/deferred queue. Do not deploy old96.
+
+---
+
+# E125 — Codex2 saved-address takeover; schema101 packet qualified — 2026-10-28
+
+- **OD-20261028-CX-TAKEOVER-01**: one feature at a time. Task1 CX-ADDR-01 summary,
+  Task2 LOC-01 offline searchable governorate/city in checkout AND profile,
+  Task3 CX-NAV-01 navbar name. Then COD only after written PDC units/workflow and
+  separate approval; Paymob, remaining PDC, transactional emails, SEO/legacy URLs,
+  remaining Dashboard/history/STOR-01 and ALL deferred work. This supersedes the
+  historical E122 email-before-Paymob queue without dropping any requirement.
+- Fresh20:37Riyadh READ-ONLY PREFLIGHT PASS: production615506cd7c047ca8/schema101,
+  sourcee47e9a7/PID68874. CARD/signup/Manual50/MON/original kill1 retained;
+  MON20:35 automatic WARNING3, critical payment/ownership0, overdue-unverified2.
+  COD/PDC outbound remain OFF. c82 is CONSUMED_COMPLETE; no replay, provider action,
+  migration, restart, business write or Git push. Other COD activation seals remain
+  HELD and cannot be used after expiry or outside their exact scopes.
+- Reused4a3cd25's exact checkout page atop deployede47e9a7 in additive30th source
+  `../checkout-address-release-20261028/source`, branch
+  `local/checkout-address-schema101-20261028`, local commit **fb824d4**. Existing
+  focused test reads this candidate's CSS. Server/migrations/payment/shipping/
+  authorization/translations/configuration/MON code unchanged. Original29 HEADs,
+  statuses and2918 pending-file hashes matched before these continuity updates.
+- **SINGLE-ADDRESS RELEASE QUALIFIED / FULL MULTIPLE-ADDRESS REQUIREMENT BLOCKED**:
+  schema101 has one profile address, no address book. Existing summary does not
+  supply multiple saved-address selection. Owner question pending; CX-ADDR-02
+  records the gap. Do not imply its acceptance or silently add/renumber a migration.
+- 16 focused actual EN/AR desktop/mobile/light/dark/RTL address browser checks/0skip,
+  typecheck/build/diff,5 release guards and wrong-approval rejection PASS. Exact
+  3778-entry archive/secret scan,2697 retained hashes and all2804 local HTTP+hash
+  assets PASS. Established7 generated registry entries repaired locally; initial
+  artifacts preserved. No broad provider/payment/Auth tests repeated or deferrals closed.
+- Narrow candidate **0951137d1d85bfe4/schema101**, migration0, one app restart only
+  after NEW separate exact approval that explicitly defers the address book.
+  Seal6922b6d… expires **29Oct00:36:37.927Riyadh**. No approval/intent/deployment.
+  [Scope gap, exact source/archive/approval](docs/checkout-address-summary-approval.md).
+  Mandatory fresh guards, all-public-assets postflight and next automatic MON;
+  no retry/rollback, no new emergency budget. Hosted owner acceptance stays pending.
+- **ONE NEXT OWNER ACTION:** choose the smaller release using its exact scoped
+  approval (which explicitly defers CX-ADDR-02), or require the address book now.
+  Full Task1 is BLOCKED until that choice; no Task2 implementation bundled.
+  Preserve location4843754/historical96 and derive its safe numbering only from
+  actual then-current repository/production history during LOC-01 qualification.
+
+---
+
+# E124 — Inactive COD/PDC schema101 DEPLOYED; COD stays OFF — 2026-10-28
+
+- Owner's exact **c82a5a…** approval accepted before expiry, executed once and
+  **CONSUMED_COMPLETE**. Current **615506cd7c047ca8/schema101**, sourcee47e9a7.
+  Only28200000 migration;20:05:32Riyadh commit preserves145 original projections,
+  Auth/history/ACL/RLS and CARD data.20:05:59 cutover, exactly1 app restart.
+- **DEPLOYED / TECHNICAL POSTFLIGHT PASS / OWNER ACCEPTANCE PENDING**:
+  all2698 public HTTP+SHA256 assets, exact installed inventory/certificate/schema,
+  protected pricing/payment configuration and10 anonymous routes PASS.
+  Next automatic MON20:10:05 report complete/WARNING3, critical mismatches/
+  duplicate/ownership0, overdue-unverified2; final installed match20:10:32Riyadh.
+  Existing CARD/Manual50/signup/MON/original emergency kill1 remain available.
+- **COD OFF / PDC booking OFF**; default-manual collector and narrow staff-COD
+  gate remain OFF. No runtime/Caddy/credential/business/payment/provider/email
+  change or fake order. No provider pickup, booking, receipt or Treasury transaction.
+  29 worktree HEAD/status inventories matched before these continuity updates;
+  no Git push/merge/reset/cleanup. Never replay the consumed c82 operator.
+- [Deployment receipt](docs/cod-pdc-schema101-deployment-receipt.md).
+  Independent73e5df activation remains HELD/unapproved/unexecuted on written PDC
+  amount-unit proof: `cod=200.35 means EGP200.35`. Its deployment/public-assets/
+  next-MON prerequisite now passes; expiry remains28Oct23:39:26.530Riyadh.
+  Old972c77 remains HELD and non-replayable; no new provider investigation.
+- Saved-address summary4a3cd25 stays LOCAL PASS, NOT DEPLOYED. **Next customer task:**
+  carry its reviewed page change onto currente47/schema101 and qualify a guarded
+  app release; retain the COD bridge. Next feature LOC-01 offline searchable
+  checkout AND profile locations, then navbar, emails, Paymob, remaining PDC,
+  SEO/redirects/deferred work. Do not deploy the old schema100 source over101.
+
+---
+
+# E123 — Saved shipping summary LOCAL PASS; basic shopping continues — 2026-10-28
+
+- After E122's bounded external COD blocker, completed **CX-ADDR-01** locally on
+  independent29th branch **local/checkout-address-summary-20261028**, commit
+  **4a3cd25**, based on deployed-code1615993/schema100. No COD/PDC dependency.
+- Complete saved name/address/phone collapses; Edit expands/focuses; incomplete/new,
+  invalid phone/email/governorate and QA-marker addresses stay expanded. Existing
+  delivery selector stays visible. Edits stay in memory; validation expands fields;
+  loading is neutral and account changes clear the old summary. No profile save,
+  order/payment creation, new pricing, redesigned UI or live provider dependency.
+- **LOCAL PASS / NOT DEPLOYED**:16 actual EN/AR desktop/mobile/light/dark/RTL browser
+  checks/0skip, including editing/draft/delivery continuity and summary isolation;
+  typecheck/build/diff PASS. No repeated hosted Auth/owner-payment tests. Production
+  remains9c74cf4d2c22a267/schema100; zero app restarts/deployments/provider calls.
+- [Address review](docs/checkout-address-summary-review.md). Before publishing,
+  qualify against exact then-current source: if101 deploys first, carry this small
+  reviewed change forward without reverting the COD bridge. No blind branch merge.
+  **NEXT customer feature: LOC-01** searchable governorate/city in checkout AND
+  /account/profile using latest offline mapping/preserved4843754; no live PDC calls.
+- E122 inactive deployment approval remains READY until23:39:26.530Riyadh; separate
+  COD activation is HELD on written provider unit proof plus successful101 postflight.
+  Never replay972c77. Preserve CARD, Manual50, MON, original kill1, deferred tests,
+  every old order/payment/provider reference and both accounts' work.
+
+---
+
+# E122 — Inactive schema101 packet READY; independent activation BLOCKED — 2026-10-28
+
+- Owner **OD-20261028-SHOP-01**: finish basic shopping urgently; isolate COD/PDC
+  external blockers and move to checkout. Exact queue after COD: saved address →
+  offline searchable locations checkout AND profile → navbar name → transactional
+  emails → Paymob recovery/reconciliation → remaining PDC → SEO/redirects/deferred.
+  Emails now precede Paymob. Preserve every unfinished task, branch and receipt.
+- Supplied PDC guide section4.3/page3 confirms `shipments[].cod` number/cash amount,
+  separate declaredValue. SHA8f2f5ae… verified; **currency/major-versus-minor units are
+  not specified**. Written confirmation `cod=200.35 means EGP200.35` is the exact
+  external activation blocker. Old historical shipments were owner-managed manually,
+  not API unit proof. No new provider call/booking/retry/support message; no repeated
+  investigation. Local fractional/discounted total agreement passes, not provider acceptance.
+- **INACTIVE DEPLOYMENT READY / NOT APPROVED.** Candidate615506cd7c047ca8, source
+  **e47e9a7480a9cdcf855e9c003b5b01c085084a55**, only migration28200000/schema100→101,
+  one app restart. Code adds explicit collector and defaultOFF staff-COD-only gate;
+  general PDC gate/lookup/tracking/recovery/reverse/automatic workers stay paused.
+  No app business configuration, runtime, provider, payment, pickup or email writes.
+  CARD/Manual50/MON/signups retained; COD/PDC cash/staff-COD remain OFF.
+- Existing64 native checks retained without broad repeats;13 scoped native/amount
+  checks,2 DB-operator guards,5 runtime guards, fresh typecheck/build PASS. Exact101
+  footprint native139/live145 protected projections, Auth/history/ACL/RLS preserved.
+  Fresh encrypted100 DB full pg_restore and11 runtime-file readbacks PASS.
+  Exact3672-entry archive/readback/secret scan/all2698 local HTTP+hash assets PASS;
+  2591 retained immutable assets preserved. Existing7-entry serving-registry repair
+  qualified locally; failed local artifacts retained. No production asset change.
+- Fresh19:40Riyadh sealed preflight: **9c74cf4d2c22a267/schema100**, CARD live, COD OFF,
+  protected settings unchanged; MON enabled/active/waiting,19:40:05 report WARNING3,
+  critical0/overdue-unverified2, original emergency kill1 unused. No provider outcome
+  inferred. Earlier98-only auxiliary health guard corrected locally to current100;
+  failed preflight/draft seals retained, none approved or executed.
+- [Exact deployment and independent activation review](docs/cod-pdc-schema101-deployment-review.md).
+  Deployment **c82a5a516edca3027b5c36391dee7ebc45b7f03223fea5cd2231436c65e8501f** READY.
+  Independent activation **73e5df08599cb2f7e7016e8ef7e328f439099f907dbb8ec18ff181b071c3f671**
+  CONDITIONAL/HELD: refuses missing PDC source-hashed owner-verified unit proof and
+  requires exact inactive deployment/all-public-assets/next-MON PASS first. Both
+  expire **28Oct23:39:26.530Riyadh /20:39:26.530Z**. No approval/intent exists.
+  Held972c77 and every consumed predecessor remain non-replayable. No auto retry/rollback.
+- Only future activation may set fee50, selected Manual collection/PDC collector,
+  PDC COD capability, Beta CARD+CASH and narrow NUXT_PDC_MANUAL_COD_ENABLED; general
+  PDC gates stay FALSE. Operator makes no booking, pickup, order, charge or cash/
+  Treasury transaction. Customer total includes fees/discounts; collection and full
+  actual remittance remain separate verified staff actions. Original kill1 retained.
+- COD/PDC preparation milestone is finished, activation externally BLOCKED. Work
+  moved to CX-ADDR-01 on a separate schema100-compatible29th branch. Original worktrees
+  preserved; COD branch has two local commits c5c0e4a/e47e9a7,
+  no Git push/merge/reset/cleanup. DTR-33/STOR-01/location4843754/paid records kept.
+
+---
+
+# E121 — PDC collects COD; old activation seal HELD; local bridge PASS — 2026-10-28
+
+- **OD-20261028-COD-02**: unpaid COD → staff approval/packing → staff requests PDC
+  from the **Nuxt Dashboard** → PDC delivery/customer collection → verified customer
+  receipt → later actual Treasury receipt. Owner confirms **PDC remits the FULL
+  collected amount**. No external-portal workaround or automatic checkout booking.
+  Customer fees remain **EGP50 delivery + EGP50 COD**, total merchandise+EGP100.
+- Exact972c77… approval RECEIVED with changed scope; **HELD_SCOPE_CHANGED / NOT
+  ACCEPTED FOR EXECUTION**. Original seal binds employees collecting, zero app/SQL
+  changes and PDC OFF. Its private owner receipt has acceptedFALSE/sealNULL; apply
+  refuses it. No execution intent, settings write, restart or provider request.
+  Never overwrite/replay; no replacement activation seal/expiry is issued yet.
+- Current **9c74cf4d2c22a267/schema100 / CARD LIVE / COD OFF**. Fresh18:36Riyadh
+  read-only integrity/privacy PASS. MON enabled/active/waiting; automatic18:35:05
+  report complete/WARNING3, critical0; overdue-unverified2 and original kill1 kept.
+  PDC is_enabledTRUE but cod_enabledFALSE/automatic labelsFALSE/outbound gatesOFF.
+  Pickup/credential presence/product cache pass;411 cached cities,382 mappings,
+  381 in cache. No actual COD/provider outcome inferred.
+- Genuine production gaps confirmed: Manual checkout does not expose PDC booking;
+  PDC guard requires PDC-selected company and serialized allocations; manual-AWB
+  fallback requires prepaid allocated stock. Six native diagnostic checks PASS.
+- Additive28th worktree **local/cod-pdc-dashboard-20261028**, HEAD1615993 with local
+  uncommitted correction, preserves all27 originals. Proposed migration101
+  **20261028200000_manual_cod_pdc_dispatch.sql**: explicit defaultMANUAL collector,
+  optional PDC selection in existing EN/AR Shipping form, offline destination/COD
+  checks before accepting PDC-collected COD, ordinary untracked packing support,
+  existing Dashboard booking card and ready-to-deliver button guard. CARD behavior,
+  quote/order fees, RBAC/RLS, actual scans/video, original REF/AWB and no-rebooking
+  barriers retained. Automatic labels remain OFF. No fake stock or payment state.
+- **LOCAL PASS ONLY**:64 native SQL/API/CARD/COD/cash/PDC-mock regressions/0skip;
+  typecheck/build/diff PASS. Exact100→101 footprint:1 default-manual column,
+  1 constraint,2 private function bodies;139 native original projections preserved,
+  ACL/ownership/RLS unchanged and rollback restored100. Mock requests are local,
+  not provider acceptance. Hosted COD/collection/remittance remain NOT EXERCISED.
+- [Current scoped review](docs/cod-pdc-dashboard-review.md). NEXT within CX-COD-01:
+  qualify a replacement guarded source/archive/schema101 deployment and precise
+  COD/PDC activation packet. Old runtime-only seal cannot authorize these changes.
+  Bind actual source, recovery/retained assets, explicit collector/capabilities,
+  staff-only outbound scope, automaticOFF and original kill1; then new exact approval.
+- No Paymob investigation/external PDC investigation, real order/charge/collection,
+  cash/Treasury production write, deployment, migration, credential change or push.
+  DTR-33/STOR-01/all deferrals, paid/unverified attempts and location4843754 retained.
+  After COD keep exact queue: saved address → checkout AND profile locations → navbar
+  → Paymob → remaining PDC operations → emails → SEO/GSC/redirects → deferred work.
+
+---
+
+# E120 — Codex1 takeover; COD activation READY, still OFF — 2026-10-28
+
+- Owner decision **OD-20261028-COD-01** supersedes the E119 queue and zero-COD-fee
+  proposal: employees arrange delivery, collect cash and confirm actual receipt.
+  Use existing Manual delivery/28 destination labels. **EGP50 delivery + EGP50 COD
+  collection = merchandise + EGP100**, fully reviewed before confirmation.
+- **COD ACTIVATION READY / NOT APPROVED / NOT ACTIVATED.** Current production
+  **9c74cf4d2c22a267/schema100**, source3911124; fresh18:05Riyadh sealed read-only
+  check PASS. Cash setting TRUE/fee0, Manual collection FALSE, runtime CARD-only.
+  No application redeployment/migration needed. Proposed changes: fee0→50,
+  Manual collection FALSE→TRUE, existing runtime policy adds CARD/CASH; exactly
+  **one app restart**. Existing shipping/payment-method generations each advance1.
+- 66 native SQL/API/config/CARD/cash/cancellation checks PASS/0skip;18 actual EN/AR
+  desktop1440/mobile390/light/dark/RTL browser checks PASS;5 runtime/approval/budget
+  guards and22 monitor regressions PASS. Fee drift fails closed; COD creates no
+  Paymob attempt, fake stock or PDC job. Ordinary untracked sales retained.
+- Displayed COD state remains **Placed / Awaiting COD collection**, never prepaid.
+  Authorized Orders staff record actual cash only after delivered/completed;
+  Treasury permission additionally required for separate full-receipt remittance.
+  Duplicate/lost-response recovery, financial review and cancellation guards stay.
+  No old CARD method conversion, Pay Again or existing-order repricing.
+- MON enabled/active/waiting;18:00:06Riyadh complete automatic report, WARNING3
+  (2 overdue/1 terminal provider-unverified), critical integrity/ownership0.
+  Original emergency purchasing-close budget1 remains unused and explicitly bound
+  to the proposed policy; callbacks retained. PDC automatic/outbound stays paused.
+- [Exact review/approval](docs/cod-activation-review.md). Seal **972c77a4c3f3fbe30fc8059f7c4fe06495a372458cc5c797cc5beef51d9f0d52**;
+  expiry **28 October2026,22:04:06.072Riyadh / 19:04:06.072Z**. No approval receipt,
+  execution intent, production settings write or restart. Drift/expiry/uncertain
+  checkpoint means STOP; no replay, automatic retry/rollback or extra restart.
+- Main6cfaadc and all27 worktrees retained; deployed-source worktree1615993 has
+  code matching3911124. Original65eed27 and location4843754 untouched. Remote
+  main read-only ls-remote matches6cfaadc; no fetch/ref mutation/merge/reset/push.
+  DTR-33/STOR-01/all deferred tests, successful payments and uncertain attempts kept.
+  Hosted COD/actual employee receipt/Treasury acceptance remains NOT EXERCISED.
+- NEXT: separate exact sealed COD activation approval only. After activation use
+  this exact order, ONE feature at a time: **1 CX-ADDR-01** collapsed saved shipping
+  address; **2 LOC-01** searchable governorate/city at checkout AND /account/profile,
+  existing offline mapping/preserved branch; **3 CX-NAV-01** authenticated navbar
+  username; **4 CX-PAY-01** Merchant Inquiry/safe Pay Again/method change;
+  **5 SHIP-07/08/10** PDC creation/tracking/shipping; **6 CX-EMAIL-01** transactional
+  email; **7 MIG-04** Google SEO/legacy redirects/Search Console; **8** remaining
+  admin/history/storage/deferred tests. Paymob/PDC are the first integration
+  priorities after the customer fixes. Do not restart either investigation now.
+
+---
+
+# E119 — COD inactive deployment COMPLETE; production9c74/schema100 — 2026-10-28
+
+- Owner exacte3176505… approval recorded once and **CONSUMED COMPLETE**. Fresh guarded
+  preflight passed; migrations99/100 committed17:25:48.719Riyadh, approved app switch
+  passed17:26:11.200. Exactly1 app restart. Production **9c74cf4d2c22a267/schema100**,
+  source3911124; all98 previous history entries and145 original projections plus
+  Auth/history/ACL/RLS/expected schema footprint preserved. Never rerun this operator.
+- **DEPLOYED INACTIVE / TECHNICAL POSTFLIGHT PASS / COD OFF.** Zero Manual cash
+  collection flags enabled; runtime Beta remains CARD-only. Existing cash toggle
+  TRUE/fee0, Manual50 and inventory_tracking_required=FALSE unchanged. Normal untracked
+  COD code is present; no stock is fabricated or required to be recorded for opening.
+  Existing employee collection is the business premise, not activation authority.
+- All3566 installed entries/certificate/running-directory checks PASS; every2592
+  browser asset public HTTP/hash PASS and2479 retained hashes preserved. Same runtime,
+  Caddy/units/config/credentials and Caddy process; callbacks retained, original
+  purchasing kill budget1 unused/rebound. No MON lifecycle or report/dedup reset.
+- EN/AR public entry/privacy guards PASS; correct signup route is login?mode=signup.
+  Auxiliary observer's unsupported /signup assumption was corrected locally from
+  source/prior receipt; failed evidence kept. No application correction/extra restart,
+  sealed guard bypass, deployment retry or automatic rollback occurred.
+- 17:30:04Riyadh automatic MON report succeeded AFTER cutover; enabled/active/waiting,
+  WARNING3 unchanged/emailOFF. Critical payment amount/attempt mismatch, unreconciled
+  signed success, duplicate success and ownership0; overdue provider-unverified2.
+  Original2649/3149 uncertainty and successful payment/fulfillment records retained.
+- [Deployment receipt](docs/cod-inactive-deployment-receipt.md); private completion,
+  approval/intent/migration/switch/postflight receipts exist. All27 opening HEADs and
+  pending-file inventories preserved before continuity updates;65eed27 and separate
+  location4843754 untouched. DTR-33/STOR-01/all original deferrals retained.
+- No real order/payment/refund/email, Paymob inquiry/PDC call/booking/activation,
+  business/settings/stock write, Caddy/runtime/unit edit, Git push or public COD
+  activation. No hosted COD/employee cash/owner acceptance claimed; cart owner review
+  remains pending.95 native/46 browser local qualification retained without reruns.
+- NEXT customer feature: transactional order/payment emails; then collapsed saved
+  address, offline checkout AND profile locations, navbar username. Preserve one
+  feature at a time; no diversion into Paymob/PDC. COD controlled-order acceptance
+  and cash coverage/fee/collection/Treasury activation need later separate exact
+  approval. Deployment authority is consumed; no new activation seal is issued.
+
+---
+
+# E118 — Untracked COD qualified; sealed inactive deployment READY — 2026-10-28
+
+- Owner selects existing sell-without-recorded-stock behavior for normal COD,
+  confirms employees collect cash, wants normal purchase labels and manual product
+  deactivation. Recording quantities is not an opening prerequisite. E116's business
+  blocker is corrected:223 published normal priced products/237 active models have
+  zero recorded stock;49 recorded units belong solely to draft/excluded TESTproduct2026.
+  Existing owner-confirmed physical catalog availability remains the premise.
+- Preserve65eed27 and all26 original worktrees. New27th source branch
+  local/cod-untracked-readiness-20261028 at **3911124** adds migration100 atop99:
+  existing inventory_tracking_required=FALSE allows ordinary COD without fabricated
+  stock; TRUE retains physical allocation. Actual scans/video, cash/Treasury ledger,
+  ownership, duplicate/receipt recovery, cancellation and CARD safeguards retained.
+  No old CARD-to-COD conversion, Pay Again, stock claims or new availability copy.
+- **INACTIVE DEPLOYMENT READY / NOT DEPLOYED / COD OFF.** Candidate9c74cf4d2c22a267,
+  exact schema98→100 (only two named migrations), one app switch/restart. Existing
+  collection capability defaultsFALSE and runtime Beta remains CARD-only. No setting,
+  runtime/Caddy/unit/credential/MON/provider/email/order/payment change authorized.
+- 95 focused native/SQL/CARD/cash/monitor/cart checks +46 browser/policy PASS/0skip;
+  native schema footprint/rollback and live98 definition match PASS; typecheck/build,
+  secret scan/archive readback and every2592 browser asset HTTP/hash PASS. All2479
+  retained assets preserved;7 missing Nitro serving entries repaired only locally
+  using existing guarded helper. Initial failed packaging evidence retained.
+- Fresh encrypted DB full pg_restore readback and11 runtime files authenticated/hash
+  readback PASS. Sealed state guards145 original projections plus Auth/history/ACL/RLS.
+  No production-data restore or hosted COD/actual collection acceptance claimed.
+- 17:15Riyadh fresh read-only preflight: **42a61d03f3aba831/schema98**, CARD/Manual50/
+  signup maintained, cash unavailable. MON enabled/active/waiting with17:15 report,
+  WARNING3 (2overdue unverified/1terminal unverified), staff-attention2. Critical
+  mismatch/unreconciled signed success/duplicate/ownership0; original kill1 retained.
+- [Exact inactive review/approval](docs/cod-inactive-deployment-review.md), seal
+  **e3176505e22006ea79a65540889c730921952d31fc009f9797f181c8ceffefd9**;
+  expires28Oct21:15:22.032Riyadh. No owner approval, execution intent, SQL application,
+  cutover or restart recorded. Single-use; stop on guard/transport/checkpoint mismatch;
+  no retry/automatic rollback. Migration commit followed by cutover stop requires
+  separate recovery approval. Original kill budget rebound; callbacks stay available.
+- Later activation must bind employee cash-collection coverage, existing EGP50 and
+  zero COD fee, receipt/Treasury responsibilities and controlled owner acceptance.
+  It is separate from inactive deployment. No PDC cash collection assumed.
+- NEXT: exact sealed inactive deployment approval only when owner chooses execution.
+  Next customer-facing feature preparation is transactional emails, then collapsed
+  address, offline checkout AND profile selectors, navbar username. Do not divert
+  into Paymob/PDC; they follow tasks1–5. Preserve unpaid2649/3149 evidence, successful
+  payments, PDC barriers, DTR-33/STOR-01/all deferrals/location source/shared work.
+
+---
+
+# E117 — COD business policy clarified; local extension in progress — 2026-10-28
+
+- Owner confirms existing employees collect COD and explicitly selects existing
+  sell-without-recorded-stock behavior for normal COD products. No warehouse census,
+  fake balances or mandatory procurement is required for opening. All active,
+  published normal positive-price products/models use normal purchase labels;
+  staff manually deactivate unavailable products. Keep genuine preorder/draft rules.
+- Read-only16:45Riyadh:42a61d03f3aba831/schema98 unchanged;223 published normal priced
+  products/237 active models have zero recorded product stock. Recorded49 units
+  belong solely to unpublished/Beta-excluded TESTproduct2026. This is not evidence
+  the commercial catalog lacks physical goods. E59 owner availability confirmation
+  and current inventory_tracking_required=FALSE remain the business premise.
+- Correction to E116: mandatory recorded stock was too restrictive for the owner's
+  established opening model. Native diagnosis7 checks PASS: CARD untracked works,
+  cash currently fails stock; enabling collection alone cannot change that policy.
+- MON enabled/active/waiting;16:45 report complete/WARNING3:2 overdue unverified,
+  1 terminal unverified. Critical mismatch/unreconciled-success/duplicate/ownership0.
+  No provider outcome inferred; no Paymob/PDC inquiry or operational change.
+- Preserve65eed27 byte-for-byte in its existing worktree. New additive27th worktree
+  `../cod-readiness-20261028/source`, branch local/cod-untracked-readiness-20261028,
+  extends the existing inventory policy locally. No new availability-to-order copy,
+  no automatic activation. Manual50/zero COD fee remain current settings, no edits.
+- Prepare focused SQL/cancellation/packing/cash/browser tests, then a sealed inactive
+  deployment only if qualified. Separate exact approval still required to execute;
+  later COD activation/real-order acceptance remain separate. No production changes.
+- Customer queue retained: emails, saved address, checkout/profile locations,
+  navbar; Paymob/PDC only afterward. DTR-33/STOR-01/all prior work retained.
+
+---
+
+# E116 — Codex2 takeover; COD LOCAL PASS; owner queue replaced — 2026-10-28
+
+- Read AGENTS/README/current roadmap and both handoffs. Audited25 worktrees,
+  main6cfaadc, deployed-source d69d68d and Codex1 pending files. No prior work
+  overwritten/discarded; additive26th worktree `../cod-preparation-20261028/source`
+  on `local/cod-preparation-20261028`, implementation **65eed27** from deployed d69.
+- Fresh read-only16:19Riyadh confirms **42a61d03f3aba831/schema98**, CARD/Manual50
+  live, MON enabled/active/waiting with16:15 report/WARNING3 and original kill1.
+  CX-CART-01 hosted PASS/37 direct-add; owner acceptance pending. SignupOPEN;
+  couponsOFF/PDCpaused/PayAgainOFF/application-emailOFF preserved.
+- COD remains OFF through the Beta CARD-only gate, although Dashboard cash toggle
+  is alreadyTRUE/fee0. Recorded stock is absent: **0 of223 published normal products
+  meet the positive recorded-stock/active-warehouse gate**. Do not invent stock.
+- **CX-COD-01 LOCAL IMPLEMENTATION PASS / NOT DEPLOYED / NOT ACTIVATION READY.**
+  Optional runtime methods defaultCARD; new defaultFALSE Manual-only cash capability,
+  existing Dashboard settings/shipping checkbox; locked SQL eligibility/coverage/
+  inventory/confirmed ownership; truthful Placed/Awaiting COD collection and reused
+  immutable cash/Treasury ledger. No Paymob charge for cash. Existing CARD safeguards
+  retained. Unfulfilled unpaid COD cancellation now returns original stock once;
+  collected/shipped/packed/uncertain cases require review. No untracked COD allowance.
+- One new migration `20261028170000_manual_cod_eligibility.sql` only; original98
+  and separate location migration/source unchanged. Migration-first/app-second
+  release required; no SQL execution or deployment occurred. Existing receipts
+  retain recovery under disabled cash/delivery flags. No payment-method-change route.
+- Focused runs49 PASS, cash/CARD/monitor regressions62 PASS, final additional32 PASS
+  (overlapping; native PostgreSQL17.11 + fixture Auth/transport; actual Vue browsers).
+  EN/AR desktop1440/mobile390/light/dark/RTL checkout+confirmation and CARD-only Beta
+  passed; typecheck/build/diff PASS. Hosted COD/physical cash acceptance NOT exercised.
+  [Review and activation blockers](docs/manual-cod-preparation-review.md).
+- Exact owner work order supersedes E113–115: **1 COD;2 transactional emails;
+  3 collapsed saved checkout address;4 LOC-01 validated offline selectors at checkout
+  AND profile;5 navbar username;6 Paymob inquiry/retry/method changes/abandonment;
+  7 PDC creation/configuration/tracking/operations;8 MIG-04 SEO/GSC/redirects/sitemap/
+  canonical/404;9 admin/WooCommerce data migration/STOR-01/other deferred work.**
+  One feature at a time. Tasks2–5 do not wait for Merchant Inquiry. After1–5,
+  Paymob/PDC become immediate top integrations. No new inquiry now.
+- Preserve successful payments, unpaid2649/3149 provider-UNVERIFIED, Merchant API Key/
+  inquiry evidence, original PDC dispatch barrier, MON/kill, DTR-33/STOR-01/all deferred
+  tests/location-reference/frozen sources. No email delivery assumed. Zero production
+  writes/restarts/provider calls/emails/activation/Git pushes. Consumed operators stay
+  consumed. Current main application differs from active lineage; use the COD branch.
+- NEXT: owner identifies genuine received COD stock and confirms Manual collection
+  responsibility/coverage/fees. No exact approval packet is issued. A fresh sealed
+  inactive migration/app deployment packet is still required; deployment and later
+  controlled-order/public COD activation each need separate exact approval. Do not
+  start another feature or silently weaken stock to make an acceptance order possible.
+
+---
+
 # E115 — Homepage direct Add to Cart DEPLOYED; hosted postflight PASS — 2026-10-28
 
 - Owner exact babea828… approval executed ONCE and is CONSUMED COMPLETE. Current

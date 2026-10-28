@@ -1,3 +1,92 @@
+## E128 — one-field recovery complete;31 worktrees preserved — 2026-10-28
+
+All31 opening HEAD/status inventories/8334 pending-file hashes matched before continuity updates. Source2236497/main6cfaadc unchanged. Recovery17c changes one target config field only; no app restart/signal/SQL/provider action, push/merge/rebase/reset/cleanup or source edit. Parentc86 consumed-stop retained. Main/current source receive the completion receipt and matching handoffs; original location484 and all other worktrees/deferrals remain intact. [Receipt](checkout-address-book-monitor-recovery-receipt.md).
+
+## E127 — approved address-book attempt stopped;31 worktrees preserved — 2026-10-28
+
+All31 opening HEAD/status inventories and8330 pending-file hashes match before continuity updates. Main6cfaadc and application source2236497 unchanged. Appa7fa8e8e/schema102 installed; c86 consumed-stop; no retry/reset/rollback/signal/push or source edit after stop. Recovery is isolated in checkout-address-book-monitor-recovery-20261028 with no new worktree; one config-hash write awaits NEW approval. All sources/old location484/deferred registers retained. [Stop receipt](checkout-address-book-deployment-stop-receipt.md).
+
+## E126 — full address book isolated;31 worktrees — 2026-10-28
+
+Original30 HEAD/status inventories and5623 pending-file hashes match except authorized main continuity docs. Additive31st worktree checkout-address-book-20261028/source, branch local/checkout-address-book-20261028, local2236497 based onfb824d4/e47e9a7. Original4a/fb/location484 and all source/migration/deferred work remain intact. Main6cfaadc unchanged; no merge/rebase/reset/cleanup/push. Narrow6922 packet records an owner scope rejection, not execution. [Full qualification/approval](checkout-address-book-release-review.md); SQL102 is proposed, live stays101.
+
+## E125 — checkout schema101 continuity;30 worktrees — 2026-10-28
+
+Original29 HEAD/status inventories and2918 pending-file hashes matched before continuity updates. Additive30th worktree checkout-address-release-20261028/source, branch local/checkout-address-schema101-20261028, localfb824d4 directly on deployed e47e9a7. Original4a3cd25 and4843754 remain intact. Only original checkout page and existing focused test carried forward; server/migrations/config/MON unchanged. Main remains6cfaadc. No push/merge/reset/rebase/cleanup. [Qualification and scope gap](checkout-address-summary-approval.md).
+
+## E124 — approved inactive101 release;29 worktrees preserved — 2026-10-28
+
+Opening29 HEADs and status inventories matched exactly after cutover and before
+continuity updates. Main remains6cfaadc; deployed app source is isolatede47e9a7.
+Address4a3cd25/location4843754 and every pending source/deferred test are retained.
+Only main/COD/address continuity docs update. No push/merge/reset/cleanup.
+c82 is consumed; no COD/PDC activation. [Receipt](cod-pdc-schema101-deployment-receipt.md).
+
+## E123/E122 — isolated inactive release and saved-address work — 2026-10-28
+
+Opening28 worktrees are preserved. The designated COD branch contains local
+commits c5c0e4a/e47e9a7; its inactive schema101 packet is READY but not approved
+or deployed. Additive29th worktree `../checkout-address-summary-20261028/source`
+contains local4a3cd25 with16 browser checks/typecheck/build PASS, not deployed.
+Main and both active sources receive continuity updates; unrelated worktrees
+and location4843754 remain unchanged. No push, merge, reset, cleanup or provider
+operation. Original972c77 approval stays HELD; new independent c82/73 seals
+expire28Oct23:39:26.530Riyadh; activation lacks written PDC unit proof.
+[Release review](cod-pdc-schema101-deployment-review.md);
+[address review](checkout-address-summary-review.md).
+
+## E121 — isolated Dashboard PDC COD bridge — 2026-10-28
+
+All27 original worktree HEADs/statuses retained apart from authorized main continuity
+updates. Additive28th worktree `../cod-pdc-dashboard-20261028/source` on
+`local/cod-pdc-dashboard-20261028`, base1615993, holds the local schema101 correction.
+Existing65eed27/location4843754 and frozen sources unchanged. No commit/push/merge/
+reset/cleanup. Original972c77 packet preserved with a non-executable held owner
+receipt; no accepted approval or execution intent. Source and main handoffs updated.
+[Current review](cod-pdc-dashboard-review.md).
+
+## E120 — Codex1 takeover; COD packet only — 2026-10-28
+
+All27 existing worktree HEADs retained. Main6cfaadc matches read-only remote main
+ls-remote; no fetch or ref mutation. COD readiness1615993 differs from deployed
+3911124 only in Markdown. Original65eed27 and location4843754 preserved.
+Additive private packet `../cod-activation-20261028` uses deployed code without
+editing any source worktree. Existing pending documentation was copied privately
+before additive continuity updates. No merge/reset/rebase/cleanup/push.
+[Activation review](cod-activation-review.md); separate approval remains pending.
+
+## E119 — inactive deployment completed; shared Git preserved — 2026-10-28
+
+All27 opening HEADs and pending-file inventories rechecked unchanged after execution
+and before authorized continuity updates. Main remains6cfaadc with existing docs work;
+active application is deployed3911124/archive9c74cf4d2c22a267/schema100 from the isolated
+COD source. Preserve65eed27 and location4843754. No app-source edit, merge/reset/
+rebase/cleanup/push occurred during deployment. Only main/current source handoffs and
+receipts update below; exact approval is consumed. [Receipt](cod-inactive-deployment-receipt.md).
+
+## E118 — business-compatible COD candidate and inactive seal — 2026-10-28
+
+All26 opening worktree HEADs and unrelated pending inventories are preserved.
+The original65eed27 implementation remains unchanged in cod-preparation/source.
+Additive27th worktree cod-readiness-20261028/source on
+local/cod-untracked-readiness-20261028 contains3911124 (untracked COD policy).
+Only main/current candidate handoffs and review docs are updated. No prior branch,
+location4843754, frozen source, deferred register or provider evidence changed.
+The candidate is not deployed; exact inactive approval is pending. No push/reset/
+merge/rebase/deletion occurred. [Current review](cod-inactive-deployment-review.md).
+
+## E116 — Codex2 takeover; COD source isolated — 2026-10-28
+
+Fresh read-only audit:25 opening worktrees,17 with pending files; main6cfaadc.
+Deployed42a61d03f3aba831/schema98 is sourced fromd69d68d. All25 opening HEADs and
+pending-file inventories rechecked unchanged before continuity edits. Additive26th
+worktree `../cod-preparation-20261028/source`, branch `local/cod-preparation-20261028`,
+implementation65eed27 fromd69d68d. No other branch or pending application work changed.
+Only main/current COD source receive new continuity/review documentation. Local COD
+commit only; no merge/rebase/reset/cleanup/push. Separate location4843754 remains
+unchanged. [COD review and exact owner queue](manual-cod-preparation-review.md).
+Historical inventories below are not current release or activation authority.
+
 ## E64/E65 — partial deployment and asset recovery preparation
 
 All135 frozen paths/14 original contexts and separate96 rechecked unchanged. Main

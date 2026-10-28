@@ -1,3 +1,25 @@
+> 2026-10-28 E128: Address book a7fa8e8e/schema102 passed technical closeout. Approved MON recovery is consumed and complete. The automatic 23:20 scan returned three existing warnings and zero critical alerts. CARD, Manual EGP50 and signup remain available; COD and PDC booking remain off. Recovery added no restart, signal or migration. [Receipt](docs/checkout-address-book-monitor-recovery-receipt.md). Owner checkout review is pending; LOC-01 follows. The original deployment remains consumed-stop. Never replay either packet.
+
+> 2026-10-28 E127: address-book appa7fa8e8e/schema102 is LIVE; parent c86 CONSUMED_STOP after Caddy signal. No Caddy restart; all2804 public assets/privacy/CARD/Manual50 PASS. MON scans complete but CRITICAL on old expected Caddy hash. [Stop receipt](docs/checkout-address-book-deployment-stop-receipt.md); [one-field recovery approval](docs/checkout-address-book-monitor-recovery-review.md). No retry/redeploy/restart/migration.
+
+> 2026-10-28 E126: full saved-address summary/book LOCAL/PREFLIGHT PASS; candidatea7fa8e8e, proposed102 migration and four exact API ingress rules await separate approval. [SQL review](docs/checkout-address-book-migration-review.md), [release/approval](docs/checkout-address-book-release-review.md). Production615506/schema101 unchanged; CARD/Manual50/MON live, COD/PDC OFF. Single-address6922 scope rejected.
+
+> 2026-10-28 E125: saved-address summary reused on deployed schema101; narrow release0951137d LOCAL/PREFLIGHT PASS, not deployed. Multiple saved-address selection needs an address book: full requirement BLOCKED pending owner scope choice. [Exact conditional review/approval](docs/checkout-address-summary-approval.md). Production615506/schema101 unchanged; CARD/Manual50/MON live, COD/PDC OFF.
+
+> 2026-10-28 E124: inactive COD/PDC release615506cd7c047ca8/schema101 DEPLOYED; one restart,2698 public assets/next automatic MON PASS. CARD/Manual50 preserved; COD/PDC booking OFF. c82 approval consumed; independent73 activation blocked on written PDC amount units. [Receipt](docs/cod-pdc-schema101-deployment-receipt.md). Saved-address summary LOCAL PASS/not deployed; qualify it on current101 lineage next.
+
+> 2026-10-28 E123/E122: saved shipping summary LOCAL PASS (16 browser/typecheck/build), not deployed. Inactive schema101 release615506cd7c047ca8 READY for exact c82a5a… approval; COD activation73e5df… HELD on PDC amount-unit proof. [Approvals/scope/expiry](docs/cod-pdc-schema101-deployment-review.md); [address review](docs/checkout-address-summary-review.md). Current9c74/schema100/CARD live/COD OFF; no production changes.
+
+> 2026-10-28 E121: PDC collects COD and remits the full amount; staff book through the Nuxt Dashboard after approval/packing. Old972c77 activation approval HELD for scope mismatch. Minimal bridge LOCAL PASS (64 native/typecheck/build); production9c74/schema100/CARD live/COD OFF. [Current review](docs/cod-pdc-dashboard-review.md). No production or provider action.
+
+> 2026-10-28 E120: Codex1 takeover. COD ACTIVATION READY, still OFF on9c74/schema100. Proposed Manual delivery50 + COD fee50; one runtime restart, no redeployment. [Exact sealed approval/expiry](docs/cod-activation-review.md). After COD: saved address → checkout/profile locations → navbar → Paymob → PDC → emails → SEO → deferred work.
+
+> 2026-10-28 E119: COD code deployed INACTIVE as9c74cf4d2c22a267/schema100. CARD/Manual50 preserved; COD remains OFF. One app restart;2592 public asset checks and next automatic MON report PASS, original kill1 retained. Approval consumed. [Receipt](docs/cod-inactive-deployment-receipt.md). Transactional emails are next.
+
+> 2026-10-28 E118: Normal untracked COD3911124 qualified; sealed inactive9c74cf4d2c22a267/schema100 READY for separate approval. Production remains42a61d/schema98/COD OFF. Employees collect cash after later activation; no stock census or availability-to-order copy. [Exact scoped review](docs/cod-inactive-deployment-review.md).
+
+> 2026-10-28 E116: Codex2 takeover verified42a61d03f3aba831/schema98 and MON active. COD implementation65eed27 is LOCAL PASS only; zero eligible recorded stock, Manual collection scope and sealed deployment/acceptance remain blockers. [COD review](docs/manual-cod-preparation-review.md). New queue: COD → emails → saved address → checkout/profile locations → navbar → Paymob → PDC → SEO → deferred work. No deployment or activation.
+
 > 2026-10-28 E115: Homepage direct Add to Cart DEPLOYED on42a61d03f3aba831/schema98; hosted postflight PASS, owner acceptance pending. Exactly1 app restart; CARD/Manual50/MON/kill1 preserved. Approval consumed. [Receipt](docs/homepage-direct-cart-receipt.md). Safe COD preparation is next, independent from Inquiry.
 
 > 2026-10-28 E114: Homepage direct Add to Cart LOCAL/PREFLIGHT PASS; candidate42a61d03f3aba831/schema98 awaits separate approval. Production acfc97 remains unchanged. One app restart if approved; MON/CARD/Manual50/kill1 preserved. [Review](docs/homepage-direct-cart-review.md), [approval](docs/homepage-direct-cart-approval.md).
