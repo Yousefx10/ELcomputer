@@ -1,3 +1,27 @@
+## E136 — email preparation isolated; original33 worktrees retained — 2026-10-29
+
+Opening33-worktree inventory retained14054 pending-file hashes; all33 original HEADs/status inventories and14049 unrelated pending-file hashes match after authorized continuity exclusions. Additive34th `../customer-order-emails-20261029/source` on local/customer-order-emails-20261029 is based directly on deployed8d75404, with local444c8fd containing only five email code/migration/test files. No old HEAD or application file changed; mainb760a25 and all Codex1/Codex2/LOC/COD/Paymob work remain. Only main/new-source continuity docs and preparation report update. No push/merge/reset/rebase/cleanup. Production9aa/schema103 unchanged, proposed104 only; provider drafts/consumed receipts unchanged. [Scope and minimum plan](customer-order-emails-preparation.md).
+
+## E135 — bounded audit complete;33 worktrees preserved — 2026-10-29
+
+Exact47410 approval consumed-complete with two provider requests and zero financial/SQL/production changes. All33 opening HEAD/status inventories and14046 unrelated pending-file hashes match before main continuity updates. Mainb760a25/deployed8d75404 and all Codex1/Codex2/LOC/COD/Paymob sources remain intact. Only main continuity/current review docs change; private operator receipts and updated unsent support draft are additive. No app code edit, test/build rerun, worktree creation, push/merge/reset/rebase/cleanup or prior packet replay. [Receipt](paymob-paid-control-shape-review.md).
+
+## E134 — expired approval preserved; read-only refresh isolated — 2026-10-29
+
+No provider audit executed: predecessor7dc4 expired, sealed files preserved and late-approval receipt rejected for execution. Additive private refresh packet creates no worktree; only its local operational warning guard changes to exact current4-warning bindings. Existing33 HEADs and unrelated pending files remain intact, including navbar review/receipt; mainb760a25/source8d75404 unchanged. Main continuity/review docs update together. No application code/test/build/release/push/merge/reset/rebase/cleanup or production write. Four new local warning-guard tests only; prior12 reused. [Current exact approval](paymob-paid-control-shape-review.md).
+
+## E133 — readiness preparation only;33 worktrees preserved — 2026-10-29
+
+All33 opening HEADs/status inventories and14046 unrelated pending-file hashes match after authorized main continuity exclusions. Opening inventory contained14051 pending-file hashes; five existing main continuity files may change additively. Main remainsb760a25, deployed source8d75404; every Codex1/Codex2/LOC/COD/Paymob source and pending change is retained. New private COD-readiness and Paymob-shape packets create no worktree or application code edit. Only main continuity docs and three new readiness/request/review documents change. No push/merge/reset/rebase/cleanup or production/provider action. Existing navbar receipt/review pending files remain byte-identical. [Readiness](cod-pdc-activation-readiness.md); [independent Paymob approval](paymob-paid-control-shape-review.md).
+
+## E132 — approved navbar deployment complete;33 worktrees preserved — 2026-10-29
+
+Exactbfb approval consumed-complete; current9aa61b64/schema103/source8d75404. All33 opening HEAD/status inventories and14049 pending-file hashes match before main/source continuity updates. Mainb760a25 and all source HEADs unchanged; old Codex1/Codex2/LOC/COD/Paymob work retained. No merge/rebase/reset/cleanup/push or code edit. One app restart,0 migrations/SQL/Caddy/runtime/MON/provider actions. [Receipt](navbar-customer-name-deployment-receipt.md).
+
+## E131 — navbar isolated; original32 worktrees preserved — 2026-10-29
+
+New33rd `../navbar-customer-name-20261029/source`, branch `local/navbar-customer-name-20261029`, source8d75404 directly on deployed34022ae. Original32 HEAD/status inventories/11127 pending-file hashes matched before main continuity updates; mainb760a25, LOC484/34022ae and all Codex1/Codex2 work retained. No merge/reset/rebase/cleanup/push. Production57a5/schema103 unchanged; application-only name release READY, not approved/deployed. [Scope and exact approval](navbar-customer-name-review.md).
+
 ## E130 — approved LOC-01 deployment complete;32 worktrees preserved — 2026-10-29
 
 Exact661 approval consumed-complete; source34022ae/current57a5b31d/schema103. All32 opening HEAD/status inventories and11132 pending-file hashes matched before main/source continuity updates. Main137cfd6 and every existing source HEAD unchanged; no merge/rebase/reset/cleanup/push or code edits. One approved migration/app restart, no Caddy/runtime/MON/provider action. Old location4843754 and Codex1/Codex2 work intact. [Receipt](loc01-delivery-locations-deployment-receipt.md).

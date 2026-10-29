@@ -1,3 +1,240 @@
+# E136 — customer order emails first increment LOCAL PASS/OFF — 2026-10-29
+
+- **OD-20261029-EMAIL-01 / CX-EMAIL-01:** owner promotes independent transactional
+  order email preparation while PDC/Paymob answers are pending. One feature only;
+  no provider support message, inquiry replay, real email or production change.
+  [Current capability, implementation and minimum plan](docs/customer-order-emails-preparation.md).
+- Both provider requests **READY TO FORWARD / NOT SENT**. PDC must confirm EGP200.35
+  `cod:200.35` versus20035, precision/rounding and production account/service scope.
+  Paymob must document complete one-order history/pagination/bindings and independent
+  checkout finality. Full final COD cash includes delivery50 +COD50. COD off/PDC paused;
+  both prior payment outcomes remain unverified, Pay Again off;47410 consumed/7dc expired.
+- Existing private Email foundation reused, not rebuilt: encrypted provider settings,
+  EN/AR escaped rendering, central idempotency/queue/attempts/final dispatch and Claims
+  delegation retained. Existing payment copy helper reused. Live Email revision0 is
+  OFF/unconfigured: no sender/template/application key/worker secret or message history.
+  Auth SMTP was NOT inspected, reused or extracted; no credential content exported.
+- Owner supplies proposed **ELCOMPUTER <info@elcomputer.net>** From identity only.
+  Keep this deployment configuration out of application logic. Sender/account/domain
+  verification remains unqualified. Owner confirms a private test-only mailbox; no send.
+- New34th isolated worktree `../customer-order-emails-20261029/source`, branch
+  local/customer-order-emails-20261029, **local444c8fd on deployed8d75404**. First increment:
+  durable order-received CARD/COD intent and coherent verified-live-CARD payment intent,
+  same central queue, immutable event/recipient/locale and atomic linkage. No history
+  backfill; disabled capture creates no sendable backlog. Duplicate/lost acknowledgement/
+  uncertain-send barriers and final order/payment/config guards retained. Other order
+  milestones/COD collection/remittance emails remain unfinished within CX-EMAIL-01.
+- **Proposed104 only**,20261029120000_customer_order_email_notifications.sql: two
+  service-only/RLS tables and scoped functions/trigger; provider/order capture defaultOFF.
+  Live history remains103/20261029010000. No migration applied or approval issued.
+  **31 focused checks PASS/0skip**, including native17.11 independent workers; typecheck/
+  build/diff PASS. Native migration/transaction rollback preserves142 old table data/
+  security projections and383 unrelated function contracts; original base bodies retained.
+  Six synthetic EN/AR previews prepared; no hosted/delivery/owner acceptance inferred.
+- Baseline103 reset coverage has three existing unknown location/address tables in
+  the local lab;104 adds no new unknown. Reset remains fail-closed, deletion/retention
+  protected. No broad reset repair or original deferred test closure in this feature.
+- **11:59Riyadh live check:**9aa61b64c2c5cf9f/schema103, app72557/Caddy26652/fixed files
+  unchanged; CARD/Manual50 live, Email/COD off. Automatic MON11:55:05.632 complete/
+  enabled/active, **WARNING5/critical0**: new overdue-unverified warning plus all four
+  original fingerprints retained (now2overdue/3terminal). Critical financial/signed-
+  success/duplicate/ownership counters0. No payment outcome inferred, warning reset,
+  retry or fulfillment action. Original unused kill budget1/historical journal gaps2.
+- Original33 HEADs/pending work preserved; mainb760a25 and every Codex1/Codex2 source
+  retained; only the additive source has a new local commit. No push/merge/reset/cleanup.
+  Owner address-book/location/navbar acceptance remains PENDING; DTR-33/STOR-01/all
+  deferred tests remain. No outbound send or exact deployment/activation approval now.
+- **ONE NEXT ACTION:** qualify the separate application email credential/sender privately.
+  From identity and a private test-only mailbox are confirmed, never hard-coded. A later
+  inactive104/app release and automation activation each need fresh exact approval.
+
+---
+
+# E135 — approved Paymob shape audit COMPLETE; history remains BLOCKED — 2026-10-29
+
+- Exact owner **47410c89…** approval recorded11:17:41.470Riyadh; exclusive single-use
+  intent11:17:56.579Riyadh. Executed once, **CONSUMED_COMPLETE / NEVER REPLAY**.
+  [Scope receipt and next contract](docs/paymob-paid-control-shape-review.md).
+  Prior7dc4 packet remains EXPIRED/NOT EXECUTED, never transferred or extended.
+- Exactly **2 provider requests**: one Merchant auth **HTTP201**, then one original
+  verified EGP2 paid-control order GET **HTTP200**. Merchant/order/amount/currency/
+  original reference/paid amount matched. No transaction GET or unpaid-order inquiry.
+  Safe shape observation11:18:00.851Riyadh; bounded completion11:18:02.377Riyadh.
+- **Top-level `transactions` is MISSING**, not a non-array or oversized array. All
+  seven checked count/truncation/pagination fields also MISSING;29 top-level fields.
+  This resolves only the prior shape uncertainty. Do not infer zero transactions,
+  complete history, negative payment evidence or session finality. No other field
+  name/endpoint/schema guessed. Full Inquiry/Pay Again/method change/reconciliation
+  remain BLOCKED; no new execution approval until the supported contract qualifies.
+- **11:20:00.208Riyadh read-only postflight PASS:** current **9aa61b64c2c5cf9f/schema103**,
+  app72557/Caddy26652/NRestarts0 unchanged. Original paid-control state unchanged;
+  protected checkout/PDC config unchanged, CARD-only live/COD off. Financial amount,
+  signed-success coherence, duplicate and ownership counters0; overdue-unverified1.
+  MON active/complete/WARNING4 with same sealed fingerprints, no critical exception;
+  one overdue/three terminal unverified warnings and original unused kill budget1.
+- Merchant key read only inside VPS memory for approved authentication; auth token,
+  raw replies, customer/card fields and credential contents were NOT exported.
+  Before/after snapshot key-content-readFALSE describes metadata-only snapshots,
+  not absence of the approved in-memory authentication read.0 SQL/financial writes,
+  production config/deployment/restart/MON/email/PDC actions. No callback or payment
+  state reset; no order deemed paid/unpaid from this audit, no retry or extra request.
+- All33 opening HEADs/worktrees and14046 unrelated pending-file hashes preserved
+  before continuity updates; no application source edit/test/build/deployment or
+  Git push/reset/merge/cleanup. Prior12 shape +4 warning-binding tests reused,
+  not rerun. Owner navbar/address-book/location acceptance remains PENDING; COD
+  still externally BLOCKED on written PDC currency units; original PDC uncertain
+  booking/ref/AWB quarantine and all deferred tests/DTR-33/STOR-01 remain intact.
+- **ONE NEXT ACTION:** obtain Paymob's documented one-order complete-history schema/
+  route, completeness/pagination and independent old-session finality contract.
+  [Updated provider draft — NOT SENT](../paymob-paid-control-shape-refresh-20261029/PAYMOB-HISTORY-CONTRACT-REQUEST.md).
+  No further provider query or financial action authorized. Then qualify Inquiry/
+  safe Pay Again/method changes, remaining PDC tracking, emails, SEO and deferred work.
+
+---
+
+# E134 — expired Paymob approval unexecuted; refreshed read-only packet READY — 2026-10-29
+
+- Exact owner7dc4… statement received, but packet expired07:28:53.884Riyadh;
+  current validation11:04:53Riyadh was outside its window. Recorded **EXPIRED /
+  NOT EXECUTED**, accepted-for-executionFALSE; no owner-approval/audit-intent/provider
+  observation exists. All predecessor sealed inputs unchanged; no expiry bypass.
+- Refresh first stopped at the expected-three MON guard. Read-only diagnosis found
+  complete/active automatic monitoring, **WARNING4/critical0**, one overdue plus
+  three terminal unverified warnings. This is current ledger/report drift, not a
+  monitor outage or proof of provider nonpayment. Report/history/dedup untouched;
+  original warning receipts and every unresolved provider barrier are preserved.
+- Independent replacement in `../paymob-paid-control-shape-refresh-20261029` keeps
+  the SAME one-auth/one-original-EGP2-paid-control-GET scope, max2 requests,0 transaction/
+  unpaid GETs,0 financial/SQL/provider-write/restart/deploy actions. The guard now binds
+  every current warning fingerprint/code/severity/UNVERIFIED evidence to the new seal;
+  any added/missing/changed warning stops. Freshness/completion/no-critical retained.
+- **4 new warning-binding tests PASS; earlier12 shape tests reused**, source projection/
+  transport unchanged. **11:12:12.633Riyadh sealed read-only preflight PASS**, current
+  **9aa61b64c2c5cf9f/schema103**, app72557/Caddy26652/NRestarts0; key METADATA unchanged,
+  contents not read. Original EGP2 paid-control context unchanged; CARD-only live,
+  protected checkout/PDC configuration unchanged, critical mismatch/ownership/duplicate/
+  unreconciled-success counters0, overdue-unverified1. Automatic MON11:10:05.899Riyadh
+  complete/active/WARNING4, original emergency-close budget1 unused.
+- **ONE new exact approval/expiry:** [current review](docs/paymob-paid-control-shape-review.md).
+  Seal47410c89… expires **29October2026,15:11:54.444Riyadh**; must start before
+  **15:08:54.444Riyadh**. No replacement owner approval/intent yet; provider calls0,
+  production writes0. Stop on drift/expiry/uncertain transport, no audit replay.
+- All33 opening worktree HEADs and unrelated pending hashes retained; no application
+  code/build/deployment or prior test suite repeated. Mainb760a25/deployed source8d75404,
+  all Codex1/Codex2/LOC/COD/Paymob work preserved; no push/reset/merge/cleanup.
+  Owner navbar/address-book/location acceptance stays PENDING; COD/PDC activation
+  still BLOCKED on written PDC cash units, no new provider answer or activation approval.
+- **ONE NEXT ACTION:** owner replacement exact Paymob read-only approval before expiry.
+  History completeness/session finality, Pay Again/method changes, payment reconciliation,
+  PDC tracking, transactional emails, SEO and every deferred test remain unqualified/open.
+
+---
+
+# E133 — COD contract BLOCKED; Paymob read-only shape audit READY — 2026-10-29
+
+- **OD-20261029-COD-READINESS-01 / CX-COD-01:** reuse installed101 infrastructure
+  on current **9aa61b64c2c5cf9f/schema103**. Fresh read-only schema/security, nine
+  dispatch/cash function ACL/hash projections and seven source bindings PASS.
+  [Readiness and smallest plan](docs/cod-pdc-activation-readiness.md).
+- Missing written PDC production answer: for **EGP200.35**, does `shipments[].cod`
+  take **200.35 or20035**? Current serializer divides minor units by100. Supplied
+  Test PDF number/zero example cannot establish currency scale. [Exact unsent request](docs/pdc-cod-unit-confirmation-request.md).
+  No live provider request, shipment or activation; no COD approval issued.
+- Staff Orders authority, approval/packing/video, selected courier/cached coverage,
+  trusted full saved balance, one durable dispatch, uncertain/no-retry quarantine,
+  PDF-only retry and collection/Treasury separation retained. Existing original
+  CARD EGP2 job remains uncertain/attempt1/noAWB; never infer no booking from500.
+  Retained64 native/API +13 scoped-gate checks reused, not rerun. Provider COD
+  booking/collection/remittance acceptance remains NOT EXERCISED.
+- If decimal EGP is confirmed, **no app deployment/migration is needed**. Later
+  separately approved activation sets COD fee50 (inactive current0), retains delivery50,
+  selects Manual/PDC collection, adds cash alongside CARD and enables narrow staff
+  COD only, with one app restart. Global outbound/automation/recovery remain off.
+  If units differ, qualify only the necessary adapter change before a new release.
+- **CX-PAY-01 fallback:** independent paid-control response-shape audit prepared;
+  [ONE exact approval/expiry](docs/paymob-paid-control-shape-review.md). New12 local
+  guard/redaction tests +03:30:05Riyadh sealed read-only preflight PASS. At most one
+  auth +one original EGP2 control GET after fresh approval;0 transaction/unpaid GETs.
+  Seal7dc4c56d… expires29Oct07:28:53.884Riyadh, must start before07:25:53.884.
+  No approval/intent/provider call/key-content read yet. Complete history/finality,
+  Pay Again/method changes and reconciliation remain unqualified/prohibited.
+- CARD/Manual50/signup live, app72557/Caddy26652 unchanged, MON enabled/active/
+  complete with original warning3/critical0, original unused emergency budget1.
+  Two overdue +one terminal unverified warnings and all deferred tests retained.
+  No production writes/restart/deploy/provider action/Git push;33 original HEADs/
+  worktrees and14046 unrelated pending-file hashes preserved. No app source changed.
+- Navbar/address-book/location visual acceptance remains **PENDING**. Consumed LOC/
+  navbar/schema101 deployments are not replayed; old COD/Inquiry packets not reused.
+  **ONE NEXT APPROVAL:** optional independent Paymob read-only shape audit while PDC
+  units are awaiting written confirmation. Then Inquiry/safe Pay Again/method changes,
+  remaining PDC tracking, transactional emails, SEO/redirects and retained deferred work.
+
+---
+
+# E132 — Navbar name DEPLOYED/schema103; technical postflight PASS — 2026-10-29
+
+- Exact owner **bfbfdf13…** approval recorded01:58:07.563Riyadh, executed once:
+  **CONSUMED_COMPLETE**, never replay. Current **9aa61b64c2c5cf9f/schema103**, source
+ 8d75404/appPID72557/NRestarts0. [Deployment receipt](docs/navbar-customer-name-deployment-receipt.md).
+- Fresh sealed preflight01:58:47.590Riyadh passed before changes. Exact archive and
+  loopback readiness passed; **one app cutover/ordinary restart01:59:06.420Riyadh**.
+  Schema103/security/Auth/history/access unchanged; **0 migrations or SQL writes**.
+- All **3020 public HTTP/hash assets/private/held-route guards PASS**; next
+  **AUTOMATIC02:00:06.756Riyadh MON PASS**, completeTRUE/WARNING3/critical0, enabled/
+  active/waiting. Existing warnings/unverified outcomes retained, mismatch counters0,
+  overdue-unverified2; no report/history/dedup reset or manual monitor action.
+- CARD-only/Manual EGP50/signup/email confirmation live. Caddy26652/fixed files/
+  runtime/configuration unchanged; original unused emergency-close budget1 and callbacks
+  retained/rebound. COD/PDC booking OFF. No Caddy signal/restart, config/credential/
+  stock change, provider/payment/email action or Git push; no retry/rollback.
+- All33 opening HEAD/status inventories/**14049 pending-file hashes** preserved
+  before main/source continuity updates. All Codex1/Codex2/LOC/COD/Paymob branches,
+  pending work and consumed boundaries retained; no merge/reset/rebase/cleanup.
+- **Navbar owner visual acceptance PENDING / hosted authenticated NOT EXERCISED**.
+  Address-book/location owner acceptance stays PENDING; never infer acceptance from
+  this deployment or local browser fixtures. Owner review needs no charge/order/PDC call.
+- **ONE NEXT ENGINEERING ACTION:** qualify written PDC final-cash currency scale and
+  booking safeguards for CX-COD-01. PDC collects **full final cash amount**; COD must
+  remain OFF until qualified/fresh approval. Immediate priorities now COD/Paymob/PDC,
+  no further cosmetic changes. DTR-33/STOR-01/all original deferrals, provider/REF/AWB
+  barriers, emails/SEO/redirects and unverified payment outcomes remain preserved.
+
+---
+
+# E131 — CX-NAV-01 READY; application-only/schema103 — 2026-10-29
+
+- **OD-20261029-NAV-01:** navbar customer name **READY / LOCAL + SEALED READ-ONLY
+  PREFLIGHT PASS / NOT DEPLOYED**. [Exact review/approval](docs/navbar-customer-name-review.md).
+  Candidate9aa61b64c2c5cf9f/source8d75404 in new33rd navbar-customer-name-20261029/source,
+  based on deployed34022ae. Original32 HEAD/status inventories/11127 pending-file
+  hashes preserved; mainb760a25/old LOC/Codex1/Codex2 work retained, no push/cleanup.
+- Saved profile name → CURRENT session Auth preferred/display/full/name → localized
+  Account, never email-derived. Minimal own-profile lookup shared with Account,
+  one per app/session; no duplicate sidebar lookup, SSR name payload or browser storage.
+  Neutral hydration/loading, synchronous session clearing/epoch guards, safe bounded
+  fallback and refresh; EN/AR/RTL/themes/desktop/mobile, existing routes/logout retained.
+- **16 focused +17 actual browser +6 operator checks PASS/0skip**, typecheck/build/diff
+  PASS. SSR hydration/warm profile race and mobile visibility corrected before seal.
+ 4001-entry archive readback/secret scan,2910retained/3020served HTTP/hash assets,
+  fresh encrypted103 DB/full pg_restore and11fixed-file readbacks PASS.
+- **01:52:56.908Riyadh read-only preflight:** production57a5b31dd4d82156/schema103,
+  app71861/Caddy26652 unchanged. CARD-only/Manual50/signup live; MON active/complete/
+  WARNING3/critical0, mismatch counters0/overdue-unverified2 retained. Original unused
+  emergency-close budget1/callbacks preserved. COD/PDC booking OFF;0 production writes.
+- Seal **bfbfdf13a43bf8afaf63c7487d95cec15a3e9e24dc27817997b3ee6c3e8b154c**, expires
+  **29October2026,05:51:50.078Riyadh**. If separately approved: one app switch/restart,
+  **0 migrations/SQL/Caddy/runtime/MON/unit/settings/credential/provider/email changes**.
+  No approval/apply/stage exists; stop on drift/expiry/partial/uncertain outcome,
+  no retry/automatic rollback or old operator replay. Hosted navbar acceptance unexercised.
+- Address-book/location owner visual acceptance stays **PENDING**, never marked accepted.
+  **No navbar blocker. COD remains BLOCKED** on written currency-scale contract and
+  booking safeguards; PDC must collect full final cash amount, no guessed conversion.
+  After navbar, immediate COD/Paymob/PDC completion; no new cosmetic queue. Emails/
+  SEO/redirects, DTR-33/STOR-01/original deferred tests and provider/REF/AWB barriers retained.
+- **ONE NEXT ACTION:** owner exact CX-NAV-01 application-only approval before expiry.
+
+---
+
 # E130 — LOC-01 DEPLOYED/schema103; technical postflight PASS — 2026-10-29
 
 - Exact owner **661e429c…** approval recorded01:10:24Riyadh and executed once:
