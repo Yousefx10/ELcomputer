@@ -4,6 +4,7 @@ import { credentialSecretsMatch } from '../../../utils/credentialSecrets.js'
 import { emailHandler,emailFail,readEmailBody } from '../../../utils/email/core.js'
 import { processEmailQueue } from '../../../utils/email/service.js'
 import { processClaimCommunications } from '../../../utils/afterSalesCommunications.js'
+import { processOrderEmailNotifications } from '../../../utils/orderEmailNotifications.js'
 export default defineEventHandler(emailHandler(async event=>{
  const authorize=()=>{
   const secret=String(useRuntimeConfig().emailWorkerSecret||'')
@@ -13,5 +14,6 @@ export default defineEventHandler(emailHandler(async event=>{
  const b=await readEmailBody(event,1024)
  if(b.limit!==undefined&&(!Number.isInteger(b.limit)||b.limit<1||b.limit>3))emailFail('Invalid email worker limit.')
  const db=getSupabaseAdminClient(),claimEvents=await processClaimCommunications(db,{channel:'email',limit:b.limit||1,authorize})
- return {results:await processEmailQueue(db,{limit:b.limit||1,authorize}),claimEvents}
+ const orderEvents=await processOrderEmailNotifications(db,{limit:b.limit||1,authorize})
+ return {results:await processEmailQueue(db,{limit:b.limit||1,authorize}),claimEvents,orderEvents}
 }))
