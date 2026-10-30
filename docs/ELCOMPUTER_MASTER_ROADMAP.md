@@ -1,3 +1,804 @@
+# E155 — Future transactional email ACTIVE — 2026-10-30
+
+- **CX-EMAIL-01:** approved zero-restart recovery8824c9 completed once.
+  **CONSUMED_COMPLETE**, hosted postflight09:11:02Riyadh PASS. Parent96da remains
+  CONSUMED_STOP. Never replay either approval, readiness request or apply command.
+- Live application remains1e931d20d19bde5a/source444c8fd/schema105/PID84134.
+  Recovery used **zero restarts, migrations, deployments, new keys or installed files**.
+  The earlier parent restart remains recorded; no additional runtime/Caddy change.
+- FIRST authenticated worker passed empty at09:04:32 with no provider request.
+  Future capture began09:04:56.147; canonical settings committed09:05:06 and the
+  installed15-second timer became active09:05:16. No scan or historical backfill.
+- Provider revision3 has only transactional enable/account approval/activation true.
+  Capture revision1 is ON. Encrypted Brevo key and verified sender are unchanged.
+  Claims, marketing, webhooks and MON Email remain OFF. Auth SMTP untouched.
+- **Scheduled worker verified:**12 successful empty batches recorded by09:10:40,
+  service Result=success/exit0, timer enabled/active, HTTP retries0. Inspection made
+  no extra worker request. Retained read-only timestamp/duration parsing diagnostics
+  were corrected; no production worker/configuration correction or resend occurred.
+- **Next automatic MON09:10:04:** same five TERMINAL_PAYMENT_UNVERIFIED warnings,
+  zero critical, historical gaps2 preserved. No warning reset or payment inference.
+  CARD/COD available and private routes denied; original emergency budgets1 remain.
+- Canonical transaction preserved146 of150 protected projections and Auth security.
+  Only provider/capture settings, two staff audit rows and Brevo setup revision+1
+  changed. Existing orders, payments, packing, shipping and cash records unchanged.
+- Email templates/messages/attempts/provider events/order events all0 at postflight.
+  No Brevo request, customer/test email, synthetic order, cancelled C140 event,
+  historical replay, shipment, cash action, Paymob request or successful probe repeat.
+- Active future events: new ordinary CARD order received/payment pending; coherently
+  verified live CARD payment successful; new ordinary COD received/awaiting collection.
+  EN/AR, verified order-owner recipients at enqueue/dispatch, privacy, truthful cash/
+  payment status, deduplication, durable leases and uncertainty/retry guards remain.
+  Future verified payment transitions may qualify; old received events are not scanned.
+- Actual future customer delivery and remaining Arabic mailbox acceptance stay pending.
+  Reuse the earlier owner-accepted private Brevo delivery evidence without replay.
+  Fulfillment/cancellation/collection/remittance emails and other deferred work remain.
+- [Current receipt and immediate disable](customer-email-activation-review.md).
+  The original96da disable adapter halts the timer first, then capture/all provider
+  flags without restart. Purchasing/COD adapters retain ORIGINAL fences/budgets.
+  Activation continues until disabled; seal expiry bounds the one-time execution.
+- All36 worktrees/35 deferred IDs and prior evidence are preserved. No staging/push.
+  Pixel/Pay Again awaits Paymob; genuine eligible PDC shipping/tracking, SEO/visual/
+  customer/admin/history/storage work remain. Detailed settlement/ERP stays LAST.
+- **ONE next action:** monitor the first genuine qualifying event and delivery.
+  Do not create an order, repeat the private probe or manufacture a paid event.
+
+---
+
+# E154 — zero-restart Email recovery READY; sending remains OFF — 2026-10-30
+
+- **CX-EMAIL-01:** original96da activation remains **CONSUMED_STOP**. It installed
+  the reviewed worker/key and restarted once, then stopped before authenticated
+  readiness on new JOURNAL_UPSTREAM. Do not replay it or clear its intent files.
+- Normal08:40:05 and08:45:05 MON reports restored the EXACT original five warning
+  IDs/zero critical and gaps2, without manual scan, warning reset or acknowledgement.
+  Preserve the startup incident/three GET502 records and unverified payment evidence.
+- Minimal continuation is **READY / UNAPPROVED**. New seal
+  **8824c9d2df740d535a82160a7d21f782beeb78de56642ba4c635a06aeefc4280**;
+  expires **2026-10-30 11:45:32 Riyadh**, start before **11:30:32 Riyadh**.
+  [Exact NEW approval and disable](customer-email-activation-review.md).
+- **ZERO additional restarts, migrations, deployments, installed files or keys.**
+  Reuse live1e931d20/source444/schema105/PID84134, installed caller/units/private
+  worker credential, Brevo ciphertext/sender,113 email checks,25 parent ops checks,
+  native migration/rollback/canonical enable-disable and encrypted105 backup readbacks.
+  Recovery adds13 root fence/failure tests and4 Node scope tests, all PASS. Initial
+  unittest fixture-name collision was corrected; the failed local log is retained.
+- **08:47:40 sealed READ-ONLY preflight PASS:** exact original MON policy unchanged;
+  CARD/COD available, protected routes denied; provider revision2/all five flags OFF,
+  capture false/revision0, every Email count0, installed timer disabled/worker idle.
+  Parent stage has only five initial receipts; FIRST worker request is unattempted.
+  Original purchasing/COD emergency budgets remain1. No production/provider write.
+- New approval permits a separate root recovery intent, then exclusive readiness
+  fences in BOTH stages and ONE first authenticated empty limit1 worker call while
+  sending/capture stay OFF. Only after it succeeds may the existing canonical SQL
+  enable provider3/capture1 for future qualifying events, then start the installed
+  timer. Keep expected two staff audits/Brevo setup revision+1; no order/auth mutation.
+- Future ordinary CARD received/pending, coherently verified live CARD payment,
+  COD received/uncollected and EN/AR/105 ownership/final-dispatch guards remain.
+  No old receipt scan/backfill, cancelled C140 event, private delivery-test replay,
+  synthetic order, shipment, payment retry or fabricated cash. Claims, marketing,
+  webhooks, MON Email and Auth SMTP stay untouched/OFF. Pixel/PDC remain preserved.
+- The original96da Email disable adapter still halts the timer first and disables
+  capture/provider without restart; its purchasing/COD emergency adapters still
+  retain ORIGINAL fences/budgets. No new emergency budget or runtime rebind. Any
+  new drift/uncertainty consumes recovery; no automatic retry, rollback or resend.
+- All36 worktrees/35 deferred IDs/evidence, visual/SEO/history/storage work remain;
+  no customer delivery/bilingual mailbox acceptance is invented. ERP/settlement LAST.
+- **ONE next action:** owner supplies the exact NEW zero-restart recovery approval.
+  No recovery approval, first worker call, capture enable, timer start or mail exists.
+
+---
+
+# E153 — Email activation stopped safely; sending remains OFF — 2026-10-30
+
+- **CX-EMAIL-01:** exact96da activation approval was used once and is
+  **CONSUMED_STOP** at08:35:31Riyadh. Never replay approve/apply or clear its fences.
+- The approved worker files passed Linux validation. One app restart completed
+  at08:33:09; live1e931d20/source444/schema105 now runs PID84134. No migration,
+  app deployment, Caddy change or second restart. Only the private worker key was added.
+- The next automatic08:35:03 MON report added **JOURNAL_UPSTREAM**, making six
+  warnings/zero critical. The same five payment-unverified warnings remain.
+  Exact-warning guard stopped before the first authenticated worker request.
+  Bounded private journal evidence records three loopback connection-refused502s
+  on GET payment API requests at08:33:08.59–08:33:09.14 during startup. No warning
+  reset, provider outcome inference, repeated readiness or manual MON scan.
+- **Read-only stop inspection:** provider revision2/all five flags false; capture
+  false/revision0; all queues/templates/messages/attempts/events0. Timer disabled,
+  worker inactive. Root stage has only intent/runtime/restart receipts; no worker
+  readiness fence, settings commit or timer start. No Brevo request or email.
+- CARD/COD available; encrypted key/verified sender, original emergency budgets1,
+  Caddy/callbacks, cancelled C140 exclusion, paid/customer orders and Auth SMTP
+  preserved. The worker key stays private and unused. No automatic rollback.
+- Prepare only a separately sealed **zero-restart** continuation after a normal
+  MON report again matches the original exact five-warning baseline. Reuse installed
+  files/key,105 and existing native/email/backup qualification. A new approval must
+  precede the ONE first empty worker check, future capture/provider gates and timer.
+  No install, new key, migration, repeated delivery probe, backfill or synthetic order.
+- All36 worktrees/35 deferred IDs/evidence and Pixel/PDC/SEO/visual/history/storage
+  work remain. Commercial settlement/ERP stays LAST. [Current review](customer-email-activation-review.md).
+- **ONE next action:** finish read-only post-stop qualification and prepare the
+  concrete zero-restart recovery approval.96da cannot be retried or expanded.
+
+---
+
+# E152 — future Email activation packet READY; production remains OFF — 2026-10-30
+
+- **CX-EMAIL-01:**105 recipient fix remains deployed inactive;40b is consumed.
+  The separately authorized activation preparation is now **READY / UNAPPROVED**.
+  [Exact next approval, staged gates and disable](customer-email-activation-review.md).
+  New seal **96da5af5a7af5872855d983bdd5e89eb58b3edce058dbc6dceb0c7ad50accac7**;
+  expires **2026-10-30 11:45:32 Riyadh**, start before **2026-10-30 11:25:32 Riyadh**.
+- Reuse installed worker/adapter/bilingual copy/queue/105 ownership safeguards.
+  Proposed scope: zero migrations/app deployments, one private worker credential,
+  **one app restart**, three bounded worker/unit files and one15-second loopback
+  timer. All provider/capture controls stay OFF through install/restart, a fresh
+  automatic MON pass and ONE empty authenticated worker check. Only then may the
+  separately approved run atomically enable three transactional provider gates and
+  future order capture, followed by the timer. No historical scan/backfill/test mail.
+- Future events: ordinary CARD received/payment pending, coherently verified live
+  CARD payment, COD received/uncollected; EN/AR preserved. Owner/verification/payment
+  truth rechecked at dispatch, duplicate/lease/retry/uncertainty guards reused. Claims,
+  marketing, webhooks and MON Email remain OFF; no Auth SMTP/Paymob/PDC action.
+- **Qualification:**113 existing focused email checks reused;8 loopback worker +11
+  remote/emergency +6 Node scope guards PASS; PostgreSQL17.11 canonical activation/
+  disable rehearsal PASS, no actual provider/production writes. Proves old receipts
+  absent, only new local events queued, COD unpaid, key/history/orders preserved.
+  Settings audits intentionally add2 staff activity rows and only Brevo Quick Setup
+  revision+1. Corrected fixture-owner/clock/newline and side-effect evidence remains.
+  Fresh105 encrypted DB/runtime full backup readbacks PASS. No implementation rebuild.
+- **07:47:10Riyadh sealed READ-ONLY preflight PASS:** live1e/source444/schema105,
+  configured provider revision2/key/sender preserved, all five flags false, capture
+  false/revision0, all Email queues empty, no worker credential/unit/timer installed.
+  CARD/COD available; MON07:45:02 complete/five existing warnings/0 critical. Both
+  original purchasing/COD budgets1 remain; no reset, shipment, collection or send.
+- Clear one-use Email disable first halts the timer/caller even if app/MON is
+  unhealthy, then canonically disables capture/provider while retaining current keys,
+  history and uncertainty. No restart or recall promise. Reviewed purchasing/COD
+  emergency adapters bind the new runtime but consume the ORIGINAL fences/budgets;
+  no new purchasing budget. Automatic app restart counters do not block emergencies.
+- First positive hosted empty-worker check necessarily belongs INSIDE the future
+  approval, while sending remains OFF; it has not been performed now. Existing
+  Brevo201/owner mailbox proof is reused; no successful private probe is repeated.
+  Actual Arabic mailbox delivery/full future customer acceptance remain unclaimed.
+- All36 worktrees/35 deferred IDs, paid/COD orders, cancelled C140 exclusion, visual
+  TODOs and Pixel/PDC/SEO/history/storage work preserved. **No activation approval
+  recorded; no worker files/runtime/provider/capture change or email this preparation.**
+  Initial unapproved0b draft was superseded for disable hardening; never approve it.
+- **ONE next action:** owner supplies the exact NEW future transactional activation
+  statement from the review.40b cannot activate Email. Then guarded install/readiness/
+  enable/postflight only; no fabricated order, repeated test or payment retry.
+
+---
+
+# E151 — schema105 recipient fix DEPLOYED INACTIVE — 2026-10-30
+
+- **CX-EMAIL-01:** exact40b02e… approval executed once and is **CONSUMED_COMPLETE**.
+  Never replay105, approve/apply or an older operator. One migration committed
+  **06:31:17Riyadh**; all150 live data/security projections preserved. Installed
+  app remains **1e931d20d19bde5a/source444c8fd**, unchanged PID78939/runtime/Caddy.
+  **Zero application deployment/restart, provider request, email or backfill.**
+  [Inactive105 deployment receipt](customer-email-schema105-deployment-receipt.md).
+- Hosted105 catalog/ACL/ownership postflight PASS at**06:41:27Riyadh**. Browser roles
+  cannot read Email ledgers; anon/authenticated/service_role cannot execute the
+  restricted helper directly. Read-only predicate matched8/8 existing verified
+  owner recipients; this proves ownership only, not eligibility or permission to
+  email old orders. Cancelled C1403FCFC6 remains excluded and unshipped/unemailed.
+- Post-commit automatic MON**06:40:06Riyadh** complete/active, same five terminal-
+  unverified warnings,0 critical, gaps2; no reset or provider-outcome inference.
+  CARD/COD available; original purchasing/COD emergency budgets remain1 each.
+- Email revision2/encrypted key/verified sender preserved. All five controls false;
+  capture false/revision0, empty templates/messages/attempts/provider/order-event
+  queues, worker secret/scheduler absent. Supabase Auth SMTP untouched. Accepted
+  private Brevo201/owner mailbox evidence remains accepted and was not repeated.
+- Original113 focused/16 guard/typecheck/build/native rollback/encrypted backup
+  evidence is reused; qualification is distinct from this hosted installation.
+  All36 worktrees and35 deferred IDs/earlier evidence remain preserved; no Git push.
+- **Current authorized independent work:** prepare the separate guarded future-
+  events-only activation packet using the installed worker. No activation/send/
+  worker-runtime change is authorized by40b02e. Keep Email OFF until a new exact
+  approval. Preserve Pixel/Pay Again provider wait, genuine eligible PDC shipping/
+  tracking and all visual/SEO/deferred work; commercial settlement/ERP remain LAST.
+
+---
+
+# E150 — recipient ownership SQL fix READY, schema105 inactive approval pending — 2026-10-30
+
+- **CX-EMAIL-01 / OD-20261030-EMAIL-RECIPIENT-01:** minimum inactive recipient fix
+  **READY / NOT DEPLOYED**. [Exact review, approval and expiry](customer-email-recipient-fix-review.md).
+  Seal **40b02e0559b1e3ca3bdc3a4a166ec279c75c5d8ca0258d90ee63ce6e4226a9d4**;
+  expires **2026-10-30 10:06:00 Riyadh**, start before **2026-10-30 09:56:00 Riyadh**.
+  This is one104→105 migration, **zero app deployments/restarts**, no runtime,
+  Caddy, worker, credential, Auth SMTP, provider, email or business-data action.
+- Reused the E149 SQL correction unchanged except its migration header. One
+  restricted private ownership predicate plus two private function replacements.
+  Match the active nonanonymous order owner's confirmed Auth mailbox to the saved
+  recipient at capture, enqueue and final dispatch. Unowned/unverified recipients
+  are withheld without rerouting or changing checkout/order/payment status.
+- Actual hosted history is104, latest20261029120000. New migration
+  **20261030040000_order_email_recipient_ownership.sql** is105; no competing30October
+  migration across preserved worktrees. All104 historical migration bytes unchanged.
+  Local correction source **083fc20a91542efd1b10872a18b6cebeb36d734d**; installed app
+  remains **1e931d20d19bde5a / source444c8fd / schema104** until separate approval.
+- **113 focused email tests +16 release guards PASS** on Node22.23.1, no skips/
+  cancellations. Includes original31, bilingual CARD pending/verified-payment/COD
+  unpaid copy, replay/dedup/queues/privacy, capture/dispatch ownership, account and
+  verification changes, inactive/anonymous accounts, concurrency and no old replay.
+  PostgreSQL17.11 migration/transaction rollback preserves149 native projections
+  and395 unrelated functions. Typecheck/build and full encrypted DB/runtime backup
+  readbacks PASS. Build is qualification only; no application artifact is deployed.
+- **Sealed read-only preflight06:07:06Riyadh PASS:** same live release/process/fixed
+  files/all4,111 installed inventory entries,150 live protected projections bound,
+  encrypted Email revision2/key/verified sender preserved; all five controls false,
+  capture false/revision0 and empty queues, worker secret/scheduler absent. CARD/COD
+  capability200. MON06:05:05 complete/five existing terminal-unverified warnings/
+  critical0, gaps2, both original emergency budgets1 unchanged. No warning reset.
+- Cancelled ORD-20261029-C1403FCFC6 remains cancelled/unpaid/unshipped, no email;
+  no synthetic production order/payment or provider request. Accepted Brevo201 and
+  owner mailbox receipt remain accepted/consumed and were not repeated. All35
+  existing worktrees preserved; one isolated36th source worktree added, no push.
+  All35 deferred IDs, prior evidence, visual TODOs, Pixel/PDC and historical work stay.
+- **ONE next action:** owner supplies the exact new inactive-deployment approval
+  from the review. After105 deployment, verify hosted privacy/ACLs/CARD/COD/next
+  normal MON while all Email controls stay OFF, then prepare separate future-events-
+  only activation approval. Do not activate, backfill, retry payment or resend tests.
+  Pixel/Pay Again await Paymob; genuine eligible PDC shipping/tracking follows;
+  SEO/customer/admin/deferred work preserved; commercial settlement/ERP remain LAST.
+
+---
+
+# E149 — hosted Email qualification blocked on recipient ownership — 2026-10-30
+
+- **CX-EMAIL-01 / OD-20261030-EMAIL-HOSTED-01:** final hosted qualification is
+  **BLOCKED**, customer sending/capture/workers remain OFF. Reused deployed104;
+  no rebuild, migration, provider request, send, activation or Auth SMTP access.
+  [Qualification, correction scope and disable procedure](customer-email-hosted-qualification.md).
+- Read-only04:05:18Riyadh host verification matches live1e931d20/source444c8fd,
+  all4,111 installed files, app78939 and fixed runtime/Caddy/MON/service bytes.
+  Actual worker returns401 for absent/wrong secrets before database access.
+  Worker secret/scheduler stay absent; positive hosted processing was not invoked.
+- Read-only04:06:06 database verification matches sealed104 catalog397 functions/
+  230 triggers/88 policies and remaining schema/security projections. Email revision2/
+  encrypted key/verified sender unchanged, all five controls false, capture false/
+  revision0, all Email/event queues empty; Claims Email disabled/empty. CARD+COD
+  retained; MON04:05:05 complete/WARNING5 terminal-unverified/critical0, gaps2 and
+  both original emergency budgets preserved. No monitor reset or provider inference.
+- Three dormant event forms qualify in EN/AR: new CARD receipt/payment pending,
+  verified-live-CARD payment confirmed, new COD receipt/cash not collected. Payment
+  truth, cancellation suppression, replay deduplication, durable queues, privacy,
+  authorization, uncertainty/no retry and disabled-period/no-backfill checks pass.
+  Order copy contains no deep link; no hosted positive delivery or Arabic mailbox
+  acceptance is claimed. The earlier one-private-message delivery stays accepted/
+  consumed and was not repeated.
+- **81 existing tests PASS** including the original31;17 new native cases have15
+  passes and **two launch-critical ownership failures** (the parent also fails).
+  Checkout can save another mailbox;104 queues to it without proving ownership.
+  It also fails to recheck mailbox confirmation before enqueue. Current hosted
+  orders match confirmed mailboxes; all automatic sending has remained OFF.
+- A proposed additive SQL-only guard adds one restricted predicate and reuses two
+  private functions. All18 local cases PASS with that proposal. It is NOT deployed,
+  release-certified or assigned a migration slot; historical104/application files
+  remain untouched. Suppress unowned/unverified recipients, never silently reroute.
+  The blocked activation draft has **no executable approval, seal or expiry**.
+- Cancelled ORD-20261029-C1403FCFC6 remains cancelled/unpaid, no email/shipment;
+  active COD candidates0. Do not pack, book, email or reopen it. No synthetic
+  production order/payment, pickup, collection, PDC or Paymob request occurred.
+- Final04:16 read-only postflight preserves14 selected live table fingerprints,
+  catalog/config and all installed bytes. Public CARD/COD capability GET200;
+  MON04:15:05 complete/five warnings/zero critical; all Email controls OFF.
+  Accepted test results use pinnedNode22.23.1. The earlier Node24 and firstNode22
+  mock-timer cancellation logs are retained; a test-only loop keeper yields81/81
+  with0 failures/cancellations/skips. No application timeout/transport changed.
+- **ONE next action:** prepare a separately sealed inactive deployment for the
+  minimal recipient-ownership guard. Keep sending/capture/workers OFF. Future
+  activation requires deployed correction, fresh preflight and separate approval.
+  After Email: Pixel/safe Pay Again waits for Paymob reply; eligible genuine PDC
+  shipping/tracking; SEO/Search Console/legacy redirects; remaining customer/admin/
+  deferred work; LAST commercial settlement/ERP. Preserve all35 worktrees, visual
+  TODOs, prior approvals, tests and historical migration/storage evidence.
+
+---
+
+# E148 — private Email delivery owner-confirmed; COD order cancelled — 2026-10-30
+
+- **CX-EMAIL-01:** owner answered **Received correctly** to the exact private test
+  question covering sender, subject, expected text and readable layout. Brevo201
+  acceptance plus actual mailbox receipt/basic English rendering are now accepted
+  for **that one private probe only**. No delivery timestamp, provider webhook,
+  SPF/DKIM/inbox-placement or remaining bilingual/hosted queue acceptance is invented.
+  [Updated delivery receipt](customer-email-one-message-receipt.md).
+- Both52f one-message and e266 deployment approvals remain **CONSUMED_COMPLETE**.
+  Confirmation is not another send or future customer-email activation approval.
+  Hosted app queue/worker/order-event and remaining EN/AR qualification stay open.
+- **30 October 2026, 03:36:25 Riyadh, read-only state:** same1e931d20/schema104,
+  CARD+COD available, configured Email revision2/key/sender fingerprint unchanged;
+  all five application controls false, capture false/revision0, workers absent/off,
+  all central Email/event tables empty. No Brevo/PDC request, email, configuration/
+  runtime/deployment/restart, order/money action or Auth SMTP access this turn.
+- **COD update supersedes E147 staff-pack action:** ORD-20261029-C1403FCFC6 is now
+  **cancelled**, updated29 October 2026, 20:32:48 Riyadh. Saved historical total1540,
+  amount_paid0, verified collections0; no packing session, shipment job, dispatch or
+  AWB. Do not pack, reopen, collect or book this cancelled order. Total COD rows1,
+  eligible active COD rows0. No shipment approval or financial reconciliation issued.
+  [Current operational note](real-cod-pdc-operations.md).
+- MON at**30 October 2026, 03:35:05 Riyadh** complete/active,5 warnings/0 critical, now all
+  TERMINAL_PAYMENT_UNVERIFIED. The historical5-warning seal's code/fingerprint set
+  changed and its read-only verifier stopped MONITOR_WARNING_DRIFT; no guard replay,
+  config/hash update or warning reset. Independent read-only report inspection
+  confirms current status; provider outcomes remain UNVERIFIED. Journal gaps2 stay.
+- Both handoffs/roadmap/deferred evidence and all35 worktrees remain preserved.
+  Real eligible COD processing stays P0; Pixel waits for Paymob's answer. While no
+  eligible order exists, next Email preparation is hosted queue/worker/event
+  qualification and a concrete future activation review, with all sending OFF.
+  **No new activation seal or approval request is issued now.**
+
+---
+
+# E147 — ONE private Email accepted; first real COD needs staff — 2026-10-29
+
+- Owner exact **52f93c4a…** private-message approval executed once at19:45:41 Riyadh.
+  **CONSUMED_COMPLETE / NEVER RESUBMIT.** Brevo returned **HTTP201** with a validated
+  messageId, recorded privately. One adapter invocation/one exclusive dispatch fence,
+  no retry or extra provider request. **Mailbox delivery AWAITING OWNER CONFIRMATION**;
+  the owner was asked through the pending private-test receipt question.
+  [Sanitized test receipt](customer-email-one-message-receipt.md).
+- **19:50:24 postflight PASS:** same1e931d20/schema104, CARD+COD live, Email revision2/
+  encrypted key/sender/config fingerprint unchanged. All five app controls false;
+  capture false/revision0; workers absent/off. Central templates/messages/attempts/
+  provider/order-email events all zero. The isolated test uses private receipts only.
+  No application, order, payment, stock, runtime/Caddy/unit/credential change, restart
+  or Auth SMTP access. MON19:50:05 complete WARNING5/critical0, original gaps2 and both
+  emergency budgets intact; financial/duplicate/ownership mismatches zero.
+- **P0 genuine COD order RECEIVED:** `ORD-20261029-C1403FCFC6`, created19:30:43 Riyadh.
+  Read-only19:53:52: normal built-in checkout, backend pending_payment/pending,
+  customer display **Placed / awaiting COD collection**; amount_paid0, verified cash0.
+  **EGP1440 merchandise −0 discount +50 delivery +50 COD =EGP1540 outstanding.**
+  Saved total matches. Recipient/contact/street/gov/city fields structurally present,
+  phone well formed, one cached PDC city match. Customer data remains private.
+- Dashboard Orders source includes cash without a paid-only filter; pending_payment
+  is eligible for staff processing/packing and displays Placed for cash. One active
+  Orders authority exists; actual staff browser acceptance is still NOT EXERCISED.
+  No packing session/completed private video, shipping job, dispatch attempt or AWB.
+  **PDC booking BLOCKED only by staff review/actual packing and measured parcel weight
+  plus final recipient/cash recheck.** No booking seal/expiry issued. Merchant fees/ERP
+  remain LAST, never prerequisites. Original historical uncertain dispatch quarantined.
+  [Current staff action and booking boundary](real-cod-pdc-operations.md).
+- **ONE NEXT OWNER/STAFF ACTION:** open the real order, review/approve it and physically
+  pack it through the existing Dashboard process; retain required validated packing
+  evidence and measure actual parcel weight. Then prepare one separate real shipment
+  approval. Do not book, request pickup, mark Paid or use a configured default weight
+  as physical evidence. Email delivery confirmation remains pending independently.
+- All35 worktrees, deferred tests/evidence, Pixel, visual TODOs, SEO/redirects and
+  remaining email/hosted queue/worker/EN-AR acceptance remain. Future transactional
+  activation requires verified delivery, remaining qualification and owner approval.
+
+---
+
+# E146 — ONE private Email delivery test READY; app sending OFF — 2026-10-29
+
+- **CX-EMAIL-01:** schema104 deployment1e931d20/source444c8fd is complete/inactive;
+  e266 remains **CONSUMED_COMPLETE / NEVER REPLAY**. No email or Brevo request sent.
+  [Deployment receipt](customer-email-schema104-deployment-receipt.md).
+- Separate **ONE private provider delivery probe READY / NOT APPROVED / NOT SENT**.
+  [Exact content, limits, new approval and expiry](customer-email-one-message-review.md).
+  Reuses the existing approved private mailbox, original stable test identity and
+  unchanged Brevo adapter. Exact existing English test copy states no order/payment.
+  One recipient, no CC/BCC/attachment, one submission, no retry for any outcome.
+- All five app controls remain false; capture false/revision0; application workers
+  absent/off. The isolated ephemeral command does not open global delivery or enqueue
+  customer/history mail. It uses its own private intent/fence/outcome receipts;
+  hosted app queue/worker/order-event and remaining EN/AR acceptance stay unfinished.
+- **11 local message/remote/compiled guards PASS** and8 hosted REST GET projections
+  PASS. **29 October 2026, 18:28:20 Riyadh sealed preflight PASS**: same104 release/process,
+  fixed files/config/key digest, revision2/sender, empty queues, recipient safety,
+  worker off and CARD+COD live. No Brevo key/ciphertext selected for preparation,
+  no decryption, production mutation, Auth SMTP access or provider API request.
+- Current test seal **52f93c4aff01bcf297f527b2ca481fd109ecbaff4019f255cd1a73f815627a97**, expires **29 October 2026, 22:27:16 Riyadh**.
+  Separate approval permits one private command stage and fixed provider submission
+  only. Dedicated key is decrypted in memory after approval; no service/DB/config/
+  runtime/Caddy changes. Existing attempt/stage or any drift/expiry means STOP.
+  Provider201/messageId means acceptance; actual mailbox delivery needs owner evidence.
+  Future customer mail stays OFF until delivery/remaining qualification/owner approval.
+- Latest read-only live health18:28: CARD+COD healthy, MON18:25 complete WARNING5/
+  critical0, same original warnings/gaps2, integrity/duplicate/ownership0, zero COD/new
+  orders. Original PDC quarantine and both emergency budgets remain. Pixel, visual
+  TODOs, SEO/redirects, all35 deferred rows and every worktree remain preserved.
+- **ONE NEXT OWNER ACTION:** provide the separate ONE PRIVATE DELIVERY TEST approval
+  from the review. No deployment or test operator is replayed automatically.
+
+---
+
+# E145 — schema104 Email deployed inactive; MON postflight PASS — 2026-10-29
+
+- Exact owner **e2663fb7…** deployment approval executed once.
+  **CONSUMED_COMPLETE / NEVER REPLAY.** [Receipt](customer-email-schema104-deployment-receipt.md).
+  Live **1e931d20d19bde5a / source444c8fd / schema104**, app PID78939/Caddy26652.
+  One migration20261029120000 and one ordinary app restart; cutover17:58:12 Riyadh.
+- All148 old protected projections preserved; current150 includes the two new tables.
+  Configured Email revision2, encrypted key/selected verified sender and complete-row
+  fingerprint unchanged. Provider/account/activation/marketing/webhook all false;
+  capture false/revision0, worker secret absent, templates/messages/attempts/provider
+  events/order-email events all zero. No historical backfill, Brevo request or email.
+  Supabase Auth SMTP was never accessed. No runtime/Caddy/unit/credential change.
+- All3,129 public assets HTTP/hash PASS. NEXT automatic MON **18:00:07 Riyadh**
+  complete/active, five identical retained warnings, zero critical; journal gaps2 and
+  original unused purchasing kill1/COD-only disable1 remain. CARD+COD and Manual50+
+  COD50/CARDfee0 stay live; payment/ownership/duplicate guards and original uncertain
+  PDC dispatch quarantine intact. No shipment, pickup, money action or payment retry.
+- Technical inactive deployment COMPLETE; provider/mailbox delivery, owner template
+  acceptance and future automatic customer email activation remain PENDING.31 local
+  email checks/11 release guards and rollback qualification retained, not rerun.
+- All35 worktrees, deferred tests/evidence, Pixel preparation, visual TODOs, SEO/
+  redirects and historical/storage work remain. PDC commercial settlement/ERP LAST.
+- **ONE NEXT ACTION:** prepare one separate private controlled-message approval.
+  Reuse the approved private mailbox and existing test scope. No send, worker or
+  future capture activation is authorized by the consumed deployment approval.
+
+---
+
+# E144 — inactive customer Email schema104 READY — 2026-10-29
+
+- **CX-EMAIL-01 / OD-20261029-EMAIL-104-01:** owner requests inactive104 production
+  qualification only. **READY / SEALED READ-ONLY PREFLIGHT PASS / NOT DEPLOYED.**
+  [Exact approval, expiry, scope and recovery](customer-email-schema104-release-review.md).
+- Frozen source444c8fd directly extends deployed8d75404. All five existing qualified
+  code/migration hashes are unchanged. Separate35th release worktree preserves the
+  original34 and14,076 opening pending-file hashes, except intentional continuity docs.
+  One new migration20261029120000; all103 historical files unchanged. No rebuild of
+  the Email foundation, application redesign, merge/reset or Git push.
+- **31 focused checks +11 release guards PASS /0 skips; typecheck/build PASS.**
+  Native PostgreSQL17.11 migration/transactional rollback preserves configured
+  revision2 key/sender, COD-active settings,142 table projections and383 unrelated
+  function contracts. Live103 maps to the reviewed104 footprint; future transaction
+  compares148 protected projections. No historical email backfill or backlog.
+- Archive **1e931d20d19bde5a**,4,111 entries,3,129 browser HTTP/hash checks PASS;
+  all3,019 immutable parent assets retained. Local serving registry includes seven
+  retained negative-name URLs. Fresh encrypted DB and11 runtime/config file backups
+  passed full readback. No Caddy change/signal or production restore is authorized.
+- **29 October 2026, 17:12:24 Riyadh, sealed preflight PASS:** live9aa/schema103, app76747/Caddy26652,
+  CARD+COD, Manual50+COD50/CARDfee0, configured Email revision2/verified sender intact.
+  Provider/account/activation/marketing/webhook all false, worker absent, all Email
+  queues/attempts/events0. MON17:10 automatic complete WARNING5/critical0; original
+  warning identities/gaps2/emergency kill1/COD-only disable1 remain. Zero COD/new orders;
+  original uncertain dispatch quarantined. No provider/money/shipping action.
+- Inactive deployment would install truthful bilingual CARD/COD order-received and
+  verified live CARD-payment mail. Capture remains false/revision0, worker absent,
+  all five Email controls OFF. Existing key/sender/Email row are fingerprinted and
+  preserved. No Brevo API request, send or Supabase Auth SMTP access occurred.
+- Current seal **e2663fb7457f5cafebfa42a27d9f58b5c565a069cc6833247e4806c209bf32ce**, expires **29 October 2026, 21:10:52 Riyadh**;
+  start before **29 October 2026, 21:00:52 Riyadh**. Exact approval permits one migration,
+  exact app cutover and one ordinary restart, with zero runtime/Caddy/MON/settings/
+  credential/provider changes. It is not yet approved; no attempt/stage exists.
+  Stop on any guard/expiry/partial/uncertain result; no replay or automatic rollback.
+- After deployment prepare one separately approved message to the known private
+  test-only mailbox. Provider acceptance, actual mailbox delivery and owner approval
+  must precede future capture/worker activation. Remaining customer-email milestones,
+  owner visuals, Pixel, SEO/redirects and all35 deferred rows/evidence remain open.
+  Existing three reset unknowns stay fail-closed. Commercial settlement/ERP remains LAST.
+- **ONE NEXT OWNER ACTION:** supply the exact new deployment approval in the review.
+
+---
+
+# E143 — disabled Email configuration saved; readback PASS — 2026-10-29
+
+- **CX-EMAIL-01 / OD-20261029-EMAIL-CONFIG-01:** owner confirms saved, Disabled,
+  all five controls unchecked, sender verified YES. Read-only production readback
+  at **16:12:47 Riyadh** independently confirms application settings revision**2**,
+  encrypted key present, expected ELCOMPUTER / info@elcomputer.net identity and one
+  saved sender marked verified. No Brevo key or ciphertext was selected or disclosed.
+  [Configuration receipt and remaining boundary](customer-email-configuration-review.md).
+- All five gates are **false**: provider, account approval, sending activation,
+  marketing and webhook. Worker secret and webhook token remain absent. Reply-To,
+  payment alert recipient, marketing sender and unsubscribe origin remain empty;
+  timeout10000 retained. Templates/messages/attempts/events are all zero. Proposed
+  schema104 is still absent. No backlog or historical customer email was created.
+- Sender verification is owner-confirmed and stored locally. No independent Brevo
+  authentication, sender/domain API verification or mailbox delivery is claimed.
+  Codex made no provider request, settings write, email/send, migration, deployment,
+  restart, permission change or Git push. Supabase Auth SMTP was never accessed.
+- Same live **9aa61b64c2c5cf9f / schema103**, CARD and COD available. MON's automatic
+  16:10:06 scan completed with five retained warnings and zero critical alerts;
+  timer active, email alerts OFF, two historical journal gaps and original unused
+  emergency budget preserved. Genuine COD orders0; new orders since activation0.
+  No shipment authority or PDC/provider action follows from this email milestone.
+- Existing local444c8fd/proposed104 and its five qualified source hashes remain.
+  Prior31 focused checks/typecheck/build, preservation/rollback and383 unrelated
+  functions plus E141's10 offline configuration checks are retained, not rerun.
+  Six bilingual previews and all unfinished email events/acceptance stay open.
+- **ONE NEXT INDEPENDENT ACTION:** qualify the inactive schema104 migration/app
+  release packet against the current COD-active runtime and saved Email revision2.
+  Preserve the key/sender and all-OFF gates, no backfill or scheduling. Packet
+  preparation is already authorized; deployment requires its own exact approval.
+  A later controlled test-send and future worker/capture activation stay separate.
+- Both handoffs and roadmap updated. All34 worktrees and35 deferred IDs/evidence,
+  visual TODOs, Pixel preparation, SEO/redirects and quarantined PDC dispatch remain.
+  PDC commercial fees/net settlement/ERP remain LAST, never booking prerequisites.
+
+---
+
+# E142 — private Dashboard Email configuration guidance — 2026-10-29
+
+- **CX-EMAIL-01 / OD-20261029-EMAIL-CONFIG-01:** owner reports a dedicated Brevo
+  key created with Restricted access, Transactional email All, every other resource
+  None. This is owner-reported preparation, not provider authentication or send proof.
+  The key was not shared with Codex. No Supabase Auth SMTP access is authorized.
+- Owner requests guided configuration through the existing authenticated Dashboard.
+  Scope is one settings save, preserving every delivery/account/activation/marketing/
+  webhook gate OFF. No extra permission request is needed for these instructions.
+  [Exact fields and expected readback](customer-email-configuration-review.md).
+- Schema103 source8d75404 confirms the settings handler only validates, encrypts and
+  persists configuration. It makes no provider request or send. Five activation
+  controls remain unchecked. The sender's Verified box stays false unless actual
+  Brevo evidence already exists; unverified sender configuration can be saved OFF.
+- Guide uses brand/name ELCOMPUTER and sender info@elcomputer.net. Reply-To, payment
+  alert recipient, marketing sender, unsubscribe origin, timeout and webhook token
+  stay unchanged. No verification email, API probe, worker or test-send is included.
+- **Save/readback PENDING:** no owner result or new live check is inferred. E141's
+  dated14:36 production/order/MON evidence remains the last observation. Schema104,
+  both payment methods, all deferred tests, Paymob preparation and PDC quarantine
+  remain preserved. No code change, production write, deployment or Git push.
+- **ONE NEXT ACTION:** owner privately completes the all-OFF Dashboard settings save,
+  then reports only the non-secret saved/disabled status. Provider qualification,
+  deployment and one controlled send each remain separately authorized later.
+
+---
+
+# E141 — customer-email preparation resumed; disabled configuration next — 2026-10-29
+
+- **OD-20261029-EMAIL-RESUME-01 / CX-EMAIL-01:** email preparation may proceed
+  while genuine COD orders and provider answers are pending. Reuse the preserved
+  444c8fd / proposed schema104 candidate. Working payments remain unchanged.
+  [Next configuration-only scope and approval boundary](customer-email-configuration-review.md).
+- **14:36:22 Riyadh, read-only production check:** release 9aa61b64 / schema103,
+  app PID76747 and Caddy PID26652 match the activated runtime and installed inventory.
+  CARD and COD are live. Delivery EGP50; additional COD fee EGP50; CARD fee EGP0.
+  MON's 14:35:05.630 automatic scan completed: five retained warnings, zero critical.
+  These are two overdue and three terminal/unverified payment warnings. Financial,
+  duplicate and ownership mismatch counters remain zero. Original emergency budget1
+  and two historical journal gaps remain preserved. No manual scan or restart.
+- There are **zero COD orders and zero new orders since activation**. Two existing
+  unpaid CARD orders and the historical paid/packed shipment remain unchanged.
+  Its uncertain dispatch stays quarantined: attempt1, no AWB, original reference.
+  A genuine COD order needs verified details, staff approval and actual packing,
+  measured parcel weight and the full saved EGP balance. Only then prepare one
+  separately approved booking. No synthetic order, retry, pickup or fake collection.
+  Commercial fees and ERP remain LAST, never shipment prerequisites.
+- **Live Email revision0 is OFF and unconfigured.** Application API key, sender and
+  worker secret are absent. Account, activation, marketing and webhooks are false.
+  Templates, messages, attempts and events are empty; schema104 remains absent.
+  Auth SMTP was never inspected or changed. The private test mailbox stays test-only.
+  Anonymous settings GET401 and Dashboard302 confirm the authentication boundary;
+  an authenticated settings save remains NOT EXERCISED.
+- All five candidate code/migration hashes match the previous qualification.
+  Source444c8fd remains directly based on deployed8d75404. Reused evidence includes
+  **31 focused checks, typecheck/build PASS, 142-table preservation/rollback and
+  383 unrelated function contracts**. These were not rerun. Six EN/AR previews remain.
+  No application code, migration number, release packet or backfill was changed.
+- **10 new offline configuration checks PASS.** The existing validator encrypts a
+  local canary key, keeps delivery off, redacts secrets, rejects stale revisions and
+  forged encrypted input, and clears accidental activation. Verified sender status
+  alone cannot enable mail. No database order or provider request was created.
+- **Smallest next independent action:** privately prepare the dedicated Brevo
+  application API key and actual sender/account/domain evidence for the selected
+  ELCOMPUTER / info@elcomputer.net identity. Keep the key and private recipient out
+  of chat. Then approve one revision-bound authenticated Email settings save with
+  every delivery/account/activation/marketing/webhook gate OFF. That save needs
+  **no migration or restart**. No executable seal is issued: private inputs are missing.
+  Inactive schema104 deployment, one private test-send and future capture/worker
+  activation each require separate approval. Uncertain sends cannot be retried.
+- Current priorities: genuine COD processing; pickup/tracking after a real AWB;
+  provider-qualified Pixel/recovery; emails, with preparation allowed now; SEO and
+  redirects; remaining deferred/customer/admin/history/storage work; LAST settlement
+  and ERP. No repeated provider investigation, live Pixel switch or payment retry.
+- All34 worktrees and 14,075 opening pending-file hashes are preserved, except
+  intentional documentation updates. Both accounts' source, local104, visual TODOs
+  and all35 deferred rows/evidence remain. No production write, provider request,
+  email, credential change or Git push occurred.
+- **ONE NEXT OWNER ACTION:** prepare the application key and sender evidence
+  privately. The next approval covers only the disabled configuration save above.
+
+---
+
+# E140 — owner promotes real COD shipping; commercial/ERP LAST — 2026-10-29
+
+- **OD-20261029-COD-OPS-FIRST-01:** owner accepts PDC commercial fees for now.
+  Stop treating commission, invoice deductions, net remittance, settlement timing,
+  profitability or ERP/Daftra integration as booking blockers. Move detailed work
+  to **FIN-PDC-01 / FINAL-FIN / LAST**, retaining unknowns/tests/evidence. Basic saved
+  totals/requested COD, verified actual collection and outstanding receivables stay
+  mandatory; no fabricated settlement, forced short-payout reconciliation or Paid flag.
+  [Current operational note and exact blocker](real-cod-pdc-operations.md).
+- **14:05:19Riyadh final READ-ONLY check:** same9aa61b64c2c5cf9f/source8d75404/schema103,
+  app76747/Caddy26652/installed inventory/schema-security/activated runtime match.
+  CARD+COD live, Manual50 +COD50/CARDfee0. Next automatic14:05:05.866 MON complete/
+  WARNING5/critical0, same2overdue+3terminal codes, integrity/duplicate/ownership0.
+  Original kill1 unused, historical journal gaps2, monitoring/callbacks unchanged.
+- **New normal COD orders0 / total normal COD orders0 / eligible packed candidates0.**
+  Orders projection includes cash without paid-only filtering; one active Orders
+  authority exists. Actual hosted staff interaction with a real COD row NOT EXERCISED.
+  Installed checkout/status copy keeps COD unpaid/awaiting collection. Staff approval,
+  quantity packing/private video, cached destination, full cash and one dispatch/REF/
+  AWB guards remain;44 prior local checks reused, not rerun. No demonstrated defect,
+  new implementation, migration, deployment or runtime change is needed for booking.
+- **PDC first-booking BLOCKED only by no eligible genuine approved/packed COD order.**
+  No shipment seal/expiry/approval is issuable now. Narrow manual-COD book/label gate
+  is already ON; global outbound/automation/reverse/tracking/general recovery remain
+  OFF. Fees/accounting are not prerequisites. No fake order or quarantined incident
+  is used. Original uncertain CARD dispatch remains attempt1/noAWB/reference intact.
+- Owner confirms **SaveShipmentEx creates shipment only; it does NOT request pickup**.
+  After a real approved AWB/private label, staff arrange actual pickup separately;
+  no verified normal-outbound pickup API or automatic schedule is invented. Basic
+  saved-AWB+REF tracking is SECOND; qualify a narrowly scoped status action after AWB,
+  retaining existing dates/mapping/unknown-state guards, without global PDC opening.
+  Booking/AWB/pickup/delivery never imply verified cash collection or Treasury receipt.
+- Exact queue now: **1 real COD/approval/packing/PDC booking →2 pickup/basic tracking
+  →3 Pixel + safe recovery using Paymob response/SDK qualification →4 transactional
+  emails →5 Google SEO/legacy redirects →6 remaining customer/admin/visual issues
+  →7 historical migration/storage →8 LAST detailed PDC commercial settlement/ERP**.
+  Paymob inquiry SENT/response pending; no repeated investigation or live switch.
+- [Deferred register](DEFERRED_TEST_REGISTER.md) preserves all original33 IDs/
+  evidence, reprioritizes relevant rows, adds **DTR-34** P0 real COD acceptance and
+  **DTR-35** LAST financial/accounting phase. No deferred test deleted or marked PASS.
+  SHIP-03/04 and ERP-01/02 explicitly LAST; existing ERP/inventory/RBAC/RLS/Treasury
+  safety controls remain mandatory. Historical approvals/notes cannot override E140.
+- All34 opening worktrees/14068 pending-file hashes preserved except intentional
+  docs; no app/source/production write, restart, provider request, shipment, pickup,
+  cash/financial/email action or Git push. Local email444c8fd/proposed104 OFF,
+  Auth SMTP/private test-only mailbox boundaries, visual TODOs, SEO/redirects,
+  migration/STOR-01/DTR-33 and all unfinished work retained.
+- **ONE NEXT ACTION:** receive the first genuine COD order and have authorized staff
+  approve/pack it; then prepare ONE newly scoped real-shipment approval for that order.
+
+---
+
+# E139 — COD ACTIVATED on103; automatic MON postflight PASS — 2026-10-29
+
+- Exact owner **d13f2f0e…** approval recorded13:30:53.654Riyadh and executed once.
+  **CONSUMED_COMPLETE / NEVER REPLAY.** [Activation receipt and remaining boundary](cod-schema103-activation-receipt.md).
+  CX-COD-01 / OD-20261029-COD-FINAL-01 activation and technical closeout COMPLETE;
+  hosted customer/provider/financial/owner acceptance remains separate.
+- Same **9aa61b64c2c5cf9f/source8d75404/schema103**, no migration or app deployment.
+  Three config rows commit13:33:56.145: cash fee50, reviewed Manual COD/PDC collector,
+  PDC COD capability. Existing payment_methods+1/shipping+2 revisions;17 protected
+  order/payment/inventory/Auth/Treasury table projections unchanged in transaction.
+- Runtime active **13:34:09.680Riyadh**, exactly **one app restart**, new app76747;
+  Caddy26652 unchanged. CARD+CASH public policy/narrow staff-COD flag loaded exactly.
+  CARD live, delivery50 +COD50, CARDfee0, signup open/confirmation required. Global
+  PDC outbound/automatic labels/reverse/tracking/general recovery remain paused.
+  Staff approval/packing/private video/one dispatch/uncertain/cancellation guards retained.
+- Fresh execution encrypted DB13654377 plaintext bytes/authenticated full pg_restore
+  and all11 runtime/config file readbacks PASS13:33:23.327. Exclusive local/remote
+  intents precede mutation. Final **13:35:43.574 read-only POSTFLIGHT PASS** after
+  next **AUTOMATIC13:35:06.091 MON complete/WARNING5/critical0**, timer enabled/active/
+  waiting, same2overdue+3terminal fingerprints; financial/signed-success/duplicate/
+  ownership mismatch0. No manual scan, report/history/dedup reset or email.
+- Original unused purchasing-kill1 and unused manual COD-only emergency disable
+  retained; neither used,0 extra restart. Same source/schema-security/installed
+  inventory/callback/fixed-file guards pass. Original uncertain CARD dispatch stays
+  attempt1/noAWB/original reference; no provider recovery/rebooking is authorized.
+- No agent-created order, payment intention/charge, shipment, pickup, collection,
+  Treasury/refund/email action, credential/Auth/Caddy change, automatic rollback,
+  Git push or old approval replay. Existing44 focused local checks reused, not rerun.
+  Public/technical evidence does not establish real COD booking/collection/remittance
+  or owner visual acceptance. First real provider action needs its own exact scope.
+- Financial limitation retained: saved tariffs0; draft COD0.5%/VAT14%/invoice14days
+  unverified. Merchant fee basis/minimum/rounding/VAT, separate invoice vs deductions,
+  gross/net remittance, statement allocation and bank-credit timing UNKNOWN. Customer
+  COD50 is not PDC's evidenced fee. A short/net payout cannot clear full-receipt
+  Treasury reconciliation; never invent a net amount/expense or mark it reconciled.
+- All34 opening worktrees/14067 pending-file hashes preserved except intentional
+  continuity docs; main3747575/deployed8d75404 and both accounts' work retained.
+  Local email444c8fd/proposed104 OFF, Auth SMTP/private test-only recipient limits,
+  address/location/navbar visual TODOs, SEO/redirects, migration/STOR-01/DTR-33/all
+  deferred tests preserved. Paymob inquiry SENT/response pending; no new investigation
+  or live Pixel switch. Continue existing SDK preparation after provider answers.
+- **ONE NEXT OWNER ACTION:** confirm current PDC merchant tariff, deduction/invoicing
+  and remittance terms before separately authorizing the first booking.
+
+---
+
+# E138 — final COD activation packet READY on103; approval pending — 2026-10-29
+
+- **OD-20261029-COD-FINAL-01 / CX-COD-01:** final activation-only preparation
+  complete. [Exact review, financial limits, emergency procedure and approval](cod-schema103-activation-review.md).
+  Owner confirms PDC major EGP/full final cash, delivery50 +COD50, staff approval/
+  packing. Reuse installed101 on103; **0 migrations,0 app deployments**.
+- **13:19:04.021Riyadh SEALED READ-ONLY PREFLIGHT PASS:**9aa61b64c2c5cf9f/schema103,
+  app72557/Caddy26652/current inventory/schema-security/fixed files match. CARD-only/
+  Manual50/signup confirmation live, COD/PDC gates OFF. Automatic13:15 MON complete/
+  WARNING5/critical0, same2overdue+3terminal fingerprints; mismatch/signed-success/
+  duplicate/ownership0. Original unused purchasing-kill1 and journal gaps2 retained.
+- **34 JS/native +10 Python runtime/MON focused checks PASS/0fail/0skip.** Actual
+  deployed103 SQL/handlers, native17.11: quote fee50+50/CARDfee0, exact full cash incl
+  200.35, concurrent unpaid placement, staff/packing, one dispatch, uncertain quarantine,
+  pre/post-AWB cancellation guards, collection/Treasury separation. New backup/expiry/
+  intent/emergency guards pass. No new app build or hosted visual/provider acceptance.
+  Old fixture-location failure retained; only lab synthetic reference setup corrected.
+- Fresh encrypted DB13653829 plaintext bytes/authenticated full pg_restore and all11
+  runtime/config files/full-byte readback PASS at13:17:31Riyadh. Receipt/encrypted
+  bytes/source/dependencies bind the NEW seal; apply requires another fresh backup.
+- NEW seal **d13f2f0e57a9aaef7531dbe3fb424b64d43a30774cbc6de636e1bfac2559fda1**,
+  expires **29October17:18:44.767Riyadh**, start before17:15:44.767. Changes only cash
+  fee0→50, reviewed Manual COD/PDC collector, PDC COD capability, CARD+CASH policy and
+  narrow staff-COD runtime flag; **one app restart**. No approval/intent/activation.
+  Global PDC/automation/reverse/tracking/recovery remain off;0 provider calls/orders/
+  pickups/cash/Treasury/emails. Old101/held/consumed packets remain non-replayable.
+- Manual one-use COD-only emergency disable is qualified, with at most one additional
+  restart; closes cash/staff booking, preserves CARD/records/MON/original kill1.
+  Existing whole-purchasing emergency kill retains its original reasons/budget.
+  Neither is automatic rollback. Stop on any drift/expiry/partial/uncertain outcome.
+- **Financial limits:** production saved tariffs0. Owner draft lists COD0.5%,VAT14%,
+  invoice14days, freight60–105, unverified for current account/Product40. Calculation
+  base/minimum/rounding/VAT, separate invoice vs deductions, actual gross/net payout,
+  statement allocation and remittance/bank-credit timing UNKNOWN. Invoice14days is
+  not a remittance promise. Customer COD50 is not PDC's evidenced merchant fee.
+  No activation blocker to this zero-provider-request packet; first booking remains
+  separately held for exact cost/order/parcel review and authorization. Short/net
+  payout cannot clear the installed full-receipt Treasury reconciliation.
+- Owner reports **Paymob technical inquiry email SENT; response pending**. No further
+  Paymob investigation/probe. Current Pixel plan stays preserved; no live switch until
+  provider answers/SDK qualification. All34 worktrees/opening14066 pending hashes
+  preserved; main3747575/other-account work untouched apart from continuity docs.
+  Local email444c8fd/proposed104 OFF, Auth SMTP/private test-only recipient boundary,
+  visual acceptance TODOs, SEO/redirects, migration/STOR-01/DTR-33/all deferrals retained.
+- **ONE NEXT ACTION:** exact owner `APPROVE PDC COD SCHEMA103 ACTIVATION` statement
+  with the new seal in the review, before expiry. No production action has run.
+
+---
+
+# E137 — Codex2 takeover; PDC units confirmed; COD readiness READY — 2026-10-29
+
+- **OD-20261029-TAKEOVER-02 / OD-20261029-PDC-UNITS-01:** owner reports direct PDC
+  confirmation: `shipments[].cod:200.35` means **EGP200.35 / major units**. Record as
+  owner-reported provider confirmation, not an independently obtained written answer.
+  Close the scale blocker; do not repeat its question/investigation or a PDC request.
+  [Current preflight, COD decision and exact next scope](commerce-takeover-20261029.md).
+- **12:46–12:48Riyadh READ-ONLY PASS:** production9aa61b64c2c5cf9f/source8d75404,
+  schema103/last20261029010000, app72557/Caddy26652/restart counters0/fixed files match.
+  CARD-only initiation/Manual50/signup configuration retained. COD/PDC outbound OFF;
+  cash fee0/inactive. Ten public/privacy routes PASS; no authenticated acceptance.
+- Automatic **12:45:05.887 MON complete/WARNING5/critical0**, timer enabled/active/
+  waiting: two overdue +three terminal payment-unverified warnings, same E136
+  fingerprints. Financial/signed-success/duplicate/ownership mismatches0. Since
+  E13611:59:24.854:0 new orders/attempts/transactions or changed payment rows.
+  Original kill budget1 unused; historical journal gaps2 retained, no resets/scans.
+- **CX-COD-01 READINESS READY / EXECUTION HELD:** installed101 serializer/guards work
+  on103; seven source bindings/nine function+ACL projections/schema freshly verified.
+  **No migration or application deployment required.**64 native/API +13 scoped tests
+  reused, not rerun. No new booking-safety code blocker found. Full cash includes
+  delivery50 +COD50; staff approval/packing/private video/one dispatch remain mandatory.
+  Collection and Treasury remittance remain separate; booking/AWB/delivery never Paid.
+- Remaining safeguard: NEW schema103 settings/runtime-only activation packet, qualified
+  operator, owner-confirmation binding, current backups/MON fingerprints, expiry/seal
+  and independent approval. Old101 activation packets expired; never bypass/replay.
+  At most one app restart, cash alongside CARD, narrow staff-COD gate only;0 shipments/
+  pickups/financial entries. Original uncertain CARD dispatch attempt1/noAWB/reference
+  remains quarantined. Real booking/collection/remittance acceptance NOT EXERCISED.
+  Additional precision/rounding, merchant tariffs/VAT/deductions and statement/remittance
+  evidence remain unqualified; retain exact two-decimal/full-match guards, no fee guesses.
+- **OD-20261029-PIXEL-01 / PAY-02:** [independent Pixel preparation](paymob-pixel-preparation.md).
+  Deployed source already mounts pinned Pixel1.2.8; owner reports LIVE Redirect journey,
+  but no separate Redirect adapter/selector was found. Preserve the working flow;
+  qualify that gap/fallback, SDK lifecycle, CSP, merchant card/3DS and expiry contract.
+  Server intentions only; callbacks authoritative; no new/reopened charge on refresh.
+  Official by-order inquiry returns LATEST only; no complete-history assumption/probe.
+  Pay Again/method changes stay held; owner's technical question set pending.
+- **OD-20261029-PAYOPS-01 / PAY-06:** [reusable payment operations design](payment-operations-design.md)
+  covers order/attempt IDs, evidence/states, callback limits, recovery holds, refunds/
+  voids/disputes, fees/net/remittance, MON and RBAC/audit. Missing provider values remain
+  Unknown; unsupported actions unavailable. Design only; no app/SQL change or new test run.
+- All34 worktrees/branch tips/14055 pending-file hashes inventoried before docs edits.
+  Main3747575 is continuity, not deployed lineage. No reset/merge/cleanup/push or other
+  account source edit. Local email444c8fd/proposed104 preserved OFF; resume after current
+  commerce qualification. Sender/application key pending; private Yahoo test-only,
+  Auth SMTP untouched. SEO/legacy redirects/admin/migration/STOR-01/DTR-33/all deferrals
+  retained; owner address/location/navbar acceptance PENDING. No deployment, migration,
+  restart, provider API call, customer email, financial write or consumed-approval replay.
+- **ONE NEXT ENGINEERING ACTION:** prepare and qualify the fresh schema103 COD
+  activation-only packet, then present its independent exact approval. This readiness
+  milestone issues no execution approval or executable seal.
+
+---
+
 # E136 — customer order emails first increment LOCAL PASS/OFF — 2026-10-29
 
 - **OD-20261029-EMAIL-01 / CX-EMAIL-01:** owner promotes independent transactional
@@ -3233,6 +4034,26 @@ Light/Dark/System, compact Dashboard components and responsive layouts.
 
 ### B. Current production baseline
 
+**E148, verified30 October2026 at03:36:26 Riyadh:** use the
+[current real-COD operations note](real-cod-pdc-operations.md) and
+[inactive Email deployment receipt](customer-email-schema104-deployment-receipt.md). The
+[activation receipt](cod-schema103-activation-receipt.md) remains consumed technical evidence.
+
+| Area | Current verified boundary |
+| --- | --- |
+| Application/schema | 1e931d20d19bde5a/source444c8fd, schema104/last20261029120000; inventory/certificate/running release/schema-security match. App78939/Caddy26652. Main3747575 remains continuity. |
+| Commerce/Auth | CARD and COD available; Manual delivery50/additional COD50/CARDfee0; signup open/confirmation required. One approved restart; hosted owner interaction not inferred. |
+| COD/PDC | Installed101 reused on104; COD ACTIVATED, Manual/PDC collector and narrow staff gate enabled. Global outbound/queues/reverse/tracking/general recovery remain paused. Original uncertain shipment quarantined. First booking needs a real approved/packed order and separate approval; commercial/ERP details LAST, not a booking prerequisite;0 provider requests. |
+| Payment operations | Approved activation preserved17 order/payment/inventory/Auth/Treasury projections; no agent money action. Finance/signed-success/duplicate/ownership mismatch counters0; provider-unverified cases and Pay Again hold retained. |
+| MON/recovery | Five-minute timer active;03:35:05 automatic complete WARNING5/critical0 (five terminal-unverified warnings; old frozen warning set drifted, no reset), same two overdue/three terminal warnings. Original unused emergency-close budget1; historical journal gaps2 remain. Only two approved runtime values changed; Caddy/monitor fixed files unchanged; one app restart. |
+| Customer features | Homepage direct cart, address book/collapsed checkout, dependent locations and navbar name deployed; pending owner visual scopes remain pending. |
+| Payments preparation | Existing Pixel source identified; reported Redirect journey/fallback and SDK/CSP/3DS/finality need qualification. PAY-06 Dashboard design only. Paymob inquiry SENT/response pending; no new investigation/live switch. |
+| Email | E148 owner-confirmed actual receipt/basic English layout for the one private probe; provider201 accepted.52f/e266 consumed. Email revision2/key/sender unchanged, all five controls false, capture false/revision0, worker absent, central queues0. Hosted queue/worker/event and remaining bilingual acceptance pending; no activation authority. |
+| Preservation |35 total worktrees; original34 branch tips/14076 opening pending hashes preserved; no reset/merge/push/cleanup/source overwrite. All deferred requirements retained. |
+
+The following E69-era table is retained as **historical evidence**, not the current
+production baseline or execution authority.
+
 | Area | Latest reliable retained evidence |
 | --- | --- |
 | Application | E69 active `11cb391b2497b703`, source5b090772228494989b7d7eb0fbb28690ef6c8316, completed2026-10-27 02:26:23.176 Riyadh. One app restart/0 SQL/runtime/Caddy/Auth changes; app seal20d5 CONSUMED_COMPLETE. Old81 retained; separate rollback must retain both asset generations and align the recovery template. |
@@ -3327,7 +4148,7 @@ it does not waive multi-customer, email, destination or recovery acceptance.
 | BETA-07 | Owner-approved launch delivery and configurable EGP50 shipping | P0 | LOCAL PASS | Owner-managed delivery/all cities and governorates/EGP50 CONFIRMED | Prepare separate Manual company and reviewed coverage/fee; old PDC identity/barriers preserved | E59; OD-20261026-DELIVERY-02 | 2026-10-26 | Install approved Manual configuration through guarded Beta plan; PDC calls remain paused |
 | BETA-08 | Merchant refund/cancellation and stock-reconciliation readiness | P0 | MANUAL REMEDY OPERATIONALLY CONFIRMED | Owner confirms documented manual process available; no refund/transfer executed | Consent/original transaction/unique private operation/remaining amount and reconciliation required; capture history preserved | E89; E59; OD-20261026-REFUND-02 | 2026-10-27 | Use supported remedy only for an authorized actual case; automation remains deferred |
 | BETA-09 | Payment exception monitoring and closure | P0 | LIVE WARNING; FIVE-MINUTE AUTOMATION ACTIVE | E103 two automatic checks/fresh report/dedup PASS; critical0; pending2649 and abandoned3149 provider outcomes UNVERIFIED; two paid staff-backlog orders | Timer/heartbeat/history/private alerts verified; no automatic money/order/stock action; callbacks/original kill retained | E103; E102; E101 | 2026-10-28 02:45 regular worker/02:46 postflight | Staff attends Dashboard exceptions and real fulfillment; actual merchant outcomes require evidence; email OFF; owner Dashboard operation accepted E107; optional email separate |
-| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | LIVE SAFETY CONTROL | AUTOMATIC PASS / ORIGINAL3 WARNINGS / critical0 / PRIOR SCOPED OWNER ACCEPTANCE RETAINED | E128 one approved config hash update17c consumed-complete; worker/history unchanged | Enabled/active/waiting,23:20 automatic complete report; finance/ownership0, original kill1 unused; no email | E128; docs/checkout-address-book-monitor-recovery-receipt.md; E108 | 2026-10-28 23:20 automatic MON + technical postflight PASS | Keep active during later features; preserve warnings/provider uncertainty and full proxy-hash guard |
+| MON-01 | Durable monitoring and secure Dashboard alerts; email optional | LIVE SAFETY CONTROL | AUTOMATIC COMPLETE / WARNING5 / critical0 / PRIOR SCOPED OWNER ACCEPTANCE RETAINED | E139 next automatic13:35 scan after approved COD restart PASS; worker/config/history unchanged | Enabled/active/waiting, same2overdue+3terminal unverified fingerprints; finance/ownership0, original kill1 unused, gaps2 retained; email off | E139; cod-schema103-activation-receipt.md; E128; E108 | 2026-10-29 13:35:06 automatic report/13:35:43 final postflight PASS | Keep five-minute timer/history/warnings/proxy-hash guard active; no reset/manual scan or Paymob investigation |
 | BETA-10 | Guarded inactive schema91→94 deployment preparation | P0 | DEPLOYED | Exact replacement4c332350 approved/executed once; catalog pause may end; seal consumed | Releasebc05eef266eeb7de/schema94 active, atomic92–94, all140 original projections/Auth preserved; backups/candidate/RLS/gates/public smoke PASS, history/claims0 | E35; E34; E33; E31 | 2026-10-25 | Never rerun consumed apply; E37 historical import/three-route change also completed; ordinary acceptance/notice/signup are next |
 | BETA-11 | Normal CARD checkout and guarded public activation | P0 | PUBLIC CARD BETA ACTIVE | E88 genuine paid5/closure; E90 exact approved runtime activation verified | CARD/Manual50/signup entry/test exclusion/no coupons; app9c74cf4d2c22a267/schema100; Caddy/security/history retained; DTR-33 remains | E119; E115; E90; E88; docs/homepage-direct-cart-receipt.md | 2026-10-28 inactive COD cutover postflight; original paid acceptance retained | Accept genuine customer orders; staff15min exceptions/manual fulfillment; one approved kill on valid public defect or unmaintainable reconciliation |
 | BETA-12 | Preserve LIVE payment, 3DS and callback reconciliation | P0 | ACCEPTED | Prior real LIVE card payment/signed callback accepted; preserved | No repeat integration charge; new native customer-to-paid flow PASS with0 external calls | E59; DONE-04; E02 | 2026-10-26 | Preserve binding; verify next single authorized genuine customer sale only |
@@ -3346,7 +4167,7 @@ deployment, import, signup and purchasing retain their separate approvals.
 | MIG-01 | Source inventory and durable customer identity mappings | P0 | DEPLOYED | Source and final eligibility/import approved and executed once; actual Auth claims0 | 516 imported/513 conditionally eligible/3 held; one current verified match has no orders,512 later verified signups; zero Auth creation/hash import/automatic links/current edits | E37; E36; E30; E23 | 2026-10-25 | Preserve source/import receipts; verify explicit ordinary ownership without changing immutable flags |
 | MIG-02 | Historical customer profiles and saved addresses | P0 | DEPLOYED | All516 archived customer snapshots imported; verified explicit claim required for reads | Every approved historical snapshot/address preserved; all140 original projections/current profiles/credentials unchanged | E37; E36; E23 | 2026-10-25 | Existing eligible customer accepts archived profile/empty order view; hosted acceptance remains pending |
 | MIG-03 | Historical orders, customer order history and Woo metadata | P0 | DEPLOYED | Data/API/My Orders and three scoped routes live; claims0, hosted owned acceptance pending | 591 orders/6 refunds/1789 items/702 events reconciled exactly;459 orders/6 refunds eligible,1 held order/131 unlinked remain private; no live provider action | E37; E36; E35; E23 | 2026-10-25 | Accept hosted ordinary claim/list/detail/refresh with an eligible order-bearing customer after separately approved signup |
-| MIG-04 | SEO, legacy redirects and Search Console | SHOP 7 | QUEUED READ-ONLY | E122 after remaining PDC; Google access not established | Preserve identities/URLs; audit sitemap/canonical/hreflang/redirects/indexing before changes | E122; E123; E98; L1 requirement10 | 2026-10-28 priority updated | After shopping/email/Paymob/PDC; preserve deferred historical and Storage work |
+| MIG-04 | SEO, legacy redirects and Search Console | 5 — GOOGLE SEO / LEGACY REDIRECTS | QUEUED READ-ONLY / NO NEW EXTERNAL ACCESS | E140 after transactional emails; Google access unestablished | Preserve identities/URLs; sitemap/canonical/hreflang/redirect/indexing audit before changes; historical data/storage remain7 | E140; E122; E98; L1 requirement10; DTR-32 | 2026-10-29 owner priority updated; no Google/redirect action | Run bounded SEO/redirect audit as priority5, retaining original privacy/mapping acceptance |
 | MIG-05 | Historical import safety and guarded acceptance | P0 | DEPLOYED | Exact3c9f5764 approval consumed;41 durable batches/completion and independent verification PASS | Fresh encrypted execution recovery/full readback; every immutable record and140 original projections preserved; no Auth/current-commerce/provider/notification writes; one scoped Caddy signal/0 app restart | E37; E36; seven operator tests | 2026-10-25 | Never rerun consumed apply/check expecting empty history; retain receipts and complete hosted ordinary-owner acceptance |
 
 ### G. Payment gateways
@@ -3354,10 +4175,11 @@ deployment, import, signup and purchasing retain their separate approvals.
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | PAY-01 | Secure Dashboard Payment Gateways and Quick Setup configuration | P1 | PLANNED | Separate unit D1; active-owner authorization | Owner-only route/API, versioned encrypted secrets, presence-only responses, audited changes; explicit runtime fallback/source switch | E10; E19 | 2026-10-25 | Extend existing resolver/Setup without moving live secrets automatically |
-| PAY-02 | Paymob Pixel/embedded on-site payment investigation | P2 | PLANNED | Preserve successful LIVE flow and verified callback path | Audit existing Pixel loader/integration first; qualify hosted embedding, lifecycle and 3DS before changing redirects | E10; paymob-report.md; REQ | 2026-10-25 | Compare existing embedded path with observed customer journey |
-| PAY-03 | Paymob refund/void workflows and transaction reconciliation | P1 | PLANNED | BETA-08 manual readiness first; provider/account acceptance | Explicit approved money actions, durable operation ledger, uncertainty handling, refund callbacks/reconciliation and stock disposition | E06; E10; REQ | 2026-10-25 | Design against original transaction; no current refund API exists |
+| PAY-02 | Paymob Pixel embedded checkout with qualified Redirect fallback | AFTER COD / AWAIT PAYMOB RESPONSE | PREPARATION PRESERVED / LIVE SWITCH HELD | E138 owner reports technical inquiry email SENT; response pending; E137 existing Pixel1.2.8 source and observed Redirect/fallback gap retained | Server intentions/callback truth/one-attempt protections; SDK/CSP/3DS/merchant/expiry/fallback qualification required; no Pay Again or automatic live switch | E138; E137; paymob-pixel-preparation.md; OD-20261029-PIXEL-01 | 2026-10-29 no new Paymob investigation/provider call; current flow preserved | Wait for owner-shared response, then qualify existing SDK one independent increment after COD |
+| PAY-03 | Paymob refund/void workflows and transaction reconciliation | P1 / PROVIDER CONTRACT HOLD | DESIGN ONLY / UNSUPPORTED ACTIONS UNAVAILABLE | Existing original transaction/private ledgers; merchant eligibility and supported API/finality evidence required | Separate explicit financial approvals, durable one-dispatch command, uncertain outcome, callbacks/reconciliation and stock disposition | E137; payment-operations-design.md; E06; E10; REQ | 2026-10-29 design; no refund/void/API implementation or action | Obtain authoritative refund/void/dispute/settlement contracts before provider actions; retain separate manual reimbursement readiness |
 | PAY-04 | Generic future payment gateway adapters | P2 | PLANNED | Owner-selected provider and supported capability contract | Provider/config revision pinned per attempt; preserve original reconciliation keys and method availability controls | E10; REQ | 2026-10-25 | Add only when a concrete gateway is selected |
-| PAY-05 | Dashboard merchant-transaction visibility issue | P2 | PLANNED | Owner-reported requirement; exact failing view unverified | Reproduce with secure intended merchant/session; reconcile known sale to local/provider view without another charge | REQ; E02 | 2026-10-25 | Capture read-only view/reproduction details privately |
+| PAY-05 | Dashboard merchant-transaction visibility issue | P1 / LINKED PAY-06 | LOCAL-LEDGER DESIGN PREPARED / PROVIDER VIEW UNVERIFIED | Owner request and E137 payment-operations design; no extra charge or invented full history | Explicit local attempt/transaction IDs/evidence; provider-only values Unknown until qualified; bounded authorized read-only views | E137; payment-operations-design.md; REQ; E02 | 2026-10-29 source/design inspected; hosted staff view NOT EXERCISED | Implement first read-only local-ledger increment under PAY-06 after current COD qualification |
+| PAY-06 | Reusable payment operations and financial reconciliation Dashboard | 3 BASIC PAYMENT VISIBILITY / LAST SETTLEMENT ACCOUNTING | DESIGN PRESERVED / NOT IMPLEMENTED | E140 basic payment truth/recovery uses Paymob response; detailed PDC fees/net/ERP deferred FINAL-FIN | Bounded permissioned local order/attempt/MON views; unsupported provider fields Unknown/actions unavailable; exact collection/receivable evidence remains mandatory | E140; E137; payment-operations-design.md; OD-20261029-PAYOPS-01 | 2026-10-29 priority split only;0 app/SQL/provider changes | Basic payment visibility with priority3; detailed PDC settlement/financial panels with FIN-PDC-01 LAST |
 
 ### H. Products, inventory and backorders
 
@@ -3379,29 +4201,31 @@ Current Beta catalog/wording review is BETA-06; PROD-05 is not a signup/paid-lau
 | PROD-01 | Configurable zero-stock purchasing and truthful fulfillment | P0 | LOCAL PASS | 95 default-safe untracked CARD mode locally qualified; legacy tracked flow preserved | No count/quantity/serial fabrication; paid SKU packing/video still enforced | E59; LOCAL-02; OD-20261026-STOCK-03 | 2026-10-26 | Guarded95 release, then explicit mode activation; preserve all old order snapshots |
 | PROD-02 | Product Manager reliability, publication and bulk operations | P1 | PLANNED | Preserve current compact UI and E12 contracts | Revision-safe sparse changes, current-page selection, recoverable partial receipts, Draft-first required fields and honest failures | E12; E21; REQ | 2026-10-25 | Reproduce remaining accepted defects before extending controls |
 | PROD-03 | Image uploads and VPS media lifecycle | P1 | PLANNED | VPS-only files; extend reference guards for new tables | Validated public images, private evidence separation, authorized deletion/recovery and real upload acceptance | E12; REQ | 2026-10-25 | Verify remaining hosted upload/delete cases without replacing uploader |
-| PROD-04 | Procurement and ERP inventory ownership | P1 | PLANNED | Built-in versus Daftra mode, genuine units and ERP-02 ownership matrix | Preserve single inventory owner; receipt/cost/QR links truthful; aggregate ERP stock never fabricates physical units; no inventory repair merely to sell | E38; E20; E07 | 2026-10-25 | Review procurement→paid-backorder release under current ERP mode; ERP-01/02 follow after Beta |
+| PROD-04 | Procurement and ERP inventory ownership | P1 | PLANNED | Built-in versus Daftra mode, genuine units and ERP-02 ownership matrix; E140 existing ownership mandatory, new ERP integration LAST | Preserve single inventory owner; receipt/cost/QR links truthful; aggregate ERP stock never fabricates physical units; no inventory repair merely to sell | E38; E20; E07 | 2026-10-25 | Preserve actual stock/ownership policy now; ERP-01/02 integration and accounting enhancements LAST, never require inventory repair merely to sell |
 
 ### I. Shipping companies and PDC
 
 PDC remains one adapter within generic Shipping Companies. Product40 is the
 current preferred configured service, not a reusable hardcoded default.
-Book by weight; do not require dimensions. Administrator confirmation, real
-stock allocation and packing precede an explicit booking. Payment alone does
-not book. No automatic pickup scheduling; manual pickup remains the default.
-PDC may create implicit pickup records; do not promise provider behavior absent evidence.
+Book by actual weight; do not add a dimensions requirement. Administrator
+approval and quantity packing/private video precede explicit booking. Preserve the
+current tracked/untracked inventory policy; do not require invented stock. COD is
+unpaid until verified collection. Owner confirmation E140: SaveShipmentEx creates
+only the shipment and does NOT request pickup. Staff arrange pickup separately;
+no automatic scheduling or unverified pickup API is introduced.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | SHIP-01 | Modular companies, provider accounts and future carrier APIs | P1 | PLANNED | Separate A1 unit; preserve current account/jobs | Company/account revisions snapshot new jobs; old/uncertain jobs retain credentials/reference; no automatic reassignment | E10; REQ | 2026-10-25 | Design account binding without changing current PDC operations |
 | SHIP-02 | Official PDC city/governorate IDs and searchable selectors | P1 | BLOCKED | E62 offline382 cityIDs/27 govnames reconciled; gov/zone IDs absent, cache-only30 parents unknown; PDC paused | LOC-01 local96 selectors support Manual independently; no coverage/tariff/API/booking inference; existing maps/cache immutable | E62; E59; OD-20261026-LOC-01 | 2026-10-26 | Retain unknown IDs/status issues for later;96 needs separate approval, not silently added to95 |
-| SHIP-03 | Six-zone tariff verification and bounded draft import | P1 | BLOCKED | Effective date, Product40 applicability, rounding, bases/suburbs unverified | Owner confirms current prices/fee/VAT/surcharge rules; exact company/version import remains inactive until separately accepted | E09 | 2026-10-25 | Review owner package against authoritative current terms |
-| SHIP-04 | Carrier cost, customer price, subsidy and rounding rules | P1 | PLANNED | Separate C1; verified tariffs and explicit owner strategy | Fixed/percentage/full-cost rules, optional cap, integer money/rounding and immutable cost/subsidy snapshots; no inferred fees | E10; REQ | 2026-10-25 | Specify pricing unit separately from Beta's fixed50 |
+| SHIP-03 | Six-zone tariff verification and bounded draft import | LAST / FINAL-FIN | DEFERRED COMMERCIAL ACCEPTANCE / NOT A BOOKING BLOCKER | E140 owner accepts fees now; retain unverified dates/Product40/bases/rounding/suburbs evidence | Later exact merchant tariff/import/VAT/surcharge acceptance; fixed customer totals remain guarded now | E140; E09; real-cod-pdc-operations.md; DTR-16/35 | 2026-10-29 owner priority decision; no tariff/provider change | Review/import only in FINAL-FIN after operational/customer/migration work; no shipment hold |
+| SHIP-04 | Carrier cost, customer price, subsidy and rounding rules | LAST MERCHANT COSTS / CUSTOMER TOTAL SAFETY NOW | DEFERRED DETAILED COST/SUBSIDY ACCOUNTING | E140 customer delivery50+COD50 retained; merchant costs accepted for now | Preserve exact customer snapshots; cost/full-cost/subsidy/VAT/rounding enhancements later, no guessed expenses | E140; E10; REQ; DTR-16/35 | 2026-10-29 owner priority decision | FINAL-FIN after all operational phases; no merchant-fee prerequisite for shipping |
 | SHIP-05 | Returning-customer free shipping and next-purchase promotion | P2 | PLANNED | Separate C2; owner eligibility/expiry/cancellation policy | Prior paid qualifying purchases; locked one-use grants; no double spend, perpetual regrant or unverified imported eligibility | E10; REQ | 2026-10-25 | Choose unlimited-repeat versus one-time policy explicitly |
-| SHIP-06 | Private PDC PDF label templates and retrieval | P1 | PLANNED | Genuine assigned AWB; approved template and VPS directory | Authorized explicit PDF retrieval, safe validation/storage/viewing; diagnostic AWB never attached to customer order | E03; E13; REQ | 2026-10-25 | Qualify existing label path with separately approved real linkage |
-| SHIP-07 | Normal Dashboard dynamic booking and tracking acceptance | P1 | BLOCKED | No eligible paid/packed unbooked customer candidate in latest packet | Exact-order approved Product40/weight booking, original REF/AWB linkage, private PDF and dated status; manual pickup | E03; E08; REQ | 2026-10-25 | Select legitimate eligible order read-only; do not reuse uncertain order |
-| SHIP-08 | Date-filtered GetShipmentsStatus polling | P1 | DEPLOYED | New polls remain separately authorized | Required valid dates and matching saved-job lifetime deployed; no blind retries; live owned tracking acceptance incomplete | E03; R:server/utils/pdcLookups.js | 2026-10-25 | Reuse correction; accept polling within SHIP-07 |
-| SHIP-09 | Manual pickup and optional daily pickup policy | P2 | PLANNED | Default manual; later explicit owner automation decision | Preserve no-pickup-scheduler default; define provider behavior and opt-in controls before scheduling anything | E03; REQ | 2026-10-25 | Document actual manual process; defer daily automation |
-| SHIP-10 | PDC authenticated webhook mapping and provider cutover | P1 | BLOCKED | Owner requests webhook tracking and reports labels/pickups; not new technical acceptance | Provider still paused and uncertain incident preserved; Manual Beta does not depend on this cutover | E59; OD-20261026-TRACK-01; E04 | 2026-10-26 | Review latest redacted files when supplied; no provider calls/booking/retry without new exact authorization |
+| SHIP-06 | Private PDC PDF label templates and retrieval | P0 STANDARD LABEL / OPTIONAL LAYOUTS LATER | INSTALLED PATH / REAL AWB ACCEPTANCE PENDING | E140 one approved packed COD order and verified returned AWB;0 candidates now | Exact-reference AWB validation then private template1 PDF; no static/uncertain AWB attachment or rebooking on PDF failure | E140; E139; E03; E13; DTR-21/34 | 2026-10-29 source/retained native proof reviewed;0 provider calls | Qualify label with first separately approved real booking; optional5/6 layouts remain deferred |
+| SHIP-07 | Normal Dashboard dynamic booking and tracking acceptance | P0 FIRST — REAL COD BOOKING | INSTALLED / NO ACTIVE ELIGIBLE ORDER | E148 first order cancelled,0 job/dispatch/AWB, no booking authority | One eligible staff-approved/packed order, measured parcel and full final EGP balance before exact REF/AWB approval; no uncertain retry/pickup/Paid inference | E148; real-cod-pdc-operations.md; DTR-34 | 2026-10-30 read-only cancellation;0 PDC calls | No action on cancelled C140; prepare only after another eligible genuine order and staff evidence. Fees not prerequisites |
+| SHIP-08 | Date-filtered GetShipmentsStatus polling | 2 — BASIC TRACKING AFTER FIRST SHIPMENT | INSTALLED DATE-FILTERED PATH / GENERAL LIVE GATE PAUSED | Actual saved AWB+REF and separate narrowly authorized status scope; no global PDC opening | Bounded dated matching and truthful unknown states; polling never marks collection/Paid; existing source correction reused | E140; E03; server/utils/pdcLookups.js; DTR-20 | 2026-10-29 current gate/source reviewed; no provider poll | After a real AWB, qualify existing-AWB status action independently; no fee/accounting dependency |
+| SHIP-09 | Manual pickup and optional daily pickup policy | P0 HANDOVER / 2 BASIC FULFILLMENT | MANUAL PICKUP / NO VERIFIED OUTBOUND PICKUP API | E140 owner confirms SaveShipmentEx does NOT request pickup | Shipment/AWB/label separate from actual pickup; use established staff/PDC manual arrangement; no invented API/schedule/status | E140; OD-20261029-COD-OPS-FIRST-01; E03; DTR-24 | 2026-10-29 owner confirmation/source inspection;0 pickup requests | After verified AWB, arrange actual handover through established process; daily automation stays deferred |
+| SHIP-10 | PDC authenticated webhook mapping and provider cutover | 2 — BASIC TRACKING / CUTOVER SEPARATE | AUTHENTICATED WEBHOOK ACCEPTANCE PENDING | E140 actual genuine AWB/REF and verified mapping/time semantics; no booking dependency | Retain existing ingress/authentication and local history; provider registration/cutover remains independently approved | E140; E59; E04; DTR-20 | 2026-10-29 no webhook/provider cutover performed | Qualify authenticated tracking after first real shipment; unknown status97 never guessed |
 | SHIP-11 | PDC reverse shipments and returns | P1 | ON HOLD | Reverse type/account acceptance and after-sales scope | Verified reverse service, durable reference, private labels/status and authorized return flow; no automatic restock/refund | E17; pdc-shipping.md | 2026-10-25 | Resume only under separately approved reverse acceptance |
 | SHIP-12 | Historical HTTP500s and original uncertain dispatch reconciliation | P1 | BLOCKED | Original provider outcome unresolved; diagnostic success is separate | Preserve all private incidents/REF/AWB evidence; reconcile exact original reference without reset/rebooking or alias invention | E03; E08; REQ | 2026-10-25 | Review existing authoritative evidence; no new booking to test a theory |
 
@@ -3415,7 +4239,7 @@ uncertain shipment creation or attach an unrelated diagnostic/cancelled AWB.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| ORDER-01 | Administrator order confirmation and packing controls | P1 | DEPLOYED | Existing Orders permission, assigned real units and active packer | Confirmation/scan/video/Ready to Deliver guards exist; original paid test packing completed; full normal Beta fulfillment still separate | E13; E08 | 2026-10-25 | Preserve and accept with legitimate Beta order |
+| ORDER-01 | Administrator order confirmation and packing controls | P0 FIRST — ELIGIBLE COD APPROVAL/PACKING | DEPLOYED / CANCELLED ORDER EXCLUDED | E148 C140 cancelled with0 packing sessions; historical staff instruction superseded | Do not reopen or pack cancelled order; actual future staff processing/validated packing and truthful unpaid status remain required | E148; real-cod-pdc-operations.md; E147; DTR-34 | 2026-10-30 03:36 read-only | Wait for eligible order; keep all original packing/RBAC/inventory safeguards, no agent account/order changes |
 | ORDER-02 | Packing/confirmation videos under Orders → Documents | P1 | PLANNED | Existing private VPS video backend; post-Beta owner folder/naming, recording choices, limits and retention review | New sessions/YYYY-MM-DD/ORDER-CODE/VIDEO-NAME-PACKERFIRSTNAME.mp4 convention, server-bound staff/order/time/location/size/duration metadata, private authorized Orders Documents playback; preserve old bindings | E38; E13; REQ; L1 requirement5 | 2026-10-25 | Define capture/upload/transcoding, versioned paths, permissions and retention before implementation; no move/rename or Supabase bytes |
 | ORDER-03 | AWB, shipment and tracking linkage/manual fallback | P1 | LOCAL PASS | LOCAL-05; genuine eligible packed order | Record verified manual AWB atomically; no uncertain barrier bypass or invented label; customer projection shows correct linkage | E06; E07; REQ | 2026-10-25 | Verify hosted RBAC and duplicate recovery after approved release |
 | ORDER-04 | Customer order timeline and notifications | P1 | PLANNED | Real dated status evidence; channels separately approved | Accurate owned timeline; no invented intermediate states; idempotent producers and separately accepted notification delivery | E13; E18; REQ | 2026-10-25 | Audit actual order-event producers and customer status projections |
@@ -3432,10 +4256,10 @@ uncertain shipment creation or attach an unrelated diagnostic/cancelled AWB.
 | CX-05 | Reliable EN/AR desktop/mobile checkout | P0 | PLANNED | Existing candidate needs hosted acceptance; new post-Beta toggles are not prerequisites | Accurate fulfillment/fee/error states across RTL/themes/widths; no false quantity-based availability promises, hydration errors or cross-account data | E38; E06; E14; REQ | 2026-10-25 | Qualify the exact current candidate and report label conflicts without implementing post-Beta features |
 | CX-06 | Help Center, support, returns and warranty improvements | P2 | PLANNED | Existing ticket/article/claims contracts and owner policy | Preserve owned support/private evidence; review remaining accessibility, article helpfulness and communication needs | E17; E18; PROJECT_STATE.md Help Center entries; REQ | 2026-10-25 | Select one concrete improvement after Beta |
 | CX-07 | Original-browser controlled-checkout rejection (OD-20261027-BROWSER-STATE-01) | P1/B; public repro escalates A | DEFERRED FIELD UNCONFIRMED | DTR-33 original valid v3 cart/no pending; fresh Incognito genuine5 success; actual Vue/server-guard local3 PASS | Identify actual failed request/address/delivery/client state without another charge; preserve recovery/security | E88; DTR-33; docs/egp5-genuine-payment-verification.md | 2026-10-27 | Safe diagnostic follow-up; stop public purchasing on valid public reproduction |
-| CX-PAY-01 | Paymob Inquiry, Pay Again and payment-method changes | IMMEDIATE / EXTERNAL HISTORY AND FINALITY CONTRACT HOLD | SHAPE AUDIT CONSUMED_COMPLETE / FULL HISTORY AND RETRY BLOCKED | E135 exactly auth201 +paid-control GET200; top-level transactions and seven checked metadata fields absent; context matched | No unpaid/transaction GETs, financial/SQL/config write or retry; CARD/MON/kill1 retained; E136 warning5 without reset; no zero-history/nonpayment inference | E136; E135; docs/paymob-paid-control-shape-review.md | 2026-10-29 11:18 capture/11:20 postflight PASS;47410 consumed,7dc4 expired-unexecuted | Obtain official one-order complete-history schema/pagination/bindings and independent checkout finality contract; then separately qualify Inquiry/Pay Again/method changes |
-| CX-EMAIL-01 | Customer transactional order emails | IMMEDIATE INDEPENDENT FEATURE / OUTBOUND OFF | FIRST INCREMENT LOCAL PASS444c8fd / NOT DEPLOYED OR DELIVERY-QUALIFIED | E136 existing Email foundation reused;31 focused/native +typecheck/build +104 preservation/rollback PASS; From and private test-only recipient confirmed; application key/sender verification pending | Default-off capture/queue; order received and verified live CARD payment only; no backlog or Auth SMTP; remaining fulfillment/COD collection purposes retained | E136; docs/customer-order-emails-preparation.md | 2026-10-29 live103/email revision0 unconfigured; local104 only, no provider calls/sends/production writes | Qualify dedicated application key/sender privately and a bounded one-email test; fresh inactive release/activation approvals later |
+| CX-PAY-01 | Paymob Inquiry, Pay Again and payment-method changes | PROVIDER RESPONSE HOLD | TECHNICAL EMAIL SENT / HISTORY AND RETRY BLOCKED | E138 owner reports technical question email sent; no new investigation; E137 official inquiry latest-only, E135 consumed shape audit retained | No latest-only/absent-array finality inference; Pay Again/method changes off; same five alerts and callbacks preserved | E138; E137; paymob-paid-control-shape-review.md | 2026-10-29 13:19 local integrity/MON PASS;0 new Paymob probes | Await owner-shared Paymob response for complete history/finality/callback/refund/settlement contract; no repeated investigation |
+| CX-EMAIL-01 | Customer transactional order emails | CURRENT FEATURE / ACTIVE FUTURE EVENTS |105 ACTIVE /8824 CONSUMED_COMPLETE; first genuine delivery pending | E155 hosted empty worker/12 scheduled batches/next normal MON/CARD/COD/privacy PASS;0 additional restart | EN/AR future CARD received, verified live CARD paid, COD received; verified owner checks and uncertainty/dedup guards; no historic/test mail | E155; customer-email-activation-review.md; private consumed-complete; E148 private delivery | 2026-10-30 09:11:02 hosted postflight PASS; capture1/provider3/timer ON, queues0, MON five warnings/zero critical | Monitor first genuine qualifying event/delivery; do not manufacture an order or repeat private probe. Remaining notifications/AR mailbox tests stay deferred |
 | CX-CART-01 | Homepage Add to Cart versus Options | DEPLOYED / OWNER REVIEW | DEPLOYED / HOSTED PASS / OWNER ACCEPTANCE PENDING | Existing stock/capability/cart/server guards; independent from Merchant Inquiry | Single configuration direct; genuine Options;37 Add/3preorder; real variant/double-click/reload/EN-AR-RTL desktop-mobile PASS; native concurrency remains deferred | E115; E114; E113; docs/homepage-direct-cart-receipt.md | 2026-10-28 deployed42a61d/schema98; owner review pending | Owner review; separate COD preparation next without inquiry dependency |
-| CX-COD-01 | PDC collects full final COD cash; staff-controlled booking | IMMEDIATE / EXTERNAL CONTRACT HOLD | ACTIVATION BLOCKED / INSTALLED101 GUARDS VERIFIED ON103 | E133 seven source bindings/schema/functions/ACL PASS; missing written EGP200.35→200.35 or20035 production contract | Staff approval/packing, full saved balance, one dispatch, uncertain quarantine and cash/remittance separation retained; CARD/MON/kill1 preserved; E136 current warning5 without reset | E136; E134; E133; docs/cod-pdc-activation-readiness.md; docs/pdc-cod-unit-confirmation-request.md | 2026-10-29 03:22Riyadh read-only;0 writes/provider calls | Obtain exact written units; no deployment/migration if decimal EGP confirmed; fresh settings/runtime-only activation approval later, never old packet replay |
+| CX-COD-01 | PDC collects full final COD cash; staff-controlled booking | P0 FIRST — NEXT ELIGIBLE REAL ORDER | COD LIVE / FIRST ORDER CANCELLED / NO ACTIVE CANDIDATE | E148 C1403FCFC6 cancelled, amount_paid0, no packing/job/dispatch/AWB;0 active eligible COD rows | Do not pack/reopen/book cancelled order. Next genuine eligible order requires actual staff approval/packing/video/weight/final full EGP balance; commercial/ERP LAST | E148; real-cod-pdc-operations.md; E147; DTR-34 | 2026-10-30 03:36 read-only; no order/provider mutation | Await next genuine eligible order; then staff processing and one separate booking approval. No synthetic replacement or old-incident reuse |
 | CX-ADDR-01 | Complete saved checkout summary and safe selection | DEPLOYED / OWNER REVIEW | DEPLOYED a7fa8e8e/schema102 / RECOVERED TECHNICAL PASS / OWNER ACCEPTANCE PENDING | E12817c recovery complete; parentc86 consumed-stop retained | 145 protected projections/2804 public assets/private gates/finance0; next automatic MON WARNING3/critical0; no recovery restart | E128; docs/checkout-address-book-monitor-recovery-receipt.md | 2026-10-28 23:20 automatic postflight PASS | Owner review of summary/Edit/address selection; record acceptance separately; next LOC-01 |
 | CX-ADDR-02 | Owned multiple delivery addresses | INCLUDED IN SHOP 1 / DEPLOYED | LIVE / RECOVERED TECHNICAL PASS / OWNER ACCEPTANCE PENDING | E128 schema102 committed once, no backfill; owner included book | Owned selection/explicit revision-idempotent saves/removal, bounded private data and retained drafts; profile/order snapshots preserved | E128; E126; docs/checkout-address-book-migration-review.md | 2026-10-28 postflight PASS, hosted owner interaction pending | Same Task1 owner review; do not replay102 or mark authenticated address-save acceptance from anonymous gates |
 | CX-ADDR-REC-01 | Rebind MON expected hash to reviewed address routes | COMPLETE / CONSUMED | CONSUMED_COMPLETE / TECHNICAL PASS | E128 exact17c approval used once; only config.caddy_sha256 to reviewed1c12f6 | One field/other bytes retained,0 app restart/signal/migration/provider/email; next automatic non-critical MON, history retained | E128; docs/checkout-address-book-monitor-recovery-receipt.md | 2026-10-28 23:15 correction/23:20 automatic PASS | Never replay recovery or parent; preserve original kill1 and future full-hash detection |
@@ -3456,7 +4280,7 @@ acceptance. Do not revive already completed historical phases as new work.
 | FUT-05 | Central email, SMS and customer notifications activation | P1 | ON HOLD | Approved senders, credentials, worker infrastructure and provider acceptance | Retain dormant Brevo/Vodafone/order/PDC channels; idempotent event capture, no replay backlog, delivery/uncertainty/retention acceptance | E18; E06 | 2026-10-25 | Keep distinct from Auth SMTP; approve one channel/producer at a time |
 | FUT-06 | After-sales warranty, reverse logistics and communications acceptance | P1 | ON HOLD | Policy/role/private-file/provider acceptance | Purchased rights immutable; stage-specific claims/returns decisions; no automatic financial or inventory side effects | E17 | 2026-10-25 | Reconcile remaining hosted acceptance before enabling policies |
 | FUT-07 | Quick Setup portable installation/publication and recovery | P2 | LOCAL PASS | Fresh independent target; hosted/Linux/reboot acceptance separate | Preserve certified installer/publisher/release82 behavior and first-owner/RLS safety; include provider management without hardcoded identity | E19; E10 | 2026-10-25 | Plan actual independent-target acceptance; never use historical production operators |
-| FUT-08 | ERP/Daftra, procurement, treasury and HR follow-up | P2 | PLANNED | Correct ERP owner; focused provider/mode work tracked once under ERP-01/02 | Retain existing modules/salary/payment command safety and procurement options; ERP-01 owns connection/data audit, ERP-02 mode repair; other finance/HR acceptance remains here | E38; E20; salary-payment-safety.md | 2026-10-25 | Prioritize stock controls after Beta, then ERP-01/02; select remaining finance/HR scope without duplicating those tasks |
+| FUT-08 | ERP/Daftra, procurement, treasury and HR follow-up | LAST ERP/ACCOUNTING INTEGRATION / OTHER MODULES6 | PLANNED | E140 ERP-01/02/FIN-PDC-01 LAST; existing Treasury/HR protections retained | Retain existing modules/salary/payment command safety and procurement options; ERP-01 owns connection/data audit, ERP-02 mode repair; other finance/HR acceptance remains here | E38; E20; salary-payment-safety.md | 2026-10-25 | ERP/Daftra/detailed settlement only in FINAL-FIN; remaining ordinary HR/admin follow-up stays6, no money-action authority |
 | FUT-09 | Live Chat, OAuth, accessibility and Help Center follow-up | P2 | PLANNED | Focused live-chat audit/VPS acceptance delegated to CHAT-01; provider/retention approvals remain | Preserve conversations/support; CHAT-01 owns current chat isolation/reconnect/performance/files; OAuth/accessibility/article feedback remain this umbrella’s unfinished work | E38; live-chat-staging-acceptance.md; authentication-page.md | 2026-10-25 | Reuse current foundations, track chat only under CHAT-01 and select remaining OAuth/help scope after Beta |
 | FUT-10 | Additional shipping/payment integrations and future discovery protocols | PARKED | ON HOLD | Concrete owner-selected service and explicit scope | Generic adapters/secure callbacks; advertise only implemented services; no speculative provider IDs or false capabilities | E10; E14; REQ | 2026-10-25 | Retain until owner selects integration |
 | CONT-01 | Permanent cross-account roadmap and milestone continuity | P1 | LOCAL PASS | This documentation task; future accounts must update explicitly | A–O/tasks/evidence/conflicts/pointers maintained; old handoff bytes and other account's work preserved | This file; AGENTS.md; both handoffs | 2026-10-25 | Update with every completed milestone and new requirement |
@@ -3495,8 +4319,8 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | ORDER-06 | Actual package KG at packing/confirmation and PDC binding | P1 | PLANNED | Post-Beta enhancement; provider weight precision/limits and order/package authority; ORDER-01/02 | Positive precise actual KG persisted on correct package and snapshotted into explicit authorized booking; no checkout shipment/pickup or invented actual weight | E38; L1 requirement5; SHIP-07 | 2026-10-25 | Review existing default-weight path and define actual-weight save/booking contract with focused unit/retry tests |
 | DASH-01 | Settings opens Store Settings without nested sidebar menus | P2 | PLANNED | Post-Beta navigation-only; preserve settings permissions/pages/direct routes | One direct Settings entry; all configuration still reachable within existing settings surfaces; EN/AR/RTL/mobile/active-state access intact | E38; L1 requirement6; E20 | 2026-10-25 | Map current navigation/settings keys and propose compact direct entry; delete no settings feature |
 | DASH-02 | Overview Store Activity and separate Live on Store tile | P2 | PLANNED | Post-Beta; existing CustomerExperience/Overview data and permissions | Reused Store Activity on Overview plus small distinct live tile; accurate timestamped values, responsive themes/locales, bounded requests/subscriptions | E38; L1 requirement7; FUT-04 | 2026-10-25 | Reuse existing source/component contracts and set refresh/query budget; no invented live counts |
-| ERP-01 | Daftara API connectivity, mappings and full data audit | P1 | PLANNED | Post-Beta; scoped credentials/provider capability evidence; read-only first | Explicit capability/read/write matrix for customers/products/inventory/accounts/invoices/bills/payments; pagination/rates/idempotency/reconciliation/recovery/monitoring; no unapproved provider write | E38; L1 requirement8; FUT-08; E20 | 2026-10-25 | Inventory current adapters/jobs and read-only diagnostics; verify actual provider documentation before any separately approved write test |
-| ERP-02 | Local/Daftara mode compatibility and backend ownership enforcement | P1 | PLANNED | Post-Beta; old switching code incompletely accepted; ERP-01 and PROD-04 | Local modules work in Local mode; incompatible Procurement/Suppliers APIs and UI denied in Daftara mode; historical local data retained; explicit status/versioned switch/recovery | E38; L1 requirement9; FUT-08; E20 | 2026-10-25 | Build current module/API/SQL ownership matrix and safe switch/rollback fixtures; no mode/credentials/data changes now |
+| ERP-01 | Daftara API connectivity, mappings and full data audit | LAST / FINAL-FIN | DEFERRED / ORIGINAL EVIDENCE PRESERVED | E140 ERP/Daftra accounting integration last, not shipment eligibility | Retain original read/write capability/mapping/pagination/idempotency/recovery scope and approval boundaries; existing ownership remains enforced | E140; E38; L1 requirement8; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no provider audit | Resume scoped read-only audit in FINAL-FIN after migration/storage; no booking dependency |
+| ERP-02 | Local/Daftara mode compatibility and backend ownership enforcement | LAST / FINAL-FIN | DEFERRED / CURRENT MODE GUARDS RETAINED | E140 new mode-switch/accounting integration work last; current built-in ownership remains authoritative | Preserve original compatibility/API/UI/SQL ownership tests and historical local data; no silent fallback or duplicate accounting | E140; E38; L1 requirement9; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no mode/credential/data changes | Resume matrix/repair only in FINAL-FIN; existing correct mode enforcement is never deferred |
 
 #### Requirement1 — PROD-05: normal selling, independent of recorded stock
 
@@ -3676,6 +4500,8 @@ source/requirement inspection, not hosted acceptance or provider verification.
 
 #### Requirement8 — ERP-01: comprehensive Daftara API/data audit
 
+> E140 owner priority: this ERP/accounting enhancement is FINAL-FIN / LAST, after all operational/customer/migration work. Existing runtime/backend ownership controls remain mandatory. Earlier P1 post-Beta sequencing below is historical.
+
 - **Existing status:** code calls the provider Daftra; the owner also uses Daftara.
   `daftra.js`, `daftraSync.js`, credential storage, entity links and durable jobs
   exist. Current list wrappers cover selected resources; invoice export/issue code
@@ -3700,6 +4526,8 @@ source/requirement inspection, not hosted acceptance or provider verification.
   bounded read-only diagnostic; preserve production mode and records meanwhile.
 
 #### Requirement9 — ERP-02: Local ERP ↔ Daftara switch
+
+> E140 owner priority: this ERP/accounting enhancement is FINAL-FIN / LAST, after all operational/customer/migration work. Existing runtime/backend ownership controls remain mandatory. Earlier P1 post-Beta sequencing below is historical.
 
 - **Existing status:** `erpState.js`, `useActiveErp`, navigation mode flags,
   `erpOwnership.js` guards and migration20261003120000 exist. The owner reports
@@ -3764,7 +4592,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 
 | ID | Task | Priority | Status | Dependencies | Scope / acceptance | Evidence | Last verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STOR-01 | Supabase Storage versus VPS file-byte dependency audit | P1 | QUEUED | AFTER current public Beta milestone; owner read-only authorization | All six bucket counts/bytes/recency and ACTIVE/LEGACY/EMPTY; every active SDK/REST upload/read/signed URL/delete path, VPS workflow and private-access evidence; conditional integrity/backup/rollback migration plan only | E60; OD-20261026-STORAGE-01; docs/vps-storage-audit-plan.md | 2026-10-26 requirements only; production NOT AUDITED | Finish public Beta first, then execute targeted read-only audit; no changes, provider calls or invented bucket classifications |
+| STOR-01 | Supabase Storage versus VPS file-byte dependency audit | 6 — REMAINING DEFERRED HISTORY/STORAGE | QUEUED / NOT AUDITED | E141 after remaining customer/admin needs and before LAST finance; preserve existing read-only audit scope | All six buckets counts/bytes/recency/live dependency paths and private parity; any migration separately approved, no invented classifications | E140; E60; OD-20261026-STORAGE-01; docs/vps-storage-audit-plan.md; DTR-18 | 2026-10-29 priority only; production buckets not reaudited | Keep targeted bucket/dependency/privacy audit in remaining deferred phase6; no migration/delete/bytes change without later exact scope |
 
 ### L3. Provider-neutral selected locations — offline work only
 
@@ -3772,10 +4600,21 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | LOC-01 | Offline searchable dependent governorate/city selectors | DEPLOYED / OWNER REVIEW | LIVE ON9aa61b64/schema103 / TECHNICAL PASS / OWNER ACCEPTANCE PENDING | E130 exact661 consumed-complete; E132 navbar release retains LOC code | Checkout/book/profile/shared editor, EN/AR/RTL/themes/mobile, owned legacy compatibility and SQL validation; no PDC dependency | E132; E130; docs/loc01-delivery-locations-deployment-receipt.md | 2026-10-29 original01:12 cutover/01:15 MON; retained in02:00 navbar postflight | Owner visual review remains pending; never replay103/661 or infer acceptance; COD/Paymob/PDC next |
 
+### L4. Final deferred financial and accounting phase — LAST
+
+**E140 / OD-20261029-COD-OPS-FIRST-01:** fees are accepted for now. This phase
+never blocks an eligible COD shipment. Existing totals, collection evidence and
+outstanding receivables remain protected throughout all earlier phases.
+
+| ID | Task | Priority | Status | Dependencies | Scope / acceptance | Evidence | Last verified | Next action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| FIN-PDC-01 | Detailed PDC merchant fees, deductions, net remittance, settlement schedules, profitability and ERP/Daftra accounting | LAST / FINAL-FIN | DEFERRED / UNKNOWN VALUES NOT INVENTED | AFTER operational/customer/migration work; SHIP-03/04 and ERP-01/02 retain original tests | Exact later commercial/statement/fee/VAT/rounding/allocation/settlement/ERP evidence; no fabricated cash receipt, short-payout reconciliation or write-off; existing receivables remain outstanding | E140; DTR-16/30/35; real-cod-pdc-operations.md; original tariff/ERP evidence | 2026-10-29 owner priority reset only;0 financial/provider writes | Resume LAST; never require commercial-rate/net-settlement qualification to prepare a one-order booking approval |
+
 ### M. Risks and blockers
 
 | Task | Actual blocker / why it matters | Evidence | Smallest next action |
 | --- | --- | --- | --- |
+| CX-EMAIL-01 | Future transactional activation COMPLETE; actual first genuine/remaining AR mailbox delivery and later notification kinds remain pending.96da stays consumed-stop;8824 consumed complete. | E15509:11 hosted postflight/12 scheduled batches/next normal MON PASS; no provider/customer/test mail or backfill | Monitor a genuine future qualifying event and delivery; existing immediate disable available without restart. No synthetic order or old approval replay. |
 | BETA-03 | E61 public signup OPEN; owner-only toggle and read-only postflight PASS; f5 consumed complete. | E61; E57 | Keep confirmation/CAPTCHA/login/recovery; purchasing held; preserve enabled signup in new95 guards. |
 | MIG-01/02/03/05 | E37 history import/three-route change PASS; all41 receipts/original140 projections preserved, actual claims0. Hosted ordinary-owner acceptance pending; current matching verified identity has no orders. Three held identities/131 unlinked orders stay private. | E37; E36; E35 | Accept profile/empty view; order-bearing history needs approved signup. Never repeat source/deployment/import. |
 | BETA-07 / SHIP-02 | E59 owner confirms Manual/all areas/EGP50; no business coverage blocker. | E59; OD-20261026-DELIVERY-02 | Configure through guarded Beta plan; PDC tracking separate/paused. |
@@ -3785,8 +4624,8 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | LOCAL-08 | Main and original dirty worktree retain separate source/docs; exact combined archive is now deployed. Blind overwrite/merge can still lose prepared work. | E35; E23; source pins | Preserve1924ca0/724720a/40 original Beta files; consolidate only under separately reviewed source work. |
 | BETA-06 / PROD-01 | E59 owner confirms catalog physically available/no counts;95 untracked mode local PASS. | E59; OD-20261026-STOCK-03 | Guarded95 release, no warehouse census or fake stock; exclude test product. |
 | SHIP-12 | Original paid customer dispatch remains uncertain despite separate static success. Rebooking can create duplicate obligations. | E03; E08 | Preserve reference/barrier; reconcile original outcome without new shipment creation. |
-| SHIP-03/04 | Draft tariff effective dates, current prices, Product40 terms, fee bases/rounding/suburbs unverified. EGP50 customer fee does not establish carrier cost. | E09; E10 | Review authoritative current commercial terms before tariff verification/import. |
-| SHIP-07/10 | Dynamic paid/packed shipment acceptance and authenticated webhook cutover lack an eligible genuine linked REF/AWB; status/timezone questions remain. | E03; E04 | Review mapping/eligibility privately; no destination switch or static-AWB attachment. |
+| SHIP-03/04 / FIN-PDC-01 | Detailed commercial/accounting acceptance is deferred LAST; E140 owner accepts fees now. It is NOT a shipment-booking blocker. Exact customer totals/requested COD and verified collection remain mandatory. | E140; E09; E10; DTR-16/35 | Resume tariff/cost/net/ERP acceptance in FINAL-FIN; do not hold an eligible approved/packed COD order on these details. |
+| SHIP-07 / CX-COD-01 | E148 first C140 order is cancelled, unpaid and unshipped;0 active eligible COD candidates. No shipment seal. Fees/accounting remain LAST. | E148;30October03:36 read-only; DTR-34 | Do not pack/book/reopen the cancelled order. Await next eligible genuine order, then actual staff approval/packing/video/weight and separate one-shipment approval. |
 | FUT-01 / CONT-01 | Public smoke, local/native fixtures and owner reports have different evidentiary scope. External W files/private receipts are not durable main-branch source. | Evidence registry; E06; E21 | Preserve source hashes and consolidate reviewed documents/code during a separate milestone. |
 
 Current E59 sequence: signup may open independently by exact owner approval; prepare
@@ -3796,7 +4635,185 @@ notice polish, PDC tracking and scheduler automation are deferred. Accepted Auth
 cart isolation, payment/callback and packing results are retained. Existing data,
 provider incident and callback authority are preserved; no shipment is automatic.
 
-### N. Current next action — E124
+### N. Current next action — E155
+
+Monitor the first genuine qualifying Email event, verified owner recipient and
+actual provider/mailbox delivery. Future CARD-received/verified-CARD-paid/COD-received
+capture and scheduled processing are ACTIVE; no synthetic order, historical replay,
+private probe repeat or fabricated Paid event. Keep the documented disable ready.
+Pixel/Pay Again awaits Paymob's technical response. Genuine eligible PDC shipping/
+tracking, SEO/redirects and remaining customer/admin/history/storage tests follow.
+Detailed PDC commercial settlement/ERP remains LAST; all deferred evidence stays.
+
+### Historical E154 next action — recovery consumed complete
+
+Owner supplies the exact NEW zero-restart Email activation recovery statement from
+customer-email-activation-review.md before11:30:32Riyadh/start and11:45:32expiry,
+30October2026. Provider/capture OFF, timer disabled; first worker still unattempted.
+Reuse staged runtime/key/files and exact original MON baseline. No additional
+restart/install/schema/deployment/key/provider-test/backfill scope.96da stays stopped.
+Pixel/Pay Again awaits Paymob; genuine PDC/SEO/deferred work follow; ERP LAST.
+
+### Historical E153 next action — zero-restart recovery now prepared
+
+Finish read-only post-stop MON qualification and the minimal zero-restart activation
+recovery packet. Sending/capture remain OFF, timer disabled and readiness unattempted.
+Do not retry96da, restart, clear warnings, send a probe, backfill or change providers.
+
+### Historical E152 next action — activation consumed-stop
+
+Owner supplies the exact new future transactional Email activation statement from
+customer-email-activation-review.md before expiry/start deadline.105 is installed;
+all current sending/capture/workers remain OFF. Approved run installs/restarts once,
+requires Linux validation/normal MON/one empty worker check, then enables only future
+qualified events. No private test replay, historical backfill or other provider.
+Pixel/Pay Again awaits Paymob; genuine PDC shipping/tracking, SEO/deferred work follow;
+detailed settlement/ERP remains LAST.
+
+### Historical E151 next action — separate activation packet now prepared
+
+Prepare the separate guarded future-events-only Email activation packet.105 is
+installed inactive and40b consumed. Keep provider/capture/workers OFF until a new
+exact activation approval; reuse accepted delivery evidence without repeating it.
+Pixel/Pay Again awaits Paymob; eligible genuine PDC shipping/tracking, SEO/redirects
+and deferred customer/admin/history work remain; detailed financial ERP remains LAST.
+
+### Historical E150 next action — inactive deployment now complete
+
+Owner approves the exact inactive105 recipient-ownership SQL deployment in
+customer-email-recipient-fix-review.md before its expiry/start deadline. No app
+release or restart, outbound activation, provider request or customer mail is
+included. After deployment, verify hosted privacy/ACLs, CARD/COD and next normal
+MON while Email remains OFF; then prepare a separate future-events-only activation.
+
+Pixel/safe Pay Again waits for Paymob. Genuine eligible PDC shipping/tracking and
+SEO/customer/admin/deferred work remain preserved; commercial settlement/ERP LAST.
+
+### Historical E149 next action — minimum correction is now sealed and ready
+
+Prepare a separately sealed inactive deployment for the minimal recipient-ownership
+Email guard. The local SQL proposal passes18 cases; production remains unchanged104
+and qualification is BLOCKED. Sending/capture/workers stay OFF. No activation seal
+or expiry exists. Preserve the accepted one-message test without repeating it.
+
+After Email: Pixel/safe Pay Again awaits the provider reply; genuine eligible PDC
+booking/tracking; SEO/Search Console/legacy redirects; remaining customer/admin/
+deferred work; LAST commercial settlement/ERP. C140 remains cancelled and excluded.
+
+### Historical E148 next action — hosted qualification now completed with blocker
+
+No active eligible COD order exists. C1403FCFC6 is cancelled; do not pack, book or
+reopen it. Next eligible genuine intake still preempts other work and needs staff
+review/physical packing/validated evidence/actual weight before separate PDC approval.
+
+The one private Email provider/mailbox test is accepted from the owner's Received
+correctly response. All app sending/capture/workers stay OFF. The next independent
+Email preparation is hosted queue/worker/order-event qualification and a concrete
+future activation review. No new send or activation is approved by this confirmation.
+
+### Historical E147 next action — packing superseded by cancellation; email receipt confirmed
+
+Authorized staff review/approve and physically pack **ORD-20261029-C1403FCFC6** through the
+existing Dashboard workflow. Its saved final unpaid COD balance is **EGP1540**.
+Complete required item/video evidence and measure actual parcel weight; then prepare
+one separately approved PDC booking. No booking seal exists now. Fees/accounting LAST.
+
+The private Email probe was accepted once by Brevo HTTP201. Mailbox delivery awaits
+owner confirmation; all app email/capture/workers stay OFF.52f is consumed and never
+retried. Future activation needs actual receipt, remaining qualification and approval.
+
+### Historical E146 next action — one private test consumed by E147
+
+Owner provides the exact separate ONE PRIVATE DELIVERY TEST approval in the
+[test review](customer-email-one-message-review.md). Seal `52f93c4aff01bcf297f527b2ca481fd109ecbaff4019f255cd1a73f815627a97`
+expires 29 October 2026, 22:27:16 Riyadh. One existing private recipient, fixed truthful test content,
+one provider submission and no retry. All application sending/capture/workers stay OFF.
+Provider acceptance, actual mailbox delivery and remaining hosted qualification precede
+future transactional activation under another approval. Deployment e266 is consumed.
+
+### Historical E145 next action — separate private test prepared by E146
+
+Prepare one separate controlled private delivery test using the existing approved
+mailbox and test scope. Sending, future order capture and workers remain OFF.
+Do not replay consumed e266 deployment. Provider acceptance, actual mailbox delivery
+and owner approval must precede future activation; no send approval exists yet.
+
+### Historical E144 next action — exact deployment consumed and completed by E145
+
+Owner supplies the exact inactive104 deployment approval in the
+[release review](customer-email-schema104-release-review.md). Candidate1e931d20d19bde5a
+installs one additive migration and one app archive with one ordinary restart.
+Live schema103/CARD+COD, Email revision2, MON and emergency controls remain intact.
+All email sending/capture/worker controls stay OFF. No backfill or provider request.
+
+Seal `e2663fb7457f5cafebfa42a27d9f58b5c565a069cc6833247e4806c209bf32ce` expires 29 October 2026, 21:10:52 Riyadh.
+Execution must start before 29 October 2026, 21:00:52 Riyadh. No approval or attempt is recorded.
+After technical deployment, prepare a separate one-message private controlled test;
+provider acceptance, mailbox delivery and owner approval precede future activation.
+All35 deferred rows, originals, visual/Pixel/SEO work and financial LAST phase remain.
+
+### Historical E143 next action — inactive release qualified by E144
+
+Qualify the inactive schema104 migration/application packet on the COD-active
+schema103 runtime. The disabled Email configuration is saved at revision2 and
+verified by read-only checks. Preserve its key/sender, all five false controls and
+absent worker. Keep capture OFF and create no customer-history backlog.
+Preparation needs no additional approval. A concrete release packet, one controlled
+send and future worker/capture activation require separate approvals before execution.
+
+Genuine COD orders still preempt independent email preparation. E143 found zero
+COD/new orders. Leave PDC quarantine, working CARD, Pixel and all deferred tests intact.
+
+### Historical E142 next action — disabled configuration completed by E143
+
+The owner privately enters the dedicated key and sender through Dashboard Email.
+Follow the [configuration guide](customer-email-configuration-review.md), save once
+with all five activation controls OFF, then report only saved/disabled status.
+Sender verification may remain false; no verification email or provider probe.
+Actual settings persistence and readback are PENDING, not inferred from key creation.
+No migration, deployment, restart or send is part of this configuration step.
+
+Real COD orders retain first priority. E141's dated order/MON observation remains
+last verified; PDC quarantine, Pixel, working CARD and every deferred test stay intact.
+
+### Historical E141 next action — superseded by E142 guided private configuration
+
+The14:36 read-only check found zero COD orders and no new order since activation. Maintain
+MON-01 and staff attention to the two existing unverified CARD cases; the historical
+paid/packed uncertain dispatch stays quarantined. When a real COD order arrives,
+verify details, staff approval/actual packing/parcel weight/full EGP balance, then
+prepare one new shipment approval. No commercial/ERP prerequisite or synthetic order.
+
+While waiting, customer email preparation is active independently. The preserved
+444c8fd/proposed104 has31 prior checks plus10 fresh offline disabled-configuration
+checks. Live Email is OFF/unconfigured. **Privately prepare the dedicated application
+API key and actual Brevo sender evidence**, then obtain the revision-bound all-OFF
+configuration-only approval in the [review](customer-email-configuration-review.md).
+That save needs no migration or restart. Deployment, one private test-send and future
+worker/capture activation require separate exact approvals; none issued now.
+
+Current sequence:1COD →2pickup/tracking after AWB →3provider-qualified Pixel/recovery
+→4emails (may prepare now) →5SEO/redirects →6all remaining deferred/customer/admin/
+historical/storage →LAST commercial settlement/ERP. Preserve every existing test.
+No Paymob/PDC re-investigation, working CARD change or unqualified payment retry.
+
+### Historical E140 next action — superseded by E141 parallel email preparation
+
+COD and CARD are live on9aa61b64/schema103. Staff-controlled COD booking and label
+capability are installed; automatic/global PDC access remains paused. Current
+normal COD orders0, eligible approved/packed candidates0. No shipment seal is issued.
+
+**Receive the first genuine COD order and have authorized staff approve/pack it.**
+Then bind one exact shipment approval to that order, actual parcel, full saved cash,
+configuration/staff authority and one durable dispatch. Merchant fees, deductions,
+net remittance, settlement and ERP are accepted/deferred LAST and are not blockers.
+No automatic booking, uncertain retry, historical incident test, fake receipt,
+unauthorized provider request or production change. Use the [current operational
+note](real-cod-pdc-operations.md) and DTR-34; pickup/tracking follows the actual AWB.
+
+Historical next actions below retain dated evidence and do not override E140.
+
+### Historical E124 next action — superseded by E140
 
 [Inactive101 deployment completed](cod-pdc-schema101-deployment-receipt.md).
 Current615506cd7c047ca8/schema101; CARD/Manual50/MON live, COD and PDC booking OFF.

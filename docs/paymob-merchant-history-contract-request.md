@@ -1,3 +1,7 @@
+> E138,29October2026: owner reports the Paymob technical inquiry email **SENT; response pending**. Do not repeat investigations or consumed probes while waiting. Current LIVE payment experience stays unchanged; Pixel rollout awaits the response and real SDK qualification.
+
+> E137,29October2026: official [by-order/reference inquiry](https://developers.paymob.com/paymob-docs/developers/transaction-inquiry-apis/transaction-inquiry/by-order-id-or-reference) documents the **latest transaction**, not complete history. Ask for complete-history/finality evidence without repeating a consumed probe or assuming an array. [Pixel dependencies](paymob-pixel-preparation.md) and [operations design](payment-operations-design.md) extend the owner's pending technical questions. No support message or provider request was sent by Codex.
+
 # Paymob complete attempt-history contract request — draft only
 
 28 October 2026. **NOT SENT. No provider transaction authorized.**

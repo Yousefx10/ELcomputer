@@ -1,3 +1,5 @@
+> E137,29October2026: **unit question ANSWERED by owner-reported direct PDC confirmation**. `shipments[].cod:200.35` means EGP200.35. Do not resend the scale question or repeat its investigation. Preserve the draft below as historical unsent evidence. Remaining precision/limits, merchant fee/VAT/deduction and remittance evidence are separated in the [current readiness decision](commerce-takeover-20261029.md). No PDC request or activation is authorized.
+
 # PDC final COD amount — provider confirmation draft
 
 Prepared 29 October 2026 for CX-COD-01. **DRAFT / NOT SENT.**

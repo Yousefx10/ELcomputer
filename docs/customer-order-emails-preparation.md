@@ -1,3 +1,35 @@
+> **E155:** future transactional Email ACTIVE on105; recovery8824 CONSUMED_COMPLETE, zero additional restart. First empty worker,12 scheduled batches and next09:10 MON/CARD/COD/privacy PASS. Queues0; no historical/test/provider email. [Current receipt and disable](customer-email-activation-review.md). Actual first genuine delivery remains pending; old approvals cannot be replayed.
+
+> **E154:**105 installed; Email96da consumed-stop/OFF after one restart. Exact original MON baseline restored normally. [Zero-restart recovery](customer-email-activation-review.md) READY/unapproved,17 new tests/live preflight PASS. No first worker/provider/email; no old approval replay.
+
+> **E153:**105 remains installed; subsequent Email activation96da stopped on MON_WARNING_DRIFT after one runtime-key restart. Sending/capture OFF; timer disabled/queues0. No readiness/provider/email; no replay. [Current stop/recovery review](customer-email-activation-review.md).
+
+> **E152:**105 remains deployed inactive. The [separate future-events-only activation packet](customer-email-activation-review.md) is READY, unapproved and unexecuted. It requires one worker-key restart and no-send readiness/MON gates before enabling. All current sending/capture/workers stay OFF; no private probe repeat.
+
+> **E151,30October2026:** schema105 recipient fix [DEPLOYED INACTIVE / hosted postflight PASS](customer-email-schema105-deployment-receipt.md).40b consumed; never replay. App unchanged/no restart; all Email/capture/workers OFF. The separate future-events-only activation packet is being prepared.
+
+> **E150,30October2026:** the minimal ownership guard is [READY for separately approved inactive105 deployment](customer-email-recipient-fix-review.md).113 focused tests/16 guards/native rollback/typecheck/build/backup/sealed preflight PASS. Production104 remains unchanged/OFF; zero app deployments/restarts and no send/activation authority. Earlier E149 failures remain dated evidence.
+
+> **E149,30October2026:** [final hosted qualification](customer-email-hosted-qualification.md) is BLOCKED on recipient ownership.81 existing tests pass, two new negative cases fail on104. A minimal local additive guard passes18 cases; it is not deployed/release-certified. All sending/capture/workers remain OFF. No activation approval/seal or repeat provider test.
+
+> **E148,30October2026:** the owner confirms correct actual receipt/layout of the one private test. [Bounded delivery acceptance](customer-email-one-message-receipt.md). Customer sending/capture/workers remain OFF; hosted queue/worker/event and remaining bilingual qualification plus future activation approval are still required. No additional email or provider request.
+
+> **E147,29October2026:** isolated ONE private test accepted by Brevo HTTP201;52f consumed, no retry. [Receipt](customer-email-one-message-receipt.md). Actual mailbox delivery is awaiting owner confirmation; all app sending/capture/workers stay OFF. Hosted queue/worker/order-event and remaining EN/AR acceptance are pending. The new genuine COD order takes operational priority.
+
+> **E146,29October2026:** schema104 deployment complete/inactive. The [separate ONE private delivery probe](customer-email-one-message-review.md) is ready for its own exact approval.11 guards/read-only preflight PASS; no mail/Brevo request. Global Email/capture/workers stay OFF; hosted queue/worker/event and remaining bilingual acceptance remain pending.
+
+> **E145,29October2026:** 1e931d20d19bde5a/schema104 DEPLOYED INACTIVE. Approval e2663f CONSUMED_COMPLETE; never replay. One migration/restart, all3,129 assets and next automatic18:00:07 MON PASS. Configured Email revision2/key/sender preserved; all sending/capture/worker controls OFF, no email/provider request. [Receipt](customer-email-schema104-deployment-receipt.md). ONE private controlled test requires separate preparation/approval.
+
+> **E144,29October2026:** inactive schema104/application release is READY after fresh31 focused checks,11 release guards, native migration/rollback, typecheck/build, backup and asset qualification. Dedicated key/sender revision2 preserved; all five gates and capture OFF, worker absent. No deployment or send. [Exact approval/review](customer-email-schema104-release-review.md) supersedes historical next-action wording below. All remaining email/visual/deferred scope stays open.
+
+> **E143,29October2026,16:12:47 Riyadh:** dedicated application key/sender configuration is saved and read back at revision2. Outbound/provider/account/activation/marketing/webhook OFF; worker absent; templates/messages/attempts/events0. Sender verification owner-confirmed and stored; no provider authentication or delivery tested. Same schema103; local104 preserved. Next: qualify inactive104 release, with deployment/send separately approved. [Receipt](customer-email-configuration-review.md).
+
+> **E141,29October2026: preparation RESUMED NOW while higher-priority real orders/provider answers are pending.** [Current live/configuration review and required approval](customer-email-configuration-review.md).444c8fd/proposed104 preserved,31 checks reused and10 new offline config checks PASS. Live Email revision0/OFF/unconfigured; no send/deploy approval or production write. Dedicated application key and actual sender evidence are the next input; Auth SMTP/private test-recipient boundaries remain. Older sequencing/provider-status notes below are dated history.
+
+> E140,29October2026: customer transactional emails are priority4, after real COD shipping, tracking and provider-qualified payment work. Local444c8fd/proposed104 remains preserved OFF; no application credential, Auth SMTP, private test-only recipient, send or release change. [Current ordered priorities](real-cod-pdc-operations.md).
+
+> E137,29October2026: owner-reported PDC major-unit confirmation closes the scale question below. [Current takeover/readiness](commerce-takeover-20261029.md) supersedes its pending-answer wording. New priority: COD readiness/guarded packet, independent Pixel preparation and payment-operations design, then resume this preserved local104 candidate. Outbound stays OFF; separate application sender/key qualification remains pending. Auth SMTP/private test-recipient boundaries and all local qualification evidence remain unchanged.
+
 # CX-EMAIL-01 — customer order email preparation, E136
 
 29 October 2026. **FIRST INCREMENT LOCAL PASS / OFF / NOT DEPLOYED.**
