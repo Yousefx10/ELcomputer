@@ -34,7 +34,9 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
  const posts=()=>sent.filter(x=>x.url.endsWith('/SaveShipmentEx')).length
  const order=async id=>(await f.db.query('select * from public.customer_orders where id=$1',[id])).rows[0]
  try{
-  await f.db.query("update public.site_settings set inventory_tracking_required=false,payment_cash_fee=50,backorder_fulfillment_message='Delivery timing depends on your address.',backorder_fulfillment_message_ar='تختلف مدة التوصيل حسب العنوان.' where key='default'")
+  // A private owned reference row satisfies the current schema103 location contract.
+  await f.db.query("insert into private.delivery_location_cities(code,governorate_code,name_en,name_ar,is_active) values('owned-fixture-city','eg-cairo','Fixture city','مدينة اختبار',true)")
+  await f.db.query("update public.site_settings set inventory_tracking_required=false,payment_card_enabled=true,payment_cash_fee=50,backorder_fulfillment_message='Delivery timing depends on your address.',backorder_fulfillment_message_ar='تختلف مدة التوصيل حسب العنوان.' where key='default'")
   await f.db.query("update public.commerce_shipping_companies set client_shipping_price=50,cod_collection_provider='pdc'")
   await f.db.query("update public.shipping_provider_settings set is_enabled=true,cod_enabled=true,auto_create_labels=false,company_id='123',product_id=64,origin_city_id=1,origin_address='Owned pickup street',origin_phone='01000000000',origin_contact_name='Owned pickup',cities_cache='[{\"id\":1},{\"id\":2}]',products_cache='[{\"id\":64}]',access_token_encrypted=$1,webhook_secret_encrypted=$2 where id='pdc'",[encryptShippingSecret('OWNED-TOKEN'),encryptShippingSecret('owned-independent-webhook-secret-over-32-characters')])
   await f.db.query('delete from public.shipping_city_mappings')
@@ -42,8 +44,12 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
   const videoPath=join(f.directory,'owned.webm')
   await promisify(execFile)('ffmpeg',['-v','error','-f','lavfi','-i','color=c=blue:size=64x64:rate=10','-t','6','-an','-c:v','libvpx',videoPath])
   const bytes=await readFile(videoPath)
-  const packed=async()=>{
-   const pack=await f.newPack(1,'editor',{beforePack:async id=>{
+  const packed=async(options={})=>{
+   const pack=await f.newPack(1,'editor',{paymentMethod:options.paymentMethod||'cash',beforePack:async id=>{
+    if(options.paymentMethod==='card'){
+     if(options.cardMode!=='missing')await f.db.query("insert into public.payment_attempts(order_id,mode,integration_id,amount_minor,currency,status,paid_at) select id,$2,1,case when $3 then 1 else (total_amount*100)::bigint end,'EGP','succeeded',now() from public.customer_orders where id=$1",[id,options.cardMode==='test'?'test':'live',options.cardMode==='wrong_amount'])
+     await f.db.query("update public.customer_orders set payment_status='paid',amount_paid=total_amount where id=$1",[id])
+    }
     const approved=await f.call('/api/admin-orders/'+id,{actor:'owner',method:'PATCH',body:{status:'processing'}})
     assert.equal(approved.response.status,200,JSON.stringify(approved.body))
    }})
@@ -69,11 +75,18 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
   })
   await t.test('only authorized staff can request a shipment; browser COD amounts are rejected',async()=>{
    for(const actor of [null,'invalid','customer','viewer','disabled']){
-    const response=await f.call('/api/admin-shipping/orders/'+ready+'/booking',{actor,method:'POST',body:{action:'book'}})
+    const response=await f.call('/api/admin-shipping/orders/'+ready+'/booking',{actor,method:'POST',body:{action:'book',actual_weight_kg:1.234,weight_confirmed:true}})
     assert.equal(response.response.status,!actor||actor==='invalid'?401:403)
    }
    assert.equal((await f.call('/api/admin-shipping/orders/'+ready+'/booking',{actor:'owner',method:'POST',body:{action:'book',cod:1}})).response.status,400)
    assert.equal(sent.length,0)
+  })
+  await t.test('measured weight and confirmation are mandatory before any dispatch intent',async()=>{
+   const count=posts(),path='/api/admin-shipping/orders/'+ready+'/booking'
+   for(const body of [{action:'book'},{action:'book',actual_weight_kg:0,weight_confirmed:true},{action:'book',actual_weight_kg:1.2345,weight_confirmed:true},{action:'book',actual_weight_kg:true,weight_confirmed:true},{action:'book',actual_weight_kg:2.345,weight_confirmed:false}]){
+    const response=await f.call(path,{actor:'owner',method:'POST',body});assert.equal(response.response.status,400)
+   }
+   assert.equal(posts(),count);assert.equal((await f.db.query('select count(*)::int n from private.pdc_dispatches where order_id=$1',[ready])).rows[0].n,0)
   })
   await t.test('PDC fulfillment is explicit; other stores keep employee collection by default',async()=>{
    const unused=(await f.db.query("insert into public.commerce_shipping_companies(name,provider) values('Independent manual collection','manual') returning id,cod_collection_provider")).rows[0]
@@ -81,7 +94,7 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    const id=before.shipping_company_id
    await f.db.query("update public.commerce_shipping_companies set cod_collection_provider='manual' where id=$1",[id])
    const detail=await f.call('/api/admin-orders/'+ready,{actor:'owner'});assert.equal(detail.body.shipping,null)
-   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:ready,action:'book',runtime:f.config,fetcher}))
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:ready,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}))
    assert.equal(posts(),0)
    await f.db.query("update public.commerce_shipping_companies set cod_collection_provider='pdc' where id=$1",[id])
    await f.db.query('delete from public.commerce_shipping_companies where id=$1',[unused.id])
@@ -91,9 +104,9 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    globalThis.fetch=(url,options)=>String(url).startsWith(f.url+'/')?original(url,options):fetcher(url,options)
    try{
     const path='/api/admin-shipping/orders/'+ready+'/booking'
-    const response=await f.call(path,{actor:'owner',method:'POST',body:{action:'book'}})
+    const response=await f.call(path,{actor:'owner',method:'POST',body:{action:'book',actual_weight_kg:1.234,weight_confirmed:true}})
     assert.equal(response.response.status,200,JSON.stringify(response.body));assert.equal(response.body.state,'ready')
-    assert.equal((await f.call(path,{actor:'owner',method:'POST',body:{action:'book'}})).response.status,200)
+    assert.equal((await f.call(path,{actor:'owner',method:'POST',body:{action:'book',actual_weight_kg:1.234,weight_confirmed:true}})).response.status,200)
    }finally{globalThis.fetch=original}
    assert.equal(posts(),1);const shipment=sent.find(x=>x.url.endsWith('/SaveShipmentEx')).body.shipments[0]
    assert.equal(shipment.cod,200);assert.equal(shipment.toCityID,2);assert.equal(shipment.toRef,'ORD-'+ready)
@@ -106,16 +119,25 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
   await t.test('missing capability, uncovered or ambiguous city, missing packing and disabled runtime never dispatch',async()=>{
    const fresh=await packed(),count=posts()
    for(const [change,undo] of [["update public.shipping_provider_settings set cod_enabled=false","update public.shipping_provider_settings set cod_enabled=true"],["update public.commerce_shipping_companies set cod_collection_enabled=false","update public.commerce_shipping_companies set cod_collection_enabled=true"],["update public.commerce_shipping_companies set checkout_governorates=array['Giza']","update public.commerce_shipping_companies set checkout_governorates=array['Cairo']"],["update public.order_packing_videos set status='failed'","update public.order_packing_videos set status='ready'"]]){
-    await f.db.query(change);await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',runtime:f.config,fetcher}));await f.db.query(undo)
+    await f.db.query(change);await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}));await f.db.query(undo)
    }
-   f.config.shippingLiveRequestsEnabled=false;await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',runtime:f.config,fetcher}));f.config.shippingLiveRequestsEnabled=true
+   f.config.shippingLiveRequestsEnabled=false;await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}));f.config.shippingLiveRequestsEnabled=true
    await f.db.query("insert into public.shipping_city_mappings(provider,governorate,city,city_arabic,provider_city_id) values('pdc','Cairo','Other city','Fixture city',3)")
-   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',runtime:f.config,fetcher}))
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}))
    await f.db.query("delete from public.shipping_city_mappings where city='Other city'")
    const unpacked=await f.newPack(1)
-   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:unpacked.order,action:'book',runtime:f.config,fetcher}))
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:unpacked.order,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}))
    await f.call(unpacked.path+'/release',{method:'POST',body:{}});await f.call('/api/admin-orders/packing/work-session',{method:'POST',body:{action:'close'}})
    assert.equal(posts(),count)
+  })
+  await t.test('saved measured weight is used instead of the provider default and is immutable after dispatch',async()=>{
+   const job=(await f.db.query('select * from public.shipping_order_jobs where order_id=$1',[ready])).rows[0]
+   assert.equal(Number(job.actual_weight_kg),1.234)
+   assert.equal(sent.find(x=>x.url.endsWith('/SaveShipmentEx')).body.shipments[0].weight,1.234)
+   assert.equal(Number((await f.db.query("select default_weight_kg from public.shipping_provider_settings where id='pdc'")).rows[0].default_weight_kg),1)
+   await assert.rejects(f.db.query('update public.shipping_order_jobs set actual_weight_kg=2 where id=$1',[job.id]),/cannot change/)
+   await assert.rejects(f.db.query('update public.shipping_order_jobs set actual_weight_kg=null where id=$1',[job.id]),/cannot change/)
+   for(const role of ['anon','authenticated'])assert.equal((await f.db.query("select has_function_privilege($1,'public.shipping_order_prepare_measured(uuid,uuid,numeric)','execute') allowed",[role])).rows[0].allowed,false)
   })
   await t.test('PDC collection validates the offline destination and capability before accepting new COD orders',async()=>{
    const total=(await f.db.query('select count(*)::int n from public.customer_orders')).rows[0].n,count=posts()
@@ -130,9 +152,9 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
   })
   await t.test('ambiguous booking is retained once and cannot become a second provider POST',async()=>{
    const fresh=await packed(),count=posts();lost=true
-   const response=await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',runtime:f.config,fetcher});lost=false
+   const response=await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher});lost=false
    assert.equal(response.state,'uncertain')
-   await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',runtime:f.config,fetcher});assert.equal(posts(),count+1)
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}));assert.equal(posts(),count+1)
    assert.equal((await f.db.query('select count(*)::int n from private.pdc_dispatches where order_id=$1',[fresh])).rows[0].n,1)
    assert.equal((await order(fresh)).payment_status,'pending')
   })
@@ -141,7 +163,7 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    const tracked=await packed(),snapshot=await order(tracked),count=posts()
    assert.equal(snapshot.stock_fulfillment_state,'ready')
    assert.equal((await f.db.query('select count(*)::int n from public.commerce_serialized_units where customer_order_id=$1',[tracked])).rows[0].n,1)
-   assert.equal((await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:tracked,action:'book',runtime:f.config,fetcher})).state,'ready');assert.equal(posts(),count+1)
+   assert.equal((await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:tracked,action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher})).state,'ready');assert.equal(posts(),count+1)
    await f.db.query("update public.site_settings set inventory_tracking_required=false where key='default'")
   })
   await t.test('PDC collection proof pays customer balance; separate full remittance alone reaches Treasury',async()=>{
@@ -155,20 +177,56 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    const posted=await f.call('/api/admin-orders/'+ready+'/cod-cash',{actor:'owner',method:'POST',body:remit});assert.equal(posted.response.status,200,JSON.stringify(posted.body))
    assert.equal((await f.db.query('select count(*)::int n from public.treasury_transactions where customer_order_id=$1',[ready])).rows[0].n,1)
   })
-  await t.test('staff COD switch allows only explicit COD booking and PDF while global PDC remains paused',async()=>{
+  await t.test('legacy queued work cannot dispatch an assumed default weight',async()=>{
+   const fresh=await packed(),count=posts()
+   const prepared=await f.client.rpc('shipping_order_prepare',{p_admin:f.actors.owner,p_order:fresh});assert.equal(prepared.error,null)
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:0,weightConfirmed:true,runtime:f.config,fetcher}))
+   const settings=(await f.db.query("select * from public.shipping_provider_settings where id='pdc'")).rows[0]
+   const config=Object.fromEntries(['base_url','api_mode','company_id','access_token_encrypted','webhook_secret_encrypted','product_id','origin_city_id','origin_address','origin_phone','origin_contact_name','default_weight_kg','shipment_type_id','label_template_id','allow_open_shipment','all_must_valid','cod_enabled'].map(k=>[k,k==='default_weight_kg'?Number(settings[k]):settings[k]]))
+   const claim=await f.client.rpc('shipping_order_take',{p_job:prepared.data.id,p_ready:true,p_configuration:config});assert.ok(claim.error)
+   assert.equal((await f.db.query('select count(*)::int n from private.pdc_dispatches where order_id=$1',[fresh])).rows[0].n,0);assert.equal(posts(),count)
+  })
+  await t.test('concurrent staff weight preparations pin one value before any provider request',async()=>{
+   const fresh=await packed(),count=posts()
+   const results=await Promise.all([1.111,2.222].map(p_actual_weight_kg=>f.client.rpc('shipping_order_prepare_measured',{p_admin:f.actors.owner,p_order:fresh,p_actual_weight_kg})))
+   assert.equal(results.filter(x=>!x.error).length,1);assert.equal(results.filter(x=>x.error).length,1)
+   const saved=(await f.db.query('select actual_weight_kg,dispatch_started_at from public.shipping_order_jobs where order_id=$1',[fresh])).rows[0]
+   assert.ok([1.111,2.222].includes(Number(saved.actual_weight_kg)));assert.equal(saved.dispatch_started_at,null);assert.equal(posts(),count)
+  })
+  await t.test('staff Manual/PDC CARD requires verified live payment, then sends COD zero and measured weight',async()=>{
+   const count=posts()
+   for(const cardMode of ['missing','wrong_amount']){
+    const invalid=await packed({paymentMethod:'card',cardMode})
+    f.config.shippingLiveRequestsEnabled=false;f.config.pdcManualCodEnabled=true
+    await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:invalid,action:'book',actualWeightKg:2.345,weightConfirmed:true,runtime:f.config,fetcher}))
+    assert.equal(posts(),count)
+   }
+   await assert.rejects(packed({paymentMethod:'card',cardMode:'test'}),/Test gateway payments cannot fulfill/)
+   assert.equal(posts(),count)
+   const fresh=await packed({paymentMethod:'card',cardMode:'live'}),snapshot=await order(fresh)
+   const reply=await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:2.345,weightConfirmed:true,runtime:f.config,fetcher})
+   assert.equal(reply.state,'ready');assert.equal(posts(),count+1)
+   const shipment=sent.filter(x=>x.url.endsWith('/SaveShipmentEx')).at(-1).body.shipments[0]
+   assert.equal(shipment.cod,0);assert.equal(shipment.weight,2.345)
+   assert.equal(Number((await f.db.query('select actual_weight_kg from public.shipping_order_jobs where order_id=$1',[fresh])).rows[0].actual_weight_kg),2.345)
+   assert.deepEqual(await order(fresh),snapshot);assert.equal(f.config.shippingLiveRequestsEnabled,false)
+   assert.equal((await processPdcOutboundQueue({supabaseAdmin:f.client,runtime:f.config,fetcher})).active,false)
+   f.config.pdcManualCodEnabled=false;f.config.shippingLiveRequestsEnabled=true
+  })
+  await t.test('staff switch allows explicit order booking and PDF while global PDC remains paused',async()=>{
    const fresh=await packed(),count=posts();f.config.shippingLiveRequestsEnabled=false;f.config.pdcManualCodEnabled=true
    assert.equal((await processPdcOutboundQueue({supabaseAdmin:f.client,runtime:f.config,fetcher})).active,false)
    assert.equal((await processPdcReverseQueue({supabaseAdmin:f.client,runtime:f.config,fetcher})).active,false)
    assert.throws(()=>requirePdcReadAccess({is_enabled:true},f.config),/disabled/)
    await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'recover',runtime:f.config,fetcher}),/disabled/)
-   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:randomUUID(),action:'book',runtime:f.config,fetcher}),/unavailable/)
+   await assert.rejects(operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:randomUUID(),action:'book',actualWeightKg:1.234,weightConfirmed:true,runtime:f.config,fetcher}),/unavailable/)
    assert.equal(posts(),count)
    const original=globalThis.fetch
    globalThis.fetch=(url,options)=>String(url).startsWith(f.url+'/')?original(url,options):fetcher(url,options)
    try{
     const path='/api/admin-shipping/orders/'+fresh+'/booking'
-    assert.equal((await f.call(path,{actor:'customer',method:'POST',body:{action:'book'}})).response.status,403)
-    const response=await f.call(path,{actor:'owner',method:'POST',body:{action:'book'}})
+    assert.equal((await f.call(path,{actor:'customer',method:'POST',body:{action:'book',actual_weight_kg:1.234,weight_confirmed:true}})).response.status,403)
+    const response=await f.call(path,{actor:'owner',method:'POST',body:{action:'book',actual_weight_kg:1.234,weight_confirmed:true}})
     assert.equal(response.response.status,200,JSON.stringify(response.body));assert.equal(response.body.state,'ready')
    }finally{globalThis.fetch=original}
    assert.equal(posts(),count+1);assert.equal((await order(fresh)).payment_status,'pending')

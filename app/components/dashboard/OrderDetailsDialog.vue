@@ -153,11 +153,15 @@
                   </p>
                 </div>
 
+                <div v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" class="space-y-2 text-sm">
+                  <label class="block">{{ $t('pdcParcel.weight') }}<input v-model="parcelWeight" type="number" min="0.001" max="99999.999" step="0.001" inputmode="decimal" class="mt-1 w-full rounded-lg border bg-white p-2" :disabled="courierChecking"></label>
+                  <label class="flex items-start gap-2"><input v-model="parcelWeightConfirmed" type="checkbox" class="mt-1" :disabled="courierChecking">{{ $t('pdcParcel.confirm') }}</label>
+                </div>
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
                     {{ $t(`liveSales.states.${shippingDetail.state}`) }}
                   </span>
-                  <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking || orderDetail.status !== 'ready_to_deliver'" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
+                  <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking || orderDetail.status !== 'ready_to_deliver' || !parcelWeightConfirmed || measuredParcelWeight(parcelWeight) === null" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
                   <button v-if="['uncertain','submitting'].includes(shippingDetail.state) && !shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('recover')">{{ $t('liveSales.recover') }}</button>
                   <button v-if="shippingDetail.awb && !shippingDetail.label_ready" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('label')">{{ $t('liveSales.label') }}</button>
                   <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
@@ -367,6 +371,7 @@
 </template>
 
 <script setup>
+import { measuredParcelWeight } from '../../utils/parcelWeight.js'
 const { data: erpState } = useNuxtData('active-erp')
 const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
@@ -400,6 +405,8 @@ const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
 const statusLoading = ref(false)
 const labelLoading = ref(false)
+const parcelWeight = ref('')
+const parcelWeightConfirmed = ref(false)
 const courierChecking = ref(false)
 const courierNotice = ref('')
 const manualAwb = ref('')
@@ -653,13 +660,15 @@ const closeDialog = () => {
 
 const runCourierAction = async action => {
   if (courierChecking.value || !props.orderId) return
+  if (action === 'book' && (!parcelWeightConfirmed.value || measuredParcelWeight(parcelWeight.value) === null)) return
   if (action === 'book' && !window.confirm(t('liveSales.confirmBooking'))) return
   courierChecking.value = true; courierNotice.value = ''
   try {
-    const result = await $fetch(`/api/admin-shipping/orders/${props.orderId}/booking`, { method: 'POST', headers: await getAuthHeaders(), body: { action }, retry: 0 })
+    const body = action === 'book' ? { action, actual_weight_kg: measuredParcelWeight(parcelWeight.value), weight_confirmed: true } : { action }
+    const result = await $fetch(`/api/admin-shipping/orders/${props.orderId}/booking`, { method: 'POST', headers: await getAuthHeaders(), body, retry: 0 })
     await loadOrderDetails()
     courierNotice.value = result.state === 'uncertain' ? 'liveSales.uncertain' : 'shipment.reconciled'
-  } catch { courierNotice.value = 'shipment.actionFailed' } finally { courierChecking.value = false }
+  } catch { courierNotice.value = 'shipment.actionFailed'; await loadOrderDetails(true).catch(() => {}) } finally { courierChecking.value = false }
 }
 
 const refreshCourierStatus = async () => {
@@ -791,6 +800,7 @@ const recordManualAwb = async () => {
   try {
     await $fetch(`/api/admin-shipping/orders/${props.orderId}/manual-awb`, { method: 'POST', headers: await getAuthHeaders(), body: { awb: manualAwb.value.trim(), confirmed: true }, retry: 0 })
     manualAwb.value = ''; manualAwbConfirmed.value = false
+    parcelWeight.value = ''; parcelWeightConfirmed.value = false
     await loadOrderDetails()
     emit('updated', orderDetail.value)
   } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Review the original booking.' }
@@ -829,6 +839,8 @@ watch(
   () => [props.open, props.orderId],
   async ([isOpen, orderId]) => {
     manualAwb.value = ''; manualAwbConfirmed.value = false
+    parcelWeight.value = ''; parcelWeightConfirmed.value = false
+    courierNotice.value = ''
     if (!isOpen) {
       resetDialogState()
       return

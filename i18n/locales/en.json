@@ -5700,5 +5700,9 @@
     "applyUncertain": "Result unconfirmed. Recover the same import command.",
     "legacy": "Choose a supported location to change these values.",
     "select": "Select a supported governorate and city."
+  },
+  "pdcParcel": {
+    "weight": "Parcel weight (kg)",
+    "confirm": "I weighed this packed parcel."
   }
 }

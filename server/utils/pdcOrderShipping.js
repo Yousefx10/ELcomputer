@@ -4,6 +4,7 @@ import { requirePdcReadAccess, requestPdcLookup, pdcResponseRows, getPdcStatusFi
 import { verifyReverseResult } from './pdcReverseLogistics.js'
 import { getShippingDocumentsRoot, saveShippingDocument } from './privateShippingDocuments.js'
 import { decryptShippingSecret, shippingSecretsMatch } from './shippingSecrets.js'
+import { measuredParcelWeight } from '../../app/utils/parcelWeight.js'
 
 const fields = ['base_url','api_mode','company_id','access_token_encrypted','webhook_secret_encrypted','product_id','origin_city_id','origin_address','origin_phone','origin_contact_name','default_weight_kg','shipment_type_id','label_template_id','allow_open_shipment','all_must_valid','cod_enabled']
 const configuration = settings => Object.fromEntries(fields.map(key => [key, key === 'default_weight_kg' ? Number(settings[key]) : settings[key]]))
@@ -30,7 +31,9 @@ export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, f
       await authorize()
       const { data: items, error } = await db.from('customer_order_items').select('product_title,quantity').eq('order_id', job.order.id).order('created_at')
       if (error) throw error
-      const shipment = await buildPdcShipment({ settings, order: job.order, items: items || [], orderReference: job.to_ref,
+      const weight = measuredParcelWeight(job.actual_weight_kg)
+      if (weight === null) throw new Error('Measured parcel weight is missing')
+      const shipment = await buildPdcShipment({ settings: { ...settings, default_weight_kg: weight }, order: job.order, items: items || [], orderReference: job.to_ref,
         destinationCityId: job.city_id, codAmountMinor: Number(job.cod_amount_minor) })
       const result = verifyReverseResult(await requestPdcJson({ settings, endpoint: 'SaveShipmentEx', body: {
         allMustValid: Boolean(settings.all_must_valid), shipments: [shipment], hasAWBs: false, extraParams: {}
@@ -71,15 +74,17 @@ export const processPdcOutboundQueue = async ({ supabaseAdmin: db, limit = 10, f
   for (const job of data || []) processed.push(await processPdcOrderJob({ supabaseAdmin: db, settings, jobId: job.id, fetcher, runtime, authorize }))
   return { active: true, processed }
 }
-export const operatePdcOrder = async ({ db, adminId, orderId, action, runtime = useRuntimeConfig(), fetcher = fetch, authorize = () => {} }) => {
+export const operatePdcOrder = async ({ db, adminId, orderId, action, actualWeightKg, weightConfirmed, runtime = useRuntimeConfig(), fetcher = fetch, authorize = () => {} }) => {
   await authorize()
+  if (action === 'book' && (weightConfirmed !== true || measuredParcelWeight(actualWeightKg) === null)) throw createError({ statusCode: 400, statusMessage: 'Measure and confirm the packed parcel weight.' })
   if (runtime.shippingLiveRequestsEnabled !== true && [true, 'true'].includes(runtime.pdcManualCodEnabled) && ['book', 'label'].includes(action)) {
     const { data: order, error } = await db.from('customer_orders').select('payment_method,is_preorder,erp_owner,shipping_company_id').eq('id', orderId).maybeSingle()
-    if (error || !order || order.payment_method !== 'cash' || order.is_preorder || order.erp_owner !== 'built_in') throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })
+    if (error || !order || !['cash', 'card'].includes(order.payment_method) || order.is_preorder || order.erp_owner !== 'built_in') throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })
     const selected = await db.from('commerce_shipping_companies').select('provider,is_active,checkout_enabled,cod_collection_enabled,cod_collection_provider').eq('id', order.shipping_company_id).maybeSingle()
     if (selected.error || !selected.data?.is_active || !selected.data.checkout_enabled || selected.data.provider !== 'manual'
       || !selected.data.cod_collection_enabled || selected.data.cod_collection_provider !== 'pdc') throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })
-    // Only this verified staff COD operation receives access. General PDC calls,
+    // Only this selected staff order operation receives access. SQL rechecks live
+    // CARD payment or the saved COD balance before dispatch. General PDC calls,
     // tracking, recovery, reverse shipments and queue workers retain their gate.
     runtime = { ...runtime, shippingLiveRequestsEnabled: true }
   }
@@ -100,6 +105,8 @@ export const operatePdcOrder = async ({ db, adminId, orderId, action, runtime = 
     await authorize()
     await rpc(db, 'shipping_order_recover', { p_admin: adminId, p_order: orderId, p_ref: job.to_ref, p_awb: matches[0].AWB, p_configuration: configuration(settings) })
   }
-  const job = await rpc(db, 'shipping_order_prepare', { p_admin: adminId, p_order: orderId })
+  const job = action === 'book'
+    ? await rpc(db, 'shipping_order_prepare_measured', { p_admin: adminId, p_order: orderId, p_actual_weight_kg: measuredParcelWeight(actualWeightKg) })
+    : await rpc(db, 'shipping_order_prepare', { p_admin: adminId, p_order: orderId })
   return processPdcOrderJob({ supabaseAdmin: db, settings, jobId: job.id, fetcher, runtime, authorize })
 }
