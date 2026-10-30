@@ -108,8 +108,8 @@ const exercise = async (t, database = null) => {
     await t.test('legacy/imported orders and malformed recipients cannot enqueue', async () => {
       const legacy = await make({ cart: null }); assert.deepEqual(await events(legacy), [])
       const bad = await make({ email: 'bad\n@example.invalid' })
-      const result = await processOrderEmailNotifications(f.client); assert.equal(result.processed[0].state, 'suppressed')
-      assert.equal((await events(bad))[0].reason, 'invalid_content')
+      assert.deepEqual(await events(bad), [])
+      assert.deepEqual(await processOrderEmailNotifications(f.client), { processed: [] })
     })
     await t.test('Test-mode success and a rejected wrong amount cannot create verified-paid mail', async () => {
       const o = await make(), a = (await db.query("insert into public.payment_attempts(order_id,mode,integration_id,amount_minor,currency,status,provider_order_id) values($1,'test',12345,20035,'EGP','pending','12388001') returning *", [o.id])).rows[0]

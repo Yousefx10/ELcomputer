@@ -10,7 +10,7 @@ export const createEmailFixture=async({database=null}={})=>{
  globalThis.useRuntimeConfig=()=>emailFixtureRuntime
  const db=database||await createResetDatabase(),client=smsDatabaseClient(db),actors={owner:randomUUID(),customer:randomUUID(),viewer:randomUUID(),manager:randomUUID(),templates:randomUUID(),sender:randomUUID(),history:randomUUID(),preferences:randomUUID(),inactive:randomUUID()}
  for(const [name,id]of Object.entries(actors)){
-  await db.query('insert into auth.users(id,email) values($1,$2)',[id,name+'@email.example.invalid'])
+  await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,$3)',[id,name==='customer'?'buyer@email.example.invalid':name+'@email.example.invalid',name==='customer'?new Date():null])
   if(name==='customer')continue
   const permissions={'email.view':true,...Object.fromEntries(({viewer:['settings.view','templates.view'],manager:['settings.view','settings.manage'],templates:['templates.view','templates.manage'],sender:['transactional.send'],history:['history.view'],preferences:['marketing.manage']})[name]?.map(key=>['email.'+key,true])||[])}
   await db.query('insert into public.admin_users(id,email,role,permissions,is_active) values($1,$2,$3,$4,$5)',[id,name+'@email.example.invalid',name==='owner'?'owner':'admin',JSON.stringify(permissions),name!=='inactive'])
