@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import {pathToFileURL} from 'node:url'
 import { mkdtemp, mkdir, realpath, rm } from 'node:fs/promises'
 import { build } from 'esbuild'
 import { createApp, createRouter, toNodeListener } from 'h3'
@@ -62,6 +63,7 @@ export async function createPrivatePackingFixture(options = {}) {
         banner: { js: `const useRuntimeConfig=()=>globalThis[${JSON.stringify(key)}].config; const defineEventHandler=handler=>handler;` }, plugins: [{ name: key, setup(builder) {
           builder.onResolve({ filter: /\/supabaseAdmin(?:\.js)?$/ }, () => ({ path: key, namespace: key }))
           builder.onLoad({ filter: /.*/, namespace: key }, () => ({ contents: `export const getSupabaseAdminClient=()=>globalThis[${JSON.stringify(key)}].client`, loader: 'js' }))
+          builder.onResolve({filter:/^\./},args=>{const file=resolve(args.resolveDir,args.path);if(options.externalModules?.includes(file))return {path:pathToFileURL(file).href,external:true}})
           builder.onResolve({ filter: /^h3$/ }, () => ({ path: import.meta.resolve('h3'), external: true }))
         } }] })
       const handler = (await import('data:text/javascript;base64,' + Buffer.from(compiled.outputFiles[0].text).toString('base64'))).default

@@ -45,8 +45,9 @@ const location = async (key, create) => {
 }
 const validate = bytes => { if (!Buffer.isBuffer(bytes) || bytes.length < 5 || bytes.length > MAX_SHIPPING_DOCUMENT_BYTES || bytes.subarray(0, 5).toString() !== '%PDF-') fail() }
 const sha = bytes => createHash('sha256').update(bytes).digest('hex')
-export const saveShippingDocument = async (key, bytes) => {
+export const saveShippingDocument = async (key, bytes, { verify } = {}) => {
   validate(bytes)
+  await verify?.(bytes)
   const { path, parent } = await location(key, true), temporary = join(parent, '.' + randomUUID() + '.pending')
   let file
   try {
@@ -62,7 +63,7 @@ export const saveShippingDocument = async (key, bytes) => {
       try {
         const stat = await existing.stat();safe(stat, false)
         if (stat.size > MAX_SHIPPING_DOCUMENT_BYTES) fail()
-        saved = await existing.readFile();validate(saved)
+        saved = await existing.readFile();validate(saved);await verify?.(saved)
       } finally { await existing.close() }
     }
     await fs.unlink(temporary);await sync(parent)

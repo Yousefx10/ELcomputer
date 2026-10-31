@@ -5704,5 +5704,14 @@
   "pdcParcel": {
     "weight": "Parcel weight (kg)",
     "confirm": "I weighed this packed parcel."
+  },
+  "shippingLabel": {
+    "title": "Shipping label",
+    "view": "View label",
+    "download": "Download label",
+    "print": "Print label",
+    "loading": "Preparing label…",
+    "unavailable": "The label is unavailable. Keep the existing shipment.",
+    "page": "Shipping label, page {number}"
   }
 }

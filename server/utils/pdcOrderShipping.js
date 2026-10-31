@@ -4,6 +4,7 @@ import { requirePdcReadAccess, requestPdcLookup, pdcResponseRows, getPdcStatusFi
 import { verifyReverseResult } from './pdcReverseLogistics.js'
 import { getShippingDocumentsRoot, saveShippingDocument } from './privateShippingDocuments.js'
 import { decryptShippingSecret, shippingSecretsMatch } from './shippingSecrets.js'
+import { shippingLabelIdentity, validateShippingLabelPdf } from './shippingLabelPdf.js'
 import { measuredParcelWeight } from '../../app/utils/parcelWeight.js'
 
 const fields = ['base_url','api_mode','company_id','access_token_encrypted','webhook_secret_encrypted','product_id','origin_city_id','origin_address','origin_phone','origin_contact_name','default_weight_kg','shipment_type_id','label_template_id','allow_open_shipment','all_must_valid','cod_enabled']
@@ -21,10 +22,11 @@ const requireReady = async (settings, runtime) => {
   if (!token || secret.length < 32 || shippingSecretsMatch(token, secret)) throw createError({ statusCode: 503, statusMessage: 'Courier credentials are incomplete.' })
   await getShippingDocumentsRoot({ create: true })
 }
-export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, fetcher = fetch, runtime = useRuntimeConfig(), authorize = () => {} }) => {
+export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, fetcher = fetch, runtime = useRuntimeConfig(), authorize = () => {}, labelOnly = false, expectedIdentity = null }) => {
   await authorize();await requireReady(settings, runtime)
   const job = await rpc(db, 'shipping_order_take', { p_job: jobId, p_ready: true, p_configuration: configuration(settings) })
   if (!job) return { id: jobId, skipped: true }
+  if (labelOnly && (job.task !== 'label' || !job.awb || job.id !== jobId || expectedIdentity && (job.awb !== expectedIdentity.awb || job.to_ref !== expectedIdentity.reference))) throw createError({statusCode:409,statusMessage:'Review the existing shipment before retrieving its label.'})
   const finish = (state, extra = {}) => rpc(db, 'shipping_order_finish', { p_job: job.id, p_token: job.token, p_state: state, ...extra })
   if (job.task === 'book') {
     try {
@@ -41,7 +43,7 @@ export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, f
       if (result.state !== 'created') throw new Error('Booking outcome requires review')
       await finish('created', { p_awb: result.awb })
       // The next claim performs only ExportPDF. Do not reuse the booking token.
-      return processPdcOrderJob({ supabaseAdmin: db, settings, jobId, fetcher, runtime, authorize })
+      return processPdcOrderJob({ supabaseAdmin: db, settings, jobId, fetcher, runtime, authorize, labelOnly: true, expectedIdentity: {awb:result.awb,reference:job.to_ref,orderId:job.order.id} })
     } catch {
       try { await finish('uncertain') } catch { /* Durable dispatch barrier still prevents another POST. */ }
       return { id: jobId, state: 'uncertain' }
@@ -50,9 +52,12 @@ export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, f
   try {
     await authorize()
     const bytes = await requestPdcLabel({ settings, awb: job.awb, fetcher, bounded: true })
-    const { data: row, error } = await db.from('shipping_order_jobs').select('order_id').eq('id', jobId).single()
-    if (error || !row) throw new Error('Missing label binding')
-    const evidence = await saveShippingDocument(`vps-v1/orders/${row.order_id}/${job.id}.pdf`, bytes)
+    await authorize()
+    const { data: row, error } = await db.from('shipping_order_jobs').select('id,order_id,provider,to_ref,awb').eq('id', jobId).single()
+    if (error || !row || row.id !== job.id || row.awb !== job.awb || row.to_ref !== job.to_ref || expectedIdentity?.orderId && row.order_id !== expectedIdentity.orderId) throw new Error('Missing label binding')
+    const identity = shippingLabelIdentity(row)
+    const evidence = await saveShippingDocument(`vps-v1/orders/${row.order_id}/${job.id}.pdf`, bytes, {verify: saved => validateShippingLabelPdf(saved, identity)})
+    await authorize()
     await finish('label_ready', { p_sha256: evidence.sha256, p_size: evidence.size_bytes })
     return { id: jobId, state: 'ready', awb: job.awb }
   } catch {
@@ -91,9 +96,9 @@ export const operatePdcOrder = async ({ db, adminId, orderId, action, actualWeig
   const settings = await getPdcSettings(db)
   await requireReady(settings, runtime)
   if (action === 'label') {
-    const { data: job, error } = await db.from('shipping_order_jobs').select('id,awb').eq('order_id', orderId).maybeSingle()
+    const { data: job, error } = await db.from('shipping_order_jobs').select('id,order_id,provider,to_ref,awb').eq('order_id', orderId).maybeSingle()
     if (error || !job?.awb) throw createError({ statusCode: 404, statusMessage: 'An existing shipment is required.' })
-    return processPdcOrderJob({ supabaseAdmin: db, settings, jobId: job.id, fetcher, runtime, authorize })
+    return processPdcOrderJob({ supabaseAdmin: db, settings, jobId: job.id, fetcher, runtime, authorize, labelOnly: true, expectedIdentity: shippingLabelIdentity(job) })
   }
   if (action === 'recover') {
     const { data: job, error } = await db.from('shipping_order_jobs').select('to_ref,state,provider_identity').eq('order_id', orderId).maybeSingle()

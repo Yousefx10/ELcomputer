@@ -1,4 +1,8 @@
 import process from 'node:process'
+import {createRequire} from 'node:module'
+import {dirname,join} from 'node:path'
+const pdfRoot=dirname(createRequire(import.meta.url).resolve('pdfjs-dist/package.json'))
+const pdfVersion=createRequire(import.meta.url)('pdfjs-dist/package.json').version
 import { DEFAULT_SITE_URL } from './app/utils/seo.js'
 import tailwindcss from "@tailwindcss/vite";
 
@@ -14,6 +18,14 @@ const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
+  nitro: {
+    publicAssets: [{dir:join(pdfRoot,'standard_fonts'),baseURL:`/_nuxt/pdfjs-${pdfVersion}/standard_fonts`,maxAge:31536000}],
+    externals: {
+      // Text-only PDF validation uses JS DOMMatrix; no native canvas is required.
+      traceInclude: ['node_modules/pdfjs-dist/legacy/build/pdf.mjs', 'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs', 'node_modules/@thednp/dommatrix/dist/dommatrix.mjs'],
+      traceOptions: {ignore: ['**/node_modules/@napi-rs/canvas/**', '**/node_modules/@napi-rs/canvas-*/**']}
+    }
+  },
   modules: ['@nuxtjs/supabase', '@nuxt/icon', '@nuxtjs/i18n', '@nuxtjs/color-mode'],
   i18n: {
     defaultLocale: 'en',

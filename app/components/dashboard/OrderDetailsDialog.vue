@@ -165,15 +165,9 @@
                   <button v-if="['uncertain','submitting'].includes(shippingDetail.state) && !shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('recover')">{{ $t('liveSales.recover') }}</button>
                   <button v-if="shippingDetail.awb && !shippingDetail.label_ready" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('label')">{{ $t('liveSales.label') }}</button>
                   <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
-                  <button
-                    v-if="shippingDetail.label_ready"
-                    type="button"
-                    :disabled="labelLoading"
-                    class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
-                    @click="downloadShippingLabel"
-                  >
-                    {{ labelLoading ? $t('common.downloading') : $t('common.shippingLabel') }}
-                  </button>
+                  <template v-if="shippingDetail.label_ready">
+                    <button v-for="action in ['view','download','print']" :key="action" type="button" :disabled="labelLoading" class="min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold disabled:opacity-50" @click="openShippingLabel(action)">{{ $t('shippingLabel.'+action) }}</button>
+                  </template>
                 </div>
               </div>
               <p v-if="courierNotice" role="status" class="mt-3 text-sm text-gray-600">{{ $t(courierNotice) }}</p>
@@ -368,9 +362,12 @@
       </div>
     </div>
   </Teleport>
+  <ShippingLabelPreview v-if="labelPreview" :key="labelPreview.identity.jobId" :document="labelPreview" :auto-print="labelAutoPrint" @close="clearShippingLabel" />
 </template>
 
 <script setup>
+import ShippingLabelPreview from './ShippingLabelPreview.vue'
+import {readShippingLabelResponse} from '../../utils/shippingLabelDownload.js'
 import { measuredParcelWeight } from '../../utils/parcelWeight.js'
 const { data: erpState } = useNuxtData('active-erp')
 const externalErp = computed(() => erpState.value?.mode === 'daftra')
@@ -405,6 +402,10 @@ const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
 const statusLoading = ref(false)
 const labelLoading = ref(false)
+const labelPreview = ref(null)
+const labelAutoPrint = ref(false)
+let labelController=null,labelRequest=0
+const clearShippingLabel=()=>{labelRequest++;labelController?.abort();labelController=null;labelPreview.value=null;labelAutoPrint.value=false;labelLoading.value=false}
 const parcelWeight = ref('')
 const parcelWeightConfirmed = ref(false)
 const courierChecking = ref(false)
@@ -681,38 +682,25 @@ const refreshCourierStatus = async () => {
   } catch { courierNotice.value = 'shipment.actionFailed' } finally { courierChecking.value = false }
 }
 
-const downloadShippingLabel = async () => {
-  if (!props.orderId || !shippingDetail.value?.label_ready) {
-    return
-  }
-
-  labelLoading.value = true
-  errorMessage.value = ''
-
+const openShippingLabel = async action => {
+  if (!props.orderId || !shippingDetail.value?.label_ready || labelLoading.value) return
+  clearShippingLabel()
+  const current=++labelRequest,expected={orderId:props.orderId,jobId:shippingDetail.value.id,awb:shippingDetail.value.awb}
+  const controller=new AbortController();labelController=controller;const timeout=setTimeout(()=>controller.abort(),20000)
+  labelLoading.value=true;errorMessage.value=''
   try {
-    const response = await fetch(`/api/admin-shipping/orders/${props.orderId}/label`, {
-      headers: await getAuthHeaders()
-    })
-
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}))
-      throw new Error(errorBody?.statusMessage || 'Could not download the shipping label.')
-    }
-
-    const labelUrl = URL.createObjectURL(await response.blob())
-    const link = document.createElement('a')
-    link.href = labelUrl
-    link.download = `PDC-${shippingDetail.value.awb || props.orderId}.pdf`
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    URL.revokeObjectURL(labelUrl)
-  } catch (error) {
-    errorMessage.value = error?.message || 'Could not download the shipping label.'
-  } finally {
-    labelLoading.value = false
-  }
+    const response=await fetch(`/api/admin-shipping/orders/${expected.orderId}/label`,{headers:await getAuthHeaders(),redirect:'error',cache:'no-store',signal:labelController.signal})
+    const document=await readShippingLabelResponse(response,expected)
+    if(current!==labelRequest||props.orderId!==expected.orderId||!props.open)return
+    if(action==='download'){
+      const url=URL.createObjectURL(new Blob([document.bytes],{type:'application/pdf'})),link=window.document.createElement('a')
+      link.href=url;link.download=`PDC-${document.identity.awb}.pdf`;window.document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
+    } else {labelAutoPrint.value=action==='print';labelPreview.value=document}
+  } catch {if(current===labelRequest&&props.open)errorMessage.value=t('shippingLabel.unavailable')}
+  finally {clearTimeout(timeout);if(current===labelRequest){labelLoading.value=false;labelController=null}}
 }
+watch(()=>[props.orderId,props.open],clearShippingLabel)
+onBeforeUnmount(clearShippingLabel)
 
 const loadOrderDetails = async (background = false) => {
   if (!props.open || !props.orderId) {

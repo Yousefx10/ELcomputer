@@ -1,19 +1,21 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
-import {readFile} from 'node:fs/promises'
+import {readFile,rename,writeFile,unlink,readdir} from 'node:fs/promises'
 import {execFile} from 'node:child_process'
 import {promisify} from 'node:util'
 import {join,resolve} from 'node:path'
 import {createPrivatePackingFixture} from './helpers/privatePackingFixture.mjs'
 import {emailNativeAvailable} from './helpers/emailNativeDatabase.mjs'
+import {shippingLabelFixture} from './helpers/shippingLabelFixture.mjs'
 import {encryptShippingSecret} from '../server/utils/shippingSecrets.js'
 import {operatePdcOrder,processPdcOutboundQueue} from '../server/utils/pdcOrderShipping.js'
 import {requirePdcReadAccess} from '../server/utils/pdcLookups.js'
 import {processPdcReverseQueue} from '../server/utils/pdcReverseLogistics.js'
 
 test('staff-approved Manual COD uses existing PDC Dashboard dispatch without prepaid or invented stock',{skip:!emailNativeAvailable},async t=>{
- const f=await createPrivatePackingFixture({extraRoutes:[
+ const f=await createPrivatePackingFixture({externalModules:[resolve('server/utils/shippingLabelPdf.js')],extraRoutes:[
+  ['get','/api/admin-shipping/orders/:id/label',resolve('server/api/admin-shipping/orders/[id]/label.get.js')],
   ['get','/api/admin-orders/:id',resolve('server/api/admin-orders/[id].get.js')],
   ['patch','/api/admin-orders/:id',resolve('server/api/admin-orders/[id].patch.js')],
   ['post','/api/admin-shipping/orders/:id/booking',resolve('server/api/admin-shipping/orders/[id]/booking.post.js')],
@@ -21,14 +23,18 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
  ]})
  const previous=globalThis.useRuntimeConfig;globalThis.useRuntimeConfig=()=>f.config
  Object.assign(f.config,{shippingLiveRequestsEnabled:true,shippingDocumentsDir:join(f.directory,'private-documents'),shippingCredentialsEncryptionKey:'owned-isolated-shipping-key-over-32-characters'})
- const sent=[];let lost=false
+ const sent=[];let lost=false,pdfMode="valid"
  const fetcher=async(url,options)=>{
   const body=JSON.parse(options.body);sent.push({url:String(url),body});assert.equal(options.redirect,'error')
   if(String(url).endsWith('/SaveShipmentEx')){
    if(lost)throw Error('Owned ambiguous provider transport')
    return Response.json({generalResponse:{success:true},successResponses:[{success:true,ref:body.shipments[0].toRef,awb:'SYNTHETIC-'+sent.length}]})
   }
-  if(String(url).endsWith('/ExportPDF'))return new Response('%PDF-1.7\nOwned synthetic label\n%%EOF',{headers:{'content-type':'application/pdf'}})
+  if(String(url).endsWith('/ExportPDF')){
+   const saved=(await f.db.query('select to_ref from public.shipping_order_jobs where awb=$1',[body.awBs[0]])).rows[0]
+   const pdf=shippingLabelFixture({awb:pdfMode==='wrong'?'OTHER-SHIPMENT':body.awBs[0],reference:saved.to_ref,compressed:true})
+   return new Response(pdf,{headers:{'content-type':'application/pdf'}})
+  }
   throw Error('Unexpected synthetic provider request')
  }
  const posts=()=>sent.filter(x=>x.url.endsWith('/SaveShipmentEx')).length
@@ -115,6 +121,30 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    assert.equal((await f.db.query('select count(*)::int n from public.payment_attempts')).rows[0].n,0)
    assert.equal((await f.db.query('select count(*)::int n from public.order_cod_collections')).rows[0].n,0)
    assert.equal((await f.db.query('select count(*)::int n from public.order_cod_reconciliations')).rows[0].n,0)
+  })
+  await t.test('label View/Download/Print endpoint enforces existing RBAC and exact PDF identity',async()=>{
+   const job=(await f.db.query('select * from public.shipping_order_jobs where order_id=$1',[ready])).rows[0],path='/api/admin-shipping/orders/'+ready+'/label',count=sent.length
+   for(const actor of [null,'invalid','customer','viewer','disabled'])assert.equal((await f.call(path,{actor})).response.status,!actor||actor==='invalid'?401:403)
+   for(const actor of ['owner','editor']){const r=await f.call(path,{actor});assert.equal(r.response.status,200,JSON.stringify(r.body));assert.equal(r.response.headers.get('x-shipping-order'),ready);assert.equal(r.response.headers.get('x-shipping-awb'),job.awb);assert.equal(r.response.headers.get('cache-control'),'private, no-store');assert.match(r.response.headers.get('content-disposition'),/^attachment/);assert.equal(r.body.length,Number(job.label_size_bytes))}
+   assert.equal((await f.call('/api/admin-shipping/orders/'+randomUUID()+'/label',{actor:'owner'})).response.status,404);assert.equal(sent.length,count)
+  })
+  await t.test('a missing or tampered ready PDF is withheld without ExportPDF or another shipment',async()=>{
+   const job=(await f.db.query('select * from public.shipping_order_jobs where order_id=$1',[ready])).rows[0],file=join(f.config.shippingDocumentsDir,job.label_storage_path),original=await readFile(file),count=sent.length,path='/api/admin-shipping/orders/'+ready+'/label'
+   await rename(file,file+'.owned-missing')
+   try{assert.equal((await f.call(path,{actor:'owner'})).response.status,503)}finally{await rename(file+'.owned-missing',file)}
+   try{await writeFile(file,shippingLabelFixture({awb:'OTHER',reference:job.to_ref}));assert.equal((await f.call(path,{actor:'owner'})).response.status,503)}finally{await writeFile(file,original)}
+   assert.equal(sent.length,count);assert.equal((await f.call(path,{actor:'owner'})).response.status,200)
+  })
+  await t.test('wrong provider PDF stays pending; explicit retry requests only the saved AWB',async()=>{
+   const fresh=await packed(),count=posts();pdfMode='wrong'
+   const result=await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'book',actualWeightKg:1.111,weightConfirmed:true,runtime:f.config,fetcher});assert.equal(result.state,'label_pending')
+   const saved=(await f.db.query('select * from public.shipping_order_jobs where order_id=$1',[fresh])).rows[0];assert.ok(saved.awb);assert.equal(saved.label_sha256,null);assert.equal(posts(),count+1)
+   pdfMode='valid';const pdfs=sent.filter(x=>x.url.endsWith('/ExportPDF')).length
+   await Promise.all(Array.from({length:4},()=>operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'label',runtime:f.config,fetcher})))
+   assert.equal(posts(),count+1);assert.equal(sent.filter(x=>x.url.endsWith('/ExportPDF')).length,pdfs+1)
+   const done=(await f.db.query('select * from public.shipping_order_jobs where order_id=$1',[fresh])).rows[0];assert.equal(done.state,'ready');assert.equal(done.awb,saved.awb)
+   const entries=await readdir(join(f.config.shippingDocumentsDir,'vps-v1/orders',fresh));assert.deepEqual(entries,[done.id+'.pdf'])
+   const noMore=sent.length;await operatePdcOrder({db:f.client,adminId:f.actors.owner,orderId:fresh,action:'label',runtime:f.config,fetcher});assert.equal(sent.length,noMore)
   })
   await t.test('missing capability, uncovered or ambiguous city, missing packing and disabled runtime never dispatch',async()=>{
    const fresh=await packed(),count=posts()
