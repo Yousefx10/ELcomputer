@@ -5,7 +5,7 @@ import { getLocalizedCategoryName } from './categoryLocale.js'
 export const DEFAULT_SITE_URL = ''
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
 const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'email', 'api', 'uploads', '_nuxt'])
-const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'products', 'brand', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
+const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'shop', 'contact', 'request-refund', 'products', 'brand', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export function seoPlainText(value) {
@@ -174,21 +174,23 @@ export function productSchema(product, base, locale, availability = null, settin
   return schema
 }
 
-export function searchSeoPolicy(query = {}, categories = [], brands = [], totalCount = 0) {
+export function searchSeoPolicy(query = {}, categories = [], brands = [], totalCount = 0, { shop = false } = {}) {
   const category = categories.find(item => item.slug === query.category && validPublicSlug(item.slug))
   const brand = brands.find(item => item.slug === query.brand && validPublicSlug(item.slug))
   const identity = category && !query.brand ? { category: category.slug } : brand && !query.category ? { brand: brand.slug } : {}
   const record = identity.category ? category : identity.brand ? brand : null
   const extra = Object.keys(query).some(key => !['category', 'brand', 'page'].includes(key) && !/^(utm_.+|gclid|fbclid|msclkid)$/.test(key))
   const page = typeof query.page === 'string' && /^[1-9]\d*$/.test(query.page) ? Number(query.page) : 1
-  if (identity.brand) return { record, path: `/brand/${brand.slug}`, query: {}, index: false }
-  return { record, query: { ...identity, ...(record && page > 1 ? { page } : {}) }, index: Boolean(record && !extra && page === 1 && Number(totalCount) > 0) }
+  if (shop && !query.category && !query.brand && !extra) return { record: null, path: '/shop', query: page > 1 ? { page } : {}, index: page === 1 && Number(totalCount) > 0 }
+  if (identity.brand) return { record, path: `/brand/${brand.slug}`, query: page > 1 ? { page } : {}, index: false }
+  return { record, path: shop ? '/search' : undefined, query: { ...identity, ...(page > 1 ? { page } : {}) }, index: Boolean(record && !extra && page === 1 && Number(totalCount) > 0) }
 }
 
 export function discoverPublicPages({ products = [], categories = [], brands = [], pages = [], helpCategories = [], helpArticles = [] } = {}) {
   const published = products.filter(item => item.is_published === true && validPublicSlug(item.slug) && seoText(item.title))
   const categoryIds = new Set(published.map(item => item.category_id))
-  const routes = [{ path: '/' }, { path: '/help' }, { path: '/reviews' }]
+  const routes = [{ path: '/' }, { path: '/help' }, { path: '/reviews' }, { path: '/contact' }]
+  if (published.length) routes.push({ path: '/shop' })
   published.forEach(item => routes.push({ path: `/products/${item.slug}`, updated: item.updated_at }))
   categories.filter(item => categoryIds.has(item.id) && validPublicSlug(item.slug) && seoText(item.name)).forEach(item => routes.push({ path: '/search', query: { category: item.slug } }))
   brands.filter(item => validPublicSlug(item.slug) && seoText(item.name)).forEach(item => routes.push({ path: `/brand/${item.slug}` }))

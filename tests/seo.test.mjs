@@ -90,12 +90,12 @@ test('discovery excludes unpublished, empty, invalid, noindex, private and inact
   assert.ok(routes.some(item => item.path === '/brand/example'))
   assert.ok(routes.some(item => item.path === '/about'))
   assert.ok(routes.some(item => item.path === '/help/orders/delivery'))
-  assert.equal(routes.length, 8)
+  assert.equal(routes.length, 10)
   const xml = sitemapXml(routes, settings.seo_site_url)
   assert.match(xml, /https:\/\/shop.example\/ar\/products\/test-mouse/)
   assert.match(xml, /hreflang="x-default"/)
   assert.doesNotMatch(xml, /hidden|secret|empty|inactive|draft|old|account/)
-  assert.equal((xml.match(/<loc>/g) || []).length, 16)
+  assert.equal((xml.match(/<loc>/g) || []).length, 20)
 })
 
 test('robots permits public crawling, protects internal routes and references the canonical sitemap', () => {

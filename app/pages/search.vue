@@ -301,6 +301,7 @@ const { categoryName } = useCategoryLocale()
 
 import { categoryMatchesSearch } from '~/utils/categoryLocale'
 import { searchSeoPolicy, publicSiteUrl, breadcrumbs, catalogSeoFields } from '~/utils/seo'
+import { catalogPageSize, catalogPage, catalogPageExists, normalizeSearchTerm, normalizePositiveNumber, getMinimumPriceGap, normalizePriceRange } from '~/utils/catalogListing.js'
 const { uiNavigateTo } = useUiNavigation()
 
 const { uiText, uiLabel, intlLocale } = useUiLocale()
@@ -309,7 +310,7 @@ const supabase = useSupabaseClient()
 const route = useUiRoute()
 
 const filtersOpen = ref(false)
-const pageSize = 12
+const pageSize = catalogPageSize
 const defaultSort = 'relevance'
 const defaultStatus = ''
 
@@ -346,39 +347,9 @@ const normalizeTextValue = (value = '') => {
   return String(value).trim()
 }
 
-const normalizeSearchTerm = (value = '') => {
-  return normalizeTextValue(value)
-    .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
-    .replace(/\s+/g, ' ')
-}
 
-const normalizePositiveNumber = (value, fallback = 0) => {
-  const parsedValue = Number(value)
 
-  if (!Number.isFinite(parsedValue) || parsedValue < 0) {
-    return fallback
-  }
 
-  return parsedValue
-}
-
-const getMinimumPriceGap = (bounds) => {
-  if (Number(bounds.max) <= Number(bounds.min)) {
-    return 0
-  }
-
-  return Number.isInteger(bounds.min) && Number.isInteger(bounds.max) ? 1 : 0.01
-}
-
-const normalizePageValue = (value) => {
-  const parsedValue = Number(value)
-
-  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
-    return 1
-  }
-
-  return parsedValue
-}
 
 const normalizeProductRecord = (product) => {
   return {
@@ -440,17 +411,6 @@ const getRelevanceScore = (product, searchTerm) => {
   return score
 }
 
-const normalizePriceRange = (minPrice, maxPrice, bounds) => {
-  const minimumGap = getMinimumPriceGap(bounds)
-  const maxMinValue = Math.max(bounds.min, bounds.max - minimumGap)
-  const normalizedMin = Math.max(bounds.min, Math.min(normalizePositiveNumber(minPrice, bounds.min), maxMinValue))
-  const normalizedMax = Math.min(bounds.max, Math.max(normalizePositiveNumber(maxPrice, bounds.max), normalizedMin + minimumGap))
-
-  return {
-    minPrice: normalizedMin,
-    maxPrice: normalizedMax
-  }
-}
 
 const createMissingSortColumnError = (columnLabel) => {
   return createError({
@@ -573,7 +533,8 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     const selectedSort = validSortValues.has(String(routeQuery.sort || ''))
       ? String(routeQuery.sort)
       : defaultSort
-    const currentPage = normalizePageValue(routeQuery.page)
+    const currentPage = catalogPage(routeQuery.page)
+    if (!currentPage || selectedCategory && !categories.some(c => c.slug === selectedCategory) || selectedBrand && !brands.some(b => b.slug === selectedBrand)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
     const normalizedPriceRange = normalizePriceRange(routeQuery.min, routeQuery.max, priceBounds)
     const normalizedSearchQuery = searchQuery.toLocaleLowerCase()
     const matchingCategoryIds = searchQuery
@@ -615,10 +576,10 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       )
     `
 
-    const buildBaseQuery = (withCount = false) => {
+    const buildBaseQuery = (withCount = false, head = false) => {
       let query = supabase
         .from('storefront_products')
-        .select(selectFields, withCount ? { count: 'exact' } : undefined)
+        .select(selectFields, withCount ? { count: 'exact', head } : undefined)
         .eq('is_published', true)
         .abortSignal(signal)
 
@@ -684,7 +645,8 @@ const { data: searchPageData, pending, error } = await useAsyncData(
 
       const totalCount = rankedProducts.length
       const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-      const safePage = Math.min(currentPage, totalPages)
+      if (!catalogPageExists(currentPage, totalCount)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+      const safePage = currentPage
       const rangeStart = (safePage - 1) * pageSize
       const pageProducts = rankedProducts
         .slice(rangeStart, rangeStart + pageSize)
@@ -704,7 +666,12 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       }
     }
 
-    let requestedPage = currentPage
+    if (currentPage > 1) {
+      const probe = await buildBaseQuery(true, true)
+      if (probe.error) throw probe.error
+      if (!catalogPageExists(currentPage, probe.count || 0)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+    }
+    const requestedPage = currentPage
     let rangeStart = (requestedPage - 1) * pageSize
     let resultsQuery = applySortOrder(buildBaseQuery(true), selectedSort)
       .range(rangeStart, rangeStart + pageSize - 1)
@@ -712,28 +679,15 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     let { data, error: resultsError, count } = await resultsQuery
 
     if (resultsError) {
+      if (resultsError.code === 'PGRST103') throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
       throwSortErrorIfNeeded(selectedSort, resultsError)
     }
 
     const totalCount = count || 0
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-    const safePage = Math.min(currentPage, totalPages)
+    if (!catalogPageExists(currentPage, totalCount)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+    const safePage = currentPage
 
-    if (safePage !== requestedPage && totalCount > 0) {
-      requestedPage = safePage
-      rangeStart = (requestedPage - 1) * pageSize
-
-      resultsQuery = applySortOrder(buildBaseQuery(true), selectedSort)
-        .range(rangeStart, rangeStart + pageSize - 1)
-
-      const rerunResult = await resultsQuery
-      data = rerunResult.data
-      resultsError = rerunResult.error
-
-      if (resultsError) {
-        throwSortErrorIfNeeded(selectedSort, resultsError)
-      }
-    }
 
     return {
       categories,
@@ -752,6 +706,9 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     lazy: true
   }
 )
+
+if (error.value?.statusCode === 404) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+watch(error, value => { if (value?.statusCode === 404) showError(createError({ statusCode: 404, statusMessage: 'Page not found.' })) })
 
 const categories = computed(() => searchPageData.value?.categories || [])
 const brands = computed(() => searchPageData.value?.brands || [])
@@ -1120,7 +1077,7 @@ const clearFilters = async () => {
   filters.maxPrice = priceBounds.value.max
   filters.sortBy = defaultSort
 
-  await uiNavigateTo('/search')
+  await uiNavigateTo(route.path === '/shop' ? '/shop' : '/search')
 }
 
 const changeSort = async () => {
@@ -1132,7 +1089,7 @@ const changeSort = async () => {
 
 const goToPage = async (page) => {
   await uiNavigateTo({
-    path: '/search',
+    path: route.path,
     query: buildRouteQuery(page)
   })
 }
@@ -1145,12 +1102,12 @@ const { data: seoContent } = useSiteContent()
 const { locale: seoLocale } = useI18n()
 const seoConfig = useRuntimeConfig()
 usePageSeo(() => {
-  const policy = searchSeoPolicy(route.query, categories.value, brands.value, searchPageData.value?.totalCount)
+  const policy = searchSeoPolicy(route.query, categories.value, brands.value, searchPageData.value?.totalCount, { shop: route.path === '/shop' })
   const record = policy.record
   const settings = seoContent.value?.settings || {}
   const base = publicSiteUrl(settings, seoConfig.public.siteUrl)
   return {
-    ...(record ? catalogSeoFields(record, settings, seoLocale.value) : { title: uiLabel('Search') }),
+    ...(record ? catalogSeoFields(record, settings, seoLocale.value) : { title: route.path === '/shop' ? uiLabel('Shop') : uiLabel('Search') }),
     path: policy.path || route.path, query: policy.query, index: policy.index,
     structuredData: record ? [breadcrumbs([{ name: uiLabel('Home'), path: '/' }, { name: policy.query.category ? categoryName(record) : record.name, path: '/search', query: policy.query }], base, seoLocale.value)] : []
   }

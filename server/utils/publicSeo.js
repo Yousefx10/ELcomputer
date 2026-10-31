@@ -12,14 +12,16 @@ export function publicSeoClient(event) {
   return { client: createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }), config }
 }
 
-export async function readSeoSettings(client) {
-  const result = await client.from('site_settings').select('*').eq('key', 'default').maybeSingle()
+export async function readSeoSettings(client, { signal } = {}) {
+  let request = client.from('site_settings').select('*').eq('key', 'default')
+  if (signal) request = request.abortSignal(signal)
+  const result = await request.maybeSingle()
   if (result.error) throw createError({ statusCode: 503, statusMessage: 'Public settings are unavailable.' })
   return result.data || {}
 }
 
 // PostgREST caps each response. Read every page with stable ordering.
-export async function readPublicRows(client, table, fields, filters, optional = '') {
+export async function readPublicRows(client, table, fields, filters, optional = '', { signal } = {}) {
   const rows = []
   let offset = 0
   let total = null
@@ -27,6 +29,7 @@ export async function readPublicRows(client, table, fields, filters, optional = 
     const makeQuery = select => {
       let query = client.from(table).select(select, offset === 0 ? { count: 'exact' } : undefined).order('id').range(offset, offset + 999)
       for (const [key, value] of Object.entries(filters)) query = query.eq(key, value)
+      if (signal) query = query.abortSignal(signal)
       return query
     }
     const result = optional ? await selectWithSeo(makeQuery, fields, optional) : await makeQuery(fields)
