@@ -14,9 +14,10 @@ export const shipmentTimeline = (order, shipping) => {
   const steps = [{ id: 'placed', label_key: 'shipment.orderPlaced', date: order?.created_at, source: 'order' }]
   if (order?.paid_at && order.payment_status === 'paid' && (order.payment_method !== 'card' || order.customer_payment?.verified === true)) steps.push({ id: 'paid', label_key: 'shipment.paymentConfirmed', date: order.paid_at, source: 'order' })
   if (order?.packing_completed_at) steps.push({ id: 'packed', label_key: 'shipment.packed', date: order.packing_completed_at, source: 'order' })
+  if(shipping?.booking_verified)steps.push({id:'booked',label_key:'shipment.booked',date:shipping.booked_at,source:'booking'})
   for (const event of shipping?.events || []) steps.push({
     id: event.id, label_key: shipmentStateKey(event.state), date: event.status_at || event.observed_at,
     observed: !event.status_at, source: 'courier', reason_key: event.reason_key, exception: shipmentExceptionStates.includes(event.state)
   })
-  return steps.sort((a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime())
+  return steps.sort((a,b)=>{if(a.id==='placed')return -1;if(b.id==='placed')return 1;if(a.id==='booked'&&!a.date)return b.source==='courier'?-1:1;if(b.id==='booked'&&!b.date)return a.source==='courier'?1:-1;return new Date(a.date||0).getTime()-new Date(b.date||0).getTime()})
 }

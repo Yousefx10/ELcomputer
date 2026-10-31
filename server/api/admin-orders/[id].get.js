@@ -1,3 +1,4 @@
+import {readTrackingMetadata} from '../../utils/pdcTrackingPolling'
 import { createError, getRouterParam } from 'h3'
 import { normalizeAdminOrderItemRecord, normalizeAdminOrderRecord } from '../../utils/adminOrders'
 import { requireAdminRequest } from '../../utils/adminRequest'
@@ -160,11 +161,13 @@ export default defineEventHandler(async (event) => {
       label_ready: Boolean(shippingJob.label_storage_path && shippingJob.label_sha256)
     }
     const { data: courierEvents, error: eventError } = await supabaseAdmin.from('shipping_webhook_events')
-      .select('id,provider_status_id,provider_status_name,status_date,reason_name,normalized_state,source,received_at')
+      .select('id,provider_status_id,provider_status_name,status_date,reason_name,normalized_state,source,received_at,projection_disposition')
       .eq('provider', shippingJob.provider).eq('order_ref', shippingJob.to_ref).eq('awb', shippingJob.awb || '')
       .not('processed_at', 'is', null).order('received_at', { ascending: false }).limit(200)
     if (eventError) throw createError({ statusCode: 503, statusMessage: 'Courier history is unavailable.' })
     shipping.events = courierEvents || []
+    shipping.tracking=await readTrackingMetadata(supabaseAdmin,orderId)
+    shipping.tracking_requests_enabled=useRuntimeConfig().pdcTrackingRequestsEnabled===true && shipping.tracking?.policy_enabled===true
     delete shipping.to_ref
     delete shipping.label_storage_path
     delete shipping.label_sha256

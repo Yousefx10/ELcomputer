@@ -1,0 +1,11 @@
+[Unit]
+Description=Bounded shipment tracking schedule
+[Timer]
+OnActiveSec=60s
+OnUnitActiveSec=60s
+RandomizedDelaySec=5s
+AccuracySec=1s
+Persistent=false
+Unit=@TRACKING_SERVICE@.service
+[Install]
+WantedBy=timers.target

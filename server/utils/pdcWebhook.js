@@ -14,7 +14,10 @@ export const handlePdcWebhook = async (event, db) => {
   const work = async () => {
     const settings = await getPdcSettings(db, signal)
     if (!settings.webhook_secret_encrypted) throw createError({ statusCode: 503, statusMessage: 'Courier webhook is not configured.' })
-    if (!shippingSecretsMatch(decryptShippingSecret(settings.webhook_secret_encrypted), requestSecret)) throw createError({ statusCode: 401, statusMessage: 'Invalid webhook secret.' })
+    const savedSecret=decryptShippingSecret(settings.webhook_secret_encrypted)
+    if(savedSecret.length<32)throw createError({statusCode:503,statusMessage:'Courier webhook is not configured.'})
+    if (!shippingSecretsMatch(savedSecret, requestSecret)) throw createError({ statusCode: 401, statusMessage: 'Invalid webhook secret.' })
+    if (useRuntimeConfig().pdcWebhookEnabled!==true)throw createError({statusCode:503,statusMessage:'Courier webhook is disabled.'})
     if (!settings.is_enabled) throw createError({ statusCode: 503, statusMessage: 'Courier tracking is disabled.' })
     if (!/^application\/json(?:\s*;|$)/i.test(getHeader(event, 'content-type') || '')) throw createError({ statusCode: 415, statusMessage: 'JSON is required.' })
     const raw = await readPaymentCallbackBody(event, 8192, 2000)

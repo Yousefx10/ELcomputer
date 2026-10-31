@@ -1,0 +1,19 @@
+[Unit]
+Description=Private shipment tracking caller
+After=network-online.target @APP_SERVICE@.service
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=@PYTHON@ -I -S -B @WORKER@ --runtime @RUNTIME@ --origin @ORIGIN@
+TimeoutStartSec=85
+Restart=no
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost

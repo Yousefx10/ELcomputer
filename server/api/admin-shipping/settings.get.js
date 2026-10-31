@@ -65,6 +65,10 @@ export default defineEventHandler(async (event) => {
       live_requests_enabled: useRuntimeConfig().shippingLiveRequestsEnabled === true,
       city_mapping_count: cityCountResult.count || 0,
       pending_job_count: jobCountResult.count || 0,
+      tracking_policy: settings.tracking_policy,
+      tracking_requests_enabled: useRuntimeConfig().pdcTrackingRequestsEnabled===true,
+      tracking_worker_enabled: useRuntimeConfig().pdcTrackingWorkerEnabled===true,
+      webhook_enabled: useRuntimeConfig().pdcWebhookEnabled===true,
       updated_at: settings.updated_at
     }
   }

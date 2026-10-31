@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import { validatePdcBaseUrl } from './pdcShipping.js'
 import { validatePdcTimezone } from './pdcTracking.js'
+import {trackingPolicy,defaultTrackingPolicy} from './pdcTrackingPolling.js'
 import { encryptShippingSecret, decryptShippingSecret, shippingSecretsMatch } from './shippingSecrets.js'
 
 const fail = label => { throw createError({ statusCode: 400, statusMessage: `${label} is invalid.` }) }
@@ -49,6 +50,12 @@ export const validatePdcSettings = (body, current) => {
   update.reverse_enabled = body.reverse_enabled ?? current.reverse_enabled ?? false
   update.reverse_shipment_type_id = reverseType === null || reverseType === '' ? null : 3
   if ((update.is_enabled || update.auto_create_labels || update.reverse_enabled) && (company_id === null || update.product_id === null)) fail('Merchant identifiers')
+  if(body.tracking_policy!==undefined){
+    let policy
+    try{policy=trackingPolicy(body.tracking_policy)}catch{fail('Tracking settings')}
+    if(policy.enabled!==(current.tracking_policy||defaultTrackingPolicy).enabled)fail('Tracking activation')
+    update.tracking_policy=policy
+  }
   const token = text(body.access_token, 4096, 'Access Token')
   const secret = text(body.webhook_secret, 4096, 'Webhook Secret')
   if (secret && secret.length < 32) fail('Webhook Secret')

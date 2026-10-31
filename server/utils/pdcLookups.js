@@ -96,6 +96,10 @@ export const reconcilePdcShipment = async (db, settings, orderId, fetcher = fetc
   if (error) throw unavailable()
   if (claim?.error) throw createError({ statusCode: claim.error === 'throttled' ? 429 : 404, statusMessage: claim.error === 'throttled' ? 'Try again in five minutes.' : 'Shipment not found.' })
   if (!claim?.awb || !claim.ref) throw unavailable()
+  return persistPdcUpdate(db, await readPdcShipmentUpdate(db,settings,orderId,claim,fetcher))
+}
+
+export const readPdcShipmentUpdate = async (db, settings, orderId, claim, fetcher=fetch) => {
   const filters = await getPdcStatusFilters(db, { orderId, awb: claim.awb, ref: claim.ref })
   const response = await requestPdcLookup(settings, 'GetShipmentsStatus', filters, fetcher)
   const rows = pdcResponseRows(response)
@@ -113,5 +117,5 @@ export const reconcilePdcShipment = async (db, settings, orderId, fetcher = fetc
     status_date: row.StatusDate ? parsePdcStatusDate(row.StatusDate, settings.status_timezone) : null,
     observed_at: claim.observed_at, source: 'reconciliation'
   }
-  return persistPdcUpdate(db, update)
+  return update
 }

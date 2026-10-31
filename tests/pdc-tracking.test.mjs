@@ -16,7 +16,7 @@ import { shipmentTimeline, shipmentReasonKey, shipmentStateKey, shippingStates }
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')
 const secret = 'fixture-webhook-secret-abcdefghijklmnopqrstuvwxyz'
-globalThis.useRuntimeConfig = () => ({ shippingCredentialsEncryptionKey: 'fixture-encryption-key-abcdefghijklmnopqrstuvwxyz', shippingLiveRequestsEnabled: false })
+globalThis.useRuntimeConfig = () => ({ shippingCredentialsEncryptionKey: 'fixture-encryption-key-abcdefghijklmnopqrstuvwxyz', shippingLiveRequestsEnabled: false, pdcWebhookEnabled:true })
 const settings = () => ({ is_enabled: true, api_mode: 'production', base_url: PDC_PRODUCTION_BASE_URL, company_id: '123456', product_id: 64, status_timezone: 'Africa/Cairo', access_token_encrypted: encryptShippingSecret('fixture-access-token'), webhook_secret_encrypted: encryptShippingSecret(secret) })
 const payload = () => ({ AWB: 'EDC-FIXTURE', REF: 'ORDER-FIXTURE', StatusID: '4', CustomerStatusName: 'Out For Delivery', StatusDate: '2026-10-05T10:42:00+03:00', ReasonName: '' })
 const builder = result => ({ select() { return this }, eq() { return this }, maybeSingle() { return this }, abortSignal() { return Promise.resolve(result) } })

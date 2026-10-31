@@ -34,7 +34,7 @@ export async function createPrivatePackingFixture(options = {}) {
       admin: { deleteUser: async id => { await db.query('delete from auth.users where id=$1', [id]); return { error: null } } }
     }
     client.storage = { from() { controls.storageCalls++; throw Error('Supabase Storage object access is forbidden in this fixture') } }
-    client.rpc = async (name, args = {}) => {
+    const invokeRpc = async (name, args = {}) => {
       if (name === 'packing_video_finish') {
         if (controls.beforeFinish) { const hook = controls.beforeFinish; controls.beforeFinish = null; await hook() }
         if (controls.failFinishOnce) { controls.failFinishOnce = false; return { data: null, error: { code: '08006', message: 'Owned SQL acknowledgement failure' } } }
@@ -48,6 +48,7 @@ export async function createPrivatePackingFixture(options = {}) {
       } catch (error) { return { data: null, error: { code: error.code, message: error.message } } }
       finally { await connection.end() }
     }
+    client.rpc=(...args)=>{const pending=invokeRpc(...args);pending.abortSignal=()=>pending;return pending}
     globalThis[key] = { client, config }
     const router = createRouter()
     for (const [method, path, file] of [

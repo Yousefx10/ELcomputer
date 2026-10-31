@@ -29,6 +29,9 @@ export default defineEventHandler(async event => {
   ])
   if (itemsResult.error) throwRequestDatabaseError('Customer order items', itemsResult.error)
 
+  const current=await requireCustomerRequest(event)
+  const finalOwner=await supabaseAdmin.from('customer_orders').select('id').eq('id',order.id).eq('user_id',current.authUser.id).maybeSingle()
+  if(current.authUser.id!==authUser.id||finalOwner.error||!finalOwner.data)throw createError({statusCode:404,statusMessage:'Order not found.'})
   const { user_id: _owner, ...safeOrder } = order
   safeOrder.customer_payment = customerPayment
   const policies = new Map(afterSales.map(row => [row.id, row.after_sales]))

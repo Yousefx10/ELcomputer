@@ -3799,7 +3799,29 @@
       "r22": "Street name needs review",
       "r23": "Building number needs review"
     },
-    "noHistory": "Courier history is not available yet."
+    "noHistory": "Courier history is not available yet.",
+    "booked": "Shipment booked",
+    "unverifiedBooking": "Awaiting verified shipment booking.",
+    "stale": "Tracking updates may be delayed.",
+    "trackingError": "The last tracking check failed.",
+    "pollingPaused": "Automatic checks are paused.",
+    "nextCheck": "Next check",
+    "withheldConflict": "Conflicting update retained for review.",
+    "unavailable": "Tracking is unavailable. Please try again later.",
+    "pollingSettings": "Tracking checks",
+    "callsEnabled": "Tracking calls are enabled.",
+    "callsDisabled": "Tracking calls are off.",
+    "policy": {
+      "interval_seconds": "Check interval (seconds)",
+      "max_requests_minute": "Maximum requests per minute",
+      "max_requests_hour": "Maximum requests per hour",
+      "max_requests_day": "Maximum requests per day",
+      "batch_size": "Maximum shipments per batch",
+      "concurrency": "Concurrent requests",
+      "max_failures": "Failure limit before pause",
+      "max_age_days": "Automatic tracking duration (days)",
+      "stale_seconds": "Delayed update threshold (seconds)"
+    }
   },
   "sms": {
     "title": "SMS",

@@ -30,6 +30,7 @@ export const smsDatabaseClient = db => {
       insert(data) { state.action = 'insert'; state.data = data; return query },
       upsert(data) { state.action = 'upsert'; state.data = data; return query },
       eq(key, value) { state.filters.push(`${key}=${parameter(value)}`); return query },
+      not(key, operator, value) { if(operator!=='is'||value!==null)throw Error('Unsupported fixture negation');state.filters.push(`${key} is not null`);return query },
       is(key, value) { state.filters.push(value === null ? `${key} is null` : `${key} is ${value === true ? 'true' : 'false'}`); return query },
       gte(key, value) { state.filters.push(`${key}>=${parameter(value)}`); return query },
       lte(key, value) { state.filters.push(`${key}<=${parameter(value)}`); return query },

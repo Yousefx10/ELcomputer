@@ -208,6 +208,16 @@
           </div>
         </div>
 
+        <fieldset class="rounded-lg border p-3" data-tracking-policy>
+          <legend class="px-1 text-sm font-semibold">{{ $t('shipment.pollingSettings') }}</legend>
+          <p class="mb-3 text-xs">{{ $t(pdcSettings.tracking_requests_enabled && pdcSettings.tracking_policy.enabled ? 'shipment.callsEnabled':'shipment.callsDisabled') }}</p>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <label v-for="field in trackingFields" :key="field.key" class="text-sm">{{ $t('shipment.policy.'+field.key) }}
+              <input v-model.number="pdcSettings.tracking_policy[field.key]" type="number" :min="field.min" :max="field.max" step="1" required :disabled="!canConfigureShipping || pdcSaving" class="mt-1 min-h-11 w-full rounded-lg border bg-white p-2">
+            </label>
+          </div>
+        </fieldset>
+
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label class="flex items-center gap-2 text-sm text-gray-700"><input v-model="pdcSettings.cod_enabled" type="checkbox">{{ $t('liveSales.codEnabled') }}</label>
           <label class="flex items-center gap-2 text-sm text-gray-700">
@@ -562,6 +572,8 @@ let searchTimeoutId = null
 const canConfigureShipping = computed(() => hasPermission('settings.edit'))
 
 const createEmptyPdcSettings = () => ({
+  tracking_policy:{enabled:false,interval_seconds:900,max_requests_minute:2,max_requests_hour:20,max_requests_day:100,batch_size:3,concurrency:1,max_failures:8,max_age_days:90,stale_seconds:3600},
+  tracking_requests_enabled:false,
   display_name: 'PDC Courier',
   base_url: 'https://clientsapi.pdc-eg.com/api/ClientUsers/V6/',
   api_mode: 'production',
@@ -596,6 +608,7 @@ const createEmptyPdcSettings = () => ({
   pending_job_count: 0
 })
 
+const trackingFields=[['interval_seconds',300,86400],['max_requests_minute',1,5],['max_requests_hour',1,60],['max_requests_day',1,500],['batch_size',1,5],['concurrency',1,2],['max_failures',1,8],['max_age_days',7,180],['stale_seconds',600,172800]].map(([key,min,max])=>({key,min,max}))
 const pdcMappings = ref([])
 const pdcActionBusy = ref(false)
 const pdcActionError = ref('')
@@ -691,6 +704,7 @@ const savePdcSettings = async () => {
         is_enabled: pdcSettings.is_enabled,
         auto_create_labels: pdcSettings.auto_create_labels,
         cod_enabled: pdcSettings.cod_enabled,
+        tracking_policy:pdcSettings.tracking_policy,
         access_token: pdcSettings.access_token,
         webhook_secret: pdcSettings.webhook_secret
       }

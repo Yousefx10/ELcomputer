@@ -137,9 +137,9 @@
 
             <section v-if="shippingDetail" class="rounded-2xl border p-5">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+                <div class="min-w-0 flex-1">
                   <h4 class="text-lg font-bold text-gray-900">{{ $t('common.pdcShipping') }}</h4>
-                  <p class="mt-1 text-sm text-gray-500">
+                  <p class="mt-1 break-all text-sm text-gray-500">
                     {{ shippingDetail.awb ? $t('common.awbValue', { value0: (shippingDetail.awb) }) : $t('common.waitingForAnAwb') }}
                   </p>
                   <p v-if="shippingDetail.provider_status_name" class="mt-1 text-sm text-gray-600">
@@ -157,14 +157,14 @@
                   <label class="block">{{ $t('pdcParcel.weight') }}<input v-model="parcelWeight" type="number" min="0.001" max="99999.999" step="0.001" inputmode="decimal" class="mt-1 w-full rounded-lg border bg-white p-2" :disabled="courierChecking"></label>
                   <label class="flex items-start gap-2"><input v-model="parcelWeightConfirmed" type="checkbox" class="mt-1" :disabled="courierChecking">{{ $t('pdcParcel.confirm') }}</label>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
+                <div class="flex shrink-0 flex-wrap items-center gap-2 sm:max-w-xs sm:justify-end">
                   <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
                     {{ $t(`liveSales.states.${shippingDetail.state}`) }}
                   </span>
                   <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking || orderDetail.status !== 'ready_to_deliver' || !parcelWeightConfirmed || measuredParcelWeight(parcelWeight) === null" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
                   <button v-if="['uncertain','submitting'].includes(shippingDetail.state) && !shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('recover')">{{ $t('liveSales.recover') }}</button>
                   <button v-if="shippingDetail.awb && !shippingDetail.label_ready" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('label')">{{ $t('liveSales.label') }}</button>
-                  <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
+                  <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking || !shippingDetail.tracking_requests_enabled || !shippingDetail.tracking?.manual_due" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
                   <template v-if="shippingDetail.label_ready">
                     <button v-for="action in ['view','download','print']" :key="action" type="button" :disabled="labelLoading" class="min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold disabled:opacity-50" @click="openShippingLabel(action)">{{ $t('shippingLabel.'+action) }}</button>
                   </template>
@@ -178,14 +178,7 @@
                 <label class="flex items-start gap-2"><input v-model="manualAwbConfirmed" type="checkbox" required class="mt-1">{{ $t('beta.verifyAwb') }}</label>
                 <button type="submit" :disabled="courierChecking" class="rounded-lg border px-3 py-2 font-semibold disabled:opacity-50">{{ $t('beta.recordAwb') }}</button>
               </form>
-              <details v-if="shippingDetail.events?.length" class="mt-4 rounded-lg border p-3">
-                <summary class="cursor-pointer text-sm font-semibold">{{ $t('shipment.history') }}</summary>
-                <ol class="mt-3 space-y-3"><li v-for="event in shippingDetail.events" :key="event.id" class="text-sm">
-                  <p class="font-semibold">{{ event.provider_status_name || $t('shipment.states.unknown') }}<span v-if="event.provider_status_id"> ({{ event.provider_status_id }})</span></p>
-                  <p v-if="event.reason_name">{{ event.reason_name }}</p>
-                  <p class="text-xs text-gray-500">{{ formatCommerceDate(event.status_date || event.received_at) }}</p>
-                </li></ol>
-              </details>
+              <ShipmentTracking :shipping="shippingDetail" :format-date="formatDate" />
             </section>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
@@ -367,6 +360,7 @@
 
 <script setup>
 import ShippingLabelPreview from './ShippingLabelPreview.vue'
+import ShipmentTracking from './ShipmentTracking.vue'
 import {readShippingLabelResponse} from '../../utils/shippingLabelDownload.js'
 import { measuredParcelWeight } from '../../utils/parcelWeight.js'
 const { data: erpState } = useNuxtData('active-erp')
@@ -676,10 +670,10 @@ const refreshCourierStatus = async () => {
   if (courierChecking.value || !props.orderId) return
   courierChecking.value = true; courierNotice.value = ''
   try {
-    await $fetch(`/api/admin-shipping/orders/${props.orderId}/refresh`, { method: 'POST', headers: await getAuthHeaders() })
+    await $fetch(`/api/admin-shipping/orders/${props.orderId}/refresh`, { method: 'POST', headers: await getAuthHeaders(), retry:0 })
     await loadOrderDetails()
     courierNotice.value = 'shipment.reconciled'
-  } catch { courierNotice.value = 'shipment.actionFailed' } finally { courierChecking.value = false }
+  } catch { courierNotice.value = 'shipment.actionFailed';await loadOrderDetails(true).catch(()=>{}) } finally { courierChecking.value = false }
 }
 
 const openShippingLabel = async action => {
@@ -774,7 +768,7 @@ const releaseBackorder = async () => {
   releaseSaving.value = true
   errorMessage.value = ''
   try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}/release-backorder`, { method: 'POST', headers: await getAuthHeaders() })
+    const response = await $fetch(`/api/admin-orders/${props.orderId}/release-backorder`, { method: 'POST', headers: await getAuthHeaders(), retry:0 })
     await loadOrderDetails()
     emit('updated', response.order)
   } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Stock could not be assigned.' }

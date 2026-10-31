@@ -128,7 +128,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
             <p v-else-if="detail.order.shipping_method" class="mt-2 text-sm capitalize text-slate-600">{{ $uiLabel(detail.order.shipping_method) }}</p>
             <p v-if="detail.order.shipping_review_status === 'required'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('account.orders.deliveryDetailsAreUnderReview') }}</p>
             <p v-if="detail.order.shipping_review_status === 'rejected'" class="mt-2 text-sm font-semibold text-red-700">{{ $t('account.orders.deliveryDetailsNeedAttentionContactSupport') }}</p>
-            <p v-if="detail.shipping?.awb" class="mt-2 break-all text-sm text-slate-700">{{ $t('common.courierReference') }} <strong dir="ltr">{{ detail.shipping.awb }}</strong></p>
+            <p v-if="detail.shipping?.booking_verified && detail.shipping?.awb" class="mt-2 break-all text-sm text-slate-700">{{ $t('common.courierReference') }} <strong dir="ltr">{{ detail.shipping.awb }}</strong></p>
             <div v-if="detail.shipping?.has_update" class="mt-3 text-sm text-slate-700" aria-live="polite">
               <p class="font-semibold">{{ $t(shipmentStateKey(detail.shipping.current_state)) }}</p>
               <p v-if="detail.shipping.reason_key" class="mt-1">{{ $t(detail.shipping.reason_key) }}</p>
@@ -136,6 +136,9 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
               <p v-else-if="detail.shipping.observed_at" class="mt-1">{{ $t('shipment.checkedAt') }} <time :datetime="detail.shipping.observed_at">{{ formatAccountDate(detail.shipping.observed_at, true) }}</time></p>
             </div>
             <p v-else class="mt-2 text-sm text-slate-600">{{ $t('account.orders.noCourierUpdateIsAvailableYet') }}</p>
+            <p v-if="detail.shipping?.unavailable" class="mt-2 text-sm text-slate-600" role="status">{{ $t('shipment.unavailable') }}</p>
+            <p v-else-if="detail.shipping?.stale" class="mt-2 text-sm text-slate-600" role="status">{{ $t('shipment.stale') }}</p>
+            <p v-if="detail.shipping?.latest_update_at" class="mt-2 text-xs text-slate-600">{{ $t('shipment.checkedAt') }} <time :datetime="detail.shipping.latest_update_at">{{ formatAccountDate(detail.shipping.latest_update_at,true) }}</time></p>
             <button type="button" class="mt-3 min-h-11 rounded-lg px-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" @click="load(true)">{{ $t('shipment.refresh') }}</button>
             <p class="mt-3 text-sm text-slate-600">{{ detail.order.street_address }}, {{ detail.order.city }}, {{ detail.order.governorate }}</p>
           </section>
