@@ -1,3 +1,11 @@
+> **1November2026 / E170 current release:** category/shop/link recovery DEPLOYED on1fd7ef6909869361/schema107;dd931679 CONSUMED_COMPLETE. [Hosted receipt and residual review](seo-category-shop-review.md).320 variants/308 corrections/488 sitemap URLs/3698 asset hashes/normal MON PASS; no policy wording or merchant changes.28holds/numeric/renamed/ambiguous mappings/private Google metrics remain open. Next read-only WooCommerce customer/order/address migration assessment, then UI. Never replay this or earlier approvals; all worktrees/deferred evidence preserved.
+
+> **1November2026 / E169:** [Category/shop/link recovery packet SEALED READY, UNAPPROVED](seo-category-shop-review.md). Production remainsf5b0/schema107; previous query-release approval consumed.308 corrections/320 variants qualified locally;28 held503 identities remain classified/open. No deployment or Google/WP/provider write. Next fresh approval; after release brief residual SEO review → historical migration → UI.
+
+> **31October2026 / E168 current release:** product-query hotfix DEPLOYED onf5b0a50419e22041/schema107, seal3b7dfe4d CONSUMED_COMPLETE. [Current SEO migration review](seo-migration-review.md) records hosted200-query/3583-asset/data/normal-MON acceptance. Remaining category/shop/numeric/renamed/policy/footer recovery and Google metrics remain OPEN. Historical deployment/approval notes below are not current execution authority.
+
+> **31October2026 / E167 current audit:** production473703da9917ba21/schema107. [Live SEO/legacy migration review](seo-migration-review.md) supersedes the historical origin/deployment baseline below. Existing SEO reused; current484 sitemap URLs pass, legacy recovery gaps found. First product-query hotfix is locally qualified/sealed, NOT DEPLOYED. Current production, Google private access and owner acceptance remain distinct.
+
 # Public SEO
 
 Released and verified on 2026-10-01 at `https://new.elcomputer.net`. Application SHA: `e4fb685f4441326f7999a1954b5710928531789c`. The existing implementation was already committed/pushed; this task applied its authorized migration and released it without new application features.

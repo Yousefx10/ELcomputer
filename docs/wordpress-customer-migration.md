@@ -1,3 +1,19 @@
+> **E172 /1November2026:** Core import remains complete/consumed. [Limited metadata supplement LOCAL READY](woocommerce-history-metadata-review.md), no production installation:591financial records/485archive-SKU refs/12private notes; core unchanged,131unlinked orders retained.11focused+11native scenarios/full1088record memory reconciliation/rollback/privacy PASS. No new migration version or approval; optional fields/one unexplained total case remain deferred. NEXT UI/UX review; hosted order-bearing-owner acceptance still pending.
+
+# E171 — Current read-only assessment, 1 November 2026
+
+**SOURCE AVAILABLE; core migration already imported and reconciled on schema107.**
+[Current evidence-based mapping](woocommerce-history-assessment.md) supersedes old
+preparation statuses below. Fresh authenticated raw archive parsing reproduces all
+516customer/591order/6refund/1789item records and41durable receipts in production.
+No repeat import is required; prior approvals are consumed. Claims0; three source
+holds and one current unverified case remain private. No Auth/password/provider/
+notification/production/archive change occurred. Next qualify missing private
+metadata/SKU/original monetary aggregates locally; no live import approval yet.
+Hosted ordinary order-bearing-owner acceptance remains separate and unexercised.
+
+---
+
 # Required WordPress customer migration
 
 **Production history import PASS — 2026-10-25,23:07:33.882 Riyadh.**

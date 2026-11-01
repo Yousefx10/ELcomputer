@@ -1,3 +1,808 @@
+# E173 — Customer/Admin UX review complete; waiting for owner priorities — 2026-11-01
+
+- **OD-20261101-UIUX-01 / UIUX-01:** read-only review complete. No feature
+  implementation, deployment approval or new migration. [Findings](docs/ui-ux-review-20261101.md)
+  record five issues, with evidence levels and optional enhancements separated.
+- **Fresh production:**1fd7ef6909869361/schema107/source7d989cd, app140566/Caddy26652,
+  all17 protected file hashes unchanged. CARD/COD, Email, tracking and MON timers
+  active; same five MON warnings/zero critical. Current Dashboard COD fee10 verified;
+  settings remain authoritative.
+  Eight live orders retain their status/payment aggregates;591historical orders/
+  6refunds/131unlinked/0claims remain unchanged. No production/provider/archive write.
+- **Confirmed:** UX-REV-01 delayed order-A response replaces displayed B details;
+  UX-REV-02 preorder amount/reference/verified checkbox survive closing/opening another
+  order; UX-REV-03 temporary false empty cart during hydration (recovers, no lost
+  basket established); UX-REV-04 order modal lacks keyboard/semantic containment;
+  UX-REV-05 historical dates omitted and raw Woo status codes shown. First two
+  reproduced in local deployed-source components; no real action submitted.
+- **Reuse/qualification:**859 product editor/list/bulk/media browser assertions,
+  37 checkout/address tests PASS; public desktop/mobile EN/AR layouts no overflow/
+  JS errors. Initial guard/toolchain/time-out limitations preserved in the report.
+  No connected authenticated session; hosted staff/customer acceptance is not claimed.
+- **History:** a separate private staff viewer is useful but optional. Existing core
+  history is sufficient; preserve metadata9b4107c LOCAL ONLY. No metadata installation
+  needed for these corrections or a basic viewer. DTR-06 real verified order-bearing
+  owner acceptance stays open. All43 worktrees and35 deferred IDs/evidence preserved.
+- **ONE next action:** owner chooses the first implementation priority; recommend
+  minimal order-dialog state isolation for UX-REV-01/02. Wait before implementation.
+  Paymob remains provider-response-held; detailed settlement/ERP remains LAST.
+
+# E172 — Minimal history metadata LOCAL READY; optional installation deferred — 2026-11-01
+
+- **OD-20261101-METADATA-LIMIT-01 / MIG-03-META-01:** limited local qualification
+  complete; do not repeat core migration. UI/UX review is NEXT, including whether
+  staff need a historical-order viewer. Optional fields/unknown causes stay deferred;
+  Paymob awaits reply, detailed PDC settlement/ERP LAST. No live approval/seal.
+- **Frozen candidate:** source `9b4107cabbb96fcf1f8124d03f9318aa4650cf22` (base7d989cd),
+  isolated local/history-metadata-20261101. Five new script/SQL/test/readme files;
+  no app/UI/routes, historical migration or dependency edits. SQL is an unregistered
+  local candidate, not a selected schema108 release. Production owner/E171 baseline
+  remains1fd7/schema107; this phase made0production connections. Confirm actual
+  deployed release/schema with fresh read-only preflight before any future change.
+- **Exact scope:**1,088 metadata entries in22batches:591 original discount/shipping/
+  tax snapshots,485 item SKU references labelled archive_snapshot and12 private
+  checkout notes. Original totals/status/dates/refunds/identities/core5tables/41core
+  receipts never updated. No new customers/orders/refunds/claims/passwords or current
+  SKU changes.236 missing SKU references, all true order-time SKUs and8353comment logs
+  deferred; customer flags alone do not authorize note publication.
+- **205 differences classified:** archived price decimals=0; all205 COD totals are
+  whole EGP,204 match half-up whole-EGP component rounding. This is consistency
+  evidence, not a per-order execution trace. One source difference and five separate
+  coupon-sum mismatches remain unexplained; preserve all values, no retotal/collection/
+  reconciliation inference. Optional unknowns do not block UI review.
+- **Privacy/effects:** separate private schema/two tables/three service-only RPCs,
+  no direct table grants; owned reader reuses existing verified historical ownership.
+  Notes/evidence never returned to customers, no staff-note API installed. Source,
+  item/order/product binding/strict allowlists/locks/immutable receipts enforced.
+  No active-commerce/provider/stock/COD/Email/marketing/treasury/Auth writes or workers.
+  All131unlinked orders/withheld identities preserved; actual production claims0created.
+- **Qualified PASS:**11 focused planner/PGlite/privacy/portability tests,11 native
+  PostgreSQL17.11 scenarios with real two-session locking/conflict/cancellation,
+  1088-record memory-only reconciliation/22exact replays, RLS/grants/private-field
+  denial, whole-DDL rollback and exact-bundle withdrawal preserving core/receipts.
+  Thirteen active-commerce sentinel tables untouched; native fixture stopped,
+  non-loopback/provider requests0. Real note text stays encrypted outside tests;
+  full-data rehearsal holds it only in memory with deidentified customer identities.
+  Raw archive SHA4c62 unchanged, Node syntax/Git whitespace PASS. Local failed
+  extraction/alias/transport iterations retained and resolved before final qualification.
+- **Release boundary:** optional SQL/data-only installation could use the two
+  private tables/three functions/22metadata batches in one guarded transaction;
+  no app restart or existing route change inherently required. No production
+  migration/version/deployment/operator or approval prepared; install only if a
+  later UI need justifies it, with fresh production compatibility/recovery/seal.
+  No extra optional-history investigation or waiting is needed before UI review.
+- **Acceptance/ONE next action:** start customer/Admin UI/UX review and staff
+  historical-viewer decision. DTR-06 hosted verified order-bearing owner claim/detail
+  acceptance remains unexercised; do not create/send/claim to manufacture a test.
+  Original42 worktrees plus this isolated candidate and all35 deferred IDs/evidence
+  retained; no Git push, archive write, external provider or production action.
+  [Fields, limits and final proof](docs/woocommerce-history-metadata-review.md).
+
+# E171 — Historical migration reassessment READ-ONLY PASS; core already imported — 2026-11-01
+
+- **OD-20261101-MIGRATION-NOW-01 / MIG-01/02/03/05:** historical migration is NOW,
+  then customer/Admin UI, Paymob after provider reply, detailed PDC settlement/ERP
+  LAST. Reused completed history implementation and original consumed3c9f5764 import;
+  no unrelated SEO/UI work or fresh import/deployment approval. Current1fd7/schema107,
+  source7d989cd/app140566/Caddy26652 unchanged; dd931679 remains consumed complete.
+- **Fresh source inventory:** authenticated both full encrypted SQL archives;
+  exact wp_ data-only parsing, no archive HTTP/SQL/PHP/cron/callback execution/write.
+  Primary518 registered accounts (516customer/2admin),591orders,6refunds,1789items,
+  702stored observations.110guest orders/84distinct billing-email strings are not
+  verified guest identities;88guest lookup rows remain source facts. Comparison
+  589orders/6refunds is not unioned; two IDs unique each/one changed registered email.
+  Raw source hashes/size/mtime unchanged; snapshot cutoff beyond frozen data unproven.
+- **Current107 exact reconciliation:**516customers/597order-refund records/1789items,
+  one visible source/41original durable receipts; every core record/eligibility flag
+  equals the sealed payload, and fresh raw normalization reproduces it. Planned
+  core inserts0/updates0; no repeat import needed. Current9Auth users/9profiles,
+  8live orders and2saved addresses remain separate.145 live/Auth/Storage projections:
+  143unchanged, analytics-only growth; five history tables separately unchanged from
+  pre-SEO snapshot. No credentials/current payment/order/financial state changed.
+- **Ownership/privacy:**513 persisted conditional approvals/3source holds; claims0.
+  One current unverified legacy match with two orders stays withheld, yielding512
+  currently eligible/4runtime-held cases without flag edits. The one verified
+  eligible current match has no orders.110guest+21excluded/missing-owner orders
+  remain unlinked, even though50guest billing emails match registered source users.
+  No billing-email claim, password import, Auth creation, verification message or
+  hosted real claim/detail acceptance. RLS/grants/service-only RPC/privacy PASS.
+- **Address/metadata gaps:** street-bearing customer billing404/shipping105;
+  order billing591/shipping590. Preserve all immutable objects/missing fields;
+  no current-address copy. Source12checkout notes/8353order notes (8117other/private),
+  historical SKUs and explicit order aggregate breakdowns are outside current
+  record whitelist. Original item fees/shipping/coupons and totals remain exact.
+  Simple component sums differ from source totals on205orders, coupon sums on5
+  (208unique exceptions): keep all original facts, no retotal/reconciliation.
+  Auxiliary32wallet records/6refund-request cases/114webhook logs remain unmapped
+  inert facts; never create credits/refunds/jobs/callbacks. Refund cases lack order IDs.
+- **Qualification:**22 focused synthetic in-memory/HTTP/UI/planning/safety checks
+  and3parser tests PASS, zero non-loopback test requests. Four hosted function bodies
+  match tested source, import targets only five private tables, no network functions
+  or history triggers. All17protected files/PIDs unchanged; normal12:20Riyadh MON
+  five original warnings/zero critical/gaps2, Email/tracking active, CARD/COD healthy.
+  No production/archive mutation, email/provider request, restart, schema/app change,
+  Git push or approval packet. All42worktrees/35deferred IDs/evidence retained.
+- **MIG-03-META-01 / ONE next action:** qualify a private local metadata-supplement
+  mapping (financial aggregates/SKU/notes, source exceptions and internal-note privacy).
+  Keep immutable core, current tables and existing namespace unchanged; no live
+  import approval until ownership/mapping/side effects qualify. DTR-06 hosted
+  verified order-bearing-owner acceptance remains separate; do not create/send/claim
+  to manufacture a candidate. No new migration number selected.
+  [Complete mapping and counts](docs/woocommerce-history-assessment.md); private
+  evidence:`/Users/imac/Documents/ELcomputer/woocommerce-history-assessment-20261101`.
+
+# E170 — Category/shop/link recovery DEPLOYED; hosted postflight PASS — 2026-11-01
+
+- **MIG-04-C production:** 1fd7ef6909869361/schema107/source7d989cd,
+  app PID140566; priorf5b0 retained. Owner sealdd931679 **CONSUMED_COMPLETE**.
+  One apply/stage/cutover/app restart and one same-PID Caddy SIGUSR1 reload;
+  Caddy PID26652 unchanged. Zero migration/runtime/key/unit/SMTP/settings or
+  business-row change. Never replay the approval, apply, restart, signal or timers.
+- **Hosted SEO PASS:** all320 EN/AR/slash/page variants,308 corrections and
+  82canonical destinations.127 additional live assertions cover canonical/hreflang/
+  robots,488sitemap URLs, query preservation, truthful404, owned support/login
+  destinations and all28existing503 holds. Contact/Refund links work in both
+  languages, with saved public settings and no legal/refund wording change.
+  Existing product-query recovery and original path/query maps retained.
+- **Assets and local evidence:**3,698 hosted HTTP/hash checks PASS, retaining3,582
+  old immutable assets. Source-bound105 tests/420 compiled HTTP/306 browser across48
+  screens/12 guards/typecheck/build/local rollback/encrypted recovery readback PASS.
+  Local rollback qualification is not a production rollback or owner UI acceptance.
+- **Commerce and data preserved:** CARD/COD/customer Email/bounded tracking active;
+  booking/global PDC writes/webhooks remain OFF,0eligible AWBs and original uncertain
+  job quarantined.150 protected projections checked:148 unchanged, only two public
+  analytics tables grew. Orders/payments/fulfillment/collection/Treasury/Auth and
+  configured fees/key/sender/capture/policy unchanged; intentional customer COD10
+  remains server-authoritative. Original emergency fences remain unspent.
+- **Timers and MON:** existing Email pause1.405746s/tracking1.474535s,
+  each resumed once without caller termination/replay. Caddy adds only the approved
+  1,100-byte routing block, preserving every original byte; only MON caddy_sha256
+  changes to match, with its timer pause2.588626s/resume once. All17protected files
+  match the approved after-state. Next NORMAL MON `2026-11-01T00:00:03.331054+00:00` PASS:
+  same five unverified warnings/zero critical/gaps2, MON Email OFF; normal Email/
+  tracking callers successful. No forced scan or manual warning clearing.
+- **Read-only preflight hold:** first check stopped for MONITOR_REPORT_STOP before
+  approval recording or any execution attempt. Private reason DATA_OR_TRANSPORT_FAILURE;
+  next scheduled23:55:05UTC check completed with the original warning baseline.
+  No monitor repair/reset/restart/forced run occurred. The still-valid owner approval
+  was then recorded, and the FIRST/ONLY apply passed all guards. No production
+  mutation or uncertain provider action was retried; the initial failure is retained.
+- **Residual SEO review:**28 held503 paths span24missing exact replacements/four
+  unpublished-product aliases; numeric IDs/three renamed query aliases and other
+  ambiguous mappings stay unproven. No guessed301/410, republication or homepage
+  fallback. Search Console/private metrics unavailable, not a migration blocker.
+  All41original worktrees plus candidate/20,552 non-document hashes/35deferred IDs
+  and their evidence retained. No provider/manual Email/artificial order/shipment,
+  Google/DNS/WordPress write/execution, Git push or automatic rollback.
+- **ONE next action:** start the read-only historical WooCommerce customers/orders/
+  addresses migration assessment, reusing preserved prior work. No import, account
+  notification, order/cash state change or migration deployment is authorized here.
+  UI follows historical migration; Paymob Pixel/Pay Again awaits its ticket;
+  pickup excluded; detailed PDC fees/settlement/ERP LAST.
+  [Current SEO receipt](docs/seo-category-shop-review.md); private packet:
+  `/Users/imac/Documents/ELcomputer/seo-category-shop-release-20261101`.
+
+# E169 — Category/shop/link recovery SEALED READY, UNAPPROVED — 2026-11-01
+
+- **MIG-04-C / OD-20261101-SEO-CATEGORY-01:** reuse the accepted audit and current
+  listing. Finish proven category/shop and Contact/Refund recovery; no broad SEO
+  redesign or repeated 2,221-URL review. After this release, briefly classify
+  residual SEO gaps, then historical WooCommerce customers/orders/addresses
+  migration, then customer/Admin UI. Search Console unavailable, not a blocker.
+- **Production unchanged:** f5b0a50419e22041/schema107/source d2714b8,
+  app PID134743/Caddy PID26652. Prior3b7dfe4d is CONSUMED_COMPLETE; never replay.
+  Read-only sealed preflight 2026-10-31T21:50:13.870Z PASS. CARD/COD/Email/tracking
+  active, booking/webhooks OFF, 0 eligible AWBs; historical uncertain job quarantined.
+  MON retains the same five warnings/zero critical/gaps2; MON Email OFF. Current
+  Dashboard settings, intentional COD fee10, emergency fences and orders retained.
+- **Recovery scope:** 320 EN/AR/slash/page variants qualify; 308 corrected URLs
+  (307 prior404s and one shop redirect formerly targeting noindex search), with12
+  successful existing destinations preserved. Exact eight populated categories,
+  current listing filters and genuine pagination; invalid/out-of-range pages404,
+  no homepage fallback. Contact uses saved public details; Refund links owned
+  orders/support with no new policy/legal wording. Sitemap484→488 locally;
+  canonical/hreflang/noindex consistent. Existing product-query recovery retained.
+- **Held identities:** all28 existing503 paths classified across six source IDs:
+  24 lack an exact current primary-slug/stored-SKU candidate; four identify an
+  unpublished product. No guessed replacement, republishing or inferred410. Bare
+  numeric IDs, three renamed primary-query aliases and ambiguous mappings remain
+  explicitly open; no Search Console access or invented metrics.
+- **Qualification PASS:** 105 focused tests,420 compiled HTTP assertions,
+  306 browser assertions across48 desktop/mobile EN/AR/RTL/theme screens,
+  12 release guards, typecheck/build, local before→candidate→before rollback and
+  same-PID Caddy file reload. Encrypted full recovery readback and3,698 asset HTTP/
+  hash checks PASS;3,582 immutable old assets retained. Original41 worktrees plus
+  one isolated candidate,20,552 pending non-document hashes and35 deferred IDs/
+  original evidence preserved. No push or archive execution/write.
+- **Smallest proposed release:** candidate1fd7ef6909869361/source7d989cd,
+  same schema107/0 migrations. One app restart with bounded pause/resume of existing
+  Email/tracking timers; one1,100-byte Caddy collection-routing insertion preserving
+  every original byte, one same-PID SIGUSR1 reload/0 Caddy restart; MON changes only
+  caddy_sha256 with one bounded pause/resume of its existing timer. This explicit
+  edge scope is needed because existing category/shop redirects discard queries.
+  No runtime/key/unit/settings/business-row/provider/Google/DNS/WP changes.
+- **Fresh one-use seal:** `dd931679164d90486bcbcb1eb6c47e594527a01002e1ee24f721b710359860ee`;
+  expires `2026-11-01T01:49:17.895Z`, start before `2026-11-01T01:34:17.895Z`.
+  No approval or execution attempt recorded. On drift/uncertainty stop; no retries,
+  automatic rollback or replenished emergency fences. Production rollback requires
+  a new observed-state approval for the prior app and paired routing/MON files.
+- **Final read-only refresh:** 2026-10-31T21:57:41.332Z PASS, sealed inputs and hosted state
+  unchanged. An intervening database TLS read timeout is preserved as evidence;
+  one subsequent read-only check passed. No approval/execution fence was consumed.
+- **ONE next action:** approve only MIG-04-C using the exact phrase in
+  [category/shop release review](docs/seo-category-shop-review.md).
+  Hosted postflight and owner acceptance remain pending. Paymob Pixel/Pay Again
+  waits for its ticket; pickup excluded; merchant fees/settlement/ERP LAST.
+  Private sealed packet: `/Users/imac/Documents/ELcomputer/seo-category-shop-release-20261101`.
+
+# E168 — Product-query SEO hotfix DEPLOYED; hosted postflight PASS — 2026-10-31
+
+- **MIG-04-B production:**f5b0a50419e22041/schema107/sourced2714b8,
+  PID134743; previous473 retained. Exact owner seal3b7dfe4d **CONSUMED_COMPLETE**,
+  one attempt/one app restart,0 migration/SQL/runtime/settings/Caddy/unit/key change.
+  Caddy PID26652 and17 protected file hashes unchanged. Do not replay the approval,
+  stage, cutover, restart or timer starts. No rollback/restore or Git push.
+- **Hosted SEO PASS:**all200 matching archived primary product slug queries301 to
+  exact published current products. EN/AR representative redirects and unknown/
+  ambiguous404/noindex PASS; no homepage fallback or invented product identity.
+  All3,583 assets GET/hash PASS with3,474 immutable old assets retained. Existing
+  2,193 Caddy redirects/28 held503s untouched. Local55 tests/412 compiled assertions/
+  12 guards/typecheck/build/rollback/archive/backup evidence remains valid.
+- **Live commerce preserved:**CARD/COD/private-route health PASS. Email and tracking
+  timers remain enabled/active with naturally completed successful post-cutover
+  callers. Timer pauses were Email0.861364s and tracking
+  0.995274s; no caller termination/manual worker/provider
+  call/email test/backfill/artificial order/shipment. Booking/webhook OFF;0 eligible
+  AWBs and original uncertain shipment quarantined. Current fees/key/sender/capture/
+  tracking policy and original purchasing/COD/Email/tracking emergency fences retained.
+- **Data/monitoring:**148/150 projections unchanged; only two live analytics tables
+  grew. Original orders/payments/packing/shipping/collection/Treasury/configuration
+  unchanged; schema107/Auth security unchanged, Auth SMTP untouched. Next NORMAL MON
+  `2026-10-31T20:40:02.896659+00:00` PASS with the same five warning identities/zero critical/gaps2,
+  MON Email OFF. No forced scan or warning clearing. Original40 worktrees plus
+  candidate retained,17,078 non-document hashes and35 deferred IDs/evidence preserved.
+- **MIG-04 remains OPEN:**bare numeric?p= and three renamed primary query slugs,
+  category aliases, shop/pagination/noindex destination, policy/contact/refund links
+  and private Search Console metrics remain separately documented. No Google/DNS/
+  WordPress write/submission or unrelated provider action. Hosted technical closeout
+  is not complete SEO recovery, ranking evidence or owner UI acceptance.
+- **ONE next action:**prepare the next smallest identity-proven category/shop URL
+  recovery packet, reusing the archive/current catalog and successful mappings.
+  No production change without a new approval. Then remaining SEO → historical
+  WooCommerce customers/orders/addresses migration → UI. Paymob Pixel/Pay Again
+  awaits reply; detailed PDC fees/settlement/ERP LAST. All deferred tests retained.
+  [SEO migration review](seo-migration-review.md); private receipt packet:
+  `/Users/imac/Documents/ELcomputer/seo-legacy-query-release-20261031`.
+
+# E167 — SEO audit ISSUES FOUND; product-query hotfix SEALED READY — 2026-10-31
+
+- **MIG-04 / OD-20261031-SEO-NOW-01:** independent PDC readiness is sufficient;
+  SEO is current work, without waiting for a genuine shipment. Reused existing
+  implementation/accepted URL map. Production473703da9917ba21/schema107/source4d0bf6f,
+  PID126398 unchanged; CARD/COD/Email/MON/bounded tracking active, booking/webhooks OFF.
+- **Read-only live audit:**2,221 historical manifest URLs GET-tested;2,193 exact301
+  first hops and28 preserved held503s, no map mismatch. Both authenticated public
+  WordPress archives parsed as data only, no SQL/PHP/WP execution/write.565 archived
+  published product IDs:203 live,356 unpublished,6 held. No fuzzy identity/republication.
+- **Current SEO:**484/484 sitemap URLs200 and exact public catalog coverage,
+  correct canonical/reciprocal EN/AR/x-default/OG/RTL,406 Product schemas and current
+  prices;359/359 unpublished routes404. Search/filter/private noindex preserved.
+  Verified defects: product-query homepage soft404s, bare?p= fallback, missing
+  shop/category/policy aliases, shop redirect to noindex search, four broken EN/AR
+  Contact/Refund links and invalid Uncategorized generic-search fallback.
+  No private Search Console access/metrics; need verified-property read access/export.
+- **Smallest MIG-04-B candidate:** locald2714b8, four files only, resolves exact
+  published product-slug queries with301 or truthful404/noindex; bounded lookup503
+  on failure.203 current identities qualified,200 archived primary slugs recovered;
+  three renamed primary slugs/numeric-ID/other aliases remain explicit follow-up.
+  Caddy/current successful mappings, settings and every historical migration unchanged.
+- **Qualification PASS:**55 focused tests,412 compiled HTTP assertions,12 guards,
+  local before→candidate→before rollback, typecheck/build, encrypted full recovery
+  readback/archive and3,583 HTTP asset hashes/3,474 immutable assets retained.
+  Fresh read-only hosted sealed preflight `2026-10-31T19:49:48.019Z` PASS; original five MON
+  warnings/zero critical,0 eligible AWBs/provider calls. Original40 worktrees plus
+  one isolated candidate retained;17,078 non-document pending hashes/35 deferred IDs
+  preserved. No push, production deployment, SQL/config/service action, Google/WP
+  mutation, provider/manual Email request or synthetic order/shipment.
+- **Release READY / UNAPPROVED:** candidatef5b0a50419e22041/same107;0 migration,
+  runtime/settings/Caddy/unit/key change;1 proposed app restart and bounded pause/
+  resume of existing Email/tracking timers. Original emergency budgets retained.
+  Seal `3b7dfe4d142ff0dde6cc4cb3d75b3ad30a554d00748a1c325e7915c817bab943`, expires `2026-10-31T23:43:40.479Z`;
+  start before `2026-10-31T23:28:40.479Z`. No approval consumed.
+  Exact phrase and disable/rollback limits: [SEO migration review](seo-migration-review.md).
+- **ONE next action:** approve the new product-query hotfix only. Hosted acceptance
+  follows deployment; remaining MIG-04 category/shop/policy/query/link fixes remain
+  open. Then historical WooCommerce data migration → UI; Paymob awaits reply;
+  merchant fees/settlement/ERP LAST. Preserve all visual/deferred tests and orders.
+
+# E166 — Bounded PDC tracking ACTIVE; zero-restart recovery COMPLETE — 2026-10-31
+
+- **Production remains473703da9917ba21/schema107/source4d0bf6f**, app PID126398,
+  Caddy26652 unchanged. Recoveryfe7fad74 **CONSUMED_COMPLETE**; parent0f28db0b remains
+  CONSUMED_STOP. ZERO additional restart/install/runtime/key/unit/Caddy/Email change,
+  migration or app deployment. One TOTAL activation restart belongs to the parent.
+  Never replay either apply, first batch, policy COMMIT or timer start.
+- **SHIP-08 ACTIVE at21:55:41Riyadh:** one revision-bound policy enabled flag, original
+  remaining first-batch fence and installed timer-start fence consumed once with the
+  recovery binding. First authenticated batch checked0/failed0/emptytrue/retries0.
+  Only the dedicated60-second tracking timer enabled/started; no repeated manual
+  first batch, secret rotation, forced MON scan or original budget replenishment.
+- **Hosted scheduled postflight PASS:**4 natural empty worker batches,0 failures/
+  uncertainty/provider requests/reservations. Eligible genuine AWBs remain0. Original
+  uncertain/no-AWB dispatch and cancelled orders unchanged. Booking/global shipping
+  and PDC webhooks remain OFF. No synthetic order/shipment/PDF/pickup/provider write,
+  payment/COD collection/refund/Treasury change or manual Email test/send occurred.
+- **Current server policy preserved:**900seconds,2requests/minute,20/hour,100/day,
+  batch3/concurrency1; durable rolling quotas/2-minute leases/timeouts/backoff and
+  terminal/8-failure/90-day stops. Manual staff refresh shares limits; customers
+  read stored owner-scoped EN/AR/RTL timelines. Shipping never proves cash collection.
+- **Integrity PASS:** exact107 catalog/security/archive/runtime, protected routes,
+  CARD/COD/payment integrity and active Email/normal caller/timer preserved. Data audit
+  retained146 unchanged of150 projections; expected provider policy/shipping
+  revision changed, with live analytics growth separately recorded. All8 orders,
+  payment/shipping/collection/financial histories and current commerce/key/sender
+  configuration unchanged. Current COD fee10 remains intentional/server-authoritative.
+  All14 protected files/three installed caller-unit hashes unchanged during recovery;
+  PID126398 proves no additional app restart. Supabase Auth SMTP untouched.
+- **Next automatic MON22:00:08Riyadh PASS:** original five unverified warnings/zero
+  critical, gaps2, MON Email OFF. The recovery guard permits bounded normal timer
+  transitions without altering MON policy, files, warnings or reports. Original
+  purchasing/COD/Email and one-use tracking disable fences remain unspent.
+- **Acceptance boundary:**16 recovery guards plus existing47 checks/18 native
+  assertions/451 browser/build/typecheck evidence remain bound to unchanged source.
+  Hosted empty batches establish worker/scheduler/authentication/gating readiness.
+  First genuine AWB/provider/timezone/mapping/manual/customer timeline, real registered
+  webhook and provider PDF/physical print/barcode acceptance remain PENDING. All40
+  worktrees/pending bytes and35 deferred IDs/evidence retained; no Git push.
+- **MIG-04 read-only SEO/legacy redirect audit STARTED:** existing SEO notes and
+  deployed4d0bf6f robots/sitemap/private-indexing routes reviewed. The Oct1 SEO release
+  notes describe historical PM2/domain/schema53 evidence, not current107 deployment
+  authority. Existing helpers/routes will be reused; current live origin/SSR metadata/
+  sitemap and real legacy URL mappings need bounded verification. No Google access,
+  indexing request, redirect or application change.
+- **ONE next action: finish the current SEO/legacy redirect audit.** Do not
+  wait for a shipment or expand PDC. Future genuine booking still requires actual
+  staff approval/packing/measured weight and one separate order-specific seal.
+  Pickup excluded; history migration/UI follow; Paymob Pixel/Pay Again await reply;
+  detailed merchant fees/settlement/ERP/Daftra LAST.
+  [Recovery receipt and disable](pdc-tracking-activation-review.md).
+
+# E165 — Tracking activation STOPPED safely; zero-restart recovery READY — 2026-10-31
+
+- **Production remains473703da9917ba21/schema107/source4d0bf6f**, app PID126398,
+  Caddy26652 unchanged. Approval0f28db0b is **CONSUMED_STOP**, not complete. One app
+  restart/runtime/caller/unit installation completed at18:25:12Riyadh;0 migration/
+  app deployment. Never replay parent apply/install/restart or edit its sealed inputs.
+- **Stop18:30:03Riyadh:** MONITOR_TIMER_STOP during read-only inspection, BEFORE
+  policy enable, first authenticated tracking batch or timer start. The guard required
+  timer SubState=waiting; normal scans can use running. Exact rejected substate was
+  not captured, so that cause is inferred from timing rather than a failed MON report.
+  The subsequent normal scans retained the original five warnings/zero critical.
+- **Safe hold:** tracking request/worker runtime inputs installed but policy OFF and
+  dedicated timer disabled/inactive;0 eligible AWBs, leases, reservations or provider
+  requests. All nine original installation receipts remain; first-batch/start fences
+  absent. Historical uncertain/no-AWB shipment and cancelled orders untouched.
+  Booking/global shipping and webhooks stay OFF. No shipment, PDF, pickup, Email test,
+  financial transition, automatic retry/rollback or second restart occurred.
+- **Preservation PASS:**148 of150 projections unchanged; only live analytics events/
+  sessions grew during storefront traffic. All8 orders, payments, shipping history,
+  collection/Treasury/configuration/Auth projections are unchanged. CARD/COD/Email and
+  current Dashboard fee10/key/sender remain healthy.13 protected files unchanged;
+  runtime has only three approved inputs, caller/unit hashes match. Email timer
+  paused1.250s and restored once; no caller termination/manual send.
+- **New guarded recovery:** existing installed runtime/credential/caller/units only,
+  ZERO additional restart/install/runtime/key/unit/Caddy/Email/schema/app change.
+  Enable only the revision-bound policy flag, use the ORIGINAL remaining first-empty-
+  batch fence and timer-start fence once. Existing900second/2perminute/20perhour/
+  100perday/batch3/concurrency1 limits retained. Same genuine-AWB/privacy/financial
+  rules; no extra budget. Original one-use tracking disable and commerce controls
+  remain available/unspent through the parent packet, zero restart for tracking disable.
+- **Qualification:**16 new recovery/normal-running/queued-timer/failed/stale/critical/
+  warning-drift/expiry/fence tests PASS. Existing47 checks/18 native assertions/451
+  browser assertions/deployed build/typecheck reused unchanged. Read-only hosted
+  recovery preflight18:48:39Riyadh PASS; MON18:45:05 same five warnings/zero critical,
+  gaps2, MON Email OFF. No forced scan, warning clearing or production recovery action.
+  All40 worktrees/pending bytes and35 deferred IDs/evidence preserved; no Git push.
+- **Fresh exact approval:** `APPROVE PDC SCHEMA107 ZERO-RESTART TRACKING ACTIVATION RECOVERY fe7fad74a8a9ceaffaf7efd66428ace663d80b137ab1044ec748a46f6498b34a`.
+  Expires **31October2026 22:47:03 Riyadh**; start before
+  **31October2026 22:32:03 Riyadh**. Recovery UNAPPROVED; no apply/root intent.
+- **ONE next action:** approve this zero-restart recovery. The sealed parent requires
+  a fresh approval after any partial stop;0f28db0b cannot be reused. After actual
+  activation/empty scheduled postflight, proceed directly to Google SEO/legacy
+  redirects without waiting for a real shipment or expanding PDC. Genuine provider/
+  AWB/callback/PDF acceptance remains pending. History/UI follow; pickup excluded,
+  Paymob awaits reply, merchant fees/settlement/ERP LAST.
+  [Stop, recovery approval and disable](pdc-tracking-activation-review.md).
+
+# E164 — PDC tracking activation SEALED READY; still OFF — 2026-10-31
+
+- **Production unchanged:473703da9917ba21/schema107/source4d0bf6f**, app PID124591.
+  Schema107 deployment18490351 remains CONSUMED_COMPLETE. This task made0 migrations,
+  deployments, restarts, settings writes, worker invocations or provider requests.
+  Polling/workers/booking/webhooks remain OFF; no scheduler is installed.
+- **Eligible genuine AWBs:0.** The sole PDC job is the historical uncertain/no-AWB
+  dispatch and remains quarantined. Cancelled/unbooked/unverified/terminal/over-age
+  or failure-paused jobs cannot enter automatic tracking. No artificial shipment.
+- **Activation-only packet:** exact installed107 infrastructure reused. Three private
+  tracking runtime inputs/new independent credential; existing caller plus one service/
+  timer; ONE prospective app restart and bounded existing Email timer pause/resume.
+  Policy stays OFF through normal post-restart MON and readiness. Then change only
+  its enabled flag at the exact provider hash/shipping revision; one empty first batch
+  before timer start. No migration/app archive/Caddy/SMTP/provider-token/fee change.
+- **Provider scope:** GetShipmentsStatus only, exact active verified normal AWB/REF/
+  account/created-dispatch proof. Initial server policy900seconds/2 perminute/20 perhour/
+  100 perday, batch3/concurrency1; shared with authorized manual staff refresh. Durable
+  rolling reservations/tokens,2-minute leases, timeouts, backoff,8-failure pause,
+  terminal/90-day stops; no booking/label/pickup/webhook or financial transition.
+- **Fresh qualification PASS:**26 focused tracking tests,6 caller tests,14 operator
+  guard tests,1 connector test,18 native activation/disable assertions and451 browser
+  assertions (EN/AR/RTL,desktop/mobile,themes,owner privacy/stale/unavailable states).
+  Native empty worker checked0/failed0 with0 provider requests; history/orders/payment
+  fields unchanged. Existing deployed typecheck/build and full release evidence reused;
+  source is unchanged. Initial local harness path errors retained, not called passes.
+- **Read-only hosted preflight18:08:41Riyadh PASS:** exact107 catalog/security/installed
+  runtime/files/lineage, CARD/COD/Email/private-route/payment integrity and policy
+  permissions qualified. MON18:05:05 retains five existing unverified warnings/zero
+  critical, gaps2, MON Email OFF. Current Dashboard fees/key/sender and original
+  purchasing/COD/Email emergency fences preserved; no forced scan or warning clearing.
+- **Emergency tracking disable:** dedicated timer disabled/stopped, then only current
+  tracking_policy.enabled=false; preserve numeric settings/reservations/history/orders.
+  ZERO app restart and no Email/MON/payment/collection change. Allow an in-flight read
+  to finish without replay; it cannot be recalled. Original commerce emergency scopes/
+  budgets remain separate, rebound through the new packet's existing-fence adapters.
+- **New one-use approval:** `APPROVE PDC SCHEMA107 BOUNDED TRACKING ACTIVATION 0f28db0bda9595b5a497db6f81510fe15eb8d264e4110eb3179b69663becfc8e`.
+  Expires **31October2026 22:07:10 Riyadh**; execution must start before
+  **31October2026 21:47:10 Riyadh**. UNAPPROVED; no apply attempt or root intent.
+  All40 worktrees/pending bytes and35 deferred IDs/evidence preserved; no Git push.
+- **ONE next action:** approve only the new activation packet in the review below.
+  After activation, keep genuine AWB/provider/PDF/customer timeline acceptance pending
+  and move directly to Google SEO/legacy WooCommerce redirects. Do not wait for an
+  order, expand PDC or enable unverified webhooks. History migration then UI follow;
+  pickup excluded, Paymob Pixel/Pay Again await reply, commercial settlement/ERP LAST.
+  [Activation review](pdc-tracking-activation-review.md).
+
+# E163 — Schema107 tracking DEPLOYED INACTIVE; hosted postflight PASS — 2026-10-31
+
+- **Current production: 473703da9917ba21 / schema107**, source
+  4d0bf6f130b5c91c1ecc2904eed3badfad8bc2bf; app PID124591, Caddy26652 unchanged.
+  Approval18490351 is **CONSUMED_COMPLETE**. Never replay it or earlier approvals.
+  One106→107 migration committed at17:21:17Riyadh; one app restart/cutover completed
+  at17:21:53Riyadh. Main was not deployed. No retry or automatic rollback occurred.
+- **Inactive SHIP-08 installed:** bounded GetShipmentsStatus polling, durable shared
+  quotas/leases/backoff/terminal stops and protected Dashboard/My Account timelines.
+  Existing API/history/status mappings and exact verified AWB/REF/dispatch proof reused.
+  Customer refresh reads stored data only; shipping never establishes cash collection
+  or changes order/payment/refund/inventory/Treasury state. No historical AWB backfill.
+- **Hosted postflight PASS:** exact107 catalog/security, metadata SELECT-only null-order
+  RPC200/null, CARD/COD/payment integrity/private-route denials and all3,475 public
+  asset HTTP/SHA checks. All150 original projections preserved at migration commit;
+  eight orders and11 selected original order/payment/packing/shipping/financial
+  projections unchanged afterwards. Current Dashboard fees and encrypted Email
+  key/sender/provider3/capture1 preserved; intentional COD10 was not restored/hardcoded.
+- **Existing services preserved:** all14 protected files, runtime, units, Caddy,
+  Supabase Auth SMTP and original purchasing/COD/Email emergency fences unchanged.
+  Email timer paused about1.394s and resumed once; its running caller was not killed.
+  Normal scheduled caller completed successfully at17:23:28Riyadh. No manual Email
+  worker/test/send/backfill, synthetic order, shipment or provider request was made.
+- **Next automatic MON17:25:04Riyadh PASS:** same five unverified warnings/zero critical,
+  historical gaps2 and MON Email OFF. No forced scan, warning clearing or new budget.
+  The full asset scan retained an earlier14:20 MON snapshot; a separate read-only
+  observation confirmed the normal14:25 report after cutover, without another restart.
+- **Tracking stays OFF:** request/worker/webhook runtime flags absent/false, tracking
+  policy disabled, reservations0, new worker secret absent. No tracking caller/service/
+  timer was installed or activated; automatic booking remains OFF. SHIP-10 offline
+  auth/replay/order/race security qualified; live registration/callback remains unverified.
+- **Qualification remains bound to this source:**145 automated tests,677 browser
+  assertions,25 release guards, native migration/rollback144 original projections,
+  typecheck/build and archive/compiled PDF checks PASS. Genuine AWB/provider/timezone/
+  mapping/manual/scheduled timeline and DTR-21 PDF/physical print/barcode acceptance
+  remain pending. Historical uncertain dispatch and cancelled COD stay excluded.
+  All worktrees/pending work and35 deferred IDs/evidence retained; no Git push.
+- **ONE next action:** prepare the separately guarded tracking activation packet,
+  including its dedicated secret/caller/timer/policy scope and disable procedure.
+  No tracking/webhook/provider activation is authorized by this deployment.
+  Independent webhook security is complete; proceed to SEO/legacy redirects after
+  independent PDC readiness without waiting for a real AWB or live callback. Then
+  historical WooCommerce migration/UI. Pickup excluded; Paymob awaits its reply;
+  detailed PDC settlement/ERP/Daftra LAST. [Receipt](pdc-tracking-review.md).
+
+# E162 — Tracking/timelines and offline webhooks LOCAL PASS; inactive107 READY — 2026-10-31
+
+- **Production remains a98e465ae7611e73 / schema106 / source4238e92.** No migration,
+  restart, provider request, worker activation, shipment or Email action in this task.
+  Previous label approval05fca90d remains CONSUMED_COMPLETE; never replay it.
+- **SHIP-08 candidate source4d0bf6f130b5c91c1ecc2904eed3badfad8bc2bf:** existing
+  GetShipmentsStatus, exact verified AWB/REF/production-dispatch proof, mappings and
+  private history reused. Durable rolling minute/hour/day quotas, shared manual/
+  worker leases/concurrency, timeouts, exponential backoff, failure pause, age horizon
+  and terminal stops. Unknown/conflicting status evidence is private/withheld;
+  shipping never changes order/payment/COD/refund/inventory/Treasury state.
+- **Dashboard/My Account locally qualified:** verified booking and actual carrier
+  timeline, successful check time, stale/error state and authorized throttled staff
+  refresh. Customer refresh reads stored data only. Ownership/current account status
+  rechecked before response; private binding/diagnostics/raw notes withheld. EN/AR/RTL,
+  desktop/mobile and all themes;100-character AWB internal overflow guard qualified.
+- **SHIP-10 offline security qualified:** existing documented encrypted independent
+  secret, authentication-before-parsing, bounded callback, replay/dedup, exact binding,
+  chronology and polling/callback races share ingestion. No invented signature.
+  Live registration/authenticated provider callback/account acceptance remain unverified.
+  Polling works while webhook processing is OFF; none waits for live registration.
+- **Local PASS:**145 automated checks (25 label/policy,40 native,74 protocol,6 scheduler),
+  677 browser assertions (451 tracking,144 labels,82 booking),25 release guards;
+  native migration/rollback144 original projections, typecheck/build, compiled private
+  routes/PDF parser, guarded archive readback and3,475 served asset hashes.
+  Existing optional pre-COD/old browser/deferred evidence retained, not called passed.
+- **Smallest release:** one additive106→107 migration and one app restart; bounded
+  existing Email timer pause/resume.12 new columns/two indexes/six new functions/four
+  function corrections; all106 historical migrations unchanged. No historical AWB
+  backfill, provider call, scheduler installation, runtime/key/unit/Caddy/Auth SMTP
+  change. New tracking request/worker/webhook gates and policy remain OFF; secret absent.
+  Current Dashboard fees/key/sender are captured afresh and preserved, not hardcoded.
+  Owner-selected COD10 remains intentional; merchant fees/settlement/ERP LAST.
+- **Genuine acceptance pending:** first genuine verified AWB/provider response/timezone/
+  mapping/manual/scheduled timeline; real callback only after registration, and DTR-21
+  PDF/physical printer/barcode. Historical uncertain dispatch/cancelled COD excluded.
+  No synthetic production order or shipment. All worktrees and35 DTR IDs/evidence retained.
+- **Fresh sealed preflight15:23:03Riyadh PASS:** serving a98e/schema106; CARD/COD/
+  Email/private routes/payment integrity pass. MON15:20 retains five original warnings,
+  zero critical/gaps2, MON Email OFF. New tracking runtime/worker/webhook flags and
+  worker secret checked inactive; no provider call.39 original worktrees/17,074 pending
+  non-document hashes preserved; one new clean source worktree. All35 deferred IDs retained.
+- **New exact approval:** `APPROVE PDC SCHEMA107 INACTIVE TRACKING DEPLOYMENT 184903519ef464d24e271439a660dc2ce5e8c551bef6285665d4a4c478440165`.
+  Expires **31 October 2026 19:20:08 Riyadh**; start before **31 October 2026 19:05:08 Riyadh**. UNAPPROVED; no apply attempt.
+- **ONE next action:** approve the inactive107 deployment in [the review](pdc-tracking-review.md).
+  Subsequent tracking activation needs its own exact scope/secret/scheduler approval;
+  webhook cutover remains separate. Independent webhook security work is complete.
+  Then SEO/legacy redirects → historical WooCommerce migration → UI; do not wait for
+  genuine AWBs or live callbacks. Pickup excluded; Paymob Pixel/Pay Again await reply.
+
+# E161 — PDC labels DEPLOYED; hosted postflight PASS — 2026-10-31
+
+- **Current production: a98e465ae7611e73 / schema106**, source
+  4238e9258d896f2ad708b30143cfb8aabcf2bc6d; app PID118185, Caddy26652 unchanged.
+  Label approval05fca90d is **CONSUMED_COMPLETE**. One app restart at12:17:05Riyadh;
+  zero migrations/SQL/settings/runtime/Caddy/unit/key/provider/Email requests.
+  Never replay this apply command or previous106 approvals84e0/91cc.
+- **SHIP-06 installed:** protected Dashboard View/Download/Print reuses ExportPDF,
+  saved AWB/REF, label leases/unique job and private publish-once VPS storage.
+  Actual PDF/order/job/hash/size/AWB/REF validation, renewed staff authorization,
+  EN/AR/RTL/theme/responsive preview, original download and print-only rendering.
+  A missing/failed PDF never creates a shipment. Missing/tampered ready evidence
+  is withheld; reviewed private-file recovery and real provider actions stay separate.
+- **Hosted postflight PASS:** exact installed archive/schema/security/runtime,
+  CARD/COD/payment integrity/private routes and all3,365 public asset HTTP hashes.
+  Eight orders and11 original order/payment/packing/shipping/financial projections
+  unchanged. Key/sender/provider3/capture1 unchanged. Existing Email timer paused
+  about1.230s, running caller allowed to finish; resumed once. Normal scheduled
+  caller subsequently exited successfully. No manual worker/send/test/backfill.
+- **Next automatic MON12:20:06Riyadh PASS:** same five unverified warnings/zero
+  critical, gaps2, MON Email OFF. No forced scan, warning clearing or new budget.
+  All14 protected files and original purchasing/COD/Email emergency fences preserved.
+  Use the new label packet's existing-fence commands for the installed archive;
+  do not use old installed-release bindings. Supabase Auth SMTP untouched.
+- **Current business configuration remains authoritative.** Customer COD feeEGP10
+  is intentional; no fee value is hardcoded/restored or treated as a defect.
+  Automatic PDC booking/polling/webhook cutover remain OFF; pickup development excluded.
+- **Acceptance boundary:**113 local tests/226 browser assertions/21 guards and
+  typecheck/build/compiled parser/archive checks remain bound to deployed source.
+  Genuine provider PDF/template/font/physical printing/barcode acceptance remains
+  **PENDING FIRST REAL APPROVED AWB / DTR-21**. No eligible new shipment; original
+  uncertain dispatch and cancelled COD stay excluded. No provider call or synthetic order.
+  All worktrees/deferred tests and their evidence preserved; no Git push.
+- **ONE next action:** bounded GetShipmentsStatus polling and Dashboard/My Account
+  timelines, reusing existing tracking history. Offline documented webhook auth/
+  dedup/replay follows; polling does not wait for live callback registration.
+  SEO starts after independent PDC readiness even without real orders; then history
+  migration/UI. Paymob Pixel/Pay Again await the reply; PDC settlement/ERP/Daftra LAST.
+  [Deployment receipt and emergency procedure](pdc-labels-review.md).
+
+# E160 — PDC labels locally qualified; app-only release READY — 2026-10-31
+
+- **SHIP-06:** source4238e9258d896f2ad708b30143cfb8aabcf2bc6d reuses the deployed106
+  lineage, ExportPDF, saved AWB/REF, database label leases and private VPS storage.
+  Authorized Dashboard **View / Download / Print** is locally qualified; NOT deployed.
+- **Exact scope:** actual bounded PDF parsing before publication and retrieval;
+  order/job/provider/path/hash/size/AWB/REF binding, renewed staff authorization,
+  private no-store responses and stale-request protection. Failed PDFs are withheld.
+  Saved-AWB-only label retry cannot create a shipment. Missing/tampered ready files
+  require reviewed private-evidence recovery; no automatic overwrite or booking retry.
+- **Local PASS:**113 automated tests (20 label,19 native,74 protocol/tracking),226 browser
+  assertions (144 label,82 booking),21 release guards, typecheck/build, compiled PDF
+  parser, full archive readback and3,365 served asset hashes (3,236 retained).
+  EN/AR/RTL,390/1440 widths,Light/Dark/System, real PDF canvas, original download
+  hash and browser-printed paper geometry qualified. No customer/provider test action.
+- **Release:** schema106 unchanged;0 migrations/SQL/settings/runtime/Caddy/unit/key
+  changes. One prospective app restart plus bounded existing Email timer pause/resume
+  requires the NEW exact deployment approval. Previous84e0/91cc approvals consumed.
+  CARD/COD/customer Email/MON and original emergency fences remain preserved.
+- **OD-20261031-COD-FEE-01 clarified:** owner intentionally set the customer COD fee
+  toEGP10. Current server-authoritative configuration governs all fees; neither10
+  nor50 is hardcoded, restored or treated as a label defect. Existing snapshots remain.
+- **Acceptance remains pending:** first genuine provider PDF/template/font/AWB/REF,
+  physical printer/scale and barcode scan under a real separately approved AWB.
+  No synthetic order, uncertain dispatch replay or cancelled-order action. DTR-21/34
+  and all35 deferred IDs/evidence remain; local fixtures are not provider acceptance.
+- **Fresh sealed preflight12:09:07Riyadh PASS:** ce4142/schema106 remains serving;
+  CARD/COD/private-route/payment-integrity checks pass, active customer Email caller/
+  timer preserved. MON12:05 retains five original warnings/zero critical, gaps2,
+  MON Email OFF. All38 original worktrees/17,074 pending non-document hashes pass;
+  all35 deferred IDs/evidence preserved. No production mutation/provider request.
+- **New deployment seal:** `APPROVE PDC LABELS SCHEMA106 APP-ONLY DEPLOYMENT 05fca90db0a6b61cede98f4e7ec5bafbf19a17309bb02280b0c8b8f57112d915`.
+  Expires **31October2026 16:07:19 Riyadh**; start before **31October2026 15:52:19 Riyadh**. UNAPPROVED; no apply attempt.
+- **ONE next action:** review and approve the sealed app-only label deployment in
+  [the label release review](pdc-labels-review.md). No shipment/provider approval is included.
+  Then bounded tracking/timelines and offline documented webhook qualification;
+  polling does not wait for live webhook acceptance. SEO starts after independent PDC
+  readiness even with no real order. No pickup development. Paymob awaits reply;
+  historical migration/UI follow SEO, detailed PDC settlement/ERP/Daftra LAST.
+
+# E159 — Schema106 booking readiness DEPLOYED INACTIVE — 2026-10-31
+
+- **Current production: ce4142a02ffd7afb / schema106**, source
+  0631cbe972bf9e86ae9572c632e115da685f4e50; app PID106963. Existing staged archive
+  finalized at03:25:58Riyadh under recovery91cc. **Recovery CONSUMED_COMPLETE**;
+  original84e0 CONSUMED_STOP remains preserved. Never replay either apply command.
+  Candidate certificate stays bound to84e0; recovery receipt binds91cc to finalization.
+- **Scope completed:** original106 migration once (150 original projections preserved),
+  ONE total app restart; recovery0 migrations/SQL/builds/uploads. Existing Email timer
+  paused about1.096s, running caller never killed, timer restored once. Runtime,
+  keys/sender, units and Caddy unchanged. Supabase Auth SMTP untouched.
+- **Hosted postflight PASS:** exact106 catalog/security, CARD/COD capabilities/payment
+  integrity, protected routes, all3,237 public asset hashes and retained assets.
+  Existing scheduled Email caller completed successfully after restart; queues/events/
+  attempts0, capture/provider/timer remain active. No manual worker or Email request.
+  **Next automatic MON03:30:05Riyadh PASS:** same five unverified warnings/zero critical,
+  gaps2, MON Email OFF. No forced scan, warning clearing or outcome fabrication.
+- **SHIP-13 / ORDER-06:** measured per-order weight and staff CARD/COD eligibility
+  installed. No automatic PDC booking/polling/pickup/webhook activation, provider request,
+  test shipment/order, historical backfill, financial write or order/payment mutation.
+  Customer delivery50/COD10(owner-confirmed)/CARD0 preserved. Original emergency
+  purchasing/COD/Email disable fences remain unspent; no new budgets or key changes.
+- **Acceptance boundary:** technical deployment/postflight complete; real staff parcel,
+  booking/AWB/provider PDF/tracking/callback acceptance remains pending. Existing eight
+  orders/projected data unchanged except live analytics fingerprints;0 eligible genuine
+  new shipments. Historical uncertain attempt1/no AWB quarantined; cancelled COD excluded.
+  Exact-source90 tests/82 browser assertions, original22 guards and recovery15 checks
+  retained; migration rollback/typecheck/build/backups qualified. No deferred test dropped.
+- **ONE next action:** SHIP-06 local label View/Download/Print and actual PDF/AWB/REF
+  qualification using existing ExportPDF/private VPS storage. No provider contact or
+  deployment/send/booking implied. Then bounded tracking/timelines and offline webhook
+  auth/dedup/replay; **SEO starts immediately after independent PDC readiness even with
+  no genuine order**. No pickup development. Paymob awaits reply; settlement/ERP LAST.
+  [Deployment receipt and emergency controls](pdc-schema106-release-review.md).
+
+# E158 — Schema106 SQL committed; app cutover stopped; recovery READY — 2026-10-31
+
+- **SHIP-13 / ORDER-06:** approval84e0 is **CONSUMED_STOP**. Migration106 committed
+  at03:08:10Riyadh, preserving all150 original projections/Auth/history/Email/commerce.
+  Candidate ce4142a02ffd7afb/source063 is staged and private-GET qualified.
+  **Current production:1e931d20d19bde5a/source444 / schema106, PID84134.**
+  No symlink switch, Email timer pause or app restart occurred. Do not rerun84e0/apply.
+- **Cause:** a local variable named `cutover` in the original Python dispatcher
+  shadowed its function. UnboundLocalError occurred BEFORE cutover entry/intent.
+  Parent root stage still contains exactly intent.json/runtime.before/staged.json.
+  Original source/seal/failure evidence is preserved. No migration rollback or retry.
+- **Read-only post-commit/next automatic MON PASS:** same five unverified warnings,
+  zero critical/gaps2; original app/Caddy/runtime/key/sender/Email caller/timer unchanged.
+  Fresh recovery preflight **2026-10-31 03:18:46.327 Riyadh: PASS** on the exact installed106 catalog.
+  CARD/COD/Email active, delivery50/customer COD10(owner-confirmed)/CARD0 retained;
+  uncertain dispatch remains quarantined. No provider/booking/manual Email/financial write.
+- **Cutover-only recovery READY / UNAPPROVED:** explicit namespace dispatch into the
+  original never-entered cutover function. Same staged archive; **0 migrations, SQL,
+  builds or uploads; one remaining app restart**, with bounded existing Email timer
+  pause/natural caller completion/one restore. No automatic PDC activation or new budgets.
+  Two dispatcher regressions+nine recovery guards+four database guards PASS (15 total).
+  Fresh encrypted106 DB and14 runtime/caller/unit files pass full authenticated readback.
+- **NEW exact approval:** `APPROVE PDC SCHEMA106 EXISTING CANDIDATE CUTOVER RECOVERY 91cc05acdb536c868a445236bdccdc7451ca855425be116f29e0dc6082ec9bfc`.
+  Expires **2026-10-31 07:18:02.615 Riyadh**; start before **2026-10-31 07:03:02.615 Riyadh**.
+  New recovery not approved/executed. Any drift/uncertainty consumes it; no retry/rollback.
+  Private packet `../pdc-schema106-cutover-recovery-20261031/`. Original emergency
+  controls remain under their original fences; no budget reset or SMTP/provider action.
+  [Receipt, recovery and postflight](pdc-schema106-release-review.md).
+- **ONE next action:** approve the NEW cutover-only recovery above. Then independent
+  labels/View/Download/Print/PDF binding, bounded tracking and offline webhook checks;
+  SEO follows without waiting for a genuine order. No pickup development. Paymob
+  awaits its reply; detailed PDC settlement/ERP/Daftra remains LAST. All deferred
+  tests/evidence/worktrees preserved. Actual shipment still needs its own one-order seal.
+
+# E157 — Schema106 inactive booking release READY / UNAPPROVED — 2026-10-31
+
+- **SHIP-13 / ORDER-06:** reuse clean source0631cbe972bf9e86ae9572c632e115da685f4e50,
+  installed105 ancestry083fc20a; one measured staff CARD/COD106 migration and archive
+  ce4142a02ffd7afb. NOT deployed. No automatic booking or order/payment state change.
+- **Fresh sealed preflight 2026-10-31 02:58:56.932 Riyadh: PASS.** Serving1e931d20d19bde5a/schema105,
+  CARD/COD/Email/MON retained; same five unverified warnings/zero critical/gaps2.
+  Provider3/capture1/existing Email timer active; original purchasing/COD/Email disable
+  fences unspent. Eight orders; no new staff action or eligible genuine shipment.
+  Historical uncertain attempt1/no AWB quarantined; original COD order cancelled.
+- **Scope if separately approved:** one migration/application restart. Briefly pause
+  the existing Email timer, let a running caller finish naturally and restore once
+  in finally. Capture/key/sender/settings stay active. No Caddy/runtime/unit/Auth SMTP
+  change, manual worker request, provider call, test order/Email or backfill.
+- **Qualification:** exact-source90 tests/82 booking browser assertions reused;
+  fresh migration/rollback144 projections, typecheck/build and22 release guards PASS.
+  Archive readback and3,237 served asset hashes PASS (3,128 retained). Encrypted105 DB
+  and14 protected runtime/caller/unit files pass authenticated full readback.
+  Prior pre-COD fixture and older tracking-browser failures remain deferred, not passed.
+- **OD-20261031-COD-FEE-01 — OWNER CONFIRMED:** customer COD fee **EGP10 is intentional**.
+  Delivery50/CARD0 remain as observed. This supersedes earlier COD50 instructions for
+  future customer charges; existing order snapshots stay unchanged. No fee/settings
+  write is requested or included. Preserve current configuration in the inactive106
+  release. Confirmation is not deployment or shipment approval. Merchant fees/ERP LAST.
+- **Approval:** `APPROVE PDC SCHEMA106 INACTIVE BOOKING READINESS DEPLOYMENT 84e0b8cfcc814be128d6afc16be0b204c3f673795badea6fcf648ceb9d50eab5`. Expires **2026-10-31 06:54:51.714 Riyadh**;
+  execution must start before **2026-10-31 06:39:51.714 Riyadh**. No approval/apply intent recorded.
+  [Review, exact scope and emergency procedures](pdc-schema106-release-review.md).
+  Private packet `../pdc-schema106-release-20261031/`; b564/a436 preparation seals WITHDRAWN,
+  never approved/applied. No replay/auto rollback; post-commit failure needs fresh recovery.
+- **OD-20261031-PDC-NOWAIT-02:** finish independently testable labels/View/Download/
+  Print/PDF-AWB-REF and bounded tracking/timelines, then offline webhook auth/dedup/replay
+  qualification. Live PDF/callback/provider acceptance stays separately gated.
+  **When these independent features are done, start SEO/legacy redirects immediately,
+  even with zero genuine candidates.** Then WooCommerce customers/orders/addresses,
+  then UI/UX. No pickup development. Paymob awaits reply; settlement/ERP/Daftra LAST.
+  Future eligible approved/actually packed/measured real order needs ONE separate seal.
+- **ONE next action:** exact owner approval of this inactive106 deployment. All existing
+  worktrees/deferred IDs/evidence preserved; no Git push or production/provider write.
+
+# E156 — PDC operations first; pickup integration excluded — 2026-10-31
+
+- **OD-20261031-PDC-OPS-01 / SHIP-06/07/08/09/10/13:** owner confirms PDC pickup
+  is already handled automatically outside this integration. **NO pickup APIs,
+  scheduling, buttons or new pickup development.** Record handover only from verified
+  evidence; booking/AWB/label never invents physical handover, delivery or collection.
+- Current priority: **1 PDC booking/labels/tracking; 2 Google SEO/legacy redirects;
+  3 historical WooCommerce customer/order/address migration; 4 customer/admin UI;
+  5 Paymob after its ticket response; 6 LAST detailed PDC settlement/ERP/Daftra.**
+  CARD/COD, MON, active transactional Email and original emergency controls stay live.
+- **02:10:00Riyadh READ-ONLY:** serving1e931d20d19bde5a/source444c8fd/schema105,
+  PID84134; CARD/COD available, Email provider3/capture1/timer active. No Email events
+  or sends observed. MON02:05:03 complete, same five unverified warnings/zero critical,
+  gaps2. Original purchasing/COD budgets1. No production/provider write or restart.
+- **No eligible genuine shipment:** eight orders remain. The only ready/packed/paid
+  CARD order is the historical uncertain dispatch (attempt1/no AWB), still quarantined.
+  All other orders, including C140 COD, are cancelled. No packing/reopen/booking,
+  label/poll, pickup, money or private Email-test action is authorized by this work.
+- Existing101/103 infrastructure, V6/vendor response examples, private VPS document
+  adapter, account timeline, atomic status history and authenticated webhook reused.
+  Status.xlsx33 rows/32 IDs and Templates IDS V3 four IDs re-read; hashes unchanged.
+  Live32 mappings retain97 as unknown. Template1 remains selected. No guessed IDs.
+- **Concrete gaps:** live staff gate excludes CARD; booking uses provider default
+  weight1kg rather than a measured per-order value. Label download exists, but View/
+  Print and stronger PDF/printed REF-AWB acceptance remain. Manual dated tracking and
+  stored customer history exist; general live gate blocks refresh, and no bounded
+  tracking scheduler exists. Older account-tracking browser harness times out before
+  rendering; its failed qualification is retained, never marked PASS.
+- **Smallest first implementation LOCAL PASS:** proposed106 measured staff booking,
+  branch local/pdc-staff-shipping-20261031, source **0631cbe972bf9e86ae9572c632e115da685f4e50** based on083fc20.
+  One nullable weight column, one constraint/private trigger, one server-only prepare
+  RPC, two narrowly updated existing functions. No historical migration rewrite or
+  row backfill. Explicit staff weight/confirmation, per-order pin/concurrency guard,
+  immutable dispatched weight; verified live CARD sends COD0, COD sends full saved
+  EGP-major balance. Global queues/reverse/tracking remain gated. No pickup code.
+- **Qualification:**16 native +74 protocol/tracking tests PASS/no skips;82 browser
+  assertions/eight actual-component EN/AR/RTL/LTR desktop/mobile CARD/COD cases PASS;
+  typecheck/build PASS on Node22.23.1. PostgreSQL17.11 migration/rollback preserves144
+  disposable original projections/ACLs; both altered function bodies match deployed105
+  baseline byte-for-byte. Legacy test-fixture/import failures remain private. Older
+  pre-COD PDC suite and tracking browser tests/evidence are preserved, not waived.
+- **Webhook VERIFIED AVAILABLE in vendor documentation:** HTTPS POST,
+  X-Webhook-Secret, AWB/REF/StatusID/StatusDate/name/reason and AWB+StatusID idempotency.
+  Existing bounded authenticated/atomic handler is installed. Live provider registration,
+  valid callback/account mapping acceptance remain unverified; optional cutover does
+  **not** block labels or initial polling. No new endpoint/signature is invented.
+- [Current PDC matrix, remaining no-contact work and first release](pdc-operations-readiness.md).
+  All36 earlier worktrees/pending evidence preserved; one new isolated worktree added.
+  All35 deferred IDs/evidence retained. Pickup development withdrawn, never labelled
+  technically accepted. Visual/Email/Pixel/SEO/history/storage tests remain open as dated.
+- **ONE next action:** prepare and seal the smallest105→106 booking-only release,
+  preserving active Email/MON/kill bindings and keeping all automatic PDC calls OFF.
+  No deployment seal or production approval is issued here. After that, finish label
+  View/Print/PDF binding, then bounded existing-AWB polling; no PDC contact is needed
+  for these implementations. A real shipment still needs a genuine packed order and
+  a separate exact one-order approval. Detailed commercial accounting remains LAST.
+
+---
+
 # E155 — Future transactional email ACTIVE — 2026-10-30
 
 - **CX-EMAIL-01:** approved zero-restart recovery8824c9 completed once.
@@ -4043,7 +4848,7 @@ Light/Dark/System, compact Dashboard components and responsive layouts.
 | --- | --- |
 | Application/schema | 1e931d20d19bde5a/source444c8fd, schema104/last20261029120000; inventory/certificate/running release/schema-security match. App78939/Caddy26652. Main3747575 remains continuity. |
 | Commerce/Auth | CARD and COD available; Manual delivery50/additional COD50/CARDfee0; signup open/confirmation required. One approved restart; hosted owner interaction not inferred. |
-| COD/PDC | Installed101 reused on104; COD ACTIVATED, Manual/PDC collector and narrow staff gate enabled. Global outbound/queues/reverse/tracking/general recovery remain paused. Original uncertain shipment quarantined. First booking needs a real approved/packed order and separate approval; commercial/ERP details LAST, not a booking prerequisite;0 provider requests. |
+| COD/PDC | E156 live105/COD+CARD retained; staff COD gate installed, global PDC OFF, historical uncertain quarantined. Local106 measured CARD/COD parity qualified, not deployed. Labels/View/Print/PDF-reference and bounded polling remain; pickup integration excluded;0 eligible candidates,0 provider calls. |
 | Payment operations | Approved activation preserved17 order/payment/inventory/Auth/Treasury projections; no agent money action. Finance/signed-success/duplicate/ownership mismatch counters0; provider-unverified cases and Pay Again hold retained. |
 | MON/recovery | Five-minute timer active;03:35:05 automatic complete WARNING5/critical0 (five terminal-unverified warnings; old frozen warning set drifted, no reset), same two overdue/three terminal warnings. Original unused emergency-close budget1; historical journal gaps2 remain. Only two approved runtime values changed; Caddy/monitor fixed files unchanged; one app restart. |
 | Customer features | Homepage direct cart, address book/collapsed checkout, dependent locations and navbar name deployed; pending owner visual scopes remain pending. |
@@ -4164,11 +4969,11 @@ deployment, import, signup and purchasing retain their separate approvals.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| MIG-01 | Source inventory and durable customer identity mappings | P0 | DEPLOYED | Source and final eligibility/import approved and executed once; actual Auth claims0 | 516 imported/513 conditionally eligible/3 held; one current verified match has no orders,512 later verified signups; zero Auth creation/hash import/automatic links/current edits | E37; E36; E30; E23 | 2026-10-25 | Preserve source/import receipts; verify explicit ordinary ownership without changing immutable flags |
-| MIG-02 | Historical customer profiles and saved addresses | P0 | DEPLOYED | All516 archived customer snapshots imported; verified explicit claim required for reads | Every approved historical snapshot/address preserved; all140 original projections/current profiles/credentials unchanged | E37; E36; E23 | 2026-10-25 | Existing eligible customer accepts archived profile/empty order view; hosted acceptance remains pending |
-| MIG-03 | Historical orders, customer order history and Woo metadata | P0 | DEPLOYED | Data/API/My Orders and three scoped routes live; claims0, hosted owned acceptance pending | 591 orders/6 refunds/1789 items/702 events reconciled exactly;459 orders/6 refunds eligible,1 held order/131 unlinked remain private; no live provider action | E37; E36; E35; E23 | 2026-10-25 | Accept hosted ordinary claim/list/detail/refresh with an eligible order-bearing customer after separately approved signup |
-| MIG-04 | SEO, legacy redirects and Search Console | 5 — GOOGLE SEO / LEGACY REDIRECTS | QUEUED READ-ONLY / NO NEW EXTERNAL ACCESS | E140 after transactional emails; Google access unestablished | Preserve identities/URLs; sitemap/canonical/hreflang/redirect/indexing audit before changes; historical data/storage remain7 | E140; E122; E98; L1 requirement10; DTR-32 | 2026-10-29 owner priority updated; no Google/redirect action | Run bounded SEO/redirect audit as priority5, retaining original privacy/mapping acceptance |
-| MIG-05 | Historical import safety and guarded acceptance | P0 | DEPLOYED | Exact3c9f5764 approval consumed;41 durable batches/completion and independent verification PASS | Fresh encrypted execution recovery/full readback; every immutable record and140 original projections preserved; no Auth/current-commerce/provider/notification writes; one scoped Caddy signal/0 app restart | E37; E36; seven operator tests | 2026-10-25 | Never rerun consumed apply/check expecting empty history; retain receipts and complete hosted ordinary-owner acceptance |
+| MIG-01 | Source inventory and durable customer identity mappings | 1 — HISTORICAL MIGRATION NOW | DEPLOYED / FRESH READ-ONLY RECONCILIATION PASS | Source and final eligibility/import approved and executed once; actual Auth claims0 | 516 imported/513 conditionally eligible/3 held; one current verified match has no orders,512 later verified signups; zero Auth creation/hash import/automatic links/current edits | E37; E36; E30; E23 | 2026-10-25 | Preserve source/import receipts; verify explicit ordinary ownership without changing immutable flags E171: both exact-prefix full raw archives authenticated/recounted; primary518accounts=516customers+2admins. Current107 core exactly matches:516customers/591orders/6refunds/1789items/41receipts,0new core inserts/updates. Three source holds,513conditional flags,0claims; one current unverified legacy match withheld. No new Auth or password migration. Source cutoff beyond frozen snapshot unverified; do not union comparison or duplicate source namespace. |
+| MIG-02 | Historical customer profiles and saved addresses | 1 — HISTORICAL MIGRATION NOW | DEPLOYED / ADDRESS PROMOTION AND HOSTED ACCEPTANCE PENDING | All516 archived customer snapshots imported; verified explicit claim required for reads | Every approved historical snapshot/address preserved; all140 original projections/current profiles/credentials unchanged | E37; E36; E23 | 2026-10-25 | Existing eligible customer accepts archived profile/empty order view; hosted acceptance remains pending E171: archived street-bearing customer billing404/shipping105 and order billing591/shipping590 counted; all original address JSON preserved,2current saved addresses unchanged. Missing city/locale IDs held, no guesses/overwrite. Conservative owner/source/kind/all-fields dedup yields1440review candidates only; no merge or copy. Current verified match has no orders; real owner acceptance still unexercised. |
+| MIG-03 | Historical orders, customer order history and Woo metadata | CORE COMPLETE / OPTIONAL METADATA DEFERRED | CORE DEPLOYED / METADATA LOCAL QUALIFIED, NOT INSTALLED | Data/API/My Orders and three scoped routes live; claims0, hosted owned acceptance pending | 591 orders/6 refunds/1789 items/702 events reconciled exactly;459 orders/6 refunds eligible,1 held order/131 unlinked remain private; no live provider action | E37; E36; E35; E23 | 2026-10-25 | Accept hosted ordinary claim/list/detail/refresh with an eligible order-bearing customer after separately approved signup E171: fresh source107 record-for-record reconciliation PASS; source total/currency/status/date/item/refund facts preserved with zero proposed core updates. MIG-03-META-01: qualify private missing note/SKU/order-aggregate mapping locally;12checkout notes/8353order notes include8117private/other notes, not automatic customer content. Simple sums differ on205orders/coupon aggregates on5 (208unique source exceptions), keep original amounts; no retotal/financial action.32wallet records/6unlinked refund cases/114legacy webhook logs remain inert ancillary facts. Dedicated Dashboard history viewer absent; later UI scope, do not insert into live orders. No live approval/migration prepared. E172: MIG-03-META-01 local9b4107c READY, not installed;591financial/485archive-SKU/12private-note rows,1088total/22batches.11focused+11native PostgreSQL scenarios/full source-memory reconciliation/RLS/true concurrency/DDL rollback/bundle-hide pass;0core/current commerce changes.204of205source differences match zero-decimal rounding, one and5coupon cases deferred, no retotal.236missing SKUs/true order-time SKU/all8353comment logs remain deferred. Optional two-table/three-service-RPC SQL/data installation waits for demonstrated UI need, no version/approval or production connection. Next customer/Admin UI/UX review and staff-history-viewer decision; real hosted owner acceptance remains DTR-06 pending. |
+| MIG-04 | SEO, legacy redirects and Search Console | 2 — GOOGLE SEO / LEGACY REDIRECTS | MIG-04-B AND C DEPLOYED / RESIDUAL IDENTITIES AND METRICS OPEN | E140 after transactional emails; Google access unestablished | Preserve identities/URLs; sitemap/canonical/hreflang/redirect/indexing audit before changes; historical data/storage remain7 | E140; E122; E98; L1 requirement10; DTR-32 | 2026-10-29 owner priority updated; no Google/redirect action | Run bounded SEO/redirect audit as priority5, retaining original privacy/mapping acceptance E166: independent PDC tracking active/qualified; owner priority2 is NOW. Existing SEO implementation/Oct1 notes and deployed4d0bf6f routes reviewed, not rebuilt; historical deployment instructions are not current authority. Next bounded live origin/SSR canonical-hreflang/robots/sitemap and actual WooCommerce URL mapping audit. Google private access/metrics unestablished;0 indexing requests/redirect/production changes. E167: dated live/public archive audit complete for first-fix scope;484 sitemap200/359 unpublished404/2193 existing301+28 held503. Product-query soft404 hotfixd2714b8 ready on107,0 migration/Caddy/settings change; separate seal3b7dfe4d/expiry23:43:40UTC31Oct. Remaining numeric/renamed/category/shop/noindex/policy/footer links and Google private metrics OPEN. Read-only preparation only; next approve first packet, then hosted postflight and continue remaining MIG-04 before historical migration/UI. E168: first query hotfixf5b0/schema107 DEPLOYED; seal3b7dfe4d consumed complete.200 hosted301s/3583 asset hashes/original business data/normal MON PASS;1 restart/0 migration/settings/Caddy change. Next smallest identity-proven category/shop packet; numeric/renamed/policy/footer/Google metrics remain open. No external submission/provider write; history/UI after remaining SEO. E169: category/shop/link candidate1fd7ef6909869361/source7d989cd SEALED READY, UNAPPROVED on107.308 corrections/320 variants; no guessed identity or policy wording.105 focused/420 HTTP/306 browser/12 guards/typecheck/build/rollback/3698 assets and21:50:13UTC read-only hosted preflight PASS. Proposed one app restart,1100-byte Caddy insertion/same-PID reload and paired one-field MON hash; no migration/runtime/settings/provider action.28 holds classified (24 absent/four unpublished), numeric/three renamed/ambiguous aliases retained. Freshdd931679 expiry01:49:17UTC1Nov/start01:34:17UTC; next exact approval in category/shop review. No production change or approval attempt. OD-20261101-SEO-CATEGORY-01: after this release brief residual SEO review, then historical WooCommerce customer/order/address migration, then customer/Admin UI; do not block on Search Console/PDC shipment. E170: MIG-04-C deployed1fd7/schema107/source7d989cd;dd931679 consumed complete.320 hosted variants/308 corrections/82 canonicals/488 sitemap URLs/127 extra HTML assertions/28 preserved holds/3698 assets PASS. Contact/Refund EN/AR repaired without legal wording.1 app restart/1 same-PID Caddy reload/1 matching MON hash,0 migration/settings/business-row/provider change. Initial read-only monitor transport failure recovered on its next normal scan before first apply; all production mutation fences consumed once only. Next normal post-cutover MON00:00:03UTC1Nov: same5warnings/0critical/gaps2.148/150 projections unchanged; analytics-only growth. Residual28holds/numeric/three renamed/ambiguous identities/private Google metrics remain explicitly open, not blockers to read-only history migration. Next reuse preserved WooCommerce customer/order/address migration work, then UI; no import/email/backfill/deployment approval granted. All worktrees/deferred evidence retained. |
+| MIG-05 | Historical import safety and guarded acceptance | 1 — HISTORICAL MIGRATION NOW | DEPLOYED / CURRENT OFFLINE SAFETY PASS; HOSTED ACCEPTANCE PENDING | Exact3c9f5764 approval consumed;41 durable batches/completion and independent verification PASS | Fresh encrypted execution recovery/full readback; every immutable record and140 original projections preserved; no Auth/current-commerce/provider/notification writes; one scoped Caddy signal/0 app restart | E37; E36; seven operator tests | 2026-10-25 | Never rerun consumed apply/check expecting empty history; retain receipts and complete hosted ordinary-owner acceptance E171: four hosted function bodies match22fixture+3parser-tested code; private RLS/service-only RPC, zero history triggers/network functions,145base projections143unchanged plus five immutable history tables/41receipts unchanged. Only ordinary analytics grew. Current9accounts/8live orders/2saved addresses retained;17files/PIDs/commerce/Email/tracking/MON unchanged. Native107 restore/races and hosted real-owner claim/detail not executed; qualify any future metadata extension separately. No write/import/provider/email/archive execution or approval packet. E172: local supplement privacy/ownership/side-effect and withdrawal qualification passed against unchanged core reader; source-keyed immutable metadata only,131unlinked unchanged. No real owner claims or production writes, no metadata installation/approval. Hosted DTR-06 acceptance remains pending; optional metadata fields/unknown source causes do not block UI review. |
 
 ### G. Payment gateways
 
@@ -4219,13 +5024,14 @@ no automatic scheduling or unverified pickup API is introduced.
 | SHIP-01 | Modular companies, provider accounts and future carrier APIs | P1 | PLANNED | Separate A1 unit; preserve current account/jobs | Company/account revisions snapshot new jobs; old/uncertain jobs retain credentials/reference; no automatic reassignment | E10; REQ | 2026-10-25 | Design account binding without changing current PDC operations |
 | SHIP-02 | Official PDC city/governorate IDs and searchable selectors | P1 | BLOCKED | E62 offline382 cityIDs/27 govnames reconciled; gov/zone IDs absent, cache-only30 parents unknown; PDC paused | LOC-01 local96 selectors support Manual independently; no coverage/tariff/API/booking inference; existing maps/cache immutable | E62; E59; OD-20261026-LOC-01 | 2026-10-26 | Retain unknown IDs/status issues for later;96 needs separate approval, not silently added to95 |
 | SHIP-03 | Six-zone tariff verification and bounded draft import | LAST / FINAL-FIN | DEFERRED COMMERCIAL ACCEPTANCE / NOT A BOOKING BLOCKER | E140 owner accepts fees now; retain unverified dates/Product40/bases/rounding/suburbs evidence | Later exact merchant tariff/import/VAT/surcharge acceptance; fixed customer totals remain guarded now | E140; E09; real-cod-pdc-operations.md; DTR-16/35 | 2026-10-29 owner priority decision; no tariff/provider change | Review/import only in FINAL-FIN after operational/customer/migration work; no shipment hold |
-| SHIP-04 | Carrier cost, customer price, subsidy and rounding rules | LAST MERCHANT COSTS / CUSTOMER TOTAL SAFETY NOW | DEFERRED DETAILED COST/SUBSIDY ACCOUNTING | E140 customer delivery50+COD50 retained; merchant costs accepted for now | Preserve exact customer snapshots; cost/full-cost/subsidy/VAT/rounding enhancements later, no guessed expenses | E140; E10; REQ; DTR-16/35 | 2026-10-29 owner priority decision | FINAL-FIN after all operational phases; no merchant-fee prerequisite for shipping |
+| SHIP-04 | Carrier cost, customer price, subsidy and rounding rules | LAST MERCHANT COSTS / CUSTOMER TOTAL SAFETY NOW | DEFERRED DETAILED COST/SUBSIDY ACCOUNTING | E140 historical customer delivery50+COD50; E157 owner confirms current customer COD10 intentional; delivery50 retained and no fee change. Merchant costs accepted for now | Preserve exact customer snapshots; cost/full-cost/subsidy/VAT/rounding enhancements later, no guessed expenses | E140; E10; REQ; DTR-16/35 | 2026-10-29 owner priority decision | FINAL-FIN after all operational phases; no merchant-fee prerequisite for shipping |
 | SHIP-05 | Returning-customer free shipping and next-purchase promotion | P2 | PLANNED | Separate C2; owner eligibility/expiry/cancellation policy | Prior paid qualifying purchases; locked one-use grants; no double spend, perpetual regrant or unverified imported eligibility | E10; REQ | 2026-10-25 | Choose unlimited-repeat versus one-time policy explicitly |
-| SHIP-06 | Private PDC PDF label templates and retrieval | P0 STANDARD LABEL / OPTIONAL LAYOUTS LATER | INSTALLED PATH / REAL AWB ACCEPTANCE PENDING | E140 one approved packed COD order and verified returned AWB;0 candidates now | Exact-reference AWB validation then private template1 PDF; no static/uncertain AWB attachment or rebooking on PDF failure | E140; E139; E03; E13; DTR-21/34 | 2026-10-29 source/retained native proof reviewed;0 provider calls | Qualify label with first separately approved real booking; optional5/6 layouts remain deferred |
-| SHIP-07 | Normal Dashboard dynamic booking and tracking acceptance | P0 FIRST — REAL COD BOOKING | INSTALLED / NO ACTIVE ELIGIBLE ORDER | E148 first order cancelled,0 job/dispatch/AWB, no booking authority | One eligible staff-approved/packed order, measured parcel and full final EGP balance before exact REF/AWB approval; no uncertain retry/pickup/Paid inference | E148; real-cod-pdc-operations.md; DTR-34 | 2026-10-30 read-only cancellation;0 PDC calls | No action on cancelled C140; prepare only after another eligible genuine order and staff evidence. Fees not prerequisites |
-| SHIP-08 | Date-filtered GetShipmentsStatus polling | 2 — BASIC TRACKING AFTER FIRST SHIPMENT | INSTALLED DATE-FILTERED PATH / GENERAL LIVE GATE PAUSED | Actual saved AWB+REF and separate narrowly authorized status scope; no global PDC opening | Bounded dated matching and truthful unknown states; polling never marks collection/Paid; existing source correction reused | E140; E03; server/utils/pdcLookups.js; DTR-20 | 2026-10-29 current gate/source reviewed; no provider poll | After a real AWB, qualify existing-AWB status action independently; no fee/accounting dependency |
-| SHIP-09 | Manual pickup and optional daily pickup policy | P0 HANDOVER / 2 BASIC FULFILLMENT | MANUAL PICKUP / NO VERIFIED OUTBOUND PICKUP API | E140 owner confirms SaveShipmentEx does NOT request pickup | Shipment/AWB/label separate from actual pickup; use established staff/PDC manual arrangement; no invented API/schedule/status | E140; OD-20261029-COD-OPS-FIRST-01; E03; DTR-24 | 2026-10-29 owner confirmation/source inspection;0 pickup requests | After verified AWB, arrange actual handover through established process; daily automation stays deferred |
-| SHIP-10 | PDC authenticated webhook mapping and provider cutover | 2 — BASIC TRACKING / CUTOVER SEPARATE | AUTHENTICATED WEBHOOK ACCEPTANCE PENDING | E140 actual genuine AWB/REF and verified mapping/time semantics; no booking dependency | Retain existing ingress/authentication and local history; provider registration/cutover remains independently approved | E140; E59; E04; DTR-20 | 2026-10-29 no webhook/provider cutover performed | Qualify authenticated tracking after first real shipment; unknown status97 never guessed |
+| SHIP-06 | Private PDC PDF labels | 1 — PDC operations | DEPLOYED / GENUINE PDF AND PRINTER ACCEPTANCE PENDING | E161 source4238e92/a98e465ae7611e73/schema106;05fca90d CONSUMED_COMPLETE; ExportPDF/leases/private VPS reused | Actual PDF/order/job/AWB/REF/hash/size, renewed staff authorization, private View/Download/Print; AWB-only retries never book | E160/E161; pdc-labels-review.md; DTR-21; original E156 retained | 2026-10-31 hosted3,365 assets/11 original data projections/CARD/COD/Email/next12:20 MON PASS;113 tests/226 browser assertions/21 guards retained | First genuine provider PDF/font/physical print/barcode acceptance under a real approved AWB remains deferred. Next bounded tracking/timelines/offline webhook, then SEO without waiting for orders |
+| SHIP-07 | Staff-controlled genuine CARD/COD booking | 1 — PDC operations | 106 STAFF WORKFLOW INSTALLED /0 ELIGIBLE GENUINE SHIPMENTS | Only ready paid/packed order is historical uncertain; all others cancelled | Preserve staff/packing/verified CARD/full COD/actual weight/one-dispatch rules; no synthetic order or replay | E156; pdc-operations-readiness.md; DTR-34 | 2026-10-31 E16112:18 read-only a98e/schema106;0 provider calls | E159 ce4142/schema106 deployed inactive;91cc consumed complete; future one genuine-order seal separate. No fee/accounting/pickup blocker; SEO follows independent readiness |
+| SHIP-13 | Measured per-order staff weight and CARD parity | 1 — FIRST SMALL RELEASE | 106 DEPLOYED INACTIVE / REAL PARCEL ACCEPTANCE PENDING | Source0631cbe972bf9e86ae9572c632e115da685f4e50; existing101/105 reused | No default/rounded weight, staff confirmation, immutable dispatch, verified CARD COD0/full saved COD; no global activation | E157; pdc-schema106-release-review.md;90 source tests/82 browser assertions/22 guards/rollback/typecheck/build/3,237 assets/backups/preflight | 2026-10-31 local only;0 production/provider writes | E159 ce4142/schema106 hosted postflight PASS;91cc consumed complete. Next labels/tracking/offline webhook then SEO; real booking requires separate one-order seal |
+| SHIP-08 | Bounded GetShipmentsStatus and stored timelines | 1 — PDC operations | ACTIVE / HOSTED EMPTY SCHEDULED POSTFLIGHT PASS | Deployed4d0bf6f/473703da9917ba21/schema107; descends from4238e92; existing API/history/mappings/private dispatch proof reused | Rolling shared quotas/leases/backoff/terminal-age stops; current owner-only EN/AR/RTL timelines; no customer provider requests or financial writes | E162; pdc-tracking-review.md; DTR-20; E156 retained | 2026-10-31 local145 tests/677 browser assertions/25 guards/144-projection rollback/typecheck/build/compiled archive/3,475 assets PASS;0 provider calls | E163:18490351 CONSUMED_COMPLETE;473703da9917ba21/schema107 installed, one migration/restart, hosted3,475 assets/17:25 MON PASS. Tracking gates/policy OFF, worker secret absent and no scheduler/provider call. Next separately scoped tracking activation/disable packet. Genuine AWB/provider acceptance deferred; webhook registration does not block polling or SEO E164: zero eligible AWBs; separate activation-only seal0f28db0b READY/UNAPPROVED, one prospective restart and zero-restart disable;47 tests/18 native assertions/451 browser/fresh hosted preflight PASS. After activation proceed directly to SEO without waiting for real shipments. E165:0f28db0b CONSUMED_STOP after one runtime restart, BEFORE policy/first batch/timer. Current473/schema107/PID126398/CARD/COD/Email/MON healthy;0 AWBs/provider requests. New16 guard checks/read-only hosted preflight PASS; zero-restart recovery sealfe7fad74 READY/UNAPPROVED. No extra install/key/Email/mon change; preserve original fences. NEXT separate recovery approval, then SEO directly. E166:fe7fad74 recovery CONSUMED_COMPLETE;0 additional restart/install/runtime change; first empty plus4 scheduled empty batches/next22:00:08 MON/CARD/COD/Email PASS.0 AWBs/provider requests/reservations; booking/webhooks OFF. Parent0f28 remains STOP. NEXT SEO/legacy redirects without waiting or PDC expansion. |
+| SHIP-09 | Owner-handled pickup / verified physical handover | OUT OF CURRENT DEVELOPMENT SCOPE | OWNER ARRANGEMENT ALREADY HANDLED | E156 owner: pickup is automatic outside this integration | No pickup-request API, schedule, button or invented status; physical handover only when verified | E156; OD-20261031-PDC-OPS-01; DTR-24; historical E140 retained | 2026-10-31 owner decision,0 pickup requests | No pickup development. Preserve actual verified handover evidence within ordinary shipment history |
+| SHIP-10 | Authenticated PDC tracking webhook | OPTIONAL LIVE CUTOVER / POLLING INDEPENDENT | OFFLINE SECURITY QUALIFIED / LIVE REGISTRATION AND CALLBACK ACCEPTANCE PENDING | Existing vendor X-Webhook-Secret contract/handler/ingress/shared atomic history reused; dedicated new runtime gate OFF | Strong independent encrypted secret, auth before bounded parsing, exact REF/AWB/proof, replay/dedup/chronology/poll conflicts; no invented HMAC or financial transition | E162; pdc-tracking-review.md; original vendor guide/E156 retained; DTR-20 | 2026-10-31 native/mock HTTP and shared ingestion PASS;0 provider requests or registration | Independent security qualification complete; live registration/account/authenticated callback requires separate evidence/approval and genuine AWB. Do not hold polling or SEO for it E163: guarded handler installed on107 but runtime gate OFF; no provider registration/callback action. |
 | SHIP-11 | PDC reverse shipments and returns | P1 | ON HOLD | Reverse type/account acceptance and after-sales scope | Verified reverse service, durable reference, private labels/status and authorized return flow; no automatic restock/refund | E17; pdc-shipping.md | 2026-10-25 | Resume only under separately approved reverse acceptance |
 | SHIP-12 | Historical HTTP500s and original uncertain dispatch reconciliation | P1 | BLOCKED | Original provider outcome unresolved; diagnostic success is separate | Preserve all private incidents/REF/AWB evidence; reconcile exact original reference without reset/rebooking or alias invention | E03; E08; REQ | 2026-10-25 | Review existing authoritative evidence; no new booking to test a theory |
 
@@ -4257,7 +5063,7 @@ uncertain shipment creation or attach an unrelated diagnostic/cancelled AWB.
 | CX-06 | Help Center, support, returns and warranty improvements | P2 | PLANNED | Existing ticket/article/claims contracts and owner policy | Preserve owned support/private evidence; review remaining accessibility, article helpfulness and communication needs | E17; E18; PROJECT_STATE.md Help Center entries; REQ | 2026-10-25 | Select one concrete improvement after Beta |
 | CX-07 | Original-browser controlled-checkout rejection (OD-20261027-BROWSER-STATE-01) | P1/B; public repro escalates A | DEFERRED FIELD UNCONFIRMED | DTR-33 original valid v3 cart/no pending; fresh Incognito genuine5 success; actual Vue/server-guard local3 PASS | Identify actual failed request/address/delivery/client state without another charge; preserve recovery/security | E88; DTR-33; docs/egp5-genuine-payment-verification.md | 2026-10-27 | Safe diagnostic follow-up; stop public purchasing on valid public reproduction |
 | CX-PAY-01 | Paymob Inquiry, Pay Again and payment-method changes | PROVIDER RESPONSE HOLD | TECHNICAL EMAIL SENT / HISTORY AND RETRY BLOCKED | E138 owner reports technical question email sent; no new investigation; E137 official inquiry latest-only, E135 consumed shape audit retained | No latest-only/absent-array finality inference; Pay Again/method changes off; same five alerts and callbacks preserved | E138; E137; paymob-paid-control-shape-review.md | 2026-10-29 13:19 local integrity/MON PASS;0 new Paymob probes | Await owner-shared Paymob response for complete history/finality/callback/refund/settlement contract; no repeated investigation |
-| CX-EMAIL-01 | Customer transactional order emails | CURRENT FEATURE / ACTIVE FUTURE EVENTS |105 ACTIVE /8824 CONSUMED_COMPLETE; first genuine delivery pending | E155 hosted empty worker/12 scheduled batches/next normal MON/CARD/COD/privacy PASS;0 additional restart | EN/AR future CARD received, verified live CARD paid, COD received; verified owner checks and uncertainty/dedup guards; no historic/test mail | E155; customer-email-activation-review.md; private consumed-complete; E148 private delivery | 2026-10-30 09:11:02 hosted postflight PASS; capture1/provider3/timer ON, queues0, MON five warnings/zero critical | Monitor first genuine qualifying event/delivery; do not manufacture an order or repeat private probe. Remaining notifications/AR mailbox tests stay deferred |
+| CX-EMAIL-01 | Customer transactional order emails | ACTIVE / BACKGROUND MONITORING |105 ACTIVE /8824 CONSUMED_COMPLETE; first genuine delivery pending | E155 hosted empty worker/12 scheduled batches/next normal MON/CARD/COD/privacy PASS;0 additional restart | EN/AR future CARD received, verified live CARD paid, COD received; verified owner checks and uncertainty/dedup guards; no historic/test mail | E155; customer-email-activation-review.md; private consumed-complete; E148 private delivery | 2026-10-30 09:11:02 hosted postflight PASS; capture1/provider3/timer ON, queues0, MON five warnings/zero critical | Monitor first genuine qualifying event/delivery; do not manufacture an order or repeat private probe. Remaining notifications/AR mailbox tests stay deferred |
 | CX-CART-01 | Homepage Add to Cart versus Options | DEPLOYED / OWNER REVIEW | DEPLOYED / HOSTED PASS / OWNER ACCEPTANCE PENDING | Existing stock/capability/cart/server guards; independent from Merchant Inquiry | Single configuration direct; genuine Options;37 Add/3preorder; real variant/double-click/reload/EN-AR-RTL desktop-mobile PASS; native concurrency remains deferred | E115; E114; E113; docs/homepage-direct-cart-receipt.md | 2026-10-28 deployed42a61d/schema98; owner review pending | Owner review; separate COD preparation next without inquiry dependency |
 | CX-COD-01 | PDC collects full final COD cash; staff-controlled booking | P0 FIRST — NEXT ELIGIBLE REAL ORDER | COD LIVE / FIRST ORDER CANCELLED / NO ACTIVE CANDIDATE | E148 C1403FCFC6 cancelled, amount_paid0, no packing/job/dispatch/AWB;0 active eligible COD rows | Do not pack/reopen/book cancelled order. Next genuine eligible order requires actual staff approval/packing/video/weight/final full EGP balance; commercial/ERP LAST | E148; real-cod-pdc-operations.md; E147; DTR-34 | 2026-10-30 03:36 read-only; no order/provider mutation | Await next genuine eligible order; then staff processing and one separate booking approval. No synthetic replacement or old-incident reuse |
 | CX-ADDR-01 | Complete saved checkout summary and safe selection | DEPLOYED / OWNER REVIEW | DEPLOYED a7fa8e8e/schema102 / RECOVERED TECHNICAL PASS / OWNER ACCEPTANCE PENDING | E12817c recovery complete; parentc86 consumed-stop retained | 145 protected projections/2804 public assets/private gates/finance0; next automatic MON WARNING3/critical0; no recovery restart | E128; docs/checkout-address-book-monitor-recovery-receipt.md | 2026-10-28 23:20 automatic postflight PASS | Owner review of summary/Edit/address selection; record acceptance separately; next LOC-01 |
@@ -4273,7 +5079,8 @@ acceptance. Do not revive already completed historical phases as new work.
 
 | ID | Feature / workstream | Priority | Status | Owner decision / dependency | Done / acceptance | Evidence | Verified | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| FUT-01 | Dashboard full authenticated/RBAC/browser-write-safety acceptance | P1 | BLOCKED | Secure active-role sessions and guarded test scope | Accept named roles/modules; functional owner smoke and public401/403 are insufficient; preserve unread evidence limits | E21; E12 | 2026-10-25 | Prepare smallest remaining authenticated acceptance scope |
+| UIUX-01 | Existing customer/Admin workflow review and scoped corrections | CURRENT OWNER PHASE / OWNER PRIORITIES REQUIRED | READ-ONLY REVIEW COMPLETE; NO IMPLEMENTATION | UX-REV-01/02 local order-dialog defects;03 transient cart state;04 modal keyboard;05 history dates/status | Reuse deployed Products/Orders/Account components; no metadata installation needed for basic viewer or fixes; hosted acceptance remains separate | E173; ui-ux-review-20261101.md | 2026-11-01 | Owner selects first scope; recommend minimal order-dialog state isolation. No release approval prepared. |
+| FUT-01 | Dashboard full authenticated/RBAC/browser-write-safety acceptance | P1 | BLOCKED | Secure active-role sessions and guarded test scope | Accept named roles/modules; functional owner smoke and public401/403 are insufficient; preserve unread evidence limits | E21; E12 | 2026-10-25 | Prepare smallest remaining authenticated acceptance scope E172 owner direction: customer/Admin UI/UX REVIEW is next after the bounded local metadata qualification; include whether staff need a dedicated permission-scoped historical-order viewer. No UI implementation, authenticated production write or full RBAC acceptance implied. Preserve current design/EN-AR/RTL/responsiveness and all old acceptance limits. |
 | FUT-02 | Premium PDP/Footer owner acceptance | P2 | PLANNED | Secure owner browser and saved theme/content settings | Hosted persistence/favorites/sharing/package content accepted; no fabricated content or replacement layout | E16 | 2026-10-25 | Complete remaining owner cases without redesign |
 | FUT-03 | QR/serialized inventory and packing extensions | P2 | PLANNED | Actual unit custody/ownership and scan authorization | Preserve current QR registry; validate real scans, retries and packing coverage; no invented ownership from aggregate stock/warranty claims | E13; E17; E20; REQ | 2026-10-25 | Inventory specific outstanding QR requirements before implementation |
 | FUT-04 | Analytics, finance and reporting enhancements | P2 | PLANNED | Owner-selected metrics; exact financial source ownership | Reconciled transactions/shipping subsidies/COD/returns; authorized aggregate reporting, no fabricated wallet/ledger history | E20; cod-collections.md; REQ | 2026-10-25 | Define one report and its real data contract |
@@ -4316,7 +5123,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | PROD-06 | Dashboard Products grid/list preference | P2 | PLANNED | Post-Beta; reuse bounded Products/RBAC/bulk contracts | Both admin display modes retain editor/search/filter/sort/page/bulk/return continuity; responsive EN/AR/RTL/themes and bounded catalog performance | E38; L1 requirement2; PROD-02; E12 | 2026-10-25 | Reuse current listing data/controller; define preference/pagination continuity without storefront redesign |
 | CHAT-01 | Live Chat isolation/performance audit and private VPS files | P1 | PLANNED | Post-Beta; legacy Supabase byte adapter must be reconciled before chat activation | Reliable conversations/reconnect/unreads/notifications/mobile; authorized bounded private VPS uploads/downloads/retention, no Supabase file bytes or storefront slowdown | E38; L1 requirement3; FUT-09 | 2026-10-25 | Audit existing chat/attachment contracts offline first; qualify isolated actors and bounded resources before separate activation |
 | DOC-01 | Documents workspace/sidebar and cached private storage usage | P2 | PLANNED | Post-Beta; layout/access/accounting and legacy storage-provider scope review | Main area used effectively; desktop main sidebar expanded by default/manual collapse; real cached private-byte total/last-updated timestamp, no recursive page-load scan | E38; L1 requirement4; ORDER-02; PROD-03 | 2026-10-25 | Define sidebar state and authorized accounting roots/worker; inspect provider gap without migration or recursive scans |
-| ORDER-06 | Actual package KG at packing/confirmation and PDC binding | P1 | PLANNED | Post-Beta enhancement; provider weight precision/limits and order/package authority; ORDER-01/02 | Positive precise actual KG persisted on correct package and snapshotted into explicit authorized booking; no checkout shipment/pickup or invented actual weight | E38; L1 requirement5; SHIP-07 | 2026-10-25 | Review existing default-weight path and define actual-weight save/booking contract with focused unit/retry tests |
+| ORDER-06 | Actual package KG at packing/confirmation and PDC binding | 1 — measured staff booking | 106 DEPLOYED / REAL STAFF PARCEL ACCEPTANCE PENDING | Post-Beta enhancement; provider weight precision/limits and order/package authority; ORDER-01/02 | Positive precise actual KG persisted on correct package and snapshotted into explicit authorized booking; no checkout shipment/pickup or invented actual weight | E38; L1 requirement5; SHIP-07 | 2026-10-25 | E157/SHIP-13 measured weight source063 qualified; E159 source063/ce4142/schema106 deployed;91cc consumed complete. Actual staff parcel measurement and genuine provider acceptance remain separate |
 | DASH-01 | Settings opens Store Settings without nested sidebar menus | P2 | PLANNED | Post-Beta navigation-only; preserve settings permissions/pages/direct routes | One direct Settings entry; all configuration still reachable within existing settings surfaces; EN/AR/RTL/mobile/active-state access intact | E38; L1 requirement6; E20 | 2026-10-25 | Map current navigation/settings keys and propose compact direct entry; delete no settings feature |
 | DASH-02 | Overview Store Activity and separate Live on Store tile | P2 | PLANNED | Post-Beta; existing CustomerExperience/Overview data and permissions | Reused Store Activity on Overview plus small distinct live tile; accurate timestamped values, responsive themes/locales, bounded requests/subscriptions | E38; L1 requirement7; FUT-04 | 2026-10-25 | Reuse existing source/component contracts and set refresh/query budget; no invented live counts |
 | ERP-01 | Daftara API connectivity, mappings and full data audit | LAST / FINAL-FIN | DEFERRED / ORIGINAL EVIDENCE PRESERVED | E140 ERP/Daftra accounting integration last, not shipment eligibility | Retain original read/write capability/mapping/pagination/idempotency/recovery scope and approval boundaries; existing ownership remains enforced | E140; E38; L1 requirement8; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no provider audit | Resume scoped read-only audit in FINAL-FIN after migration/storage; no booking dependency |
@@ -4635,7 +5442,17 @@ notice polish, PDC tracking and scheduler automation are deferred. Accepted Auth
 cart isolation, payment/callback and packing results are retained. Existing data,
 provider incident and callback authority are preserved; no shipment is automatic.
 
-### N. Current next action — E155
+### N. Current next action — E156
+
+Prepare and seal the smallest105→106 measured staff booking/CARD parity release.
+The local patch is qualified; no deployment approval/seal exists yet. Preserve
+active CARD/COD/Email/MON, all orders/assets and original emergency fences/budgets;
+keep automatic PDC/global shipping OFF. No eligible genuine shipment exists.
+Then finish label View/Print/PDF-reference controls and bounded tracking-only polling
+without PDC contact. Pickup integration is excluded. SEO/redirects follows PDC,
+then historical migration, UI, provider-qualified Paymob; financial/ERP LAST.
+
+### Historical E155 next action — Email monitoring continues in background
 
 Monitor the first genuine qualifying Email event, verified owner recipient and
 actual provider/mailbox delivery. Future CARD-received/verified-CARD-paid/COD-received

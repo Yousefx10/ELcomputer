@@ -1,3 +1,5 @@
+> **E156,31October2026:** pickup is already handled automatically outside this integration. No pickup-request/scheduling/button development; only verified physical handover. PDC operations → SEO → historical migration → UI → provider-qualified Paymob → LAST settlement/ERP. Live1e/schema105/CARD/COD/Email/MON preserved,0 eligible new shipments. [Current readiness and local106 booking fix](pdc-operations-readiness.md). Labels/View/Print and scheduled tracking still need work; webhook contract is documented, live cutover separate. No provider call or deployment. Historical evidence below is retained.
+
 # PDC status and label references — offline, no activation
 
 2026-10-26. Original workbooks are unchanged; file hashes are in
