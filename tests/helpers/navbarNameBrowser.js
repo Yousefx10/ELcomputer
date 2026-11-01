@@ -16,7 +16,7 @@ export function setup(fixture,server=false){
  useNuxtApp:()=>({vueApp:app}),useSupabaseSession:()=>session,useSupabaseUser:()=>claims,useSupabaseClient:()=>supabase,
  useState:(key,initial)=>{if(!state.has(key))state.set(key,ref(initial()));return state.get(key)},
  useCategoryLocale:()=>({categoryName:row=>row.name}),useUiLocale:()=>({intlLocale:ref(fixture.locale==='ar'?'ar-EG':'en-EG'),uiLabel:value=>value}),useUiNavigation:()=>({uiNavigateTo:path=>actions.push(path)}),
- useUiRoute:()=>({path:'/',fullPath:'/',query:{}}),useI18n:()=>({t:translate,locale:ref(fixture.locale)}),useCart:()=>({itemCount:ref(0),subtotal:ref(0),loadCart:()=>{}}),
+ useUiRoute:()=>({path:'/',fullPath:'/',query:{}}),useI18n:()=>({t:translate,locale:ref(fixture.locale)}),useCart:()=>({itemCount:ref(0),subtotal:ref(0),isReady:ref(true),loadCart:()=>{}}),
  useSiteContent:()=>({data:ref({settings:{site_name:'Synthetic store'},headerLinks:[{id:'fixture-departments',link_type:'categories-dropdown'}],navbarCategories:[],customPages:[]})}),useAccountAppearance:()=>({data:ref({account_dashboard_style:'modern'})})})
  // Nuxt returns the same app object to every consumer.
  const nuxt={};globalThis.useNuxtApp=()=>nuxt

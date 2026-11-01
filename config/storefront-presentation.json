@@ -1,0 +1,44 @@
+{
+  "homepage": {
+    "en": {
+      "title": "PC accessories and gaming gear",
+      "description": "Shop keyboards, mice, headsets and PC accessories at {store}. Browse products and manage your orders online."
+    },
+    "ar": {
+      "title": "ملحقات الكمبيوتر والألعاب",
+      "description": "تسوق لوحات المفاتيح والماوس وسماعات الرأس وملحقات الكمبيوتر لدى {store}. تصفح المنتجات وتابع طلباتك عبر الموقع."
+    }
+  },
+  "mobileHeroes": [
+    {
+      "image": "/uploads/settings/hero-banners/1792500018709-4037d0bdfdb101a93e755b06fa4abe33.jpg",
+      "link": "https://discord.com/invite/wqhynJvAeU",
+      "artSide": "left",
+      "artWidthPercent": 45,
+      "en": {
+        "title": "Join Discord. Get EGP50 off your order.",
+        "body": "Find the coupon in the chat."
+      },
+      "ar": {
+        "title": "انضم إلى ديسكورد واحصل على خصم 50 جنيهًا على طلبك.",
+        "body": "ستجد الكوبون في المحادثة."
+      },
+      "artVerticalPercent": 30
+    },
+    {
+      "image": "/uploads/settings/hero-banners/1793298351666-44542614146897ddf04387bec2b8a52f.png",
+      "link": "",
+      "artSide": "right",
+      "artWidthPercent": 42,
+      "en": {
+        "title": "Mice",
+        "body": "Shop wireless and wired mice. Choose Bluetooth, performance, ergonomic, business, EDU, travel, compact and WFH options."
+      },
+      "ar": {
+        "title": "الماوس",
+        "body": "تسوق الماوس السلكي واللاسلكي. خيارات بلوتوث وأداء وتصميم مريح، للعمل والتعليم والسفر والاستخدام المنزلي."
+      },
+      "artVerticalPercent": 50
+    }
+  ]
+}

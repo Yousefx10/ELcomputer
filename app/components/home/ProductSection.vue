@@ -29,6 +29,11 @@ const slider = ref(null)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 let resizeObserver
+let resizeFrame
+const queueScrollState = () => {
+  cancelAnimationFrame(resizeFrame)
+  resizeFrame = requestAnimationFrame(updateScrollState)
+}
 const updateScrollState = () => {
   if (!slider.value) return
   canScrollLeft.value = Math.abs(slider.value.scrollLeft) > 2
@@ -43,8 +48,9 @@ const scroll = (direction) => {
 watch(() => props.products, () => nextTick(updateScrollState))
 onMounted(() => {
   updateScrollState()
-  resizeObserver = new ResizeObserver(updateScrollState)
+  // Update controls after resize delivery; WebKit otherwise reports a resize loop.
+  resizeObserver = new ResizeObserver(queueScrollState)
   if (slider.value) resizeObserver.observe(slider.value)
 })
-onBeforeUnmount(() => resizeObserver?.disconnect())
+onBeforeUnmount(() => { resizeObserver?.disconnect(); cancelAnimationFrame(resizeFrame) })
 </script>

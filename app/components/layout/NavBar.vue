@@ -1,5 +1,5 @@
 <template>
-  <header ref="header" class="store-header" @keydown.esc="closeDepartments(true)">
+  <header ref="header" class="store-header" data-nosnippet @keydown.esc="closeDepartments(true)">
     <div class="store-container store-header-main">
       <NuxtLinkLocale to="/" class="store-logo" :class="{ 'store-logo-default': siteLogoUrl === '/images/dashboard-logo.png' }" :aria-label="$t('common.valueHome', { value0: (siteName) })">
         <BrandLogo :settings="siteContent?.settings" :alt="siteName" />
@@ -16,10 +16,10 @@
           <Icon name="lucide:user-round" size="25" />
           <span class="store-action-copy"><small>{{ customerUser ? $t('common.welcomeBack') : $t('common.helloSignIn') }}</small><strong :class="{ 'store-customer-name': customerUser, 'store-customer-name-pending': customerUser && !profileReady }"><bdi>{{ accountName }}</bdi></strong></span>
         </NuxtLinkLocale>
-        <NuxtLinkLocale to="/cart" class="store-header-action store-cart-action" :aria-label="$t('common.cartValueItems', { value0: (itemCount) })">
+        <NuxtLinkLocale to="/cart" class="store-header-action store-cart-action" :aria-label="hydrated && cartReady ? $t('common.cartValueItems', { value0: (itemCount) }) : $t('common.cart')">
           <span class="store-cart-icon">
             <Icon name="lucide:shopping-cart" size="27" />
-            <span class="store-cart-count">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+            <span v-if="hydrated && cartReady" class="store-cart-count">{{ itemCount > 99 ? '99+' : itemCount }}</span>
           </span>
           <span class="store-action-copy"><small>{{ $t('common.myCart') }}</small><strong>{{ formattedSubtotal }} <span class="store-cart-currency">EGP</span></strong></span>
         </NuxtLinkLocale>
@@ -35,7 +35,7 @@
             <Icon :name="departmentsOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="16" />
           </button>
         </div>
-        <div class="store-nav-scroll no-scrollbar">
+        <div ref="categoryRail" class="store-nav-scroll" tabindex="0" :aria-label="$t('common.browseCategories')">
           <NuxtLinkLocale to="/search" class="store-nav-link store-nav-link-bold" :class="{ 'store-nav-link-active': isShopAllActive }" :aria-current="isShopAllActive ? 'page' : false">{{ $t('common.shopAll') }}</NuxtLinkLocale>
           <NuxtLinkLocale :to="{ path: '/search', query: { sort: 'latest' } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.sort === 'latest' }" :aria-current="route.path === '/search' && route.query.sort === 'latest' ? 'page' : false">{{ $t('common.newArrivals') }}</NuxtLinkLocale>
           <NuxtLinkLocale v-for="category in headerCategories.slice(0, 5)" :key="category.id" :to="{ path: '/search', query: { category: category.slug } }" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === '/search' && route.query.category === category.slug }" :aria-current="route.path === '/search' && route.query.category === category.slug ? 'page' : false">
@@ -48,6 +48,7 @@
           <NuxtLinkLocale v-for="page in customPages" :key="page.id" :to="`/${page.path}`" class="store-nav-link" :class="{ 'store-nav-link-active': route.path === `/${page.path}` }" :aria-current="route.path === `/${page.path}` ? 'page' : false">{{ page.title }}</NuxtLinkLocale>
         </div>
 
+        <button type="button" class="store-nav-more" :aria-label="$t('common.moreCategories')" @click="scrollCategories"><Icon name="lucide:chevron-right" size="18" class="directional-icon" /></button>
         <div v-if="departmentsOpen" id="store-departments" class="store-departments-panel">
           <div class="store-departments-heading"><strong>{{ $t('common.shopByDepartment') }}</strong><button type="button" :aria-label="$t('common.closeDepartments')" @click="closeDepartments(true)"><Icon name="lucide:x" size="20" /></button></div>
           <NuxtLinkLocale to="/search" class="store-department-item" @click="closeDepartments()"><Icon name="lucide:layout-grid" size="20" /><span>{{ $t('common.allProducts') }}</span><Icon name="lucide:arrow-right" size="17" class="directional-icon" /></NuxtLinkLocale>
@@ -76,10 +77,15 @@ const { profile, ready: profileReady } = useCustomerDisplayProfile()
 const { t } = useI18n()
 const accountName = computed(() => customerUser.value && profileReady.value ? customerDisplayName(profile.value, customerUser.value, t('common.account')) : t('common.account'))
 const { data: siteContent } = await useSiteContent()
-const { itemCount, subtotal, loadCart } = useCart()
+const { itemCount, subtotal, loadCart, isReady: cartReady } = useCart()
 
 const header = ref(null)
 const departmentButton = ref(null)
+const categoryRail = ref(null)
+const scrollCategories = () => {
+  const rail = categoryRail.value
+  if (rail) rail.scrollBy({ left: rail.clientWidth * .8 * (getComputedStyle(rail).direction === 'rtl' ? -1 : 1), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+}
 const departmentsOpen = ref(false)
 const isShopAllActive = computed(() => route.path === '/search' && !Object.keys(route.query).length)
 const siteName = computed(() => siteContent.value?.settings?.site_name || 'Store')
@@ -87,7 +93,7 @@ const siteLogoUrl = computed(() => getStoreImageUrl(siteContent.value?.settings?
 const headerCategories = computed(() => siteContent.value?.navbarCategories || [])
 const customerAccountPath = computed(() => customerUser.value ? '/account' : '/login')
 const ordersPath = computed(() => customerUser.value ? '/account/orders' : { path: '/login', query: { redirect: '/account/orders' } })
-const formattedSubtotal = computed(() => new Intl.NumberFormat(intlLocale.value, { maximumFractionDigits: 2 }).format(subtotal.value))
+const formattedSubtotal = computed(() => hydrated.value && cartReady.value ? new Intl.NumberFormat(intlLocale.value, { maximumFractionDigits: 2 }).format(subtotal.value) : '—')
 const departmentsEnabled = computed(() => (siteContent.value?.headerLinks || []).some((link) => link.link_type === 'categories-dropdown'))
 const extraHeaderLinks = computed(() => (siteContent.value?.headerLinks || []).filter((link) => link.link_type !== 'categories-dropdown' && link.default_key !== 'home'))
 const customPages = computed(() => siteContent.value?.customPages || [])

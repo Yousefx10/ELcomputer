@@ -1912,7 +1912,8 @@
     "matchingCustomers": "عملاء مطابقون",
     "live": "مباشرة",
     "reconnecting": "جارٍ إعادة الاتصال",
-    "other": "أخرى"
+    "other": "أخرى",
+    "moreCategories": "المزيد من الأقسام"
   },
   "dashboard": {
     "commerce": {
@@ -2974,7 +2975,8 @@
     "soldAndShippedByElcomputer": "يباع ويُشحن بواسطة ELcomputer",
     "stockIsCheckedAgainWhenYouConfirm": "يُتحقق من المخزون مجددًا عند التأكيد.",
     "subtotalValueValue": "المجموع الفرعي ({value0} {value1})",
-    "yourDeliveryAddressIsConfirmedAtCheckout": "يُؤكّد عنوان التوصيل عند إتمام الشراء."
+    "yourDeliveryAddressIsConfirmedAtCheckout": "يُؤكّد عنوان التوصيل عند إتمام الشراء.",
+    "restoring": "جارٍ استعادة سلتك…"
   },
   "checkout": {
     "11DigitsStartingWith01": "11 رقمًا تبدأ بـ 01.",
@@ -5735,5 +5737,19 @@
     "loading": "جارٍ تجهيز البوليصة…",
     "unavailable": "البوليصة غير متاحة. احتفظ بالشحنة الحالية.",
     "page": "بوليصة الشحن، الصفحة {number}"
+  },
+  "historicalOrders": {
+    "status": {
+      "pending": "بانتظار الدفع",
+      "processing": "قيد التجهيز",
+      "on-hold": "قيد الانتظار",
+      "completed": "مكتمل",
+      "cancelled": "ملغى",
+      "refunded": "مسترد",
+      "failed": "فشل",
+      "checkout-draft": "مسودة طلب",
+      "unknown": "حالة مسجلة أخرى"
+    },
+    "dateUnavailable": "التاريخ غير متوفر"
   }
 }

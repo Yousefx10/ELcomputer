@@ -2,11 +2,12 @@
   <div class="min-h-[60vh] bg-slate-50 py-7 sm:py-10">
     <div class="store-container">
       <header class="flex flex-wrap items-end justify-between gap-4">
-        <div><p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">{{ $t('common.yourCart') }}</p><h1 class="mt-2 text-3xl font-bold text-slate-950 sm:text-4xl">{{ $t('common.cart') }} <span class="text-xl font-medium text-slate-600">({{ itemCount }} {{ itemCount === 1 ? $t('common.item') : $t('common.items') }})</span></h1></div>
-        <NuxtLinkLocale v-if="!isEmpty" to="/search" class="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50">{{ $t('common.continueShopping') }}</NuxtLinkLocale>
+        <div><p class="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">{{ $t('common.yourCart') }}</p><h1 class="mt-2 text-3xl font-bold text-slate-950 sm:text-4xl">{{ $t('common.cart') }} <span v-if="cartRestored" class="text-xl font-medium text-slate-600">({{ itemCount }} {{ itemCount === 1 ? $t('common.item') : $t('common.items') }})</span></h1></div>
+        <NuxtLinkLocale v-if="cartRestored && !isEmpty" to="/search" class="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50">{{ $t('common.continueShopping') }}</NuxtLinkLocale>
       </header>
 
-      <div v-if="isEmpty" class="mt-6 rounded-3xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
+      <div v-if="!cartRestored" role="status" aria-live="polite" class="mt-6 rounded-2xl bg-white p-8 text-center text-sm text-slate-600">{{ $t('cart.restoring') }}</div>
+      <div v-else-if="isEmpty" class="mt-6 rounded-3xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
         <span class="mx-auto grid size-14 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon name="lucide:shopping-cart" size="25" aria-hidden="true" /></span>
         <p class="mt-4 text-lg font-semibold text-slate-900">{{ $t('common.yourCartIsEmpty') }}</p><p class="mt-2 text-sm text-slate-600">{{ $t('cart.addProductsFromTheStoreToStartYourOrder') }}</p>
         <NuxtLinkLocale to="/search" class="mt-6 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">{{ $t('common.startShopping') }}</NuxtLinkLocale>
@@ -75,7 +76,9 @@ const { intlLocale } = useUiLocale()
 
 import { specialOrderNotice, usesUnrecordedStockSales } from '~/utils/backorder'
 import { calculatePreorderAmounts, expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
-const { items, itemCount, subtotal, isEmpty, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
+const { items, itemCount, subtotal, isEmpty, isReady: cartReady, incrementItem, decrementItem, removeItem, clearCart, loadCart } = useCart()
+const cartMounted = ref(false)
+const cartRestored = computed(() => cartMounted.value && cartReady.value)
 const { scope: purchaseScope } = usePurchaseAccess()
 const supabase = useSupabaseClient()
 const { data: siteContent } = useSiteContent()
@@ -157,6 +160,7 @@ const cartRecommendationKey = computed(() => items.value
 
 onMounted(() => {
   loadCart()
+  cartMounted.value = true
   loadRecommendations()
 })
 watch(cartRecommendationKey, loadRecommendations)

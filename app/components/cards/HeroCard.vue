@@ -1,7 +1,11 @@
 <template>
-  <section v-if="heroEnabled && currentBanner" class="store-hero" :aria-label="$t('common.storeHighlights')" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
+  <section v-if="heroEnabled && currentBanner" class="store-hero" :class="{ 'store-hero-has-mobile': mobileCopy }" :aria-label="$t('common.storeHighlights')" aria-roledescription="carousel" @mouseenter="hoverPaused = true" @mouseleave="hoverPaused = false" @focusin="focusPaused = true" @focusout="onFocusOut">
     <component :is="currentBannerComponent" v-if="currentBanner" v-bind="currentBannerAttributes" class="store-hero-image-link">
       <img class="store-hero-image" :alt="currentBanner.alt_text || $t('common.exploreTheLatestAt') + ' ' + siteName" :src="currentBannerImageUrl" fetchpriority="high" />
+      <div v-if="mobileCopy" class="store-hero-mobile">
+        <div class="store-hero-mobile-art" aria-hidden="true" :style="{ backgroundImage: `url(${JSON.stringify(currentBannerImageUrl)})`, backgroundPosition: `${mobileCopy.artSide} ${mobileCopy.artVerticalPercent}%`, backgroundSize: `${10000 / mobileCopy.artWidthPercent}% auto` }" />
+        <div class="store-hero-mobile-copy"><p class="store-hero-mobile-title">{{ mobileCopy.title }}</p><p>{{ mobileCopy.body }}</p></div>
+      </div>
     </component>
     <div v-if="heroBanners.length > 1" class="store-hero-controls">
       <button type="button" :aria-label="$t('common.previousBanner')" @click="moveBanner(-1)"><Icon name="lucide:chevron-left" size="17" class="directional-icon" /></button>
@@ -14,6 +18,8 @@
 
 <script setup>
 import { getConfiguredStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '~/utils/storefront'
+import { mobileHeroPresentation } from '~/utils/storePresentation'
+const { locale } = useI18n()
 const { data: siteContent } = await useSiteContent()
 const currentBannerIndex = ref(0)
 const paused = ref(false)
@@ -28,6 +34,7 @@ const heroBanners = computed(() => heroEnabled.value
   : [])
 const rotationSeconds = computed(() => Math.max(1, Number(siteContent.value?.settings?.hero_rotation_seconds || 5)))
 const currentBanner = computed(() => heroBanners.value[currentBannerIndex.value] || null)
+const mobileCopy = computed(() => mobileHeroPresentation(currentBanner.value, locale.value))
 const currentBannerImageUrl = computed(() => getConfiguredStoreImageUrl(currentBanner.value?.image_url))
 const currentBannerLinkUrl = computed(() => getStoreLinkUrl(currentBanner.value?.link_url))
 const currentBannerExternal = computed(() => isExternalStoreLink(currentBannerLinkUrl.value))

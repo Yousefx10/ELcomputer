@@ -32,31 +32,31 @@ const reorder = async () => {
 </script>
 
 <template>
-  <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+  <article data-order-card class="min-w-0 w-full max-w-full rounded-2xl border border-slate-200 bg-white p-4 [overflow-wrap:anywhere] sm:p-5">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
         <h2 class="break-all text-base font-bold text-slate-900">{{ order.order_number || $t('common.orderValueVariant2', { value0: (order.id.slice(0, 8)) }) }}</h2>
         <p class="mt-1 text-xs text-slate-500">{{ formatAccountDate(order.created_at) }} · {{ order.itemCount || 0 }} {{ order.itemCount === 1 ? $t('common.item') : $t('common.items') }}</p>
       </div>
-      <p class="whitespace-nowrap text-base font-bold text-slate-900">{{ formatAccountMoney(order.total_amount, order.currency) }}</p>
+      <p class="max-w-full break-words text-base font-bold text-slate-900">{{ formatAccountMoney(order.total_amount, order.currency) }}</p>
     </div>
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
-      <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ $uiLabel(formatCustomerOrderStatus(order.status, order.payment_method)) }}</span>
+      <span class="max-w-full break-words rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ $uiLabel(formatCustomerOrderStatus(order.status, order.payment_method)) }}</span>
       <span v-if="!compact && order.payment_method !== 'card' && (order.payment_method !== 'cash' || order.is_preorder) && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ $uiLabel(paymentStatusLabel(order.payment_status)) }}</span>
       <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ $uiLabel(paymentProofStatusLabel(order.payment_proof_status)) }}</span>
     </div>
     <PaymentCodStatus v-if="order.payment_method === 'cash' && !order.is_preorder" :order="order" />
     <PaymentOrderStatus v-if="order.payment_method === 'card' && !order.is_preorder" :order="order" :actions="false" />
     <p v-if="order.is_preorder" class="mt-2 text-xs text-slate-600">{{ $t('account.OrderCard.requiredInitialPaymentValueVerifiedPaidValueBalanceValue', { value0: (formatAccountMoney(order.initial_amount_due, order.currency)), value1: (formatAccountMoney(order.amount_paid, order.currency)), value2: (formatAccountMoney(Number(order.total_amount) - Number(order.amount_paid), order.currency)) }) }}</p>
-    <div v-if="order.items?.length" class="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
-      <div class="flex shrink-0 -space-x-2">
+    <div v-if="order.items?.length" class="mt-4 flex min-w-0 items-start gap-3 border-t border-slate-100 pt-4">
+      <div class="flex shrink-0 -space-x-2 rtl:space-x-reverse">
         <div v-for="item in order.items.slice(0, 3)" :key="item.id" class="flex size-11 items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-slate-100 text-slate-400">
           <img v-if="getConfiguredStoreImageUrl(item.image_url)" :src="getConfiguredStoreImageUrl(item.image_url)" :alt="item.product_title" class="size-full object-cover" loading="lazy" />
           <Icon v-else name="lucide:package" size="18" aria-hidden="true" />
         </div>
       </div>
-      <p class="min-w-0 flex-1 truncate text-sm text-slate-600">{{ order.items.map(item => item.product_title).join(', ') }}</p>
+      <p class="min-w-0 flex-1 break-words [overflow-wrap:anywhere] text-sm text-slate-600">{{ order.items.map(item => item.product_title).join(', ') }}</p>
     </div>
     <p v-if="reorderMessage" class="mt-3 text-end text-xs text-slate-600" role="status">{{ $uiLabel(reorderMessage) }} <NuxtLinkLocale v-if="reorderMessage.includes('added')" to="/cart" class="font-semibold text-blue-700 hover:underline">{{ $t('common.viewCart') }}</NuxtLinkLocale></p>
     <div class="mt-4 flex flex-wrap justify-end gap-2">

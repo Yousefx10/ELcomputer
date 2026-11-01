@@ -18,6 +18,7 @@ const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
+  routeRules: Object.fromEntries(['/favicon.ico', '/favicon-16x16.png', '/favicon-32x32.png', '/favicon-48x48.png', '/favicon-96x96.png', '/apple-touch-icon.png', '/android-chrome-192x192.png', '/android-chrome-512x512.png', '/site.webmanifest'].map(path => [path, { headers: { 'cache-control': 'public, max-age=86400' } }])),
   nitro: {
     publicAssets: [{dir:join(pdfRoot,'standard_fonts'),baseURL:`/_nuxt/pdfjs-${pdfVersion}/standard_fonts`,maxAge:31536000}],
     externals: {

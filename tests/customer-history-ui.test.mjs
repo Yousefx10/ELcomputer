@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {readFile} from 'node:fs/promises'
 import {parse} from '@vue/compiler-sfc'
 import {ref,computed} from 'vue'
-const script=parse(await readFile('app/components/account/HistoricalOrders.vue','utf8')).descriptor.scriptSetup.content
+const script=parse(await readFile('app/components/account/HistoricalOrders.vue','utf8')).descriptor.scriptSetup.content.replace(/^import .*$/gm,'')
 const factory=new Function('deps',`const {useCustomerScope,useI18n,ref,computed,onMounted}=deps;${script};return {rows,profiles,load,connect,show,error,notice,copy,address};`)
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject}}
 function fixture(){

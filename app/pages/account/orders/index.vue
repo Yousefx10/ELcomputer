@@ -67,7 +67,7 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="space-y-5">
+  <div class="min-w-0 max-w-full space-y-5">
     <header><p class="text-sm font-semibold text-blue-700">{{ $t('common.yourAccount') }}</p><h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $t('common.orders') }}</h1><p class="mt-1 text-sm text-slate-600">{{ $t('account.orders.seeWhatYouOrderedAndWhereItStands') }}</p></header>
     <nav class="flex gap-2 overflow-x-auto pb-1" :aria-label="$t('common.filterOrders')">
       <NuxtLinkLocale v-for="item in accountOrderFilters" :key="item.value" :to="{ path: '/account/orders', query: item.value === 'all' ? {} : { filter: item.value } }" :aria-current="filter === item.value ? 'page' : undefined" class="inline-flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" :class="filter === item.value ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-blue-50'">{{ $uiLabel(item.label) }}</NuxtLinkLocale>

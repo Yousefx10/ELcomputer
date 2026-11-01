@@ -1,4 +1,5 @@
 <script setup>
+import { historicalStatusKey, historicalDate } from '~/utils/historicalOrderDisplay'
 const scope=useCustomerScope()
 const {locale}=useI18n()
 const labels={
@@ -48,9 +49,10 @@ onMounted(load)
   </details>
   <p v-if="loading" role="status" class="text-sm">{{ copy.loading }}</p>
   <p v-else-if="!error&&!rows.length" class="text-sm text-slate-600 dark:text-slate-400">{{ copy.empty }}</p>
-  <article v-for="order in rows" :key="order.source_id+':'+order.legacy_id" class="space-y-2 rounded-lg border border-slate-200 p-3 text-sm dark:border-slate-700">
+  <article v-for="order in rows" :key="order.source_id+':'+order.legacy_id" class="min-w-0 space-y-2 rounded-lg border border-slate-200 p-3 text-sm [overflow-wrap:anywhere] dark:border-slate-700">
    <div class="flex flex-wrap items-center justify-between gap-2"><span>{{ order.kind==='shop_order_refund'?copy.refund:'#'+order.legacy_id }}</span><span dir="ltr">{{ order.total }} {{ order.currency }}</span></div>
-   <div class="flex flex-wrap items-center justify-between gap-2"><span>{{ copy.status }}: {{ order.status }}</span><button type="button" class="min-h-10 px-2 font-semibold text-blue-700 dark:text-blue-400" :aria-expanded="Boolean(details[order.source_id+':'+order.legacy_id])" @click="show(order)">{{ copy.details }}</button></div>
+   <p><time v-if="historicalDate(order.created_at, locale)" :datetime="order.created_at">{{ historicalDate(order.created_at, locale) }}</time><span v-else>{{ $t('historicalOrders.dateUnavailable') }}</span></p>
+   <div class="flex flex-wrap items-center justify-between gap-2"><span>{{ copy.status }}: {{ $t(historicalStatusKey(order.status)) }}<span v-if="historicalStatusKey(order.status).endsWith('.unknown') && order.status"> ({{ order.status }})</span></span><button type="button" class="min-h-10 px-2 font-semibold text-blue-700 dark:text-blue-400" :aria-expanded="Boolean(details[order.source_id+':'+order.legacy_id])" @click="show(order)">{{ copy.details }}</button></div>
    <div v-if="details[order.source_id+':'+order.legacy_id]" class="space-y-2 border-t border-slate-200 pt-2 dark:border-slate-700">
     <template v-for="detail in [details[order.source_id+':'+order.legacy_id]]" :key="order.legacy_id">
      <p v-if="detail.order.payment_title||detail.order.payment_method">{{ copy.payment }}: {{ detail.order.payment_title||detail.order.payment_method }}</p>

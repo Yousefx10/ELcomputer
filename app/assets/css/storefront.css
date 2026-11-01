@@ -359,3 +359,41 @@
   .storefront .store-search { height: 50px; }
   .storefront .store-nav-link { min-height: 44px; }
 }
+
+/* Owner-reviewed responsive content; desktop imagery retains its composition. */
+.storefront .store-home-intro { margin-block: 0 20px; max-width: 70ch; }
+.storefront .store-home-intro h1 { font-size: 22px; font-weight: 700; line-height: 1.3; }
+.storefront .store-home-intro p { margin-top: 6px; color: var(--store-muted); font-size: 14px; line-height: 1.6; }
+.storefront .store-hero-mobile { display: none; }
+.storefront .store-nav-scroll { scrollbar-width: thin; scrollbar-color: #8bafd8 transparent; }
+.storefront .store-nav-more { display: none; }
+@media (max-width: 700px) {
+  /* A non-sticky mobile header cannot cover focused account content. */
+  .storefront { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  .storefront .store-topbar { padding-top: env(safe-area-inset-top); }
+  .storefront footer { padding-bottom: env(safe-area-inset-bottom); }
+  .storefront .store-header { position: relative; }
+  .storefront .store-container { max-width: calc(100% - 24px); }
+  .storefront .store-header-main { min-width: 0; }
+  .storefront .store-header-actions { gap: 0; }
+  .storefront .store-header-action { min-width: 40px; }
+  .storefront .store-department-nav { flex-wrap: wrap; gap: 0; }
+  .storefront .store-department-trigger-wrap { flex-basis: 100%; border-inline-end: 0; padding-inline-end: 0; }
+  .storefront .store-nav-scroll { flex: 1; width: calc(100% - 40px); padding-block: 4px 8px; gap: 4px; }
+  .storefront .store-nav-more { display: grid; place-items: center; flex: 0 0 40px; min-height: 44px; border-inline-start: 1px solid #cad8ec; color: var(--store-navy); }
+  .storefront .store-nav-link { min-height: 40px; }
+  .storefront .store-discovery-links { min-width: 0; scrollbar-width: thin; }
+}
+@media (max-width: 639px) {
+  .storefront .store-hero { height: auto; }
+  .storefront .store-hero-image-link { height: auto; }
+  .storefront .store-hero-image { width: 100%; height: auto; object-fit: contain; }
+  .storefront .store-hero-has-mobile .store-hero-image { display: none; }
+  .storefront .store-hero-mobile { display: block; }
+  .storefront .store-hero-mobile-art { height: 128px; background-repeat: no-repeat; }
+  .storefront .store-hero-mobile-copy { padding: 18px; color: var(--store-navy); line-height: 1.6; overflow-wrap: anywhere; }
+  .storefront .store-hero-mobile-copy .store-hero-mobile-title { margin-bottom: 8px; font-size: 22px; font-weight: 750; line-height: 1.35; }
+  .storefront .store-hero-mobile-copy > p:last-child { font-size: 15px; }
+  .storefront .store-hero-controls { position: static; justify-content: center; border-radius: 0; padding: 7px; }
+  .storefront .store-hero-controls button { width: 40px; height: 40px; }
+}

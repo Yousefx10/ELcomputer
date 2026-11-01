@@ -1,9 +1,9 @@
 <template>
-  <footer v-if="isModern" class="store-footer-modern">
+  <footer v-if="isModern" class="store-footer-modern" data-nosnippet>
     <LayoutModernFooter :settings="settings" :links="footerLinks" />
   </footer>
 
-  <footer v-else class="store-footer">
+  <footer v-else class="store-footer" data-nosnippet>
     <div class="store-container">
       <div v-if="footerCtaTitle || footerCtaSubtitle || footerCtaButtonLabel" class="store-footer-cta">
         <div><h2>{{ footerCtaTitle }}</h2><p>{{ footerCtaSubtitle }}</p></div>

@@ -1912,7 +1912,8 @@
     "matchingCustomers": "matching customers",
     "live": "live",
     "reconnecting": "reconnecting",
-    "other": "Other"
+    "other": "Other",
+    "moreCategories": "More categories"
   },
   "dashboard": {
     "commerce": {
@@ -2974,7 +2975,8 @@
     "soldAndShippedByElcomputer": "Sold and shipped by ELcomputer",
     "stockIsCheckedAgainWhenYouConfirm": "Stock is checked again when you confirm.",
     "subtotalValueValue": "Subtotal ({value0} {value1})",
-    "yourDeliveryAddressIsConfirmedAtCheckout": "Your delivery address is confirmed at checkout."
+    "yourDeliveryAddressIsConfirmedAtCheckout": "Your delivery address is confirmed at checkout.",
+    "restoring": "Restoring your cart…"
   },
   "checkout": {
     "11DigitsStartingWith01": "11 digits, starting with 01.",
@@ -5735,5 +5737,19 @@
     "loading": "Preparing label…",
     "unavailable": "The label is unavailable. Keep the existing shipment.",
     "page": "Shipping label, page {number}"
+  },
+  "historicalOrders": {
+    "status": {
+      "pending": "Payment pending",
+      "processing": "Processing",
+      "on-hold": "On hold",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "failed": "Failed",
+      "checkout-draft": "Checkout draft",
+      "unknown": "Other recorded status"
+    },
+    "dateUnavailable": "Date unavailable"
   }
 }

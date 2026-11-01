@@ -9,7 +9,7 @@
       </div>
     </nav>
 
-    <h1 v-if="hasCustomHero || !heroEnabled" class="sr-only">{{ $t('home.valueStorefront', { value0: (siteContent?.settings?.site_name || 'Store') }) }}</h1>
+    <header class="store-home-intro"><h1>{{ homeCopy.title }}</h1><p>{{ homeCopy.description }}</p></header>
     <div v-if="heroEnabled" class="store-hero-grid">
       <CardsHeroCard />
       <div class="store-hero-side">
@@ -52,6 +52,9 @@
 
 <script setup>
 import { siteSchema, publicSiteUrl } from '~/utils/seo'
+import { homepagePresentation } from '~/utils/storePresentation'
+const { locale: homeLocale } = useI18n()
+const homeCopy = computed(() => homepagePresentation(siteContent.value?.settings, homeLocale.value))
 const { uiLabel } = useUiLocale()
 
 import { getConfiguredStoreImageUrl, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
@@ -219,6 +222,8 @@ const bannerAds = computed(() => {
 const seoConfig = useRuntimeConfig()
 usePageSeo(() => ({
   index: true,
+  title: homeCopy.value.title,
+  description: homeCopy.value.description,
   structuredData: siteSchema(siteContent.value?.settings || {}, publicSiteUrl(siteContent.value?.settings || {}, seoConfig.public.siteUrl))
 }))
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="store-topbar">
+  <div class="store-topbar" data-nosnippet>
     <div class="store-container store-topbar-inner">
       <p>{{ currentMessage }}</p>
       <div class="store-topbar-links">
