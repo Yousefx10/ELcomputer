@@ -30,7 +30,7 @@ export function normalizeModernFooter(value) {
     newsletter: { state: n.state === 'disabled' ? 'disabled' : 'hidden', ...pair(n, 'title', 'Newsletter', 'النشرة البريدية'), ...pair(n, 'description'), ...pair(n, 'placeholder', 'Email address', 'البريد الإلكتروني'), ...pair(n, 'button', 'Subscribe', 'اشتراك') },
     support: { enabled: enabled(s.enabled), ...pair(s, 'hours'), ...pair(s, 'label'), url: text(s.url, 2048) },
     apps: { enabled: enabled(a.enabled, false), ...pair(a, 'title'), ...pair(a, 'description'), items: rows(a.items, 2, (row, i) => ({ id: text(row.id, 80) || `app-${i}`, platform: row.platform === 'google' ? 'google' : 'apple', enabled: enabled(row.enabled), url: text(row.url, 2048), image_url: text(row.image_url, 2048) })) },
-    payments: { enabled: enabled(p.enabled, false), ...pair(p, 'title', 'Payment methods', 'طرق الدفع'), items: rows(p.items, 12, (row, i) => ({ id: text(row.id, 80) || `payment-${i}`, method: footerMethods.includes(row.method) ? row.method : 'card', label: text(row.label, 80), image_url: text(row.image_url, 2048), enabled: enabled(row.enabled) })) },
+    payments: { enabled: enabled(p.enabled, false), ...pair(p, 'title', 'Payment methods', 'طرق الدفع'), items: rows(p.items, 12, (row, i) => ({ id: text(row.id, 80) || `payment-${i}`, method: footerMethods.includes(row.method) ? row.method : '', label: text(row.label, 80), image_url: text(row.image_url, 2048), enabled: enabled(row.enabled) })) },
     bottom: { enabled: enabled(b.enabled), ...pair(b, 'copyright'), show_year: enabled(b.show_year, false), links: rows(b.links, 20, link) }
   }
 }
@@ -58,7 +58,7 @@ export function validateModernFooter(value) {
   if (v.brand.socials.some(row => (row.url && !footerUrl(row.url, 'external')) || (row.enabled && (!row.url || !row.label)))) return 'socials'
   if (v.support.url && !footerUrl(v.support.url, 'contact')) return 'contact'
   if (v.apps.items.some(row => (row.url && !footerUrl(row.url, 'external')) || (row.enabled && (!row.url || !row.image_url)))) return 'apps'
-  if (v.payments.items.some(row => row.enabled && (!row.label || !row.image_url))) return 'payments'
+  if (v.payments.items.some(row => row.enabled && (!footerMethods.includes(row.method) || !row.label || !row.image_url))) return 'payments'
   const images = [v.brand.logo_url, v.brand.logo_dark_url, ...v.apps.items.map(row => row.image_url), ...v.payments.items.map(row => row.image_url)]
   if (images.some(url => url && !footerUrl(url))) return 'images'
   return ''
