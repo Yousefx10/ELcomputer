@@ -5,7 +5,7 @@
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       @click.self="closeDialog"
     >
-      <div class="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
+      <div ref="dialogElement" role="dialog" aria-modal="true" aria-labelledby="order-dialog-title" tabindex="-1" @keydown="handleDialogKeys" class="min-w-0 max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
         <div class="sticky top-0 z-10 border-b bg-white px-6 py-5">
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
@@ -13,7 +13,7 @@
                 {{ $t('common.orderDetails') }}
               </p>
 
-              <h3 class="mt-2 text-2xl font-bold text-gray-900">
+              <h3 id="order-dialog-title" class="mt-2 break-all text-2xl font-bold text-gray-900">
                 {{ orderDetail?.order_number || orderTitle }}
               </h3>
 
@@ -35,7 +35,7 @@
             <div class="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                :disabled="loading || !orderDetail"
+                :disabled="loading || !orderIdentityCurrent || actionBusy"
                 class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 @click="printOrderDetails"
               >
@@ -44,7 +44,7 @@
 
               <button
                 type="button"
-                class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                ref="closeButton" :disabled="actionBusy" class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                 @click="closeDialog"
               >
                 {{ $t('common.close') }}
@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <div class="p-6">
+        <fieldset :disabled="actionBusy" class="min-w-0 border-0 p-6">
           <div v-if="loading" class="rounded-2xl bg-gray-50 p-8 text-center text-gray-500">
             {{ $t('dashboard.OrderDetailsDialog.loadingOrderDetails') }}
           </div>
@@ -351,7 +351,7 @@
               </section>
             </div>
           </div>
-        </div>
+        </fieldset>
       </div>
     </div>
   </Teleport>
@@ -420,6 +420,47 @@ const paymentReference = ref('')
 const paymentVerified = ref(false)
 const paymentSaving = ref(false)
 const releaseSaving = ref(false)
+const actionBusy = computed(() => statusLoading.value || courierChecking.value || paymentSaving.value || releaseSaving.value)
+const orderIdentityCurrent = computed(() => props.open && orderDetail.value?.id === props.orderId)
+let dialogEpoch = 0, detailVersion = 0, detailController = null
+const contextCurrent = context => props.open && props.orderId === context.id && dialogEpoch === context.epoch
+const beginAction = () => !loading.value && orderIdentityCurrent.value && !actionBusy.value ? {id:props.orderId,epoch:dialogEpoch} : null
+const scopedRequest = async (context, path, options = {}) => {
+  const headers = await getAuthHeaders()
+  if (!contextCurrent(context)) return null
+  const response = await $fetch(path, {...options, headers, retry:0})
+  if (!contextCurrent(context)) return null
+  if (response?.order && response.order.id !== context.id) throw new Error('Could not load order details.')
+  return response
+}
+const dialogElement = ref(null), closeButton = ref(null)
+let previousFocus = null, previousOverflow = '', modalActive = false
+const dialogControls = () => [...(dialogElement.value?.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex="0"]') || [])].filter(node => node.getClientRects().length && !node.matches(':disabled') && !node.closest('[inert]'))
+const containFocus = event => {
+  if (props.open && !labelPreview.value && !dialogElement.value?.contains(event.target)) (dialogControls()[0] || dialogElement.value)?.focus()
+}
+const handleDialogKeys = event => {
+  if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeDialog(); return }
+  if (event.key !== 'Tab') return
+  const controls = dialogControls(), first = controls[0], last = controls.at(-1)
+  if (!first) { event.preventDefault(); dialogElement.value?.focus(); return }
+  if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogElement.value)) { event.preventDefault(); last.focus() }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+}
+const releaseModalFocus = () => {
+  if (!modalActive) return
+  modalActive = false; document.removeEventListener('focusin', containFocus); document.body.style.overflow = previousOverflow
+  if (previousFocus?.isConnected) previousFocus.focus()
+  previousFocus = null
+}
+watch(() => props.open, async open => {
+  if (!import.meta.client) return
+  if (!open) { releaseModalFocus(); return }
+  if (!modalActive) { previousFocus=document.activeElement; previousOverflow=document.body.style.overflow; document.body.style.overflow='hidden'; modalActive=true; document.addEventListener('focusin',containFocus) }
+  await nextTick()
+  if (props.open) closeButton.value?.focus()
+}, {immediate:true,flush:'post'})
+onMounted(() => { if (props.open) closeButton.value?.focus() })
 const visibleStatusOptions = computed(() => orderDetail.value?.is_preorder && orderDetail.value?.preorder_fulfillment_state === 'awaiting_stock'
   ? customerOrderStatusOptions.filter(option => ['on_hold', 'cancelled'].includes(option.value))
   : customerOrderStatusOptions)
@@ -640,6 +681,9 @@ const printOrderDetails = () => {
 }
 
 const resetDialogState = () => {
+  dialogEpoch++; detailVersion++; detailController?.abort(); detailController=null
+  paymentAmount.value=''; paymentReference.value=''; paymentVerified.value=false
+  preorderPayments.value=[]; codCash.value=null
   errorMessage.value = ''
   statusMessage.value = ''
   statusPanelOpen.value = false
@@ -650,30 +694,32 @@ const resetDialogState = () => {
 }
 
 const closeDialog = () => {
+  if (actionBusy.value) return
   emit('update:open', false)
 }
 
 const runCourierAction = async action => {
-  if (courierChecking.value || !props.orderId) return
-  if (action === 'book' && (!parcelWeightConfirmed.value || measuredParcelWeight(parcelWeight.value) === null)) return
-  if (action === 'book' && !window.confirm(t('liveSales.confirmBooking'))) return
-  courierChecking.value = true; courierNotice.value = ''
+  const context=beginAction();if(!context)return
+  if(action==='book'&&(!parcelWeightConfirmed.value||measuredParcelWeight(parcelWeight.value)===null))return
+  if(action==='book'&&!window.confirm(t('liveSales.confirmBooking')))return
+  const body=action==='book'?{action,actual_weight_kg:measuredParcelWeight(parcelWeight.value),weight_confirmed:true}:{action}
+  courierChecking.value=true;courierNotice.value=''
   try {
-    const body = action === 'book' ? { action, actual_weight_kg: measuredParcelWeight(parcelWeight.value), weight_confirmed: true } : { action }
-    const result = await $fetch(`/api/admin-shipping/orders/${props.orderId}/booking`, { method: 'POST', headers: await getAuthHeaders(), body, retry: 0 })
+    const result=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/booking`,{method:'POST',body})
+    if(!result)return
     await loadOrderDetails()
-    courierNotice.value = result.state === 'uncertain' ? 'liveSales.uncertain' : 'shipment.reconciled'
-  } catch { courierNotice.value = 'shipment.actionFailed'; await loadOrderDetails(true).catch(() => {}) } finally { courierChecking.value = false }
+    if(contextCurrent(context))courierNotice.value=result.state==='uncertain'?'liveSales.uncertain':'shipment.reconciled'
+  }catch{if(contextCurrent(context)){courierNotice.value='shipment.actionFailed';await loadOrderDetails(true)}}finally{courierChecking.value=false}
 }
-
 const refreshCourierStatus = async () => {
-  if (courierChecking.value || !props.orderId) return
-  courierChecking.value = true; courierNotice.value = ''
+  const context=beginAction();if(!context)return
+  courierChecking.value=true;courierNotice.value=''
   try {
-    await $fetch(`/api/admin-shipping/orders/${props.orderId}/refresh`, { method: 'POST', headers: await getAuthHeaders(), retry:0 })
+    const result=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/refresh`,{method:'POST'})
+    if(!result)return
     await loadOrderDetails()
-    courierNotice.value = 'shipment.reconciled'
-  } catch { courierNotice.value = 'shipment.actionFailed';await loadOrderDetails(true).catch(()=>{}) } finally { courierChecking.value = false }
+    if(contextCurrent(context))courierNotice.value='shipment.reconciled'
+  }catch{if(contextCurrent(context)){courierNotice.value='shipment.actionFailed';await loadOrderDetails(true)}}finally{courierChecking.value=false}
 }
 
 const openShippingLabel = async action => {
@@ -697,136 +743,78 @@ watch(()=>[props.orderId,props.open],clearShippingLabel)
 onBeforeUnmount(clearShippingLabel)
 
 const loadOrderDetails = async (background = false) => {
-  if (!props.open || !props.orderId) {
-    return
-  }
-
-  if (!background) loading.value = true
-  errorMessage.value = ''
-  statusMessage.value = ''
-
-  try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}`, {
-      headers: await getAuthHeaders()
-    })
-
-    orderDetail.value = response.order || null
-    orderItems.value = response.items || []
-    customerDetail.value = response.customer || null
-    shippingDetail.value = response.shipping || null
-    preorderPayments.value = response.preorderPayments || []
-    codCash.value = response.codCash || null
-  } catch (error) {
-    if (!background) orderDetail.value = null
-    errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not load order details.'
-  } finally {
-    if (!background) loading.value = false
-  }
+  if(!props.open||!props.orderId)return
+  const context={id:props.orderId,epoch:dialogEpoch},version=++detailVersion
+  detailController?.abort();const controller=new AbortController();detailController=controller
+  const timeout=setTimeout(()=>controller.abort(),20000)
+  const current=()=>contextCurrent(context)&&version===detailVersion
+  if(!background)loading.value=true
+  errorMessage.value='';statusMessage.value=''
+  try{
+    const response=await scopedRequest(context,`/api/admin-orders/${context.id}`,{signal:controller.signal})
+    if(!response||!current())return
+    orderDetail.value=response.order||null;orderItems.value=response.items||[];customerDetail.value=response.customer||null
+    shippingDetail.value=response.shipping||null;preorderPayments.value=response.preorderPayments||[];codCash.value=response.codCash||null
+  }catch(error){if(current()){if(!background)orderDetail.value=null;errorMessage.value=error?.data?.statusMessage||error?.message||'Could not load order details.'}}
+  finally{clearTimeout(timeout);if(current()){if(!background)loading.value=false;detailController=null}}
 }
-
 const refreshCash = async () => {
-  await loadOrderDetails(true)
-  emit('updated', orderDetail.value)
+  const context={id:props.orderId,epoch:dialogEpoch};await loadOrderDetails(true)
+  if(contextCurrent(context)&&orderIdentityCurrent.value)emit('updated',orderDetail.value)
 }
-
 const recordVerifiedPayment = async () => {
-  if (!paymentVerified.value || paymentSaving.value) return
-  paymentSaving.value = true
-  errorMessage.value = ''
-  try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}/payments`, {
-      method: 'POST', headers: await getAuthHeaders(),
-      body: { amount: paymentAmount.value, reference: paymentReference.value, verified: true }
-    })
-    orderDetail.value = response.order
-    paymentAmount.value = ''
-    paymentReference.value = ''
-    paymentVerified.value = false
+  const context=beginAction();if(!context||!paymentVerified.value)return
+  const body={amount:paymentAmount.value,reference:paymentReference.value,verified:true}
+  paymentSaving.value=true;errorMessage.value=''
+  try{
+    const response=await scopedRequest(context,`/api/admin-orders/${context.id}/payments`,{method:'POST',body})
+    if(!response)return
+    paymentAmount.value='';paymentReference.value='';paymentVerified.value=false
     await loadOrderDetails()
-    emit('updated', response.order)
-  } catch (error) {
-    errorMessage.value = error?.data?.statusMessage || 'Could not record the payment.'
-  } finally { paymentSaving.value = false }
+    if(contextCurrent(context))emit('updated',response.order)
+  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||'Could not record the payment.'}finally{paymentSaving.value=false}
 }
-
-const releasePreorder = async () => {
-  if (releaseSaving.value) return
-  releaseSaving.value = true
-  errorMessage.value = ''
-  try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}/release`, { method: 'POST', headers: await getAuthHeaders() })
-    orderDetail.value = response.order
-    await loadOrderDetails()
-    emit('updated', response.order)
-  } catch (error) {
-    errorMessage.value = error?.data?.statusMessage || 'Could not release the preorder.'
-  } finally { releaseSaving.value = false }
+const releaseOrder = async (path, failure) => {
+  const context=beginAction();if(!context)return
+  releaseSaving.value=true;errorMessage.value=''
+  try{
+    const response=await scopedRequest(context,`/api/admin-orders/${context.id}/${path}`,{method:'POST'})
+    if(!response)return
+    await loadOrderDetails();if(contextCurrent(context))emit('updated',response.order)
+  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||failure}finally{releaseSaving.value=false}
 }
-
-const releaseBackorder = async () => {
-  if (releaseSaving.value) return
-  releaseSaving.value = true
-  errorMessage.value = ''
-  try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}/release-backorder`, { method: 'POST', headers: await getAuthHeaders(), retry:0 })
-    await loadOrderDetails()
-    emit('updated', response.order)
-  } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Stock could not be assigned.' }
-  finally { releaseSaving.value = false }
-}
-
+const releasePreorder = () => releaseOrder('release','Could not release the preorder.')
+const releaseBackorder = () => releaseOrder('release-backorder','Stock could not be assigned.')
 const recordManualAwb = async () => {
-  if (courierChecking.value || !manualAwbConfirmed.value) return
-  courierChecking.value = true
-  errorMessage.value = ''
-  try {
-    await $fetch(`/api/admin-shipping/orders/${props.orderId}/manual-awb`, { method: 'POST', headers: await getAuthHeaders(), body: { awb: manualAwb.value.trim(), confirmed: true }, retry: 0 })
-    manualAwb.value = ''; manualAwbConfirmed.value = false
-    parcelWeight.value = ''; parcelWeightConfirmed.value = false
-    await loadOrderDetails()
-    emit('updated', orderDetail.value)
-  } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Review the original booking.' }
-  finally { courierChecking.value = false }
+  const context=beginAction();if(!context||!manualAwbConfirmed.value)return
+  const body={awb:manualAwb.value.trim(),confirmed:true}
+  courierChecking.value=true;errorMessage.value=''
+  try{
+    const response=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/manual-awb`,{method:'POST',body})
+    if(!response)return
+    manualAwb.value='';manualAwbConfirmed.value=false;parcelWeight.value='';parcelWeightConfirmed.value=false
+    await loadOrderDetails();if(contextCurrent(context))emit('updated',orderDetail.value)
+  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||'Review the original booking.'}finally{courierChecking.value=false}
 }
-
-const updateOrderStatus = async (nextStatus) => {
-  if (!props.orderId || !orderDetail.value || orderDetail.value.status === nextStatus) {
-    return
-  }
-
-  statusLoading.value = true
-  errorMessage.value = ''
-  statusMessage.value = ''
-
-  try {
-    const response = await $fetch(`/api/admin-orders/${props.orderId}`, {
-      method: 'PATCH',
-      body: {
-        status: nextStatus
-      },
-      headers: await getAuthHeaders()
-    })
-
-    orderDetail.value = response.order || orderDetail.value
-    statusMessage.value = 'Order status updated successfully.'
-    emit('updated', response.order)
-  } catch (error) {
-    errorMessage.value = error?.data?.statusMessage || error?.message || 'Could not update order status.'
-  } finally {
-    statusLoading.value = false
-  }
+const updateOrderStatus = async nextStatus => {
+  const context=beginAction();if(!context||orderDetail.value.status===nextStatus)return
+  statusLoading.value=true;errorMessage.value='';statusMessage.value=''
+  try{
+    const response=await scopedRequest(context,`/api/admin-orders/${context.id}`,{method:'PATCH',body:{status:nextStatus}})
+    if(!response)return
+    orderDetail.value=response.order||orderDetail.value;statusMessage.value='Order status updated successfully.';emit('updated',response.order)
+  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||error?.message||'Could not update order status.'}finally{statusLoading.value=false}
 }
+onBeforeUnmount(()=>{resetDialogState();releaseModalFocus()})
 
 watch(
   () => [props.open, props.orderId],
   async ([isOpen, orderId]) => {
+    resetDialogState()
     manualAwb.value = ''; manualAwbConfirmed.value = false
     parcelWeight.value = ''; parcelWeightConfirmed.value = false
     courierNotice.value = ''
-    if (!isOpen) {
-      resetDialogState()
-      return
-    }
+    if (!isOpen) return
 
     if (orderId) {
       await loadOrderDetails()
