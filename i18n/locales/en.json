@@ -5751,5 +5751,9 @@
       "unknown": "Other recorded status"
     },
     "dateUnavailable": "Date unavailable"
+  },
+  "ownerPhase2": {
+    "chooseAddress": "Choose a saved address",
+    "checkoutDraft": "Unsaved address"
   }
 }

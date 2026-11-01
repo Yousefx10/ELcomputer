@@ -7,6 +7,17 @@ import {createServer} from 'node:http'
 import {build} from 'esbuild'
 import {parse,compileScript} from '@vue/compiler-sfc'
 
+const addressSelector = page => {
+ const toggle = page.getByTestId('saved-address-toggle')
+ return { waitFor: () => toggle.waitFor(), count: () => toggle.count(), inputValue: () => toggle.getAttribute('data-selected-address'), textContent: async () => { if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click(); return page.locator('#checkout-saved-addresses').textContent() }, selectOption: async value => {
+  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click()
+  const list=page.locator('#checkout-saved-addresses')
+  if (['new','profile'].includes(value)) await list.locator(value === 'new' ? 'button:last-child' : 'button').filter(value === 'new' ? {} : {hasText: /Unsaved address|عنوان غير محفوظ/}).first().click()
+  else await list.locator('[data-address-id="'+value+'"]').click()
+ }}
+}
+const deliverySelector = page => ({ selectOption: value => page.locator('input[name="delivery-method"][value="'+value+'"]').check(), inputValue: async () => await page.locator('input[name="delivery-method"]:checked').count() ? page.locator('input[name="delivery-method"]:checked').inputValue() : '' })
+
 test('saved shipping summary retains validation, editing and customer isolation',async t=>{
  const {chromium}=await import(process.env.COD_REVIEW_PLAYWRIGHT)
  let helper=await readFile('tests/helpers/normalPurchaseBrowser.js','utf8')
@@ -47,7 +58,7 @@ test('saved shipping summary retains validation, editing and customer isolation'
     const summary=page.getByTestId('saved-address-summary');await summary.waitFor()
     assert.match(await summary.textContent(),/Synthetic Buyer/);assert.match(await summary.textContent(),/Owned saved street/);assert.match(await summary.textContent(),/Owned unit/)
     assert.equal(await page.locator('#checkout-address-fields').isVisible(),false)
-    const delivery=page.locator('select').last();await delivery.selectOption(scenario.companyId)
+    const delivery=deliverySelector(page);await delivery.selectOption(scenario.companyId)
     await page.getByRole('button',{name:scenario.messages.common.edit,exact:true}).click()
     const street=page.locator('input[autocomplete=address-line1]');await street.waitFor();assert.equal(await page.locator('input[autocomplete=given-name]').evaluate(x=>x===document.activeElement),true)
     await street.fill('Owned revised street');await page.getByRole('button',{name:scenario.messages.common.hideDetails,exact:true}).click()

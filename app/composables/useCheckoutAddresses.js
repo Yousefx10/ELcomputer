@@ -9,6 +9,7 @@ export const useCheckoutAddresses = (address, expanded, complete, scope) => {
   const savedAddresses = ref([])
   const selectedAddressKey = ref('profile')
   const addressLabel = ref('')
+  const profileDraftSummary = ref('')
   const loadingAddresses = ref(false)
   const savingAddress = ref(false)
   const removingAddress = ref(false)
@@ -23,8 +24,8 @@ export const useCheckoutAddresses = (address, expanded, complete, scope) => {
   let profileAddress = null, revision = null
   const snapshot = () => ({ address: { ...address }, label: addressLabel.value, revision, expanded: expanded.value })
   const clearMessages = () => { addressBookError.value = ''; addressBookNotice.value = ''; addressConflict.value = false; confirmAddressRemoval.value = false }
-  const storeDraft = () => drafts.set(selectedAddressKey.value, snapshot())
-  const setProfileAddress = () => { profileAddress = { ...address }; drafts.set('profile', snapshot()) }
+  const storeDraft = () => { drafts.set(selectedAddressKey.value, snapshot()); if (selectedAddressKey.value === 'profile') profileDraftSummary.value = [address.street_address, address.city].filter(Boolean).join(', ') }
+  const setProfileAddress = () => { profileAddress = { ...address }; drafts.set('profile', snapshot()); profileDraftSummary.value = [address.street_address, address.city].filter(Boolean).join(', ') }
   const chooseAddress = key => {
     if (busyAddress.value || !scope.isCurrent()) return
     const saved = savedAddresses.value.find(row => row.id === key)
@@ -123,11 +124,11 @@ export const useCheckoutAddresses = (address, expanded, complete, scope) => {
     } finally { if (scope.isCurrent()) removingAddress.value = false }
   }
   scope.onInvalidate(() => {
-    savedAddresses.value = []; selectedAddressKey.value = 'profile'; addressLabel.value = ''; revision = null; profileAddress = null
+    savedAddresses.value = []; profileDraftSummary.value = ''; selectedAddressKey.value = 'profile'; addressLabel.value = ''; revision = null; profileAddress = null
     drafts.clear(); createIds.clear(); loadingAddresses.value = false; savingAddress.value = false; removingAddress.value = false
     addressLoadError.value = ''; clearMessages()
   })
-  return { savedAddresses, selectedAddressKey, selectedSavedAddress, addressLabel, busyAddress, loadingAddresses, savingAddress, removingAddress,
+  return { savedAddresses, profileDraftSummary, selectedAddressKey, selectedSavedAddress, addressLabel, busyAddress, loadingAddresses, savingAddress, removingAddress,
     addressLoadError, addressBookError, addressBookNotice, addressConflict, confirmAddressRemoval,
     setProfileAddress, chooseAddress, loadSavedAddresses, saveAddress, keepAsNewAddress, useSavedVersion, removeAddress }
 }

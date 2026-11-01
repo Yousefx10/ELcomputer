@@ -5751,5 +5751,9 @@
       "unknown": "حالة مسجلة أخرى"
     },
     "dateUnavailable": "التاريخ غير متوفر"
+  },
+  "ownerPhase2": {
+    "chooseAddress": "اختر عنواناً محفوظاً",
+    "checkoutDraft": "عنوان غير محفوظ"
   }
 }
