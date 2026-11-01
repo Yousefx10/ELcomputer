@@ -93,3 +93,23 @@
   .storefront .store-footer-modern-bottom-inner { align-items: flex-start; flex-direction: column; gap: 8px; padding-block: 14px; }
   .storefront .store-footer-modern-bottom li { padding-inline: 12px; }
 }
+
+/* Shared, bounded logo cells in either configured footer style. */
+.storefront .footer-payment-marks { min-width: 0; text-align: center; padding-block: 16px; }
+.storefront .footer-payment-marks h2 { margin: 0 0 10px; font-size: 13px; font-weight: 600; }
+.storefront .footer-payment-marks ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); width: min(100%, 340px); gap: 8px; margin-inline: auto; }
+.storefront .footer-payment-marks li { display: grid; place-items: center; min-height: 42px; padding: 5px; background: #fff; border: 1px solid #dbe1e8; border-radius: 6px; }
+.storefront .footer-payment-marks img { width: 64px; max-width: 100%; height: 28px; object-fit: contain; }
+.storefront .store-footer-modern-utility-grid > .footer-payment-marks { align-items: center; justify-content: center; }
+.storefront .store-footer-modern-socials a, .storefront .footer-social-links a { display: grid; place-items: center; width: 42px; min-height: 42px; border: 1px solid var(--border); border-radius: 8px; }
+.storefront .footer-social-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+@media (max-width: 639px) {
+  .storefront .store-footer-modern-main { gap: 22px; }
+  .storefront .store-footer-modern-logo { width: min(100%, 230px); }
+  .storefront .store-footer-modern-logo .brand-logo img { height: 72px; }
+  .storefront .store-footer-modern-description { font-size: 13px; }
+  .storefront .store-footer-modern-navigation { gap: 18px; }
+  .storefront .store-footer-modern-group ul { gap: 6px; }
+  .storefront .store-footer-modern-newsletter { padding: 16px; }
+  .storefront .store-footer-modern-newsletter > p { margin-bottom: 8px; }
+}

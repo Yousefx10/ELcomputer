@@ -64,7 +64,7 @@ export function validateModernFooter(value) {
   return ''
 }
 
-export const visibleFooterPayments = (config, settings) => {
+export const visibleFooterPayments = (config, settings, capabilities = null) => {
   const available = new Set(getAvailablePaymentMethods(settings).map(method => method.value))
-  return config.payments.enabled ? config.payments.items.filter(row => row.enabled && row.label && footerUrl(row.image_url) && available.has(row.method)) : []
+  return config.payments.enabled ? config.payments.items.filter(row => row.enabled && row.label && footerUrl(row.image_url) && available.has(row.method) && (capabilities === null || (row.method === 'card' ? capabilities.card?.available === true : row.method !== 'paypal' || capabilities.paypal?.available === true))) : []
 }

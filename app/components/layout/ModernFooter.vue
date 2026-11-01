@@ -7,7 +7,11 @@
           <p v-if="copy(config.brand, 'description')" class="store-footer-modern-description">{{ copy(config.brand, 'description') }}</p>
           <div v-if="config.brand.social_enabled && socials.length" class="store-footer-modern-socials">
             <p v-if="copy(config.brand, 'social_heading')">{{ copy(config.brand, 'social_heading') }}</p>
-            <ul><li v-for="item in socials" :key="item.id"><a :href="footerUrl(item.url, 'external')" :aria-label="item.label" target="_blank" rel="noopener noreferrer"><Icon :name="footerSocialIcons[item.platform]" size="21" aria-hidden="true" /></a></li></ul>
+            <ul><li v-for="item in socials" :key="item.id"><a :href="footerUrl(item.url, 'external')" :aria-label="item.label" target="_blank" rel="noopener noreferrer"><LayoutFooterSocialIcon :platform="item.platform" /></a></li></ul>
+          </div>
+          <div class="store-footer-contact">
+            <a v-if="footerUrl(`mailto:${settings.footer_email || ''}`, 'contact')" :href="`mailto:${settings.footer_email}`"><Icon name="lucide:mail" size="16" />{{ settings.footer_email }}</a>
+            <a v-if="footerUrl(`tel:${String(settings.footer_phone || '').replace(/[^+\d]/g, '')}`, 'contact')" :href="`tel:${String(settings.footer_phone).replace(/[^+\d]/g, '')}`"><Icon name="lucide:phone" size="16" />{{ settings.footer_phone }}</a>
           </div>
         </div>
       </section>
@@ -20,13 +24,6 @@
       <section v-if="hasNewsletter" class="store-footer-modern-newsletter" aria-labelledby="footer-newsletter-heading">
         <h2 id="footer-newsletter-heading">{{ copy(config.newsletter, 'title') || $t('modernFooter.newsletter') }}</h2>
         <p v-if="copy(config.newsletter, 'description')">{{ copy(config.newsletter, 'description') }}</p>
-        <form aria-describedby="footer-newsletter-status" @submit.prevent>
-          <fieldset disabled>
-            <label class="sr-only" for="footer-newsletter-email">{{ $t('modernFooter.email') }}</label>
-            <input id="footer-newsletter-email" type="email" :placeholder="copy(config.newsletter, 'placeholder') || $t('modernFooter.email')" autocomplete="off">
-            <button type="submit">{{ copy(config.newsletter, 'button') || $t('modernFooter.subscribe') }}</button>
-          </fieldset>
-        </form>
         <p id="footer-newsletter-status" class="store-footer-modern-unavailable">{{ $t('modernFooter.newsletterUnavailable') }}</p>
       </section>
     </div>
@@ -43,10 +40,7 @@
         <div><h2 v-if="copy(config.apps, 'title')">{{ copy(config.apps, 'title') }}</h2><p v-if="copy(config.apps, 'description')">{{ copy(config.apps, 'description') }}</p></div>
         <div class="store-footer-modern-app-badges"><a v-for="item in apps" :key="item.id" :href="footerUrl(item.url, 'external')" target="_blank" rel="noopener noreferrer"><img :src="footerUrl(item.image_url)" :alt="item.platform === 'apple' ? $t('modernFooter.appStore') : $t('modernFooter.googlePlay')" loading="lazy" width="136" height="42"></a></div>
       </section>
-      <section v-if="payments.length" class="store-footer-modern-payments" :aria-label="copy(config.payments, 'title') || $t('modernFooter.paymentMethods')">
-        <h2 v-if="copy(config.payments, 'title')">{{ copy(config.payments, 'title') }}</h2>
-        <ul :style="{ '--footer-payment-columns': paymentColumns }"><li v-for="item in payments" :key="item.id"><img :src="footerUrl(item.image_url)" :alt="item.label" loading="lazy" width="52" height="26"></li></ul>
-      </section>
+      <LayoutFooterPayments v-if="payments.length" :settings="settings" />
     </div>
   </div>
   <div v-if="hasBottom" class="store-footer-modern-bottom">
@@ -75,8 +69,9 @@ const mainSections = computed(() => Number(config.value.brand.enabled) + Number(
 const socials = computed(() => config.value.brand.socials.filter(item => item.enabled && item.label && footerUrl(item.url, 'external')))
 const hasSupport = computed(() => config.value.support.enabled && !!(copy(config.value.support, 'hours') || copy(config.value.support, 'label')))
 const apps = computed(() => config.value.apps.enabled ? config.value.apps.items.filter(item => item.enabled && footerUrl(item.url, 'external') && footerUrl(item.image_url)) : [])
-const payments = computed(() => visibleFooterPayments(config.value, props.settings))
-const paymentColumns = computed(() => payments.value.length ? Math.ceil(payments.value.length / Math.ceil(payments.value.length / 4)) : 1)
+const { capabilities, purchasingEnabled, refresh } = usePurchaseAccess()
+onMounted(refresh)
+const payments = computed(() => purchasingEnabled.value ? visibleFooterPayments(config.value, props.settings, capabilities.value) : [])
 const legalLinks = computed(() => visibleLinks(config.value.bottom.links))
 const utilityCount = computed(() => Number(hasSupport.value) + Number(!!apps.value.length) + Number(!!payments.value.length))
 const hasBottom = computed(() => config.value.bottom.enabled && !!(copyright.value || legalLinks.value.length))

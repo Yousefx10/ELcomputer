@@ -1,7 +1,7 @@
 <template>
   <article class="store-product-card">
     <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-image" :aria-label="product.title">
-      <span v-if="hasDiscount" class="store-product-badge">{{ $t('common.saveValueVariant2', { value0: (discountPercent) }) }}</span>
+      <span v-if="discountPercent > 0" class="store-product-badge">{{ $t('common.saveValueVariant2', { value0: (discountPercent) }) }}</span>
       <span v-else-if="product.is_featured" class="store-product-badge store-product-badge-featured">{{ $t('common.featured') }}</span>
       <img v-if="getStoreImageUrl(product.image_url)" :src="product.image_url" :alt="product.title" loading="lazy" />
       <Icon v-else :name="getStoreCategoryIcon(product.category?.name)" size="56" class="store-product-placeholder" />
@@ -17,7 +17,7 @@
         <Icon :name="isOutOfStock ? 'lucide:clock-3' : 'lucide:check'" size="13" />
         {{ isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.preOrder') : isOutOfStock ? (isPurchasable ? $t('common.availableToOrder') : $t('common.outOfStock')) : $t('common.inStock') }}
       </p>
-      <button type="button" :disabled="!isPurchasable || actionPending || addedToCart" :aria-label="checkingAvailability ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" :aria-busy="checkingAvailability || actionPending" @click="handleAddToCart">
+      <button v-if="checkingAvailability || purchasingAllowed && (isPurchasable || isComingSoon || isPreorder || requiresOptionSelection)" type="button" :disabled="!isPurchasable || actionPending || addedToCart" :aria-label="checkingAvailability ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : requiresOptionSelection ? $t('cards.ProductCard.chooseOptionsForValue', { value0: (product.title) }) : $t('common.addValueToCart', { value0: (product.title) })" class="store-product-add" :aria-busy="checkingAvailability || actionPending" @click="handleAddToCart">
         <Icon :name="addedToCart ? 'lucide:check' : (requiresOptionSelection || isPreorder ? 'lucide:sliders-horizontal' : 'lucide:plus')" size="15" />
         {{ checkingAvailability ? $t('productPage.checkingPurchase') : !purchasingAllowed ? $t('productPage.buyingHeld') : isComingSoon ? $t('common.comingSoon') : isPreorder ? $t('common.viewPreOrder') : !isPurchasable ? $t('common.outOfStock') : (addedToCart ? $t('common.added') : (requiresOptionSelection ? $t('common.options') : $t('common.addToCart'))) }}
       </button>

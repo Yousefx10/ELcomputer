@@ -17,6 +17,7 @@
             <a v-if="footerPhone" :href="`tel:${footerPhone}`"><Icon name="lucide:phone" size="16" />{{ footerPhone }}</a>
             <p v-if="footerAddress && footerAddress !== 'address address'">{{ footerAddress }}</p>
           </div>
+          <ul v-if="socials.length" class="footer-social-links"><li v-for="item in socials" :key="item.id"><a :href="item.url" :aria-label="item.label" target="_blank" rel="noopener noreferrer"><LayoutFooterSocialIcon :platform="item.platform" /></a></li></ul>
         </div>
         <div class="store-footer-groups">
           <div>
@@ -38,6 +39,7 @@
           </div>
         </div>
       </div>
+      <LayoutFooterPayments :settings="settings" />
       <p class="store-footer-bottom">{{ copyrightText }}</p>
     </div>
   </footer>
@@ -46,14 +48,18 @@
 <script setup>
 const { uiLabel } = useUiLocale()
 
+import { resolveModernFooter, footerUrl } from '~/utils/modernFooter'
 import { isExternalStoreLink } from '~/utils/storefront'
 
 const { data: siteContent } = await useSiteContent()
 
 const settings = computed(() => siteContent.value?.settings || {})
+const socials = computed(() => { const c = resolveModernFooter(settings.value); return c.brand.social_enabled ? c.brand.socials.filter(x => x.enabled && x.label && footerUrl(x.url, 'external')) : [] })
 const footerLinks = computed(() => siteContent.value?.footerLinks || [])
 
 const isModern = computed(() => settings.value.footer_style === 'modern')
+const { refresh: refreshPayments } = usePurchaseAccess()
+onMounted(() => { if (!isModern.value) refreshPayments() })
 const siteName = computed(() => settings.value.site_name || 'Store')
 const footerCtaTitle = computed(() => settings.value.footer_cta_title === 'What are you waiting for?' ? uiLabel('Browse computer accessories') : (settings.value.footer_cta_title || ''))
 const footerCtaSubtitle = computed(() => settings.value.footer_cta_subtitle === 'Purchase your fav gear' ? uiLabel('Keyboards, mice, headsets and more.') : (settings.value.footer_cta_subtitle || ''))
