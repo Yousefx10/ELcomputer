@@ -37,25 +37,25 @@ try{
   const page=await doc.getPage(n),view=page.getViewport({scale:1})
   if(!Number.isFinite(view.width)||!Number.isFinite(view.height)||view.width<10||view.height<10||view.width>1500||view.height>1500||hasRecords(await page.getJSActions())||(await page.getAnnotations({intent:'any'})).length)throw Error('Invalid page')
   const content=await page.getTextContent(),text=content.items.map(x=>x.str||'').join('\n')
-  if(content.items.length>4000||text.length>65536||!contains(text,workerData.identity.awb)||!contains(text,workerData.identity.reference))throw Error('Wrong shipment')
+  if(content.items.length>4000||text.length>65536||(workerData.identity&&(!contains(text,workerData.identity.awb)||!contains(text,workerData.identity.reference))))throw Error('Wrong shipment')
   pages.push({width:view.width,height:view.height});page.cleanup()
  }
  parentPort.postMessage({ok:true,pages})
 }catch{parentPort.postMessage({ok:false})}
 finally{await task?.destroy()}
 `
-export const validateShippingLabelPdf = async (bytes, identity) => {
+const validatePrivatePdf = async (bytes, identity = null) => {
   if (!Buffer.isBuffer(bytes) || bytes.length < 100 || bytes.length > MAX_LABEL_BYTES
     || !/^%PDF-[12]\.\d[\r\n]/.test(bytes.subarray(0, 12).toString('ascii'))
     || !/%%EOF\s*$/.test(bytes.subarray(-1024).toString('ascii'))
-    || !token.test(identity?.awb || '') || !token.test(identity?.reference || '') || active >= 2) throw unavailable()
+    || (identity && (!token.test(identity.awb || '') || !token.test(identity.reference || ''))) || active >= 2) throw unavailable()
   active++
   let worker
   try {
     const require=createRequire(import.meta.url),pdfRoot=dirname(require.resolve('pdfjs-dist/package.json')),matrixRoot=dirname(require.resolve('@thednp/dommatrix/package.json'))
     const data = new Uint8Array(bytes)
     worker = new Worker(new URL('data:text/javascript;base64,' + Buffer.from(parser).toString('base64')), {
-      workerData: { bytes: data, identity: { awb: identity.awb, reference: identity.reference },
+      workerData: { bytes: data, identity: identity ? { awb: identity.awb, reference: identity.reference } : null,
         matrix: pathToFileURL(join(matrixRoot,'dist/dommatrix.mjs')).href, parser: pathToFileURL(join(pdfRoot,'legacy/build/pdf.mjs')).href, worker: pathToFileURL(join(pdfRoot,'legacy/build/pdf.worker.mjs')).href },
       transferList: [data.buffer], env: { NODE_ENV: 'production' }, stdout: true, stderr: true,
       resourceLimits: { maxOldGenerationSizeMb: 96, maxYoungGenerationSizeMb: 16, stackSizeMb: 4 }
@@ -69,4 +69,10 @@ export const validateShippingLabelPdf = async (bytes, identity) => {
     })
   } catch { throw unavailable() }
   finally { await worker?.terminate().catch(() => {}); active-- }
+}
+
+export const validatePrivateReceiptPdf = bytes => validatePrivatePdf(bytes)
+export const validateShippingLabelPdf = (bytes,identity) => {
+ if(!token.test(identity?.awb||'')||!token.test(identity?.reference||''))throw unavailable()
+ return validatePrivatePdf(bytes,identity)
 }

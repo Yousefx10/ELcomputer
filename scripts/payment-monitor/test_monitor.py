@@ -352,5 +352,44 @@ class MonitorTests(unittest.TestCase):
             state.close()
 
 
+class CheckoutSessionTests(unittest.TestCase):
+    def counts(self, **changes):
+        return dict(unresolved=0, verified_order_pending=0, additional_verified_payments=0, unprocessed_callbacks=0, overdue_unverified=0, **changes)
+
+    def test_empty_checkouts_and_unknown_counts(self):
+        self.assertEqual(m.inspect_checkouts(self.counts())[0], [])
+        for v in [None, {}, {**self.counts(), 'secret': 'CANARY'}, {**self.counts(), 'unresolved': True}, {**self.counts(), 'unresolved': -1}]:
+            with self.assertRaises(m.Stop):
+                m.inspect_checkouts(v)
+
+    def test_money_is_critical_but_expiry_is_never_failure(self):
+        counts = {**self.counts(), 'verified_order_pending': 1, 'additional_verified_payments': 1, 'overdue_unverified': 1, 'unprocessed_callbacks': 1}
+        issues, stats = m.inspect_checkouts(counts)
+        self.assertEqual(len(issues), 4)
+        self.assertEqual(sum(i['severity'] == 'CRITICAL' for i in issues), 2)
+        self.assertEqual(m.inspect_checkouts(counts), (issues, stats))
+        self.assertNotIn('order', issues[0])
+
+    def test_fixed_get_aggregate_has_no_private_table_or_provider_request(self):
+        calls = []
+        def transport(url, headers):
+            calls.append(url)
+            return 200, json.dumps(self.counts()).encode(), {}
+        ledger = m.Ledger({'url': 'https://db.example.invalid', 'service_role_key': 'PRIVATE-KEY'}, transport)
+        self.assertEqual(ledger.checkout_sessions()[0], [])
+        self.assertEqual(calls, ['https://db.example.invalid/rest/v1/rpc/commerce_payment_checkout_monitor'])
+
+    def test_incomplete_private_read_preserves_original_payment_warning(self):
+        with tempfile.TemporaryDirectory() as root:
+            state, ledger = m.State(root), FakeLedger([order(False)])
+            config = {**CONFIG, 'email_enabled': False}
+            first = m.run(config, ledger, state, operations, now=NOW)
+            ledger.checkout_sessions = lambda: (_ for _ in ()).throw(m.Stop('CHECKOUT_MONITOR_UNAVAILABLE'))
+            second = m.run({**config, 'checkout_sessions_enabled': True}, ledger, state, operations, now=NOW + dt.timedelta(minutes=5))
+            self.assertFalse(second['complete'])
+            self.assertEqual(first['exceptions'][0]['id'], next(x['id'] for x in second['exceptions'] if x['code'] == first['exceptions'][0]['code']))
+            self.assertEqual(second['business_writes'], 0)
+            state.close()
+
 if __name__ == '__main__':
     unittest.main()

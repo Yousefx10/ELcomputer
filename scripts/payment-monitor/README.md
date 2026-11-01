@@ -87,3 +87,15 @@ automatic resend. Core-only historical events do not become an email backlog.
 
 Every deployment needs a fresh exact approval. Preserve the existing single-use
 purchasing kill budget across an app release; never rerun a consumed operator.
+
+## PAY-FIRST-01 optional private checkout coverage (inactive)
+
+`checkout_sessions_enabled:false` is the default when omitted. A separately
+approved monitor installation/configuration may set it true after migration108
+and its STABLE service-only GET RPC are hosted-qualified. It reads five aggregate
+counts only. Verified funds without an order and additional payments are critical;
+unprocessed callbacks and overdue unverified attempts require review. Age never
+proves failure. RPC errors produce an incomplete check and retain old warnings.
+No business write, provider request, new SMTP access, alert reset or replay is added.
+The existing worker file/configuration hashes must be freshly sealed before
+installation. Monitoring this new lifecycle is a prerequisite to its activation.

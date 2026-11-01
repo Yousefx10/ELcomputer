@@ -61,6 +61,7 @@ const group = (key, label, icon, match, children, access = {}) => ({
 const primarySettingsKeys = new Set(['erp', 'after-sales', 'gallery', 'coupons', 'logs', 'reset'])
 
 export const dashboardNavigationGroups = [
+ {key:'payments',label:'Payments',icon:'lucide:credit-card',to:'/dashboard/payments',permission:'payments.view',documentTitle:'Dashboard - Payments',match:{paths:['/dashboard/payments']}},
   group('dashboard', 'Dashboard', 'layout-dashboard', { paths: ['/dashboard'] }, [
     child('summary', 'Overview', 'gauge', '/dashboard', 'view', ['', 'summary']),
     child('order-summary', 'Orders overview', 'shopping-bag', '/dashboard', 'view', ['orders'], 'dashboard.orders'),

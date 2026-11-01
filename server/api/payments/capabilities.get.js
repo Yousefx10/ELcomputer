@@ -1,3 +1,5 @@
+import {getSupabaseAdminClient} from '../../utils/supabaseAdmin'
+import {paymentFirstEnabled} from '../../utils/payments/checkout.js'
 import { getPaymobConfig } from '../../utils/payments/paymob.js'
 import { paymentHandler, paymentNoStore } from '../../utils/payments/index.js'
 import { requireCustomerRequest } from '../../utils/customerRequest'
@@ -24,9 +26,13 @@ export default paymentHandler(async event => {
   }
   catch { return { card: { available: false }, express: [], purchase: { available: false } } }
   const purchase = { ...safePurchaseCapability(scope), ...beta }
+  let lifecycle=null
+  if(paymentFirstEnabled(runtime)){try{const r=await getSupabaseAdminClient().rpc('commerce_payment_checkout_readiness');if(!r.error)lifecycle=r.data}catch{}}
+  if(paymentFirstEnabled(runtime))purchase.paymentFirst=lifecycle?.enabled===true
+  const manualTransfer={available:paymentFirstEnabled(runtime)&&[true,'true'].includes(runtime.manualTransferEnabled)&&lifecycle?.manual?.ready===true&&(!purchase.beta||purchase.paymentMethods?.includes('instapay')===true)}
   try {
     const config = getPaymobConfig(scope ? controlledPaymentRuntime(runtime) : runtime)
-    const available = config.methods.some(method => method.method === 'card' && method.available)
-    return { card: { available, initiationAvailable: available && (!scope || scope.payment_enabled), provider: 'paymob', mode: config.mode }, express: [], purchase }
-  } catch { return { card: { available: false }, express: [], purchase } }
+    const available = (!paymentFirstEnabled(runtime)||lifecycle?.enabled===true)&&config.methods.some(method => method.method === 'card' && method.available)
+    return { manualTransfer,card: { available, initiationAvailable: available && (!scope || scope.payment_enabled), provider: 'paymob', mode: config.mode }, express: [], purchase }
+  } catch { return { manualTransfer,card: { available: false }, express: [], purchase } }
 })

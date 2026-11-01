@@ -52,6 +52,9 @@ export default defineNuxtConfig({
     smsWorkerSecret: '',
     emailWorkerSecret: '',
     commerceWorkerSecret: '',
+    paymentFirstEnabled: false,
+    manualTransferEnabled: false,
+    transferDocumentsDir: '',
     paymobEnabled: false,
     paymobLiveRequestsEnabled: false,
     paymobMode: 'test',
@@ -89,6 +92,7 @@ export default defineNuxtConfig({
       authCaptchaProvider: '',
       turnstileSiteKey: '',
       // Presentation only. Checkout/provider authorization remains authoritative.
+      paymentFirstEnabled: false,
       purchasingEnabled: false,
       betaPurchasingEnabled: false,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,

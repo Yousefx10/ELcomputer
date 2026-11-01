@@ -16,9 +16,13 @@ import { requireCodCheckoutSchema } from '../server/utils/codCheckout.js'
 import { checkoutStreetAddress, checkoutProfileAddress, hasDeliveryTestMarker } from '../app/utils/checkoutAddress.js'
 import { build } from 'esbuild'
 import { resolve } from 'node:path'
+import {pathToFileURL} from 'node:url'
 
 const normalBundle = await build({entryPoints:[resolve('server/utils/normalPurchase.js')],bundle:true,write:false,format:'esm',platform:'node',alias:{'~':resolve('app')},plugins:[{name:'absolute-h3',setup(b){b.onResolve({filter:/^h3$/},()=>({path:import.meta.resolve('h3'),external:true}))}}]})
 const { authorizeNormalCheckout } = await import('data:text/javascript;base64,'+Buffer.from(normalBundle.outputFiles[0].text).toString('base64'))
+const lifecycleBundle=await build({stdin:{contents: "export {paymentFirstEnabled,createPaymentCheckout} from './server/utils/payments/checkout.js';export {manualTransferEnabled,createTransferCheckout} from './server/utils/payments/transfers.js'",resolveDir:resolve('.')},bundle:true,write:false,format:'esm',platform:'node',alias:{'~':resolve('app')},plugins:[{name:'h3',setup(b){b.onResolve({filter:/^h3$/},()=>({path:import.meta.resolve('h3'),external:true}))}}]})
+const {paymentFirstEnabled,createPaymentCheckout,manualTransferEnabled,createTransferCheckout}=await import('data:text/javascript;base64,'+Buffer.from(lifecycleBundle.outputFiles[0].text).toString('base64'))
+
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')
 const runtime = { paymobEnabled: true, paymobMode: 'test', paymobSecretKey: 'egy_sk_test_fixture', paymobPublicKey: 'egy_pk_test_fixture', paymobHmacSecret: 'fixture-hmac', paymobCardIntegrationId: '12345', paymobCardIntegrationMode: 'test', public: { siteUrl: 'https://staging.example.invalid' } }
@@ -41,7 +45,7 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
   const source = read('server/api/checkout/index.post.js').replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '').replace('export default defineEventHandler', 'captureHandler')
   runInNewContext(commandSource + '\n' + source, {
     captureHandler: fn => { handler = fn }, defineEventHandler: fn => fn,
-    createError, randomUUID, normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema, checkoutStreetAddress, checkoutProfileAddress, hasDeliveryTestMarker, authorizeNormalCheckout,
+    createError, randomUUID, paymentFirstEnabled,createPaymentCheckout,manualTransferEnabled,createTransferCheckout,normalizePaymentMethod, getPaymobConfig, requireCodCheckoutSchema, checkoutStreetAddress, checkoutProfileAddress, hasDeliveryTestMarker, authorizeNormalCheckout,
     readBody: async () => body, setHeader: () => {}, useRuntimeConfig: () => ({ ...runtime, public: { ...runtime.public, purchasingEnabled: true }, paymobEnabled: enabled }),
     requireCustomerRequest: async () => ({ authUser: { id: user, email: 'fixture@example.invalid' }, supabaseAdmin: db }),
     isStoreAnalyticsUuid: value => /^[0-9a-f-]{36}$/i.test(value), recordStoreOrderCreated: async () => {}, console
@@ -50,15 +54,18 @@ const checkoutHarness = (body, enabled = false, existing = null) => {
 }
 const checkoutBody = () => ({ cart_id: randomUUID(), quote_id: randomUUID(), items: [{ id: randomUUID(), quantity: 1 }], payment_method: 'card', address: { first_name: 'Buyer', phone: '01000000000', street_address: 'Street', city: 'Cairo', governorate: 'Cairo' } })
 
-test('Nuxt defaults stay private/disabled and private environment canaries cannot enter public config', () => {
-  let config
-  const source = read('nuxt.config.ts').replace(/import[^\n]+\n/g, '').replace('export default defineNuxtConfig', 'captureConfig')
-  runInNewContext(source, { captureConfig: value => { config = value }, tailwindcss: () => ({}), DEFAULT_SITE_URL: 'https://fixture.example.invalid', process: { env: { NUXT_PAYMOB_SECRET_KEY: 'PRIVATE_PAYMOB_CANARY', NUXT_PAYMOB_HMAC_SECRET: 'PRIVATE_HMAC_CANARY', NUXT_SUPABASE_SERVICE_ROLE_KEY: 'PRIVATE_SERVICE_CANARY' } } })
-  assert.equal(config.runtimeConfig.paymobEnabled, false)
-  assert.equal(config.runtimeConfig.paymobMode, 'test')
-  assert.equal(config.sourcemap, false); assert.equal(config.vite.build.sourcemap, false)
-  assert.equal(JSON.stringify(config.runtimeConfig.public).includes('PRIVATE'), false)
-  assert.equal(Object.keys(config.runtimeConfig.public).some(key => /paymob|secret|hmac|serviceRole/i.test(key)), false)
+test('Nuxt defaults stay private/disabled and private environment canaries cannot enter public config', async () => {
+  const canaries={NUXT_PAYMOB_SECRET_KEY:'PRIVATE_PAYMOB_CANARY',NUXT_PAYMOB_HMAC_SECRET:'PRIVATE_HMAC_CANARY',NUXT_SUPABASE_SERVICE_ROLE_KEY:'PRIVATE_SERVICE_CANARY'}
+  const compiled=await build({entryPoints:[resolve('nuxt.config.ts')],bundle:true,write:false,platform:'node',format:'esm',define:{'import.meta.url':JSON.stringify(pathToFileURL(resolve('nuxt.config.ts')).href)},banner:{js:'const defineNuxtConfig=value=>value;'},plugins:[{name:'private-env',setup(b){
+    b.onResolve({filter:/^node:process$/},()=>({path:'env',namespace:'fixture'}));b.onResolve({filter:/^@tailwindcss\/vite$/},()=>({path:'css',namespace:'fixture'}));b.onLoad({filter:/.*/,namespace:'fixture'},({path})=>({contents:path==='env'?'export default {env:'+JSON.stringify(canaries)+'}':'export default ()=>({})'}))
+  }}]})
+  const {default:config}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'))
+  assert.equal(config.runtimeConfig.paymobEnabled,false);assert.equal(config.runtimeConfig.paymobMode,'test')
+  assert.equal(config.runtimeConfig.paymentFirstEnabled,false);assert.equal(config.runtimeConfig.manualTransferEnabled,false);assert.equal(config.runtimeConfig.public.paymentFirstEnabled,false)
+  assert.equal(config.runtimeConfig.supabaseServiceRoleKey,canaries.NUXT_SUPABASE_SERVICE_ROLE_KEY)
+  assert.equal(config.sourcemap,false);assert.equal(config.vite.build.sourcemap,false)
+  assert.equal(JSON.stringify(config.runtimeConfig.public).includes('PRIVATE'),false)
+  assert.equal(Object.keys(config.runtimeConfig.public).some(key=>/paymob|secret|hmac|serviceRole/i.test(key)),false)
 })
 
 test('disabled gateway rejects normalized card spellings and delegates committed retries to the guarded receipt RPC', async () => {

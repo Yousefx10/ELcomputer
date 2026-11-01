@@ -1,6 +1,7 @@
 import { normalizeDashboardQueryValue } from './dashboardNavigation.js'
 
 export const adminPermissionGroups = [
+ {key:'payments',title:'Payments',accessPermission:{key:'payments.view',label:'View payment activity'},permissions:[{key:'payments.review',label:'Review transfer evidence'},{key:'payments.verify',label:'Verify received bank funds'},{key:'payments.configure',label:'Configure payment methods'}]},
   { key: 'email', title: 'Email', accessPermission: { key: 'email.view', label: 'Email Access' }, permissions: [
     { key: 'email.settings.view', label: 'View email settings' }, { key: 'email.settings.manage', label: 'Manage email settings' },
     { key: 'email.templates.view', label: 'View email templates' }, { key: 'email.templates.manage', label: 'Manage email templates' },
@@ -240,6 +241,7 @@ export const getDashboardRouteRequirement = (route = '') => {
 
   if (path === '/dashboard/after-sales' || path.startsWith('/dashboard/after-sales/')) return { permission: 'claims.view' }
 
+  if (path === '/dashboard/payments') return {permission:'payments.view'}
   if (path === '/dashboard/email') return { permission: ({ settings:'email.settings.view', templates:'email.templates.view', send:'email.transactional.send', history:'email.history.view', events:'email.history.view', preferences:'email.marketing.manage' })[tab || 'settings'] || 'email.view' }
 
   if (path === '/dashboard/sms') {

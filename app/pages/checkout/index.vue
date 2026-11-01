@@ -34,6 +34,11 @@
         <NuxtLinkLocale to="/account/orders" class="me-4 mt-3 inline-flex text-sm font-semibold text-blue-700">{{ $t('checkoutRecovery.history') }}</NuxtLinkLocale>
         <button type="button" class="mt-3 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white" @click="reviewCart">{{ $t('checkoutRecovery.review') }}</button>
       </section>
+      <section v-if="savedCheckout" role="status" class="mx-auto mt-4 max-w-5xl rounded-xl border p-4">
+        <p class="text-sm">{{ $t('paymentFirst.cartRetained') }}</p>
+        <a v-if="hostedFallback" :href="hostedFallback" referrerpolicy="no-referrer" rel="noreferrer" class="mt-2 inline-flex min-h-11 items-center px-3 text-sm font-semibold">{{ $t('paymentFirst.openSaved') }}</a>
+        <NuxtLinkLocale :to="`/checkout/session/${savedCheckout}`" class="mt-2 inline-flex min-h-11 items-center px-3 text-sm font-semibold">{{ $t('paymentFirst.checkStatus') }}</NuxtLinkLocale>
+      </section>
       <div v-if="isEmpty" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
         <p class="text-lg font-semibold text-slate-900">{{ $t('common.yourCartIsEmpty') }}</p>
         <p class="mt-2 text-sm text-slate-600">{{ $t('checkout.addProductsFirstThenReturnHereToCheckout') }}</p>
@@ -143,7 +148,8 @@
 
               <p v-if="selectedPaymentMethod === 'card' && paymentCapabilities?.card?.mode === 'test'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('paymob.testOnly') }}</p>
 
-              <div v-if="paymentMethodNeedsProof(selectedPaymentMethod)" class="mt-6 space-y-4 border-t border-slate-200 pt-6">
+              <div v-if="prepaidFlow && selectedPaymentMethod === 'instapay'" class="mt-4 text-sm text-slate-600">{{ $t('transfer.afterConfirm') }}</div>
+              <div v-else-if="paymentMethodNeedsProof(selectedPaymentMethod)" class="mt-6 space-y-4 border-t border-slate-200 pt-6">
                 <div class="rounded-2xl bg-slate-50 p-5"><h3 class="font-bold text-slate-950">{{ $t('common.transferInstructions') }}</h3><p class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-700">{{ paymentInstructions || $t('checkout.contactTheStoreForTransferDetailsBeforeSendingPayment') }}</p></div>
                 <template v-if="isPreorderCart"><p class="text-sm text-slate-600">{{ $t('checkout.afterConfirmingUseYourOrderNumberWhenContactingTheStoreAboutYourTransferStaffWillRecordTheAmountOnlyAfterVerifyingItYourOrderRemainsUnpaidUntilThen') }}</p></template>
                 <template v-else><PaymentProofUpload v-model="proofFile" backend-notice="Proof selection is available now. Secure submission will be activated with the payment backend; you can also return from My Account → Orders." /><p class="text-sm text-slate-600">{{ $t('checkout.youCanConfirmTheOrderWithoutProofAndReturnLaterTheOrderWillStayAtPaymentPendingUntilProofIsSubmittedAndReviewed') }}</p></template>
@@ -185,6 +191,7 @@ const { intlLocale } = useUiLocale()
 
 const { uiNavigateTo } = useUiNavigation()
 
+import {hostedPaymentUrl} from '~/utils/hostedPayment'
 import { readPendingCheckout, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
 import { getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
@@ -201,9 +208,12 @@ const customerScope = useCustomerScope()
 const user = useCustomerIdentity().user
 const { data: siteContent } = await useSiteContent()
 const { capabilities: paymentCapabilities, scope: purchaseScope, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
-const { items, owner: cartOwner, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, setAppliedCoupon, resetCoupon, loadCart } = useCart()
+const { items, owner: cartOwner, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, ensurePurchaseLineIdentities, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
+const paymentFirstRuntime=useRuntimeConfig()
+const prepaidFlow=computed(()=>[true,'true'].includes(paymentFirstRuntime.public.paymentFirstEnabled))
+const savedCheckout=ref(''),hostedFallback=ref('')
 const checkoutStep = ref('shipping')
 const loadingProfile = ref(false)
 const addressExpanded = ref(true)
@@ -217,7 +227,7 @@ const couponSuccess = ref('')
 const orderError = ref('')
 const selectedPaymentMethod = ref('')
 const shippingCompanyId = ref('')
-const requiresDelivery = computed(() => ['cash', 'card'].includes(selectedPaymentMethod.value))
+const requiresDelivery = computed(() => ['cash','card','instapay'].includes(selectedPaymentMethod.value))
 const deliveryOptions = ref([])
 const loadingDelivery = ref(false)
 const deliveryError = ref('')
@@ -388,7 +398,7 @@ const applyCoupon = async () => {
 
 const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = '' }
 
-const sendCommand = async command => {
+const sendCommand = async (command,explicit=false) => {
   pendingCheckout.value = command
   try {
     const { data } = await supabase.auth.getSession()
@@ -397,6 +407,14 @@ const sendCommand = async command => {
     const response = await customerScope.request('/api/checkout', {
       method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: command.body, retry: 0
     })
+    if(response.checkout){
+      customerScope.assertCurrent();savedCheckout.value=response.checkout.id
+      if(explicit&&response.created&&response.payment){
+       const url=hostedPaymentUrl(response.payment);hostedFallback.value=url
+       try{window.location.assign(url)}catch{orderError.value=t('paymentFirst.openSaved')}
+      }else await uiNavigateTo(response.checkout.method==='instapay'?`/checkout/transfer/${response.checkout.id}`:`/checkout/session/${response.checkout.id}`)
+      return
+    }
     const current = (await supabase.auth.getSession()).data.session
     customerScope.assertCurrent()
     if (current?.user.id === command.userId) completeCart({ ...command.cart, owner: 'account:' + command.userId })
@@ -424,6 +442,7 @@ const placeOrder = async () => {
   orderError.value = ''
   try {
     const reviewed = quote.value
+    if(prepaidFlow.value)ensurePurchaseLineIdentities()
     syncCart()
     if (!validateAddress()) { checkoutStep.value = 'shipping'; return }
     const paymentError = validatePayment()
@@ -440,10 +459,10 @@ const placeOrder = async () => {
       if (pendingCheckout.value) return
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
       const command = JSON.parse(JSON.stringify({ version: 1, userId: customerId.value,
-        body: { ...checkoutBody(), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value, owner: cartOwner.value }, review: quote.value }))
+        body: { ...checkoutBody(), ...(prepaidFlow.value&&selectedPaymentMethod.value!=='cash'?{cart_revision:revision.value,cart_lines:items.value.map(({cart_key,cart_line_id,quantity})=>({cart_key,cart_line_id,quantity}))}:{}), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value, owner: cartOwner.value }, review: quote.value }))
       // Persist before sending; an uncertain acknowledgement keeps this exact request.
       savePendingCheckout(window.localStorage, command)
-      await sendCommand(command)
+      await sendCommand(command,true)
     })
   } catch (error) { orderError.value = error?.message || 'Could not retain checkout. Please try again.' }
   finally { placingOrder.value = false }
@@ -464,6 +483,8 @@ const reviewCart = () => {
 const storageChanged = () => { readPending() }
 onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
 customerScope.onInvalidate(() => {
+  savedCheckout.value='';hostedFallback.value=''
+
   backorderAccepted.value = false
   ++quoteSequence
   customerId.value = ''

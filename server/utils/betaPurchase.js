@@ -14,9 +14,9 @@ export const betaPurchasePolicy = runtime => {
     || policy.excluded_product_ids.length > 1000 || policy.excluded_product_ids.some(id => !uuid.test(id))) unavailable()
   // Existing deployments stay CARD-only until their reviewed runtime opts in.
   if (policy.payment_methods !== undefined && (!Array.isArray(policy.payment_methods)
-    || !policy.payment_methods.length || policy.payment_methods.length > 2
+    || !policy.payment_methods.length || policy.payment_methods.length > 3
     || new Set(policy.payment_methods).size !== policy.payment_methods.length
-    || policy.payment_methods.some(method => !['card', 'cash'].includes(method)))) unavailable()
+    || policy.payment_methods.some(method => !['card', 'cash','instapay'].includes(method)))) unavailable()
   if (policy.customer_ids !== undefined && (!Array.isArray(policy.customer_ids) || !policy.customer_ids.length
     || policy.customer_ids.length > 100 || policy.customer_ids.some(id => !uuid.test(id)))) unavailable()
   if (policy.starts_at !== undefined || policy.expires_at !== undefined) {

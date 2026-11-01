@@ -164,6 +164,14 @@ class Ledger:
                 raise Stop('LEDGER_PAGE_INCOMPLETE')
         raise Stop('LEDGER_SCAN_BOUND')
 
+    def checkout_sessions(self):
+        # Fixed STABLE service-only RPC, GET only; no private rows or secrets.
+        code, body, _ = self.transport(self.origin + '/rest/v1/rpc/commerce_payment_checkout_monitor',
+            {'apikey': self.key, 'Authorization': 'Bearer ' + self.key, 'Accept': 'application/json'})
+        if code != 200:
+            raise Stop('CHECKOUT_MONITOR_UNAVAILABLE')
+        return inspect_checkouts(json.loads(body))
+
     def recipient(self):
         rows = self.read('email_provider_settings', {'select': 'config', 'id': 'eq.brevo', 'limit': '2'})
         if len(rows) != 1:
@@ -175,6 +183,22 @@ class Ledger:
         rows = self.read('commerce_shipping_companies', {'select': 'is_active,checkout_enabled,provider,client_shipping_price',
                                                         'id': 'eq.' + company_id, 'limit': '2'})
         return len(rows) == 1 and rows[0]['is_active'] and rows[0]['checkout_enabled'] and rows[0]['provider'] == 'manual' and decimal.Decimal(str(rows[0]['client_shipping_price'])) == decimal.Decimal(str(expected_price))
+
+
+def inspect_checkouts(counts):
+    fields = {'unresolved', 'verified_order_pending', 'additional_verified_payments', 'unprocessed_callbacks', 'overdue_unverified'}
+    if not isinstance(counts, dict) or set(counts) != fields or any(type(n) is not int or n < 0 or n > 1000000 for n in counts.values()):
+        raise Stop('CHECKOUT_MONITOR_INVALID')
+    issues = []
+    for name, code, severity in (
+        ('verified_order_pending', 'CHECKOUT_FUNDS_WITHOUT_ORDER', 'CRITICAL'),
+        ('additional_verified_payments', 'CHECKOUT_ADDITIONAL_PAYMENT', 'CRITICAL'),
+        ('unprocessed_callbacks', 'CHECKOUT_CALLBACK_REVIEW', 'WARNING'),
+        ('overdue_unverified', 'CHECKOUT_OUTCOME_UNVERIFIED', 'WARNING')):
+        if counts[name]:
+            issues.append({'key': fingerprint(['checkout-sessions', code]), 'code': code,
+                'severity': severity, 'provider_evidence': 'UNVERIFIED' if name in ('unprocessed_callbacks', 'overdue_unverified') else 'LOCAL_LEDGER'})
+    return issues, counts
 
 
 def inspect_orders(orders, now):
@@ -460,6 +484,10 @@ def run(config, ledger, state, collect=operational, sender=None, now=None):
     try:
         orders = ledger.orders()
         issues, staff, stats = inspect_orders(orders, now)
+        if config.get('checkout_sessions_enabled') is True:
+            checkout_issues, checkout_stats = ledger.checkout_sessions()
+            issues.extend(checkout_issues)
+            stats.update({'checkout_' + k: v for k, v in checkout_stats.items()})
         recipient = ledger.recipient() if email_enabled else ''
         if not ledger.manual(config['manual_company_id'], config['manual_price']):
             issues.append({'key': 'manual', 'code': 'MANUAL_DELIVERY_UNAVAILABLE', 'severity': 'CRITICAL'})

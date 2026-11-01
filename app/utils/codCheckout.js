@@ -3,6 +3,8 @@ import { getAvailablePaymentMethods } from './paymentMethods'
 export const checkoutPaymentMethods = (settings, capabilities, { restricted = false, preorder = false } = {}) =>
   getAvailablePaymentMethods(settings).filter(method => (!restricted || method.value === 'card')
     && (!capabilities?.purchase?.beta || capabilities.purchase.paymentMethods?.includes(method.value))
+    && (!capabilities?.purchase?.paymentFirst||['card','cash','instapay'].includes(method.value))
+    && (method.value!=='instapay'||capabilities?.manualTransfer?.available===true)
     && (method.value !== 'card' || capabilities?.card?.available === true)
     && (!preorder || ['bank_transfer', 'instapay'].includes(method.value)))
 

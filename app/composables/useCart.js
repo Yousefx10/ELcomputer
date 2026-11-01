@@ -1,4 +1,4 @@
-import { acknowledgeCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
+import { acknowledgeCart, acknowledgePurchasedCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
 import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
 import { allowsCartBackorder } from '~/utils/backorder'
 import { useCustomerIdentity } from './useCustomerIdentity'
@@ -80,6 +80,7 @@ const normalizeCartItem = (item, settings = {}) => {
 
   return {
     id: productId,
+    cart_line_id: UUID_PATTERN.test(item.cart_line_id || '') ? item.cart_line_id : null,
     cart_key: buildCartKey(productId, variantId),
     variant_id: variantId,
     variant_name: String(item.variant_name ?? variant?.name ?? ''),
@@ -201,10 +202,14 @@ export const useCart = () => {
     } catch { /* Preserve the current cart when browser storage is unavailable. */ }
   }
   const commitCart = () => {
+    items.value = items.value.map(item => item.cart_line_id ? item : {...item, cart_line_id:createCartIdentifier()})
     // An acknowledgement may arrive while this tab is editing in memory.
     // Fork the committed identity without replacing those edited items.
     if (import.meta.client && cartId.value) {
-      try { cartId.value = restoreCart(window.localStorage, { id: cartId.value, revision: createCartIdentifier() }, owner.value).id }
+      try {
+        const restored = restoreCart(window.localStorage, {id:cartId.value, revision:createCartIdentifier(), items:items.value, coupon:appliedCoupon.value}, owner.value)
+        cartId.value = restored.id; items.value = restored.items; appliedCoupon.value = restored.coupon
+      }
       catch { /* Server receipts still reject incompatible command reuse. */ }
     }
     revision.value = createCartIdentifier()
@@ -245,6 +250,17 @@ export const useCart = () => {
     if (!snapshot?.owner || snapshot.owner !== owner.value) return
     acknowledgeCart(window.localStorage, snapshot, createCartIdentifier(), snapshot.owner)
     syncCart()
+  }
+  const ensurePurchaseLineIdentities = () => {
+    syncCart()
+    if (items.value.some(item => !item.cart_line_id)) commitCart()
+  }
+  const completePurchasedCart = (snapshot, receipt) => {
+    syncCart()
+    if (!snapshot?.owner || snapshot.owner !== owner.value) return false
+    const done = acknowledgePurchasedCart(window.localStorage, snapshot, createCartIdentifier(), receipt, snapshot.owner)
+    syncCart()
+    return done
   }
 
   const ensureCartId = () => {
@@ -515,6 +531,8 @@ export const useCart = () => {
     syncCart,
     renewCart,
     completeCart,
+    completePurchasedCart,
+    ensurePurchaseLineIdentities,
     isReady,
     itemCount,
     distinctItemsCount,

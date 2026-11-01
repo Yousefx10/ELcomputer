@@ -10,7 +10,7 @@ export const prepareOrderEmail = row => {
     || !['order_received', 'payment_verified'].includes(row.event_type)
     || !/^[0-9a-f-]{36}$/i.test(row.id || '') || row.payload?.currency !== 'EGP') throw Error('Invalid order email event.')
   const o = row.payload, ar = row.locale === 'ar'
-  if (!['card', 'cash'].includes(o.payment_method) || !/^\d{1,10}\.\d{2}$/.test(o.total_amount)) throw Error('Invalid order email amount.')
+  if (!['card', 'cash','instapay'].includes(o.payment_method) || !/^\d{1,10}\.\d{2}$/.test(o.total_amount)) throw Error('Invalid order email amount.')
   const reference = emailLine(o.order_number, 120), total = o.total_amount + ' EGP'
   let subject, message
   if (row.event_type === 'order_received' && o.payment_method === 'card') {
@@ -19,10 +19,11 @@ export const prepareOrderEmail = row => {
       order: { ...o, email: row.recipient, payment_status: 'pending', status: 'pending_payment', is_preorder: false }, attempt: null })
     subject = draft.subject; message = draft.body.split('\n\n').slice(1).join('\n\n')
   } else if (row.event_type === 'order_received') {
+    if(o.payment_method==='instapay')throw Error('Unverified transfer receipt is not an order.')
     subject = ar ? 'تم استلام الطلب — الدفع عند الاستلام' : 'Order received — cash on delivery'
     message = ar ? 'لم يتم تحصيل المبلغ. طلبك بانتظار مراجعة المتجر.' : 'Payment is not collected. Your order awaits store review.'
   } else {
-    if (o.payment_method !== 'card') throw Error('Cash collection notification is not qualified.')
+    if (!['card','instapay'].includes(o.payment_method)) throw Error('Cash collection notification is not qualified.')
     subject = ar ? 'تم تأكيد الدفع' : 'Payment confirmed'
     message = ar ? 'تم التحقق من الدفع. حالة تجهيز الطلب منفصلة.' : 'Your payment is verified. Order progress is shown separately.'
   }

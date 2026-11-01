@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-[60vh] bg-slate-50 py-8 sm:py-12">
+  <PaymentCheckoutStatus v-if="checkoutId" :session-id="checkoutId" />
+  <div v-else class="min-h-[60vh] bg-slate-50 py-8 sm:py-12">
     <main class="store-container max-w-3xl">
       <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8" aria-live="polite">
         <Icon :name="state === 'paid' ? 'lucide:circle-check' : 'lucide:clock-3'" class="text-blue-600" size="32" aria-hidden="true" />
@@ -25,6 +26,7 @@ const orderStatus = ref('')
 const mode = ref(null)
 const orderId = ref('')
 const displayState = computed(() => ['paid','failed','awaiting_payment','pending','provider_uncertain','test_succeeded','unable','not_applicable'].includes(state.value) ? state.value : 'checking')
+const checkoutId=/^[0-9a-f-]{36}$/i.test(String(route.query.checkout_id||''))?String(route.query.checkout_id):''
 const selector = /^[0-9a-f-]{36}$/i.test(String(route.query.order_id || ''))
   ? { order_id: String(route.query.order_id) }
   : /^\d{1,18}$/.test(String(route.query.provider_order_id || route.query.order || '')) ? { provider_order_id: String(route.query.provider_order_id || route.query.order) } : null
@@ -43,6 +45,7 @@ const refresh = async () => {
   } catch { if (!disposed) state.value = 'unable' }
 }
 onMounted(async () => {
+  if(checkoutId){await router.replace({path:route.path,query:{checkout_id:checkoutId}});return}
   // Discard all provider status/card/transaction query fields. Keep only the safe lookup.
   await router.replace({ path: route.path, query: selector || {} })
   await refresh()

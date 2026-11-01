@@ -15,8 +15,8 @@ const safe = (s, directory) => {
 }
 const sync = async path => { const h = await fs.open(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { await h.sync() } finally { await h.close() } }
 const directory = async path => { if (await fs.realpath(path) !== path) fail();safe(await fs.lstat(path), true) }
-export const getShippingDocumentsRoot = async ({ create = false } = {}) => {
-  const config = useRuntimeConfig(), configured = config.shippingDocumentsDir
+export const getShippingDocumentsRoot = async ({ create = false, configuredRoot = null } = {}) => {
+  const config = useRuntimeConfig(), configured = configuredRoot || config.shippingDocumentsDir
   if (typeof configured !== 'string' || !isAbsolute(configured)) fail()
   const root = resolve(configured), app = resolve(process.cwd()), uploads = resolve(app, config.uploadsDir || 'storage/uploads')
   const publicRoots = [app, uploads, await fs.realpath(uploads).catch(() => uploads)]
