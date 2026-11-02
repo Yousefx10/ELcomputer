@@ -1,3 +1,292 @@
+# E195 — payment-first CARD ACTIVE; owner sees CARD/COD; approval consumed — 2026-11-02
+
+- Owner approval e0d17db7 executed once. CONSUMED_COMPLETE, with natural MON
+  postflight PASS at20:50UTC. App release81f6206b/source7b33/database109unchanged.
+  New appPID208234; Caddy26652unchanged. No deployment or migration.
+- One existing control row enabled atrevision1; one audit inserted. Only two
+  runtime flags changed, with one app restart and one pause/resume per existing
+  MON/Email/PDC timer.154other table projections and16other files unchanged.
+  No operator provider call, order update, payment, refund, credit or manual worker.
+- Public capabilities confirm paymentFirst=true, CARD/COD available, no express/
+  manual-transfer method. EN/ARpublic pages200, private pages redirect correctly,
+  anonymous private API401/no-store/no-referrer. Cart/runtime flag verified.
+- Owner confirms existing-cart checkout reaches payment selection with Card+Cash.
+  This accepts checkout display only. No payment/provider/order/COD-confirmation
+  acceptance inferred. Read-only follow-up shows sessions/attempts/funds0 and all
+  integrity issue counts0. First genuine prepaid CARD acceptance remains pending.
+- Natural MON20:50complete WARNING/0critical with original7UNVERIFIEDwarnings and
+ 3journal gaps. Natural Email20:51and PDC20:51exit0; timers enabled. No warning clear.
+  CARD/COD,Email,tracking,server COD fee10and original quarantines remain intact.
+- Future explicit CARD confirmation now uses private prepaid sessions; verified
+  matching funds create one paid order. COD remains the separate unpaid exception.
+  Newmethods/Pixel/Google/balance stay OFF. No successful Brevo test is repeated.
+- [Execution and recovery receipt](docs/payment-first-schema109-activation-receipt.md).
+  No new approval or expiry. Do not replay e0d17db7 or any parent. One unused
+  SQL-only core disable retains since/runtime,callbacks,cart,evidence and COD;
+  original purchasing/COD/Email emergency budgets remain,not renewed.
+- All50worktrees/original35deferred rows remain. Preserve the inactive InstaPay
+ 221000candidate (next110),Pixel/balance111,metadata/UI/SEO and all deferred evidence.
+  Apple merchant activation report remains pending actual offer evidence; no
+  generic certificate/domain demand or repeat support inquiry. PDC financials LAST.
+  **ONE next independent action:** qualify the existing inactive InstaPay110release.
+  No bank data/proof upload, provider action or activation without its separate scope.
+
+# E194 — P0 owner accepted; schema109 existing CARD core activation READY / UNAPPROVED — 2026-11-02
+
+- Owner confirms public products load normally. P0 recovery acceptance COMPLETE;
+ 213bf0c2remains CONSUMED_COMPLETE. No new production write/restart/provider request.
+- Existing installed core reused on app81f6206b/source7b33/schema109. Core remains
+  OFF/revision0/private sessions-attempts-funds0. No app implementation/migration.
+- Fresh109qualification PASS:23callback/HTTP/concurrency/privacy checks plus10
+  activation/control/disable checks,20scope/failure guards and3actual deployed-build
+  runtime modes. Full encrypted109DB/17runtime-file readback PASS20:32:24UTC.
+- Sealed hosted read-only preflight PASS20:38UTC: integrity issues0; CARD/COD, Email,
+  bounded tracking,fee10,original PDC quarantine/automatic-booking OFF and emergency
+  fences retained. Private empty Payment activity owner acceptance already complete.
+- Current MON: original7UNVERIFIEDpayment warnings/0critical,3journal gaps retained.
+  Earlier client-write-timeout JOURNAL_UPSTREAM warning was reviewed and ended
+  naturally; missed-interval warning likewise ended naturally. No manual clear or
+  MON/config change. Both remain archived. Initial exact-drift guard STOPs retained.
+  Two historical natural tracking caller failures remain unverified; subsequent
+  two empty scheduled runs PASS with0eligible AWBs/no provider request or retry.
+- Smallest activation: one existing control revision/audit,2runtime flags,1app
+  restart,one bounded pause/resume of existing3timers.0deploy/migration/Caddy/key/
+  provider probe/test order/refund/credit. Future explicit CARD uses existing
+  hosted Redirect; verified funds create one paid order,other attempts stay private.
+  COD stays independent/unpaid. One-use SQL-only disable retains since/runtime,
+  genuine late callbacks/cart/evidence/COD; never returns to legacy unpaid CARD intake.
+- Exact approval: `APPROVE PAYMENT-FIRST SCHEMA109 CORE ACTIVATION e0d17db79a1cdbf933cccfdd5bd2ddb404fe4eeb7f5a71f0df81446c53e6452d`.
+  Expires `2026-11-02T22:36:17.701Z` / 01:36:17 Riyadh, 03 November 2026.
+  [Full guarded activation review](docs/payment-first-schema109-activation.md).
+  **ONE next action:** approve this existing-CARD core activation. Your separate
+  production-activation approval is required; owner recovery confirmation grants
+  no activation. All50worktrees/original35deferred rows and all unshipped work retained.
+- Apple merchant activation remains pending actual method evidence; no generic
+  certificate/domain task or repeat inquiry. Pixel is local/OFFpending actual3DS;
+  InstaPay candidate110unchanged/OFFpending recipient/private proof qualification;
+  wallets need actual merchant integration evidence; balance111OFFpending legitimate
+  funding/reconciliation/terms. GoogleOFF. No other method is included in this seal.
+
+# E193 — owner accepts P0 recovery; existing core activation qualification resumed — 2026-11-02
+
+- Owner confirms products load normally at the corrected root/ARstorefront URLs.
+  OPS-DATAAPI-01 public recovery acceptance COMPLETE. No save/purchase/provider
+  acceptance inferred.213bf0c2remains CONSUMED_COMPLETE and is never replayed.
+- One current feature: reuse the existing inactive core and qualified operator;
+  rebind locally to actualschema109and preserved MON7warnings/3gaps. Existing
+  core108draft and all old tests remain intact. No core activation authorized.
+- New private preparation root: payment-first-core109-activation-20261102. No new
+  app implementation,worktree or migration. Preserve50worktrees/original35DTRrows.
+  CARD/COD,Email,tracking,MON,fee10and emergency controls stay unchanged.
+- Priorities: qualified payment-first CARD,then InstaPay/Apple,then wallets/balance.
+  Apple merchant-specific activation report remains pending actual offer evidence;
+  no generic cert/domain demand,repeat support inquiry or unauthorized probe.
+- **ONE next action:** finish the guarded existing-core activation packet using
+  fresh read-only hosted evidence, then return its separate approval and expiry.
+
+# E192 — P0 SQL109 applied once; Data API and natural workers RECOVERED — 2026-11-02
+
+- Owner approved213bf0c2exactly. Operator CONSUMED_COMPLETE; commit acknowledged
+  19:58:56.761UTC/22:58:56Riyadh. One catalog exception40001→PT409and one109history
+  row.156protected table projections/RLS/Auth/history/function attributes preserved.
+ 0business-row writes,app/Caddy restart or reload,session cancellation/termination,
+  configuration/key/provider action or manual worker invocation by the operator.
+- Production app81f6206b393714ae/source7b33is unchanged; database is now schema109.
+  Same app197689/Caddy26652and17protected files. All4public Data API reads200;
+  eight API connections idle,zero rollbacks in1.62s,zero active product-save loops.
+- Natural20:00MON complete WARNING/0critical; original7UNVERIFIEDpayment warnings
+  retained plus1missed-monitoring warning. Journal gaps2→3from the outage; none
+  cleared/reconciled. Natural Email/PDC/monitor service exit0; timers active/enabled.
+  MON notification email remains OFF; customer transactional Email remains LIVE.
+- EN/AR root/shop/cart200; checkout redirects to correct EN/ARlogin200. English
+  uses /, Arabic/ar; earlier diagnostic/en404was a wrong test path,not a regression.
+  No synthetic product save/order/payment/email/provider test. Owner storefront
+  confirmation is pending; actual staff draft/receipt recovery stays owner-scoped.
+- CARD/COD configured ON; current Dashboard COD fee10.00retained. Customer Email,
+  bounded tracking,automatic-booking OFF,marketing OFF and emergency fences retained.
+  Core payment-first OFF/revision0/private sessions/attempts/funds0; no new method
+  activated. Rebind its preserved unexecuted108draft to109/8warnings/3gaps later.
+- Local source7be3584and all50worktrees/original35deferred rows retained. Original
+  transfer221000and balanceNov2candidate SQL untouched; they now become110/111if
+  installed in order. Apple merchant activation report retained; no generic cert
+  work or repeat provider inquiry. Other business40001paths remain separately scoped.
+- [Applied recovery receipt](docs/p0-data-api-schema109-receipt-20261102.md).
+  No new approval/expiry;213bf0c2is spent and never replayed.
+  **ONE next action:** confirm products load at https://elcomputer.net/ or /ar in
+  a separate tab. Keep unsaved Dashboard drafts open; reconcile Check save before
+  any later explicit save retry. Then qualify the next sealed payment-first packet.
+
+# E191 — P0 Data API root cause proved; SQL-only conflict fix READY / UNAPPROVED — 2026-11-02
+
+- OPS-DATAAPI-01: owner logs confirm HTTP504/PGRST003. Existing catalog_save_product
+  raises40001for a permanent stale revision; observed PostgREST14.18 retries it.
+  Eight API connections loop;19:31UTC sample14total/60max and2334rollbacks in1.9s.
+  This is pool starvation from product conflicts, not proof of changed Supabase
+  settings or an exhausted PostgreSQL connection limit. No limits/services changed.
+- Actual14.18/nativePG17.11 reproduction:8stale saves exhaust8slots/PGRST003;
+  PT409correction releases all8in-flight calls and restores reads without restart
+  or cancellation.41focused save/permission/privacy/concurrency tests and5actual
+  guarded-operator/rollback/scope cases PASS. No hosted recovery claimed yet.
+- Minimum patch: unchanged app81f6206b/source7b33, schema108→109, one exact function
+  exception code40001→PT409 plus one migration-history row.0business-row writes,
+  deployment/restart/settings/provider/worker action. Local source7be3584 clean.
+  Migration20261101220500uses the free slot before preserved unapplied transfer;
+  original candidate SQL is untouched; transfer becomes110/balance111 if approved.
+- CARD/COD remain configured ON, but required Data API and natural Email/PDC/MON
+  callers remain degraded. Payment-first/new methods stay OFF. Preserve original
+  warnings/gaps/uncertain outcomes; no synthetic orders or retries. Owner's private
+  Payment activity empty-page acceptance is COMPLETE, not real-payment acceptance.
+- OD-20261102-APPLE-MERCHANT-01 retained: Paymob reportedly handles Apple activation
+  within~1day, no extra owner setup. Verify actual hosted merchant offer/ID evidence;
+  do not impose generic certificate/domain work. No provider probe authorized.
+- Read-only hosted preflight, protected schema/Auth/history/156row projections,
+ 17file/service binding and18:22UTC encrypted full-readback backup are qualified.
+  Existing core108 operator draft remains unexecuted/unsealed and must be rebound
+  after109/recovery. All50worktrees and original35deferred rows/evidence preserved.
+- Exact one-use approval: `APPROVE P0 DATA API SCHEMA109 CATALOG CONFLICT SQL-ONLY FIX 213bf0c22686800f88cc1f21a3996d8165c97447f1e2550424b0205b99e4d3cf`.
+  Expires `2026-11-02T21:38:07.776Z` (00:38:07 Riyadh, 03 November 2026; use exact UTC above).
+  [Root cause, review and recovery](docs/p0-data-api-conflict-20261102.md).
+  **ONE next action:** approve this SQL-only patch. Separate migration approval is
+  required; no production mutation is authorized by previous consumed seals.
+
+# E190 — owner accepts private activity; core locally qualified, activation BLOCKED by Data API failure — 2026-11-02
+
+- Owner signed in at /account/payments and confirmed it loads correctly with no
+  activity. Empty private-page hosted acceptance COMPLETE; real payment/foreign
+  private-record acceptance remains separately deferred. E189/fdf4efc5original
+  operator CONSUMED_STOP is preserved;3file installation independently qualified.
+- Core108 activation operator prepared locally, never executed: existing app/schema,
+  2runtime flags,1private control+1audit row,1restart, bounded existing3timer pause/
+  resume.0deploy/migration/Caddy/provider/money action. SQL-only emergency disable
+  preserves COD/callbacks/sessions and activation boundary; never restores legacy
+  unpaid CARD intake.23deployed-core regression/9activation/1transaction/18guards/
+  3built-runtime HTTP modes PASS. Fresh encrypted DB/runtime17file readback PASS.
+- FINAL PREFLIGHT STOP: EMAIL_WORKER_FAILURE, before any core plan/seal/activation.
+  Current project Data API REST reads time out from VPS and local machine, while
+  public Auth200/directPostgreSQL work. MON last complete18:15UTC, then CRITICAL/
+  incomplete with original7unverified warnings plus missed-interval warning; Email
+  and PDC callers fail. Timers still enabled. No warning reset, worker invoke,
+  service restart, session cancellation, setting change or provider request by us.
+- Existing CARD/COD remain configured ON; anonymous capabilities200is insufficient
+  to claim purchases healthy while required REST is unavailable. Core stays OFF/
+  revision0,private sessions/funds0. Current app81f6206b/schema108/source7b33 remains.
+- Admin audit shows31successful product update events,23save receipts after18:00,
+  last18:18:34UTC. Product-save calls appear on Data API sessions; owner confirms
+  saves stuck/retried. Causality unproved. Pause extra Save clicks, retain drafts;
+  never replay uncertain saves, reset products, alterRLS or terminate sessions.
+  Owner clarifies changes are believed storefront/product edits; actual Supabase
+  configuration change is UNCONFIRMED. Preserve all business changes.
+- New decision OD-20261102-APPLE-MERCHANT-01: owner reports urgent Paymob support
+  confirms this merchant is Apple Pay eligible; provider will activate within~1day
+  and says no extra owner action. Treat account activation PENDING verification,
+  not a generic certificate/domain blocker. Existing hosted Unified Checkout uses
+  the requested CARD integration; local dedicated extras absent, which alone does
+  not prove provider-hosted Apple unavailability. No cert generation/contact redo.
+- Updated priority: restore actual API/worker health → existing payment-first CARD →
+  InstaPay109 and Apple readiness → wallets/balance. Google DISABLED. Pixel local/
+  inactive, real merchant3DS pending; balance OFF pending funding/recon/terms.
+  All existing records, key/sender, settings, worktrees and deferred evidence stay.
+- [Current blocker, qualification and next action](docs/payment-first-core108-activation-preparation.md).
+  **ONE next action:** owner opens Supabase Logs, selects PostgREST/API Gateway and
+  shares error code/message since18:15UTC (no keys/headers/customer data). Current
+  PostgreSQL credentials do not provide management logs; management access absent.
+  No activation approval/expiry can be issued while REST/MON remain unqualified.
+
+# E189 — private ingress/MON installed; independent read-only qualification PASS — 2026-11-02
+
+- Exact owner approvalfdf4efc5 executed once.3approved files installed;1Caddy SIGUSR1
+  at17:51:41UTC;1bounded MON pause/resume.0app deploy/restart,SQL/migration, runtime/
+  unit/key/business change, financial/provider action or new payment activation.
+- Original operator is CONSUMED_STOP / UNREVIEWED_ROUTE_OPENED after all writes:
+  its postflight wrongly expected403 at existing staff API /api/admin-transfers.
+  Actual401 is unchanged application Auth/RBAC. Real local full before/after Caddy
+  proof PASS. No sealed helper/plan edit, retry, rollback, second signal or forged
+  remote completion marker. Do not replay the consumed operator.
+- Independent read-only installed audit PASS17:57:33UTC:17protected files,5,073app
+  entries/backups/current certificate/processes/runtime/original emergency budgets.
+  Production81f6206b393714ae/schema108/source7b33ed0; app197689/Caddy26652 unchanged.
+- New private API now reaches401Auth instead of403edge, no-store/no-referrer;
+  EN/AR pages302to proper login; malformed/unreviewed private paths still403.
+  Existing CARD/COD capabilities/cart/login200. Customer authenticated acceptance
+  remains PENDING; no empty SQL or anonymous response is called owner acceptance.
+- Natural MON17:55:05UTC PASS: five checkout aggregates0, same7UNVERIFIED warnings,
+  0critical/2original gaps. No clearing, scan reset, payment retry/finality inference.
+  Natural Email/PDC callers exit0 and all3timers active/enabled at17:59:11UTC.
+- New payment-first/manual-transfer/Pixel/balance controls remain OFF. Private
+  sessions/attempts/funds0/revision0, deployed cancellation hold exact. Localffc1a30,
+  schema109 and provisional110 remain undeployed; Google DISABLED. Original
+  purchasing/COD/Email kill fences available; all deferred tests/worktrees retained.
+- [Actual execution and independent receipt](docs/payment-first-ingress-monitor-20261102-receipt.md).
+  **ONE next action:** owner signs in at https://elcomputer.net/account/payments and
+  confirms private activity loads without error. Then prepare a separate core
+  activation packet against actual installed state. No further production write
+  is needed for this read-only closeout; no activation is authorized byfdf4efc5.
+
+# E188 — payment launch qualified locally; schema108 prerequisite packet READY / UNAPPROVED — 2026-11-02
+
+- Fresh production81f6206b393714ae/schema108/source7b33ed0, app197689/Caddy26652.
+  Owner accepts P0 repair; old approvals remain consumed. No production change,
+  payment/provider request, funding, email, PDC action, upload or migration occurred.
+- Single payment workstream reused108/109 and current UI. Owned local source
+  `ffc1a30fea8d1bc8f1702833a93c2c09bf5883f2`;49worktrees preserved. Pixel1.2.8/correct package/frame,
+  truthful merchant readiness and immutable private balance110 implemented locally.
+  New methods/controls OFF; existing hosted CARD/COD/Email/tracking preserved.
+-90 focused backend,42Paymob/packing,23core-alone,21transfer-alone checks PASS;
+  304checkout+16Pixel browser scenarios PASS, Chromium/WebKit/ENAR/RTL/themes.
+  3Caddy/26MON/16release guards, rollback/typecheck/build/built-asset HTTP PASS.
+  Actual merchant3DS/funding/hosted customer acceptance remain separate.
+- Hosted core108 cancellation body/RLS/private readiness and service-only aggregate
+  GET PASS; private sessions/attempts/funds0. Initial old-six-warning snapshot STOP
+  MONITOR_WARNING_DRIFT; one genuine legacy pending CARD attempt became overdue,
+  no signed transaction/outcome proof. No retry/cancel/reconciliation. Fresh packet
+  explicitly pins7UNVERIFIED warnings/0critical/2original journal gaps; none cleared.
+- Smallest release READY:3existingfiles, narrow localized private GET ingress and
+  stable private-funds MON extension.0app restart/deploy,0SQL/migration/runtime/
+  unit/key/business/provider write or activation;1same-PID Caddy SIGUSR1 and1bounded
+  MON timer pause/resume. Email/PDC timers untouched; original kill fences retained.
+- Approval `APPROVE PAYMENT-FIRST SCHEMA108 PRIVATE SESSION INGRESS AND MONITOR READINESS fdf4efc5106b89b516f75e8154d36bd463ed37d8d4e218d509e2c7e78b3471b9`.
+  Expiry `2026-11-02T19:35:54.407Z` /22:35:54Riyadh2November. Fresh sealed hosted read-only
+  preflight PASS17:36:32UTC. No automatic apply/retry/rollback. Private packet
+  `/Users/imac/Documents/ELcomputer/payment-launch-20261102/release-plan.json`.
+- Launch gates remain: core approved prerequisite/hosted acceptance/separate
+  activation;109 verified recipient/private proof controls; Pixel merchant3DS;
+  Apple live ID/domain/certificates;wallet merchant flow/ID;balance funding/refund/
+  reconciliation/terms/obligations. Google DISABLED. Unsupported methods isolated.
+- [Full review and recovery](docs/payment-launch-readiness-20261102.md).
+  **ONE next action:** approve the exact3file prerequisite. Then perform natural MON
+  and authenticated read-only postflight; separately seal core activation. Keep
+  UI/catalog paused, original deferred tests and financial/PDC settlement LAST.
+
+# E187 — owner accepts P0 restoration; final checkout/payment launch workstream ACTIVE — 2026-11-02
+
+- Owner personally tested and confirmed the repaired checkout. P0-STORE-CHECKOUT-01
+  owner acceptance is complete. Last release81f6206b393714ae/schema108; fresh
+  read-only verification is in progress. Restoration approval6b762153 remains spent.
+- New decision OD-20261102-PAY-LAUNCH-01 supersedes the feature pause and earlier
+  blanket Paymob-Pixel hold for independent public-document/offline qualification.
+  Prior provider inquiries remain consumed; no merchant probe, payment, refund,
+  fund credit, bank transfer, customer-record upload or shipment is authorized.
+- Single active workstream: reuse108 private prepaid sessions/callback finalizer,
+  close exact customer ingress403 and private-funds MON readiness, qualify activation,
+  then reuse InstaPay109, Pixel1.2.8 and approved checkout UI. Prepare Apple Pay and
+  Egyptian wallets only to evidence-supported readiness. Google Pay stays DISABLED.
+  Inspect existing customer wallet fields before adding an immutable EGP ledger;
+  real-money funding/balance activation stays OFF until controls and obligations pass.
+- Prepaid verified funds create exactly one paid order. Unverified/failed/abandoned
+  attempts stay private, preserving cart/checkout. Retain cancellation safety, late
+  genuine success, funded-order recovery, RLS and uncertain-provider quarantine.
+  COD keeps its confirmation exception; fee10/current shipping remain authoritative.
+  PDC remains staff-approved/packed/measured/separately authorized, no automatic booking.
+- Pause unrelated UI/catalog work. Preserve all existing real records, Email,
+  tracking, MON warnings, emergency controls, worktrees and deferred tests. Exact
+  new sealed approval remains mandatory for production changes or activation.
+- Owned workspace `/Users/imac/Documents/ELcomputer/payment-launch-20261102/source`,
+  branchlocal/payment-launch-20261102 starts from live7b33ed0. Original48worktrees
+  snapshotted read-only before the49th worktree; no merge/reset/push or old edits.
+- **Current next action:** complete concrete prerequisite implementations/qualification
+  and the smallest fresh production packet while independently preparing supported
+  methods. No repeated architecture exercise or synthetic production transactions.
+
 # E186 — P0-STORE-CHECKOUT-01 RESTORED; approved release and hosted browser postflight PASS — 2026-11-02
 
 - Production `81f6206b393714ae / schema108 / source7b33ed031ebfdbad68857ba31fb075a21f795688`.

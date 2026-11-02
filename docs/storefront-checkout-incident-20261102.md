@@ -1,3 +1,15 @@
+> E192: the exact SQL-only109approval was applied once and is CONSUMED_COMPLETE.
+> Data API reads and scheduled workers recovered;8warnings/3gaps remain intact.
+> [Actual execution receipt](p0-data-api-schema109-receipt-20261102.md).
+> Do not replay any consumed operator or activate the old core108draft.
+
+> E191: the earlier browser restoration remains owner accepted. A later,
+> independent Data API outage now blocks purchase reliability. See the
+> [SQL-only pool recovery packet](p0-data-api-conflict-20261102.md). Do not replay
+> the consumed storefront deployment or activate payment-first while degraded.
+
+> **E187 OWNER ACCEPTANCE:** On2November2026 the owner personally tested and confirmed checkout works. P0 is accepted. Continue only the coordinated payment-launch workstream in current handoffs;6b762153 remains consumed.
+
 # P0-STORE-CHECKOUT-01 — urgent purchasing restoration
 
 **STOREFRONT: RESTORED. CHECKOUT: RESTORED (technical qualification).**
