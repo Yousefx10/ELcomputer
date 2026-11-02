@@ -1,3 +1,485 @@
+# E186 — P0-STORE-CHECKOUT-01 RESTORED; approved release and hosted browser postflight PASS — 2026-11-02
+
+- Production `81f6206b393714ae / schema108 / source7b33ed031ebfdbad68857ba31fb075a21f795688`.
+  Exact owner approval6b762153 executed once; CONSUMED_COMPLETE. Cutover
+  `2026-11-02T14:32:36.751347Z`; one app restart, app PID197689. Caddy26652
+  unchanged. Zero SQL, runtime, routing, unit, key, worker or provider changes.
+  Existing Email/tracking timers paused/resumed once without invoking callers.
+- STOREFRONT and existing CHECKOUT technically RESTORED. The two-line composable
+  repair stops the conditional footer remount from repeatedly resetting resolved
+  purchasing access. Capability calls have a10second deadline and no automatic retry;
+  server eligibility, stock and pricing checks remain authoritative.
+- Actual hosted Chrome, unmodified application JavaScript, EN/AR1440/390:4journeys
+  PASS. Controls settle,7footer payment marks remain, eligible Add to Cart works,
+  cart survives refresh, guest checkout reaches sign-in; no browser exceptions.
+  2 actual hosted PDP checks ENdesktop/ARmobile PASS:200, enabled Add to Cart,
+  resolved availability, stable request count, correct canonical and RTL.
+  All non-GET/HEAD browser requests blocked for safety; no production fixture order.
+- 8 authenticated isolated actual Checkout+footer/legacy Card-COD cases,7unit/security,
+  6 release guards,typecheck/build and local application rollback PASS (saved evidence
+  reused; unchanged backend/SQL). No live successful charge or authenticated merchant
+  transaction is claimed. Existing broader account/payment acceptance stays deferred.
+- Sealed read-only hosted postflight PASS:5073installed entries/17protected file
+  hashes/4051actual HTTPS asset hashes, current database/history/Auth/critical order,
+  payment, shipping, Treasury and settings projections preserved. Payment-first and
+  InstaPay remain OFF; private sessions/attempts/funds0, activation revision0.
+  CARD/COD, future customer Email, bounded PDC tracking, configured CODfee10/current
+  shipping/sell-without-stock and emergency controls preserved. Booking remains OFF.
+- Next natural MON `2026-11-02T14:35:04.816617+00:00` PASS: same6existing unverified
+  warnings,0critical,2original journal gaps; no clearing/reconciliation. Natural
+  worker readiness PASS; at14:44:39UTC all3timers active/enabled and both scheduled
+  callers successful. Auth SMTP untouched; no synthetic order, email or provider call.
+- [Incident and evidence](docs/storefront-checkout-incident-20261102.md). All48
+  worktrees/original pending work and35deferred IDs/evidence retained. Original e0
+  implementation, local109/manual transfer, metadata supplement and UI work preserved.
+  No push, feature activation, rollback or additional deployment authorized.
+- **ONE next action:** owner reloads open storefront tabs once and checks the repaired
+  shopping flow. Owner acceptance remains separate from technical restoration; no
+  new release approval is needed. Feature work stays paused pending owner direction.
+
+# E185 — P0-STORE-CHECKOUT-01 confirmed purchasing outage; minimal repair SEALED READY — 2026-11-02
+
+- Owner emergency direction supersedes feature work. STOP payment-first/ingress/
+  InstaPay/monitor-extension development; restore existing storefront/CARD/COD only.
+  Production remains eb50f11c35c0bf62/schema108; no repair deployed yet. Both
+  STOREFRONT and CHECKOUT remain BLOCKED pending the single exact release approval.
+- Actual hosted Chromium EN/AR,desktop/mobile reproduced all cards indefinitely
+  pending despite200catalog/variants/capabilities. Capabilities repeatedly refetch.
+  Conditional footer payment consumer remounts on resolved access,then its automatic
+  mounted refresh resets the shared snapshot pending and unmounts it again. Checkout
+  uses this snapshot for payment methods/quote state. The same three files are byte-
+  identical in7b/5fa ande0/eb50; rollback would retain the refresh loop. Schema108
+  is not the availability root cause; controls false,sinceNULL,revision0,data0.
+- Fix only `app/composables/usePurchaseAccess.js`:2added/2removed lines. Mounts
+  refresh only unresolved current-identity access; explicit refresh and account/token
+  validation remain. HTTP capability timeout10seconds,retry0; failure stays closed.
+  No stock/eligibility/pricing bypass or hardcoded merchant settings. Preserve fee10,
+  current delivery/sell-without-stock configuration and every order/payment record.
+- Isolated hotfix worktree `/Users/imac/Documents/ELcomputer/storefront-checkout-incident-20261102/source`,branchlocal/p0-storefront-checkout-20261102,
+  clean commit7b33ed031ebfdbad68857ba31fb075a21f795688. Originale0 and all other
+  worktrees/candidates preserved. Typecheck/build PASS with pinned Node22.23.1.
+-4actual hosted browser client-patch cases EN/AR,1440/390 PASS: request storm stops,
+  eligible controls resolve,7footer marks remain,Add to Cart works,cart survives
+  reload,guest checkout reaches login. Real public data/eligibility,not fabricated.
+ 8authenticated isolated Checkout+actual footer/legacy Card/COD cases PASS with
+  one confirmation,double-click guard,explicit Card intention once/retry0. No real
+  provider call or production fixture order.7unit/security and6release guards PASS.
+ 33local route checks,4051served asset hashes,9icons,guarded archive readback and fresh
+  encrypted108 DB/17runtime-file backups/full readback PASS. No real charge claimed.
+- Confirmed inactive new `/api/account/payment-checkouts`403 is not called by the
+  current legacy Card/COD fixture journeys. Do not open new ingress or activate a
+  feature to repair this incident. E184server/API/SSR postflight did not establish
+  actual customer purchase usability; this incident now requires real browser proof.
+- Candidate81f6206b393714ae,app-only108,0SQL/runtime/Caddy/units/keys/provider changes,
+ 1app restart and bounded existing Email/tracking timer pause/resume. New flows OFF.
+  Fresh sealed hosted preflight `2026-11-02T13:57:01.991Z` PASS: actualeb50/108,17files,
+  CARD/COD capabilities,Email/tracking/MON,same6warnings/0critical and original fences.
+  Exact one-use deployment guard requires a fresh artifact approval; no approval or
+  execution attempt has been recorded. Old e47/8714 approvals must never be replayed.
+- [Incident/release receipt](docs/storefront-checkout-incident-20261102.md). New seal
+  `6b762153b5702e6da2c6d28d9795ba09213c7625b0d3dcff15100a79075376e4`; expires `2026-11-02T15:50:56.171Z` /18:50:56Riyadh;
+  start by `2026-11-02T15:35:56.171Z` /18:35:56Riyadh.
+- **ONE next action:** owner supplies `APPROVE P0 STOREFRONT CHECKOUT SCHEMA108 APP-ONLY RESTORATION 6b762153b5702e6da2c6d28d9795ba09213c7625b0d3dcff15100a79075376e4`. This single approval covers
+  the minimal restoration release and postflight; no routine-step confirmations.
+  After deployment prove actual unpatched hosted controls/cart/checkout handoff and
+  guarded fixture Card/COD,then update the incident. No feature work before restoration.
+
+# E184 — PAY-FIRST-01 inactive108 app+SQL DEPLOYED; read-only technical closeout PASS — 2026-11-02
+
+- Exact recovery8714d1d3 executed once; cutover11:17:43UTC. Production is now
+  `eb50f11c35c0bf62 / schema108 / sourcee0ece3a162f0c081b19f63a4fb33b44e4598d82d`.
+  App PID192586,one restart; Caddy26652 unchanged. Recovery spent0SQL/0upload and
+  one bounded pause/resume each existing Email/tracking timer, without caller
+  termination/manual invocation. Schema108 was already committed by consumed e47.
+- New payment-first server/public/DB controls remain OFF,revision0; five private
+  session/payment/evidence tables0. CARD/COD,Email,tracking,MON,Dashboard fee10,
+  Auth SMTP,existing orders and original emergency budgets preserved.109/manual
+  transfer,MON private-funds extension,extra methods/Pixel/Pay Again remain excluded.
+- Raw8714 mutating operator ended CONSUMED_STOP AFTER a successful cutover when
+  its public postflight wrongly expected401 for the new customer session API.
+  Actual public403 is the unchanged Caddy account allowlist; loopback401 proves
+  application authentication. New admin API401. Frozen operator/STOP receipts are
+  preserved; never rerun apply or restart. Independent read-only closeout PASS,
+  without changing runtime,Caddy,units,keys,worker files or business data.
+- Hosted proof:4965installed file inventory/17protected hashes,3933served asset
+  hashes,9icons/manifest/cache,10EN/AR public routes/canonicals,public CARD/COD PASS.
+  Six private RLS tables,18denied direct-role table checks,13service-only RPCs,
+  authorized owner-admin read/unauthorized actor denial and actual PostgREST GET
+  monitor all0 PASS. No real customer-token A/B or merchant/bank acceptance claimed.
+- Of150original projections,144unchanged. Four catalog/audit projections match one
+  independently audited owner publish at11:10:33UTC BEFORE cutover; receipt/actor/
+  product/revision/current published value match and remain preserved. Two analytics
+  tables grew naturally. Financial/order/Auth security/history/Email/settings stable.
+  Original108 migration transaction separately preserved all150rows exactly.
+- Next natural MON11:30:06UTC PASS: same6warnings/0critical,2original journal gaps.
+  Both natural callers succeeded after cutover; two consecutive scheduled tracking
+  batches checked0/failed0/emptytrue,retries0. No provider/payment/refund/shipment/
+  customer message/SMTP action initiated. Cancelled real order and uncertain PDC
+  booking remain closed/provider-unverified or quarantined. Earlier failures retained.
+- [Technical receipt and activation gates](docs/payment-first-core108-release-review.md).
+  Closeout `2026-11-02T11:43:05.941Z`; packet `/Users/imac/Documents/ELcomputer/payment-first-core108-cutover-recovery-20261102`. Both e47 and8714 are spent; no retry,
+  implicit rollback,DB restore/drop,evidence deletion or new approval reuse.
+- **ACTIVATION NOT READY:** customer `/api/account/payment-checkouts` is explicitly
+  absent from the existing account ingress allowlist and publicly403. Qualify all
+  exact required customer routes/methods before opening them. Private-funds MON
+  qualification/install and controlled hosted/merchant acceptance also remain.
+ 109/bank settings have their own later release/activation; old catalog numbering
+  stays provisional. All47worktrees/24133pending hashes/35deferred IDs preserved.
+- **ONE next action:** PAY-FIRST-01-INGRESS: prepare the smallest locally qualified
+  customer payment-session ingress packet; no production change or activation
+  without a new exact owner approval. Pixel/Pay Again await existing reply; ERP LAST.
+
+# E183 — PAY-FIRST-01-R1 existing108 app-only recovery SEALED READY / UNAPPROVED — 2026-11-02
+
+- Parent e47ceaab remains CONSUMED_STOP. Schema108 committed10:48:30UTC with
+  150original projections unchanged; do not rerun its SQL, staging or apply mode.
+  Live app stays5fa9ef1bf4b05359 on inactive108; no app restart, current-link switch
+  or timer pause occurred. Candidate eb50f11c35c0bf62 remains privately staged.
+- [Current recovery review](docs/payment-first-core108-release-review.md). Fresh
+  separate packet reuses that exact candidate/certificate/sourcee0ece3a and build830:
+  0SQL/migration/upload,1app restart, bounded pause/resume of existing Email/tracking
+  timers only. No runtime/Caddy/unit/key/worker/provider/business/email change;
+  new checkout/transfer controls remain OFF.109/monitor extension/activation excluded.
+- Guard correction observes at most150seconds for two actual consecutive recent
+  successful empty scheduled tracking runs, after DB preflight. Requires checked0,
+  failed0,emptytrue,retries0 and successful inactive caller; never invokes a worker,
+  accepts failure, deletes evidence or hides a warning. Original-stage O_EXCL recovery
+  claim prevents concurrent packet reuse. Any uncertain consumed attempt stops.
+- 8Node+9Python recovery guards PASS; existing app/native/browser/typecheck/build/
+  rollback/3933asset/backup evidence reused because application/SQL bytes unchanged.
+  Sealed read-only hosted preflight `2026-11-02T11:09:15.944Z` PASS:108,private sessions/payment
+  data0,old app/PIDs/17files,current CARD/COD/Email/tracking/MON/fee10/emergencies,
+  same6warnings/0critical and eligible AWBs0. Original runtime and encrypted107 DB
+  backup reused with committed108 SQL/receipt and fresh108 schema/data snapshot.
+- Existing generic tracking failures remain recorded; exact HTTP/RPC cause unproven.
+  Subsequent natural runs succeeded; no manual request/PDC contact or worker fix.
+  Preserve cancelled CARD/provider-unverified order and uncertain PDC quarantine.
+- New recovery seal `8714d1d31eb6713b75003082b8fe3b5cc4b4391836552e2b1142965d3ecee090`; expiry `2026-11-02T15:04:59.787Z` /18:04:59Riyadh;
+  execution start by `2026-11-02T14:49:59.787Z` /17:49:59Riyadh.
+  New approval/apply/stage/migration/cutover has NOT been recorded or executed.
+  All47 worktrees/24133 original pending hashes/35deferred IDs remain preserved.
+- **ONE next action:** owner supplies `APPROVE PAYMENT-FIRST SCHEMA108 EXISTING CANDIDATE CUTOVER RECOVERY 8714d1d31eb6713b75003082b8fe3b5cc4b4391836552e2b1142965d3ecee090` if accepting this existing-
+  candidate app-only cutover. Parent approval cannot authorize recovery. Hosted
+  inactive acceptance/MON extension/checkout activation and109/bank readiness remain
+  separate; Pixel/Pay Again await provider reply; detailed PDC settlement/ERP LAST.
+
+# E182 — PAY-FIRST-01 schema108 COMMITTED; app cutover CONSUMED_STOP — 2026-11-02
+
+- Owner exact e47ceaab approval recorded and attempted once. Schema108 committed
+  at2026-11-02T10:48:30.244Z;150original projections and Auth/history/commerce/Email
+  preserved exactly inside the transaction. All new controls OFF; private sessions,
+  attempts, funds and callback rows0. Never rerun the108 migration or parent installer.
+- Candidate eb50f11c35c0bf62 is staged and certified from sourcee0ece3a. Before
+  cutover, TRACKING_CALLER_STOP halted on the latest existing scheduled caller
+  failure. No symlink switch, app restart, timer pause/resume, runtime/Caddy/unit/key
+  change, provider action or customer message. Parent e47 is CONSUMED_STOP.
+- Read-only after-stop verification PASS: live app remains5fa9ef1bf4b05359 on
+  inactive schema108; app169602/Caddy26652,17files and public CARD/COD unchanged,
+  current Email/tracking/MON/fee10/emergency controls preserved. Same6warnings/
+  0critical,eligible AWBs0. Tracking recovered through its next two scheduled empty
+  runs without manual worker calls. The failed outcomes and guard receipts remain.
+- Repeated generic caller failures preceded SQL and occurred again before cutover;
+  their underlying HTTP/RPC cause is not proven. Do not call PDC or replay a worker.
+  Recovery will retain strict health checks and require two consecutive successful
+  zero-work natural runs, with bounded read-only waiting. No failure is accepted.
+- Preparing the smallest separate existing-candidate app-only recovery: schema108
+  already installed,0SQL/0upload,1app restart, bounded existing timer pause/resume.
+  No automatic recovery or parent-approval reuse. New checkout/transfer controls
+  remain OFF;109/MON extension/activation/provider methods remain separately gated.
+- Worktrees/deferred evidence and cancelled/quarantined real orders preserved.
+  **ONE next action:** finish and review the fresh sealed app-only recovery packet;
+  a new exact owner approval is required before any cutover action.
+
+# E181 — PAY-FIRST-01 inactive core108 SEALED READY / UNAPPROVED — 2026-11-02
+
+- Checkpoint recovered and independently verified; E179 owner pause was revoked.
+  Clean branch `local/payment-first-checkout-20261101` at
+  `e0ece3a162f0c081b19f63a4fb33b44e4598d82d`; implementation830558dc remains unchanged.
+  HEAD adds only two baseline account-ownership cases. Existing passing830 build
+  reused with byte-identical application/SQL inputs; no implementation rebuild.
+- [Release review](docs/payment-first-core108-release-review.md): complete compatible
+  core app plus only `20261101220000_payment_first_checkout.sql`,107→108,
+  one app restart and bounded pause/resume of existing Email/tracking timers.
+  New initiation/runtime/DB controls remain OFF;109/manual transfer, monitor-worker
+  installation, merchant methods/Pixel/catalog/metadata and activation are excluded.
+- Qualification:182 saved focused tests+23 core-alone+10 new compatibility/ownership
+  cases;26 monitor tests/204 browser scenarios/typecheck/build;15 new release guards,
+  exact migration footprint/rollback,33 route checks/3933 asset HTTP hashes and full
+  encrypted backup readback PASS.26 inherited stale assertions remain preserved;
+  no all-repository-green or hosted transaction/owner acceptance claim.
+- Fresh sealed read-only preflight `2026-11-02T10:24:11.767Z` PASS: production5fa9ef1bf4b05359/
+  schema107, app169602/Caddy26652,17protected hashes and managed-role/default ACL,
+  current CARD/COD/Email/tracking/MON, fee10, emergency fences and original data.
+  Same6 MON warnings/0critical; zero genuine eligible AWBs. No production/provider,
+  payment/refund/shipment/email/SMTP action or warning clearing. Cancelled CARD
+  order remains closed/provider-unverified; uncertain PDC booking stays quarantined.
+- Candidate `eb50f11c35c0bf62`; seal `e47ceaabe0c52fee7e79b21dd670e78e0ff055f5feb4dba0d0db80f50e651f2e`.
+  Expiry `2026-11-02T14:22:46.328Z` /17:22:46Riyadh; execution start by
+  `2026-11-02T14:07:46.328Z` /17:07:46Riyadh. One-use and revision-bound;
+  no approval or apply attempt recorded. Stop on drift/expiry/uncertainty; no retry,
+  implicit rollback, old-DB restore, evidence deletion or old-approval reuse.
+- Preserved47 worktrees including46 original/24133 pending non-document hashes,
+  all35 deferred IDs/evidence, metadata9b4107c and earlier UI/catalog candidates.
+  Hosted inactive acceptance → separate private-funds MON qualification/install →
+  separate complete payment-first activation. B109 needs its own later inactive
+  release, verified bank settings/roles/private files and activation. Pixel/Pay Again
+  await provider reply; detailed PDC settlement/ERP remains LAST.
+- **ONE next action:** owner supplies `APPROVE PAYMENT-FIRST SCHEMA108 INACTIVE CORE DEPLOYMENT e47ceaabe0c52fee7e79b21dd670e78e0ff055f5feb4dba0d0db80f50e651f2e` if accepting only this
+  inactive installation. No new provider transaction or checkout activation implied.
+
+# E180 — PAY-FIRST-01 resumed; checkpoint independently verified — 2026-11-02
+
+- Owner resumed qualification/release preparation. The E179 stop request is revoked;
+  no deployment, migration, provider or payment action is authorized.
+- Saved checkpoint830558dc7b1655ddbb2a2d957e52863ef6036c39 is complete and clean.
+  Both final build commands returned0. Saved test receipts confirm182 focused Node,
+ 23 core-alone and26 monitor tests, plus204 actual browser scenarios, all PASS.
+- Main checkpoint documents exactly match their saved SHA256s. All47 worktrees,
+  prior candidates, zero staged main paths and all35 deferred IDs remain preserved.
+  Do not rebuild/retest passing work without a missing or invalidated check.
+- Current work: qualify the missing inactive107→108 compatibility/deployment
+  boundaries, reuse the built830 artifact and prepare a fresh sealed core release.
+  B109, merchant methods/Pixel and catalog remain independently gated. Production
+  is unchanged; a new read-only target/history/role/backup preflight is required.
+
+# E179 — PAY-FIRST-01 local qualification saved; OWNER PAUSED — 2026-11-02
+
+- **Owner requested STOP for usage reset.** No further feature/release work until
+  explicitly resumed. [Safe checkpoint](docs/payment-first-checkout-checkpoint.md)
+  contains exact paths, commands/evidence and the first resume action.
+- **Code checkpoint:** clean830558dc7b1655ddbb2a2d957e52863ef6036c39 in the isolated
+ 47th worktree, local/payment-first-checkout-20261101. Reuses deployed7b plus571a670
+  checkout A–E; no rebuild of existing Paymob/COD/Email/PDC infrastructure.
+- **Local design/implementation qualified:** private payment-first core108 and
+  independent InstaPay addon109, owner/cart/funds safety, bilingual paid-only Email,
+  private receipt/review, packing eligibility and optional OFF monitor extension.
+ 182 focused Node tests +23 core-alone cases +26 Python monitor tests PASS;
+ 204 actual Chromium/WebKit scenarios PASS. Final830 typecheck/build both0.
+- **Production unchanged:** last read-only00:25 Riyadh2November confirms5fa9/schema107,
+  app169602/Caddy26652,17 hashes, same6 warnings/0 critical and original gaps.
+  CARD/COD/Email/tracking/MON/fee10/emergency controls and nine real orders retained.
+  Cancelled96B4660736 and historical uncertain shipment remain closed/quarantined.
+- **Preservation:** all46 original worktrees/24,133 pending non-document hashes and
+ 35 DTR IDs/evidence retained. All107 historical migrations unchanged; old catalog/
+  guard numbering provisional. Full34e/visual7b/phase171d/metadata9b work remains.
+- **No new seal/expiry:** no deployment, migration, activation, provider/charge/refund,
+  shipment, email, Auth SMTP, warning clearing or Git push. Existing approvals consumed.
+  Hosted/merchant/physical acceptance remains separate;26 inherited stale test
+  failures reproduced on untouched deployed source and preserved in the review.
+- **On resume:** inspect the checkpoint, then prepare the fresh separately sealed
+  inactive core108 packet. Keep addon109/provider methods/catalog independently gated.
+  Pixel/Pay Again wait for the existing reply; settlement/ERP remains LAST.
+
+# E178 — VISUAL DEPLOYED; hosted postflight PASS — 2026-11-01
+
+- **UIUX-03-R1 / UIUX-03:** exact recovery approvale613e1df consumed COMPLETE.
+  [Deployment receipt](docs/owner-ui-phase2-release-review.md). Production now
+  `5fa9ef1bf4b05359 / schema107 / source7b3706768206a8852483999e98b0b1b46d1a0b04`.
+  Cutover19:44:52UTC, one app restart/PID169602; Caddy PID26652 unchanged, no signal.
+  Parent940c stays CONSUMED_STOP and must never be replayed or amended.
+- **Installed scope:** complete phase-one mobile/nav/account/favicon/SEO/cart/staff-
+  dialog fixes plus phase-two footer, supported marks, mobile cards and dark art.
+  Zero migrations/SQL/business/settings/runtime/credential/Caddy/provider changes.
+  Checkout A–E, catalog108/109, cancellation hold110, hosted handoff and metadata
+  remain local/excluded. No unrelated feature activation or synthetic transaction.
+- **Hosted postflight PASS:** all3,813 current/retained asset SHA-256s, nine icons/
+  manifest/cache headers, EN/AR homepage metadata/canonical routes and truthful
+  test-product404; live public CARD initiation/COD/purchasing. All17 protected
+  file hashes unchanged. One bounded stop/resume of each existing Email/tracking
+  timer; both natural callers succeeded after cutover, no manual worker request.
+- **Data/security:**147of150 full table fingerprints unchanged. Auth differences
+  are only permitted activity timestamps; all nine identity/security rows unchanged.
+  Only two analytics tables otherwise grew naturally. All nine existing orders,
+  payment/Email/shipping/history/CMS projections, Dashboard fee10, tracking policy,
+  emergency budgets and Auth SMTP preserved. Genuine eligible AWBs remain0.
+- **MON:** next normal19:45:05UTC report PASS, same6 terminal-payment-unverified
+  warnings/0 critical and unchanged journal-gap bindings. No warning reset/mute,
+  payment reconciliation, provider inquiry, cancellation/reopen/refund/fulfillment.
+  The previously owner-cancelled order remains closed/provider-unverified.
+- **Preservation:** all46 worktrees,24,131 protected pending hashes and35 deferred
+  IDs/evidence preserved; original71d/full34e/metadata9b4107c candidates intact.
+  Handoffs/roadmap/register synchronized; main documentation remains unstaged.
+  No Git push. Production rollback still needs a fresh observed-state approval;
+  never restore the DB, replay a consumed attempt or spend an emergency implicitly.
+- **Acceptance:** technical deployment/postflight complete. Physical owner visual
+  acceptance and all separately recorded hosted/provider tests remain pending.
+- **ONE next action:** owner reviews the deployed mobile visuals in EN/AR. Prepare
+  CHECKOUT A–E independently after that review; no catalog/payment scope implied.
+
+# E177 — VISUAL approval CONSUMED_STOP before staging; guard recovery READY — 2026-11-01
+
+- **UIUX-03-R1:** exact owner approval940c65d5 recorded and attempted once.
+  The local operator passed the read-only database/host checks, then stopped on a
+  public health parser error: it expected nonexistent top-level `cash.available`.
+  The actual deployed contract is `purchase.paymentMethods`. This was an operator
+  defect, not evidence of broken COD. [Receipt/recovery](docs/owner-ui-phase2-release-review.md).
+- **Production unchanged:**1fd7ef6909869361/schema107, app PID140566/Caddy26652,
+  all17 protected hashes, CARD/COD, Email/tracking/MON, fee10 and emergency fences.
+  No execution intent, upload, remote stage, cutover, restart, SQL/configuration,
+  provider request or email. Parent940c remains CONSUMED_STOP, never replay/amend.
+- **Correction local only:** separate private recovery operator validates real
+  CARD/live/public purchase fields and CARD/COD policy, alongside existing guarded
+  Dashboard settings. Actual public GET and23 focused tests PASS:15 operator,
+  five capability-contract/uncertainty checks and three DB/security guards.
+  Fresh read-only hosted preflight confirms6 unchanged payment-unverified warnings,
+  zero critical, original MON/journal bindings and no remote candidate/stage.
+- **Reuse unchanged artifact/source:**7b3706768206a8852483999e98b0b1b46d1a0b04,
+  candidate5fa9ef1bf4b05359; no rebuild, migration or feature expansion. All prior
+  browser/typecheck/build/assets/rollback evidence and encrypted backups retained.
+  One app restart remains, with bounded existing Email/tracking timer pauses only.
+  Checkout/catalog/cancellation guard/hosted handoff/metadata remain excluded.
+- **Recovery READY / UNAPPROVED:** seal e613e1dfd5866c187095bb6ba15960e44fab908836f47acfaf2f38f23ae4aa60;
+  expires 2026-11-01T23:22:07.695Z; start by 2026-11-01T23:07:07.695Z.
+  Exact statement in the report. Separate approval required because the parent
+  attempt is consumed. No recovery approval recorded or execution attempted.
+- **Preserved:** all46 worktrees, pending work and35 deferred IDs/evidence; cancelled
+  order remains closed and provider-unverified, six MON warnings remain visible.
+  No automated retry/rollback, warning reset or original emergency-budget use.
+- **ONE next action:** owner approves only the fresh pre-staging guard recovery
+  statement if accepted. Do not run the consumed940c packet again.
+
+# E176 — Phase two recovered; visual-only release SEALED READY, UNAPPROVED — 2026-11-01
+
+- **OD-20261101-UIUX-PHASE2-RESUME-01 / UIUX-03-R:** recovered completed E175
+  implementation and passing receipts; no rediscovery/rebuild or production write.
+  [Completion and release review](docs/owner-ui-phase2-release-review.md) supersedes
+  the prior combined visual/checkout grouping. Phase one71d86c3 and complete phase
+  two34e1590 remain clean and compatible; metadata9b4107c stays undeployed.
+- **Isolated VISUAL source:**7b3706768206a8852483999e98b0b1b46d1a0b04,
+  `local/owner-ui-phase2-visual-20261101`, based on71d86c3. Includes prior mobile,
+  favicon/SEO, account/cart/staff-dialog fixes plus footer/cards/dark category art.
+  Checkout, server APIs,107 migrations, catalog/accessories/payment changes match
+  production and are excluded. Separate review patches account for every remaining
+  application change; shared fields require a reviewed rebase, never overwrite.
+- **Fresh subset PASS:**5 focused;482 visual component assertions per engine,
+  459 compiled public-shell assertions per engine;14 release/3 DB guards;
+  typecheck/build;33 prior/candidate/rollback HTTP checks;3,813 served asset hashes;
+  archive/retention, encrypted backups/readback and read-only hosted preflight.
+  Reused completed E175 native/RLS/worker/checkout evidence without broad reruns.
+  Four inherited frozen/reset failures and all deferred evidence are preserved.
+- **Production:**1fd7ef6909869361/schema107,17 protected hashes and CARD/COD/Email/
+  tracking/MON/emergencies/fee10 preserved. Original CARD order remains owner-
+  cancelled at16:47UTC and payment-unverified; no reopen/retry/refund/fulfillment.
+  Six terminal-payment-unverified warnings/zero critical explicitly disclosed in
+  the NEW packet; no monitor/ledger change, suppression or financial reconciliation.
+- **Release groups:** VISUAL app-only107 first; CHECKOUT A–E app-only107 separately;
+  CATALOG continuation108/accessory guard109 separately; cancellation hold110 and
+  hosted handoff separately. Numbers provisional until actual-history recheck.
+  Handoff OFF; provider finality/merchant acceptance still pending. No unrelated
+  metadata, pickup, ERP or integration activation. Other groups have review patches,
+  not execution seals/artifacts. The held original packet remains untouched.
+- **VISUAL packet:**candidate5fa9ef1bf4b05359, zero SQL/settings/runtime/Caddy/provider
+  changes; at most one app restart and bounded existing Email/tracking timer pauses.
+  One-use seal 940c65d5eeef225243b3f9567658075015c06beac37a20f32f7f6a6d4c0ad6aa; expiry 2026-11-01T23:22:07.695Z;
+  start deadline 2026-11-01T23:07:07.695Z. Exact statement in the report.
+  Approval not granted/consumed; no staging/restart/deployment or provider write.
+- **Preservation:** all45 existing worktrees plus isolated46th, pending work and35
+  deferred IDs retained; main continuity edits remain unstaged. Production rollback
+  requires fresh separate approval, never DB restore or automatic retry/rollback.
+- **ONE next action:** owner reviews visual previews and approves only the new
+  VISUAL statement if accepted. Checkout/catalog/payment safety remain separate.
+
+# E175 — Phase-two UI/UX locally qualified; separate releases unapproved — 2026-11-01
+
+- **OD-20261101-UIUX-PHASE2-01 / UIUX-03:** all independent local work complete.
+  Reuse and preserve the qualified71d86c3 phase-one candidate. [Report](docs/owner-ui-phase2-20261101.md)
+  covers footer, mobile cards, dark category images, configurable bounded catalog
+  continuation, selected accessories and checkout A–F; no broad redesign.
+- **Frozen source:** `34e159002bbe348c12da73202a04023e9587ec0f`, isolated `local/owner-ui-phase2-20261101`.
+  Both footer styles, real capability-gated logos, newsletter truth, responsive
+  images/actions, inline owned addresses/focus/Escape, delivery cards and coupon
+  placement qualified. F's fresh-only hosted handoff flag defaults OFF; no Pixel,
+  existing-attempt resume, unsafe Pay Again or provider activation.
+- **Schema plan:** provisional108 catalog preference/read RPC;109 recommendation
+  cycle guard reusing existing private ordered IDs;110 unpaid-CARD cancellation
+  hold. Separate SQL/rollback qualification; zero historical migration edits or
+  current order/data rewrites. Reconfirm actual history for each selected release.
+  No metadata supplement, history import/claim, pickup, SEO expansion or ERP work.
+- **Payment truth/current production:** pinned17:01UTC host observation confirms
+  `1fd7ef6909869361 / schema107`, same app/Caddy PIDs and17 protected hashes.
+  CARD/COD, Email, tracking and MON remain active; COD fee10 preserved. Read-only
+  ledger/audit confirms the genuine CARD order was cancelled by an owner-role
+  Dashboard update at16:47UTC. Its payment is still pending/unverified, amount paid
+  zero, transactions zero; do not reopen, resume, pack, ship or use it as a test.
+  Detailed references remain private. No cancellation/payment/provider action by us.
+- **P0 finding:** original cancellation SQL could infer safety from local age.
+  The isolated local110 guard holds every existing attempt for reconciliation,
+  including worker expiry; no-attempt cancellation retains its existing contract.
+  Provider finality remains response-blocked. Normal MON now has six terminal
+  payment-unverified warnings/zero critical; none suppressed, cleared or rebound.
+  The prior packet stopped on its expected-five-warning/ledger guard. Do not replay
+  it; disclose current alerts in a fresh selected release packet.
+- **PASS:**33 focused tests;13 payment/HMAC safeguards;15 native migration/RLS/
+  concurrency/expiry/Orders-HTTP checks;5 native presentation API checks;500 new
+  component assertions per browser;459 public-shell assertions per browser;
+  36 new checkout tests per browser and37 existing address tests;145 staff
+  regressions; typecheck/build;30 local HTTP/rollback checks and34 served asset
+  hashes per observation. Chromium/WebKit, eight widths, EN/AR/RTL, both themes
+  and footer styles covered. Screenshots are fixtures, not owner/hosted acceptance.
+- **Preserved limits:** three old frozen-string checks and old native reset-coverage
+  failure reproduced on unchanged prior71d86c3. All cases/evidence retained; no
+  unrelated reset/grant/production repair. Native fixture ACL matches read-only
+  production evidence. All44 prior worktrees plus clean45th,35DTR IDs and9b4107c
+  metadata preserved. No production write/restart/deployment, provider inquiry,
+  email, booking or Auth SMTP action.
+- **Release order:** first A+D app-only/schema107 subset, then catalog, accessories,
+  separate payment hold and separately gated F. Do not deploy the full110 source
+  as an app-only107 artifact. Every packet requires fresh binding/backups and exact
+  owner approval; no seal or expiry issued. Paymob reply/real acceptance remains
+  separate; detailed PDC settlement/ERP LAST.
+- **ONE next action:** owner reviews the local mobile previews for the first
+  app-only visual/checkout presentation packet; production approval follows sealing.
+
+# E174 — Owner UI fixes locally qualified; deployment held — 2026-11-01
+
+- **OD-20261101-UIUX-FIX-01 / UIUX-02:** owner authorized all listed local fixes
+  together, superseding E173's wait for priorities. All four screenshot areas and
+  UX-REV-01 through 05 now pass local qualification. [Evidence](docs/owner-ui-fixes-20261101.md) records
+  mobile hero/navigation, contained account cards, source-derived favicons,
+  localized SEO, safe order-dialog identity/payment fields, cart restoration,
+  keyboard focus and original historical dates/statuses. No broad redesign.
+- **Frozen source:** `71d86c365101ea7dd185c0f0884334a4a7fc9c90`, isolated
+  `local/owner-ui-fixes-20261101`, based on actual deployed `7d989cd`.
+  Two small commits; 32 files; no handwritten server API, migration or dependency
+  changes. Metadata `9b4107c` remains preserved and undeployed.
+- **Qualification:** 87 focused/navbar tests; Chromium and WebKit at
+  320/360/375/390/414/768/1280/1440px, EN/AR, RTL/LTR, light/dark;
+  918 public, 260 account, 290 staff/history, 144 label and 25 cart browser
+  assertions PASS. Component bounds, before/after screenshots, delayed responses,
+  local mock command completion, keyboard focus and reload persistence checked.
+  Typecheck/build, 13 release guards, three database/security guards, 3,812 asset
+  hashes and 33 local prior/candidate/rollback HTTP checks PASS. Hosted customer/
+  staff, physical-iPhone and genuine provider-PDF acceptance remain distinct.
+- **Production unchanged:** fresh host observation confirms
+  `1fd7ef6909869361 / schema107`, app PID 140566, Caddy PID 26652 and all 17
+  protected hashes. CARD/COD, Email, bounded tracking, MON, emergency controls
+  and owner-configured COD EGP10 preserved. Automatic booking/webhooks remain OFF.
+  TESTproduct2026 is already unpublished, both paths 404 and absent from the
+  current 488-URL sitemap; no catalog change or Google submission occurred.
+- **Release HELD before sealing:** normal MON at 15:05 UTC has six warnings,
+  zero critical; one new `OVERDUE_PAYMENT_UNVERIFIED` joins the original five.
+  Read-only SQL confirms a new genuine CARD order is `pending_payment / pending`;
+  nine live orders now exist. Its reference remains in private evidence, not Git.
+  No provider verification, retry, payment marking, warning clearing or new
+  warning-baseline acceptance occurred. Original eight Auth security identities
+  are unchanged; one ordinary customer added, no new administrator. The fresh
+  exact nine-account binding passes guards without modifying historical validators.
+- **Smallest later release:** app-only, same schema107, one planned app restart,
+  bounded pause/resume of existing Email/tracking timers; zero migration,
+  settings/runtime/Caddy/business-row/Google change or worker/provider invocation.
+  Candidate archive `f4318b3a40d13c36915ada5642f2729d1df16ed1e4be631dd0ea602a85888ec6`.
+  Encrypted backups/readback and local rollback PASS. No seal, expiry, approval,
+  staging, cutover or restart exists for this stopped packet. A later deployment
+  or rollback requires a fresh exact approval; no automatic retry or rollback.
+- **Preservation:** all 43 original worktrees and 24,130 pending non-document
+  hashes retained, plus the clean isolated 44th worktree; all 35 deferred IDs and
+  previous evidence remain. Paymob Pixel/Pay Again await the provider reply;
+  detailed PDC settlement/ERP remains LAST. No real test order, email, charge,
+  booking, provider request, Auth SMTP or archive write was performed.
+- **ONE next action:** owner reviews the new pending CARD order in Dashboard and
+  decides payment follow-up. Then qualify a fresh warning-aware release preflight;
+  do not adopt the changed MON baseline or mint approval from the stopped attempt.
+
 # E173 — Customer/Admin UX review complete; waiting for owner priorities — 2026-11-01
 
 - **OD-20261101-UIUX-01 / UIUX-01:** read-only review complete. No feature
