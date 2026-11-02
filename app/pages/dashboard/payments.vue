@@ -18,7 +18,7 @@
 <script setup>
 import {hasAdminPermission} from '~/utils/adminPermissions'
 const {adminUser}=useAdminAccess(),canReview=computed(()=>hasAdminPermission(adminUser.value,'payments.review')),canConfigure=computed(()=>hasAdminPermission(adminUser.value,'payments.configure'))
-definePageMeta({layout:'dashboard',middleware:['admin-auth']})
+definePageMeta({layout:'dashboard'})
 const scope=useCustomerScope(),monitor=ref(null),methods=ref([])
 let disposed=false
 const {request}=useSupportClient(),rows=ref([]),loading=ref(true),error=ref(false),manualInstalled=ref(false)
