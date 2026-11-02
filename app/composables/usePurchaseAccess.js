@@ -42,7 +42,7 @@ export const usePurchaseAccess = () => {
       if (!job || job.accountId !== id || job.token !== session?.access_token) {
         job = { accountId: id, token: session?.access_token, promise: $fetch('/api/payments/capabilities', {
           headers: session?.access_token ? { authorization: 'Bearer ' + session.access_token } : {},
-          retry: 0
+          retry: 0, timeout: 10000
         }) }
         requests.set(nuxt, job)
       }
@@ -69,7 +69,7 @@ export const usePurchaseAccess = () => {
     }, { flush: 'sync' })
     let timer
     onMounted(() => {
-      if (!publicAccess.value || betaAccess.value) refresh()
+      if ((!publicAccess.value || betaAccess.value) && !resolved.value) refresh()
       timer = setInterval(() => { now.value = Date.now() }, 1000)
     })
     onScopeDispose(() => clearInterval(timer))
