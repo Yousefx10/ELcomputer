@@ -1,3 +1,15 @@
+> **CURRENT E201,3November2026:** Productionbec54ceb2fbfac72/source76b4db1/schema110. Dashboard fix deployed and owner accepted,d702CONSUMED_COMPLETE. Independent postflight PASS;InstaPay remainsOFF. One genuine private CARD attempt pending/0verifiedfunds,not a paid-order acceptance. [Actual receipt/current next boundary](docs/instapay-dashboard-schema110-deployment-receipt-20261103.md). Earlier approvals below are historical.
+
+> **CURRENT E200,3November2026:** ffd0a1c4 CONSUMED_STOP after candidate upload;NO live cutover/restart. Production81f6206b/schema110 unchanged. Same candidate recovery with bounded read-only MON admission qualified,READY/UNAPPROVED. [Actual stop and fresh recovery approval](docs/instapay-dashboard-schema110-staging-stop-and-cutover-recovery-20261103.md).
+
+> **CURRENT E199,3November2026:** Old3c75de02 approval expired before receipt;NOT EXECUTED. Same Dashboard500fix/source/artifact refreshed after read-only checks,READY/UNAPPROVED. Production81f6206b/schema110 unchanged;InstaPayOFF. [Fresh exact approval and expiry](docs/instapay-dashboard-access-schema110-refresh-20261103.md).
+
+> **CURRENT E198,3November2026:** Production81f6206b/schema110 unchanged. Dashboard Payment activity500 reproduced; one-line access fix locally qualified/sealed READY,UNAPPROVED. InstaPay remains OFF. [Exact app-only scope,approval and expiry](docs/instapay-dashboard-access-schema110-review-20261103.md). No replay of earlier approvals.
+
+> **CURRENT E197,3November2026:** Production81f6206b/schema110. InstaPay installed INACTIVE; CARD/COD preserved. Original5d25operator CONSUMED_STOP after acknowledged SQL commit; independent read-only/natural-worker closeout PASS. [Actual receipt](docs/instapay-schema110-installation-receipt-20261103.md). No replay or new approval. Earlier READY/approval instructions below are historical.
+
+> **CURRENT E196,3November2026:** Handover recovered; actual production81f6206b/schema109 with payment-first CARD ACTIVE. Inactive InstaPay110 is separately sealed READY/UNAPPROVED,one SQL migration/zero app restart. [Current scope,approval and acceptance gates](docs/instapay-schema110-release-review-20261103.md). First genuine CARD remains pending. Apple merchant activation needs actual offer evidence; no generic owner certificate/domain task. Earlier checkpoints and approvals below are historical. Owner communication: English always.
+
 # E195 — payment-first CARD ACTIVE; owner sees CARD/COD; approval consumed — 2026-11-02
 
 - Owner approval e0d17db7 executed once. CONSUMED_COMPLETE, with natural MON
