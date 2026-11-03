@@ -4,9 +4,10 @@ import {readFile} from 'node:fs/promises'
 import vm from 'node:vm'
 import {parse} from '@babel/parser'
 import {allowsCartBackorder} from '../app/utils/backorder.js'
-const source=await readFile('app/composables/useCart.js','utf8'),wanted=['normalizePositiveInteger','normalizeOptionalIdentifier','buildCartKey','getMaximumCartQuantity','normalizeCartItem']
+import {validOptionValues} from '../app/utils/productOptions.js'
+const source=await readFile('app/composables/useCart.js','utf8'),wanted=['UUID_PATTERN','normalizePositiveInteger','normalizeOptionalIdentifier','buildCartKey','getMaximumCartQuantity','normalizeCartItem']
 const statements=parse(source,{sourceType:'module'}).program.body.filter(n=>n.type==='VariableDeclaration'&&n.declarations.some(d=>wanted.includes(d.id.name)))
-const context={allowsCartBackorder};vm.createContext(context);vm.runInContext(statements.map(n=>source.slice(n.start,n.end)).join('\n')+'\nglobalThis.normalize=normalizeCartItem',context)
+const context={allowsCartBackorder,validOptionValues};vm.createContext(context);vm.runInContext(statements.map(n=>source.slice(n.start,n.end)).join('\n')+'\nglobalThis.normalize=normalizeCartItem',context)
 test('normal serialized untracked items retain zero real stock and their allowed cart quantity',()=>{
  const item={id:'fixture-item',variant_id:'fixture-option',is_serialized:true,selling_mode:'normal',stock_quantity:0,allow_out_of_stock_purchases:true,quantity:1,price:25}
  const untracked=context.normalize(item,{inventory_tracking_required:false});assert.equal(untracked.allow_out_of_stock_purchases,true);assert.equal(untracked.stock_quantity,0);assert.equal(untracked.quantity,1)

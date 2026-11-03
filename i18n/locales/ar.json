@@ -1,4 +1,22 @@
 {
+  "modernProduct": {
+    "buyWithIt": "اشترِ معه",
+    "customerReviews": "تقييمات العملاء",
+    "chooseOptions": "اختر الخيارات قبل الإضافة إلى السلة.",
+    "clearSelection": "مسح الاختيار",
+    "priceOverride": "سعر الخيار (جنيه)",
+    "inheritPrice": "اتركه فارغًا لاستخدام سعر المنتج.",
+    "attributes": "خصائص خيارات الشراء",
+    "attributeHelp": "استخدم أسماء الخصائص نفسها لكل خيار.",
+    "attribute": "الخاصية",
+    "value": "القيمة",
+    "addAttribute": "إضافة خاصية",
+    "removeAttribute": "حذف الخاصية",
+    "moveUp": "نقل لأعلى",
+    "moveDown": "نقل لأسفل",
+    "accessoryHelp": "منتجات اختيارية يحدد الموظفون توافقها.",
+    "options": { "color": "اللون", "model": "الموديل", "switch": "نوع المفتاح", "size": "المقاس", "capacity": "السعة", "version": "الإصدار" }
+  },
   "shippingTariffs": {
     "codBasis": "أساس نسبة التحصيل",
     "failedBasis": "أساس رسوم تعذّر التسليم",

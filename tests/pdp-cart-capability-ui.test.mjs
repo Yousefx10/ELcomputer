@@ -18,6 +18,7 @@ test('actual PDP controls and cart handle delayed capabilities and unrecorded se
   const template=parseVue(await readFile('app/components/product/'+layout+'.vue','utf8')).descriptor.template.content.match(/<button\b[^>]*@click="handleAddToCart"[\s\S]*?<\/button>/)[0]
   const text=`<template><main>${template}<p role="status">{{cartMessage}}</p></main></template><script setup>
 import {usesUnrecordedStockSales} from '~/utils/backorder'
+import {variantSalePrice} from '~/utils/productOptions'
 import {useCart} from '~/composables/useCart'
 import {usePurchaseAccess} from '~/composables/usePurchaseAccess'
 const {data:siteContent}=useSiteContent(),{t}=useI18n()
@@ -29,7 +30,7 @@ const canOrder=computed(()=>premiumPurchasingEnabled.value&&canPurchaseProduct.v
 const refreshPreorderAvailability=()=>{}
 </script>`
   const compiled=compileScript(parseVue(text).descriptor,{id:'actual-pdp-control',inlineTemplate:true}).content
-  const result=await build({entryPoints:[resolve('tests/helpers/normalPurchaseBrowser.js')],bundle:true,write:false,format:'iife',platform:'browser',alias:{'~':resolve('app')},define:{'import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'actual-pdp-purchase-controls',setup(b){b.onResolve({filter:/^normal-purchase-page$/},()=>({path:'pdp',namespace:'pdp'}));b.onLoad({filter:/.*/,namespace:'pdp'},()=>({contents:compiled,resolveDir:resolve('.'),loader:'js'}));b.onLoad({filter:/normalPurchaseBrowser\.js$/},()=>({contents:helper,resolveDir:resolve('tests/helpers'),loader:'js'}))}}]});bundles[layout]=result.outputFiles[0].text
+  const result=await build({entryPoints:[resolve('tests/helpers/normalPurchaseBrowser.js')],bundle:true,write:false,format:'iife',platform:'browser',alias:{'~':resolve('app')},define:{'import.meta.client':'true','process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'actual-pdp-purchase-controls',setup(b){b.onResolve({filter:/^normal-purchase-page$/},()=>({path:'pdp',namespace:'pdp'}));b.onLoad({filter:/.*/,namespace:'pdp'},()=>({contents:compiled,resolveDir:resolve('.'),loader:'js'}));b.onLoad({filter:/normalPurchaseBrowser\.js$/},()=>({contents:helper,resolveDir:resolve('tests/helpers'),loader:'js'}));b.onLoad({filter:/\.vue$/},async args=>({contents:compileScript(parseVue(await readFile(args.path,'utf8')).descriptor,{id:args.path,inlineTemplate:true}).content,resolveDir:resolve(args.path,'..'),loader:'js'}))}}]});bundles[layout]=result.outputFiles[0].text
  }
  let scenario,layout
  const server=createServer((req,res)=>{res.setHeader('content-type',req.url==='/fixture.js'?'text/javascript':'text/html; charset=utf-8');res.end(req.url==='/fixture.js'?bundles[layout]:'<!doctype html><html dir="'+(scenario.locale==='ar'?'rtl':'ltr')+'"><body><div id="app"></div><script>window.__fixture='+JSON.stringify(scenario)+'</script><script src="/fixture.js"></script></body></html>')})

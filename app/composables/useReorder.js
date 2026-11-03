@@ -1,3 +1,4 @@
+import { variantSalePrice } from '~/utils/productOptions'
 export const useReorder = () => {
   const supabase = useSupabaseClient()
   const scope = useCustomerScope()
@@ -26,7 +27,7 @@ export const useReorder = () => {
         is_published,
         category:categories (id, name, slug),
         brand:brands (id, name, slug),
-        product_variants:storefront_product_variants (id, name, code, sku, color_name, color_hex, price, stock_quantity, is_active)
+        product_variants:storefront_product_variants (id, name, code, sku, color_name, color_hex, price, sale_price, option_values, stock_quantity, is_active)
       `)
       .in('id', productIds)
       .eq('is_published', true)
@@ -70,7 +71,7 @@ export const useReorder = () => {
       const quantityBefore = Number(items.value.find(item => item.cart_key === cartKey)?.quantity || 0)
       const result = addItem({
         ...product,
-        price: Number(variant?.price ?? product.price ?? 0),
+        price: variantSalePrice(product, variant),
         stock_quantity: stockQuantity,
         brand_name: product.brand?.name || '',
         category_name: product.category?.name || '',
@@ -80,7 +81,8 @@ export const useReorder = () => {
         variant_code: variant?.code || '',
         variant_sku: variant?.sku || '',
         variant_color_name: variant?.color_name || '',
-        variant_color_hex: variant?.color_hex || ''
+        variant_color_hex: variant?.color_hex || '',
+        variant_options: variant?.option_values || {}
       }, quantity, { source: 'order_again' })
       const quantityAfter = Number(items.value.find(item => item.cart_key === cartKey)?.quantity || 0)
       const quantityAdded = Math.max(0, quantityAfter - quantityBefore)

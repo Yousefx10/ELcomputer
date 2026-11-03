@@ -1,6 +1,6 @@
 import { allowsCartBackorder } from './backorder.js'
 
-export const productCardVariantFields = 'id,product_id,name,code,sku,color_name,color_hex,stock_quantity,is_active'
+export const productCardVariantFields = 'id,product_id,name,code,sku,color_name,color_hex,stock_quantity,is_active,sale_price,option_values'
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 // Two active rows are enough to prove a choice exists. Never fetch private

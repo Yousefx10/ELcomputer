@@ -1,6 +1,7 @@
 import { acknowledgeCart, acknowledgePurchasedCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
 import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
 import { allowsCartBackorder } from '~/utils/backorder'
+import { validOptionValues } from '~/utils/productOptions'
 import { useCustomerIdentity } from './useCustomerIdentity'
 
 const carts = new WeakMap()
@@ -88,6 +89,8 @@ const normalizeCartItem = (item, settings = {}) => {
     variant_sku: String(item.variant_sku ?? variant?.sku ?? ''),
     variant_color_name: String(item.variant_color_name ?? variant?.color_name ?? ''),
     variant_color_hex: String(item.variant_color_hex ?? variant?.color_hex ?? ''),
+    variant_options: validOptionValues(item.variant_options ?? variant?.option_values)
+      ? { ...(item.variant_options ?? variant.option_values) } : {},
     is_serialized: isSerialized,
     selling_mode: sellingMode,
     expected_availability_date: item.expected_availability_date || null,

@@ -1,3 +1,4 @@
+import { validOptionValues } from './productOptions.js'
 // Early field feedback; the existing API/transaction remains authoritative.
 export function productEditorErrors(fields) {
   const errors = {}
@@ -10,6 +11,10 @@ export function productEditorErrors(fields) {
   if (fields.sku && (typeof fields.sku !== 'string' || fields.sku.length > 120 || /[\u0000-\u001f\u007f]/.test(fields.sku))) errors.sku = 'sku'
   if (fields.is_serialized && !fields.primary_warehouse_id) errors.primary_warehouse_id = 'warehouse'
   if (fields.is_serialized && (!Array.isArray(fields.variants) || !fields.variants.length)) errors.variants = 'variants'
+  for (const variant of fields.variants || []) {
+    if (Object.hasOwn(variant, 'option_values') && !validOptionValues(variant.option_values)) errors.variants = 'variants'
+    if (![null, undefined, ''].includes(variant.sale_price) && !/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(String(variant.sale_price))) errors.variants = 'variants'
+  }
   if (!fields.is_serialized && (!/^\d+$/.test(String(fields.stock_quantity)) || Number(fields.stock_quantity) > 2147483647)) errors.stock_quantity = 'stock_quantity'
   return errors
 }

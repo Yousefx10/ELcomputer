@@ -1,4 +1,22 @@
 {
+  "modernProduct": {
+    "buyWithIt": "Buy with it",
+    "customerReviews": "Customer Reviews",
+    "chooseOptions": "Choose your options before adding to cart.",
+    "clearSelection": "Clear selection",
+    "priceOverride": "Option price (EGP)",
+    "inheritPrice": "Blank uses the product price.",
+    "attributes": "Purchase attributes",
+    "attributeHelp": "Use the same attribute names for every option.",
+    "attribute": "Attribute",
+    "value": "Value",
+    "addAttribute": "Add attribute",
+    "removeAttribute": "Remove attribute",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "accessoryHelp": "Choose optional products; compatibility is managed by staff.",
+    "options": { "color": "Color", "model": "Model", "switch": "Switch type", "size": "Size", "capacity": "Capacity", "version": "Version" }
+  },
   "shippingTariffs": {
     "codBasis": "COD percentage basis",
     "failedBasis": "Failed-delivery fee basis",

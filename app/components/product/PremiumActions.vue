@@ -1,10 +1,12 @@
 <script setup>
 import { canonicalUrl, publicSiteUrl } from '~/utils/seo'
 import { shareProduct } from '~/utils/productFinishing'
-const props = defineProps({ product: { type: Object, required: true } })
+const props = defineProps({ product: { type: Object, required: true }, mode: { type: String, default: 'both' } })
 const { locale } = useI18n(), config = useRuntimeConfig()
 const { data: siteContent } = await useSiteContent()
-const { saved, busy, ready, feedback, toggle } = useProductFavorites(() => props.product.id)
+const { saved, busy, ready, feedback, toggle } = props.mode === 'share'
+  ? { saved: ref(false), busy: ref(false), ready: ref(false), feedback: ref(''), toggle: () => {} }
+  : useProductFavorites(() => props.product.id)
 const shareBusy = ref(false), shareFeedback = ref('')
 const share = async () => {
   if (shareBusy.value) return
@@ -20,10 +22,10 @@ const share = async () => {
 </script>
 
 <template>
-  <div class="pdp-gallery-actions">
+  <div :class="mode === 'both' ? 'pdp-gallery-actions' : `pdp-${mode}-action`">
     <div class="pdp-action-buttons">
-      <button type="button" :aria-pressed="saved" :aria-busy="busy" :data-ready="ready" :disabled="busy" @click="toggle"><Icon name="lucide:heart" size="17" :class="{ 'fill-current': saved }" aria-hidden="true" />{{ $t(saved ? 'productFinishing.saved' : 'productFinishing.favorite') }}</button>
-      <button type="button" :disabled="shareBusy" @click="share"><Icon name="lucide:share-2" size="17" aria-hidden="true" />{{ $t('productFinishing.share') }}</button>
+      <button v-if="mode !== 'share'" type="button" :aria-pressed="saved" :aria-busy="busy" :data-ready="ready" :disabled="busy" @click="toggle"><Icon name="lucide:heart" size="17" :class="{ 'fill-current': saved }" aria-hidden="true" />{{ $t(saved ? 'productFinishing.saved' : 'productFinishing.favorite') }}</button>
+      <button v-if="mode !== 'favorite'" type="button" :disabled="shareBusy" @click="share"><Icon name="lucide:share-2" size="17" aria-hidden="true" />{{ $t('productFinishing.share') }}</button>
     </div>
     <p v-if="feedback" class="pdp-action-feedback" role="status">{{ $t(`productFinishing.${feedback}`) }}</p>
     <p v-if="shareFeedback" class="pdp-action-feedback" role="status">{{ $t(`productFinishing.${shareFeedback}`) }}</p>

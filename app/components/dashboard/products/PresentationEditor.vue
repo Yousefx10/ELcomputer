@@ -34,6 +34,11 @@ watch(search, value => {
   }, 300)
 })
 const add = (field, id) => { if (content.value[field].length < 8 && !content.value[field].includes(id)) content.value[field].push(id) }
+const move = (field, id, delta) => {
+  const index = content.value[field].indexOf(id), target = index + delta
+  if (index < 0 || target < 0 || target >= content.value[field].length) return
+  const [item] = content.value[field].splice(index, 1); content.value[field].splice(target, 0, item)
+}
 const remove = (field, id) => { content.value[field] = content.value[field].filter(value => value !== id) }
 const fileChange = async event => { const file = event.target.files?.[0]; if (file) await uploadVideo(file); event.target.value = '' }
 watch(() => adminUser.value?.id, () => { clearTimeout(timer); controller?.abort(); generation++; results.value = []; names.value = {}; search.value = '' })
@@ -62,11 +67,11 @@ onBeforeUnmount(() => { clearTimeout(timer); controller?.abort(); generation++ }
       <div>
         <label class="block text-sm font-semibold">{{ $t('productPage.productSearch') }}<input v-model="search" type="search" maxlength="200" class="mt-2 w-full rounded-lg border p-2"></label>
         <p v-if="searching" role="status" class="mt-2 text-xs text-gray-500">{{ $t('common.loading') }}</p><p v-else-if="searchFailed" role="alert" class="mt-2 text-xs text-red-700">{{ $t('productPage.presentationUnavailable') }}</p><p v-else-if="search.trim() && !results.length" class="mt-2 text-xs text-gray-500">{{ $t('productPage.noMatches') }}</p>
-        <div v-for="item in results" :key="item.id" class="mt-2 flex flex-wrap items-center justify-between gap-2 border-b py-2 text-sm"><span class="max-w-lg">{{ item.title }}</span><div class="flex gap-2"><button v-for="field in ['related','compatible']" :key="field" type="button" :disabled="content[field].includes(item.id) || content[field].length >= 8" class="rounded border px-2 py-1 text-xs disabled:opacity-40" @click="add(field, item.id)">{{ $t(`productPage.${field === 'related' ? 'curatedRelated' : 'compatible'}`) }}</button></div></div>
+        <div v-for="item in results" :key="item.id" class="mt-2 flex flex-wrap items-center justify-between gap-2 border-b py-2 text-sm"><span class="max-w-lg">{{ item.title }}</span><div class="flex gap-2"><button v-for="field in ['related','compatible']" :key="field" type="button" :disabled="content[field].includes(item.id) || content[field].length >= 8" class="rounded border px-2 py-1 text-xs disabled:opacity-40" @click="add(field, item.id)">{{ $t(field === 'related' ? 'productPage.curatedRelated' : 'modernProduct.buyWithIt') }}</button></div></div>
       </div>
       <div v-for="field in ['related','compatible']" :key="field">
-        <h4 class="text-sm font-semibold">{{ $t(`productPage.${field === 'related' ? 'curatedRelated' : 'compatible'}`) }}</h4><p v-if="field === 'compatible'" class="mt-1 text-xs text-gray-500">{{ $t('productPage.compatibilityHelp') }}</p>
-        <div v-for="id in content[field]" :key="id" class="mt-2 flex items-center justify-between gap-3 rounded border px-3 py-2 text-sm"><span>{{ names[id]?.title || id }}<span v-if="names[id]?.is_published === false" class="ms-2 text-xs text-gray-500">{{ $t('productEditor.draft') }}</span></span><button type="button" class="text-red-700" @click="remove(field, id)">{{ $t('productPage.remove') }}</button></div>
+        <h4 class="text-sm font-semibold">{{ $t(field === 'related' ? 'productPage.curatedRelated' : 'modernProduct.buyWithIt') }}</h4><p v-if="field === 'compatible'" class="mt-1 text-xs text-gray-500">{{ $t('productPage.compatibilityHelp') }}</p>
+        <div v-for="id in content[field]" :key="id" class="mt-2 flex min-w-0 flex-wrap items-center justify-between gap-3 rounded border px-3 py-2 text-sm [overflow-wrap:anywhere]"><span>{{ names[id]?.title || id }}<span v-if="names[id]?.is_published === false" class="ms-2 text-xs text-gray-500">{{ $t('productEditor.draft') }}</span></span><div class="flex shrink-0 flex-wrap gap-1"><button type="button" class="min-h-11 rounded border px-2 disabled:opacity-40" :disabled="content[field].indexOf(id) === 0" :aria-label="$t('modernProduct.moveUp')" @click="move(field, id, -1)"><Icon name="lucide:arrow-up" size="16" /></button><button type="button" class="min-h-11 rounded border px-2 disabled:opacity-40" :disabled="content[field].indexOf(id) === content[field].length - 1" :aria-label="$t('modernProduct.moveDown')" @click="move(field, id, 1)"><Icon name="lucide:arrow-down" size="16" /></button><button type="button" class="text-red-700" @click="remove(field, id)">{{ $t('productPage.remove') }}</button></div></div>
       </div>
     </fieldset>
     <p v-if="error" role="alert" class="mt-4 text-sm text-red-700">{{ error }}</p><p v-if="status === 'saved'" role="status" class="mt-4 text-sm text-green-700">{{ $t('productPage.presentationSaved') }}</p>

@@ -8,7 +8,7 @@
     </NuxtLinkLocale>
     <div class="store-product-info">
       <div class="store-product-price">
-        <strong>{{ priceFormatter.format(numericPrice) }} <small>EGP</small></strong>
+        <strong>{{ priceFormatter.format(numericPrice) }}<template v-if="hasPriceRange"> – {{ priceFormatter.format(maximumPrice) }}</template> <small>EGP</small></strong>
         <del v-if="hasDiscount">{{ formatPrice(product.old_price) }}</del>
       </div>
       <p v-if="brandName || categoryName" class="store-product-brand">{{ brandName || categoryName }}</p>
@@ -38,6 +38,7 @@ const { uiNavigateTo } = useUiNavigation()
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import { usesUnrecordedStockSales } from '~/utils/backorder'
 import { productCardPurchase } from '~/utils/productCardPurchase'
+import { variantSalePrice } from '~/utils/productOptions'
 import { useProductCardVariants } from '~/composables/useProductCardVariants'
 const props = defineProps({
   product: {
@@ -61,8 +62,10 @@ watch(() => props.product.id, () => { clearTimeout(feedbackTimeout); addedToCart
 
 const priceFormatter = computed(() => new Intl.NumberFormat(intlLocale.value))
 
-const numericPrice = computed(() => Number(props.product.price || 0))
+const numericPrice = computed(() => variantSalePrice(props.product, purchase.value?.variant))
 const numericOldPrice = computed(() => Number(props.product.old_price || 0))
+const maximumPrice = computed(() => Number(props.product.max_price ?? numericPrice.value))
+const hasPriceRange = computed(() => !purchase.value?.variant && maximumPrice.value > numericPrice.value)
 const brandName = computed(() => String(props.product.brand?.name || '').trim())
 const categoryName = computed(() => localizedCategoryName(props.product.category))
 const purchase = computed(() => productCardPurchase(props.product, siteContent.value?.settings, cardVariants.value, Boolean(purchaseScope.value)))
@@ -76,7 +79,7 @@ const isPurchasable = computed(() => !checkingAvailability.value && purchasingAl
 const requiresOptionSelection = computed(() => purchase.value.kind === 'options')
 
 const hasDiscount = computed(() => {
-  return numericOldPrice.value > numericPrice.value
+  return !hasPriceRange.value && numericOldPrice.value > numericPrice.value
 })
 
 const discountAmount = computed(() => {
@@ -117,6 +120,7 @@ const handleAddToCart = async () => {
     if (!allowsProduct(props.product.id, selected.variant?.id || null)) return
     const result = addItem({
       ...props.product, variant: selected.variant, variant_id: selected.variant?.id || null,
+      price: variantSalePrice(props.product, selected.variant),
       stock_quantity: selected.stock, variant_stock_quantity: selected.stock,
       allow_out_of_stock_purchases: allowOutOfStockPurchases.value
     }, 1, { source: 'product_card' })

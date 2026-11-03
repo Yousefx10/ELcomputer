@@ -156,6 +156,19 @@
           </div>
 
         </div>
+        <div class="mt-4 border-t pt-4">
+          <label :for="fieldId(row, 'sale-price')" class="block text-sm font-semibold">{{ $t('modernProduct.priceOverride') }}</label>
+          <input :id="fieldId(row, 'sale-price')" v-model="row.sale_price" type="text" inputmode="decimal" maxlength="13" :disabled="disabled" class="mt-2 w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500 sm:max-w-xs">
+          <p class="mt-1 text-xs text-gray-500">{{ $t('modernProduct.inheritPrice') }}</p>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2"><h4 class="text-sm font-semibold">{{ $t('modernProduct.attributes') }}</h4><button type="button" :disabled="disabled || row._attributes.length >= 8" class="min-h-11 rounded-lg border px-3 text-sm disabled:opacity-50" @click="row._attributes.push({ name: '', value: '' })">{{ $t('modernProduct.addAttribute') }}</button></div>
+          <p class="mt-1 text-xs text-gray-500">{{ $t('modernProduct.attributeHelp') }}</p>
+          <div v-for="(attribute, attributeIndex) in row._attributes" :key="attributeIndex" class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+            <label class="text-xs font-medium" :for="fieldId(row, `attribute-${attributeIndex}`)">{{ $t('modernProduct.attribute') }}<input :id="fieldId(row, `attribute-${attributeIndex}`)" v-model="attribute.name" :list="fieldId(row, 'attribute-names')" maxlength="60" :disabled="disabled" class="mt-1 min-h-11 w-full rounded-lg border bg-white p-2" @blur="attribute.name = attribute.name.trim()"></label>
+            <label class="text-xs font-medium" :for="fieldId(row, `value-${attributeIndex}`)">{{ $t('modernProduct.value') }}<input :id="fieldId(row, `value-${attributeIndex}`)" v-model="attribute.value" maxlength="120" :disabled="disabled" class="mt-1 min-h-11 w-full rounded-lg border bg-white p-2" @blur="attribute.value = attribute.value.trim()"></label>
+            <button type="button" :disabled="disabled" :aria-label="$t('modernProduct.removeAttribute')" class="min-h-11 self-end rounded-lg border px-3 text-red-600 disabled:opacity-50" @click="row._attributes.splice(attributeIndex, 1)"><Icon name="lucide:x" size="16" aria-hidden="true" /></button>
+          </div>
+          <datalist :id="fieldId(row, 'attribute-names')"><option v-for="key in optionDimensionKeys" :key="key" :value="key">{{ $t(`modernProduct.options.${key}`) }}</option></datalist>
+        </div>
       </article>
     </div>
 
@@ -174,6 +187,7 @@
 </template>
 
 <script setup>
+import { optionDimensionKeys, validOptionValues } from '~/utils/productOptions'
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -215,13 +229,21 @@ const normalizeHexValue = (value) => {
     : normalizedValue.toUpperCase()
 }
 
+const rowOptions = row => {
+  if (!row._attributes) return row.option_values === undefined ? {} : row.option_values
+  const entries = row._attributes.map(item => [item.name, item.value])
+  const value = Object.fromEntries(entries)
+  return new Set(entries.map(([name]) => name.toLowerCase())).size === entries.length && validOptionValues(value) ? value : entries
+}
 const toPublicRow = (row = {}) => ({
   id: row.id ? String(row.id) : null,
   name: String(row.name || ''),
   code: String(row.code || ''),
   sku: String(row.sku || ''),
   color_name: String(row.color_name || ''),
-  color_hex: normalizeHexValue(row.color_hex)
+  color_hex: normalizeHexValue(row.color_hex),
+  sale_price: row.sale_price ?? '',
+  option_values: rowOptions(row)
 })
 
 const serializeRows = (value = rows.value) => {
@@ -241,6 +263,7 @@ const hydrateRows = (value) => {
 
     return {
       ...normalizedRow,
+      _attributes: (Array.isArray(normalizedRow.option_values) ? normalizedRow.option_values : Object.entries(normalizedRow.option_values || {})).map(([name, value]) => ({ name, value })),
       _key: (
         normalizedRow.id
         && existingRow?.id === normalizedRow.id
@@ -266,6 +289,8 @@ const addVariant = () => {
     sku: '',
     color_name: '',
     color_hex: '',
+    sale_price: '',
+    _attributes: [],
     _key: createRowKey()
   })
 }

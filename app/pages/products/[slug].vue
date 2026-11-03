@@ -16,6 +16,7 @@ const { intlLocale, uiLabel } = useUiLocale()
 import { buildProductGallery, hasDistinctColorVariants, selectProductGalleryImages, shouldIncludeMainProductImage, variantPreviewImages, visibleProductSpecifications, productSavings, pickRelatedProducts } from '~/utils/productDetail'
 import { groupProductSpecifications, productHighlights, descriptionBlocks } from '~/utils/specificationLibrary'
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
+import { variantSalePrice, productOptionPriceRange, configuredVariantDimensions } from '~/utils/productOptions'
 import { calculatePreorderAmounts, expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 const supabase = useSupabaseClient()
 const route = useUiRoute()
@@ -93,7 +94,7 @@ const { data: product, pending, error } = await useAsyncData(`product-${slug}`, 
     productData.is_serialized
       ? supabase
           .from('storefront_product_variants')
-          .select('id, product_id, name, code, sku, color_name, color_hex, stock_quantity, is_active')
+          .select('id, product_id, name, code, sku, color_name, color_hex, stock_quantity, is_active, sale_price, option_values')
           .eq('product_id', productData.id)
           .eq('is_active', true)
           .order('name', { ascending: true })
@@ -172,10 +173,11 @@ usePageSeo(() => {
   const trail = [{ name: uiLabel('Home'), path: '/' }]
   if (item?.category?.slug) trail.push({ name: categoryName(item.category), path: '/search', query: { category: item.category.slug } })
   if (item) trail.push({ name: item.title, path: `/products/${item.slug}` })
-  const schema = productSchema(item, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en', preorderAvailability.value, settings)
+  const pricedItem = item ? { ...item, price: productOptionPriceRange(item, item.variants || []).minimum } : item
+  const schema = productSchema(pricedItem, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en', preorderAvailability.value, settings)
   return { ...productSeoFields(item || {}), index: !!item, type: 'product', structuredData: schema ? [schema, breadcrumbs(trail, base, intlLocale.value.startsWith('ar') ? 'ar' : 'en')] : [] }
 })
-const preorderAmounts = computed(() => calculatePreorderAmounts(product.value?.price || 0, selectedQuantity.value, product.value?.preorder_payment_mode, product.value?.preorder_deposit_percent))
+const preorderAmounts = computed(() => calculatePreorderAmounts(variantSalePrice(product.value, selectedVariant.value), selectedQuantity.value, product.value?.preorder_payment_mode, product.value?.preorder_deposit_percent))
 const selectedVariantId = ref('')
 const cartMessage = ref('')
 const allowOutOfStockPurchases = computed(() => {
@@ -185,8 +187,14 @@ const stockIndependentSale = computed(() => usesUnrecordedStockSales(product.val
 const productVariants = computed(() => product.value?.variants || [])
 const hasVariants = computed(() => productVariants.value.length > 0)
 const requiresVariantSelection = computed(() => Boolean(product.value?.is_serialized))
-const showVariantChoices = computed(() => requiresVariantSelection.value && productVariants.value.length > 1)
-const hasColorChoices = computed(() => showVariantChoices.value && hasDistinctColorVariants(productVariants.value))
+const showVariantChoices = computed(() => requiresVariantSelection.value
+  && (productVariants.value.length > 1 || Boolean(route.query.variant) && !selectedVariant.value))
+const hasColorChoices = computed(() => {
+  const dimensions = configuredVariantDimensions(productVariants.value)
+  return showVariantChoices.value && (dimensions.length
+    ? dimensions.some(dimension => dimension.key === 'color' && dimension.values.length > 1)
+    : hasDistinctColorVariants(productVariants.value))
+})
 const meaningfulVariantName = computed(() => selectedVariant.value && !/^(default|standard|base|product)$/i.test(String(selectedVariant.value.name || '').trim()))
 const selectedVariant = computed(() => {
   return productVariants.value.find((variant) => variant.id === selectedVariantId.value) || null
@@ -335,8 +343,8 @@ const getVariantMeta = (variant) => {
 }
 
 const selectVariant = (variant) => {
-  selectedVariantId.value = variant.id
-  selectedQuantity.value = 1
+  selectedVariantId.value = variant?.id || ''
+  if (productPageStyle.value !== 'premium') selectedQuantity.value = 1
   cartMessage.value = ''
 }
 const markImageBroken = (url) => {
@@ -377,8 +385,10 @@ const onLightboxKeydown = (event) => {
 }
 const updateReviewSummary = (summary) => { reviewSummary.value = summary }
 const goToReviews = async () => {
-  reviewsSection.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   await reviewsComponent.value?.openReviews()
+  await nextTick()
+  const reducedMotion = import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  reviewsSection.value?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
 }
 onBeforeUnmount(closeLightbox)
 
@@ -403,6 +413,7 @@ const handleAddToCart = () => {
   const result = addItem({
     ...product.value,
     variant: selectedVariant.value,
+    price: variantSalePrice(product.value, selectedVariant.value),
     image_url: selectedVariantImages.value[0]?.image_url || product.value.image_url,
     stock_quantity: effectiveStockQuantity.value,
     allow_out_of_stock_purchases: allowOutOfStockPurchases.value,
@@ -451,7 +462,7 @@ watch(
     reviewSummary.value = { total: product.value.reviewCount, average: Number(product.value.reviewAverage || 0) }
     brokenImages.value = []
     const nextVariantId = requestedVariant?.id
-      || (product.value.variants.length === 1 ? product.value.variants[0].id : '')
+      || (!requestedVariantId && product.value.variants.length === 1 ? product.value.variants[0].id : '')
     selectedVariantId.value = nextVariantId
     selectedImage.value = getPreferredProductImage(nextVariantId)
   },

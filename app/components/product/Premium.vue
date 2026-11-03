@@ -3,12 +3,14 @@ import { normalizeProductPageConfig, formatProductPagePrice, premiumSpecificatio
 import { curatedProductTags, isProductTag, parsePackageEntry } from '~/utils/productFinishing'
 import { productHighlights } from '~/utils/specificationLibrary'
 import { normalizeProductWarranty } from '~/utils/warranty'
-const { stockIndependentSale, backorderNotice, product, pending, error, productAppearance, premiumPurchasingEnabled, categoryName, intlLocale,
+import { variantSalePrice, productOptionPriceRange } from '~/utils/productOptions'
+import { productSavings } from '~/utils/productDetail'
+const { stockIndependentSale, allowOutOfStockPurchases, backorderNotice, product, pending, error, productAppearance, premiumPurchasingEnabled, categoryName, intlLocale,
   productVariants, selectedVariant, selectedVariantId, selectedImage, galleryImages, markImageBroken,
   showVariantChoices, hasColorChoices, meaningfulVariantName, getVariantPreview, getVariantColor, getVariantMeta,
   selectVariant, variantStockLabel, selectedVariantStockLabel, hasPurchasableVariants, visibleSpecifications,
   specificationGroups, descriptionContent, relatedProducts, reviewSummary, reviewsSection, reviewsComponent,
-  updateReviewSummary, goToReviews, hasDiscount, savings, discountPercent, isOutOfStock, isPreorder, isComingSoon,
+  updateReviewSummary, goToReviews, isOutOfStock, isPreorder, isComingSoon,
   stockLabel, expectedAvailabilityLabel, preorderAmounts, preorderAvailability, selectedQuantity, maximumQuantity,
   purchasingPending, decreaseQuantity, increaseQuantity, canPurchaseProduct, handleAddToCart, addToCartLabel, cartMessage } = useProductDetailContext()
 const { locale } = useI18n()
@@ -25,16 +27,13 @@ const policies = computed(() => config.value.policy_links.map(row => ({ ...row, 
 const warranty = computed(() => normalizeProductWarranty(product.value || {}))
 const canOrder = computed(() => premiumPurchasingEnabled.value && canPurchaseProduct.value)
 const currentSku = computed(() => selectedVariant.value?.sku || product.value?.sku || '')
-const variantsElement = ref(null)
-const variantKeydown = async event => {
-  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return
-  event.preventDefault()
-  const choices = productVariants.value, current = choices.findIndex(item => item.id === selectedVariantId.value)
-  const forward = ['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : -1
-  const direction = ['ArrowLeft', 'ArrowRight'].includes(event.key) && locale.value === 'ar' ? -forward : forward
-  const position = event.key === 'Home' ? 0 : event.key === 'End' ? choices.length - 1 : (Math.max(0, current) + direction + choices.length) % choices.length
-  if (choices[position]) { selectVariant(choices[position]); await nextTick(); variantsElement.value?.querySelectorAll('[role="radio"]')[position]?.focus() }
-}
+const priceRange = computed(() => productOptionPriceRange(product.value, productVariants.value))
+const currentPrice = computed(() => selectedVariant.value ? variantSalePrice(product.value, selectedVariant.value) : priceRange.value.minimum)
+const hasPriceRange = computed(() => !selectedVariant.value && priceRange.value.maximum > currentPrice.value)
+const selectedSavings = computed(() => hasPriceRange.value ? { amount: 0, percent: 0 } : productSavings(currentPrice.value, product.value?.old_price))
+const hasDiscount = computed(() => selectedSavings.value.amount > 0)
+const savings = computed(() => selectedSavings.value.amount)
+const discountPercent = computed(() => selectedSavings.value.percent)
 
 // These authored relationships/videos are optional additions, not inferred data.
 const { data: presentation, error: presentationError } = await useAsyncData(`product-presentation-${product.value?.id}`, async () => {
@@ -64,7 +63,7 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
       <article v-else>
         <nav class="pdp-breadcrumb" :aria-label="$t('common.productLocation')"><NuxtLinkLocale to="/">{{ $t('common.home') }}</NuxtLinkLocale><Icon name="lucide:chevron-right" class="directional-icon" size="13" aria-hidden="true" /><NuxtLinkLocale v-if="product.category?.slug" :to="{ path: '/search', query: { category: product.category.slug } }">{{ categoryName(product.category) }}</NuxtLinkLocale><span v-else>{{ $t('common.products') }}</span></nav>
         <div class="pdp-main-grid" :class="{ 'pdp-main-minimal': !topHighlights.length && !(config.sections.specifications && quickSpecifications.length) && !showVariantChoices }">
-          <ProductPremiumGallery :items="media" v-model="selectedImage" :title="product.title" @image-error="markImageBroken"><template #actions><ProductPremiumActions :key="product.id" :product="product" /></template></ProductPremiumGallery>
+          <ProductPremiumGallery :items="media" v-model="selectedImage" :title="product.title" @image-error="markImageBroken" />
           <section class="pdp-information" :aria-label="product.title">
             <NuxtLinkLocale v-if="product.brand?.slug" :to="`/brand/${product.brand.slug}`" class="pdp-brand"><img v-if="product.brand.logo_url" :src="product.brand.logo_url" alt="" width="64" height="32" loading="lazy">{{ product.brand.name }}</NuxtLinkLocale>
             <span v-else-if="product.brand?.name" class="pdp-brand">{{ product.brand.name }}</span>
@@ -76,30 +75,27 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
             </div>
             <ul v-if="tags.length" class="pdp-tags" :aria-label="$t('productFinishing.productTags')"><li v-for="tag in tags" :key="tag"><bdi>{{ tag }}</bdi></li></ul>
             <dl v-if="topHighlights.length" class="pdp-highlights"><div v-for="item in topHighlights" :key="item.label"><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div></dl>
-            <div v-if="showVariantChoices" class="pdp-variants">
-              <div class="pdp-variant-heading"><h2>{{ hasColorChoices ? $t('common.color') : $t('common.chooseAnOption') }}<span v-if="selectedVariant">: {{ hasColorChoices ? selectedVariant.color_name : selectedVariant.name }}</span></h2></div>
-              <div ref="variantsElement" class="pdp-variant-options" role="radiogroup" :aria-label="hasColorChoices ? $t('common.availableColors') : $t('common.productOptions')" @keydown="variantKeydown">
-                <button v-for="(variant, position) in productVariants" :key="variant.id" type="button" role="radio" :aria-checked="selectedVariantId === variant.id" :tabindex="selectedVariantId === variant.id || !selectedVariantId && position === 0 ? 0 : -1" @click="selectVariant(variant)">
-                  <span v-if="getVariantPreview(variant)" class="pdp-variant-image"><img :src="getVariantPreview(variant)" alt="" width="52" height="52" loading="lazy" @error="markImageBroken(getVariantPreview(variant))"></span><span v-else-if="getVariantColor(variant)" class="pdp-swatch" :style="{ backgroundColor: getVariantColor(variant) }" /><Icon v-else name="lucide:package" size="20" aria-hidden="true" />
-                  <span><strong>{{ hasColorChoices ? variant.color_name : variant.name }}</strong><small v-if="variantStockLabel(variant)">{{ $uiLabel(variantStockLabel(variant)) }}</small></span><Icon v-if="selectedVariantId === variant.id" name="lucide:check" size="16" aria-hidden="true" />
-                </button>
-              </div>
-              <p v-if="!selectedVariant && hasPurchasableVariants" class="pdp-hint">{{ $t('products.slug.selectAValueBeforeAddingToCart', { value0: hasColorChoices ? $t('common.color') : $t('product.option') }) }}</p>
-            </div>
+            <ProductVariantOptions v-if="showVariantChoices" :key="product.id" :variants="productVariants" :selected-id="selectedVariantId" :color-choices="hasColorChoices"
+              :allow-backorder="allowOutOfStockPurchases" :preorder="isPreorder" :stock-independent="stockIndependentSale"
+              :preview="getVariantPreview" :color="getVariantColor" :stock-label="variantStockLabel" @select="selectVariant" />
             <p v-else-if="selectedVariant && meaningfulVariantName" class="pdp-single-option">{{ $t('common.option') }} <strong>{{ selectedVariant.name }}</strong></p>
             <div v-if="quickSpecifications.length && config.sections.specifications" class="pdp-quick-specifications"><h2>{{ $t('common.specifications') }}</h2><dl><div v-for="row in quickSpecifications" :key="row.id"><dt>{{ row.definition?.name || row.label }}</dt><dd>{{ row.value }}</dd></div></dl><a href="#pdp-specifications">{{ $t('productPage.viewSpecs') }}<Icon name="lucide:arrow-down" size="14" aria-hidden="true" /></a></div>
+            <ProductBuyWithIt :key="product.id" :product-id="product.id" :items="compatible" />
           </section>
+          <div class="pdp-purchase-column">
           <aside class="pdp-purchase" :aria-label="$t('productPage.purchaseTitle')">
-            <div class="pdp-purchase-summary"><div class="pdp-price"><bdi>{{ price(product.price) }}</bdi><del v-if="hasDiscount"><bdi>{{ price(product.old_price) }}</bdi></del></div>
+            <div class="pdp-purchase-summary"><div class="pdp-price"><bdi>{{ price(currentPrice) }}<template v-if="hasPriceRange"> – {{ price(priceRange.maximum) }}</template></bdi><del v-if="hasDiscount"><bdi>{{ price(product.old_price) }}</bdi></del></div>
             <p v-if="hasDiscount" class="pdp-saving">{{ $t('product.saveAmount', { value0: price(savings) }) }}<span v-if="discountPercent"> ({{ discountPercent }}%)</span></p>
             <div v-if="!stockIndependentSale" class="pdp-stock" :data-available="!isOutOfStock && !isPreorder && !isComingSoon"><Icon :name="isOutOfStock || isPreorder || isComingSoon ? 'lucide:clock-3' : 'lucide:circle-check'" size="18" aria-hidden="true" /><strong>{{ $uiLabel(stockLabel) }}</strong></div>
             <p v-if="backorderNotice && !stockIndependentSale" class="pdp-availability-note" role="note">{{ backorderNotice }}</p>
             <div v-if="isPreorder || isComingSoon" class="pdp-availability-note"><p v-if="product.expected_availability_date">{{ $t('products.slug.expectedAvailabilityValue', { value0: expectedAvailabilityLabel(product.expected_availability_date) }) }}</p><p v-if="product.availability_message">{{ product.availability_message }}</p><p>{{ $t('products.slug.thisItemIsNotReadyForNormalDelivery') }}</p><template v-if="isPreorder"><p>{{ $t('common.requiredNow') }} <strong>{{ price(preorderAmounts.due) }}</strong></p><p v-if="preorderAmounts.balance">{{ $t('common.remainingBalance') }} <strong>{{ price(preorderAmounts.balance) }}</strong></p></template></div>
-            </div><div class="pdp-purchase-controls"><div v-if="premiumPurchasingEnabled && !isComingSoon" class="pdp-quantity" :aria-label="$t('common.quantity')"><button type="button" :disabled="!canPurchaseProduct || selectedQuantity <= 1" :aria-label="$t('common.decreaseQuantity')" @click="decreaseQuantity">−</button><output :aria-label="$t('common.selectedQuantity')">{{ selectedQuantity }}</output><button type="button" :disabled="!canPurchaseProduct || selectedQuantity >= maximumQuantity" :aria-label="$t('common.increaseQuantity')" @click="increaseQuantity">+</button></div>
+            </div><div class="pdp-purchase-controls"><div class="pdp-quantity-row"><div v-if="premiumPurchasingEnabled && !isComingSoon" class="pdp-quantity" :aria-label="$t('common.quantity')"><button type="button" :disabled="!canPurchaseProduct || selectedQuantity <= 1" :aria-label="$t('common.decreaseQuantity')" @click="decreaseQuantity">−</button><output :aria-label="$t('common.selectedQuantity')">{{ selectedQuantity }}</output><button type="button" :disabled="!canPurchaseProduct || selectedQuantity >= maximumQuantity" :aria-label="$t('common.increaseQuantity')" @click="increaseQuantity">+</button></div><ProductPremiumActions :key="product.id" :product="product" mode="favorite" /></div>
             <button v-if="!isComingSoon" type="button" class="pdp-purchase-action" :aria-busy="purchasingPending" :disabled="!canOrder" @click="handleAddToCart"><Icon name="lucide:shopping-cart" size="18" aria-hidden="true" />{{ purchasingPending ? $t('productPage.checkingPurchase') : premiumPurchasingEnabled ? $uiLabel(addToCartLabel) : $t('productPage.buyingHeld') }}</button>
             <p v-if="cartMessage" class="pdp-cart-status" role="status">{{ $uiMessage(cartMessage) }}</p>
-            </div><ProductPremiumHelp /><div class="pdp-purchase-policies"><ProductWarranty :product="product" /><nav v-if="policies.length" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav></div>
+            </div><ProductPremiumHelp /><div class="pdp-purchase-policies"><ProductWarranty :product="product" /><button v-if="config.sections.reviews" type="button" class="pdp-customer-reviews" @click="goToReviews"><Icon name="lucide:message-square" size="16" aria-hidden="true" />{{ $t('modernProduct.customerReviews') }}<span v-if="reviewSummary.total">({{ reviewSummary.total }})</span></button><nav v-if="policies.length" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav></div>
           </aside>
+          <ProductPremiumActions :key="product.id" :product="product" mode="share" />
+          </div>
         </div>
         <p v-if="presentationError" class="pdp-hint" role="status">{{ $t('productPage.detailsUnavailable') }}</p>
         <nav v-if="jumpLinks.length > 1" class="pdp-section-navigation" :aria-label="$t('productPage.jumpTo')"><a v-for="link in jumpLinks" :key="link.id" :href="`#${link.id}`">{{ $t(`productPage.sections.${link.label}`) }}</a></nav>
@@ -112,10 +108,10 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
           </details>
           <section v-if="hasSpecifications" id="pdp-specifications" class="pdp-content-section"><div class="pdp-section-title"><h2>{{ $t('productPage.sections.specifications') }}</h2></div><div class="pdp-specification-groups"><div v-for="(group, groupIndex) in premiumGroups" :key="groupIndex"><h3 v-if="group.name">{{ group.name }}</h3><dl><div v-for="row in group.items" :key="row.id"><dt :title="row.definition?.help_text || undefined">{{ row.displayLabel }}</dt><dd>{{ row.value }}</dd></div></dl></div></div></section>
           <section v-if="config.sections.reviews" id="pdp-reviews" ref="reviewsSection" class="pdp-content-section pdp-reviews"><div class="pdp-section-title"><h2>{{ $t('productPage.sections.reviews') }}</h2></div><ProductReviews ref="reviewsComponent" :product-id="product.id" :product-name="product.title" @summary-change="updateReviewSummary" /></section>
-          <section v-if="config.sections.related && compatible.length" class="pdp-recommendations"><h2>{{ $t('productPage.compatibility') }}</h2><div class="pdp-product-cards"><CardsProductCard v-for="item in compatible" :key="item.id" :product="item" /></div></section>
           <section v-if="hasRelated" id="pdp-related" class="pdp-recommendations"><h2>{{ $t('productPage.related') }}</h2><div class="pdp-product-cards"><CardsProductCard v-for="item in curatedRelated" :key="item.id" :product="item" /></div></section>
         </div>
       </article>
     </div>
   </div>
 </template>
+<style src="~/assets/css/modern-product.css"></style>

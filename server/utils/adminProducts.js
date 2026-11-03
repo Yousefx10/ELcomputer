@@ -1,6 +1,7 @@
 import { createError } from 'h3'
 import { normalizeSeoFields } from './seoFields.js'
 import { normalizeProductWarranty, warrantyFields } from '../../app/utils/warranty.js'
+import { validOptionValues } from '../../app/utils/productOptions.js'
 
 const PRODUCT_MUTABLE_FIELDS = [
   'seo_title', 'seo_description', 'seo_image_url',
@@ -163,6 +164,14 @@ export const normalizeSerializedVariants = (variants = [], {
       sku: normalizeSku(variant?.sku, 'variants'),
       color_name: normalizeText(variant?.color_name, 120, 'variants') || name,
       color_hex: colorHex
+    }
+    if (Object.hasOwn(variant, 'option_values')) {
+      if (!validOptionValues(variant.option_values)) productValidationError('Check the option attributes.', 'variants')
+      normalizedVariant.option_values = { ...variant.option_values }
+      if (variant.option_values.color) normalizedVariant.color_name = variant.option_values.color
+    }
+    if (Object.hasOwn(variant, 'sale_price')) {
+      normalizedVariant.sale_price = normalizeProductMoney(variant.sale_price, 'variants', { optional: true })
     }
 
     if (includeQuantity) {
