@@ -1,4 +1,7 @@
--- 109 candidate. Independent private InstaPay review; every activation OFF.
+-- Schema110 candidate after the consumed schema109 catalog correction.
+-- Reuses the original InstaPay candidate; all activation remains OFF.
+-- Permanent revision conflicts use P0001, mapped to HTTP409 by the installed app.
+-- This avoids transaction retries; the deployed catalog PT409 fix stays unchanged.
 begin;
 set local lock_timeout='5s';
 set local statement_timeout='60s';
@@ -53,7 +56,7 @@ declare t private.transfer_settings;v_enabled boolean;begin
  perform private.checkout_staff(p_actor,'payments.configure');
  if jsonb_typeof(p_config)<>'object' or exists(select 1 from jsonb_object_keys(p_config) k where k not in ('enabled','recipient_name','recipient_address','recipient_verified','instructions_en','instructions_ar','mime_types','max_bytes','max_proofs')) then raise exception 'Invalid transfer settings.';end if;
  select * into t from private.transfer_settings where id for update;
- if t.revision<>p_revision then raise exception 'Transfer settings changed.' using errcode='40001';end if;
+ if t.revision<>p_revision then raise exception 'Transfer settings changed.' using errcode='P0001';end if;
  v_enabled:=coalesce((p_config->>'enabled')::boolean,false);
  if length(coalesce(p_config->>'recipient_name',''))>120 or length(coalesce(p_config->>'recipient_address',''))>200 or length(coalesce(p_config->>'instructions_en',''))>2000 or length(coalesce(p_config->>'instructions_ar',''))>2000
  or jsonb_typeof(p_config->'mime_types')<>'array' or jsonb_array_length(p_config->'mime_types') not between 1 and 3
@@ -132,7 +135,7 @@ declare t private.transfer_submissions;p private.transfer_proofs;ext text;begin
  if found then
   if p.user_id<>p_user_id or p.session_id<>p_session_id or p.sha256<>p_sha256 or p.size_bytes<>p_size or p.mime_type<>p_mime then raise exception 'Proof command changed.';end if;return to_jsonb(p);
  end if;
- if t.revision<>p_revision or t.state not in ('awaiting_proof','correction_requested','rejected') or p_request_id is null then raise exception 'Transfer changed. Refresh first.' using errcode='40001';end if;
+ if t.revision<>p_revision or t.state not in ('awaiting_proof','correction_requested','rejected') or p_request_id is null then raise exception 'Transfer changed. Refresh first.' using errcode='P0001';end if;
  if p_sha256!~'^[a-f0-9]{64}$' or p_size not between 1 and (t.recipient_snapshot->>'max_bytes')::integer
   or not exists(select 1 from jsonb_array_elements_text(t.recipient_snapshot->'mime_types') m where m=p_mime)
   or (select count(*) from private.transfer_proofs where session_id=p_session_id)>=(t.recipient_snapshot->>'max_proofs')::integer then raise exception 'Proof limit or format rejected.';end if;
@@ -159,7 +162,7 @@ declare t private.transfer_submissions;c private.transfer_commands;fp bytea:=sha
  select * into c from private.transfer_commands where id=p_request_id;
  if found then if c.actor<>p_user_id or c.session_id<>p_session_id or c.fingerprint<>fp or c.action<>'submit' then raise exception 'Proof command changed.';end if;return c.result;end if;
  if t.revision<>p_revision or t.state not in ('awaiting_proof','correction_requested','rejected') or p_request_id is null or length(coalesce(p_reference,''))>120
-  or not exists(select 1 from private.transfer_proofs where id=p_proof_id and session_id=p_session_id and user_id=p_user_id and state='ready') then raise exception 'Transfer changed or proof unavailable.' using errcode='40001';end if;
+  or not exists(select 1 from private.transfer_proofs where id=p_proof_id and session_id=p_session_id and user_id=p_user_id and state='ready') then raise exception 'Transfer changed or proof unavailable.' using errcode='P0001';end if;
  update private.transfer_submissions set state='under_review',proof_id=p_proof_id,customer_reference=nullif(btrim(p_reference),''),submitted_at=clock_timestamp(),public_reason=null,revision=revision+1 where session_id=p_session_id returning * into t;
  result:=jsonb_build_object('reference',t.reference,'state',t.state,'revision',t.revision);
  insert into private.transfer_commands(id,session_id,actor,action,fingerprint,result) values(p_request_id,p_session_id,p_user_id,'submit',fp,result);
@@ -174,7 +177,7 @@ declare t private.transfer_submissions;s private.payment_checkout_sessions;c pri
  if not found then raise exception 'Transfer not found.';end if;
  select * into c from private.transfer_commands where id=p_request_id;
  if found then if c.actor<>p_actor or c.session_id<>p_session_id or c.fingerprint<>fp or c.action<>p_action then raise exception 'Review command changed.';end if;return c.result;end if;
- if p_request_id is null or t.revision<>p_revision or t.state<>'under_review' or p_action not in ('verify','reject','correct') then raise exception 'Transfer changed. Refresh first.' using errcode='40001';end if;
+ if p_request_id is null or t.revision<>p_revision or t.state<>'under_review' or p_action not in ('verify','reject','correct') then raise exception 'Transfer changed. Refresh first.' using errcode='P0001';end if;
  select * into s from private.payment_checkout_sessions where id=p_session_id for update;
  if p_action='verify' then
   if p_evidence->'bank_credit_verified' is distinct from 'true'::jsonb or p_evidence->>'currency' is distinct from 'EGP'
