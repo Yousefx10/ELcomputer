@@ -1,3 +1,52 @@
+# E203 — checkout/Pixel and Meta locally complete; inactive InstaPay host sealed — 2026-11-03
+
+- PAY-EXEC-20261103-01: local commits968b705/89ea6cc/c83d2af/f5e97b5;
+  independent checkout app-only and inactive Meta application/SQL artifacts PASS.
+  No production deployment, activation, migration, provider call, financial action
+  or Git push. Hosted CARD stays default; new Pixel/Meta/balance/Google OFF.
+- Current bec54ceb2fbfac72/source76b4db1/schema110 unchanged. CARD/COD/core,
+  EGP10, Email/PDC/MON timers preserved. Fresh MON8warnings/3gaps/0critical;
+  genuine private CARD remains pending/overdue,0funds/0linkedorder. No finality.
+- MKT-META-01 LOCAL PASS: protected token/settings, consent/GPC/DNT/staff gates,
+  server values, shared immutable IDs, verified funds+order Purchase, uncollected
+  COD distinction, completed balance debit, private URL protection, bounded
+  outbox retries and attribute retention. Actual Meta/merchant acceptance pending.
+- Native/HTTP/privacy and both-browser EN/AR/RTL/mobile/dark qualification PASS;
+  both builds/typechecks, archives/readbacks and retained static serving PASS.
+  Original50foreign worktrees exact,51original/53total; main docs only.
+- InstaPay installed/access accepted but blank/OFF; legacy general flag observed
+  ON. db13c8ee packet READY_UNAPPROVED corrects general OFF/private proof ingress
+  and canary only; no app restart/migration/runtime/provider/financial action.
+  Start deadline20:41:18Riyadh, expiry20:56:18Riyadh3November2026; fresh check mandatory.
+- Apple live offer/ID unverified; Paymob-managed promise retained. Wallet IDs/flow
+  absent; unsupported methods hidden. Balance29-result candidate and catalog
+  candidates preserved; no legacy balance funding or old migration-number replay.
+- Actual next schema after110 is rechecked per release; Meta is provisional111.
+  One next action: exact inactive InstaPay host approval in [execution report](payments-checkout-meta-execution-20261103.md).
+
+# E202 — coordinated payments, checkout and Meta execution resumed — 2026-11-03
+
+- OD-20261103-MASTER-EXEC-01 authorizes local implementation, focused testing,
+  safe commits, artifacts and independent release qualification across all phases.
+  Payments and checkout plus Meta tracking precede preserved catalog work.
+- Initial read-only audit is complete; it was not completion of the master task.
+  Fresh verification 10:32UTC confirms bec54ceb2fbfac72/source76b4db1/schema110,
+  CARD/COD/core, Email, tracking and MON active; seven warnings/three gaps/zero critical.
+- Genuine CARD session remains pending/overdue, zero callbacks/funds/linked order.
+  No provider inquiry, payment-state change or financial transaction is authorized.
+- InstaPay private/runtime initiation OFF, blank recipient/instructions/revision0.
+  General site toggle observed ON, contrary to requested OFF; preserve until the
+  separately approved inactive configuration scope explicitly changes it.
+- New isolated source local/payments-checkout-meta-20261103 starts at actual76b4db1.
+  All51 prior worktree heads/status/diff digests saved outside the repository.
+  Existing Pixel1.2.8, checkout A–E, balance ledger and catalog candidates reused.
+- PAY-EXEC-20261103-01 IN PROGRESS; MKT-META-01 local implementation IN PROGRESS.
+  Unsupported methods/Google/balance stay OFF. No deployment/SQL/provider approval
+  is implied. Old approvals and emergency budgets remain consumed/original.
+- Immediate work: qualify recovered embedded CARD and checkout changes; prepare
+  inactive InstaPay configuration, then complete independent consented Meta work.
+  Durable checkpoint: ../payments-checkout-meta-20261103/EXECUTION_CHECKPOINT.json.
+
 # E201 — Dashboard fix DEPLOYED / OWNER ACCEPTED; InstaPay remains OFF — 2026-11-03
 
 - d702b587 CONSUMED_COMPLETE. Actual bec54ceb2fbfac72/source76b4db1/schema110.
@@ -6036,7 +6085,9 @@ acceptance. Do not revive already completed historical phases as new work.
 | UIUX-03-B | Configurable bounded public catalog continuation | CURRENT LOCAL QUALIFIED | MIGRATION108 UNAPPROVED | ON default only for approved new feature; explicit OFF retained;12 rows/page,20-page windows, applied filters, Back and crawlable links | Separate catalog-only SQL; no full-catalog relevance fetch or business-state writer | E175 | 2026-11-01 | Separate source-bound migration/app packet after actual-history recheck; no production configuration change. |
 | UIUX-03-C | Staff-selected optional accessories | CURRENT LOCAL QUALIFIED | FUNCTION109 UNAPPROVED | Reuse private compatible IDs, ordered receipts and existing product/cart rules; add/remove/reorder; cycle guard | No new table/current price/stock edit; published/owner permission and concurrency tests PASS | E175 | 2026-11-01 | Separate feature packet; no real recommendations configured or cart items added automatically. |
 | UIUX-03-P0 | Unverified CARD cancellation and truthful support | SAFETY LOCAL QUALIFIED | FUNCTION110 UNAPPROVED / FINALITY HELD | Request is an owned support ticket, never cancellation; API/SQL/expiry hold every existing uncertain attempt | Native authorization/age/failure/worker/rollback checks PASS; no old order rewrite/provider inquiry | E175 | 2026-11-01 | Separately seal payment hold; current owner-cancelled order remains closed/unpaid-unverified. Provider reply required for finality/recovery, no old intention reuse. |
-| UIUX-03-E | Fresh-confirmation hosted payment handoff | LOCAL PREPARED | FLAG OFF / MERCHANT ACCEPTANCE PENDING | Only newly created explicitly confirmed CARD order initiates once; same-tab URL, owned fallback, no page-load/recovery/replay start | Both browsers/identity/idempotency/uncertainty checks PASS with provider navigation intercepted | E175 | 2026-11-01 | Separate release and flag approval after hosted path/3DS/return qualification; never activates Pixel or unsafe Pay Again. |
+| UIUX-03-E | Fresh-confirmation secure payment handoff | DEPLOYED HOSTED DEFAULT | PIXEL LOCAL; GENUINE ACCEPTANCE PENDING | Deployed payment-first fresh CARD session initiates once with same-tab hosted handoff; no unpaid prepaid order; isolated89ea6cc adds optional embedded path with hosted preserved | Both browsers and native/HTTP idempotency/uncertainty/cart checks PASS; genuine signed successful payment acceptance pending | E201; E203; payments-checkout-meta-execution-20261103.md | 2026-11-03 | Separate app-only compact COD/Pixel inactive release; preserve hosted CARD until genuine embedded acceptance. |
+| PAY-EXEC-20261103-01 | Coordinated payments, checkout and tracking execution | CURRENT OWNER PRIORITY | LOCAL GROUPS COMPLETE; PRODUCTION UNCHANGED | Checkout/Pixel89ea6cc and inactive Metaf5e97b5 artifacts qualified; H1db13c8ee READY_UNAPPROVED | Native/HTTP/browser/build/archive/assets PASS;50foreign worktrees exact | E202; E203; payments-checkout-meta-execution-20261103.md | 2026-11-03 | Exact inactive InstaPay host approval; then real protected fields and separately bound activations. |
+| MKT-META-01 | Consented Meta Pixel and Conversions API | CURRENT OWNER PRIORITY | LOCAL PASS; PRODUCTION OFF | Protected token/config, consent, immutable dedup/outbox, verified Purchase, COD/balance gates, retention and worker |34native/HTTP results;18consent+12Dashboard browser; typecheck/build/archive/static serving PASS; no Meta calls | E203; meta-commerce-tracking.md in isolated source | 2026-11-03 | Separate inactive schema/app release, protected real Dataset/token, exact activation and Test Events acceptance. |
 | FUT-01 | Dashboard full authenticated/RBAC/browser-write-safety acceptance | P1 | BLOCKED | Secure active-role sessions and guarded test scope | Accept named roles/modules; functional owner smoke and public401/403 are insufficient; preserve unread evidence limits | E21; E12 | 2026-10-25 | Prepare smallest remaining authenticated acceptance scope E172 owner direction: customer/Admin UI/UX REVIEW is next after the bounded local metadata qualification; include whether staff need a dedicated permission-scoped historical-order viewer. No UI implementation, authenticated production write or full RBAC acceptance implied. Preserve current design/EN-AR/RTL/responsiveness and all old acceptance limits. |
 | FUT-02 | Premium PDP/Footer owner acceptance | P2 | PLANNED | Secure owner browser and saved theme/content settings | Hosted persistence/favorites/sharing/package content accepted; no fabricated content or replacement layout | E16 | 2026-10-25 | Complete remaining owner cases without redesign |
 | FUT-03 | QR/serialized inventory and packing extensions | P2 | PLANNED | Actual unit custody/ownership and scan authorization | Preserve current QR registry; validate real scans, retries and packing coverage; no invented ownership from aggregate stock/warranty claims | E13; E17; E20; REQ | 2026-10-25 | Inventory specific outstanding QR requirements before implementation |

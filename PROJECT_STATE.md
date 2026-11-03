@@ -1,3 +1,52 @@
+# E203 — checkout/Pixel and Meta locally complete; inactive InstaPay host sealed — 2026-11-03
+
+- PAY-EXEC-20261103-01: local commits968b705/89ea6cc/c83d2af/f5e97b5;
+  independent checkout app-only and inactive Meta application/SQL artifacts PASS.
+  No production deployment, activation, migration, provider call, financial action
+  or Git push. Hosted CARD stays default; new Pixel/Meta/balance/Google OFF.
+- Current bec54ceb2fbfac72/source76b4db1/schema110 unchanged. CARD/COD/core,
+  EGP10, Email/PDC/MON timers preserved. Fresh MON8warnings/3gaps/0critical;
+  genuine private CARD remains pending/overdue,0funds/0linkedorder. No finality.
+- MKT-META-01 LOCAL PASS: protected token/settings, consent/GPC/DNT/staff gates,
+  server values, shared immutable IDs, verified funds+order Purchase, uncollected
+  COD distinction, completed balance debit, private URL protection, bounded
+  outbox retries and attribute retention. Actual Meta/merchant acceptance pending.
+- Native/HTTP/privacy and both-browser EN/AR/RTL/mobile/dark qualification PASS;
+  both builds/typechecks, archives/readbacks and retained static serving PASS.
+  Original50foreign worktrees exact,51original/53total; main docs only.
+- InstaPay installed/access accepted but blank/OFF; legacy general flag observed
+  ON. db13c8ee packet READY_UNAPPROVED corrects general OFF/private proof ingress
+  and canary only; no app restart/migration/runtime/provider/financial action.
+  Start deadline20:41:18Riyadh, expiry20:56:18Riyadh3November2026; fresh check mandatory.
+- Apple live offer/ID unverified; Paymob-managed promise retained. Wallet IDs/flow
+  absent; unsupported methods hidden. Balance29-result candidate and catalog
+  candidates preserved; no legacy balance funding or old migration-number replay.
+- Actual next schema after110 is rechecked per release; Meta is provisional111.
+  One next action: exact inactive InstaPay host approval in [execution report](docs/payments-checkout-meta-execution-20261103.md).
+
+# E202 — coordinated payments, checkout and Meta execution resumed — 2026-11-03
+
+- OD-20261103-MASTER-EXEC-01 authorizes local implementation, focused testing,
+  safe commits, artifacts and independent release qualification across all phases.
+  Payments and checkout plus Meta tracking precede preserved catalog work.
+- Initial read-only audit is complete; it was not completion of the master task.
+  Fresh verification 10:32UTC confirms bec54ceb2fbfac72/source76b4db1/schema110,
+  CARD/COD/core, Email, tracking and MON active; seven warnings/three gaps/zero critical.
+- Genuine CARD session remains pending/overdue, zero callbacks/funds/linked order.
+  No provider inquiry, payment-state change or financial transaction is authorized.
+- InstaPay private/runtime initiation OFF, blank recipient/instructions/revision0.
+  General site toggle observed ON, contrary to requested OFF; preserve until the
+  separately approved inactive configuration scope explicitly changes it.
+- New isolated source local/payments-checkout-meta-20261103 starts at actual76b4db1.
+  All51 prior worktree heads/status/diff digests saved outside the repository.
+  Existing Pixel1.2.8, checkout A–E, balance ledger and catalog candidates reused.
+- PAY-EXEC-20261103-01 IN PROGRESS; MKT-META-01 local implementation IN PROGRESS.
+  Unsupported methods/Google/balance stay OFF. No deployment/SQL/provider approval
+  is implied. Old approvals and emergency budgets remain consumed/original.
+- Immediate work: qualify recovered embedded CARD and checkout changes; prepare
+  inactive InstaPay configuration, then complete independent consented Meta work.
+  Durable checkpoint: ../payments-checkout-meta-20261103/EXECUTION_CHECKPOINT.json.
+
 # E201 — Dashboard fix DEPLOYED / OWNER ACCEPTED; InstaPay remains OFF — 2026-11-03
 
 - d702b587 CONSUMED_COMPLETE. Actual bec54ceb2fbfac72/source76b4db1/schema110.
