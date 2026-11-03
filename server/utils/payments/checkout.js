@@ -38,7 +38,7 @@ export async function createPaymentCheckout({body,user,db,runtime,fetcher=fetch}
   const committed=await paymentCheckoutRpc(db,'commerce_store_checkout_intention',{p_attempt_id:attempt.id,p_intention_id:result.intentionId,p_provider_order_id:result.providerOrderId,p_client_secret:result.clientSecret})
   const checkout=await paymentCheckoutRpc(db,'commerce_read_payment_checkout',{p_user_id:user.id,p_session_id:prepared.checkout.id})
   if(committed?.order_id||checkout.orderId)return {checkout,created:true}
-  return {checkout,created:true,payment:{provider:'paymob',mode:config.mode,publicKey:config.publicKey,clientSecret:result.clientSecret}}
+  return {checkout,created:true,payment:{provider:'paymob',mode:config.mode,publicKey:config.publicKey,clientSecret:result.clientSecret,expiresAt:checkout.expiresAt,experience:[true,'true'].includes(runtime.paymobPixelEnabled)?'embedded':'redirect',redirectFallback:runtime.paymobRedirectFallbackEnabled!==false&&runtime.paymobRedirectFallbackEnabled!=='false'}}
  }catch{
   await paymentCheckoutRpc(db,'commerce_checkout_payment_uncertain',{p_attempt_id:claimed.attempt.id})
   return {checkout:await paymentCheckoutRpc(db,'commerce_read_payment_checkout',{p_user_id:user.id,p_session_id:prepared.checkout.id}),created:true}

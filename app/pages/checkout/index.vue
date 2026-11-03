@@ -36,6 +36,7 @@
       </section>
       <section v-if="savedCheckout" role="status" class="mx-auto mt-4 max-w-5xl rounded-xl border p-4">
         <p class="text-sm">{{ $t('paymentFirst.cartRetained') }}</p>
+        <ClientOnly><PaymentPaymobPixel v-if="embeddedPayment" :key="savedCheckout" :session="embeddedPayment" class="mt-4" @complete="checkEmbeddedPayment" @cancel="checkEmbeddedPayment" /></ClientOnly>
         <a v-if="hostedFallback" :href="hostedFallback" referrerpolicy="no-referrer" rel="noreferrer" class="mt-2 inline-flex min-h-11 items-center px-3 text-sm font-semibold">{{ $t('paymentFirst.openSaved') }}</a>
         <NuxtLinkLocale :to="`/checkout/session/${savedCheckout}`" class="mt-2 inline-flex min-h-11 items-center px-3 text-sm font-semibold">{{ $t('paymentFirst.checkStatus') }}</NuxtLinkLocale>
       </section>
@@ -156,7 +157,7 @@
               </div>
 
               <div v-else-if="selectedPaymentMethod === 'paypal'" class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5"><h3 class="font-bold text-blue-950">PayPal</h3><p class="mt-2 text-sm leading-6 text-blue-900">{{ $t('checkout.yourOrderWillRemainPaymentPendingUntilThePaypalConnectionConfirmsPayment') }}</p></div>
-              <div v-else-if="selectedPaymentMethod === 'cash'" class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><h3 class="font-bold text-emerald-950">{{ $t('common.payWithCash') }}</h3><p class="mt-2 text-sm leading-6 text-emerald-900">{{ $t('checkout.prepareTheOrderTotalForTheCourierTheOrderRemainsPaymentPendingUntilCollection') }}</p></div>
+
             </section>
           </template>
         </main>
@@ -213,7 +214,8 @@ const { trackEvent } = useStoreAnalytics()
 
 const paymentFirstRuntime=useRuntimeConfig()
 const prepaidFlow=computed(()=>[true,'true'].includes(paymentFirstRuntime.public.paymentFirstEnabled))
-const savedCheckout=ref(''),hostedFallback=ref('')
+const savedCheckout=ref(''),hostedFallback=ref(''),embeddedPayment=shallowRef(null)
+const checkEmbeddedPayment=()=>savedCheckout.value&&uiNavigateTo(`/checkout/session/${savedCheckout.value}`)
 const checkoutStep = ref('shipping')
 const loadingProfile = ref(false)
 const addressExpanded = ref(true)
@@ -410,8 +412,14 @@ const sendCommand = async (command,explicit=false) => {
     if(response.checkout){
       customerScope.assertCurrent();savedCheckout.value=response.checkout.id
       if(explicit&&response.created&&response.payment){
-       const url=hostedPaymentUrl(response.payment);hostedFallback.value=url
-       try{window.location.assign(url)}catch{orderError.value=t('paymentFirst.openSaved')}
+       if(response.payment.experience==='embedded'){
+        hostedFallback.value=''
+        if(paymentCapabilities.value?.card?.experience==='embedded')embeddedPayment.value={publicKey:response.payment.publicKey,clientSecret:response.payment.clientSecret,expiresAt:response.checkout.expiresAt}
+        else orderError.value=t('paymentFirst.openSaved')
+       }else{
+        const url=hostedPaymentUrl(response.payment);hostedFallback.value=response.payment.redirectFallback===false?'':url
+        try{window.location.assign(url)}catch{orderError.value=t('paymentFirst.openSaved')}
+       }
       }else await uiNavigateTo(response.checkout.method==='instapay'?`/checkout/transfer/${response.checkout.id}`:`/checkout/session/${response.checkout.id}`)
       return
     }
@@ -483,7 +491,7 @@ const reviewCart = () => {
 const storageChanged = () => { readPending() }
 onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
 customerScope.onInvalidate(() => {
-  savedCheckout.value='';hostedFallback.value=''
+  savedCheckout.value='';hostedFallback.value='';embeddedPayment.value=null
 
   backorderAccepted.value = false
   ++quoteSequence

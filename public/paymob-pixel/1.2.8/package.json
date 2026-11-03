@@ -1,0 +1,15 @@
+{
+  "name": "paymob-pixel",
+  "version": "1.2.8",
+  "keywords": ["paymob","pixel","paymob-pixel"],
+  "main": "./main.js",
+  "license": "MIT",
+  "homepage": "https://developers.paymob.com",
+  "author": "Paymob <support@paymob.com> (https://developers.paymob.com)",
+  "exports": {
+    ".": {
+      "import": "./main.js",
+      "require": "./main.js"
+    }
+  }
+}

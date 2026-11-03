@@ -33,6 +33,6 @@ export default paymentHandler(async event => {
   try {
     const config = getPaymobConfig(scope ? controlledPaymentRuntime(runtime) : runtime)
     const available = (!paymentFirstEnabled(runtime)||lifecycle?.enabled===true)&&config.methods.some(method => method.method === 'card' && method.available)
-    return { manualTransfer,card: { available, initiationAvailable: available && (!scope || scope.payment_enabled), provider: 'paymob', mode: config.mode }, express: [], purchase }
+    return { manualTransfer,card: { available, initiationAvailable: available && (!scope || scope.payment_enabled), provider: 'paymob', mode: config.mode, experience: [true,'true'].includes(runtime.paymobPixelEnabled) ? 'embedded' : 'redirect' }, express: [], purchase }
   } catch { return { manualTransfer,card: { available: false }, express: [], purchase } }
 })

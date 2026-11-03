@@ -4,6 +4,7 @@ import {dirname,join} from 'node:path'
 const pdfRoot=dirname(createRequire(import.meta.url).resolve('pdfjs-dist/package.json'))
 const pdfVersion=createRequire(import.meta.url)('pdfjs-dist/package.json').version
 import { DEFAULT_SITE_URL } from './app/utils/seo.js'
+import { paymobFrameCsp } from './app/utils/paymobFramePolicy.js'
 import tailwindcss from "@tailwindcss/vite";
 
 const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
@@ -18,7 +19,7 @@ const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  routeRules: Object.fromEntries(['/favicon.ico', '/favicon-16x16.png', '/favicon-32x32.png', '/favicon-48x48.png', '/favicon-96x96.png', '/apple-touch-icon.png', '/android-chrome-192x192.png', '/android-chrome-512x512.png', '/site.webmanifest'].map(path => [path, { headers: { 'cache-control': 'public, max-age=86400' } }])),
+  routeRules: { '/paymob-pixel/1.2.8/**': { headers: { 'Content-Security-Policy': paymobFrameCsp, 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'public, max-age=31536000, immutable' } }, ...Object.fromEntries(['/favicon.ico', '/favicon-16x16.png', '/favicon-32x32.png', '/favicon-48x48.png', '/favicon-96x96.png', '/apple-touch-icon.png', '/android-chrome-192x192.png', '/android-chrome-512x512.png', '/site.webmanifest'].map(path => [path, { headers: { 'cache-control': 'public, max-age=86400' } }])) },
   nitro: {
     publicAssets: [{dir:join(pdfRoot,'standard_fonts'),baseURL:`/_nuxt/pdfjs-${pdfVersion}/standard_fonts`,maxAge:31536000}],
     externals: {
@@ -52,6 +53,8 @@ export default defineNuxtConfig({
     smsWorkerSecret: '',
     emailWorkerSecret: '',
     commerceWorkerSecret: '',
+    paymobPixelEnabled: false,
+    paymobRedirectFallbackEnabled: true,
     paymentFirstEnabled: false,
     manualTransferEnabled: false,
     transferDocumentsDir: '',

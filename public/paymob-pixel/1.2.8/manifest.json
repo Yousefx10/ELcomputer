@@ -1,0 +1,9 @@
+{
+  "package": "paymob-pixel",
+  "version": "1.2.8",
+  "source": "https://registry.npmjs.org/paymob-pixel/-/paymob-pixel-1.2.8.tgz",
+  "npm_integrity": "sha512-8SweaBsSnt8NH7/GAAF6++UHwNzAbSISzqtSr/9dYCYSpNhJWMYZXyVgahLs9zR3KN7A/oPd2SE6AiQkn+YCdw==",
+  "sha256": "082c4b1b76425af80bb6cd98e795e06667fc9b07c34cdb9340c1caa88924373d",
+  "script_integrity": "sha384-4ITAGSF5NsYiL+fauejz88cmuuYkGC7Yw0lgzHATTP0n/Az+BPASNgkDC5PfA1cM",
+  "styles": "Self-contained SDK Shadow DOM; no separate CSS files"
+}

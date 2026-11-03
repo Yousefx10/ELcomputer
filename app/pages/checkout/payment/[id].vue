@@ -8,7 +8,7 @@
         <p v-if="capabilities?.card?.mode === 'test'" class="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('paymob.testOnly') }}</p>
         <p v-if="error || !cardAvailable" role="alert" class="mt-5 text-sm text-red-700">{{ $t('paymob.unavailable') }}</p>
         <p v-if="error" class="mt-2 text-sm text-slate-600">{{ $t('paymentStatus.detail.provider_uncertain') }}</p>
-        <ClientOnly><PaymentPaymobPixel v-if="session && cardAvailable" :session="session" class="mt-6" @complete="showResult" @cancel="showResult" /></ClientOnly>
+        <ClientOnly><PaymentPaymobPixel v-if="session && cardAvailable && capabilities?.card?.experience === 'embedded'" :session="session" class="mt-6" @complete="showResult" @cancel="showResult" /></ClientOnly>
         <button v-if="!session && cardAvailable && !attempted && payment?.recovery === 'start'" type="button" :disabled="loading" class="mt-6 min-h-12 rounded-full bg-blue-600 px-6 font-semibold text-white disabled:opacity-50" @click="start">{{ loading ? $t('paymob.loading') : $t('paymob.openSecure') }}</button>
         <NuxtLinkLocale :to="`/account/orders/${orderId}`" class="mt-6 block text-sm font-semibold text-blue-700">{{ $t('paymob.viewOrder') }}</NuxtLinkLocale>
       </section>
@@ -16,6 +16,7 @@
   </div>
 </template>
 <script setup>
+import {hostedPaymentUrl} from '~/utils/hostedPayment'
 definePageMeta({ middleware: 'customer-auth' })
 const route = useRoute()
 const { locale, t } = useI18n()
@@ -39,6 +40,7 @@ const start = async () => {
   try {
     session.value = await customerScope.request('/api/payments/intentions', { method: 'POST', body: { order_id: orderId, locale: locale.value }, retry: 0 })
     payment.value = { status: 'pending', recovery: 'review' }
+    if (capabilities.value?.card?.experience !== 'embedded') window.location.assign(hostedPaymentUrl(session.value))
   } catch { error.value = true; payment.value = { status: 'provider_uncertain', recovery: 'review' } }
   finally { loading.value = false }
 }
