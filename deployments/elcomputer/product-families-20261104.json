@@ -1,0 +1,727 @@
+{
+  "format": 1,
+  "source_sha256": "4c62f42b156e40cc45ccdf7ba43ef682ea7ab234362ecb53963f7e9a8ec7aefd",
+  "evidence": "WPCode8565 _cv5_links reciprocal authored lists",
+  "families": [
+    {
+      "source_ids": [
+        "3759",
+        "3761",
+        "3763",
+        "3765"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "7857a89e-282c-5592-b151-4825fc2b46ee",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "d355ae0e-bdba-40e6-ae39-f28836bda2ea",
+            "values": {
+              "version": "MP905"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "1b0185d8-5c75-4876-b721-47d843c64e37",
+            "values": {
+              "version": "KUJIRA"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "7bfcb9e1-192a-471d-98c2-9be5803252ad",
+            "values": {
+              "version": "NAMI"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "9dc2850e-2026-41c9-874d-09477cd0ae82",
+            "values": {
+              "version": "Vibe Edition"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "d355ae0e-bdba-40e6-ae39-f28836bda2ea",
+      "expected_revision": 0,
+      "request_id": "a6ca051b-191e-597c-a2cf-13ac776081de"
+    },
+    {
+      "source_ids": [
+        "3783",
+        "3876",
+        "5821"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "66d84b9b-9ce3-5ac8-8f5b-c4a177ad71ce",
+        "axes": [
+          {
+            "key": "model",
+            "label": "Model",
+            "label_ar": "الموديل"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "c890851d-a36b-426b-bbfa-37151968aebc",
+            "values": {
+              "model": "EV200 (Wired)"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "63b9cdcb-a413-47ce-9d95-c73150a127fb",
+            "values": {
+              "model": "EV250 (Wirless)"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "f1d4fe3e-70f4-4042-82a3-c27a763255b3",
+            "values": {
+              "model": "EV310M (Wireless )"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "c890851d-a36b-426b-bbfa-37151968aebc",
+      "expected_revision": 0,
+      "request_id": "e2a8ad0d-858d-551f-8c62-043ebf713967"
+    },
+    {
+      "source_ids": [
+        "3790",
+        "5773"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "1e811d60-fb3e-5cee-a359-dce0f71f79d8",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "ee816adc-8579-49a2-bf3b-c50f008d9acf",
+            "values": {
+              "color": "Gray"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "8052910b-406d-41bd-9cc9-773dd44fa2e1",
+            "values": {
+              "color": "BLACK"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "ee816adc-8579-49a2-bf3b-c50f008d9acf",
+      "expected_revision": 0,
+      "request_id": "20bffffd-6b44-5992-b7e3-9848eaf3a64a"
+    },
+    {
+      "source_ids": [
+        "4000",
+        "5835",
+        "7506",
+        "8983"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "04766077-4715-560b-b227-df31a74ac9c9",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "8cd156de-4d72-435e-8a4d-2225e9a68396",
+            "values": {
+              "version": "mini"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "026f3341-51b8-4b84-a0af-1a23971cbf6a",
+            "values": {
+              "version": "light Black"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "e62a4e94-0580-4a5f-a5de-074913d2fb72",
+            "values": {
+              "version": "white"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "8d15d969-b88b-4cc1-aa11-aed4ce5c8323",
+            "values": {
+              "version": "Rose"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "8cd156de-4d72-435e-8a4d-2225e9a68396",
+      "expected_revision": 0,
+      "request_id": "312c4b3b-d83c-5428-9973-893c1a773123"
+    },
+    {
+      "source_ids": [
+        "4305",
+        "4309"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "29d6dfb7-a414-5ca1-9f85-c8aa13fc8a63",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "219339a9-d1b1-4ac1-865f-aa92f454790c",
+            "values": {
+              "color": "WHITE"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "26b0d94d-e429-46bf-b653-0f45120a08b3",
+            "values": {
+              "color": "BLACK"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "219339a9-d1b1-4ac1-865f-aa92f454790c",
+      "expected_revision": 0,
+      "request_id": "2808d97b-7a41-5436-b42e-fd2c601ed05e"
+    },
+    {
+      "source_ids": [
+        "4339",
+        "4344",
+        "8980"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "4468d094-221b-5e75-afb3-895ef1049267",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "73b215e7-e5b6-4523-96f9-4017564095a7",
+            "values": {
+              "version": "bluse"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "31d16ab9-dc96-40ac-860e-fe61d624eb6c",
+            "values": {
+              "version": "rose"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "68b804eb-b447-4c03-be73-9c253e49885c",
+            "values": {
+              "version": "black"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "73b215e7-e5b6-4523-96f9-4017564095a7",
+      "expected_revision": 0,
+      "request_id": "4409b778-72d0-5b85-ad75-5e1c416e4fb4"
+    },
+    {
+      "source_ids": [
+        "4357",
+        "4362"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "7eab4c92-acc7-5079-a308-a423cd0dfac6",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "79234827-4f64-4fef-9da4-df5ca3a1e2dd",
+            "values": {
+              "color": "Black"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "f9de6132-c8c5-4299-8b10-72d3643dd556",
+            "values": {
+              "color": "white"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "79234827-4f64-4fef-9da4-df5ca3a1e2dd",
+      "expected_revision": 0,
+      "request_id": "5efb1b20-7c40-5b3e-8e76-658675c5dc60"
+    },
+    {
+      "source_ids": [
+        "4446",
+        "5883"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "47d71154-c73c-5822-b4fe-5ebacbd46c64",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "503305e8-aed2-4202-b719-7f46a3c76b7f",
+            "values": {
+              "version": "Space Edition"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "cfe90532-aed0-4b8f-8d17-55f2dd052e48",
+            "values": {
+              "version": "Black"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "503305e8-aed2-4202-b719-7f46a3c76b7f",
+      "expected_revision": 0,
+      "request_id": "902f67ab-8097-54f0-8efc-469782c47c3a"
+    },
+    {
+      "source_ids": [
+        "5788",
+        "5921"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "eb04f5cf-494d-58eb-9c42-cef7837ee6f8",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "4f3046aa-6ed0-475e-8cd1-5a3cb0abb54b",
+            "values": {
+              "color": "White"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "0f2dc44c-5e3e-4ea0-b2ec-a1251ea2849a",
+            "values": {
+              "color": "Black"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "4f3046aa-6ed0-475e-8cd1-5a3cb0abb54b",
+      "expected_revision": 0,
+      "request_id": "ad2cc12d-643f-5a50-89e4-57455888fd6d"
+    },
+    {
+      "source_ids": [
+        "5798",
+        "5928",
+        "5939"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "0abf1082-96ff-56d8-aab2-60772f994b16",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "8f36d7a6-3cc2-432c-9004-59e9eb4f4105",
+            "values": {
+              "version": "Black (wirless)"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "13a39c61-9533-44fa-a7cd-cb42025f8252",
+            "values": {
+              "version": "Black (wired)"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "7283f507-59c3-4985-9722-1c5a3ebbac9e",
+            "values": {
+              "version": "white (wirless)"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "8f36d7a6-3cc2-432c-9004-59e9eb4f4105",
+      "expected_revision": 0,
+      "request_id": "6ade6d3c-cda0-5c01-bd67-6da3494eafeb"
+    },
+    {
+      "source_ids": [
+        "5808",
+        "5814",
+        "5955"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "dcc11bb7-dae2-5f82-a58f-5870cddd446f",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "b0d425dd-83ca-4969-9339-ba04af36afaf",
+            "values": {
+              "color": "Gray"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "e2f64655-db53-41b2-a212-c85c0c346cd4",
+            "values": {
+              "color": "Blue"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "88a46366-8418-46a8-9c58-819d2743fa12",
+            "values": {
+              "color": "Beige"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "b0d425dd-83ca-4969-9339-ba04af36afaf",
+      "expected_revision": 0,
+      "request_id": "2927b041-aeea-58d5-86dd-01c262764da7"
+    },
+    {
+      "source_ids": [
+        "7145",
+        "7150"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "66131e94-7d2d-5981-a421-16bec4ae6312",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "a18b28eb-ac87-4890-a86e-22ad0ffd45a8",
+            "values": {
+              "color": "Light Grey"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "f4c7cfe6-14bd-479f-89d7-a1aa4450e4d3",
+            "values": {
+              "color": "Grey"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "a18b28eb-ac87-4890-a86e-22ad0ffd45a8",
+      "expected_revision": 0,
+      "request_id": "ede3eb51-16bb-5f58-97f8-dadfdf3825e7"
+    },
+    {
+      "source_ids": [
+        "7166",
+        "7174"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "9d13646e-8551-57e2-8989-398184f10bed",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "dfbd5f4a-1618-459f-b3a1-bdb8ab8c9928",
+            "values": {
+              "color": "Sumi Grey"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "0bc63d22-5b75-4acc-a31e-492797c222f5",
+            "values": {
+              "color": "Sumi Black"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "dfbd5f4a-1618-459f-b3a1-bdb8ab8c9928",
+      "expected_revision": 0,
+      "request_id": "dd2e38da-234b-57f1-a0ff-f5a4f3b5afb0"
+    },
+    {
+      "source_ids": [
+        "7187",
+        "7333"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "a52e016e-4ba1-535a-92ae-e5f7d6fee37c",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "5d0971fb-382c-4dd6-91e1-0ca860bfec5a",
+            "values": {
+              "version": "Saturn"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "db8924d5-9770-49da-9ab3-556b0f3faf99",
+            "values": {
+              "version": "Mercury"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "5d0971fb-382c-4dd6-91e1-0ca860bfec5a",
+      "expected_revision": 0,
+      "request_id": "fe6bcee8-ce17-5157-b823-aca1aaee8a96"
+    },
+    {
+      "source_ids": [
+        "7299",
+        "7304"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "7a8e58b9-11ac-504b-91d4-21dd045c105b",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "aa63cf46-f502-44b4-8469-5fd096aac094",
+            "values": {
+              "color": "sky blue"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "9c542d8c-4f52-4d44-af1b-ece97f968198",
+            "values": {
+              "color": "navy"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "aa63cf46-f502-44b4-8469-5fd096aac094",
+      "expected_revision": 0,
+      "request_id": "43a3a934-5a5e-52b3-aa30-ac2e03263a06"
+    },
+    {
+      "source_ids": [
+        "7343",
+        "7350"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "df500198-4e98-5bd8-b967-ad21f19f2c0a",
+        "axes": [
+          {
+            "key": "color",
+            "label": "Color",
+            "label_ar": "اللون"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "a5d7fc8f-393a-4778-9915-abb44cf895b2",
+            "values": {
+              "color": "Black"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "05985592-5970-4d7c-9ce9-d23b9bb25007",
+            "values": {
+              "color": "white"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "a5d7fc8f-393a-4778-9915-abb44cf895b2",
+      "expected_revision": 0,
+      "request_id": "a4b034a4-c89d-58b0-88fd-01c75c3f3ee7"
+    },
+    {
+      "source_ids": [
+        "8113",
+        "8118"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "32c10dd6-3424-5379-90a6-e3aaa27e2857",
+        "axes": [
+          {
+            "key": "switch",
+            "label": "Keyboard switch",
+            "label_ar": "نوع المفتاح"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "f493dc44-8e5e-4719-80d7-2bde9ce68670",
+            "values": {
+              "switch": "Blue switch"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "702dd0e0-df32-4abe-897a-0f8b51219da6",
+            "values": {
+              "switch": "Red switch"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "f493dc44-8e5e-4719-80d7-2bde9ce68670",
+      "expected_revision": 0,
+      "request_id": "89286b68-e843-5709-b6f6-314d1cc5a255"
+    },
+    {
+      "source_ids": [
+        "11622",
+        "11633",
+        "11639"
+      ],
+      "evidence": "_cv5_links",
+      "family": {
+        "id": "ee3ed60c-4cdb-5501-a0f8-a7914d20218c",
+        "axes": [
+          {
+            "key": "version",
+            "label": "Option",
+            "label_ar": "الخيار"
+          }
+        ],
+        "members": [
+          {
+            "product_id": "1e1f21cc-455e-4ee3-aa60-5afe7b9a8c36",
+            "values": {
+              "version": "White pro"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "ef52936d-3675-42c9-8bb4-845a23f1b0b3",
+            "values": {
+              "version": "WHITE"
+            },
+            "values_ar": {}
+          },
+          {
+            "product_id": "39fd6b75-de5e-47ca-9b2d-5a927e0d06df",
+            "values": {
+              "version": "BLACK"
+            },
+            "values_ar": {}
+          }
+        ]
+      },
+      "anchor_product_id": "1e1f21cc-455e-4ee3-aa60-5afe7b9a8c36",
+      "expected_revision": 0,
+      "request_id": "fa3511c4-9859-54ee-bfcc-af561a756d53"
+    }
+  ]
+}

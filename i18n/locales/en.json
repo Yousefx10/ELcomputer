@@ -1,4 +1,19 @@
 {
+  "productFamily": {
+  "standalone": "Other products in this range",
+  "navigationHelp": "Each option opens its own product page.",
+  "internalOptions": "Options for this product",
+  "allOptions": "All product options",
+  "editorHelp": "Link separate products. Their prices and stock stay independent.",
+  "start": "Link product options",
+  "confirmRelated": "These are options of the same underlying product.",
+  "searchHelp": "Use product search above to add members.",
+  "attribute": "Attribute",
+  "label": "Label",
+  "addAttribute": "Add attribute",
+  "swatch": "Color swatch (optional)",
+  "link": "Link as option"
+},
   "modernProduct": {
     "buyWithIt": "Buy with it",
     "customerReviews": "Customer Reviews",

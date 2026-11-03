@@ -75,6 +75,8 @@ const jumpLinks = computed(() => [hasOverview.value && { id: 'pdp-overview', lab
             </div>
             <ul v-if="tags.length" class="pdp-tags" :aria-label="$t('productFinishing.productTags')"><li v-for="tag in tags" :key="tag"><bdi>{{ tag }}</bdi></li></ul>
             <dl v-if="topHighlights.length" class="pdp-highlights"><div v-for="item in topHighlights" :key="item.label"><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div></dl>
+            <ProductFamilyOptions :key="`family-${product.id}`" :family="presentation?.family" :product-id="product.id" />
+            <p v-if="presentation?.family?.members?.length > 1 && showVariantChoices" class="pdp-family-heading">{{ $t('productFamily.internalOptions') }}</p>
             <ProductVariantOptions v-if="showVariantChoices" :key="product.id" :variants="productVariants" :selected-id="selectedVariantId" :color-choices="hasColorChoices"
               :allow-backorder="allowOutOfStockPurchases" :preorder="isPreorder" :stock-independent="stockIndependentSale"
               :preview="getVariantPreview" :color="getVariantColor" :stock-label="variantStockLabel" @select="selectVariant" />

@@ -1,4 +1,5 @@
 import { createError, setHeader } from 'h3'
+import { validProductFamily } from '../../app/utils/productFamily.js'
 
 export const PDP_MAX_VIDEO_BYTES = 64 * 1024 * 1024
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -37,7 +38,8 @@ export function presentationCommand(body) {
   const requestId = pdpId(body.request_id)
   if (!Number.isSafeInteger(body.expected_revision) || body.expected_revision < 0) fail(400, 'PDP_INVALID')
   const content = body.content
-  if (!content || typeof content !== 'object' || Array.isArray(content) || Buffer.byteLength(JSON.stringify(content)) > 64000 || Object.keys(content).some(key => !['videos', 'related', 'compatible'].includes(key))) fail(400, 'PDP_INVALID')
+  if (!content || typeof content !== 'object' || Array.isArray(content) || Buffer.byteLength(JSON.stringify(content)) > 64000 || Object.keys(content).some(key => !['videos', 'related', 'compatible', 'family'].includes(key))) fail(400, 'PDP_INVALID')
+  if (Object.hasOwn(content, 'family') && !validProductFamily(content.family)) fail(400, 'PDP_INVALID')
   for (const key of ['videos', 'related', 'compatible']) if (!Array.isArray(content[key]) || content[key].length > (key === 'videos' ? 6 : 8)) fail(400, 'PDP_INVALID')
   for (const key of ['related', 'compatible']) {
     if (content[key].some(value => typeof value !== 'string' || !uuid.test(value)) || new Set(content[key]).size !== content[key].length) fail(400, 'PDP_INVALID')
