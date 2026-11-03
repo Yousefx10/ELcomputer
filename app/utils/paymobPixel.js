@@ -1,7 +1,12 @@
-// Only implemented card capability reaches Pixel. Express slots await merchant/browser validation.
+// CARD stays available independently of optional express methods.
 export const pixelPaymentMethods = capabilities => capabilities?.card?.available === true ? ['card'] : []
-export const paymobPixelOptions = ({ publicKey, clientSecret, elementId, locale, dark, afterPaymentComplete, onPaymentCancel }) => ({
-  publicKey, clientSecret, elementId, paymentMethods: ['card'],
+export const applePayDeviceEligible = (environment = globalThis) => {
+  try { return environment.isSecureContext === true && typeof environment.ApplePaySession?.canMakePayments === 'function'
+    && environment.ApplePaySession.canMakePayments() === true
+    && (typeof environment.ApplePaySession.supportsVersion !== 'function' || environment.ApplePaySession.supportsVersion(3)) } catch { return false }
+}
+export const paymobPixelOptions = ({ publicKey, clientSecret, elementId, paymentMethods = ['card'], locale, dark, afterPaymentComplete, onPaymentCancel }) => ({
+  publicKey, clientSecret, elementId, paymentMethods: paymentMethods.length === 1 && ['card', 'apple-pay'].includes(paymentMethods[0]) ? [...paymentMethods] : [],
   showSaveCard: false, forceSaveCard: false, showPaymobLogo: true,
   afterPaymentComplete, onPaymentCancel,
   customStyle: {

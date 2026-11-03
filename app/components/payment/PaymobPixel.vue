@@ -11,12 +11,16 @@
 <script setup>
 import { paymobPixelOptions } from '~/utils/paymobPixel'
 const props = defineProps({ session: { type: Object, required: true } })
-const emit = defineEmits(['complete', 'cancel'])
+const emit = defineEmits(['complete', 'cancel', 'unavailable'])
 const { locale } = useI18n()
 const colorMode = useColorMode()
 const frame = ref(null), frameSrc = ref(''), height = ref(600)
 const loading = ref(true), error = ref(false)
-let disposed = false, timeout, expiryTimer, channel = '', mounted = false, completed = false
+let disposed = false, timeout, expiryTimer, channel = '', mounted = false, completed = false, submitted = false
+const unavailable = beforeSubmit => {
+  clearTimeout(timeout);clearTimeout(expiryTimer);error.value=true;loading.value=false;frameSrc.value=''
+  emit('unavailable', { beforeSubmit: beforeSubmit && !submitted })
+}
 const receive = event => {
   if (disposed || event.origin !== window.location.origin || event.source !== frame.value?.contentWindow) return
   const data = event.data
@@ -28,7 +32,8 @@ const receive = event => {
   }
   if (data.channel !== channel) return
   if (data.type === 'mounted') { mounted = true; clearTimeout(timeout); loading.value = false }
-  else if (data.type === 'unavailable') { clearTimeout(timeout); clearTimeout(expiryTimer); error.value = true; loading.value = false; frameSrc.value = '' }
+  else if (data.type === 'unavailable') unavailable(data.beforeSubmit === true)
+  else if (data.type === 'submitted') submitted = true
   else if (data.type === 'height' && Number.isInteger(data.height) && data.height >= 360 && data.height <= 1600) height.value = data.height
   else if (data.type === 'complete' && !completed) { completed = true; emit('complete') }
   else if (data.type === 'cancel') emit('cancel')
@@ -40,7 +45,7 @@ onMounted(() => {
   expiryTimer = setTimeout(() => { if (!disposed) { loading.value = false; error.value = true; frameSrc.value = '' } }, Math.min(expiry - Date.now(), 3600000))
   channel = crypto.randomUUID()
   window.addEventListener('message', receive)
-  timeout = setTimeout(() => { if (!disposed && !mounted) { loading.value = false; error.value = true; frameSrc.value = '' } }, 15000)
+  timeout = setTimeout(() => { if (!disposed && !mounted) unavailable(true) }, 15000)
   // Same-origin, integrity-pinned package. No secret enters a URL, log or storage.
   frameSrc.value = '/paymob-pixel/1.2.8/host.html'
 })

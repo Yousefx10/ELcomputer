@@ -10,7 +10,7 @@ const {chromium,webkit}=await import(process.env.COD_REVIEW_PLAYWRIGHT)
 const vendor=resolve('public/paymob-pixel/1.2.8')
 const helper=`import {createApp,h,ref,shallowRef,onMounted,onBeforeUnmount,nextTick} from 'vue';import Pixel from './app/components/payment/PaymobPixel.vue';
  const visible=ref(true),events=[];Object.assign(globalThis,{ref,shallowRef,onMounted,onBeforeUnmount,useI18n:()=>({locale:ref(window.__fixture.locale)}),useColorMode:()=>({value:window.__fixture.dark?'dark':'light'})});
- const app=createApp({render:()=>visible.value?h(Pixel,{session:{publicKey:'egy_pk_test_fixture',clientSecret:'egy_csk_test_fixture',expiresAt:new Date(Date.now()+1800000).toISOString()},onComplete:()=>events.push('complete'),onCancel:()=>events.push('cancel')}):h('p','Unmounted')});app.config.globalProperties.$t=k=>k;app.mount('#app');window.__events=events;window.__hide=async()=>{visible.value=false;await nextTick()};window.__show=async()=>{visible.value=true;await nextTick()};`
+ const app=createApp({render:()=>visible.value?h(Pixel,{session:{publicKey:'egy_pk_test_fixture',clientSecret:'egy_csk_test_fixture',paymentMethods:[window.__fixture.method||'card'],expiresAt:new Date(Date.now()+1800000).toISOString()},onComplete:()=>events.push('complete'),onCancel:()=>events.push('cancel')}):h('p','Unmounted')});app.config.globalProperties.$t=k=>k;app.mount('#app');window.__events=events;window.__hide=async()=>{visible.value=false;await nextTick()};window.__show=async()=>{visible.value=true;await nextTick()};`
 const compiled=await build({stdin:{contents:helper,resolveDir:resolve('.'),sourcefile:'pixel-fixture.js'},write:false,bundle:true,format:'iife',platform:'browser',alias:{'~':resolve('app')},define:{'process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'vue',setup(b){b.onLoad({filter:/\.vue$/},async({path})=>({contents:compileScript(parse(await readFile(path,'utf8'),{filename:path}).descriptor,{id:path,inlineTemplate:true}).content,resolveDir:dirname(path),loader:'js'}))}}]})
 let fixture,mode
 const fakeSdk=`window.Pixel=class{constructor(options){window.__options=options;window.__constructs=(window.__constructs||0)+1;document.getElementById(options.elementId).textContent='Provider-owned field fixture'}}`
@@ -21,15 +21,15 @@ const server=createServer(async(req,res)=>{
   const name=path.split('/').pop();if(!['host.html','host.js','main.js'].includes(name)){res.statusCode=404;res.end();return}
   if(name==='host.html'){res.setHeader('content-security-policy',paymobFrameCsp);res.setHeader('referrer-policy','no-referrer')}
   res.setHeader('content-type',name.endsWith('.html')?'text/html':'text/javascript')
-  if(name==='main.js'&&mode==='hanging'){res.writeHead(200);res.write('/* pending SDK fixture */');return}
+  if(name==='main.js'&&mode==='hanging'){res.writeHead(200);res.write('/* pending SDK fixture */');setTimeout(()=>res.end(),1500).unref();return}
   if(name==='main.js'&&mode!=='actual'){res.statusCode=mode==='missing'?404:200;res.end(mode==='missing'?'':fakeSdk);return}
   let body=await readFile(resolve(vendor,name),'utf8');if(name==='host.html'&&mode!=='actual')body=body.replace(/ integrity="[^"]+"/,'');res.end(body);return
  }
  res.setHeader('content-type','text/html');res.end('<!doctype html><html lang="'+fixture.locale+'" dir="'+(fixture.locale==='ar'?'rtl':'ltr')+'"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script>window.__fixture='+JSON.stringify(fixture)+'</script><script src="/fixture.js"></script></body></html>')
 })
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port
-try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await test(engine+' private Pixel lifecycle',{timeout:120000},async t=>{
- const browser=await type.launch({headless:true,...(engine==='chromium'?{channel:'chrome'}:{})})
+try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await test(engine+' private Pixel lifecycle',{timeout:180000},async t=>{
+ const browser=await type.launch({headless:true,timeout:30000,...(engine==='chromium'?{channel:'chrome'}:process.env.REVIEW_WEBKIT_EXECUTABLE?{executablePath:process.env.REVIEW_WEBKIT_EXECUTABLE}:{})})
  try{for(const locale of ['en','ar'])for(const width of [1440,390])await t.test(locale+' '+width+' callbacks, ownership and disposal',async()=>{
   fixture={locale,dark:width===390};mode='fake';const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage(),errors=[],unsafe=[]
   await context.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():(unsafe.push(r.request().method()),r.abort()))
@@ -62,12 +62,28 @@ try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await te
   await context.route('**/*',r=>{if(r.request().url().endsWith('/main.js'))sdk++;return r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():r.abort()})
   await page.goto(origin);await page.getByRole('alert').waitFor();assert.equal(sdk,1);assert.equal(await page.locator('iframe').count(),0);assert.deepEqual(await page.evaluate(()=>window.__events),[]);await context.close()
  })
- await t.test('actual pinned package renders with isolated provider responses',async()=>{
-  fixture={locale:'ar'};mode='actual';const context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage(),writes=[],unapproved=[],errors=[];page.on('pageerror',e=>errors.push(e.message));let metadata=0
+ await t.test('Apple cancellation never unlocks a second submission or claims paid status',async()=>{
+  fixture={locale:'en',method:'apple-pay'};mode='fake';const context=await browser.newContext(),page=await context.newPage()
+  await context.addInitScript(()=>{window.ApplePaySession=class{static canMakePayments(){return true}static supportsVersion(){return true}}})
+  await context.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():r.abort());await page.goto(origin)
+  await page.frameLocator('iframe').locator('#paymob-card').getByText('Provider-owned field fixture').waitFor();const child=page.frames().find(f=>f.url().includes('/host.html'))
+  assert.deepEqual(await child.evaluate(()=>window.__options.paymentMethods),['apple-pay'])
+  assert.equal(await child.evaluate(()=>window.__options.beforePaymentComplete()),true)
+  await child.evaluate(()=>window.__options.onPaymentCancel({privatePayload:'DO_NOT_FORWARD'}));await page.waitForFunction(()=>window.__events.length===1)
+  assert.deepEqual(await page.evaluate(()=>window.__events),['cancel']);assert.equal(await child.evaluate(()=>window.__options.beforePaymentComplete()),false)
+  await context.close()
+ })
+ for(const method of ['card','apple-pay'])await t.test('actual pinned package renders '+method+' with isolated provider responses',async()=>{
+  fixture={locale:'ar',method};mode='actual';const context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage(),writes=[],unapproved=[],errors=[];page.on('pageerror',e=>errors.push(e.message));let metadata=0
+  if(method==='apple-pay')await context.addInitScript(()=>{window.ApplePaySession=class{static canMakePayments(){return true}static supportsVersion(){return true}}})
   await context.route('**/*',async r=>{
-   const req=r.request(),u=new URL(req.url());if(req.method()!=='GET'){writes.push(req.method());return r.abort()}
+   const req=r.request(),u=new URL(req.url())
+   // The unmodified Apple component checks for a provider discount on mount.
+   // Fulfill only that exact fixture request; every payment request is blocked.
+   if(method==='apple-pay'&&req.method()==='POST'&&u.origin==='https://accept.paymob.com'&&u.pathname==='/api/acceptance/transaction_discount')return r.fulfill({contentType:'application/json',body:JSON.stringify({discounted_amount_cents:0})})
+   if(req.method()!=='GET'){writes.push(req.method());return r.abort()}
    if(u.origin===origin)return r.continue()
-   if(u.origin==='https://accept.paymob.com'&&u.pathname.startsWith('/v1/intention/element/')){metadata++;return r.fulfill({contentType:'application/json',body:JSON.stringify({intention_detail:{amount:12345,currency:'EGP'},payment_methods:[{integration_id:1,name:'card',live:false,currency:'EGP'}],payment_keys:{card:'fixture-provider-token',card_iframe_id:1},card_tokens:[],merchant_name:'Isolated fixture'})})}
+   if(u.origin==='https://accept.paymob.com'&&u.pathname.startsWith('/v1/intention/element/')){metadata++;return r.fulfill({contentType:'application/json',body:JSON.stringify({intention_detail:{amount:12345,currency:'EGP'},payment_methods:[{integration_id:1,name:method,live:false,currency:'EGP'}],payment_keys:{[method]:'fixture-provider-token',[method+'_iframe_id']:1},card_tokens:[],merchant_name:'Isolated fixture'})})}
    if(u.origin==='https://eg.checkout.paymob.com')return r.fulfill({contentType:'text/html',body:'<!doctype html><title>Provider fixture</title><p>Isolated provider card fields</p>'})
    unapproved.push(u.origin+u.pathname);return r.abort()
   })

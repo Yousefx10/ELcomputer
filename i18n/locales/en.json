@@ -15,7 +15,14 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "accessoryHelp": "Choose optional products; compatibility is managed by staff.",
-    "options": { "color": "Color", "model": "Model", "switch": "Switch type", "size": "Size", "capacity": "Capacity", "version": "Version" }
+    "options": {
+      "color": "Color",
+      "model": "Model",
+      "switch": "Switch type",
+      "size": "Size",
+      "capacity": "Capacity",
+      "version": "Version"
+    }
   },
   "shippingTariffs": {
     "codBasis": "COD percentage basis",
@@ -5248,7 +5255,7 @@
     "message21": "Cleanup does not match this reset."
   },
   "checkoutRecovery": {
-    "pending": "Recover this checkout before starting another.",
+    "pending": "Payment is still being checked.",
     "recover": "Recover checkout",
     "history": "View order history",
     "review": "Review cart",
@@ -5826,7 +5833,7 @@
       "google_pay": "Google Pay",
       "mobile_wallet": "Egyptian mobile wallets"
     },
-    "failedDetail": "Payment is unconfirmed. Contact the store before trying again.",
+    "failedDetail": "Your cart is saved. Check payment status before trying again.",
     "checkoutDetails": "Checkout details"
   },
   "transfer": {
@@ -5874,5 +5881,14 @@
       "verified_order_pending": "Funds verified · order needs review"
     },
     "afterConfirm": "Confirm to view verified transfer details and upload your receipt."
+  },
+  "embeddedCheckout": {
+    "pending": "Payment is still being checked.",
+    "secureTitle": "Secure payment",
+    "hosted": "Continue on Paymob",
+    "apple": "Pay securely with Apple Pay.",
+    "cartSaved": "Your cart is saved.",
+    "failed": "Payment was declined.",
+    "tryAgain": "Try again"
   }
 }

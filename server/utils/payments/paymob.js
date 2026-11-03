@@ -27,6 +27,13 @@ export const getPaymobConfig = (runtime, { callback = false } = {}) => {
   return { provider: 'paymob', methods, mode, secretKey, publicKey, hmacSecret, integrationId, origin: origin.origin }
 }
 
+export const selectPaymobMethod = (config, method = 'card', { callback = false } = {}) => {
+  const selected = config.methods.find(item => item.method === method)
+  if (!selected || !['card', 'apple_pay'].includes(method) || !selected.integrationId
+    || !selected.flowImplemented || !callback && !selected.available) throw new PaymentError('method_unavailable', 409)
+  return { ...config, integrationId: selected.integrationId, method, pixelMethod: selected.pixelMethod }
+}
+
 // Parse fixed decimals without binary floating-point multiplication or rounding.
 export const toMinorUnits = value => {
   const match = String(value).match(/^(\d{1,12})(?:\.(\d{1,2}))?$/)
@@ -101,7 +108,9 @@ export const normalizePaymobCallback = (transaction, config) => {
   for (const value of [transaction.id, transaction.order?.id, transaction.amount_cents, transaction.integration_id]) {
     if (!Number.isSafeInteger(value) || value < 1) throw new PaymentError('invalid_callback', 400)
   }
-  if (transaction.integration_id !== config.integrationId || transaction.currency !== 'EGP' || transaction.source_data?.type !== 'card') {
+  const registered = config.methods?.find(method => method.integrationId === transaction.integration_id && ['card', 'apple_pay'].includes(method.method) && method.flowImplemented)
+  const integrationId = registered?.integrationId ?? config.integrationId
+  if (transaction.integration_id !== integrationId || transaction.currency !== 'EGP' || transaction.source_data?.type !== 'card') {
     throw new PaymentError('callback_context_mismatch', 409)
   }
   // Authorization-only, refunds, voids, captures and child transactions are separate future workflows.
@@ -109,7 +118,7 @@ export const normalizePaymobCallback = (transaction, config) => {
     || transaction.has_parent_transaction || !transaction.is_standalone_payment) throw new PaymentError('unsupported_transaction', 422)
   return {
     provider_order_id: String(transaction.order.id), transaction_id: String(transaction.id),
-    integration_id: config.integrationId, mode: config.mode, currency: transaction.currency, amount_minor: transaction.amount_cents,
+    integration_id: integrationId, mode: config.mode, currency: transaction.currency, amount_minor: transaction.amount_cents,
     status: transaction.pending ? 'pending' : transaction.success && !transaction.error_occured ? 'succeeded' : 'failed'
   }
 }

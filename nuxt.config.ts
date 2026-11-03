@@ -54,6 +54,7 @@ export default defineNuxtConfig({
     emailWorkerSecret: '',
     commerceWorkerSecret: '',
     paymobPixelEnabled: false,
+    paymobPixelCustomerIds: '[]',
     paymobRedirectFallbackEnabled: true,
     paymentFirstEnabled: false,
     manualTransferEnabled: false,

@@ -17,7 +17,8 @@
       || !/^(egy_)?pk_(test|live)_.{1,450}$/.test(options.publicKey)
       || !/^(egy_)?csk_(test|live)_.{1,450}$/.test(options.clientSecret)
       || options.publicKey.match(/_(test|live)_/)[1] !== options.clientSecret.match(/_(test|live)_/)[1]
-      || !Array.isArray(options.paymentMethods) || options.paymentMethods.length !== 1 || options.paymentMethods[0] !== 'card') {
+      || !Array.isArray(options.paymentMethods) || options.paymentMethods.length !== 1 || !['card', 'apple-pay'].includes(options.paymentMethods[0])
+      || options.paymentMethods[0] === 'apple-pay' && (!window.isSecureContext || !window.ApplePaySession?.canMakePayments?.())) {
       initialized = true; send('unavailable'); return
     }
     initialized = true
@@ -29,7 +30,7 @@
       // shadow roots, requests and event listeners without private vendor methods.
       new window.Pixel({
         publicKey: options.publicKey, clientSecret: options.clientSecret,
-        elementId: 'paymob-card', paymentMethods: ['card'],
+        elementId: 'paymob-card', paymentMethods: [...options.paymentMethods],
         showSaveCard: false, forceSaveCard: false, showPaymobLogo: true,
         customStyle: options.customStyle,
         beforePaymentComplete: () => {
@@ -44,7 +45,7 @@
       observer = new ResizeObserver(() => send('height', { height: Math.min(1600, Math.max(360, Math.ceil(document.body.scrollHeight))) }))
       observer.observe(document.body)
       send('mounted')
-    } catch { send('unavailable') }
+    } catch { send('unavailable', { beforeSubmit: !submitted }) }
   }
   window.addEventListener('message', receive)
   window.addEventListener('pagehide', () => { observer?.disconnect(); window.removeEventListener('message', receive) }, { once: true })
