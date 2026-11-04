@@ -1,4 +1,76 @@
-> 3November2026 E203: Checkout/Pixel and Meta local artifacts qualified; production unchanged. [Execution report and exact next inactive InstaPay approval](docs/payments-checkout-meta-execution-20261103.md).
+> **CURRENT E242, 4 November 2026:** Apple routing is activated and hosted technical checks passed. Operator `3d0a441c` is `CONSUMED_COMPLETE`. Production is `54315e37fdc74aa7` / schema 113. CARD/COD and all 11 attempts are preserved. The scheduled monitor retains 8 warnings, 3 gaps and 0 critical findings. Physical iPhone sheet/provider acceptance remains open. Never replay consumed operators. [Final receipt](docs/paymob-apple-caddy-signal-activation-schema113-deployment-receipt-20261104.md).
+
+> **CURRENT E241,4November2026:** One-signal activation acknowledged. Live Apple routes302/private-no-store, owned interface anonymous401, CARD/COD200. PIDs unchanged; no restart/config edit/SQL/provider action. Full read-only/natural-MON postflight active; genuine iPhone acceptance remains open. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E240,4November2026:** Exact3d0a441csignal approval recorded after fresh preflight. The guarded isolated-binary test and one-signal activation are executing. No completion or device acceptance claimed. Never replay old operators. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E239,4November2026:** Route files are installed, but unsupported systemdreload stoppedbf0a21c6. A supported signal-only activation is qualified/sealed3d0a441c/2360inputs with fresh read-only preflight PASS. One productionSIGUSR1after an isolated installed-binary fixture; no restart, timer pause or further config edit. Apple/device acceptance remains open. [Exact review and approval](docs/paymob-apple-caddy-signal-activation-schema113-review-20261104.md).
+
+> **CURRENT E238,4November2026:** Approved route/config bytes are installed, but bf0a21c6stopped because systemdCaddy reload is unsupported and adminAPI is off. App/Caddy remain healthy; Apple stays403. No replay. A supported signal-only activation is being qualified with no restart or further config edit. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E237,4November2026:** Exactbf0a21c6routing approval is recorded after fresh preflight. The one-use Caddy correction is executing; no completion or device acceptance claimed. Never replay. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E236,4November2026:** App54315e37/schema113is installed; Apple remains blocked by Caddy. The exact page/interface routing correction is qualified and sealedbf0a21c6/2265inputs; read-only preflight PASS. One Caddy reload, no app restart or SQL/provider action. Prior app approval forbids this Caddy edit, so a fresh exact approval is required. [Review and approval](docs/paymob-apple-route-correction-schema113-review-20261104.md).
+
+> **CURRENT E235, 4 November 2026:** App54315e37/schema113is installed, but Apple URL receives403from the existing Caddy allowlist; Nuxt itself returns302. Routing-only correction is being qualified and needs a new approval. CARD/COD preserved;4772live asset hashes PASS. No replay or Caddy edit under the spent approval. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E234, 4 November 2026:** Apple form hotfix installed once:54315e37/source388c04d/schema113/PID271738. Timers resumed; SQL/runtime/Caddy/provider actions0. Full read-only postflight is active; owner iPhone/provider acceptance stays open. Never replay. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E233, 4 November 2026:** Exact23d5b181approval recorded after fresh preflight. The one-use Apple app hotfix is executing; deployment and owner acceptance are not yet claimed. Never replay apply or old packets. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E232, 4 November 2026:** Apple-only candidate388c04d is locally qualified and sealed READY/UNAPPROVED.183focused tests, build/typecheck,4772assets, runtime/guard/backup readback and sealed preflight PASS. Production46bb252b/schema113unchanged;10attempts preserved,1submitted unresolved. Real iPhone/provider acceptance stays open. New app-only approval is required. [Exact review and approval](docs/paymob-apple-form-schema113-hotfix-review-20261104.md).
+
+> **CURRENT E231, 4 November 2026:** Apple-only Safari correction is local: same pinned SDK in an authenticated top-level secure page, existing intention and server gate reused, CARD iframe unchanged.38SDK/native fixture and77backend checks plus typecheck PASS; build/release preparation active. Real iPhone/provider acceptance remains open; production46bb252b/113unchanged. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E230, 4 November 2026:** P1 Apple Pay form-unavailable hotfix is active locally. Fresh actual46bb252b/schema113;8real attempts,0funds/callbacks. EGP3050Apple attempt has correct live6038812integration and no submission fence. Preserve Pixel1.2.8, CARD/COD and paused work. No production/provider/financial action authorized. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E229, 4 November 2026:** Checkout lifecycle113deployed once:46bb252b/source0b2eeb3/PID267131, original operator CONSUMED_COMPLETE. Full4651live asset/financial/catalog/10guest browser/natural MON8/3/0postflight PASS. All five legacy attempts preserved; runtime/Caddy unchanged. Owner checkout/financial acceptance remains open. Never replay. [Actual receipt](docs/paymob-checkout-lifecycle-schema113-deployment-receipt-20261104.md).
+
+> **CURRENT E228, 4 November 2026:** SQL113and app46bb252b/source0b2eeb3installed once; PID267131, timers resumed, runtime/Caddy unchanged. Full read-only assets/financial/browser/natural MON postflight is active. Do not replay apply/SQL/restart. [Current scope and receipts](docs/paymob-checkout-lifecycle-schema113-guard-review-20261104.md).
+
+> **CURRENT E227, 4 November 2026:** Exact corrected0f5673d3approval is recorded after fresh preflight. The one-use113deployment is executing; no completion claimed. Never invoke apply again or replay prior packets. [Approved scope and evidence](docs/paymob-checkout-lifecycle-schema113-guard-review-20261104.md).
+
+> **CURRENT E226, 4 November 2026:** Release guard corrected for normal analytics/login activity while retaining exact financial/security and all-current migration preservation. Seal0f5673d3/2004inputs passes full read-only preflight; production remains112, all five attempts preserved. Natural MON recovered to8/3/0. New exact approval is required because the operator/hash changed. [Current review and approval](docs/paymob-checkout-lifecycle-schema113-guard-review-20261104.md).
+
+> **CURRENT E225, 4 November 2026:** Exact113approval is in time, but preflight rejected analytics-only drift before any approval/apply marker. Production remains112. Local release-guard correction is active; a separate natural MON07:50incomplete run is under read-only investigation. No production change or worker invocation. [Current roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E224, 4 November 2026:** Prior113start window closed before execution. Old packet remains unused. Same code/SQL/archive freshly sealed73fd2c5e, read-only preflight PASS; production remains112 with all five attempts preserved. New exact approval is required for the refreshed deadline/hash. [Current review and approval](docs/paymob-checkout-lifecycle-schema113-refresh-20261104.md).
+
+> **CURRENT E223, 4 November 2026:** Exact113approval arrived after the sealed execution-start cutoff. The unchanged operator rejected the late start before production connections; the packet remains unused. Fresh read-only evidence and a new sealed packet are being prepared. No production change or provider action. [Current review](docs/paymob-checkout-lifecycle-schema113-review-20261104.md).
+
+> **CURRENT E222, 4 November 2026:** Checkout lifecycle113 correction is locally qualified and sealed READY/UNAPPROVED; read-only production preflight PASS. Current production remains7828142b/112 with all five real attempts and MON8/3/0 preserved. [Concrete release review, exact fresh approval and deadlines](docs/paymob-checkout-lifecycle-schema113-review-20261104.md). No new deployment, provider call or financial mutation is authorized.
+
+> **CURRENT E221, 4 November 2026:** Abandoned-form checkout correction passes local qualification (83backend,68checkout browser,26Pixel checks). Schema113 is required for the existing global SQL index. Production remains7828142b/112; all five real attempts and original MON8/3/0 are preserved. Guarded release preparation is active; no fresh production/provider action authorized. [Current requirements and evidence](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E220, 4 November 2026:** Schema112 read-only closeout PASS; original operator CONSUMED_COMPLETE. Actual7828142b/source4580314/112;18groups/45products/76choices,4532live hashes and protected financial evidence PASS. MON8warnings/3gaps/0critical. Urgent abandoned-form checkout lifecycle correction now has local authorization only. [Closeout and next scope](docs/product-family-schema112-closeout-20261104.md).
+
+> **CURRENT E219, 4 November 2026:** Owner-requested safe checkpoint. SQL112/data and app7828142b/source4580314 are installed; timers resumed and next natural MON/host audit PASS. Full read-only postflight remains pending; its local process was intentionally stopped. [Resume instructions and exact receipts](docs/product-family-schema112-checkpoint-20261104.md). Never replay check/approve/apply or the migration/restart.
+
+> **CURRENT E218, 4 November 2026:** Historical links SQL112/data and app cutover have receipts:7828142b/source4580314/app253099. Exactly18groups/45products; one restart, runtime/Caddy unchanged. Full hosted postflight and natural MON verification are in progress. [Evidence](docs/product-family-recovery-20261104.md). Do not replay the consumed attempt.
+
+> **CURRENT E217, 4 November 2026:** Exact historical product-link5c415587 approval is recorded and the existing one-use operator is executing. Production completion is not yet claimed. [Current evidence and review](docs/product-family-recovery-20261104.md). Do not replay the attempt or any older consumed packet.
+
+> **CURRENT E216, 4 November 2026:** Historical linked product options are locally qualified and schema112 is sealed READY/UNAPPROVED. Existing schema111 presentation links are reused;18proven groups/45products qualify,19CV5 groups and2legacy entries remain held. Production remains3e5824a9/111. [Exact release review and fresh approval](docs/product-family-recovery-20261104.md).
+
+> **CURRENT E215, 4 November 2026:** Historical product-family recovery is active locally. Reuse existing schema111 presentation links and internal variants;18proven groups/45products qualify, all ambiguous links held. Production unchanged; fresh exact approval required before schema/data/deployment.
+
+> **CURRENT E214, 4 November 2026:** CARD restored;3ba9340b runtime recovery is CONSUMED_COMPLETE on3e5824a9/schema111. Full operator/assets/live Modern and natural MON postflight PASS;8warnings/3gaps/0critical preserved. [Actual receipt and owner review](docs/paymob-pixel-runtime-string-recovery-receipt-20261104.md). No charge or genuine Apple/3DS acceptance is inferred; do not replay either attempt.
+
+> **CURRENT E213, 4 November 2026:** Runtime string recovery3ba9340b applied once. CARD restored on the same3e5824a9/schema111; postflight assets and natural MON verification are in progress. [Current recovery evidence](docs/paymob-pixel-runtime-string-recovery-20261104.md). Do not reapply either consumed attempt.
+
+> **CURRENT E212, 4 November 2026:** CARD is unavailable after parente02fcd07 CONSUMED_STOP. Same-app two-value runtime correction is qualified/sealed UNAPPROVED;1917input read-only recovery check PASS. [Fresh recovery approval and deadline](docs/paymob-pixel-runtime-string-recovery-20261104.md). No old attempt may be replayed.
+
+> **CURRENT E211, 4 November 2026:** Pixel cutovere02fcd07 is CONSUMED_STOP after readiness failure. Production3e5824a9/111 serves pages but CARD is unavailable. Two-value runtime encoding recovery is locally qualified and being sealed. [Actual stop and recovery boundary](docs/paymob-pixel-apple-schema111-review-20261103.md). Do not replay or roll back the consumed packet.
+
+> **CURRENT E210, 3 November 2026:** Embedded CARD/Apple scoped app/config packet is sealed, read-only preflight PASS, UNAPPROVED. Production remainsa5bbed35/111. [Exact scope, checks, approval and deadline](docs/paymob-pixel-apple-schema111-review-20261103.md). Earlier approvals below are historical; never replay them.
+
+> **CURRENT E207, 3 November 2026:** Modern PDP deployed once: a5bbed3531c739fa/source9335186/schema111. Exact057f2915 approval is CONSUMED_COMPLETE. Full operator/assets/natural MON and six live EN/AR guest views PASS. [Actual receipt, screenshots, owner review and paused-work resume](docs/modern-product-page-schema111-deployment-receipt-20261103.md). Earlier approvals below are historical; never replay them.
+
+> **CURRENT E206, 3 November 2026:** Modern PDP implemented and qualified; new schema111 release sealed UNAPPROVED. Production remains bec54ceb2fbfac72/schema110. [Changes, tests, screenshots, paused-work resume and exact approval](docs/modern-product-page-schema111-review-20261103.md). Payments/Meta/SMS is paused; prior approvals below are historical.
+
+> **CURRENT E204, 3 November 2026:** Inactive InstaPay host configuration complete; db13c8ee CONSUMED_COMPLETE. General toggle OFF; next natural MON verified with8 warnings/3 gaps/0 critical. App/schema unchanged. [Receipt and remaining hosted acceptance](docs/instapay-inactive-host-schema110-receipt-20261103.md). Earlier approvals below are historical; never replay them.
+
+> 3November2026 E203: Checkout/Pixel and Meta local artifacts qualified; production unchanged. [Execution report and historical inactive InstaPay approval](docs/payments-checkout-meta-execution-20261103.md).
 
 > **CURRENT E202,3 November 2026:** Full coordinated payments, checkout and Meta execution is in progress. Initial read-only audit complete; production bec54ceb2fbfac72/schema110 unchanged. [Current execution checkpoint](docs/ELCOMPUTER_MASTER_ROADMAP.md).
 

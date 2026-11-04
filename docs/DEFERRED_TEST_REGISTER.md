@@ -1,3 +1,453 @@
+# E242 — Apple routing DEPLOYED / hosted technical PASS / CONSUMED_COMPLETE — 2026-11-04
+
+Task `PAY-APPLE-FORM-20261104-01`: the exact `3d0a441c` operator completed at
+`2026-11-04T13:16:39.944Z`. Production is application `54315e37fdc74aa7`, source
+`388c04d`, physical schema **113**. Application PID `271738` and Caddy PID `26652`
+remained unchanged during activation.
+
+The installed Caddy binary passed an isolated signal fixture. Exactly one
+production `SIGUSR1` then activated the approved routes at 13:10:25 UTC.
+This activation made no further configuration edits, restarts, timer pauses,
+SQL, provider, financial, runtime, key, manual-worker or Git push changes.
+The operator is spent; never replay it or any previous consumed operator.
+
+The prior public **403** routing block is cleared. EN/AR Apple pages return **302**
+to login with private/no-store controls; the owned interface rejects an anonymous
+POST with **401**. CARD/COD capabilities return **200**. Nine public/auth/SDK checks,
+schema history, retained attempt IDs, financial integrity and the independent
+host audit passed. The audit confirmed all 17 approved files, both PIDs, app
+certificate/runtime and the existing customer-scoped Apple integration `6038812`.
+The earlier 183 focused app tests and 4,772 live asset hashes remain valid.
+
+The natural 13:15 UTC monitor run completed with the original **8 warnings,
+3 gaps and 0 critical findings**. MON/Email/PDC timers remain active/enabled;
+their natural callers succeeded. No warning was cleared or worker invoked.
+All **11 sessions/attempts** remain: 0 funds/callbacks, 10 orders and 0 proofs;
+all four financial-integrity counters are zero. Five legacy unknown/null
+interfaces and the submitted unresolved-attempt protection remain intact.
+
+All 2,360 sealed input hashes, 58 worktrees, 55 paused artifacts and 19,350 prior
+sealed input entries are preserved. The old `23d5`/`bf0a` STOP records remain.
+DTR-45 hosted routing/technical qualification passed; physical iOS 26 Apple sheet
+and authorized provider-payment acceptance remain **OPEN**. DTR-36/38/42/43/44
+gates and Modern DTR-41 acceptance remain unchanged.
+
+ONE next action: reload Safari checkout on the eligible iPhone and select Apple
+Pay to check whether its authorization sheet opens. Stop before confirming
+payment. If an existing attempt shows an uncertain status, report that message.
+
+Receipt: [Final deployment evidence](paymob-apple-caddy-signal-activation-schema113-deployment-receipt-20261104.md).
+
+# E241 — One-signal activation acknowledged; live routing works — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: CADDY_SIGNAL_ACTIVATION_APPLIED 2026-11-04T13:10:25.236392+00:00.
+Installed-binary isolated SIGUSR1fixture PASS, then exactly1productionSIGUSR1to
+Caddy26652. App54315e37/source388c04d/schema113/PID271738and CaddyPIDunchanged.
+0config edits/app or Caddy restarts/timer pauses/SQL/provider/financial/manual
+worker actions. EN/ARApple UUID pages now302to login/private-no-store; exactowned
+interface anonymous empty-body POST401; CARD/CODcapabilities200. The prior403
+routing block is cleared. No authenticated Apple sheet/provider acceptance claimed.
+Full read-only sealed/public/SDK/schema/financial and next-natural-MON postflight
+is active. Never replay signal/apply; previous23d5/bf0aSTOPevidence stays preserved.
+All existing attempts/warnings/paused artifacts and deferred gates remain intact.
+ONE next action: finish postflight and record the exact hosted/device evidence tier.
+
+# E240 — Exact signal activation approval recorded; guarded execution active — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: exact3d0a441capproval recorded 2026-11-04T13:08:15.112Z
+after fresh sealed preflight. One-use activation is executing. Native validation
+and isolated installed-binary SIGUSR1fixture must pass before one live signal to
+Caddy26652.0production config edits/app or Caddy restarts/timer pauses/SQL/provider /
+financial/key/unit/manual-worker actions. No activation or device success claimed.
+App54315e37/source388c04d/schema113stays exact. Old23d5/bf0aoperators stay spent;
+never replay any apply. All attempts/warnings/paused work/deferred gates preserved.
+ONE next action: confirm fixture/live receipts, private routes and next natural MON.
+
+# E239 — Supported one-signal activation sealed READY; prior reload STOP kept — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: approved Caddy7133f681/monitor5604d55cbytes are
+installed, but bf0a21c6operatorCONSUMED_STOPbecause the service has no ExecReload
+and adminAPI is disabled. No reload/restart occurred. MON restored; app54315e37 /
+source388c04d/schema113/PID271738and Caddy26652remain healthy; Apple remains403.
+Native validation passed. The service capability check was missed in preflight.
+Official Caddy signals support SIGUSR1for its actual run-from-file/no-resume /
+admin-off startup. Read-only caught-signal, exact binary/PID/file and full approved
+adaptedJSONchecks PASS. A restart is avoidable. No signal has been sent.
+New packet ../paymob-apple-signal-activation-20261104/release binds one production
+SIGUSR1only, after native revalidation and a mandatory isolated installed-binary
+signal fixture. Fixture uses private HOME/XDG, loopback-only port, admin/HTTPS /
+persistence off; failure stops before production. Actual binary fixture deferred
+to approved execution.0further config edits/app or Caddy restarts/timer pauses /
+SQL/provider/financial/key/unit/manual-worker changes. Never replay prior applies.
+92local safety checks,21one-use assertions and fresh encrypted DB/17-file readback
+PASS. Seal3d0a441c0f4392c5bc6f34875b43620e5e9834ec7f2fe2a80d00510b066b0d0c,2360inputs,
+READY_UNAPPROVED. Sealed read-only preflight PASS13:00:12UTC; natural MON13:00
+original8warnings/3gaps/0critical.11attempts retained,0funds/callbacks,10orders /
+proofs0,integrity0. All58trees,55paused artifacts and19350prior sealed input entries
+preserved. No warning/finality rewrite or unrelated Meta/storefront/cache bundle.
+DTR-45routing/device/financial gates remainOPEN; all previous gates/acceptance kept.
+ONE next action: exact fresh signal-only approval in the review. Start before
+16:42:25UTC/19:42:25Riyadh; expire16:57:25UTC/19:57:25Riyadh.
+Review: docs/paymob-apple-caddy-signal-activation-schema113-review-20261104.md.
+
+# E238 — Approved route files installed; systemd reload unsupported — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: bf0a21c6operatorCONSUMED_STOP12:17:30UTC.
+Native Caddy validation PASS12:17:19. Exact approved Caddy7133f681and monitor5604d55c
+bytes installed once. systemctlreloadwas rejected: CanReload=no, no ExecReload.
+Admin API is disabled. No running Caddy reload or restart occurred; public Apple
+pages still403. App54315e37/source388c04d/schema113/PID271738and Caddy26652remain.
+MON resumed in3.64seconds; no Email/PDC pause, app restart, SQL/provider/financial
+or further config change. Never replay this operator or roll back automatically.
+The preflight missed service reload capability. Read-only evidence confirms run
+from the correct config, no --resume, no watcher and disabled admin API. Official
+Caddy documentation supports SIGUSR1reload in that mode. A narrower signal-only
+activation is being qualified in ../paymob-apple-signal-activation-20261104;0further
+config edits/restarts/timer pauses. It must pass an isolated installed-binary
+signal fixture before any production signal. No live signal has been sent.
+Both prior approvals are spent. Recovery requires fresh exact approval. All real
+attempts and original warnings remain protected; DTR-45routing/device/financial
+acceptance and all existing deferred gates remainOPEN. Preserve all spent inputs.
+ONE next action: complete the concrete one-signal packet and fresh approval seal.
+
+# E237 — Exact Caddy routing approval recorded; one-use execution active — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: exactbf0a21c6approval recorded 2026-11-04T12:13:48.561Z
+after fresh sealed preflight. The one-use route/interface correction is executing.
+Native Caddy validation must pass before its two protected writes. Maximum1Caddy
+reload and bounded MON pause/resume;0app restart/SQL/provider/financial/runtime /
+flag/key/Email/PDC/manual-worker changes. Do not replay apply or any older packet.
+Current app remains54315e37/source388c04d/schema113. All existing attempts, original
+warnings, paused artifacts and deferred gates remain protected. Owner iPhone and
+provider acceptance remainOPEN; routing deployment is not yet claimed complete.
+ONE next action: verify activation, private routes, unchanged app/schema and natural MON.
+
+# E236 — Exact Apple page/interface routing correction sealed READY — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: app54315e37/source388c04d/schema113is installed,
+but public Apple pages remain403because Caddy omitted their private route. The
+existing owned interface POST is also absent. Loopback page302confirms Nuxt works.
+No live Apple/device/provider acceptance is claimed. Original23d5b181app approval
+is spent and explicitly forbids Caddy edits; its verify STOP remains preserved.
+Correction adds only GET/HEADEN/ARApple UUID pages and POSTowned UUID/interface
+in the same private no-store handler, plus monitor caddy_sha256binding. One Caddy
+reload and bounded MON pause/resume;0app restart/SQL/provider/financial/key/flag /
+Email/PDC/manual-worker changes. Native validation must precede protected writes.
+210route/guard checks,21one-use assertions, actual deployed Caddy adaptation and
+fresh encrypted DB/17-file readback PASS. Only two identical adapted expression
+leaves change, across HTTP/HTTPS; all other adapted configuration stays exact.
+Sealbf0a21c6416653b1ba9cc5b84f3151777a2771262ef74ac0cad76fad27566678,2265inputs,
+packet ../paymob-apple-route-correction-20261104/release, READY_UNAPPROVED.
+Sealed read-only preflight PASS12:00:54UTC; natural MON12:00original8/3/0. All11
+attempts retained,0funds/callbacks,10orders/proofs0,integrity0. One submitted
+unresolved fence and5legacy unknown/null interfaces stay protected. All4772live
+asset hashes PASS; old183app checks remain valid, with unchanged app source.
+58trees,55paused artifacts and17085spent inputs preserved. No old replay, automatic
+retry/rollback, warning/finality rewrite or homepage/Meta/image-cache bundle.
+DTR-45routing/device/financial gates OPEN; all other original gates/acceptance kept.
+ONE next action: exact fresh routing approval in the review. Start before15:42:41UTC /
+18:42:41Riyadh; expire15:57:41UTC/18:57:41Riyadh.
+Review: docs/paymob-apple-route-correction-schema113-review-20261104.md.
+
+# E235 — App installed; Apple URL blocked by existing Caddy allowlist — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: installed54315e37/source388c04d/schema113/PID271738.
+Cutover succeeded once. Public /checkout/apple/:id returns403Unavailable in EN/AR;
+loopback Nuxt returns302to login. Existing Caddy payment_checkout_access permits
+checkout/session UUIDs but omits Apple. This production routing dependency was
+missed during qualification. CARD/COD and all server/SQL/runtime/key files remain.
+The spent23d5b181approval forbids Caddy edits; no further production change occurred.
+Original verify stopped on MONITOR_WARNING_DRIFT at11:16. Natural MON returned
+without intervention to original8warnings/3gaps/0critical at11:20; no warning cleared.
+Independent current app/PID/runtime/17files/timers PASS; pauses about10.4seconds.
+All4772live asset hashes PASS. New customer activity makes current attempts11,
+funds/callbacks0,orders10/proofs0,integrity0; all prior10IDs and legacy5remain.
+Full original frozen financial projections cannot be claimed after new activity.
+A one-line Caddy route correction and its monitor hash binding are being qualified
+in ../paymob-apple-route-correction-20261104. Same private handler, GET/HEAD and
+strict UUIDs only;0app restarts/SQL/provider/financial actions. Fresh exact approval
+will be required. DTR-45 remainsBLOCKED on live routing/device acceptance. Preserve
+all old consumed packets, paused work and deferred gates; never replay the app.
+ONE next action: finish concrete route-only qualification/backups and approval seal.
+
+# E234 — Apple form hotfix installed once; read-only postflight active — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: exact23d5b181cutover acknowledged 2026-11-04T11:14:36.012692+00:00.
+Installed54315e37fdc74aa7/source388c04d/schema113/PID271738. One app restart;
+Caddy/runtime/SQL/provider/financial/manual-worker changes0. Existing timers
+resumed. Never replay apply, stage, cutover or restart. Full sealed asset/auth /
+schema/financial/protected-file/natural MON verification is active. Owner iOS26
+sheet and genuine provider acceptance remainOPEN; no successful charge is claimed.
+All10prior attempts, original deferred gates and paused Meta/UX work remain protected.
+ONE next action: finish read-only postflight and record its actual evidence tier.
+
+# E233 — Exact Apple hotfix approval recorded; one-use execution active — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: exact23d5b181approval recorded 2026-11-04T11:10:56.703Z
+after fresh sealed preflight. The single app-only cutover is executing. Current
+installation still46bb252b/schema113until acknowledged cutover evidence. Do not
+replay apply or older packets. SQL/runtime/flag/Caddy/provider/financial/manual
+worker actions remain0. All10attempts and1submitted unresolved fence are preserved.
+DTR-45hosted/device/financial gates remainOPEN; all previous deferred gates and
+paused Meta/UX artifacts remain intact. Next: cutover receipts and read-only
+schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone proof.
+
+# E232 — DTR-45 local gate PASS; deployment/device/financial gates OPEN — 2026-11-04
+
+Apple candidate388c04d passes183focused tests, typecheck/build,4772asset hashes,
+nine compiled runtime cases, operator/preservation and fresh backup readback.
+Seal23d5b181/2145inputs passes read-only preflight11:01:13UTC. Production stays
+46bb252b/schema113,10attempts preserved, including1submitted unresolved fence.
+Original physical Safari exception is unavailable; no genuine Apple sheet or
+provider payment acceptance is claimed. New app-only approval is required.
+DTR-44hosted technical success and all owner gates remain separate. DTR-36/38/42/43
+and ModernDTR-41acceptance stay preserved. No provider/financial action or replay.
+[Current exact review](paymob-apple-form-schema113-hotfix-review-20261104.md).
+
+# E231 — DTR-45 Apple hotfix locally qualified; deployed/device gates OPEN — 2026-11-04
+
+Owner: immediate failure on iOS26; CARD works on same iPhone. Restricted-child
+fixture reproduces generic rejection before SDK submission; original actual Safari
+exception was not recorded. New top-level Apple-only surface reuses Pixel1.2.8and
+the same intention/gate.38SDK/native fixture+77backend/typecheck PASS; build and
+release preparation active. No physical Apple sheet, authorized payment, inquiry
+or provider success is claimed. Production stays46bb252b/113;8attempts preserved.
+All earlier DTR-36/38/42/43/44 gates and Modern acceptance remain distinct.
+
+# E230 — Apple Pay owner failure observed; existing acceptance gates remain OPEN — 2026-11-04
+
+PAY-APPLE-FORM-20261104-01: eligible-iPhone Apple Pay reaches secure page then
+"The payment form is unavailable." This is a live observed failure, not acceptance.
+Physical113/app46bb252bverified;8current genuine attempts preserved,0funds/callbacks.
+EGP3050/live6038812Apple attempt has no submission fence. Minimal local hotfix
+investigation/qualification active; no provider/financial action or old operator
+replay. DTR-36/38/42/43/44 and all original deferred requirements remain distinct.
+
+# E229 — DTR-44 hosted technical PASS; owner/financial gates OPEN — 2026-11-04
+
+Exact0f5673d3operator CONSUMED_COMPLETE2026-11-04T08:39:06.423Z. Installed46bb252b/source0b2eeb3 /
+113/PID267131; one SQL/app restart, timers resumed in about104seconds each.
+All4651live hashes, private401/EN/ARHTML,17financial/5catalog-family/physical ledger /
+5legacy unknown-null metadata,10read-only guest browser views and independent host
+checks PASS. Natural MON08:35complete: original8warnings/3gaps/0critical. No provider /
+financial action, warning clear, credential/runtime/Caddy edit or manual worker.
+DTR-44hosted technical gate is PASS. Owner authenticated Safari leave/reopen/cart/tab
+acceptance and separately authorized genuine CARD/3DS/Apple/inquiry/delivery remain
+OPEN. All five real attempts remain financially unresolved and protected.
+DTR-36/38/42/43 and Modern acceptance stay distinct; all original deferred work kept.
+[Actual receipt, evidence tiers and next owner action](paymob-checkout-lifecycle-schema113-deployment-receipt-20261104.md).
+
+# E228 — DTR-44 installation PASS; full hosted/owner/financial gates OPEN — 2026-11-04
+
+SQL113commit and app46bb252b/source0b2eeb3/PID267131cutover receipts exist.
+One restart, timers resumed, runtime/Caddy unchanged. Original160projections and
+five legacy attempts preserved; unknown/null metadata only. Full assets, financial,
+critical guest browser and next natural MON checks remain active. No replay or
+provider/financial action. DTR-36/38/42/43/44 and Modern acceptance remain distinct.
+
+# E227 — DTR-44 exact deployment approval recorded; hosted/financial gates OPEN — 2026-11-04
+
+Exact0f5673d3approval recorded08:28:47UTCafter fresh preflight. The single113apply
+is executing; installation/postflight/owner acceptance are not claimed. Never
+replay apply/SQL. No provider/financial action, runtime/flag/Caddy change or worker
+invocation is included. All five genuine attempts and existing deferred gates stay
+protected. Next: read-only installation/assets/financial/browser/natural MON proof.
+
+# E226 — DTR-44 corrected guard sealed READY; deployment/financial gates OPEN — 2026-11-04
+
+Prior73fd2c5eapproval was in time but analytics-only preflight rejection left the
+packet unused. Newseal0f5673d3/2004inputs passes sealed read-only preflight.
+43activity/9remote policy/40JS/32Python/5actual authorization checks and fresh
+backup/readback PASS. All160current original projections must stay exact across
+SQL; financial/catalog/Auth security checks remain strict. No production change.
+Natural07:50MON incomplete evidence retained;07:55and later runs recovered
+without intervention to8warnings/3gaps/0critical. All five real attempts preserved.
+Fresh exact approval is the remaining release step. DTR-36/38/42/43/44 and genuine
+CARD/3DS/Apple/inquiry/notification gates remain OPEN; Modern DTR-41 stays accepted.
+[Current corrected packet, exact approval and deadline](paymob-checkout-lifecycle-schema113-guard-review-20261104.md).
+
+# E225 — DTR-44 release preflight rejected; MON incomplete evidence retained — 2026-11-04
+
+The73fd2c5eapproval arrived within its deadline. Preflight rejected analytics-only
+drift; no approval/apply consumed. All five real attempts and158other projections
+remain exact. Local guard correction is in progress. Natural MON07:50incomplete
+(8original warnings/3gaps/1critical) is being reconciled read-only; no worker call
+or warning clear. Deployment/owner/provider/financial gates remain OPEN; existing
+DTR-36/38/42/43/44 and Modern acceptance are retained.
+
+# E224 — DTR-44 refreshed seal READY; deployment and financial gates OPEN — 2026-11-04
+
+Oldfe9450b0packet unused after its sealed start cutoff; no approval/apply marker.
+Same implementation is freshly sealed73fd2c5e/1952inputs, full read-only
+preflight PASS2026-11-04T05:56:04.531Z. Fresh encrypted backup/readback and40JS/32Python /
+4actual authorization denials PASS. No production change, provider inquiry, payment,
+retirement or warning clear. All five genuine unresolved attempts remain preserved.
+Fresh exact approval is the remaining release step; hosted correction and real
+CARD/3DS/Apple/inquiry/notification acceptance remain separate OPEN gates.
+DTR-36/38/42/43/44 and original deferred work preserved; DTR-41 stays accepted.
+[Current review, exact approval and deadline](paymob-checkout-lifecycle-schema113-refresh-20261104.md).
+
+# E223 — DTR-44 approval arrived after start cutoff; deployment still OPEN — 2026-11-04
+
+Exactfe9450b0approval cannot extend its sealed05:35:56UTCstart cutoff. The packet
+remains unused with all1905inputs preserved and no approval/apply marker. Fresh
+read-only evidence and a separate sealed packet are in preparation; no production
+change, provider inquiry or financial action. Existing DTR-36/38/42/43/44 gates,
+Modern acceptance and all prior deferred work remain.
+
+# E222 — DTR-44 READY / UNAPPROVED; hosted and financial acceptance OPEN — 2026-11-04
+
+Local83backend/68checkout browser/26Pixel, build/typecheck, exact112preimages and
+154native projections/DDL rollback,9compiled runtime cases,4651asset hashes and
+protected backup PASS. Sealfe9450b0 /1905inputs /01:53UTCread-only preflight PASS.
+Actual production remains112; five genuine unknown attempts preserved,0funds /
+callbacks. A fresh exact SQL113+app approval is required. No live charge, inquiry,
+refund, bank operation, activation or owner financial acceptance is included.
+[Exact review, approval and deadlines](paymob-checkout-lifecycle-schema113-review-20261104.md).
+DTR-43 remains technical PASS/owner visual OPEN; DTR-41 accepted; DTR-36/38/42
+and all original deferred requirements and paused work remain intact.
+
+# E221 — DTR-44 checkout lifecycle hosted/financial acceptance OPEN — 2026-11-04
+
+| ID | Local qualification | Remaining evidence |
+| --- | --- | --- |
+| DTR-44 |83backend,34Chromium+34WebKit checkout,26Pixel frame cases; current112preimages/154projections/DDL rollback, typecheck/build PASS. Opened forms reuse intentions; submission has a one-use server fence. | Fresh exact113deployment approval and guarded receipt; hosted initialized-form leave/reopen/cart edits/tab/device acceptance; separately authorized real CARD/3DS/Apple and targeted inquiry/notification evidence. Preserve all five genuine unknown attempts; no financial/provider action inferred. |
+
+DTR-43 technical closeout PASS/owner visual OPEN. DTR-41 remains accepted. The
+owner reports CARD rendering and eligible-iPad Apple visibility, not a verified
+charge. DTR-36/38/42 remain open. Original35deferred rows and paused work remain.
+
+# E220 — DTR-43 hosted technical PASS; owner visual gate OPEN — 2026-11-04
+
+All45public projections,90EN/ARHTMLpages,10guest browser views,45Products-authorized
+SQL reads/private ACL and4532live asset hashes PASS. Financial/catalog preservation
+PASS; original operator CONSUMED_COMPLETE00:50:46UTC. Signed-in Dashboard browser
+and family owner visual acceptance remain OPEN. DTR-42 owner reports CARD rendering
+and eligible-iPad Apple visibility; real authorization/payment acceptance remains
+OPEN. Five current unresolved attempts are preserved;0funds/callbacks.
+[Exact closeout and retained initial failures](product-family-schema112-closeout-20261104.md).
+
+# E219 — DTR-43 checkpoint: installation PASS; final hosted/owner gates OPEN — 2026-11-04
+
+SQL112/data and app7828142b/source4580314 installed once. Independent host and next
+natural MON PASS,8warnings/3gaps/0critical; all timers resumed. Owner requested a
+safe checkpoint; local read-only verify was stopped, exit143. Full4532asset,
+operator/public/browser/financial postflight is pending. Owner acceptance remains
+open. [Exact read-only continuation](product-family-schema112-checkpoint-20261104.md).
+No replay, restart, rollback, provider call or financial operation is authorized.
+Earlier DTR-36/38/42 uncertainties remain; Modern DTR-41 stays accepted.
+
+# E216 — DTR-43 historical family hosted/owner gate OPEN — 2026-11-04
+
+| ID | Qualified locally | Required hosted / owner acceptance |
+| --- | --- | --- |
+| DTR-43 |18proven groups/45products/76choices; existing presentation store/editor reused.38backend tests,249Chromium+249WebKit checks, exact hosted preimages/native rollback/idempotence,4532asset hashes, compiled Pixel scope and read-only preflight PASS. | Fresh exact5c415587 schema112 approval; one-use guarded SQL/data/app receipt; all45metadata identities and canonical links/target buying information; complete4532asset and next natural MON verification; owner EN/AR/mobile and mixed family/internal SKU review. No live migration or acceptance claimed. |
+
+Initial preflight worker stop is preserved; natural callers recovered and the
+immutable check passed. No configuration/worker/production change occurred.
+DTR-36/38/42 financial/provider/bank gates remain open, with no new charge budget.
+DTR-41 Modern remains owner accepted. Meta/SMS/InstaPay activation stays paused.
+[Full scope, evidence, holds and exact approval](product-family-recovery-20261104.md).
+
+# E214 — DTR-42 hosted technical recovery PASS; financial acceptance open — 2026-11-04
+
+3ba9340b CONSUMED_COMPLETE: CARD restored, same3e5824a9/schema111. All4412assets,
+SDK/CSP/no-referrer,6Modern live guest views and independent host/financial audits
+PASS. Natural MON01:35/01:40Riyadh has original8warnings/3gaps/0critical; the failed
+01:30run and browser timeout remain archived. No warning clear or manual caller.
+4pending attempts/0verified funds/callbacks/17financial projections exact.
+DTR-42 hosted technical gate is PASS; actual6038812 Apple/device/issuer3DS/payment
+acceptance is NOT EXERCISED. DTR-36/38remain open; DTR-41 remains owner accepted.
+No live charge budget, general Pixel rollout, provider inquiry/retry, retirement,
+refund or PDC financial action follows. [Actual receipt and owner review](paymob-pixel-runtime-string-recovery-receipt-20261104.md).
+
+# E212 — DTR-42 recovery ready, CARD regression still active — 2026-11-04
+
+The parent cutover remains CONSUMED_STOP. Same-app runtime string recovery is
+sealed UNAPPROVED after2actual-runtime/9compiled-HTTP/9guard checks and encrypted
+17file full readback. Fresh known-fault preflight PASS; original8warnings/3gaps and
+one PUBLIC_CHECKOUT_HEALTH critical are retained. After separate restart approval,
+require restored CARD and next natural MON8/3/0. Real Apple/device/issuer3DS/payment
+acceptance stays open. No charge, provider action, retirement, replay or rollback.
+[Exact recovery gate](paymob-pixel-runtime-string-recovery-20261104.md).
+
+# E211 — DTR-42 deployment STOP; CARD runtime regression — 2026-11-04
+
+DTR-42 is NOT ACCEPTED: e02fcd07 CONSUMED_STOP after app/config cutover and one
+restart. Current3e5824a9/source9f71/schema111; CARDfalse, MON1PUBLIC_CHECKOUT_HEALTH
+critical plus original8warnings/3gaps. Timers resumed once; no automatic rollback.
+Actual compiled runtime/HTTP evidence reproduces JSON type conversion and proves
+correct JSON-string encoding restores CARD/scoped Pixel/Apple. Fresh runtime-only
+recovery requires a new exact restart approval. No genuine payment or issuer/Apple
+acceptance;4pending/0funds/callbacks/17financial projections exact. Preserve all
+parent receipts, failure evidence, current111, fee10, COD/Email/PDC and paused work.
+
+# E210 — DTR-42 scoped packet READY; live merchant acceptance unexercised — 2026-11-03
+
+DTR-42 preparation is COMPLETE: source9f71ec0/candidate3e5824a9/schema111;
+85backend/80browser/16release guards/build/typecheck/4412compiled asset hashes
+PASS. Fresh sealed check18:43UTC PASS,1875inputs, scoped account unresolved0.
+No deployment/activation/charge yet. MON8warnings/3gaps/0critical preserved;
+4pending sessions/attempts/0funds/callbacks, original3and17projections exact.
+Genuine6038812 Apple/issuer3DS/device acceptance and separately authorized live
+payment remain open; no provider call or live charge budget is authorized.
+Current gate: [exact scoped app/config approval](paymob-pixel-apple-schema111-review-20261103.md).
+DTR-36/38 remain open; DTR-41 Modern remains owner accepted. Preserve all earlier
+failures and both unsealed preparation stops; no automatic Intention retirement.
+
+# E209 — DTR-42 embedded CARD/Apple merchant acceptance — 2026-11-03
+
+| ID | Local evidence | Remaining gate |
+| --- | --- | --- |
+| DTR-42 | Source9f71ec0/111;85 backend,80 browser,14 release guards, build/typecheck,4412 compiled asset hashes PASS. Owner confirms Apple6038812 Pixel web/domain/certificates and Paymob-managed verification. One existing owner-managed account qualifies for the initial scope; other customers retain hosted CARD. | Fresh exact scoped deployment approval, passive hosted/next natural MON verification, then separately authorized real CARD/issuer3DS and Apple Pay device/merchant acceptance. No live charge budget is authorized. Public rollout requires genuine acceptance and a fresh decision. |
+
+DTR-36 now has4pending genuine private CARD sessions/attempts;0funds/callbacks,
+10existing orders. The original3 session/attempt fingerprints remain exact; the
+additional17:54UTC session is outside the proposed acceptance scope. No retirement,
+provider inquiry/retry, manual finality or warning clearing. Transaction decline
+alone does not permit a new Intention; Try again is disabled until explicit safe
+server retirement. DTR-38 transfer/private proof/bank acceptance remains open;
+InstaPayOFF. DTR-41 Modern is owner accepted. Preserve every historical failure.
+
+# E208 — owner accepts Modern PDP; payment acceptance remains separate — 2026-11-03
+
+DTR-41 owner visual acceptance is now ACCEPTED by the owner's explicit new
+request: Modern Product Page deployed and accepted. E207 hosted verification
+remains PASS. This closes only the Modern page gate. DTR-36 genuine CARD/3DS and
+DTR-38 transfer acceptance remain open. Apple6038812 merchant label does not
+prove Pixel/domain/certificate/device/payment acceptance. The new embedded
+CARD/Apple work is PAY-PIXEL-APPLE-20261103-01; Google/Meta/SMS/InstaPay stayOFF or
+paused. No old probe, charge, reset or approval is replayed.
+
+# E207 — DTR-41 hosted technical PASS; owner visual acceptance pending — 2026-11-03
+
+| ID | New evidence | Remaining gate |
+| --- | --- | --- |
+| DTR-41 | Modern PDP deployeda5bbed35/source9335186/schema111once;057f2915CONSUMED_COMPLETE. Existing verify,4291asset HTTP hashes,17protected files,next naturalMON16:10UTC/same8warnings/3gaps/0critical, and six EN/AR guest desktop/mobile views PASS. | Owner/physical review of live Modern; technical deployment is not owner acceptance. No live catalog merchandising edit was used for tests. |
+
+DTR-36 still has3pending CARD sessions/attempts,0funds/0callbacks/0linked orders.
+Seventeen financial/order/uncertain-shipping projections remain exact. CARD/COD/
+core/EGP10/Email/PDC are retained; no provider inquiry/retry, financial operation,
+manual finality or synthetic hosted order. DTR-38 genuine transfer/private-proof/
+bank acceptance stays open; InstaPay remainsOFF. All prior rows/failures remain.
+[Actual deployment receipt and next owner action](modern-product-page-schema111-deployment-receipt-20261103.md).
+
+# E206 — DTR-41 Modern PDP hosted/owner gate; existing financial gates retained — 2026-11-03
+
+| ID | Requirement | Current evidence and remaining gate |
+| --- | --- | --- |
+| DTR-41 | Modern PDP111 hosted postflight and owner/physical visual acceptance | Local9335186:74 backend, build/typecheck, Chromium/WebKit144each,4291assets, exact migration/preservation/rollback proofs PASS. Fresh057f2915 sealed UNAPPROVED; productionbec54ceb/schema110 unchanged. After separate exact approval, install once and verify111/app/allassets/next naturalMON, then owner visual/physical review. No hosted catalog edit, provider test or synthetic order authorized. |
+
+DTR-36 now has three pending private CARD sessions/attempts,0verified funds,
+0callbacks and0linked orders. Preserve all uncertainty; no payment acceptance,
+provider inquiry/retry or manual finality follows. MON15:30UTC retains8warnings/
+3gaps/0critical. DTR-38 genuine transfer/private-proof/bank acceptance remains
+NOT EXERCISED; InstaPay remains OFF. All original rows and failures remain below.
+The unchanged76b4db1 legacy backorder city/lifecycle fixture failure is retained;
+current payment-first native/HTTP regression passes. Earlier WebKit forced-reload
+request-abort diagnostics remain; qualified client navigation/SSR checks pass.
+[Qualified release and exact gate](modern-product-page-schema111-review-20261103.md).
+
 # E201 — DTR-40 Dashboard visibility accepted; financial/transfer gates retained — 2026-11-03
 
 Dashboard fix deployed09:59:21UTC/bec54ceb/schema110,d702CONSUMED_COMPLETE. Owner

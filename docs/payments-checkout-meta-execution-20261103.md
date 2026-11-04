@@ -1,4 +1,60 @@
+> **E214 actual closeout, 4 November:** CARD is restored. Runtime recovery3ba9340b
+> is CONSUMED_COMPLETE; current3e5824a9/source9f71/schema111, app249602. Full assets,
+> SDK, live Modern, host/financial and natural MON verification PASS. Original
+> parente02fcd07 remains consumedSTOP; no rollback/replay or charge occurred.
+> [Actual receipt and remaining owner acceptance](paymob-pixel-runtime-string-recovery-receipt-20261104.md).
+> Earlier fault/READY/approval text below is historical; never reapply either seal.
+
+> **E212 actual status, 4 November:** Parent Pixele02fcd07 CONSUMED_STOP after
+> cutover/restart; current3e5824a9/schema111 has CARDfalse. Separate two-value runtime
+> string recovery is locally qualified/sealed UNAPPROVED, fresh1917input recovery
+> preflight PASS. No Meta/SMS/InstaPay activation or source alteration is included.
+> [Fresh exact recovery approval](paymob-pixel-runtime-string-recovery-20261104.md).
+
+> **E210 current gate:** Pixel/Apple scoped schema111 packet/source9f71ec0,
+> candidate3e5824a9 is sealed UNAPPROVED. Exact operator read-only check PASS18:43UTC.
+> Productiona5bbed35/111 unchanged; one owner-managed customer scope, other customers
+> retain hosted CARD. No SQL/Caddy/MON/provider/financial action or charge.
+> Meta/SMS/InstaPay activation stays at originalf5e97b5/55artifacts checkpoint.
+> [Exact approval and deadline](paymob-pixel-apple-schema111-review-20261103.md).
+
+> **E209 current payment priority:** only Pixel89ea6cc recovered onto actual9335186
+> in a new owned source9f71ec0. CARD/Apple scoped app/config candidate3e5824a9/111
+> is locally qualified; no SQL, production mutation, provider call or charge.
+> Owner-confirmed Apple web/domain/certificates are Paymob managed. Original
+> Meta/SMS sourcef5e97b5 and55 paused artifacts remain unchanged. Hosted CARD is
+> retained outside one private owner-managed acceptance account; general rollout
+> remains separately gated. Four pending CARD sessions/0funds/0callbacks are held.
+> [Current scoped qualification and production gate](paymob-pixel-apple-schema111-review-20261103.md).
+
+> **E207 actual PDP delivery:** a5bbed3531c739fa/source9335186/schema111 is now
+> deployed;057f2915 is CONSUMED_COMPLETE. Full technical/asset/naturalMON and live
+> EN/AR guest checks PASS. Payments/Meta/SMS remains checkpointed atf5e97b5 and55
+> artifact hashes. Resume only scoped increments onto actual9335186/111, preserving
+> its SKU pricing/order snapshots. Do not deploy these older archives or execute
+> provisional Meta111/20261103120000 unchanged; fresh physical next is currently112
+> subject to ledger/source/MON recheck and requalification. Genuine CARD remains
+> 3pending/0funds/0callbacks/0linkedorders; provider/activation gates stay separate.
+> [Actual receipt, owner review and precise resume boundary](modern-product-page-schema111-deployment-receipt-20261103.md).
+
+> **E206 priority/checkpoint:** Payments/Meta/SMS is paused for the owner's
+> Modern PDP delivery. Sourcef5e97b5 and all55 artifact hashes remain unchanged.
+> The earlier H1 approval is consumed. PDP source9335186/schema111 is now locally
+> qualified and separately sealed UNAPPROVED; production remainsbec54ceb/schema110.
+> Pending CARD is now3unresolved/0funds/0callbacks/0linkedorders. After PDP delivery,
+> recover scoped increments onto actual current source; do not install these older
+> archives over PDP or reuse provisional Meta111/its earlier timestamp.
+> [Current priority, exact approval and resume checkpoint](modern-product-page-schema111-review-20261103.md).
+
 # Payments, checkout and Meta execution — 3 November 2026
+
+> **E204 actual H1 closeout:** db13c8ee executed once, CONSUMED_COMPLETE.
+> General InstaPay is OFF; private initiation remains OFF. Exact proof ingress,
+> paired Caddy/MON configuration and private filesystem canary passed. Existing
+> operator verify and next natural MON12:45:03UTC passed with the same8warnings,
+> 3gaps and0critical. App/source/schema110 unchanged. No provider/financial action.
+> [Actual receipt and next owner action](instapay-inactive-host-schema110-receipt-20261103.md).
+> The preparation record and approval below are historical; never replay db13c8ee.
 
 OD-20261103-MASTER-EXEC-01. Local implementation and independent artifacts are
 complete for checkout/CARD Pixel and Meta tracking. Nothing was deployed,
@@ -80,7 +136,7 @@ All 51 original trees remain, plus 2 owned new trees: 53 total. Main changes are
 this authorized continuity documentation. Deferred requirements are retained.
 No reset, clean, blind merge or foreign-source overwrite occurred.
 
-## Exact next production approval: inactive InstaPay host configuration
+## Historical H1 approval: inactive InstaPay host configuration — consumed E204
 
 [Sealed plan](../../instapay-inactive-host-20261103/plan.json),
 [review](../../instapay-inactive-host-20261103/REVIEW.md),
@@ -126,7 +182,9 @@ read-only. Never replay a consumed approval, automatically roll back, renew old
 emergency budgets or restore a database over new customer activity. Preserve a
 committed OFF setting and prepare exact actual-state recovery if needed.
 
-**One immediate action:** approve the exact inactive InstaPay host packet above.
+**E204 next owner action:** enter verified recipient details and EN/AR instructions
+privately in the protected Dashboard form; keep Enabled unchecked. Hosted genuine
+proof/staff/bank-credit acceptance and later activation remain separately scoped.
 
 Official references checked3November2026:
 [Paymob Pixel](https://developers.paymob.com/paymob-docs/developers/checkout-experiences/pixel-embedded),
