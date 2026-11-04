@@ -59,6 +59,12 @@ export const throwCheckoutError = error => {
     'checkout:retired': 'This checkout was reset. Start a new cart.',
     'checkout:quote': 'This quote expired or changed. Review checkout again.',
     'checkout:unavailable': 'A product is no longer available. Refresh your cart.',
+    'coupon:invalid': 'This coupon is invalid or disabled.',
+    'coupon:not_started': 'This coupon is not active yet.',
+    'coupon:expired': 'This coupon has expired.',
+    'coupon:exhausted': 'This coupon has reached its usage limit.',
+    'coupon:customer_limit': 'You have already used this coupon.',
+    'coupon:ineligible': 'This coupon does not apply to these products.',
     'checkout:coupon': 'The coupon is no longer valid for this order.',
     'checkout:delivery': 'Choose delivery for your governorate.',
     'checkout:stock': 'This item has no available warehouse stock.'

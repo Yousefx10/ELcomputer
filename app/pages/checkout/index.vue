@@ -52,6 +52,7 @@
         <main class="min-w-0 space-y-5">
           <p v-if="orderError" role="alert" class="rounded-2xl bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-100">{{ $uiMessage(orderError) }}</p>
 
+          <p v-if="isPreorderCart && !availablePaymentMethods.length" role="status" class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">{{ $t('commerceReliability.preorderUnavailable') }}</p>
           <template v-if="checkoutStep === 'shipping'">
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="delivery-address-title">
               <div class="flex flex-wrap items-start justify-between gap-3">
@@ -60,21 +61,23 @@
                 <button v-else-if="!addressExpanded" type="button" :disabled="busyAddress" aria-controls="checkout-address-fields" :aria-expanded="false" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-50" @click="editAddress">{{ $t('common.edit') }}</button>
               </div>
 
-              <div v-if="!loadingProfile" class="mt-4 flex flex-wrap items-end gap-2">
-                <div v-if="savedAddresses.length" class="min-w-0 w-full">
-                  <button type="button" :disabled="busyAddress" ref="savedAddressToggle" data-testid="saved-address-toggle" :data-selected-address="selectedAddressKey" aria-controls="checkout-saved-addresses" :aria-expanded="savedAddressChoicesOpen" class="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-300 p-3 text-start text-sm font-semibold" @click="savedAddressChoicesOpen = !savedAddressChoicesOpen">
-                    <span>{{ selectedSavedAddress?.label || (selectedSavedAddress ? [selectedSavedAddress.first_name, selectedSavedAddress.last_name].filter(Boolean).join(' ') : $t('ownerPhase2.chooseAddress')) }}</span><Icon :name="savedAddressChoicesOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="18" />
-                  </button>
-                  <div v-if="savedAddressChoicesOpen" id="checkout-saved-addresses" @keydown.esc.prevent.stop="closeAddressChoices" class="mt-2 grid gap-2" role="group" :aria-label="$t('checkoutAddressBook.savedAddresses')">
-                    <button v-for="saved in savedAddresses" :key="saved.id" type="button" :disabled="busyAddress" :aria-pressed="selectedAddressKey === saved.id" :data-address-id="saved.id" class="min-h-11 min-w-0 rounded-lg border p-3 text-start text-sm [overflow-wrap:anywhere]" :class="selectedAddressKey === saved.id ? 'border-blue-600 bg-blue-50' : 'border-slate-200'" @click="selectCheckoutAddress(saved.id)">
-                      <strong class="block">{{ saved.label || [saved.first_name, saved.last_name].filter(Boolean).join(' ') }}</strong><span>{{ [saved.street_address, saved.address_line_2, saved.city, $uiLabel(saved.governorate)].filter(Boolean).join(', ') }}</span>
-                    </button>
-                    <button v-if="profileDraftSummary" type="button" :disabled="busyAddress" :aria-pressed="selectedAddressKey === 'profile'" class="min-h-11 rounded-lg border p-3 text-start text-sm [overflow-wrap:anywhere]" @click="selectCheckoutAddress('profile')">{{ $t('ownerPhase2.checkoutDraft') }} · {{ profileDraftSummary }}</button>
-                    <button type="button" :disabled="busyAddress" class="min-h-11 rounded-lg border p-3 text-start text-sm font-semibold" @click="selectCheckoutAddress('new')">{{ $t('checkoutAddressBook.newAddress') }}</button>
+              <div v-if="!loadingProfile" class="mt-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <p v-if="savedAddresses.length" class="text-sm font-semibold">{{ $t('checkoutAddressBook.savedAddresses') }}</p>
+                  <div class="flex gap-2">
+                    <button v-if="selectedSavedAddress" type="button" :disabled="busyAddress" class="min-h-11 px-3 text-sm font-semibold text-blue-700" @click="editAddress">{{ $t('common.edit') }}</button>
+                    <button type="button" :disabled="busyAddress" class="min-h-11 rounded-lg border px-3 text-sm font-semibold" @click="selectCheckoutAddress('new')">{{ $t('checkoutAddressBook.newAddress') }}</button>
                   </div>
-                  <p v-if="!selectedSavedAddress && addressComplete" class="mt-2 text-xs text-slate-600">{{ $t('ownerPhase2.checkoutDraft') }}</p>
                 </div>
-                <button v-if="selectedAddressKey !== 'new'" type="button" :disabled="busyAddress" class="min-h-11 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-50" @click="selectCheckoutAddress('new')">{{ $t('checkoutAddressBook.newAddress') }}</button>
+                <div id="checkout-saved-addresses" class="mt-2 grid gap-3 sm:grid-cols-2" role="group" :aria-label="$t('checkoutAddressBook.savedAddresses')">
+                  <button v-for="saved in savedAddresses" :key="saved.id" type="button" :disabled="busyAddress" :aria-pressed="selectedAddressKey === saved.id" :data-address-id="saved.id" class="min-w-0 rounded-xl border p-4 text-start text-sm [overflow-wrap:anywhere]" :class="selectedAddressKey === saved.id ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-300'" @click="selectCheckoutAddress(saved.id)">
+                    <span class="flex flex-wrap justify-between gap-2"><strong>{{ [saved.first_name, saved.last_name].filter(Boolean).join(' ') }}</strong><span v-if="saved.is_default" class="text-xs">{{ $t('commerceReliability.defaultAddress') }}</span></span>
+                    <span v-if="saved.label" class="mt-1 block text-xs text-slate-500">{{ saved.label }}</span>
+                    <span class="mt-2 block">{{ [saved.street_address, saved.address_line_2].filter(Boolean).join(', ') }}</span>
+                    <span class="mt-1 block text-slate-600">{{ [saved.city, $uiLabel(saved.governorate)].filter(Boolean).join(', ') }}</span>
+                    <span v-if="selectedAddressKey === saved.id" class="mt-2 block font-semibold text-blue-700">{{ $t('commerceReliability.selected') }}</span>
+                  </button>
+                </div>
                 <span v-if="loadingAddresses" role="status" class="text-sm text-slate-500">{{ $t('checkoutAddressBook.loading') }}</span>
               </div>
               <div v-if="addressLoadError" class="mt-3 text-sm text-red-700"><p role="alert">{{ addressLoadError }}</p><button type="button" :disabled="busyAddress" class="mt-2 min-h-10 font-semibold text-blue-700" @click="loadSavedAddresses">{{ $t('checkoutAddressBook.reload') }}</button></div>
@@ -111,8 +114,8 @@
               </fieldset>
               <div v-if="requiresDelivery" class="mt-5">
                 <fieldset class="min-w-0" :disabled="loadingDelivery || placingOrder"><legend class="mb-2 text-sm font-semibold text-slate-700">{{ $t('codCheckout.deliveryOption') }}</legend>
-                  <div class="flex flex-wrap gap-2"><label v-for="option in availableDeliveryOptions" :key="option.id" class="flex min-h-14 min-w-0 flex-1 basis-40 cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm" :class="shippingCompanyId === option.id ? 'border-blue-600 bg-blue-50' : 'border-slate-300'">
-                    <input v-model="shippingCompanyId" type="radio" name="delivery-method" :value="option.id" class="shrink-0"><span class="min-w-0 [overflow-wrap:anywhere]"><strong class="block">{{ option.name }}</strong><span>{{ formatCurrency(option.price) }}</span></span>
+                  <div class="grid gap-3 sm:grid-cols-2"><label v-for="option in availableDeliveryOptions" :key="option.id" class="flex min-h-24 min-w-0 cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm" :class="shippingCompanyId === option.id ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-300'">
+                    <input v-model="shippingCompanyId" type="radio" name="delivery-method" :value="option.id" class="mt-1 shrink-0"><span class="min-w-0 flex-1 [overflow-wrap:anywhere]"><strong class="block">{{ option.name }}</strong><span class="mt-1 block text-slate-600">{{ $t('commerceReliability.deliveryCoverage', {city:address.city}) }}</span><span class="mt-2 block font-semibold">{{ formatCurrency(option.price) }}</span></span>
                   </label></div>
                 </fieldset>
                 <p v-if="deliveryError" role="alert" class="mt-2 text-sm text-red-700">{{ $uiMessage(deliveryError) }}</p>
@@ -170,11 +173,12 @@
             <article v-for="item in items" :key="item.cart_key" class="flex items-center gap-3"><div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-2"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-contain"></div><div class="min-w-0 flex-1"><p class="line-clamp-2 text-sm font-semibold text-slate-900">{{ quoteLine(item)?.title || item.title }}</p><p v-if="quoteLine(item)?.variantName || item.variant_name" class="text-xs text-slate-600">{{ quoteLine(item)?.variantName || item.variant_name }}</p><ProductOptionSummary :values="quoteLine(item)?.variantOptions || item.variant_options" /><p v-if="item.selling_mode === 'preorder'" class="text-xs font-bold text-amber-800">{{ $t('common.preOrderValue', { value0: ((quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? $t('preorder.depositPercent', { value0: (quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</p><p v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="text-xs text-slate-600">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date)) }) }}</p><p class="mt-1 text-xs text-slate-500">{{ $t('common.qtyValue', { value0: (item.quantity) }) }}</p></div><p class="text-sm font-semibold text-slate-900">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</p></article>
           </div>
           <p v-if="quoteError" class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(quoteError) }}</p>
-          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? $t('common.preorderMerchandise') : $t('common.subtotal') }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div>            <section v-if="!isPreorderCart" class="mt-4 border-t border-slate-200 pt-4" aria-labelledby="coupon-title">
-              <h2 id="coupon-title" class="text-sm font-semibold text-slate-950">{{ $t('common.coupon') }}</h2>
+          <dl class="mt-5 space-y-3 border-t border-slate-200 pt-4 text-sm"><div class="flex justify-between gap-3 text-slate-600"><dt>{{ isPreorderCart ? $t('common.preorderMerchandise') : $t('common.subtotal') }}</dt><dd>{{ formatCurrency(quote?.orderValue ?? subtotal) }}</dd></div><div>            <details v-if="!isPreorderCart" class="mt-4 border-t border-slate-200 pt-4" aria-labelledby="coupon-title">
+              <summary id="coupon-title" class="min-h-10 cursor-pointer text-sm font-semibold text-slate-950">{{ $t('common.coupon') }}</summary>
+              <p v-if="paymentCapabilities?.purchase?.beta && !paymentCapabilities.purchase.couponsEnabled" class="mt-2 text-sm text-slate-600">{{ $t('commerceReliability.couponDisabled') }}</p>
               <div class="mt-4 flex flex-col gap-3 sm:flex-row"><input v-model="couponCode" type="text" :placeholder="$t('common.couponCode')" class="min-w-0 flex-1 rounded-xl border border-slate-300 p-3 uppercase outline-none focus:border-blue-600"><button type="button" :disabled="applyingCoupon" class="min-h-12 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white hover:bg-slate-800 disabled:bg-slate-400" @click="applyCoupon">{{ applyingCoupon ? $t('common.applying') : $t('common.apply') }}</button><button v-if="appliedCoupon" type="button" class="min-h-12 rounded-xl px-4 text-sm font-semibold text-red-700 hover:bg-red-50" @click="removeCoupon">{{ $t('common.remove') }}</button></div>
               <p v-if="couponError" class="mt-3 text-sm text-red-700">{{ $uiMessage(couponError) }}</p><p v-if="couponSuccess" class="mt-3 text-sm text-emerald-700">{{ $uiLabel(couponSuccess) }}</p>
-            </section></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
+            </details></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" :disabled="savingAddress || removingAddress" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
           <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : prepaidFlow && selectedPaymentMethod === 'card' ? $t('paymentInterface.pay') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
@@ -212,7 +216,7 @@ const customerScope = useCustomerScope()
 const user = useCustomerIdentity().user
 const { data: siteContent } = await useSiteContent()
 const { capabilities: paymentCapabilities, scope: purchaseScope, purchasingEnabled, refresh: refreshPurchaseAccess } = usePurchaseAccess()
-const { items, owner: cartOwner, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, ensurePurchaseLineIdentities, setAppliedCoupon, resetCoupon, loadCart } = useCart()
+const { waitForSync, syncState, items, owner: cartOwner, cartId, itemCount, subtotal, isEmpty, appliedCoupon, revision, syncCart, renewCart, completeCart, ensurePurchaseLineIdentities, setAppliedCoupon, resetCoupon, loadCart } = useCart()
 const { trackEvent } = useStoreAnalytics()
 
 const paymentFirstRuntime=useRuntimeConfig()
@@ -279,6 +283,8 @@ const pendingCheckout = ref(null)
 const reviewRequired = ref('')
 const customerId = ref(customerScope.accountId)
 let quoteSequence = 0
+let quoteTimer
+const scheduleQuote = () => {clearTimeout(quoteTimer);quoteTimer=setTimeout(() => {if(addressComplete.value && availablePaymentMethods.value.length) void refreshQuote()},180)}
 const readPending = () => { pendingCheckout.value = readPendingCheckout(window.localStorage, customerId.value) }
 let checkoutStartedTracked = false
 
@@ -316,13 +322,12 @@ const loadDeliveryOptions = async () => {
     deliveryError.value = error?.data?.statusMessage || 'Delivery options are unavailable.'
   } finally { loadingDelivery.value = false }
 }
-watch(availableDeliveryOptions, options => {
-  if (!options.some(option => option.id === shippingCompanyId.value)) shippingCompanyId.value = ''
-})
+
 const refreshQuote = async () => {
   if (!customerScope.isCurrent()) return false
   syncCart()
   if (!items.value.length) { quote.value = null; return false }
+  if (!await waitForSync()) {quote.value=null;return false}
   if (requiresDelivery.value && !shippingCompanyId.value) { quote.value = null; quoteError.value = ''; return false }
   const sequence = ++quoteSequence, body = checkoutBody(), identity = JSON.stringify(body)
   const previous = quote.value
@@ -354,16 +359,21 @@ watch([revision, address, locale, shippingCompanyId], () => {
     checkoutStep.value = 'shipping'
     quoteError.value = 'Checkout changed. Review your cart and delivery details.'
   }
+  scheduleQuote()
 }, { deep: true, flush: 'sync' })
 watch(selectedPaymentMethod, () => {
   ++quoteSequence
   quote.value = null
-  if (checkoutStep.value === 'payment') refreshQuote()
+  scheduleQuote()
 }, { flush: 'sync' })
 const hasSavedAddress = computed(() => Boolean(address.street_address && address.city && address.governorate))
 const addressComplete = computed(() => Boolean(address.first_name.trim() && address.street_address.trim() && address.city.trim()
   && egyptGovernorates.includes(address.governorate.trim()) && PHONE_PATTERN.test(address.phone.trim())
   && (!address.email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address.email.trim())) && !hasDeliveryTestMarker(address)))
+watch([availableDeliveryOptions, addressComplete, () => address.city, revision], ([options, complete]) => {
+  shippingCompanyId.value = complete && !loadingDelivery.value
+    ? [...options].filter(option => Number.isFinite(option.price) && option.price >= 0).sort((a,b) => a.price-b.price || a.id.localeCompare(b.id))[0]?.id || '' : ''
+})
 const { savedAddresses, profileDraftSummary, selectedAddressKey, selectedSavedAddress, addressLabel, busyAddress, loadingAddresses, savingAddress, removingAddress,
   addressLoadError, addressBookError, addressBookNotice, addressConflict, confirmAddressRemoval,
   setProfileAddress, chooseAddress, loadSavedAddresses, saveAddress, keepAsNewAddress, useSavedVersion, removeAddress
@@ -432,14 +442,15 @@ const validatePayment = () => {
 const applyCoupon = async () => {
   couponError.value = ''; couponSuccess.value = ''
   if (!couponCode.value.trim()) { couponError.value = 'Enter a coupon code first.'; return }
+  if(paymentCapabilities.value?.purchase?.beta && !paymentCapabilities.value.purchase.couponsEnabled){couponError.value=t('commerceReliability.couponDisabled');return}
   applyingCoupon.value = true
   try {
     const response = await customerScope.request('/api/checkout/coupon', { method: 'POST', body: { ...checkoutBody(), coupon_code: couponCode.value } })
-    setAppliedCoupon(response.coupon); couponCode.value = response.coupon?.code || couponCode.value.trim().toUpperCase(); couponSuccess.value = 'Coupon applied.'
+    setAppliedCoupon(response.coupon); await waitForSync(); await refreshQuote(); couponCode.value = response.coupon?.code || couponCode.value.trim().toUpperCase(); couponSuccess.value = 'Coupon applied.'
   } catch (error) { if (customerScope.isCurrent()) { resetCoupon(); couponError.value = error?.data?.statusMessage || error?.message || 'Could not apply the coupon.' } } finally { applyingCoupon.value = false }
 }
 
-const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = '' }
+const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = ''; scheduleQuote() }
 
 const newCheckoutCommand=()=>JSON.parse(JSON.stringify({version:1,userId:customerId.value,
  body:{...checkoutBody(),...(prepaidFlow.value&&selectedPaymentMethod.value==='card'?{paymob_method:selectedPaymobMethod.value,payment_ui_version:2}:{}),...(prepaidFlow.value&&selectedPaymentMethod.value!=='cash'?{cart_revision:revision.value,cart_lines:items.value.map(({cart_key,cart_line_id,quantity})=>({cart_key,cart_line_id,quantity}))}:{}),quote_id:quote.value.quoteId,...(quote.value.reviewToken?{review_token:quote.value.reviewToken}:{})},
@@ -503,7 +514,7 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
       orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return
     }
     if(code==='payment_first:refresh'){orderError.value=t('paymentInterface.reload');return}
-    if (['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon', 'checkout:delivery', 'checkout:stock'].includes(code)) {
+    if (code?.startsWith('coupon:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon', 'checkout:delivery', 'checkout:stock'].includes(code)) {
       removePendingCheckout(window.localStorage, command)
       readPending()
       reviewRequired.value = code
@@ -513,6 +524,7 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
 }
 const placeOrder = async () => {
   if (placingOrder.value || reviewRequired.value) return
+  if (!await waitForSync()) {orderError.value=t('cartSync.error');return}
   if(pendingCheckout.value){recoveryVisible.value=true;await recoverCheckout();return}
   placingOrder.value = true
   orderError.value = ''
@@ -549,14 +561,14 @@ const recoverCheckout = async () => {
   finally { placingOrder.value = false }
 }
 const reviewCart = () => {
-  if (['checkout:conflict', 'checkout:legacy', 'checkout:retired'].includes(reviewRequired.value)) renewCart()
+  if (code?.startsWith('coupon:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired'].includes(reviewRequired.value)) renewCart()
   reviewRequired.value = ''
   orderError.value = ''
   quote.value = null
   checkoutStep.value = 'shipping'
 }
 const storageChanged = () => { readPending() }
-onBeforeUnmount(() => {paymentEpoch++;window.removeEventListener('storage', storageChanged)})
+onBeforeUnmount(() => {clearTimeout(quoteTimer);paymentEpoch++;window.removeEventListener('storage', storageChanged)})
 customerScope.onInvalidate(() => {
   savedCheckout.value='';hostedFallback.value='';embeddedPayment.value=null;paymentSummary.value=null;embeddedFallback='';recoveryVisible.value=false;appleDevice.value=false;selectedPaymobMethod.value='card'
   activeInterface.value=null;affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++

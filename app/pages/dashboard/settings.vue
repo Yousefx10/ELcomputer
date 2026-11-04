@@ -1930,6 +1930,9 @@
                   <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleProductId') }}</label>
                   <input v-model="newCoupon.eligible_product_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
+                <div><label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('couponRules.category') }}</label><input v-model="newCoupon.eligible_category_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border p-3"></div>
+                <div><label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('couponRules.customerLimit') }}</label><input v-model="newCoupon.per_customer_limit" type="number" min="1" step="1" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border p-3"></div>
+
 
                 <div>
                   <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleDeliveryId') }}</label>
@@ -2068,6 +2071,9 @@
                   <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleProductId') }}</label>
                   <input v-model="coupon.eligible_product_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
                 </div>
+                <div><label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('couponRules.category') }}</label><input v-model="coupon.eligible_category_id" type="text" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border p-3"></div>
+                <div><label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('couponRules.customerLimit') }}</label><input v-model="coupon.per_customer_limit" type="number" min="1" step="1" :placeholder="$t('dashboard.settings.allEligible')" class="w-full rounded-lg border p-3"></div>
+
 
                 <div>
                   <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('dashboard.settings.eligibleDeliveryId') }}</label>
@@ -2388,6 +2394,7 @@ const newCoupon = reactive({
   eligible_shipping_company_id: '',
   eligible_product_id: '',
   eligible_customer_id: '',
+  eligible_category_id: '', per_customer_limit: '',
   minimum_order_amount: '',
   usage_limit: '',
   starts_at: '',
@@ -2864,6 +2871,8 @@ const normalizeCouponPayload = (coupon) => {
     eligible_shipping_company_id: String(coupon.eligible_shipping_company_id || '').trim().toLowerCase() || null,
     eligible_product_id: String(coupon.eligible_product_id || '').trim().toLowerCase() || null,
     eligible_customer_id: String(coupon.eligible_customer_id || '').trim().toLowerCase() || null,
+    eligible_category_id: String(coupon.eligible_category_id || '').trim().toLowerCase() || null,
+    per_customer_limit: coupon.per_customer_limit === '' || coupon.per_customer_limit == null ? null : Number(coupon.per_customer_limit),
     minimum_order_amount: minimumOrderAmount,
     usage_limit: usageLimit ? Number(usageLimit) : null,
     starts_at: toIsoDateTimeValue(coupon.starts_at),
@@ -2893,6 +2902,8 @@ const mapCoupon = (coupon) => {
     original_eligible_shipping_company_id: normalizedCoupon.eligible_shipping_company_id || '',
     original_eligible_product_id: normalizedCoupon.eligible_product_id || '',
     original_eligible_customer_id: normalizedCoupon.eligible_customer_id || '',
+    original_eligible_category_id: normalizedCoupon.eligible_category_id || '',
+    original_per_customer_limit: normalizedCoupon.per_customer_limit,
     original_minimum_order_amount: String(normalizedCoupon.minimum_order_amount || ''),
     original_usage_limit: normalizedCoupon.usage_limit === null ? '' : String(normalizedCoupon.usage_limit),
     original_starts_at: toDateTimeLocalValue(coupon.starts_at),
@@ -4212,13 +4223,14 @@ const deleteSiteLink = async (linkId) => {
 const validateCouponForm = (coupon, isNewCoupon = false) => {
   const normalizedCoupon = normalizeCouponPayload(coupon)
 
-  for (const field of ['eligible_customer_id', 'eligible_product_id', 'eligible_shipping_company_id']) {
+  for (const field of ['eligible_customer_id', 'eligible_product_id', 'eligible_shipping_company_id', 'eligible_category_id']) {
     if (normalizedCoupon[field] && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(normalizedCoupon[field])) {
       couponError.value = 'Enter a valid eligibility ID.'
       return null
     }
   }
 
+  if (normalizedCoupon.per_customer_limit !== null && (!Number.isSafeInteger(normalizedCoupon.per_customer_limit) || normalizedCoupon.per_customer_limit < 1)) {couponError.value='Enter a positive customer usage limit.';return null}
   if (!normalizedCoupon.code) {
     couponError.value = 'Coupon code is required.'
     return null
@@ -4269,6 +4281,8 @@ const isCouponDirty = (coupon) => {
     String(coupon.eligible_shipping_company_id || '').trim().toLowerCase() !== coupon.original_eligible_shipping_company_id ||
     String(coupon.eligible_product_id || '').trim().toLowerCase() !== coupon.original_eligible_product_id ||
     String(coupon.eligible_customer_id || '').trim().toLowerCase() !== coupon.original_eligible_customer_id ||
+    String(coupon.eligible_category_id || '').trim().toLowerCase() !== coupon.original_eligible_category_id ||
+    (coupon.per_customer_limit === '' || coupon.per_customer_limit == null ? null : Number(coupon.per_customer_limit)) !== coupon.original_per_customer_limit ||
     String(coupon.minimum_order_amount || '') !== coupon.original_minimum_order_amount ||
     String(coupon.usage_limit || '') !== coupon.original_usage_limit ||
     String(coupon.starts_at || '') !== coupon.original_starts_at ||
@@ -4285,6 +4299,7 @@ const resetNewCoupon = () => {
   newCoupon.eligible_shipping_company_id = ''
   newCoupon.eligible_product_id = ''
   newCoupon.eligible_customer_id = ''
+  newCoupon.eligible_category_id = ''; newCoupon.per_customer_limit = ''
   newCoupon.minimum_order_amount = ''
   newCoupon.usage_limit = ''
   newCoupon.starts_at = ''

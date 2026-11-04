@@ -1,4 +1,7 @@
-import { test } from 'node:test'
+import { test, beforeEach, afterEach } from 'node:test'
+let simulatedSocket
+beforeEach(() => {simulatedSocket=setInterval(()=>{},1000)})
+afterEach(() => {clearInterval(simulatedSocket)})
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { postBrevoEmail,brevoProvider } from '../server/utils/email/brevo.js'

@@ -9,9 +9,10 @@ export const betaPurchasePolicy = runtime => {
   if (!betaPurchasingEnabled(runtime)) return null
   let policy
   try { policy = typeof runtime.betaPurchasePolicy === 'string' ? JSON.parse(runtime.betaPurchasePolicy) : runtime.betaPurchasePolicy } catch { unavailable() }
-  if (!policy || Array.isArray(policy) || Object.keys(policy).some(k => !['shipping_company_id', 'excluded_product_ids', 'customer_ids', 'starts_at', 'expires_at', 'payment_methods'].includes(k))
+  if (!policy || Array.isArray(policy) || Object.keys(policy).some(k => !['shipping_company_id', 'excluded_product_ids', 'customer_ids', 'starts_at', 'expires_at', 'payment_methods', 'allow_coupons'].includes(k))
     || !uuid.test(policy.shipping_company_id || '') || !Array.isArray(policy.excluded_product_ids)
     || policy.excluded_product_ids.length > 1000 || policy.excluded_product_ids.some(id => !uuid.test(id))) unavailable()
+  if (policy.allow_coupons !== undefined && typeof policy.allow_coupons !== 'boolean') unavailable()
   // Existing deployments stay CARD-only until their reviewed runtime opts in.
   if (policy.payment_methods !== undefined && (!Array.isArray(policy.payment_methods)
     || !policy.payment_methods.length || policy.payment_methods.length > 3
@@ -38,11 +39,11 @@ export const authorizeBetaCheckout = (runtime, order, items, user) => {
   if (!policy) return
   authorizeBetaCustomer(runtime, user)
   if (!(policy.payment_methods || ['card']).includes(order.payment_method) || order.shipping_method !== 'shipping' || order.shipping_company_id !== policy.shipping_company_id
-    || order.coupon_code || !Array.isArray(items) || !items.length
+    || (order.coupon_code && policy.allow_coupons !== true) || !Array.isArray(items) || !items.length
     || items.some(item => policy.excluded_product_ids.includes(item.product_id))) unavailable()
 }
 
 export const betaPurchaseCapability = runtime => {
   const policy = betaPurchasePolicy(runtime)
-  return policy ? { beta: true, paymentMethods: policy.payment_methods || ['card'], excludedProductIds: policy.excluded_product_ids } : {}
+  return policy ? { beta: true, ...(policy.allow_coupons !== undefined ? {couponsEnabled:policy.allow_coupons} : {}), paymentMethods: policy.payment_methods || ['card'], excludedProductIds: policy.excluded_product_ids } : {}
 }

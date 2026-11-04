@@ -4,6 +4,7 @@
     <a class="store-skip-link" href="#main-content">{{ $t('common.skipToContent') }}</a>
     <LayoutTopBar />
     <LayoutNavBar />
+    <ClientOnly><CartSyncNotice /></ClientOnly>
     <main id="main-content" tabindex="-1">
       <slot />
     </main>

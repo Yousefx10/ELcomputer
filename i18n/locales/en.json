@@ -5956,5 +5956,31 @@
     "cta_en": "English button",
     "cta_ar": "Arabic button",
     "order": "Order"
+  },
+  "cartSync": {
+    "loading": "Loading your saved cart…",
+    "saving": "Saving your cart…",
+    "error": "Your cart changes are not saved yet.",
+    "conflict": "Your cart changed on another device. Review before editing.",
+    "review": "Show saved cart",
+    "skipped": "Some guest items are unavailable. Your saved cart is shown."
+  },
+  "commerceReliability": {
+    "defaultAddress": "Default",
+    "selected": "Selected",
+    "deliveryCoverage": "Delivery to {city}.",
+    "preorderUnavailable": "Preorders have no available payment method. Contact the store.",
+    "couponDisabled": "Coupons are currently unavailable for this checkout.",
+    "couponInvalid": "This coupon is invalid or disabled.",
+    "couponNotStarted": "This coupon is not active yet.",
+    "couponExpired": "This coupon has expired.",
+    "couponExhausted": "This coupon has reached its usage limit.",
+    "couponUsed": "You have already used this coupon.",
+    "couponIneligible": "This coupon does not apply to these products.",
+    "cartLoading": "Wait for your saved cart to load."
+  },
+  "couponRules": {
+    "category": "Eligible category ID",
+    "customerLimit": "Lifetime uses per customer"
   }
 }

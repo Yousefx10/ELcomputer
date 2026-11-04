@@ -90,7 +90,7 @@ const refresh=async()=>{
   if(confirmed.value&&acknowledged!==result.checkout.id){
    try{
     const c=result.checkout,owner='account:'+scope.accountId
-    const done=completePurchasedCart({id:c.cartId,revision:c.cartRevision,owner,items:c.cartLines||[]},c.id)
+    const done=await completePurchasedCart({id:c.cartId,revision:c.cartRevision,owner,items:c.cartLines||[]},c.id)
     if(done){const pending=readPendingCheckout(window.localStorage,scope.accountId);if(pending?.body.cart_id===c.cartId)removePendingCheckout(window.localStorage,pending);acknowledged=c.id}else cartNotice.value=true
    }catch{cartNotice.value=true}
   }

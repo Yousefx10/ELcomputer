@@ -3,6 +3,7 @@ import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, r
 import { allowsCartBackorder } from '~/utils/backorder'
 import { validOptionValues } from '~/utils/productOptions'
 import { useCustomerIdentity } from './useCustomerIdentity'
+import {createCartSync, cartWriteBody} from '~/utils/accountCartSync'
 
 const carts = new WeakMap()
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -81,6 +82,7 @@ const normalizeCartItem = (item, settings = {}) => {
 
   return {
     id: productId,
+    eligible: item.eligible !== false,
     cart_line_id: UUID_PATTERN.test(item.cart_line_id || '') ? item.cart_line_id : null,
     cart_key: buildCartKey(productId, variantId),
     variant_id: variantId,
@@ -149,6 +151,54 @@ export const useCart = () => {
   const owner = useState('cart-owner', () => '')
   const guestId = useState('cart-guest-id', () => '')
   const { trackEvent } = useStoreAnalytics()
+  const supabase = useSupabaseClient()
+  const syncState = useState('account-cart-sync', () => 'idle')
+  const syncNotice = useState('account-cart-notice', () => '')
+  let remote = null, remoteKey = '', remoteLoading = null, importCart = null
+  const snapshot = () => ({id:cartId.value,revision:revision.value,items:items.value,coupon:appliedCoupon.value})
+  const requestCart = async (body, key = identity.key.value) => {
+    const {data,error} = await supabase.auth.getSession()
+    if (error || identity.key.value !== key || data.session?.user?.id !== identity.accountId.value || !data.session?.access_token) throw Error('Session changed.')
+    const result = await $fetch('/api/account/cart', {method:body ? 'POST' : 'GET',
+      headers:{authorization:'Bearer ' + data.session.access_token},...(body ? {body} : {}),retry:0,timeout:10000})
+    if (identity.key.value !== key) throw Error('Session changed.')
+    return result
+  }
+  const applyRemote = cart => {
+    items.value = cart.items.map(item => ({...normalizeItem(item),quantity:item.quantity}))
+    appliedCoupon.value = normalizeAppliedCoupon(cart.coupon)
+    cartId.value = cart.id || ''; revision.value = cart.revision || createCartIdentifier()
+  }
+  const loadRemote = async () => {
+    if (remoteLoading) return remoteLoading
+    const key = identity.key.value
+    if (!identity.accountId.value) return
+    syncState.value = 'loading'
+    remoteLoading = (async () => {
+      try {
+        const result = await requestCart(undefined,key)
+        remote = createCartSync({request:body => requestCart(body,key),current:() => identity.key.value === key,
+          apply:applyRemote,status:value => {if(identity.key.value === key) syncState.value=value},uuid:createCartIdentifier})
+        if (importCart?.items?.length) {
+          const imported = importCart
+          const merged = await requestCart({command_id:UUID_PATTERN.test(imported.revision || '') ? imported.revision : imported.id,
+            expected_version:0,body:cartWriteBody({...imported,items:imported.items.map(item => ({...item,cart_line_id:item.cart_line_id || createCartIdentifier()}))},'merge')},key)
+          remote.initialize(merged.cart)
+          if(merged.skipped) syncNotice.value='cartSync.skipped'
+          try {window.localStorage.removeItem(cartStateKey(imported.owner))} catch {}
+          importCart = null
+        } else remote.initialize(result.cart)
+      } catch {if(identity.key.value === key) syncState.value='error'}
+      finally {if(identity.key.value === key) remoteLoading=null}
+    })()
+    return remoteLoading
+  }
+  const retrySync = async () => {if (!remote || importCart) await loadRemote(); else await remote.retry()}
+  const reviewServerCart = async () => {
+    try {await remote?.review();importCart=null} catch {syncState.value='error'}
+  }
+  const waitForSync = async () => {await remoteLoading;await remote?.retry();return !identity.accountId.value || syncState.value === 'ready' && remote?.clean}
+  const writable = () => !identity.accountId.value || !!remote && ['ready','saving'].includes(syncState.value)
 
   const currentOwner = () => {
     if (identity.accountId.value) {
@@ -173,7 +223,7 @@ export const useCart = () => {
     }
 
     try {
-      if (!owner.value || owner.value !== currentOwner()) return
+      if (!owner.value || owner.value !== currentOwner() || owner.value.startsWith('account:')) return
       window.localStorage.setItem(cartStateKey(owner.value), JSON.stringify({ version: 3, owner: owner.value,
         id: cartId.value, revision: revision.value, items: items.value, coupon: appliedCoupon.value }))
     } catch {
@@ -185,10 +235,27 @@ export const useCart = () => {
     if (!import.meta.client) return
     const expected = currentOwner()
     if (expected !== owner.value) {
+      const previousOwner = owner.value
+      if (previousOwner.startsWith('guest:') && expected.startsWith('account:')) {
+        importCart = {...snapshot(),owner:previousOwner}
+      } else importCart = null
+      if (previousOwner.startsWith('account:')) {
+        try {window.localStorage.removeItem(cartStateKey(previousOwner))} catch {}
+      }
+      if (expected.startsWith('account:') && !importCart) {
+        try {importCart=readOwnedCart(window.localStorage,expected)} catch {}
+      }
+      remote=null;remoteLoading=null;remoteKey=identity.key.value;syncNotice.value=''
       // Clear first, even if storage is unavailable or the next envelope is bad.
       resetMemory()
       owner.value = expected
     }
+    if (expected.startsWith('account:')) {
+      if (remoteKey !== identity.key.value) {remote=null;remoteLoading=null;remoteKey=identity.key.value}
+      if (!remote && !remoteLoading) void loadRemote()
+      return
+    }
+    syncState.value='idle'
     try {
       const stored = readOwnedCart(window.localStorage, expected)
       const storedItems = stored?.items, storedId = stored?.id
@@ -217,6 +284,7 @@ export const useCart = () => {
     }
     revision.value = createCartIdentifier()
     persistCart()
+    if (identity.accountId.value && remote) remote.write(snapshot())
   }
   const loadCart = () => {
     if (!import.meta.client || isReady.value) return
@@ -236,7 +304,11 @@ export const useCart = () => {
     window.addEventListener('storage', storageChanged)
     window.addEventListener('focus', syncCart)
     document.addEventListener('visibilitychange', visibilityChanged)
+    const refreshRemote = () => {if (identity.accountId.value && remote?.clean && !document.hidden) void remote.review().catch(() => {syncState.value='error'})}
+    const poll = window.setInterval(refreshRemote,15000)
+    window.addEventListener('focus',refreshRemote)
     app.vueApp?.onUnmount(() => {
+      clearInterval(poll);window.removeEventListener('focus',refreshRemote)
       scope.stop()
       window.removeEventListener('storage', storageChanged)
       window.removeEventListener('focus', syncCart)
@@ -251,6 +323,10 @@ export const useCart = () => {
   const completeCart = snapshot => {
     syncCart()
     if (!snapshot?.owner || snapshot.owner !== owner.value) return
+    if (identity.accountId.value) {
+      if (snapshot.id === cartId.value && snapshot.revision === revision.value) {items.value=[];appliedCoupon.value=null;cartId.value='';commitCart()}
+      return
+    }
     acknowledgeCart(window.localStorage, snapshot, createCartIdentifier(), snapshot.owner)
     syncCart()
   }
@@ -258,9 +334,14 @@ export const useCart = () => {
     syncCart()
     if (items.value.some(item => !item.cart_line_id)) commitCart()
   }
-  const completePurchasedCart = (snapshot, receipt) => {
+  const completePurchasedCart = async (snapshot, receipt) => {
     syncCart()
     if (!snapshot?.owner || snapshot.owner !== owner.value) return false
+    if (identity.accountId.value) {
+      if (!await waitForSync()) return false
+      try {const result=await requestCart({purchase_session_id:receipt});remote.initialize(result.cart);return true}
+      catch {syncState.value='error';return false}
+    }
     const done = acknowledgePurchasedCart(window.localStorage, snapshot, createCartIdentifier(), receipt, snapshot.owner)
     syncCart()
     return done
@@ -296,12 +377,14 @@ export const useCart = () => {
   }
 
   const setAppliedCoupon = (coupon) => {
+    if (!writable()) return
     syncCart()
     appliedCoupon.value = normalizeAppliedCoupon(coupon)
     commitCart()
   }
 
   const clearCart = (options = {}) => {
+    if (!writable()) return
     syncCart()
     const previousCartId = cartId.value
     const previousQuantity = items.value.reduce((total, item) => {
@@ -325,6 +408,7 @@ export const useCart = () => {
   }
 
   const removeItem = (cartKey, options = {}) => {
+    if (!writable()) return
     syncCart()
     const existingItem = findCartItem(cartKey)
 
@@ -353,6 +437,7 @@ export const useCart = () => {
   }
 
   const setQuantity = (cartKey, nextQuantity, options = {}) => {
+    if (!writable()) return
     syncCart()
     const existingItem = findCartItem(cartKey)
 
@@ -424,6 +509,7 @@ export const useCart = () => {
   }
 
   const addItem = (product, quantity = 1, options = {}) => {
+    if (!writable()) return {success:false,message:'Wait for your saved cart to load.'}
     syncCart()
     const normalizedProduct = normalizeItem({
       ...product,
@@ -527,6 +613,7 @@ export const useCart = () => {
 
   const cart = {
     items,
+    syncState, syncNotice, retrySync, reviewServerCart, waitForSync,
     owner,
     appliedCoupon,
     cartId,

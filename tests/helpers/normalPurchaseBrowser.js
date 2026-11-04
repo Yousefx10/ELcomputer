@@ -1,3 +1,4 @@
+import {subtractPurchasedLines} from '../../app/utils/purchasedCart.js'
 import { createApp, ref, reactive, computed, watch, effectScope, onMounted, onBeforeUnmount, onScopeDispose, getCurrentInstance, nextTick, shallowRef, useId, h, Suspense } from 'vue'
 import Component from 'normal-purchase-page'
 import LocationFields from '../../app/components/address/LocationFields.vue'
@@ -70,6 +71,30 @@ const supabase = {
 const request = async (path, options = {}) => {
   window.__requests.push({ path, method: options.method || 'GET', body: options.body === undefined ? undefined : JSON.parse(JSON.stringify(options.body)), retry: options.retry })
   await holds.get(path)
+  if (path === '/api/account/cart') {
+    const actor=options.headers?.authorization?.replace('Bearer synthetic-','')
+    if(!actor)throw Error('Missing cart identity')
+    window.__serverCarts ||= {};window.__cartReceipts ||= JSON.parse(localStorage.getItem('synthetic-cart-receipts')||'{}')
+    const cart=window.__serverCarts[actor] ||= JSON.parse(localStorage.getItem('synthetic-cart-server:'+actor)||'null') || {id:crypto.randomUUID(),revision:crypto.randomUUID(),version:0,items:[],coupon:null}
+    if(options.body){
+      if(options.body.purchase_session_id){
+        const key=actor+':paid:'+options.body.purchase_session_id
+        if(!window.__cartReceipts[key]){cart.items=subtractPurchasedLines(cart.items,fixture.checkout?.cartLines||[]);if(!cart.items.length)cart.coupon=null;cart.version++;cart.revision=crypto.randomUUID();window.__cartReceipts[key]=true}
+      } else {
+        const cmd=options.body,key=actor+':'+cmd.command_id
+        if(!window.__cartReceipts[key]){
+          if(cmd.body.action==='replace'&&cmd.expected_version!==cart.version)return {conflict:true,cart:structuredClone(cart)}
+          const hydrate=line=>({...fixture.cart?.items?.find(item=>item.id===line.id&&String(item.variant_id||'')===String(line.variant_id||'')),...line,cart_key:line.id+':'+(line.variant_id||'default')})
+          if(cmd.body.action==='merge'){
+            for(const line of cmd.body.items){const old=cart.items.find(item=>item.id===line.id&&item.variant_id===line.variant_id);if(old)old.quantity=Math.max(old.quantity,line.quantity);else cart.items.push(hydrate(line))}
+          }else{cart.items=cmd.body.items.map(hydrate);cart.id=cmd.body.cart_id||cart.id;cart.coupon=cmd.body.coupon_code?{code:cmd.body.coupon_code}:null}
+          cart.version++;cart.revision=crypto.randomUUID();window.__cartReceipts[key]=true
+        }
+      }
+    }
+    localStorage.setItem('synthetic-cart-server:'+actor,JSON.stringify(cart));localStorage.setItem('synthetic-cart-receipts',JSON.stringify(window.__cartReceipts))
+    return {applied:true,cart:structuredClone(cart)}
+  }
   if (path === '/api/account/addresses' || path.startsWith('/api/account/addresses/')) {
     const actor = options.headers?.authorization?.replace('Bearer synthetic-', '')
     if (!actor) throw Object.assign(Error('Synthetic session unavailable'), { statusCode: 401 })

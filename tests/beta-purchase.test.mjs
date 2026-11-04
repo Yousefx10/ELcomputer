@@ -73,3 +73,13 @@ test('normal beta initiation projects the persisted delivery context before its 
       return { ok: true, json: async () => ({ id: 'pi_test_beta_projection', intention_order_id: 990001, client_secret: 'egy_csk_test_beta_projection', special_reference: attemptId, intention_detail: { amount: 15000, currency: 'EGP' } }) } } })
   assert.equal(calls, 1); assert.deepEqual(session.methods, ['card'])
 })
+
+test('coupons need explicit Beta opt-in and still bind the existing carrier and product policy',()=>{
+ const company=randomUUID(),product=randomUUID(),runtime={public:{betaPurchasingEnabled:true},betaPurchasePolicy:{shipping_company_id:company,excluded_product_ids:[]}}
+ const order={payment_method:'card',shipping_method:'shipping',shipping_company_id:company,coupon_code:'FIXTURE'},items=[{product_id:product,quantity:1}]
+ assert.throws(()=>authorizeBetaCheckout(runtime,order,items))
+ runtime.betaPurchasePolicy.allow_coupons=true;authorizeBetaCheckout(runtime,order,items)
+ assert.equal(betaPurchaseCapability(runtime).couponsEnabled,true)
+ assert.throws(()=>authorizeBetaCheckout(runtime,{...order,shipping_company_id:randomUUID()},items))
+ runtime.betaPurchasePolicy.allow_coupons='true';assert.throws(()=>betaPurchasePolicy(runtime))
+})
