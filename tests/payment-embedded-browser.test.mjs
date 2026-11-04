@@ -16,6 +16,7 @@ test('focused embedded checkout and single-read status qualification',{timeout:2
  helper=helper.replace('payment_cash_enabled: true','payment_cash_enabled: false').replace('payment_bank_transfer_enabled: true, payment_instapay_enabled: true','payment_bank_transfer_enabled: false, payment_instapay_enabled: false')
  helper=helper.replace('siteUrl: fixture.siteUrl }','siteUrl: fixture.siteUrl, paymentFirstEnabled: true }').replace("params: { id: fixture.orderId }, query: { order_id: fixture.orderId }","params: { id: fixture.orderId }, query: {}")
  helper=helper.replace("  if (path === '/api/checkout') {",`  if (path === '/api/checkout') {
+    if(fixture.blocked)return {created:false,allowed:false,blocked:true,checkout:structuredClone(fixture.checkout)}
     if(fixture.restartOnce&&!fixture.restarted){fixture.restarted=true;throw Object.assign(Error('Isolated cart restart'),{data:{data:{code:'checkout:restart'}}})}
     return {created:!window.__fixture.resume,checkout:window.__fixture.checkout,payment:window.__fixture.uncertain?undefined:{provider:'paymob',mode:'live',publicKey:'pk_live_fixture',clientSecret:'csk_live_fixture',interfaceToken:'00000000-0000-4000-8000-000000000002',experience:window.__fixture.pixel?'embedded':'redirect',paymentMethods:[options.body.paymob_method==='apple_pay'?'apple-pay':'card'],redirectFallback:options.body.paymob_method!=='apple_pay'}}
   }
@@ -56,6 +57,36 @@ test('focused embedded checkout and single-read status qualification',{timeout:2
  await t.test('explicit final confirmation opens once and retains the unpaid cart',async()=>{scenario=fixture();const{page,errors,handoffs}=await open(390);try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).evaluate(e=>{e.click();e.click()});await page.getByRole('heading',{name:'Local payment interception'}).waitFor();assert.equal(handoffs.length,1);await page.goBack();await page.waitForFunction(()=>window.__cartMemory()?.items?.length);assert.equal((await page.evaluate(()=>window.__cartMemory())).items[0].quantity,1);assert.deepEqual(errors,[])}finally{await page.close()}})
  await t.test('uncertain start creates no second intention and preserves recoverable cart',async()=>{scenario={...fixture(),uncertain:true};const{page,errors,handoffs}=await open(390);try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.waitForFunction(()=>window.__navigations.length);assert.ok((await page.evaluate(()=>window.__cartMemory())).items.length);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path==='/api/checkout').length,1);assert.equal(handoffs.length,0);assert.deepEqual(errors,[])}finally{await page.close()}})
  kind='checkout'
+
+ await t.test('a stale retained command cannot redirect an independent purchase to its old payment',async()=>{
+  scenario={...fixture('ar'),pixel:true};const{page,errors}=await open(390)
+  try{
+   const stale={version:1,userId:scenario.actorId,body:{cart_id:randomUUID(),quote_id:randomUUID(),payment_method:'card'},cart:{revision:randomUUID()},review:{lines:[]}}
+   await page.evaluate(c=>localStorage.setItem('elcomputer-checkout-pending-'+c.userId,JSON.stringify(c)),stale)
+   await page.reload();await page.getByTestId('saved-address-toggle').waitFor()
+   await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click()
+   await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.locator('[data-fixture-pixel]').waitFor()
+   const commands=(await page.evaluate(()=>window.__requests)).filter(r=>r.path==='/api/checkout')
+   assert.equal(commands.length,1);assert.notEqual(commands[0].body.cart_id,stale.body.cart_id)
+   assert.deepEqual(await page.evaluate(()=>window.__navigations),[])
+   assert.equal(await page.evaluate(c=>Object.values(localStorage).some(v=>v===JSON.stringify(c)),stale),true)
+   assert.deepEqual(errors,[])
+  }finally{await page.close()}
+ })
+ await t.test('an affected unresolved payment keeps checkout editable with a private status reference',async()=>{
+  scenario={...fixture(),pixel:true,blocked:true};const{page,errors,handoffs}=await open(390)
+  try{
+   await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click()
+   await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click()
+   await page.getByRole('alert').filter({hasText:scenario.messages.paymentInterface.affectedStatus}).waitFor()
+   assert.equal(await page.locator('[data-fixture-pixel]').count(),0)
+   assert.deepEqual(await page.evaluate(()=>window.__navigations),[]);assert.equal(handoffs.length,0)
+   assert.equal((await page.evaluate(()=>window.__requests)).filter(r=>r.path==='/api/checkout').length,1)
+   await page.getByRole('button',{name:scenario.messages.common.backToDelivery,exact:true}).click()
+   await page.getByTestId('saved-address-toggle').waitFor();assert.ok((await page.evaluate(()=>window.__cartMemory())).items.length)
+   assert.deepEqual(errors,[])
+  }finally{await page.close()}
+ })
  await t.test('scoped embedded CARD mounts once and refresh hides ordinary recovery warnings',async()=>{
   scenario={...fixture(),pixel:true};const{page,errors,handoffs}=await open(390)
   try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).evaluate(e=>{e.click();e.click()});await page.locator('[data-fixture-pixel]').waitFor();assert.equal(await page.locator('[data-fixture-pixel]').count(),1);assert.equal(handoffs.length,0);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path==='/api/checkout').length,1);assert.ok((await page.evaluate(()=>window.__cartMemory())).items.length);await page.reload();await page.getByTestId('saved-address-toggle').waitFor();assert.equal(await page.locator('[data-fixture-pixel]').count(),0);const text=await page.locator('body').innerText();assert.equal(text.includes('Recover this checkout before starting another.'),false);assert.equal(text.includes('Review your existing payment checkout.'),false);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path==='/api/checkout').length,0);assert.deepEqual(errors,[])}finally{await page.close()}

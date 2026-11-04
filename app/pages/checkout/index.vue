@@ -200,7 +200,7 @@ const { uiNavigateTo } = useUiNavigation()
 
 import {applePayDeviceEligible} from '~/utils/paymobPixel'
 import {hostedPaymentUrl} from '~/utils/hostedPayment'
-import { readPendingCheckout, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
+import { readPendingCheckoutForCart, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
 import { getPaymentMethodFee, getPaymentMethodLabel, paymentMethodNeedsProof } from '~/utils/paymentMethods'
 import { checkoutPaymentMethods, checkoutDeliveryOptions } from '~/utils/codCheckout'
@@ -285,7 +285,7 @@ const customerId = ref(customerScope.accountId)
 let quoteSequence = 0
 let quoteTimer
 const scheduleQuote = () => {clearTimeout(quoteTimer);quoteTimer=setTimeout(() => {if(addressComplete.value && availablePaymentMethods.value.length) void refreshQuote()},180)}
-const readPending = () => { pendingCheckout.value = readPendingCheckout(window.localStorage, customerId.value) }
+const readPending = () => { pendingCheckout.value = readPendingCheckoutForCart(window.localStorage, customerId.value, { id: cartId.value, revision: revision.value }) }
 let checkoutStartedTracked = false
 
 const address = reactive({ first_name: '', last_name: '', street_address: '', address_line_2: '', city: '', phone: '', email: '', governorate: '' })
@@ -465,6 +465,14 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
       method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: {...command.body,...(prepaidFlow.value&&command.body.payment_method==='card'?{payment_ui_version:2}:{})}, retry: 0
     })
     if(response.checkout){
+      customerScope.assertCurrent()
+      if(response.blocked || response.allowed === false){
+        removePendingCheckout(window.localStorage,command);readPending()
+        affectedPayment.value=response.checkout
+        orderError.value=t('paymentInterface.affectedStatus')
+        recoveryVisible.value=false
+        return
+      }
       customerScope.assertCurrent();savedCheckout.value=response.checkout.id;paymentSummary.value=response.checkout;recoveryVisible.value=false
       // The private server session is a durable acknowledgement, including an
       // uncertain payment. A global browser command must not lock future carts.
@@ -510,7 +518,7 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
     }
     if(code==='payment_first:existing'){
       const id=error?.data?.data?.checkoutId
-      if(id){removePendingCheckout(window.localStorage,command);readPending();await uiNavigateTo(`/checkout/session/${id}`);return}
+      if(id){removePendingCheckout(window.localStorage,command);readPending();affectedPayment.value={id,reference:''};orderError.value=t('paymentInterface.affectedStatus');return}
       orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return
     }
     if(code==='payment_first:refresh'){orderError.value=t('paymentInterface.reload');return}
@@ -525,6 +533,7 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
 const placeOrder = async () => {
   if (placingOrder.value || reviewRequired.value) return
   if (!await waitForSync()) {orderError.value=t('cartSync.error');return}
+  readPending()
   if(pendingCheckout.value){recoveryVisible.value=true;await recoverCheckout();return}
   placingOrder.value = true
   orderError.value = ''
