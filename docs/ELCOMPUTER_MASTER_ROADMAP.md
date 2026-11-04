@@ -6,12 +6,14 @@ the urgent P1 priority. The latest EGP325 attempt remains pending/submitted, wit
 no recorded funds, callback, order or inquiry. All twelve attempts are preserved.
 
 Production remains `54315e37fdc74aa7` / source `388c04d` / schema **113**.
-Host checks at 18:01 Riyadh confirm both PIDs, all 17 protected files and
-loaded runtime. The 18:05 read-only database observation preserves a target STOP:
+Host checks at 18:30 Riyadh confirm both PIDs, all 17 protected files and
+loaded runtime. The 18:31 read-only database observation preserves a target STOP:
 Auth rows changed 14→15 and store orders 10→11; all private payment projections
-remain unchanged. The old binding is not accepted or weakened. Recovery must be
-refreshed for any later execution. Natural MON retains 8 warnings, 3 gaps and 0 critical findings;
-Email/PDC/MON timers and their natural callers remain healthy.
+remain unchanged. The Email provider full-row fingerprint also changed; its
+cause is not classified by that hash. No settings were written by this session.
+The old binding is not accepted or weakened. Recovery must be refreshed before
+any later execution. Natural MON retains 8 warnings, 3 gaps and 0 critical
+findings; Email/PDC/MON timers and natural callers remain healthy.
 
 The pinned SDK calls the submission hook before native `begin()`. The app then
 navigated away on SDK cancellation. The separate local guard `1da68eb` retains
@@ -29,20 +31,24 @@ MKT-META-01 is recovered at `fd655ce`, with variant/quote values, stable IDs,
 consent/outbox, protected token settings and verified Purchase/inquiry proof.
 Pixel ID `1680814460341996` is deployment configuration. Runtime transmission
 remains OFF; the CAPI token and dedicated worker secret are still absent.
-IMG-PERF-20261104-01 at `863d9b9` adds public ETag/304/OFF/freshness/URL-epoch
-controls and diagnostics. Private responses and downloads remain no-store.
+IMG-PERF-20261104-01 at `d6b0934` adds public ETag/304/OFF/freshness/URL-epoch
+controls and diagnostics. Explicit HEAD responses retain status 200 and image
+headers. Direct sanitized image denials retain no-store through Nitro. Private
+responses and downloads remain no-store.
 
 Chrome/WebKit storefront and Modern/family checks, composed backend/Meta/media
 checks, all builds/typechecks, archive readbacks and compiled serving checks pass.
-Exact local A/B/C review packets and the separate guard packet exist. Encrypted database and 17-file recovery backups passed full readback. Proposed
+Exact local A/B/C review packets and the separate guard packet exist.
+Encrypted database and 17-file recovery backups passed full readback. Proposed
 114–116 migrations remain provisional; the installed ledger stays 113.
 No production execution seal, expiry or approval is issued during this P1 hold.
 After a qualified payment correction, recheck the actual ledger, restore rehearsal,
 operator, preflight and fresh authorization. Local qualification is not deployment
 or owner/provider acceptance.
 
-All 58 opening worktrees, including 27 with unfinished changes, retain their
-heads/status/diffs/indexes before authorized continuity edits. Also preserved:
+All 57 other opening worktrees retain their heads/status/diffs/indexes.
+Main changes only six authorized continuity documents. All 27 initially dirty
+worktrees retain their unfinished changes. Also preserved:
 24,009 prior untracked hashes, 55 paused artifacts and 21,710 consumed inputs.
 Two owned worktrees isolate storefront and payment work. CARD/COD/EGP10,
 existing orders, all attempts, Brevo/PDC/MON/settings, and paused SMS/InstaPay/
