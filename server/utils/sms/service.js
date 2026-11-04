@@ -29,7 +29,7 @@ export const prepareSmsSend = (settings, input, trafficType) => {
 
 // Server consumers provide authorization and a durable logical event identity.
 export const createSmsService = db => {
-  const enqueue = async (trafficType, input, claimCommunication = null, transactionalEvent=null) => {
+  const enqueue = async (trafficType, input, claimCommunication = null, transactionalEvent=null,marketingRecipient=null) => {
     if(claimCommunication&&(trafficType!=='notification'||input.orderEvent||input.triggeredBy))fail(400,'Invalid claim SMS context.')
     const settings = await getSmsSettings(db)
     if (input.orderEvent && trafficType !== 'notification') fail(400, 'Order SMS requires Notification traffic.')
@@ -48,7 +48,7 @@ export const createSmsService = db => {
     const fingerprint = createHash('sha256').update(JSON.stringify({ trafficType, templateId, messages, actor: input.triggeredBy || null, triggerSource, priority: input.priority ?? 10, expiresAt: input.expiresAt || null })).digest('hex')
     const batch={ idempotency_key: input.idempotencyKey, fingerprint, traffic_type: trafficType, template_id: templateId,
         triggered_by: input.triggeredBy || null, trigger_source: triggerSource, priority: input.priority ?? 10, expires_at: input.expiresAt || null }
-    const { data, error } = await db.rpc(transactionalEvent?'sms_enqueue_transactional':claimCommunication?'after_sales_communication_enqueue':input.orderEvent ? 'sms_enqueue_order_event' : 'sms_enqueue', transactionalEvent?{
+    const { data, error } = await db.rpc(marketingRecipient?'sms_enqueue_marketing':transactionalEvent?'sms_enqueue_transactional':claimCommunication?'after_sales_communication_enqueue':input.orderEvent ? 'sms_enqueue_order_event' : 'sms_enqueue', marketingRecipient?{p_id:marketingRecipient.id,p_token:marketingRecipient.token,p_batch:batch,p_messages:messages}:transactionalEvent?{
       p_id:transactionalEvent.id,p_token:transactionalEvent.token,p_batch:batch,p_messages:messages
     }:claimCommunication?{
       p_id:claimCommunication.id,p_token:claimCommunication.token,p_channel:'sms',p_payload:batch,p_messages:messages
@@ -64,7 +64,7 @@ export const createSmsService = db => {
     }
     return data
   }
-  return { sendNotification: (input,{claimCommunication=null,transactionalEvent=null}={}) => enqueue('notification', input,claimCommunication,transactionalEvent), sendCampaign: input => enqueue('campaign', input) }
+  return { sendNotification: (input,{claimCommunication=null,transactionalEvent=null}={}) => enqueue('notification', input,claimCommunication,transactionalEvent), sendCampaign: (input,{marketingRecipient=null}={}) => enqueue('campaign', input,null,null,marketingRecipient) }
 }
 
 export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvider,authorize=()=>{},trafficTypes=null } = {}) => {

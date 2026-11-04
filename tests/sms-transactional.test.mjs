@@ -2,12 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
 import {createOrderSmsFixture} from './helpers/orderSmsFixture.mjs'
+import {createEmailNativeDatabase} from './helpers/emailNativeDatabase.mjs'
 import {processTransactionalSms} from '../server/utils/sms/transactional.js'
 import {processSmsQueue} from '../server/utils/sms/service.js'
 import {estimateSmsSegments,normalizeSmsPhone} from '../app/utils/sms.js'
 globalThis.useRuntimeConfig=()=>({credentialsEncryptionKey:'isolated-sms-channel-master-at-least-32-characters'})
 test('transactional channel: verified source, revision fences and provider-independent queue',async t=>{
- const f=await createOrderSmsFixture(),{db,client}=f
+ const f=await createOrderSmsFixture(process.env.INTEGRATION_NATIVE==='1'?{database:await createEmailNativeDatabase()}:{}),{db,client}=f
  const sql=(q,p=[])=>db.query(q,p),scalar=async(q,p=[])=>Object.values((await sql(q,p)).rows[0])[0]
  const rpc=async(name,args={})=>{const r=await client.rpc(name,args);if(r.error)throw Error(r.error.message);return r.data}
  try{

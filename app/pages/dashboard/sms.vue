@@ -135,6 +135,7 @@
       </details>
       <div class="mt-4 flex gap-3"><button class="sms-secondary" :disabled="history.page <= 1" @click="history.page--; loadTab()">{{ $t('sms.previous') }}</button><button class="sms-secondary" :disabled="history.page * 25 >= Math.max(history.total, history.orderTotal)" @click="history.page++; loadTab()">{{ $t('sms.next') }}</button></div>
     </section>
+    <SmsMarketingControls v-else-if="tab==='marketing'&&can('sms.marketing.view')" />
     <p v-else>{{ $t('sms.noAccess') }}</p>
     <SmsTransactionalControls />
   </div>
@@ -170,7 +171,7 @@ const confirmationFields = ['trusted_ip_confirmed', 'activation_confirmed', 'has
 const canSend = computed(() => can('sms.notification.send'))
 const tabs = computed(() => [
   { key: 'settings', allowed: can('sms.settings.view') }, { key: 'templates', allowed: can('sms.templates.view') },
-  { key: 'send', allowed: canSend.value }, { key: 'history', allowed: can('sms.history.view') }
+  { key: 'marketing', allowed: can('sms.marketing.view') }, { key: 'send', allowed: canSend.value }, { key: 'history', allowed: can('sms.history.view') }
 ].filter(item => item.allowed))
 const tab = computed(() => String(route.query.tab || 'settings'))
 const approvedSenders = computed(() => senderNames.value.split(/\r?\n/).map(name => name.trim()).filter(Boolean))

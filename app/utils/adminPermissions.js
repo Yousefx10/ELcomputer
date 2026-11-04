@@ -36,7 +36,8 @@ export const adminPermissionGroups = [
       { key: 'sms.templates.manage', label: 'Manage SMS templates' },
       { key: 'sms.history.view', label: 'View SMS history' },
       { key: 'sms.notification.send', label: 'Send notification SMS' },
-      { key: 'sms.campaign.send', label: 'Send campaign SMS' }
+      { key: 'sms.campaign.send', label: 'Legacy campaign access' },
+      ...['view','manage','consent','configure','approve','reports'].map(key=>({key:'sms.marketing.'+key,label:({view:'View marketing SMS',manage:'Manage campaign drafts',consent:'Manage consent and suppression',configure:'Configure marketing pricing',approve:'Approve exact campaign sending',reports:'View campaign reports'})[key]}))
     ]
   },
   {
@@ -153,7 +154,8 @@ export const adminPermissionKeys = adminPermissionDefinitions.map((permission) =
 export const adminPermissionDependencies = {
   'email.view': ['email.settings.view','email.settings.manage','email.templates.view','email.templates.manage','email.transactional.send','email.history.view','email.marketing.manage'],
   'email.settings.view': ['email.settings.manage'], 'email.templates.view': ['email.templates.manage'],
-  'sms.view': ['sms.settings.view', 'sms.settings.manage', 'sms.templates.view', 'sms.templates.manage', 'sms.history.view', 'sms.notification.send', 'sms.campaign.send'],
+  'sms.view': ['sms.settings.view', 'sms.settings.manage', 'sms.templates.view', 'sms.templates.manage', 'sms.history.view', 'sms.notification.send', 'sms.campaign.send','sms.marketing.view'],
+  'sms.marketing.view':['sms.marketing.manage','sms.marketing.consent','sms.marketing.configure','sms.marketing.approve','sms.marketing.reports'],
   'sms.settings.view': ['sms.settings.manage'],
   'sms.templates.view': ['sms.templates.manage'],
   'dashboard.view': ['dashboard.analysis', 'dashboard.orders'],
@@ -246,7 +248,8 @@ export const getDashboardRouteRequirement = (route = '') => {
 
   if (path === '/dashboard/sms') {
     const permissions = { settings: 'sms.settings.view', templates: 'sms.templates.view', history: 'sms.history.view' }
-    if (tab === 'send') return { permissionsAny: ['sms.notification.send', 'sms.campaign.send'] }
+    if (tab === 'send') return { permission:'sms.notification.send' }
+    if (tab === 'marketing') return {permission:'sms.marketing.view'}
     return { permission: permissions[tab || 'settings'] || 'sms.view' }
   }
 

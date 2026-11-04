@@ -4,7 +4,7 @@ import { getLocalizedCategoryName } from './categoryLocale.js'
 // Shared by SSR pages, dashboard previews and public discovery. No browser dependencies.
 export const DEFAULT_SITE_URL = ''
 export const SEO_FIELDS = ['seo_title', 'seo_description', 'seo_image_url']
-const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'email', 'api', 'uploads', '_nuxt'])
+const PRIVATE_ROOTS = new Set(['account', 'dashboard', 'cart', 'checkout', 'login', 'signup', 'support', 'email', 'sms', 'api', 'uploads', '_nuxt'])
 const RESERVED_ROOTS = new Set([...PRIVATE_ROOTS, 'ar', 'ai', 'shop', 'contact', 'request-refund', 'products', 'brand', 'search', 'reviews', 'help', 'robots.txt', 'sitemap.xml', 'sitemap-pages'])
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
