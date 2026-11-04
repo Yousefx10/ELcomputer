@@ -51,6 +51,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     paymentMonitorReportPath: '',
     smsWorkerSecret: '',
+    smsTransactionalEnabled: false,
     emailWorkerSecret: '',
     commerceWorkerSecret: '',
     paymobPixelEnabled: false,

@@ -10,6 +10,9 @@ export default defineEventHandler(smsHandler(async event => {
   if (typeof body.idempotencyKey !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.idempotencyKey)) throw createError({ statusCode: 400, statusMessage: 'An SMS request key is required.' })
   if (!['notification', 'campaign'].includes(body.trafficType)) throw createError({ statusCode: 400, statusMessage: 'Choose an SMS traffic type.' })
   const campaign = body.trafficType === 'campaign'
+  if(campaign)throw createError({statusCode:409,statusMessage:'Use an approved marketing campaign.'})
+  if(![true,'true'].includes(useRuntimeConfig(event).smsTransactionalEnabled))throw createError({statusCode:503,statusMessage:'Transactional SMS is disabled.'})
+  const channel=await supabaseAdmin.rpc('sms_channel_state');if(channel.error||!channel.data?.transactionalEnabled)throw createError({statusCode:503,statusMessage:'Transactional SMS is disabled.'})
   if (!hasAdminPermission(adminUser, campaign ? 'sms.campaign.send' : 'sms.notification.send')) throw createError({ statusCode: 403, statusMessage: 'You do not have permission for this action.' })
   if (campaign && body.campaignConfirmed !== true) throw createError({ statusCode: 400, statusMessage: 'Confirm the campaign recipient list.' })
   const sms = createSmsService(supabaseAdmin)

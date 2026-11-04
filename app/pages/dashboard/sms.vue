@@ -82,7 +82,7 @@
       <p v-if="!capabilities.enabled || !capabilities.ready" class="my-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-200">{{ $t('sms.sendingDisabled') }}</p>
       <form class="mt-4 space-y-4" @submit.prevent="sendSms">
         <div class="grid gap-4 md:grid-cols-2">
-          <label class="sms-field">{{ $t('sms.trafficType') }}<select v-model="send.trafficType"><option v-if="can('sms.notification.send')" value="notification">{{ $t('sms.notification') }}</option><option v-if="can('sms.campaign.send')" value="campaign">{{ $t('sms.campaign') }}</option></select></label>
+          <label class="sms-field">{{ $t('sms.trafficType') }}<select v-model="send.trafficType"><option v-if="can('sms.notification.send')" value="notification">{{ $t('sms.notification') }}</option></select></label>
           <label class="sms-field">{{ $t('sms.sender') }}<select v-model="send.sender"><option v-for="sender in capabilities.sender_names" :key="sender">{{ sender }}</option></select></label>
           <label class="sms-field md:col-span-2">{{ $t(send.trafficType === 'campaign' ? 'sms.recipientList' : 'sms.recipient') }}<textarea v-model="send.recipients" rows="3" maxlength="8000" dir="ltr" required /><span class="text-xs text-gray-500">{{ $t(send.trafficType === 'campaign' ? 'sms.campaignHint' : 'sms.notificationHint', { count: capabilities.batch_size }) }}</span></label>
           <label v-if="usableTemplates.length" class="sms-field">{{ $t('sms.template') }}<select v-model="send.templateCode"><option value="">{{ $t('sms.freeText') }}</option><option v-for="item in usableTemplates" :key="item.id" :value="item.code">{{ item.name }}</option></select></label>
@@ -136,6 +136,7 @@
       <div class="mt-4 flex gap-3"><button class="sms-secondary" :disabled="history.page <= 1" @click="history.page--; loadTab()">{{ $t('sms.previous') }}</button><button class="sms-secondary" :disabled="history.page * 25 >= Math.max(history.total, history.orderTotal)" @click="history.page++; loadTab()">{{ $t('sms.next') }}</button></div>
     </section>
     <p v-else>{{ $t('sms.noAccess') }}</p>
+    <SmsTransactionalControls />
   </div>
 </template>
 
@@ -160,13 +161,13 @@ const notificationGroups = computed(() => [
 const orderTemplates = computed(() => templates.value.filter(item => item.traffic_type === 'notification'))
 const blankTemplate = () => claimCommunicationTemplateDraft(String(route.query.claimPurpose||''),'sms')||({ code: '', name: '', category: 'manual', text_en: '', text_ar: '', traffic_type: 'notification', sender: '', is_enabled: false, variables: [] })
 const template = ref(blankTemplate())
-const send = reactive({ trafficType: can('sms.notification.send') ? 'notification' : 'campaign', recipients: '', sender: '', text: '', templateCode: '', locale: locale.value, variablesJson: '{}', campaignConfirmed: false })
+const send = reactive({ trafficType: 'notification', recipients: '', sender: '', text: '', templateCode: '', locale: locale.value, variablesJson: '{}', campaignConfirmed: false })
 const requestKey = ref(''), sent = ref(null)
 const settingTextFields = ['base_url', 'notification_path', 'campaign_path', 'expected_outbound_ip', 'activation_notes']
 const secretFields = [{ key: 'account_id', presence: 'account_id_configured' }, { key: 'password', presence: 'password_configured' }, { key: 'hash_secret', presence: 'hash_secret_configured' }]
 const numericFields = [{ key: 'timeout_ms', min: 1000, max: 30000 }, { key: 'preflight_retry_limit', min: 0, max: 3 }, { key: 'batch_size', min: 1, max: 200 }, { key: 'request_interval_ms', min: 500, max: 60000 }]
 const confirmationFields = ['trusted_ip_confirmed', 'activation_confirmed', 'hash_protocol_confirmed']
-const canSend = computed(() => can('sms.notification.send') || can('sms.campaign.send'))
+const canSend = computed(() => can('sms.notification.send'))
 const tabs = computed(() => [
   { key: 'settings', allowed: can('sms.settings.view') }, { key: 'templates', allowed: can('sms.templates.view') },
   { key: 'send', allowed: canSend.value }, { key: 'history', allowed: can('sms.history.view') }

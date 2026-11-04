@@ -5982,5 +5982,25 @@
   "couponRules": {
     "category": "Eligible category ID",
     "customerLimit": "Lifetime uses per customer"
+  },
+  "smsTransactional": {
+    "title": "Transactional SMS",
+    "scope": "Send only verified order, payment and invoice updates.",
+    "failed": "Review the notification settings and templates.",
+    "enabled": "Enabled",
+    "event": "Verified event",
+    "template": "Bilingual template",
+    "runtimeOn": "Transactional sending is enabled on the server.",
+    "runtimeOff": "Transactional sending is off on the server.",
+    "pdc": "Courier updates use the existing PDC notification controls.",
+    "submission": "Provider submission does not confirm handset delivery.",
+    "save": "Save notification settings",
+    "cod_confirmed": "Accepted COD order",
+    "prepaid_confirmed": "Verified prepaid order",
+    "payment_failed": "Definitive payment attempt failure",
+    "transfer_under_review": "Transfer under review, unpaid",
+    "transfer_verified": "Verified transfer",
+    "transfer_rejected": "Transfer evidence rejected",
+    "invoice_available": "Verified invoice available"
   }
 }

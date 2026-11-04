@@ -29,7 +29,7 @@ export const prepareSmsSend = (settings, input, trafficType) => {
 
 // Server consumers provide authorization and a durable logical event identity.
 export const createSmsService = db => {
-  const enqueue = async (trafficType, input, claimCommunication = null) => {
+  const enqueue = async (trafficType, input, claimCommunication = null, transactionalEvent=null) => {
     if(claimCommunication&&(trafficType!=='notification'||input.orderEvent||input.triggeredBy))fail(400,'Invalid claim SMS context.')
     const settings = await getSmsSettings(db)
     if (input.orderEvent && trafficType !== 'notification') fail(400, 'Order SMS requires Notification traffic.')
@@ -48,7 +48,9 @@ export const createSmsService = db => {
     const fingerprint = createHash('sha256').update(JSON.stringify({ trafficType, templateId, messages, actor: input.triggeredBy || null, triggerSource, priority: input.priority ?? 10, expiresAt: input.expiresAt || null })).digest('hex')
     const batch={ idempotency_key: input.idempotencyKey, fingerprint, traffic_type: trafficType, template_id: templateId,
         triggered_by: input.triggeredBy || null, trigger_source: triggerSource, priority: input.priority ?? 10, expires_at: input.expiresAt || null }
-    const { data, error } = await db.rpc(claimCommunication?'after_sales_communication_enqueue':input.orderEvent ? 'sms_enqueue_order_event' : 'sms_enqueue', claimCommunication?{
+    const { data, error } = await db.rpc(transactionalEvent?'sms_enqueue_transactional':claimCommunication?'after_sales_communication_enqueue':input.orderEvent ? 'sms_enqueue_order_event' : 'sms_enqueue', transactionalEvent?{
+      p_id:transactionalEvent.id,p_token:transactionalEvent.token,p_batch:batch,p_messages:messages
+    }:claimCommunication?{
       p_id:claimCommunication.id,p_token:claimCommunication.token,p_channel:'sms',p_payload:batch,p_messages:messages
     }:{
       ...(input.orderEvent ? { p_id: input.orderEvent.id, p_token: input.orderEvent.token } : {}),
@@ -62,18 +64,19 @@ export const createSmsService = db => {
     }
     return data
   }
-  return { sendNotification: (input,{claimCommunication=null}={}) => enqueue('notification', input,claimCommunication), sendCampaign: input => enqueue('campaign', input) }
+  return { sendNotification: (input,{claimCommunication=null,transactionalEvent=null}={}) => enqueue('notification', input,claimCommunication,transactionalEvent), sendCampaign: input => enqueue('campaign', input) }
 }
 
-export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvider,authorize=()=>{} } = {}) => {
+export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvider,authorize=()=>{},trafficTypes=null } = {}) => {
   const processed = []
   const count = Math.min(3, Math.max(1, Number(limit) || 1))
   for (let index = 0; index < count; index++) {
     await authorize()
-    const job = check(await db.rpc('sms_claim'))
+    const job = check(await db.rpc(trafficTypes?'sms_claim_for_channels':'sms_claim',trafficTypes?{p_types:trafficTypes}:undefined))
     if (!job?.id) break
     let settings, credentials, messages
     try {
+      await authorize({trafficType:job.traffic_type,batchId:job.id})
       settings = await getSmsSettings(db)
       messages = check(await db.from('sms_messages').select('*').eq('batch_id', job.id).order('position'))
       if (!settings.is_enabled || !smsReadiness(settings).ready || messages.some(message => !settings.sender_names.includes(message.sender))) throw Error()
@@ -87,7 +90,7 @@ export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvid
     let result
     try {
       result = await provider.submit(settings, credentials, job, messages, undefined, async () => {
-        try{await authorize()}catch{throw Object.assign(Error('SMS worker revoked.'),{smsNotSent:true})}
+        try{await authorize({trafficType:job.traffic_type,batchId:job.id})}catch{throw Object.assign(Error('SMS worker revoked.'),{smsNotSent:true})}
         const authorized = check(await db.rpc('sms_check_dispatch', { p_id: job.id, p_token: job.lease_token, p_revision: settings.config_revision }))
         if (authorized !== true) {
           const error = new Error('SMS dispatch cancelled.')
@@ -95,7 +98,7 @@ export const processSmsQueue = async (db, { limit = 1, provider = vodafoneProvid
           else error.smsNotSent = true
           throw error
         }
-        try{await authorize()}catch{throw Object.assign(Error('SMS worker revoked.'),{smsNotSent:true})}
+        try{await authorize({trafficType:job.traffic_type,batchId:job.id})}catch{throw Object.assign(Error('SMS worker revoked.'),{smsNotSent:true})}
       })
       const submitted = result.messages.filter(message => message.status === 'submitted').length
       result = { ...result, status: submitted === messages.length ? 'submitted' : submitted ? 'partial' : 'failed' }

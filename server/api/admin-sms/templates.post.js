@@ -18,12 +18,11 @@ export default defineEventHandler(smsHandler(async event => {
   if (body.sender && !settings.sender_names.includes(body.sender)) invalid()
   const payload = { code: body.code, name: body.name.trim(), category: body.category.trim(), text_en: body.text_en, text_ar: body.text_ar,
     traffic_type: body.traffic_type, is_enabled: body.is_enabled, sender: body.sender, variables, updated_by: adminUser.id, updated_at: new Date().toISOString() }
-  let query
   if (body.id) {
     if (!/^[0-9a-f-]{36}$/i.test(body.id)) invalid()
-    query = supabaseAdmin.from('sms_templates').update(payload).eq('id', body.id)
-  } else query = supabaseAdmin.from('sms_templates').insert({ ...payload, created_by: adminUser.id })
-  const { data, error } = await query.select('*').single()
+    if(!Number.isInteger(body.revision))throw createError({statusCode:409,statusMessage:'Reload the current template before saving.'})
+  }
+  const { data, error } = await supabaseAdmin.rpc('sms_save_versioned_template',{p_actor:adminUser.id,p_id:body.id||null,p_revision:body.revision||0,p_template:payload})
   if (error) throw createError({ statusCode: 409, statusMessage: 'SMS template could not be saved.' })
   await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'sms.template.update', description: 'Saved an SMS template.',
     metadata: { template_id: data.id, code: data.code, enabled: data.is_enabled, traffic_type: data.traffic_type } })
