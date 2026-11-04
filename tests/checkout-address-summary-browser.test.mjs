@@ -8,18 +8,16 @@ import {build} from 'esbuild'
 import {parse,compileScript} from '@vue/compiler-sfc'
 
 const addressSelector = page => {
- const toggle = page.getByTestId('saved-address-toggle')
- return { waitFor: () => toggle.waitFor(), count: () => toggle.count(), inputValue: () => toggle.getAttribute('data-selected-address'), textContent: async () => { if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click(); return page.locator('#checkout-saved-addresses').textContent() }, selectOption: async value => {
-  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click()
-  const list=page.locator('#checkout-saved-addresses')
-  if (['new','profile'].includes(value)) await list.locator(value === 'new' ? 'button:last-child' : 'button').filter(value === 'new' ? {} : {hasText: /Unsaved address|عنوان غير محفوظ/}).first().click()
-  else await list.locator('[data-address-id="'+value+'"]').click()
+ const cards=page.locator('#checkout-saved-addresses')
+ return { waitFor:()=>cards.waitFor(),count:()=>cards.count(),inputValue:async()=>await cards.locator('[aria-pressed=true]').count()?cards.locator('[aria-pressed=true]').getAttribute('data-address-id'):'new',textContent:()=>cards.textContent(),selectOption:async value=>{
+  if(value==='new')await page.getByRole('button',{name:/^New address$|^عنوان جديد$/i}).click()
+  else await cards.locator('[data-address-id="'+value+'"]').click()
  }}
 }
 const deliverySelector = page => ({ selectOption: value => page.locator('input[name="delivery-method"][value="'+value+'"]').check(), inputValue: async () => await page.locator('input[name="delivery-method"]:checked').count() ? page.locator('input[name="delivery-method"]:checked').inputValue() : '' })
 
 test('saved shipping summary retains validation, editing and customer isolation',async t=>{
- const {chromium}=await import(process.env.COD_REVIEW_PLAYWRIGHT)
+ const engine=process.env.CHECKOUT_REVIEW_ENGINE||'chromium',pw=await import(process.env.COD_REVIEW_PLAYWRIGHT)
  let helper=await readFile('tests/helpers/normalPurchaseBrowser.js','utf8')
  helper=helper.replaceAll('value => value','value => fixture.uiKeys[value] ? translate(fixture.uiKeys[value]) : value')
   helper=helper.replace('payment_cash_enabled: true','payment_cash_enabled: false').replace('payment_bank_transfer_enabled: true, payment_instapay_enabled: true','payment_bank_transfer_enabled: false, payment_instapay_enabled: false')
@@ -45,7 +43,7 @@ test('saved shipping summary retains validation, editing and customer isolation'
   res.setHeader('content-type',req.url==='/fixture.js'?'text/javascript':'text/html;charset=utf-8')
   res.end(req.url==='/fixture.js'?compiled.outputFiles[0].text:'<!doctype html><html lang="'+scenario.locale+'" dir="'+(scenario.locale==='ar'?'rtl':'ltr')+'" class="'+(scenario.dark?'dark':'')+'"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body><div id="app"></div><script>window.__fixture='+JSON.stringify(scenario)+'</script><script src="/fixture.js"></script></body></html>')
  })
- await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch({headless:true,channel:'chrome'})
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,browser=await pw[engine].launch(engine==='chromium'?{headless:true,channel:'chrome'}:{headless:true,executablePath:process.env.REVIEW_WEBKIT_EXECUTABLE})
  const open=async width=>{
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[],blocked=[];page.setDefaultTimeout(8000);page.on('pageerror',e=>errors.push(e.message))
   await page.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():(blocked.push(r.request().method()),r.abort()))

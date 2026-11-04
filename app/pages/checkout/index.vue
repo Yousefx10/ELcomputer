@@ -58,14 +58,13 @@
               <div class="flex flex-wrap items-start justify-between gap-3">
                 <div><h2 id="delivery-address-title" class="text-xl font-bold text-slate-950">{{ $t('common.shippingAddress') }}</h2><p class="mt-1 text-sm text-slate-600">{{ hasSavedAddress ? $t('checkout.checkYourSavedAddress') : $t('checkout.enterYourDeliveryAddress') }}</p></div>
                 <span v-if="loadingProfile" class="text-sm text-slate-500">{{ $t('common.loadingAccount') }}</span>
-                <button v-else-if="!addressExpanded" type="button" :disabled="busyAddress" aria-controls="checkout-address-fields" :aria-expanded="false" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-50" @click="editAddress">{{ $t('common.edit') }}</button>
               </div>
 
               <div v-if="!loadingProfile" class="mt-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <p v-if="savedAddresses.length" class="text-sm font-semibold">{{ $t('checkoutAddressBook.savedAddresses') }}</p>
                   <div class="flex gap-2">
-                    <button v-if="selectedSavedAddress" type="button" :disabled="busyAddress" class="min-h-11 px-3 text-sm font-semibold text-blue-700" @click="editAddress">{{ $t('common.edit') }}</button>
+                    <button v-if="!addressExpanded" type="button" :disabled="busyAddress" aria-controls="checkout-address-fields" :aria-expanded="false" class="min-h-11 px-3 text-sm font-semibold text-blue-700" @click="editAddress">{{ $t('common.edit') }}</button>
                     <button type="button" :disabled="busyAddress" class="min-h-11 rounded-lg border px-3 text-sm font-semibold" @click="selectCheckoutAddress('new')">{{ $t('checkoutAddressBook.newAddress') }}</button>
                   </div>
                 </div>
@@ -178,7 +177,7 @@
               <p v-if="paymentCapabilities?.purchase?.beta && !paymentCapabilities.purchase.couponsEnabled" class="mt-2 text-sm text-slate-600">{{ $t('commerceReliability.couponDisabled') }}</p>
               <div class="mt-4 flex flex-col gap-3 sm:flex-row"><input v-model="couponCode" type="text" :placeholder="$t('common.couponCode')" class="min-w-0 flex-1 rounded-xl border border-slate-300 p-3 uppercase outline-none focus:border-blue-600"><button type="button" :disabled="applyingCoupon" class="min-h-12 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white hover:bg-slate-800 disabled:bg-slate-400" @click="applyCoupon">{{ applyingCoupon ? $t('common.applying') : $t('common.apply') }}</button><button v-if="appliedCoupon" type="button" class="min-h-12 rounded-xl px-4 text-sm font-semibold text-red-700 hover:bg-red-50" @click="removeCoupon">{{ $t('common.remove') }}</button></div>
               <p v-if="couponError" class="mt-3 text-sm text-red-700">{{ $uiMessage(couponError) }}</p><p v-if="couponSuccess" class="mt-3 text-sm text-emerald-700">{{ $uiLabel(couponSuccess) }}</p>
-            </details></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
+            </details></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}<span v-if="appliedCoupon" class="block text-xs font-normal">{{ appliedCoupon.code }}</span></dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" :disabled="savingAddress || removingAddress" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
           <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : prepaidFlow && selectedPaymentMethod === 'card' ? $t('paymentInterface.pay') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
@@ -261,8 +260,6 @@ const openHostedFallback=async()=>{
 const checkoutStep = ref('shipping')
 const loadingProfile = ref(false)
 const addressExpanded = ref(true)
-const savedAddressChoicesOpen = ref(false)
-const savedAddressToggle = ref(null)
 const applyingCoupon = ref(false)
 const placingOrder = ref(false)
 const couponCode = ref('')
@@ -378,8 +375,7 @@ const { savedAddresses, profileDraftSummary, selectedAddressKey, selectedSavedAd
   addressLoadError, addressBookError, addressBookNotice, addressConflict, confirmAddressRemoval,
   setProfileAddress, chooseAddress, loadSavedAddresses, saveAddress, keepAsNewAddress, useSavedVersion, removeAddress
 } = useCheckoutAddresses(address, addressExpanded, addressComplete, customerScope)
-const closeAddressChoices = async () => { savedAddressChoicesOpen.value = false; await nextTick(); savedAddressToggle.value?.focus() }
-const selectCheckoutAddress = async key => { chooseAddress(key); await closeAddressChoices() }
+const selectCheckoutAddress = key => chooseAddress(key)
 const paymentInstructions = computed(() => selectedPaymentMethod.value === 'bank_transfer' ? settings.value.payment_bank_transfer_instructions : settings.value.payment_instapay_instructions)
 
 watch(availablePaymentMethods, methods => {
@@ -589,7 +585,6 @@ customerScope.onInvalidate(() => {
   quote.value = null
   Object.keys(address).forEach(field => { address[field] = '' })
   addressExpanded.value = true
-  savedAddressChoicesOpen.value = false
   couponCode.value = ''; couponError.value = ''; couponSuccess.value = ''
   selectedPaymentMethod.value = ''; shippingCompanyId.value = ''
   deliveryOptions.value = []; deliveryError.value = ''; proofFile.value = null

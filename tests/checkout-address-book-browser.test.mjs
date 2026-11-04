@@ -8,24 +8,26 @@ import { build } from 'esbuild'
 import { parse, compileScript } from '@vue/compiler-sfc'
 
 const addressSelector = page => {
- const toggle = page.getByTestId('saved-address-toggle')
- return { waitFor: () => toggle.waitFor(), count: () => toggle.count(), inputValue: () => toggle.getAttribute('data-selected-address'), textContent: async () => { if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click(); return page.locator('#checkout-saved-addresses').textContent() }, selectOption: async value => {
-  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click()
-  const list=page.locator('#checkout-saved-addresses')
-  if (['new','profile'].includes(value)) await list.locator(value === 'new' ? 'button:last-child' : 'button').filter(value === 'new' ? {} : {hasText: /Unsaved address|عنوان غير محفوظ/}).first().click()
-  else await list.locator('[data-address-id="'+value+'"]').click()
+ const cards=page.locator('#checkout-saved-addresses')
+ return { waitFor:()=>cards.waitFor(),count:()=>cards.count(),inputValue:async()=>await cards.locator('[aria-pressed=true]').count()?cards.locator('[aria-pressed=true]').getAttribute('data-address-id'):'new',textContent:()=>cards.textContent(),selectOption:async value=>{
+  if(value==='new')await page.getByRole('button',{name:/^New address$|^عنوان جديد$/i}).click()
+  else await cards.locator('[data-address-id="'+value+'"]').click()
  }}
 }
 const deliverySelector = page => ({ selectOption: value => page.locator('input[name="delivery-method"][value="'+value+'"]').check(), inputValue: async () => await page.locator('input[name="delivery-method"]:checked').count() ? page.locator('input[name="delivery-method"]:checked').inputValue() : '' })
 
 test('actual checkout address selection, explicit saves and private drafts', async t => {
-  const { chromium } = await import(process.env.COD_REVIEW_PLAYWRIGHT)
+  const engine=process.env.CHECKOUT_REVIEW_ENGINE||'chromium',pw=await import(process.env.COD_REVIEW_PLAYWRIGHT)
   let helper = await readFile('tests/helpers/normalPurchaseBrowser.js', 'utf8')
   helper = helper.replaceAll('value => value', 'value => fixture.uiKeys[value] ? translate(fixture.uiKeys[value]) : value')
     .replace('payment_cash_enabled: true', 'payment_cash_enabled: false')
     .replace('payment_bank_transfer_enabled: true, payment_instapay_enabled: true', 'payment_bank_transfer_enabled: false, payment_instapay_enabled: false')
     .replace("name: 'Synthetic PDC', price: 10", "name: 'Synthetic manual delivery', price: 50")
     .replace('totalAmount: 110', 'totalAmount: 150').replace('shippingFee: 10', 'shippingFee: 50')
+  helper=helper.replace("options: [{ id: fixture.companyId","options: fixture.deliveryOptions || [{ id: fixture.companyId")
+    .replace('totalAmount: 150','totalAmount: 100 - (options.body?.coupon_code ? 1 : 0) + (fixture.deliveryOptions?.find(o=>o.id===options.body?.shipping_company_id)?.price ?? 50)')
+    .replace('discountAmount: 0','discountAmount: options.body?.coupon_code ? 1 : 0')
+    .replace('shippingFee: 50','shippingFee: fixture.deliveryOptions?.find(o=>o.id===options.body?.shipping_company_id)?.price ?? 50')
   const compiled = await build({ entryPoints: [resolve('tests/helpers/normalPurchaseBrowser.js')], bundle: true, write: false, format: 'iife', platform: 'browser', alias: { '~': resolve('app') },
     define: { 'import.meta.client': 'true', 'process.env.NODE_ENV': '"test"', __VUE_OPTIONS_API__: 'true', __VUE_PROD_DEVTOOLS__: 'false', __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false' },
     plugins: [{ name: 'address-book-browser', setup(b) {
@@ -52,7 +54,7 @@ test('actual checkout address selection, explicit saves and private drafts', asy
     res.end(req.url === '/fixture.js' ? compiled.outputFiles[0].text : '<!doctype html><html lang="' + scenario.locale + '" dir="' + (scenario.locale === 'ar' ? 'rtl' : 'ltr') + '" class="' + (scenario.dark ? 'dark' : '') + '"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>' + css + '</style></head><body><div id="app"></div><script>window.__fixture=' + JSON.stringify(scenario) + '</script><script src="/fixture.js"></script></body></html>')
   })
   await new Promise(r => server.listen(0, '127.0.0.1', r))
-  const origin = 'http://127.0.0.1:' + server.address().port, browser = await chromium.launch({ headless: true, channel: 'chrome' })
+  const origin = 'http://127.0.0.1:' + server.address().port, browser = await pw[engine].launch(engine==='chromium'?{headless:true,channel:'chrome'}:{headless:true,executablePath:process.env.REVIEW_WEBKIT_EXECUTABLE})
   const open = async width => {
     const page = await browser.newPage({ viewport: { width, height: 900 } }), errors = [], blocked = []
     page.setDefaultTimeout(8000); page.on('pageerror', error => errors.push(error.message))
@@ -140,7 +142,7 @@ test('actual checkout address selection, explicit saves and private drafts', asy
         if (mode !== 'none') { await page.getByTestId('saved-address-summary').waitFor(); await button(page, 'common.edit').click() }
         const fields = page.locator('input[role=combobox]')
         await fields.nth(0).waitFor()
-        if (mode === 'legacy') { await page.getByText('Unmatched preserved locality', { exact: false }).waitFor(); await page.locator('input[autocomplete=tel]').fill('01011111111'); assert.equal(await fields.nth(1).inputValue(), '') }
+        if (mode === 'legacy') { await page.locator('#checkout-address-fields bdi').filter({hasText:'Unmatched preserved locality'}).waitFor(); await page.locator('input[autocomplete=tel]').fill('01011111111'); assert.equal(await fields.nth(1).inputValue(), '') }
         await fields.nth(0).fill('Giza'); await fields.nth(0).press('Enter')
         assert.equal(await fields.nth(1).inputValue(), '')
         await fields.nth(1).fill('Ramses'); assert.equal(await page.getByRole('listbox').getByRole('option').filter({hasText:'Ramses'}).count(), 0)
@@ -224,6 +226,20 @@ test('actual checkout address selection, explicit saves and private drafts', asy
         assert.equal(await page.getByRole('heading', { name: scenario.messages.common.paymentMethod, exact: true }).count(), 0)
         await check(context)
       } finally { await page.close() }
+    })
+    await t.test('cheapest eligible delivery is selected and changing it refreshes the authoritative total',async()=>{
+      scenario=fixture('en');const expensive=randomUUID();scenario.deliveryOptions=[{id:expensive,name:'Configured express delivery',price:100,governorates:['Cairo']},{id:scenario.companyId,name:'Configured standard delivery',price:50,governorates:['Cairo']},{id:randomUUID(),name:'Different governorate',price:1,governorates:['Giza']}]
+      const context=await open(390),{page}=context;const money=n=>new Intl.NumberFormat('en-EG',{style:'currency',currency:'EGP',maximumFractionDigits:2}).format(n)
+      try{await addressSelector(page).waitFor();await page.getByText(money(150),{exact:true}).waitFor();assert.equal(await deliverySelector(page).inputValue(),scenario.companyId);assert.equal(await page.locator('input[name=delivery-method]').count(),2)
+       await deliverySelector(page).selectOption(expensive);await page.getByText(money(200),{exact:true}).waitFor();const quote=(await page.evaluate(()=>window.__requests)).filter(r=>r.path==='/api/checkout/quote').at(-1);assert.equal(quote.body.shipping_company_id,expensive);await check(context)
+      }finally{await page.close()}
+    })
+    await t.test('coupon starts collapsed and keeps its code and exact discount when collapsed again',async()=>{
+      scenario=fixture('en');const context=await open(390),{page}=context,money=n=>new Intl.NumberFormat('en-EG',{style:'currency',currency:'EGP',maximumFractionDigits:2}).format(n)
+      try{await addressSelector(page).waitFor();const disclosure=page.locator('details[aria-labelledby=coupon-title]');assert.equal(await disclosure.getAttribute('open'),null);await disclosure.locator('summary').click()
+       await page.getByPlaceholder(scenario.messages.common.couponCode,{exact:true}).fill('ALICE_PRIVATE_COUPON');await button(page,'common.apply').click();await page.getByText(money(149),{exact:true}).waitFor();await disclosure.locator('summary').click();assert.equal(await disclosure.getAttribute('open'),null)
+       await page.getByText('ALICE_PRIVATE_COUPON',{exact:true}).waitFor();assert.ok((await page.locator('body').innerText()).includes(money(1)));await disclosure.locator('summary').click();await button(page,'common.remove').click();await page.getByText(money(150),{exact:true}).waitFor();assert.equal((await page.evaluate(()=>window.__requests)).filter(r=>r.path==='/api/checkout/quote').at(-1).body.coupon_code,'');await check(context)
+      }finally{await page.close()}
     })
     for (const pending of ['list', 'save']) await t.test(`account switch clears private rows and drafts during a pending ${pending}`, async () => {
       scenario = fixture('en'); const second = randomUUID()
