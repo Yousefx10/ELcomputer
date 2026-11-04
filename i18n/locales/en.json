@@ -5930,7 +5930,9 @@
     "loading": "Loading Apple Pay…",
     "unavailable": "Apple Pay couldn’t open. Try again or choose Card.",
     "expired": "This payment form expired. Return to checkout.",
-    "ineligible": "Apple Pay is unavailable in this browser."
+    "ineligible": "Apple Pay is unavailable in this browser.",
+    "closedReady": "Apple Pay closed. You can reopen this payment.",
+    "closedChecking": "Apple Pay closed. Check its status before trying again."
   },
   "storefrontUX": {
     "heroMode": "Hero layout",

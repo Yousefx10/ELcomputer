@@ -5930,7 +5930,9 @@
     "loading": "جارٍ تحميل Apple Pay…",
     "unavailable": "تعذر فتح Apple Pay. أعد المحاولة أو اختر البطاقة.",
     "expired": "انتهت صلاحية نموذج الدفع. عُد إلى إتمام الشراء.",
-    "ineligible": "Apple Pay غير متاح في هذا المتصفح."
+    "ineligible": "Apple Pay غير متاح في هذا المتصفح.",
+    "closedReady": "أُغلق Apple Pay. يمكنك إعادة فتح هذه الدفعة.",
+    "closedChecking": "أُغلق Apple Pay. تحقق من حالتها قبل المحاولة مجددًا."
   },
   "storefrontUX": {
     "heroMode": "تخطيط الواجهة",
