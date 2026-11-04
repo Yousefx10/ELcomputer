@@ -1,3 +1,67 @@
+# E243 — Local storefront packages qualified; Apple P1 holds production — 2026-11-04
+
+The owner reports that Safari on an eligible iPad opens the Apple sheet, then
+closes it without deliberate authorization. PAY-APPLE-LIFECYCLE-20261104-01 is
+the urgent P1 priority. The latest EGP325 attempt remains pending/submitted, with
+no recorded funds, callback, order or inquiry. All twelve attempts are preserved.
+
+Production remains `54315e37fdc74aa7` / source `388c04d` / schema **113**.
+Host checks at 18:01 Riyadh confirm both PIDs, all 17 protected files and
+loaded runtime. The 18:05 read-only database observation preserves a target STOP:
+Auth rows changed 14→15 and store orders 10→11; all private payment projections
+remain unchanged. The old binding is not accepted or weakened. Recovery must be
+refreshed for any later execution. Natural MON retains 8 warnings, 3 gaps and 0 critical findings;
+Email/PDC/MON timers and their natural callers remain healthy.
+
+The pinned SDK calls the submission hook before native `begin()`. The app then
+navigated away on SDK cancellation. The separate local guard `1da68eb` retains
+the document and intention, hides closed controls, permits reopening only with
+server `canResume`, and records fixed phase codes without secrets. Forty actual
+SDK fixture results, typecheck/build and 4,892 compiled asset hashes pass.
+The real native dismissal, initial ten-second failure and provider outcome remain
+unproven. The guard is a partial correction, not a complete payment fix.
+A private, exact-reference Paymob support case is prepared and has not been sent.
+
+SF-UX-20261104-01 reuses the existing hero CMS and preserved catalog candidate:
+three modes, mobile artwork/copy/CTA/focal/order controls, category circles,
+footer refinements and bounded infinite scroll with crawlable pagination.
+MKT-META-01 is recovered at `fd655ce`, with variant/quote values, stable IDs,
+consent/outbox, protected token settings and verified Purchase/inquiry proof.
+Pixel ID `1680814460341996` is deployment configuration. Runtime transmission
+remains OFF; the CAPI token and dedicated worker secret are still absent.
+IMG-PERF-20261104-01 at `863d9b9` adds public ETag/304/OFF/freshness/URL-epoch
+controls and diagnostics. Private responses and downloads remain no-store.
+
+Chrome/WebKit storefront and Modern/family checks, composed backend/Meta/media
+checks, all builds/typechecks, archive readbacks and compiled serving checks pass.
+Exact local A/B/C review packets and the separate guard packet exist. Encrypted database and 17-file recovery backups passed full readback. Proposed
+114–116 migrations remain provisional; the installed ledger stays 113.
+No production execution seal, expiry or approval is issued during this P1 hold.
+After a qualified payment correction, recheck the actual ledger, restore rehearsal,
+operator, preflight and fresh authorization. Local qualification is not deployment
+or owner/provider acceptance.
+
+All 58 opening worktrees, including 27 with unfinished changes, retain their
+heads/status/diffs/indexes before authorized continuity edits. Also preserved:
+24,009 prior untracked hashes, 55 paused artifacts and 21,710 consumed inputs.
+Two owned worktrees isolate storefront and payment work. CARD/COD/EGP10,
+existing orders, all attempts, Brevo/PDC/MON/settings, and paused SMS/InstaPay/
+wallet/balance/deferred work are protected. There was no deployment, SQL write,
+configuration edit, restart, signal, manual worker, provider/marketing/financial
+action or Git push. Historical retry/approval instructions below are superseded.
+
+[Implementation, exact artifacts, tests, limitations and resume](storefront-master-execution-20261104.md).
+
+ONE next action: send the prepared private Paymob support case for the exact
+transaction outcome and native-validation trace. No further charge is authorized.
+
+New stable tasks preserve the owner master execution requirements:
+SF-UX-20261104-01 covers existing-CMS layouts/mobile, category circles, footer,
+all public catalog contexts and SEO. MKT-META-01 retains consent, verified event,
+deduplication and token gates. IMG-PERF-20261104-01 covers public HTTP caching and
+honest controls. PAY-APPLE-LIFECYCLE-20261104-01 is the urgent P1 priority.
+Independent storefront work continued; production remains held on that blocker.
+
 # E242 — Apple routing DEPLOYED / hosted technical PASS / CONSUMED_COMPLETE — 2026-11-04
 
 Task `PAY-APPLE-FORM-20261104-01`: the exact `3d0a441c` operator completed at
@@ -7199,7 +7263,10 @@ acceptance. Do not revive already completed historical phases as new work.
 | UIUX-03-P0 | Unverified CARD cancellation and truthful support | SAFETY LOCAL QUALIFIED | FUNCTION110 UNAPPROVED / FINALITY HELD | Request is an owned support ticket, never cancellation; API/SQL/expiry hold every existing uncertain attempt | Native authorization/age/failure/worker/rollback checks PASS; no old order rewrite/provider inquiry | E175 | 2026-11-01 | Separately seal payment hold; current owner-cancelled order remains closed/unpaid-unverified. Provider reply required for finality/recovery, no old intention reuse. |
 | UIUX-03-E | Fresh-confirmation secure payment handoff | DEPLOYED HOSTED DEFAULT | PIXEL LOCAL; GENUINE ACCEPTANCE PENDING | Deployed payment-first fresh CARD session initiates once with same-tab hosted handoff; no unpaid prepaid order; isolated89ea6cc adds optional embedded path with hosted preserved | Both browsers and native/HTTP idempotency/uncertainty/cart checks PASS; genuine signed successful payment acceptance pending | E201; E203; payments-checkout-meta-execution-20261103.md | 2026-11-03 | Separate app-only compact COD/Pixel inactive release; preserve hosted CARD until genuine embedded acceptance. |
 | PAY-EXEC-20261103-01 | Coordinated payments, checkout and tracking execution | CURRENT OWNER PRIORITY | LOCAL GROUPS COMPLETE; H1 HOST CONFIGURATION COMPLETE | Checkout/Pixel89ea6cc and inactive Metaf5e97b5 artifacts qualified; H1db13c8ee CONSUMED_COMPLETE; InstaPay OFF, app/schema unchanged | Original local qualifications retained; existing H1verify/next natural MON PASS; all53 worktrees retained | E202; E203; E204; payments-checkout-meta-execution-20261103.md | 2026-11-03 | Real protected recipient fields with Enabled unchecked; separately qualify hosted acceptance, app releases and later activations. |
-| MKT-META-01 | Consented Meta Pixel and Conversions API | CURRENT OWNER PRIORITY | LOCAL PASS; PRODUCTION OFF | Protected token/config, consent, immutable dedup/outbox, verified Purchase, COD/balance gates, retention and worker |34native/HTTP results;18consent+12Dashboard browser; typecheck/build/archive/static serving PASS; no Meta calls | E203; meta-commerce-tracking.md in isolated source | 2026-11-03 | Separate inactive schema/app release, protected real Dataset/token, exact activation and Test Events acceptance. |
+| PAY-APPLE-LIFECYCLE-20261104-01 | iPad sheet disappearance and consumed submission fence | URGENT P1 | LOCAL GUARD; TRACE BLOCKER | Production `54315e37` / 113; EGP325 pending, no recorded funds/callback/order | Sheet opening reported; stable flow/finality unaccepted; no financial rewrite | E243; storefront-master-execution-20261104.md | 2026-11-04 | Send the private Paymob case; obtain outcome/trace and a safe-cancel contract before deployment. |
+| SF-UX-20261104-01 | Existing hero CMS modes/mobile, circles/footer and recovered infinite scroll | CURRENT OWNER PROGRAM | LOCAL PASS; NOT DEPLOYED | `ff037dd` / provisional 114; settings preserved | 44 browser results, bounded native ranking/RLS and compiled SSR/4,898 assets pass | E243; storefront-master-execution-20261104.md | 2026-11-04 | P1 resolution, fresh lineage/ledger/operator/authorization and hosted owner acceptance. |
+| IMG-PERF-20261104-01 | VPS public image validators and Dashboard cache controls | CURRENT OWNER PROGRAM | LOCAL PASS; NOT DEPLOYED | `863d9b9` / provisional 116; no private cache or transform worker | Same 25,317-byte image returns local 304/0 bytes; HTTP/schema/privacy and 498 Modern/family checks pass | E243; storefront-master-execution-20261104.md | 2026-11-04 | P1 resolution and fresh release; hosted improvement remains unmeasured. |
+| MKT-META-01 | Consented Meta Pixel and Conversions API | CURRENT OWNER PRIORITY | RECOVERED LOCAL PASS; PRODUCTION OFF | `fd655ce` / provisional 115; deployment Pixel ID and protected token path | 58 composed plus 10 updated native, 7 dispatch/privacy and 4 worker results pass; no Meta transmission | E243; E203; storefront-master-execution-20261104.md | 2026-11-04 | P1 resolution; fresh inactive release; secure token/worker secret and separate consented Test Events activation/acceptance. |
 | FUT-01 | Dashboard full authenticated/RBAC/browser-write-safety acceptance | P1 | BLOCKED | Secure active-role sessions and guarded test scope | Accept named roles/modules; functional owner smoke and public401/403 are insufficient; preserve unread evidence limits | E21; E12 | 2026-10-25 | Prepare smallest remaining authenticated acceptance scope E172 owner direction: customer/Admin UI/UX REVIEW is next after the bounded local metadata qualification; include whether staff need a dedicated permission-scoped historical-order viewer. No UI implementation, authenticated production write or full RBAC acceptance implied. Preserve current design/EN-AR/RTL/responsiveness and all old acceptance limits. |
 | FUT-02 | Premium PDP/Footer owner acceptance | P2 | PLANNED | Secure owner browser and saved theme/content settings | Hosted persistence/favorites/sharing/package content accepted; no fabricated content or replacement layout | E16 | 2026-10-25 | Complete remaining owner cases without redesign |
 | FUT-03 | QR/serialized inventory and packing extensions | P2 | PLANNED | Actual unit custody/ownership and scan authorization | Preserve current QR registry; validate real scans, retries and packing coverage; no invented ownership from aggregate stock/warranty claims | E13; E17; E20; REQ | 2026-10-25 | Inventory specific outstanding QR requirements before implementation |

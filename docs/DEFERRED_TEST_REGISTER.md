@@ -1,3 +1,67 @@
+# E243 — Local storefront packages qualified; Apple P1 holds production — 2026-11-04
+
+The owner reports that Safari on an eligible iPad opens the Apple sheet, then
+closes it without deliberate authorization. PAY-APPLE-LIFECYCLE-20261104-01 is
+the urgent P1 priority. The latest EGP325 attempt remains pending/submitted, with
+no recorded funds, callback, order or inquiry. All twelve attempts are preserved.
+
+Production remains `54315e37fdc74aa7` / source `388c04d` / schema **113**.
+Host checks at 18:01 Riyadh confirm both PIDs, all 17 protected files and
+loaded runtime. The 18:05 read-only database observation preserves a target STOP:
+Auth rows changed 14→15 and store orders 10→11; all private payment projections
+remain unchanged. The old binding is not accepted or weakened. Recovery must be
+refreshed for any later execution. Natural MON retains 8 warnings, 3 gaps and 0 critical findings;
+Email/PDC/MON timers and their natural callers remain healthy.
+
+The pinned SDK calls the submission hook before native `begin()`. The app then
+navigated away on SDK cancellation. The separate local guard `1da68eb` retains
+the document and intention, hides closed controls, permits reopening only with
+server `canResume`, and records fixed phase codes without secrets. Forty actual
+SDK fixture results, typecheck/build and 4,892 compiled asset hashes pass.
+The real native dismissal, initial ten-second failure and provider outcome remain
+unproven. The guard is a partial correction, not a complete payment fix.
+A private, exact-reference Paymob support case is prepared and has not been sent.
+
+SF-UX-20261104-01 reuses the existing hero CMS and preserved catalog candidate:
+three modes, mobile artwork/copy/CTA/focal/order controls, category circles,
+footer refinements and bounded infinite scroll with crawlable pagination.
+MKT-META-01 is recovered at `fd655ce`, with variant/quote values, stable IDs,
+consent/outbox, protected token settings and verified Purchase/inquiry proof.
+Pixel ID `1680814460341996` is deployment configuration. Runtime transmission
+remains OFF; the CAPI token and dedicated worker secret are still absent.
+IMG-PERF-20261104-01 at `863d9b9` adds public ETag/304/OFF/freshness/URL-epoch
+controls and diagnostics. Private responses and downloads remain no-store.
+
+Chrome/WebKit storefront and Modern/family checks, composed backend/Meta/media
+checks, all builds/typechecks, archive readbacks and compiled serving checks pass.
+Exact local A/B/C review packets and the separate guard packet exist. Encrypted database and 17-file recovery backups passed full readback. Proposed
+114–116 migrations remain provisional; the installed ledger stays 113.
+No production execution seal, expiry or approval is issued during this P1 hold.
+After a qualified payment correction, recheck the actual ledger, restore rehearsal,
+operator, preflight and fresh authorization. Local qualification is not deployment
+or owner/provider acceptance.
+
+All 58 opening worktrees, including 27 with unfinished changes, retain their
+heads/status/diffs/indexes before authorized continuity edits. Also preserved:
+24,009 prior untracked hashes, 55 paused artifacts and 21,710 consumed inputs.
+Two owned worktrees isolate storefront and payment work. CARD/COD/EGP10,
+existing orders, all attempts, Brevo/PDC/MON/settings, and paused SMS/InstaPay/
+wallet/balance/deferred work are protected. There was no deployment, SQL write,
+configuration edit, restart, signal, manual worker, provider/marketing/financial
+action or Git push. Historical retry/approval instructions below are superseded.
+
+[Implementation, exact artifacts, tests, limitations and resume](storefront-master-execution-20261104.md).
+
+ONE next action: send the prepared private Paymob support case for the exact
+transaction outcome and native-validation trace. No further charge is authorized.
+
+| ID | Newly qualified local scope | Remaining hosted / owner gate |
+| --- | --- | --- |
+| DTR-46 | Apple guard and phase diagnostics `1da68eb`; 40 SDK fixture results, build/typecheck and 4,892 asset checks. Owner reports iPad sheet opening. | Native dismissal, initial failure and provider outcome remain unproven. No clearing/retry or full acceptance; send the prepared case. |
+| DTR-47 | Hero/mobile/category/footer/catalog `ff037dd`; 44 browser results, bounded SQL and compiled SSR checks. | P1 hold; fresh ledger/operator/114 approval, then hosted responsive/Back/SEO and owner acceptance. |
+| DTR-48 | Meta `fd655ce`; server SKU/quote values, consent, immutable IDs/outbox, verified Purchase, protected settings and worker preview. | Not installed/live. Real token/worker secret, fresh 115 packet and separate consented Test Events acceptance remain. |
+| DTR-49 | Image `863d9b9`; validators/OFF/TTL/epochs/diagnostics, bounded settings reads and same-image byte evidence. | P1 hold; fresh 116 packet and hosted cache/expiry/invalidation/performance acceptance. No guaranteed browser quota or automatic conversion. |
+
 # E242 — Apple routing DEPLOYED / hosted technical PASS / CONSUMED_COMPLETE — 2026-11-04
 
 Task `PAY-APPLE-FORM-20261104-01`: the exact `3d0a441c` operator completed at
