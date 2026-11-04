@@ -1,3 +1,7 @@
+> **CURRENT E244 — 4 November 2026:** The latest owner instruction separates Apple P1 from storefront shipping. Release A is now sealed READY/UNAPPROVED, with fresh target bindings, encrypted recovery, restored-target/operator qualification and read-only preflight PASS. Production remains `54315e37` / schema 113; all 13 current attempts are preserved. Meta and image caching remain separate, with no Paymob dependency. [Exact Storefront114 approval packet, scope and deadlines](storefront-ux-discovery-schema114-review-20261104.md).
+
+The E243 record below preserves the earlier implementation and its original twelve-attempt observation. Its Apple-wide release hold and next-action instruction are superseded by E244.
+
 # Storefront execution and urgent Apple lifecycle — 4 November 2026
 
 **Local implementation and review artifacts are complete. Production is held for the Apple incident.**

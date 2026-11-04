@@ -1,3 +1,70 @@
+# E244 — Storefront114 READY / UNAPPROVED; Apple P1 independent — 2026-11-04
+
+The owner's latest instruction removes the Apple provider escalation as a
+prerequisite for the independent storefront release. SF-UX-20261104-01 is
+qualified and sealed without rebuilding its existing artifact. Apple guard
+`1da68eb` remains local and excluded. No further real charge is authorized.
+
+Production is still `54315e37fdc74aa7` / source `388c04d` / physical schema113.
+The fresh sealed read-only preflight passed at 19:33:53 Riyadh. Migration
+`20261104140000` is absent and is the only migration in this 113 → 114 packet.
+Source `ff037dd`, candidate `6fd67997c8feaeca`, seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a`.
+Start by **22:49:03 Riyadh, 4 November 2026**; expires **23:04:03 Riyadh**.
+No owner-approved, apply-attempt or production-stage marker exists.
+
+Scope: three hero modes/mobile controls, category clipping, footer and bounded
+infinite scroll/SEO. One exact SQL/history transaction, archive upload and app
+cutover/restart, plus one bounded pause/resume each MON/Email/PDC timer.
+Zero Apple guard/payment logic/financial-row rewrite, runtime/flags/Caddy/units/
+credentials/provider/manual-worker/Meta/image-cache change or Git push.
+CARD/COD, EGP10, exactly-once verified prepaid orders and late callbacks remain.
+
+The physical target now contains 13 attempts, including all original twelve.
+The additional EGP3050 Apple attempt predates this preparation and remains
+pending/submitted, with no recorded funds/callback/order. One older initialized
+attempt has only installed schema113 supersession metadata changed; no original
+financial status or submission evidence was rewritten. Fresh protected evidence
+classifies the difference and binds all thirteen fences. Current store orders 11,
+Auth 15, funds/callbacks/proofs 0; all four integrity counters 0. Provider financial
+finality stays unverified. No financial action was taken by this session.
+
+Fresh encrypted database and 17-file recovery passed full readback at 19:04:03
+Riyadh. The same SQL114 adapter committed successfully on the private disposable
+restored target, preserving all 160 original projections. DDL rollback, Auth/
+Email/shipping and public default ACL checks passed; temporary data was removed.
+Managed extension-service exclusions are documented in the review.
+
+Existing application checks are reused: 4,898 compiled/retained asset hashes,
+storefront/SSR/browser/native checks, 44 payment/family/options results and
+249 Chrome + 249 WebKit Modern/family results. New operator qualification passes
+52 JavaScript guards, 52 remote guards and seven one-use scenarios (54 assertions).
+The two old snapshot assertions fail on both deployed and candidate baselines;
+they are explicitly classified, retained and not weakened. Footer.vue and checkout
+source are byte-identical between the deployed baseline and this candidate.
+
+Natural MON remains 8 warnings / 3 gaps / 0 critical. App/Caddy PIDs and all 17 protected
+files match; natural Email/PDC/MON callers remain healthy. Capacity, unused
+candidate/stage and candidate-port checks pass. No policy or guard was loosened.
+
+Meta115 (`fd655ce`) and image116 (`d6b0934`) remain separate packets with no
+Paymob dependency. Meta has a verified encrypted local worker-secret candidate;
+it is uninstalled, transmission OFF, CAPI token still missing. Secure input:
+Dashboard → Marketing → Conversions API token after approved inactive installation.
+Their own migration prerequisites, fresh target/credential/activation approvals
+and hosted acceptance remain separate. Existing local image evidence is reused.
+
+All 60 worktrees, 59 other heads/status/diffs/indexes, 24,009 untracked hashes,
+55 paused artifacts and 21,710 consumed input hashes are preserved. Main contains
+continuity documentation only; there is no application merge, reset or push.
+SMS/InstaPay/wallet/balance and all other unfinished requirements remain paused.
+No production mutation has occurred. Local readiness is not deployment or owner
+acceptance; consumed operators remain spent.
+
+[Exact first executable approval packet and limits](docs/storefront-ux-discovery-schema114-review-20261104.md).
+
+ONE next action: reply with the exact Storefront114 approval statement in that
+review before the start deadline.
+
 # E243 — Local storefront packages qualified; Apple P1 holds production — 2026-11-04
 
 The owner reports that Safari on an eligible iPad opens the Apple sheet, then
