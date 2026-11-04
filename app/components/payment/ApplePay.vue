@@ -4,9 +4,11 @@
   <p v-if="checkout" class="mt-2 text-lg font-semibold">{{ checkout.totalAmount }} {{ checkout.currency }}</p>
   <p v-if="loading" role="status" class="mt-3 text-sm text-slate-600 dark:text-slate-400">{{ $t('applePayment.loading') }}</p>
   <p v-if="error" role="alert" class="mt-3 text-sm text-red-700 dark:text-red-400">{{ $t(error) }}</p>
-  <div v-show="!error" id="paymob-apple" ref="container" class="mt-4 min-w-0" />
+  <p v-if="sheetClosed" role="status" class="mt-3 text-sm">{{ $t(checkout?.canResume ? 'applePayment.closedReady' : 'applePayment.closedChecking') }}</p>
+  <div v-show="!error && !sheetClosed" id="paymob-apple" ref="container" class="mt-4 min-w-0" />
   <div class="mt-4 flex flex-wrap gap-3">
    <button v-if="error && retrySafe" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="reload">{{ $t('embeddedCheckout.tryAgain') }}</button>
+   <button v-if="sheetClosed && checkout?.canResume" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="reload">{{ $t('embeddedCheckout.tryAgain') }}</button>
    <button v-if="checkout && !loading" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="status">{{ $t('paymentFirst.checkStatus') }}</button>
    <button type="button" class="min-h-11 px-2 text-sm font-semibold text-blue-700 dark:text-blue-400" @click="back">{{ $t('paymentInterface.back') }}</button>
   </div>
@@ -18,10 +20,20 @@ import {applePayDeviceEligible,paymobPixelOptions} from '~/utils/paymobPixel'
 const props=defineProps({sessionId:{type:String,required:true}})
 const scope=useCustomerScope(),{uiNavigateTo}=useUiNavigation(),{locale}=useI18n(),colorMode=useColorMode()
 const checkout=shallowRef(null),container=ref(null),loading=ref(true),error=ref(''),retrySafe=ref(false)
+const sheetClosed=ref(false)
 let disposed=false,arming=false,submitted=false,completed=false,payment=null,sdk,observer,loadTimer,expiryTimer
 const navigate=path=>uiNavigateTo(path,{external:true})
 const back=()=>navigate('/checkout'),status=()=>navigate('/checkout/session/'+props.sessionId)
 const reload=()=>window.location.reload()
+const phase=code=>console.info('[apple-payment]',code)
+const cancelled=()=>{
+ if(disposed||completed||sheetClosed.value)return
+ // Pixel calls beforePaymentComplete before begin(), not after native approval.
+ // Its cancel callback carries no authoritative payment outcome. Keep the
+ // current document and intention; never clear the server submission fence.
+ sheetClosed.value=true;loading.value=false;retrySafe.value=false
+ console.warn('[apple-payment]','SHEET_CLOSED')
+}
 const sdkError=event=>{
  if(disposed||!payment)return
  const fromSdk=event.filename?.includes('/paymob-pixel/1.2.8/main.js')
@@ -40,12 +52,13 @@ const authorize=async()=>{
  if(disposed||arming||submitted||!scope.isCurrent()||!payment?.interfaceToken)return false
  if(Date.parse(payment.expiresAt)<=Date.now()){fail('EXPIRED','applePayment.expired');return false}
  arming=true;retrySafe.value=false
+ phase('SUBMISSION_GATE_REQUESTED')
  try{
   const result=await scope.request(`/api/account/payment-checkouts/${props.sessionId}/interface`,{method:'POST',body:{version:2,action:'submit',token:payment.interfaceToken},retry:0,timeout:10000})
   if(disposed||!scope.isCurrent())return false
   checkout.value=result.checkout
   if(result.allowed!==true){fail('SUBMISSION_DENIED','paymentInterface.unavailable');return false}
-  submitted=true;return true
+  submitted=true;phase('SUBMISSION_GATE_ACCEPTED');return true
  }catch{fail('SUBMISSION_UNCERTAIN','paymentInterface.unavailable');return false}
  // Arming stays fenced after denial or transport uncertainty.
 }
@@ -53,17 +66,18 @@ const mount=()=>{
  if(disposed||!scope.isCurrent())return
  if(Date.parse(payment.expiresAt)<=Date.now()){fail('EXPIRED','applePayment.expired');return}
  if(typeof window.Pixel!=='function'){fail('SDK_MISSING');return}
+ phase('SDK_LOADED')
  try{
   new window.Pixel({...paymobPixelOptions({...payment,elementId:'paymob-apple',locale:locale.value,dark:colorMode.value==='dark'}),
    beforePaymentComplete:authorize,
-   afterPaymentComplete:()=>{if(!disposed&&!completed){completed=true;status()}},
-   onPaymentCancel:()=>{if(!disposed)back()}})
+   afterPaymentComplete:()=>{if(!disposed&&!completed){completed=true;phase('SDK_COMPLETED');status()}},
+   onPaymentCancel:cancelled})
   const rendered=()=>{
    if(disposed)return
    const roots=[container.value,...container.value?.querySelectorAll('*')||[]].map(node=>node?.shadowRoot).filter(Boolean)
    for(const root of roots){
     if(root.querySelector('[role=alert]')){fail('SDK_INITIALIZATION');return}
-    if(root.querySelector('#apple-pay-button')){loading.value=false;clearTimeout(loadTimer);return}
+    if(root.querySelector('#apple-pay-button')){if(loading.value)phase('SDK_READY');loading.value=false;clearTimeout(loadTimer);return}
    }
   }
   observer=new MutationObserver(rendered);observer.observe(container.value,{childList:true,subtree:true})
@@ -79,6 +93,7 @@ onMounted(async()=>{
  // CARD retains the existing disposable SDK frame.
  if(window!==window.top||!applePayDeviceEligible(window)){fail('INELIGIBLE','applePayment.ineligible');return}
  try{
+  phase('INTERFACE_OPEN_REQUESTED')
   const result=await scope.request(`/api/account/payment-checkouts/${props.sessionId}/interface`,{method:'POST',body:{version:2,action:'open'},retry:0,timeout:10000})
   if(disposed||!scope.isCurrent())return
   checkout.value=result.checkout
@@ -86,6 +101,7 @@ onMounted(async()=>{
    fail('SESSION_UNAVAILABLE','paymentInterface.unavailable');return
   }
   payment=result.payment
+  phase('INTERFACE_READY')
   const expiry=Date.parse(payment.expiresAt)
   if(!Number.isFinite(expiry)||expiry<=Date.now()){fail('EXPIRED','applePayment.expired');return}
   expiryTimer=setTimeout(()=>fail('EXPIRED','applePayment.expired'),Math.min(expiry-Date.now(),3600000))

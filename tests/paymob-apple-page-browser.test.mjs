@@ -15,9 +15,9 @@ const helper=`import {createApp,ref,shallowRef,onMounted,onBeforeUnmount} from '
  const fixture=window.__fixture;window.__requests=[];window.__navigations=[];window.__phases=[];
  const translate=key=>key.split('.').reduce((value,part)=>value?.[part],fixture.messages)||key;
  const request=async(path,options)=>{window.__requests.push({path,method:options.method,body:options.body,retry:options.retry});
-  if(options.body.action==='submit'){if(fixture.lostAcknowledgement)throw Error('Isolated lost acknowledgement');return {allowed:!fixture.denied,checkout:{id:fixture.id,totalAmount:'3050.00',currency:'EGP',paymentStatus:'verifying'}}}
+  if(options.body.action==='submit'){if(fixture.lostAcknowledgement)throw Error('Isolated lost acknowledgement');return {allowed:!fixture.denied,checkout:{id:fixture.id,totalAmount:'3050.00',currency:'EGP',paymentStatus:'verifying',canResume:false}}}
   if(fixture.interfaceFailure)throw Error('Isolated interface failure');
-  return {allowed:true,checkout:{id:fixture.id,totalAmount:'3050.00',currency:'EGP',paymentStatus:'ready'},payment:{publicKey:'egy_pk_live_fixture',clientSecret:'egy_csk_live_fixture',interfaceToken:fixture.id,expiresAt:new Date(Date.now()+(fixture.expired?-1000:1800000)).toISOString(),experience:'embedded',paymentMethods:[fixture.cardContext?'card':'apple-pay']}}
+  return {allowed:true,checkout:{id:fixture.id,totalAmount:'3050.00',currency:'EGP',paymentStatus:'ready',canResume:true},payment:{publicKey:'egy_pk_live_fixture',clientSecret:'egy_csk_live_fixture',interfaceToken:fixture.id,expiresAt:new Date(Date.now()+(fixture.expired?-1000:1800000)).toISOString(),experience:'embedded',paymentMethods:[fixture.cardContext?'card':'apple-pay']}}
  };
  Object.assign(globalThis,{ref,shallowRef,onMounted,onBeforeUnmount,useI18n:()=>({locale:ref(fixture.locale)}),useColorMode:()=>({value:fixture.dark?'dark':'light'}),useCustomerScope:()=>({isCurrent:()=>true,request,onInvalidate:fn=>{window.__invalidate=fn}}),useUiNavigation:()=>({uiNavigateTo:(path,options)=>{window.__navigations.push({path,options});document.querySelector('#app').setAttribute('data-navigation',path)}}),onBeforeRouteLeave:fn=>{window.__leave=fn}});
  const warn=console.warn;console.warn=(...values)=>{window.__phases.push(values);warn(...values)};
@@ -47,6 +47,7 @@ const native=()=>{
   constructor(version,request){if(window!==top)throw new DOMException('Fixture disallows Apple Pay in child context','SecurityError');if(window.__fixture?.nativeBlocked)throw new DOMException('Isolated native policy rejection','InvalidAccessError');if(!window.__gesture)throw new DOMException('Fixture requires a user gesture','InvalidAccessError');window.__nativeConstructions.push({version,request});window.__nativeSession=this}
   begin(){window.__nativeBegins++}
   completePayment(value){window.__nativeCompletions.push(value)}
+  completeMerchantValidation(value){window.__merchantValidationCompleted=true;if(window.__fixture?.validationRejected){this.oncancel?.({sessionError:{code:'unknown',info:'isolated validation failure'}})}}
  }
 }
 try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await test(engine+' actual pinned Apple SDK page',{timeout:180000},async t=>{
@@ -65,6 +66,7 @@ try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await te
     if(fixture.metadataFailure)return route.abort()
     return route.fulfill({contentType:'application/json',body:JSON.stringify({intention_detail:{amount:305000,currency:'EGP'},payment_methods:[{integration_id:321,name:'apple-pay',live:true,currency:'EGP'}],payment_keys:{'apple-pay':'isolated-provider-token','apple-pay_iframe_id':321},card_tokens:[],merchant_name:'Isolated merchant'})})
    }
+   if(url.origin==='https://accept.paymob.com'&&url.pathname==='/api/auth/merchant/validate'&&req.method()==='POST')return route.fulfill({status:401,contentType:'application/json',body:JSON.stringify({detail:'Isolated merchant validation denial'})})
    if(url.origin==='https://accept.paymob.com'&&url.pathname==='/api/acceptance/transaction_discount'&&req.method()==='POST')return route.fulfill({contentType:'application/json',body:JSON.stringify({discounted_amount_cents:0})})
    if(url.origin==='https://eg.checkout.paymob.com'&&req.method()==='GET')return route.fulfill({contentType:'text/html',body:'<!doctype html><p>Isolated preload</p>'})
    unsafe.push({method:req.method(),origin:url.origin,path:url.pathname});return route.abort()
@@ -107,13 +109,24 @@ try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await te
    const {context,page,unsafe}=await open({denied:true,lostAcknowledgement})
    try{await page.locator('#apple-pay-button').click();await page.getByRole('alert').waitFor();assert.equal(await page.evaluate(()=>window.__nativeBegins),0);assert.equal(await page.getByRole('button',{name:messages.en.embeddedCheckout.tryAgain,exact:true}).count(),0);assert.equal(await page.evaluate(()=>window.__sdkOptions.beforePaymentComplete()),false);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,1);assert.deepEqual(unsafe,[])}finally{await context.close()}
   })
-  await t.test('unsubmitted cancellation leaves through a full navigation without another intention or payment status claim',async()=>{
+  await t.test('unsubmitted cancellation stays in the current document without another intention or financial claim',async()=>{
    const {context,page,unsafe}=await open()
-   try{await page.locator('#apple-pay-button').waitFor();await page.evaluate(()=>window.__sdkOptions.onPaymentCancel({success:true}));assert.deepEqual(await page.evaluate(()=>window.__navigations),[{path:'/checkout',options:{external:true}}]);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,0);assert.deepEqual(unsafe,[])}finally{await context.close()}
+   try{await page.locator('#apple-pay-button').waitFor();await page.evaluate(()=>window.__sdkOptions.onPaymentCancel({success:true}));assert.deepEqual(await page.evaluate(()=>window.__navigations),[]);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,0);assert.deepEqual(unsafe,[])}finally{await context.close()}
+  })
+  await t.test('merchant validation denial keeps the current document, intention and submission fence',async()=>{
+   const {context,page,unsafe}=await open({validationRejected:true})
+   try{await page.waitForFunction(()=>window.__sdkOptions && !document.querySelector('[role=status]'));await page.waitForTimeout(100);await page.locator('#apple-pay-button').click();await page.waitForFunction(()=>window.__nativeBegins===1);
+    assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,1,'The SDK fences before native authorization');
+    await page.evaluate(()=>window.__nativeSession.onvalidatemerchant({validationURL:'https://apple-pay-gateway.apple.com/isolated-validation'}));
+    await page.getByText(messages.en.applePayment.closedChecking,{exact:true}).waitFor();
+    assert.deepEqual(await page.evaluate(()=>window.__navigations),[]);
+    assert.equal(await page.evaluate(()=>window.__merchantValidationCompleted),true);
+    assert.deepEqual(await page.evaluate(()=>window.__nativeCompletions),[],'No native authorization or payment completion occurred');assert.deepEqual(unsafe,[])
+   }finally{await context.close()}
   })
   await t.test('sheet cancellation keeps the server submission fence consumed',async()=>{
    const {context,page,unsafe}=await open()
-   try{await page.locator('#apple-pay-button').click();await page.waitForFunction(()=>window.__nativeBegins===1);await page.evaluate(()=>window.__nativeSession.oncancel());assert.deepEqual(await page.evaluate(()=>window.__navigations),[{path:'/checkout',options:{external:true}}]);assert.equal(await page.evaluate(()=>window.__sdkOptions.beforePaymentComplete()),false);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,1);assert.deepEqual(unsafe,[])}finally{await context.close()}
+   try{await page.locator('#apple-pay-button').click();await page.waitForFunction(()=>window.__nativeBegins===1);await page.evaluate(()=>window.__nativeSession.oncancel());assert.equal(await page.locator('#paymob-apple').isVisible(),false);assert.deepEqual(await page.evaluate(()=>window.__navigations),[]);await page.getByText(messages.en.applePayment.closedChecking,{exact:true}).waitFor();assert.equal(await page.evaluate(()=>window.__sdkOptions.beforePaymentComplete()),false);assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.body.action==='submit').length,1);assert.deepEqual(unsafe,[])}finally{await context.close()}
   })
   await t.test('browser success/replayed callbacks only navigate to server status, never create or pay an order',async()=>{
    const {context,page,unsafe}=await open()
