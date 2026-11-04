@@ -2,13 +2,18 @@
 (() => {
   'use strict'
   const parentOrigin = location.origin
-  let channel = '', initialized = false, submitted = false, observer
+  let channel = '', initialized = false, submitted = false, authorizing = false, cardValid = false, observer, approval
   const send = (type, extra = {}) => {
     if (channel) parent.postMessage({ source: 'paymob-frame-v1', channel, type, ...extra }, parentOrigin)
   }
   const receive = event => {
-    if (initialized || event.source !== parent || event.origin !== parentOrigin) return
+    if (event.source !== parent || event.origin !== parentOrigin) return
     const input = event.data
+    if (initialized && input?.source === 'storefront-pixel-v1' && input.type === 'authorize-result'
+      && input.channel === channel && input.requestId === approval?.id) {
+      approval.resolve(input.allowed === true); return
+    }
+    if (initialized) return
     if (!input || input.source !== 'storefront-pixel-v1' || input.type !== 'initialize'
       || !/^[0-9a-f-]{36}$/i.test(input.channel || '')) return
     channel = input.channel
@@ -33,14 +38,25 @@
         elementId: 'paymob-card', paymentMethods: [...options.paymentMethods],
         showSaveCard: false, forceSaveCard: false, showPaymobLogo: true,
         customStyle: options.customStyle,
-        beforePaymentComplete: () => {
+        cardValidationChanged: valid => { cardValid = valid === true },
+        beforePaymentComplete: async () => {
           if (Date.now() >= expiry) { send('unavailable'); return false }
-          if (submitted) return false
+          if (submitted || authorizing || options.paymentMethods[0] === 'card' && !cardValid) return false
+          authorizing = true
+          const allowed = await new Promise(resolve => {
+            const id = crypto.randomUUID(), timer = setTimeout(() => resolve(false), 12000)
+            approval = { id, resolve: value => { clearTimeout(timer); resolve(value) } }
+            send('authorize', { requestId: id })
+          })
+          approval = null; authorizing = false
+          if (!allowed) { send('unavailable', { beforeSubmit: false }); return false }
           submitted = true; send('submitted'); return true
         },
         // Ignore all provider payload fields. Only server-verified status can pay.
         afterPaymentComplete: () => send('complete'),
-        onPaymentCancel: () => send('cancel')
+        // The documented cancellation hook is exclusive to Apple Pay.
+        // It closes UI; it never resets financial submission evidence.
+        onPaymentCancel: () => { if (options.paymentMethods[0] === 'apple-pay') send('cancel') }
       })
       observer = new ResizeObserver(() => send('height', { height: Math.min(1600, Math.max(360, Math.ceil(document.body.scrollHeight))) }))
       observer.observe(document.body)
@@ -48,6 +64,6 @@
     } catch { send('unavailable', { beforeSubmit: !submitted }) }
   }
   window.addEventListener('message', receive)
-  window.addEventListener('pagehide', () => { observer?.disconnect(); window.removeEventListener('message', receive) }, { once: true })
+  window.addEventListener('pagehide', () => { approval?.resolve(false); observer?.disconnect(); window.removeEventListener('message', receive) }, { once: true })
   parent.postMessage({ source: 'paymob-frame-v1', type: 'ready' }, parentOrigin)
 })()

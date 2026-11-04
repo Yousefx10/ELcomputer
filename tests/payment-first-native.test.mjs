@@ -14,7 +14,7 @@ test('payment-first uses the actual schema107 checkout and verified settlement c
   await assert.rejects(f.prepare({actor:s.actor}),/payment_first:existing/)
  })
  await t.test('parallel claims dispatch once and never reveal a stored secret on replay',async()=>{
-  const s=await f.prepare(),clients=await Promise.all([f.db.connect(),f.db.connect()]);const a=await Promise.all(clients.map(c=>f.rpc('commerce_claim_checkout_payment',[s.actor.id,s.session.id,'live',123],c)));assert.equal(a.filter(v=>v.created).length,1);assert.deepEqual(a.find(v=>!v.created),{created:false})
+  const s=await f.prepare(),clients=await Promise.all([f.db.connect(),f.db.connect()]);const a=await Promise.all(clients.map(c=>f.rpc('commerce_claim_checkout_payment',[s.actor.id,s.session.id,'live',123,...(f.interfaceVersion===2?[2]:[])],c)));assert.equal(a.filter(v=>v.created).length,1);assert.deepEqual(a.find(v=>!v.created),{created:false})
   await assert.rejects(f.db.query('update private.payment_checkout_sessions set snapshot=\'{}\' where id=$1',[s.session.id]),/immutable/)
   await assert.rejects(f.db.query('update private.payment_checkout_attempts set amount_minor=1 where session_id=$1',[s.session.id]),/immutable/)
  })

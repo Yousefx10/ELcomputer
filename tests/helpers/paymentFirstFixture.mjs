@@ -17,10 +17,11 @@ export async function paymentFirstFixture(options={}){
   actor ||= await user();const cart=randomUUID(),order={first_name:'Owned',last_name:'Fixture',email:actor.email,phone:'01012345678',street_address:'Fixture street',city,governorate:'Cairo',shipping_method:'shipping',shipping_company_id:company,payment_method:method,locale,coupon_code:coupon},items=[{product_id:product,variant_id:variant,quantity}]
   const revision=randomUUID();const review=await rpc('commerce_checkout_quote',[actor.id,cart,order,items]);const created=await rpc('commerce_prepare_payment_checkout',[actor.id,cart,review.quoteId,order,items,revision]);return {actor,cart,order,items,revision,review,session:created.checkout}
  }
- const claim=async(s,mode='live')=>rpc('commerce_claim_checkout_payment',[s.actor.id,s.session.id,mode,123])
+ const interfaceClaim=(await db.query("select to_regprocedure('public.commerce_claim_checkout_payment(uuid,uuid,text,bigint,integer)') is not null installed")).rows[0].installed
+ const claim=async(s,mode='live')=>rpc('commerce_claim_checkout_payment',[s.actor.id,s.session.id,mode,123,...(interfaceClaim?[2]:[])])
  const store=async(a,id='90001')=>rpc('commerce_store_checkout_intention',[a.attempt.id,'pi_'+a.attempt.mode+'_fixture'+id,id,'csk_'+a.attempt.mode+'_fixture'+id])
  const callback=async(a,{id='10001',provider='90001',status='succeeded',amount=Number(a.attempt.amount_minor),mode=a.attempt.mode}={})=>rpc('commerce_accept_payment_callback',[{transaction_id:id,provider_order_id:provider,integration_id:123,mode,currency:'EGP',amount_minor:amount,status}])
  const counts=async()=>(await db.query("select (select count(*)::int from public.customer_orders) orders,(select count(*)::int from public.payment_attempts) attempts,(select count(*)::int from public.payment_transactions) transactions,(select count(*)::int from public.shipping_order_jobs) shipping,(select count(*)::int from public.order_email_events) emails,(select count(*)::int from public.commerce_inventory_movements) stock,(select count(*)::int from private.payment_checkout_sessions) sessions")).rows[0]
- return {...f,db,user,rpc,prepare,claim,store,callback,counts,product,variant,company,city,close:()=>db.close()}
+ return {...f,db,user,rpc,prepare,claim,store,callback,counts,product,variant,company,city,interfaceVersion:interfaceClaim?2:1,close:()=>db.close()}
  }catch(e){await db.close();throw e}
 }

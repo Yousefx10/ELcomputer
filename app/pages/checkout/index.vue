@@ -25,6 +25,9 @@
         <p class="text-sm text-slate-700">{{ $t('embeddedCheckout.pending') }}</p>
         <button type="button" :disabled="placingOrder" class="mt-3 min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="recoverCheckout">{{ $t('paymentFirst.checkStatus') }}</button>
       </section>
+      <p v-if="affectedPayment && !savedCheckout" class="mx-auto mt-4 max-w-5xl text-sm text-slate-600">
+        <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="font-semibold text-blue-700">{{ $t('paymentInterface.affectedStatus') }} · {{ affectedPayment.reference }}</NuxtLinkLocale>
+      </p>
       <section v-if="reviewRequired" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200">
         <p role="alert" class="text-sm text-slate-800">{{ $uiMessage(orderError) }}</p>
         <NuxtLinkLocale to="/account/orders" class="me-4 mt-3 inline-flex text-sm font-semibold text-blue-700">{{ $t('checkoutRecovery.history') }}</NuxtLinkLocale>
@@ -33,9 +36,11 @@
       <section v-if="savedCheckout" class="mx-auto mt-4 max-w-3xl rounded-xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="secure-payment-title">
         <h2 id="secure-payment-title" class="text-lg font-semibold">{{ $t('embeddedCheckout.secureTitle') }}</h2>
         <p v-if="paymentSummary" class="mt-2 text-lg font-semibold">{{ formatCurrency(paymentSummary.totalAmount) }}</p>
-        <ClientOnly><PaymentPaymobPixel v-if="embeddedPayment" :key="savedCheckout" :session="embeddedPayment" class="mt-4" @complete="checkEmbeddedPayment" @cancel="checkEmbeddedPayment" @unavailable="embeddedUnavailable" /></ClientOnly>
-        <a v-if="hostedFallback" :href="hostedFallback" referrerpolicy="no-referrer" rel="noreferrer" class="mt-3 inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-semibold">{{ $t('embeddedCheckout.hosted') }}</a>
+        <p v-if="paymentFormError || orderError" role="alert" class="mt-3 text-sm text-red-700">{{ paymentFormError || $uiMessage(orderError) }}</p>
+        <ClientOnly><PaymentPaymobPixel v-if="embeddedPayment" :key="savedCheckout" :session="embeddedPayment" :authorize="authorizeEmbeddedPayment" class="mt-4" @complete="checkEmbeddedPayment" @cancel="dismissPayment" @unavailable="embeddedUnavailable" /></ClientOnly>
+        <button v-if="hostedFallback" type="button" :disabled="placingOrder" class="mt-3 inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-semibold" @click="openHostedFallback">{{ $t('embeddedCheckout.hosted') }}</button>
         <button v-else-if="!embeddedPayment" type="button" class="mt-3 min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="checkEmbeddedPayment">{{ $t('paymentFirst.checkStatus') }}</button>
+        <button type="button" class="ms-3 mt-3 min-h-11 px-2 text-sm font-semibold text-blue-700" @click="dismissPayment">{{ $t('paymentInterface.back') }}</button>
       </section>
       <div v-if="isEmpty && !savedCheckout" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
         <p class="text-lg font-semibold text-slate-900">{{ $t('common.yourCartIsEmpty') }}</p>
@@ -171,7 +176,7 @@
               <p v-if="couponError" class="mt-3 text-sm text-red-700">{{ $uiMessage(couponError) }}</p><p v-if="couponSuccess" class="mt-3 text-sm text-emerald-700">{{ $uiLabel(couponSuccess) }}</p>
             </section></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}</dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" :disabled="savingAddress || removingAddress" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
-          <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : $t('common.confirmCheckout') }}</button>
+          <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : prepaidFlow && selectedPaymentMethod === 'card' ? $t('paymentInterface.pay') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
         </aside>
       </div>
@@ -213,11 +218,42 @@ const { trackEvent } = useStoreAnalytics()
 const paymentFirstRuntime=useRuntimeConfig()
 const prepaidFlow=computed(()=>[true,'true'].includes(paymentFirstRuntime.public.paymentFirstEnabled))
 const savedCheckout=ref(''),hostedFallback=ref(''),embeddedPayment=shallowRef(null),paymentSummary=shallowRef(null),recoveryVisible=ref(false)
+const activeInterface=shallowRef(null),affectedPayment=shallowRef(null)
+const paymentFormError=ref('')
 const appleDevice=ref(false),selectedPaymobMethod=ref('card')
-let embeddedFallback=''
+let embeddedFallback='',paymentEpoch=0,submissionStarted=false
 const paymentChoice=computed({get:()=>selectedPaymentMethod.value==='card'&&selectedPaymobMethod.value==='apple_pay'?'apple_pay':selectedPaymentMethod.value,set:value=>{selectedPaymobMethod.value=value==='apple_pay'?'apple_pay':'card';selectedPaymentMethod.value=value==='apple_pay'?'card':value}})
-const embeddedUnavailable=({beforeSubmit})=>{embeddedPayment.value=null;if(beforeSubmit&&selectedPaymobMethod.value==='card')hostedFallback.value=embeddedFallback}
+const embeddedUnavailable=({beforeSubmit})=>{embeddedPayment.value=null;paymentFormError.value=t('paymentInterface.formUnavailable');if(beforeSubmit&&selectedPaymobMethod.value==='card')hostedFallback.value=embeddedFallback}
 const checkEmbeddedPayment=()=>savedCheckout.value&&uiNavigateTo(`/checkout/session/${savedCheckout.value}`)
+const authorizeEmbeddedPayment=async()=>{
+ const id=savedCheckout.value,payment=activeInterface.value,epoch=paymentEpoch
+ if(!id||!payment?.interfaceToken||!customerScope.isCurrent())return false
+ submissionStarted=true
+ try{
+  const result=await customerScope.request(`/api/account/payment-checkouts/${id}/interface`,{method:'POST',body:{version:2,action:'submit',token:payment.interfaceToken},retry:0,timeout:10000})
+  if(epoch!==paymentEpoch||!customerScope.isCurrent())return false
+  paymentSummary.value=result.checkout
+  return result.allowed===true
+ }catch{return false}
+}
+const dismissPayment=()=>{
+ if(submissionStarted&&paymentSummary.value)affectedPayment.value=paymentSummary.value
+ paymentEpoch++;savedCheckout.value='';embeddedPayment.value=null;activeInterface.value=null;hostedFallback.value='';embeddedFallback='';submissionStarted=false
+ orderError.value='';paymentFormError.value='';recoveryVisible.value=false
+}
+const openHostedFallback=async()=>{
+ const id=savedCheckout.value,payment=activeInterface.value,epoch=paymentEpoch
+ if(placingOrder.value||!id||!payment?.interfaceToken||!hostedFallback.value)return
+ placingOrder.value=true;submissionStarted=true;hostedFallback.value=''
+ try{
+  const result=await customerScope.request(`/api/account/payment-checkouts/${id}/interface`,{method:'POST',body:{version:2,action:'hosted',token:payment.interfaceToken},retry:0,timeout:10000})
+  if(epoch!==paymentEpoch||!customerScope.isCurrent())return
+  paymentSummary.value=result.checkout
+  if(result.allowed===true)window.location.assign(hostedPaymentUrl(payment))
+  else await checkEmbeddedPayment()
+ }catch{if(epoch===paymentEpoch)orderError.value=t('paymentInterface.unavailable')}
+ finally{placingOrder.value=false}
+}
 const checkoutStep = ref('shipping')
 const loadingProfile = ref(false)
 const addressExpanded = ref(true)
@@ -405,24 +441,32 @@ const applyCoupon = async () => {
 
 const removeCoupon = () => { resetCoupon(); couponSuccess.value = ''; couponError.value = ''; couponCode.value = '' }
 
-const sendCommand = async (command,explicit=false) => {
+const newCheckoutCommand=()=>JSON.parse(JSON.stringify({version:1,userId:customerId.value,
+ body:{...checkoutBody(),...(prepaidFlow.value&&selectedPaymentMethod.value==='card'?{paymob_method:selectedPaymobMethod.value,payment_ui_version:2}:{}),...(prepaidFlow.value&&selectedPaymentMethod.value!=='cash'?{cart_revision:revision.value,cart_lines:items.value.map(({cart_key,cart_line_id,quantity})=>({cart_key,cart_line_id,quantity}))}:{}),quote_id:quote.value.quoteId,...(quote.value.reviewToken?{review_token:quote.value.reviewToken}:{})},
+ cart:{id:cartId.value,revision:revision.value,owner:cartOwner.value},review:quote.value}))
+const sendCommand = async (command,explicit=false,restarted=false) => {
   pendingCheckout.value = command
   try {
     const { data } = await supabase.auth.getSession()
     if (!data.session?.access_token || data.session.user.id !== command.userId) throw new Error('Your session expired. Please log in again.')
     customerScope.assertCurrent()
     const response = await customerScope.request('/api/checkout', {
-      method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: command.body, retry: 0
+      method: 'POST', headers: { authorization: `Bearer ${data.session.access_token}` }, body: {...command.body,...(prepaidFlow.value&&command.body.payment_method==='card'?{payment_ui_version:2}:{})}, retry: 0
     })
     if(response.checkout){
       customerScope.assertCurrent();savedCheckout.value=response.checkout.id;paymentSummary.value=response.checkout;recoveryVisible.value=false
-      if(explicit&&response.created&&response.payment){
+      // The private server session is a durable acknowledgement, including an
+      // uncertain payment. A global browser command must not lock future carts.
+      removePendingCheckout(window.localStorage,command);readPending()
+      affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++
+      if(explicit&&response.payment){
        if(response.payment.experience==='embedded'){
         hostedFallback.value='';embeddedFallback=response.payment.redirectFallback?hostedPaymentUrl(response.payment):''
-        if(paymentCapabilities.value?.card?.experience==='embedded')embeddedPayment.value={publicKey:response.payment.publicKey,clientSecret:response.payment.clientSecret,expiresAt:response.checkout.expiresAt,paymentMethods:response.payment.paymentMethods||['card']}
+        activeInterface.value=response.payment
+        if(paymentCapabilities.value?.card?.experience==='embedded')embeddedPayment.value={...response.payment,expiresAt:response.checkout.expiresAt}
         else orderError.value=t('paymentFirst.openSaved')
        }else{
-        const url=hostedPaymentUrl(response.payment);hostedFallback.value=response.payment.redirectFallback===false?'':url
+        const url=hostedPaymentUrl(response.payment);hostedFallback.value='';submissionStarted=true
         try{window.location.assign(url)}catch{orderError.value=t('paymentFirst.openSaved')}
        }
       }else await uiNavigateTo(response.checkout.method==='instapay'?`/checkout/transfer/${response.checkout.id}`:`/checkout/session/${response.checkout.id}`)
@@ -441,7 +485,21 @@ const sendCommand = async (command,explicit=false) => {
   } catch (error) {
     orderError.value = error?.data?.statusMessage || error?.message || 'Could not confirm checkout. Recover the same request.'
     const code = error?.data?.data?.code
-    if(code==='payment_first:existing'){orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return}
+    if(code==='checkout:restart'&&!restarted&&explicit){
+      removePendingCheckout(window.localStorage,command);readPending();renewCart();syncCart();ensurePurchaseLineIdentities()
+      if(!await refreshQuote())return
+      const terms=review=>JSON.stringify([review.totalAmount,review.requiredNow,review.lines,review.shipping,review.stockFulfillmentState,review.fulfillmentMessage])
+      if(terms(command.review)!==terms(quote.value)){orderError.value=t('paymentInterface.review');return}
+      customerScope.assertCurrent();checkoutStep.value='payment';orderError.value=''
+      const next=newCheckoutCommand();savePendingCheckout(window.localStorage,next)
+      await sendCommand(next,true,true);return
+    }
+    if(code==='payment_first:existing'){
+      const id=error?.data?.data?.checkoutId
+      if(id){removePendingCheckout(window.localStorage,command);readPending();await uiNavigateTo(`/checkout/session/${id}`);return}
+      orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return
+    }
+    if(code==='payment_first:refresh'){orderError.value=t('paymentInterface.reload');return}
     if (['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon', 'checkout:delivery', 'checkout:stock'].includes(code)) {
       removePendingCheckout(window.localStorage, command)
       readPending()
@@ -471,10 +529,9 @@ const placeOrder = async () => {
     await checkoutLock(customerId.value, async () => {
       customerScope.assertCurrent()
       readPending()
-      if (pendingCheckout.value){recoveryVisible.value=true;await sendCommand(pendingCheckout.value);return}
+      if (pendingCheckout.value){recoveryVisible.value=true;await sendCommand(pendingCheckout.value,true);return}
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
-      const command = JSON.parse(JSON.stringify({ version: 1, userId: customerId.value,
-        body: { ...checkoutBody(), ...(prepaidFlow.value&&selectedPaymentMethod.value==='card'?{paymob_method:selectedPaymobMethod.value}:{}), ...(prepaidFlow.value&&selectedPaymentMethod.value!=='cash'?{cart_revision:revision.value,cart_lines:items.value.map(({cart_key,cart_line_id,quantity})=>({cart_key,cart_line_id,quantity}))}:{}), quote_id: quote.value.quoteId, ...(quote.value.reviewToken ? { review_token: quote.value.reviewToken } : {}) }, cart: { id: cartId.value, revision: revision.value, owner: cartOwner.value }, review: quote.value }))
+      const command = newCheckoutCommand()
       // Persist before sending; an uncertain acknowledgement keeps this exact request.
       savePendingCheckout(window.localStorage, command)
       await sendCommand(command,true)
@@ -485,7 +542,7 @@ const placeOrder = async () => {
 const recoverCheckout = async () => {
   if (placingOrder.value) return
   placingOrder.value = true
-  try { await checkoutLock(customerId.value, async () => { customerScope.assertCurrent(); readPending(); if (pendingCheckout.value) await sendCommand(pendingCheckout.value) }) }
+  try { await checkoutLock(customerId.value, async () => { customerScope.assertCurrent(); readPending(); if (pendingCheckout.value) await sendCommand(pendingCheckout.value,true) }) }
   finally { placingOrder.value = false }
 }
 const reviewCart = () => {
@@ -496,9 +553,10 @@ const reviewCart = () => {
   checkoutStep.value = 'shipping'
 }
 const storageChanged = () => { readPending() }
-onBeforeUnmount(() => window.removeEventListener('storage', storageChanged))
+onBeforeUnmount(() => {paymentEpoch++;window.removeEventListener('storage', storageChanged)})
 customerScope.onInvalidate(() => {
   savedCheckout.value='';hostedFallback.value='';embeddedPayment.value=null;paymentSummary.value=null;embeddedFallback='';recoveryVisible.value=false;appleDevice.value=false;selectedPaymobMethod.value='card'
+  activeInterface.value=null;affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++
 
   backorderAccepted.value = false
   ++quoteSequence
@@ -521,6 +579,14 @@ onMounted(async () => {
   if (!customerScope.isCurrent()) return
   readPending()
   window.addEventListener('storage', storageChanged)
+  if(pendingCheckout.value&&prepaidFlow.value&&pendingCheckout.value.body.payment_method==='card'){
+    const retained=pendingCheckout.value
+    try{
+      const result=await customerScope.request('/api/account/payment-checkouts',{retry:0,timeout:10000})
+      if(customerScope.isCurrent()&&result.items?.some(checkout=>checkout.cartId===retained.body.cart_id)){removePendingCheckout(window.localStorage,retained);readPending()}
+    }catch{ /* Keep an unacknowledged request; never infer a payment outcome. */ }
+  }
+  if(!customerScope.isCurrent())return
   couponCode.value = appliedCoupon.value?.code || ''
   if (isPreorderCart.value && appliedCoupon.value) resetCoupon()
   await Promise.all([refreshPurchaseAccess(), loadCustomerProfile(), loadDeliveryOptions()])

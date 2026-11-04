@@ -48,10 +48,12 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
 
 export const throwCheckoutError = error => {
   const code = String(error?.message || '')
+  if(code.includes('payment_first:existing'))throw createError({statusCode:409,statusMessage:'Check this payment before paying again.',data:{code:'payment_first:existing',...(/^[0-9a-f-]{36}$/i.test(error.details||'')?{checkoutId:error.details}:{})}})
   if (error?.code === '22023' && code === 'Select a supported governorate and city.') {
     throw createError({ statusCode: 400, statusMessage: 'Select a supported governorate and city.', data: { code: 'checkout:location' } })
   }
   const conflicts = {
+    'checkout:restart': 'Review the updated checkout.',
     'checkout:conflict': 'This checkout changed. Review your cart before ordering.',
     'checkout:legacy': 'Review this order in My Account before ordering again.',
     'checkout:retired': 'This checkout was reset. Start a new cart.',

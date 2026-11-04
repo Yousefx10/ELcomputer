@@ -10,18 +10,18 @@
 </template>
 <script setup>
 import { paymobPixelOptions } from '~/utils/paymobPixel'
-const props = defineProps({ session: { type: Object, required: true } })
+const props = defineProps({ session: { type: Object, required: true }, authorize: { type: Function, default: null } })
 const emit = defineEmits(['complete', 'cancel', 'unavailable'])
 const { locale } = useI18n()
 const colorMode = useColorMode()
 const frame = ref(null), frameSrc = ref(''), height = ref(600)
 const loading = ref(true), error = ref(false)
-let disposed = false, timeout, expiryTimer, channel = '', mounted = false, completed = false, submitted = false
+let disposed = false, timeout, expiryTimer, channel = '', mounted = false, completed = false, submitted = false, arming = false
 const unavailable = beforeSubmit => {
   clearTimeout(timeout);clearTimeout(expiryTimer);error.value=true;loading.value=false;frameSrc.value=''
-  emit('unavailable', { beforeSubmit: beforeSubmit && !submitted })
+  emit('unavailable', { beforeSubmit: beforeSubmit && !submitted && !arming })
 }
-const receive = event => {
+const receive = async event => {
   if (disposed || event.origin !== window.location.origin || event.source !== frame.value?.contentWindow) return
   const data = event.data
   if (!data || data.source !== 'paymob-frame-v1') return
@@ -32,6 +32,16 @@ const receive = event => {
   }
   if (data.channel !== channel) return
   if (data.type === 'mounted') { mounted = true; clearTimeout(timeout); loading.value = false }
+  else if (data.type === 'authorize' && /^[0-9a-f-]{36}$/i.test(data.requestId || '')) {
+    if (arming || submitted) return
+    arming = true
+    let allowed = false
+    try { allowed = await props.authorize?.() === true } catch { /* An uncertain acknowledgement never authorizes payment. */ }
+    if (disposed) return
+    submitted = allowed
+    frame.value?.contentWindow?.postMessage({ source: 'storefront-pixel-v1', type: 'authorize-result', channel, requestId: data.requestId, allowed }, window.location.origin)
+    // Keep arming set if denied/unknown so client UI cannot offer a blind fallback.
+  }
   else if (data.type === 'unavailable') unavailable(data.beforeSubmit === true)
   else if (data.type === 'submitted') submitted = true
   else if (data.type === 'height' && Number.isInteger(data.height) && data.height >= 360 && data.height <= 1600) height.value = data.height

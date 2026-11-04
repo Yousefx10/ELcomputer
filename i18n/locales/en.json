@@ -5905,5 +5905,17 @@
     "cartSaved": "Your cart is saved.",
     "failed": "Payment was declined.",
     "tryAgain": "Try again"
+  },
+  "paymentInterface": {
+    "pay": "Pay",
+    "ready": "Ready to pay",
+    "back": "Back to checkout",
+    "affectedStatus": "Check this payment",
+    "support": "Share this payment reference with support.",
+    "unavailable": "Check this payment before trying again.",
+    "formUnavailable": "The payment form is unavailable.",
+    "review": "Review the updated checkout before paying.",
+    "reload": "Reload checkout before paying.",
+    "closed": "Payment form closed"
   }
 }

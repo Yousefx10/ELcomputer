@@ -29,7 +29,7 @@ export async function createCodCheckoutFixture(options = {}) {
         const parameters = Object.keys(args).map((key, index) => key + '=>$' + (index + 1)).join(',')
         const values = Object.values(args).map(value => value !== null && typeof value === 'object' ? JSON.stringify(value) : value)
         return { data: (await connection.query('select public.' + name + '(' + parameters + ') value', values)).rows[0].value, error: null }
-      } catch (error) { return { data: null, error: { code: error.code, message: error.message } } }
+      } catch (error) { return { data: null, error: { code: error.code, message: error.message, details:error.detail } } }
       finally { await connection.end() }
     }
     globalThis[key] = fixture.client

@@ -10,7 +10,7 @@ const {chromium,webkit}=await import(process.env.COD_REVIEW_PLAYWRIGHT)
 const vendor=resolve('public/paymob-pixel/1.2.8')
 const helper=`import {createApp,h,ref,shallowRef,onMounted,onBeforeUnmount,nextTick} from 'vue';import Pixel from './app/components/payment/PaymobPixel.vue';
  const visible=ref(true),events=[];Object.assign(globalThis,{ref,shallowRef,onMounted,onBeforeUnmount,useI18n:()=>({locale:ref(window.__fixture.locale)}),useColorMode:()=>({value:window.__fixture.dark?'dark':'light'})});
- const app=createApp({render:()=>visible.value?h(Pixel,{session:{publicKey:'egy_pk_test_fixture',clientSecret:'egy_csk_test_fixture',paymentMethods:[window.__fixture.method||'card'],expiresAt:new Date(Date.now()+1800000).toISOString()},onComplete:()=>events.push('complete'),onCancel:()=>events.push('cancel')}):h('p','Unmounted')});app.config.globalProperties.$t=k=>k;app.mount('#app');window.__events=events;window.__hide=async()=>{visible.value=false;await nextTick()};window.__show=async()=>{visible.value=true;await nextTick()};`
+ const app=createApp({render:()=>visible.value?h(Pixel,{session:{publicKey:'egy_pk_test_fixture',clientSecret:'egy_csk_test_fixture',paymentMethods:[window.__fixture.method||'card'],expiresAt:new Date(Date.now()+1800000).toISOString()},authorize:async()=>{window.__authorizations=(window.__authorizations||0)+1;return window.__fixture.approval!==false},onComplete:()=>events.push('complete'),onCancel:()=>events.push('cancel')}):h('p','Unmounted')});app.config.globalProperties.$t=k=>k;app.mount('#app');window.__events=events;window.__hide=async()=>{visible.value=false;await nextTick()};window.__show=async()=>{visible.value=true;await nextTick()};`
 const compiled=await build({stdin:{contents:helper,resolveDir:resolve('.'),sourcefile:'pixel-fixture.js'},write:false,bundle:true,format:'iife',platform:'browser',alias:{'~':resolve('app')},define:{'process.env.NODE_ENV':'"test"',__VUE_OPTIONS_API__:'true',__VUE_PROD_DEVTOOLS__:'false',__VUE_PROD_HYDRATION_MISMATCH_DETAILS__:'false'},plugins:[{name:'vue',setup(b){b.onLoad({filter:/\.vue$/},async({path})=>({contents:compileScript(parse(await readFile(path,'utf8'),{filename:path}).descriptor,{id:path,inlineTemplate:true}).content,resolveDir:dirname(path),loader:'js'}))}}]})
 let fixture,mode
 const fakeSdk=`window.Pixel=class{constructor(options){window.__options=options;window.__constructs=(window.__constructs||0)+1;document.getElementById(options.elementId).textContent='Provider-owned field fixture'}}`
@@ -40,13 +40,30 @@ try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await te
   assert.deepEqual(await child.evaluate(()=>({save:window.__options.showSaveCard,force:window.__options.forceSaveCard,methods:window.__options.paymentMethods,dir:document.documentElement.dir})),{save:false,force:false,methods:['card'],dir:locale==='ar'?'rtl':'ltr'})
   // Wrong source and channel cannot claim completion.
   await page.evaluate(()=>window.postMessage({source:'paymob-frame-v1',type:'complete',channel:'00000000-0000-4000-8000-000000000000'},location.origin));assert.deepEqual(await page.evaluate(()=>window.__events),[])
-  assert.deepEqual(await child.evaluate(()=>[window.__options.beforePaymentComplete(),window.__options.beforePaymentComplete()]),[true,false])
+  assert.deepEqual(await child.evaluate(async()=>{window.__options.cardValidationChanged(true);return Promise.all([window.__options.beforePaymentComplete(),window.__options.beforePaymentComplete()])}),[true,false])
+  assert.equal(await page.evaluate(()=>window.__authorizations),1)
   await child.evaluate(()=>{window.__options.afterPaymentComplete({PAN_CANARY:'DO_NOT_FORWARD'});window.__options.afterPaymentComplete({success:true})})
   await page.waitForFunction(()=>window.__events.length===1);assert.deepEqual(await page.evaluate(()=>window.__events),['complete'])
   assert.equal(await page.evaluate(()=>Object.keys(localStorage).length),0)
   await page.evaluate(()=>window.__hide());await page.waitForFunction(()=>!document.querySelector('iframe'));assert.equal(page.frames().length,1)
   await page.evaluate(()=>window.__show());await page.frameLocator('iframe').locator('#paymob-card').getByText('Provider-owned field fixture').waitFor();assert.equal(page.frames().filter(f=>f.url().includes('/host.html')).length,1)
   assert.deepEqual(errors,[]);assert.deepEqual(unsafe,[]);await context.close()
+ })
+ await t.test('card validation failure does not contact the server submission gate',async()=>{
+  fixture={locale:'en'};mode='fake';const context=await browser.newContext(),page=await context.newPage()
+  await context.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():r.abort());await page.goto(origin)
+  await page.frameLocator('iframe').locator('#paymob-card').getByText('Provider-owned field fixture').waitFor();const child=page.frames().find(f=>f.url().includes('/host.html'))
+  assert.equal(await child.evaluate(()=>{window.__options.cardValidationChanged(false);return window.__options.beforePaymentComplete()}),false)
+  assert.equal(await page.evaluate(()=>window.__authorizations||0),0);assert.deepEqual(await page.evaluate(()=>window.__events),[])
+  await context.close()
+ })
+ await t.test('a denied or uncertain server authorization removes the frame without submitting',async()=>{
+  fixture={locale:'ar',approval:false};mode='fake';const context=await browser.newContext(),page=await context.newPage()
+  await context.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():r.abort());await page.goto(origin)
+  await page.frameLocator('iframe').locator('#paymob-card').getByText('Provider-owned field fixture').waitFor();const child=page.frames().find(f=>f.url().includes('/host.html'))
+  await child.evaluate(()=>{window.__options.cardValidationChanged(true);window.__options.beforePaymentComplete()})
+  await page.getByRole('alert').waitFor();assert.equal(await page.locator('iframe').count(),0);assert.equal(await page.evaluate(()=>window.__authorizations),1)
+  assert.deepEqual(await page.evaluate(()=>window.__events),[]);await context.close()
  })
  await t.test('expired sessions withhold payment without claiming failure or creating an intention',async()=>{
   fixture={locale:'en'};mode='fake';const context=await browser.newContext(),page=await context.newPage();await context.route('**/*',r=>r.request().url().startsWith(origin)&&r.request().method()==='GET'?r.continue():r.abort());await page.goto(origin);await page.frameLocator('iframe').locator('#paymob-card').getByText('Provider-owned field fixture').waitFor();const child=page.frames().find(f=>f.url().includes('/host.html'));const started=await child.evaluate(()=>{Date.now=()=>4102444800000;return window.__options.beforePaymentComplete()});assert.equal(started,false);await page.getByRole('alert').waitFor();assert.equal(await page.locator('iframe').count(),0);assert.deepEqual(await page.evaluate(()=>window.__events),[]);await context.close()

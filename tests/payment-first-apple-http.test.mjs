@@ -18,8 +18,8 @@ test('Apple-selected native HTTP checkout preserves financial finality without p
  await f.db.query('update private.payment_checkout_settings set enabled=true,enabled_since=now()')
  const product=(await f.db.query("insert into public.products(title,slug,price,is_serialized,is_published,primary_warehouse_id) values('HTTP fixture',$1,100.35,true,true,$2) returning id",['http-'+randomUUID(),f.warehouse])).rows[0].id,variant=(await f.db.query('select id from public.product_variants where product_id=$1',[product])).rows[0].id
  const company=(await f.db.query("insert into public.commerce_shipping_companies(name,client_shipping_price,checkout_enabled,checkout_governorates,cod_collection_enabled) values('HTTP delivery',50,true,array['Cairo'],true) returning id")).rows[0].id,city=(await f.db.query("select name_en from private.delivery_location_cities where governorate_code='eg-cairo' order by code limit 1")).rows[0].name_en
- const lineId=randomUUID(),body={cart_id:randomUUID(),cart_revision:randomUUID(),cart_lines:[{cart_key:product+':'+variant,cart_line_id:lineId,quantity:1}],items:[{id:product,variant_id:variant,quantity:1}],address:{first_name:'Owned',last_name:'Buyer',email:'customer@product-save.example.invalid',phone:'01012345678',street_address:'Fixture street',city,governorate:'Cairo'},payment_method:'card',paymob_method:'apple_pay',shipping_method:'shipping',shipping_company_id:company,locale:'ar'}
- const {cart_revision,cart_lines,paymob_method,...quoteBody}=body,q=await f.call('/api/checkout/quote',{method:'POST',body:quoteBody});assert.equal(q.response.status,200,JSON.stringify(q.body));body.quote_id=q.body.quoteId
+ const lineId=randomUUID(),body={payment_ui_version:2,cart_id:randomUUID(),cart_revision:randomUUID(),cart_lines:[{cart_key:product+':'+variant,cart_line_id:lineId,quantity:1}],items:[{id:product,variant_id:variant,quantity:1}],address:{first_name:'Owned',last_name:'Buyer',email:'customer@product-save.example.invalid',phone:'01012345678',street_address:'Fixture street',city,governorate:'Cairo'},payment_method:'card',paymob_method:'apple_pay',shipping_method:'shipping',shipping_company_id:company,locale:'ar'}
+ const {cart_revision,cart_lines,paymob_method,payment_ui_version,...quoteBody}=body,q=await f.call('/api/checkout/quote',{method:'POST',body:quoteBody});assert.equal(q.response.status,200,JSON.stringify(q.body));body.quote_id=q.body.quoteId
  let started
  await t.test('actual capabilities expose Apple only for the reviewed authenticated rollout account',async()=>{
   const own=await f.call('/api/payments/capabilities');assert.equal(own.response.status,200);assert.equal(own.body.card.experience,'embedded');assert.deepEqual(own.body.express,[{method:'apple_pay',available:true,experience:'embedded'}]);assert.equal(JSON.stringify(own.body).includes('321'),false)
@@ -33,10 +33,10 @@ test('Apple-selected native HTTP checkout preserves financial finality without p
   assert.equal((await f.db.query('select count(*)::int n from public.customer_orders')).rows[0].n,0)
  })
  await t.test('retrying a lost acknowledgement never opens another provider intention',async()=>{
-  const r=await f.call('/api/checkout',{method:'POST',body});assert.equal(r.response.status,200);assert.equal(r.body.created,false);assert.equal(r.body.checkout.id,started.body.checkout.id);assert.equal(r.body.payment,undefined);assert.equal(providerCalls,1)
+  const r=await f.call('/api/checkout',{method:'POST',body});assert.equal(r.response.status,200);assert.equal(r.body.created,false);assert.equal(r.body.checkout.id,started.body.checkout.id);assert.equal(r.body.payment.clientSecret,started.body.payment.clientSecret);assert.equal(providerCalls,1)
  })
- await t.test('a changed cart or selected method resumes the same owned attempt without dispatch',async()=>{
-  const changed={...body,cart_id:randomUUID(),paymob_method:'card'};const r=await f.call('/api/checkout',{method:'POST',body:changed});assert.equal(r.response.status,200,JSON.stringify(r.body));assert.equal(r.body.created,false);assert.equal(r.body.checkout.id,started.body.checkout.id);assert.equal(r.body.payment,undefined);assert.equal(providerCalls,1);
+ await t.test('changing the selected method requires a fresh quoted journey without dispatch',async()=>{
+  const changed={...body,paymob_method:'card'};const r=await f.call('/api/checkout',{method:'POST',body:changed});assert.equal(r.response.status,409,JSON.stringify(r.body));assert.equal(r.body.data.code,'checkout:restart');assert.equal(providerCalls,1);
  })
  await t.test('foreign and anonymous status requests cannot read a session or its secret',async()=>{
   for(const actor of [null,'owner']){const r=await f.call('/api/account/payment-checkouts/'+started.body.checkout.id,{actor});assert.ok([401,403].includes(r.response.status));assert.ok(!JSON.stringify(r.body).includes('Owned'))}
@@ -59,13 +59,13 @@ test('Apple-selected native HTTP checkout preserves financial finality without p
   const receipts=(await f.db.query('select * from private.payment_callback_receipts')).rows;assert.equal(receipts.length,3);assert.deepEqual(receipts.map(r=>r.status).sort(),['failed','pending','succeeded']);await assert.rejects(f.db.query('delete from private.payment_callback_receipts'),/immutable/);const evidence=receipts.find(r=>r.status==='succeeded');assert.match(evidence.evidence_sha256,/^[a-f0-9]{64}$/);assert.match(evidence.signature_sha256,/^[a-f0-9]{64}$/)
  })
  await t.test('new COD checkout stays unpaid with live configured fee and no provider dispatch',async()=>{
-  const {cart_revision,cart_lines,paymob_method,...cash}=body;cash.cart_id=randomUUID();cash.payment_method='cash';delete cash.quote_id;
+  const {cart_revision,cart_lines,paymob_method,payment_ui_version,...cash}=body;cash.cart_id=randomUUID();cash.payment_method='cash';delete cash.quote_id;
   const q=await f.call('/api/checkout/quote',{method:'POST',body:cash});assert.equal(q.response.status,200,JSON.stringify(q.body));cash.quote_id=q.body.quoteId;
   const result=await f.call('/api/checkout',{method:'POST',body:cash});assert.equal(result.response.status,200,JSON.stringify(result.body));assert.equal(result.body.order.paymentFeeAmount,10);assert.equal(result.body.order.amountPaid,0);assert.equal(result.body.order.paymentMethod,'cash');assert.equal(providerCalls,1)
  })
  await t.test('lost provider response stays quarantined, including a signed callback with no known mapping',async()=>{
-  const {cart_revision,cart_lines,paymob_method,...quoteBody}=body;quoteBody.cart_id=randomUUID();delete quoteBody.quote_id;
-  const q=await f.call('/api/checkout/quote',{method:'POST',body:quoteBody});assert.equal(q.response.status,200);const newBody={...quoteBody,quote_id:q.body.quoteId,cart_revision:randomUUID(),cart_lines:body.cart_lines};providerResponseLost=true;
+  const {cart_revision,cart_lines,paymob_method,payment_ui_version,...quoteBody}=body;quoteBody.cart_id=randomUUID();delete quoteBody.quote_id;
+  const q=await f.call('/api/checkout/quote',{method:'POST',body:quoteBody});assert.equal(q.response.status,200);const newBody={...quoteBody,payment_ui_version:2,quote_id:q.body.quoteId,cart_revision:randomUUID(),cart_lines:body.cart_lines};providerResponseLost=true;
   const first=await f.call('/api/checkout',{method:'POST',body:newBody});assert.equal(first.response.status,200);assert.equal(first.body.checkout.state,'uncertain');const before=(await f.db.query('select count(*)::int n from public.customer_orders')).rows[0].n;
   const again=await f.call('/api/checkout',{method:'POST',body:newBody});assert.equal(again.response.status,200);assert.equal(again.body.payment,undefined);assert.equal(providerCalls,2);
   const receipt=await callback({...transaction,id:99002,order:{id:80002}});assert.equal(receipt.response.status,200);assert.equal((await f.db.query('select count(*)::int n from public.customer_orders')).rows[0].n,before);assert.equal((await f.db.query("select count(*)::int n from private.payment_callback_inbox where transaction_id='99002' and not processed")).rows[0].n,1)
