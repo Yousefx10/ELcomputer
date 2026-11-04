@@ -66,7 +66,7 @@ export const smsDatabaseClient = db => {
     const request = (async () => {
     try {
       const parameters = Object.keys(args).map((key, index) => `${key} => $${index + 1}`)
-      const values = Object.values(args).map(value => typeof value === 'object' && value !== null && !Array.isArray(value) ? JSON.stringify(value) : value)
+      const values = Object.entries(args).map(([key,value]) => key==='p_types' ? value : typeof value === 'object' && value !== null ? JSON.stringify(value) : value)
       const call = `public.${name}(${parameters.join(',')})`
       return { data: (await db.query(`select ${['sms_claim', 'sms_claim_order_event','sms_claim_for_channels'].includes(name) ? `to_jsonb(${call})` : call} as value`, values)).rows[0].value, error: null }
     } catch (error) { return { data: null, error: { code: error.code, message: error.message } } }
