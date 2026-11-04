@@ -1,3 +1,49 @@
+# E247 — Storefront114 DEPLOYED / technical PASS / CONSUMED_COMPLETE — 2026-11-04
+
+SF-UX-20261104-01 is deployed: release `6fd67997c8feaeca`, source `ff037dd`,
+physical schema114, app PID `282442`. The original approved `0caf76d3`
+operator applied one exact SQL/history transaction and one app cutover/restart
+at 19:49:46 Riyadh. It is CONSUMED_COMPLETE; never replay or reuse approval.
+
+The migration preserved all 160 original projections. Independent final checks
+confirm nine original financial projections unchanged and all 13 attempts retained
+(including the original twelve). Funds/callbacks/proofs 0, store orders 11,
+all four integrity counters 0. No payment outcome was inferred or cleared.
+CARD/COD/EGP10 and exactly-once verified ordering/late callbacks are preserved.
+
+All 17 protected files, loaded runtime, Caddy PID 26652 and MON Caddy binding
+match. MON/Email/PDC timers resumed once and are active/enabled; natural callers
+are healthy. Each timer paused about 108 seconds, within 180. The natural 20:15:03
+Riyadh monitor report retains eight original warnings, three gaps and zero
+critical findings. Independent host/financial audit passed at 20:17:39 Riyadh.
+
+All 4,898 live canonical HTTPS asset bodies match their sealed hashes. Ten
+GET-only EN/AR content/hero/shop/search/category/brand checks and four Modern PDP
+checks pass; canonical pagination links remain. Live mode Both and infinite
+scroll enabled are visible. Desktop response-body timeouts were classified: full
+HTTPS verification ran on the pinned VPS, then the unchanged operator consumed
+that complete proof and finished postflight. No production fix or retry was used.
+
+Apple guard `1da68eb`, Meta115 and image116 remain local/separate. Runtime, flags,
+Caddy, credentials, provider/financial actions, manual workers, new emergency
+budgets and Git pushes: zero changes. No artifact rebuild occurred. P1 Apple
+provider finality/dismissal remains open; no further charge is authorized.
+Meta's encrypted worker-secret candidate remains uninstalled, transmission OFF,
+CAPI token missing. Future Meta/image releases need their own fresh target,
+credential/activation scopes and approvals. Do not transfer this spent approval.
+
+All 60 worktrees, 59 other heads/status/diffs/indexes, 24,009 prior untracked hashes,
+55 paused artifacts and 21,710 consumed input hashes are preserved. Main changes
+continuity documentation only; no application merge/reset/push. Classified
+historical snapshot failures remain; SMS/InstaPay/wallet/balance and all prior
+deferred requirements stay paused. Technical closeout is not owner acceptance.
+
+[Actual deployment receipt and evidence](storefront-ux-discovery-schema114-review-20261104.md).
+
+ONE next action: owner storefront acceptance for live Dashboard hero controls,
+responsive/RTL appearance and infinite-scroll/filter/Back behavior, without a
+payment submission.
+
 # E246 — Storefront114 deployed; read-only postflight active — 2026-11-04
 
 The original `0caf76d3` operator committed SQL114 once and cut over at 19:49:46

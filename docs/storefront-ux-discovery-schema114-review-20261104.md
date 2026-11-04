@@ -1,3 +1,44 @@
+# Storefront114 deployment receipt — 4 November 2026
+
+**DEPLOYED / TECHNICAL POSTFLIGHT PASS / CONSUMED_COMPLETE.**
+The owner explicitly authorized the immediately preceding Storefront114 packet. Its verbatim statement and single-packet mapping were retained privately; the frozen operator recorded approval only after a fresh sealed check. Seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a` is spent. Never replay approve/apply/SQL/restart or reuse this authorization.
+
+| Item | Verified result |
+| --- | --- |
+| Live release | `6fd67997c8feaeca` |
+| Source | `ff037ddd30f7d625daf637c11065f5e980c19f1d` |
+| Database | Physical schema114; only `20261104140000_storefront_discovery.sql` added once |
+| SQL receipt / cutover | 19:49:13 / 19:49:46 Riyadh |
+| App / Caddy PID | `282442` / `26652`; one app restart, Caddy unchanged |
+| Archive SHA256 | `6fd67997c8feaeca5ed07cb4e5fd526dee5990e824d38c40f039bc7f8a9d8e6d`; original qualified artifact reused |
+| Financial preservation | 160 original migration projections and nine final financial projections match; all 13 attempts retained |
+| Financial state | Funds/callbacks/proofs 0, store orders 11, all four integrity counters 0; provider outcomes remain unverified |
+| Host | All 17 protected files and loaded runtime match; MON Caddy hash remains bound |
+| Timers | MON/Email/PDC active/enabled, natural callers healthy; exactly one pause/resume each, 108.27–108.36 seconds (budget 180) |
+| Assets | All 4,898 full-body SHA256 checks passed through the canonical live HTTPS domain on the pinned VPS |
+| Public pages | Ten GET-only content/hero/shop/search/category/brand checks; EN/AR and canonical/next-page links pass |
+| Modern PDP | Four live EN/AR checks pass; existing schema112 family data remains preserved |
+| Natural MON | 20:15:03 Riyadh: eight original warnings, three gaps, zero critical; no suppression or manual worker |
+| Independent audit | 20:17:39 Riyadh: exact financial, process, file, environment, timer and MON checks pass |
+
+The released scope is hero layouts/mobile controls, category clipping, footer refinements and bounded infinite scroll/SEO. The live mode remains Both; infinite scroll is enabled and Dashboard can disable it. Existing authored content, account permissions, catalog/inventory and financial contracts were preserved.
+
+The additional thirteenth EGP3050 Apple attempt existed before this preparation and remains pending/submitted. All original twelve remain. The installed schema113 replacement metadata change was classified before sealing; no financial status, amount, provider identity, submission fence, callback or funds evidence was cleared by this deployment. This is not a claim of no-charge finality or genuine Apple/CARD payment acceptance.
+
+Initial desktop verification aborted while consuming response bodies at its unchanged 15-second deadline. Read-only transfer probes subsequently matched complete bytes and hashes, with observed times of about 3–22 seconds. A separate pinned-SSH verifier requested every asset from the same canonical HTTPS origin through live Caddy, checked status 200/full bytes/SHA256 and produced the bound asset receipt. The frozen operator then completed its normal database/host/public-health/natural-MON checks and wrote CONSUMED_COMPLETE. The extra read-only checker's initial overstrict rejection of a valid generated CSS filename was corrected locally. No application, sealed operator, production timeout, Caddy rule or verification criterion was changed, and no failed deployment was retried. A client-wide performance improvement is not claimed.
+
+Apple cancellation guard `1da68eb` remains local. Pixel 1.2.8, CARD/COD, EGP10, exactly-once verified prepaid ordering and late authenticated callbacks are unchanged. Provider calls, charges/cancellations/refunds, financial/business-row rewrites, runtime/flag/Caddy/credential changes, manual workers, new emergency budgets and Git pushes by this deployment are zero. Meta115 and image116 remain separate uninstalled packets; their activation and hosted acceptance gates remain. The encrypted local Meta worker-secret candidate is uninstalled, and the CAPI token is still missing. SMS/InstaPay/wallet/balance and all previous deferred requirements stay paused.
+
+All 60 original worktrees and both code workstreams are preserved. Main contains continuity documentation only. The 24,009 earlier untracked hashes, 55 paused artifacts and 21,710 consumed input hashes remain unchanged. No application merge/reset/push occurred. The two classified historical snapshot assertion failures remain preserved; current qualification was reused without rebuilding the artifact.
+
+Machine evidence: [closeout receipt](../../storefront-master-20261104/release-a-production-20261104/deployment-closeout.json), [original operator completion](../../storefront-master-20261104/release-a-production-20261104/consumed-complete.json), [full live HTTPS asset proof](../../storefront-master-20261104/release-a-production-20261104/hosted-asset-verification-ssh.json), [independent audit](../../storefront-master-20261104/release-a-production-20261104/independent-closeout.json).
+
+Owner UI acceptance remains OPEN for live Dashboard hero controls, responsive/RTL appearance and infinite-scroll/filter/Back behavior. Provider acceptance and Meta Test Events remain separate.
+
+**ONE next action:** perform owner storefront acceptance on the deployed release, without a payment submission.
+
+---
+
 > **CURRENT E246, 4 November 2026:** The authorized original operator deployed `6fd67997c8feaeca` / source `ff037dd` / schema114 at 19:49:46 Riyadh, PID `282442`. SQL and app restart occurred once; timers resumed, runtime/Caddy unchanged, all 13 attempts preserved. Read-only postflight is active after an initial request timeout. Apple guard/Meta/image/provider actions remain excluded. Never replay apply/SQL; no automatic rollback.
 
 > **CURRENT E245, 4 November 2026:** Explicit owner deployment authorization is bound to seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a`. Fresh sealed preflight passed; the original one-use operator is executing. Migration/cutover completion remains unclaimed. Apple guard, Meta, image caching and financial/provider actions are excluded. Do not replay after a stop.
