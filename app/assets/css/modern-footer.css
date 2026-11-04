@@ -113,3 +113,9 @@
   .storefront .store-footer-modern-newsletter { padding: 16px; }
   .storefront .store-footer-modern-newsletter > p { margin-bottom: 8px; }
 }
+
+.storefront .store-footer-modern-socials a { display: grid; place-items: center; min-width: 44px; min-height: 44px; }
+.storefront .store-footer-modern-socials a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+@media (max-width: 767px) {
+  .storefront .footer-payment-marks ul { grid-template-columns: repeat(2, minmax(64px, 96px)); justify-content: center; width: 100%; }
+}

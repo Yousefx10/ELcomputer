@@ -257,38 +257,8 @@
               />
             </div>
 
-            <div
-              v-if="totalPages > 1"
-              class="mt-6 flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <button
-                type="button"
-                :disabled="currentPage <= 1"
-                class="rounded-lg px-4 py-3 text-sm font-medium"
-                :class="currentPage > 1
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-200 text-gray-400'"
-                @click="goToPage(currentPage - 1)"
-              >
-                {{ $t('common.previous') }}
-              </button>
-
-              <p class="text-sm text-gray-500">
-                {{ $t('common.pageValueOfValue', { value0: (currentPage), value1: (totalPages) }) }}
-              </p>
-
-              <button
-                type="button"
-                :disabled="currentPage >= totalPages"
-                class="rounded-lg px-4 py-3 text-sm font-medium"
-                :class="currentPage < totalPages
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'cursor-not-allowed bg-gray-200 text-gray-400'"
-                @click="goToPage(currentPage + 1)"
-              >
-                {{ $t('common.next') }}
-              </button>
-            </div>
+            <CatalogContinuation :enabled="infiniteEnabled" :has-more="continuation.hasMore" :bounded="continuation.bounded" :loading="continuation.loading" :failed="continuation.failed" :next="{ path: route.path, query: { ...route.query, page: String(continuation.page + 1) } }" @load="continuation.loadMore" />
+            <nav v-if="currentPage > 1" class="mt-3" :aria-label="$t('brandPages.pagination')"><NuxtLinkLocale :to="{ path: route.path, query: buildRouteQuery(currentPage - 1) }" rel="prev" class="inline-flex min-h-11 items-center px-4">{{ $t('common.previous') }}</NuxtLinkLocale></nav>
           </div>
         </section>
       </div>
@@ -301,6 +271,7 @@ const { categoryName } = useCategoryLocale()
 
 import { categoryMatchesSearch } from '~/utils/categoryLocale'
 import { searchSeoPolicy, publicSiteUrl, breadcrumbs, catalogSeoFields } from '~/utils/seo'
+import { catalogCacheKey } from '~/utils/catalogContinuation'
 import { catalogPageSize, catalogPage, catalogPageExists, normalizeSearchTerm, normalizePositiveNumber, getMinimumPriceGap, normalizePriceRange } from '~/utils/catalogListing.js'
 const { uiNavigateTo } = useUiNavigation()
 
@@ -518,13 +489,12 @@ const getSearchMetadata = async (signal) => {
   return data
 }
 
-const { data: searchPageData, pending, error } = await useAsyncData(
-  () => `store-search-${route.fullPath}`,
-  async (_nuxtApp, { signal }) => {
-    const routeQuery = { ...route.query }
+const loadSearchPage = async (_nuxtApp, { signal }, routeQuery = { ...route.query }) => {
+    const cacheKey = catalogCacheKey(route.path, routeQuery, locale.value)
+    signal = signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000)
     const { categories, brands, priceBounds } = await getSearchMetadata(signal)
 
-    const searchQuery = normalizeSearchTerm(routeQuery.q)
+    const searchQuery = normalizeSearchTerm(routeQuery.q).slice(0, 200)
     const selectedCategory = normalizeTextValue(routeQuery.category)
     const selectedBrand = normalizeTextValue(routeQuery.brand)
     const selectedStatus = validStatusValues.has(String(routeQuery.status || ''))
@@ -534,7 +504,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       ? String(routeQuery.sort)
       : defaultSort
     const currentPage = catalogPage(routeQuery.page)
-    if (!currentPage || selectedCategory && !categories.some(c => c.slug === selectedCategory) || selectedBrand && !brands.some(b => b.slug === selectedBrand)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+    if (!currentPage || currentPage > 10000 || selectedCategory && !categories.some(c => c.slug === selectedCategory) || selectedBrand && !brands.some(b => b.slug === selectedBrand)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
     const normalizedPriceRange = normalizePriceRange(routeQuery.min, routeQuery.max, priceBounds)
     const normalizedSearchQuery = searchQuery.toLocaleLowerCase()
     const matchingCategoryIds = searchQuery
@@ -615,7 +585,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     }
 
     const queryState = {
-      searchQuery,
+      cacheKey, searchQuery,
       category: selectedCategory,
       brand: selectedBrand,
       status: selectedStatus,
@@ -626,44 +596,20 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     }
 
     if (selectedSort === 'relevance' && searchQuery) {
-      const { data, error } = await buildBaseQuery()
-
-      if (error) {
-        throw error
-      }
-
-      const rankedProducts = (data || [])
-        .sort((firstProduct, secondProduct) => {
-          const scoreDifference = getRelevanceScore(secondProduct, searchQuery) - getRelevanceScore(firstProduct, searchQuery)
-
-          if (scoreDifference !== 0) {
-            return scoreDifference
-          }
-
-          return String(secondProduct.created_at || '').localeCompare(String(firstProduct.created_at || ''))
-        })
-
-      const totalCount = rankedProducts.length
-      const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-      if (!catalogPageExists(currentPage, totalCount)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
-      const safePage = currentPage
-      const rangeStart = (safePage - 1) * pageSize
-      const pageProducts = rankedProducts
-        .slice(rangeStart, rangeStart + pageSize)
-        .map(normalizeProductRecord)
-
-      return {
-        categories,
-        brands,
-        priceBounds,
-        queryState: {
-          ...queryState,
-          currentPage: safePage
-        },
-        products: pageProducts,
-        totalCount,
-        totalPages
-      }
+      const ranking = await supabase.rpc('storefront_ranked_catalog_page', {
+        p_query: searchQuery.slice(0, 200), p_category: categories.find(c => c.slug === selectedCategory)?.id || null,
+        p_brand: brands.find(b => b.slug === selectedBrand)?.id || null, p_status: selectedStatus,
+        p_min: routeQuery.min === undefined ? null : normalizedPriceRange.minPrice,
+        p_max: routeQuery.max === undefined ? null : normalizedPriceRange.maxPrice,
+        p_matching_categories: matchingCategoryIds, p_matching_brands: matchingBrandIds, p_page: currentPage
+      }).abortSignal(signal)
+      if (ranking.error) throw ranking.error
+      const ranked = ranking.data
+      if (!ranked || !Array.isArray(ranked.ids) || ranked.ids.length > pageSize || !catalogPageExists(currentPage, ranked.count)) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
+      const rows = ranked.ids.length ? await buildBaseQuery().in('id', ranked.ids).limit(pageSize) : { data: [] }
+      if (rows.error) throw rows.error
+      const map = new Map((rows.data || []).map(row => [row.id, normalizeProductRecord(row)]))
+      return { categories, brands, priceBounds, queryState, products: ranked.ids.map(id => map.get(id)).filter(Boolean), totalCount: ranked.count, totalPages: Math.max(1, Math.ceil(ranked.count / pageSize)) }
     }
 
     if (currentPage > 1) {
@@ -673,7 +619,7 @@ const { data: searchPageData, pending, error } = await useAsyncData(
     }
     const requestedPage = currentPage
     let rangeStart = (requestedPage - 1) * pageSize
-    let resultsQuery = applySortOrder(buildBaseQuery(true), selectedSort)
+    let resultsQuery = applySortOrder(buildBaseQuery(true), selectedSort).order('id')
       .range(rangeStart, rangeStart + pageSize - 1)
 
     let { data, error: resultsError, count } = await resultsQuery
@@ -701,10 +647,10 @@ const { data: searchPageData, pending, error } = await useAsyncData(
       totalCount,
       totalPages
     }
-  },
-  {
-    lazy: true
   }
+
+const { data: searchPageData, pending, error } = await useAsyncData(
+  () => `store-search-${route.fullPath}`, loadSearchPage, { lazy: true }
 )
 
 if (error.value?.statusCode === 404) throw createError({ statusCode: 404, statusMessage: 'Page not found.' })
@@ -713,10 +659,19 @@ watch(error, value => { if (value?.statusCode === 404) showError(createError({ s
 const categories = computed(() => searchPageData.value?.categories || [])
 const brands = computed(() => searchPageData.value?.brands || [])
 const priceBounds = computed(() => searchPageData.value?.priceBounds || { min: 0, max: 0 })
-const products = computed(() => searchPageData.value?.products || [])
+const pageProducts = computed(() => searchPageData.value?.products || [])
 const totalCount = computed(() => searchPageData.value?.totalCount || 0)
 const totalPages = computed(() => searchPageData.value?.totalPages || 1)
 const currentPage = computed(() => searchPageData.value?.queryState?.currentPage || 1)
+const { data: listingSite } = useSiteContent()
+const infiniteEnabled = computed(() => listingSite.value?.settings?.catalog_infinite_scroll_enabled === true)
+const continuation = reactive(useCatalogContinuation({
+  key: computed(() => catalogCacheKey(route.path, route.query, locale.value)),
+  initial: computed(() => searchPageData.value ? { key: searchPageData.value.queryState.cacheKey, products: pageProducts.value, page: currentPage.value, pages: totalPages.value } : null),
+  enabled: infiniteEnabled,
+  fetchPage: async (page, signal) => { const result = await loadSearchPage(null, { signal }, { ...route.query, page: String(page) }); return { products: result.products, page: result.queryState.currentPage, pages: result.totalPages } }
+}))
+const products = computed(() => continuation.products)
 const sliderMin = computed(() => priceBounds.value.min)
 const sliderMax = computed(() => Math.max(priceBounds.value.max, priceBounds.value.min))
 const priceStep = computed(() => getMinimumPriceGap({

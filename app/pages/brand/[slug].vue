@@ -1,4 +1,5 @@
 <script setup>
+import { catalogCacheKey } from '~/utils/catalogContinuation'
 import { normalizeBrandPage, visibleBrandRows } from '~/utils/brandPage'
 import { renderSafeMarkdown } from '~/utils/markdown'
 import { brandSeoFields, breadcrumbs, publicSiteUrl } from '~/utils/seo'
@@ -8,13 +9,19 @@ const localePath = useLocalePath()
 const slug = computed(() => String(route.params.slug || ''))
 const filterKeys = ['category', 'status', 'sort', 'page']
 const query = computed(() => Object.fromEntries(filterKeys.filter(key => typeof route.query[key] === 'string').map(key => [key, route.query[key]])))
-const { data, pending, error } = await useAsyncData(() => `brand:${slug.value}:${JSON.stringify(query.value)}`, () => $fetch(`/api/storefront/brands/${encodeURIComponent(slug.value)}`, { query: query.value }), { watch: [slug, query] })
+const { data, pending, error } = await useAsyncData(() => `brand:${slug.value}:${JSON.stringify(query.value)}`, async () => { const key = catalogCacheKey(route.path, query.value, locale.value); const result = await $fetch(`/api/storefront/brands/${encodeURIComponent(slug.value)}`, { query: query.value, retry: 0, timeout: 15000 }); return { ...result, _catalogKey: key } }, { watch: [slug, query] })
 if (error.value) throw createError({ statusCode: error.value.statusCode || 503, statusMessage: error.value.statusCode === 404 ? 'Brand not found.' : 'Brand content is unavailable.' })
 const brand = computed(() => data.value?.brand)
 const page = computed(() => normalizeBrandPage(brand.value?.brand_page))
 const rows = computed(() => visibleBrandRows(page.value))
 const storyHtml = computed(() => renderSafeMarkdown(page.value.story.content))
 const { data: siteContent } = await useSiteContent()
+const infiniteEnabled = computed(() => siteContent.value?.settings?.catalog_infinite_scroll_enabled === true)
+const continuation = reactive(useCatalogContinuation({
+  key: computed(() => catalogCacheKey(route.path, query.value, locale.value)),
+  initial: computed(() => data.value ? { key: data.value._catalogKey, products: data.value.products, page: data.value.page, pages: data.value.pages } : null), enabled: infiniteEnabled,
+  fetchPage: async (page, signal) => { const result = await $fetch(`/api/storefront/brands/${encodeURIComponent(slug.value)}`, { query: { ...query.value, page: String(page) }, signal, timeout: 15000, retry: 0 }); return { products: result.products, page: result.page, pages: result.pages } }
+}))
 const config = useRuntimeConfig()
 usePageSeo(() => ({
   ...brandSeoFields(brand.value || {}, siteContent.value?.settings || {}, locale.value),
@@ -72,9 +79,10 @@ const applyFilters = () => navigateTo(localePath(productLink(1)))
           <button type="submit" :disabled="pending">{{ $t('common.applyFilters') }}</button>
         </form>
         <p v-if="error" class="brand-feedback" role="alert">{{ $t('brandPages.loadError') }}</p>
-        <div v-else-if="data.products.length" class="store-search-grid"><CardsProductCard v-for="product in data.products" :key="product.id" :product="product" /></div>
+        <div v-else-if="continuation.products.length" class="store-search-grid"><CardsProductCard v-for="product in continuation.products" :key="product.id" :product="product" /></div>
         <p v-else class="brand-feedback">{{ $t('brandPages.noProducts') }}</p>
-        <nav v-if="data.pages > 1" class="brand-pagination" :aria-label="$t('brandPages.pagination')"><NuxtLinkLocale v-if="data.page > 1" :to="productLink(data.page - 1)">{{ $t('common.previous') }}</NuxtLinkLocale><span>{{ $t('common.pageValueOfValue', { value0: data.page, value1: data.pages }) }}</span><NuxtLinkLocale v-if="data.page < data.pages" :to="productLink(data.page + 1)">{{ $t('common.next') }}</NuxtLinkLocale></nav>
+        <CatalogContinuation :enabled="infiniteEnabled" :has-more="continuation.hasMore" :bounded="continuation.bounded" :loading="continuation.loading" :failed="continuation.failed" :next="{ path: `/brand/${slug}`, query: { ...query, page: String(continuation.page + 1) }, hash: '#brand-products' }" @load="continuation.loadMore" />
+        <nav v-if="data.page > 1" class="brand-pagination" :aria-label="$t('brandPages.pagination')"><NuxtLinkLocale :to="productLink(data.page - 1)" rel="prev">{{ $t('common.previous') }}</NuxtLinkLocale></nav>
       </div>
     </section>
   </article>

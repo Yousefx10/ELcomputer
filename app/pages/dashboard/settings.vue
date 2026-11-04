@@ -104,6 +104,11 @@
                 >
               </div>
 
+              <label class="flex min-h-11 items-start gap-3 rounded-lg border p-4 text-sm">
+                <input v-model="siteSettings.catalog_infinite_scroll_enabled" type="checkbox" class="mt-1">
+                <span><strong class="block">{{ $t('ownerPhase2.infiniteScroll') }}</strong><span class="mt-1 block text-gray-500">{{ $t('ownerPhase2.infiniteHelp') }}</span></span>
+              </label>
+
               <DashboardMediaUploadField
                 v-model="siteSettings.site_logo_url"
                 :label="$t('common.siteLogo')"
@@ -823,6 +828,7 @@
                 </div>
               </div>
 
+              <div class="grid gap-3 sm:grid-cols-2"><label class="block text-sm font-semibold">{{ $t('storefrontUX.heroMode') }}<select v-model="siteSettings.hero_layout_mode" class="mt-2 w-full rounded-lg border p-3"><option value="carousel">{{ $t('storefrontUX.carousel') }}</option><option value="banner">{{ $t('storefrontUX.banner') }}</option><option value="both">{{ $t('storefrontUX.both') }}</option></select></label><label v-if="siteSettings.hero_layout_mode === 'banner'" class="block text-sm font-semibold">{{ $t('storefrontUX.staticBanner') }}<select v-model="siteSettings.hero_static_banner_id" class="mt-2 w-full rounded-lg border p-3"><option value="">{{ $t('storefrontUX.firstActive') }}</option><option v-for="(banner, index) in heroBanners.filter(row => row.is_enabled)" :key="banner.id" :value="banner.id">{{ banner.presentation?.title_en || banner.presentation?.title_ar || `${$t('common.heroBanner')} ${index + 1}` }}</option></select></label></div>
               <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.heroRotationSeconds') }}</label>
                 <input
@@ -864,6 +870,7 @@
               </button>
             </div>
 
+            <DashboardHeroBannerFields v-model="newHeroPresentation" class="mb-4" />
             <div class="mb-5 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto]">
               <DashboardMediaUploadField
                 v-model="newHeroImageUrl"
@@ -924,6 +931,7 @@
                   </label>
                 </div>
 
+                <div class="space-y-3 md:col-span-full"><label class="block text-sm">{{ $t('storefrontUX.order') }}<input v-model.number="banner.sort_order" type="number" min="0" max="10000" class="ms-2 w-24 rounded-lg border p-2"></label><DashboardHeroBannerFields v-model="banner.presentation" /></div>
                 <div class="flex gap-2 self-start">
                   <button
                     type="button"
@@ -2242,6 +2250,7 @@
 </template>
 
 <script setup>
+import { heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
 import { productPageStyle, productPageEditorConfig, productPageConfigError } from '~/utils/productPage'
@@ -2354,6 +2363,7 @@ const adminLogAuthors = ref([])
 
 const newHeroImageUrl = ref('')
 const newHeroLinkUrl = ref('')
+const newHeroPresentation = ref({})
 const newTopBarText = ref('')
 const newOfferCard = reactive({
   eyebrow_text: '',
@@ -2518,6 +2528,7 @@ const siteSettingsSectionFields = {
     'landing_page_title',
     'allow_out_of_stock_purchases',
     'inventory_tracking_required',
+    'catalog_infinite_scroll_enabled',
     'backorder_fulfillment_message',
     'backorder_fulfillment_message_ar'
   ],
@@ -2540,7 +2551,7 @@ const siteSettingsSectionFields = {
   ],
   heroSettings: [
     'hero_enabled',
-    'hero_rotation_seconds'
+    'hero_rotation_seconds', 'hero_layout_mode', 'hero_static_banner_id'
   ],
   topBarSettings: [
     'top_bar_rotation_seconds'
@@ -2758,7 +2769,10 @@ const mapHeroBanner = (banner) => ({
   is_enabled: banner.is_enabled ?? true,
   original_image_url: banner.image_url || '',
   original_link_url: banner.link_url || '',
-  original_is_enabled: banner.is_enabled ?? true
+  original_is_enabled: banner.is_enabled ?? true,
+  presentation: normalizeHeroPresentation(banner.presentation),
+  original_presentation: normalizeHeroPresentation(banner.presentation),
+  original_sort_order: banner.sort_order
 })
 
 const mapTopBarMessage = (message) => ({
@@ -2922,11 +2936,14 @@ const normalizeSiteSettings = (source = {}) => ({
   product_page_config: productPageEditorConfig(source.product_page_config),
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   inventory_tracking_required: source.inventory_tracking_required ?? true,
+  catalog_infinite_scroll_enabled: source.catalog_infinite_scroll_enabled ?? true,
   backorder_fulfillment_message: source.backorder_fulfillment_message ?? '',
   backorder_fulfillment_message_ar: source.backorder_fulfillment_message_ar ?? '',
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
   hero_enabled: source.hero_enabled ?? false,
+  hero_layout_mode: heroLayoutMode(source.hero_layout_mode),
+  hero_static_banner_id: String(source.hero_static_banner_id || ''),
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
   banner_ad_1_enabled: source.banner_ad_1_enabled ?? false,
@@ -3082,6 +3099,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'footer_style',
       'allow_out_of_stock_purchases',
       'inventory_tracking_required',
+    'catalog_infinite_scroll_enabled',
       'backorder_fulfillment_message',
       'backorder_fulfillment_message_ar',
       'homepage_reviews_enabled',
@@ -3540,7 +3558,9 @@ const removeGalleryImage = async (image) => {
 const isHeroBannerDirty = (banner) => {
   return banner.image_url !== banner.original_image_url ||
     (banner.link_url || '') !== banner.original_link_url ||
-    (banner.is_enabled ?? true) !== banner.original_is_enabled
+    (banner.is_enabled ?? true) !== banner.original_is_enabled ||
+    Number(banner.sort_order) !== Number(banner.original_sort_order) ||
+    JSON.stringify(normalizeHeroPresentation(banner.presentation)) !== JSON.stringify(normalizeHeroPresentation(banner.original_presentation))
 }
 
 const addHeroBanner = async () => {
@@ -3561,7 +3581,8 @@ const addHeroBanner = async () => {
     .insert({
       image_url: heroImageUrl,
       link_url: heroLinkUrl,
-      sort_order: heroBanners.value.length
+      sort_order: heroBanners.value.length,
+      presentation: normalizeHeroPresentation(newHeroPresentation.value)
     })
 
   heroLoading.value = false
@@ -3575,6 +3596,7 @@ const addHeroBanner = async () => {
 
   newHeroImageUrl.value = ''
   newHeroLinkUrl.value = ''
+  newHeroPresentation.value = {}
   await getHeroBanners()
   generalSettingsLoaded.value = true
   syncGeneralSettingsCache()
@@ -3604,7 +3626,9 @@ const saveHeroBanner = async (banner) => {
     .update({
       image_url: banner.image_url.trim(),
       link_url: banner.link_url.trim() || null,
-      is_enabled: banner.is_enabled
+      is_enabled: banner.is_enabled,
+      sort_order: Math.max(0, Math.min(10000, Math.trunc(Number(banner.sort_order) || 0))),
+      presentation: normalizeHeroPresentation(banner.presentation)
     })
     .eq('id', banner.id)
 

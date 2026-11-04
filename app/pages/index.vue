@@ -10,9 +10,9 @@
     </nav>
 
     <header class="store-home-intro"><h1>{{ homeCopy.title }}</h1><p>{{ homeCopy.description }}</p></header>
-    <div v-if="heroEnabled" class="store-hero-grid">
+    <div v-if="heroEnabled" class="store-hero-grid" :class="{ 'store-hero-grid-single': heroMode !== 'both' }" :data-hero-mode="heroMode">
       <CardsHeroCard />
-      <div class="store-hero-side">
+      <div v-if="heroMode === 'both'" class="store-hero-side">
         <NuxtLinkLocale v-for="(tile, index) in discoveryTiles" :key="index" :to="tile.to" class="store-promo-tile">
           <div class="store-promo-copy">
             <p>{{ tile.eyebrow }}</p>
@@ -35,10 +35,10 @@
     <LayoutPageLoading v-else-if="homePending && homeHydrated" :label="$t('common.loadingProducts')" class="mt-8" />
     <TopCategories :categories="topCategories" />
     <HomeProductSection v-if="featuredProducts.length" :title="$t('common.storePicks')" :products="featuredProducts" />
-    <CardsBanner v-if="bannerAds.bannerAd1" v-bind="bannerAds.bannerAd1" />
+    <CardsBanner v-if="heroMode === 'both' && bannerAds.bannerAd1" v-bind="bannerAds.bannerAd1" />
     <OfferSlider />
     <HomeProductSection v-if="topSellerProducts.length" :title="$t('common.moreProducts')" :products="topSellerProducts" />
-    <CardsBanner v-if="bannerAds.bannerAd2" v-bind="bannerAds.bannerAd2" />
+    <CardsBanner v-if="heroMode === 'both' && bannerAds.bannerAd2" v-bind="bannerAds.bannerAd2" />
     <FeaturedBrands v-if="featuredBrands.length" :title="$t('common.shopByBrand')" :brands="featuredBrands" />
 
     <section v-for="category in categorySections" :key="category.id">
@@ -53,6 +53,7 @@
 <script setup>
 import { siteSchema, publicSiteUrl } from '~/utils/seo'
 import { homepagePresentation } from '~/utils/storePresentation'
+import { heroLayoutMode } from '~/utils/heroLayout'
 const { locale: homeLocale } = useI18n()
 const homeCopy = computed(() => homepagePresentation(siteContent.value?.settings, homeLocale.value))
 const { uiLabel } = useUiLocale()
@@ -64,6 +65,7 @@ import OfferSlider from '~/components/layout/OfferSlider.vue'
 
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
+const heroMode = computed(() => heroLayoutMode(siteContent.value?.settings?.hero_layout_mode))
 const homeHydrated = ref(false)
 onMounted(() => { homeHydrated.value = true })
 

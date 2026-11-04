@@ -1,19 +1,19 @@
 {
   "productFamily": {
-  "standalone": "Other products in this range",
-  "navigationHelp": "Each option opens its own product page.",
-  "internalOptions": "Options for this product",
-  "allOptions": "All product options",
-  "editorHelp": "Link separate products. Their prices and stock stay independent.",
-  "start": "Link product options",
-  "confirmRelated": "These are options of the same underlying product.",
-  "searchHelp": "Use product search above to add members.",
-  "attribute": "Attribute",
-  "label": "Label",
-  "addAttribute": "Add attribute",
-  "swatch": "Color swatch (optional)",
-  "link": "Link as option"
-},
+    "standalone": "Other products in this range",
+    "navigationHelp": "Each option opens its own product page.",
+    "internalOptions": "Options for this product",
+    "allOptions": "All product options",
+    "editorHelp": "Link separate products. Their prices and stock stay independent.",
+    "start": "Link product options",
+    "confirmRelated": "These are options of the same underlying product.",
+    "searchHelp": "Use product search above to add members.",
+    "attribute": "Attribute",
+    "label": "Label",
+    "addAttribute": "Add attribute",
+    "swatch": "Color swatch (optional)",
+    "link": "Link as option"
+  },
   "modernProduct": {
     "buyWithIt": "Buy with it",
     "customerReviews": "Customer Reviews",
@@ -5798,7 +5798,14 @@
   },
   "ownerPhase2": {
     "chooseAddress": "Choose a saved address",
-    "checkoutDraft": "Unsaved address"
+    "checkoutDraft": "Unsaved address",
+    "loadMore": "Load more",
+    "loadingMore": "Loading products…",
+    "catalogEnd": "You have reached the end.",
+    "catalogFailed": "Could not load more products. Try again or open the next page.",
+    "nextPage": "Next page",
+    "infiniteScroll": "Infinite scroll",
+    "infiniteHelp": "Load products as customers scroll. Pagination remains available."
   },
   "paymentFirst": {
     "confirmed": "Payment verified — order created",
@@ -5924,5 +5931,28 @@
     "unavailable": "Apple Pay couldn’t open. Try again or choose Card.",
     "expired": "This payment form expired. Return to checkout.",
     "ineligible": "Apple Pay is unavailable in this browser."
+  },
+  "storefrontUX": {
+    "heroMode": "Hero layout",
+    "carousel": "Carousel Only",
+    "banner": "Banner Only",
+    "both": "Both",
+    "staticBanner": "Static hero",
+    "firstActive": "First active banner",
+    "mobileImage": "Mobile image (optional)",
+    "imageFit": "Image fit",
+    "cover": "Fill image area",
+    "contain": "Show full image",
+    "focal_x": "Horizontal focus (%)",
+    "focal_y": "Vertical focus (%)",
+    "mobile_focal_x": "Mobile horizontal focus (%)",
+    "mobile_focal_y": "Mobile vertical focus (%)",
+    "title_en": "English heading",
+    "title_ar": "Arabic heading",
+    "body_en": "English text",
+    "body_ar": "Arabic text",
+    "cta_en": "English button",
+    "cta_ar": "Arabic button",
+    "order": "Order"
   }
 }
