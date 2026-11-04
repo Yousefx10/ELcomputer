@@ -1,3 +1,5 @@
+> **CURRENT E246, 4 November 2026:** The authorized original operator deployed `6fd67997c8feaeca` / source `ff037dd` / schema114 at 19:49:46 Riyadh, PID `282442`. SQL and app restart occurred once; timers resumed, runtime/Caddy unchanged, all 13 attempts preserved. Read-only postflight is active after an initial request timeout. Apple guard/Meta/image/provider actions remain excluded. Never replay apply/SQL; no automatic rollback.
+
 > **CURRENT E245, 4 November 2026:** Explicit owner deployment authorization is bound to seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a`. Fresh sealed preflight passed; the original one-use operator is executing. Migration/cutover completion remains unclaimed. Apple guard, Meta, image caching and financial/provider actions are excluded. Do not replay after a stop.
 
 # Storefront UX and Infinite Scroll schema114 — exact production review

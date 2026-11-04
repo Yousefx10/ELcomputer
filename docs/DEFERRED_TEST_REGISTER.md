@@ -1,3 +1,25 @@
+# E246 — Storefront114 deployed; read-only postflight active — 2026-11-04
+
+The original `0caf76d3` operator committed SQL114 once and cut over at 19:49:46
+Riyadh to release `6fd67997c8feaeca`, source `ff037dd`, schema114, app PID
+`282442`. Exactly one app restart occurred. Existing MON/Email/PDC
+timers resumed; runtime and Caddy stayed unchanged. Never replay apply or SQL.
+
+The transaction preserved all 160 original projections and all 13 current
+payment attempts, including the original twelve. Provider/financial actions 0.
+Apple guard, Meta and image caching remain excluded. CARD/COD/EGP10 and
+late authenticated callbacks retain their existing contracts.
+
+Hosted EN/AR homepages, shop pagination, search and category pages passed
+GET-only hero/content/canonical/next-link checks. All 4,898 asset HTTP hashes,
+independent financial/host checks and natural MON closeout are still active.
+An initial read-only verification request timed out; observational tracing is
+active without changing the sealed operator or its deadlines. This is not a
+deployment retry or full owner/provider acceptance. No automatic rollback exists.
+
+ONE next action: finish the same release's read-only postflight and record
+its verified outcome.
+
 # E245 — Storefront114 authorized; one-use execution active — 2026-11-04
 
 The owner explicitly authorized deployment of the immediately preceding
