@@ -1,3 +1,21 @@
+# E245 — Storefront114 authorized; one-use execution active — 2026-11-04
+
+The owner explicitly authorized deployment of the immediately preceding
+Storefront114 packet. The verbatim message and its single-packet mapping are
+recorded privately; the operator recorded approval at 19:44:21 Riyadh only after
+a fresh sealed preflight passed. Seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a`.
+
+The original one-use operator is now executing. No completed migration, cutover
+or deployment is claimed yet. Source `ff037dd`; candidate `6fd67997c8feaeca`;
+production before `54315e37` / schema113. One SQL114/history transaction, one
+archive/app cutover/restart and bounded MON/Email/PDC timer pause/resume only.
+All 13 attempts remain protected. Apple guard, Meta, image caching, provider/
+financial actions, Caddy/runtime/credential changes and Git pushes stay outside
+this approval. Never replay an apply or acknowledged mutation after a stop.
+
+ONE next action: finish this same authorized one-use execution and read-only
+postflight, then record its actual boundary.
+
 # E244 — Storefront114 READY / UNAPPROVED; Apple P1 independent — 2026-11-04
 
 The owner's latest instruction removes the Apple provider escalation as a

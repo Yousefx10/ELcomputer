@@ -1,3 +1,5 @@
+> **CURRENT E245, 4 November 2026:** Explicit owner deployment authorization is bound to seal `0caf76d38285fecb86bc227762e34785545f55c20948d9088ce3324c1931370a`. Fresh sealed preflight passed; the original one-use operator is executing. Migration/cutover completion remains unclaimed. Apple guard, Meta, image caching and financial/provider actions are excluded. Do not replay after a stop.
+
 # Storefront UX and Infinite Scroll schema114 — exact production review
 
 **READY / UNAPPROVED.** Read-only sealed preflight passed at 19:33:53 Riyadh on 4 November 2026. No deployment or production mutation has occurred. The owner's latest instruction separates this nonfinancial release from the independently tracked Apple Pay P1 escalation.
