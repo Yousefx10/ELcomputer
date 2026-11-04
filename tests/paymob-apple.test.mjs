@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID} from 'node:crypto'
-import {getPaymobConfig,selectPaymobMethod,normalizePaymobCallback} from '../server/utils/payments/paymob.js'
+import {getPaymobConfig,selectPaymobMethod,buildIntentionRequest,normalizePaymobCallback} from '../server/utils/payments/paymob.js'
 import {pixelEnabledFor} from '../server/utils/payments/methods.js'
 import {applePayDeviceEligible,paymobPixelOptions} from '../app/utils/paymobPixel.js'
 const origin='https://independent.example.invalid',id=randomUUID(),apple={id:321,mode:'live',enabled:true,pixelVerified:true,certificatesVerified:true,verifiedOrigin:origin}
@@ -15,6 +15,16 @@ test('Apple requires live method, explicit Pixel/certificate verification and th
  }
  const config=getPaymobConfig(runtime)
  for(const method of ['google_pay','mobile_wallet','apple-pay','unknown'])assert.throws(()=>selectPaymobMethod(config,method))
+})
+test('Apple intention uses its configured integration and the exact server EGP3050 quote',()=>{
+ const config=selectPaymobMethod(getPaymobConfig(runtime),'apple_pay')
+ const order={id:randomUUID(),order_number:'ISOLATED-APPLE',total_amount:'3050.00',currency:'EGP',first_name:'Fixture',phone:'01012345678',email:'fixture@example.invalid',street_address:'Fixture street',city:'Fixture city',governorate:'Fixture region'}
+ const attempt={id:randomUUID(),amount_minor:305000}
+ const payload=buildIntentionRequest(config,order,attempt,'ar')
+ assert.deepEqual(payload.payment_methods,[apple.id]);assert.equal(payload.amount,305000);assert.equal(payload.currency,'EGP');assert.equal(payload.expiration,1800)
+ assert.equal(new URL(payload.notification_url).origin,origin);assert.equal(new URL(payload.redirection_url).origin,origin)
+ assert.throws(()=>buildIntentionRequest(config,order,{...attempt,amount_minor:305001}))
+ assert.deepEqual(buildIntentionRequest(selectPaymobMethod(getPaymobConfig(runtime),'card'),order,attempt).payment_methods,[123])
 })
 test('rollout is bounded by authenticated customer IDs and fails closed for malformed settings',()=>{
  assert.equal(pixelEnabledFor(runtime,id),true);assert.equal(pixelEnabledFor(runtime,randomUUID()),false)

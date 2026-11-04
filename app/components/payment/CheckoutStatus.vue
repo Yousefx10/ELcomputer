@@ -42,7 +42,8 @@ const retryCheckout=async()=>{
    const result=await scope.request(`/api/account/payment-checkouts/${props.sessionId}/interface`,{method:'POST',body:{version:2,action:'open'},retry:0,timeout:10000})
    if(disposed||version!==epoch)return
    checkout.value=result.checkout;error.value=false
-   if(result.payment?.experience==='embedded'){activeInterface.value=result.payment;payment.value=result.payment}
+   if(result.payment?.experience==='embedded'&&result.payment.paymentMethods?.length===1&&result.payment.paymentMethods[0]==='apple-pay')await uiNavigateTo(`/checkout/apple/${props.sessionId}`,{external:true})
+   else if(result.payment?.experience==='embedded'){activeInterface.value=result.payment;payment.value=result.payment}
    else if(result.payment)window.location.assign(hostedPaymentUrl(result.payment))
   }catch{if(!disposed&&version===epoch)error.value=true}
   finally{if(version===epoch)busy.value=false}

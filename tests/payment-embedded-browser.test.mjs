@@ -12,6 +12,7 @@ test('focused embedded checkout and single-read status qualification',{timeout:2
  let base=await readFile('tests/helpers/normalPurchaseBrowser.js','utf8');base=base.replace("if (fixture.publicAccess) return { card:","if (fixture.publicAccess) return { express: fixture.apple ? [{method:'apple_pay',available:true}] : [], card:").replace("available: true, initiationAvailable: true, mode: 'live'","available: true, initiationAvailable: true, mode: 'live', experience: fixture.pixel ? 'embedded' : 'redirect'")
  for(const[k,file]of Object.entries(pages)){
  let helper=base.replace("app.component('PaymentPaymobPixel', { setup: (_, context) => () => h('button', { 'data-fixture-pixel': 'true', onClick: () => context.emit('complete') }, 'Synthetic secure fields') })","app.component('PaymentPaymobPixel',{props:['session','authorize'],setup:(props,context)=>{window.__pixelUnavailable=beforeSubmit=>context.emit('unavailable',{beforeSubmit});window.__pixelCancel=()=>context.emit('cancel');window.__pixelAuthorize=()=>props.authorize?.();window.__pixelSession=props.session;return()=>h('button',{'data-fixture-pixel':'true',onClick:()=>context.emit('complete')},'Synthetic secure fields')}})").replace("import Component from 'normal-purchase-page'","import Component from 'normal-purchase-page'\nimport CheckoutStatus from '../../app/components/payment/CheckoutStatus.vue'")
+ helper=helper.replace("uiNavigateTo: async value => { window.__navigations.push(value) }","uiNavigateTo: async (value,options) => { window.__navigations.push(value); (window.__navigationOptions ||= []).push(options) }")
  helper=helper.replace('payment_cash_enabled: true','payment_cash_enabled: false').replace('payment_bank_transfer_enabled: true, payment_instapay_enabled: true','payment_bank_transfer_enabled: false, payment_instapay_enabled: false')
  helper=helper.replace('siteUrl: fixture.siteUrl }','siteUrl: fixture.siteUrl, paymentFirstEnabled: true }').replace("params: { id: fixture.orderId }, query: { order_id: fixture.orderId }","params: { id: fixture.orderId }, query: {}")
  helper=helper.replace("  if (path === '/api/checkout') {",`  if (path === '/api/checkout') {
@@ -61,7 +62,7 @@ test('focused embedded checkout and single-read status qualification',{timeout:2
  })
  await t.test('eligible Apple choice selects its single provider method; CARD remains available',async()=>{
   scenario={...fixture('ar'),pixel:true,apple:true};const{page,errors}=await open(390)
-  try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();await page.locator('input[name=payment-method][value=apple_pay]').check();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.locator('[data-fixture-pixel]').waitFor();const command=(await page.evaluate(()=>window.__requests)).find(x=>x.path==='/api/checkout');assert.equal(command.body.payment_method,'card');assert.equal(command.body.paymob_method,'apple_pay');assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path==='/api/checkout').length,1);assert.deepEqual(errors,[])}finally{await page.close()}
+  try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();await page.locator('input[name=payment-method][value=apple_pay]').check();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.waitForFunction(()=>window.__navigations.length);assert.equal(await page.locator('[data-fixture-pixel]').count(),0);assert.deepEqual(await page.evaluate(()=>window.__navigationOptions),[{external:true}]);assert.equal((await page.evaluate(()=>window.__navigations))[0],'/checkout/apple/'+scenario.checkout.id);const command=(await page.evaluate(()=>window.__requests)).find(x=>x.path==='/api/checkout');assert.equal(command.body.payment_method,'card');assert.equal(command.body.paymob_method,'apple_pay');assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path==='/api/checkout').length,1);assert.deepEqual(errors,[])}finally{await page.close()}
  })
  await t.test('an unsubmitted form closes and reopens immediately without a global pending warning',async()=>{
   scenario={...fixture(),pixel:true};const{page,errors}=await open(390)
@@ -97,15 +98,16 @@ test('focused embedded checkout and single-read status qualification',{timeout:2
    assert.equal(commands[1].retry,0);assert.deepEqual(errors,[])
   }finally{await page.close()}
  })
- await t.test('Apple cancellation closes the interface and keeps the cart without claiming a failure',async()=>{
+ await t.test('Apple secure-page handoff preserves cart and acknowledged session without a global recovery lock',async()=>{
   scenario={...fixture('ar'),pixel:true,apple:true};const{page,errors}=await open(390)
   try{
    await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click()
-   await page.locator('input[name=payment-method][value=apple_pay]').check();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.locator('[data-fixture-pixel]').waitFor()
-   await page.evaluate(()=>window.__pixelCancel());await page.waitForFunction(()=>!document.querySelector('[data-fixture-pixel]'))
-   assert.equal((await page.locator('body').innerText()).includes(scenario.messages.embeddedCheckout.failed),false)
+   await page.locator('input[name=payment-method][value=apple_pay]').check();await page.getByRole('button',{name:scenario.messages.paymentInterface.pay,exact:true}).click();await page.waitForFunction(()=>window.__navigations.length)
+   assert.equal(await page.locator('[data-fixture-pixel]').count(),0)
    assert.equal((await page.evaluate(()=>window.__cartMemory())).items[0].quantity,1)
-   assert.equal((await page.evaluate(()=>window.__requests)).filter(r=>r.path.endsWith('/interface')).length,0);assert.deepEqual(errors,[])
+   assert.equal((await page.evaluate(()=>window.__navigations))[0],'/checkout/apple/'+scenario.checkout.id)
+   assert.deepEqual(await page.evaluate(()=>window.__navigationOptions),[{external:true}])
+   assert.equal((await page.evaluate(()=>window.__requests)).filter(x=>x.path.endsWith('/interface')).length,0);assert.deepEqual(errors,[])
   }finally{await page.close()}
  })
  await t.test('an ineligible device hides Apple while keeping CARD available',async()=>{scenario={...fixture(),pixel:true,apple:true,appleDevice:false};const{page,errors}=await open(390);try{await page.locator('input[name=delivery-method]').check();await page.getByRole('button',{name:scenario.messages.common.continueToPayment,exact:true}).click();assert.equal(await page.locator('input[name=payment-method][value=apple_pay]').count(),0);assert.equal(await page.locator('input[name=payment-method][value=card]').count(),1);assert.deepEqual(errors,[])}finally{await page.close()}})

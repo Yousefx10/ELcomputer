@@ -1,7 +1,7 @@
 # Embedded Paymob methods
 
 Pixel uses the pinned, unmodified `paymob-pixel@1.2.8` package. Merchant code
-only supplies a scoped Intention secret and manages the iframe lifecycle.
+only supplies a scoped Intention secret and manages its document lifecycle.
 Provider fields never pass card numbers or CVV through application APIs.
 
 `NUXT_PAYMOB_PIXEL_ENABLED` defaults false. A reviewed, nonempty JSON UUID list
@@ -29,15 +29,21 @@ the real integration ID. The existing database validates integration, mode,
 amount, currency, provider mapping and ownership before finalization. SDK and
 browser return events only open the owned status view.
 
-One iframe creates one SDK instance and permits one submission. Removing it
-disposes its globals and fields. Hosted fallback is offered only after an SDK
+CARD uses one iframe and permits one submission. Removing it disposes its globals
+and fields. Apple Pay uses an authenticated top-level secure page, keeping device
+eligibility, the SDK and its native button gesture in the same Safari context.
+The server opens the existing intention and issues the same one-use submission
+gate. Every exit, retry and restored history document performs a full navigation;
+no private SDK disposal method, URL secret or browser token storage is used.
+Hosted CARD fallback is offered only after an SDK
 failure before submission, once the embedded frame has been removed. A possible
 submitted payment always goes to server status. No automatic provider retry occurs.
 
 Checkout retains private recovery commands without a permanent warning on a
 normal visit. Status performs one initial read, plus explicit manual checks.
 No unverified, abandoned or declined attempt creates an ordinary CARD order.
-Try again stays disabled until the server explicitly retires an unfunded session.
+Try again requires server permission to reopen the existing intention. A trusted
+decline may permit it; a submitted or uncertain outcome cannot grant a blind retry.
 A failed transaction or local expiration alone is insufficient. This release
 does not implement automatic Intention retirement or claim provider finality.
 

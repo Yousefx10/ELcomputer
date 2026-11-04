@@ -5917,5 +5917,12 @@
     "review": "Review the updated checkout before paying.",
     "reload": "Reload checkout before paying.",
     "closed": "Payment form closed"
+  },
+  "applePayment": {
+    "title": "Apple Pay",
+    "loading": "Loading Apple Pay…",
+    "unavailable": "Apple Pay couldn’t open. Try again or choose Card.",
+    "expired": "This payment form expired. Return to checkout.",
+    "ineligible": "Apple Pay is unavailable in this browser."
   }
 }

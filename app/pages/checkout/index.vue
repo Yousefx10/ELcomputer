@@ -460,6 +460,9 @@ const sendCommand = async (command,explicit=false,restarted=false) => {
       removePendingCheckout(window.localStorage,command);readPending()
       affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++
       if(explicit&&response.payment){
+       if(response.payment.experience==='embedded'&&response.payment.paymentMethods?.length===1&&response.payment.paymentMethods[0]==='apple-pay'){
+        await uiNavigateTo(`/checkout/apple/${response.checkout.id}`,{external:true});return
+       }
        if(response.payment.experience==='embedded'){
         hostedFallback.value='';embeddedFallback=response.payment.redirectFallback?hostedPaymentUrl(response.payment):''
         activeInterface.value=response.payment
