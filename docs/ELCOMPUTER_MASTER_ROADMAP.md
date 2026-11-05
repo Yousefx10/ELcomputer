@@ -1,3 +1,17 @@
+# E301 — Activation inventory and priorities — 6 November 2026
+
+The owner accepts the deployed CARD/Apple Pay retry UI on iPhone, iPad and MacBook.
+App `2a1fb3c96f391f40`, source `e2663ea`, schema121 are the current observed state.
+Do not repeat the accepted P0 investigation or consumed deployments.
+
+The [public activation summary](ELCOMPUTER_ACTIVATION_STATUS_PUBLIC.md) records 147 tracked scopes and current priorities.
+The complete operational register and protected evidence remain local. Coupons are the
+next prepared configuration-only release, pending exact approval of saved offer terms.
+Preserve the bounded SMS pilot; Meta inputs remain owner-deferred. No production
+change, paid message or provider event was performed for this inventory.
+
+Earlier entries below remain dated history; this status supersedes stale priorities.
+
 # E247 — Storefront114 DEPLOYED / technical PASS / CONSUMED_COMPLETE — 2026-11-04
 
 SF-UX-20261104-01 is deployed: release `6fd67997c8feaeca`, source `ff037dd`,

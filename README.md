@@ -1,3 +1,17 @@
+# E301 — Activation inventory and priorities — 6 November 2026
+
+The owner accepts the deployed CARD/Apple Pay retry UI on iPhone, iPad and MacBook.
+App `2a1fb3c96f391f40`, source `e2663ea`, schema121 are the current observed state.
+Do not repeat the accepted P0 investigation or consumed deployments.
+
+The [public activation summary](docs/ELCOMPUTER_ACTIVATION_STATUS_PUBLIC.md) records 147 tracked scopes and current priorities.
+The complete operational register and protected evidence remain local. Coupons are the
+next prepared configuration-only release, pending exact approval of saved offer terms.
+Preserve the bounded SMS pilot; Meta inputs remain owner-deferred. No production
+change, paid message or provider event was performed for this inventory.
+
+Earlier entries below remain dated history; this status supersedes stale priorities.
+
 > **CURRENT E247, 4 November 2026:** Storefront UX + Infinite Scroll114 is deployed and technically verified: `6fd67997c8feaeca` / source `ff037dd` / schema114 / PID 282442. All 4,898 live HTTPS asset hashes, public storefront/PDP, financial and natural-MON checks pass. All 13 attempts and CARD/COD/EGP10 are preserved. Original operator CONSUMED_COMPLETE; never replay. Apple guard, Meta and image caching remain separate. Owner UI acceptance stays open. [Deployment receipt](docs/storefront-ux-discovery-schema114-review-20261104.md).
 
 > **CURRENT E246, 4 November 2026:** Storefront114 is deployed: `6fd67997c8feaeca` / source `ff037dd` / schema114 / PID `282442`. One app restart; timers resumed; runtime/Caddy unchanged. All 13 attempts preserved. Read-only asset/financial/natural-MON postflight is active. Apple guard, Meta and image caching remain separate. Never replay. [Current receipt boundary](docs/storefront-ux-discovery-schema114-review-20261104.md).
