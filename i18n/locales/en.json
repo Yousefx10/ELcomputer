@@ -6137,5 +6137,15 @@
     "revalidated": "Conditional responses",
     "avoided": "Body bytes avoided",
     "measurementScope": "Current process only. Fresh browser hits are not measured."
+  },
+  "merchantRetry": {
+    "title": "Payment retries",
+    "detail": "Allow fresh CARD or Apple Pay attempts. Earlier charges may still succeed.",
+    "enabled": "Allow retries with uncertain payments",
+    "save": "Save",
+    "excess": "Extra payment needs review",
+    "tryAgain": "Try payment again",
+    "closed": "Payment closed. You can try again.",
+    "status": "Payment status"
   }
 }

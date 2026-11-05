@@ -4,11 +4,11 @@
   <p v-if="checkout" class="mt-2 text-lg font-semibold">{{ checkout.totalAmount }} {{ checkout.currency }}</p>
   <p v-if="loading" role="status" class="mt-3 text-sm text-slate-600 dark:text-slate-400">{{ $t('applePayment.loading') }}</p>
   <p v-if="error" role="alert" class="mt-3 text-sm text-red-700 dark:text-red-400">{{ $t(error) }}</p>
-  <p v-if="sheetClosed" role="status" class="mt-3 text-sm">{{ $t(checkout?.canResume ? 'applePayment.closedReady' : 'applePayment.closedChecking') }}</p>
+  <p v-if="sheetClosed" role="status" class="mt-3 text-sm">{{ $t(checkout?.merchantRiskRetryAllowed ? 'merchantRetry.closed' : checkout?.canResume ? 'applePayment.closedReady' : 'applePayment.closedChecking') }}</p>
   <div v-show="!error && !sheetClosed" id="paymob-apple" ref="container" class="mt-4 min-w-0" />
   <div class="mt-4 flex flex-wrap gap-3">
    <button v-if="error && retrySafe" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="reload">{{ $t('embeddedCheckout.tryAgain') }}</button>
-   <button v-if="sheetClosed && checkout?.canResume" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="reload">{{ $t('embeddedCheckout.tryAgain') }}</button>
+   <button v-if="sheetClosed && (checkout?.merchantRiskRetryAllowed || checkout?.canResume)" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="reload">{{ $t('embeddedCheckout.tryAgain') }}</button>
    <button v-if="checkout && !loading" type="button" class="min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="status">{{ $t('paymentFirst.checkStatus') }}</button>
    <button type="button" class="min-h-11 px-2 text-sm font-semibold text-blue-700 dark:text-blue-400" @click="back">{{ $t('paymentInterface.back') }}</button>
   </div>
@@ -23,15 +23,17 @@ const checkout=shallowRef(null),container=ref(null),loading=ref(true),error=ref(
 const sheetClosed=ref(false)
 let disposed=false,arming=false,submitted=false,completed=false,payment=null,sdk,observer,loadTimer,expiryTimer
 const navigate=path=>uiNavigateTo(path,{external:true})
-const back=()=>navigate('/checkout'),status=()=>navigate('/checkout/session/'+props.sessionId)
-const reload=()=>window.location.reload()
+const retire=()=>{if(checkout.value?.merchantRiskRetryAllowed)void scope.request(`/api/account/payment-checkouts/${props.sessionId}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{})}
+const back=()=>{retire();navigate('/checkout')},status=()=>navigate('/checkout/session/'+props.sessionId)
+const reload=()=>checkout.value?.merchantRiskRetryAllowed?back():window.location.reload()
 const phase=code=>console.info('[apple-payment]',code)
 const cancelled=()=>{
  if(disposed||completed||sheetClosed.value)return
  // Pixel calls beforePaymentComplete before begin(), not after native approval.
- // Its cancel callback carries no authoritative payment outcome. Keep the
- // current document and intention; never clear the server submission fence.
+ // Its cancel callback carries no authoritative financial outcome.
+ // Merchant-authorized retries retire only the local presentation.
  sheetClosed.value=true;loading.value=false;retrySafe.value=false
+ if(checkout.value?.merchantRiskRetryAllowed){retire();payment=null;void navigate('/checkout')}
  console.warn('[apple-payment]','SHEET_CLOSED')
 }
 const sdkError=event=>{
@@ -114,7 +116,7 @@ onMounted(async()=>{
 const restore=event=>{if(event.persisted)window.location.reload()}
 // Pixel1.2.8 has no public disposal API. Every exit replaces the document,
 // disposing provider listeners and intent data without private vendor methods.
-onBeforeRouteLeave(to=>{window.location.assign(new URL(to.fullPath,window.location.origin).href);return false})
+onBeforeRouteLeave(to=>{retire();window.location.assign(new URL(to.fullPath,window.location.origin).href);return false})
 onBeforeUnmount(()=>{disposed=true;clearTimeout(loadTimer);clearTimeout(expiryTimer);observer?.disconnect();window.removeEventListener('pageshow',restore);window.removeEventListener('error',sdkError);window.removeEventListener('unhandledrejection',sdkError);if(sdk){sdk.onload=null;sdk.onerror=null}payment=null})
 scope.onInvalidate(()=>{disposed=true;payment=null;checkout.value=null;container.value?.replaceChildren();navigate('/login')})
 </script>

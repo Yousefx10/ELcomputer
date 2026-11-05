@@ -25,7 +25,7 @@
         <p class="text-sm text-slate-700">{{ $t('embeddedCheckout.pending') }}</p>
         <button type="button" :disabled="placingOrder" class="mt-3 min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="recoverCheckout">{{ $t('paymentFirst.checkStatus') }}</button>
       </section>
-      <p v-if="affectedPayment && !savedCheckout" class="mx-auto mt-4 max-w-5xl text-sm text-slate-600">
+      <p v-if="affectedPayment && !savedCheckout && !(merchantRiskRetry && affectedPayment.method!=='instapay')" class="mx-auto mt-4 max-w-5xl text-sm text-slate-600">
         <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="font-semibold text-blue-700">{{ $t('paymentInterface.affectedStatus') }} · {{ affectedPayment.reference }}</NuxtLinkLocale>
       </p>
       <section v-if="reviewRequired" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200">
@@ -220,6 +220,7 @@ const { waitForSync, syncState, items, owner: cartOwner, cartId, itemCount, subt
 const { trackEvent } = useStoreAnalytics()
 
 const paymentFirstRuntime=useRuntimeConfig()
+const merchantRiskRetry=computed(()=>paymentCapabilities.value?.purchase?.merchantRiskRetries===true)
 const prepaidFlow=computed(()=>[true,'true'].includes(paymentFirstRuntime.public.paymentFirstEnabled))
 const savedCheckout=ref(''),hostedFallback=ref(''),embeddedPayment=shallowRef(null),paymentSummary=shallowRef(null),recoveryVisible=ref(false)
 const activeInterface=shallowRef(null),affectedPayment=shallowRef(null)
@@ -241,7 +242,8 @@ const authorizeEmbeddedPayment=async()=>{
  }catch{return false}
 }
 const dismissPayment=()=>{
- if(submissionStarted&&paymentSummary.value)affectedPayment.value=paymentSummary.value
+ if(merchantRiskRetry.value&&savedCheckout.value){void customerScope.request(`/api/account/payment-checkouts/${savedCheckout.value}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{})}
+ else if(submissionStarted&&paymentSummary.value)affectedPayment.value=paymentSummary.value
  paymentEpoch++;savedCheckout.value='';embeddedPayment.value=null;activeInterface.value=null;hostedFallback.value='';embeddedFallback='';submissionStarted=false
  orderError.value='';paymentFormError.value='';recoveryVisible.value=false
 }
@@ -283,7 +285,7 @@ const customerId = ref(customerScope.accountId)
 let quoteSequence = 0
 let quoteTimer
 const scheduleQuote = () => {clearTimeout(quoteTimer);quoteTimer=setTimeout(() => {if(addressComplete.value && availablePaymentMethods.value.length) void refreshQuote()},180)}
-const readPending = () => { pendingCheckout.value = readPendingCheckoutForCart(window.localStorage, customerId.value, { id: cartId.value, revision: revision.value }) }
+const readPending = () => { const retained=readPendingCheckoutForCart(window.localStorage, customerId.value, { id: cartId.value, revision: revision.value });pendingCheckout.value=merchantRiskRetry.value&&retained?.body?.payment_method==='card'?null:retained }
 let checkoutStartedTracked = false
 
 const address = reactive({ first_name: '', last_name: '', street_address: '', address_line_2: '', city: '', phone: '', email: '', governorate: '' })
@@ -531,7 +533,7 @@ const placeOrder = async () => {
   if (placingOrder.value || reviewRequired.value) return
   if (!await waitForSync()) {orderError.value=t('cartSync.error');return}
   readPending()
-  if(pendingCheckout.value){recoveryVisible.value=true;await recoverCheckout();return}
+  if(pendingCheckout.value&&!(merchantRiskRetry.value&&selectedPaymentMethod.value==='card')){recoveryVisible.value=true;await recoverCheckout();return}
   placingOrder.value = true
   orderError.value = ''
   try {
@@ -549,6 +551,19 @@ const placeOrder = async () => {
     if (!await refreshQuote()) return
     await checkoutLock(customerId.value, async () => {
       customerScope.assertCurrent()
+      if(merchantRiskRetry.value&&selectedPaymentMethod.value==='card'){
+       const previous=readPendingCheckoutForCart(window.localStorage,customerId.value,{id:cartId.value,revision:revision.value})
+       if(previous?.body?.payment_method==='card')removePendingCheckout(window.localStorage,previous)
+       const acceptedTerms=JSON.stringify([quote.value?.totalAmount,quote.value?.lines,quote.value?.shipping,quote.value?.stockFulfillmentState])
+       renewCart();ensurePurchaseLineIdentities();syncCart()
+       const syncDeadline=Date.now()+10000
+       while(syncState.value==='saving'&&Date.now()<syncDeadline)await new Promise(resolve=>setTimeout(resolve,20))
+       if(!await waitForSync()){orderError.value=t('cartSync.error');return}
+       await nextTick();clearTimeout(quoteTimer)
+       if(!await refreshQuote())return
+       if(acceptedTerms!==JSON.stringify([quote.value?.totalAmount,quote.value?.lines,quote.value?.shipping,quote.value?.stockFulfillmentState])){orderError.value=t('paymentInterface.review');return}
+       checkoutStep.value='payment'
+      }
       readPending()
       if (pendingCheckout.value){recoveryVisible.value=true;await sendCommand(pendingCheckout.value,true);return}
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
@@ -574,8 +589,9 @@ const reviewCart = () => {
   quote.value = null
   checkoutStep.value = 'shipping'
 }
+const restorePaymentPresentation=event=>{if(event.persisted&&merchantRiskRetry.value)dismissPayment()}
 const storageChanged = () => { readPending() }
-onBeforeUnmount(() => {clearTimeout(quoteTimer);paymentEpoch++;window.removeEventListener('storage', storageChanged)})
+onBeforeUnmount(() => {clearTimeout(quoteTimer);paymentEpoch++;window.removeEventListener('storage', storageChanged);window.removeEventListener('pageshow',restorePaymentPresentation)})
 customerScope.onInvalidate(() => {
   savedCheckout.value='';hostedFallback.value='';embeddedPayment.value=null;paymentSummary.value=null;embeddedFallback='';recoveryVisible.value=false;appleDevice.value=false;selectedPaymobMethod.value='card'
   activeInterface.value=null;affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++
@@ -599,7 +615,7 @@ onMounted(async () => {
   loadCart()
   if (!customerScope.isCurrent()) return
   readPending()
-  window.addEventListener('storage', storageChanged)
+  window.addEventListener('storage', storageChanged);window.addEventListener('pageshow',restorePaymentPresentation)
   if(pendingCheckout.value&&prepaidFlow.value&&pendingCheckout.value.body.payment_method==='card'){
     const retained=pendingCheckout.value
     try{

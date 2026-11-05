@@ -27,6 +27,7 @@ export async function createPaymentCheckout({body,user,db,runtime,fetcher=fetch}
  let prepared
  try{prepared=await paymentCheckoutRpc(db,'commerce_prepare_payment_checkout',{p_user_id:user.id,p_cart_id:context.cartId,p_quote_id:quoteId,p_order:order,p_items:items,p_cart_revision:cart_revision||null,p_cart_lines:cart_lines})}
  catch(error){return affectedCheckout(db,user,error)}
+ if(prepared.checkout.orderId&&prepared.checkout.paymentStatus==='paid'||prepared.checkout.fundsVerified===true)return {created:false,checkout:prepared.checkout}
  const reopen=async()=>{
   if(prepared.checkout.canRestart&&!prepared.checkout.canResume)throw createError({statusCode:409,statusMessage:'Review the updated checkout.',data:{code:'checkout:restart'}})
   try{
