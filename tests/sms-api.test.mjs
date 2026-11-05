@@ -15,10 +15,11 @@ import { processSmsQueue } from '../server/utils/sms/service.js'
 import { pdcEventKey } from '../server/utils/pdcTracking.js'
 import { vodafoneProvider, VODAFONE_NAMESPACE } from '../server/utils/sms/vodafone.js'
 const workerSecret = 'sms-api-test-worker-key-at-least-32-characters'
-globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-api-test-master-key-at-least-32-characters', smsWorkerSecret: workerSecret })
+globalThis.useRuntimeConfig = () => ({ credentialsEncryptionKey: 'sms-api-test-master-key-at-least-32-characters', smsWorkerSecret: workerSecret,smsTransactionalEnabled:true,public:{siteUrl:'https://store.example.invalid'} })
 
 test('actual SMS H3 routes with isolated SQL and mocked authenticated staff identities', async t => {
   const db = await createResetDatabase()
+  await db.query("select set_config('request.jwt.claim.role','service_role',false)")
   const client = smsDatabaseClient(db)
   const ownerId = randomUUID(), viewerId = randomUUID(), senderId = randomUUID()
   const actors = {
@@ -133,20 +134,22 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
       for (const value of ['CD'.repeat(16), 'api-account-fixture', 'api-password-fixture', 'replacement-fixture']) assert.ok(!audit.includes(value))
     })
     await t.test('notification/campaign server permissions, confirmation and bulk limits enforced', async () => {
+      const gate=await client.rpc('sms_configure_transactional',{p_actor:ownerId,p_revision:0,p_enabled:true,p_bindings:[]});assert.equal(gate.error,null)
       const input = { trafficType: 'notification', recipients: ['01012345678'], text: 'Manual fixture', sender: 'APP', idempotencyKey: randomUUID() }
       assert.equal((await call('send', { actor: 'viewer', method: 'POST', body: input })).response.status, 403)
-      assert.equal((await call('send', { actor: 'sender', method: 'POST', body: { ...input, trafficType: 'campaign', campaignConfirmed: true } })).response.status, 403)
-      assert.equal((await call('send', { method: 'POST', body: { ...input, trafficType: 'campaign' } })).response.status, 400)
+      assert.equal((await call('send', { actor: 'sender', method: 'POST', body: { ...input, trafficType: 'campaign', campaignConfirmed: true } })).response.status, 409)
+      assert.equal((await call('send', { method: 'POST', body: { ...input, trafficType: 'campaign' } })).response.status, 409)
       assert.equal((await call('send', { method: 'POST', body: { ...input, recipients: ['01012345678', '01112345678'] } })).response.status, 400)
       const sent = await call('send', { actor: 'sender', method: 'POST', body: input })
       assert.equal(sent.response.status, 200); assert.equal(sent.body.status, 'queued')
       assert.equal((await call('send', { actor: 'sender', method: 'POST', body: input })).body.id, sent.body.id)
+      const beforeCampaigns=(await db.query("select count(*)::int n from public.sms_batches where traffic_type='campaign'")).rows[0].n
       const campaign = await call('send', { method: 'POST', body: { ...input, idempotencyKey: randomUUID(), trafficType: 'campaign', campaignConfirmed: true, recipients: ['01012345678', '01112345678'] } })
-      assert.equal(campaign.response.status, 200)
+      assert.equal(campaign.response.status, 409)
       const duplicateCampaign = await call('send', { method: 'POST', body: { ...input, idempotencyKey: randomUUID(), trafficType: 'campaign', campaignConfirmed: true } })
-      assert.equal(duplicateCampaign.response.status, 429)
+      assert.equal(duplicateCampaign.response.status, 409);assert.equal((await db.query("select count(*)::int n from public.sms_batches where traffic_type='campaign'")).rows[0].n,beforeCampaigns)
     })
-    await t.test('manual H3 Notification and Campaign both reach mocked Vodafone through the same queue', async () => {
+    await t.test('manual H3 Notification reaches mocked Vodafone while unapproved raw campaigns stay closed', async () => {
       const paths = [], privateHashValues = []
       const provider = { submit: (settings, credentials, batch, messages, _transport, beforeDispatch) => vodafoneProvider.submit(settings, credentials, batch, messages, async (url, xml, _timeout, beforePost) => {
         await beforePost()
@@ -161,14 +164,14 @@ test('actual SMS H3 routes with isolated SQL and mocked authenticated staff iden
         privateHashValues.push(credentials.hashSecret, hashInput, digest)
         return { status: 200, body: `<SubmitSMSResponse xmlns="${VODAFONE_NAMESPACE}">${messages.map(() => '<SMSStatus>SUBMITTED</SMSStatus>').join('')}<ResultStatus>SUCCESS</ResultStatus></SubmitSMSResponse>` }
       }, beforeDispatch) }
-      for (let index = 0; index < 2; index++) {
+      for (let index = 0; index < 1; index++) {
         await db.query('update public.sms_provider_settings set next_request_at=null')
         const result = await processSmsQueue(client, { provider })
         assert.equal(result.processed[0].status, 'submitted')
         for (const value of privateHashValues) assert.ok(!JSON.stringify(result).includes(value))
       }
-      assert.deepEqual(paths, ['/web2sms/sms/submit/Notification', '/web2sms/sms/submit'])
-      assert.equal((await db.query("select count(*)::int n from public.sms_batches where trigger_source='dashboard_manual' and status='submitted'")).rows[0].n, 2)
+      assert.deepEqual(paths, ['/web2sms/sms/submit/Notification'])
+      assert.equal((await db.query("select count(*)::int n from public.sms_batches where trigger_source='dashboard_manual' and status='submitted'")).rows[0].n, 1)
       const observable = JSON.stringify({ history: (await call('history')).body,
         attempts: (await db.query('select * from public.sms_attempts')).rows,
         audit: (await db.query("select metadata from public.admin_activity_logs where action_key like 'sms.%'")).rows })

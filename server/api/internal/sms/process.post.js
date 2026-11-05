@@ -5,8 +5,8 @@ import {processSmsQueue} from '../../../utils/sms/service.js'
 import {readSmsBody,smsHandler} from '../../../utils/sms/admin.js'
 import {processOrderSmsEvents} from '../../../utils/sms/orderEvents.js'
 import {processClaimCommunications} from '../../../utils/afterSalesCommunications.js'
-import {processTransactionalSms} from '../../../utils/sms/transactional'
-import {processMarketingSms,unsubscribeKeys} from '../../../utils/sms/marketing'
+import {processTransactionalSms} from '../../../utils/sms/transactional.js'
+import {processMarketingSms,unsubscribeKeys} from '../../../utils/sms/marketing.js'
 export default defineEventHandler(smsHandler(async event=>{
  const on=v=>[true,'true'].includes(v),runtime=useRuntimeConfig(event)
  if(!on(runtime.smsTransactionalEnabled)&&!on(runtime.smsMarketingEnabled)){setResponseStatus(event,404);return {state:'disabled'}}
