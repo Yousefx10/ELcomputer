@@ -843,7 +843,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .review-eligibility-status { color: var(--store-navy, #0f172a); background: var(--surface-muted, #f8fafc); border-color: var(--store-border, #cbd5e1); }
-:global(.dark) .review-eligibility-status { color: #e2e8f0; background: #1e293b; border-color: #475569; }
+.dark .review-eligibility-status { color: #e2e8f0; background: #1e293b; border-color: #475569; }
 .review-eligibility-status button { color: inherit; background: transparent; border-color: currentColor; }
 .review-eligibility-status button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
 </style>
