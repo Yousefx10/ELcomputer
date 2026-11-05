@@ -443,3 +443,14 @@
   .storefront .store-hero-controls button { width: 40px; height: 40px; }
   .storefront .store-hero-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Keep authored compositions visible, including text inside the source image. */
+.storefront .store-hero-image { object-fit: var(--hero-fit, contain); }
+@media (max-width: 1023px) {
+  .storefront .store-hero-grid { grid-template-rows: auto; }
+  .storefront .store-hero { height: auto; }
+  .storefront .store-hero-image-link, .storefront .store-hero-picture { height: auto; }
+  .storefront .store-hero-image { aspect-ratio: 2 / 1; height: auto; object-fit: var(--hero-mobile-fit, contain); object-position: var(--hero-mobile-position, 50% 50%); }
+  .storefront .store-hero-authored-copy { position: static; padding: 12px 16px 56px; color: var(--store-navy); background: var(--surface-muted); }
+  .storefront .store-hero:not(.store-hero-multiple) .store-hero-authored-copy { padding-bottom: 12px; }
+}

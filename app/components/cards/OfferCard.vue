@@ -1,6 +1,6 @@
 <template>
   <article class="store-offer-card">
-    <img v-if="getStoreImageUrl(imageUrl)" :src="imageUrl" :alt="title || $t('common.storeOffer')" loading="lazy" />
+    <img v-if="getStoreImageUrl(imageUrl)" :src="publicImage(imageUrl)" :alt="title || $t('common.storeOffer')" loading="lazy" />
     <div class="store-offer-copy">
       <p v-if="eyebrowText">{{ eyebrowText }}</p>
       <h3>{{ title || $t('common.storeOffer') }}</h3>
@@ -10,6 +10,8 @@
 </template>
 
 <script setup>
+import {usePublicImageUrl} from '~/composables/usePublicImageUrl'
+const publicImage=usePublicImageUrl()
 import { getStoreImageUrl } from '~/utils/storefront'
 defineProps({
   eyebrowText: { type: String, default: '' },

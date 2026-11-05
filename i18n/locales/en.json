@@ -5978,7 +5978,8 @@
     "couponExhausted": "This coupon has reached its usage limit.",
     "couponUsed": "You have already used this coupon.",
     "couponIneligible": "This coupon does not apply to these products.",
-    "cartLoading": "Wait for your saved cart to load."
+    "cartLoading": "Wait for your saved cart to load.",
+    "mobileFit": "Mobile and tablet image fit"
   },
   "couponRules": {
     "category": "Eligible category ID",
@@ -6117,5 +6118,24 @@
     "testCustomer": "Test customer ID",
     "testMinutes": "Test window (minutes)",
     "testLimit": "Maximum test events"
+  },
+  "imageCache": {
+    "title": "Public image caching",
+    "enabled": "Cache public images",
+    "freshness": "Freshness",
+    "age0": "Revalidate every time",
+    "age3600": "One hour",
+    "age86400": "One day",
+    "age604800": "One week",
+    "originals": "Original VPS images. No transformation cache or browser storage limit.",
+    "expiry": "Existing browser copies expire normally. Save to refresh image URLs.",
+    "invalidate": "Refresh image URLs on save",
+    "inspect": "Check diagnostics",
+    "verified": "Settings cache: up to {seconds} seconds.",
+    "failed": "Could not load diagnostics.",
+    "responses": "Image responses",
+    "revalidated": "Conditional responses",
+    "avoided": "Body bytes avoided",
+    "measurementScope": "Current process only. Fresh browser hits are not measured."
   }
 }

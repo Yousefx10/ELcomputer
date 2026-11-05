@@ -1,4 +1,6 @@
 <script setup>
+import {usePublicImageUrl} from '~/composables/usePublicImageUrl'
+const publicImage=usePublicImageUrl()
 const props = defineProps({ items: { type: Array, default: () => [] }, modelValue: { type: String, default: '' }, title: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue', 'image-error'])
 const { locale } = useI18n()
@@ -64,7 +66,7 @@ onBeforeUnmount(close)
         <video v-if="active.type === 'video'" :key="active.url" :src="active.url" controls playsinline preload="metadata" :aria-label="active.alt || $t('productPage.video')" @loadedmetadata="loading = false" @error="mediaError(active)" />
         <button v-if="active.type === 'video'" type="button" class="pdp-gallery-expand" :aria-label="$t('productPage.openGallery')" aria-haspopup="dialog" @click="open"><Icon name="lucide:expand" size="18" aria-hidden="true" /></button>
         <button v-else class="pdp-gallery-open" type="button" :aria-label="$t('productPage.openGallery')" aria-haspopup="dialog" @click="open">
-          <img :key="active.url" :src="active.url" :alt="active.alt || title" width="900" height="900" loading="eager" fetchpriority="high" decoding="async" @load="loading = false" @error="mediaError(active)">
+          <img :key="active.url" :src="publicImage(active.url)" :alt="active.alt || title" width="900" height="900" loading="eager" fetchpriority="high" decoding="async" @load="loading = false" @error="mediaError(active)">
           <span class="pdp-gallery-expand" aria-hidden="true"><Icon name="lucide:expand" size="18" /></span>
         </button>
         <span v-if="loading" class="pdp-gallery-loading" role="status"><span class="sr-only">{{ $t('productPage.loadingImage') }}</span></span>
@@ -79,7 +81,7 @@ onBeforeUnmount(close)
     <div v-if="media.length > 1" class="pdp-thumbnails" :aria-label="$t('common.galleryThumbnails')" @keydown="thumbnailKeydown">
       <button v-for="(item, position) in media" :key="item.url" :ref="el => { thumbnails[position] = el }" type="button" :tabindex="position === index ? 0 : -1" :aria-current="position === index ? 'true' : undefined" :aria-label="$t('productPage.mediaNumber', { number: position + 1, total: media.length })" @click="select(item)">
         <Icon v-if="item.type === 'video'" name="lucide:play" size="23" aria-hidden="true" />
-        <img v-else :src="item.url" :alt="''" width="64" height="64" loading="lazy" decoding="async" @error="mediaError(item)">
+        <img v-else :src="publicImage(item.url)" :alt="''" width="64" height="64" loading="lazy" decoding="async" @error="mediaError(item)">
       </button>
     </div>
     <slot name="actions" />
@@ -89,7 +91,7 @@ onBeforeUnmount(close)
           <div class="pdp-dialog-toolbar"><span>{{ title }}</span><div><button v-if="active?.type !== 'video'" type="button" :aria-label="$t(zoomed ? 'productPage.zoomOut' : 'productPage.zoomIn')" :aria-pressed="zoomed" @click="zoomed = !zoomed"><Icon :name="zoomed ? 'lucide:zoom-out' : 'lucide:zoom-in'" size="21" /></button><button ref="closeButton" type="button" :aria-label="$t('productPage.closeGallery')" @click="close"><Icon name="lucide:x" size="23" /></button></div></div>
           <div v-if="active" class="pdp-dialog-stage" :data-zoomed="zoomed" @pointerdown="pointerDown" @pointerup="pointerUp" @pointercancel="gesture = null">
             <video v-if="active.type === 'video'" :key="active.url" :src="active.url" controls playsinline preload="metadata" :aria-label="active.alt || $t('productPage.video')" @error="mediaError(active)" />
-            <button v-else type="button" :aria-label="$t(zoomed ? 'productPage.zoomOut' : 'productPage.zoomIn')" @click="zoomed = !zoomed"><img :src="active.url" :alt="active.alt || title" @error="mediaError(active)"></button>
+            <button v-else type="button" :aria-label="$t(zoomed ? 'productPage.zoomOut' : 'productPage.zoomIn')" @click="zoomed = !zoomed"><img :src="publicImage(active.url)" :alt="active.alt || title" @error="mediaError(active)"></button>
           </div>
           <div class="pdp-dialog-navigation"><button type="button" :disabled="media.length < 2" :aria-label="$t('productPage.previousMedia')" @click="step(-1)"><Icon name="lucide:chevron-left" class="directional-icon" size="22" /></button><p aria-live="polite">{{ $t('productPage.mediaNumber', { number: index + 1, total: media.length }) }}</p><button type="button" :disabled="media.length < 2" :aria-label="$t('productPage.nextMedia')" @click="step(1)"><Icon name="lucide:chevron-right" class="directional-icon" size="22" /></button></div>
           <p id="pdp-gallery-help" class="pdp-dialog-help">{{ $t('productPage.galleryHelp') }}</p>

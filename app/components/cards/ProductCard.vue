@@ -3,7 +3,7 @@
     <NuxtLinkLocale :to="product.slug ? `/products/${product.slug}` : '/search'" class="store-product-image" :aria-label="product.title">
       <span v-if="discountPercent > 0" class="store-product-badge">{{ $t('common.saveValueVariant2', { value0: (discountPercent) }) }}</span>
       <span v-else-if="product.is_featured" class="store-product-badge store-product-badge-featured">{{ $t('common.featured') }}</span>
-      <img v-if="getStoreImageUrl(product.image_url)" :src="product.image_url" :alt="product.title" loading="lazy" />
+      <img v-if="getStoreImageUrl(product.image_url)" :src="publicImage(product.image_url)" :alt="product.title" loading="lazy" decoding="async" width="480" height="480" />
       <Icon v-else :name="getStoreCategoryIcon(product.category?.name)" size="56" class="store-product-placeholder" />
     </NuxtLinkLocale>
     <div class="store-product-info">
@@ -29,6 +29,8 @@
 </template>
 
 <script setup>
+import {usePublicImageUrl} from '~/composables/usePublicImageUrl'
+const publicImage=usePublicImageUrl()
 const { categoryName: localizedCategoryName } = useCategoryLocale()
 
 const { intlLocale } = useUiLocale()

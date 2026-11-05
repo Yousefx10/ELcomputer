@@ -2,13 +2,15 @@
   <div v-if="resolvedImageUrl" class="store-banner-ad">
     <component :is="bannerComponent" v-bind="bannerAttributes" class="store-banner-ad-link">
       <div class="store-banner-ad-media">
-        <img :src="resolvedImageUrl" :alt="altText || $t('application.bannerAd')" loading="lazy">
+        <img :src="publicImage(resolvedImageUrl)" :alt="altText || $t('application.bannerAd')" loading="lazy">
       </div>
     </component>
   </div>
 </template>
 
 <script setup>
+import {usePublicImageUrl} from '~/composables/usePublicImageUrl'
+const publicImage=usePublicImageUrl()
 import { getConfiguredStoreImageUrl, getStoreLinkUrl, isExternalStoreLink } from '~/utils/storefront'
 
 const props = defineProps({

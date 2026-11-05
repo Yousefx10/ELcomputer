@@ -28,7 +28,7 @@ export async function createMediaFixture(options={}) {
   const router=createRouter()
   try {
     for(const[method,path,file]of[
-      ['post','/api/admin-uploads','server/api/admin-uploads/index.post.js'],['get','/api/admin-gallery','server/api/admin-gallery/index.get.js'],['delete','/api/admin-gallery','server/api/admin-gallery/index.delete.js'],['get','/uploads/**','server/routes/uploads/[...path].get.js']]){
+      ['post','/api/admin-uploads','server/api/admin-uploads/index.post.js'],['get','/api/admin-gallery','server/api/admin-gallery/index.get.js'],['delete','/api/admin-gallery','server/api/admin-gallery/index.delete.js'],['get','/uploads/**','server/routes/uploads/[...path].get.js'],['head','/uploads/**','server/routes/uploads/[...path].head.js'],...(options.routes||[])]){
       const result=await build({entryPoints:[resolve(file)],bundle:true,write:false,format:'esm',platform:'node',alias:{'~':resolve('app')},plugins:[{name:key,setup(b){
         b.onResolve({filter:/\/supabaseAdmin$/},()=>({path:key,namespace:key}));b.onLoad({filter:/.*/,namespace:key},()=>({contents:`export const getSupabaseAdminClient=()=>globalThis[${JSON.stringify(key)}].client`,loader:'js'}));b.onResolve({filter:/^h3$/},()=>({path:import.meta.resolve('h3'),external:true}))
       }}],banner:{js:`const useRuntimeConfig=()=>({uploadsDir:globalThis[${JSON.stringify(key)}].root});`}})

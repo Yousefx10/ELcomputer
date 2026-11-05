@@ -36,6 +36,7 @@ export const defaultSiteSettings = {
   allow_out_of_stock_purchases: false,
   inventory_tracking_required: true,
   catalog_infinite_scroll_enabled: true,
+  public_image_cache: {enabled:false,maxAge:86400,version:'1'},
   backorder_fulfillment_message: '',
   backorder_fulfillment_message_ar: '',
   homepage_reviews_enabled: true,

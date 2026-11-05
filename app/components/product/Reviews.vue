@@ -216,7 +216,7 @@
 
           <div
             v-else-if="!reviewEligibilityChecked"
-            class="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-gray-700"
+            class="review-eligibility-status mt-6 rounded-xl border p-4 sm:p-6"
             role="status"
           >
             <div class="flex items-center gap-3">
@@ -227,7 +227,7 @@
 
           <div
             v-else-if="!reviewEligibility.canReview"
-            class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
+            class="review-eligibility-status mt-6 rounded-xl border p-4 sm:p-6"
             role="status"
           >
             <div class="flex items-start gap-3">
@@ -840,3 +840,10 @@ onBeforeUnmount(() => {
   reviewSubmitGeneration += 1
 })
 </script>
+
+<style scoped>
+.review-eligibility-status { color: var(--store-navy, #0f172a); background: var(--surface-muted, #f8fafc); border-color: var(--store-border, #cbd5e1); }
+:global(.dark) .review-eligibility-status { color: #e2e8f0; background: #1e293b; border-color: #475569; }
+.review-eligibility-status button { color: inherit; background: transparent; border-color: currentColor; }
+.review-eligibility-status button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+</style>

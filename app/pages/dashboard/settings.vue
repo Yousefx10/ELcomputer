@@ -104,6 +104,7 @@
                 >
               </div>
 
+              <DashboardPublicImageCache v-model="siteSettings.public_image_cache" />
               <label class="flex min-h-11 items-start gap-3 rounded-lg border p-4 text-sm">
                 <input v-model="siteSettings.catalog_infinite_scroll_enabled" type="checkbox" class="mt-1">
                 <span><strong class="block">{{ $t('ownerPhase2.infiniteScroll') }}</strong><span class="mt-1 block text-gray-500">{{ $t('ownerPhase2.infiniteHelp') }}</span></span>
@@ -2256,6 +2257,7 @@
 </template>
 
 <script setup>
+import { normalizePublicImageCache } from '~/utils/publicImageCache'
 import { heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
@@ -2536,6 +2538,7 @@ const siteSettingsSectionFields = {
     'allow_out_of_stock_purchases',
     'inventory_tracking_required',
     'catalog_infinite_scroll_enabled',
+    'public_image_cache',
     'backorder_fulfillment_message',
     'backorder_fulfillment_message_ar'
   ],
@@ -2948,6 +2951,7 @@ const normalizeSiteSettings = (source = {}) => ({
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   inventory_tracking_required: source.inventory_tracking_required ?? true,
   catalog_infinite_scroll_enabled: source.catalog_infinite_scroll_enabled ?? true,
+  public_image_cache: normalizePublicImageCache(source.public_image_cache),
   backorder_fulfillment_message: source.backorder_fulfillment_message ?? '',
   backorder_fulfillment_message_ar: source.backorder_fulfillment_message_ar ?? '',
   homepage_reviews_enabled: source.homepage_reviews_enabled ?? defaultSiteSettings.homepage_reviews_enabled,
