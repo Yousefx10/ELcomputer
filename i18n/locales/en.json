@@ -6080,5 +6080,42 @@
       "pause": "Paused",
       "cancel": "Cancelled"
     }
+  },
+  "metaTracking": {
+    "title": "Meta tracking",
+    "privacyTitle": "Marketing cookies",
+    "privacyDetail": "Allow Meta tracking to measure visits and purchases.",
+    "decline": "Decline",
+    "allow": "Allow marketing cookies",
+    "privacySettings": "Privacy preferences",
+    "failed": "Could not save. Your changes are retained.",
+    "enabled": "Enable Meta tracking",
+    "pixelId": "Pixel / Dataset ID",
+    "capiEnabled": "Enable server events",
+    "token": "Conversions API access token",
+    "tokenSaved": "A token is saved. Leave blank to keep it.",
+    "tokenEmpty": "No token is saved.",
+    "clearToken": "Remove saved token",
+    "version": "Graph API version",
+    "testCode": "Test Events code",
+    "purchaseRule": "Purchase events require verified payment and a paid order.",
+    "saved": "Tracking settings saved.",
+    "diagnostics": "Event diagnostics",
+    "diagnosticsDetail": "Check this code in Meta Events Manager → Test Events.",
+    "event": "Event",
+    "status": "Status",
+    "attempts": "Attempts",
+    "noEvents": "No events recorded.",
+    "states": {
+      "pending": "Pending",
+      "dispatching": "Sending",
+      "delivered": "Accepted by Meta",
+      "retry": "Retry scheduled",
+      "held": "Needs review",
+      "suppressed": "Not sent"
+    },
+    "testCustomer": "Test customer ID",
+    "testMinutes": "Test window (minutes)",
+    "testLimit": "Maximum test events"
   }
 }

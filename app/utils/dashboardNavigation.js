@@ -61,6 +61,7 @@ const group = (key, label, icon, match, children, access = {}) => ({
 const primarySettingsKeys = new Set(['erp', 'after-sales', 'gallery', 'coupons', 'logs', 'reset'])
 
 export const dashboardNavigationGroups = [
+ {key:'marketing',label:'Meta tracking',icon:'lucide:chart-no-axes-combined',to:'/dashboard/marketing',permission:'settings.view',documentTitle:'Dashboard - Meta tracking',match:{paths:['/dashboard/marketing']}},
  {key:'payments',label:'Payments',icon:'lucide:credit-card',to:'/dashboard/payments',permission:'payments.view',documentTitle:'Dashboard - Payments',match:{paths:['/dashboard/payments']}},
   group('dashboard', 'Dashboard', 'layout-dashboard', { paths: ['/dashboard'] }, [
     child('summary', 'Overview', 'gauge', '/dashboard', 'view', ['', 'summary']),

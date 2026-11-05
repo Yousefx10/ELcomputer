@@ -1,0 +1,10 @@
+[Unit]
+Description=Private marketing attribute retention
+
+[Timer]
+OnBootSec=120
+OnUnitInactiveSec=1h
+Unit=marketing@retention.service
+
+[Install]
+WantedBy=timers.target

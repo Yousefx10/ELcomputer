@@ -243,6 +243,7 @@ export const getDashboardRouteRequirement = (route = '') => {
 
   if (path === '/dashboard/after-sales' || path.startsWith('/dashboard/after-sales/')) return { permission: 'claims.view' }
 
+  if (path === '/dashboard/marketing') return {permission:'settings.view'}
   if (path === '/dashboard/payments') return {permission:'payments.view'}
   if (path === '/dashboard/email') return { permission: ({ settings:'email.settings.view', templates:'email.templates.view', send:'email.transactional.send', history:'email.history.view', events:'email.history.view', preferences:'email.marketing.manage' })[tab || 'settings'] || 'email.view' }
 

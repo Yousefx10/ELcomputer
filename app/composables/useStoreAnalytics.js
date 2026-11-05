@@ -1,3 +1,4 @@
+import {emitMetaEvent,metaAnalyticsNames} from '~/utils/metaTracking'
 import {
   getStorefrontAudienceAccessToken,
   getStorefrontAudienceStatus,
@@ -378,6 +379,8 @@ export const useStoreAnalytics = () => {
       if (audienceStatus === STOREFRONT_AUDIENCE_UNKNOWN) {
         return bufferEventsUntilAudienceResolves(normalizedEvents, options)
       }
+
+      normalizedEvents.forEach(event => { if(metaAnalyticsNames[event.eventName]) emitMetaEvent(event.eventName,event) })
 
       if (options.immediate || options.keepalive) {
         sendImmediateEvents(normalizedEvents, options)

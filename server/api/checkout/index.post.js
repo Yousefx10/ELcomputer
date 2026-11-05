@@ -1,3 +1,4 @@
+import {bindMetaCheckout} from '../../utils/metaTracking'
 import {createTransferCheckout,manualTransferEnabled} from '../../utils/payments/transfers.js'
 import {createPaymentCheckout,paymentFirstEnabled} from '../../utils/payments/checkout.js'
 import { randomUUID } from 'node:crypto'
@@ -15,6 +16,7 @@ export default defineEventHandler(async event => {
   const { authUser, supabaseAdmin } = await requireCustomerRequest(event)
   const body = await readBody(event)
   const runtime=useRuntimeConfig(event)
+  await bindMetaCheckout(event,authUser,body,supabaseAdmin,runtime)
   if(paymentFirstEnabled(runtime)&&!['card','cash','instapay'].includes(body?.payment_method))throw createError({statusCode:400,statusMessage:'This payment method is unavailable.'})
   if(manualTransferEnabled(runtime)&&body?.payment_method==='instapay')return createTransferCheckout({body,user:authUser,db:supabaseAdmin,runtime})
   if(paymentFirstEnabled(runtime)&&body?.payment_method==='card')return createPaymentCheckout({body,user:authUser,db:supabaseAdmin,runtime})

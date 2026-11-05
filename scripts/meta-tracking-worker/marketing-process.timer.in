@@ -1,0 +1,10 @@
+[Unit]
+Description=Bounded commerce marketing dispatch
+
+[Timer]
+OnBootSec=90
+OnUnitInactiveSec=10
+Unit=marketing@process.service
+
+[Install]
+WantedBy=timers.target

@@ -6080,5 +6080,42 @@
       "pause": "إيقاف مؤقت",
       "cancel": "إلغاء"
     }
+  },
+  "metaTracking": {
+    "title": "تتبع Meta",
+    "privacyTitle": "ملفات تعريف الارتباط التسويقية",
+    "privacyDetail": "اسمح بتتبع Meta لقياس الزيارات والمشتريات.",
+    "decline": "رفض",
+    "allow": "السماح بملفات التسويق",
+    "privacySettings": "تفضيلات الخصوصية",
+    "failed": "تعذر الحفظ. تم الاحتفاظ بتغييراتك.",
+    "enabled": "تفعيل تتبع Meta",
+    "pixelId": "معرّف Pixel / Dataset",
+    "capiEnabled": "تفعيل أحداث الخادم",
+    "token": "رمز الوصول إلى Conversions API",
+    "tokenSaved": "يوجد رمز محفوظ. اترك الحقل فارغاً للاحتفاظ به.",
+    "tokenEmpty": "لا يوجد رمز محفوظ.",
+    "clearToken": "حذف الرمز المحفوظ",
+    "version": "إصدار Graph API",
+    "testCode": "رمز أحداث الاختبار",
+    "purchaseRule": "تتطلب أحداث الشراء دفعاً موثقاً وطلباً مدفوعاً.",
+    "saved": "تم حفظ إعدادات التتبع.",
+    "diagnostics": "تشخيص الأحداث",
+    "diagnosticsDetail": "تحقق من الرمز في مدير أحداث Meta ← أحداث الاختبار.",
+    "event": "الحدث",
+    "status": "الحالة",
+    "attempts": "المحاولات",
+    "noEvents": "لم تُسجل أحداث.",
+    "states": {
+      "pending": "قيد الانتظار",
+      "dispatching": "جارٍ الإرسال",
+      "delivered": "قبلته Meta",
+      "retry": "إعادة المحاولة مجدولة",
+      "held": "يحتاج إلى مراجعة",
+      "suppressed": "لم يُرسل"
+    },
+    "testCustomer": "معرّف عميل الاختبار",
+    "testMinutes": "مدة الاختبار بالدقائق",
+    "testLimit": "الحد الأقصى للأحداث"
   }
 }

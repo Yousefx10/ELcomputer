@@ -39,5 +39,5 @@ useHead(() => ({
 </script>
 
 <template>
-  <NuxtLayout :key="customerLayoutKey"><NuxtPage :page-key="customerArea ? customerPageKey : undefined" /></NuxtLayout>
+  <NuxtLayout :key="customerLayoutKey"><NuxtPage :page-key="customerArea ? customerPageKey : undefined" /></NuxtLayout><ClientOnly><PrivacyMarketingConsent /></ClientOnly>
 </template>

@@ -1,3 +1,4 @@
+import {emitMetaEvent} from '~/utils/metaTracking'
 import { acknowledgeCart, acknowledgePurchasedCart, restoreCart, cartCompletionPrefix } from '~/utils/checkoutRecovery'
 import { accountCartOwner, cartStateKey, cartStatePrefix, guestCartSessionKey, readOwnedCart } from '~/utils/cartSession'
 import { allowsCartBackorder } from '~/utils/backorder'
@@ -365,6 +366,7 @@ export const useCart = () => {
   const trackCartEvent = (eventName, payload = {}) => {
     try {
       trackEvent(eventName, payload)
+      if(eventName==='add_to_cart')emitMetaEvent('AddToCart',payload)
     } catch {
       // Cart actions must never fail because analytics is unavailable.
     }

@@ -1,0 +1,11 @@
+{
+  "task": "MKT-META-01",
+  "pixel_id": "1680814460341996",
+  "tracking_enabled": false,
+  "capi_enabled": false,
+  "runtime_tracking_enabled": false,
+  "runtime_dispatch_enabled": false,
+  "secure_input_path": "Dashboard → Marketing → Conversions API token",
+  "production_transmission": "requires separately sealed consented Test Events activation",
+  "token_present_in_packet": false
+}

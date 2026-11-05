@@ -1,0 +1,16 @@
+[Unit]
+Description=Commerce marketing %i
+After=network.target
+
+[Service]
+Type=oneshot
+User=@APP_USER@
+EnvironmentFile=@WORKER_ENV@
+ExecStart=/usr/bin/python3 -I -S -B @WORKER_PATH@ %i
+TimeoutStartSec=30
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_INET

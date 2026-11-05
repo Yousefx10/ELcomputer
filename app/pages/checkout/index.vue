@@ -198,6 +198,7 @@ const { intlLocale } = useUiLocale()
 const { uiNavigateTo } = useUiNavigation()
 
 import {applePayDeviceEligible} from '~/utils/paymobPixel'
+import {emitMetaEvent} from '~/utils/metaTracking'
 import {hostedPaymentUrl} from '~/utils/hostedPayment'
 import { readPendingCheckoutForCart, savePendingCheckout, removePendingCheckout, checkoutLock } from '~/utils/checkoutRecovery'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
@@ -552,6 +553,7 @@ const placeOrder = async () => {
       if (pendingCheckout.value){recoveryVisible.value=true;await sendCommand(pendingCheckout.value,true);return}
       if (!quote.value || new Date(quote.value.expiresAt) <= new Date()) { quoteError.value = 'Review checkout before confirming.'; return }
       const command = newCheckoutCommand()
+      emitMetaEvent('AddPaymentInfo',{path:'/checkout',cartId:cartId.value})
       // Persist before sending; an uncertain acknowledgement keeps this exact request.
       savePendingCheckout(window.localStorage, command)
       await sendCommand(command,true)

@@ -22,6 +22,7 @@
  </section>
 </template>
 <script setup>
+import {emitMetaEvent} from '~/utils/metaTracking'
 import {readPendingCheckout,removePendingCheckout} from '~/utils/checkoutRecovery'
 import {hostedPaymentUrl} from '~/utils/hostedPayment'
 const props=defineProps({sessionId:{type:String,required:true}})
@@ -88,6 +89,7 @@ const refresh=async()=>{
   if(disposed||version!==epoch)return
   checkout.value=result.checkout;error.value=false
   if(confirmed.value&&acknowledged!==result.checkout.id){
+   emitMetaEvent('Purchase',{orderId:result.checkout.orderId})
    try{
     const c=result.checkout,owner='account:'+scope.accountId
     const done=await completePurchasedCart({id:c.cartId,revision:c.cartRevision,owner,items:c.cartLines||[]},c.id)

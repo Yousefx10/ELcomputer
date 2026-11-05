@@ -1,3 +1,4 @@
+import {captureMetaQuote} from './metaTracking'
 import { createError } from 'h3'
 import { requireCustomerRequest } from './customerRequest'
 import { normalizeCheckoutCommand, throwCheckoutError } from './checkoutCommand'
@@ -21,5 +22,7 @@ export const reviewCheckout = async (event, { requireCoupon = false } = {}) => {
     p_user_id: authUser.id, p_cart_id: context.cartId, p_order: order, p_items: items
   })
   if (error) throwCheckoutError(error)
-  return { order, supabaseAdmin, review: authorizeNormalQuote(context, data) }
+  const review=authorizeNormalQuote(context,data)
+  await captureMetaQuote(event,supabaseAdmin,authUser.id,context.cartId,review)
+  return {order,supabaseAdmin,review}
 }
