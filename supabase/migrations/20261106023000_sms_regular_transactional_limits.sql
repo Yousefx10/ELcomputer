@@ -13,4 +13,5 @@ create or replace function public.sms_channel_state() returns jsonb language plp
  if auth.role() is distinct from 'service_role' then raise exception 'Server authorization required.';end if;
  return(select jsonb_build_object('transactionalEnabled',transactional_enabled,'revision',revision,'enabledSince',enabled_since) from private.sms_channel_controls where id);
 end $$;
+notify pgrst,'reload schema';
 commit;
