@@ -2,7 +2,7 @@ import {createError} from 'h3'
 import {normalizeCheckoutCommand} from '../checkoutCommand'
 import {authorizeNormalCheckout} from '../normalPurchase.js'
 import {getPaymobConfig,selectPaymobMethod,buildIntentionRequest,createPaymobIntention} from './paymob.js'
-import {pixelEnabledFor} from './methods.js'
+import {pixelEnabledFor,paymobExperience} from './methods.js'
 import {runPaymentCheckoutRpc as paymentCheckoutRpc} from './checkoutRpc.js'
 import {paymentInterface,affectedCheckout} from './checkoutInterface.js'
 export {runPaymentCheckoutRpc as paymentCheckoutRpc} from './checkoutRpc.js'
@@ -21,9 +21,9 @@ export async function createPaymentCheckout({body,user,db,runtime,fetcher=fetch}
  if(!/^[0-9a-f-]{36}$/i.test(quoteId)||order.payment_method!=='card')throw createError({statusCode:409,statusMessage:'Review payment checkout.'})
  const context=authorizeNormalCheckout({runtime,user,cartId,order,items,commit:true,quoteId,signature:body.review_token})
  if(context.scope)throw createError({statusCode:403,statusMessage:'This checkout is unavailable.'})
- const embedded=pixelEnabledFor(runtime,user.id)
- if(paymob_method==='apple_pay'&&!embedded)throw createError({statusCode:409,statusMessage:'This payment method is unavailable.'})
- const config=selectPaymobMethod(getPaymobConfig(context.runtime),paymob_method)
+ const embedded=pixelEnabledFor(runtime,user.id),paymob=getPaymobConfig(context.runtime)
+ if(paymob_method==='apple_pay'&&!paymobExperience(paymob.methods.find(item=>item.method==='apple_pay'),embedded,user.id))throw createError({statusCode:409,statusMessage:'This payment method is unavailable.'})
+ const config=selectPaymobMethod(paymob,paymob_method)
  let prepared
  try{prepared=await paymentCheckoutRpc(db,'commerce_prepare_payment_checkout',{p_user_id:user.id,p_cart_id:context.cartId,p_quote_id:quoteId,p_order:order,p_items:items,p_cart_revision:cart_revision||null,p_cart_lines:cart_lines})}
  catch(error){return affectedCheckout(db,user,error)}

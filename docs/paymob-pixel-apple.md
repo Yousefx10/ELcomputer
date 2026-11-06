@@ -17,6 +17,17 @@ a successful live transaction. Browser eligibility additionally requires secure
 context, `ApplePaySession.canMakePayments()` and supported session version.
 Google Pay remains unavailable.
 
+Optional `"hosted": true` on the live `apple_pay` entry sends Apple Pay to
+Paymob's hosted Unified Checkout. Paymob then owns the Apple domain and
+certificates, so the Pixel readiness flags are not needed. Hosted Apple Pay
+ignores the Pixel rollout and never opens the embedded Apple page. It still
+creates one Apple-only Intention per attempt. Card keeps its own integration.
+Signed Apple callbacks may report `source_data.type` as `card` or an Apple Pay
+label. Other source types stay rejected.
+Optional `customerIds` (up to 100 account UUIDs) limits hosted Apple Pay to
+those signed-in customers, for a first live test. Absent or empty means every
+eligible Apple device.
+
 The client selects CARD or Apple Pay before confirming checkout. Both retain
 the existing CARD commerce, pricing and fee contracts. The server selects
 exactly one integration ID for one Intention and freezes that actual ID in

@@ -110,7 +110,10 @@ export const normalizePaymobCallback = (transaction, config) => {
   }
   const registered = config.methods?.find(method => method.integrationId === transaction.integration_id && ['card', 'apple_pay'].includes(method.method) && method.flowImplemented)
   const integrationId = registered?.integrationId ?? config.integrationId
-  if (transaction.integration_id !== integrationId || transaction.currency !== 'EGP' || transaction.source_data?.type !== 'card') {
+  // Apple Pay may arrive labelled as card or as Apple Pay. Other wallets stay rejected.
+  const source = transaction.source_data?.type
+  const sourceValid = source === 'card' || registered?.method === 'apple_pay' && typeof source === 'string' && /^apple[ _-]?pay$/i.test(source)
+  if (transaction.integration_id !== integrationId || transaction.currency !== 'EGP' || !sourceValid) {
     throw new PaymentError('callback_context_mismatch', 409)
   }
   // Authorization-only, refunds, voids, captures and child transactions are separate future workflows.
