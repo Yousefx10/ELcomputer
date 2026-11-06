@@ -13,6 +13,7 @@ export const dashboardSettingsSections = [
   { key: 'layout', section: 'dashboardLayout', label: 'Dashboard appearance', group: 'Administration', icon: 'lucide:panel-right', description: 'Switch between the Classic and Modern dashboard.' },
   { key: 'product-page', section: 'productPage', label: 'Product page', group: 'Store', icon: 'lucide:panels-top-left', description: 'Choose the layout for every product.' },
   { key: 'account-dashboard', section: 'accountDashboard', label: 'Customer account', group: 'Store', icon: 'lucide:user-round-cog', description: 'Choose the customer account layout.' },
+  { key: 'checkout-layout', section: 'checkoutPage', label: 'Checkout', group: 'Store', icon: 'lucide:shopping-cart', description: 'Choose the checkout layout.' },
   { key: 'authentication', section: 'authPage', label: 'Authentication page', group: 'Store', icon: 'lucide:log-in', description: 'Set login and signup layout, images and text.' },
   { key: 'live-chat', section: 'liveChat', label: 'Live Chat', group: 'Administration', icon: 'lucide:messages-square', description: 'Set availability, hours, messages and workflow.' },
   { key: 'after-sales', label: 'After-sales policies', group: 'Store', icon: 'lucide:shield-check', description: 'Manage warranty and return policies.' },

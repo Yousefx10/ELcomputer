@@ -1778,6 +1778,37 @@
         </div>
       </section>
 
+      <section v-show="activeSettingsSection?.section === 'checkoutPage'" class="overflow-hidden rounded-2xl bg-white shadow">
+        <div class="p-6">
+          <h3 class="text-2xl font-bold">{{ $t('checkoutLayout.title') }}</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ $t('checkoutLayout.help') }}</p>
+        </div>
+        <div class="border-t p-6">
+          <div class="grid gap-4 md:grid-cols-2" role="radiogroup" :aria-label="$t('checkoutLayout.title')">
+            <label v-for="option in checkoutStyleOptions" :key="option.value"
+              class="cursor-pointer rounded-2xl border-2 p-5 transition focus-within:ring-2 focus-within:ring-blue-500"
+              :class="siteSettings.checkout_style === option.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-300'">
+              <input v-model="siteSettings.checkout_style" type="radio" name="checkout-style"
+                :value="option.value" :disabled="!canEditSettings" class="sr-only">
+              <span class="flex items-start justify-between gap-3">
+                <span><span class="block font-bold text-gray-900">{{ $t(option.label) }}</span><span class="mt-1 block text-sm text-gray-600">{{ $t(option.description) }}</span></span>
+                <Icon v-if="siteSettings.checkout_style === option.value" name="lucide:circle-check" size="21" class="shrink-0 text-blue-700" aria-hidden="true" />
+              </span>
+            </label>
+          </div>
+          <p v-if="settingsErrorSection === 'checkoutPage' && settingsError" role="alert" class="mt-4 text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
+          <p v-if="settingsSuccessSection === 'checkoutPage' && settingsSuccess" role="status" class="mt-4 text-sm text-green-700">{{ $t('checkoutLayout.saved') }}</p>
+          <div class="mt-5 flex justify-end">
+            <button type="button" :disabled="!canEditSettings || !isSettingsSectionDirty('checkoutPage') || settingsLoading"
+              class="rounded-lg px-5 py-3 font-bold text-white"
+              :class="canEditSettings && isSettingsSectionDirty('checkoutPage') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'"
+              @click="saveSiteSettings('checkoutPage')">
+              {{ settingsLoadingSection === 'checkoutPage' ? $t('common.saving') : $t('checkoutLayout.save') }}
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section v-show="activeSettingsSection?.section === 'authPage'" class="overflow-hidden rounded-2xl bg-white shadow">
         <div class="border-b p-6">
           <h3 class="text-2xl font-bold">{{ $t('authPage.settingsTitle') }}</h3>
@@ -2416,6 +2447,10 @@ const dashboardLayoutOptions = [
     description: 'Sidebar navigation with a cleaner workspace.'
   }
 ]
+const checkoutStyleOptions = [
+  { value: 'classic', label: 'checkoutLayout.classic', description: 'checkoutLayout.classicHelp' },
+  { value: 'modern', label: 'checkoutLayout.modern', description: 'checkoutLayout.modernHelp' }
+]
 const accountDashboardOptions = [
   { value: 'classic', label: 'Classic', description: 'Keep the current account sidebar and summary cards.' },
   { value: 'modern', label: 'Modern', description: 'Grouped account navigation with focused order, wallet and profile sections.' }
@@ -2455,6 +2490,7 @@ const openSections = reactive({
   generalSettings: true,
   dashboardLayout: true,
   accountDashboard: true,
+  checkoutPage: true,
   authPage: true,
   homepageReviews: false,
   bannerAds: false,
@@ -2548,6 +2584,7 @@ const siteSettingsSectionFields = {
   accountDashboard: [
     'account_dashboard_style'
   ],
+  checkoutPage: ['checkout_style'],
   productPage: ['product_page_style', 'product_page_config'],
   authPage: [
     'auth_page_layout', 'auth_image_light_url', 'auth_image_dark_url', 'auth_image_position',
@@ -2623,6 +2660,7 @@ const siteSettingsSectionLabels = {
   generalSettings: 'General settings',
   dashboardLayout: 'Dashboard appearance',
   accountDashboard: 'Customer account layout',
+  checkoutPage: 'Checkout layout',
   productPage: 'Product page',
   authPage: 'Authentication page',
   homepageReviews: 'Homepage reviews',
@@ -2947,6 +2985,7 @@ const normalizeSiteSettings = (source = {}) => ({
     ? 'classic'
     : 'modern',
   product_page_style: productPageStyle(source.product_page_style),
+  checkout_style: String(source.checkout_style || '').trim().toLowerCase() === 'modern' ? 'modern' : 'classic',
   product_page_config: productPageEditorConfig(source.product_page_config),
   allow_out_of_stock_purchases: source.allow_out_of_stock_purchases ?? defaultSiteSettings.allow_out_of_stock_purchases,
   inventory_tracking_required: source.inventory_tracking_required ?? true,
@@ -3105,6 +3144,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'site_background_color',
       'landing_page_title',
       'account_dashboard_style',
+      'checkout_style',
       'product_page_style',
       'product_page_config',
       'auth_page_layout',
@@ -3523,6 +3563,9 @@ const saveSiteSettings = async (sectionName) => {
   }
   if (sectionName === 'accountDashboard') {
     await refreshNuxtData('account-appearance')
+  }
+  if (sectionName === 'checkoutPage') {
+    await refreshNuxtData('checkout-appearance')
   }
 
   await logSettingsAction(

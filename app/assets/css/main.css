@@ -3,6 +3,7 @@
 @import "./dashboard.css";
 @import "./appearance.css";
 @import "./premium-product.css";
+@import "./modern-checkout.css";
 
 @layer base {
   a {

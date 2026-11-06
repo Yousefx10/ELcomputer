@@ -3135,5 +3135,6 @@
   "This coupon has reached its usage limit.": "commerceReliability.couponExhausted",
   "You have already used this coupon.": "commerceReliability.couponUsed",
   "This coupon does not apply to these products.": "commerceReliability.couponIneligible",
-  "Wait for your saved cart to load.": "commerceReliability.cartLoading"
+  "Wait for your saved cart to load.": "commerceReliability.cartLoading",
+  "Choose the checkout layout.": "checkoutLayout.navHelp"
 }

@@ -165,6 +165,7 @@ Object.assign(globalThis, {
   useCart, usePurchaseAccess, useCustomerIdentity, useCustomerScope, useSupportClient, useReorder, $fetch: request,
   useShipmentUpdates: () => {},
   useAccountAppearance: () => ({ data: ref({ account_dashboard_style: 'modern' }) }),
+  useCheckoutAppearance: () => ({ data: ref({ checkout_style: fixture.checkoutStyle === 'modern' ? 'modern' : 'classic' }) }),
   useNuxtData: () => ({ data: ref({ settings: {} }) }),
   useAsyncData: async (key, handler) => {
     window.__asyncKeys ||= []; window.__asyncKeys.push(key)

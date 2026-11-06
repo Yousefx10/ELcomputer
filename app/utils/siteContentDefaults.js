@@ -27,6 +27,7 @@ export const defaultSiteSettings = {
   dashboard_layout: 'standard',
   account_dashboard_style: 'modern',
   product_page_style: 'classic',
+  checkout_style: 'classic',
   product_page_config: null,
   erp_mode: 'built_in',
   daftra_connection_status: 'disconnected',
