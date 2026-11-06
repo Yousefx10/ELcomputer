@@ -1,51 +1,79 @@
-# Coupon policy activation review — 6 November 2026
+# Execution outcome — DEPLOYED / CONSUMED_COMPLETE
 
-Configuration-only. App2a1fb3c96f391f40/sourcee2663ea/schema121 stay unchanged.
-Fixed/percentage/delivery discounts, capacity and redemption SQL are already
-installed; four current-native checks and nine portable overlay cases pass.
-The public coupon endpoint already returns401/private-no-store. No engine rebuild,
-Caddy change or migration is needed. Positive hosted coupon acceptance is pending.
+Seal6a3e29a9 was used once at02:45Riyadh,6November. One unrestricted offer is
+inactive; coupon engineON; app/source/schema unchanged. Postflight and next naturalMON
+passed. [Deployment receipt](coupon-schema121-activation-receipt-20261106.md).
+The approval below is historical and cannot be used again.
 
-Beta currently omits allow_coupons, which rejects a coupon by default. A protected
-additive systemd EnvironmentFile sets only the existing policy's allow_coupons=true.
-Every other policy field is preserved. The SMS-guarded base runtime file remains
-byte-identical, preserving pilot worker/source/receipts/quota/expiry and marketingOFF.
+---
 
-Existing saved offers are unchanged:
+# Corrected coupon activation review — 6 November 2026
 
-| Offer | Current restriction | Limit/expiry |
-|---|---|---|
-|95percent merchandise +EGP50delivery discount|Unscoped customer/product/shipping/category|No usage/per-customer cap; ends30November22:27Riyadh|
-|EGP74fixed, minimumEGP10|One existing customer; identity private|No usage/per-customer cap; ends6November22:29Riyadh|
+**READY / UNAPPROVED.** Fresh read-only preflight passed against app
+2a1fb3c96f391f40/sourcee2663ea/schema121 and naturalMON02:30Riyadh.
+No production write or coupon activation has occurred. No application build or
+migration is required. The prior237943b9packet is superseded, unexecuted and expired.
 
-The broad95percent offer is an explicit commercial review point. The owner can
-approve these saved terms or change the real Dashboard offer before a fresh seal.
-No coupon rows, usage counters or historical order snapshots are edited here.
-Expired offers remain expired. A submitted uncertain one-use coupon retains its
-capacity reservation; this activation does not weaken commercial guards.
+## Explicit commercial change
 
-Exact approval:
+Disable exactly the saved unrestricted **95% merchandise + EGP50 delivery** offer:
+its `is_active` changes **true → false**. No eligibility, price, usage limit,
+per-customer limit, expiry, code, usage counter or other column changes. The row
+remains stored. This offer cannot be used for new server-validated coupon claims
+until the owner separately approves its eligibility and a fresh exact activation.
+Existing submitted financial evidence and order snapshots are retained.
+
+Preserve the **EGP74 fixed / minimum EGP10** offer for its one eligible customer,
+with its existing limits and6November22:29expiry. Both expired historical offers
+and all coupon/redemption records remain intact. No coupon codes or customer
+identities are printed in this review.
+
+## Exact technical scope
+
+1. One guarded transaction updates one exact fingerprinted coupon row, changing
+   only `is_active` to false. Schema121 and its migration ledger stay unchanged.
+   Current coupon table has no user update triggers; all other fields/rows are
+   compared before commit. An encrypted current coupon backup passed authenticated
+   full readback. A commit-intent ledger and one-use apply marker precede mutation.
+2. Then install two protected configuration files enabling only Beta
+   `allow_coupons=true`. Preserve every other Beta value and the SMS-guarded base
+   runtime byte for byte. No base-runtime rewrite or credentials changes.
+3. One systemd daemon-reload/app restart. Existing MON/email/PDC/SMS timers pause
+   and resume once each, within180seconds. App archive/source/schema stay unchanged.
+4. Zero provider calls, paid sends, real orders/payment attempts, shipping, Meta,
+   marketing, SMS quota/window, Caddy, payment settings or financial-history changes.
+
+If the commercial transaction commits but configuration fails, stop and retain
+its honest partial state. No replay, automatic rollback or broad re-enable is
+permitted. New exact approval would be required after independent reconciliation.
+
+## Focused verification
+
+-9 native checks pass, including current production function identities, stale
+preimage rejection, atomic rollback, exact one-column preservation, disabled-offer
+rejection for general/eligible customers, authenticated customer eligibility,
+EGP176.70 quote →17670payment minor units, callback replay/usage protection,
+product/carrier/category rules, historical expiry and existing usage caps.
+-9 portable configuration cases pass; only `allow_coupons` changes.
+-The4previous current-source pricing/capacity/redemption checks are reused.
+-Initial sandbox/runtime and synthetic fixture failures remain saved; they required
+no application correction. Historical PDC failures and accepted P0 stay untouched.
+-Positive hosted customer coupon acceptance follows installation. No production
+preview or synthetic paid order was used to claim acceptance.
+
+## Fresh one-use approval
 
 ```
-APPROVE COUPON POLICY ONLY SCHEMA121 ACTIVATION 237943b9d13d70d5df27d591f1d2f8b4f97e06d75bd0b2e66ef1070af44f6f97
+APPROVE COUPONS WITH ONE OFFER DISABLED SCHEMA121 ACTIVATION 6a3e29a9ea04e3270e220634ef12f85fb53b8ada93df67ba7317aa90f04ae60c
 ```
 
-Start before6November02:29:00Riyadh; expires02:44:00. Scope: two new protected
-configuration files; one daemon-reload and app restart; existing MON/email/PDC/SMS
-timers pause/resume once each≤180seconds. ZeroSQL/provider/financial/coupon-row/
-Caddy/runtime-base/SMS-budget or credential changes. The current base-runtime and
-service recovery preimages match authenticated encrypted full-readback backups.
-No database restore is authorized; the operator's database connections are read-only.
+Start before **6 November 03:29:34 Riyadh**; expires **6 November 03:44:34 Riyadh**.
+The approval explicitly covers **one commercial offer deactivation** plus the
+coupon policy configuration/restart above. It does not approve the unrestricted
+offer's eligibility or any regular SMS charges.
 
-Read-only preflight passes against actual121, current engine/functions/history,
-exact saved offers and configuration flags. Existing genuine financial activity can
-append normally; it is not erased or treated as provider finality. Sealed inputs,
-exclusive attempts, no retry after staging and no automatic rollback remain enforced.
+Private executable packet: `logs/activation-register-20261106/coupons-safe/`.
+After the exact owner reply: record approval, apply once, verify coupon postimages,
+effective environment, private routes, preserved SMS runtime and next naturalMON.
 
-Private packet: logs/activation-register-20261106/coupons/plan.json.
-Operator: node logs/activation-register-20261106/coupons/operator.mjs.
-After approval: apply once; check effective environment/coupons capability/private
-routes, preserved SMS runtime/worker and next naturalMON. Do not fabricate a paid
-order or use a real coupon preview to claim production acceptance during installation.
-
-**One next action:** approve the exact saved-offer activation scope above.
+**One next action:** approve the exact corrected coupon packet above.

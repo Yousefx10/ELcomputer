@@ -1,3 +1,61 @@
+# E303 — Coupons enabled; unrestricted offer disabled — 6 November 2026
+
+Regular SMS preparation: local source9fa54a1, built app8218c8bdb367c9be and
+worker9e564238 are retained, uninstalled.13quota/14compiled-worker/6native/
+5authenticated-handler/7compiled-app HTTP/8browser cases plus typecheck/build
+PASS. Compiled inputs are reused after a SQL-only schema-cache notification.
+Retained assets, fresh restored-production/handover qualification and separate
+charge authority remain; proposed5/day,35total/7days is NOT approved. Live03:25:
+pilot0/5,0genuine events, sameexpiry; couponsON, broad offerOFF, Meta/marketingOFF.
+All76worktrees (73opening +3additive), local commits/main staging are preserved.
+No further Git push or production change after the consumed coupon installation.
+
+COUPON-ACT-02 is DEPLOYED / CONSUMED_COMPLETE. One exact active flag changed
+true→false on the unrestricted95%+EGP50offer, preserving all rows/other fields,
+usage history and the one-customer EGP74offer. Only allow_coupons is enabled.
+App2a1fb3c96f391f40/sourcee2663ea/schema121 unchanged; newPID344894. One restart,
+four timer pauses/resumes2.41s≤180s. Base runtime and other settings unchanged.
+Immediate, hosted capability/privacy and next-naturalMON02:50 postflight PASS.
+Positive eligible-customer hosted coupon acceptance remains OPEN; no fabricated use.
+[Consumed deployment receipt](coupon-schema121-activation-receipt-20261106.md). Never replay seal6a3e29a9 or the installer.
+
+Final02:54Riyadh snapshot: pilot0/5, closed=false, expiry6November19:02:25,
+Meta/marketingOFF,17sessions/17attempts retained. No operator paid send/provider
+request, new financial action or Git push. Public publication remains owner-deferred.
+147scope counts now:23accepted,79live-needs-acceptance,10installed-disabled,
+3local-qualified,10local-incomplete,6provider-blocked,6planned,10deferred.
+Regular SMS Dashboard/quota/worker candidate is local and independently gated;
+its future app/settings/worker handover and charges are not authorized by coupons.
+Meta inputs deferred; ReleaseC/Daftra/P0 and all existing work remain preserved.
+
+# E302 — Corrected coupon packet ready; public publication deferred — 6 November 2026
+
+COUPON-ACT-02 supersedes the unsafe all-offer237943b9packet. Fresh read-only
+preflight passes on app2a1fb3c96f391f40/sourcee2663ea/schema121. Exact approval
+will disable only the unscoped95%+EGP50offer (`is_active`:true→false), preserving
+all rows, other columns, legitimate restricted offers, usage/redemption history;
+then enable only Beta allow_coupons. No build/migration. One restart, four existing
+timer pauses/resumes≤180s; base runtime/SMS/Meta/payment/shipping settings unchanged.
+9native+9portable checks pass;4existing checks reused. Encrypted coupon backup
+passed full authenticated readback. No production mutation or provider submission.
+[Exact executable approval and commercial scope](coupon-policy-activation-review-20261106.md).
+Start before6 November 03:29:34 Riyadh; previous seal remains expired/superseded and never executed.
+
+SMS-VF-TX-PERM-01 now has a prepared Dashboard-limit patch and13passing quota-core
+checks. It is still LOCAL_INCOMPLETE: wire the durable worker reservations/handover,
+qualify the app/settings migration and obtain separate regular sending authority.
+Defaults keep regular dispatchOFF; marketingOFF. Fresh02:30Riyadh pilot0/5,
+closed=false, same6November19:02:25expiry/runtime. No genuine SMS event exists.
+Meta remains installedOFF; deferred protected Test Events inputs stay deferred.
+ReleaseC e39dfa6/archive4549faee are reverified without rebuilding; forward rebase
+is still required. Daftra b782b13 checkpoint and accepted P0 remain untouched.
+
+OPS-GIT-PUBLIC-01: further public publication is OWNER-DEFERRED. The earlier
+owner-approved85b1f7fpush is preserved as history; no new push/remote change occurs.
+Local commits, staged files and all worktrees remain preserved. Git never blocks
+production activation. Counts remain147scopes in the same eight categories.
+ONE next action: approve the corrected coupon-only commercial/configuration packet.
+
 # E301 — Full activation register; coupons first; P0 owner-accepted — 6 November 2026
 
 OPS-ACT-REG-01 is complete as a source/ledger/evidence inventory, not a blanket

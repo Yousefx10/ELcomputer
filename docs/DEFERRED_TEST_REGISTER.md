@@ -1,3 +1,12 @@
+# Coupon deployment reconciliation — 6 November 2026
+
+COUPON-ACT-02 is DEPLOYED / CONSUMED_COMPLETE on app2a1fb3c96f391f40/sourcee2663ea/
+schema121. Coupon engineON; unrestricted95%+EGP50offer inactive; restricted offer
+and history preserved. Hosted capability/auth privacy and next naturalMON PASS.
+DTR08 positive eligible-customer coupon preview/total acceptance remains OPEN.
+[Receipt](coupon-schema121-activation-receipt-20261106.md). Old installation holds
+below are historical; do not rerun the consumed coupon operator.
+
 > **6 November2026 reconciliation:** [Current activation/acceptance register](ELCOMPUTER_REMAINING_WORK_AND_ACTIVATION_REGISTER.md). Retry UI is owner-accepted on iPhone/iPad/MacBook; earlier installation holds are superseded by actualschema121. Bank finality and other deferred financial/provider/role cases remain distinct. Original rows below are preserved.
 
 # E276 — DTR-52 SMS installed inactive; owner/provider acceptance OPEN — 2026-11-05

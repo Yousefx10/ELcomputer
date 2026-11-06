@@ -2,11 +2,17 @@
 
 **Current authority:** 6 November 2026. This register supersedes stale priority/status summaries; original receipts, uncertainty and pauses remain evidence. Update this file, the master roadmap and both handoffs together. Counts describe tracked feature/workstream scopes, including explicit legacy aliases; they are not a count of unique UI screens.
 
+**Latest release — 6November02:54Riyadh:** COUPON-ACT-02 is DEPLOYED /
+CONSUMED_COMPLETE. EngineON; only unrestricted95%+EGP50offer inactive; restricted
+EGP74offer/history preserved. Sameapp/source/schema121, newPID344894. Hosted
+capability/privacy and next naturalMON PASS; positive eligible-customer acceptance
+OPEN. SMS pilot0/5, sameexpiry; Meta/marketingOFF. No new public push.
+
 ## Executive status and living production register
 
 Owner reports the completed P0 CARD/Apple Pay retry experience works on iPhone, iPad and MacBook. Mark that retry UI scope OWNER_ACCEPTED. Do not reopen its investigation, re-run its operators or redeploy its code. This does not establish the bank/provider finality of older uncertain attempts.
 
-Fresh read-only observation: **2026-11-05T22:10:27.739531+00:00** (6 November, Riyadh01:10). App **2a1fb3c96f391f40**, full source **e2663eac1f66fecb7d942273b330433799bc12a6**, physical **schema121**, last **20261105210000 merchant_risk_payment_retries**, PID337498. Current sessions/attempts **17/17**, orders11, private funds/callbacks0. The three extra attempts since the release are retained, not declared failed or uncharged. Owner acceptance refers to retry behavior, not a new verified payment.
+Opening historical read-only observation (superseded by the release above): **2026-11-05T22:10:27.739531+00:00** (6 November, Riyadh01:10). App **2a1fb3c96f391f40**, full source **e2663eac1f66fecb7d942273b330433799bc12a6**, physical **schema121**, last **20261105210000 merchant_risk_payment_retries**, PID337498. Current sessions/attempts **17/17**, orders11, private funds/callbacks0. The three extra attempts since the release are retained, not declared failed or uncharged. Owner acceptance refers to retry behavior, not a new verified payment.
 
 CARD/COD and merchant-risk retriesON; fixedCOD EGP10. Image cacheON86400/version1. SMS pilotON,0/5dispatches, expiry6November19:02:25Riyadh. Meta/campaigns/InstaPay/live chatOFF. Base runtime SHA4401d2fb; Caddy SHA d12b2798. Native service/systemd is current; old PM2/Nginx recipes are historical.
 
@@ -17,8 +23,8 @@ No separate file titled Living Production Register was found in the current repo
 | Category | Scopes |
 |---|---:|
 | LIVE_AND_ACCEPTED | 23 |
-| LIVE_NEEDS_ACCEPTANCE | 78 |
-| INSTALLED_BUT_DISABLED | 11 |
+| LIVE_NEEDS_ACCEPTANCE | 79 |
+| INSTALLED_BUT_DISABLED | 10 |
 | LOCAL_QUALIFIED_NOT_DEPLOYED | 3 |
 | LOCAL_INCOMPLETE | 10 |
 | EXTERNAL_PROVIDER_BLOCKED | 6 |
@@ -33,7 +39,7 @@ No separate file titled Living Production Register was found in the current repo
 |---|---|
 | Auth/signup/recovery/CAPTCHA | Historical bounded owner acceptance preserved; do not send repeat authentication tests. |
 | CARD and callbacks | Historical EGP2/EGP5 signed-sale evidence preserved; pending attempts retain uncertainty. |
-| Payment-first/cart/address/coupon capacity | Core and ReleaseB installed through schema116; positive coupon public activation is stillOFF. |
+| Payment-first/cart/address/coupon capacity | Core and ReleaseB installed; coupon engine enabled on schema121. Positive restricted-customer acceptance remains OPEN. |
 | SMS infrastructure and real test | Schema118 installed; one real message accepted and owner-received; pilot is a separate bounded scope. |
 | Meta | Schema119 installed inactive; provider Test Events never claimed. |
 | ReleaseD and dark review CSS | Schema120/app6f1f805 technical hosted acceptance retained; current app includes it. |
@@ -41,27 +47,23 @@ No separate file titled Living Production Register was found in the current repo
 
 ## Priority activation plan and dependencies
 
-1. **COUPON-ACT-01:** installed engine + public ingress exist. Beta omitted allow_coupons defaults to rejection. Prepare only a configuration overlay setting that fieldtrue; preserve every other policy value and the SMS-guarded base runtime. No coupon row edits, redemption, provider request or real order during installation. Bind the unexpired95%+EGP50 delivery and EGP74 offers to the exact review. Existing coupon limits/holds remain authoritative.
+1. **COUPON-ACT-02 COMPLETE:** engine enabled; unrestricted95%+EGP50offer inactive; legitimate restricted offer/history preserved. Positive eligible-customer preview/total acceptance remains OPEN. Never replay the consumed installer.
 2. **SMS-VF-TX-PERM-01:** do not repeat the delivered test or extend the five-slot pilot. Prepare permanent dispatch/quotas with explicit bounded ongoing charge authority and a genuine eligible-order acceptance. Keep marketing separate.
 3. **MKT-META-01:** use the existing protected intake when deferred token/code/customer/consent arrive. Operator generates worker secret; max3nonfinancial events/5minutes; no fabricated Purchase and no substitute Pixel.
 4. **C-FND-01:** rebase the existing preorder/COD candidate onto121; disabled install first, then independent preorder/deposit and0.5%COD policy approvals. No old archive blind deployment.
 5. **Daftra:** retain checkpoint; fix the named mobile/qualification gaps and finish ownership matrices before any private invoice/accounting release.
 6. Complete genuine PDC/Brevo/history/customer/role acceptance and storage/chat fixes; then optional UI/reporting/extra integrations. Owner approval for Git publication does not authorize any production activation.
 
-### Next exact release
+### Coupon release completed; regular SMS remains independent
 
-Coupon packet preparation and current focused verification are in `logs/activation-register-20261106/`. The exact configuration-only packet is sealed and its read-only preflight passed. No historical seal is reusable. The installation keeps app/source/schema unchanged and performs zero provider or financial transactions.
-
-**READY / UNAPPROVED:** `APPROVE COUPON POLICY ONLY SCHEMA121 ACTIVATION 237943b9d13d70d5df27d591f1d2f8b4f97e06d75bd0b2e66ef1070af44f6f97`.
-Start before **6 November02:29:00Riyadh**; expiry02:44:00. Two new protected config files,
-one daemon-reload/app restart, four existing timer pauses/resumes≤180seconds.
-Base runtime/SMS guard/allowance/expiry unchanged; zeroSQL/coupon-row/Caddy/provider changes.
-The unexpired95percent+EGP50delivery offer is **unscoped**, with no usage or per-customer
-limit. The EGP74offer is limited to one existing customer. This is an explicit commercial
-review point in the approval, not permission to edit either offer. Nine portable overlay
-cases and four current-engine pricing/capacity/redemption checks pass; old qualified
-coupon evidence is reused for identical source. Coupon ingress is already401/private-no-store.
-Positive hosted coupon acceptance follows activation; no production preview/order was fabricated.
+COUPON-ACT-02 is DEPLOYED / CONSUMED_COMPLETE,seal6a3e29a9. The unrestricted
+95%+EGP50offer is inactive, the legitimate restricted offer is preserved and only
+allow_coupons is enabled. One restart/four timer pauses2.41s. Sameapp/source/schema.
+[Receipt](coupon-schema121-activation-receipt-20261106.md). No coupon approval
+remains pending and no consumed or older superseded seal can be replayed.
+Positive eligible-customer hosted preview/total acceptance remains OPEN.
+Regular SMS needs its separate app/settings/worker qualification and bounded charge
+approval. Existing pilot/expiry/allowance and marketingOFF remain unchanged.
 
 ## Feature inventory
 
@@ -89,7 +91,7 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 | CMS-DISABLED-01 | Optional reviews, view-all reviews and two ad banners | INSTALLED_BUT_DISABLED | YES / homepage_reviews_enabled=false; reviews_view_all=false; banner_ad_1=false; banner_ad_2=false | Configuration-only activation | Retain current content choices; request activation only when the owner selects real content. |
 | COD-PERCENT-01 | Configurable fixed/percentage COD fee | LOCAL_QUALIFIED_NOT_DEPLOYED | NO / NO | Existing qualified package | Install disabled capability first; then a separate0.5percent settings packet. |
 | CONT-01 | Permanent cross-account roadmap and milestone continuity | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
-| CX-01 | Installed coupon engine and public activation | INSTALLED_BUT_DISABLED | YES / OFF: Beta allow_coupons omitted, which rejects coupons by default | Configuration-only activation | Approve the smallest policy-overlay packet after focused checks/preflight; no coupon rebuild. |
+| CX-01 | Installed coupon engine and public activation | LIVE_NEEDS_ACCEPTANCE | YES / ON: effective policytrue; unrestricted95%offer inactive | Hosted/owner acceptance | Approve the smallest policy-overlay packet after focused checks/preflight; no coupon rebuild. |
 | CX-02 | Related customer-route permissions | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | CX-03 | Multiple saved customer addresses | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | CX-04 | Cart persistence, recovery and multi-customer security acceptance | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
@@ -481,16 +483,16 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### CX-01 — Installed coupon engine and public activation
 
-- **Area/status:** CX / INSTALLED_BUT_DISABLED.
-- **Implementation:** Fixed, percentage, delivery discount, eligibility, capacity and redemption SQL installed; collapsed UI and Dashboard editor installed.
-- **Production:** installed=YES; enabled=OFF: Beta allow_coupons omitted, which rejects coupons by default.
-- **Evidence:** local: Release B prior qualification retained; current-source targeted checks in this task; hosted: POST /api/checkout/coupon returns401/private-no-store, proving ingress is installed; positive customer coupon acceptance awaits activation; owner: Remaining scope OPEN; provider: No new provider credentials needed.
-- **Missing / immediate activation:** Fresh configuration-only activation; bind the two unexpired saved offers and preserve pending-capacity guards. NO production action without a fresh exact packet.
-- **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source; retained locator: E88; E78; docs/egp5-genuine-payment-verification.md.
-- **Migration:** None: coupon_capacity20261105011000 is installed in schema116 lineage.
-- **Financial/security boundary:** Preserve ownership, RLS, current financial snapshots and private-file boundaries.
-- **Next executable action:** Approve the smallest policy-overlay packet after focused checks/preflight; no coupon rebuild..
-- **Last verified / evidence locator:** 2026-11-06 source/ledger and dated-evidence reconciliation; retained table evidence 2026-10-27 live accepted; E88; E78; docs/egp5-genuine-payment-verification.md.
+- **Area/status:** CX / LIVE_NEEDS_ACCEPTANCE.
+- **Implementation:** Existing fixed/percentage/delivery/eligibility/capacity/redemption engine enabled; no rebuild/migration.
+- **Production:** installed=YES; enabled=ON via allow_coupons. Only the unrestricted95%+EGP50offer is inactive; all other rows/fields/history preserved.
+- **Evidence:**9native+9portable checks;4existing checks reused. Hosted capability/private401 and next naturalMON PASS. Positive eligible-customer acceptance OPEN; no provider transaction or real coupon use by operator.
+- **Missing / immediate activation:** No installation remains. Eligible customer should confirm the positive hosted preview and displayed total. Unrestricted offer eligibility needs separate explicit approval.
+- **Source/worktree/archive:** Production app2a1fb3c96f391f40/sourcee2663ea unchanged; private operatorcoupons-safe.
+- **Migration:** None; physicalschema121 remains unchanged.
+- **Financial/security boundary:** One disclosed active flag true→false; records, limits, history, submitted snapshots and other settings preserved. Never replay consumedseal6a3e29a9.
+- **Next executable action:** Genuine eligible-customer coupon preview/total acceptance without submitting a payment.
+- **Last verified / evidence locator:**6November02:54Riyadh; docs/coupon-schema121-activation-receipt-20261106.md.
 
 ### CX-02 — Related customer-route permissions
 
@@ -1976,16 +1978,16 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### SMS-VF-TX-PERM-01 — Permanent transactional SMS transition
 
-- **Area/status:** SMS / LOCAL_INCOMPLETE.
-- **Implementation:** Existing delivery-proven provider/channel/templates reused; current private pilot wrapper has a fixed five-slot/24h contract.
-- **Production:** installed=NO; enabled=NOT activated.
-- **Evidence:** local: Scoped evidence only; hosted: Not established for outstanding scope; owner: OPEN; provider: Not applicable.
-- **Missing / immediate activation:** Explicit ongoing bounded charge allowance/window, durable ongoing quota/monitoring binding and genuine-order acceptance; tariff remains unknown. NO live action without required exact scope.
-- **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source; docs/sms-permanent-transactional-activation-plan-20261105.md.
-- **Migration:** None assumed.
-- **Financial/security boundary:** Paid sends; uncertain ledger/provider outcomes must latch closed; no retries or fabricated paid event.
-- **Next executable action:** Finish the bounded transition review; authorize a regular quantity budget after genuine-event acceptance; never extend the pilot implicitly..
-- **Last verified / evidence locator:** 2026-11-06; current source/flags and dated receipts; Current register source map.
+- **Area/status:** SMS / LOCAL_INCOMPLETE (components qualified; final release/handover open).
+- **Implementation:** Existing delivered provider/HMAC/templates reused. Dashboard daily rolling24h limit/default0 and minimum interval/default60s implemented; durable single-recipient reservation/acknowledgement worker prepared, with global uncertain/rejected/interrupted stop latch.
+- **Production:** installed=NO; regular sending=OFF. Original five-slot pilot remains unchanged,0/5 at03:25Riyadh, same19:02:25expiry. MarketingOFF.
+- **Evidence:** Node22typecheck/build PASS;13quota,14compiled-worker,6native SQL/ACL/rollback/cache reload,5authenticated settings,7compiled-app HTTP,8EN/AR/mobile/desktop/light/dark browser cases PASS;1271archive entries full byte/mode readback. Compiled app/worker reused after SQL-only notification. No provider or production call in tests; genuine-order automation acceptance OPEN.
+- **Missing / immediate activation:** Retained production assets, fresh restored-predecessor/handover operator qualification and separate exact installation/regular charge approval. No production activation yet.
+- **Source/worktree/archive:** logs/activation-register-20261106/sms-regular/source@9fa54a1; app-build archive8218c8bdb367c9be; worker9e564238; full component evidence in component-qualification.json.
+- **Migration:** Uninstalled20261106023000_sms_regular_transactional_limits.sql; conditional next physical122 only if actual predecessor remains121. No slot reserved.
+- **Financial/security boundary:** Proposal5/day,35total/7days is NOT authorized. Dashboard can pause/reduce within approved ceiling; no quota renewal, multipart sends, fallback, marketing, historical replay or fabricated paid event. Preserve all pilot receipts/markers/budget/expiry until an approved handover.
+- **Next executable action:** Complete final asset/restored-handover packet independently; verify genuine pilot SMS History and receipt when a real eligible order occurs.
+- **Last verified / evidence locator:**6November03:25 live observation; local qualification component-qualification.json; docs/sms-permanent-transactional-transition-review-20261106.md.
 
 ### STOR-01 — Supabase Storage versus VPS file-byte dependency audit
 
@@ -2158,7 +2160,7 @@ Boolean-only read-only snapshot; singleton/id columns omitted. Multiple rows rem
 | public.sms_order_event_settings row7 | is_enabled |
 | public.sms_provider_settings | allow_international |
 
-Additional effective gates: Beta coupons implicitlyOFF; Meta runtime/workerOFF; InstaPay/manual transfers ineffective despite `payment_bank_transfer_enabled=true`; Google Pay and account-balanceOFF; PDC global outbound/automatic labels/reverseOFF while separately bounded staff COD/tracking remain active; SMS campaign runtime/unsubscribe binding absent. Marketing unicode/commercial controls are not accepted. Nested image cache isON.
+Additional effective gates: coupon policy overlayON (base file still omits allow_coupons); Meta runtime/workerOFF; InstaPay/manual transfers ineffective despite `payment_bank_transfer_enabled=true`; Google Pay and account-balanceOFF; PDC global outbound/automatic labels/reverseOFF while separately bounded staff COD/tracking remain active; SMS campaign runtime/unsubscribe binding absent. Marketing unicode/commercial controls are not accepted. Nested image cache isON.
 
 ## Provider credentials and acceptance — no secret values
 
@@ -2197,7 +2199,7 @@ Candidate archive/source map: C e39dfa6/4549faee; DaftraAa47b39b/cc621fb1 (compi
 
 ## Deferred-test register reconciliation
 
-All DTR01–52 obligations remain in `docs/DEFERRED_TEST_REGISTER.md`, including later entries outside its original consolidated table. Latest execution/owner evidence supersedes old installation holds. P0 retry UI/device acceptance is closed for the explicit iPhone/iPad/MacBook scope; no broader bank finality, refunds, real historical claims, staff RBAC, PDC parcels, invoice/PDF, Meta events or new notification acceptance is inferred. DTR08 coupon ingress now401/private-no-store; public positive coupon validation remainsOFF pending activation. DTR47/49 storefront/cache are installed, so their old deployment prerequisites are superseded. DTR48 Meta is installedOFF. DTR52 Vodafone one-message acceptance is complete; regular transaction/campaign acceptance remains distinct.
+All DTR01–52 obligations remain in `docs/DEFERRED_TEST_REGISTER.md`, including later entries outside its original consolidated table. Latest execution/owner evidence supersedes old installation holds. P0 retry UI/device acceptance is closed for the explicit iPhone/iPad/MacBook scope; no broader bank finality, refunds, real historical claims, staff RBAC, PDC parcels, invoice/PDF, Meta events or new notification acceptance is inferred. DTR08 coupon capability is nowON, with ingress401/private-no-store; positive eligible-customer hosted acceptance remainsOPEN. DTR47/49 storefront/cache are installed, so their old deployment prerequisites are superseded. DTR48 Meta is installedOFF. DTR52 Vodafone one-message acceptance is complete; regular transaction/campaign acceptance remains distinct.
 
 ## Unresolved production issues and honest limits
 
@@ -2211,7 +2213,7 @@ All DTR01–52 obligations remain in `docs/DEFERRED_TEST_REGISTER.md`, including
 
 | Priority | Exact gate | One action |
 |---|---|
-| Coupons | Fresh one-use settings-overlay seal; existing saved coupon terms and SMS-preserving base runtime; one bounded app restart; noSQL/provider/order changes | Approve the final exact coupon packet after its current preflight. |
+| Coupons | DEPLOYED / CONSUMED_COMPLETE; one disclosed offer disabled plus policy overlay; never replay | Eligible customer confirms the preview/total; no payment submission needed. |
 | Permanent SMS | Existing five-slot pilot never becomes unlimited; new event/budget/window/worker scope and genuine acceptance required | Choose/approve bounded regular sending limits after a genuine event is accepted. |
 | Meta | Separate target/consent/Test Events scope; max3nonfinancial events,5minutes; ordinary trackingOFF | Supply deferred protected inputs when available; unrelated work continues. |
 | Preorder/COD | Fresh121-rebased inactive foundation first; separate deposit/0.5percent activation | Prepare C-FND-01 without deploying the old cumulative archive. |
@@ -2398,3 +2400,16 @@ remain preserved; no new full rehash is claimed. Evidence: private
 **One next production action:** independently review/approve the coupon-only
 packet within its recorded start window. After expiry, create a fresh exact packet;
 publication approval never authorizes production activation.
+
+## Current owner directive — publication deferred
+
+Further public GitHub publication is OWNER-DEFERRED and does not block any
+production packet. Preserve the previous approved public push and local full
+commits as history; no new Git push or main rewrite occurs in this continuation.
+
+## SMS local preparation continuation
+
+Source9fa54a1 and archive8218c8bdb367c9be are preserved with scoped component
+qualification; regular SMS is not installed or authorized. See the per-feature
+entry and transition review. All76worktrees now include the three additive
+publication/SMS worktrees. Counts remain147; no whole-release PASS is inferred.
