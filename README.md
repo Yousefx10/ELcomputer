@@ -1,3 +1,60 @@
+Git publication (6November): owner-approved public summary85b1f7f is pushed on
+codex/activation-roadmap-public-20261106; remote main is unchanged. The31main
+checkout documentation files are preserved in separate local commits and staged
+locally; full operational records remain local. No production change occurred.
+
+> **Current, 6 November 2026:** P0 retry UI is owner-accepted. Coupons are the next exact configuration-only activation. Use the [remaining-work and activation register](docs/ELCOMPUTER_REMAINING_WORK_AND_ACTIVATION_REGISTER.md). All older status notices below are dated history.
+
+> Meta activation is the current priority. Independent preparation is complete; tracking remains OFF pending the secure token, Test Event code and test-customer reference. The verified SMS pilot is preserved. [Plan](docs/meta-activation-inputs-and-test-plan-20261105.md).
+
+> Vodafone test delivered. The guarded, future-only transactional pilot is active: five further single-segment sends maximum, until 6 November at 19:02 Riyadh. Marketing remains OFF. [Receipt](docs/vodafone-transactional-pilot-receipt-20261105.md).
+
+> Vodafone: test SMS delivered; future-only COD/verified-payment pilot ACTIVE, five further single-segment sends maximum over24h. Marketing OFF. [Receipt](docs/vodafone-transactional-pilot-receipt-20261105.md).
+
+> Vodafone: one real SMS accepted and owner-confirmed received. Credentials bound; automation and marketing OFF. See [receipt](docs/vodafone-first-real-sms-receipt-20261105.md).
+
+> **CURRENT E293: Meta/D/scoped dark-review correction DEPLOYED; schema120 technical PASS.** App459a6579/source6f1f805; image caching ON, Meta/SMS transmission OFF. All5658 assets and naturalMON pass. [Actual closeout and next independent C1 milestone](docs/production120-meta-d-sms-closeout-20261105.md).
+
+> **CURRENT E279: Historical Vodafone/Meta credentials recovered. Meta and D schema118 packets READY / UNAPPROVED.** Production SMS/schema118 remains OFF; no new deployment or transmission. [Recovery and genuine remaining prerequisites](docs/historical-vodafone-meta-recovery-20261105.md). [Current packets](docs/meta-d-schema118-inactive-review-20261105.md).
+
+> **CURRENT E276: SMS foundation DEPLOYED INACTIVE / schema118 / technical PASS.** Both channels/provider OFF; zero sends. Forward approval consumed. [Deployment receipt and provider prerequisites](docs/sms-inactive-schema118-deployment-receipt-20261105.md).
+
+> **CURRENT E273: Production B/schema116 unchanged; corrected SMS forward READY / UNAPPROVED.** Original approval consumed before commit. [Fresh exact scope and approval](docs/sms-inactive-forward-review-20261105.md).
+
+> **CURRENT E272: SMS stopped before commit; production B/schema116 preserved.** Original approval consumed; timers resumed. [Independent rollback receipt](docs/sms-inactive-installation-stop-receipt-20261105.md).
+
+> **CURRENT E270: SMS/Meta/D independently READY / UNAPPROVED.** Restored rehearsals, compiled artifacts and fresh schema116 preflights pass. Communications OFF; no deployment. [Exact SMS-first approval and limits](docs/sms-meta-visual-inactive-release-review-20261105.md).
+
+> **CURRENT E269: Interrupted SMS/Meta/D work recovered.** Sources, builds, archives and PDFs rehash; protected qualification awaits approval-review account authentication. No deployment/provider action. [Recovery and exact blockers](docs/sms-meta-visual-interruption-recovery-20261105.md).
+
+> **CURRENT E268: Vodafone SMS + Meta P1; visual D P2.** SMS-only work is resumed; Daftra remains paused. B/schema116 stays deployed. Provider/paid-send/Test Events/production gates remain separate; no transmission is authorized by preparation. [Current priorities](docs/ELCOMPUTER_MASTER_ROADMAP.md).
+
+> **CURRENT E267: Release B DEPLOYED / technical PASS / CONSUMED_COMPLETE.** `bef28c4029ccc9b6` / `e3ba3b7` / schema116. All 5142 live assets, 14 method/privacy checks, exact original-data preservation and natural MON PASS. All 14 attempts preserved; owner/provider acceptance remains open. [Final receipt and next action](docs/commerce-release-b-schema116-deployment-receipt-20261105.md).
+
+> **CURRENT E266: Release B DEPLOYED; read-only postflight active.** Production `bef28c4029ccc9b6` / `e3ba3b7` / schema116 / PID 308821. One restart/one Caddy signal; timers resumed. Both migrations committed with exact preservation. All 5142 live assets and next natural MON verification are in progress. Owner/provider acceptance remains open. [Exact scope](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E265: Exact forward B approval recorded; original one-use execution active.** Adoption/atomic SQL/cutover is running under seal 3fd11398. No completion or owner/provider acceptance claimed. [Current scope](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E264: B forward packet sealed; READY / UNAPPROVED; preflight PASS.** A/schema114 remains deployed. The consumed attempt rolled back before commit; all 14 attempts are unchanged. Fixture parity is corrected and locally qualified. Forward 3fd11398 adopts the staged B artifact without upload/fixture replay and requires fresh one-use approval. [Exact forward review](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E263: B CONSUMED_STOP before commit; rollback independently verified.** Production remains A/schema114, all 14 attempts unchanged; timers resumed once. The packet expected restored ACL/index metadata rather than the exact live baseline. No Caddy/app cutover occurred. Forward qualification is being prepared; never replay 3f542aff. [Current boundary](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E262: Exact B approval recorded; original one-use execution active.** B e3ba3b7/schema116 cutover is executing under seal 3f542aff. No completion or owner/provider acceptance claimed. PDC recovered naturally; no manual worker call. [Exact current scope](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E261, 5 November 2026: B approval expired; replacement READY / UNAPPROVED.** No deployment occurred. A remains `4f32e3bee6f2f137` / schema114. Same B source/archive and scope; fresh backup and restored atomic executor PASS. Replacement `3f542aff` needs fresh exact approval; start by 14:37:34 Riyadh. Final sealed preflight PASS at 10:59:42 Riyadh. [Exact boundary and approval](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E260, 5 November 2026: Release B SEALED READY / UNAPPROVED.** Fresh preflight PASS; A remains `4f32e3bee6f2f137` / schema114. Existing B `e3ba3b7` proposes app `bef28c4029ccc9b6` / schema116, two SQL files and restricted cart routing. Exact Apple reference correctly overlaps the same variant; unrelated SKU is unblocked. Inquiry is separate and unexecuted. [Evidence, limits and one next approval](docs/commerce-release-b-review-20261105.md).
+
+> **CURRENT E258, 5 November 2026: Release A DEPLOYED / technical PASS / CONSUMED_COMPLETE.** Production `4f32e3bee6f2f137` / `e9361ea` / schema114. All 14 attempts preserved; all 5,019 live assets and natural MON pass. Owner/provider acceptance remains open. B/C/D stay local; Meta OFF; Daftra/SMS paused. [Final receipt](docs/commerce-payment-lifecycle-schema114-deployment-receipt-20261105.md).
+
+> **CURRENT E255, 5 November 2026: Release A READY / UNAPPROVED.** Final local payment and commerce qualification is complete. Fresh sealed preflight passes; production remains Storefront114/schema114. Approve only the exact final A packet. B/C/D remain independently gated. Daftra/SMS stays paused. [Final report and approval](docs/commerce-reliability-final-review-20261105.md).
+
+> **CURRENT E254, 5 November 2026: PAUSED BY OWNER.** Commerce reliability is saved locally; production stays Storefront114. Four qualified review archives remain unsealed/unapproved. The final three-file checkout polish passed browser checks but is uncommitted/unbuilt. All worktrees and the separate Daftra/SMS pause are preserved. [Safe checkpoint and report](docs/commerce-reliability-safe-checkpoint-20261105.md).
+
+> Current E249: [Meta115 inactive installation ready; exact one-use approval and remaining token/hosted gates](docs/meta115-inactive-installation-review-20261104.md). Storefront114 stays deployed; Meta transmission remains OFF.
+
+> **CURRENT E248, 4 November 2026:** Paymob contract/Store Check review complete. The supplied Apple6038812 screenshot has legacy callback defaults; existing per-intention overrides are correct. Public-document CSP is missing; SDK-frame CSP is present. Schema114 remains installed; all 13 prior attempts plus one observed additional attempt are retained. Meta/image artifacts remain separate and qualified, with fresh execution bindings required. No payment/provider/configuration change. [Review and continuation](docs/paymob-docs-store-check-addendum-20261104.md).
+
 > **CURRENT E247, 4 November 2026:** Storefront UX + Infinite Scroll114 is deployed and technically verified: `6fd67997c8feaeca` / source `ff037dd` / schema114 / PID 282442. All 4,898 live HTTPS asset hashes, public storefront/PDP, financial and natural-MON checks pass. All 13 attempts and CARD/COD/EGP10 are preserved. Original operator CONSUMED_COMPLETE; never replay. Apple guard, Meta and image caching remain separate. Owner UI acceptance stays open. [Deployment receipt](docs/storefront-ux-discovery-schema114-review-20261104.md).
 
 > **CURRENT E246, 4 November 2026:** Storefront114 is deployed: `6fd67997c8feaeca` / source `ff037dd` / schema114 / PID `282442`. One app restart; timers resumed; runtime/Caddy unchanged. All 13 attempts preserved. Read-only asset/financial/natural-MON postflight is active. Apple guard, Meta and image caching remain separate. Never replay. [Current receipt boundary](docs/storefront-ux-discovery-schema114-review-20261104.md).

@@ -1,3 +1,1736 @@
+# E301 — Full activation register; coupons first; P0 owner-accepted — 6 November 2026
+
+OPS-ACT-REG-01 is complete as a source/ledger/evidence inventory, not a blanket
+feature-acceptance claim. Use [the remaining-work and activation register](ELCOMPUTER_REMAINING_WORK_AND_ACTIVATION_REGISTER.md)
+as the maintained status/activation inventory; it holds147tracked feature/workstream
+scopes, eight categories, all observedOFFcontrols, candidate/migration identities,
+provider readiness, deferred acceptance, release dependencies and one action/priority.
+Historical dated receipts remain preserved; current observations take precedence.
+
+Owner now accepts CARD/Apple Pay retry behavior on iPhone/iPad/MacBook.
+PAY-RISK-RETRY-01 is closed for that UI/device scope; do not reopen or redeploy it.
+Fresh read-only01:10Riyadh: app2a1fb3c96f391f40/sourcee2663ea/schema121/PID337498;
+17sessions/17attempts,11orders,0private funds/callbacks; no financial finality inferred.
+SMS pilot0/5, same6November19:02:25expiry; Meta/campaignsOFF. Daftra currentNuxt
+mode built_in/disconnected, no DBcredential row, all supported env-presencefalse;
+checkpoint remains intact. No new provider/send/financial or production write.
+
+COUPON-ACT-01 is the first executable activation: installed engine/ingress ready;
+Beta's omitted allow_coupons defaultsOFF. Four native engine checks/nine portable
+overlay cases and fresh read-only preflight PASS. Configuration-only overlay avoids
+rewriting the SMS-guarded base runtime; app/source/schema stay unchanged.
+[Exact coupon scope, saved offers and approval](coupon-policy-activation-review-20261106.md).
+Broad saved95percent+EGP50delivery offer is unscoped/unlimited; EGP74is one-customer
+scoped. This commercial effect is explicit in the exact approval, not silently edited.
+
+Permanent SMS transition review is prepared independently; no pilot expansion or
+new paid send. It still needs genuine-event acceptance and explicit regular charge
+budget/window. Meta's deferred protected inputs do not block independent work.
+[SMS handover review](sms-permanent-transactional-transition-review-20261106.md).
+
+The owner specifically approved the six-file PUBLIC documentation summary.
+OPS-GIT-PUBLIC-01 is COMPLETE: commit85b1f7f was pushed and its remote hash verified
+on codex/activation-roadmap-public-20261106, Yousefx10/ELcomputer. Remote main is
+unchanged at20ee821. Earlier automatic-review rejections remain preserved history;
+the specific owner authorization satisfied the public production-ID/status gate.
+The31visible main-checkout files all matched the full local documentation commits
+atd8b4196 before this publication-status update. They are excluded from the public
+summary and remain on codex/activation-register-20261106. The main checkout is
+being staged locally as requested; no main commit/reset/clean or force push occurs.
+Full register, coupon terms, seals, customer records and protected evidence were not
+published. All original worktrees/refs remain preserved; two additive publication
+worktrees make75total. No app/source/schema/configuration/provider changes.
+ONE next production action remains separate: review/approve the exact coupon-only
+packet before its start deadline; refresh it after expiry, never reuse an old seal.
+
+# E300 — Merchant-risk retries and close-route edge DEPLOYED / final postflight PASS — 6 November 2026
+
+PAY-RISK-RETRY-01 technical release is complete. Production app2a1fb3c96f391f40,
+sourcee2663eac1f66fecb7d942273b330433799bc12a6, physical schema121/PID337498.
+Merchant-risk retries are ON, visibly confirmed in the authenticated owner Dashboard.
+Fresh CARD/Apple Pay attempts bypass unresolved prior-attempt holds; historical
+financial outcomes/references remain intact. Verified late/excess charges are
+recorded, one order fulfills the purchase, and additional funds alert staff.
+Known verified funding suppresses a new charge. No automatic refund/cancellation.
+
+Core schema121/retry-setting revision2 committed00:10:41Riyadh; app cutover00:10:55.
+One app restart and four existing timer pauses/resumes within55seconds. Original
+seal679ff5bc remains CONSUMED_STOP because its post-cutover probe caught the new
+retire endpoint's edge403. This is retained evidence, never a reason to replay SQL.
+Independent core postflight proves all176 protected original projections/security /
+history and all5781hosted public file hashes,14attempts/11orders/0funds/callbacks.
+
+Separate exact edge sealc3bcc579 completed at00:28:39Riyadh and is CONSUMED_COMPLETE.
+Only one POST UUID/retire matcher and MON's Caddy hash changed. Frozen installed-
+binary isolated SIGUSR1fixture passed; exactly one liveSIGUSR1toCaddy26652;
+app/Caddy PIDs unchanged, no restart/SQL/provider action. MON-only pause0.932seconds.
+POST now reaches customer authentication401/private-no-store/no-referrer;
+GET/DELETE and unknown actions stay403. The initial failed admission was read-only,
+proved unstaged/unsignalled, and existing workers recovered naturally before apply.
+
+Final independent financial/file/privacy check and next-natural-MON PASS at
+00:31:04Riyadh: original8warnings/3gaps/0critical retained. Combined closeout:
+logs/p0-merchant-risk-retry-20261105/ops/packet/independent-combined-closeout.json.
+Local50financial +94browser checks, build/typecheck, restored actual production
+atomic commit/rollback/activation and21edge route cases remain qualified.
+No new production intention, charge, provider inquiry, fabricated order/payment,
+refund or financial cancellation was performed. Genuine customer/native-device /
+provider acceptance remains the owner's next step; local/hosted proof is distinct.
+
+SMS pilot's natural post-cutover run passed:0dispatches/all5slots, same expiry
+6November19:02:25Riyadh, one/minute/one-segment/zero retries and stop latch.
+Meta/marketing stayOFF. Release D/CARD/COD/EGP10/Daftra/financial evidence /
+all73worktrees,24004previous recorded hashes and historical PDC fixture failure
+are preserved. No Git push. No further production approval remains for this release.
+[Deployment receipt](p0-merchant-risk-retry-schema121-deployment-receipt-20261106.md).
+ONE next action: reload checkout and retry a genuine purchase with CARD or Apple Pay.
+
+# E299 — Merchant-risk retry core DEPLOYED; close-only edge route pending — 6 November 2026
+
+PAY-RISK-RETRY-01 core is installed and enabled: app2a1fb3c96f391f40,
+sourcee2663eac1f66fecb7d942273b330433799bc12a6, physical schema121/PID337498.
+Migration121 and setting revision2 acknowledged at00:10:41 Riyadh; app cutover
+at00:10:55. One restart; MON/email/PDC/SMS timers resumed within55seconds.
+Owner seal679ff5bc is consumed. The operator recorded CONSUMED_STOP only after
+cutover, on an unauthenticated401-vs403 HTTP assertion. Never replay it or SQL.
+
+Independent read-only core postflight passes all5781 hosted public hashes,
+all176 protected original projections/security/history, original14attempts /
+11orders/0funds/callbacks, and next-natural-MON8warnings/3gaps/0critical.
+The signed-in owner Dashboard visibly confirms retries enabled. CARD/Apple Pay
+server integrations remain configured. No fresh production intention, charge,
+provider inquiry, refund, cancellation or fabricated order/payment was created.
+Customer/native-device/provider retry acceptance remains distinct and open.
+
+Fresh CARD/Apple Pay attempts now bypass unresolved-attempt holds and retained
+commands. All original references/uncertainty stay intact; verified late/excess
+charges are recorded, one order fulfills, and extra funds require staff review.
+Known verified funding suppresses new charges. Existing50financial/94browser
+checks, build/typecheck and actual restored-schema rehearsal remain qualified.
+
+One best-effort close-only route remains blocked by the unchanged edge allowlist:
+POST/api/account/payment-checkouts/UUID/retire returns403/Unavailable. App route
+compiled/auth/no-store checks pass, and new checkout preparation already retires
+old presentations within SQL. Main retry initiation is enabled. A separate exact
+edge-only packet will allow just this POST, rebind MON's Caddy hash and send one
+supported SIGUSR1; no app restart, SQL, runtime, credential or provider action.
+No Caddy change is authorized by the original seal's zero-Caddy scope.
+
+SMS's identity-only rebind passes a natural post-cutover run at00:20:16Riyadh:
+0dispatches,5slots, same expiry6November19:02:25, rate/segments/retries/latch.
+Meta/marketing stayOFF; Release D/CARD/COD/EGP10/Daftra/financial evidence /
+all73worktrees and unrelated historical PDC fixture failure remain preserved.
+[Deployment receipt](p0-merchant-risk-retry-schema121-deployment-receipt-20261106.md).
+Edge-only packet is now SEALED/UNAPPROVED and read-only preflight PASS:
+c3bcc579c0f8dee599fc1a145915137a22c27ad398932850335d485645c1607f. One Caddy matcher line adds onlyPOST
+UUID/retire alongside interface; one MON caddy_sha256 replacement. Native adapted
+configuration differs only in the two listener copies of that same expression.
+21method/path cases pass; exact original encrypted-backup preimages match.
+Actual binary678ade3b/PID26652 supports caughtSIGUSR1/run-from-file/no-resume;
+CanReload=no. The frozen isolated installed-binary signal fixture must pass during
+approved execution before one liveSIGUSR1. MON-only pause/resume≤60seconds;
+no app/Caddy restart, SQL, runtime, credential, unit or provider changes.
+Start before6November01:02:23Riyadh; expiry01:17:23. No edge change/signal sent.
+Packet/operator: logs/p0-merchant-risk-retry-20261105/edge-close.
+ONE next action: obtain the exact edge-only approval and execute once.
+
+# E298 — P0 merchant-authorized payment retries — QUALIFIED, exact approval pending
+
+PAY-RISK-RETRY-01 is the immediate priority. Owner accepts fresh CARD/Apple Pay
+attempts while earlier outcomes remain uncertain. The Paymob support report stays
+owner-reported evidence; the old commercial hold is superseded by this directive.
+
+Fresh sealed read-only production preflight passed at 6 November 00:00:30 Riyadh:
+app459a6579dc15cc31/source6f1f805, schema120, CARD/COD/EGP10 intact, Meta OFF,
+SMS transactional pilot preserved and marketing OFF. No P0 production mutation,
+provider call, payment inquiry, void, refund, cancellation or charge occurred.
+
+Qualified independent source e2663eac1f66fecb7d942273b330433799bc12a6 is committed
+in logs/p0-merchant-risk-retry-20261105/source (73rd additive worktree). Candidate
+app2a1fb3c96f391f40 migrates120→121 and enables the Dashboard merchant-risk policy.
+Fresh explicit clicks use new attempt/provider identities; abandoned presentations
+are retired locally without inventing a financial result. Original references
+CHK-5AB39404CFB747A4 and CHK-724EDD15767942B3 remain preserved. Late/simultaneous
+verified successes enter the immutable funds ledger; one order fulfills the purchase,
+additional funds receive staff review, and known verified funds never offer a charge.
+
+Qualification: 50 isolated financial checks; 26 Chromium checkout/status checks;
+26 WebKit checkout/status checks; 42 pinned Apple SDK checks with native/provider
+fixtures; typecheck/build; 5,763 compiled asset hash checks and23 HTTP checks.
+Restored actual schema120 passed exact schema/RLS/ACL baseline, atomic commit,
+rollback, policy ON and both historical conflict-reference checks. All176 original
+protected projections survived. Encrypted database/runtime backup fully read back.
+The unrelated historical PDC fixture failure remains preserved and unmodified.
+
+The app cutover requires only an operational identity rebind in the existing SMS
+pilot worker. Its original plan, active receipt, dispatch markers, five-slot budget,
+6November19:02:25 Riyadh expiry, one/minute rate and fatal/uncertain stop latch
+remain unchanged. Eight actual-worker fixture checks pass; nine consumed-lifecycle
+checks and23 remote scope/approval guards pass. No SMS feature or allowance expands.
+Release D, Daftra checkpoint, payment evidence and all prior worktrees stay intact.
+
+Fresh one-use seal: 679ff5bc16b7ce36fec6a6e08d858ace5788f916f4728f556b1433c2f965ab47.
+Scope: one migration/history insert plus one retry-setting row enable; one app
+restart; existing MON/email/PDC/SMS timers pause/resume once each within180seconds;
+identity-only SMS bundle replacement. Shared runtime, credentials, Caddy, units,
+Meta and marketing settings stay unchanged. No operator provider transactions.
+Start before 6November00:34:33 Riyadh; expires00:49:33. Not approved or consumed.
+Packet: logs/p0-merchant-risk-retry-20261105/ops/packet/plan.json.
+Operator: node logs/p0-merchant-risk-retry-20261105/ops/release-cli.mjs.
+Never replay after apply-attempt; ambiguous commit requires independent read-only
+reconciliation, with no automatic retry or rollback. Hosted signed-in/device/payment
+acceptance remains pending deployment; local fixtures are not provider acceptance.
+
+ONE next action: obtain the exact packet approval, then execute once and postflight.
+
+# E297 — Meta priority; independent activation preparation COMPLETE — 5 November 2026
+
+MKT-META-TEST-01 is now the immediate priority. Meta is installed and OFF.
+Fresh read-only verification at21:26:34 Riyadh: app459a6579dc15cc31/source6f1f805,
+physical schema120/PID324764. Meta settings revision0; token, Test Event code
+and selected customer absent; consent/event counts0. Target dataset remains
+1680814460341996. No Meta event or credential-bearing provider request was sent.
+
+Six Meta core/worker/migration files match the qualified source. Reuse the43
+passing consent/privacy/dedup checks and four worker checks. No integration
+rebuild or repeated full test program. VPS graph.facebook.com TLS1.3 passed
+with no HTTP request or token. Actual Python3.12.3, app user, loopback port3000
+and service environment loading were verified. Six overlay-rendering and four
+protected-input checks pass. Local units/env templates and encrypted owner-input
+intake are prepared; no worker/secret/configuration was installed or generated.
+
+Important coexistence constraint: the active SMS pilot guards the shared runtime
+file's exact hash. Meta must use the prepared additive systemd Meta-only app.env
+instead of rewriting that file or altering SMS active receipts/budget markers.
+The actual app starts directly from systemd and supports this additive overlay.
+The four allowed keys are META_TRACKING_ENABLED, META_DISPATCH_ENABLED,
+META_TEST_REVISION and META_WORKER_SECRET (all NUXT_ prefixed). Token binding uses
+the existing server AES-GCM/RBAC/revision mechanism, never an environment token.
+
+Exact pending private inputs: target-dataset CAPI token, its Test Event code,
+and one existing non-staff customer reference. Fresh in-product consent is
+required for the test revision; GPC/DNT and staff exclusion remain enforced.
+Worker secret generation is operator-owned, not another owner input. After
+inputs, capture fresh preimages and seal one5minute/max3nonfinancial-event scope.
+PageView/ViewContent navigation needs no cart/order/payment mutation. Timers
+remain unenabled for the controlled test; Purchase/CODOrderPlaced are excluded.
+Provider receipt, browser/server dedup and real EGP/catalog identifiers require
+actual hosted acceptance. Do not claim retailer-SKU matching from UUID content_ids.
+No stale/placeholder approval seal was created or reused. Ordinary tracking OFF.
+
+SMS-VF-LIVE-01 remains COMPLETE with owner-confirmed handset receipt. Do not
+repeat it. SMS-VF-TX-01 is unchanged: five slots available, zero pilot dispatches,
+one segment/message, one/minute, zero retries, stop latch intact, same expiry
+6November19:02:25 Riyadh. No genuine transactional event exists; duplicate groups0.
+SMS-VF-TX-ACCEPT-01 remains pending a real eligible order. Verify private SMS
+History, unique event/batch, attempts and exact status when it occurs; never
+fabricate an order/payment. SMS-VF-TX-PERM-01 permanent plan is prepared only,
+without expanding pilot authority. Marketing remains separately OFF.
+
+Release D, CARD/COD/EGP10,14sessions/14attempts/11orders/funds0/callbacks0,
+Daftra checkpoint and existing configuration are preserved. No production write,
+restart, worker/timer change, SMS send or financial/provider transaction occurred.
+[Meta inputs and controlled test plan](meta-activation-inputs-and-test-plan-20261105.md).
+[Permanent transactional SMS plan](sms-permanent-transactional-activation-plan-20261105.md).
+ONE next action: when available, provide the token, code and private test-customer
+reference through protected encrypted intake; then seal the small Meta test scope.
+
+# E296 — Vodafone delivered; guarded transactional pilot ACTIVE — 5 November 2026
+
+SMS-VF-LIVE-01 is complete. Vodafone returned HTTP 200, SUCCESS / SUBMITTED.
+The owner confirmed receiving the exact synthetic test message. Exactly one
+recipient, one segment and one provider POST were used, with zero retries.
+The exact charged amount and provider delivery receipt were not returned.
+The owner expressly accepted the ordinary charge. No tariff question remains
+for the completed test or the separately approved five-segment pilot.
+
+SMS-VF-TX-01 is ACTIVE with a hard five-further-segment budget over 24 hours.
+Only future COD confirmations and genuinely verified-payment confirmations are
+enabled, using the existing bilingual templates. Maximum one segment/message
+and one send/minute; no retries, historical backfill or other event producers.
+Marketing remains OFF. No eligible new order has occurred; pilot dispatches = 0.
+The deadline remains 6 November 2026, 19:02:25 Riyadh, without daily budget reset.
+The provider closes at the quota/window; no dispatch can exceed either limit.
+
+The owner also approved worker-only seal
+69978611f1177f1a9de51ddb63affeee2afb9ad87c6ffb73225ddbf1db59188a.
+It is CONSUMED_COMPLETE at 19:20:06 Riyadh. The correction durably latches the
+pilot closed on its first rejected/uncertain provider result or uncertain ledger
+finish. It disables the provider when reachable. The latch blocks further sends
+even during a database outage. Budget markers and expiry were preserved.
+Only the SMS timer paused/resumed, for 0.051 seconds. No app restart, SQL, runtime,
+settings or provider request occurred during the worker correction. The earlier
+7180f5b9 test and ee12fc4b activation seals also remain consumed. Never replay.
+
+Actual production: app 459a6579dc15cc31, source 6f1f805, physical schema 120,
+PID 324764. Guarded private worker SHA256 begins 36a704775761d20d. Credentials
+remain encrypted under the existing VPS master key. No public worker secret or
+new unauthenticated access was installed. HMAC remains literal uppercase HEX
+without decoding, under Vodafone support ticket INC000081856720.
+
+Natural guarded-worker postflight passed at 19:21:41 Riyadh: exact bundle hash,
+healthy enabled timer/caller, no residual lock, no closed latch and zero pilot
+POSTs. Eight new actual-worker flow checks passed; the previous 22 one-test and
+14 pilot-bound checks remain valid. Frozen application qualification was reused.
+Original source and consumed operator files were preserved. App/source/schema,
+financial evidence, CARD/COD/EGP10, Daftra checkpoint, PDC/Brevo/MON and Meta OFF
+boundaries remain intact. Original 68 worktrees and 24,004 hashes remain preserved.
+
+[Delivered SMS and active guarded pilot receipt](vodafone-transactional-pilot-receipt-20261105.md).
+ONE next action: review the first eligible new-order notification within the
+approved pilot. Do not fabricate an order/payment or expand its budget.
+
+# E295 — Vodafone delivered; bounded transactional pilot ACTIVE/PASS — 5 November 2026
+
+SMS-VF-LIVE-01 COMPLETE: exact7180f5b9 test seal CONSUMED_COMPLETE. Exactlyone
+Notification POST returnedHTTP200/SUCCESS/SUBMITTED; owner confirmed exact handset
+receipt. GSM7/33units/one segment; retries0/fallbacks0. No provider DLR, assigned ID
+or exact charged amount was returned. Ordinary one-message charge was expressly
+owner-authorized despite unknown merchant tariff; do not reopen pricing/HMAC as
+blockers for that completed scope. INC000081856720 literal uppercase HMAC unchanged.
+
+SMS-VF-TX-01: owner separately approved exactee12fc4b4ac70877b14d5cfc137dc20854c7ddb42dd0a73660de4d2b90351526
+for up to FIVE FURTHER ordinary single-segment charges over24h, one/minute, retries0.
+Operator CONSUMED_COMPLETE19:02:28 Riyadh. Existing encrypted credentials reused;
+providerrevision2/channelrevision1; only cod_confirmed/prepaid_confirmed bindings
+and existing bilingual templates enabled. enabled_since19:02:21 Riyadh excludes
+historical orders; genuine verified-funds contract retained. All other events,
+invoice/Daftra/PDC/claims/transfer/failure and marketing remain excluded/OFF.
+
+Actual app459a6579dc15cc31/source6f1f805/schema120/PID324764. Source/schema unchanged;
+one apprestart, runtime SMStransactionaltrue/marketingfalse, private bounded CLI
+worker/timer installed. No public HTTP-worker secret/access was added. The worker
+reuses current service/transactional/queue/adapter/transport/lease final-dispatch
+checks plus a root-only cumulative five-dispatch budget, one segment each, no
+retries, and an absolute24h window. It disables the provider at exhaustion/expiry
+(on its next natural check); no dispatch is allowed beyond either bound. Deadline:
+06 November 2026 19:02:25 Riyadh. Never delete/reset budget files or replay either operator.
+
+Three original timers restored after12.1138seconds; no manual worker requests.
+Postflight19:06:09 Riyadh PASS: natural pilot runs3, dispatches0/no eligible new
+orders; totalSMS ledger1batch/1message/1attempt remains the delivered test.
+NaturalMON19:05:05 Riyadh unchanged8warnings/3historicalgaps/0critical; alloriginal
+units active/enabled and callerssuccess. SMS anonymous settings/transactional/
+history401/privateNoStore, storefront200, Meta publicconfigdisabled/noStore PASS.
+Financial counters14sessions/14attempts/11orders/funds0/callbacks0 preserved.
+
+Newoperator safetychecks22 + pilotlimits/source/segmentchecks14 PASS; current
+installed application/source qualification reused, no app rebuild/HMAC rewrite.
+All original68worktrees/24004hashes and67foreignHEAD/status/index/diff preserved;
+no main/source/Gitpush changes. Secret-output scanPASS/0values/0secretcommits.
+Meta remains OFF/ready for owner-deferred Test Events; CARD/COD/EGP10/Daftra/Brevo/
+PDC safeguards unchanged. First real future-order SMS acceptance is not yet claimed.
+
+[Delivered test and active pilot receipt](vodafone-transactional-pilot-receipt-20261105.md).
+ONE next action: monitor the first eligible new-order notification within this
+approved pilot; no synthetic order/payment is authorized or needed.
+
+# E294 — Vodafone single real SMS accepted and received — 5 November 2026
+
+SMS-VF-LIVE-01 is the immediate priority; Release C is deferred behind SMS.
+Owner explicitly accepted the ordinary charge for one Egyptian SMS segment,
+without waiting for the exact merchant tariff. AGENTS.md imposes no numeric
+monetary ceiling; no further pricing question is needed for this consumed test.
+Exact one-use seal7180f5b90bf7408c829cc582c9ed9daa01ae083dec649e85f9d8c797115dbf5a
+was approved and executed once. CONSUMED_COMPLETE at18:42:03 Riyadh; never replay.
+
+Actual Vodafone response HTTP200 / SUCCESS / SUBMITTED; one provider POST,
+one recipient, GSM7 33units / one segment, automatic retries0/fallbacks0.
+The owner then confirmed: “Received the exact test message.” This is owner-reported
+handset receipt, separate from provider submission acceptance; no provider DLR
+or provider-assigned ID/charged amount was returned. Client ExternalTrxId and
+sanitized result are preserved in the protected SMS ledger and operation receipt.
+
+Recovered credentials are now bound using the existing server AES-GCM master key.
+Provider/ordinary transactional/marketing controls remain OFF; no runtime changes,
+worker/timer installation, app restart, migration, payment or authentication writes.
+Current app459a6579dc15cc31/source6f1f805/schema120/PID322399. Financial counters
+remain14sessions/14attempts/11orders/funds0/callbacks0. Meta remains OFF/ready for
+its separately deferred Test Events inputs. CARD/COD/EGP10/Daftra/PDC/Brevo/MON
+and original worktrees/recorded hashes remain preserved.
+
+VPS assigned public source IP equals its route source for Vodafone; verifiedTLS1.3
+passed. The real accepted Notification now proves this specific request used
+accepted credentials/sender/source access. Formal current whitelist/account
+records and exact tariff are still not supplied; neither is a repeated blocker
+for the already authorized and completed single test. No authenticated merchant
+portal session or Vodafone package/tariff record was recovered. A generic portal
+field belonged to an unrelated gateway plugin, not Vodafone commercial evidence.
+HMAC remains literal uppercase HEX string without decoding, per INC000081856720.
+
+22 new bounded-operator safety checks passed; installed adapter/settings/transport/
+credential/helper source identities were verified and prior feature qualification
+reused. No integration rebuild or HMAC reinvestigation. The isolated operator kept
+ordinary application sending OFF and appended only its owned one-message ledger.
+
+[Single-SMS execution receipt](vodafone-first-real-sms-receipt-20261105.md).
+ONE next action: prepare the separate exact transactional activation packet with
+future-only approved templates, a small segment budget and marketing OFF.
+
+# E293 — Meta/D/CSS DEPLOYED technical PASS; independent preparation COMPLETE — 5 November 2026
+
+Actual current459a6579dc15cc31/source6f1f805/schema120/PID322399. Meta4503cbf1/c8ba371
+installed118→119; Da086e5f0/7220bd0 installed119→120; scopedCSS459a6579/6f1f805
+app-only120→120. Exacte484/7c104/71c4 operators CONSUMED_COMPLETE; never replay any
+mutation or auto-rollback/DBrestore. Oldmismatched/unready approvals/stops intact.
+Final CSSpostflight18:02:59 Riyadh PASS: all5658 hostedasset hashes;176 original
+projections/17Auth/14 attempts/11orders retained, funds/callbacks/proofs/integrity0;
+naturalMON18:00:05 Riyadh8warnings/3historicalgaps/0critical. One restart per actual
+cutover, existingtimerspause/resume≤180s; no runtime/Caddy/credentials/units changes.
+CSSexecutedzeroSQL/history/schema/settings/policy writes, realR/Oreceipt preserved.
+
+Hosted actualheroDOM/srcstable acrosstwothemetoggles;390/820/1440contain/nooverflow,
+WhatsApp/YouTubevectors, imageGET/HEAD/304/lastmodified/86400freshness/versionedURL
+andprotectedfinancial/customer/private noStore PASS. Actualcompiled scopedreview
+CSScorrected/hostedPASS; signed-inrevieweligibility notimpersonated. Scripts/templates
+andallothercodeunchanged. Original PDCfixturefailure/unrelatedfooterexpectations
+retained; no broadtests restarted or blanketfullsuite/provideracceptance claim.
+
+OwnerexplicitlydefersMetaToken/TestCode: implementationinstalled/privacy/dedup43+
+worker4readinesscomplete, transmissionOFF, worker/secret/schedulernotinstalledbytask.
+FourGETs0positivetargetaccess, merchant190/460,other3code100; noCAPIwrite/expiredtoken
+inference, noeventPOST/Purchase/TestEvents/EGP-SKU/providerdedup acceptancefabricated.
+Do notwait/requestMeta inputsagain. Vodafoneexistingcreds recovered/validatedwith
+fixtureencryptionroundtrip, TLS1.3actualVPSPASS; encryptedminimalOFFcandidate and
+private-recipienthashpreserved. No livebinding/confirmation/activation/SMS/marketing.
+Currentaccount/Notification/sender/IPpermission andtariff/exactcap/bodyapproval still
+missing; do notrequestgenericnewkeys orsendpaidtrafficwithoutboundauthorization.
+
+C-FND-01: preservedC e39dfa6/archive4549faee/1705inputs/twoSQL/monitorrehashPASS;
+nextdisabledpreorder/CODfoundation milestoneidentified. OldB/114bindingsstale versus
+actual120;6sharedsourcefiles need additiveMeta/SMS/Dpreservation; forwarduninstalled
+migrationIDs/MON/currentpreimage/recovery/oneusesealrequired. NoCinstall/slotreservation,
+preorder/percentage/paymentpolicyactivation. Daftrab782b13checkpointstayspaused;
+Paymobsupport/financialuncertainty, CARD/COD/EGP10,Brevo,PDC,MONunchanged. Alloriginal
+68worktrees/24004hashespreserved;4ownedadditions(total72), main20ee821/noGitpush.
+[Actual deployment and independent closeout](production120-meta-d-sms-closeout-20261105.md).
+ONE next action: rebind/seal C-FND-01's disabledfoundation on actual120, preserving
+Meta/SMS/D, preordersOFF/CODfixedEGP10; do notdeploy theoldCpacket orwaitforMeta.
+
+# E292 — CSS-only120 DEPLOYED; original read-only postflight active — 5 November 2026
+
+Fresh71c4ec21 source6f1f805/archive459a6579dc15cc31 cutover acknowledged14:55:43 UTC,
+newPID322399, schema120 unchanged. One apprestart; existingtimers resumed once.
+Paused database verification14:55:27 SCHEMA120_READONLY_UNCHANGED_PASS: migrations0,
+SQL/history/schema/settings/policy/provider/runtime/credentialchanges0. No fakeSQL
+commit receipt: actual database-readonly.json preserved. Original app/data/assets/
+naturalMON and hostedscopedCSS checks running; finaltechnicalpassnotyetclaimed.
+Never replay stage/switch/restart, auto-rollback orDBrestore after this acknowledged
+cutover. Priorfe6 consumed beforestage remainsintact; new71 source/no-SQL budget
+wasexecutedonce withread-only admission followedbyexclusive mutation barrier.
+
+Livecurrent459a6579/6f1f805/120 retainsMeta/SMS/D; imagecacheenabled, Meta/SMS
+transmissionOFF. SourceC1 checkedonly (oldscope stale), nopreorder/newfeeactivation.
+OwnerMetaToken/TestCodedeferred; safeconsent/workerready; no customer/eventPOST.
+SMS protectedOFFcandidate prepared/notapplied, recoveredcredsvalidated/TLSpass,
+paidtestgatedbycurrentpermissions/tariff/cap. Daftra/Paymob/paymentevidenceand
+originalworktrees/hashes preserved. ONE next action: complete original CSSpostflight
+and actualhostedscopeddarkstyle receipt, then finalindependentworkcloseout.
+
+# E291 — Fresh CSS-only71c4 exact approval received; executing — 5 November 2026
+
+Owner approved APPROVE DARK REVIEW CSS ONLY SCHEMA120 APP INSTALLATION
+71c4ec21023061b726e106de4a7ee83ca4bd3f14a0ca304d7e03b20878cc54eb.
+Original operations-dark-review-forward controller recording approval/executing.
+Same6f1f805/archive459a6579, schema120 unchanged, zero SQL/history/settings/policy/
+financial/runtime/credential/provider changes. One apprestart/timerpause-resume180s.
+Read-only admission precedes exclusive mutation attempt; an unready read check
+has no stage/production intent. First staging consumes the mutation budget;
+never retry stage/switch/restart or auto-rollback after that barrier.45JS/threePython
+scope/no-writable-DB/admission checks PASS; currentpreflight14:48:45 UTC PASS.
+Priorfe6 CONSUMED_STOP beforestage preserved, no replay. Completion not yet claimed.
+
+Safe SMS preparation now includes encrypted OFF-config candidate with three
+recovered fields, historicalsender and observedpublic VPS socket-source IP; all
+confirmations/provider/channels remainfalse. ServerNuxt encryption is required
+only during futureexactapprovedbinding; transfer envelope is not a livecredential
+record. Provider-visibleNAT/allowlist/sender/account permission and tariff/cap
+remainunverified; zero liveciphertext/configwrites, paid submissions ormarketing.
+Owner-deferred Meta transmissionOFF; C1 candidatechecked andnextdisabledfoundation
+identified only; Daftra/Paymob/financial/worktree evidence retained unchanged.
+ONE next action: this original CSS-onlycutover, hostedscopeddarkstyles and full
+read-only postflight; then finalindependentworkreport withoutwaitingforMeta.
+
+# E290 — CSS fe6 attempt CONSUMED_STOP before stage; fresh admission preparation — 5 November 2026
+
+Exactfe6bd65a approval recorded, but original apply preflight stopped14:43:02 UTC
+with EXISTING_WORKER_STOP before execution-intent/stage/pause/database-readonly/
+cutover. Preserve apply-attempt/consumed-stop and owner approval; never replay fe6.
+No new app/schema/SQL/runtime/credential/provider change; live remains D a086e5f0/
+7220bd0/schema120/PID320082. All workers naturallysuccess14:46:00, timers active/
+enabled. No manual worker call/restart/timer action. Existing safeguards unchanged.
+
+Same one-selector6f1f805/archive459a6579 retained, actualcompiled CSS localbrowser
+PASS, scripts/templates unchanged; no feature rebuild/retest. Fresh controller
+operations-dark-review-forward prepares read-only admission before the mutation
+one-use barrier. Failed read-only admission creates no apply/stage/production intent;
+atomic exclusive apply-attempt still precedes first staging, and no retry/rollback
+is allowed after that point. This prevents unrelated transient worker state from
+consuming an otherwise unused mutation budget, without admitting unhealthyworkers
+or relaxing any preimage/source/unit/financial guard. New guardcase proves this;
+fresh exact seal/approval required; oldfe6 not reused. Currentdata capture underway.
+
+Owner Meta inputs deferred/providerOFF; SMS offline/encryption/TLS continuity done,
+paid sends forbidden withouttariff/cap. C1 preserved1705inputs andtwoSQL/monitor next
+inactivefoundation identified; sourceoverlaps6 require current120 rebind, no policy
+activation. Daftra/Paymob evidence and all originalworktree/hash boundaries retained.
+ONE next action: qualify fresh app-only admission/seal, exact owner approval and
+one original CSS cutover/postflight; no waiting for Meta/provider setup.
+
+# E289 — Exact CSS-only120 approval received; one-use execution — 5 November 2026
+
+Owner explicitly approved APPROVE DARK REVIEW CSS ONLY SCHEMA120 APP INSTALLATION
+fe6bd65a438379cec31e1179dc47c0ee201f4ad94a2635f23295802287eba499.
+Original operations-dark-review-current controller recording approval/executing
+once. Source6f1f805/archive459a6579dc15cc31, one selector only, same script/template
+and all other code. Schema120 UNCHANGED; ZERO SQL/history/schema/settings/policy/
+financial/runtime/credential/unit/provider changes. One apprestart and existing
+pause/resume≤180s. Writable DB export/migration path absent, real paused database
+verification is read-only and records database-readonly.json, never a fake commit.
+No completion claimed before actual app cutover/read-only postflight. No replay,
+automatic rollback or DB restore on uncertainty. D/Meta remain consumedcomplete.
+
+Actualcompiled localCSS browser now verifiesforeground226/232/240,background30/41/59,
+border71/85/105 with no network.All5533 immutable installedD public
+files retained; compiled21routes+5640assets PASS; source/script/template proof and
+44JS/threePython app-only guard checks PASS. Full feature programs not repeated.
+Owner-deferred Meta transmission remainsOFF; no token/TestCode wait/request. SMS
+credential offlinecompatibility/TLS/private-recipient continuity PASS, missing
+externalconfirmations/tariff/cap; no paid sends. C1 disabled-foundation milestone
+identified/preserved, no preorder/percentage/payment activation. Daftra/Paymob
+support/financial uncertainty and originalworktree/hash safeguards unchanged.
+ONE next action: complete this exact app-only installation, hosted darkCSS check
+and original financial/assets/natural-MON postflight, then independent final report.
+
+# E288 — CSS-only correction exact packet READY; production remains D120 — 5 November 2026
+
+UX-DARK-REV-01 one-selector source6f1f805/archive459a6579dc15cc31 qualified. Actual
+compiled CSS now has scoped .dark .review-eligibility-status[data-v-*], removing
+the unintended bare global.dark rule. Script/template and all other source bytes
+identical. Typecheck evidence reused through unchanged script/template; build,
+compiled21routes+5640assets and44JS/threePython app-only scope guards PASS. Writable
+DB export/migrationcallback removed. Schema120/zeroSQL/zerohistory/settings/policy/
+provider changes; one apprestart/timerpause-resume180s only.
+
+Fresh actual Auth-security preimage captured with17 accounts/176 projections/
+14 attempts. Old227d23d1 failed read-only and remains preserved/unapproved, never
+staged/executed. Same fresh authenticated recovery backup retained within original
+window; database restore prohibited. New fe6bd65a438379cec31e1179dc47c0ee201f4ad94a2635f23295802287eba499
+sealed preflight14:32:50UTC PASS; exact owner approval requested. Start by21:10:16
+Riyadh, expiry21:25:16. Controller operations-dark-review-current/. No completion
+or approval is claimed until actual receipts. D7c104dc7/Metae484768d consumedcomplete;
+never replay either. Currentlive appa086e5f0/source7220bd0/schema120/PID320082.
+
+Owner explicitly defers Meta providerinputs; preserveOFF, do not wait/request again.
+Safe consent/worker readiness retained. SMS offline recovered-credential validation
+and ephemeral encryption roundtrip PASS with real values never emitted; no live
+ciphertext/binding/confirmations or sends. TLS1.3 PASS; cap/tariff/currentIP/sender
+confirmations missing. Cnextfoundation checked1705source inputs/archive/twoSQL/monitor
+and6 source overlaps identified: CheckoutStatus/checkout/Dashboardsettings/defaults/
+EN/AR must preserve installedMeta/SMS/D. OldCpacket cannot be deployed unchanged.
+No C/fee/preorder activation, Daftra restart, Paymob support/financial changes orpush.
+ONE next action: exact approval and one app-only CSS installation, then hosted styles
+and original postflight; finish independent closeout without waiting for Meta.
+
+# E287 — D technical PASS; one compiled dark selector correction; provider deferral — 5 November 2026
+
+Owner explicitly defers Meta token/Test Event code; keep provider transmission OFF
+and continue all independent work. Do not wait or request Meta credentials again.
+MKT-META-LOCAL-01: installed implementation/consent/dedup/GPC/DNT/staff exclusion
+and loopback-worker readiness remain qualified; no token/worker activation or
+provider acceptance fabricated. SMS-VF-TEST-01: actual recovered fields passed
+Nuxt validation and ephemeral fixture-key encryption roundtrip; test ciphertexts
+discarded. Live TLS1.3 PASS, existing private recipient reference preserved.
+Expected outbound IP/current account/sender/trusted-IP confirmations, actual tariff/
+charge cap/body approval remain missing; paid SMS/marketing OFF, zero submissions.
+
+D a086e5f0/7220bd0/schema120/PID320082 CONSUMED_COMPLETE14:04:21 UTC. All5534 hosted
+asset hashes,176 protected projections/17 Auth accounts/14 attempts, CARD/COD/EGP10
+and naturalMON14:00:06 PASS(8 warnings/3 gaps/0critical). HostedGET/HEAD/304/public
+freshness/versionedURL and privatefinancial/customer noStore PASS. Actual hero same
+DOM/src across two theme toggles PASS;390/820/1440 contain/nooverflow PASS; hosted
+WhatsApp/YouTube21px16viewBox vectors PASS. Guest review state cannot exercise
+signed-in eligibility; delivered compiled CSS inspection found a real selectorbug:
+:global(.dark) .review-eligibility-status compiled to bare .dark.
+
+UX-DARK-REV-01 correction6f1f805 changes only that selector. Script/template and
+all other code identical; same schema120/no SQL/settings/provider/fee changes.
+New build/compiled21routes+5640assets PASS;44 JS/three Python app-only guard checks
+PASS, writable DB export/callback removed. New archive459a6579dc15cc31. Initial
+227d23d1 read-only preflight caught Authsecurity SHA drift(count17 unchanged); no
+approval/stage/production mutation. Old plan/preimages preserved. Same source/
+qualification/fresh protected backup retained; actualdata-only rebind ongoing.
+
+C-FND-01: preservedC e39dfa6 sourceexport1705inputs/archive4549faee/twoSQL/monitor
+rehash PASS. Next independent milestone is disabled preorder/COD capability
+foundation, preordersOFF/CODfixedEGP10; no new payment/percentage policy activation.
+Old114/B bindings stale against actual120; forward uninstalled SQL identities,
+currentMeta/SMS/D source preservation and exact new MON/preimage/seal required.
+62 native/27 monitor evidence preserved, not rerun or labelled current deployment.
+Daftra checkpoint remains paused; Paymob support/financial evidence untouched.
+ONE next action: finish CSS-only actual-preimage seal, obtain exact app-only approval,
+then verify hosted scoped dark styles; Meta provider setup remains owner-deferred.
+
+# E286 — D120 DEPLOYED; hosted acceptance/original postflight active — 5 November 2026
+
+Exact7c104dc7 migration committed once13:56:59 UTC; cutover acknowledged13:57:13:
+a086e5f0638827a3/7220bd0/physical120/PID320082. One restart, existing timers
+resumed once. Reviewed visuals and public-image-cache defaultenabled installed.
+No repeat stage, SQL, switch/restart, rollback or restore after this acknowledged
+commit. Original data/assets/natural-MON and hostedpublic cache/UI acceptance
+running; technical completion not claimed before actual receipts.
+
+ActualMeta119 predecessor176 locked original projections/17 Auth accounts/
+14 attempts retained atomically. Existing Meta/SMS provider/channels stay OFF;
+no token/runtime/worker/Caddy/provider/financial changes. Meta e484768d remains
+CONSUMED_COMPLETE with all5407 assets and naturalMON PASS. D's source preserves
+Meta/SMS and excludes ReleaseC/preorder/COD changes; all5406 immutable Meta public
+files retained. Known historical PDC fixture remains unchanged.
+
+Provider gates: four Meta GET checks did not positively establish target1680814460341996
+access; no Test Events/Purchase or other event POST. Vodafone actualVPS TLS1.3
+PASS, selectedprivate recipient preserved; tariff/cap/body acceptance absent,
+zero submissions/charges/marketing. All original worktrees/hashes, payment
+uncertainty, CARD/COD/EGP10,Daftra,PDC/Brevo/MON preserved.
+ONE next action: complete this original D read-only postflight and hostedcache/UI
+acceptance, then report only actual deployment, provider results and one owner action.
+
+# E285 — Exact D120 approval received; one-use execution — 5 November 2026
+
+Owner approved APPROVE VISUAL ONLY INACTIVE SCHEMA119 INSTALLATION
+7c104dc73a6b86c093e12717fe9d6217d32ab97a1d6f975dcea9adf81d84c810.
+Fresh sealed preflight13:52:19 UTC PASS against actual Meta4503cbf1/c8ba371/schema119,
+176 original projections/17 Auth accounts/14 attempts/11 orders, funds/callbacks/
+proofs/integrity0. D operator is recording approval and executing once; no completed
+D deployment is claimed before actual commit/cutover/postflight receipts.
+
+Scope:7220bd0/archivea086e5f0638827a3, one exact public-image-cache migration119→120,
+one app restart, existing-timer pause/resume≤180s. Reviewed D visuals and default-
+enabled public-image caching take effect. “Inactive” means communication gates:
+existing Meta/SMS stay OFF. Runtime/credentials/workers/Caddy/provider/financial
+changes0; Release C/preorder/COD and Daftra excluded. No replay or automatic
+rollback after consumed/uncertain stage,SQL,app switch/restart. All5406 immutable
+Meta-installed public assets retained in D; compiled21routes+5516assets PASS.
+Current119 restore reproduces37 exact owner-only grants,176 projections/14 attempts;
+rollback/commit PASS. D54/Meta43 reused by byte identity; new53+10 JS/five Python
+release/Meta-preservation guards PASS. Full application suites were not repeated.
+
+Meta e484768d remains CONSUMED_COMPLETE/technical PASS with tracking OFF. Four
+read-only recovered-token checks did not positively establish target access;
+zero event POSTs, Test Events or customer transmissions. Vodafone TLS1.3 PASS,
+private test recipient preserved; real tariff/cap/body approval missing, zero SMS.
+Preserve all original worktrees/hashes, payments, CARD/COD/EGP10,Daftra,PDC/Brevo/MON.
+ONE next action: finish this original D installation, hosted cache acceptance and
+independent data/assets/natural-MON postflight; do not pause independent D for Meta.
+
+# E284 — Meta119 technical PASS / CONSUMED_COMPLETE; activation blocked — 5 November 2026
+
+Meta4503cbf1cda3c5d0/c8ba371/schema119/PID319012 original postflight complete:
+all5407 hosted public asset hashes PASS13:46:08 UTC; financial/Auth17/SMS original
+projections and14 attempts/11 orders preserved, funds/callbacks/proofs/integrity0.
+Natural MON13:45:05 retains8 warnings/3 historical gaps/0 critical. Original
+e484768d CONSUMED_COMPLETE: never replay stage/migration/restart or auto-rollback.
+Provider/runtime/token/worker changes0; Meta remains disabled with empty token.
+
+Owner-authorized recovered-token READ checks completed13:42:02: four GETs to
+1680814460341996, zero event POSTs or customer transmissions. Target read access
+confirmed0. Merchant token HTTP401/Meta190 sub460; other three HTTP400/code100.
+These read rejections do not prove all CAPI tokens expired or lack write permission.
+No historical Pixel substituted and no unverified token bound. Hosted Test Events,
+provider receipt/deduplication/EGP/SKU and ordinary activation remain BLOCKED on
+positive target-token permission plus private Test Event code/customer/consent and
+exact protected configuration/test scope. Minimum owner step: Events Manager for
+target1680814460341996, confirm/restore an authorized integration token and obtain
+its Test Event code privately. Do not request generic credentials or claim failure
+of CAPI submission that was never attempted. D continues independently.
+
+D actual predecessor capture confirms installedMeta119/176 original projections/
+17 Auth accounts/14 attempts; current encrypted backup full readback PASS. D source
+7220bd0 build/compiled21routes+5516assets PASS;54 focused checks reused. Disposable
+fixture now reproduces37 measured owner-only grants (prior33 plus four Meta tables),
+with full schema/RLS/ACL equality unchanged; exact local rehearsal continues. No D
+approval/install or current-schema assumption. Vodafone TLS1.3 PASS; private
+recipient preserved; actual tariff/cap/body approval missing, zero SMS submissions.
+ONE next action: complete D's actual119-bound seal and obtain its exact approval.
+
+# E283 — Meta119 DEPLOYED inactive; original read-only postflight — 5 November 2026
+
+Replacement e484768d exact migration committed once13:40:33 UTC; app cutover
+acknowledged13:40:50 UTC:4503cbf1cda3c5d0/c8ba371/physical119/PID319012.
+One restart; existing timers resumed once. No repeat mutation, automatic rollback,
+restore or reuse of e484768d after this acknowledged commit/cutover. Full hosted
+asset/data/natural-MON postflight is running; technical completion not yet claimed.
+All172 locked original projections/14 attempts retained in atomic transaction.
+Meta settings empty/disabled; runtime/credentials/workers unchanged. SMS provider/
+channels and marketing OFF. No CAPI/browser/customer event was transmitted by the
+installation. Owner separately authorizes nonmutating access checks of four
+recovered tokens against1680814460341996, now running with secret-safe output.
+
+D integration source7220bd0 has typecheck/build/compiled21-route/5516-asset PASS;
+54 focused checks and Meta43 reused through byte-identical runtime/test files.
+Its execution must bind actual installed Meta119, preserve Meta/SMS and require
+fresh exact approval; old118 D seals invalid. Provider-token failure must not stop
+independent D work. Vodafone TLS1.3 PASS; recipient reference preserved; actual
+price/cap/body approval still absent and no SMS POST or charge authorized.
+All financial uncertainty, original worktrees/hashes, Daftra,CARD/COD/EGP10,
+PDC/Brevo/MON preserved. ONE next action: finish Meta original read-only postflight,
+then seal D against this actual119 predecessor; continue authorized token checks.
+
+# E282 — Replacement Meta119 exact approval received; executing once — 5 November 2026
+
+Owner explicitly approved replacement seal e484768d6e6de8aa43c9b1192e516b773a84684c4c1c0bcb745a03316080fdd7.
+The current17-account controller is recording approval and executing once. Same
+qualified c8ba371/archive4503cbf1cda3c5d0 and exact one inactive migration118→119,
+one app restart, existing timers paused/resumed within180s. Runtime/credentials/
+workers/providers/transmissions/financial actions0; D/C/Daftra excluded. Do not
+replay approval, stage, SQL or cutover after consumption/uncertainty, or roll back
+a committed result automatically. No completed deployment is claimed yet.
+Old eb935c7b remains preserved and invalid for its16-account preimage; it created
+no approval-file/execution/stage/SQL. D combined source7220bd0 typecheck/build PASS;
+D54/Meta43 reused by exact runtime/test identities. Its future seal requires the
+actual installed Meta receipt. All original preservation boundaries remain.
+ONE next action: finish original Meta installation and independent postflight.
+
+# E281 — Meta preimage refreshed; replacement exact approval pending — 5 November 2026
+
+Old eb935c7b owner statement was received, but its mandatory approval preflight
+stopped before approval-file/execution/stage/SQL creation: Auth count16→17 after
+13:23:50 preflight. Preserve the old plan/statement/stop; never reuse it. No
+production mutation or deployment occurred. Actual source/app/schema118 unchanged.
+
+Fresh read-only snapshot preserves all17 Auth accounts/172 original projections,
+14 attempts/11 orders, funds/callbacks/proofs/integrity0. New encrypted DB/runtime
+backup full readback and exact Meta-only17-account restored commit/rollback PASS.
+Same c8ba371/archive4503cbf1cda3c5d0/DDL and all feature/build/HTTP/guard evidence
+reused; zero Meta rebuilds or focused/full test repeats. No guard relaxation.
+New seal e484768d6e6de8aa43c9b1192e516b773a84684c4c1c0bcb745a03316080fdd7,
+sealed preflight13:34:14 UTC PASS. Exact owner approval pending; start by20:15:42
+Riyadh today. Same one-use118→119 inactive scope, one restart/timerpause180s;
+zero runtime/credential/worker/provider/financial actions. Controller root:
+logs/historical-integrations-20261105/operations-meta-current/.
+
+Authorized Vodafone live DNS+certificate-verified TLS1.3 PASS from actual Nuxt VPS
+13:26:31 UTC; no HTTP/credential/SMS sent. Existing private test-recipient hash
+verified, no value displayed. Actual tariff/charge cap/body acceptance still absent;
+no documented nonmutating account/sender/IP inquiry or delivery API was recovered.
+D's54 and Meta43 runtime/test identities reused in additive integration source
+7220bd0; local combined build ongoing, physical predecessor not assumed or sealed.
+All original worktrees, payments, Daftra, CARD/COD/EGP10,PDC/Brevo/MON preserved.
+ONE next action: execute Meta once after the replacement exact owner approval.
+
+# E280 — Exact Meta119 installation APPROVED; one-use execution — 5 November 2026
+
+Owner explicitly prioritizes qualified Meta, then independent Release D, then
+Vodafone controlled SMS. MKT-META-EXEC-01/VIS-D-EXEC-01/SMS-VF-TEST-01: reuse passing
+qualification; perform necessary fresh preimages/nonmutating provider checks;
+continue independent work when provider access fails. No broad test/development
+restart, generic credential request, bulk marketing or unlimited cost authority.
+
+Exact owner statement received for Meta eb935c7be29f332fa0e69ebf6e818578752e7cc25a1f65e8f0decffe715d15db.
+Fresh sealed preflight13:23:50 UTC PASS: actual SMS ee5dd61e/573e208/schema118,
+14 attempts/11 orders, funds/callbacks/proofs/four integrity counters0. Approved
+scope: c8ba371 archive4503cbf1cda3c5d0, one exact inactive Meta migration118→119,
+one app restart and one bounded pause/resume per existing timer180s. Runtime,
+credentials, workers, providers/transmissions, financial actions, C/D/Daftra0.
+The original operator is recording approval and executing once; no completion is
+claimed until commit/cutover and independent postflight receipts are observed.
+Never replay an ambiguous or consumed stage/SQL/cutover; no automatic rollback.
+
+After actual Meta install, verify recovered token access to target1680814460341996
+without substituting another Pixel; configuration/worker/Test Events require
+concrete protected inputs and exact scopes. Ordinary tracking follows successful
+provider acceptance/consent. D must preserve actual Meta-installed predecessor.
+Vodafone endpoint/TLS read-only validation authorized; one paid SMS still needs
+actual tariff/cap and approved existing recipient. Marketing stays OFF. Preserve
+all original68 worktrees/24004 hashes, payments, Daftra, CARD/COD/EGP10,PDC/Brevo/MON.
+ONE next action: complete this exact Meta installation and original postflight.
+
+# E279 — Recovery COMPLETE; Meta/D schema118 READY UNAPPROVED — 5 November 2026
+
+Historical Vodafone account/password/literal-uppercase secret/sender/direct endpoint
+RECOVERED YES, plus four Meta token candidates; no replacement/contact request.
+See E278 and recovery report. Credentials fit Nuxt inputs and existing server master
+key meets encryption requirement. Current sender/Notification/IP permission/tariff/
+cap and target1680814460341996 token access remain UNVERIFIED; historical Pixels
+are different. Private binding/test recipient/body/Test Event code/customer and
+exact inactive-install/configuration/test approvals remain required. No provider
+request, SMS/Meta/marketing transmission, runtime/credential write or deployment.
+
+Meta original77013c4 reused as c8ba371; D0f4e66f reused as54364a5, both on installed
+SMS573e208 with all118 installed migration files unchanged. Separate118→119 packets
+READY UNAPPROVED. Each actual restored-production rehearsal preserves172 original
+projections/14 attempts; rollback/commit/full schema/RLS/ACL PASS. Typecheck/build
+both PASS; Meta43 + worker4 and D54 PASS. Compiled Meta21 routes/5389 assets and
+D17 routes/5392 assets PASS;5283 immutable installed public files preserved in each.
+SMS57/Dashboard17 retained only for valid installed source evidence; historical
+PDC order_number and old footer fixture failures remain untouched. No full-suite,
+hosted signed-in/customer/device/provider acceptance claim.
+
+Sealed read-only Meta preflight13:11:02 UTC PASS and D13:14:55 PASS. D's initial
+EXISTING_WORKER_STOP resolved naturally; no worker/timer/restart action. Guards
+54+9 JS/five Python PASS; independent rehash1794/1771 sealed inputs PASS. Meta seal
+eb935c7be29f332fa0e69ebf6e818578752e7cc25a1f65e8f0decffe715d15db;
+D seal088a8197449baeef99266536b61d9f2fbe1aef0e8776bfcda807663ef6ef3c23.
+Start by19:40:47 Riyadh,5Nov; expiry19:55:47. Neither approval recorded/consumed.
+Installing either invalidates the other's baseline; rebind the next source/schema
+and seal. No combined/sequential use of these unchanged packets. D explicitly
+installs default-enabled public-image caching; communications stay OFF.
+
+Production unchanged: ee5dd61e/573e208/schema118/PID315151, SMS provider/channels
+OFF, Meta/D absent;14 attempts/11 orders, funds/callbacks/proofs/integrity0,
+MON8 warnings/3 gaps/0 critical. Original68 worktrees/24004 hashes preserved at
+13:17:50 UTC; two owned worktrees are additive. Daftra pause b782b13, CARD/COD/EGP10,
+PDC/Brevo/MON, existing financial uncertainty and consumed SMS boundaries retained.
+No main commit, Git push, archived WordPress execution/change or provider request.
+[Recovered configuration](historical-vodafone-meta-recovery-20261105.md).
+[Current separate installation packets](meta-d-schema118-inactive-review-20261105.md).
+[Bounded test preparation](vodafone-meta-bounded-test-preparation-20261105.md).
+ONE next action: privately confirm Vodafone sender/IP/tariff and target Meta dataset
+access through the existing owner accounts, using the recovered credentials.
+
+# E278 — Historical Vodafone/Meta credentials RECOVERED; no activation — 5 November 2026
+
+SMS-VF-REC-01/MKT-META-REC-01 recovery complete: both authenticated SQL snapshots,
+22 pinned WPvivid parts/three SQL fragments and all three encrypted home archives
+(61 protected configs) checked as inert data. Active dedicated WordPress Vodafone
+account/password/literal-uppercase secret/sender/direct merchant endpoint recovered;
+all agree with vSMS namespaces after account string serialization. Historical
+SUCCESS/submitted records exist; no current authorization or delivery is inferred.
+Malformed alternate relay excluded. No saved trusted-IP approval, tariff/cap or
+usable delivery-status contract found. Existing owner records precede provider
+contact/new keys. INC000081856720 and Nuxt HMAC remain unchanged.
+
+Four distinct Meta token candidates recovered (Woo access/merchant/page and PYS
+CAPI). Historical configured Pixels differ from target1680814460341996; target
+access/current validity/consent/Test Events unverified. No token replacement asked.
+Recovered values are AES-GCM encrypted under ignored owner-only logs; no secrets
+printed/committed, WordPress/PHP or archived SQL executed, provider request or production write.
+Fresh Nuxt schema118 snapshot: ee5dd61e/573e208/PID315151, provider/channels OFF,
+empty Vodafone fields; actual NUXT_CREDENTIALS_ENCRYPTION_KEY present, SMS/Meta
+worker secrets absent.14 attempts/11 orders, funds/callbacks/proofs/integrity0,
+MON8 warnings/3 gaps/0 critical preserved. Old WP paths absent on current VPS.
+
+New isolated source identities reuse original Meta77013c4 and D0f4e66f on installed
+SMS573e208: Metac8ba371 and D54364a5. Exact migrations independently118→119 pass
+restored-production rollback/commit and all172 original projections/14 attempts.
+No Meta/D install or approval; either installation invalidates the other's current
+baseline and requires a fresh binding. Original68 worktrees/24004 hashes and all
+consumed SMS receipts remain preserved; two owned worktrees are additive. Build,
+compiled HTTP and final packets continue; known historical PDC failure untouched.
+[Recovery report](historical-vodafone-meta-recovery-20261105.md).
+[Prepared bounded tests](vodafone-meta-bounded-test-preparation-20261105.md).
+ONE next action: finish compiled qualification and seal the separate inactive packets.
+
+# E277 — Historical Vodafone/Meta recovery FIRST; current providers OFF — 5 November 2026
+
+Owner clarifies that archived WordPress/WooCommerce may retain Vodafone and Meta
+credentials, integration IDs, sender/endpoint and prior test evidence. SMS-VF-REC-01
+and MKT-META-REC-01: exhaust authorized protected local/archive/backups and existing
+Nuxt settings before requesting provider contact, new keys or replacements. Nuxt
+unconfigured does not establish historically missing. Secret values must never
+enter chat, console/logs, reports, screenshots or Git. Read data only; do not execute,
+modify or restart WordPress, issue provider requests, send SMS/Meta events or copy
+whole WordPress configuration. Record exact evidence and current-validity limits.
+
+Production remains SMS ee5dd61e2b6fd8f6/573e208/schema118, both channels/provider OFF.
+Forwardba482860 and prior162c0f90 are consumed; no replay/rollbacks. Preserve14
+attempts/orders, all68 opening worktrees/24004 hashes, Daftra pause, CARD/COD/EGP10,
+MON/PDC/Brevo and all uncertainty. Fresh read-only reconciliation accompanies prep.
+
+Reuse Meta77013c4 and D0f4e66f in new isolated sources, preserving installed SMS118.
+Meta fresh inactive packet targets actual118; D must target its actual installed
+predecessor. No old116/115 seal or migration overwrite. Prepare narrow connection/
+single transactional test and consented bounded Meta Test Events only after secret
+recovery/compatibility classification. No current provider/transmission/deployment
+approval. ONE next action: complete protected historical recovery and fresh packets;
+report the shortest existing-credential route with only genuine missing inputs.
+
+# E276 — SMS inactive DEPLOYED / technical PASS / CONSUMED_COMPLETE — 5 November 2026
+
+Production is ee5dd61e2b6fd8f6/source573e208/physical118/PID315151. Exact two SMS
+migrations committed atomically14:46:38 Riyadh; app cutover14:46:54, one restart.
+Existing stage adopted once, old certificate preserved/rebound once; ZERO upload,
+extraction or candidate launch. Existing MON/Email/PDC timers each paused/resumed
+once~71.5s, inside180s. Runtime/Caddy/credentials/unit definitions/17 protected files
+unchanged. Forwardba482860 is CONSUMED_COMPLETE; never replay any mutation.
+
+All162 original projections and14 attempts/11 orders preserved; zero funds/callbacks/
+proofs/four integrity counters. Independent nine-financial-projection hashes and
+original116+two exact history rows PASS. All5284 live public asset hashes PASS at
+14:53:54. Natural MON14:50:05 and independent14:55:02 retain8 warnings/3 gaps/0
+critical. Independent app/runtime/timer/certificate/old-ten-receipt closeout PASS
+14:56:46. Final preservation14:57:57 PASS:68 worktrees/24004 hashes/67 foreign exact.
+
+Vodafone, transactional and marketing controls OFF; enabled bindings0; eleven new
+transactional templates all disabled. Events/contacts/campaigns/recipients/batches/
+messages/SMS attempts all0. SMS/Meta worker secrets absent; no worker/scheduler
+installed or manually invoked. No SMS/Meta transmission, provider/financial action,
+Paymob inquiry/charge/refund, credential entry or Git push. CARD/COD/EGP10, scoped
+Apple/Pixel, Brevo/Email, PDC, MON, Auth and all financial uncertainty preserved.
+
+Prior unchanged SMS57/Dashboard17/typecheck/build/compiled evidence reused; known
+historical PDC fixture failure retained. Corrected controller70 JS/nine Python and
+restored transaction PASS. Old162c0f90 STOP/rollback/stage/receipts remain intact.
+No broad-suite or hosted/provider acceptance claim. Owner signed-in Dashboard,
+provider delivery/cost and genuine sending acceptance remain OPEN.
+
+Meta/D/C uninstalled; Daftra pause b782b13 untouched. Old B/schema116 Meta/D packets
+are now stale: preserve installed SMS and rebind to actual source/schema118 before
+fresh qualification/approval. Vodafone merchant endpoint/sender/IP, credentials,
+tariff/charge cap and delivery-status contract remain missing/unconfigured. No real
+one-message or campaign/Meta activation is authorized by this consumed install.
+ONE next action: confirm Vodafone merchant endpoint, approved sender/IP and tariff
+for private Dashboard configuration, keeping sending OFF.
+[Completed deployment and independent receipt](sms-inactive-schema118-deployment-receipt-20261105.md).
+
+# E275 — SMS inactive DEPLOYED/schema118; read-only postflight active — 5 November 2026
+
+The two exact SMS migrations committed atomically at 2026-11-05T11:46:38.621Z, preserving162
+original projections/all14 attempts. App cutover acknowledged at 2026-11-05T11:46:54.447090+00:00:
+ee5dd61e2b6fd8f6/source573e208/physical118/PID315151, one app restart. Existing
+MON/Email/PDC timers resumed once. Sending/provider/both SMS channels remain OFF.
+
+The approved forward operator adopted the existing staged candidate once and
+preserved/rebound its certificate once: zero upload/extraction/candidate launches.
+Runtime/Caddy/credentials/unit definitions and all other protected files unchanged.
+Old162c0f90 remains consumed before commit with verified rollback; never replay it.
+Forwardba482860 is consumed for mutations: no repeat adoption, SQL, switch/restart
+or automatic committed rollback/restore. Full live asset hashes, original financial/
+settings preservation and next natural MON are in read-only postflight. No technical
+completion or owner/provider acceptance is claimed until actual evidence passes.
+
+No SMS/Meta/provider transmission, Paymob inquiry/charge/refund, financial action
+or Git push. Daftra pause and C/Meta/D sources preserved. Old B/schema116 Meta/D
+packets are now stale and must be rebound to preserve installed SMS/schema118.
+ONE next action: complete original read-only postflight and record its receipt.
+[Exact consumed scope](sms-inactive-forward-review-20261105.md).
+
+# E274 — Exact SMS forward approval recorded; original one-use execution active — 5 November 2026
+
+Owner approval for ba482860b7ce54eeaef7a7ef687e1bd9918a54d7de7965853173914e9f357a2d
+was recorded at 2026-11-05T11:42:40.177Z after fresh sealed preflight PASS. Opening preservation
+PASS retains68 worktrees/24004 hashes. The original forward operator is executing;
+no completed adoption, SQL commit or cutover is claimed until its actual receipt.
+
+Scope: reuse exact staged573e208/ee5dd61e; preserve/rebind certificate once; ZERO
+uploads/extractions/candidate launches. Exact two SQL files in one new transaction
+physical116→118, one app switch/restart, bounded existing timer pause/resume180s.
+Both SMS channels/provider OFF; zero runtime/Caddy/credential/unit/worker/provider/
+financial changes or sends. Meta/D/C/Daftra excluded, all14 attempts protected.
+Original162c0f90 remains consumed before commit with verified rollback; never replay.
+Do not repeat the forward approval/apply/adoption/SQL/cutover after consumption or
+uncertainty. No automatic committed rollback/restore or signal/restart retry.
+
+ONE next action: finish this original execution and read-only postflight, stopping
+at any genuine consumed uncertainty. [Exact approved scope](sms-inactive-forward-review-20261105.md).
+
+# E273 — Corrected SMS forward packet READY / UNAPPROVED — 5 November 2026
+
+Original162c0f90 remains CONSUMED_STOP before commit; independent rollback/live
+preservation PASS. Production remains B bef28c4029ccc9b6/e3ba3b7/physical116. No app
+restart/cutover or provider/financial action. Old staged SMS/archive/certificate/
+ten receipts are intact. All timers resumed once after about69.7s, inside180s.
+
+Separate forward tooling corrects only the verifier: exact current locked original
+projections inside SQL; already reviewed activity policy at read-only postflight.
+App/source573e208/archiveee5dd61e and two SQL files unchanged. Nine actual-failure
+regressions,70 JS/nine Python guards, nine lifecycle scenarios and temporary-file
+adoption tests PASS. Fresh restored PostgreSQL17.11 SMS atomic/rollback proof PASS.
+Prior SMS57/Dashboard17/build/compiled17-route5266-asset evidence reused unchanged;
+known historical PDC failure preserved. No blanket suite or owner/provider acceptance.
+
+New sealba482860b7ce54eeaef7a7ef687e1bd9918a54d7de7965853173914e9f357a2d binds1766
+inputs. Existing staged candidate adopted once, certificate preserved/rebound once,
+ZERO uploads/extractions/candidate launches. Then exact two SQL files in one new
+transaction116→118 and one app switch/restart, bounded existing timer pause/resume.
+Internal precommit90s, total pause180s unchanged. Zero runtime/Caddy/credentials/
+units/workers/provider/financial changes or sends. Both SMS channels and provider
+OFF; Meta/D/C/Daftra excluded. No fresh approval/adoption/SQL/cutover has run.
+
+Final sealed read-only preflight14:36:08 Riyadh PASS: schema116,162 original
+projections/all14 attempts/11 orders, zero funds/callbacks/proofs/four integrity
+counters. Final preservation14:35:39 PASS:68 worktrees/24004 hashes,67 foreign exact.
+Start by16:52:50.938 Riyadh5 November; expiry17:07:50.938. Backup reused within4h.
+The consumed approval cannot authorize this corrected operator or certificate binding.
+
+ONE next action: approve the exact SMS-only inactive forward packet in its window.
+[Scope, stopped-history proof and fresh approval](sms-inactive-forward-review-20261105.md).
+
+# E272 — SMS CONSUMED_STOP before commit; independent rollback PASS — 5 November 2026
+
+Exact approval162c0f90 was recorded14:09:21 Riyadh. Original operator staged SMS and
+passed readiness, then stopped at the SMS post-DDL verifier before SQL commit.
+The uncommitted transaction rolled back; existing timers resumed once after about
+69.7s, inside180s. No app/Caddy cutover, restart, runtime/credential/unit change,
+provider send, financial action or Git push. Never replay the consumed operator.
+
+Independent read-only14:16:01 PASS: B bef28c4029ccc9b6/e3ba3b7/physical116, all
+116 original history rows/full schema, 162 original projections under the reviewed
+activity policy, all14 attempts/11 orders, zero funds/callbacks/proofs/four integrity
+counters. Original app PID/Caddy/17 protected files, SMS templates and Quick Setup
+revisions unchanged. Natural MON14:15:03 retains8 warnings/3 gaps/0 critical; timers
+active/enabled. Ten stage/timer receipts and original certificate rehash14:22:44.
+
+Cause: I missed that the SMS post-DDL verifier compared ordinary analytics growth
+to sealed counts despite the already approved preflight activity policy. A separate
+local correction keeps all locked original projections exact within SQL and applies
+only the reviewed activity policy at read-only postflight. Consumed bytes stay fixed.
+Nine focused regressions and a fresh SMS restored transaction PASS; forward guards
+and exact adoption packet are being finalized locally, without production approval.
+
+Opening68-worktree/24004-hash preservation PASS. Daftra pause and Meta/D/C sources
+untouched. Staged SMS archive/certificate/receipts are preserved for a separately
+reviewed one-use adoption, with no reupload or second candidate launch.
+ONE next action: complete the concrete forward review, then request fresh exact
+approval. No new production mutation or provider action is authorized.
+[Consumed stop and independent evidence](sms-inactive-installation-stop-receipt-20261105.md).
+
+# E271 — Exact SMS-only inactive approval recorded; one-use execution active — 5 November 2026
+
+Owner approval for seal162c0f907bf5b3d39651063fd98244065240d6ee58fe08a9a7569666fa4269da
+was recorded at 2026-11-05T11:09:21.261Z after a fresh sealed read-only preflight PASS. Original
+one-use SMS operator is starting. No completed SQL commit or app cutover is claimed.
+Opening preservation PASS retains68 worktrees/24004 hashes and all prior sources.
+
+Scope: SMS573e208/archiveee5dd61e only; two exact additive migrations physical116→118,
+one archive upload/candidate readiness and one app restart, bounded existing
+MON/Email/PDC timer pause/resume. Both SMS channels/provider/bindings/templates OFF;
+zero runtime/Caddy/credentials/units/provider/financial changes or sends. Meta/D/C
+and paused Daftra are excluded. All14 attempts and uncertainty remain protected.
+Do not replay approval, apply, SQL, stage or cutover after consumption/uncertainty.
+
+ONE next action: finish this original execution and read-only postflight, stopping
+at any consumed uncertainty. No additional provider or activation approval exists.
+[Exact approved scope](sms-meta-visual-inactive-release-review-20261105.md).
+
+# E270 — SMS/Meta/D qualified independently; READY / UNAPPROVED — 5 November 2026
+
+Authentication restored. Fresh production snapshot and three sealed read-only
+preflights PASS on B bef28c4029ccc9b6/e3ba3b7/physical116; latest at 14:01:46 Riyadh.
+All 162 original projections/all 14 attempts, 11 orders, zero funds/callbacks/proofs
+and four zero integrity counters remain. Natural MON stays 8 warnings/3 gaps/0
+critical. No deployment, provider/financial action, credential change or Git push.
+
+DTR-52 local qualification COMPLETE: three exact restored PostgreSQL17.11 atomic
+commit/rollback rehearsals PASS; all compiled HTTP/asset checks PASS (SMS17/5266,
+Meta17/5264, D13/5267); four Meta loopback-worker tests; 58 JS/five Python release
+guards with nine one-use scenarios. Reuse unchanged SMS57, Dashboard17, Meta43,
+D54 and three typecheck/builds. Known B/PDC and historical footer fixture failures
+remain; no blanket suite/hosted/provider acceptance. Original sources stay clean.
+Final preservation PASS: 68 worktrees, 67 foreign exact, 24004 untracked hashes.
+Daftra pause b782b13 and all consumed operators remain intact.
+
+Separate new seals: SMS162c0f90 (116→118), Meta1cfc77e2 (116→117), D9cbaf1ac
+(116→117). All READY / UNAPPROVED with no approval/execution markers. Each permits
+only its own archive/SQL, one app restart and bounded existing timer pause/resume;
+zero runtime/Caddy/credentials/units/provider changes. Communications remain OFF.
+D visuals/public cache operate on install; cache defaults ON at86400s. No C/preorder.
+Installing one invalidates both other B-bound packets; preserve it when rebinding.
+
+Start by 16:52:50.938 Riyadh, 5 November; expiry17:07:50.938. Encrypted backup and
+full readback reused within four hours. First concurrent read-only snapshots timed
+out; preserved logs, same limits, sequential checks PASS, no mutations consumed.
+Vodafone provisioning/sender/IP, tariff/cap and delivery-status contract remain
+missing. Meta needs protected Dataset token, Test Events code/customer and private
+worker binding. Real one-message and bounded five-minute/three-event Test Events
+approvals remain separate; no sends or general marketing authorization.
+
+ONE next action: approve SMS-only inactive seal162c0f90 within its valid window.
+[Exact sources, scope, evidence and approval](sms-meta-visual-inactive-release-review-20261105.md).
+
+# E269 — SMS/Meta/D interruption recovered; protected qualification blocked — 5 November 2026
+
+All three interrupted candidates are recovered and clean: SMS 573e208, Meta
+77013c4, visual D 0f4e66f, under sms-meta-priority-20261105. A new private checkpoint
+preserves all 68 worktrees, 24004 untracked hashes, original patches and main docs.
+Every build input, all 116 installed migration bytes and three full archive
+readbacks match. Reuse the existing builds and focused results: SMS 57 passes plus
+one baseline PDC failure, Dashboard 17, bounded Meta 43, D 54. No broad-suite pass.
+
+Corrected only the copied rehearsal assertion: bigint revision strings now add
+numerically, with three passing guard regressions. Real restored rehearsal and
+compiled HTTP checks remain unfinished (DTR-52). Original sources/operators/diagnostics and
+Daftra b782b13 pause remain untouched. D remains independent of C/preorder.
+
+Last recovered live evidence is 10:05 UTC: B bef28c4029ccc9b6/e3ba3b7/schema116,
+162 projections, all 14 attempts, 11 orders and four zero integrity counters.
+A fresh snapshot DID NOT RUN: sandbox networking was denied, then automatic
+approval review could not refresh the account token after the account switch.
+Isolated PostgreSQL shared memory also needs protected execution. No bypass,
+production/provider/financial action or Git push occurred. Current live state is
+not newly verified by this recovery.
+
+Both original provider PDFs match recovered hashes. Vodafone merchant endpoint,
+credentials/sender/IP, tariff/cap and delivery-status contract remain missing;
+recipient stays private. Meta still needs its Dataset-authorized CAPI token,
+Test Events code, approved non-staff customer and private matching worker secret.
+Rendered worker units and exact inactive/one-message review drafts exist, but no
+worker was installed and no executable production approval seal is qualified.
+B occupies physical115/116; proposed SMS116→118, Meta116→117 and D116→117 are each
+independent B-bound drafts, invalidated if another candidate installs first.
+
+ONE next action: restore Codex approval-review authentication, then finish the
+pending read-only snapshot and isolated qualification before any fresh approval.
+[Recovery report](sms-meta-visual-interruption-recovery-20261105.md).
+
+# E268 — Owner priority change: Vodafone SMS and Meta P1; visual D P2 — 5 November 2026
+
+The owner's new mission resumes SMS-only development/readiness from the paused
+Daftra/SMS checkpoint. Daftra invoices/accounting remain PAUSED; preserve b782b13,
+20 broad regression failures and the invoice mobile-layout issue. Do not modify
+that saved source, pause receipt, independent candidates or prior worktrees.
+
+P1 SMS-TX-01/SMS-MKT-01 and SMS-VF-ACCEPT-01: reuse Vodafone transport, verified
+producers, versioned templates, consent/suppression, budgets and approval controls;
+separate from Daftra. Compare all 19 PDF pages. Prepare independent inactive install,
+secure configuration, one exact owner-recipient charged Notification test and
+independent delivery/cost acceptance. No send, campaign activation or provider call
+is authorized now; missing provisioning/status/price contracts remain explicit.
+
+P1 MKT-META-01: rebase the qualified fd655ce package onto actual B/schema116.
+Pixel/Dataset 1680814460341996 remains deployment configuration. Protected Dashboard
+token/test-code input, consent, stable event IDs/dedup and verified Purchase proof
+remain required. Separate inactive installation, bounded hosted Test Events and
+general activation approvals. Never replay historical EGP2/EGP5 conversions.
+
+P2 SF-VIS-REL-01/IMG-PERF-20261104-01: recover 79775a1 visual/cache delta independently
+of Release C. Release B owner acceptance stays open; do not redevelop B's cart,
+address/delivery/quote/coupon work. C/preorder remains local/uninstalled.
+PAY-REL-02 and merchant-controlled retry policy/support escalation remain separate;
+uncertain attempts/callbacks/paid-order safeguards are preserved and do not block
+SMS/Meta. No Paymob inquiry/charge/refund/Apple configuration action authorized.
+
+Fresh read-only production at 09:18 UTC confirms bef28c4029ccc9b6/e3ba3b7/schema116,
+14 attempts/11 orders, 0 funds/callbacks/proofs and four zero integrity counters.
+All 65 opening worktrees are snapshotted with 24004 original untracked hashes.
+Both supplied PDFs fully read; they are contract evidence, not execution authority.
+Vodafone PDF's hex-decode sentence contradicts its own two vectors, which match
+literal uppercase-key behavior and prior INC000081856720 clarification. No actual
+merchant host, tariff or delivery inquiry/callback contract is supplied. Meta PDF
+is browser-Pixel setup email, not a CAPI contract/token/Test Events authorization.
+Official CAPI developer pages 429; official SDK is the primary fallback reference.
+
+ONE next action: finish safe SMS/Meta recovery, qualification and exact independent
+packets; stop at genuine production/provider/paid-send/credential gates.
+
+# E267 — Release B DEPLOYED / technical PASS / CONSUMED_COMPLETE — 5 November 2026
+
+Production is `bef28c4029ccc9b6` / source `e3ba3b7` / physical schema116 / PID 308821.
+Both exact cart/coupon migrations committed atomically; app/routing cutover at
+11:41:44 Riyadh. Existing staged archive adopted once, zero upload/fixture replay,
+one certificate rebind, one app restart and one production Caddy SIGUSR1. Caddy
+PID 26652 unchanged. MON config changed only its Caddy hash. All other protected
+configuration/runtime/flags/workers/units/credentials stayed unchanged.
+
+All 160 original projections/all 14 attempts pass exact postflight preservation;
+11 orders, 0 funds/callbacks/proofs; four integrity counters zero. Independent audit
+passes nine financial projections and the original114 + two exact history rows.
+All 5142 live asset hashes and 14 public method/privacy cases PASS. Natural MON at
+11:45:05 retains 8 warnings/3 gaps/0 critical. Timers active/enabled, natural callers
+successful; each paused/resumed once for about 54 seconds. Original operator is
+CONSUMED_COMPLETE at 11:48:56; independent closeout PASS at 11:49:22. Never replay.
+
+The corrected fixture now matches the complete production baseline before DDL;
+83 JS / 89 Python guards, 8 one-use scenarios/64 assertions and real restored atomic
+executor PASS. Old 3f542aff remains CONSUMED_STOP/verified uncommitted rollback;
+all its stage/fixture/receipt evidence is preserved. No committed rollback/restore.
+Previous app test evidence is reused for identical e3ba3b7; the old order-first
+subtest/parent mismatch remains documented. No blanket full-suite/owner acceptance.
+
+CART-SYNC-01/CHK-DEL-01/COUPON-REL-01 are DEPLOYED, owner acceptance OPEN. Cart
+persistence/merge, address/delivery cards, New Address beside Edit, no cart delivery
+selector, cheapest eligible default, authoritative quote refresh and collapsed
+coupons are installed. Beta coupon opt-in remains false. CARD/COD/fixed EGP10,
+scoped Apple/Pixel, PDC, Email/Brevo, MON, Auth/security and all worktrees preserved.
+C/e39dfa6, D/79775a1, Meta OFF and paused Daftra/SMS unchanged. Subsequent releases
+need fresh physical116/source/assets binding. No provider/financial action or push.
+
+PAY-REL-02 stays submitted/unknown and protected. Separate inquiry rebound to
+schema116; 8 offline tests/fresh binding PASS, credential/fresh-approval gated and
+UNEXECUTED. Prior inquiry packets stay expired; escalation draft not sent.
+ONE next action: owner signed-in cart/address/delivery acceptance on two devices;
+no new payment for the held obligation. Provider/device finality remains separate.
+[Final deployment receipt](commerce-release-b-schema116-deployment-receipt-20261105.md).
+
+# E266 — Release B DEPLOYED; read-only postflight active — 5 November 2026
+
+Production is now `bef28c4029ccc9b6` / source e3ba3b7 / physical schema116 /
+PID 308821. Both exact B migrations committed atomically at `2026-11-05T08:41:28.384Z`,
+preserving all 160 original projections/all 14 attempts and the exact security
+footprint. Cutover acknowledged at `2026-11-05T08:41:44.429547+00:00`: one app restart, one Caddy SIGUSR1,
+matching MON hash-only update, existing timers resumed once, cart GET/POST 401 with
+private no-store/no-referrer. Existing archive adopted without upload or fixture
+replay; original consumed 3f542aff stage/history remains preserved.
+
+Forward seal 3fd11398 is consumed for mutations. Never approve/apply, re-run SQL,
+rebind certificate, signal, restart or restore automatically. Full 5142 live-asset
+hash verification, public method/privacy checks, strict original-data preservation
+and next natural MON evidence are in progress. No CONSUMED_COMPLETE or customer/
+provider acceptance claimed until actual postflight. Owner acceptance remains open.
+
+CARD/COD/fixed EGP10, scoped Apple/Pixel, financial uncertainty, PDC/Email/Brevo,
+MON, all worktrees and C/D/Meta/paused Daftra/SMS remain preserved. PAY-REL-02 is
+still separately unknown; no provider inquiry or financial action occurred.
+ONE next action: complete original read-only postflight and record the receipt.
+[Exact scope and history](commerce-release-b-review-20261105.md).
+
+# E265 — Exact forward B approval recorded; one-use execution active — 5 November 2026
+
+Owner authorization for `3fd11398539b8a7ae2cbf904b89d8b341642018e49ce95080ce35d10e7130722` was recorded at `2026-11-05T08:38:18.951Z` after fresh
+sealed preflight PASS. The original forward operator is executing the reviewed
+adoption, exact atomic SQL and B cutover. No completed migration/cutover is claimed
+yet. Existing archive and original fixture proof are reused without replay.
+Prior 3f542aff remains CONSUMED_STOP with verified rollback; never retry it.
+
+Scope remains e3ba3b7/archive bef28c40, schema114→116, restricted cart Caddy route,
+MON hash-only config, one app restart and bounded existing timer pause/resume.
+No provider inquiry, financial action, activation, C/D/Meta or Daftra/SMS bundle.
+ONE next action: complete the original forward operator and read-only postflight;
+stop at any consumed uncertainty. [Exact scope](commerce-release-b-review-20261105.md).
+
+# E264 — B forward packet sealed; corrected fixture parity — 5 November 2026
+
+Production remains A `4f32e3bee6f2f137` / `e9361ea` / physical114. The consumed
+3f542aff attempt staged B and passed the isolated 13-case fixture, then rolled back
+its uncommitted SQL before cutover. All timers resumed once. Independent exact
+schema/security/data evidence proves all 160 original projections/all 14 attempts
+unchanged, 11 orders and 0 funds/callbacks/proofs. Never replay that operator.
+
+The qualification error is corrected locally: reproduce all 31 explicit owner-ACL
+representations and the exact observed production search_path in the isolated
+restored fixture; assert complete raw schema equality BEFORE any B DDL. New expected
+schema equals production baseline plus ONLY the qualified B delta. The original
+bad expected schema is explicitly rejected by a regression assertion. No live ACL,
+index, function or financial repair was performed; no guard comparison is relaxed.
+Fresh restored rollback and real atomic-executor qualification PASS on exact parity.
+Forward guards 83 JS / 89 Python and 8 scenarios/64 one-use assertions PASS.
+
+Forward seal `3fd11398539b8a7ae2cbf904b89d8b341642018e49ce95080ce35d10e7130722` binds 2224 inputs.
+Operator: `/Users/imac/Documents/ELcomputer/commerce-reliability-20261104/release-b-forward-execution-20261105`.
+Same B source e3ba3b7/archive bef28c40/schema116; adopt the fully rehashed existing
+staged candidate once, preserve its old certificate and rebind certificate once.
+Zero archive uploads/extractions and zero isolated-fixture replay. Preserve all
+consumed-stage receipts; binary/config bindings and original fixture proof are
+rechecked. Then exact two SQL files in one transaction, two history rows, one
+cart-route Caddy SIGUSR1, MON hash-only config update and one app restart. Fresh
+one-use pause/resume budgets apply only after new exact owner authorization.
+
+Final sealed live preflight PASS at 11:32:43 Riyadh (08:32:43 UTC). Forward owner approval/apply remain absent.
+Start by 14:37:34 Riyadh, 5 November 2026; expiry 14:52:34. Backup reused within its
+original 4-hour freshness limit only after independent rollback/data verification.
+C/D/Meta, paused Daftra/SMS, all 65 worktrees and PAY-REL-02 remain untouched.
+No provider inquiry, charge/refund/cancel, retirement or duplicate intention.
+ONE next action: approve the exact forward packet.
+[Forward scope, evidence and approval](commerce-release-b-review-20261105.md).
+
+Fresh sealed preflight PASS: app 4f32e3bee6f2f137/schema114, 14 attempts/11 orders,
+0 funds/callbacks/proofs, public CARD/COD and private APIs match. Natural MON at
+11:30:05 Riyadh retains 8 warnings/3 gaps. All 17 protected files match the original
+state; future changes remain only the two reviewed Caddy/MON files. No forward
+approval/apply/certificate rebind/SQL/signal/restart has been executed.
+
+# E263 — B CONSUMED_STOP before commit; independent rollback PASS — 5 November 2026
+
+Seal 3f542aff staged the exact B archive and passed the actual-binary isolated
+13-case Caddy/SIGUSR1 fixture. It paused the existing timers once, then stopped
+at the post-DDL schema assertion before SQL commit. The uncommitted transaction
+rolled back; all timers resumed once. Do not replay approve/apply or the staging.
+
+Independent read-only checks at 08:16:58 UTC confirm physical114/latest04140000,
+all 160 original projections/all 14 attempts unchanged, 11 orders and 0 funds/
+callbacks/proofs; four integrity counters zero. App 4f32e3bee6f2f137 / PID 295093
+remains active. No Caddy config write/signal, app restart or financial/provider
+action occurred. Natural workers are healthy and timers active/enabled.
+
+Cause: the expected schema was copied from the restored fixture, whose 31 owner
+ACL representations and 4 pg_trgm index qualifications differ from production.
+The original qualification missed this baseline mismatch. No production ACL or
+index change is established; the strict guard stopped before commit.
+
+A local forward packet will correct fixture fidelity and prove exact baseline
+parity before DDL. Reuse existing B archive/source and preserve the consumed stage;
+no app development/rebuild, guard weakening or automatic production retry.
+C/D/Meta, paused Daftra/SMS and PAY-REL-02 remain untouched/unknown.
+ONE next action: finish the concrete forward packet and its qualification before
+requesting fresh one-use approval. No forward production action is authorized.
+[Exact review and consumed boundary](commerce-release-b-review-20261105.md).
+
+# E262 — Exact Release B approval recorded; one-use execution active — 5 November 2026
+
+The owner authorized replacement seal `3f542affe0b40ab60a523c62e571ac13fc03b4de956256574f00447f8b7bd668` within its valid window.
+Fresh sealed preflight passed after PDC recovered naturally; approval was recorded
+at `2026-11-05T08:11:18.280Z`. The earlier worker STOP was read-only and unconsumed, and its
+log is retained. No manual worker invocation, restart or guard bypass occurred.
+
+The original one-use operator is executing B only: e3ba3b7/archive bef28c40,
+physical114→116 in one atomic two-migration transaction, restricted cart routing,
+MON config hash only and one app cutover/restart. No completion is claimed yet.
+Never replay approval/apply, SQL, signal or restart after consumption/uncertainty.
+Production/provider/customer acceptance will be reported from actual postflight.
+
+PAY-REL-02 remains separately unknown and unexecuted. C/D/Meta and paused
+Daftra/SMS are unchanged. ONE next action: complete this original operator and
+its read-only postflight; stop on a genuine consumed boundary.
+[Exact scope and history](commerce-release-b-review-20261105.md).
+
+# E261 — Expired B approval preserved; replacement READY / UNAPPROVED — 5 November 2026
+
+The owner supplied exact B approval 7a461ec8 after its window expired. Initial
+clock observation was 07:48:13 UTC / 10:48:13 Riyadh; old expiry was 04:40:21 UTC /
+07:40:21 Riyadh. No old approve/apply command or production mutation was executed.
+The original packet remains byte-identical and unconsumed; do not replay it.
+The expired authorization cannot approve the replacement seal.
+
+Replacement operator: `/Users/imac/Documents/ELcomputer/commerce-reliability-20261104/release-b-refreshed-execution-20261105`.
+Seal `3f542affe0b40ab60a523c62e571ac13fc03b4de956256574f00447f8b7bd668` binds 2223 inputs.
+Start by 14:37:34 Riyadh, 5 November 2026; absolute expiry 14:52:34. No replacement
+production approval, execution marker or provider inquiry exists.
+
+Live production remains A `4f32e3bee6f2f137` / `e9361ea` / physical schema114.
+The proposal remains B `bef28c4029ccc9b6` / `e3ba3b7` / schema116. Same exact archive,
+two source SQL files, deployment code, restricted cart route, MON hash-only update
+and budgets; no rebuild, scope expansion or payment reconciliation.
+
+Fresh actual host/database/configuration binding and same-scope comparison pass.
+Encrypted backup/full 17-file runtime readback PASS at 07:52:34 UTC. Fresh restored
+PostgreSQL17.11 DDL rollback and real atomic two-migration executor PASS, preserving
+160 original projections/all 14 attempts, Auth, Email and PDC. All 1698 source inputs
+and exact archive match; prior browser/cart/coupon/build/guard evidence is reused
+for unchanged bytes. Known legacy order-first test mismatch remains documented.
+Replacement scope qualification PASS; final sealed live preflight PASS at 10:59:42 Riyadh (07:59:42 UTC).
+All 65 worktrees and 23999 original untracked hashes remain preserved. The initial
+local scope run lacked a copied coupon evidence log; its diagnostic is retained,
+the original sealed log was copied, and the accepted qualification passed.
+
+PAY-REL-02 remains submitted/unknown and untouched. No live inquiry, retirement,
+charge/refund/cancel or duplicate intention occurred. Its old inquiry packet is
+also expired; rebind after B before seeking separate inquiry authorization.
+C/e39dfa6, D/79775a1, Meta OFF and paused Daftra/SMS remain unchanged. No Git push.
+
+**ONE next action:** approve only the replacement B
+seal in the linked review. Old A approvals remain consumed; old B approval expired.
+[Replacement packet and exact boundary](commerce-release-b-review-20261105.md).
+
+Fresh sealed preflight confirms 14 attempts/11 orders/0 funds/callbacks/proofs,
+unchanged protected state and public CARD/COD/private API contracts. Natural MON
+at 10:55:03 Riyadh retains 8 warnings/3 gaps. No production approval/execution marker
+exists; all 65 worktrees remain preserved. No provider inquiry or financial action.
+
+# E260 — Release B SEALED READY / UNAPPROVED; exact Apple overlap proven — 5 November 2026
+
+Production remains `4f32e3bee6f2f137` / `e9361ea` / physical schema114.
+B reuses `e3ba3b7` and archive `bef28c4029ccc9b6`; no application rebuild.
+Proposed schema116 adds only the two existing cart/coupon SQL files in one atomic
+transaction. The restricted GET/POST cart Caddy route and matching MON config hash
+are included; no monitor worker change or coupon Beta opt-in.
+
+B seal `7a461ec875bfd2367bfee4cad9a6d20bf17d5d85eb8b05ee8482c4eb995a1197` binds 2224 inputs.
+Fresh read-only sealed preflight PASS at 04:16:46 Riyadh: protected state matches,
+14 attempts/11 orders, no funds/callbacks/proofs; public CARD/COD and private APIs
+match. Natural MON 04:15:05 retains 8 warnings/3 gaps. Encrypted DB/runtime backups,
+real restored atomic executor, 160 original projections and all 14 attempts pass.
+Cart 15, coupon/Beta 6, exact-B Chromium 44/WebKit 39, guards 76 JS / 64 Python and 8 one-use
+scenarios/64 assertions pass. Typecheck/build and compiled 5142 asset/15 route checks
+are reused with all 1698 source hashes unchanged. One obsolete order-first delivery
+subtest and its parent fail identically on A and B; preserve that known mismatch.
+
+PAY-REL-02: `CHK-5AB39404CFB747A4` correctly overlaps the Black Fantech GO W190
+variant in the five latest post-A quotes. Full frozen intent/review fingerprints
+match despite new cart IDs; CARD/Apple switching does not remove the obligation.
+A different published SKU has no live conflict. Submitted/pending evidence stays
+unknown; no status was cleared. The exact read-only inquiry packet passes 8 offline
+operation / 4 recovered-helper tests, is credential/approval gated and unexecuted.
+Latest-transaction inquiry alone cannot establish whole-intention nonchargeability.
+Exact private escalation is prepared, not sent. Rebind inquiry after B's ledger
+change. No generic submitted-intention retirement RPC was found; no direct edit.
+
+C/e39dfa6, D/79775a1 and their archives remain unchanged. Meta stays uninstalled/OFF;
+subsequent releases need fresh ledger binding. Daftra/SMS remains paused at b782b13,
+including its 20 existing failures/mobile issue. All 65 worktrees preserved. No
+provider/financial action, production B mutation, policy activation or Git push.
+A's earlier bdbb3d38 approval is CONSUMED_COMPLETE and cannot authorize B.
+
+**ONE next action:** approve only B's exact one-use packet in the linked review.
+Start by 07:25:21 Riyadh, 5 November 2026; expiry 07:40:21. No B approval/apply is recorded.
+Hosted cross-device/customer acceptance and Apple/provider finality remain open.
+
+[Exact causes, evidence, scope and approval](commerce-release-b-review-20261105.md).
+
+# E259 — Exact Apple conflict and Release B preparation — 5 November 2026
+
+Owner reports the old Apple reference after testing deployed A. PAY-REL-02 now
+tracks a separate supported read-only inquiry and exact overlap/finality review;
+CART-SYNC-01/CHK-DEL-01/COUPON-REL-01 remain the Release B scope. No provider or
+production B approval is granted by this mission. A remains4f32e3bee6f2f137/114.
+
+Focused live reads confirm the latest five quotes after A match the old Apple
+attempt's full frozen intent/review,despite new cart IDs. It is the same Black
+Fantech GO W190 mouse and amount. The live conflict predicate returns no conflict
+for an unrelated published SKU. The reference is relevant,not an account-wide
+hold. Submission remains unknown without funds/callback/order/inquiry evidence.
+No attempt was changed,retired,cancelled,refunded or cleared.
+
+B reuses exact sourcee3ba3b7/archivebef28c40;no app rebuild or feature reimplementation.
+Fresh actual A/schema114 binding,encrypted full-readback backup and B-only restored
+PostgreSQL rehearsal pass. The real two-migration executor also passes an atomic
+commit rehearsal,preserving160 projections/all14 attempts. A guarded B operator,
+restricted GET/POST cart Caddy route and monitor-hash-only update are qualifying.
+Current proposal is schema116 after two new source SQL files;no live slot reserved.
+
+C/e39dfa6,D/79775a1,Meta and paused Daftra/SMS remain untouched. Full local and
+production approval/acceptance boundaries remain in place. ONE next action:finish
+B's final guard qualification and seal a fresh exact one-use packet.
+
+# E258 — Release A DEPLOYED / technical PASS / CONSUMED_COMPLETE — 5 November 2026
+
+Production is now `4f32e3bee6f2f137` / source `e9361ea` / schema114 / PID 295093.
+The exact approved operator cut over at 03:03:00 Riyadh with one restart. All
+existing MON/Email/PDC timers resumed once after about 11 seconds; all are active/
+enabled and natural callers succeeded. Original seal `bdbb3d38` is consumed.
+Never replay approve/apply, archive staging or restart under this authorization.
+
+All 14 original attempts and nine original financial projections are unchanged;
+11 orders, zero checkout funds/callbacks/proofs; four integrity counters zero.
+All 17 protected files and loaded runtime/Caddy binding match. All5, 019 canonical
+HTTPS asset bodies pass exact length/SHA256; 12 additional public/private method
+checks pass. Natural MON at 03:05:05 retains 8 warnings/3 gaps/0 critical. Original
+operator completed at 03:05:52; independent closeout passed at 03:06:36. No raw logs
+were exported; surrounding journal had zero error-priority/unhandled entries.
+
+PAY-REL-01's browser command selection and inline conflicts are deployed; no
+migration was needed. SQL113 financial holds/callbacks stay intact. Both real
+references remain separately unknown/private; none was cleared or called uncharged.
+Owner signed-in, physical Apple/3DS/OTP and authoritative Paymob finality remain open.
+
+No SQL, runtime, flags, Caddy, units, credentials, financial/provider action, manual
+worker, new policy activation or push occurred. Only A is deployed. B/C/D stay
+local and independently gated; B can now bind the actual A predecessor and fresh
+ledger. Coupon opt-in remains gated, COD fixed EGP10. Preorder capability/cart proxy/
+image-cache/inquiry worker changes were not installed. Meta is uninstalled/OFF;
+its old packet needs fresh source/assets/target binding. Daftra/SMS stays paused
+at `b782b13`, including its 20 prior failures/mobile issue. All worktrees preserved.
+
+[Final deployment receipt and exact evidence](commerce-payment-lifecycle-schema114-deployment-receipt-20261105.md).
+ONE next action: prepare B's fresh guarded packet against deployed A.
+
+# E257 — Release A installed; read-only postflight active — 5 November 2026
+
+The exact approved one-use operator installed application `4f32e3bee6f2f137`,
+source `e9361ea`, schema114, app PID295093 at03:03:00 Riyadh. One app restart;
+existing MON/Email/PDC timers resumed. SQL/runtime/Caddy/unit/credential changes,
+provider calls and financial actions are zero. The preceding read-only database
+audit preserved all14 attempts and existing financial/schema state.
+
+Do not replay approve/apply or restart again. Full canonical HTTPS asset checks,
+private/public method checks, independent installed-state/financial verification
+and the next natural MON are still active. No final owner/device/provider
+acceptance is claimed. B/C/D, Meta, image caching and paused Daftra/SMS are separate.
+
+[Live execution receipt](commerce-payment-lifecycle-schema114-deployment-receipt-20261105.md). ONE next action:finish the required read-only
+postflight and preserve its actual result without retrying any mutation.
+
+# E256 — Release A exact authorization received — 5 November 2026
+
+The owner supplied the exact Release A authorization for seal
+`bdbb3d386f2bc552bc8b25a8f5f7f1d143e72a20d971407506f2942707b58c98`.
+The sealed operator is rechecking expiry, all bound inputs, preserved worktrees,
+actual host/schema/financial state and existing workers before approval recording.
+No deployment completion is claimed. Original production is Storefront114
+`6fd67997c8feaeca` / schema114; candidate is `4f32e3bee6f2f137` / source `e9361ea`.
+
+Only the approved app-only A scope is authorized. No SQL, provider inquiry,
+financial action, runtime/Caddy/unit/credential edit, new policy activation or push.
+B/C/D, Meta, image caching and paused Daftra/SMS remain separate. Never replay a
+consumed attempt or compensate for STOP with an unreviewed change.
+
+[Execution receipt](commerce-payment-lifecycle-schema114-deployment-receipt-20261105.md). ONE next action: complete this guarded A operation and
+its read-only postflight, stopping on actual drift or ambiguous mutation outcomes.
+
+# E255 — Final payment correction READY / UNAPPROVED — 5 November 2026
+
+Owner-resumed commerce local work is complete. Fresh sealed read-only preflight
+PASS at 02:46:41 Riyadh: production remains app `6fd67997c8feaeca`, source
+`ff037ddd`, physical schema 114, PID 282442. All 14 attempts, 11 orders, zero funds/
+callbacks and 17 protected files are preserved. MON remains 8 warnings/3 gaps/0
+critical. No deployment, activation, provider/financial action or Git push occurred.
+
+PAY-REL-01 found account-wide browser-command selection before cart/revision
+comparison. Source `e9361ea` now retains old commands, selects only the current cart
+revision, and renders relevant conflicts inline without automatic SDK mount or
+redirection. Schema113 server gates/callbacks stay unchanged; A needs no migration.
+Both real references remain unknown and private. Apple preauthorization dismissal
+cannot clear its submission fence. Physical merchant/device acceptance stays open.
+
+The final A packet is `../commerce-reliability-20261104/release-a-final-ready-execution/`.
+Seal `bdbb3d386f2bc552bc8b25a8f5f7f1d143e72a20d971407506f2942707b58c98`. Candidate `4f32e3bee6f2f137`; 1872 sealed inputs; 45 JS/39 remote guard
+checks, 44 scope checks and 6 one-use scenarios/45 assertions pass. It permits one
+archive/cutover/app restart and bounded existing-timer pause/resume only. No SQL,
+runtime, Caddy, flags, units, credentials, worker edits/manual calls, provider calls or policy activation.
+Start before 06:16:21 Riyadh, 5 November; expiry 06:31:21. Never replay a consumed packet.
+
+An initial read-only preflight stopped on PDC status 1; normal timers recovered.
+A second check found an old guard incorrectly expecting anonymous embedded CARD.
+The replacement guard correctly preserves hosted anonymous CARD; its new fixtures
+pass. Earlier unused seal and STOP evidence remain preserved; no apply occurred.
+
+Final sources and built review archives: A `e9361ea`, B `e3ba3b7`, C `e39dfa6`, D
+`79775a1`. All four isolated typechecks/builds and archive/privacy/hash smoke pass:
+5019/5142/5266/5391 assets. B excludes preorder/COD capability; C adds those gates;
+D adds visuals/cache. New SQL lists are B 2 / C 2 / D 1; no live slots are reserved.
+B/C/D require actual installed predecessors, fresh ledger and their own one-use
+seals. Cart routing and encrypted monitor hash candidate are prepared/uninstalled;
+C's deposit-aware monitor replacement passes 27 checks. Coupon opt-in is OFF,
+preorders default OFF, and COD remains fixed EGP10 until separate activation.
+
+Final checks:A 73 Chromium/native/HTTP/account and 36 WebKit; B 44 Chromium and 39
+WebKit; combined financial/cart 62; zero skips. Reused exact-source evidence retains
+103 current regressions, 50 visual/cache, 63 Apple and 249 PDP/family per engine.
+Fresh encrypted backup/readback and restored PostgreSQL17.11 rehearsal preserve
+160 projections/all 14 attempts across five proposed migrations and verified rollback.
+A separate bounded inquiry library passes four offline cases; it is uninstalled,
+unscheduled and uncredentialed. Real Paymob finality still needs separate approval.
+
+All 61 opening worktree HEADs/indexes and 23,999 original untracked hashes are
+preserved; 65 total worktrees, four owned commerce trees clean. Original final
+address polish was preserved and committed `a1459b1`; original archives unchanged.
+Daftra/SMS stays independently PAUSED at `b782b13`, including its 20 failures/mobile
+invoice issue. Meta is uninstalled/OFF with its independent packet preserved.
+
+[Complete final report, source paths, exact approval and remaining acceptance](commerce-reliability-final-review-20261105.md).
+ONE next action:approve the exact final Release A packet within its valid window.
+
+# E254 — Commerce reliability PAUSED BY OWNER — 5 November 2026
+
+The owner requested an immediate safe checkpoint for another Codex.
+Implementation and checks have stopped. No owned background process remains.
+[Complete report and exact continuation](commerce-reliability-safe-checkpoint-20261105.md).
+
+Production is unchanged: 6fd67997c8feaeca / ff037ddd / physical schema114.
+The closing 01:35 Riyadh read-only audit retained all 14 attempt rows, 11 orders,
+zero funds/callbacks and 17 protected file hashes. Both EGP325 references remain
+financially uncertain. No deployment, provider operation, settings activation or push.
+
+Saved candidates: A 8bd28e4, B 1475600, C 93e9d23, D dcded3f. Four builds and archives
+pass for those commits; all review candidates remain unsealed/unapproved. Actual
+A plan/seal/approval/apply/execution markers do not exist. A prepare-plan draft
+was never executed. New SQL identifiers reserve no production ledger positions.
+
+Local evidence: 62 financial/cart; 103 regressions; 107 checkout cases per engine;
+50 visual/cache; 249 compiled PDP/family checks per engine; 27 monitor checks.
+Latest address/delivery/coupon polish passed 39 Chromium and 39 WebKit checks.
+That final three-file patch remains deliberately uncommitted in owned source:
+checkout/index.vue and the two checkout-address browser tests. Its exact bytes,
+patch, hashes and receipts are saved under ../commerce-reliability-20261104/checkpoint/.
+It is not ported into B/C, rebuilt or included in the four archives.
+
+All 61 opening worktrees/HEADs/indexes and 23,999 original untracked hashes are
+preserved; 63 total now include two owned commerce worktrees. Main has only
+continuity edits. Daftra/SMS remains separately paused at b782b13 with all prior
+builds, failures and unfinished guards. Meta remains uninstalled and independent.
+Coupons require reviewed runtime opt-in; preorder CARD/Apple defaults OFF;
+COD remains fixed EGP10 until separately approved 0.5 percent activation.
+
+Resume only on an owner request. Read the report and private task CHECKPOINT.md,
+audit source/pending patch and fresh live lineage, finish local integration,
+then rebind backups/ledger/proxy/worker/operator guards before any new seal.
+Never replay a consumed operator or treat fixture approval as production approval.
+
+# E253 — Owner selected CARD/Apple Pay for preorders — 5 November 2026
+
+PREORDER-REL-01 now explicitly targets the product's full-payment or deposit
+terms through CARD/Apple Pay. Safe local implementation is active in
+../commerce-reliability-20261104/preorder-source, based on isolated cart/coupon
+candidate a049f79. Activation stays separate; no production setting changes.
+
+Independent A/B/C source builds pass and D is qualifying. These are local review
+candidates, not execution approvals. Production remains 6fd67997/schema114.
+Both exact uncertain references and all financial evidence are preserved.
+Original Daftra/SMS stays paused at b782b13. Meta and its existing packets remain
+uninstalled/unspent; no consumed operator is replayed. All 61 opening worktrees
+remain, with two new owned commerce worktrees. The parent source is unchanged.
+
+# E252 — Commerce reliability implementation — 4 November 2026
+
+Owner mission: complete safe local development in ../commerce-reliability-20261104/source,
+based on deployed ff037ddd. No production change or provider write authorized.
+Daftra/SMS remains paused at b782b13; its four builds, mobile failure and draft
+release guards are preserved. Meta/image/Apple packets remain independent.
+
+Fresh pinned read-only observation at 23:53 Riyadh: app 6fd67997c8feaeca,
+source ff037ddd, physical schema114 / 20261104140000; 14 sessions/attempts,
+11 orders, zero funds/callbacks. Both exact EGP325 references remain uncertain:
+CHK-724EDD15767942B3 is legacy interface unknown; CHK-5AB39404CFB747A4 is
+Apple submitted. Neither has authoritative no-charge evidence. Preserve both.
+
+Stable requirements: PAY-REL-01 payment classification and scoped retry;
+CART-SYNC-01 server-authoritative account carts and deterministic guest merge;
+CHK-DEL-01 delivery/address cards and server quote refresh; COUPON-REL-01
+existing coupon policy/validation repair; PREORDER-REL-01 eligible completion
+or explicit unsupported-path feedback; COD-FEE-01 fixed/percentage capability,
+0.5 percent only after separate settings/financial/PDC acceptance;
+SF-VIS-REL-01 theme/hero/footer/review corrections; IMG-PERF-20261104-01
+recover existing cache candidate. P1 payment and commerce precede P2 refinements.
+
+61 opening worktrees, indexes, diffs and 23,999 untracked hashes were captured
+privately before creating the isolated worktree. No foreign application edits.
+Safe local implementation and qualification are active. Deployment, hosted
+acceptance and production settings activation remain separate fresh approvals.
+
+# E251 — Daftra and SMS PAUSED BY OWNER — 2026-11-04
+
+The owner requested a safety checkpoint and a stop. Do not continue development,
+qualification or release preparation until the owner asks. Review the saved
+[checkpoint](daftra-sms-safety-checkpoint-20261104.md).
+
+A/B/C/D source candidates are local and independent; combined source is b782b13
+in ../daftra-sms-20261104/source, clean. Four independent typecheck/builds pass;
+39 combined focused checks, 14 native SMS checks and 51 current PDC checks pass.
+The older broad regression run retains 20 failures, and actual mobile invoice
+Detail layout failed browser qualification. Preserve both unresolved results.
+
+Production remains Storefront114 6fd67997 / ff037ddd / schema114; Meta is not
+installed. Latest read-only bindings retain all 14 attempts and 160 protected
+projections. No deployment, provider request, invoice creation, SMS, financial
+mutation, runtime/credential change or Git push occurred. All new gates remain OFF.
+
+Release A archive/readback/secret scan is prepared locally, but compiled HTTP smoke,
+fresh backup/rehearsal, draft operator qualification, release reviews, data-flow
+matrix and exact one-use seal remain unfinished. No A approval/apply exists. No
+physical schema number is reserved. Meta/image/Apple packets and all other worktrees
+are preserved. ONE next action: owner reviews the checkpoint; wait for resume.
+
+# E250 — Daftra invoices and Vodafone SMS work resumed by owner — 2026-11-04
+
+The new owner mission promotes ERP-01/02 and customer invoices, transactional
+Vodafone SMS and a separate marketing channel into one active local workstream.
+It supersedes the older LAST/ON HOLD development priorities for these named tasks.
+Actual provider writes, invoice creation/imports, SMS transmission, financial
+changes, production deployment and Git pushes still need their own exact scope.
+
+Fresh read-only observation at 22:08:53 Riyadh confirms Storefront114 6fd67997 /
+ff037ddd / schema114. Meta115 is not installed. Built-in ERP remains active,
+Daftra disconnected, 14 checkout attempts retained, funds/callbacks 0, orders 11,
+Auth 15. Vodafone is disabled with no saved account/password/hash/destination,
+no confirmations, and zero SMS batches/messages. ERP jobs/entity links/remote
+write intents 0. No provider request or production mutation occurred.
+
+The new owned worktree is ../daftra-sms-20261104/source, based on actual deployed
+ff037ddd. All earlier worktrees and the Meta/Apple/image packets are unchanged.
+There are now 61 worktrees. Existing unexecuted Meta execution guards deliberately
+require their own later refresh for this inventory change; never edit or reuse a
+consumed seal. Meta's installation/activation approval remains unspent.
+
+ERP-INV-01 covers private customer invoice access and supported provider PDFs;
+ERP-01/02 covers read/write isolation and selective accounting ownership;
+SMS-TX-01 covers verified transactional producers/templates; SMS-MKT-01 covers
+separate consent, budgets, approval and campaigns. Recover existing foundations,
+keep every new control OFF, qualify fixtures/native/browser behavior and prepare
+four independent release scopes. No new physical schema number is reserved.
+
+ONE current next action: finish safe local implementation and qualification,
+then prepare the smallest exact inactive release packet.
+
+# E249 — Meta115 inactive installation READY / UNAPPROVED — 2026-11-04
+
+MKT-META-01 is the owner's next implementation/release priority. Storefront114
+remains 6fd67997c8feaeca / ff037ddd / schema114; it was not rebuilt or redeployed.
+The spent Storefront114 approval stays consumed. Apple Pay remains a separate
+provider escalation; all unresolved attempts and financial fences are preserved.
+
+Meta source fd655ce and Pixel ID 1680814460341996 are recovered and qualified.
+The existing Meta archive omitted 121 assets introduced by deployed Storefront114.
+A separate local archive adds only their exact bytes and serving entries, without
+rebuilding either application. Candidate 77b3d459886c9d2a passes full archive
+readback, secret scanning, 5,020 compiled asset HTTP hashes and 17 route/privacy
+checks. The original Meta and image archives are unchanged. Eleven protected
+payment application files remain byte-identical to the deployed baseline.
+
+Fresh schema114 bindings include 14 attempts, 15 Auth users, 11 orders and current
+Email/order activity. Funds/callbacks/proofs 0; all four integrity counters 0.
+Encrypted database and 17-file recovery passed full readback at 21:25:15 Riyadh.
+The restored PostgreSQL 17.11 target committed the actual SQL115 adapter/history
+row, preserving all 160 original projections and 14 attempts; rollback/Auth/Email/
+shipping/default-ACL checks pass, and the temporary database was removed.
+
+Focused Meta 29 and existing worker 4 results pass; new worker binding 16 checks,
+55 JavaScript/54 remote guards and seven one-use scenarios/54 assertions pass.
+Existing corrected 58-result Meta/browser and application qualifications are reused.
+No Purchase is emitted for pending, abandoned or unverified payments. Purchase
+keeps one stable order identity; private payment-return pages use CAPI only.
+
+The worker binding uses an encrypted replacement candidate, not the retired
+uninstalled value printed by a local validation diagnostic. Original encrypted
+history is preserved. Replacement value was never printed; no production
+credential was exposed or changed. Installation binds the same new secret to
+server runtime and a root-owned 0600 worker env; reviewed units remain disabled.
+
+Sealed read-only preflight PASS at 21:37:19 Riyadh. Seal 430110d54d3e06b8… binds
+1,933 inputs. One SQL115/history transaction, one app archive/cutover/restart,
+one bounded MON/Email/PDC pause/resume, one narrow worker/runtime binding and
+one daemon-reload only. Meta gates remain OFF; new marketing timer starts 0.
+Start by **5 November 2026, 01:10:15 Riyadh**; expires **01:25:15 Riyadh**.
+No approval/apply/execution marker exists; production mutations/provider calls 0.
+
+CAPI token remains missing. Its exact secure input, after inactive installation,
+is **Dashboard → Marketing → Conversions API token**. The existing handler encrypts
+it into private.meta_settings.token_encrypted; stored values are never returned.
+Token/dataset access, bounded hosted consent/Test Events, real paid Purchase
+acceptance and general activation remain separate missing/unapproved gates.
+Do not send tokens in chat or fabricate/replay paid orders for acceptance.
+
+All 60 worktrees, 59 other states, 24,009 prior untracked hashes, 55 paused artifacts
+and 21,710 consumed input hashes remain preserved. Image d6b0934 is unchanged
+for its following release; its own packet must later retain the current/Meta
+assets and bind the actual compatible 115 receipt. SMS/InstaPay/wallet/balance,
+owner storefront acceptance and every earlier unfinished requirement remain.
+
+[Exact Meta115 readiness, one-use approval, deadlines and protected acceptance preparation](meta115-inactive-installation-review-20261104.md).
+
+ONE prioritized next action: reply with the exact inactive Meta115 installation
+approval in that review before its start deadline. Live Meta activation is excluded.
+
+# E248 — Paymob read-only addendum; legacy callback defaults and CSP scope — 2026-11-04
+
+PAY-DOCS-20261104-01: official endpoint/Token, minor units, selected Apple 6038812,
+reference/client-secret/return, HMAC and pinned Pixel lifecycle contracts match.
+Thirteen focused fixture checks pass. The SDK submission hook precedes native
+Apple authorization; dismissal/finality remain PAY-APPLE-LIFECYCLE-20261104-01.
+The owner reports Paymob support has been asked; older “prepared, not sent”
+text is superseded. No support message, provider call or payment was made here.
+
+PAY-CALLBACK-CONFIG-20261104-01: the owner screenshot confirms Apple 6038812 /
+EGP/online/VPC, but both Dashboard callback defaults still point to the legacy
+WooCommerce query handler. Existing Intention requests correctly override them
+with the app webhook and owned-session return. Official Paymob FAQ confirms
+this override contract. Stale defaults are a configuration discrepancy, not proof
+of native-validation failure. No Dashboard save or callback replay occurred.
+
+SEC-CSP-20261104-01 is OPEN/P2: live public/payment-result documents have no CSP;
+the disposable Pixel frame has its enforced scoped CSP. HSTS/nosniff/SAMEORIGIN
+and private payment no-store/no-referrer controls remain. No broad restriction
+was added; future document policy needs separate report-only qualification.
+
+Fresh read-only evidence: app 6fd67997 / source ff037dd, schema114 exact, PIDs
+282442/26652 and all 17 protected hashes match. At 21:08:27 Riyadh there are14
+sessions/attempts; all 13 deployment-bound attempts remain, funds/callbacks/proofs 0,
+orders 11. The submitted EGP325 case remains pending/fenced; no financial status
+was changed or provider outcome inferred. Future packets must bind all 14.
+
+SF-UX-20261104-01 remains DEPLOYED/technical PASS; owner UI acceptance OPEN.
+MKT-META-01 fd655ce and IMG-PERF-20261104-01 d6b0934 archives/inputs rehash PASS.
+Both retain deployed storefront ancestry and11 byte-identical payment files.
+The old schema113 target/Apple-wide hold descriptions are historical. Meta115
+and image116 continue independently with fresh target/recovery/operator scopes;
+image116 still requires115. Meta transmission OFF, encrypted worker candidate
+uninstalled, CAPI token missing. No application change/rebuild/deployment,
+production row/config write, restart, manual worker or Git push occurred.
+Consumed approvals, all worktrees, financial evidence and deferred work remain.
+
+[Exact comparison, screenshot review, live headers and release continuation](paymob-docs-store-check-addendum-20261104.md).
+
+ONE prioritized next action: obtain Paymob's authoritative EGP325 outcome and
+native-validation trace. Independent inactive Meta115 target refresh may proceed.
+
 # E247 — Storefront114 DEPLOYED / technical PASS / CONSUMED_COMPLETE — 2026-11-04
 
 SF-UX-20261104-01 is deployed: release `6fd67997c8feaeca`, source `ff037dd`,
@@ -990,7 +2723,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   Pausedf5e97b5 Meta/SMS/InstaPay activation checkpoint unchanged. DTR-36/42 genuine
   payment/provider/device acceptance and DTR-38 bank acceptance remain open;
   DTR-41 Modern remains owner accepted. No old artifact/provisional Meta111 replay.
-- [Actual receipt, verification evidence and remaining acceptance](docs/paymob-pixel-runtime-string-recovery-receipt-20261104.md).
+- [Actual receipt, verification evidence and remaining acceptance](paymob-pixel-runtime-string-recovery-receipt-20261104.md).
   **ONE next owner action:** review checkout with the selected Outlook account.
   Real payment testing needs a separately authorized budget. This source requires
   the reviewed JSON-string env encoding; retain actual compiled runtime tests.
@@ -1047,7 +2780,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   Start before04:58:48Riyadh4November; expires05:13:48Riyadh4November.
   Packet: ../paymob-pixel-runtime-recovery-20261104. Existing approval is spent;
   no new recovery approval or apply attempt exists. No further production write.
-- [Actual fault, evidence, scope and exact next gate](docs/paymob-pixel-runtime-string-recovery-20261104.md).
+- [Actual fault, evidence, scope and exact next gate](paymob-pixel-runtime-string-recovery-20261104.md).
   **ONE next action:** send that exact two-value runtime recovery approval.
 
 # E211 — Pixel111 cutover stopped; CARD unavailable; runtime recovery prepared — 2026-11-04
@@ -1740,7 +3473,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   InstaPay109 and Apple readiness → wallets/balance. Google DISABLED. Pixel local/
   inactive, real merchant3DS pending; balance OFF pending funding/recon/terms.
   All existing records, key/sender, settings, worktrees and deferred evidence stay.
-- [Current blocker, qualification and next action](docs/payment-first-core108-activation-preparation.md).
+- [Current blocker, qualification and next action](payment-first-core108-activation-preparation.md).
   **ONE next action:** owner opens Supabase Logs, selects PostgREST/API Gateway and
   shares error code/message since18:15UTC (no keys/headers/customer data). Current
   PostgreSQL credentials do not provide management logs; management access absent.
@@ -1770,7 +3503,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   sessions/attempts/funds0/revision0, deployed cancellation hold exact. Localffc1a30,
   schema109 and provisional110 remain undeployed; Google DISABLED. Original
   purchasing/COD/Email kill fences available; all deferred tests/worktrees retained.
-- [Actual execution and independent receipt](docs/payment-first-ingress-monitor-20261102-receipt.md).
+- [Actual execution and independent receipt](payment-first-ingress-monitor-20261102-receipt.md).
   **ONE next action:** owner signs in at https://elcomputer.net/account/payments and
   confirms private activity loads without error. Then prepare a separate core
   activation packet against actual installed state. No further production write
@@ -1806,7 +3539,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   activation;109 verified recipient/private proof controls; Pixel merchant3DS;
   Apple live ID/domain/certificates;wallet merchant flow/ID;balance funding/refund/
   reconciliation/terms/obligations. Google DISABLED. Unsupported methods isolated.
-- [Full review and recovery](docs/payment-launch-readiness-20261102.md).
+- [Full review and recovery](payment-launch-readiness-20261102.md).
   **ONE next action:** approve the exact3file prerequisite. Then perform natural MON
   and authenticated read-only postflight; separately seal core activation. Keep
   UI/catalog paused, original deferred tests and financial/PDC settlement LAST.
@@ -2326,7 +4059,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 # E173 — Customer/Admin UX review complete; waiting for owner priorities — 2026-11-01
 
 - **OD-20261101-UIUX-01 / UIUX-01:** read-only review complete. No feature
-  implementation, deployment approval or new migration. [Findings](docs/ui-ux-review-20261101.md)
+  implementation, deployment approval or new migration. [Findings](ui-ux-review-20261101.md)
   record five issues, with evidence levels and optional enhancements separated.
 - **Fresh production:**1fd7ef6909869361/schema107/source7d989cd, app140566/Caddy26652,
   all17 protected file hashes unchanged. CARD/COD, Email, tracking and MON timers
@@ -2401,7 +4134,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   acceptance remains unexercised; do not create/send/claim to manufacture a test.
   Original42 worktrees plus this isolated candidate and all35 deferred IDs/evidence
   retained; no Git push, archive write, external provider or production action.
-  [Fields, limits and final proof](docs/woocommerce-history-metadata-review.md).
+  [Fields, limits and final proof](woocommerce-history-metadata-review.md).
 
 # E171 — Historical migration reassessment READ-ONLY PASS; core already imported — 2026-11-01
 
@@ -2453,7 +4186,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   import approval until ownership/mapping/side effects qualify. DTR-06 hosted
   verified order-bearing-owner acceptance remains separate; do not create/send/claim
   to manufacture a candidate. No new migration number selected.
-  [Complete mapping and counts](docs/woocommerce-history-assessment.md); private
+  [Complete mapping and counts](woocommerce-history-assessment.md); private
   evidence:`/Users/imac/Documents/ELcomputer/woocommerce-history-assessment-20261101`.
 
 # E170 — Category/shop/link recovery DEPLOYED; hosted postflight PASS — 2026-11-01
@@ -2504,7 +4237,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   notification, order/cash state change or migration deployment is authorized here.
   UI follows historical migration; Paymob Pixel/Pay Again awaits its ticket;
   pickup excluded; detailed PDC fees/settlement/ERP LAST.
-  [Current SEO receipt](docs/seo-category-shop-review.md); private packet:
+  [Current SEO receipt](seo-category-shop-review.md); private packet:
   `/Users/imac/Documents/ELcomputer/seo-category-shop-release-20261101`.
 
 # E169 — Category/shop/link recovery SEALED READY, UNAPPROVED — 2026-11-01
@@ -2555,7 +4288,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   unchanged. An intervening database TLS read timeout is preserved as evidence;
   one subsequent read-only check passed. No approval/execution fence was consumed.
 - **ONE next action:** approve only MIG-04-C using the exact phrase in
-  [category/shop release review](docs/seo-category-shop-review.md).
+  [category/shop release review](seo-category-shop-review.md).
   Hosted postflight and owner acceptance remain pending. Paymob Pixel/Pay Again
   waits for its ticket; pickup excluded; merchant fees/settlement/ERP LAST.
   Private sealed packet: `/Users/imac/Documents/ELcomputer/seo-category-shop-release-20261101`.
@@ -5180,8 +6913,8 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 
 # E105 — CX-PAY-01 first fix LOCAL PASS; separate production approval ready — 2026-10-28
 
-- [Audit and local correction](docs/customer-payment-safety-review.md);
-  [exact first-fix approval review](docs/customer-payment-first-fix-approval.md).
+- [Audit and local correction](customer-payment-safety-review.md);
+  [exact first-fix approval review](customer-payment-first-fix-approval.md).
   Local branch customer-payment-recovery-20261028/commitbb21a160 from MON568c8dd.
   No unrelated merge/push;22 prior worktrees' heads/work preserved, apart from
   intended additive continuity. Main0a61ab1 is not the deployed app source.
@@ -5427,7 +7160,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 # E99 — MON-01 recovery consumed after cutover; timer completion blocked — 2026-10-28
 
 - Exact owner recovery approval `6e0c96c4a4c09b2562fb93534d79b2d9e328dfc913b9fd086f20c223f6fdcab4`
-  recorded and executed **once**. [Stop receipt](docs/mon01-journal-recovery-stop-receipt.md).
+  recorded and executed **once**. [Stop receipt](mon01-journal-recovery-stop-receipt.md).
   Current production **b4b502a03207713a / schema98 / PID58599**; one approved app
   restart consumed. Caddy PID26652 unchanged. Never replay either installer.
 - Worker fix and private report/runtime reader binding deployed. Corrected first
@@ -5490,7 +7223,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   storefront “under maintenance” text; preservation of old-to-new URLs.
   Google access/indexing remains unverified. No SEO change joins this deployment.
 - **NEXT: separate exact owner recovery approval** in the
-  [E97 review](docs/mon01-journal-recovery-review.md), then existing recovery once
+  [E97 review](mon01-journal-recovery-review.md), then existing recovery once
   with fresh live guards. Postflight must cover release/schema, five-minute timer,
   durable reports/journal continuity, staff-only Dashboard permissions,
   deduplication/heartbeat/failure behavior and CARD/Manual50/callback/kill controls
@@ -5506,7 +7239,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   stopped at its first worker check, before application cutover. Never rerun it.
   Existing monitoring user/group, private credentials/state, service/timer and
   staged candidate remain installed. Worker failed; timer inactive; app restarts0.
-- [Recovery review](docs/mon01-journal-recovery-review.md): original journal JSON
+- [Recovery review](mon01-journal-recovery-review.md): original journal JSON
   exceeded the4MiB worker bound (5,838,505bytes). Projecting MESSAGE/PRIORITY retained
   all5,563 records in2,199,632bytes. No larger limits, extra privilege or raw export.
   Worker-only commit568c8ddb:22worker checks PASS;5new recovery guard checks PASS.
@@ -5787,7 +7520,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 
 - Exact e239dbb7 approval recorded once. Fresh preflight/recovery/postflight PASS.
   APPLY CONSUMED_COMPLETE; never replay. Authorized later closure remains pending.
-- [Activation receipt](docs/egp5-secure-checkout-window-activation-receipt.md): owner window **16:50:56–17:50:56 Riyadh,
+- [Activation receipt](egp5-secure-checkout-window-activation-receipt.md): owner window **16:50:56–17:50:56 Riyadh,
   27 October 2026**, verified 16:51:49. Only grant dates changed; one restart,
   PID 53535 → 54442. No application deployment or SQL/Caddy/coupon/stock change.
 - Original customer/recipient/WOLF Default1/Manual50/FRE5/500-minor/fixed cart/

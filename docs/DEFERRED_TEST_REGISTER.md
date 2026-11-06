@@ -1,3 +1,243 @@
+> **6 November2026 reconciliation:** [Current activation/acceptance register](ELCOMPUTER_REMAINING_WORK_AND_ACTIVATION_REGISTER.md). Retry UI is owner-accepted on iPhone/iPad/MacBook; earlier installation holds are superseded by actualschema121. Bank finality and other deferred financial/provider/role cases remain distinct. Original rows below are preserved.
+
+# E276 — DTR-52 SMS installed inactive; owner/provider acceptance OPEN — 2026-11-05
+
+SMS ee5dd61e2b6fd8f6/573e208/schema118 DEPLOYED / technical PASS / CONSUMED_COMPLETE.
+Two atomic migrations, existing candidate adopted/certificate preserved/rebound once,
+zero upload/launch, one app restart and timers resumed once~71.5s.5284 live assets,
+162 original projections/14 attempts, independent nine financial hashes/history,
+natural MON8 warnings/3 gaps/0 critical, all17 files and68-worktree/24004-hash
+preservation PASS. Old consumed stop/rollback receipts preserved; no replay/push.
+
+Both SMS channels/provider OFF,11 disabled templates,0 enabled bindings,0 events,
+contacts/campaigns/batches/messages/attempts. No worker/secret/scheduler installed,
+SMS/Meta/provider or financial action. Prior focused/build evidence reused; historical
+PDC fixture failure retained. No broad or hosted/provider acceptance claim.
+
+Owner authenticated SMS Dashboard/configuration and live provider/TLS/submission,
+handset/cost acceptance remain unexercised. Merchant provisioning/tariff/cap and
+protected worker binding, exact one-message approval/dispatcher still required.
+Meta/D old116 packets stale; rebind preserving SMS118 before later approval.
+Daftra pause remains. ONE next action: confirm Vodafone endpoint, sender/IP approval
+and tariff privately, keeping sending OFF.
+[Completed receipt](sms-inactive-schema118-deployment-receipt-20261105.md).
+
+# E273 — DTR-52 SMS forward correction qualified; production unchanged — 2026-11-05
+
+Original SMS162c0f90 consumed before commit after a verifier falsely rejected
+ordinary analytics growth. Independent rollback/full schema116/history/data proof
+PASS; all14 attempts and17 protected files unchanged, timers resumed once~69.7s.
+No app restart, SMS, financial/provider action or replay. Original source and receipts
+preserved. Separate verifier compares exact locked originals inside SQL and uses
+only the reviewed activity policy at read-only postflight. Nine actual-failure
+regressions,70 JS/nine Python guards/adoption tests and fresh restored SMS executor
+PASS. Existing app/build/compiled evidence reused; historical PDC failure unchanged.
+
+Forwardba482860 READY / UNAPPROVED; final sealed read-only14:36:08 Riyadh PASS on
+B/schema116,162 projections/14 attempts/11 orders/four zero integrity counters.
+Adopt existing stage once, preserve/rebind certificate once, zero uploads/launches,
+then fresh exact SQL116→118/one restart and bounded180s timer pause. Sending OFF.
+Provider configuration/test/cost and hosted acceptance remain separate unexercised
+gates.68 worktrees/24004 hashes preserved. Old Meta/D packets require rebind if SMS
+installs. ONE next action: fresh exact approval within the packet valid window.
+[Corrected scope and approval](sms-inactive-forward-review-20261105.md).
+
+# E270 — DTR-52 local release qualification COMPLETE — 2026-11-05
+
+DTR-52: All three restored atomic commit/rollback rehearsals, compiled route/assets
+(SMS17/5266, Meta17/5264, D13/5267), four loopback worker tests and 58 JS/five Python
+guards with nine lifecycle scenarios PASS. Three sealed read-only preflights PASS
+on current B/schema116, latest14:01:46 Riyadh, preserving162 projections/14 attempts.
+Reuse unchanged SMS57/Dashboard17/Meta43/D54/builds. Known PDC and historical footer
+fixture failures remain recorded; no broad suite or hosted/provider acceptance.
+
+All three independent installation packets READY / UNAPPROVED; no execution.
+Vodafone provisioning/tariff/delivery and real recipient/cost acceptance, private
+Meta token/code/customer/worker binding, hosted Dashboard/device/Test Events and
+general activation remain external/owner gates. No provider/financial actions.
+D visuals/cache take effect on install (public cache default ON); no C/preorder.
+Final68-worktree/24004-hash preservation PASS; Daftra pause unchanged.
+ONE next action: approve the SMS-only inactive packet within its valid window.
+[Exact scope, evidence and approval](sms-meta-visual-inactive-release-review-20261105.md).
+
+# E269 — Interrupted SMS/Meta/D recovered; DTR-52 protected qualification blocked — 2026-11-05
+
+DTR-52 / SMS-TX-01 / SMS-MKT-01 / SMS-VF-ACCEPT-01 / MKT-META-01 /
+SF-VIS-REL-01 / IMG-PERF-20261104-01: all three source/build/archive/PDF rehashes
+PASS. Existing evidence: SMS 57 passes plus baseline PDC history failure, actual
+Dashboard fixtures 17, bounded Meta 43, D visual/cache 54. Typecheck/builds reused
+for exact unchanged inputs. Three new pure SMS revision-guard regressions PASS.
+The two ancillary historical footer fixture failures remain recorded; no broad
+clean-suite claim. Paused Daftra 20 failures/mobile issue remain untouched.
+
+Fresh production snapshot, full restored atomic/rollback qualification, compiled
+archive HTTP/assets, and four Python loopback-worker checks remain pending.
+Sandbox SSH/shared-memory denials require protected execution. Automatic approval
+review could not authenticate after the account switch; the escalated snapshot
+DID NOT EXECUTE. No bypass, provider transmission, production mutation or financial
+action. Last recovered live evidence is B/schema116 at 10:05 UTC, not a new check.
+No executable fresh approval seal is issued. Worker units and three independent
+inactive-installation/one-message review drafts are local, uninstalled and gated.
+
+ONE next action: restore Codex approval-review authentication, then finish these
+protected qualifications before a production approval request.
+[Exact recovery, source identities and missing inputs](sms-meta-visual-interruption-recovery-20261105.md).
+
+# E267 — B DEPLOYED / technical PASS; owner/provider acceptance OPEN — 2026-11-05
+
+DTR-50: CART-SYNC-01/CHK-DEL-01/COUPON-REL-01 deployed on bef28c4029ccc9b6/e3ba3b7/
+schema116. Original operator CONSUMED_COMPLETE; independent closeout PASS. Exact
+160 original projections/14 attempts, 5142 live asset hashes, 14 public method/privacy
+cases and natural MON 8 warnings/3 gaps/0 critical pass. One restart/one Caddy signal;
+timers resumed once after about 54 seconds. No runtime/policy/provider/financial
+activation or Git push. Prior order-first test mismatch remains in local evidence.
+
+Hosted signed-in cross-device cart/merge/privacy, saved addresses/New Address,
+delivery selection/cheapest default/quote refresh and coupon-disclosure acceptance
+remain owner-controlled and unexercised. Beta allow_coupons remains false.
+DTR-51/PAY-REL-02: submitted Apple attempt remains financially unknown/protected.
+Fresh separate inquiry bound to116, 8 offline tests/fresh DB check PASS, unexecuted
+and credential/exact-approval gated. Older packets expired; escalation draft not
+sent. Physical Apple/3DS/OTP, callback delivery and authoritative finality OPEN.
+C/D/Meta, paused Daftra/SMS and all other deferred requirements remain unchanged.
+ONE next action: owner signed-in cart/address/delivery review on two devices.
+[Final deployment receipt](commerce-release-b-schema116-deployment-receipt-20261105.md).
+
+# E264 — B forward packet; DTR-50/51 remain open — 2026-11-05
+
+B 3f542aff is CONSUMED_STOP before SQL commit. Uncommitted migration SQL rolled back;
+independent physical114/schema/security/data checks pass, including all 14 attempts.
+Timers resumed once; no Caddy production signal/config cutover or app restart.
+The prior restored qualification missed 31 owner-ACL representations and 4 index
+qualification differences. Earlier local PASS was insufficient for live parity.
+
+Forward 3fd11398 corrects fixture fidelity and asserts full production baseline
+identity before DDL. Restored rollback/actual atomic executor pass, and a regression
+assertion rejects the original bad expectation. New guards 83 JS / 89 Python and 8 one-use
+scenarios/64 assertions pass. Existing qualified app/browser/cart/coupon evidence is
+reused for unchanged e3ba3b7/archive bef28c40, including the old order-first mismatch.
+Existing staged artifact and original fixture proof are preserved/adopted, with
+zero upload/extraction/fixture replay. Final sealed live preflight PASS at 11:32:43 Riyadh (08:32:43 UTC).
+DTR-50 hosted/customer/cross-device acceptance remains open; no B cutover claimed.
+DTR-51/PAY-REL-02 remains submitted/unknown; no inquiry or financial action.
+C/D/Meta and paused Daftra/SMS remain unchanged. Fresh forward approval is required.
+[Exact current packet](commerce-release-b-review-20261105.md).
+
+Fresh sealed preflight PASS: app 4f32e3bee6f2f137/schema114, 14 attempts/11 orders,
+0 funds/callbacks/proofs, public CARD/COD and private APIs match. Natural MON at
+11:30:05 Riyadh retains 8 warnings/3 gaps. All 17 protected files match the original
+state; future changes remain only the two reviewed Caddy/MON files. No forward
+approval/apply/certificate rebind/SQL/signal/restart has been executed.
+
+# E261 — Expired B approval; fresh replacement remains unexecuted — 2026-11-05
+
+DTR-50 remains open. Approval 7a461ec8 arrived after expiry; original packet and
+receipts are preserved, with no deployment. Same B code/archive/SQL and previous
+qualified browser/cart/coupon/guard/build evidence are reused. Fresh encrypted
+backup, full protected-file readback, restored DDL rollback and real atomic
+executor preserve 160 original projections/all 14 attempts. Final sealed live
+preflight PASS at 10:59:42 Riyadh (07:59:42 UTC). Replacement 3f542aff requires fresh exact authorization.
+
+DTR-51 / PAY-REL-02 remains submitted/unknown. No provider inquiry or financial
+action was performed. Its original read-only packet also expired; rebind after B.
+Physical Apple/3DS/OTP and hosted customer/cross-device acceptance remain open.
+C/D/Meta and paused Daftra/SMS are unchanged. All previous limits remain recorded.
+[Exact replacement packet and approval](commerce-release-b-review-20261105.md).
+
+Fresh sealed preflight confirms 14 attempts/11 orders/0 funds/callbacks/proofs,
+unchanged protected state and public CARD/COD/private API contracts. Natural MON
+at 10:55:03 Riyadh retains 8 warnings/3 gaps. No production approval/execution marker
+exists; all 65 worktrees remain preserved. No provider inquiry or financial action.
+
+# E260 — B ready; DTR-50 acceptance and DTR-51 payment finality remain open — 2026-11-05
+
+DTR-50: Release B exact e3ba3b7/archive bef28c40 is locally qualified and sealed,
+not deployed or owner-accepted. Fresh target preflight passes on A/schema114.
+New cart/coupon SQL and restricted cart routing propose physical116. Cross-device
+signed-in cart/merge/isolation, hosted address/delivery/quote/coupon-policy
+acceptance remain unexercised. Exact-B local browser 44 Chromium/39 WebKit, cart 15,
+coupon/Beta 6, build/typecheck, compiled 5142 assets/15 routes and restored atomic
+executor/160 original projections/14 attempts pass. One obsolete order-first
+legacy delivery subtest and its parent fail identically on A and B; preserve the
+known test-contract mismatch. No blanket full-suite PASS or hosted acceptance.
+
+DTR-51 / PAY-REL-02: exact CHK-5AB39404CFB747A4 overlaps the same Black Fantech
+GO W190 variant in five post-A quotes. A different published SKU is unblocked by
+the live financial predicate; no signed-in purchase was made. Provider finality,
+callback delivery and a supported submitted-intention terminal-state procedure
+remain unresolved. The bounded read-only inquiry is prepared and credential/
+exact-approval gated, not executed; 8 operation/4 helper offline tests pass.
+Rebind it after B changes the ledger. The escalation draft is prepared, not sent.
+No retirement, cancellation, refund, arbitrary failure assignment or duplicate
+charge was performed. Preserve physical Apple/3DS/OTP and all prior uncertainty.
+
+Other deferred requirements, C/D/Meta and paused Daftra/SMS remain unchanged.
+B start deadline 07:25:21 Riyadh, 5 November 2026; no approval/apply recorded.
+[Exact report and one next action](commerce-release-b-review-20261105.md).
+
+# E258 — Release A deployed; hosted technical PASS — 2026-11-05
+
+DTR-50 now records A DEPLOYED on `4f32e3bee6f2f137` / source `e9361ea` / schema114.
+Original operator is CONSUMED_COMPLETE. All 14 attempts/nine financial projections,
+17 protected files and loaded runtime match; 5, 019 canonical HTTPS hashes and 12
+anonymous method/privacy cases pass. Natural MON 03:05:05 has 8 warnings/3 gaps/0
+critical. No signed-in/device/provider/financial acceptance is inferred.
+
+Still open: owner checkout flow acceptance; physical Apple/3DS/OTP; Paymob finality
+and callback delivery for the separate original references. B/C/D stay local;
+cart/device/privacy, addresses/coupons, preorder/stock/balance/new notification,
+COD percentage/PDC collection and visual/cache hosted acceptance are unexercised.
+All other deferred requirements and Daftra/SMS's separate pause/failures remain.
+No setting activation, provider/financial test or extra worker invocation occurred.
+
+[Consumed deployment and independent evidence](commerce-payment-lifecycle-schema114-deployment-receipt-20261105.md).
+
+# E255 — Final local commerce qualification / A READY UNAPPROVED — 2026-11-05
+
+DTR-50 remains open for hosted/customer/provider acceptance. Final A 73 Chromium/
+SQL/HTTP/account and 36 WebKit checks, B 44 Chromium/39 WebKit, combined financial/cart
+62, MON 27, and four isolated typechecks/builds/compiled archives pass with zero
+skips. Reuse remains scoped:103 regressions, 50 visual/cache, 63 Apple, 249 compiled
+PDP/family checks per engine. The final three-file address polish is now committed
+and included. No blanket full-suite or hosted acceptance is claimed.
+
+Fresh sealed A preflight passes at 02:46:41 Riyadh on unchanged Storefront114/114.
+The old guard's public hosted/embedded assumption was corrected and qualified;
+PDC's earlier natural caller failure recovered without a manual invocation.
+No production approval/apply exists. All real attempts remain preserved/unknown.
+
+Still NOT EXERCISED: hosted authenticated cart/device concurrency, customer
+address/coupon acceptance, physical Apple/3DS/OTP, authoritative Paymob lookup and
+callback delivery, preorder stock/balance/new notification acceptance, actual COD
+percentage/PDC collection and owner visual/cache acceptance. B/C/D require fresh
+actual predecessor/ledger/operator bindings; settings activation stays separate.
+Daftra/SMS pause, its 20 broad failures/mobile invoice issue, and all earlier DTRs
+are preserved. Meta remains uninstalled/OFF.
+
+[Final report and exact next approval](commerce-reliability-final-review-20261105.md).
+
+# E254 — Commerce local qualification / OWNER PAUSED — 2026-11-05
+
+DTR-50 tracks PAY-REL-01, CART-SYNC-01, CHK-DEL-01, COUPON-REL-01,
+PREORDER-REL-01, COD-FEE-01, SF-VIS-REL-01 and IMG-PERF-20261104-01.
+[Exact checkpoint and evidence](commerce-reliability-safe-checkpoint-20261105.md).
+
+Local financial/cart 62, current regressions 103, checkout 107 per engine,
+address/delivery/coupon 39 per engine, visual/cache 50, compiled PDP/family 249 per
+engine and MON 27 pass. Four frozen commits build and archive smoke pass. The
+latest three-file checkout polish is uncommitted and absent from those archives.
+No completed final release seal or production deployment is claimed.
+
+Hosted customer cart/privacy/concurrency, address/coupon/preorder acceptance,
+physical Apple device/provider finality, actual COD0.5/PDC collection and owner
+visual/cache acceptance remain NOT EXERCISED. Coupon opt-in, preorder enablement
+and COD percentage activation remain separate approval scopes. Both real EGP325
+attempts remain uncertain and preserved. Existing DTR-38 merchant acceptance and
+all earlier deferred requirements stay open; no historic failure is relabeled PASS.
+
+Owner requested STOP. Do not resume until requested. Daftra/SMS retains its
+separate pause, 20 broad failures and invoice mobile issue unchanged.
+
 # E247 — Storefront114 DEPLOYED / technical PASS / CONSUMED_COMPLETE — 2026-11-04
 
 SF-UX-20261104-01 is deployed: release `6fd67997c8feaeca`, source `ff037dd`,
