@@ -2,11 +2,393 @@
 
 **Current authority:** 6 November 2026. This register supersedes stale priority/status summaries; original receipts, uncertainty and pauses remain evidence. Update this file, the master roadmap and both handoffs together. Counts describe tracked feature/workstream scopes, including explicit legacy aliases; they are not a count of unique UI screens.
 
-**Latest release — 6November02:54Riyadh:** COUPON-ACT-02 is DEPLOYED /
+**OWNER STOP — E328,6November22:50Riyadh:** All further work is paused until explicit
+resume. SMS controls8ba30439 remain installed/hostedPASS at appbea168064d2234bd /
+source9fa54a1/schema122. Regular sending staysOFF. Unapproved regular packetd17bae75
+is withheld for a source-verified cooldown-binding mismatch; correction/regression
+and a new packet are unfinished. No charge approval is pending. Owner review only.
+[Safe checkpoint](emergency-commerce-safe-checkpoint-20261106-schema122.md).
+
+**Latest installed change — 6 November22:13:14Riyadh:** SMS controls recovery8ba30439
+is CONSUMED_COMPLETE / DEPLOYED / hosted technicalPASS. Appbea168064d2234bd/source
+9fa54a1/schema122/PID394646.5905hosted assets and176original projections PASS;
+next naturalMON22:15:05 retained8known warnings/3gaps, no critical finding.
+SMS providerOFF/daily0/minimum60; no regular dispatcher, sends or paid budget.
+AppleOFF, CARD/COD/coupons/retriesON, fixedCOD10 and Meta6/marketingOFF preserved.
+[Current ten-scope progress table](emergency-commerce-recovery-20261106.md).
+
+**Earlier coupon release — 6November02:54Riyadh:** COUPON-ACT-02 is DEPLOYED /
 CONSUMED_COMPLETE. EngineON; only unrestricted95%+EGP50offer inactive; restricted
 EGP74offer/history preserved. Sameapp/source/schema121, newPID344894. Hosted
 capability/privacy and next naturalMON PASS; positive eligible-customer acceptance
 OPEN. SMS pilot0/5, sameexpiry; Meta/marketingOFF. No new public push.
+
+**Meta continuation — 6November:** Target dataset/Test Event code supplied;
+owner-generated token intake authenticated. Existing owner-managed nonstaff
+customer verified privately; fresh customer consent is still required. Fresh
+schema121 closeout retains25sessions/25attempts and12orders. MetaOFF, token securely bound, no event sent; SMS,
+coupons, payments and all release identities unchanged. See
+[bounded test preparation](meta-bounded-test-schema121-preparation-20261106.md).
+The147scope categories/counts remain unchanged.
+
+**Post-pilot Meta checkpoint — after6November19:02:25Riyadh:** Customer sign-in
+verified privately. Target Test Events view not visible in the current Chrome
+Meta context; owner clarification pending. Meta4/OFF/0events, token retained.
+SMS pilot expired naturally at19:02:25, closed/providerOFF with0pilot sends.
+No extension or regular-SMS activation.25protected preimages full-readback PASS.
+
+**Meta provider checkpoint — 6November:** One real CAPI PageView accepted
+on one attempt, corroborated by database/journal. Fresh selected-customer consent.
+Meta6/OFF/PID385824 after approved cleanup;2unsent events suppressed. Owner deferred
+Events Manager receipt/dedup. Provider ViewContent/SKU acceptance still open;
+ordinaryOFF. Next naturalMON19:25:05PASS. No further provider call or SMS reset.
+
+## Current milestone E328 — Owner safe checkpoint; all further work stopped — 6 November 2026
+
+PAUSED BY OWNER at22:50Riyadh. Update the handoff, then stop. No further
+implementation, qualification, preparation or production mutation is authorized
+until explicit resume. Existing approved production services remain running.
+
+Installed: appbea168064d2234bd/source9fa54a1/schema122/PID394646. Recovery8ba30439
+is consumed complete/hostedPASS:5905public assets,176protected projections and
+next naturalMON passed. SMS providerOFF/daily0/minimum60; regular sending absent.
+AppleOFF, CARD/COD/coupons/retriesON, fixedCOD10, Meta/marketingOFF. No new send,
+payment, parcel, Meta event or Git push. All financial uncertainty is preserved.
+
+Regular-handover d17bae75 is WITHHELD/UNAPPROVED/NOT EXECUTED. The source compares
+next_request_at as fixed provider configuration even though queue claims update it.
+A dedicated regression, correction, v2bundle and replacement approval are NOT done.
+Its47controller/host tests and native configuration pass do not establish dispatch
+readiness. No charge approval was requested or received. Preserve all sealed inputs;
+never execute d17. Coupon operator drafts are incomplete/unsealed;123/124 and0.5%
+are uninstalled. PDC diagnostics12tests remain local. No agent-owned worker or
+rehearsal job remains. Owner review is the sole next action; do not auto-resume.
+
+## Historical milestone E327 — Regular SMS configuration rehearsal PASS; activation remains unapproved — 6 November 2026
+
+Production remains appbea168064d2234bd/source9fa54a1/schema122/PID394646.
+Controls release8ba30439 is consumed complete/hostedPASS. SMS staysOFF/daily0;
+no regular dispatcher, paid allowance, new SMS or provider request is authorized.
+
+A fresh read-only SMS snapshot shows1earlier test batch/message/attempt,0transactional
+events and0queued/processing batches. Only COD-confirmed and verified-paid bindings
+are enabled. Existing bilingual templates and credentials remain unchanged.
+
+The future5daily/35total/7day configuration passed rollback and commit on an
+isolated restore of the approved snapshot plus installedSMS122. Exactly2config
+rows change and the existing trigger increments only Vodafone's setup revision
+by1; all17setup rows/other16domains are checked. All other original176projections,
+Auth/RLS/ACL/schema/history, templates/bindings/messages and financials are preserved.
+Initial fixture stops on that legitimate setup increment remain recorded; no
+assertion was weakened or production trigger changed. Disposable clusters removed.
+
+Prepare the new no-overlap handover operator next: disable the expired pilot
+without editing its receipts, install exactly one regular dispatcher, advance the
+future capture cutoff and bind an explicit bounded ordinary-charge approval.
+The proposed quantity/window is not authority. No historical replay, multipart,
+marketing, fake order/test SMS, automatic financial retry or pilot renewal.
+Coupon SQL operator drafts remain local/unsealed; no123/124migration or0.5%activation.
+
+## Historical milestone E326 — SMS controls deployed and hosted postflight PASS — 6 November 2026
+
+Exact recovery8ba30439 is CONSUMED_COMPLETE. Current appbea168064d2234bd,
+source9fa54a1a841a0b22571a66e8b77e9cf6daa8cca3, physicalschema122, PID394646.
+SQL committed22:13:00Riyadh; one restart/cutover completed22:13:14. No archive
+upload occurred. The original a5d75bbf artifact certificate remains unchanged;
+new activation receipts bind8ba30439. Never replay any consumed packet.
+
+Independent hosted postflight completed22:18:56Riyadh:5905public file hashes PASS,
+176original business/Auth/history/RLS/ACL projections preserved, CARD/COD/coupon/
+privacy and retry-method checks PASS. NaturalMON22:15:05 passed with the same
+8known warnings/3gaps; no critical finding. No financial uncertainty was erased.
+
+SMS providerOFF/configrev3, daily limit0/minimum60. Transactional channel remains
+revision1 with its original capture cutoff; marketingOFF. Old pilot stays closed,
+0dispatches, unchanged expiry/slots. No regular dispatcher, paid budget or sends.
+AppleOFF; CARD/COD/coupons/retriesON; fixedCOD10; Meta6OFF.25attempts/12orders
+remain. No new payment, shipment, Meta transmission, credential change or Git push.
+
+SMS-VF-TX-PERM-01 remains incomplete: controls are installed; a new one-use regular
+handover, explicit bounded charge authority and genuine future-event acceptance
+remain. Prepare that P1 scope next without extending the expired pilot. Coupon/
+COD SQL and fee capabilities remain separately local, with fresh122predecessor
+bindings required. PDC diagnostics12cases remain local and outside this release.
+Apple financial completion/provider trace, actual packed parcel/AWB/PDF, Brevo
+receipt, Meta receipt/dedup/catalog/value and Beta restrictions remain honest gaps.
+
+## Historical milestone E325 — SMS controls deployed; independent hosted postflight running — 6 November 2026
+
+Exact staged recovery8ba30439 committed schema121→122 at22:13:00Riyadh and
+completed its single apprestart at22:13:14. Current appbea168064d2234bd,
+source9fa54a1a841a0b22571a66e8b77e9cf6daa8cca3, schema122, PID394646.
+The original a5d75bbf artifact certificate and staged bytes remain unchanged;
+new commit/cutover receipts bind recovery8ba30439. Never replay either packet.
+
+All176original projections passed precommit preservation. The four timers were
+drained and resumed within the180second budget. Independent read-only controls,
+protected-data, hosted-public-asset and next-natural-monitor postflight are now
+running; full hosted technical acceptance is pending those results.
+
+SMS provider staysOFF; daily default0/minimum interval60. No regular dispatcher,
+paid budget or sends. AppleOFF, CARD/COD/coupons/retriesON, fixedCOD10 and
+Meta/marketingOFF are retained by the release scope. No financial/provider test,
+shipment or Git push occurred. Continue only after the independent postflight;
+then prepare the separately gated coupon SQL and regular SMS handover.
+
+## Historical milestone E324 — Exact staged SMS recovery approved; fresh preflight running — 6 November 2026
+
+The owner approved exact recovery8ba30439 in this chat. The approval is recorded;
+fresh read-only preflight is running. No installed schema122 claim is made yet.
+
+Authorized scope: adopt the preserved appbea168064d2234bd/source9fa54a1 artifact,
+retain its original a5d75bbf certificate, apply one121→122migration, then restart
+once. No archive upload or candidate process. SMS staysOFF/daily0/minimum60.
+No regular dispatcher, paid budget, send, provider or financial action is included.
+Keep AppleOFF, CARD/COD/coupons/retriesON, fixedCOD10 and Meta/marketingOFF.
+
+Original4b147019/a5d75bbf remain consumed. The new recovery executes once only
+after fresh predecessor, staged-provenance and strict worker-health checks.
+Any acknowledged or ambiguous mutation stops without replay/automatic rollback.
+Finish hosted app/source/schema, all public assets,176original projections,
+SMS defaults and next-natural-monitor checks before preparing another release.
+
+## Historical milestone E323 — PDC diagnostic candidate qualified locally; SMS recovery pending — 6 November 2026
+
+Actual production remains app2a1fb3c96f391f40/sourcee2663ea/schema121/PID388903.
+The consumed SMS packet staged only; no SQL, timer pause or restart occurred.
+Fresh staged recovery8ba30439 is qualified and awaiting the exact approval already
+requested. Its22:45:47Riyadh start deadline and source9fa54a1/appbea168064d2234bd/
+121→122/one-restart scope are unchanged. SMS staysOFF/daily0; no sends or budget.
+
+PDC-WORKER-DIAG-01 is a separate local sub-scope. The exact protected production
+wrapper source was confirmed by SHA256. Its candidate adds safe HTTP/network/
+timeout/schema/local-IO error categories, while retaining TRACKING_OUTCOME_UNVERIFIED,
+exit1, a maximum of one loopback request,70second timeout and zero retries.
+All request, redirect, credential and main functions match the original AST.
+12focused cases PASS, including secret/body/URL redaction and pre-request guards.
+It does not identify the historical failure cause, repair a provider, change
+tracking leases/budgets or create a shipment. It is NOT installed, NOT included
+in SMS recovery and NOT a qualified wrapper release; a future separate operator/
+exact approval and passive hosted acceptance remain. Never force a failure/test poll.
+
+All176 original business/Auth/RLS/ACL/history projections and25attempts/12orders
+were independently preserved after the stop. AppleOFF, CARD/COD/coupons/retriesON,
+fixedCOD10, Meta/marketingOFF and the closed SMS pilot remain. Coupon/COD forward
+bindings stay local. Current fee0.5%, genuine SMS/email/PDC/Meta/Apple acceptance
+remain open. The147feature-scope categories are unchanged. No Git push occurred.
+
+## Historical milestone E322 — Staged SMS recovery qualified; fresh exact approval pending — 6 November 2026
+
+Actual production remains2a1fb3c96f391f40/e2663ea/schema121/PID388903. No SMS
+installation, SQL, timer pause or restart occurred under consumeda5d75bbf. It
+successfully staged appbea168064d2234bd before the real PDC worker failure.
+All176original business/Auth/history/RLS/ACL projections passed independent
+21:41:39Riyadh reconciliation;25attempts/12orders and financial uncertainty retained.
+The tracking failure cause is unknown. Later scheduled runs recovered naturally;
+no worker reset/retry, provider poll, booking or guard relaxation was performed.
+
+A separate artifact-adoption recovery is now concrete: exact seal 8ba304398e07ced91aba314dcfe0238aa371d72b25cd8d82d19538922e84eceb, source9fa54a1/appbea168064d2234bd,
+physical121→122, one SQL transaction and one apprestart. Zero archive uploads or
+candidate processes. The original a5d75bbf artifact certificate and staged receipts
+remain byte-identical; new activation receipts bind only the new seal. Admission
+rejects any prior pause/cutover/restart marker, changed file/mode, extra file,
+symlink, wrong source/seal/archive or worker image. The strict worker gate remains.
+
+29adoption/worker-gate plus17lifecycle/closed-pilot and28scope/provenance/overlay
+cases PASS. Fresh21:47:07Riyadh sealed read-only preflight PASS, including actual
+staged provenance, live host/data and CARD/COD/coupon/privacy checks. Prior build,
+19route/5887asset and actual-restored migration qualification remain applicable to
+identical application/SQL bytes. No code rebuild or source expansion occurred.
+
+Recovery8ba30439 is SEALED/UNAPPROVED/NOT INSTALLED. One exact approval was
+requested once at this new boundary. Start before22:45:47Riyadh; expire23:00:47.
+Fresh preflight remains mandatory. SMS stays providerOFF/daily0/minimum60; no
+regular dispatcher, send or paid budget. AppleOFF, CARD/COD/coupons/retriesON,
+fixedCOD10, Meta/marketingOFF, all historical evidence and76worktrees preserved.
+Coupon/COD follow-on bindings remain local;0.5% is not enabled. Genuine SMS/email/
+PDC/Meta/Apple financial acceptance remains open. No Git push or automatic rollback.
+
+[Exact staged recovery review](../logs/emergency-commerce-20261106/sms-ops-recovery/OWNER-REVIEW.md).
+
+## Historical milestone E321 — Corrected SMS packet consumed before SQL; independent preservation PASS — 6 November 2026
+
+Approveda5d75bbf staged appbea168064d2234bd successfully. It then stopped at the
+strict EXISTING_WORKER_STOP gate before pause-intent, SQL, cutover or restart.
+The packet is CONSUMED_STOP and must never be replayed. The staged candidate,
+its provenance and every original receipt remain preserved and inactive.
+
+Independent21:41:39Riyadh reconciliation confirms actual2a1fb3c96f391f40/e2663ea/
+schema121/PID388903 and all176original data/Auth/RLS/ACL/history projections.
+25attempts/12orders retained; AppleOFF, CARD/COD/coupons/retriesON, SMSOFF,
+fixedCOD10, Meta/marketingOFF. No new SQL, restart, send, payment or booking occurred.
+
+Scheduled PDC tracking emitted TRACKING_OUTCOME_UNVERIFIED and exit1 at21:37:13.
+The21:38scheduled run and later runs succeeded naturally; nextMON21:40PASS with
+existing warnings. No worker was manually invoked, reset or retried. The precise
+loopback failure cause remains unknown; this does not establish a new PDC booking
+or provider outage. No application error signal was observed in that interval.
+
+Prepare a separately sealed recovery that may adopt only the already-reviewed,
+byte-identical staged artifact after current strict worker/data checks. Do not
+re-upload, overwrite its original certificate, weaken the worker gate or resume
+any consumed operator. That concrete new recovery requires its own exact approval.
+Independent coupon/COD and regularSMS preparation remains local and unactivated.
+
+## Historical milestone E320 — Corrected SMS controls approved; execution pending preflight — 6 November 2026
+
+The owner explicitly approved corrected seala5d75bbf via this chat. The approval
+is recorded; fresh read-only production preflight is running. No installation
+completion is claimed. Original4b147019 remains consumed at archive admission.
+
+Authorized scope is appbea168064d2234bd/source9fa54a1/schema121→122, one SQL
+migration and one app restart. SMS provider stays OFF, daily limit0/minimum60.
+No regular dispatcher, paid budget or sends. Preserve AppleOFF, CARD/COD/coupons/
+retriesON, fixedCOD10, Meta/marketingOFF, pilot closure and financial uncertainty.
+Execute only once after current predecessor checks. Any ambiguous mutation stops
+without replay or automatic rollback. Then verify hosted files, original rows,
+SMS defaults and the next natural monitor run before preparing the next release.
+
+## Historical milestone E319 — Corrected SMS archive qualified; fresh approval pending — 6 November 2026
+
+The original SMS seal4b147019 is CONSUMED_STOP at archive admission. No SQL,
+timer pause or restart occurred. Its failed archive and receipts remain preserved.
+
+Corrected appbea168064d2234bd contains exactly6975manifest entries and zero
+AppleDouble entries. The unchanged production unpacker and full byte/mode checks
+PASS. Application source9fa54a1 and compiled files are unchanged. Existing build,
+19route/5887asset evidence applies;17lifecycle/worker and23scope/overlay cases PASS.
+Fresh read-only preflight21:08:40Riyadh PASS: actual2a1fb3c96f391f40/e2663ea/121/
+PID388903, AppleOFF/CARD+COD+couponsON, SMSOFF, fixedCOD10, all rows retained.
+
+New exact seal a5d75bbf1e5dd7c9ea1cd25563ac6d477228e9a941f46db687f1caa4dda69f3a
+is SEALED/UNAPPROVED/NOT INSTALLED. One121→122migration and one restart only.
+Daily0/minimum60, no regular dispatcher or sends/budget. Start before22:05:31Riyadh;
+fresh preflight required. A new approval was requested once because the previous
+one-use authority is consumed; no automatic retry or rollback is authorized.
+
+Conditional coupon/COD archive01276bc85f662c2f also passes the exact strict unpacker:
+7101entries/zero metadata, same543c550source and compiled bytes. It preserves the
+reviewed SMS controls; its future binding must use the actually installed predecessor.
+Conditional source/SQL bindings now verify the9fa54a1→1af27df→543c550 chain,
+all5904prior immutable public files and both restored migration hashes. Native
+macOS xattr suppression also passes a metadata-bearing archive fixture.
+Old e003/f7ff/c0b9/6a1a archives remain historical packaging evidence, not deployable
+packages. Provider acceptance, Apple trace, genuine SMS confirmation, PDC parcel,
+Meta receipt/dedup/catalog/value and separate0.5%settings remain open. No new
+provider action, financial test, production write or Git push occurred.
+
+[Exact corrected review](../logs/emergency-commerce-20261106/sms-ops-forward/OWNER-REVIEW.md).
+
+## Historical E312 priority correction — 6 November20:00Riyadh
+
+The new owner report overrides Apple payment-completion acceptance. Opening or
+retrying the sheet remains a separate accepted UI scope. Apple payment completion
+is APPLE_PAY_PROVIDER_BLOCKED pending native/provider trace and verified sale;
+no Paymob outage or root cause is confirmed. The actual one-customer Pixel
+allowlist is recorded. Apple-only eligibility repair is local; public expansion
+must wait for payment acceptance. The exact Apple-withdrawal packet12a00485 is
+SEALED/UNAPPROVED, with one pending exact approval and no production mutation.
+
+Current app2a1fb3c96f391f40/sourcee2663ea/schema121/PID385824.25checkoutattempts/
+12orders preserved;0new-ledger funds/callbacks does not erase2historical CARD sales.
+CouponsON/high-riskofferOFF; fixedCOD10. SMSclosed/OFF/0pilot sends. BrevoON with
+4provider-accepted confirmations; delivery unobserved. Meta6OFF/1CAPIaccepted.
+See [current recovery](emergency-commerce-recovery-20261106.md). P0Apple, P1order/
+notifications/PDC, P2couponacceptance, P3COD0.5%, P4Meta, P5Betarestrictions is the
+current priority order. Daftra stays paused; owner-confirmed automatic PDC pickup
+needs no booking/scheduling development.
+
+## Historical milestone E318 — SMS consumed stop; production unchanged
+
+Exact4b147019 stopped on unexpected AppleDouble tar entries before SQL/pause/
+restart. Read-only stage inspection has onlyintent.json; no staged/commit/cutover.
+Actualapp2a1fb3c96f391f40/e2663ea/schema121/PID388903 remains. AppleOFF, CARD/COD/
+couponsON, SMSOFF/fixed10;25attempts/12orders preserved. Strict guard is retained.
+Only the packaging envelope is being corrected and tested with the exactproduction
+unpacker; app/build/row-preservation qualification remains. Never replay4b147019.
+A corrected packet will require fresh one-use approval after concrete qualification.
+
+## Historical milestone E317 — exact SMS controls execution active
+
+Owner approval for exact4b147019 is recorded after fresh preflight. The original
+one-use9fa54a1/e003f7ba/schema121→122 install is active. No completion is claimed.
+Daily0/min60/providerOFF; no sends/regulardispatcher/paidbudget. AppleOFF,
+CARD/COD/couponsON/fixed10/MetaOFF and original evidence are preserved by scope.
+Never replay; finish hosted/financial/assets and naturalMON postflight first.
+
+## Historical milestone E316 — forward qualification complete
+
+Source543c550 composes only coupon/COD changes onto reviewedSMS9fa54a1, preserving
+SMScontrols.13native/typecheck/build and19compiledroute/6013assetchecksPASS;
+archivef7ff8023/7101entries/fullreadback retains5886priorimmutableSMSassets. Actual
+SMSinstallation is still pending, so this forward package is conditional/local.
+Original09cd9a5/0ef000d and all historicalC sources remain untouched. The actual
+176projection restore/rollback/commit chain is qualified. No0.5%activation or new
+productionSQL is claimed. Current live source/schema remains e2663ea/121, AppleOFF.
+ONE exact pending production action: SMScontrols-only4b147019 approval.
+
+## Historical milestone E315 — 6 November20:43Riyadh
+
+Actual121 snapshot restore and each SMS122/coupon123/COD124 rollback/commit pass,
+with176originalprojections/Auth/RLS/ACL/history exact and fixed10/SMSOFF preserved.
+Source9fa54a1/appe003f7ba/121→122 SMScontrols-only packet4b147019 is sealed and
+read-onlypreflightPASS; one exact ownerapproval pending. Installs daily0/min60
+controls; no regulardispatcher or paidsendbudget. One apprestart/four timercycles
+≤180seconds;27protectedhostpreimages. AppleOFF/CARD+COD/couponsON preserved;
+closedpilotreceipts/expiry/slots unchanged.17lifecycle/worker+23scope/overlaycasesPASS.
+This inactive prerequisite is not permanentSMSactivation or genuineeventacceptance.
+Applewithdrawal remains consumed/hostedPASS. Continue independent coupon/COD work.
+
+## Historical milestone E314 — 6 November20:26Riyadh
+
+Exact Applewithdrawal12a00485 is DEPLOYED/CONSUMED_COMPLETE/hostedtechnicalPASS.
+Owner explicitly approved it. App2a1fb3c96f391f40/e2663ea/schema121 remains; PID388903.
+One restart/twooverlays,1.75s; next naturalMON20:25:05PASS. NewAppleinitiationOFF;
+CARD/COD/coupons and109originalrows preserved. No SQL/provider action or financial
+acceptance claim. Original consumed seal is never reusable. Public Apple eligibility
+correctionf19e7e0 remains local and cannot override withdrawal/acceptance gates.
+
+The owner also explicitly approved the encrypted fullDBbackup. It completed with
+consistent exportedreadonlysnapshot,176protectedprojections and fullauthenticated/
+pg_restore readback. The earlier automatic-review rejection is resolved; no further
+backup permission is needed. Restored actual-production SQL rehearsals are active.
+SMS/couponparity/COD remain local/uninstalled;0.5%notactive. No extra scope approved.
+
+## Historical milestone E313 — 6 November20:19:57Riyadh
+
+Production unchanged: app2a1fb3c96f391f40/e2663ea/schema121/PID385824.
+Apple real payment still unverified; domain-association URL404 and the one-customer
+Apple eligibility dependency are confirmed gaps, with no invented failure cause.
+Apple-only withdrawal12a00485 UNAPPROVED/NOTAPPLIED. Local sourcef19e7e0 corrects
+eligibility while preserving CARD embedding;21checks/typecheck/build PASS.
+
+COUPON-COD-PARITY-01 is a new explicit subscope of CX-01, not another counted
+feature: SQL-only09cd9a5 repairs delivery-coupon COD parity. COD-PERCENT-01 is now
+rebound to actuale2663ea as0ef000d, with fixed10 installation/no preorder activation.
+13native cases and typecheck/build PASS; no SQL installed. SMS9fa54a1 retained
+artifacte003f7ba, Applec0b9fb93 and COD6a1adbe8 have full readback and19offline route
+checks each;5887/5886/5889assets respectively. Every original5762immutable asset is
+retained. No local package is a completed production/financial acceptance claim.
+
+AllBooleanmerchantsettings, actual fees, catalog and eligibility were read fresh.
+257products published. Canonical signup UI is/login?mode=signup (200);/signup is
+not the supported route. Publicshop200/Beta bannerretained. Purchases remain
+CARD/CODonly, selecteddeliverycompany and oneexcludedproduct. InstaPay/manual
+transfer, GooglePay/wallets, preorderCARD, chat, Meta, campaigns, aftersalesalerts,
+Facebooklogin and optionalreviews/ads stayOFF. BanktransferDBenabled alone does
+not make it a supported public checkout method. No blind activation is proposed.
+
+BrevoON/4provideraccepted/deliveryunobserved. SMSclosed/providerOFF/0pilotsends/
+0currentlyeligibleconfirmations. PDC382cities/32statuses; oneuncertain historical
+booking/noAWB/noPDF; two newerCODordersunpacked. Automatic pickup is owner-confirmed;
+no scheduling work. Meta6OFF/1CAPIaccepted; remaining receipt/dedup/catalog/value open.
+
+Fresh fullDBbackup was rejected by automatic approval review; it did NOT run.
+Specific encrypted-export approval is pending. Fresh restored-production SQL
+qualification/handover stays blocked. The separately verified25-file encrypted
+host backup supports only the reviewed Applewithdrawal scope. All76original
+worktrees/foreigndirty states remain;2new local codexworktrees, mainHEAD unchanged.
+The147feature count remains unchanged; couponparity is tracked underCX-01.
 
 ## Executive status and living production register
 
@@ -22,12 +404,12 @@ No separate file titled Living Production Register was found in the current repo
 
 | Category | Scopes |
 |---|---:|
-| LIVE_AND_ACCEPTED | 23 |
+| LIVE_AND_ACCEPTED | 22 |
 | LIVE_NEEDS_ACCEPTANCE | 79 |
 | INSTALLED_BUT_DISABLED | 10 |
 | LOCAL_QUALIFIED_NOT_DEPLOYED | 3 |
 | LOCAL_INCOMPLETE | 10 |
-| EXTERNAL_PROVIDER_BLOCKED | 6 |
+| EXTERNAL_PROVIDER_BLOCKED | 7 |
 | PLANNED_NOT_IMPLEMENTED | 6 |
 | INTENTIONALLY_DEFERRED | 10 |
 
@@ -45,11 +427,11 @@ No separate file titled Living Production Register was found in the current repo
 | ReleaseD and dark review CSS | Schema120/app6f1f805 technical hosted acceptance retained; current app includes it. |
 | P0 retries + edge close | Schema121/app2a1fb3c9; 144focused checks,21edge cases,5781hosted file hashes and naturalMON pass; owner now accepts retry UI on three devices. |
 
-## Priority activation plan and dependencies
+## Historical Meta-first activation plan — superseded by E312/E313
 
-1. **COUPON-ACT-02 COMPLETE:** engine enabled; unrestricted95%+EGP50offer inactive; legitimate restricted offer/history preserved. Positive eligible-customer preview/total acceptance remains OPEN. Never replay the consumed installer.
+1. **MKT-META-01:** immediate priority: preserve the single accepted CAPI event and Meta6OFF; owner will confirm actual Events Manager receipt/dedup later. Finish remaining value/identifier acceptance before ordinary approval. No Purchase or substitute Pixel.
 2. **SMS-VF-TX-PERM-01:** do not repeat the delivered test or extend the five-slot pilot. Prepare permanent dispatch/quotas with explicit bounded ongoing charge authority and a genuine eligible-order acceptance. Keep marketing separate.
-3. **MKT-META-01:** use the existing protected intake when deferred token/code/customer/consent arrive. Operator generates worker secret; max3nonfinancial events/5minutes; no fabricated Purchase and no substitute Pixel.
+3. **COUPON-ACT-02 COMPLETE:** engine enabled; unrestricted95%+EGP50offer inactive; legitimate restricted offer/history preserved. Positive eligible-customer preview/total acceptance remains OPEN. Never replay the consumed installer.
 4. **C-FND-01:** rebase the existing preorder/COD candidate onto121; disabled install first, then independent preorder/deposit and0.5%COD policy approvals. No old archive blind deployment.
 5. **Daftra:** retain checkpoint; fix the named mobile/qualification gaps and finish ownership matrices before any private invoice/accounting release.
 6. Complete genuine PDC/Brevo/history/customer/role acceptance and storage/chat fixes; then optional UI/reporting/extra integrations. Owner approval for Git publication does not authorize any production activation.
@@ -89,9 +471,9 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 | CHAT-01 | Live Chat isolation/performance audit and private VPS files | LOCAL_INCOMPLETE | PARTIAL / NO / not established | Major incomplete work | Inventory exact byte ownership, then repair one scoped private adapter; no bulk migration or recursive page-load scans. |
 | CHAT-ACTIVATE-01 | Live chat activation | INSTALLED_BUT_DISABLED | YES / chat_settings.is_enabled=false; auto assignment/request-callOFF | Configuration-only activation | Finish the focused audit before activation; do not turn it on merely because a toggle exists. |
 | CMS-DISABLED-01 | Optional reviews, view-all reviews and two ad banners | INSTALLED_BUT_DISABLED | YES / homepage_reviews_enabled=false; reviews_view_all=false; banner_ad_1=false; banner_ad_2=false | Configuration-only activation | Retain current content choices; request activation only when the owner selects real content. |
-| COD-PERCENT-01 | Configurable fixed/percentage COD fee | LOCAL_QUALIFIED_NOT_DEPLOYED | NO / NO | Existing qualified package | Install disabled capability first; then a separate0.5percent settings packet. |
+| COD-PERCENT-01 | Configurable fixed/percentage COD fee | LOCAL_QUALIFIED_NOT_DEPLOYED | NO / fixed10 still live | Current-source0ef000d foundation | Fresh restored predecessor/operator/approval; install fixed-preserving capability, then separate0.5%settings. |
 | CONT-01 | Permanent cross-account roadmap and milestone continuity | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
-| CX-01 | Installed coupon engine and public activation | LIVE_NEEDS_ACCEPTANCE | YES / ON: effective policytrue; unrestricted95%offer inactive | Hosted/owner acceptance | Approve the smallest policy-overlay packet after focused checks/preflight; no coupon rebuild. |
+| CX-01 | Installed coupon engine and public activation | LIVE_NEEDS_ACCEPTANCE | YES / engineON; unrestricted95%offerOFF | Positive hosted acceptance; separate COD parity fix | Engine activation complete. Qualify09cd9a5 delivery-coupon COD parity independently; preserve legitimate limits/history. |
 | CX-02 | Related customer-route permissions | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | CX-03 | Multiple saved customer addresses | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | CX-04 | Cart persistence, recovery and multi-customer security acceptance | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
@@ -152,7 +534,7 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 | MIG-03 | Historical orders, customer order history and Woo metadata | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Use one authorized existing historical customer; keep optional metadata independent. |
 | MIG-04 | SEO, legacy redirects and Search Console | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | MIG-05 | Historical import safety and guarded acceptance | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
-| MKT-META-01 | Consented Meta Pixel and Conversions API | INSTALLED_BUT_DISABLED | YES / DBenabled=false,capi_enabled=false; runtimeOFF; token absent; events0 | Configuration-only activation | Use protected intake when inputs arrive; seal max3 nonfinancial events/5minutes; ordinary tracking remainsOFF. |
+| MKT-META-01 | Consented Meta Pixel and Conversions API | INSTALLED_BUT_DISABLED | YES / DBenabled=false,capi_enabled=false; runtimeOFF; encrypted token bound; revision6;1CAPI accepted/2unsent-suppressed | Configuration-only activation | One CAPI PageView accepted; owner defers Events Manager/dedup. Keep Meta6OFF; complete remaining value/identifier acceptance before ordinary approval. |
 | MON-01 | Durable monitoring and secure Dashboard alerts; email optional | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | OPS-DATAAPI-01 | Restore Data API pool availability without losing saves | LIVE_AND_ACCEPTED | YES / ON for installed scope | Preserve accepted scope | Preserve bounded accepted scope; do not repeat accepted tests or consumed deployments. |
 | ORDER-01 | Administrator order confirmation and packing controls | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
@@ -168,8 +550,8 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 | PAY-04 | Generic future payment gateway adapters | PLANNED_NOT_IMPLEMENTED | NO / NO / not established | Major incomplete work | Add only when a concrete gateway is selected |
 | PAY-05 | Dashboard merchant-transaction visibility issue | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | PAY-06 | Reusable payment operations and financial reconciliation Dashboard | LOCAL_INCOMPLETE | PARTIAL / NO / not established | Major incomplete work | Basic payment visibility with priority3; detailed PDC settlement/financial panels with FIN-PDC-01 LAST |
-| PAY-APPLE-01 | Merchant-qualified Apple Pay | LIVE_AND_ACCEPTED | YES / ON for installed scope | Preserve accepted scope | Preserve accepted P0; do not investigate or deploy it again. |
-| PAY-APPLE-LIFECYCLE-20261104-01 | iPad sheet disappearance and consumed submission fence | LIVE_AND_ACCEPTED | YES / ON for installed scope | Preserve accepted scope | Preserve accepted P0; do not investigate or deploy it again. |
+| PAY-APPLE-01 | Merchant-qualified Apple Pay | EXTERNAL_PROVIDER_BLOCKED | YES / newinitiationOFF; latecallbacksON | Exact configuration-only withdrawal | New completion failure overrides paymentPASS; preserve retryUI acceptance. Withdrawal consumed/hostedPASS. Obtain native/provider trace before any reactivation. |
+| PAY-APPLE-LIFECYCLE-20261104-01 | Apple retry/sheet recovery only | LIVE_AND_ACCEPTED | YES / retryUI accepted | Preserve accepted UI scope | Preserve retries; new payment completion failure is tracked under PAY-APPLE-01. |
 | PAY-BAL-01 | Private immutable EGP ledger/full-balance checkout | LOCAL_QUALIFIED_NOT_DEPLOYED | NO / NO / not established | Existing qualified package | Choose the funding/ownership policy before an independent inactive package. |
 | PAY-EXEC-20261103-01 | Coordinated payments, checkout and tracking execution | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
 | PAY-FIRST-01 | Payment-first prepaid checkout and private method readiness | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Complete the remaining scoped hosted/owner/role or physical acceptance; do not replay historical installation steps. |
@@ -205,7 +587,7 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 | SHIP-13 | Measured per-order staff weight and CARD parity | LIVE_NEEDS_ACCEPTANCE | YES / ON for installed scope | Hosted/owner acceptance | Use the next real eligible packed parcel; no synthetic booking or pickup API. |
 | SMS-VF-LIVE-01 | Vodafone one-message provider/handset acceptance | LIVE_AND_ACCEPTED | YES / ON for recorded scope | Preserve accepted scope | Do not repeat the test. |
 | SMS-VF-MKT-01 | Vodafone marketing campaigns | INSTALLED_BUT_DISABLED | YES / DBOFF;unicode acceptancefalse; unsubscribe secret unbound | Configuration-only activation | Complete commercial/consent prerequisites independently; keepOFF. |
-| SMS-VF-TX-01 | Bounded future transactional SMS pilot | LIVE_NEEDS_ACCEPTANCE | YES / ON until6Nov19:02:25Riyadh,0/5dispatches | Hosted/owner acceptance | Inspect genuine SMSHistory exactly once when an eligible order occurs. |
+| SMS-VF-TX-01 | Closed bounded transactional SMS pilot | LIVE_NEEDS_ACCEPTANCE | YES / naturallyclosed; providerOFF;0/5sends | Preserve immutable pilot receipts | Do not extend/replay; regular dispatcher requires independent budget/handover. |
 | SMS-VF-TX-PERM-01 | Permanent transactional SMS transition | LOCAL_INCOMPLETE | NO / NOT activated | Small corrective release | Finish the bounded transition review; authorize a regular quantity budget after genuine-event acceptance; never extend the pilot implicitly. |
 | STOR-01 | Supabase Storage versus VPS file-byte dependency audit | LOCAL_INCOMPLETE | PARTIAL / NO / not established | Major incomplete work | Inventory exact byte ownership, then repair one scoped private adapter; no bulk migration or recursive page-load scans. |
 | SUPPORT-ACCEPT-01 | Customer support, returns/exchanges and warranty operations | LIVE_NEEDS_ACCEPTANCE | YES / ON for recorded scope | Hosted/owner acceptance | Use one genuine authorized support/case scenario; no invented financial remedy. |
@@ -457,16 +839,17 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### COD-PERCENT-01 — Configurable fixed/percentage COD fee
 
-- **Area/status:** COD / LOCAL_QUALIFIED_NOT_DEPLOYED.
-- **Implementation:** Release C supports half-up fixed/percentage on discounted goods plus eligible delivery before fee; production still fixedEGP10.
-- **Production:** installed=NO; enabled=NO.
-- **Evidence:** local: Scoped evidence only; hosted: Not established for outstanding scope; owner: OPEN; provider: Not applicable.
-- **Missing / immediate activation:** Same C-FND rebase; independent owner activation of0.5%; genuine PDC full-cash/collection acceptance. NO live action without required exact scope.
-- **Source/worktree/archive:** /Users/imac/Documents/ELcomputer/commerce-reliability-20261104/resume-20261105/release-c/source@e39dfa6.
-- **Migration:** Uninstalled20261105020000_configurable_cod_fee.sql.
-- **Financial/security boundary:** Never rewrite old order fee snapshots; exact quote/PDC requested cash parity.
-- **Next executable action:** Install disabled capability first; then a separate0.5percent settings packet..
-- **Last verified / evidence locator:** 2026-11-06; current source/flags and dated receipts; Current register source map.
+- **Area/status:** COD / LOCAL_QUALIFIED_NOT_DEPLOYED; installation and0.5%activation are separate.
+- **Implementation:** preservedC foundation narrowed/rebound ontoactuale2663ea. Source0ef000d changes only CODfee controls/calculation; no preorder capability. Forward543c550 composes the same delta after reviewedSMS9fa54a1, with13native/typecheck/build and19compiledroutes/6013assetsPASS; archivef7ff8023/7101entries. ActualSMSpredecessor stillpending. Defaultenabled/fixed preserves saved10; percentage defaults0.
+- **Production:** notinstalled; fixedEGP10 remains. Existing order amounts are untouched.
+- **Evidence:**13native checks including couponparity/concurrency, deliverydiscounts, rounding, quoteinvalidation, historicalbyteidentity/noautoshipment; typecheck/buildPASS. Retained archive6a1adbe8 has6977entries/fullreadback,19compiledroutes and5889assetchecksPASS. Original5762immutableassets retained.
+- **Source:** logs/emergency-commerce-20261106/cod-fee/git-source@0ef000d; originale39dfa6/4549faee preserved untouched.
+- **Independent coupon prerequisite:** COUPON-COD-PARITY-01/09cd9a5 permits only normaluntrackedCARD/COD delivery promotions; customer/product/shipping/capacity/preorder guards remain. No commercial coupon record or redemption is edited.
+- **Migrations:**20261106193000_cod_delivery_coupon_parity.sql (independentSQL-only), then20261106200000_configurable_cod_fee.sql. No physical slots reserved; rebind after any selected SMS/predecessor change.
+- **Activation:** separate settings scope sets modepercentage/rate0.5 only after installation. PDC collects the actual payable snapshot; physical acceptance and authoritative provider unit still open.
+- **Current gate:** approved encryptedactual121backup and176projection restored chain nowPASS. Exact actual-predecessor operator/production approvals remain; no backup permission is pending.
+- **Next action:** complete independent predecessor/release qualification; do not deploy old cumulativeC or enable preorders.
+- **Last verified:**6November20:20Riyadh; current recovery evidence.
 
 ### CONT-01 — Permanent cross-account roadmap and milestone continuity
 
@@ -1276,16 +1659,16 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### MKT-META-01 — Consented Meta Pixel and Conversions API
 
-- **Area/status:** MKT / INSTALLED_BUT_DISABLED.
-- **Implementation:** Installed consent, immutable IDs/outbox, dedup, verified-Purchase producer and secure settings; worker templates prepared, worker uninstalled.
-- **Production:** installed=YES; enabled=DBenabled=false,capi_enabled=false; runtimeOFF; token absent; events0.
-- **Evidence:** local: 43 core +4 worker checks reused;6 renderer +4 protected-intake checks; hosted: Inactive routes/privacy and TLS reachability accepted; no Meta event sent; owner: Owner explicitly deferred secure token/Test Event code; provider: No recovered token established target dataset access; no CAPI acceptance.
-- **Missing / immediate activation:** Secure dataset1680814460341996 CAPI token, Test Event code, existing nonstaff customer and fresh consent; operator generates worker secret. NO: genuine provider/consent inputs missing.
-- **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source; docs/meta-activation-inputs-and-test-plan-20261105.md; logs/meta-activation-readiness-20261105.
-- **Migration:** Installed20261105132000/schema119; none for activation.
-- **Financial/security boundary:** Preserve ownership, RLS, current financial snapshots and private-file boundaries.
-- **Next executable action:** Use protected intake when inputs arrive; seal max3 nonfinancial events/5minutes; ordinary tracking remainsOFF..
-- **Last verified / evidence locator:** 2026-11-06 source/ledger and dated-evidence reconciliation; retained table evidence 2026-11-04; E243; E203; storefront-master-execution-20261104.md.
+- **Area/status:** MKT / INSTALLED_BUT_DISABLED (ordinary tracking).
+- **Implementation:** Installed consent, immutable outbox/IDs, dedup, verified-Purchase producer and secure settings. Temporary test worker removed; ordinary worker uninstalled.
+- **Production:** installed=YES; Meta revision6; DB/runtime tracking and CAPI OFF; encrypted token retained.3logical events:1CAPI PageView accepted,2unsent events suppressed without retry.
+- **Evidence:** local:43core/4worker/6renderer/4intake checks reused;20operator guards/8fresh-consent cases PASS. Hosted: actual selected-customer fresh consent and one target-dataset CAPI PageView accepted on one attempt; database+journal corroborate. Immediate and next naturalMON postflight PASS. Owner: Events Manager receipt/dedup explicitly deferred. Provider: events_received=1 threshold satisfied for PageView; ViewContent was not transmitted.
+- **Missing / immediate activation:** No new token or password. Await actual target Events Manager receipt/browser-server dedup. ViewContent provider value acceptance and retailer-SKU/catalog matching remain open; observed productSKU empty, no data invented. Ordinary activation needs completed acceptance and a separate exact approval.
+- **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source. Consumed proof: logs/meta-test-schema121-20261106-r4. Future receipt reader: logs/meta-receipt-readiness-20261106, local-only/11cases+actual journal read PASS; not installed.
+- **Migration:** Installed20261105132000/schema119; current physical schema121. No migration for this configuration test.
+- **Financial/security boundary:** No Purchase/COD event, provider retry, SMS or financial action. Preserve existing RLS/RBAC, protected token and all immutable receipts. Original receipt-collector halt remains; no replay of accepted/suppressed events or unused budget.
+- **Next executable action:** Owner later confirms the accepted PageView's actual target Test Events receipt/dedup. Keep ordinary trackingOFF. If another controlled test is required, bind a fresh exact current-Meta6 packet and genuine new consent/events; never reuse b7de0a22.
+- **Last verified / evidence locator:** E311;6November2026 read-only final postflight16:29:59UTC/19:29:59Riyadh, next naturalMON16:25:05UTC. App2a1fb3c96f391f40/sourcee2663ea/schema121/PID385824;25payment sessions/attempts,12orders preserved.25protected preimages including SMSclosed.json authenticated/read back. Setup/cleanup1.89s/1.57s≤180s; all four timers restored. docs/meta-schema121-provider-acceptance-checkpoint-20261106.md.
 
 ### MON-01 — Durable monitoring and secure Dashboard alerts; email optional
 
@@ -1484,16 +1867,15 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### PAY-APPLE-01 — Merchant-qualified Apple Pay
 
-- **Area/status:** PAY / LIVE_AND_ACCEPTED.
-- **Implementation:** Installed foundation; remaining scope in retained requirement; retained documented scope: Existing live Intention/Unified Checkout Redirect requests CARD; dedicated extras absent alone does not prove hosted Apple unavailable (dated evidence, not new acceptance).
-- **Production:** installed=YES; enabled=ON for installed scope.
-- **Evidence:** local: Historical scoped checks; no blanket suite claim; hosted: Dated technical receipts for installed foundation; wider acceptance open; owner: Owner-reported retry UI accepted on iPhone, iPad and MacBook, 2026-11-06; provider: Historical CARD acceptance exists; this owner report does not establish finality of the two uncertain references.
-- **Missing / immediate activation:** No retry UI prerequisite remains. Paymob support finality is a separate preserved workstream.. No activation needed; preserve scope.
-- **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source; retained locator: E190; E191; owner merchant report; payment-first-core108-activation-preparation.md.
-- **Migration:** No new migration assumed; see candidate migration inventory.
-- **Financial/security boundary:** Preserve ownership, RLS, current financial snapshots and private-file boundaries.
-- **Next executable action:** Preserve accepted P0; do not investigate or deploy it again..
-- **Last verified / evidence locator:** 2026-11-06 source/ledger and dated-evidence reconciliation; retained table evidence 2026-11-02; Owner attachment31019b78; schema121 combined closeout; deployment receipt20261106.
+- **Area/status:** PAY / EXTERNAL_PROVIDER_BLOCKED; APPLE_PAY_PROVIDER_BLOCKED.
+- **Current evidence:** owner reports Payment Not Completed on multiple iPhones/iPad.15retained Apple attempts;6fresh EGP325intentions on6November reached submission before expiry. No new-ledger callback/funds/paidorder.
+- **Acceptance boundary:** retryUI and sheet opening remain owner-accepted. Financial success is NOT verified; provider root cause and failing lifecycle stage remain unknown.
+- **Current configuration:** live6038812/origin flags present; Pixel1.2.8 pinned. One-customer CARD Pixel allowlist also restricts Apple. Local repair decouples Apple eligibility without expanding CARD embedding; future Apple activation still requires provider acceptance.
+- **Immediate release:** exact12a00485 withdrawal packet UNAPPROVED/NOT APPLIED.17operator/portability+6native checks;25protected host backup preimages;109original rows; read-only20:00Riyadh preflightPASS. Two overlays/one restart; noSQL/provider/credential/Caddy changes. Late signed Apple callbacks remain accepted.
+- **Provider escalation:** private redacted draft contains actual intention/order/attempt identifiers and timestamps; no customer or payment secrets; not sent. Request authoritative outcome, merchant-validation/authorization trace, certificate/domain context and callback delivery. No repeat financial attempt authorized.
+- **Source/evidence:** currente2663ea; logs/emergency-commerce-20261106/. [Current review](emergency-commerce-recovery-20261106.md).
+- **Next action:** exact withdrawal approval; continue independent commerce preparation.
+- **Last verified:**6November2026,20:00Riyadh.
 
 ### PAY-APPLE-LIFECYCLE-20261104-01 — iPad sheet disappearance and consumed submission fence
 
@@ -1967,7 +2349,7 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 - **Area/status:** SMS / LIVE_NEEDS_ACCEPTANCE.
 - **Implementation:** Future COD and verified-payment confirmations; one segment, one/minute, zero retries; global rejection/uncertain stop latch.
-- **Production:** installed=YES; enabled=ON until6Nov19:02:25Riyadh,0/5dispatches.
+- **Production:** installed=YES; naturallyclosed at6Nov19:02:25Riyadh, providerOFF,0pilotdispatches. Original expiry/markers remain unchanged.
 - **Evidence:** local: Existing channel/worker checks;8actual guarded-worker flows; hosted: Natural empty worker checks pass;0genuine events; owner: OPEN; provider: Connection accepted; real-order automation/delivery not yet accepted.
 - **Missing / immediate activation:** First genuine eligible event and actual notification acceptance; preserve expiry/budget. NO live action without required exact scope.
 - **Source/worktree/archive:** Production source e2663eac1f66fecb7d942273b330433799bc12a6; logs/p0-merchant-risk-retry-20261105/source.
@@ -1978,16 +2360,17 @@ Legend: local, hosted, owner and provider evidence are distinct. `YES` means the
 
 ### SMS-VF-TX-PERM-01 — Permanent transactional SMS transition
 
-- **Area/status:** SMS / LOCAL_INCOMPLETE (components qualified; final release/handover open).
-- **Implementation:** Existing delivered provider/HMAC/templates reused. Dashboard daily rolling24h limit/default0 and minimum interval/default60s implemented; durable single-recipient reservation/acknowledgement worker prepared, with global uncertain/rejected/interrupted stop latch.
-- **Production:** installed=NO; regular sending=OFF. Original five-slot pilot remains unchanged,0/5 at03:25Riyadh, same19:02:25expiry. MarketingOFF.
-- **Evidence:** Node22typecheck/build PASS;13quota,14compiled-worker,6native SQL/ACL/rollback/cache reload,5authenticated settings,7compiled-app HTTP,8EN/AR/mobile/desktop/light/dark browser cases PASS;1271archive entries full byte/mode readback. Compiled app/worker reused after SQL-only notification. No provider or production call in tests; genuine-order automation acceptance OPEN.
-- **Missing / immediate activation:** Retained production assets, fresh restored-predecessor/handover operator qualification and separate exact installation/regular charge approval. No production activation yet.
-- **Source/worktree/archive:** logs/activation-register-20261106/sms-regular/source@9fa54a1; app-build archive8218c8bdb367c9be; worker9e564238; full component evidence in component-qualification.json.
-- **Migration:** Uninstalled20261106023000_sms_regular_transactional_limits.sql; conditional next physical122 only if actual predecessor remains121. No slot reserved.
-- **Financial/security boundary:** Proposal5/day,35total/7days is NOT authorized. Dashboard can pause/reduce within approved ceiling; no quota renewal, multipart sends, fallback, marketing, historical replay or fabricated paid event. Preserve all pilot receipts/markers/budget/expiry until an approved handover.
-- **Next executable action:** Complete final asset/restored-handover packet independently; verify genuine pilot SMS History and receipt when a real eligible order occurs.
-- **Last verified / evidence locator:**6November03:25 live observation; local qualification component-qualification.json; docs/sms-permanent-transactional-transition-review-20261106.md.
+- **Area/status:** SMS / LOCAL_INCOMPLETE. Inactive controls are deployed; regular handover and genuine automation remain open.
+- **Implementation:** Dashboard rolling24h daily limit/default0 and minimum interval/default60s. Durable single-recipient reservation/ack worker remains locally qualified, with global uncertain/rejected/interrupted stop latch.
+- **Production:** Controls installed at schema122 under consumed recovery8ba30439. Appbea168064d2234bd/source9fa54a1/PID394646. ProviderOFF/configrev3, daily0/minimum60; regular dispatcher absent. Original pilot closed/0sends;19:02:25expiry and receipts retained. MarketingOFF.
+- **Evidence:** Original typecheck/build,13quota/14compiled worker/6native/5authenticated settings/8ENARbrowser checks retained.29adoption/17lifecycle-worker/28scope cases PASS. Actual restored121→122 rollback/commit and176original projections PASS.5905hosted public asset hashes, capability/privacy/retry methods and naturalMON22:15:05 PASS with existing8warnings/3gaps.
+- **Missing:** Fresh one-use no-overlap regular handover; explicit ongoing bounded charge approval; first genuine future COD/verified-paid confirmation, SMS History and delivery acceptance. Do not repeat the delivered test or renew the old pilot.
+- **Source/artifact:** logs/activation-register-20261106/sms-regular/source@9fa54a1. Canonical archivebea168064d2234bd; original a5d75bbf artifact certificate retained; new8ba30439 activation provenance. Regular worker9e564238 remains separate and uninstalled.
+- **Migration:**20261106023000_sms_regular_transactional_limits.sql installed as physical122 on6November22:13Riyadh. No further SMS migration assumed.
+- **Financial/security boundary:** Proposal5/day,35total/7days is NOT authority. Fresh quantity/charge/window approval is mandatory before enabling regular sending. Dashboard may pause/reduce within the ceiling. No quota renewal, multipart/fallback/marketing/history replay or fabricated paid event.
+- **OWNER CHECKPOINT:** STOP. Regular packetd17bae75 is unapproved/withheld: providerBinding includes next_request_at, which the queue claim changes. Regression reproduction and a separate corrected bundle/operator are unfinished.47controller/host tests and local configuration rehearsal do not prove sending readiness. No financial approval was requested or received.
+- **Next executable action:** Owner reviews the safe checkpoint; explicit resume required before any fix, qualification or new packet. First genuine automated confirmation remains unverified.
+- **Last verified / evidence:**6November22:18:56Riyadh; logs/emergency-commerce-20261106/sms-ops-recovery/packet/consumed-complete.json and controls-postflight receipt; current recovery report.
 
 ### STOR-01 — Supabase Storage versus VPS file-byte dependency audit
 
@@ -2167,7 +2550,7 @@ Additional effective gates: coupon policy overlayON (base file still omits allow
 | Integration | Secure presence / exact evidence | Missing input or acceptance |
 |---|---|
 | Vodafone | Account/password/hash ciphertexts present; trusted-IP/activation/hash-confirmed booleanstrue. One actual SUCCESS/SUBMITTED + owner handset receipt. INC000081856720 confirms literal uppercase hexadecimal HMAC key, no hex decoding. | No replacement keys. Permanent bounded charge authority, genuine-order automation acceptance; merchant tariff/delivery-status contract remain undocumented. Unknown tariff alone does not erase the owner-approved quantity pilot. |
-| Meta1680814460341996 | Token absent in installed settings; historical candidates established no positive target access;0outbox events. | Secure target CAPI token, Test Event code, existing nonstaff customer/fresh consent. Never equate Pixel ID with token. |
+| Meta1680814460341996 | Owner token bound; actual target CAPI PageView accepted once, DB+journal corroborated. Inactive revision6;1fresh consent/3events,2unsent suppressed. UI receipt/dedup owner-deferred. | Owner-generated target token intake authenticated; TEST13493 supplied and existing nonstaff customer privately verified. PageView CAPI acknowledgement PASS; UI receipt/dedup and ViewContent value/SKU acceptance remain open. No ordinary tracking. |
 | Paymob | Existing CARD/Apple configuration retained; latest retry UI owner-accepted. | Finality/support evidence for old references; optional wallet integration/merchant evidence. No new inquiry/charge/refund by this task. |
 | PDC | Encrypted access token/webhook secret present; staff COD/tracking configured. | Genuine eligible parcel/label/collection, positive authenticated webhook and historical uncertain dispatch finality. No guessed unit/merchant fee. |
 | Brevo | Encrypted API key present; webhook token absent; order captureON. Historical private-message delivery accepted. | Genuine order email and remaining bilingual/event/webhook acceptance; Auth SMTP already accepted and not retested. |
@@ -2231,7 +2614,7 @@ All DTR01–52 obligations remain in `docs/DEFERRED_TEST_REGISTER.md`, including
 | DTR-05 | Historical owner empty profile/orders view (BETA-04) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-06 | Real historical order detail and secure connection (MIG-02/03/05) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-07 | Signup/recovery success-only confirmation UX (OD-AUTH-UX-01) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
-| DTR-08 | Coupon POST403 and related access-policy audit (CX-01/02) | Coupon ingress installed; positive activation/hosted acceptance still pending exact seal |
+| DTR-08 | Coupon POST403 and related access-policy audit (CX-01/02) | EngineON/high-riskofferOFF; positive eligible-customer previewOPEN. Separate COD delivery parity09cd9a5 locallyqualified/uninstalled. |
 | DTR-09 | Checkout loss/refresh/concurrency/price and identity mutations (CX-04/05) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-10 | Stock modes, shortage, physical allocation/packing and cancellations (PROD-01/05;LOCAL-02/03) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-11 | Payment failure/timeout/late callback/expiry recovery (BETA-09/12) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
@@ -2261,7 +2644,7 @@ All DTR01–52 obligations remain in `docs/DEFERRED_TEST_REGISTER.md`, including
 | DTR-35 | PDC merchant fees, deductions, net remittance, settlement schedules, profitability and ERP/Daftra integration (FIN-PDC-01;SHIP-03/04;ERP-01/02) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-36 | Payment-first future-event hosted activation and exact customer ingress/MON (PAY-FIRST-01) | Installed/retry UI OWNER_ACCEPTED on iPhone/iPad/MacBook; broader signed-payment/finality and named financial cases remain distinct |
 | DTR-37 | Real account funding/full-balance spend/refund/reconciliation/terms (PAY-BAL-01) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
-| DTR-38 | Actual Pixel3DS, Apple Pay and Egyptian-wallet merchant/device acceptance (PAY-02;PAY-APPLE-01;PAY-WALLET-01;PAY-GOOGLE-01;PAY-INSTAPAY-01) | Installed/retry UI OWNER_ACCEPTED on iPhone/iPad/MacBook; broader signed-payment/finality and named financial cases remain distinct |
+| DTR-38 | Actual Pixel3DS, Apple Pay and Egyptian-wallet merchant/device acceptance (PAY-02;PAY-APPLE-01;PAY-WALLET-01;PAY-GOOGLE-01;PAY-INSTAPAY-01) | RetryUI only OWNER_ACCEPTED. NewApple PaymentNotCompleted is APPLE_PAY_PROVIDER_BLOCKED; causeunconfirmed; no successful Applepayment verified. |
 | DTR-39 | P0 product-conflict pool recovery and targeted hosted acceptance (OPS-DATAAPI-01) | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-40 | Retained later acceptance obligation; see dated source headings | OPEN for remaining exact hosted/owner/provider scope; retain all dated evidence |
 | DTR-41 | Modern PDP deployeda5bbed35/source9335186/schema111once;057f2915CONSUMED_COMPLETE. Existing verify,4291asset HTTP hashes,17protected files,next naturalMON16:10UTC/same8warnings/3gaps/0critical, and six EN/AR guest desktop/mobile views PASS. | Installed technical scope; remaining visual/customer/cross-account acceptance stays OPEN |
