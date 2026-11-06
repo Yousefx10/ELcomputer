@@ -6,7 +6,7 @@ import { validVodafonePaths, isVodafoneHashSecret } from './vodafone.js'
 export const smsDefaults = Object.freeze({ id: 'vodafone', is_enabled: false, api_mode: 'production', base_url: '', port: null,
   notification_path: '/web2sms/sms/submit/Notification', campaign_path: '/web2sms/sms/submit', sender_names: [], default_sender: '',
   expected_outbound_ip: '', trusted_ip_confirmed: false, activation_confirmed: false, hash_protocol_confirmed: false, activation_notes: '',
-  timeout_ms: 10000, preflight_retry_limit: 2, batch_size: 50, request_interval_ms: 1000, default_country: 'EG', allow_international: false, config_revision: 0 })
+  timeout_ms: 10000, preflight_retry_limit: 2, batch_size: 50, request_interval_ms: 1000, default_country: 'EG', allow_international: false, config_revision: 0, transactional_daily_segment_limit: 0, transactional_min_interval_seconds: 60 })
 export const getSmsSettings = async db => {
   const { data, error } = await db.from('sms_provider_settings').select('*').eq('id', 'vodafone').maybeSingle()
   if (error) throw createError({ statusCode: 503, statusMessage: 'SMS settings are unavailable.' })
@@ -44,7 +44,7 @@ export const validateSmsSettings = (body, current) => {
   }
   if (body.api_mode !== undefined && body.api_mode !== 'production' || body.default_country !== undefined && !['EG', 'explicit'].includes(body.default_country)) fail()
   for (const key of ['api_mode', 'default_country']) if (body[key] !== undefined) update[key] = body[key]
-  for (const [key, min, max] of [['timeout_ms', 1000, 30000], ['preflight_retry_limit', 0, 3], ['batch_size', 1, 200], ['request_interval_ms', 500, 60000]]) if (body[key] !== undefined) {
+  for (const [key, min, max] of [['timeout_ms', 1000, 30000], ['preflight_retry_limit', 0, 3], ['batch_size', 1, 200], ['request_interval_ms', 500, 60000], ['transactional_daily_segment_limit', 0, 1000], ['transactional_min_interval_seconds', 60, 86400]]) if (body[key] !== undefined) {
     if (!Number.isInteger(body[key]) || body[key] < min || body[key] > max) fail()
     update[key] = body[key]
   }

@@ -3903,6 +3903,8 @@
     "preflight_retry_limit": "حد إعادة فحص الاتصال",
     "batch_size": "أقصى عدد مستلمين للحملة (١–٢٠٠)",
     "request_interval_ms": "الفاصل الأدنى للطلبات (مللي ثانية)",
+    "transactional_daily_segment_limit": "الحد اليومي لمقاطع الرسائل الخدمية",
+    "transactional_min_interval_seconds": "أقل فاصل للرسائل الخدمية بالثواني",
     "default_country": "تنسيق أرقام الهاتف",
     "egypt": "الصيغ المحلية المصرية",
     "explicitCountry": "مفتاح الدولة مطلوب",

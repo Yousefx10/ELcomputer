@@ -166,7 +166,7 @@ const send = reactive({ trafficType: 'notification', recipients: '', sender: '',
 const requestKey = ref(''), sent = ref(null)
 const settingTextFields = ['base_url', 'notification_path', 'campaign_path', 'expected_outbound_ip', 'activation_notes']
 const secretFields = [{ key: 'account_id', presence: 'account_id_configured' }, { key: 'password', presence: 'password_configured' }, { key: 'hash_secret', presence: 'hash_secret_configured' }]
-const numericFields = [{ key: 'timeout_ms', min: 1000, max: 30000 }, { key: 'preflight_retry_limit', min: 0, max: 3 }, { key: 'batch_size', min: 1, max: 200 }, { key: 'request_interval_ms', min: 500, max: 60000 }]
+const numericFields = [{ key: 'timeout_ms', min: 1000, max: 30000 }, { key: 'preflight_retry_limit', min: 0, max: 3 }, { key: 'batch_size', min: 1, max: 200 }, { key: 'request_interval_ms', min: 500, max: 60000 }, { key: 'transactional_daily_segment_limit', min: 0, max: 1000 }, { key: 'transactional_min_interval_seconds', min: 60, max: 86400 }]
 const confirmationFields = ['trusted_ip_confirmed', 'activation_confirmed', 'hash_protocol_confirmed']
 const canSend = computed(() => can('sms.notification.send'))
 const tabs = computed(() => [

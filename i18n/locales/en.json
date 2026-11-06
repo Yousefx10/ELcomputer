@@ -3903,6 +3903,8 @@
     "preflight_retry_limit": "Connection preflight retry limit",
     "batch_size": "Maximum campaign recipients (1–200)",
     "request_interval_ms": "Minimum request interval (milliseconds)",
+    "transactional_daily_segment_limit": "Daily transactional segment limit",
+    "transactional_min_interval_seconds": "Minimum transactional interval (seconds)",
     "default_country": "Phone normalization",
     "egypt": "Egyptian national formats",
     "explicitCountry": "Explicit country prefix required",
