@@ -12,6 +12,7 @@ const AWAITING_PAYMENT_STATUSES = new Set(['pending_payment','on_hold'])
 // methods. Cash on delivery, InstaPay and bank transfer bills stay unpaid in Daftra.
 const NOT_PAID_IN_DAFTRA = new Set(['cash','instapay','bank_transfer'])
 export const LINK_REQUIRED = 'Link this product to Daftra in Dashboard → ERP → Product links.'
+export const PAYMENT_METHOD_REQUIRED = 'Choose the Daftra payment method in Settings → ERP.'
 export const paidOnline = order => order?.payment_status === 'paid' && !NOT_PAID_IN_DAFTRA.has(order.payment_method)
   && Number.isFinite(Number(order.total_amount)) && Math.abs(Number(order.amount_paid) - Number(order.total_amount)) <= 0.01
 const manual = message => createError({ statusCode: 409, statusMessage: message, data: { manualRequired: true } })
@@ -217,7 +218,7 @@ export async function recordDaftraPayment(db, order, invoiceId, request = daftra
   if (intent) throw manual('The Daftra payment needs reconciliation before retrying.')
   if (Math.abs(unpaid - Number(order.total_amount)) > 0.01) throw manual('The Daftra bill balance differs. Record this payment in Daftra.')
   const settings = check(await db.from('erp_provider_settings').select('online_payment_method,online_treasury_id').eq('id','daftra').maybeSingle())
-  if (!settings?.online_payment_method) throw manual('Choose the Daftra payment method in Settings → ERP.')
+  if (!settings?.online_payment_method) throw manual(PAYMENT_METHOD_REQUIRED)
   const created = await createRemoteRecord(db,'invoice.payment',order.id,'/invoice_payments.json',{ InvoicePayment:{
     invoice_id:Number(invoiceId),amount:unpaid,payment_method:settings.online_payment_method,transaction_id:order.order_number,
     ...(settings.online_treasury_id ? { treasury_id:Number(settings.online_treasury_id) } : {}) } },request)

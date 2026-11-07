@@ -3,6 +3,7 @@ import { requireAdminRequest } from '../../utils/adminRequest'
 import { recordAdminActivity } from '../../utils/adminLogs'
 import { assertExternalErpDomain } from '../../utils/erpOwnership'
 import { readDaftraPaymentOptions } from '../../utils/daftraCatalog'
+import { PAYMENT_METHOD_REQUIRED } from '../../utils/daftraSync'
 
 export default defineEventHandler(async event => {
   setHeader(event, 'Cache-Control', 'private, no-store')
@@ -21,7 +22,14 @@ export default defineEventHandler(async event => {
   const { data, error } = await supabaseAdmin.from('erp_provider_settings')
     .update({ online_payment_method: method || null, online_treasury_id: treasuryId }).eq('id', 'daftra').select('id').maybeSingle()
   if (error || !data) throw createError({ statusCode: 409, statusMessage: 'Save the Daftra connection first.' })
+  // Bills that stopped only because no payment method was chosen retry now.
+  let requeued = 0
+  if (method) {
+    const retry = await supabaseAdmin.from('erp_sync_jobs').update({ status: 'pending', attempts: 0, last_error: null, available_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('provider', 'daftra').eq('operation', 'order.export').eq('status', 'failed').eq('last_error', PAYMENT_METHOD_REQUIRED).select('id')
+    if (!retry.error) requeued = (retry.data || []).length
+  }
   await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'settings.erp.payments-update', description: 'Updated Daftra online payment settings.',
-    metadata: { method: method || null, treasuryId } })
-  return { method, treasuryId }
+    metadata: { method: method || null, treasuryId, requeued } })
+  return { method, treasuryId, requeued }
 })
