@@ -140,7 +140,7 @@ html.dark .product-modern .pm-stock[data-state="preorder"] { color: #fbbf24; }
 .product-modern .pm-add { display: inline-flex; flex: 1 1 200px; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 10px 22px; border-radius: 999px; background: var(--pm-blue); color: #fff; font-size: 15px; font-weight: 700; transition: background .15s; }
 .product-modern .pm-add:hover:not(:disabled) { background: var(--brand-hover); }
 .product-modern .pm-add:disabled { background: var(--surface-muted); color: var(--text-secondary); cursor: not-allowed; }
-.product-modern .pm-add[data-added="true"] { background: #12784a; }
+.product-modern .pm-add[data-added="true"], .product-modern .pm-add[data-added="true"]:hover:not(:disabled) { background: #12784a; }
 .product-modern .pm-buy .pdp-favorite-action { position: relative; }
 .product-modern .pm-buy .pdp-action-buttons button { display: inline-flex; align-items: center; justify-content: center; gap: 0; width: 50px; height: 50px; padding: 0; border: 1px solid var(--pm-line); border-radius: 999px; background: var(--surface); font-size: 0; color: var(--pm-navy); transition: color .15s, border-color .15s; }
 .product-modern .pm-buy .pdp-action-buttons button .iconify { flex-shrink: 0; width: 21px; height: 21px; }

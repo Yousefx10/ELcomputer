@@ -9,6 +9,7 @@
       <slot />
     </main>
     <LayoutFooter />
+    <LayoutMobileTabBar />
     <ClientOnly><LiveChatLauncher /></ClientOnly>
   </div>
 </template>
@@ -16,6 +17,7 @@
 <script setup>
 import '~/assets/css/storefront.css'
 import '~/assets/css/modern-footer.css'
+import '~/assets/css/mobile.css'
 
 const { data: siteContent } = await useSiteContent()
 const layoutStyle = computed(() => {

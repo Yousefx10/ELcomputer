@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-[60vh] bg-white py-8">
+  <div class="store-listing-page min-h-[60vh] bg-white py-8">
     <div class="store-container">
       <div class="store-page-heading">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
@@ -24,9 +24,15 @@
         <NuxtLinkLocale v-for="category in categories" :key="category.id" :to="categoryLink(category.slug)" class="inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold" :class="filters.category === category.slug ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'">{{ categoryName(category) }}</NuxtLinkLocale>
       </nav>
 
-      <div class="mt-6 grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
-        <aside class="rounded-xl border border-gray-200 bg-white p-5">
-          <button type="button" class="flex min-h-10 w-full items-center justify-between text-sm font-bold lg:hidden" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen">
+      <div class="store-listing-bar">
+        <button type="button" class="store-listing-filter" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen"><Icon name="lucide:sliders-horizontal" size="17" aria-hidden="true" /><span>{{ $t('common.filters') }}</span><span v-if="activeFilterChips.length" class="store-listing-filter-count">{{ activeFilterChips.length }}</span></button>
+        <label class="store-listing-sort"><span class="sr-only">{{ $t('common.sortBy') }}</span><Icon name="lucide:arrow-down-up" size="16" aria-hidden="true" /><select v-model="filters.sortBy" @change="changeSort"><option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ $uiLabel(option.label) }}</option></select></label>
+      </div>
+      <p v-if="!pending" class="store-listing-count lg:hidden">{{ $t('search.valueProductvalueFound', { value0: (totalCount), value1: (totalCount === 1 ? '' : $uiPluralSuffix('s')) }) }}</p>
+
+      <div class="mt-6 grid items-start gap-6 max-lg:mt-3 lg:grid-cols-[250px_minmax(0,1fr)]">
+        <aside class="rounded-xl border border-gray-200 bg-white p-5" :class="{ 'max-lg:hidden': !filtersOpen }">
+          <button type="button" class="store-filter-toggle flex min-h-10 w-full items-center justify-between text-sm font-bold lg:hidden" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen">
             <span class="flex items-center gap-2"><Icon name="lucide:sliders-horizontal" size="17" />{{ $t('common.filterProducts') }}</span>
             <Icon :name="filtersOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="17" />
           </button>
@@ -192,7 +198,7 @@
         </aside>
 
         <section class="space-y-5">
-          <div class="rounded-xl border border-gray-200 bg-white p-5">
+          <div class="store-results-bar rounded-xl border border-gray-200 bg-white p-5">
             <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div class="space-y-3">
                 <div class="flex flex-wrap gap-2">
@@ -248,7 +254,7 @@
             {{ $t('search.noProductsMatchTheCurrentSearchAndFilters') }}
           </div>
 
-          <div v-else class="rounded-xl border border-gray-200 bg-white p-5">
+          <div v-else class="store-results rounded-xl border border-gray-200 bg-white p-5">
             <div class="store-search-grid">
               <CardsProductCard
                 v-for="product in products"
