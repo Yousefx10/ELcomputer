@@ -6,15 +6,23 @@ const unavailable = () => createError({ statusCode: 502, statusMessage: 'Courier
 
 // Cover this shipment's lifetime, including a day of timezone/clock margin.
 // Never use a rolling window that silently excludes an older shipment.
+// A PDC portal booking attached by staff uses AWB:<awb> as its website reference.
+export const attachedAwbReference = (ref, awb) => typeof ref === 'string' && !!awb && ref === `AWB:${awb}`
+
 export const getPdcStatusFilters = async (db, { orderId, jobId, ref, awb = '' }, now = new Date()) => {
   if ((!orderId && !jobId) || (orderId && jobId) || !ref) throw unavailable()
   const { data, error } = await db.from(jobId ? 'shipping_claim_jobs' : 'shipping_order_jobs')
     .select('created_at').eq(jobId ? 'id' : 'order_id', jobId || orderId).eq('to_ref', ref)
     .maybeSingle().abortSignal(AbortSignal.timeout(4000))
-  const created = Date.parse(data?.created_at)
+  const attached = !jobId && attachedAwbReference(ref, awb)
+  let created = Date.parse(data?.created_at)
+  if (attached && !error && data) {
+    const order = await db.from('customer_orders').select('created_at').eq('id', orderId).maybeSingle().abortSignal(AbortSignal.timeout(4000))
+    created = order.error ? NaN : Date.parse(order.data?.created_at)
+  }
   if (error || !Number.isFinite(created) || !Number.isFinite(now.getTime()) || created > now.getTime()) throw unavailable()
   const day = 86400000
-  return { awBs: awb, reFs: ref,
+  return { awBs: awb, reFs: attached ? '' : ref,
     fromDate: new Date(Math.floor(created / day) * day - day).toISOString(),
     toDate: new Date((Math.floor(now.getTime() / day) + 1) * day).toISOString() }
 }
@@ -103,7 +111,8 @@ export const readPdcShipmentUpdate = async (db, settings, orderId, claim, fetche
   const filters = await getPdcStatusFilters(db, { orderId, awb: claim.awb, ref: claim.ref })
   const response = await requestPdcLookup(settings, 'GetShipmentsStatus', filters, fetcher)
   const rows = pdcResponseRows(response)
-  const matches = rows.filter(row => String(row?.AWB ?? '').trim() === claim.awb && String(row?.Ref ?? '').trim() === claim.ref)
+  const attached = attachedAwbReference(claim.ref, claim.awb)
+  const matches = rows.filter(row => String(row?.AWB ?? '').trim() === claim.awb && (attached || String(row?.Ref ?? '').trim() === claim.ref))
   if (matches.length !== 1) throw createError({ statusCode: 409, statusMessage: 'Courier shipment could not be matched.' })
   const row = matches[0]
   let id = null

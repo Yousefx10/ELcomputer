@@ -413,6 +413,7 @@
             <option v-for="area in egyptGovernorates" :key="area" :value="area">{{ $uiLabel(area) }}</option>
           </select>
         </label>
+        <DashboardCommerceShippingZonePricing v-model="form.checkout_pricing" v-model:enabled="form.pricing_enabled" :governorates="form.checkout_governorates" />
         <label class="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <input v-model="form.is_active" type="checkbox">
           {{ $t('common.active') }}
@@ -535,6 +536,8 @@ const formatCommerceDate = value => baseFormatCommerceDate(value, intlLocale.val
 
 import { shippingStates, shipmentStateKey } from '~/utils/shipmentTracking'
 import { egyptGovernorates } from '~/utils/egyptGovernorates'
+import { emptyZonePricing, editableZonePricing, savedZonePricing, zonePricingErrors } from '~/utils/shippingZonePricing'
+const { t } = useI18n()
 import { formatCommerceCurrency as baseFormatCommerceCurrency, formatCommerceDate as baseFormatCommerceDate } from '~/utils/commerce'
 
 const supabase = useSupabaseClient()
@@ -735,6 +738,8 @@ const createEmptyForm = () => ({
   cod_collection_enabled: false,
   cod_collection_provider: 'manual',
   checkout_governorates: [],
+  pricing_enabled: false,
+  checkout_pricing: emptyZonePricing(),
   notes: '',
   is_active: true
 })
@@ -794,6 +799,7 @@ const mapPayload = () => ({
   cod_collection_enabled: form.provider === 'manual' && form.cod_collection_enabled === true,
   cod_collection_provider: form.provider === 'manual' && form.cod_collection_provider === 'pdc' ? 'pdc' : 'manual',
   checkout_governorates: [...form.checkout_governorates],
+  checkout_pricing: form.pricing_enabled ? savedZonePricing(form.checkout_pricing, form.checkout_governorates) : null,
   notes: String(form.notes || '').trim() || null,
   is_active: Boolean(form.is_active),
   updated_at: new Date().toISOString()
@@ -813,6 +819,8 @@ const startEdit = (company) => {
     cod_collection_enabled: company.cod_collection_enabled === true,
     cod_collection_provider: company.cod_collection_provider || 'manual',
     checkout_governorates: [...(company.checkout_governorates || [])],
+    pricing_enabled: !!company.checkout_pricing,
+    checkout_pricing: editableZonePricing(company.checkout_pricing),
     notes: company.notes || '',
     is_active: company.is_active ?? true
   })
@@ -825,6 +833,10 @@ const startEdit = (company) => {
 
 const saveCompany = async () => {
   formError.value = ''
+  if (form.pricing_enabled && zonePricingErrors(form.checkout_pricing, form.checkout_governorates).length) {
+    formError.value = t('shippingPricing.invalid')
+    return
+  }
   const payload = mapPayload()
 
   if (!payload.name) {

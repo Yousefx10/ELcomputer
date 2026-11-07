@@ -13,8 +13,8 @@ export default defineEventHandler(async event => {
     || Object.keys(body).some(key => !['awb', 'confirmed'].includes(key)) || !/^[A-Za-z0-9][A-Za-z0-9-]{0,99}$/.test(body.awb || '')) {
     throw createError({ statusCode: 400, statusMessage: 'Confirm the real airway bill for this order.' })
   }
-  const { data, error } = await supabaseAdmin.rpc('shipping_order_record_manual_awb', { p_order_id: orderId, p_admin_id: adminUser.id, p_awb: body.awb })
+  const { data, error } = await supabaseAdmin.rpc('shipping_order_attach_existing_awb', { p_order_id: orderId, p_admin_id: adminUser.id, p_awb: body.awb })
   if (error) throw createError({ statusCode: 409, statusMessage: 'Review the original booking before recording an airway bill.' })
-  await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'orders.shipping.manual_awb', description: 'Recorded an administrator-verified PDC airway bill.', metadata: { order_id: orderId, awb: data.awb } })
+  await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'orders.shipping.manual_awb', description: 'Attached a PDC airway bill booked outside the website.', metadata: { order_id: orderId, awb: data.awb } })
   return data
 })

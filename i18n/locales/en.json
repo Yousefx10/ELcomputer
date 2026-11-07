@@ -5636,7 +5636,8 @@
     "bookingError": "Review the original booking before recording an airway bill.",
     "confirmAwbError": "Confirm the real airway bill for this order.",
     "termsUnavailable": "Special-order delivery information is unavailable.",
-    "noCoupon": "Review this special order without a coupon."
+    "noCoupon": "Review this special order without a coupon.",
+    "attachAwbHelp": "Booked in the PDC portal? Attach its airway bill so the customer can track it."
   },
   "normalSales": {
     "requireInventory": "Require recorded stock for normal sales",
@@ -6210,5 +6211,21 @@
     "viewCart": "View cart",
     "showAll": "Show all {count}",
     "showLess": "Show less"
+  },
+  "shippingPricing": {
+    "title": "Price by governorate",
+    "enabled": "Price delivery by governorate",
+    "help": "Customers pay the zone rate plus VAT, rounded up, minus the amount the store pays.",
+    "vat": "VAT %",
+    "roundTo": "Round up to (EGP)",
+    "support": "Store pays per order (EGP)",
+    "zoneRates": "Zone rates before VAT (EGP)",
+    "zone": "Zone {value0}",
+    "zoneLabel": "Zone",
+    "governorate": "Governorate",
+    "cost": "Courier cost",
+    "customerPays": "Customer pays",
+    "chooseZone": "Choose",
+    "invalid": "Check the governorate prices. Every offered governorate needs a zone with a rate."
   }
 }

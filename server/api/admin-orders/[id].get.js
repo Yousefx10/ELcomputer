@@ -173,7 +173,7 @@ export default defineEventHandler(async (event) => {
     delete shipping.label_sha256
   }
 
-  if (!shipping && orderRecord.shipping_company_id && orderRecord.status === 'ready_to_deliver') {
+  if (!shipping && orderRecord.shipping_company_id && !['cancelled', 'refunded', 'returned'].includes(orderRecord.status)) {
     const { data: courier, error } = await supabaseAdmin.from('commerce_shipping_companies').select('provider,is_active,checkout_enabled,cod_collection_enabled,cod_collection_provider').eq('id', orderRecord.shipping_company_id).maybeSingle()
     if (error) throw createError({ statusCode: 503, statusMessage: 'Courier selection is unavailable.' })
     const manualCod = courier?.provider === 'manual' && courier.cod_collection_enabled && courier.checkout_enabled

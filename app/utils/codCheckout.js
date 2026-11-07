@@ -8,9 +8,7 @@ export const checkoutPaymentMethods = (settings, capabilities, { restricted = fa
     && (method.value !== 'card' || capabilities?.card?.available === true)
     && (!preorder || ['bank_transfer', 'instapay'].includes(method.value)))
 
-export const checkoutDeliveryOptions = (options, governorate, method) => options.filter(option =>
-  option.governorates.some(area => area.trim().toLowerCase() === governorate.trim().toLowerCase())
-  && (method !== 'cash' || option.cashAvailable === true))
+export { checkoutDeliveryOptions } from './deliveryOptions'
 
 // Read saved customer balances only. Delivery never proves cash was collected.
 export const codPaymentState = order => {

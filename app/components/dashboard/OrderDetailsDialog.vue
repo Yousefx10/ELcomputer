@@ -172,8 +172,8 @@
               </div>
               <p v-if="courierNotice" role="status" class="mt-3 text-sm text-gray-600">{{ $t(courierNotice) }}</p>
               <p v-if="shippingDetail.state === 'uncertain'" class="mt-3 text-sm text-amber-700">{{ $t('liveSales.uncertain') }}</p>
-              <form v-if="!shippingDetail.awb && ['not_booked','queued','blocked','failed'].includes(shippingDetail.state) && orderDetail.status === 'ready_to_deliver' && orderDetail.payment_status === 'paid'" class="mt-4 space-y-2 border-t pt-3 text-sm" @submit.prevent="recordManualAwb">
-                <p>{{ $t('beta.pdcReference') }} <span class="select-all font-mono">ORD-{{ orderId }}</span></p>
+              <form v-if="!shippingDetail.awb && ['not_booked','queued','blocked','failed'].includes(shippingDetail.state) && !['cancelled','refunded','returned'].includes(orderDetail.status)" class="mt-4 space-y-2 border-t pt-3 text-sm" @submit.prevent="recordManualAwb">
+                <p>{{ $t('beta.attachAwbHelp') }}</p>
                 <label class="block">{{ $t('beta.actualAwb') }}<input v-model="manualAwb" required maxlength="100" pattern="[A-Za-z0-9][A-Za-z0-9-]*" class="mt-1 w-full rounded-lg border p-2"></label>
                 <label class="flex items-start gap-2"><input v-model="manualAwbConfirmed" type="checkbox" required class="mt-1">{{ $t('beta.verifyAwb') }}</label>
                 <button type="submit" :disabled="courierChecking" class="rounded-lg border px-3 py-2 font-semibold disabled:opacity-50">{{ $t('beta.recordAwb') }}</button>
@@ -400,7 +400,7 @@ const labelPreview = ref(null)
 const labelAutoPrint = ref(false)
 let labelController=null,labelRequest=0
 const clearShippingLabel=()=>{labelRequest++;labelController?.abort();labelController=null;labelPreview.value=null;labelAutoPrint.value=false;labelLoading.value=false}
-const parcelWeight = ref('')
+const parcelWeight = ref('1')
 const parcelWeightConfirmed = ref(false)
 const courierChecking = ref(false)
 const courierNotice = ref('')
@@ -792,7 +792,7 @@ const recordManualAwb = async () => {
   try{
     const response=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/manual-awb`,{method:'POST',body})
     if(!response)return
-    manualAwb.value='';manualAwbConfirmed.value=false;parcelWeight.value='';parcelWeightConfirmed.value=false
+    manualAwb.value='';manualAwbConfirmed.value=false;parcelWeight.value='1';parcelWeightConfirmed.value=false
     await loadOrderDetails();if(contextCurrent(context))emit('updated',orderDetail.value)
   }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||'Review the original booking.'}finally{courierChecking.value=false}
 }
@@ -812,7 +812,7 @@ watch(
   async ([isOpen, orderId]) => {
     resetDialogState()
     manualAwb.value = ''; manualAwbConfirmed.value = false
-    parcelWeight.value = ''; parcelWeightConfirmed.value = false
+    parcelWeight.value = '1'; parcelWeightConfirmed.value = false
     courierNotice.value = ''
     if (!isOpen) return
 
