@@ -45,6 +45,7 @@ export const defaultSiteSettings = {
   hero_enabled: false,
   hero_layout_mode: 'both',
   track_orders_link: '/track',
+  bill_design: {},
   hero_static_banner_id: null,
   hero_rotation_seconds: 5,
   top_bar_rotation_seconds: 3,

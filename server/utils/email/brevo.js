@@ -11,7 +11,8 @@ export const brevoMessageId = value => {
 }
 export const postBrevoEmail = async (payload, apiKey, timeoutMs, beforeDispatch, network = {lookup,request:https.request}) => {
  const url=new URL(EMAIL_API_URL), bytes=Buffer.from(JSON.stringify(payload))
- if(bytes.length>196608) throw Object.assign(Error('Email payload too large.'),{preflight:true})
+ // A bill PDF attachment raises the limit; other messages keep the original cap.
+ if(bytes.length>(payload.attachment?1048576:196608)) throw Object.assign(Error('Email payload too large.'),{preflight:true})
  let addresses,dnsTimer
  try{ addresses=await Promise.race([network.lookup(url.hostname,{all:true}),new Promise((_,reject)=>{dnsTimer=setTimeout(()=>reject(Error('DNS timeout.')),timeoutMs);dnsTimer.unref?.()})]);if(!addresses.length||addresses.some(x=>!isPublicSmsAddress(x.address))) throw Error() }
  catch{throw Object.assign(Error('Email network preflight failed.'),{preflight:true})}finally{clearTimeout(dnsTimer)}
@@ -36,6 +37,7 @@ export const brevoProvider = {
   if(message.reply_to)payload.replyTo={email:emailAddress(message.reply_to)}
   // Current guide documents one body type per request. Text snapshots remain available.
   payload[message.body_format==='text'?'textContent':'htmlContent']=message.body_format==='text'?message.text_body:message.html_body
+  if(Array.isArray(message.attachments)&&message.attachments.length)payload.attachment=message.attachments.map(a=>({name:emailLine(a.name,120),content:String(a.content)}))
   let response
   try{response=await transport(payload,apiKey,settings.config.timeout_ms,beforeDispatch)}catch(error){if(error.dispatchDenied||error.workerRevoked)throw error;return {state:error.preflight?'retry':'uncertain',error_category:error.preflight?'network_preflight':'network_unknown',retry_seconds:30}}
   if(response.status===201){

@@ -5,7 +5,8 @@ import { createError } from 'h3'
 
 export const MAX_SHIPPING_DOCUMENT_BYTES = 5 * 1024 * 1024
 const uuid = '[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
-const keyPattern = new RegExp(`^vps-v1/(orders|claims)/${uuid}/${uuid}\\.pdf$`)
+// bills/: customer bill PDFs made by the website (phase 3B), same private disk.
+const keyPattern = new RegExp(`^vps-v1/(orders|claims|bills)/${uuid}/${uuid}\\.pdf$`)
 export const isVpsShippingDocumentPath = key => typeof key === 'string' && keyPattern.test(key)
 const fail = () => { throw createError({ statusCode: 503, statusMessage: 'Private shipping document is unavailable.' }) }
 const inside = (a, b) => a === b || a.startsWith(b + '/')

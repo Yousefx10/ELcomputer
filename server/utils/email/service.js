@@ -4,13 +4,15 @@ import { getEmailSettings, emailReadiness } from './settings.js'
 import { emailFail, emailRpc, validateEmail } from './core.js'
 import { decryptCredentialSecret, credentialSecretsMatch } from '../credentialSecrets.js'
 import { brevoProvider } from './brevo.js'
+import { billEmailAttachment } from '../customerBills.js'
 export const emailDigest = value => createHash('sha256').update(value).digest('hex')
+export const BILL_EMAIL_CATEGORY='orders:bill'
 const proof = value => {
  const key=String(useRuntimeConfig().credentialsEncryptionKey||'')
  if(key.trim().length<32)emailFail('Email encryption is unavailable.',503)
  return createHmac('sha256',key).update('email-manual-preview-v1\0'+JSON.stringify(value)).digest('base64url')
 }
-export const prepareEmail = async (db, input, classification='transactional',actor=null,{claimCommunication=null,orderNotification=null}={}) => {
+export const prepareEmail = async (db, input, classification='transactional',actor=null,{claimCommunication=null,orderNotification=null,billEmail=false}={}) => {
  const s=await getEmailSettings(db),c=s.config
  let template=null
  if(input.template_key){const result=await db.from('email_templates').select('*').eq('key',input.template_key).maybeSingle();if(result.error||!result.data||!result.data.is_enabled||result.data.classification!==classification) emailFail('Choose an enabled template for this email type.');template=result.data}
@@ -25,6 +27,8 @@ export const prepareEmail = async (db, input, classification='transactional',act
   const content={classification,recipient,sender:senderEmail,sender_name:emailLine(sender.name,100),reply_to:replyTo?emailAddress(replyTo):'',template_key:template?.key||null,template_version:template?.version||null,category:template?.category||'manual',locale:input.locale,subject,body,body_format:input.body_format||'html',source:actor?'dashboard_manual':'service',business_reference:emailLine(input.business_reference||'',120,false),actor_id:actor,priority:Number.isInteger(input.priority)&&input.priority>=0&&input.priority<=10?input.priority:0,config_revision:s.revision,brand:c.brand_name||sender.name}
   if(claimCommunication)content.action_url=input.values?.claim_url||''
   if(orderNotification)content.category='orders:'+orderNotification.event_type
+  // Bill emails (phase 3B): the worker attaches the current bill PDF when sending.
+  if(billEmail)content.category=BILL_EMAIL_CATEGORY
   return {settings:s,content,fingerprint:emailDigest(JSON.stringify(content)),html:emailLayout({...content,locale:input.locale,brand:content.brand}),text:body}
  })
 }
@@ -34,12 +38,13 @@ export const previewManualEmail = async (db,input,actor) => {
  return {receipt:{...receipt,signature:proof(receipt)},subject:prepared.content.subject,recipient:prepared.content.recipient,sender:prepared.content.sender,html:prepared.html,text:prepared.text,enabled:prepared.settings.config.is_enabled&&emailReadiness(prepared.settings).ready}
 }
 export const createEmailService = db => {
- const enqueue=async(input,classification,actor=null,claimCommunication=null,orderNotification=null)=>{
+ const enqueue=async(input,classification,actor=null,claimCommunication=null,orderNotification=null,billEmail=false)=>{
   if(claimCommunication&&(actor||classification!=='transactional'))emailFail('Invalid claim communication.')
   if(orderNotification&&(actor||claimCommunication||classification!=='transactional'||!['order_received','payment_verified'].includes(orderNotification.event_type)))emailFail('Invalid order notification.')
+  if(billEmail&&(actor||claimCommunication||orderNotification||classification!=='transactional'))emailFail('Invalid bill email.')
   const active=await getEmailSettings(db)
   if(!active.config.is_enabled||!emailReadiness(active).ready)emailFail('Email provider is disabled or unavailable.',503)
-  const p=await prepareEmail(db,input,classification,actor,{claimCommunication,orderNotification})
+  const p=await prepareEmail(db,input,classification,actor,{claimCommunication,orderNotification,billEmail})
   if(actor){
    const r=input.receipt
    if(input.confirmed!==true||input.essential_confirmed!==true||!r||typeof r.key!=='string'||!Number.isFinite(r.expires)||r.expires<Date.now()||r.expires>Date.now()+10*60000||r.actor!==actor||r.fingerprint!==p.fingerprint||!credentialSecretsMatch(r.signature,proof({key:r.key,expires:r.expires,fingerprint:r.fingerprint,actor:r.actor}))) emailFail('Preview and confirm this transactional email.',409)
@@ -67,9 +72,9 @@ export const createEmailService = db => {
   }
   return emailRpc(db,'enqueue',payload,actor)
  }
- return {sendTransactional:(input,{actor=null,claimCommunication=null,orderNotification=null}={})=>enqueue(input,'transactional',actor,claimCommunication,orderNotification),sendMarketing:input=>enqueue(input,'marketing')}
+ return {sendTransactional:(input,{actor=null,claimCommunication=null,orderNotification=null,billEmail=false}={})=>enqueue(input,'transactional',actor,claimCommunication,orderNotification,billEmail),sendMarketing:input=>enqueue(input,'marketing')}
 }
-export const processEmailQueue = async (db,{limit=1,provider=brevoProvider,authorize=()=>{}}={}) => {
+export const processEmailQueue = async (db,{limit=1,provider=brevoProvider,authorize=()=>{},attach=billEmailAttachment}={}) => {
  const results=[]
  for(let i=0;i<Math.min(3,Math.max(1,limit));i++){
   await authorize()
@@ -77,8 +82,12 @@ export const processEmailQueue = async (db,{limit=1,provider=brevoProvider,autho
   let outcome
   try{
    const settings=await getEmailSettings(db)
+   let attachments=null
+   // A bill email waits (nothing sent) while its PDF cannot be read.
+   if(message.category===BILL_EMAIL_CATEGORY){try{attachments=[await attach(db,message.id)]}catch{attachments=false}}
    if(!settings.config.is_enabled||!emailReadiness(settings).ready)outcome={state:'suppressed',error_category:'provider_unavailable'}
-   else outcome=await provider.submit(settings,decryptCredentialSecret(settings.api_key_encrypted,'Email'),message,async()=>{
+   else if(attachments===false)outcome={state:'retry',error_category:'attachment_unavailable',retry_seconds:300}
+   else outcome=await provider.submit(settings,decryptCredentialSecret(settings.api_key_encrypted,'Email'),attachments?{...message,attachments}:message,async()=>{
     try{await authorize()}catch{throw Object.assign(Error('Email worker revoked.'),{workerRevoked:true})}
     const result=await emailRpc(db,'dispatch',{id:message.id,work_token:message.work_token})
     if(!result.allowed)throw Object.assign(Error('Email dispatch denied.'),{dispatchDenied:true,emailState:result.state||'uncertain'})

@@ -112,6 +112,7 @@
 
             <PaymentCodStatus v-if="orderDetail.payment_method === 'cash' && !orderDetail.is_preorder" :order="orderDetail" />
             <DashboardOrderCodCash v-if="codCash" :order="orderDetail" :cash="codCash" :external-erp="externalErp" @updated="refreshCash" />
+            <DashboardOrderBill v-if="orderBill" :order-id="orderDetail.id" :bill="orderBill" />
 
             <section v-if="orderDetail.stock_fulfillment_state === 'awaiting_stock'" class="rounded-xl border border-amber-200 bg-amber-50 p-4">
               <p class="font-semibold">{{ $t('beta.awaitingStock') }}</p>
@@ -415,6 +416,7 @@ const customerDetail = ref(null)
 const shippingDetail = ref(null)
 const preorderPayments = ref([])
 const codCash = ref(null)
+const orderBill = ref(null)
 const paymentAmount = ref('')
 const paymentReference = ref('')
 const paymentVerified = ref(false)
@@ -683,7 +685,7 @@ const printOrderDetails = () => {
 const resetDialogState = () => {
   dialogEpoch++; detailVersion++; detailController?.abort(); detailController=null
   paymentAmount.value=''; paymentReference.value=''; paymentVerified.value=false
-  preorderPayments.value=[]; codCash.value=null
+  preorderPayments.value=[]; codCash.value=null; orderBill.value=null
   errorMessage.value = ''
   statusMessage.value = ''
   statusPanelOpen.value = false
@@ -754,7 +756,7 @@ const loadOrderDetails = async (background = false) => {
     const response=await scopedRequest(context,`/api/admin-orders/${context.id}`,{signal:controller.signal})
     if(!response||!current())return
     orderDetail.value=response.order||null;orderItems.value=response.items||[];customerDetail.value=response.customer||null
-    shippingDetail.value=response.shipping||null;preorderPayments.value=response.preorderPayments||[];codCash.value=response.codCash||null
+    shippingDetail.value=response.shipping||null;preorderPayments.value=response.preorderPayments||[];codCash.value=response.codCash||null;orderBill.value=response.bill||null
   }catch(error){if(current()){if(!background)orderDetail.value=null;errorMessage.value=error?.data?.statusMessage||error?.message||'Could not load order details.'}}
   finally{clearTimeout(timeout);if(current()){if(!background)loading.value=false;detailController=null}}
 }

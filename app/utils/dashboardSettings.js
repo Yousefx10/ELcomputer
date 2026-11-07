@@ -17,6 +17,7 @@ export const dashboardSettingsSections = [
   { key: 'checkout-layout', section: 'checkoutPage', label: 'Checkout', group: 'Store', icon: 'lucide:shopping-cart', description: 'Choose the checkout layout.' },
   { key: 'authentication', section: 'authPage', label: 'Authentication page', group: 'Store', icon: 'lucide:log-in', description: 'Set login and signup layout, images and text.' },
   { key: 'live-chat', section: 'liveChat', label: 'Live Chat', group: 'Administration', icon: 'lucide:messages-square', description: 'Set availability, hours, messages and workflow.' },
+  { key: 'bill-design', section: 'billDesign', label: 'Bill design', group: 'Store', icon: 'lucide:receipt-text', description: 'Change how customer bills look.' },
   { key: 'after-sales', label: 'After-sales policies', group: 'Store', icon: 'lucide:shield-check', description: 'Manage warranty and return policies.' },
   { key: 'order-flow', label: 'Order flow', group: 'Store', icon: 'lucide:workflow', description: 'Choose which orders book the courier automatically.' },
   { key: 'erp', label: 'ERP connection', group: 'Administration', icon: 'lucide:cloud-cog', description: 'Use the built-in tools or connect Daftra.' },

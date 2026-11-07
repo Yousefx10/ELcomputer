@@ -4,6 +4,7 @@ import { readCustomerShipment } from '../../../utils/customerShipment'
 import { throwRequestDatabaseError } from '../../../utils/requestDatabaseError'
 import { readOwnedAfterSalesEntitlements } from '../../../utils/afterSalesPolicy.js'
 import { readCustomerPayment } from '../../../utils/payments/customerStatus.js'
+import { readBillSummary } from '../../../utils/customerBills.js'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -35,5 +36,6 @@ export default defineEventHandler(async event => {
   const { user_id: _owner, ...safeOrder } = order
   safeOrder.customer_payment = customerPayment
   const policies = new Map(afterSales.map(row => [row.id, row.after_sales]))
-  return { order: safeOrder, items: (itemsResult.data || []).map(item => ({ ...item, after_sales: policies.get(item.id) || null })), shipping: shippingResult || null }
+  return { order: safeOrder, items: (itemsResult.data || []).map(item => ({ ...item, after_sales: policies.get(item.id) || null })), shipping: shippingResult || null,
+    bill: await readBillSummary(supabaseAdmin, order.id) }
 })

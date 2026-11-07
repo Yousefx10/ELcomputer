@@ -3,6 +3,7 @@ import { createError, getRouterParam } from 'h3'
 import { normalizeAdminOrderItemRecord, normalizeAdminOrderRecord } from '../../utils/adminOrders'
 import { requireAdminRequest } from '../../utils/adminRequest'
 import { codCashResponse, loadCodCollections } from '../../utils/codCollections'
+import { readBillSummary } from '../../utils/customerBills'
 
 export default defineEventHandler(async (event) => {
   codCashResponse(event)
@@ -193,6 +194,7 @@ export default defineEventHandler(async (event) => {
     customer: customerProfile,
     shipping,
     preorderPayments,
-    codCash: await loadCodCollections(supabaseAdmin, orderRecord)
+    codCash: await loadCodCollections(supabaseAdmin, orderRecord),
+    bill: await readBillSummary(supabaseAdmin, orderRecord.id)
   }
 })

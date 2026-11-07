@@ -381,6 +381,70 @@
           </div>
         </section>
 
+        <section v-show="activeSettingsSection?.section === 'billDesign'" class="overflow-hidden rounded-2xl bg-white shadow" data-settings-bill-design>
+          <button :aria-expanded="openSections.billDesign" type="button" class="flex w-full items-center justify-between p-6 text-start" @click="toggleSection('billDesign')">
+            <div>
+              <h3 class="text-2xl font-bold">{{ $t('bill.designTitle') }}</h3>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('bill.designHelp') }}</p>
+            </div>
+            <Icon name="lucide:chevron-down" size="20" class="transition" :class="openSections.billDesign ? 'rotate-180' : ''" />
+          </button>
+          <div v-if="openSections.billDesign" class="space-y-5 border-t p-6" :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''">
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.language') }}</span>
+                <select v-model="siteSettings.bill_design.language" class="w-full rounded-xl border border-gray-200 bg-white p-3" :disabled="!canEditSettings">
+                  <option value="customer">{{ $t('bill.langCustomer') }}</option><option value="ar">{{ $t('bill.langAr') }}</option><option value="en">{{ $t('bill.langEn') }}</option>
+                </select>
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.headerColor') }}</span>
+                <input v-model="siteSettings.bill_design.header_color" type="color" class="h-12 w-24 rounded-xl border border-gray-200 bg-white p-1" :disabled="!canEditSettings">
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.titleEn') }}</span>
+                <input v-model="siteSettings.bill_design.title_en" type="text" maxlength="40" dir="ltr" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.titleAr') }}</span>
+                <input v-model="siteSettings.bill_design.title_ar" type="text" maxlength="40" dir="rtl" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.sellerName') }}</span>
+                <input v-model="siteSettings.bill_design.seller_name" type="text" maxlength="80" dir="auto" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.sellerLines') }}</span>
+                <textarea v-model="siteSettings.bill_design.seller_lines" rows="4" maxlength="330" dir="auto" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings" />
+                <span class="mt-1 block text-xs text-gray-500">{{ $t('bill.sellerLinesHint') }}</span>
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.footerEn') }}</span>
+                <input v-model="siteSettings.bill_design.footer_en" type="text" maxlength="200" dir="ltr" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              </label>
+              <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.footerAr') }}</span>
+                <input v-model="siteSettings.bill_design.footer_ar" type="text" maxlength="200" dir="rtl" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              </label>
+              <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.logoUrl') }}</span>
+                <input v-model="siteSettings.bill_design.logo_url" type="text" maxlength="320" dir="ltr" placeholder="/uploads/…" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+                <span class="mt-1 block text-xs text-gray-500">{{ $t('bill.logoHint') }}</span>
+              </label>
+            </div>
+            <div class="flex flex-wrap gap-5">
+              <label v-for="field in ['show_logo', 'show_payments', 'show_order_number']" :key="field" class="flex items-center gap-2 text-sm font-semibold">
+                <input v-model="siteSettings.bill_design[field]" type="checkbox" class="size-4" :disabled="!canEditSettings">{{ $t(`bill.${field}`) }}
+              </label>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p v-if="settingsErrorSection === 'billDesign' && settingsError" class="text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
+                <p v-if="settingsSuccessSection === 'billDesign' && settingsSuccess" class="text-sm text-green-600">{{ settingsSuccess }}</p>
+                <p v-if="billPreviewError" class="text-sm text-red-600">{{ $uiMessage(billPreviewError) }}</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button v-for="locale in ['en', 'ar']" :key="locale" type="button" class="rounded-lg border border-gray-200 px-4 py-3 font-semibold disabled:opacity-50" :disabled="billPreviewing" @click="previewBill(locale)">{{ $t(locale === 'ar' ? 'bill.previewAr' : 'bill.preview') }}</button>
+                <button type="button" :disabled="!canEditSettings || !isSettingsSectionDirty('billDesign') || settingsLoading" class="rounded-lg px-5 py-3 font-bold text-white"
+                  :class="canEditSettings && isSettingsSectionDirty('billDesign') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'" @click="saveSiteSettings('billDesign')">
+                  {{ settingsLoadingSection === 'billDesign' ? $t('common.saving') : $t('bill.save') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section v-show="activeSettingsSection?.section === 'offerCards'" class="overflow-hidden rounded-2xl bg-white shadow">
           <button :aria-expanded="openSections.offerCards"
             type="button"
@@ -2321,6 +2385,7 @@
 import { normalizePublicImageCache } from '~/utils/publicImageCache'
 import { heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
 import { DEFAULT_TRACK_ORDERS_LINK, trackOrdersLinkError } from '~/utils/trackOrdersLink'
+import { billDesignError, normalizeBillDesign } from '~/utils/billDesign'
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
 import { productPageStyle, productPageEditorConfig, productPageConfigError } from '~/utils/productPage'
@@ -2525,6 +2590,7 @@ const openSections = reactive({
   authPage: true,
   homepageReviews: false,
   trackingSettings: false,
+  billDesign: false,
   bannerAds: false,
   paymentSettings: false,
   footerSettings: false,
@@ -2631,6 +2697,7 @@ const siteSettingsSectionFields = {
     'homepage_reviews_view_all_enabled'
   ],
   trackingSettings: ['track_orders_link'],
+  billDesign: ['bill_design'],
   heroSettings: [
     'hero_enabled',
     'hero_rotation_seconds', 'hero_layout_mode', 'hero_static_banner_id'
@@ -3033,6 +3100,7 @@ const normalizeSiteSettings = (source = {}) => ({
   hero_enabled: source.hero_enabled ?? false,
   hero_layout_mode: heroLayoutMode(source.hero_layout_mode),
   track_orders_link: trackOrdersLinkError(source.track_orders_link) ? DEFAULT_TRACK_ORDERS_LINK : String(source.track_orders_link).trim(),
+  bill_design: normalizeBillDesign(source.bill_design),
   hero_static_banner_id: String(source.hero_static_banner_id || ''),
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
@@ -3516,6 +3584,22 @@ const loadGalleryImages = async ({ force = false } = {}) => {
 }
 
 
+// Settings → Bill design → Preview: renders the unsaved design on a sample bill (phase 3B).
+const billPreviewing = ref(false), billPreviewError = ref('')
+const previewBill = async locale => {
+  billPreviewing.value = true; billPreviewError.value = ''
+  const tab = window.open('', '_blank')
+  try {
+    const { data } = await supabase.auth.getSession()
+    const response = await fetch('/api/admin-bills/preview', { method: 'POST', cache: 'no-store', headers: { 'content-type': 'application/json', authorization: `Bearer ${data.session?.access_token || ''}` }, body: JSON.stringify({ design: siteSettings.bill_design, locale }) })
+    if (!response.ok) { let message = ''; try { message = (await response.json())?.statusMessage || '' } catch {} ; throw new Error(message || 'Check the bill design fields.') }
+    const href = URL.createObjectURL(await response.blob())
+    if (tab) tab.location.href = href; else window.location.assign(href)
+    setTimeout(() => URL.revokeObjectURL(href), 60000)
+  } catch (error) { tab?.close(); billPreviewError.value = error?.message || 'Check the bill design fields.' }
+  finally { billPreviewing.value = false }
+}
+
 const saveSiteSettings = async (sectionName) => {
   if (!canEditSettings.value) {
     return
@@ -3530,6 +3614,12 @@ const saveSiteSettings = async (sectionName) => {
       settingsErrorSection.value = 'seoSettings'
       return
     }
+  }
+  if (sectionName === 'billDesign' && billDesignError(siteSettings.bill_design)) {
+    settingsSuccess.value = ''; settingsSuccessSection.value = ''
+    settingsError.value = 'Check the bill design fields.'
+    settingsErrorSection.value = sectionName
+    return
   }
   if (sectionName === 'trackingSettings') {
     siteSettings.track_orders_link = String(siteSettings.track_orders_link || '').trim() || DEFAULT_TRACK_ORDERS_LINK

@@ -11,6 +11,7 @@ import { getPaymentMethodLabel, paymentMethodNeedsProof, paymentProofStatusClass
 import { getConfiguredStoreImageUrl } from '~/utils/storefront'
 import { expectedAvailabilityLabel as baseExpectedAvailabilityLabel } from '~/utils/preorder'
 import { shipmentStateKey } from '~/utils/shipmentTracking'
+import { downloadPdf } from '~/utils/downloadPdf'
 
 definePageMeta({ layout: 'account', middleware: 'customer-auth' })
 const route = useUiRoute()
@@ -23,6 +24,18 @@ const proofNotice = ref('')
 const reordering = ref(false)
 const reorderMessage = ref('')
 const { addOrderToCart } = useReorder()
+const supabase = useSupabaseClient()
+const billBusy = ref(false), billError = ref('')
+// My account → Download bill (phase 3B): the private PDF, fetched with the customer's session.
+const downloadBill = async () => {
+  if (!detail.value?.bill || billBusy.value) return
+  billBusy.value = true; billError.value = ''
+  try {
+    const { data } = await supabase.auth.getSession()
+    await downloadPdf(`/api/account/orders/${encodeURIComponent(String(route.params.id))}/bill`, { authorization: `Bearer ${data.session?.access_token || ''}` }, `Bill-${detail.value.bill.number}.pdf`)
+  } catch (cause) { billError.value = cause?.statusMessage || 'The bill is unavailable. Try again later.' }
+  finally { billBusy.value = false }
+}
 let loadVersion = 0
 
 const load = async (quiet = false) => {
@@ -121,6 +134,11 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
             <PaymentCodStatus v-if="detail.order.payment_method === 'cash' && !detail.order.is_preorder" :order="detail.order" />
             <PaymentOrderStatus v-if="detail.order.payment_method === 'card' && !detail.order.is_preorder" :order="detail.order" />
             <div class="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm"><div class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.subtotal') }}</span><span>{{ formatAccountMoney(detail.order.subtotal_amount, detail.order.currency) }}</span></div><div v-if="Number(detail.order.discount_amount)" class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.discount') }}</span><span>-{{ formatAccountMoney(detail.order.discount_amount, detail.order.currency) }}</span></div><div v-if="detail.order.shipping_company_id" class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.shipping') }} · {{ detail.order.shipping_company_name }}</span><span>{{ formatAccountMoney(detail.order.shipping_fee_amount, detail.order.currency) }}</span></div><div v-if="Number(detail.order.payment_fee_amount)" class="flex justify-between gap-3"><span class="text-slate-600">{{ $t('common.paymentFee') }}</span><span>{{ formatAccountMoney(detail.order.payment_fee_amount, detail.order.currency) }}</span></div><div class="flex justify-between gap-3 border-t border-slate-100 pt-2 font-bold"><span>{{ $t('common.total') }}</span><span>{{ formatAccountMoney(detail.order.total_amount, detail.order.currency) }}</span></div></div>
+            <div v-if="detail.bill" class="mt-4 border-t border-slate-100 pt-4" data-account-bill>
+              <button type="button" class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-900 disabled:opacity-60" :disabled="billBusy" @click="downloadBill"><Icon name="lucide:file-down" size="16" aria-hidden="true" />{{ $t(billBusy ? 'bill.downloading' : 'bill.download') }}</button>
+              <p class="mt-1 text-xs text-slate-500">{{ $t('bill.number', { value0: detail.bill.number }) }}</p>
+              <p v-if="billError" class="mt-1 text-sm text-red-700" role="alert">{{ $uiMessage(billError) }}</p>
+            </div>
           </section>
           <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="shipping-title">
             <h2 id="shipping-title" class="font-bold text-slate-900">{{ $t('common.delivery') }}</h2>

@@ -2,6 +2,7 @@ import { createError } from 'h3'
 import { daftraRequest, clearDaftraConfigCache, getDaftraConfig, getDaftraConfigSummary, getDaftraConnectionSummary, unwrapDaftraRecord } from './daftra.js'
 import { assertExternalErpDomain, getErpSettings } from './erpOwnership.js'
 import { optionCode } from './daftraLinks.js'
+import { ensureOrderBill, queueBillEmail } from './customerBills.js'
 export { getErpSettings } from './erpOwnership.js'
 
 const ISSUABLE_ORDER_STATUSES = new Set(['processing','ready_to_deliver','in_progress','being_shipped','out_for_delivery','completed','delivered'])
@@ -164,7 +165,7 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
     if (!billed && !intent) return { ...summary,skipped:'no_bill' }
     throw manual('Complete cancellation or refund accounting manually in Daftra.')
   }
-  const items = check(await db.from('customer_order_items').select('id,product_id,variant_id,product_title,unit_price,quantity,line_total').eq('order_id',orderId).order('created_at'))
+  const items = check(await db.from('customer_order_items').select('id,product_id,variant_id,product_title,variant_name,unit_price,quantity,line_total').eq('order_id',orderId).order('created_at'))
   if (!items?.length) throw manual('The website order has no items.')
   // Check item mappings before creating a client or invoice.
   const products = []
@@ -212,7 +213,17 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
       if (payment.recorded) await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,codRecordedAt:new Date().toISOString() } })
     }
   }
-  return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}) }
+  // Phase 3B: the website's bill PDF and its one-time email. A bill problem never blocks Daftra.
+  let bill = null
+  if (ISSUABLE_ORDER_STATUSES.has(order.status) && link.metadata?.daftraDraft === false) {
+    try {
+      const current = payment?.recorded ? unwrapDaftraRecord((await request(`/invoices/${encodeURIComponent(invoice.id)}.json`))?.data,'Invoice') : invoice
+      const made = await ensureOrderBill(db,{ order,items,invoice:current })
+      const email = await queueBillEmail(db,order.id)
+      bill = { number:made.bill?.bill_number || null,changed:made.changed,email:email.queued ? 'queued' : email.skipped || email.state || 'not_queued' }
+    } catch (error) { bill = { error:error?.statusMessage || 'The bill could not be made.' } }
+  }
+  return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}),...(bill ? { bill } : {}) }
 }
 
 const invoiceBalance = invoice => {
