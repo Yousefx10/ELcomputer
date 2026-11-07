@@ -3160,5 +3160,12 @@
   "Choose a valid order flow and parcel weight.": "orderFlow.msgInvalid",
   "Order flow permission is required.": "orderFlow.msgPermission",
   "Choose the Daftra cash on delivery method in Settings → ERP.": "erp.msgChooseCodMethod",
-  "Daftra refused the payment. Check the method in Settings → ERP.": "erp.msgPaymentRefused"
+  "Daftra refused the payment. Check the method in Settings → ERP.": "erp.msgPaymentRefused",
+  "Enter a valid AWB number.": "track.msgInvalid",
+  "No shipment found for this AWB.": "track.msgNotFound",
+  "Too many tracking requests. Try again in a minute.": "track.msgTooMany",
+  "Use a path starting with / or an https:// link.": "track.linkInvalid",
+  "Tracking is unavailable. Please try again later.": "shipment.unavailable",
+  "Order tracking": "track.settingsTitle",
+  "Choose where “Track your orders” opens.": "track.settingsHelp"
 }

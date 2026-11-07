@@ -30,7 +30,8 @@ export const assertStoreAnalyticsRateLimit = (
   event,
   {
     scope,
-    limit
+    limit,
+    message = 'Too many analytics requests.'
   }
 ) => {
   const now = Date.now()
@@ -63,7 +64,7 @@ export const assertStoreAnalyticsRateLimit = (
     )
     throw createError({
       statusCode: 429,
-      statusMessage: 'Too many analytics requests.'
+      statusMessage: message
     })
   }
 }

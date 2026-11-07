@@ -353,6 +353,34 @@
           </div>
         </section>
 
+        <section v-show="activeSettingsSection?.section === 'trackingSettings'" class="overflow-hidden rounded-2xl bg-white shadow" data-settings-tracking>
+          <button :aria-expanded="openSections.trackingSettings" type="button" class="flex w-full items-center justify-between p-6 text-start" @click="toggleSection('trackingSettings')">
+            <div>
+              <h3 class="text-2xl font-bold">{{ $t('track.settingsTitle') }}</h3>
+              <p class="mt-1 text-sm text-gray-500">{{ $t('track.settingsHelp') }}</p>
+            </div>
+            <Icon name="lucide:chevron-down" size="20" class="transition" :class="openSections.trackingSettings ? 'rotate-180' : ''" />
+          </button>
+          <div v-if="openSections.trackingSettings" class="border-t p-6" :class="!canEditSettings ? 'pointer-events-none opacity-70' : ''">
+            <label class="block max-w-xl">
+              <span class="mb-2 block text-sm font-semibold">{{ $t('track.linkLabel') }}</span>
+              <input v-model="siteSettings.track_orders_link" type="text" dir="ltr" maxlength="300" placeholder="/track" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
+              <span class="mt-1 block text-xs text-gray-500">{{ $t('track.linkHint') }}</span>
+            </label>
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <p v-if="settingsErrorSection === 'trackingSettings' && settingsError" class="text-sm text-red-600">{{ $uiMessage(settingsError) }}</p>
+                <p v-if="settingsSuccessSection === 'trackingSettings' && settingsSuccess" class="text-sm text-green-600">{{ settingsSuccess }}</p>
+              </div>
+              <button type="button" :disabled="!canEditSettings || !isSettingsSectionDirty('trackingSettings') || settingsLoading" class="rounded-lg px-5 py-3 font-bold text-white"
+                :class="canEditSettings && isSettingsSectionDirty('trackingSettings') && !settingsLoading ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300'"
+                @click="saveSiteSettings('trackingSettings')">
+                {{ settingsLoadingSection === 'trackingSettings' ? $t('common.saving') : $t('track.save') }}
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section v-show="activeSettingsSection?.section === 'offerCards'" class="overflow-hidden rounded-2xl bg-white shadow">
           <button :aria-expanded="openSections.offerCards"
             type="button"
@@ -2292,6 +2320,7 @@
 <script setup>
 import { normalizePublicImageCache } from '~/utils/publicImageCache'
 import { heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
+import { DEFAULT_TRACK_ORDERS_LINK, trackOrdersLinkError } from '~/utils/trackOrdersLink'
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
 import { normalizeModernFooter, validateModernFooter } from '~/utils/modernFooter'
 import { productPageStyle, productPageEditorConfig, productPageConfigError } from '~/utils/productPage'
@@ -2495,6 +2524,7 @@ const openSections = reactive({
   checkoutPage: true,
   authPage: true,
   homepageReviews: false,
+  trackingSettings: false,
   bannerAds: false,
   paymentSettings: false,
   footerSettings: false,
@@ -2600,6 +2630,7 @@ const siteSettingsSectionFields = {
     'homepage_reviews_enabled',
     'homepage_reviews_view_all_enabled'
   ],
+  trackingSettings: ['track_orders_link'],
   heroSettings: [
     'hero_enabled',
     'hero_rotation_seconds', 'hero_layout_mode', 'hero_static_banner_id'
@@ -3001,6 +3032,7 @@ const normalizeSiteSettings = (source = {}) => ({
   homepage_reviews_view_all_enabled: source.homepage_reviews_view_all_enabled ?? defaultSiteSettings.homepage_reviews_view_all_enabled,
   hero_enabled: source.hero_enabled ?? false,
   hero_layout_mode: heroLayoutMode(source.hero_layout_mode),
+  track_orders_link: trackOrdersLinkError(source.track_orders_link) ? DEFAULT_TRACK_ORDERS_LINK : String(source.track_orders_link).trim(),
   hero_static_banner_id: String(source.hero_static_banner_id || ''),
   hero_rotation_seconds: Math.max(1, Number(source.hero_rotation_seconds) || defaultSiteSettings.hero_rotation_seconds),
   top_bar_rotation_seconds: Math.max(1, Number(source.top_bar_rotation_seconds) || defaultSiteSettings.top_bar_rotation_seconds),
@@ -3496,6 +3528,15 @@ const saveSiteSettings = async (sectionName) => {
     } catch {
       settingsError.value = useNuxtApp().$i18n.t('seo.invalidUrl')
       settingsErrorSection.value = 'seoSettings'
+      return
+    }
+  }
+  if (sectionName === 'trackingSettings') {
+    siteSettings.track_orders_link = String(siteSettings.track_orders_link || '').trim() || DEFAULT_TRACK_ORDERS_LINK
+    if (trackOrdersLinkError(siteSettings.track_orders_link)) {
+      settingsSuccess.value = ''; settingsSuccessSection.value = ''
+      settingsError.value = 'Use a path starting with / or an https:// link.'
+      settingsErrorSection.value = sectionName
       return
     }
   }

@@ -6302,5 +6302,25 @@
     "msgInvalid": "Choose a valid order flow and parcel weight.",
     "msgPermission": "Order flow permission is required.",
     "registryHelp": "Choose which orders book the courier automatically."
+  },
+  "track": {
+    "title": "Track your order",
+    "intro": "Enter the AWB number from your order or parcel.",
+    "awbLabel": "AWB number",
+    "submit": "Track",
+    "searching": "Checking…",
+    "openOrders": "Your open orders",
+    "noOpenOrders": "You have no open orders.",
+    "trackThis": "Track",
+    "notShippedYet": "Not shipped yet",
+    "msgInvalid": "Enter a valid AWB number.",
+    "msgNotFound": "No shipment found for this AWB.",
+    "msgTooMany": "Too many tracking requests. Try again in a minute.",
+    "settingsTitle": "Order tracking",
+    "settingsHelp": "Choose where “Track your orders” opens.",
+    "linkLabel": "Track your orders link",
+    "linkHint": "Use a store path like /track or a full https:// link.",
+    "linkInvalid": "Use a path starting with / or an https:// link.",
+    "save": "Save tracking link"
   }
 }

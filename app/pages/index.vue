@@ -27,7 +27,8 @@
 
     <nav class="store-service-strip" :aria-label="$t('common.shoppingShortcuts')">
       <NuxtLinkLocale :to="{ path: '/search', query: { status: 'instock' } }"><Icon name="lucide:package-check" size="23" /><span>{{ $t('common.findInStockGear') }}</span></NuxtLinkLocale>
-      <NuxtLinkLocale :to="ordersPath"><Icon name="lucide:truck" size="23" /><span>{{ $t('common.trackYourOrders') }}</span></NuxtLinkLocale>
+      <a v-if="trackLink.external" :href="trackLink.to" rel="noopener"><Icon name="lucide:truck" size="23" /><span>{{ $t('common.trackYourOrders') }}</span></a>
+      <NuxtLinkLocale v-else :to="trackLink.to"><Icon name="lucide:truck" size="23" /><span>{{ $t('common.trackYourOrders') }}</span></NuxtLinkLocale>
       <NuxtLinkLocale to="/contact"><Icon name="lucide:headphones" size="23" /><span>{{ $t('common.talkToOurTeam') }}</span></NuxtLinkLocale>
     </nav>
 
@@ -54,6 +55,7 @@
 import { siteSchema, publicSiteUrl } from '~/utils/seo'
 import { homepagePresentation } from '~/utils/storePresentation'
 import { heroLayoutMode } from '~/utils/heroLayout'
+import { trackOrdersTarget } from '~/utils/trackOrdersLink'
 const { locale: homeLocale } = useI18n()
 const homeCopy = computed(() => homepagePresentation(siteContent.value?.settings, homeLocale.value))
 const { uiLabel } = useUiLocale()
@@ -167,8 +169,8 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
   })
 })
 
-const customerUser = useSupabaseUser()
-const ordersPath = computed(() => customerUser.value ? '/account/orders' : { path: '/login', query: { redirect: '/account/orders' } })
+// Dashboard → Settings → Order tracking chooses this target (default: the public tracking page).
+const trackLink = computed(() => trackOrdersTarget(siteContent.value?.settings?.track_orders_link))
 const heroEnabled = computed(() => (siteContent.value?.settings?.hero_enabled ?? false) && hasCustomHero.value)
 const hasCustomHero = computed(() => (siteContent.value?.heroBanners || []).some((banner) => getConfiguredStoreImageUrl(banner.image_url) && banner.id !== 'default-hero-banner'))
 const discoveryTiles = computed(() => [

@@ -2,6 +2,7 @@ export const dashboardSettingsSections = [
   { key: 'seo', section: 'seoSettings', label: 'Search engines', group: 'Store', icon: 'lucide:search', description: 'Set search titles, descriptions and sharing images.' },
   { key: 'general', section: 'generalSettings', label: 'Store details', group: 'Store', icon: 'lucide:store', description: 'Store name, logo, colors and stock settings.' },
   { key: 'homepage-reviews', section: 'homepageReviews', label: 'Homepage reviews', group: 'Homepage', icon: 'lucide:messages-square', description: 'Choose whether reviews appear on the home page.' },
+  { key: 'order-tracking', section: 'trackingSettings', label: 'Order tracking', group: 'Homepage', icon: 'lucide:truck', description: 'Choose where “Track your orders” opens.' },
   { key: 'offers', section: 'offerCards', label: 'Offer cards', group: 'Homepage', icon: 'lucide:ticket-percent', description: 'Create promotional cards with images and links.' },
   { key: 'announcements', section: 'topBarTexts', label: 'Announcements', group: 'Homepage', icon: 'lucide:megaphone', description: 'Edit the messages shown above the store header.' },
   { key: 'hero', section: 'heroBanners', label: 'Hero banners', group: 'Homepage', icon: 'lucide:panels-top-left', description: 'Upload and arrange the main home-page banners.' },
