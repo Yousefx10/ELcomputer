@@ -6274,5 +6274,28 @@
     "customerPays": "Customer pays",
     "chooseZone": "Choose",
     "invalid": "Check the governorate prices. Every offered governorate needs a zone with a rate."
+  },
+  "orderFlow": {
+    "title": "Order flow",
+    "help": "Choose when the courier is booked for new orders.",
+    "paidOrdersTitle": "Paid orders",
+    "paidOrdersHelp": "Card, Apple Pay and verified transfers.",
+    "codOrdersTitle": "Cash on delivery",
+    "codOrdersHelp": "Orders paid to the courier on delivery.",
+    "mode_auto": "Automatic",
+    "mode_autoHelp": "Book PDC right away. No packing review first.",
+    "mode_review": "Review first",
+    "mode_reviewHelp": "Staff confirm and book from the order page.",
+    "since": "Automatic since {value0}. Older orders are not booked.",
+    "weight": "Parcel weight (kg)",
+    "courierOff": "Courier booking is off on the server. Automatic booking will wait.",
+    "waiting": "Waiting for automatic booking",
+    "save": "Save order flow",
+    "saved": "Order flow saved.",
+    "msgOff": "Automatic courier booking is off for this order.",
+    "msgUnavailable": "Order flow is unavailable.",
+    "msgInvalid": "Choose a valid order flow and parcel weight.",
+    "msgPermission": "Order flow permission is required.",
+    "registryHelp": "Choose which orders book the courier automatically."
   }
 }

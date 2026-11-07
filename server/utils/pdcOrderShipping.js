@@ -22,6 +22,18 @@ const requireReady = async (settings, runtime) => {
   if (!token || secret.length < 32 || shippingSecretsMatch(token, secret)) throw createError({ statusCode: 503, statusMessage: 'Courier credentials are incomplete.' })
   await getShippingDocumentsRoot({ create: true })
 }
+// Short, customer-free text from PDC's rejection (long digit runs such as phones are masked).
+export const pdcRejectionReason = response => {
+  const texts = []
+  const visit = (value, depth = 0) => {
+    if (depth > 5 || texts.length >= 4) return
+    if (typeof value === 'string') { const text = value.trim(); if (text && text.length <= 300) texts.push(text); return }
+    if (Array.isArray(value)) { value.forEach(item => visit(item, depth + 1)); return }
+    if (value && typeof value === 'object') for (const [key, item] of Object.entries(value)) if (/message|error|reason|description/i.test(key) || Array.isArray(item)) visit(item, depth + 1)
+  }
+  visit(response?.badResponses)
+  return [...new Set(texts)].join('; ').replace(/\d{5,}/g, '#').slice(0, 200) || 'No reason given.'
+}
 export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, fetcher = fetch, runtime = useRuntimeConfig(), authorize = () => {}, labelOnly = false, expectedIdentity = null }) => {
   await authorize();await requireReady(settings, runtime)
   const job = await rpc(db, 'shipping_order_take', { p_job: jobId, p_ready: true, p_configuration: configuration(settings) })
@@ -37,9 +49,15 @@ export const processPdcOrderJob = async ({ supabaseAdmin: db, settings, jobId, f
       if (weight === null) throw new Error('Measured parcel weight is missing')
       const shipment = await buildPdcShipment({ settings: { ...settings, default_weight_kg: weight }, order: job.order, items: items || [], orderReference: job.to_ref,
         destinationCityId: job.city_id, codAmountMinor: Number(job.cod_amount_minor) })
-      const result = verifyReverseResult(await requestPdcJson({ settings, endpoint: 'SaveShipmentEx', body: {
+      const response = await requestPdcJson({ settings, endpoint: 'SaveShipmentEx', body: {
         allMustValid: Boolean(settings.all_must_valid), shipments: [shipment], hasAWBs: false, extraParams: {}
-      }, fetcher, bounded: true }), job.to_ref)
+      }, fetcher, bounded: true })
+      const result = verifyReverseResult(response, job.to_ref)
+      // PDC confirmed nothing was created: keep its reason and allow a corrected booking.
+      if (result.state === 'failed') {
+        await rpc(db, 'shipping_order_reject', { p_job: job.id, p_token: job.token, p_reason: pdcRejectionReason(response) })
+        return { id: jobId, state: 'rejected' }
+      }
       if (result.state !== 'created') throw new Error('Booking outcome requires review')
       await finish('created', { p_awb: result.awb })
       // The next claim performs only ExportPDF. Do not reuse the booking token.

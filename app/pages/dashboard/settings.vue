@@ -1860,6 +1860,8 @@
         :can-edit="canEditSettings"
       />
 
+      <DashboardOrderFlowSettings v-else-if="activeSettingsView === 'order-flow'" :can-edit="canEditSettings" />
+
       <DashboardSystemReset v-else-if="activeSettingsView === 'reset' && isOwner" @changed="handleSystemResetChanged" />
 
       <DashboardMediaLibrary
@@ -2514,6 +2516,8 @@ const activeSettingsView = computed(() => {
   if (requestedTab === 'erp' && canViewGeneralSettings.value) {
     return 'erp'
   }
+
+  if (requestedTab === 'order-flow' && canViewGeneralSettings.value) return 'order-flow'
 
   if (requestedTab === 'coupons' && canAccessCoupons.value) {
     return 'coupons'

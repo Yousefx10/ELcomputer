@@ -17,6 +17,7 @@ export const dashboardSettingsSections = [
   { key: 'authentication', section: 'authPage', label: 'Authentication page', group: 'Store', icon: 'lucide:log-in', description: 'Set login and signup layout, images and text.' },
   { key: 'live-chat', section: 'liveChat', label: 'Live Chat', group: 'Administration', icon: 'lucide:messages-square', description: 'Set availability, hours, messages and workflow.' },
   { key: 'after-sales', label: 'After-sales policies', group: 'Store', icon: 'lucide:shield-check', description: 'Manage warranty and return policies.' },
+  { key: 'order-flow', label: 'Order flow', group: 'Store', icon: 'lucide:workflow', description: 'Choose which orders book the courier automatically.' },
   { key: 'erp', label: 'ERP connection', group: 'Administration', icon: 'lucide:cloud-cog', description: 'Use the built-in tools or connect Daftra.' },
   { key: 'gallery', label: 'Media library', group: 'Store', icon: 'lucide:images', description: 'Browse and remove uploaded images.' },
   { key: 'coupons', label: 'Coupons', group: 'Store', icon: 'lucide:badge-percent', permission: 'settings.coupons', description: 'Manage discount codes and expiry dates.' },

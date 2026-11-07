@@ -3152,5 +3152,11 @@
   "Choose a valid Daftra product.": "erp.msgInvalidLink",
   "Choose a valid payment method and treasury.": "erp.msgInvalidPayment",
   "This treasury was not found in Daftra.": "erp.msgTreasuryMissing",
-  "Save the Daftra connection first.": "erp.msgSaveConnection"
+  "Save the Daftra connection first.": "erp.msgSaveConnection",
+  "Order flow": "orderFlow.title",
+  "Choose which orders book the courier automatically.": "orderFlow.registryHelp",
+  "Automatic courier booking is off for this order.": "orderFlow.msgOff",
+  "Order flow is unavailable.": "orderFlow.msgUnavailable",
+  "Choose a valid order flow and parcel weight.": "orderFlow.msgInvalid",
+  "Order flow permission is required.": "orderFlow.msgPermission"
 }
