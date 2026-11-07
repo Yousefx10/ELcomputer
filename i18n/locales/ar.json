@@ -3016,7 +3016,15 @@
     "stockIsCheckedAgainWhenYouConfirm": "يُتحقق من المخزون مجددًا عند التأكيد.",
     "subtotalValueValue": "المجموع الفرعي ({value0} {value1})",
     "yourDeliveryAddressIsConfirmedAtCheckout": "يُؤكّد عنوان التوصيل عند إتمام الشراء.",
-    "restoring": "جارٍ استعادة سلتك…"
+    "restoring": "جارٍ استعادة سلتك…",
+    "checkoutSteps": "خطوات إتمام الشراء",
+    "savingBanner": "أنت توفر {value0} في هذا الطلب.",
+    "youSave": "توفر {value0}",
+    "savings": "التوفير",
+    "yourChoice": "اختيارك",
+    "moveToFavorites": "نقل إلى المفضلة",
+    "removedValue": "تمت إزالة {value0}.",
+    "undo": "تراجع"
   },
   "checkout": {
     "11DigitsStartingWith01": "11 رقمًا تبدأ بـ 01.",

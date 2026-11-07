@@ -3016,7 +3016,15 @@
     "stockIsCheckedAgainWhenYouConfirm": "Stock is checked again when you confirm.",
     "subtotalValueValue": "Subtotal ({value0} {value1})",
     "yourDeliveryAddressIsConfirmedAtCheckout": "Your delivery address is confirmed at checkout.",
-    "restoring": "Restoring your cart…"
+    "restoring": "Restoring your cart…",
+    "checkoutSteps": "Checkout steps",
+    "savingBanner": "You're saving {value0} on this order.",
+    "youSave": "You save {value0}",
+    "savings": "Savings",
+    "yourChoice": "Your choice",
+    "moveToFavorites": "Move to favorites",
+    "removedValue": "{value0} removed.",
+    "undo": "Undo"
   },
   "checkout": {
     "11DigitsStartingWith01": "11 digits, starting with 01.",
