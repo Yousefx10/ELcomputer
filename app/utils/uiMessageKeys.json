@@ -3158,5 +3158,7 @@
   "Automatic courier booking is off for this order.": "orderFlow.msgOff",
   "Order flow is unavailable.": "orderFlow.msgUnavailable",
   "Choose a valid order flow and parcel weight.": "orderFlow.msgInvalid",
-  "Order flow permission is required.": "orderFlow.msgPermission"
+  "Order flow permission is required.": "orderFlow.msgPermission",
+  "Choose the Daftra cash on delivery method in Settings → ERP.": "erp.msgChooseCodMethod",
+  "Daftra refused the payment. Check the method in Settings → ERP.": "erp.msgPaymentRefused"
 }

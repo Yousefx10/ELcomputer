@@ -37,20 +37,23 @@
 
       <div v-if="settings.mode === 'daftra'" class="space-y-4 rounded-2xl border border-gray-200 p-5" data-erp-payments>
         <div><h4 class="font-bold">{{ $t('erp.onlinePayments') }}</h4><p class="mt-1 text-sm text-gray-500">{{ $t('erp.onlinePaymentsHint') }}</p></div>
-        <div class="grid gap-4 md:grid-cols-2">
-          <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.paymentMethod') }}</span>
-            <input v-model="payments.method" list="erp-payment-methods" maxlength="60" dir="ltr" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEdit || paymentsSaving">
-            <datalist id="erp-payment-methods"><option v-for="method in payments.methodsInUse" :key="method" :value="method" /></datalist>
-          </label>
-          <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.treasury') }}</span>
-            <select v-model="payments.treasuryId" class="w-full rounded-xl border border-gray-200 bg-white p-3" :disabled="!canEdit || paymentsSaving">
-              <option :value="null">{{ $t('erp.treasuryDefault') }}</option>
-              <option v-for="treasury in payments.treasuries" :key="treasury.id" :value="treasury.id">{{ treasury.name }}</option>
-            </select>
-          </label>
+        <datalist id="erp-payment-methods"><option v-for="method in payments.methodsInUse" :key="method" :value="method" /></datalist>
+        <div v-for="row in PAYMENT_ROWS" :key="row.kind" class="space-y-2" :data-erp-payment-row="row.kind">
+          <p class="text-sm font-bold">{{ $t(row.title) }}</p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.paymentMethod') }}</span>
+              <input v-model="payments[row.method]" list="erp-payment-methods" maxlength="60" dir="ltr" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEdit || paymentsSaving">
+            </label>
+            <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.treasury') }}</span>
+              <select v-model="payments[row.treasury]" class="w-full rounded-xl border border-gray-200 bg-white p-3" :disabled="!canEdit || paymentsSaving">
+                <option :value="null">{{ $t('erp.treasuryDefault') }}</option>
+                <option v-for="treasury in payments.treasuries" :key="treasury.id" :value="treasury.id">{{ treasury.name }}</option>
+              </select>
+            </label>
+          </div>
+          <p v-if="!payments[row.method]" class="text-sm text-amber-700">{{ $t(row.off) }}</p>
         </div>
         <p v-if="payments.methodsInUse.length" class="text-xs text-gray-500">{{ $t('erp.methodsInUse', { value0: payments.methodsInUse.join(', ') }) }}</p>
-        <p v-if="!payments.method" class="text-sm text-amber-700">{{ $t('erp.paymentsOff') }}</p>
         <p v-if="payments.remoteError" class="text-sm text-amber-700">{{ $uiMessage(payments.remoteError) }}</p>
         <div class="flex justify-end"><button type="button" class="rounded-xl bg-blue-600 px-4 py-3 font-bold text-white disabled:opacity-40" :disabled="!canEdit || paymentsSaving" @click="savePayments">{{ $t(paymentsSaving ? 'common.saving' : 'erp.savePayments') }}</button></div>
       </div>
@@ -104,7 +107,9 @@ const supabase=useSupabaseClient()
 const loading=ref(true),loaded=ref(false),testing=ref(false),saving=ref(false),credentialsSaving=ref(false),reviewing=ref(false)
 const errorMessage=ref(''),message=ref(''),selectedMode=ref('built_in'),choice=ref('switch_only'),confirmed=ref(false),review=ref(null)
 const credentials=reactive({accountUrl:'',apiKey:'',clientId:''})
-const payments=reactive({method:'',treasuryId:null,treasuries:[],methodsInUse:[],remoteError:''}),paymentsSaving=ref(false)
+const payments=reactive({method:'',treasuryId:null,codMethod:'',codTreasuryId:null,treasuries:[],methodsInUse:[],remoteError:''}),paymentsSaving=ref(false)
+const PAYMENT_ROWS=[{kind:'online',title:'erp.cardPayments',method:'method',treasury:'treasuryId',off:'erp.paymentsOff'},
+  {kind:'cod',title:'erp.codPayments',method:'codMethod',treasury:'codTreasuryId',off:'erp.codPaymentsOff'}]
 const settings=reactive({mode:'built_in',credentialState:'not_configured',connectionHealth:'not_tested',activationState:'inactive',jobCounts:{}})
 const busy=computed(()=>testing.value || saving.value || credentialsSaving.value || reviewing.value)
 const credentialsDirty=computed(()=>credentials.accountUrl !== (settings.accountUrl || '') || Boolean(credentials.apiKey || credentials.clientId))
@@ -124,7 +129,7 @@ async function loadPayments() {
 }
 async function savePayments() {
   paymentsSaving.value=true;message.value='';errorMessage.value=''
-  try { await $fetch('/api/admin-erp/payment-settings',{method:'PATCH',headers:await headers(),body:{method:payments.method.trim(),treasuryId:payments.treasuryId}});message.value='erp.paymentsSaved' }
+  try { await $fetch('/api/admin-erp/payment-settings',{method:'PATCH',headers:await headers(),body:{method:payments.method.trim(),treasuryId:payments.treasuryId,codMethod:payments.codMethod.trim(),codTreasuryId:payments.codTreasuryId}});message.value='erp.paymentsSaved' }
   catch(error) { errorMessage.value=error?.data?.statusMessage || 'Choose a valid payment method and treasury.' }
   finally { paymentsSaving.value=false }
 }

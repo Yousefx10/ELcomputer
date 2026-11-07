@@ -13,6 +13,10 @@ const AWAITING_PAYMENT_STATUSES = new Set(['pending_payment','on_hold'])
 const NOT_PAID_IN_DAFTRA = new Set(['cash','instapay','bank_transfer'])
 export const LINK_REQUIRED = 'Link this product to Daftra in Dashboard → ERP → Product links.'
 export const PAYMENT_METHOD_REQUIRED = 'Choose the Daftra payment method in Settings → ERP.'
+export const COD_METHOD_REQUIRED = 'Choose the Daftra cash on delivery method in Settings → ERP.'
+export const PAYMENT_REFUSED = 'Daftra refused the payment. Check the method in Settings → ERP.'
+// Saving the payment settings retries bills that stopped for these reasons.
+export const PAYMENT_SETTING_ERRORS = Object.freeze([PAYMENT_METHOD_REQUIRED, COD_METHOD_REQUIRED, PAYMENT_REFUSED])
 export const paidOnline = order => order?.payment_status === 'paid' && !NOT_PAID_IN_DAFTRA.has(order.payment_method)
   && Number.isFinite(Number(order.total_amount)) && Math.abs(Number(order.amount_paid) - Number(order.total_amount)) <= 0.01
 const manual = message => createError({ statusCode: 409, statusMessage: message, data: { manualRequired: true } })
@@ -73,11 +77,19 @@ async function saveEntityLink(db, link) {
 }
 
 // A durable intent closes the timeout/crash gap. No second POST after uncertainty.
-async function createRemoteRecord(db, operation, localId, path, body, request) {
+// A clear Daftra validation refusal created nothing, so its intent may be released.
+const DEFINITE_REFUSALS = new Set([400, 401, 403, 404, 422])
+async function createRemoteRecord(db, operation, localId, path, body, request, { refused = null } = {}) {
   const intent = check(await db.from('erp_remote_writes').select('state,external_id').eq('operation',operation).eq('local_id',localId).maybeSingle())
   if (intent) throw manual('Remote creation needs reconciliation before retrying.')
   check(await db.from('erp_remote_writes').insert({ operation, local_id:localId, state:'submitted' }))
-  const response = await request(path, { method:'POST', body })
+  let response
+  try { response = await request(path, { method:'POST', body }) }
+  catch (error) {
+    if (!refused || !DEFINITE_REFUSALS.has(Number(error?.statusCode))) throw error
+    check(await db.from('erp_remote_writes').delete().eq('operation',operation).eq('local_id',localId).eq('state','submitted'))
+    throw manual(refused)
+  }
   if (!response?.id) throw manual('Remote creation needs reconciliation before retrying.')
   check(await db.from('erp_remote_writes').update({ state:'confirmed', external_id:String(response.id) }).eq('operation',operation).eq('local_id',localId))
   return response
@@ -192,6 +204,13 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
   if (ISSUABLE_ORDER_STATUSES.has(order.status) && paidOnline(order)) {
     payment = await recordDaftraPayment(db,order,String(invoice.id),request)
     if (payment.recorded) await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,paidRecordedAt:new Date().toISOString() } })
+  } else if (ISSUABLE_ORDER_STATUSES.has(order.status) && order.payment_method === 'cash') {
+    // Owner request 7 Nov 2026 (phase 2C): PDC "Delivered" means the courier collected the cash.
+    const delivery = await codDelivery(db,order.id)
+    if (delivery) {
+      payment = await recordDaftraPayment(db,order,String(invoice.id),request,{ kind:'cod',reference:delivery.awb })
+      if (payment.recorded) await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,codRecordedAt:new Date().toISOString() } })
+    }
   }
   return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}) }
 }
@@ -202,8 +221,16 @@ const invoiceBalance = invoice => {
   return Number.isFinite(unpaid) ? Math.round(unpaid * 100) / 100 : NaN
 }
 
+// The courier shipment PDC reported delivered, if any. Partial deliveries are excluded.
+async function codDelivery(db, orderId) {
+  const rows = check(await db.from('shipping_order_jobs').select('awb,normalized_state').eq('order_id',orderId).eq('normalized_state','delivered'))
+  const delivered = (rows || []).filter(row => typeof row.awb === 'string' && row.awb)
+  return delivered.length === 1 ? delivered[0] : null
+}
+
 // The Daftra bill's own balance is the source of truth; one durable intent per order.
-export async function recordDaftraPayment(db, order, invoiceId, request = daftraRequest) {
+// kind 'online': card, Apple Pay and future online methods. kind 'cod': cash collected by the courier.
+export async function recordDaftraPayment(db, order, invoiceId, request = daftraRequest, { kind = 'online', reference = order.order_number } = {}) {
   const read = async () => unwrapDaftraRecord((await request(`/invoices/${encodeURIComponent(invoiceId)}.json`))?.data,'Invoice')
   const intent = check(await db.from('erp_remote_writes').select('state,external_id').eq('operation','invoice.payment').eq('local_id',order.id).maybeSingle())
   const invoice = await read()
@@ -217,11 +244,14 @@ export async function recordDaftraPayment(db, order, invoiceId, request = daftra
   }
   if (intent) throw manual('The Daftra payment needs reconciliation before retrying.')
   if (Math.abs(unpaid - Number(order.total_amount)) > 0.01) throw manual('The Daftra bill balance differs. Record this payment in Daftra.')
-  const settings = check(await db.from('erp_provider_settings').select('online_payment_method,online_treasury_id').eq('id','daftra').maybeSingle())
-  if (!settings?.online_payment_method) throw manual(PAYMENT_METHOD_REQUIRED)
+  const settings = check(await db.from('erp_provider_settings').select('online_payment_method,online_treasury_id,cod_payment_method,cod_treasury_id').eq('id','daftra').maybeSingle())
+  const cod = kind === 'cod'
+  const method = cod ? settings?.cod_payment_method : settings?.online_payment_method
+  const treasury = cod ? settings?.cod_treasury_id : settings?.online_treasury_id
+  if (!method) throw manual(cod ? COD_METHOD_REQUIRED : PAYMENT_METHOD_REQUIRED)
   const created = await createRemoteRecord(db,'invoice.payment',order.id,'/invoice_payments.json',{ InvoicePayment:{
-    invoice_id:Number(invoiceId),amount:unpaid,payment_method:settings.online_payment_method,transaction_id:order.order_number,
-    ...(settings.online_treasury_id ? { treasury_id:Number(settings.online_treasury_id) } : {}) } },request)
+    invoice_id:Number(invoiceId),amount:unpaid,payment_method:method,transaction_id:String(reference || order.order_number),
+    ...(treasury ? { treasury_id:Number(treasury) } : {}) } },request,{ refused:PAYMENT_REFUSED })
   if (invoiceBalance(await read()) > 0.01) throw manual('The Daftra payment needs reconciliation before retrying.')
   return { paid:true,recorded:true,daftraPaymentId:String(created.id) }
 }
