@@ -83,8 +83,8 @@ export const operatePdcOrder = async ({ db, adminId, orderId, action, actualWeig
   await authorize()
   if (action === 'book' && (weightConfirmed !== true || measuredParcelWeight(actualWeightKg) === null)) throw createError({ statusCode: 400, statusMessage: 'Measure and confirm the packed parcel weight.' })
   if (runtime.shippingLiveRequestsEnabled !== true && [true, 'true'].includes(runtime.pdcManualCodEnabled) && ['book', 'label'].includes(action)) {
-    const { data: order, error } = await db.from('customer_orders').select('payment_method,is_preorder,erp_owner,shipping_company_id').eq('id', orderId).maybeSingle()
-    if (error || !order || !['cash', 'card'].includes(order.payment_method) || order.is_preorder || order.erp_owner !== 'built_in') throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })
+    const { data: order, error } = await db.from('customer_orders').select('payment_method,is_preorder,shipping_company_id').eq('id', orderId).maybeSingle()
+    if (error || !order || !['cash', 'card'].includes(order.payment_method) || order.is_preorder) throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })
     const selected = await db.from('commerce_shipping_companies').select('provider,is_active,checkout_enabled,cod_collection_enabled,cod_collection_provider').eq('id', order.shipping_company_id).maybeSingle()
     if (selected.error || !selected.data?.is_active || !selected.data.checkout_enabled || selected.data.provider !== 'manual'
       || !selected.data.cod_collection_enabled || selected.data.cod_collection_provider !== 'pdc') throw createError({ statusCode: 403, statusMessage: 'Courier action is unavailable for this order.' })

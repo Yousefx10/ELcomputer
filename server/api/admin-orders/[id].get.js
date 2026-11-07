@@ -178,7 +178,7 @@ export default defineEventHandler(async (event) => {
     if (error) throw createError({ statusCode: 503, statusMessage: 'Courier selection is unavailable.' })
     const manualCod = courier?.provider === 'manual' && courier.cod_collection_enabled && courier.checkout_enabled
       && courier.cod_collection_provider === 'pdc'
-      && ['cash', 'card'].includes(orderRecord.payment_method) && !orderRecord.is_preorder && orderRecord.erp_owner === 'built_in'
+      && ['cash', 'card'].includes(orderRecord.payment_method) && !orderRecord.is_preorder
       && ['ready', 'untracked'].includes(orderRecord.stock_fulfillment_state)
     if (courier?.is_active && (courier.provider === 'pdc' || manualCod)) shipping = { provider: 'pdc', state: 'not_booked', awb: null, label_ready: false, events: [] }
   }
