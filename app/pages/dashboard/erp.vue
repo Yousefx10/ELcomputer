@@ -29,6 +29,8 @@
       {{ $t('common.loadingDaftraData') }}
     </div>
 
+    <DashboardErpProductLinks v-if="activeTab === 'links' && activeErp?.mode === 'daftra'" />
+
     <template v-else-if="loaded && activeTab === 'overview'">
       <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStatCard v-for="card in overviewCards" :key="card.key" :label="$uiLabel(card.label)" :value="card.total ?? '—'" :icon="card.icon" :tone="card.tone" :badge="card.available ? '' : 'Unavailable'" />
@@ -133,7 +135,7 @@
       </div>
     </section>
 
-    <nav v-if="totalPages > 1" class="flex items-center justify-center gap-3" :aria-label="$t('common.daftraPages')">
+    <nav v-if="activeTab !== 'links' && totalPages > 1" class="flex items-center justify-center gap-3" :aria-label="$t('common.daftraPages')">
       <button type="button" class="rounded-lg border bg-white px-4 py-2 text-sm font-bold disabled:opacity-40" :disabled="page <= 1 || loading" @click="changePage(page - 1)">{{ $t('common.previous') }}</button>
       <span class="text-sm text-gray-600">{{ $t('common.pageValueOfValue', { value0: (page), value1: (totalPages) }) }}</span>
       <button type="button" class="rounded-lg border bg-white px-4 py-2 text-sm font-bold disabled:opacity-40" :disabled="page >= totalPages || loading" @click="changePage(page + 1)">{{ $t('common.next') }}</button>
@@ -160,7 +162,7 @@ const importingInventory = ref(false)
 const inventoryMessage = ref('')
 const errorMessage = ref('')
 const page = ref(1)
-const validTabs = new Set(['overview', 'invoices', 'inventory', 'sync'])
+const validTabs = new Set(['overview', 'invoices', 'inventory', 'sync', 'links'])
 const activeTab = computed(() => {
   const tab = getDashboardQueryValue(route, 'tab') || 'overview'
   return validTabs.has(tab) ? tab : 'overview'
@@ -186,6 +188,7 @@ const { data: activeErp } = await useActiveErp()
 const formatDate = value => value ? new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : '—'
 const loadData = async () => {
   if (activeErp.value?.mode !== 'daftra') { errorMessage.value = activeErp.value ? uiLabel('Active ERP: Built-in ERP') : t('erp.unavailable'); return }
+  if (activeTab.value === 'links') return
   loading.value = true
   errorMessage.value = ''
   try {

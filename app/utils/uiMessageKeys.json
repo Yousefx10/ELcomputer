@@ -3136,5 +3136,21 @@
   "You have already used this coupon.": "commerceReliability.couponUsed",
   "This coupon does not apply to these products.": "commerceReliability.couponIneligible",
   "Wait for your saved cart to load.": "commerceReliability.cartLoading",
-  "Choose the checkout layout.": "checkoutLayout.navHelp"
+  "Choose the checkout layout.": "checkoutLayout.navHelp",
+  "Product links": "erp.productLinks",
+  "Link this product to Daftra in Dashboard → ERP → Product links.": "erp.msgLinkRequired",
+  "Choose the Daftra payment method in Settings → ERP.": "erp.msgChooseMethod",
+  "The Daftra payment needs reconciliation before retrying.": "erp.msgPaymentReconcile",
+  "The Daftra bill balance differs. Record this payment in Daftra.": "erp.msgBalanceDiffers",
+  "Issue the Daftra bill before recording its payment.": "erp.msgIssueFirst",
+  "The Daftra bill balance needs manual review.": "erp.msgBalanceReview",
+  "Shared Daftra product links need review before a stock refresh.": "erp.msgSharedLinks",
+  "This Daftra product was not found. Refresh the list.": "erp.msgProductMissing",
+  "Product links could not be saved. Reload and try again.": "erp.msgLinksFailed",
+  "Daftra lists are unavailable. Try again later.": "erp.msgListsUnavailable",
+  "Product links are unavailable.": "erp.msgLinksUnavailable",
+  "Choose a valid Daftra product.": "erp.msgInvalidLink",
+  "Choose a valid payment method and treasury.": "erp.msgInvalidPayment",
+  "This treasury was not found in Daftra.": "erp.msgTreasuryMissing",
+  "Save the Daftra connection first.": "erp.msgSaveConnection"
 }

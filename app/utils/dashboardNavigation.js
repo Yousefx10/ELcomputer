@@ -108,7 +108,8 @@ export const dashboardNavigationGroups = [
     child('daftra-overview', 'ERP overview', 'chart-column', '/dashboard/erp', 'tab', ['', 'overview'], 'dashboard.analysis'),
     child('daftra-invoices', 'Invoices', 'receipt-text', '/dashboard/erp', 'tab', ['invoices'], 'dashboard.analysis'),
     child('daftra-inventory', 'Stock and costs', 'warehouse', '/dashboard/erp', 'tab', ['inventory'], 'dashboard.analysis'),
-    child('daftra-sync', 'Sync queue', 'refresh-cw', '/dashboard/erp', 'tab', ['sync'], 'dashboard.analysis')
+    child('daftra-sync', 'Sync queue', 'refresh-cw', '/dashboard/erp', 'tab', ['sync'], 'dashboard.analysis'),
+    child('daftra-links', 'Product links', 'link', '/dashboard/erp', 'tab', ['links'], 'products.edit')
   ], { permission: 'dashboard.analysis', externalErpOnly: true }),
   group('shipping', 'Shipping', 'truck', { paths: ['/dashboard/commerce'], queryKey: 'tab', queryValues: ['shipping'] }, [
     child('shipping', 'Shipping companies', 'truck', '/dashboard/commerce', 'tab', ['shipping'])

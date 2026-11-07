@@ -1,10 +1,19 @@
 import { createError } from 'h3'
 import { daftraRequest, clearDaftraConfigCache, getDaftraConfig, getDaftraConfigSummary, getDaftraConnectionSummary, unwrapDaftraRecord } from './daftra.js'
 import { assertExternalErpDomain, getErpSettings } from './erpOwnership.js'
+import { optionCode } from './daftraLinks.js'
 export { getErpSettings } from './erpOwnership.js'
 
-const ISSUABLE_ORDER_STATUSES = new Set(['processing','in_progress','being_shipped','out_for_delivery','completed','delivered'])
+const ISSUABLE_ORDER_STATUSES = new Set(['processing','ready_to_deliver','in_progress','being_shipped','out_for_delivery','completed','delivered'])
 const MANUAL_ORDER_STATUSES = new Set(['cancelled','canceled','returned','refunded'])
+// No bill until the customer has paid online; abandoned card attempts never reach Daftra.
+const AWAITING_PAYMENT_STATUSES = new Set(['pending_payment','on_hold'])
+// Owner rule (7 Nov 2026): bills are marked paid for card, Apple Pay and future online
+// methods. Cash on delivery, InstaPay and bank transfer bills stay unpaid in Daftra.
+const NOT_PAID_IN_DAFTRA = new Set(['cash','instapay','bank_transfer'])
+export const LINK_REQUIRED = 'Link this product to Daftra in Dashboard → ERP → Product links.'
+export const paidOnline = order => order?.payment_status === 'paid' && !NOT_PAID_IN_DAFTRA.has(order.payment_method)
+  && Number.isFinite(Number(order.total_amount)) && Math.abs(Number(order.amount_paid) - Number(order.total_amount)) <= 0.01
 const manual = message => createError({ statusCode: 409, statusMessage: message, data: { manualRequired: true } })
 const databaseError = () => createError({ statusCode: 503, statusMessage: 'ERP synchronization storage is unavailable.' })
 const check = result => { if (result.error) throw databaseError(); return result.data }
@@ -91,32 +100,39 @@ async function ensureClient(db, order, request) {
   return saveEntityLink(db,{ local_entity_type:'customer_profile', local_id:order.user_id, external_entity_type:'client', external_id:String(client.id), external_number:client.client_number || null, metadata:{ matchedBy:'email' } })
 }
 
-async function resolveProduct(db, item, request) {
-  const type = item.variant_id ? 'product_variant':'product'
-  const localId = item.variant_id || item.product_id
-  const link = await getEntityLink(db,type,localId)
-  if (link) return link
-  const record = check(await db.from(item.variant_id ? 'product_variants':'products').select(item.variant_id ? 'id,sku,code':'id,sku').eq('id',localId).maybeSingle())
-  const code = String(record?.sku || record?.code || '').trim()
-  if (!code) throw manual('Create and map this item in Daftra before exporting.')
-  const product = await findUniqueDaftraRecord('/products.json','Product',{ product_code:code }, p => String(p.product_code || '').trim().toLowerCase() === code.toLowerCase(),request)
-  if (!product?.id) throw manual('Create and map this item in Daftra before exporting.')
-  return saveEntityLink(db,{ local_entity_type:type,local_id:localId,external_entity_type:'product',external_id:String(product.id),external_number:code,metadata:{ productId:item.product_id,variantId:item.variant_id || null } })
+// Owner-confirmed option link first, then a legacy product link, then one exact unique
+// Daftra code (option SKU/code, or the product SKU when it has a single option).
+export async function resolveProduct(db, item, request) {
+  if (item.variant_id) { const link = await getEntityLink(db,'product_variant',item.variant_id); if (link) return link }
+  const productLink = await getEntityLink(db,'product',item.product_id)
+  if (productLink) return productLink
+  const product = check(await db.from('products').select('id,sku').eq('id',item.product_id).maybeSingle())
+  const variant = item.variant_id ? check(await db.from('product_variants').select('id,sku,code').eq('id',item.variant_id).maybeSingle()) : null
+  const options = check(await db.from('product_variants').select('id').eq('product_id',item.product_id).eq('is_active',true)) || []
+  const codes = [...new Set([variant?.sku, optionCode(variant), options.length <= 1 ? product?.sku : null].map(code => String(code || '').trim()).filter(Boolean))]
+  for (const code of codes) {
+    const remote = await findUniqueDaftraRecord('/products.json','Product',{ product_code:code }, p => String(p.product_code || '').trim().toLowerCase() === code.toLowerCase(),request)
+    if (remote?.id) return saveEntityLink(db,{ local_entity_type:item.variant_id ? 'product_variant':'product',local_id:item.variant_id || item.product_id,
+      external_entity_type:'product',external_id:String(remote.id),external_number:code,metadata:{ productId:item.product_id,variantId:item.variant_id || null,source:'code' } })
+  }
+  throw manual(LINK_REQUIRED)
 }
 
 export function buildDaftraInvoice(order, items, clientLink, productLinks) {
   const fee = Number(order.payment_fee_amount || 0)
+  const delivery = Number(order.shipping_fee_amount || 0)
   return {
     Invoice: {
       client_id:Number(clientLink.external_id),po_number:order.order_number,
       name:`Website order ${order.order_number}`,currency_code:order.currency || 'EGP',
       date:String(order.created_at).slice(0,10),issue_date:String(order.created_at).slice(0,10),draft:1,
       discount:0,discount_amount:Number(order.discount_amount || 0),
-      notes:`ELcomputer website order ${order.order_number}. Payments require external reconciliation.`
+      notes:`ELcomputer website order ${order.order_number}.`
     },
     InvoiceItem: [
       ...items.map((item,index) => ({ item:item.product_title,unit_price:Number(item.unit_price),quantity:Number(item.quantity),
         product_id:Number(productLinks[index].external_id),discount:0,discount_type:2,tax1:null,tax2:null })),
+      ...(delivery > 0 ? [{ item:'Delivery',unit_price:delivery,quantity:1,discount:0,discount_type:2,tax1:null,tax2:null }] : []),
       ...(fee > 0 ? [{ item:'Website payment fee',unit_price:fee,quantity:1,discount:0,discount_type:2,tax1:null,tax2:null }] : [])
     ]
   }
@@ -127,7 +143,14 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
   const order = check(await db.from('customer_orders').select('*').eq('id',orderId).maybeSingle())
   if (!order || order.erp_owner !== 'daftra') throw manual('This order belongs to the retained built-in ERP history.')
   if (order.is_preorder) throw manual('Preorder ERP accounting requires manual Daftra completion.')
-  if (MANUAL_ORDER_STATUSES.has(order.status)) throw manual('Complete cancellation or refund accounting manually in Daftra.')
+  const summary = { orderId:order.id,orderNumber:order.order_number,direction:'elcomputer_to_daftra' }
+  if (AWAITING_PAYMENT_STATUSES.has(order.status)) return { ...summary,skipped:'awaiting_payment' }
+  if (MANUAL_ORDER_STATUSES.has(order.status)) {
+    const billed = await getEntityLink(db,'customer_order',order.id)
+    const intent = check(await db.from('erp_remote_writes').select('state').eq('operation','invoice.create').eq('local_id',order.id).maybeSingle())
+    if (!billed && !intent) return { ...summary,skipped:'no_bill' }
+    throw manual('Complete cancellation or refund accounting manually in Daftra.')
+  }
   const items = check(await db.from('customer_order_items').select('id,product_id,variant_id,product_title,unit_price,quantity,line_total').eq('order_id',orderId).order('created_at'))
   if (!items?.length) throw manual('The website order has no items.')
   // Check item mappings before creating a client or invoice.
@@ -159,13 +182,47 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
     throw manual('Daftra invoice total differs. Review taxes and fees before issuance.')
   }
   if (ISSUABLE_ORDER_STATUSES.has(order.status) && draft) {
-    if (items.some(item => item.variant_id)) throw manual('Issue this invoice in Daftra after warehouse and serial review.')
     const intent=check(await db.from('erp_remote_writes').select('state,external_id').eq('operation','invoice.create').eq('local_id',order.id).maybeSingle())
     if (intent?.state!=='confirmed' || String(intent.external_id)!==String(invoice.id)) throw manual('Review the matched invoice in Daftra before issuance.')
     await request(`/invoices/update_draft/${encodeURIComponent(invoice.id)}/0.json`)
-    await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,daftraDraft:false,issuedAt:new Date().toISOString() } })
+    link = await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,daftraDraft:false,issuedAt:new Date().toISOString() } })
   }
-  return { orderId:order.id,orderNumber:order.order_number,daftraInvoiceId:String(invoice.id),direction:'elcomputer_to_daftra' }
+  let payment = null
+  if (ISSUABLE_ORDER_STATUSES.has(order.status) && paidOnline(order)) {
+    payment = await recordDaftraPayment(db,order,String(invoice.id),request)
+    if (payment.recorded) await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,paidRecordedAt:new Date().toISOString() } })
+  }
+  return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}) }
+}
+
+const invoiceBalance = invoice => {
+  const total = Number(invoice?.summary_total), paid = Number(invoice?.summary_paid || 0)
+  const unpaid = invoice?.summary_unpaid == null ? total - paid : Number(invoice.summary_unpaid)
+  return Number.isFinite(unpaid) ? Math.round(unpaid * 100) / 100 : NaN
+}
+
+// The Daftra bill's own balance is the source of truth; one durable intent per order.
+export async function recordDaftraPayment(db, order, invoiceId, request = daftraRequest) {
+  const read = async () => unwrapDaftraRecord((await request(`/invoices/${encodeURIComponent(invoiceId)}.json`))?.data,'Invoice')
+  const intent = check(await db.from('erp_remote_writes').select('state,external_id').eq('operation','invoice.payment').eq('local_id',order.id).maybeSingle())
+  const invoice = await read()
+  if (String(invoice?.id) !== String(invoiceId)) throw manual('The mapped Daftra invoice needs manual review.')
+  if (daftraDraft(invoice.draft)) throw manual('Issue the Daftra bill before recording its payment.')
+  const unpaid = invoiceBalance(invoice)
+  if (!Number.isFinite(unpaid)) throw manual('The Daftra bill balance needs manual review.')
+  if (unpaid <= 0.01) {
+    if (intent?.state === 'submitted') check(await db.from('erp_remote_writes').update({ state:'confirmed' }).eq('operation','invoice.payment').eq('local_id',order.id))
+    return { paid:true,recorded:false }
+  }
+  if (intent) throw manual('The Daftra payment needs reconciliation before retrying.')
+  if (Math.abs(unpaid - Number(order.total_amount)) > 0.01) throw manual('The Daftra bill balance differs. Record this payment in Daftra.')
+  const settings = check(await db.from('erp_provider_settings').select('online_payment_method,online_treasury_id').eq('id','daftra').maybeSingle())
+  if (!settings?.online_payment_method) throw manual('Choose the Daftra payment method in Settings → ERP.')
+  const created = await createRemoteRecord(db,'invoice.payment',order.id,'/invoice_payments.json',{ InvoicePayment:{
+    invoice_id:Number(invoiceId),amount:unpaid,payment_method:settings.online_payment_method,transaction_id:order.order_number,
+    ...(settings.online_treasury_id ? { treasury_id:Number(settings.online_treasury_id) } : {}) } },request)
+  if (invoiceBalance(await read()) > 0.01) throw manual('The Daftra payment needs reconciliation before retrying.')
+  return { paid:true,recorded:true,daftraPaymentId:String(created.id) }
 }
 
 async function readLocalRows(db, table, fields, filters = []) {
@@ -265,6 +322,7 @@ export async function syncInventoryFromDaftra(db, { request = daftraRequest } = 
     readLocalRows(db,'products','id,sku,is_serialized'),readLocalRows(db,'product_variants','id,product_id,sku,code',[['is_active',true]]),
     readLocalRows(db,'erp_entity_links','id,local_entity_type,local_id,external_id',[['provider','daftra'],['external_entity_type','product']])
   ])
+  if (new Set(links.map(link=>String(link.external_id))).size!==links.length) throw manual('Shared Daftra product links need review before a stock refresh.')
   const {rows,unmatched,invalid}=mapDaftraInventory(remote,products,variants,links)
   if (invalid) throw manual('Stock mappings or numeric balances require manual review.')
   // Validate the entire scan before applying any batch. Retries upsert the same cache.

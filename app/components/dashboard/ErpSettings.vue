@@ -35,6 +35,26 @@
         <p class="text-sm text-gray-500">{{ $t('common.lastChecked') }}: {{ formatDate(settings.lastCheckedAt) }}</p>
       </div>
 
+      <div v-if="settings.mode === 'daftra'" class="space-y-4 rounded-2xl border border-gray-200 p-5" data-erp-payments>
+        <div><h4 class="font-bold">{{ $t('erp.onlinePayments') }}</h4><p class="mt-1 text-sm text-gray-500">{{ $t('erp.onlinePaymentsHint') }}</p></div>
+        <div class="grid gap-4 md:grid-cols-2">
+          <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.paymentMethod') }}</span>
+            <input v-model="payments.method" list="erp-payment-methods" maxlength="60" dir="ltr" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEdit || paymentsSaving">
+            <datalist id="erp-payment-methods"><option v-for="method in payments.methodsInUse" :key="method" :value="method" /></datalist>
+          </label>
+          <label><span class="mb-2 block text-sm font-semibold">{{ $t('erp.treasury') }}</span>
+            <select v-model="payments.treasuryId" class="w-full rounded-xl border border-gray-200 bg-white p-3" :disabled="!canEdit || paymentsSaving">
+              <option :value="null">{{ $t('erp.treasuryDefault') }}</option>
+              <option v-for="treasury in payments.treasuries" :key="treasury.id" :value="treasury.id">{{ treasury.name }}</option>
+            </select>
+          </label>
+        </div>
+        <p v-if="payments.methodsInUse.length" class="text-xs text-gray-500">{{ $t('erp.methodsInUse', { value0: payments.methodsInUse.join(', ') }) }}</p>
+        <p v-if="!payments.method" class="text-sm text-amber-700">{{ $t('erp.paymentsOff') }}</p>
+        <p v-if="payments.remoteError" class="text-sm text-amber-700">{{ $uiMessage(payments.remoteError) }}</p>
+        <div class="flex justify-end"><button type="button" class="rounded-xl bg-blue-600 px-4 py-3 font-bold text-white disabled:opacity-40" :disabled="!canEdit || paymentsSaving" @click="savePayments">{{ $t(paymentsSaving ? 'common.saving' : 'erp.savePayments') }}</button></div>
+      </div>
+
       <fieldset class="grid gap-3 md:grid-cols-2" :disabled="!canEdit || busy">
         <legend class="mb-3 font-bold">{{ $t('erp.chooseProvider') }}</legend>
         <label v-for="mode in ['built_in','daftra']" :key="mode" class="flex cursor-pointer items-start gap-3 rounded-2xl border p-5" :class="selectedMode === mode ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
@@ -84,6 +104,7 @@ const supabase=useSupabaseClient()
 const loading=ref(true),loaded=ref(false),testing=ref(false),saving=ref(false),credentialsSaving=ref(false),reviewing=ref(false)
 const errorMessage=ref(''),message=ref(''),selectedMode=ref('built_in'),choice=ref('switch_only'),confirmed=ref(false),review=ref(null)
 const credentials=reactive({accountUrl:'',apiKey:'',clientId:''})
+const payments=reactive({method:'',treasuryId:null,treasuries:[],methodsInUse:[],remoteError:''}),paymentsSaving=ref(false)
 const settings=reactive({mode:'built_in',credentialState:'not_configured',connectionHealth:'not_tested',activationState:'inactive',jobCounts:{}})
 const busy=computed(()=>testing.value || saving.value || credentialsSaving.value || reviewing.value)
 const credentialsDirty=computed(()=>credentials.accountUrl !== (settings.accountUrl || '') || Boolean(credentials.apiKey || credentials.clientId))
@@ -95,6 +116,17 @@ async function loadSettings() {
   try { const result=await $fetch('/api/admin-erp/settings',{headers:await headers()});Object.assign(settings,result.settings);selectedMode.value=settings.mode;credentials.accountUrl=settings.accountUrl || '';loaded.value=true }
   catch(error) { loaded.value=false;errorMessage.value=error?.data?.statusMessage || 'Could not load ERP settings.' }
   finally { loading.value=false }
+}
+async function loadPayments() {
+  if(settings.mode!=='daftra') return
+  try { Object.assign(payments,await $fetch('/api/admin-erp/payment-settings',{headers:await headers()})) }
+  catch(error) { payments.remoteError=error?.data?.statusMessage || 'Daftra lists are unavailable. Try again later.' }
+}
+async function savePayments() {
+  paymentsSaving.value=true;message.value='';errorMessage.value=''
+  try { await $fetch('/api/admin-erp/payment-settings',{method:'PATCH',headers:await headers(),body:{method:payments.method.trim(),treasuryId:payments.treasuryId}});message.value='erp.paymentsSaved' }
+  catch(error) { errorMessage.value=error?.data?.statusMessage || 'Choose a valid payment method and treasury.' }
+  finally { paymentsSaving.value=false }
 }
 async function refreshState() { await Promise.all([refreshNuxtData('active-erp'),refreshNuxtData('site-content')]) }
 async function testConnection() {
@@ -123,5 +155,5 @@ async function saveMode() {
 }
 const formatDate=value=>value ? new Intl.DateTimeFormat(intlLocale.value,{dateStyle:'medium',timeStyle:'short'}).format(new Date(value)) : '—'
 watch([selectedMode,choice],()=>{confirmed.value=false;review.value=null})
-onMounted(loadSettings)
+onMounted(async()=>{await loadSettings();await loadPayments()})
 </script>
