@@ -74,20 +74,23 @@ const add = () => {
   }
 }
 
-// The quick bar appears once the main buy button scrolls out of view.
+// The quick bar appears once the main buy button scrolls above the screen.
 const buyBox = ref(null), quickBar = ref(false), activeSection = ref('')
-let observers = []
+let observers = [], frame = 0
+const checkBar = () => { frame = 0; quickBar.value = !!buyBox.value && buyBox.value.getBoundingClientRect().bottom < 0 }
+const onScroll = () => { if (!frame) frame = requestAnimationFrame(checkBar) }
 onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true }); checkBar()
   if (!('IntersectionObserver' in window)) return
-  const buy = new IntersectionObserver(([entry]) => { quickBar.value = !entry.isIntersecting && entry.boundingClientRect.top < 0 })
-  if (buyBox.value) buy.observe(buyBox.value)
   const spy = new IntersectionObserver(entries => {
     for (const entry of entries) if (entry.isIntersecting) activeSection.value = entry.target.id
   }, { rootMargin: '-30% 0px -60% 0px' })
   watch(sections, () => nextTick(() => { spy.disconnect(); for (const row of sections.value) { const el = document.getElementById(row.id); if (el) spy.observe(el) } }), { immediate: true })
-  observers = [buy, spy]
+  observers = [spy]
 })
-onBeforeUnmount(() => { observers.forEach(observer => observer.disconnect()); clearTimeout(addedTimer) })
+onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame); observers.forEach(observer => observer.disconnect()); clearTimeout(addedTimer) })
+// Open on the first photo of the gallery; option choices still switch photos.
+watch(() => product.value?.id, () => { if (media.value[0]) selectedImage.value = media.value[0].url }, { immediate: true })
 const thumb = computed(() => { const url = galleryImages.value[0]?.url || product.value?.image_url; return url ? publicImage(url) : '' })
 </script>
 
@@ -171,7 +174,7 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
             <p v-if="cartMessage" class="pm-cart-status" role="status">{{ $uiMessage(cartMessage) }} <NuxtLinkLocale v-if="added" to="/cart">{{ $t('productModern.viewCart') }}</NuxtLinkLocale></p>
 
             <div class="pm-assurance">
-              <div class="pm-assure" data-product-warranty><Icon name="lucide:shield-check" size="20" aria-hidden="true" /><div><strong>{{ $t('warranty.title') }}</strong><span>{{ warranty.warranty_status === 'included' ? $t(warrantyDurationKey({ value: warranty.warranty_duration_value, unit: warranty.warranty_duration_unit }), { value: warranty.warranty_duration_value }) : $t(warranty.warranty_status === 'none' ? 'warranty.none' : 'warranty.unavailable') }}</span></div></div>
+              <div class="pm-assure" data-product-warranty><span class="pm-assure-icon" aria-hidden="true"><Icon name="lucide:shield-check" size="20" /></span><div><strong>{{ $t('warranty.title') }}</strong><span>{{ warranty.warranty_status === 'included' ? $t(warrantyDurationKey({ value: warranty.warranty_duration_value, unit: warranty.warranty_duration_unit }), { value: warranty.warranty_duration_value }) : $t(warranty.warranty_status === 'none' ? 'warranty.none' : 'warranty.unavailable') }}</span></div></div>
               <nav v-if="policies.length" class="pm-policies" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav>
               <ProductPremiumHelp />
             </div>
@@ -188,7 +191,7 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
 
         <nav v-if="sections.length > 1" class="pm-tabs" :aria-label="$t('productPage.jumpTo')">
           <div class="pm-tabs-links"><a v-for="row in sections" :key="row.id" :href="`#${row.id}`" :aria-current="activeSection === row.id ? 'true' : undefined">{{ $t(`productPage.sections.${row.label}`) }}</a></div>
-          <div v-if="quickBar && !isComingSoon" class="pm-tabs-buy"><bdi>{{ price(currentPrice) }}</bdi><button type="button" :disabled="!canOrder" @click="add">{{ added ? $t('productModern.added') : $uiLabel(addToCartLabel) }}</button></div>
+          <div v-if="quickBar && !isComingSoon && premiumPurchasingEnabled" class="pm-tabs-buy"><bdi>{{ price(currentPrice) }}</bdi><button type="button" :disabled="!canOrder" @click="add">{{ added ? $t('productModern.added') : $uiLabel(addToCartLabel) }}</button></div>
         </nav>
 
         <div class="pm-sections">
@@ -207,10 +210,10 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
       </article>
     </div>
 
-    <div v-if="product && !isComingSoon" class="pm-quickbar" :data-visible="quickBar" :inert="!quickBar || undefined" :aria-hidden="!quickBar || undefined">
+    <div v-if="product && !isComingSoon && premiumPurchasingEnabled" class="pm-quickbar" :data-visible="quickBar" :inert="!quickBar || undefined" :aria-hidden="!quickBar || undefined">
       <img v-if="thumb" :src="thumb" alt="" width="44" height="44" loading="lazy">
       <div class="pm-quickbar-text"><span>{{ product.title }}</span><strong><bdi>{{ price(currentPrice) }}</bdi></strong></div>
-      <button type="button" :disabled="!canOrder" @click="add"><Icon :name="added ? 'lucide:check' : 'lucide:shopping-bag'" size="17" aria-hidden="true" />{{ added ? $t('productModern.added') : $uiLabel(addToCartLabel) }}</button>
+      <button type="button" :disabled="!canOrder" @click="add"><Icon :name="added ? 'lucide:check' : 'lucide:shopping-bag'" size="17" aria-hidden="true" /><span>{{ added ? $t('productModern.added') : $uiLabel(addToCartLabel) }}</span></button>
     </div>
   </div>
 </template>
