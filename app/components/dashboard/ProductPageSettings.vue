@@ -1,5 +1,5 @@
 <script setup>
-import { productPageSections, productPageEditorConfig } from '~/utils/productPage'
+import { productPageSections, productPageEditorConfig, productPageStyles } from '~/utils/productPage'
 const props = defineProps({ pageStyle: { type: String, default: 'classic' }, config: { type: Object, default: null }, disabled: Boolean })
 const emit = defineEmits(['update:pageStyle', 'update:config'])
 const editor = computed(() => productPageEditorConfig(props.config))
@@ -13,8 +13,8 @@ const removeLink = index => update(next => { next.policy_links.splice(index, 1) 
 <template>
   <fieldset :disabled="disabled" class="space-y-6" data-product-page-settings>
     <legend class="sr-only">{{ $t('productPage.settingsTitle') }}</legend>
-    <div class="grid gap-3 sm:grid-cols-2" role="radiogroup" :aria-label="$t('productPage.settingsTitle')">
-      <label v-for="option in ['classic', 'premium']" :key="option" class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 focus-within:ring-2 focus-within:ring-blue-600" :class="pageStyle === option ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
+    <div class="grid gap-3 sm:grid-cols-3" role="radiogroup" :aria-label="$t('productPage.settingsTitle')">
+      <label v-for="option in productPageStyles" :key="option" class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 focus-within:ring-2 focus-within:ring-blue-600" :class="pageStyle === option ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
         <input :checked="pageStyle === option" type="radio" name="product-page-style" :value="option" class="mt-1" @change="emit('update:pageStyle', option)">
         <span><span class="block text-sm font-semibold">{{ $t(`productPage.${option}`) }}</span><span class="mt-1 block text-sm text-gray-500">{{ $t(`productPage.${option}Description`) }}</span></span>
       </label>

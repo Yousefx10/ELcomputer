@@ -5500,7 +5500,7 @@
     "premium": "صفحة المنتج المميزة",
     "classicDescription": "احتفظ بتصميم صفحة المنتج الحالي.",
     "premiumDescription": "معرض أكبر وتفاصيل منظمة ولوحة شراء واضحة.",
-    "sectionsTitle": "أقسام التصميم المميز",
+    "sectionsTitle": "أقسام الصفحة",
     "sectionsHelp": "تُخفى الأقسام الفارغة تلقائيًا.",
     "policyLinks": "روابط السياسات والدعم",
     "policyHelp": "أضف صفحات السياسات أو الدعم الموجودة بالمتجر.",
@@ -5577,7 +5577,9 @@
     "videoUploadFailed": "تعذر رفع الفيديو.",
     "presentationUnavailable": "بيانات عرض المنتج غير متاحة.",
     "settingsSaved": "تم حفظ مظهر صفحة المنتج.",
-    "invalidOrder": "أدخل ترتيب عرض صحيحًا."
+    "invalidOrder": "أدخل ترتيب عرض صحيحًا.",
+    "modern": "صفحة المنتج العصرية",
+    "modernDescription": "اختيارات بالصور وشراء سريع وتصميم مشرق."
   },
   "productFinishing": {
     "favorite": "المفضلة",
@@ -6192,5 +6194,13 @@
     "save": "حفظ تصميم الدفع",
     "saved": "تم حفظ تصميم صفحة الدفع.",
     "navHelp": "اختر تصميم صفحة الدفع."
+  },
+  "productModern": {
+    "percentOff": "خصم {value}%",
+    "bestSeller": "الأكثر مبيعًا",
+    "added": "تمت الإضافة",
+    "viewCart": "عرض السلة",
+    "showAll": "عرض الكل ({count})",
+    "showLess": "عرض أقل"
   }
 }

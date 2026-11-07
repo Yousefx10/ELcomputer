@@ -1,5 +1,6 @@
 <template>
-  <ProductPremium v-if="productPageStyle === 'premium'" />
+  <ProductModern v-if="productPageStyle === 'modern'" />
+  <ProductPremium v-else-if="productPageStyle === 'premium'" />
   <ProductClassic v-else />
 </template>
 <script setup>
@@ -484,8 +485,10 @@ watch(selectedVariantId, (nextVariantId, previousVariantId) => {
   selectedQuantity.value = Math.min(selectedQuantity.value, maximumQuantity.value)
 })
 
+// Modern and Premium share this route's purchasing state.
+import { productPageStyle as resolveProductPageStyle } from '~/utils/productPage'
 const { data: productAppearance } = await useAsyncData('product-page-appearance', () => $fetch('/api/storefront/product-appearance', { retry: 0 }), { getCachedData: (key, app) => app.isHydrating ? app.payload.data[key] : undefined })
-const productPageStyle = computed(() => productAppearance.value?.style === 'premium' ? 'premium' : 'classic')
+const productPageStyle = computed(() => resolveProductPageStyle(productAppearance.value?.style))
 const premiumPurchasingEnabled = computed(() => allowsProduct(product.value?.id))
 watch(maximumQuantity, maximum => { selectedQuantity.value = Math.min(selectedQuantity.value, maximum) })
 provideProductDetailContext({ purchasingPending, stockIndependentSale, backorderNotice, activeImage, activeImageIndex, addToCartLabel, allowOutOfStockPurchases, canPurchaseProduct, cartMessage, categoryName, closeLightbox, decreaseQuantity, descriptionContent, discountPercent, error, expectedAvailabilityLabel, formatPrice, galleryImages, getVariantColor, getVariantMeta, getVariantPreview, goToReviews, handleAddToCart, hasColorChoices, hasDiscount, hasPurchasableVariants, highlights, increaseQuantity, isComingSoon, isOutOfStock, isPreorder, lightboxClose, lightboxDialog, lightboxOpen, markImageBroken, maximumQuantity, meaningfulVariantName, onLightboxKeydown, openLightbox, pending, preorderAmounts, preorderAvailability, product, productVariants, relatedProducts, reviewSummary, reviewsComponent, reviewsSection, savings, selectVariant, selectedImage, selectedQuantity, selectedVariant, selectedVariantId, selectedVariantStockLabel, showVariantChoices, specificationGroups, stepImage, stockLabel, updateReviewSummary, variantStockLabel, visibleSpecifications, siteContent, intlLocale, selectedVariantImages, canUseMainImage, productAppearance, premiumPurchasingEnabled })

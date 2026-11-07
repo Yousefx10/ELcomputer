@@ -1,7 +1,8 @@
 import { brandUrl } from './brandPage.js'
 
 export const productPageSections = ['highlights', 'overview', 'features', 'included', 'specifications', 'reviews', 'related']
-export const productPageStyle = value => value === 'premium' ? 'premium' : 'classic'
+export const productPageStyles = ['classic', 'premium', 'modern']
+export const productPageStyle = value => productPageStyles.includes(value) ? value : 'classic'
 const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {}
 const text = (value, limit) => typeof value === 'string' ? value.slice(0, limit) : ''
 

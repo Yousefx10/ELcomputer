@@ -1,0 +1,9 @@
+/* Shared choice marks for linked products and in-product options. */
+.pdp-switch-stem { position: relative; flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: .4rem; background: var(--surface-muted, #f1f5f9); box-shadow: inset 0 0 0 1px var(--border, #cbd5e1); }
+.pdp-switch-stem::before, .pdp-switch-stem::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 2px; background: var(--stem, #94a3b8); transform: translate(-50%, -50%); }
+.pdp-switch-stem::before { width: .9rem; height: .28rem; }
+.pdp-switch-stem::after { width: .28rem; height: .9rem; }
+.pdp-switch-stem[data-known="false"]::before, .pdp-switch-stem[data-known="false"]::after { opacity: .5; }
+.pdp-option-photo { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; overflow: hidden; border-radius: .4rem; background: #fff; }
+.pdp-option-photo img { width: 100%; height: 100%; object-fit: contain; }
+.pdp-swatch[data-light="true"] { box-shadow: inset 0 0 0 1px #cbd5e1; }

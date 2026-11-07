@@ -1,5 +1,6 @@
 <script setup>
 import { configuredVariantDimensions, resolveVariantCombination, optionChoiceAvailable, variantIsAvailable } from '~/utils/productOptions'
+import { labelColor, lightColor } from '~/utils/productFamily'
 const props = defineProps({
   variants: { type: Array, required: true }, selectedId: { type: String, default: '' },
   allowBackorder: Boolean, preorder: Boolean, stockIndependent: Boolean,
@@ -24,8 +25,15 @@ const choose = (key, value) => {
 const swatch = (key, value) => {
   if (key !== 'color') return ''
   const colors = [...new Set(props.variants.filter(v => v.option_values?.color === value).map(props.color).filter(Boolean))]
-  return colors.length === 1 ? colors[0] : ''
+  return colors.length === 1 ? colors[0] : labelColor(value)
 }
+// A color choice shows its own photo when every matching option shares one.
+const photo = (key, value) => {
+  if (key !== 'color') return ''
+  const images = [...new Set(props.variants.filter(v => v.option_values?.color === value).map(props.preview).filter(Boolean))]
+  return images.length === 1 ? images[0] : ''
+}
+const stem = (key, value) => key === 'switch' ? labelColor(value) || 'unknown' : ''
 const knownDimensions = new Set(['color', 'model', 'switch', 'size', 'capacity', 'version'])
 const keyboard = event => {
   if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return
@@ -52,7 +60,9 @@ const reset = () => { selection.value = initialSelection(); emit('select', null)
           <button v-for="value in dimension.values" :key="value" type="button" role="radio" :aria-checked="selection[dimension.key] === value"
             :disabled="!optionChoiceAvailable(variants, selection, dimension.key, value, policy)"
             :tabindex="selection[dimension.key] === value || !selection[dimension.key] && firstChoice(dimension) === value ? 0 : -1" @click="choose(dimension.key, value)">
-            <span v-if="swatch(dimension.key, value)" class="pdp-swatch" :style="{ backgroundColor: swatch(dimension.key, value) }" aria-hidden="true" /><bdi>{{ value }}</bdi>
+            <span v-if="photo(dimension.key, value)" class="pdp-option-photo"><img :src="photo(dimension.key, value)" alt="" width="44" height="44" loading="lazy"></span>
+            <span v-else-if="swatch(dimension.key, value)" class="pdp-swatch" :data-light="lightColor(swatch(dimension.key, value))" :style="{ backgroundColor: swatch(dimension.key, value) }" aria-hidden="true" />
+            <span v-else-if="stem(dimension.key, value)" class="pdp-switch-stem" :data-known="stem(dimension.key, value) !== 'unknown'" :style="stem(dimension.key, value) !== 'unknown' ? { '--stem': stem(dimension.key, value) } : undefined" aria-hidden="true" /><bdi>{{ value }}</bdi>
           </button>
         </div>
       </fieldset>

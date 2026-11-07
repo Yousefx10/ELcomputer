@@ -4,6 +4,8 @@
 @import "./appearance.css";
 @import "./premium-product.css";
 @import "./modern-checkout.css";
+@import "./product-choices.css";
+@import "./product-modern.css";
 
 @layer base {
   a {

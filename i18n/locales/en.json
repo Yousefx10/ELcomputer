@@ -5500,7 +5500,7 @@
     "premium": "Premium Product Page",
     "classicDescription": "Keep the current product page.",
     "premiumDescription": "Larger gallery, structured details and a focused purchase panel.",
-    "sectionsTitle": "Premium sections",
+    "sectionsTitle": "Page sections",
     "sectionsHelp": "Empty sections stay hidden.",
     "policyLinks": "Policy and support links",
     "policyHelp": "Add existing store policies or support pages.",
@@ -5577,7 +5577,9 @@
     "videoUploadFailed": "The video could not be uploaded.",
     "presentationUnavailable": "Product presentation is unavailable.",
     "settingsSaved": "Product page appearance saved.",
-    "invalidOrder": "Enter a valid display order."
+    "invalidOrder": "Enter a valid display order.",
+    "modern": "Modern Product Page",
+    "modernDescription": "Photo choices, quick buying and a bright layout."
   },
   "productFinishing": {
     "favorite": "Favorite",
@@ -6192,5 +6194,13 @@
     "save": "Save checkout layout",
     "saved": "Checkout layout saved.",
     "navHelp": "Choose the checkout layout."
+  },
+  "productModern": {
+    "percentOff": "{value}% off",
+    "bestSeller": "Best seller",
+    "added": "Added",
+    "viewCart": "View cart",
+    "showAll": "Show all {count}",
+    "showLess": "Show less"
   }
 }

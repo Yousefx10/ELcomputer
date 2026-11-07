@@ -6,9 +6,10 @@ import { parse } from '@vue/compiler-sfc'
 import { productPageStyle, productPageEditorConfig, normalizeProductPageConfig, productPageConfigError, formatProductPagePrice, premiumSpecificationContent } from '../app/utils/productPage.js'
 import { presentationCommand } from '../server/utils/productPresentation.js'
 
-test('exactly two styles, with Classic as the safe default', () => {
-  for (const value of [undefined, null, '', 'modern', 'Premium', {}, true]) assert.equal(productPageStyle(value), 'classic')
+test('three styles, with Classic as the safe default', () => {
+  for (const value of [undefined, null, '', 'Modern', 'Premium', {}, true]) assert.equal(productPageStyle(value), 'classic')
   assert.equal(productPageStyle('premium'), 'premium')
+  assert.equal(productPageStyle('modern'), 'modern')
   assert.equal(productPageStyle('classic'), 'classic')
 })
 test('sections hide only on explicit false; empty and unsafe policy links never render', () => {
