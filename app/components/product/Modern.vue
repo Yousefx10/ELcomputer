@@ -122,7 +122,6 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
             <div class="pm-eyebrow">
               <NuxtLinkLocale v-if="product.brand?.slug" :to="`/brand/${product.brand.slug}`" class="pm-brand"><img v-if="product.brand.logo_url" :src="product.brand.logo_url" alt="" width="56" height="28" loading="lazy"><span>{{ product.brand.name }}</span></NuxtLinkLocale>
               <span v-else-if="product.brand?.name" class="pm-brand"><span>{{ product.brand.name }}</span></span>
-              <span v-if="product.category" class="pm-chip">{{ categoryName(product.category) }}</span>
             </div>
             <h1 class="pm-title">{{ product.title }}</h1>
             <div class="pm-meta">
@@ -174,7 +173,7 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
             <p v-if="cartMessage" class="pm-cart-status" role="status">{{ $uiMessage(cartMessage) }} <NuxtLinkLocale v-if="added" to="/cart">{{ $t('productModern.viewCart') }}</NuxtLinkLocale></p>
 
             <div class="pm-assurance">
-              <div class="pm-assure" data-product-warranty><span class="pm-assure-icon" aria-hidden="true"><Icon name="lucide:shield-check" size="20" /></span><div><strong>{{ $t('warranty.title') }}</strong><span>{{ warranty.warranty_status === 'included' ? $t(warrantyDurationKey({ value: warranty.warranty_duration_value, unit: warranty.warranty_duration_unit }), { value: warranty.warranty_duration_value }) : $t(warranty.warranty_status === 'none' ? 'warranty.none' : 'warranty.unavailable') }}</span></div></div>
+              <div class="pm-assure" data-product-warranty><span class="pm-assure-icon" aria-hidden="true"><Icon name="lucide:shield-check" size="18" /></span><div><strong>{{ $t('warranty.title') }}</strong><span>{{ warranty.warranty_status === 'included' ? $t(warrantyDurationKey({ value: warranty.warranty_duration_value, unit: warranty.warranty_duration_unit }), { value: warranty.warranty_duration_value }) : $t(warranty.warranty_status === 'none' ? 'warranty.none' : 'warranty.unavailable') }}</span></div></div>
               <nav v-if="policies.length" class="pm-policies" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav>
               <ProductPremiumHelp />
             </div>
@@ -186,7 +185,7 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
         <p v-if="presentationError" class="pm-hint" role="status">{{ $t('productPage.detailsUnavailable') }}</p>
 
         <section v-if="topHighlights.length" class="pm-highlights" :aria-label="$t('productPage.sections.highlights')">
-          <div v-for="(item, index) in topHighlights" :key="item.label" class="pm-highlight" :data-tone="index % 4"><span>{{ item.label }}</span><strong><bdi>{{ item.value }}</bdi></strong></div>
+          <div v-for="item in topHighlights" :key="item.label" class="pm-highlight"><span>{{ item.label }}</span><strong><bdi>{{ item.value }}</bdi></strong></div>
         </section>
 
         <nav v-if="sections.length > 1" class="pm-tabs" :aria-label="$t('productPage.jumpTo')">
