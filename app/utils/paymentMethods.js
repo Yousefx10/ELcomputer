@@ -20,10 +20,15 @@ export const getAvailablePaymentMethods = (settings = {}) => {
   return paymentMethodDefinitions.filter(method => settings[`payment_${method.value}_enabled`] === true)
 }
 
-export const getPaymentMethodFee = (settings = {}, method = '') => {
+// Cash on delivery may add a percent of the order value (products after discounts plus
+// delivery), rounded up to a whole pound. The server quote is the final amount.
+export const getPaymentMethodFee = (settings = {}, method = '', orderValue = 0) => {
   const normalized = normalizePaymentMethod(method)
   if (!normalized) return 0
-  return Math.max(0, Number(settings[`payment_${normalized}_fee`] || 0))
+  const fixed = Math.max(0, Number(settings[`payment_${normalized}_fee`] || 0))
+  const percent = normalized === 'cash' ? Math.min(10, Math.max(0, Number(settings.payment_cash_fee_percent || 0))) : 0
+  const base = Math.max(0, Number(orderValue) || 0)
+  return fixed + (percent > 0 && base > 0 ? Math.ceil(Number((base * percent / 100).toFixed(6))) : 0)
 }
 
 export const paymentMethodNeedsProof = value => {

@@ -1251,6 +1251,12 @@
                 <input v-model.number="siteSettings[method.feeField]" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
               </div>
 
+              <div v-if="method.percentField" class="mt-4">
+                <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.codFeePercent') }}</label>
+                <input v-model.number="siteSettings[method.percentField]" type="number" min="0" max="10" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
+                <p class="mt-1 text-xs text-gray-500">{{ $t('common.codFeePercentHint') }}</p>
+              </div>
+
               <div v-if="method.instructionsField" class="mt-4">
                 <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.transferInstructions') }}</label>
                 <textarea v-model="siteSettings[method.instructionsField]" rows="5" :placeholder="$t('dashboard.settings.addTheAccountWalletReferenceAndAnyStepsCustomersNeed')" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500"></textarea>
@@ -2579,7 +2585,7 @@ const paymentSettingCards = [
   { value: 'bank_transfer', label: 'Bank transfer', description: 'Manual transfer with proof of payment.', icon: 'lucide:landmark', enabledField: 'payment_bank_transfer_enabled', feeField: 'payment_bank_transfer_fee', instructionsField: 'payment_bank_transfer_instructions' },
   { value: 'instapay', label: 'InstaPay', description: 'Manual InstaPay transfer with proof of payment.', icon: 'lucide:smartphone', enabledField: 'payment_instapay_enabled', feeField: 'payment_instapay_fee', instructionsField: 'payment_instapay_instructions' },
   { value: 'paypal', label: 'PayPal', description: 'PayPal checkout when its provider is connected.', icon: 'lucide:badge-dollar-sign', enabledField: 'payment_paypal_enabled', feeField: 'payment_paypal_fee' },
-  { value: 'cash', label: 'Cash', description: 'Collect cash when the order is delivered.', icon: 'lucide:banknote', enabledField: 'payment_cash_enabled', feeField: 'payment_cash_fee' }
+  { value: 'cash', label: 'Cash', description: 'Collect cash when the order is delivered.', icon: 'lucide:banknote', enabledField: 'payment_cash_enabled', feeField: 'payment_cash_fee', percentField: 'payment_cash_fee_percent' }
 ]
 const openSections = reactive({
   seoSettings: true,
@@ -2725,7 +2731,8 @@ const siteSettingsSectionFields = {
     'payment_paypal_enabled',
     'payment_paypal_fee',
     'payment_cash_enabled',
-    'payment_cash_fee'
+    'payment_cash_fee',
+    'payment_cash_fee_percent'
   ],
   footerSettings: [
     'footer_style',
@@ -3122,6 +3129,7 @@ const normalizeSiteSettings = (source = {}) => ({
   payment_paypal_fee: Math.max(0, Number(source.payment_paypal_fee) || 0),
   payment_cash_enabled: source.payment_cash_enabled ?? false,
   payment_cash_fee: Math.max(0, Number(source.payment_cash_fee) || 0),
+  payment_cash_fee_percent: Math.min(10, Math.max(0, Math.round((Number(source.payment_cash_fee_percent) || 0) * 100) / 100)),
   footer_cta_title: String(source.footer_cta_title || '').trim(),
   footer_cta_subtitle: String(source.footer_cta_subtitle || '').trim(),
   footer_cta_button_label: String(source.footer_cta_button_label || '').trim(),
@@ -3277,7 +3285,8 @@ const buildSiteSettingsPayload = (sectionName) => {
       'payment_paypal_enabled',
       'payment_paypal_fee',
       'payment_cash_enabled',
-      'payment_cash_fee'
+      'payment_cash_fee',
+      'payment_cash_fee_percent'
     ].includes(field)) {
       payload[field] = normalizedSettings[field]
       return

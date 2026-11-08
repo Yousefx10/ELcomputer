@@ -115,7 +115,9 @@ export function useCheckoutFlow(options) {
   })
   const discountAmount = computed(() => Number(quote.value?.discountAmount ?? appliedCoupon.value?.discountAmount ?? 0))
   const deliveryDiscountAmount = computed(() => Number(quote.value?.deliveryDiscountAmount ?? appliedCoupon.value?.deliveryDiscountAmount ?? 0))
-  const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value))
+  // Order value before any payment fee: the quote's when present, else the cart estimate.
+  const feeBase = computed(() => quote.value ? Number(quote.value.totalAmount || 0) - Number(quote.value.paymentFee || 0) : Number(subtotal.value || 0) - (isPreorderCart.value ? 0 : discountAmount.value))
+  const paymentFee = computed(() => quote.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, selectedPaymentMethod.value, feeBase.value))
   const totalAmount = computed(() => quote.value?.totalAmount ?? Math.max(0, Number(quote.value?.orderValue ?? subtotal.value) - (isPreorderCart.value ? 0 : discountAmount.value) + paymentFee.value))
   const quoteLine = item => quote.value?.lines?.find(line => line.productId === item.id && line.variantId === (item.variant_id || null))
 
@@ -206,7 +208,7 @@ export function useCheckoutFlow(options) {
 
 
   const formatCurrency = value => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
-  const getMethodFee = method => getPaymentMethodFee(settings.value, method)
+  const getMethodFee = method => quote.value && method === selectedPaymentMethod.value ? Number(quote.value.paymentFee || 0) : getPaymentMethodFee(settings.value, method, feeBase.value)
 
   const fillAddressFromProfile = profile => {
     Object.assign(address, checkoutAddressFromProfile(profile, user.value?.email))

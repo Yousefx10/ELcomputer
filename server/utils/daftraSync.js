@@ -80,7 +80,7 @@ async function saveEntityLink(db, link) {
 // A durable intent closes the timeout/crash gap. No second POST after uncertainty.
 // A clear Daftra validation refusal created nothing, so its intent may be released.
 const DEFINITE_REFUSALS = new Set([400, 401, 403, 404, 422])
-async function createRemoteRecord(db, operation, localId, path, body, request, { refused = null } = {}) {
+export async function createRemoteRecord(db, operation, localId, path, body, request, { refused = null } = {}) {
   const intent = check(await db.from('erp_remote_writes').select('state,external_id').eq('operation',operation).eq('local_id',localId).maybeSingle())
   if (intent) throw manual('Remote creation needs reconciliation before retrying.')
   check(await db.from('erp_remote_writes').insert({ operation, local_id:localId, state:'submitted' }))
@@ -213,6 +213,12 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
       if (payment.recorded) await saveEntityLink(db,{ ...link,metadata:{ ...link.metadata,codRecordedAt:new Date().toISOString() } })
     }
   }
+  // Phase 4: the Daftra cost of each line, for Sales reports. A cost problem never blocks Daftra.
+  let costs = null
+  if (ISSUABLE_ORDER_STATUSES.has(order.status) && link.metadata?.daftraDraft === false) {
+    try { costs = await captureDaftraCosts(db,order.id,items,products,request) }
+    catch { costs = { error:'Daftra costs could not be read.' } }
+  }
   // Phase 3B: the website's bill PDF and its one-time email. A bill problem never blocks Daftra.
   let bill = null
   if (ISSUABLE_ORDER_STATUSES.has(order.status) && link.metadata?.daftraDraft === false) {
@@ -223,7 +229,29 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
       bill = { number:made.bill?.bill_number || null,changed:made.changed,email:email.queued ? 'queued' : email.skipped || email.state || 'not_queued' }
     } catch (error) { bill = { error:error?.statusMessage || 'The bill could not be made.' } }
   }
-  return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}),...(bill ? { bill } : {}) }
+  return { ...summary,daftraInvoiceId:String(invoice.id),...(payment ? { payment } : {}),...(costs ? { costs } : {}),...(bill ? { bill } : {}) }
+}
+
+// The product cost Daftra shows (purchase price, else average cost), saved once per order line.
+export const daftraProductCost = product => {
+  const raw = product?.buy_price ?? product?.average_price
+  const cost = raw === null || raw === undefined || raw === '' ? NaN : Number(raw)
+  return Number.isFinite(cost) && cost >= 0 ? Math.round(cost * 100) / 100 : null
+}
+export async function captureDaftraCosts(db, orderId, items, products, request = daftraRequest) {
+  const known = new Set(check(await db.rpc('order_item_costs_known',{ p_order:orderId })) || [])
+  const missing = items.map((item,index) => ({ item,externalId:String(products[index]?.external_id || '') })).filter(row => !known.has(row.item.id) && /^[1-9][0-9]{0,18}$/.test(row.externalId))
+  if (!missing.length) return { saved:0,known:known.size }
+  const costOf = new Map()
+  for (const externalId of new Set(missing.map(row => row.externalId))) {
+    const response = await request(`/products/${encodeURIComponent(externalId)}.json`)
+    const product = unwrapDaftraRecord(response?.data,'Product')
+    costOf.set(externalId,String(product?.id) === externalId ? daftraProductCost(product) : null)
+  }
+  const rows = missing.filter(row => costOf.get(row.externalId) !== null)
+    .map(row => ({ order_item_id:row.item.id,external_product_id:row.externalId,unit_cost:costOf.get(row.externalId) }))
+  const saved = rows.length ? check(await db.rpc('order_item_costs_save',{ p_order:orderId,p_rows:rows })) : 0
+  return { saved,missing:missing.length - rows.length }
 }
 
 const invoiceBalance = invoice => {

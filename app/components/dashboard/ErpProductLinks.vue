@@ -50,6 +50,12 @@
               <button v-if="!row.link && row.suggestion" type="button" class="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-bold text-white disabled:opacity-50" :disabled="!!saving" @click="save([{ variantId: row.variantId, daftraId: row.suggestion.daftraId, source: row.suggestion.reason }])">{{ $t('erp.link') }}</button>
               <button type="button" class="rounded-lg border px-3 py-1.5 text-sm font-bold disabled:opacity-50" :disabled="!!saving" @click="openPicker(row)">{{ $t(row.link ? 'erp.change' : 'erp.choose') }}</button>
               <button v-if="row.link" type="button" class="rounded-lg px-3 py-1.5 text-sm font-bold text-red-700 hover:bg-red-50 disabled:opacity-50" :disabled="!!saving" @click="save([{ variantId: row.variantId, daftraId: null }])">{{ $t('erp.unlink') }}</button>
+              <button v-if="!row.link && confirmCreate !== row.variantId" type="button" class="rounded-lg px-3 py-1.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50" :disabled="!!saving" @click="confirmCreate = row.variantId">{{ $t('erp.createInDaftra') }}</button>
+            </div>
+            <div v-if="!row.link && confirmCreate === row.variantId" class="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 p-2 text-sm text-amber-900">
+              <span>{{ $t('erp.createInDaftraConfirm') }}</span>
+              <button type="button" class="rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white disabled:opacity-50" :disabled="!!saving" @click="createInDaftra(row)">{{ saving === row.variantId ? $t('common.saving') : $t('erp.create') }}</button>
+              <button type="button" class="rounded-lg px-3 py-1.5 font-semibold text-gray-700 hover:bg-white" :disabled="!!saving" @click="confirmCreate = null">{{ $t('common.cancel') }}</button>
             </div>
           </template>
           <div v-else class="space-y-2">
@@ -85,7 +91,7 @@ const supabase = useSupabaseClient()
 const FILTERS = ['needs', 'code', 'name', 'linked', 'all']
 const PAGE_SIZE = 40
 const rows = ref([]), daftra = ref([]), loading = ref(false), saving = ref(''), error = ref(''), notice = ref('')
-const filter = ref('needs'), publishedOnly = ref(true), search = ref(''), page = ref(1), picker = ref(null), pickerQuery = ref(''), pickerInput = ref(null)
+const filter = ref('needs'), publishedOnly = ref(true), search = ref(''), page = ref(1), picker = ref(null), pickerQuery = ref(''), pickerInput = ref(null), confirmCreate = ref(null)
 
 const daftraById = computed(() => new Map(daftra.value.map(item => [item.id, item])))
 const isDefault = option => ['', 'default'].includes(String(option || '').trim().toLowerCase())
@@ -131,6 +137,17 @@ async function save(links, mode = 'row') {
     notice.value = [saved ? t('erp.linksSaved', { value0: saved }) : t('erp.linkRemoved'), requeued ? t('erp.billsRetry', { value0: requeued }) : ''].filter(Boolean).join(' ')
     await load()
   } catch (failure) { error.value = failure?.data?.statusMessage || 'Product links could not be saved. Reload and try again.' }
+  finally { saving.value = '' }
+}
+// Creates the Daftra product, then links this option to it.
+async function createInDaftra(row) {
+  saving.value = row.variantId; error.value = ''; notice.value = ''
+  try {
+    const result = await $fetch('/api/admin-erp/product-create', { method: 'POST', headers: await headers(), body: { variantId: row.variantId } })
+    confirmCreate.value = null
+    notice.value = [t('erp.createdInDaftra'), result?.requeued ? t('erp.billsRetry', { value0: result.requeued }) : ''].filter(Boolean).join(' ')
+    await load(true)
+  } catch (failure) { error.value = failure?.data?.statusMessage || 'The product could not be created in Daftra.' }
   finally { saving.value = '' }
 }
 const linkAllCode = () => save(scoped.value.filter(row => !row.link && row.suggestion?.reason === 'code')

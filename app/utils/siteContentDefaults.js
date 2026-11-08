@@ -67,6 +67,7 @@ export const defaultSiteSettings = {
   payment_paypal_fee: 0,
   payment_cash_enabled: false,
   payment_cash_fee: 0,
+  payment_cash_fee_percent: 0,
   footer_cta_title: '',
   footer_cta_subtitle: '',
   footer_cta_button_label: '',

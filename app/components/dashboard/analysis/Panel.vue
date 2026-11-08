@@ -103,6 +103,7 @@
           <div>
             <p class="text-sm text-gray-500">{{ $uiLabel(selectedMetricDefinition.label) }} · {{ $uiLabel(activeRangeLabel) }}</p>
             <p class="mt-1 text-3xl font-bold text-gray-900">{{ formatChartValue(chartTotal) }}</p>
+            <p v-if="selectedMetricDefinition.costs" class="mt-1 text-xs text-gray-500">{{ costCoverage.unavailable ? $t('dashboard.analysis.costsUnavailable') : $t('dashboard.analysis.costCoverage', costCoverage) }}</p>
           </div>
           <p class="text-sm text-gray-500">{{ chartDateLabel }}</p>
         </div>
@@ -137,6 +138,7 @@
 </template>
 
 <script setup>
+import { isDaftraErp } from '~/utils/erpState'
 const { intlLocale } = useUiLocale()
 
 const supabase = useSupabaseClient()
@@ -159,15 +161,21 @@ const overviewMetrics = [
   { key: 'sales', label: 'Units Sold', suffix: ' units' }
 ]
 
-const chartMetrics = [
+const { data: siteContent } = useSiteContent()
+// Stock and expenses come from the built-in ERP; with Daftra they would always read 0.
+const daftraMode = computed(() => isDaftraErp(siteContent.value?.settings))
+const allChartMetrics = [
   { key: 'orders', label: 'Orders', color: '#2563eb', fill: '#60a5fa' },
   { key: 'revenue', label: 'Sales', color: '#16a34a', fill: '#4ade80', currency: true },
   { key: 'sales', label: 'Units Sold', color: '#0891b2', fill: '#22d3ee' },
   { key: 'return_units', label: 'Returns', color: '#dc2626', fill: '#f87171' },
   { key: 'coupons', label: 'Coupons', color: '#d97706', fill: '#fbbf24' },
-  { key: 'stock', label: 'Stock', color: '#4b5563', fill: '#9ca3af', signed: true },
-  { key: 'expenses', label: 'Expenses', color: '#be123c', fill: '#fb7185', currency: true }
+  { key: 'stock', label: 'Stock', color: '#4b5563', fill: '#9ca3af', signed: true, builtInOnly: true },
+  { key: 'expenses', label: 'Expenses', color: '#be123c', fill: '#fb7185', currency: true, builtInOnly: true },
+  { key: 'cost', label: 'Cost of goods', color: '#7c3aed', fill: '#a78bfa', currency: true, costs: true },
+  { key: 'profit', label: 'Gross profit', color: '#047857', fill: '#34d399', currency: true, signed: true, costs: true }
 ]
+const chartMetrics = computed(() => allChartMetrics.filter(metric => !(metric.builtInOnly && daftraMode.value)))
 
 const rangePresets = [
   { key: 'year', label: 'Year' },
@@ -177,7 +185,7 @@ const rangePresets = [
   { key: 'custom', label: 'Custom' }
 ]
 
-const selectedMetricDefinition = computed(() => chartMetrics.find((metric) => metric.key === selectedMetric.value) || chartMetrics[0])
+const selectedMetricDefinition = computed(() => chartMetrics.value.find((metric) => metric.key === selectedMetric.value) || chartMetrics.value[0])
 
 function buildOverviewPeriod(key, label, comparisonLabel, icon) {
   return {
@@ -265,15 +273,20 @@ const loadChart = async ({ force = false } = {}) => {
   analysisError.value = ''
 
   try {
-    const { data, error } = await supabase.rpc('dashboard_get_analysis_chart', {
-      p_start_date: activeRange.from,
-      p_end_date: activeRange.to,
-      p_bucket: activeRange.bucket
-    })
+    const range = { p_start_date: activeRange.from, p_end_date: activeRange.to, p_bucket: activeRange.bucket }
+    const [{ data, error }, profit] = await Promise.all([
+      supabase.rpc('dashboard_get_analysis_chart', range),
+      supabase.rpc('dashboard_get_analysis_profit', range)
+    ])
 
     if (error) throw error
 
-    chartRows.value = data || []
+    // Cost and profit are optional: the sales chart still loads when they are unavailable.
+    const profitByDate = new Map(profit.error ? [] : (profit.data || []).map(row => [String(row.period_start).slice(0, 10), row]))
+    chartRows.value = (data || []).map(row => {
+      const extra = profitByDate.get(String(row.period_start).slice(0, 10))
+      return extra ? { ...row, cost: extra.cost, profit: extra.profit, profit_orders: extra.orders, costed_orders: extra.costed_orders } : { ...row, costs_unavailable: Boolean(profit.error) }
+    })
     setSnapshot(cacheKey, chartRows.value)
   } catch (error) {
     analysisError.value = ['42883', '42P01'].includes(error?.code)
@@ -348,6 +361,11 @@ const formatOverviewValue = (metric, value) => metric.currency ? formatCurrency(
 const formatChartValue = (value) => selectedMetricDefinition.value.currency ? formatCurrency(value) : formatNumber(value)
 
 const chartValues = computed(() => chartRows.value.map((row) => Number(row[selectedMetric.value] || 0)))
+const costCoverage = computed(() => ({
+  unavailable: chartRows.value.some(row => row.costs_unavailable),
+  known: chartRows.value.reduce((total, row) => total + Number(row.costed_orders || 0), 0),
+  total: chartRows.value.reduce((total, row) => total + Number(row.profit_orders || 0), 0)
+}))
 const chartTotal = computed(() => chartValues.value.reduce((total, value) => total + value, 0))
 const chartMinimum = computed(() => Math.min(0, ...chartValues.value))
 const chartMaximum = computed(() => Math.max(0, ...chartValues.value))
