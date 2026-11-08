@@ -38,12 +38,12 @@ const downloadBill = async () => {
 }
 let loadVersion = 0
 
-const load = async (quiet = false) => {
+const load = async (quiet = false, refresh = false) => {
   const version = ++loadVersion
   if (!quiet) loading.value = true
   error.value = ''
   try {
-    const result = await request(`/api/account/orders/${encodeURIComponent(String(route.params.id))}`)
+    const result = await request(`/api/account/orders/${encodeURIComponent(String(route.params.id))}${refresh ? '?refresh=1' : ''}`)
     if (version === loadVersion) detail.value = result
   } catch (cause) {
     if (version === loadVersion) { if (!quiet || cause?.statusCode === 401 || cause?.statusCode === 403) detail.value = null; error.value = errorText(cause, 'Could not load this order.') }
@@ -74,12 +74,9 @@ const reorder = async () => {
 }
 
 watch(() => route.params.id, () => load())
-// Opening an order asks the courier for the latest status. A refused check keeps what is shown.
-const refreshCourier = async () => {
-  try { return (await request(`/api/account/orders/${encodeURIComponent(String(route.params.id))}/tracking-refresh`, { method: 'POST' }))?.refreshed === true } catch { return false }
-}
-const checkCourier = async () => { await refreshCourier(); await load(true) }
-onMounted(async () => { await load(); if (detail.value?.shipping?.awb && await refreshCourier()) await load(true) })
+// Opening an order asks the courier for the latest status, then shows it.
+const checkCourier = () => load(true, true)
+onMounted(async () => { await load(); if (detail.value?.shipping?.awb) await checkCourier() })
 onBeforeUnmount(() => { loadVersion++ })
 useShipmentUpdates(computed(() => String(route.params.id || '')), () => load(true))
 useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.order.order_number} | ${uiLabel('Your Orders')}` : uiLabel('Order Details') }))

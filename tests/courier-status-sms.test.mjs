@@ -123,6 +123,13 @@ test('native: courier updates move orders forward only, and courier SMS use the 
   } finally { await db.close?.(); await db.end?.() }
 })
 
+test('opening an order refreshes through the route the proxy already allows', async () => {
+  const api = await readFile('server/api/account/orders/[id].get.js', 'utf8'), page = await readFile('app/pages/account/orders/[id].vue', 'utf8')
+  assert.match(api, /getQuery\(event\)\.refresh === '1'/); assert.match(api, /processPdcTracking\(\{ db: supabaseAdmin, orderId: order\.id \}\)/)
+  assert.ok(api.indexOf('Order not found.\' })\n\n  // Opening') > 0, 'ownership is established before the courier is asked')
+  assert.match(page, /\?refresh=1/); assert.match(page, /load\(true, true\)/)
+})
+
 test('imported SKUs with literal quotes still match Daftra codes', async () => {
   const { codeKey } = await import('../server/utils/daftraLinks.js')
   assert.equal(codeKey('"7727500558378"'), codeKey('7727500558378'))

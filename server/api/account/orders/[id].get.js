@@ -1,5 +1,7 @@
 import { readCourierName } from '../../../utils/courierName'
-import { createError, getRouterParam, setHeader } from 'h3'
+import { createError, getQuery, getRouterParam, setHeader } from 'h3'
+import { assertStoreAnalyticsRateLimit } from '../../../utils/storeAnalyticsRateLimit'
+import { processPdcTracking } from '../../../utils/pdcTrackingPolling'
 import { requireCustomerRequest } from '../../../utils/customerRequest'
 import { readCustomerShipment } from '../../../utils/customerShipment'
 import { throwRequestDatabaseError } from '../../../utils/requestDatabaseError'
@@ -20,6 +22,15 @@ export default defineEventHandler(async event => {
     .eq('id', orderId).eq('user_id', authUser.id).maybeSingle()
   if (orderError) throwRequestDatabaseError('Customer order', orderError)
   if (!order) throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
+
+  // Opening an order asks the courier for the latest status. The database allows one check per
+  // parcel every 5 minutes, inside the daily budget. A refused check keeps the saved status.
+  if (getQuery(event).refresh === '1') {
+    try {
+      assertStoreAnalyticsRateLimit(event, { scope: 'order-tracking-refresh', limit: 10 })
+      await processPdcTracking({ db: supabaseAdmin, orderId: order.id })
+    } catch { /* the saved status is still correct to show */ }
+  }
 
   const [itemsResult, shippingResult, afterSales, customerPayment] = await Promise.all([
     supabaseAdmin.from('customer_order_items')
