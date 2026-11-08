@@ -34,10 +34,11 @@
 
             <div class="flex flex-wrap items-center gap-2">
               <button
+                v-if="orderBill || !externalErp"
                 type="button"
-                :disabled="loading || !orderIdentityCurrent || actionBusy"
+                :disabled="loading || !orderIdentityCurrent || actionBusy || billLoading"
                 class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="printOrderDetails"
+                @click="openOrderPdf"
               >
                 PDF
               </button>
@@ -64,52 +65,6 @@
 
           <div v-else-if="orderDetail" class="space-y-6">
             <p v-if="errorMessage" role="alert" class="rounded-2xl bg-red-50 p-4 text-sm text-red-700">{{ $uiMessage(errorMessage) }}</p>
-            <section class="rounded-2xl border bg-gray-50 p-5">
-              <button
-                type="button"
-                class="flex w-full items-start justify-between gap-4 text-start"
-                @click="statusPanelOpen = !statusPanelOpen"
-              >
-                <div class="min-w-0">
-                  <h4 class="text-lg font-bold text-gray-900">
-                    {{ $t('common.updateStatus') }}
-                  </h4>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ $t('dashboard.OrderDetailsDialog.selectTheNextOrderStatusForShippingAndFulfillmentManagement') }}
-                  </p>
-                </div>
-
-                <div class="flex shrink-0 items-center gap-3">
-                  <p v-if="statusMessage" class="text-sm text-green-700">
-                    {{ $uiLabel(statusMessage) }}
-                  </p>
-
-                  <Icon
-                    name="lucide:chevron-down"
-                    size="20"
-                    class="transition"
-                    :class="statusPanelOpen ? 'rotate-180' : ''"
-                  />
-                </div>
-              </button>
-
-              <div v-if="statusPanelOpen" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <button
-                  v-for="statusOption in visibleStatusOptions"
-                  :key="statusOption.value"
-                  type="button"
-                  :disabled="statusLoading"
-                  class="rounded-xl border px-4 py-3 text-start text-sm font-semibold transition"
-                  :class="orderDetail.status === statusOption.value
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'"
-                  @click="updateOrderStatus(statusOption.value)"
-                >
-                  {{ $uiLabel(statusOption.label) }}
-                </button>
-              </div>
-            </section>
-
             <PaymentCodStatus v-if="orderDetail.payment_method === 'cash' && !orderDetail.is_preorder" :order="orderDetail" />
             <DashboardOrderCodCash v-if="codCash" :order="orderDetail" :cash="codCash" :external-erp="externalErp" @updated="refreshCash" />
             <DashboardOrderBill v-if="orderBill" :order-id="orderDetail.id" :bill="orderBill" />
@@ -137,48 +92,9 @@
             </section>
 
             <section v-if="shippingDetail" class="rounded-2xl border p-5">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                  <h4 class="text-lg font-bold text-gray-900">{{ $t('common.pdcShipping') }}</h4>
-                  <p class="mt-1 break-all text-sm text-gray-500">
-                    {{ shippingDetail.awb ? $t('common.awbValue', { value0: (shippingDetail.awb) }) : $t('common.waitingForAnAwb') }}
-                  </p>
-                  <p v-if="shippingDetail.provider_status_name" class="mt-1 text-sm text-gray-600">
-                    {{ shippingDetail.provider_status_name }}
-                  </p>
-                  <p v-if="shippingDetail.provider_reason_name" class="mt-1 text-sm text-gray-600">
-                    {{ shippingDetail.provider_reason_name }}
-                  </p>
-                  <p v-if="shippingDetail.last_error" class="mt-2 text-sm text-red-600">
-                    {{ shippingDetail.last_error }}
-                  </p>
-                </div>
-
-                <div v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" class="space-y-2 text-sm">
-                  <label class="block">{{ $t('pdcParcel.weight') }}<input v-model="parcelWeight" type="number" min="0.001" max="99999.999" step="0.001" inputmode="decimal" class="mt-1 w-full rounded-lg border bg-white p-2" :disabled="courierChecking"></label>
-                  <label class="flex items-start gap-2"><input v-model="parcelWeightConfirmed" type="checkbox" class="mt-1" :disabled="courierChecking">{{ $t('pdcParcel.confirm') }}</label>
-                </div>
-                <div class="flex shrink-0 flex-wrap items-center gap-2 sm:max-w-xs sm:justify-end">
-                  <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase text-gray-700">
-                    {{ $t(`liveSales.states.${shippingDetail.state}`) }}
-                  </span>
-                  <button v-if="['not_booked','queued','blocked','failed'].includes(shippingDetail.state)" type="button" :disabled="courierChecking || orderDetail.status !== 'ready_to_deliver' || !parcelWeightConfirmed || measuredParcelWeight(parcelWeight) === null" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('book')">{{ $t('liveSales.book') }}</button>
-                  <button v-if="['uncertain','submitting'].includes(shippingDetail.state) && !shippingDetail.awb" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('recover')">{{ $t('liveSales.recover') }}</button>
-                  <button v-if="shippingDetail.awb && !shippingDetail.label_ready" type="button" :disabled="courierChecking" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="runCourierAction('label')">{{ $t('liveSales.label') }}</button>
-                  <button v-if="shippingDetail.awb" type="button" :disabled="courierChecking || !shippingDetail.tracking_requests_enabled || !shippingDetail.tracking?.manual_due" class="min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50" @click="refreshCourierStatus">{{ courierChecking ? $t('shipment.checking') : $t('shipment.reconcile') }}</button>
-                  <template v-if="shippingDetail.label_ready">
-                    <button v-for="action in ['view','download','print']" :key="action" type="button" :disabled="labelLoading" class="min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold disabled:opacity-50" @click="openShippingLabel(action)">{{ $t('shippingLabel.'+action) }}</button>
-                  </template>
-                </div>
-              </div>
-              <p v-if="courierNotice" role="status" class="mt-3 text-sm text-gray-600">{{ $t(courierNotice) }}</p>
-              <p v-if="shippingDetail.state === 'uncertain'" class="mt-3 text-sm text-amber-700">{{ $t('liveSales.uncertain') }}</p>
-              <form v-if="!shippingDetail.awb && ['not_booked','queued','blocked','failed'].includes(shippingDetail.state) && !['cancelled','refunded','returned'].includes(orderDetail.status)" class="mt-4 space-y-2 border-t pt-3 text-sm" @submit.prevent="recordManualAwb">
-                <p>{{ $t('beta.attachAwbHelp') }}</p>
-                <label class="block">{{ $t('beta.actualAwb') }}<input v-model="manualAwb" required maxlength="100" pattern="[A-Za-z0-9][A-Za-z0-9-]*" class="mt-1 w-full rounded-lg border p-2"></label>
-                <label class="flex items-start gap-2"><input v-model="manualAwbConfirmed" type="checkbox" required class="mt-1">{{ $t('beta.verifyAwb') }}</label>
-                <button type="submit" :disabled="courierChecking" class="rounded-lg border px-3 py-2 font-semibold disabled:opacity-50">{{ $t('beta.recordAwb') }}</button>
-              </form>
+              <h4 class="text-lg font-bold text-gray-900">{{ $t('common.pdcShipping') }}</h4>
+              <p class="mt-1 text-sm text-gray-500">{{ shippingDetail.awb ? $t('common.awbValue', { value0: shippingDetail.awb }) : $t(`liveSales.states.${shippingDetail.state}`) }}</p>
+              <p v-if="shippingDetail.provider_status_name" class="mt-1 text-sm text-gray-600">{{ shippingDetail.provider_status_name }}</p>
               <ShipmentTracking :shipping="shippingDetail" :format-date="formatDate" />
             </section>
 
@@ -356,14 +272,11 @@
       </div>
     </div>
   </Teleport>
-  <ShippingLabelPreview v-if="labelPreview" :key="labelPreview.identity.jobId" :document="labelPreview" :auto-print="labelAutoPrint" @close="clearShippingLabel" />
 </template>
 
 <script setup>
-import ShippingLabelPreview from './ShippingLabelPreview.vue'
 import ShipmentTracking from './ShipmentTracking.vue'
-import {readShippingLabelResponse} from '../../utils/shippingLabelDownload.js'
-import { measuredParcelWeight } from '../../utils/parcelWeight.js'
+import { downloadPdf } from '~/utils/downloadPdf'
 const { data: erpState } = useNuxtData('active-erp')
 const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
@@ -373,7 +286,6 @@ const { intlLocale, uiLabel } = useUiLocale()
 const { locale, t } = useI18n()
 
 import {
-  customerOrderStatusOptions,
   formatCustomerOrderStatus,
   getCustomerOrderStatusClass
 } from '~/utils/orderStatus'
@@ -395,21 +307,7 @@ const emit = defineEmits(['update:open', 'updated'])
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
 const loading = ref(false)
-const statusLoading = ref(false)
-const labelLoading = ref(false)
-const labelPreview = ref(null)
-const labelAutoPrint = ref(false)
-let labelController=null,labelRequest=0
-const clearShippingLabel=()=>{labelRequest++;labelController?.abort();labelController=null;labelPreview.value=null;labelAutoPrint.value=false;labelLoading.value=false}
-const parcelWeight = ref('1')
-const parcelWeightConfirmed = ref(false)
-const courierChecking = ref(false)
-const courierNotice = ref('')
-const manualAwb = ref('')
-const manualAwbConfirmed = ref(false)
 const errorMessage = ref('')
-const statusMessage = ref('')
-const statusPanelOpen = ref(false)
 const orderDetail = ref(null)
 const orderItems = ref([])
 const customerDetail = ref(null)
@@ -422,7 +320,7 @@ const paymentReference = ref('')
 const paymentVerified = ref(false)
 const paymentSaving = ref(false)
 const releaseSaving = ref(false)
-const actionBusy = computed(() => statusLoading.value || courierChecking.value || paymentSaving.value || releaseSaving.value)
+const actionBusy = computed(() => paymentSaving.value || releaseSaving.value)
 const orderIdentityCurrent = computed(() => props.open && orderDetail.value?.id === props.orderId)
 let dialogEpoch = 0, detailVersion = 0, detailController = null
 const contextCurrent = context => props.open && props.orderId === context.id && dialogEpoch === context.epoch
@@ -439,7 +337,7 @@ const dialogElement = ref(null), closeButton = ref(null)
 let previousFocus = null, previousOverflow = '', modalActive = false
 const dialogControls = () => [...(dialogElement.value?.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex="0"]') || [])].filter(node => node.getClientRects().length && !node.matches(':disabled') && !node.closest('[inert]'))
 const containFocus = event => {
-  if (props.open && !labelPreview.value && !dialogElement.value?.contains(event.target)) (dialogControls()[0] || dialogElement.value)?.focus()
+  if (props.open && !dialogElement.value?.contains(event.target)) (dialogControls()[0] || dialogElement.value)?.focus()
 }
 const handleDialogKeys = event => {
   if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeDialog(); return }
@@ -463,10 +361,6 @@ watch(() => props.open, async open => {
   if (props.open) closeButton.value?.focus()
 }, {immediate:true,flush:'post'})
 onMounted(() => { if (props.open) closeButton.value?.focus() })
-const visibleStatusOptions = computed(() => orderDetail.value?.is_preorder && orderDetail.value?.preorder_fulfillment_state === 'awaiting_stock'
-  ? customerOrderStatusOptions.filter(option => ['on_hold', 'cancelled'].includes(option.value))
-  : customerOrderStatusOptions)
-
 const orderTitle = computed(() => {
   if (!props.orderId) {
     return 'Order'
@@ -660,6 +554,17 @@ const buildPrintableOrderHtml = () => {
   </html>`
 }
 
+// The same bill the customer receives. Stores with no bills keep the printable order sheet.
+const billLoading = ref(false)
+const openOrderPdf = async () => {
+  if (!orderBill.value) { printOrderDetails(); return }
+  if (billLoading.value) return
+  billLoading.value = true; errorMessage.value = ''
+  try { await downloadPdf(`/api/admin-orders/${props.orderId}/bill`, await getAuthHeaders(), `Bill-${String(orderBill.value.number).replace(/[^A-Za-z0-9_-]/g, '-')}.pdf`) }
+  catch (error) { errorMessage.value = error?.statusMessage || 'The bill is unavailable. Try again later.' }
+  finally { billLoading.value = false }
+}
+
 const printOrderDetails = () => {
   if (!orderDetail.value || typeof window === 'undefined') {
     return
@@ -687,8 +592,6 @@ const resetDialogState = () => {
   paymentAmount.value=''; paymentReference.value=''; paymentVerified.value=false
   preorderPayments.value=[]; codCash.value=null; orderBill.value=null
   errorMessage.value = ''
-  statusMessage.value = ''
-  statusPanelOpen.value = false
   orderDetail.value = null
   orderItems.value = []
   customerDetail.value = null
@@ -700,50 +603,6 @@ const closeDialog = () => {
   emit('update:open', false)
 }
 
-const runCourierAction = async action => {
-  const context=beginAction();if(!context)return
-  if(action==='book'&&(!parcelWeightConfirmed.value||measuredParcelWeight(parcelWeight.value)===null))return
-  if(action==='book'&&!window.confirm(t('liveSales.confirmBooking')))return
-  const body=action==='book'?{action,actual_weight_kg:measuredParcelWeight(parcelWeight.value),weight_confirmed:true}:{action}
-  courierChecking.value=true;courierNotice.value=''
-  try {
-    const result=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/booking`,{method:'POST',body})
-    if(!result)return
-    await loadOrderDetails()
-    if(contextCurrent(context))courierNotice.value=result.state==='uncertain'?'liveSales.uncertain':'shipment.reconciled'
-  }catch{if(contextCurrent(context)){courierNotice.value='shipment.actionFailed';await loadOrderDetails(true)}}finally{courierChecking.value=false}
-}
-const refreshCourierStatus = async () => {
-  const context=beginAction();if(!context)return
-  courierChecking.value=true;courierNotice.value=''
-  try {
-    const result=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/refresh`,{method:'POST'})
-    if(!result)return
-    await loadOrderDetails()
-    if(contextCurrent(context))courierNotice.value='shipment.reconciled'
-  }catch{if(contextCurrent(context)){courierNotice.value='shipment.actionFailed';await loadOrderDetails(true)}}finally{courierChecking.value=false}
-}
-
-const openShippingLabel = async action => {
-  if (!props.orderId || !shippingDetail.value?.label_ready || labelLoading.value) return
-  clearShippingLabel()
-  const current=++labelRequest,expected={orderId:props.orderId,jobId:shippingDetail.value.id,awb:shippingDetail.value.awb}
-  const controller=new AbortController();labelController=controller;const timeout=setTimeout(()=>controller.abort(),20000)
-  labelLoading.value=true;errorMessage.value=''
-  try {
-    const response=await fetch(`/api/admin-shipping/orders/${expected.orderId}/label`,{headers:await getAuthHeaders(),redirect:'error',cache:'no-store',signal:labelController.signal})
-    const document=await readShippingLabelResponse(response,expected)
-    if(current!==labelRequest||props.orderId!==expected.orderId||!props.open)return
-    if(action==='download'){
-      const url=URL.createObjectURL(new Blob([document.bytes],{type:'application/pdf'})),link=window.document.createElement('a')
-      link.href=url;link.download=`PDC-${document.identity.awb}.pdf`;window.document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
-    } else {labelAutoPrint.value=action==='print';labelPreview.value=document}
-  } catch {if(current===labelRequest&&props.open)errorMessage.value=t('shippingLabel.unavailable')}
-  finally {clearTimeout(timeout);if(current===labelRequest){labelLoading.value=false;labelController=null}}
-}
-watch(()=>[props.orderId,props.open],clearShippingLabel)
-onBeforeUnmount(clearShippingLabel)
-
 const loadOrderDetails = async (background = false) => {
   if(!props.open||!props.orderId)return
   const context={id:props.orderId,epoch:dialogEpoch},version=++detailVersion
@@ -751,7 +610,7 @@ const loadOrderDetails = async (background = false) => {
   const timeout=setTimeout(()=>controller.abort(),20000)
   const current=()=>contextCurrent(context)&&version===detailVersion
   if(!background)loading.value=true
-  errorMessage.value='';statusMessage.value=''
+  errorMessage.value=''
   try{
     const response=await scopedRequest(context,`/api/admin-orders/${context.id}`,{signal:controller.signal})
     if(!response||!current())return
@@ -787,35 +646,12 @@ const releaseOrder = async (path, failure) => {
 }
 const releasePreorder = () => releaseOrder('release','Could not release the preorder.')
 const releaseBackorder = () => releaseOrder('release-backorder','Stock could not be assigned.')
-const recordManualAwb = async () => {
-  const context=beginAction();if(!context||!manualAwbConfirmed.value)return
-  const body={awb:manualAwb.value.trim(),confirmed:true}
-  courierChecking.value=true;errorMessage.value=''
-  try{
-    const response=await scopedRequest(context,`/api/admin-shipping/orders/${context.id}/manual-awb`,{method:'POST',body})
-    if(!response)return
-    manualAwb.value='';manualAwbConfirmed.value=false;parcelWeight.value='1';parcelWeightConfirmed.value=false
-    await loadOrderDetails();if(contextCurrent(context))emit('updated',orderDetail.value)
-  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||'Review the original booking.'}finally{courierChecking.value=false}
-}
-const updateOrderStatus = async nextStatus => {
-  const context=beginAction();if(!context||orderDetail.value.status===nextStatus)return
-  statusLoading.value=true;errorMessage.value='';statusMessage.value=''
-  try{
-    const response=await scopedRequest(context,`/api/admin-orders/${context.id}`,{method:'PATCH',body:{status:nextStatus}})
-    if(!response)return
-    orderDetail.value=response.order||orderDetail.value;statusMessage.value='Order status updated successfully.';emit('updated',response.order)
-  }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||error?.message||'Could not update order status.'}finally{statusLoading.value=false}
-}
 onBeforeUnmount(()=>{resetDialogState();releaseModalFocus()})
 
 watch(
   () => [props.open, props.orderId],
   async ([isOpen, orderId]) => {
     resetDialogState()
-    manualAwb.value = ''; manualAwbConfirmed.value = false
-    parcelWeight.value = '1'; parcelWeightConfirmed.value = false
-    courierNotice.value = ''
     if (!isOpen) return
 
     if (orderId) {

@@ -8,7 +8,11 @@ import {
   getPackingSessionState,
   CUSTOMER_MESSAGES_TABLE,
   ORDER_PACKING_ACTIVE_STATE,
-  ORDER_PACKING_ELIGIBLE_STATUSES
+  ORDER_PACKING_COMPLETED_STATE,
+  ORDER_PACKING_ELIGIBLE_STATUSES,
+  ORDER_PACKING_SESSIONS_TABLE,
+  isPackingWorkSessionStale,
+  readPackingWorkSessions
 } from '../../../utils/orderPacking'
 
 const normalizePage = (value) => {
@@ -35,6 +39,22 @@ export default defineEventHandler(async (event) => {
   const pageSize = normalizePageSize(query.pageSize || query.page_size)
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
+
+  if (query.view === 'confirmed') {
+    const { data: rows, count, error } = await supabaseAdmin.from(ORDER_PACKING_SESSIONS_TABLE)
+      .select('id, order_id, processor_name, completed_at', { count: 'exact' }).eq('status', ORDER_PACKING_COMPLETED_STATE)
+      .order('completed_at', { ascending: false }).order('id', { ascending: false }).range(from, to)
+    if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load confirmed orders.' })
+    const ids = (rows || []).map(row => row.order_id)
+    const [orders, jobs] = ids.length ? await Promise.all([
+      supabaseAdmin.from('customer_orders').select('id, order_number, first_name, last_name, status, payment_method, total_amount').in('id', ids),
+      supabaseAdmin.from('shipping_order_jobs').select('order_id, state, awb, label_storage_path, label_sha256').in('order_id', ids)
+    ]) : [{ data: [] }, { data: [] }]
+    if (orders.error || jobs.error) throw createError({ statusCode: 500, statusMessage: 'Could not load confirmed orders.' })
+    const orderById = new Map((orders.data || []).map(row => [row.id, row])), jobByOrder = new Map((jobs.data || []).map(row => [row.order_id, row]))
+    return { total: Number(count || 0), page, pageSize, orders: (rows || []).map(row => { const order = orderById.get(row.order_id) || {}, job = jobByOrder.get(row.order_id)
+      return { session_id: row.id, order_id: row.order_id, processor_name: row.processor_name, completed_at: row.completed_at, order_number: order.order_number || null, customer_name: `${order.first_name || ''} ${order.last_name || ''}`.trim(), status: order.status || null, payment_method: order.payment_method || null, total_amount: order.total_amount ?? null, courier_state: job?.state || null, awb: job?.awb || null, label_ready: Boolean(job?.label_storage_path && job?.label_sha256) } }) }
+  }
 
   const currentAdminSession = await getAdminActiveOrderPackingSession(
     supabaseAdmin,
@@ -119,6 +139,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const workSessions = await readPackingWorkSessions(supabaseAdmin, activeSessions.map(session => session.work_session_id))
   const processorMap = new Map(
     (processorsResult.data || []).map((processor) => [
       String(processor.id),
@@ -180,6 +201,7 @@ export default defineEventHandler(async (event) => {
           processor_email: processor?.email || null,
           processor,
           can_resume: isCurrentAdmin,
+          can_take_over: !isCurrentAdmin && isPackingWorkSessionStale(workSessions.get(String(session.work_session_id))),
           is_current_admin: isCurrentAdmin,
           isCurrentAdmin
         }

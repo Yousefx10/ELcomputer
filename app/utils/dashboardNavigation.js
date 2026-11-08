@@ -73,7 +73,7 @@ export const dashboardNavigationGroups = [
   group('orders', 'Orders', 'shopping-bag', { paths: ['/dashboard/orders'], prefixes: ['/dashboard/orders/'] }, [
     child('orders', 'All orders', 'list', '/dashboard/orders', 'view', ['', 'all'], 'dashboard.orders'),
     child('recent-orders', 'Recent orders', 'clock', '/dashboard/orders', 'view', ['recent'], 'dashboard.orders'),
-    child('confirm-orders', 'Confirm & pack', 'scan-barcode', '/dashboard/orders/confirm', null, [], 'dashboard.orders')
+    child('confirm-orders', 'Confirm Orders', 'package-check', '/dashboard/orders/confirm', null, [], 'dashboard.orders')
   ], { permission: 'dashboard.orders' }),
   group('products', 'Products', 'package', { paths: ['/dashboard/products', '/dashboard/products/add', '/dashboard/products/transfer'], prefixes: ['/dashboard/products/edit/'] }, [
     { ...child('all-products', 'All products', 'boxes', '/dashboard/products', 'status', ['', 'all'], 'products.view'), match: { paths: ['/dashboard/products'], prefixes: ['/dashboard/products/edit/'], queryKey: 'status', queryValues: ['', 'all'] } },

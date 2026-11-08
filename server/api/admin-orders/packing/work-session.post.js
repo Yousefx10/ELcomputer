@@ -3,6 +3,8 @@ import { recordAdminActivity } from '../../../utils/adminLogs'
 import { requireAdminRequest } from '../../../utils/adminRequest'
 import {
   getAdminActivePackingWorkSession,
+  isOrderPackingUuid,
+  isPackingWorkSessionStale,
   ORDER_PACKING_WORK_SESSIONS_TABLE,
   throwOrderPackingDatabaseError
 } from '../../../utils/orderPacking'
@@ -20,11 +22,17 @@ export default defineEventHandler(async (event) => {
 
   setHeader(event, 'Cache-Control', 'private, no-store')
 
-  if (!['start', 'close'].includes(action)) {
+  if (!['start', 'heartbeat', 'close'].includes(action)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Choose start or close.'
     })
+  }
+
+  const rawClientId = String(body?.clientId || '').toLowerCase()
+  const clientId = isOrderPackingUuid(rawClientId) ? rawClientId : ''
+  if (action === 'heartbeat' && !clientId) {
+    throw createError({ statusCode: 400, statusMessage: 'This screen could not be identified. Refresh and try again.' })
   }
 
   const activeWorkSession = await getAdminActivePackingWorkSession(
@@ -32,9 +40,27 @@ export default defineEventHandler(async (event) => {
     adminUser.id
   )
 
+  const markSeen = async () => {
+    const { data, error } = await supabaseAdmin.from(ORDER_PACKING_WORK_SESSIONS_TABLE)
+      .update({ client_id: clientId, last_seen_at: new Date().toISOString() })
+      .eq('id', activeWorkSession.id).eq('admin_user_id', adminUser.id).eq('status', 'active').select('*').maybeSingle()
+    if (error) throwOrderPackingDatabaseError(error, 'Could not update your packing session.')
+    return data
+  }
+
+  if (action === 'heartbeat') {
+    if (!activeWorkSession) throw createError({ statusCode: 409, statusMessage: 'Your packing session is closed. Start a new session.', data: { code: 'session_closed' } })
+    if (activeWorkSession.client_id && activeWorkSession.client_id !== clientId) throw createError({ statusCode: 409, statusMessage: 'This session moved to another screen.', data: { code: 'moved' } })
+    await markSeen()
+    return { ok: true }
+  }
+
   if (action === 'start') {
     if (activeWorkSession) {
-      return { workSession: activeWorkSession, resumed: true }
+      if (clientId && activeWorkSession.client_id && activeWorkSession.client_id !== clientId && !isPackingWorkSessionStale(activeWorkSession) && body?.force !== true) {
+        throw createError({ statusCode: 409, statusMessage: 'Your session is open on another screen.', data: { code: 'open_elsewhere' } })
+      }
+      return { workSession: clientId ? await markSeen() || activeWorkSession : activeWorkSession, resumed: true }
     }
 
     const now = new Date().toISOString()
@@ -45,6 +71,7 @@ export default defineEventHandler(async (event) => {
         operator_name: getOperatorName(adminUser),
         operator_email: String(adminUser.email || '').trim().toLowerCase() || null,
         status: 'active',
+        ...(clientId ? { client_id: clientId, last_seen_at: now } : {}),
         started_at: now,
         updated_at: now
       })

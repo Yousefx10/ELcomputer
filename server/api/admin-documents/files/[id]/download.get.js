@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
-import { getRouterParam, send, setHeader } from 'h3'
+import { createError, getRouterParam, send, setHeader } from 'h3'
 import { requireAdminRequest } from '../../../../utils/adminRequest'
+import { sendPackingVideo } from '../../../../utils/packingVideoResponse'
 import {
   DOCUMENTS_BUCKET,
   getDocumentRecord,
@@ -27,6 +28,14 @@ export default defineEventHandler(async (event) => {
     adminUser,
     folderId: document.folder_id
   })
+
+  if (document.packing_video_id) {
+    const { data: video, error: videoError } = await supabaseAdmin.from('order_packing_videos').select('*').eq('id', document.packing_video_id).maybeSingle()
+    if (videoError) throwDocumentsDataError(videoError, 'Could not download the document.')
+    if (video?.status !== 'ready') throw createError({ statusCode: 404, statusMessage: 'Packing video not found.' })
+    await touchRecentDocument(supabaseAdmin, adminUser.id, document.id)
+    return sendPackingVideo(event, video, document.name)
+  }
 
   const { data, error } = await supabaseAdmin.storage
     .from(DOCUMENTS_BUCKET)

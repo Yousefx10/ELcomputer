@@ -153,7 +153,7 @@ export const requireDocumentsPermission = (adminUser, { write = false } = {}) =>
 const getFolderRecord = async (supabaseAdmin, folderId) => {
   const { data, error } = await supabaseAdmin
     .from('document_folders')
-    .select('id, parent_id, name, is_restricted, created_by, created_at, updated_at')
+    .select('id, parent_id, name, is_restricted, is_system, created_by, created_at, updated_at')
     .eq('id', folderId)
     .maybeSingle()
 
@@ -231,6 +231,14 @@ const applyFolderRestriction = (currentAccess, folder, permissionLevel) => {
   return 'editor'
 }
 
+// Packing videos are evidence: read-only, and only for staff who can already open orders.
+const assertSystemFolderAccess = (lineage, adminUser, write) => {
+  if (!lineage.some(folder => folder.is_system)) return false
+  if (write) throw createError({ statusCode: 403, statusMessage: 'This folder is managed by the system.' })
+  if (!hasAdminPermission(adminUser, 'dashboard.orders')) throw createError({ statusCode: 403, statusMessage: 'You do not have access to this folder.' })
+  return true
+}
+
 export const requireDocumentFolderAccess = async ({
   supabaseAdmin,
   adminUser,
@@ -246,17 +254,19 @@ export const requireDocumentFolderAccess = async ({
 
   if (adminUser.role === 'owner') {
     const lineage = await getFolderLineage(supabaseAdmin, normalizedFolderId)
+    const systemFolder = assertSystemFolderAccess(lineage, adminUser, write)
 
     return {
-      accessLevel: 'editor',
+      accessLevel: systemFolder ? 'viewer' : 'editor',
       breadcrumbs: lineage,
-      canEdit: true,
+      canEdit: !systemFolder,
       folder: lineage.at(-1) || null,
       folderId: normalizedFolderId
     }
   }
 
   const lineage = await getFolderLineage(supabaseAdmin, normalizedFolderId)
+  const systemFolder = assertSystemFolderAccess(lineage, adminUser, write)
   const restrictedFolderIds = lineage
     .filter((folder) => folder.is_restricted)
     .map((folder) => folder.id)
@@ -283,7 +293,7 @@ export const requireDocumentFolderAccess = async ({
     }
   }
 
-  const canEdit = accessLevel === 'editor' && hasAdminPermission(adminUser, 'documents.manage')
+  const canEdit = !systemFolder && accessLevel === 'editor' && hasAdminPermission(adminUser, 'documents.manage')
 
   if (write && !canEdit) {
     throw createError({
@@ -310,7 +320,7 @@ export const getAccessibleChildFolders = async ({
 }) => {
   let query = supabaseAdmin
     .from('document_folders')
-    .select('id, parent_id, name, is_restricted, created_by, created_at, updated_at')
+    .select('id, parent_id, name, is_restricted, is_system, created_by, created_at, updated_at')
     .order('name', { ascending: true })
 
   query = parentId ? query.eq('parent_id', parentId) : query.is('parent_id', null)
@@ -325,14 +335,14 @@ export const getAccessibleChildFolders = async ({
     throwDocumentsDataError(error, 'Could not load folders.')
   }
 
-  const folders = data || []
+  const folders = (data || []).filter(folder => !folder.is_system || hasAdminPermission(adminUser, 'dashboard.orders'))
 
   if (adminUser.role === 'owner') {
     return folders.map((folder) => ({
       ...folder,
-      access_level: 'editor',
-      can_edit: true,
-      can_manage_access: true,
+      access_level: folder.is_system ? 'viewer' : 'editor',
+      can_edit: !folder.is_system,
+      can_manage_access: !folder.is_system,
       type: 'folder'
     }))
   }
@@ -357,7 +367,7 @@ export const getAccessibleChildFolders = async ({
       return accessibleFolders
     }
 
-    const canEdit = accessLevel === 'editor' && hasAdminPermission(adminUser, 'documents.manage')
+    const canEdit = !folder.is_system && accessLevel === 'editor' && hasAdminPermission(adminUser, 'documents.manage')
 
     accessibleFolders.push({
       ...folder,
@@ -417,7 +427,7 @@ export const normalizeFolderMembers = (members = []) => {
 
 export const mapDocumentRecord = (document, canEdit) => ({
   ...document,
-  can_edit: Boolean(canEdit),
+  can_edit: Boolean(canEdit) && !document.packing_video_id,
   type: 'file'
 })
 
@@ -487,7 +497,7 @@ export const getDocumentRecord = async (supabaseAdmin, documentId) => {
   const normalizedDocumentId = normalizeDocumentId(documentId, { label: 'Document' })
   const { data, error } = await supabaseAdmin
     .from('documents')
-    .select('id, folder_id, name, storage_path, mime_type, size_bytes, created_by, created_at, updated_at')
+    .select('id, folder_id, name, storage_path, mime_type, size_bytes, packing_video_id, created_by, created_at, updated_at')
     .eq('id', normalizedDocumentId)
     .maybeSingle()
 

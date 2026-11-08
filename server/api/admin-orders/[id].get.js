@@ -183,6 +183,11 @@ export default defineEventHandler(async (event) => {
       && ['ready', 'untracked'].includes(orderRecord.stock_fulfillment_state)
     if (courier?.is_active && (courier.provider === 'pdc' || manualCod)) shipping = { provider: 'pdc', state: 'not_booked', awb: null, label_ready: false, events: [] }
   }
+  if (shipping) {
+    const { data: flow } = await supabaseAdmin.from('commerce_order_flow_settings').select('parcel_weight_kg').eq('id', 'default').maybeSingle()
+    shipping.default_weight_kg = Number(flow?.parcel_weight_kg || 1)
+  }
+
   return {
     order: normalizeAdminOrderRecord(orderRecord),
     items: (orderItems || []).map((item) => {

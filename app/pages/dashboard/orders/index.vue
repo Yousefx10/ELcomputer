@@ -14,7 +14,7 @@
           to="/dashboard/orders/confirm"
           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         >
-          <Icon name="lucide:scan-barcode" size="18" />
+          <Icon name="lucide:package-check" size="18" />
           {{ $t('common.confirmOrders') }}
           <Icon name="lucide:arrow-up-right" size="16" class="ms-2 text-gray-400" />
         </NuxtLinkLocale>

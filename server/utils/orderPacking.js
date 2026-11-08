@@ -14,6 +14,14 @@ export const ORDER_PACKING_ELIGIBLE_STATUSES = ['pending_payment', 'processing']
 export const ORDER_PACKING_ACTIVE_STATE = 'active'
 export const ORDER_PACKING_COMPLETED_STATE = 'completed'
 export const DEFAULT_PACKED_ORDER_STATUS = 'ready_to_deliver'
+export { PACKING_STALE_MS, isPackingWorkSessionStale } from './packingPresence.js'
+export const readPackingWorkSessions = async (supabaseAdmin, ids) => {
+  const unique = [...new Set(ids.filter(Boolean).map(String))]
+  if (!unique.length) return new Map()
+  const { data, error } = await supabaseAdmin.from(ORDER_PACKING_WORK_SESSIONS_TABLE).select('id, status, last_seen_at, client_id').in('id', unique)
+  if (error) throwOrderPackingDatabaseError(error, 'Could not check who is packing this order.')
+  return new Map((data || []).map(row => [String(row.id), row]))
+}
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const MISSING_PACKING_SCHEMA_CODES = new Set([
@@ -478,6 +486,7 @@ export const getOrderPackingDetail = async ({
     return {
       ...item,
       product_sku: item.product_sku || product.sku || null,
+      can_check: orderResult.data.stock_fulfillment_state === 'untracked',
       is_serialized: orderResult.data.stock_fulfillment_state === 'untracked' ? false : item.is_serialized ?? product.is_serialized ?? Boolean(
         item.variant_id || serializedUnits.length
       ),

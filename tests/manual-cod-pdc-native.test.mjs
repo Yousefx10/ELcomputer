@@ -41,7 +41,7 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
  const order=async id=>(await f.db.query('select * from public.customer_orders where id=$1',[id])).rows[0]
  try{
   // A private owned reference row satisfies the current schema103 location contract.
-  await f.db.query("insert into private.delivery_location_cities(code,governorate_code,name_en,name_ar,is_active) values('owned-fixture-city','eg-cairo','Fixture city','مدينة اختبار',true)")
+  await f.db.query("insert into private.delivery_location_cities(code,governorate_code,name_en,name_ar,is_active) values('owned-fixture-city','eg-cairo','Fixture city','مدينة اختبار',true) on conflict do nothing")
   await f.db.query("update public.site_settings set inventory_tracking_required=false,payment_card_enabled=true,payment_cash_fee=50,backorder_fulfillment_message='Delivery timing depends on your address.',backorder_fulfillment_message_ar='تختلف مدة التوصيل حسب العنوان.' where key='default'")
   await f.db.query("update public.commerce_shipping_companies set client_shipping_price=50,cod_collection_provider='pdc'")
   await f.db.query("update public.shipping_provider_settings set is_enabled=true,cod_enabled=true,auto_create_labels=false,company_id='123',product_id=64,origin_city_id=1,origin_address='Owned pickup street',origin_phone='01000000000',origin_contact_name='Owned pickup',cities_cache='[{\"id\":1},{\"id\":2}]',products_cache='[{\"id\":64}]',access_token_encrypted=$1,webhook_secret_encrypted=$2 where id='pdc'",[encryptShippingSecret('OWNED-TOKEN'),encryptShippingSecret('owned-independent-webhook-secret-over-32-characters')])
@@ -76,7 +76,7 @@ test('staff-approved Manual COD uses existing PDC Dashboard dispatch without pre
    assert.equal(before.stock_fulfillment_state,'untracked');assert.equal(Number(before.total_amount),200)
    assert.equal((await f.db.query('select count(*)::int n from public.commerce_serialized_units where customer_order_id=$1',[ready])).rows[0].n,0)
    const detail=await f.call('/api/admin-orders/'+ready,{actor:'owner'});assert.equal(detail.response.status,200,JSON.stringify(detail.body))
-   assert.deepEqual(detail.body.shipping,{provider:'pdc',state:'not_booked',awb:null,label_ready:false,events:[]})
+   assert.deepEqual(detail.body.shipping,{provider:'pdc',state:'not_booked',awb:null,label_ready:false,events:[],default_weight_kg:1})
    const mode=await processPdcOutboundQueue({supabaseAdmin:f.client,runtime:f.config,fetcher});assert.equal(mode.active,false);assert.equal(sent.length,0)
   })
   await t.test('only authorized staff can request a shipment; browser COD amounts are rejected',async()=>{

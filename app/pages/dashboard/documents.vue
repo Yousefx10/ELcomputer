@@ -1029,6 +1029,7 @@ const getFileIcon = (item) => {
   const extension = String(item.name || '').split('.').pop()?.toLowerCase()
   if (type.includes('pdf') || extension === 'pdf') return 'lucide:file-text'
   if (type.startsWith('image/')) return 'lucide:file-image'
+  if (type.startsWith('video/')) return 'lucide:file-video'
   if (['xls', 'xlsx', 'csv', 'ods'].includes(extension)) return 'lucide:sheet'
   if (['ppt', 'pptx'].includes(extension)) return 'lucide:presentation'
   if (['zip', 'rar', '7z'].includes(extension)) return 'lucide:file-archive'

@@ -87,6 +87,7 @@ export async function createPrivatePackingFixture(options = {}) {
     const receipt = await setupRpc('commerce_create_procurement_order', { p_supplier_id: fixture.supplier, p_warehouse_id: fixture.warehouse, p_invoice_number: 'PACKING-' + randomUUID(), p_notes: 'Owned synthetic stock', p_paid_amount: 0, p_items: [{ product_id: product, variant_id: variant, quantity: 60, unit_cost: 40 }] })
     if (receipt.error) throw Error(receipt.error.message)
     await db.query("update public.site_settings set payment_cash_enabled=true,payment_cash_fee=0,allow_out_of_stock_purchases=false where key='default'")
+    await db.query("do $$ begin if to_regclass('private.delivery_location_cities') is not null then insert into private.delivery_location_cities(code,governorate_code,name_en,name_ar,is_active) values('owned-fixture-city','eg-cairo','Fixture city','مدينة اختبار',true) on conflict do nothing; end if; end $$")
     const company = (await db.query("insert into public.commerce_shipping_companies(name,checkout_enabled,checkout_governorates,client_shipping_price) values('Fixture delivery',true,array['Cairo'],7) returning id")).rows[0].id
     if ((await db.query("select exists(select 1 from information_schema.columns where table_schema='public' and table_name='commerce_shipping_companies' and column_name='cod_collection_enabled') present")).rows[0].present) {
       await db.query('update public.commerce_shipping_companies set cod_collection_enabled=true where id=$1', [company])

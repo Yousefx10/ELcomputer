@@ -148,3 +148,19 @@ use the project's Node22.23.1/npm10.9.8. The later approved foundation release
 passed actual Linux/systemd and production schema/HTTP checks. Authenticated
 browser/camera and real packing acceptance remain pending. No real customer order,
 provider activation or Git push occurred.
+
+## Confirm Orders workspace
+
+Files stay under the generated keys above in the private video directory. Documents
+shows each finished video as `Packing videos / date / packer / packer - order.ext`.
+Those folders and rows are system-managed and read-only, and opening them needs the
+Orders permission as well as Documents access. The date uses the store's business
+timezone. Publishing runs after completion and can never block it.
+
+The page reports every 20 seconds. After 150 seconds of silence another packer can
+take over the order, which discards its unfinished video. Recordings live in the
+browser, so a reload returns an unfinished order to the queue unless its video was
+already saved. One screen holds a session at a time; another must choose to take it.
+
+On orders with no stock units to scan, a packer can tap Check on each line. Those rows
+are stored with `scan_type = 'checked'`. Orders with assigned units still need exact scans.

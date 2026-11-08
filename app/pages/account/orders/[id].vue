@@ -32,7 +32,7 @@ const downloadBill = async () => {
   billBusy.value = true; billError.value = ''
   try {
     const { data } = await supabase.auth.getSession()
-    await downloadPdf(`/api/account/orders/${encodeURIComponent(String(route.params.id))}/bill`, { authorization: `Bearer ${data.session?.access_token || ''}` }, `Bill-${detail.value.bill.number}.pdf`)
+    await downloadPdf(`/api/account/orders/${encodeURIComponent(String(route.params.id))}?bill=1`, { authorization: `Bearer ${data.session?.access_token || ''}` }, `Bill-${detail.value.bill.number}.pdf`)
   } catch (cause) { billError.value = cause?.statusMessage || 'The bill is unavailable. Try again later.' }
   finally { billBusy.value = false }
 }

@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { createError } from 'h3'
+import { createError, setHeader } from 'h3'
 import { renderBillPdf } from './billPdf.js'
 import { normalizeBillDesign } from '../../app/utils/billDesign.js'
 import { saveShippingDocument, readShippingDocument } from './privateShippingDocuments.js'
@@ -86,6 +86,19 @@ export const readBillSummary = async (db, orderId) => {
   catch { return null }
 }
 export const readOrderBillPdf = async bill => readShippingDocument({ path: bill.file_path, sha256: bill.sha256, size_bytes: bill.size_bytes })
+export const sendCustomerBill = async (event, db, userId, orderId) => {
+  for (const [k, v] of Object.entries({ 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff' })) setHeader(event, k, v)
+  const owned = await db.from('customer_orders').select('id').eq('id', orderId).eq('user_id', userId).maybeSingle()
+  if (owned.error) throw unavailable()
+  if (!owned.data) throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
+  const { data: bill, error } = await db.rpc('order_bill_get', { p_order: orderId })
+  if (error) throw unavailable()
+  if (!bill) throw createError({ statusCode: 404, statusMessage: 'The bill is not ready yet.' })
+  const bytes = await readOrderBillPdf(bill)
+  setHeader(event, 'Content-Type', 'application/pdf')
+  setHeader(event, 'Content-Disposition', `attachment; filename="${billFileName(bill)}"`)
+  return bytes
+}
 export const billFileName = bill => `Bill-${String(bill.bill_number).replace(/[^A-Za-z0-9_-]/g, '-')}.pdf`
 
 const SKIPPED = { no_bill: 'The bill is not ready yet.', email_off: 'Order emails are off.', recipient_unverified: 'The customer email is not verified.',

@@ -7,7 +7,7 @@ import { readCustomerShipment } from '../../../utils/customerShipment'
 import { throwRequestDatabaseError } from '../../../utils/requestDatabaseError'
 import { readOwnedAfterSalesEntitlements } from '../../../utils/afterSalesPolicy.js'
 import { readCustomerPayment } from '../../../utils/payments/customerStatus.js'
-import { readBillSummary } from '../../../utils/customerBills.js'
+import { readBillSummary, sendCustomerBill } from '../../../utils/customerBills.js'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -31,6 +31,9 @@ export default defineEventHandler(async event => {
       await processPdcTracking({ db: supabaseAdmin, orderId: order.id })
     } catch { /* the saved status is still correct to show */ }
   }
+
+  // My account -> Download bill. This route is already allowed by the proxy.
+  if (getQuery(event).bill === '1') return sendCustomerBill(event, supabaseAdmin, authUser.id, order.id)
 
   const [itemsResult, shippingResult, afterSales, customerPayment] = await Promise.all([
     supabaseAdmin.from('customer_order_items')

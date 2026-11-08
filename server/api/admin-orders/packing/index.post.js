@@ -14,6 +14,8 @@ import {
   ORDER_PACKING_ELIGIBLE_STATUSES,
   ORDER_PACKING_SESSIONS_TABLE,
   ORDER_PACKING_WORK_SESSIONS_TABLE,
+  isPackingWorkSessionStale,
+  readPackingWorkSessions,
   throwOrderPackingDatabaseError
 } from '../../../utils/orderPacking'
 
@@ -217,9 +219,22 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const activeOrderSession = orderSessions.find(
+  let activeOrderSession = orderSessions.find(
     (session) => getPackingSessionState(session) === ORDER_PACKING_ACTIVE_STATE
   )
+
+  // A packer whose screen stopped reporting can be replaced. Their unfinished video is discarded.
+  if (activeOrderSession && getPackingSessionAdminId(activeOrderSession) !== String(adminUser.id) && body?.takeover === true) {
+    const workSessions = await readPackingWorkSessions(supabaseAdmin, [activeOrderSession.work_session_id])
+    if (isPackingWorkSessionStale(workSessions.get(String(activeOrderSession.work_session_id)))) {
+      const { error: takeoverError } = await supabaseAdmin.from(ORDER_PACKING_SESSIONS_TABLE)
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() }).eq('id', activeOrderSession.id).eq('status', ORDER_PACKING_ACTIVE_STATE)
+      if (takeoverError) throwOrderPackingDatabaseError(takeoverError, 'Could not take over this order.')
+      await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'orders.packing.takeover', description: `Took over packing order ${getOrderReference(order)}.`,
+        metadata: { order_id: orderId, order_number: order.order_number || null, previous_session_id: activeOrderSession.id, previous_processor: activeOrderSession.processor_name || null } })
+      activeOrderSession = undefined
+    }
+  }
 
   if (
     activeOrderSession

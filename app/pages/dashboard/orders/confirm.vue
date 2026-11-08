@@ -1,2419 +1,650 @@
 <template>
-  <div>
-    <div class="mx-auto max-w-[1400px] space-y-6">
-      <DashboardPageIntro
-        :title="$t('common.confirmOrders')"
-        layout-class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"
-        title-class="text-4xl font-bold text-gray-900"
-      >
-        <template #actions>
-          <NuxtLinkLocale
-            to="/dashboard/orders"
-            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
-          >
-            <Icon name="lucide:arrow-left" size="17" class="directional-icon" />
-            {{ $t('common.orders') }}
-          </NuxtLinkLocale>
-        </template>
-      </DashboardPageIntro>
-
-      <DashboardSecondaryNav :items="secondaryNavItems" />
-
-      <div
-        v-if="pageError"
-        class="flex items-start justify-between gap-4 rounded-2xl bg-red-50 p-4 text-sm text-red-700 shadow"
-        role="alert"
-      >
-        <p>{{ $uiMessage(pageError) }}</p>
-        <button
-          type="button"
-          :aria-label="$t('common.dismissError')"
-          class="shrink-0 rounded-lg p-1 hover:bg-red-100"
-          @click="pageError = ''"
-        >
-          <Icon name="lucide:x" size="17" />
+  <div class="flex flex-col gap-3 lg:h-[calc(100dvh-7.5rem)] xl:h-[calc(100dvh-8.25rem)]" data-confirm-orders>
+    <header class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-gray-200 bg-white px-3 py-2">
+      <div class="me-auto flex min-w-0 items-center gap-2.5">
+        <NuxtLinkLocale to="/dashboard/orders" :aria-label="$t('common.orders')" class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+          <Icon name="lucide:arrow-left" size="16" class="directional-icon" />
+        </NuxtLinkLocale>
+        <h1 class="truncate text-lg font-bold text-gray-950">{{ $t('common.confirmOrders') }}</h1>
+      </div>
+      <div v-if="workspaceOpen" role="tablist" class="flex rounded-lg bg-gray-100 p-0.5 text-sm font-semibold">
+        <button role="tab" type="button" :aria-selected="tab === 'queue'" class="min-h-9 rounded-md px-3" :class="tab === 'queue' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500'" @click="tab = 'queue'">
+          {{ $t('confirmOrders.tabQueue') }} <span class="ms-1 text-gray-400">{{ queueTotal }}</span>
+        </button>
+        <button role="tab" type="button" :aria-selected="tab === 'done'" class="min-h-9 rounded-md px-3" :class="tab === 'done' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500'" @click="showConfirmed">
+          {{ $t('confirmOrders.tabDone') }}
         </button>
       </div>
-
-      <div
-        v-if="pageNotice.message"
-        class="flex items-start justify-between gap-4 rounded-2xl p-4 text-sm shadow"
-        :class="pageNotice.type === 'success'
-          ? 'bg-green-50 text-green-800'
-          : 'bg-blue-50 text-blue-800'"
-        role="status"
-      >
-        <div class="flex items-start gap-3">
-          <Icon
-            :name="pageNotice.type === 'success' ? 'lucide:circle-check' : 'lucide:info'"
-            size="19"
-            class="mt-0.5 shrink-0"
-          />
-          <p>{{ pageNotice.message }}</p>
-        </div>
-        <button
-          type="button"
-          :aria-label="$t('common.dismissNotice')"
-          class="shrink-0 rounded-lg p-1 hover:bg-black/5"
-          @click="clearPageNotice"
-        >
-          <Icon name="lucide:x" size="17" />
+      <div v-if="workspaceOpen" class="flex items-center gap-3 text-sm text-gray-500">
+        <span class="hidden sm:inline">{{ workSession.operator_name || $t('common.operator') }} · {{ workSessionElapsed }}</span>
+        <button type="button" :disabled="workSessionActionLoading" class="min-h-9 rounded-lg border border-gray-300 px-3 font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50" @click="closeWorkSession">
+          {{ workSessionActionLoading ? $t('common.closing') : $t('common.closeSession') }}
         </button>
       </div>
+    </header>
 
-      <section
-        v-if="workSessionLoading"
-        class="rounded-2xl bg-white p-10 text-center text-gray-500 shadow"
-      >
-        <Icon name="lucide:loader-circle" size="28" class="mx-auto animate-spin" />
-        <p class="mt-3 text-sm">{{ $t('dashboard.orders.checkingYourPackingSession') }}</p>
-      </section>
+    <p v-if="signedOut" class="rounded-lg bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900" role="alert">{{ $t('confirmOrders.signedOut') }}</p>
+    <div v-if="pageError" class="flex items-start justify-between gap-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+      <p>{{ $uiMessage(pageError) }}</p>
+      <button type="button" :aria-label="$t('common.dismissError')" class="shrink-0" @click="pageError = ''"><Icon name="lucide:x" size="16" /></button>
+    </div>
+    <div v-if="pageNotice" class="flex items-start justify-between gap-3 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900" role="status">
+      <p>{{ pageNotice }}</p>
+      <button type="button" :aria-label="$t('common.dismissNotice')" class="shrink-0" @click="pageNotice = ''"><Icon name="lucide:x" size="16" /></button>
+    </div>
 
-      <section
-        v-else-if="!workSessionActive"
-        class="rounded-2xl bg-white p-8 shadow sm:p-10"
-      >
-        <div class="max-w-xl">
-          <span class="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-700">
-            <Icon name="lucide:play" size="23" />
-          </span>
-          <h2 class="mt-5 text-2xl font-bold text-gray-950">{{ $t('common.startSession') }}</h2>
-          <p class="mt-2 text-sm text-gray-500">{{ $t('dashboard.orders.startToViewAndConfirmOrders') }}</p>
-          <button
-            type="button"
-            :disabled="workSessionActionLoading"
-            class="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:opacity-50"
-            @click="startWorkSession"
-          >
-            <Icon
-              :name="workSessionActionLoading ? 'lucide:loader-circle' : 'lucide:play'"
-              size="18"
-              :class="workSessionActionLoading ? 'animate-spin' : ''"
-            />
-            {{ workSessionActionLoading ? $t('common.starting') : $t('common.startSession') }}
+    <section v-if="workSessionLoading" class="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500" role="status">
+      <Icon name="lucide:loader-circle" size="24" class="mx-auto animate-spin" />
+    </section>
+
+    <section v-else-if="moved" class="rounded-xl border border-gray-200 bg-white p-8 text-center">
+      <h2 class="text-lg font-bold text-gray-950">{{ $t('confirmOrders.movedTitle') }}</h2>
+      <p class="mt-1 text-sm text-gray-500">{{ $t('confirmOrders.movedHelp') }}</p>
+      <button type="button" class="mt-4 min-h-10 rounded-lg bg-gray-900 px-4 text-sm font-semibold text-white" @click="reloadPage">{{ $t('confirmOrders.reload') }}</button>
+    </section>
+
+    <section v-else-if="elsewhere" class="rounded-xl border border-gray-200 bg-white p-8 text-center">
+      <h2 class="text-lg font-bold text-gray-950">{{ $t('confirmOrders.elsewhereTitle') }}</h2>
+      <p class="mt-1 text-sm text-gray-500">{{ $t('confirmOrders.elsewhereHelp') }}</p>
+      <button type="button" :disabled="workSessionActionLoading" class="mt-4 min-h-10 rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white disabled:opacity-50" @click="claimScreen(true)">{{ $t('confirmOrders.useHere') }}</button>
+    </section>
+
+    <section v-else-if="!workspaceOpen" class="rounded-xl border border-gray-200 bg-white p-8 text-center">
+      <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-700"><Icon name="lucide:package-check" size="24" /></span>
+      <h2 class="mt-3 text-lg font-bold text-gray-950">{{ $t('confirmOrders.startTitle') }}</h2>
+      <p class="mt-1 text-sm text-gray-500">{{ $t('confirmOrders.startHelp') }}</p>
+      <button type="button" :disabled="workSessionActionLoading" class="mt-4 min-h-11 rounded-lg bg-blue-700 px-5 text-sm font-semibold text-white disabled:opacity-50" @click="claimScreen()">
+        {{ workSessionActionLoading ? $t('common.starting') : $t('common.startSession') }}
+      </button>
+    </section>
+
+    <div v-if="workspaceOpen" v-show="tab === 'queue'" class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[17rem_minmax(0,1fr)_20rem]">
+      <aside class="max-h-72 min-h-0 flex-col rounded-xl border border-gray-200 bg-white lg:flex lg:max-h-none" :class="packingDetail ? 'hidden' : 'flex'">
+        <div class="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+          <h2 class="text-sm font-bold text-gray-900">{{ $t('common.confirmationQueue') }}</h2>
+          <button type="button" :disabled="queueLoading" :aria-label="$t('dashboard.orders.refreshConfirmationQueue')" class="grid h-8 w-8 place-items-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-50" @click="loadQueue()">
+            <Icon name="lucide:refresh-cw" size="15" :class="queueLoading ? 'animate-spin' : ''" />
           </button>
         </div>
-      </section>
+        <p v-if="!queueOrders.length && !queueLoading" class="p-6 text-center text-sm text-gray-500">{{ $t('common.queueIsClear') }}</p>
+        <ul class="min-h-0 flex-1 space-y-1.5 overflow-y-auto p-2">
+          <li v-for="queueOrder in queueOrders" :key="queueOrder.id">
+            <button type="button" :disabled="queueRowDisabled(queueOrder)" class="w-full rounded-lg border px-2.5 py-2 text-start transition disabled:cursor-not-allowed disabled:opacity-60" :class="selectedOrderId === queueOrder.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-400'" @click="openQueueOrder(queueOrder)">
+              <span class="flex items-center justify-between gap-2">
+                <span class="truncate text-sm font-bold text-gray-900">{{ getOrderNumber(queueOrder) }}</span>
+                <Icon v-if="openingOrderId === String(queueOrder.id)" name="lucide:loader-circle" size="14" class="shrink-0 animate-spin text-blue-600" />
+              </span>
+              <span class="mt-0.5 block truncate text-xs text-gray-500">{{ getCustomerName(queueOrder) }} · {{ $t('common.valueItems', { value0: Number(queueOrder.total_quantity || 0) }) }}</span>
+              <span v-if="queueOrder.has_customer_reply" class="mt-1 inline-block rounded bg-fuchsia-100 px-1.5 py-0.5 text-[11px] font-semibold text-fuchsia-800">{{ $t('common.purchaserReplied') }}</span>
+              <span v-if="isLockedByOther(queueOrder)" class="mt-1 block truncate text-[11px] font-semibold text-amber-700">{{ queueOrder.active_session.can_take_over ? $t('confirmOrders.disconnected', { value0: processorName(queueOrder) }) : $t('confirmOrders.inProgress', { value0: processorName(queueOrder) }) }}</span>
+            </button>
+            <button v-if="queueOrder.active_session?.can_take_over" type="button" :disabled="!cameraConnected || Boolean(openingOrderId) || hasOpenOrder" class="mt-1 min-h-8 w-full rounded-lg border border-amber-300 text-xs font-semibold text-amber-800 disabled:opacity-50" @click="takeOverOrder(queueOrder)">{{ $t('confirmOrders.takeover') }}</button>
+          </li>
+        </ul>
+      </aside>
 
-      <section
-        v-else
-        class="overflow-hidden rounded-2xl bg-white shadow"
-      >
-        <div class="grid gap-px bg-gray-200 lg:grid-cols-[minmax(0,1fr)_440px]">
-          <div class="bg-white p-6">
-            <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-              <div class="flex items-center gap-4">
-                <span class="grid h-12 w-12 place-items-center rounded-2xl bg-green-100 text-green-700">
-                  <Icon name="lucide:circle-user-round" size="24" />
-                </span>
-                <div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-xl font-bold text-gray-950">{{ $t('common.sessionActive') }}</h2>
-                  </div>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ workSession.operator_name || $t('common.operator') }} · {{ $uiLabel(workSessionElapsed) }}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                :disabled="workSessionActionLoading"
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="closeWorkSession"
-              >
-                <Icon name="lucide:log-out" size="17" />
-                {{ workSessionActionLoading ? $t('common.closing') : $t('common.closeSession') }}
-              </button>
+      <main class="flex min-h-0 min-w-0 flex-col rounded-xl border border-gray-200 bg-white">
+        <div v-if="detailLoading" class="m-auto p-10 text-gray-400" role="status"><Icon name="lucide:loader-circle" size="24" class="animate-spin" /></div>
+        <div v-else-if="!packingDetail" class="m-auto p-10 text-center">
+          <Icon name="lucide:package-open" size="30" class="mx-auto text-gray-300" />
+          <p class="mt-2 text-sm font-semibold text-gray-700">{{ cameraConnected ? $t('confirmOrders.chooseOrder') : $t('confirmOrders.connectFirst') }}</p>
+        </div>
+
+        <template v-else>
+          <div class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 p-3">
+            <div class="min-w-0">
+              <h2 class="text-lg font-bold text-gray-950">{{ getOrderNumber(orderDetail) }}</h2>
+              <p class="text-sm text-gray-700">{{ getCustomerName(orderDetail) }} · <bdi dir="ltr">{{ orderDetail.phone || customerDetail.phone || $t('common.noPhoneSaved') }}</bdi></p>
+              <p class="text-sm text-gray-500">{{ deliveryLine }}</p>
             </div>
-            <p v-if="hasActivePackingOrder" class="mt-4 text-xs text-gray-500">
-              {{ $t('dashboard.orders.closingClearsThisOrderSPackingProgress') }}
-            </p>
-          </div>
-
-          <div class="bg-gray-950 p-5 text-white">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <div class="flex items-center gap-2">
-                  <h2 class="font-bold">{{ $t('common.packingCamera') }}</h2>
-                  <span
-                    class="rounded-full px-2 py-0.5 text-xs font-bold"
-                    :class="recordingActive
-                      ? 'bg-red-500 text-white'
-                      : cameraConnected
-                        ? 'bg-green-500/20 text-green-300'
-                        : 'bg-white/10 text-gray-300'"
-                  >
-                    {{ recordingActive ? $t('common.recording') : cameraConnected ? $t('common.connected') : $t('common.required') }}
-                  </span>
-                </div>
-                <p class="mt-1 text-xs text-gray-400">{{ $t('dashboard.orders.chooseAnOrderToStartRecording') }}</p>
-              </div>
-              <Icon name="lucide:video" size="21" :class="recordingActive ? 'text-red-400' : 'text-gray-400'" />
-            </div>
-
-            <div class="mt-4 aspect-video overflow-hidden rounded-xl bg-black">
-              <video
-                ref="cameraVideoElement"
-                autoplay
-                muted
-                playsinline
-                class="h-full w-full object-cover"
-              />
-            </div>
-
-            <p v-if="cameraError" class="mt-3 text-xs text-red-300">{{ $uiMessage(cameraError) }}</p>
-            <div class="mt-4 flex flex-col gap-2 sm:flex-row">
-              <select
-                v-if="cameraDevices.length > 1"
-                v-model="selectedCameraId"
-                :disabled="cameraLoading || recordingActive"
-                class="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm text-white outline-none"
-                @change="connectCamera"
-              >
-                <option v-for="device in cameraDevices" :key="device.deviceId" :value="device.deviceId" class="text-gray-950">
-                  {{ device.label || $t('common.camera') }}
-                </option>
-              </select>
-              <button
-                type="button"
-                :disabled="cameraLoading || recordingActive"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-gray-950 disabled:opacity-50"
-                @click="connectCamera"
-              >
-                <Icon :name="cameraLoading ? 'lucide:loader-circle' : 'lucide:camera'" size="16" :class="cameraLoading ? 'animate-spin' : ''" />
-                {{ cameraLoading ? $t('common.connecting') : cameraConnected ? $t('common.reconnect') : $t('common.connectCamera') }}
-              </button>
+            <div class="text-end">
+              <p class="text-lg font-bold text-gray-950">{{ formatCurrency(orderDetail.total_amount) }}</p>
+              <p class="text-xs font-semibold text-gray-500">{{ $uiLabel(orderDetail.payment_method || $t('common.notSelected')) }}</p>
             </div>
           </div>
+
+          <template v-if="sessionCompleted">
+            <div class="min-h-0 flex-1 overflow-y-auto p-3">
+              <p class="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm font-semibold text-green-800"><Icon name="lucide:circle-check" size="17" />{{ $t('confirmOrders.doneTitle') }}</p>
+              <DashboardOrderCourierPanel :key="courierPanelKey" :order-id="String(orderDetail.id)" :session-id="String(sessionDetail.id)" :notice="courierNotice">
+                <button v-if="!externalErp" type="button" class="min-h-10 rounded-lg border border-gray-300 px-3 text-sm font-semibold" @click="printDocuments">{{ $t('common.printAgain') }}</button>
+              </DashboardOrderCourierPanel>
+            </div>
+          </template>
+
+          <template v-else-if="problemFormOpen">
+            <form class="min-h-0 flex-1 space-y-3 overflow-y-auto p-3" @submit.prevent="reportOrderProblem">
+              <h3 class="text-sm font-bold text-red-800">{{ $t('common.problemWithOrder') }}</h3>
+              <label class="block text-xs font-semibold text-gray-600">{{ $t('common.messageToPurchaserVariant2') }}
+                <textarea v-model="problemMessage" rows="4" maxlength="2000" class="mt-1 w-full rounded-lg border border-gray-300 p-2 text-sm font-normal text-gray-900" />
+              </label>
+              <p v-if="problemFormError" class="text-sm font-semibold text-red-700" role="alert">{{ $uiMessage(problemFormError) }}</p>
+              <div class="flex flex-wrap gap-2">
+                <button type="submit" :disabled="problemLoading" class="min-h-10 rounded-lg bg-gray-900 px-4 text-sm font-semibold text-white disabled:opacity-50">{{ $t('confirmOrders.problemHold') }}</button>
+                <button type="button" :disabled="problemLoading" class="min-h-10 rounded-lg border border-red-300 px-4 text-sm font-semibold text-red-700 disabled:opacity-50" @click="cancelOrder">{{ $t('confirmOrders.cancelOrder') }}</button>
+                <button type="button" :disabled="problemLoading" class="min-h-10 rounded-lg px-3 text-sm font-semibold text-gray-600" @click="problemFormOpen = false">{{ $t('common.close') }}</button>
+              </div>
+            </form>
+          </template>
+
+          <template v-else>
+            <div class="border-b border-gray-100 p-3">
+              <div class="flex items-center justify-between gap-3 text-sm">
+                <p class="font-semibold text-gray-800">{{ $t('confirmOrders.progress', { value0: progress.scanned, value1: progress.required }) }}</p>
+                <p v-if="scanFeedback.message" class="truncate text-xs font-semibold" :class="scanFeedback.type === 'success' ? 'text-green-700' : 'text-red-700'" :role="scanFeedback.type === 'success' ? 'status' : 'alert'">{{ $uiMessage(scanFeedback.message) }}</p>
+              </div>
+              <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray-100"><div class="h-full bg-green-500 transition-all" :style="{ width: `${progress.percentage}%` }" /></div>
+              <form class="mt-2 flex gap-2" @submit.prevent="scanItem">
+                <input ref="scanInputElement" v-model="scanCode" :disabled="!recordingActive || allItemsPacked" autocomplete="off" :aria-label="$t('common.itemCode')" :placeholder="$t('confirmOrders.scanPlaceholder')" class="min-h-10 min-w-0 flex-1 rounded-lg border border-gray-300 px-3 text-sm disabled:bg-gray-50">
+                <button type="submit" :disabled="scanLoading || !scanCode.trim()" class="min-h-10 rounded-lg border border-gray-300 px-3 text-sm font-semibold disabled:opacity-50">{{ $t('confirmOrders.scan') }}</button>
+              </form>
+            </div>
+            <ul class="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
+              <li v-for="item in orderItems" :key="item.id" class="flex items-center gap-3 p-3">
+                <img v-if="item.image_url" :src="item.image_url" :alt="item.product_title || ''" class="h-12 w-12 shrink-0 rounded-lg border border-gray-100 object-contain">
+                <span v-else class="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-gray-100 text-gray-400"><Icon name="lucide:package" size="18" /></span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-semibold text-gray-900">{{ item.product_title || $t('common.product') }}</p>
+                  <p class="text-xs text-gray-500">{{ [meaningfulOption(item), $t('confirmOrders.quantity', { value0: item.quantity })].filter(Boolean).join(' · ') }}</p>
+                </div>
+                <span v-if="isItemPacked(item)" class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-green-700"><Icon name="lucide:circle-check" size="17" />{{ $t('confirmOrders.checked') }}</span>
+                <button v-else-if="item.can_check" type="button" :disabled="!recordingActive || checkingItemId === String(item.id)" class="min-h-10 shrink-0 rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white disabled:opacity-50" @click="checkItem(item)">{{ $t('confirmOrders.check') }}</button>
+                <span v-else class="shrink-0 text-xs font-semibold text-gray-500">{{ getScannedQuantity(item) }} / {{ item.quantity }}</span>
+              </li>
+            </ul>
+            <details v-if="conversationMessages.length" class="border-t border-gray-100 px-3 py-2 text-sm">
+              <summary class="cursor-pointer font-semibold text-gray-700">{{ $t('common.orderConversation') }} ({{ conversationMessages.length }})</summary>
+              <ul class="mt-2 max-h-40 space-y-2 overflow-y-auto">
+                <li v-for="message in conversationMessages" :key="message.id" class="rounded-lg bg-gray-50 p-2 text-xs"><p dir="auto" class="whitespace-pre-wrap break-words">{{ message.body || message.message }}</p></li>
+              </ul>
+            </details>
+          </template>
+        </template>
+      </main>
+
+      <aside class="flex min-h-0 flex-col gap-3">
+        <section class="rounded-xl bg-gray-950 p-2.5 text-white">
+          <div class="relative aspect-video overflow-hidden rounded-lg bg-black">
+            <video ref="cameraVideoElement" autoplay muted playsinline class="h-full w-full object-cover" />
+            <span class="absolute start-2 top-2 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-bold" :class="recordingActive ? 'bg-red-600 text-white' : cameraConnected ? 'bg-black/60 text-green-300' : 'bg-black/60 text-gray-300'">
+              <span v-if="recordingActive" class="h-1.5 w-1.5 rounded-full bg-white" />
+              {{ recordingActive ? $t('common.recording') : cameraConnected ? $t('common.connected') : $t('common.required') }}
+            </span>
+          </div>
+          <p v-if="cameraError" class="mt-2 text-xs text-red-300">{{ $uiMessage(cameraError) }}</p>
+          <div v-if="!recordingActive" class="mt-2 flex gap-2">
+            <select v-if="cameraDevices.length > 1" v-model="selectedCameraId" :disabled="cameraLoading || recordingActive" :aria-label="$t('common.camera')" class="min-h-9 min-w-0 flex-1 rounded-lg border border-white/15 bg-white/10 px-2 text-xs text-white" @change="connectCamera">
+              <option v-for="device in cameraDevices" :key="device.deviceId" :value="device.deviceId" class="text-gray-950">{{ device.label || $t('common.camera') }}</option>
+            </select>
+            <button v-if="!cameraConnected || cameraDevices.length < 2" type="button" :disabled="cameraLoading || recordingActive" class="min-h-9 flex-1 rounded-lg bg-white px-3 text-xs font-bold text-gray-950 disabled:opacity-50" @click="connectCamera">{{ cameraLoading ? $t('common.connecting') : cameraConnected ? $t('common.reconnect') : $t('common.connectCamera') }}</button>
+          </div>
+        </section>
+
+        <section v-if="packingDetail && sessionCompleted" class="rounded-xl border border-gray-200 bg-white p-3">
+          <button type="button" class="min-h-12 w-full rounded-lg bg-blue-700 text-sm font-bold text-white" @click="continueToNextOrder">{{ $t('common.nextOrder') }}</button>
+        </section>
+
+        <section v-else-if="packingDetail" class="space-y-2.5 rounded-xl border border-gray-200 bg-white p-3">
+          <p v-if="recordingInterrupted" class="rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-700" role="alert">{{ $t('confirmOrders.cameraLost') }}</p>
+          <label v-if="courierNeedsBooking" class="block text-xs font-semibold text-gray-600">{{ $t('pdcParcel.weight') }}
+            <input v-model="parcelWeight" type="number" min="0.001" max="99999.99" step="0.001" class="mt-1 min-h-11 w-full rounded-lg border border-gray-300 px-3 text-base font-semibold text-gray-900">
+          </label>
+          <button type="button" :disabled="!canFinish" class="min-h-12 w-full rounded-lg bg-blue-700 px-3 text-sm font-bold text-white disabled:opacity-50" @click="finishOrder">{{ finishLabel }}</button>
+          <p v-if="!allItemsPacked" class="text-center text-xs text-gray-500">{{ $t('confirmOrders.needChecks', { value0: progress.remaining }) }}</p>
+          <p v-if="videoUploadProgress" class="text-center text-xs font-semibold text-blue-700" role="status">{{ videoUploadProgress }}</p>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="button" :disabled="releaseLoading || completionLoading" class="min-h-9 rounded-lg border border-gray-300 px-2 text-xs font-semibold text-gray-700 disabled:opacity-50" @click="releasePackingSession">{{ releaseLoading ? $t('common.releasing') : $t('confirmOrders.release') }}</button>
+            <button type="button" :disabled="problemLoading || completionLoading" class="min-h-9 rounded-lg border border-red-200 px-2 text-xs font-semibold text-red-700 disabled:opacity-50" @click="toggleProblemForm">{{ $t('confirmOrders.problem') }}</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div v-if="workspaceOpen" v-show="tab === 'done'" class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <section class="flex min-h-0 flex-col rounded-xl border border-gray-200 bg-white">
+        <p v-if="!confirmedOrders.length && !confirmedLoading" class="p-8 text-center text-sm text-gray-500">{{ $t('confirmOrders.confirmedEmpty') }}</p>
+        <ul class="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
+          <li v-for="row in confirmedOrders" :key="row.session_id">
+            <button type="button" class="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-3 py-2.5 text-start hover:bg-gray-50" :class="selectedConfirmed?.session_id === row.session_id ? 'bg-blue-50' : ''" @click="selectedConfirmed = row">
+              <span class="min-w-0 flex-1">
+                <span class="block truncate text-sm font-bold text-gray-900">{{ row.order_number || row.order_id.slice(0, 8) }}</span>
+                <span class="block truncate text-xs text-gray-500">{{ row.customer_name }} · {{ row.processor_name }} · {{ formatDate(row.completed_at) }}</span>
+              </span>
+              <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold" :class="row.awb ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'">{{ row.awb || $t(`liveSales.states.${row.courier_state || 'not_booked'}`) }}</span>
+            </button>
+          </li>
+        </ul>
+        <div v-if="confirmedTotal > confirmedPageSize" class="flex items-center justify-between border-t border-gray-100 px-3 py-2 text-sm">
+          <button type="button" :disabled="confirmedPage <= 1" class="min-h-9 rounded-lg border border-gray-300 px-3 font-semibold disabled:opacity-50" @click="loadConfirmed(confirmedPage - 1)">{{ $t('common.previous') }}</button>
+          <span class="text-gray-500">{{ confirmedPage }} / {{ Math.ceil(confirmedTotal / confirmedPageSize) }}</span>
+          <button type="button" :disabled="confirmedPage * confirmedPageSize >= confirmedTotal" class="min-h-9 rounded-lg border border-gray-300 px-3 font-semibold disabled:opacity-50" @click="loadConfirmed(confirmedPage + 1)">{{ $t('common.next') }}</button>
         </div>
       </section>
-
-      <div v-if="workSessionActive" class="grid items-start gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
-        <aside class="rounded-2xl bg-white p-5 shadow xl:sticky xl:top-6">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="text-xl font-bold text-gray-900">{{ $t('common.confirmationQueue') }}</h2>
-              <p class="mt-1 text-xs text-gray-500">{{ $t('common.oldestRequestFirst') }}</p>
-            </div>
-
-            <button
-              type="button"
-              :disabled="queueLoading"
-              :aria-label="$t('dashboard.orders.refreshConfirmationQueue')"
-              class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition hover:bg-gray-200 disabled:opacity-50"
-              @click="loadQueue({ preserveSelection: true })"
-            >
-              <Icon
-                name="lucide:refresh-cw"
-                size="17"
-                :class="queueLoading ? 'animate-spin' : ''"
-              />
-            </button>
-          </div>
-
-          <div class="mt-4 rounded-xl bg-gray-950 px-4 py-3 text-white">
-            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">{{ $t('common.waiting') }}</p>
-            <p class="mt-1 text-3xl font-bold">{{ queueTotal }}</p>
-            <p v-if="queueTotal > queueOrders.length" class="mt-1 text-xs text-gray-400">
-              {{ $t('dashboard.orders.showingTheOldestValue', { value0: (queueOrders.length) }) }}
-            </p>
-          </div>
-
-          <div v-if="queueLoading && !queueOrders.length" class="py-12 text-center text-sm text-gray-500">
-            {{ $t('common.loadingOrders') }}
-          </div>
-
-          <div v-else-if="!queueOrders.length" class="py-12 text-center">
-            <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-green-50 text-green-700">
-              <Icon name="lucide:package-check" size="24" />
-            </span>
-            <p class="mt-4 font-bold text-gray-900">{{ $t('common.queueIsClear') }}</p>
-            <p class="mt-1 text-sm text-gray-500">{{ $t('dashboard.orders.thereAreNoOrdersWaitingForConfirmation') }}</p>
-          </div>
-
-          <div v-else class="mt-4 max-h-[65vh] space-y-3 overflow-y-auto pe-1">
-            <button
-              v-for="queueOrder in queueOrders"
-              :key="queueOrder.id"
-              type="button"
-              :disabled="!cameraConnected || isQueueOrderLocked(queueOrder) || Boolean(openingOrderId) || claimLoading || problemLoading || isDifferentActiveOrder(queueOrder)"
-              class="relative w-full overflow-hidden rounded-2xl border p-4 text-start transition disabled:cursor-not-allowed"
-              :class="[
-                selectedOrderId === queueOrder.id
-                  ? 'border-black bg-gray-950 text-white'
-                  : 'border-gray-200 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50',
-                isQueueOrderLocked(queueOrder) ? 'opacity-65' : '',
-                openingOrderId && !isQueueOrderOpening(queueOrder) ? 'opacity-60' : '',
-                isQueueOrderOpening(queueOrder) ? 'ring-4 ring-blue-100' : ''
-              ]"
-              @click="openQueueOrder(queueOrder)"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="truncate font-bold">
-                    {{ getOrderNumber(queueOrder) }}
-                  </p>
-                  <p
-                    class="mt-1 truncate text-sm"
-                    :class="selectedOrderId === queueOrder.id ? 'text-gray-300' : 'text-gray-500'"
-                  >
-                    {{ getCustomerName(queueOrder) }}
-                  </p>
-                </div>
-                <Icon
-                  :name="isQueueOrderOpening(queueOrder)
-                    ? 'lucide:loader-circle'
-                    : getQueueSession(queueOrder)
-                      ? 'lucide:package-open'
-                      : 'lucide:chevron-right'"
-                  size="18"
-                  class="mt-1 shrink-0"
-                  :class="isQueueOrderOpening(queueOrder) ? 'animate-spin text-blue-500' : ''"
-                />
-              </div>
-
-              <div
-                class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
-                :class="selectedOrderId === queueOrder.id ? 'text-gray-300' : 'text-gray-500'"
-              >
-                <span>{{ formatDate(queueOrder.created_at, false) }}</span>
-                <span>{{ $t('common.valueItems', { value0: (Number(queueOrder.item_quantity || queueOrder.total_quantity || 0)) }) }}</span>
-              </div>
-
-              <div v-if="hasQueueCustomerReply(queueOrder)" class="mt-3">
-                <span
-                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
-                  :class="selectedOrderId === queueOrder.id
-                    ? 'bg-fuchsia-400/20 text-fuchsia-100'
-                    : 'bg-fuchsia-100 text-fuchsia-800'"
-                >
-                  <Icon name="lucide:message-circle-reply" size="13" />
-                  {{ $t('common.purchaserReplied') }}
-                </span>
-              </div>
-
-              <p
-                v-if="getQueueSession(queueOrder)"
-                class="mt-3 rounded-lg px-3 py-2 text-xs font-semibold"
-                :class="isQueueOrderLocked(queueOrder)
-                  ? 'bg-amber-100 text-amber-800'
-                  : selectedOrderId === queueOrder.id
-                    ? 'bg-white/10 text-white'
-                    : 'bg-blue-50 text-blue-700'"
-              >
-                {{ isQueueOrderLocked(queueOrder)
-                  ? $t('dashboard.orders.beingPackedByValue', { value0: (getQueueProcessorName(queueOrder)) })
-                  : $t('dashboard.orders.resumeYourPackingSession') }}
-              </p>
-
-              <div
-                v-if="isQueueOrderOpening(queueOrder)"
-                class="mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold"
-                :class="selectedOrderId === queueOrder.id
-                  ? 'bg-white/10 text-white'
-                  : 'bg-blue-50 text-blue-700'"
-                role="status"
-              >
-                <Icon name="lucide:loader-circle" size="14" class="animate-spin" />
-                {{ getQueueOpeningLabel(queueOrder) }}
-              </div>
-
-              <span
-                v-if="isQueueOrderOpening(queueOrder)"
-                class="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-blue-100"
-                aria-hidden="true"
-              >
-                <span class="block h-full w-1/2 animate-pulse rounded-full bg-blue-600" />
-              </span>
-            </button>
-          </div>
-        </aside>
-
-        <main class="min-w-0">
-          <section
-            v-if="detailLoading"
-            class="rounded-2xl bg-white p-12 text-center text-gray-500 shadow"
-          >
-            <Icon name="lucide:loader-circle" size="30" class="mx-auto animate-spin" />
-            <p class="mt-4">{{ $t('dashboard.orders.openingThePackagingTable') }}</p>
-          </section>
-
-          <section
-            v-else-if="!packingDetail"
-            class="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow"
-          >
-            <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-gray-100 text-gray-500">
-              <Icon name="lucide:scan-barcode" size="32" />
-            </span>
-            <h2 class="mt-5 text-2xl font-bold text-gray-900">
-              {{ cameraConnected ? $t('dashboard.orders.chooseAnOrderToBegin') : $t('dashboard.orders.connectTheCameraFirst') }}
-            </h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-              {{ cameraConnected
-                ? $t('dashboard.orders.recordingStartsAfterYouSelectAnOrder')
-                : $t('dashboard.orders.theQueueUnlocksAfterCameraAccessIsReady') }}
-            </p>
-          </section>
-
-          <div v-else class="space-y-6">
-            <section class="overflow-hidden rounded-2xl bg-white shadow">
-              <div class="bg-gray-950 p-6 text-white">
-                <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
-                      {{ sessionCompleted ? $t('common.confirmationComplete') : $t('dashboard.orders.activePackagingSession') }}
-                    </p>
-                    <h2 class="mt-2 text-3xl font-bold">{{ getOrderNumber(orderDetail) }}</h2>
-                    <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-300">
-                      <span>{{ getCustomerName(orderDetail) }}</span>
-                      <span>{{ $t('common.startedValue', { value0: (formatDate(sessionDetail.started_at)) }) }}</span>
-                      <span>{{ $t('common.byValue', { value0: (sessionDetail.processor_name || sessionDetail.admin_name || $t('common.admin')) }) }}</span>
-                      <span v-if="!sessionCompleted" class="inline-flex items-center gap-1.5 font-bold text-red-300">
-                        <span class="h-2 w-2 animate-pulse rounded-full bg-red-400" />
-                        {{ recordingActive ? $t('common.videoRecording') : $t('common.recordingStopped') }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="w-full rounded-2xl bg-white/10 p-4 lg:max-w-xs">
-                    <div class="flex items-end justify-between gap-4">
-                      <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.scanned') }}</p>
-                        <p class="mt-1 text-3xl font-bold">
-                          {{ progress.scanned }} / {{ progress.required }}
-                        </p>
-                      </div>
-                      <p class="text-lg font-bold">{{ progress.percentage }}%</p>
-                    </div>
-                    <div class="mt-3 h-2 overflow-hidden rounded-full bg-white/15">
-                      <div
-                        class="h-full rounded-full transition-all duration-300"
-                        :class="allItemsPacked ? 'bg-green-400' : 'bg-blue-400'"
-                        :style="{ width: `${progress.percentage}%` }"
-                      />
-                    </div>
-                    <button
-                      v-if="!sessionCompleted"
-                      type="button"
-                      :disabled="releaseLoading"
-                      class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-xs font-bold text-gray-200 transition hover:bg-white/10 disabled:opacity-50"
-                      @click="releasePackingSession"
-                    >
-                      <Icon
-                        :name="releaseLoading ? 'lucide:loader-circle' : 'lucide:lock-open'"
-                        size="14"
-                        :class="releaseLoading ? 'animate-spin' : ''"
-                      />
-                      {{ releaseLoading ? $t('common.releasing') : $t('common.releaseOrder') }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                v-if="sessionCompleted"
-                class="border-b border-green-200 bg-green-50 p-5 text-green-800"
-              >
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div class="flex items-start gap-3">
-                    <Icon name="lucide:circle-check-big" size="24" class="mt-0.5 shrink-0" />
-                    <div>
-                      <p class="font-bold">{{ $t('dashboard.orders.orderConfirmedAndReadyForItsNextStep') }}</p>
-                      <p class="mt-1 text-sm">
-                        {{ $t('common.statusValue', { value0: ($uiLabel(formatCustomerOrderStatus(orderDetail.status))) }) }}
-                        <span v-if="sessionDetail.completed_at">
-                          · {{ formatDate(sessionDetail.completed_at) }}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex flex-wrap gap-2">
-                    <button
-                      v-if="packingDetail.video?.status === 'ready'"
-                      type="button"
-                      :disabled="videoDownloadLoading"
-                      class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 bg-white px-4 py-2 text-sm font-bold text-green-800 hover:bg-green-100 disabled:opacity-50"
-                      @click="downloadPackingVideo"
-                    >
-                      <Icon :name="videoDownloadLoading ? 'lucide:loader-circle' : 'lucide:video'" size="17" :class="videoDownloadLoading ? 'animate-spin' : ''" />
-                      {{ $t('common.packingVideo') }}
-                    </button>
-                    <button
-                      type="button"
-                      class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 bg-white px-4 py-2 text-sm font-bold text-green-800 hover:bg-green-100"
-                      @click="printDocuments()"
-                    >
-                      <Icon name="lucide:printer" size="17" />
-                      {{ $t('common.printAgain') }}
-                    </button>
-                    <button
-                      type="button"
-                      :disabled="claimLoading"
-                      class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50"
-                      @click="continueToNextOrder"
-                    >
-                      {{ $t('common.nextOrder') }}
-                      <Icon name="lucide:arrow-right" size="17" class="directional-icon" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid gap-px bg-gray-200 md:grid-cols-3">
-                <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.purchaser') }}</p>
-                  <p class="mt-3 font-bold text-gray-900">{{ getCustomerName(orderDetail) }}</p>
-                  <p class="mt-1 break-all text-sm text-gray-500">
-                    {{ orderDetail.email || customerDetail.email || $t('common.noEmailSaved') }}
-                  </p>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ orderDetail.phone || customerDetail.phone || $t('common.noPhoneSaved') }}
-                  </p>
-                </div>
-
-                <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.deliveryAddress') }}</p>
-                  <p class="mt-3 text-sm font-semibold leading-6 text-gray-900">
-                    {{ orderDetail.street_address || customerDetail.address_line_1 || $t('common.noAddressSaved') }}
-                  </p>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ [orderDetail.city || customerDetail.city, orderDetail.governorate || customerDetail.state].filter(Boolean).join(', ') || $t('common.cityNotSaved') }}
-                  </p>
-                  <p v-if="customerDetail.country || orderDetail.governorate" class="mt-1 text-sm text-gray-500">
-                    {{ customerDetail.country || $t('common.egypt') }}
-                  </p>
-                </div>
-
-                <div class="bg-white p-5">
-                  <p class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ $t('common.orderDetails') }}</p>
-                  <dl class="mt-3 space-y-2 text-sm">
-                    <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">{{ $t('common.placed') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">{{ formatDate(orderDetail.created_at, false) }}</dd>
-                    </div>
-                    <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">{{ $t('common.payment') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">{{ $uiLabel(orderDetail.payment_method || $t('common.notSelected')) }}</dd>
-                    </div>
-                    <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">{{ $t('common.shipping') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">{{ $uiLabel(orderDetail.shipping_method || $t('common.notSelected')) }}</dd>
-                    </div>
-                    <div class="flex justify-between gap-3">
-                      <dt class="text-gray-500">{{ $t('common.total') }}</dt>
-                      <dd class="text-end font-bold text-gray-900">{{ formatCurrency(orderDetail.total_amount) }}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-            </section>
-
-            <details class="group overflow-hidden rounded-2xl bg-white shadow">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 transition hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
-                <div class="flex items-center gap-3">
-                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-700">
-                    <Icon name="lucide:receipt-text" size="21" />
-                  </span>
-                  <div>
-                    <h3 class="text-lg font-bold text-gray-900">{{ $t('common.paymentReview') }}</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">
-                      {{ $uiLabel(orderDetail.payment_method || $t('dashboard.orders.paymentMethodNotSelected')) }}
-                      · {{ formatCurrency(orderDetail.total_amount) }}
-                    </p>
-                  </div>
-                </div>
-                <span class="inline-flex shrink-0 items-center gap-2 text-xs font-bold text-gray-500">
-                  {{ $t('common.review') }}
-                  <Icon
-                    name="lucide:chevron-down"
-                    size="18"
-                    class="transition-transform group-open:rotate-180"
-                  />
-                </span>
-              </summary>
-
-              <div class="border-t bg-gray-50/70 p-5">
-                <div class="grid gap-4 lg:grid-cols-2">
-                  <dl class="rounded-2xl border bg-white p-4 text-sm">
-                    <div class="flex items-start justify-between gap-4 py-2">
-                      <dt class="text-gray-500">{{ $t('common.orderReference') }}</dt>
-                      <dd class="text-end font-bold text-gray-900">{{ getOrderNumber(orderDetail) }}</dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.placed') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">{{ formatDate(orderDetail.created_at) }}</dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.orderStatus') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">
-                        {{ $uiLabel(formatCustomerOrderStatus(orderDetail.status)) }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.paymentMethod') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">
-                        {{ $uiLabel(orderDetail.payment_method || $t('common.notSelected')) }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.shippingMethod') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">
-                        {{ $uiLabel(orderDetail.shipping_method || $t('common.notSelected')) }}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  <dl class="rounded-2xl border bg-white p-4 text-sm">
-                    <div class="flex items-start justify-between gap-4 py-2">
-                      <dt class="text-gray-500">{{ $t('common.subtotal') }}</dt>
-                      <dd class="text-end font-semibold text-gray-900">
-                        {{ formatCurrency(orderDetail.subtotal_amount) }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.discount') }}</dt>
-                      <dd class="text-end font-semibold text-red-600">
-                        - {{ formatCurrency(orderDetail.discount_amount) }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.coupon') }}</dt>
-                      <dd class="break-all text-end font-semibold text-gray-900">
-                        {{ orderDetail.coupon_code || $t('common.noCoupon') }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t py-2">
-                      <dt class="text-gray-500">{{ $t('common.currency') }}</dt>
-                      <dd class="text-end font-semibold uppercase text-gray-900">
-                        {{ orderDetail.currency || 'EGP' }}
-                      </dd>
-                    </div>
-                    <div class="flex items-start justify-between gap-4 border-t pt-3 text-lg">
-                      <dt class="font-bold text-gray-900">{{ $t('common.total') }}</dt>
-                      <dd class="text-end font-black text-gray-950">
-                        {{ formatCurrency(orderDetail.total_amount) }}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-            </details>
-
-            <section
-              v-if="conversationMessages.length"
-              class="rounded-2xl bg-white p-6 shadow"
-            >
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div class="flex items-start gap-3">
-                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-fuchsia-50 text-fuchsia-700">
-                    <Icon name="lucide:messages-square" size="21" />
-                  </span>
-                  <div>
-                    <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.orderConversation') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                      {{ $t('dashboard.orders.storeNotesAndPurchaserResponsesLinkedToThisOrder') }}
-                    </p>
-                  </div>
-                </div>
-
-                <span
-                  v-if="latestCustomerResponse"
-                  class="inline-flex shrink-0 items-center gap-2 rounded-full bg-fuchsia-100 px-3 py-1.5 text-xs font-bold text-fuchsia-800"
-                >
-                  <Icon name="lucide:message-circle-reply" size="14" />
-                  {{ $t('dashboard.orders.latestPurchaserReplyValue', { value0: (formatDate(getConversationDate(latestCustomerResponse), false)) }) }}
-                </span>
-              </div>
-
-              <div class="mt-5 max-h-[32rem] space-y-4 overflow-y-auto rounded-2xl bg-gray-50 p-4">
-                <article
-                  v-for="(message, messageIndex) in conversationMessages"
-                  :key="getConversationKey(message, messageIndex)"
-                  class="flex"
-                  :class="isCustomerConversationMessage(message) ? 'justify-start' : 'justify-end'"
-                >
-                  <div
-                    class="max-w-[90%] rounded-2xl border p-4 shadow-sm sm:max-w-[78%]"
-                    :class="[
-                      isCustomerConversationMessage(message)
-                        ? 'border-fuchsia-200 bg-white text-gray-800'
-                        : 'border-gray-900 bg-gray-950 text-white',
-                      isLatestCustomerResponse(message)
-                        ? 'ring-4 ring-fuchsia-100'
-                        : ''
-                    ]"
-                  >
-                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-                      <span
-                        class="font-bold"
-                        :class="isCustomerConversationMessage(message)
-                          ? 'text-fuchsia-800'
-                          : 'text-white'"
-                      >
-                        {{ getConversationSenderName(message) }}
-                      </span>
-                      <span :class="isCustomerConversationMessage(message) ? 'text-gray-400' : 'text-gray-400'">
-                        {{ formatDate(getConversationDate(message)) }}
-                      </span>
-                      <span
-                        v-if="isLatestCustomerResponse(message)"
-                        class="rounded-full bg-fuchsia-100 px-2 py-0.5 font-bold text-fuchsia-800"
-                      >
-                        {{ $t('dashboard.orders.latestPurchaserResponse') }}
-                      </span>
-                    </div>
-
-                    <p
-                      v-if="getConversationSubject(message)"
-                      class="mt-2 font-bold"
-                    >
-                      {{ getConversationSubject(message) }}
-                    </p>
-                    <p dir="auto" class="mt-2 whitespace-pre-wrap break-words text-sm leading-6">
-                      {{ getConversationBody(message) }}
-                    </p>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section
-              v-if="!sessionCompleted"
-              class="overflow-hidden rounded-2xl border border-red-200 bg-white shadow"
-            >
-              <button
-                type="button"
-                class="flex w-full items-start justify-between gap-4 p-5 text-start transition hover:bg-red-50"
-                :aria-expanded="problemFormOpen"
-                :disabled="problemLoading || releaseLoading || claimLoading"
-                @click="toggleProblemForm"
-              >
-                <div class="flex items-start gap-3">
-                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-red-100 text-red-700">
-                    <Icon name="lucide:triangle-alert" size="21" />
-                  </span>
-                  <div>
-                    <h3 class="text-lg font-bold text-red-800">{{ $t('common.problemWithOrder') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                      {{ $t('dashboard.orders.stopPackingAndSendThePurchaserAClearNoteAboutWhatNeedsAttention') }}
-                    </p>
-                  </div>
-                </div>
-                <Icon
-                  name="lucide:chevron-down"
-                  size="19"
-                  class="mt-2 shrink-0 text-red-700 transition-transform"
-                  :class="problemFormOpen ? 'rotate-180' : ''"
-                />
-              </button>
-
-              <form
-                v-if="problemFormOpen"
-                class="border-t border-red-100 bg-red-50/50 p-5"
-                @submit.prevent="reportOrderProblem"
-              >
-                <div class="grid gap-4">
-                  <div>
-                    <label for="order-problem-subject" class="mb-2 block text-sm font-bold text-gray-800">
-                      {{ $t('common.subject') }} <span class="font-normal text-gray-400">{{ $t('common.optional') }}</span>
-                    </label>
-                    <input
-                      id="order-problem-subject"
-                      v-model="problemSubject"
-                      type="text"
-                      maxlength="200"
-                      :placeholder="$t('dashboard.orders.missingItemAddressCheckPaymentQuestion')"
-                      class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
-                    >
-                  </div>
-
-                  <div>
-                    <div class="mb-2 flex items-center justify-between gap-3">
-                      <label for="order-problem-message" class="text-sm font-bold text-gray-800">
-                        {{ $t('common.messageToPurchaserVariant2') }}
-                      </label>
-                      <span class="text-xs text-gray-400">{{ problemMessage.length }} / 2000</span>
-                    </div>
-                    <textarea
-                      id="order-problem-message"
-                      v-model="problemMessage"
-                      rows="5"
-                      maxlength="2000"
-                      required
-                      :placeholder="$t('dashboard.orders.explainTheIssueAndWhatYouNeedFromThePurchaser')"
-                      class="w-full rounded-xl border border-red-200 bg-white p-3 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
-                    />
-                  </div>
-                </div>
-
-                <p v-if="problemFormError" class="mt-4 text-sm font-semibold text-red-700" role="alert">
-                  {{ $uiMessage(problemFormError) }}
-                </p>
-
-                <div class="mt-5 flex flex-col gap-3 border-t border-red-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-                  <p class="text-xs leading-5 text-gray-500">
-                    {{ $t('dashboard.orders.packingStopsUntilTheCustomerResponds') }}
-                  </p>
-                  <div class="flex shrink-0 flex-wrap gap-2">
-                    <button
-                      type="button"
-                      :disabled="problemLoading"
-                      class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                      @click="closeProblemForm"
-                    >
-                      {{ $t('common.cancel') }}
-                    </button>
-                    <button
-                      type="submit"
-                      :disabled="problemLoading || !problemMessage.trim()"
-                      class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Icon
-                        :name="problemLoading ? 'lucide:loader-circle' : 'lucide:send'"
-                        size="17"
-                        :class="problemLoading ? 'animate-spin' : ''"
-                      />
-                      {{ problemLoading ? $t('common.sending') : $t('common.sendProblemReport') }}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </section>
-
-            <section
-              v-if="!sessionCompleted"
-              class="rounded-2xl bg-white p-6 shadow"
-            >
-              <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <h3 class="flex items-center gap-2 text-2xl font-bold text-gray-900">
-                    <Icon name="lucide:scan-line" size="25" class="text-blue-600" />
-                    {{ $t('common.scanPreparedItem') }}
-                  </h3>
-                  <p class="mt-2 max-w-2xl text-sm text-gray-500">
-                    {{ $t('dashboard.orders.scanAnItemCodeVariantSkuOrProductSku') }}
-                  </p>
-                </div>
-                <p
-                  class="rounded-full px-3 py-1 text-xs font-bold"
-                  :class="allItemsPacked ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'"
-                >
-                  {{ allItemsPacked ? $t('common.allItemsPrepared') : $t('common.valueRemaining', { value0: (progress.remaining) }) }}
-                </p>
-              </div>
-
-              <form class="mt-5" @submit.prevent="scanItem">
-                <label for="packing-scan-code" class="mb-2 block text-sm font-bold text-gray-700">
-                  {{ $t('common.itemCode') }}
-                </label>
-                <div class="flex flex-col gap-3 sm:flex-row">
-                  <input
-                    id="packing-scan-code"
-                    ref="scanInputElement"
-                    v-model="scanCode"
-                    type="text"
-                    autocomplete="off"
-                    autocapitalize="off"
-                    spellcheck="false"
-                    autofocus
-                    :disabled="!recordingActive"
-                    :placeholder="$t('dashboard.orders.scanSkuUnitCodeOrQr')"
-                    class="min-w-0 flex-1 rounded-xl border border-gray-300 p-4 font-mono text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:bg-gray-100"
-                    @focus="$event.currentTarget.select()"
-                  >
-                  <button
-                    type="submit"
-                    :disabled="scanLoading || !scanCode.trim() || allItemsPacked || !recordingActive"
-                    class="inline-flex min-w-36 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <Icon
-                      :name="scanLoading ? 'lucide:loader-circle' : 'lucide:scan-barcode'"
-                      size="19"
-                      :class="scanLoading ? 'animate-spin' : ''"
-                    />
-                    {{ scanLoading ? $t('common.checking') : $t('common.confirmScan') }}
-                  </button>
-                </div>
-              </form>
-
-              <div
-                v-if="scanFeedback.message"
-                class="mt-4 flex items-start gap-3 rounded-xl p-4 text-sm"
-                :class="scanFeedback.type === 'success'
-                  ? 'bg-green-50 text-green-800'
-                  : 'bg-red-50 text-red-700'"
-                :role="scanFeedback.type === 'success' ? 'status' : 'alert'"
-              >
-                <Icon
-                  :name="scanFeedback.type === 'success' ? 'lucide:circle-check' : 'lucide:circle-x'"
-                  size="19"
-                  class="mt-0.5 shrink-0"
-                />
-                <p>{{ scanFeedback.message }}</p>
-              </div>
-            </section>
-
-            <section class="rounded-2xl bg-white p-6 shadow">
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.requestedItems') }}</h3>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ $t('dashboard.orders.everyUnitMustBeSelectedBeforeThisOrderCanBeCompleted') }}
-                  </p>
-                </div>
-                <p class="text-sm font-bold text-gray-600">
-                  {{ $t('dashboard.orders.valueValueLinesComplete', { value0: (completedLineCount), value1: (orderItems.length) }) }}
-                </p>
-              </div>
-
-              <div v-if="!orderItems.length" class="py-10 text-center text-sm text-gray-500">
-                {{ $t('dashboard.orders.thisOrderHasNoSavedItemsAndCannotBeConfirmed') }}
-              </div>
-
-              <div v-else class="mt-5 space-y-4">
-                <article
-                  v-for="item in orderItems"
-                  :key="item.id"
-                  class="rounded-2xl border p-4 transition"
-                  :class="isItemPacked(item)
-                    ? 'border-green-300 bg-green-50'
-                    : 'border-gray-200 bg-white'"
-                >
-                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                    <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-white p-2">
-                      <img
-                        v-if="item.image_url"
-                        :src="item.image_url"
-                        :alt="item.product_title || $t('common.product')"
-                        class="h-full w-full object-contain"
-                      >
-                      <Icon v-else name="lucide:package" size="28" class="text-gray-300" />
-                    </div>
-
-                    <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-start justify-between gap-3">
-                        <div class="min-w-0">
-                          <p class="font-bold text-gray-900">{{ item.product_title || $t('common.product') }}</p>
-                          <p v-if="item.variant_name || item.variant_color_name" class="mt-1 text-sm text-gray-600">
-                            {{ item.variant_name || item.variant_color_name }}
-                          </p>
-                          <p class="mt-2 break-all font-mono text-xs font-semibold text-gray-500">
-                            {{ $t('common.skuValueVariant2', { value0: (getItemSku(item)) }) }}
-                          </p>
-                        </div>
-
-                        <span
-                          class="inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold"
-                          :class="isItemPacked(item)
-                            ? 'bg-green-600 text-white'
-                            : 'bg-gray-100 text-gray-700'"
-                        >
-                          <Icon
-                            :name="isItemPacked(item) ? 'lucide:check' : 'lucide:scan-line'"
-                            size="14"
-                          />
-                          {{ getScannedQuantity(item) }} / {{ Number(item.quantity || 0) }}
-                        </span>
-                      </div>
-
-                      <div
-                        v-if="item.serialized_units?.length"
-                        class="mt-3 flex flex-wrap gap-2"
-                      >
-                        <span
-                          v-for="unit in item.serialized_units"
-                          :key="unit.id"
-                          class="rounded-lg border px-2.5 py-1 font-mono text-xs"
-                          :class="isSerializedUnitScanned(item, unit)
-                            ? 'border-green-300 bg-green-100 text-green-800'
-                            : 'border-gray-200 bg-white text-gray-500'"
-                        >
-                          <Icon
-                            :name="isSerializedUnitScanned(item, unit) ? 'lucide:check' : 'lucide:box'"
-                            size="12"
-                            class="me-1 inline"
-                          />
-                          {{ unit.unit_code }}
-                        </span>
-                      </div>
-
-                      <div v-else-if="item.scans?.length" class="mt-3 flex flex-wrap gap-2">
-                        <span
-                          v-for="scan in item.scans"
-                          :key="scan.id"
-                          class="rounded-lg bg-green-100 px-2.5 py-1 font-mono text-xs text-green-800"
-                        >
-                          <Icon name="lucide:check" size="12" class="me-1 inline" />
-                          {{ scan.scanned_code || scan.scan_code || getItemSku(item) }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section
-              v-if="!sessionCompleted"
-              class="rounded-2xl bg-white p-6 shadow"
-            >
-              <div class="flex items-start gap-3">
-                <span
-                  class="grid h-11 w-11 shrink-0 place-items-center rounded-xl"
-                  :class="allItemsPacked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'"
-                >
-                  <Icon name="lucide:clipboard-check" size="22" />
-                </span>
-                <div>
-                  <h3 class="text-2xl font-bold text-gray-900">{{ $t('common.completeOrder') }}</h3>
-                  <p class="mt-1 text-sm text-gray-500">
-                    {{ $t('dashboard.orders.completePackingToUpdateTheOrderAndPrintBothDocuments') }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-6 grid gap-5 lg:grid-cols-2">
-                <div>
-                  <label for="completed-order-status" class="mb-2 block text-sm font-bold text-gray-700">
-                    {{ $t('common.newOrderStatus') }}
-                  </label>
-                  <select
-                    id="completed-order-status"
-                    v-model="completionStatus"
-                    class="w-full rounded-xl border border-gray-300 bg-white p-3 outline-none focus:border-blue-500"
-                  >
-                    <option
-                      v-for="statusOption in completionStatusOptions"
-                      :key="statusOption.value"
-                      :value="statusOption.value"
-                    >
-                      {{ $uiLabel(statusOption.label) }}
-                    </option>
-                  </select>
-                  <p class="mt-2 text-xs text-gray-500">
-                    {{ $t('dashboard.orders.readyToDeliverIsSelectedByDefault') }}
-                  </p>
-                </div>
-
-                <div>
-                  <label for="purchaser-message" class="mb-2 block text-sm font-bold text-gray-700">
-                    {{ $t('common.messageToPurchaser') }} <span class="font-normal text-gray-400">{{ $t('common.optional') }}</span>
-                  </label>
-                  <textarea
-                    id="purchaser-message"
-                    v-model="purchaserMessage"
-                    rows="4"
-                    maxlength="2000"
-                    :disabled="!orderDetail.user_id"
-                    :placeholder="orderDetail.user_id
-                      ? $t('dashboard.orders.yourOrderHasBeenPreparedAndIsReadyForDelivery')
-                      : $t('dashboard.orders.guestOrderNoCustomerAccountInbox')"
-                    class="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
-                  />
-                  <div class="mt-2 flex items-center justify-between gap-3 text-xs text-gray-500">
-                    <span>
-                      {{ orderDetail.user_id
-                        ? $t('dashboard.orders.theMessageWillAppearInTheCustomerAccountInbox')
-                        : $t('dashboard.orders.thisPurchaserDoesNotHaveALinkedAccount') }}
-                    </span>
-                    <span>{{ purchaserMessage.length }} / 2000</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-6 flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p
-                    class="text-sm font-semibold"
-                    :class="allItemsPacked ? 'text-green-700' : 'text-amber-700'"
-                  >
-                    {{ allItemsPacked
-                      ? $t('dashboard.orders.allRequestedQuantitiesAreConfirmed')
-                      : $t('dashboard.orders.scanValueMoreValueToContinue', { value0: (progress.remaining), value1: (progress.remaining === 1 ? $t('common.item') : $t('common.items')) }) }}
-                  </p>
-                  <p v-if="videoUploadProgress" class="mt-1 text-xs font-semibold text-blue-700">
-                    {{ $uiLabel(videoUploadProgress) }}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  :disabled="completionLoading || !allItemsPacked || !orderItems.length || recordingInterrupted"
-                  class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-                  @click="completePacking"
-                >
-                  <Icon
-                    :name="completionLoading ? 'lucide:loader-circle' : 'lucide:printer-check'"
-                    size="19"
-                    :class="completionLoading ? 'animate-spin' : ''"
-                  />
-                  {{ completionLoading ? completionButtonLabel : $t('common.saveVideoComplete') }}
-                </button>
-              </div>
-            </section>
-          </div>
-        </main>
-      </div>
+      <section class="min-h-0 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3">
+        <template v-if="selectedConfirmed">
+          <h2 class="mb-3 text-base font-bold text-gray-950">{{ selectedConfirmed.order_number || selectedConfirmed.order_id.slice(0, 8) }}</h2>
+          <DashboardOrderCourierPanel :key="selectedConfirmed.session_id" :order-id="selectedConfirmed.order_id" :session-id="selectedConfirmed.session_id" @updated="loadConfirmed(confirmedPage)" />
+        </template>
+        <p v-else class="p-6 text-center text-sm text-gray-500">{{ $t('confirmOrders.chooseConfirmed') }}</p>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
-const { uiText } = useUiLocale()
-const { uiLabel } = useUiLocale()
-
-const { intlLocale } = useUiLocale()
-
-const { uiRouterReplace } = useUiNavigation()
-
-import { buildDashboardOverviewLinks } from '~/utils/dashboardOverviewLinks'
+import { measuredParcelWeight } from '~/utils/parcelWeight'
 import { buildOrderPackingDocumentsHtml } from '~/utils/orderPackingPrint'
-import { formatCustomerOrderStatus } from '~/utils/orderStatus'
 
-definePageMeta({
-  layout: 'dashboard'
-})
+definePageMeta({ layout: 'dashboard' })
 
-const route = useUiRoute()
-const router = useRouter()
+const { uiLabel, intlLocale } = useUiLocale()
+const { t } = useI18n()
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
-const { hasPermission } = useAdminAccess()
+const { data: erpState } = useNuxtData('active-erp')
+const externalErp = computed(() => erpState.value?.mode === 'daftra')
 
-const queueOrders = ref([])
-const queueTotal = ref(0)
-const queueLoading = ref(false)
-const claimLoading = ref(false)
-const openingOrderId = ref('')
-const detailLoading = ref(false)
-const scanLoading = ref(false)
-const completionLoading = ref(false)
-const releaseLoading = ref(false)
-const problemLoading = ref(false)
-const pageError = ref('')
-const pageNotice = reactive({
-  type: '',
-  message: ''
-})
-const packingDetail = ref(null)
-const selectedOrderId = ref('')
-const scanCode = ref('')
-const scanInputElement = ref(null)
-const scanFeedback = reactive({
-  type: '',
-  message: ''
-})
-const completionStatus = ref('ready_to_deliver')
-const purchaserMessage = ref('')
-const problemFormOpen = ref(false)
-const problemSubject = ref('')
-const problemMessage = ref('')
-const problemFormError = ref('')
-const workSession = ref(null)
-const activePackingSessionId = ref('')
-const workSessionLoading = ref(true)
-const workSessionActionLoading = ref(false)
-const sessionClock = ref(Date.now())
-const cameraVideoElement = ref(null)
-const cameraStream = shallowRef(null)
-const cameraDevices = ref([])
-const selectedCameraId = ref('')
-const cameraLoading = ref(false)
-const cameraError = ref('')
-const recordingState = ref('idle')
-const recordingStartedAt = ref('')
-const recordingEndedAt = ref('')
-const recordingBlob = shallowRef(null)
-const recordingInterrupted = ref(false)
-const videoUploadProgress = ref('')
-const videoDownloadLoading = ref(false)
-let mediaRecorder = null
-let recordingChunks = []
-let stopRecordingPromise = null
-let resolveStopRecording = null
-let expectedRecorderStop = false
-let sessionClockTimer = null
+const tab = ref('queue')
+const queueOrders = ref([]), queueTotal = ref(0), queueLoading = ref(false)
+const confirmedOrders = ref([]), confirmedTotal = ref(0), confirmedPage = ref(1), confirmedLoading = ref(false), selectedConfirmed = ref(null)
+const confirmedPageSize = 20
+const claimLoading = ref(false), openingOrderId = ref(''), detailLoading = ref(false), scanLoading = ref(false)
+const checkingItemId = ref(''), completionLoading = ref(false), releaseLoading = ref(false), problemLoading = ref(false)
+const pageError = ref(''), pageNotice = ref(''), signedOut = ref(false), elsewhere = ref(false), moved = ref(false)
+const packingDetail = ref(null), selectedOrderId = ref(''), scanCode = ref(''), scanInputElement = ref(null)
+const scanFeedback = reactive({ type: '', message: '' })
+const problemFormOpen = ref(false), problemMessage = ref(''), problemFormError = ref('')
+const workSession = ref(null), activePackingSessionId = ref(''), workSessionLoading = ref(true), workSessionActionLoading = ref(false), sessionClock = ref(Date.now())
+const cameraVideoElement = ref(null), cameraStream = shallowRef(null), cameraDevices = ref([]), selectedCameraId = ref(''), cameraLoading = ref(false), cameraError = ref('')
+const recordingState = ref('idle'), recordingStartedAt = ref(''), recordingEndedAt = ref(''), recordingBlob = shallowRef(null), recordingInterrupted = ref(false), videoUploadProgress = ref('')
+const courierBefore = ref(null), parcelWeight = ref('1'), courierNotice = ref(''), courierPanelKey = ref(0), finishStage = ref('')
+let mediaRecorder = null, recordingChunks = [], stopRecordingPromise = null, resolveStopRecording = null, expectedRecorderStop = false
+let sessionClockTimer = null, heartbeatTimer = null, memoryClientId = ''
 
 const workSessionActive = computed(() => workSession.value?.status === 'active')
-const cameraConnected = computed(() => {
-  return Boolean(cameraStream.value?.getVideoTracks?.().some((track) => track.readyState === 'live'))
-})
+const workspaceOpen = computed(() => workSessionActive.value && !elsewhere.value && !moved.value && !workSessionLoading.value)
+const cameraConnected = computed(() => Boolean(cameraStream.value?.getVideoTracks?.().some(track => track.readyState === 'live')))
 const recordingActive = computed(() => recordingState.value === 'recording')
-const hasActivePackingOrder = computed(() => {
-  return Boolean(activePackingSessionId.value)
-    || (Boolean(sessionDetail.value.id) && !sessionCompleted.value)
-})
-const completionButtonLabel = computed(() => {
-  if (recordingState.value === 'stopping') return 'Stopping recording...'
-  if (recordingState.value === 'uploading') return 'Uploading video...'
-  return 'Completing order...'
-})
-const workSessionElapsed = computed(() => {
-  const startedAt = new Date(workSession.value?.started_at || '').getTime()
-
-  if (!Number.isFinite(startedAt)) return 'Started recently'
-
-  const totalMinutes = Math.max(0, Math.floor((sessionClock.value - startedAt) / 60000))
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-
-  return hours ? uiText('dashboard.hoursMinutes', { value0: hours, value1: minutes }) : uiText('dashboard.minutes', { value0: minutes })
-})
-
-const canSeeAnalysis = computed(() => hasPermission('dashboard.analysis'))
-const canSeeOrders = computed(() => hasPermission('dashboard.orders'))
-const secondaryNavItems = computed(() => buildDashboardOverviewLinks('orders', {
-  canSeeAnalysis: canSeeAnalysis.value,
-  canSeeOrders: canSeeOrders.value
-}))
-
-const completionStatusOptions = [
-  { value: 'ready_to_deliver', label: 'Ready to Deliver' },
-  { value: 'being_shipped', label: 'Being Shipped' },
-  { value: 'out_for_delivery', label: 'Out for Delivery' },
-  { value: 'on_hold', label: 'On Hold' }
-]
-
 const sessionDetail = computed(() => packingDetail.value?.session || {})
 const orderDetail = computed(() => packingDetail.value?.order || {})
 const customerDetail = computed(() => packingDetail.value?.customer || {})
 const orderItems = computed(() => packingDetail.value?.items || [])
 const sessionCompleted = computed(() => sessionDetail.value.status === 'completed')
-
-const getConversationRows = (value) => {
-  if (Array.isArray(value)) {
-    return value
-  }
-
-  if (Array.isArray(value?.items)) {
-    return value.items
-  }
-
-  if (Array.isArray(value?.messages)) {
-    return value.messages
-  }
-
-  return []
-}
-
-const conversationMessages = computed(() => {
-  const detail = packingDetail.value || {}
-  const rows = [
-    detail.messages,
-    detail.conversation,
-    detail.order_messages,
-    detail.order?.messages,
-    detail.order?.conversation
-  ].map(getConversationRows).find((items) => items.length) || []
-
-  return [...rows].sort((firstMessage, secondMessage) => {
-    const firstTime = new Date(getConversationDate(firstMessage) || 0).getTime()
-    const secondTime = new Date(getConversationDate(secondMessage) || 0).getTime()
-
-    if (!Number.isFinite(firstTime) || !Number.isFinite(secondTime)) {
-      return 0
-    }
-
-    return firstTime - secondTime
-  })
-})
-
-const latestCustomerResponse = computed(() => {
-  return [...conversationMessages.value]
-    .reverse()
-    .find(isCustomerConversationMessage) || null
-})
-
-const getScannedQuantity = (item) => {
-  if (Number.isFinite(Number(item?.scanned_quantity))) {
-    return Number(item.scanned_quantity)
-  }
-
-  return Array.isArray(item?.scans) ? item.scans.length : 0
-}
-
-const isItemPacked = (item) => {
-  return getScannedQuantity(item) === Number(item?.quantity || 0)
-}
-
-const completedLineCount = computed(() => {
-  return orderItems.value.filter(isItemPacked).length
-})
-
-const allItemsPacked = computed(() => {
-  return Boolean(orderItems.value.length)
-    && orderItems.value.every(isItemPacked)
-})
-
+const hasOpenOrder = computed(() => Boolean(sessionDetail.value.id) && !sessionCompleted.value)
+const hasActivePackingOrder = computed(() => Boolean(activePackingSessionId.value) || hasOpenOrder.value)
+const courierNeedsBooking = computed(() => ['not_booked', 'queued', 'blocked', 'failed'].includes(courierBefore.value?.state))
+const conversationMessages = computed(() => (packingDetail.value?.messages || []).filter(message => message.body || message.message))
+const deliveryLine = computed(() => [orderDetail.value.street_address || customerDetail.value.address_line_1, orderDetail.value.city || customerDetail.value.city, orderDetail.value.governorate || customerDetail.value.state].filter(Boolean).join(', ') || t('common.noAddressSaved'))
+const getScannedQuantity = item => (item.scans || []).reduce((sum, scan) => sum + Math.max(1, Number(scan.quantity || 1)), 0)
+const isItemPacked = item => item.is_complete === true || getScannedQuantity(item) >= Number(item.quantity || 0)
+const allItemsPacked = computed(() => orderItems.value.length > 0 && orderItems.value.every(isItemPacked))
 const progress = computed(() => {
-  const required = orderItems.value.reduce((total, item) => {
-    return total + Number(item.quantity || 0)
-  }, 0)
-  const scanned = orderItems.value.reduce((total, item) => {
-    return total + getScannedQuantity(item)
-  }, 0)
-
-  return {
-    required,
-    scanned,
-    remaining: Math.max(0, required - scanned),
-    percentage: required ? Math.min(100, Math.round((scanned / required) * 100)) : 0
-  }
+  const required = orderItems.value.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+  const scanned = orderItems.value.reduce((sum, item) => sum + Math.min(getScannedQuantity(item), Number(item.quantity || 0)), 0)
+  return { required, scanned, remaining: Math.max(required - scanned, 0), percentage: required ? Math.round(scanned / required * 100) : 0 }
+})
+const videoSaved = computed(() => packingDetail.value?.video?.status === 'ready')
+const canFinish = computed(() => allItemsPacked.value && !completionLoading.value && !recordingInterrupted.value && (recordingActive.value || videoSaved.value || Boolean(recordingBlob.value?.size)) && (!courierNeedsBooking.value || measuredParcelWeight(parcelWeight.value) !== null))
+const finishLabel = computed(() => {
+  if (finishStage.value === 'video') return t('confirmOrders.savingVideo')
+  if (finishStage.value === 'confirm') return t('confirmOrders.confirming')
+  if (finishStage.value === 'courier') return t('confirmOrders.booking')
+  return courierNeedsBooking.value ? t('confirmOrders.finishBook') : t('confirmOrders.finish')
+})
+const workSessionElapsed = computed(() => {
+  const startedAt = new Date(workSession.value?.started_at || '').getTime()
+  if (!Number.isFinite(startedAt)) return ''
+  const total = Math.max(0, Math.floor((sessionClock.value - startedAt) / 60000)), hours = Math.floor(total / 60), minutes = total % 60
+  return hours ? t('dashboard.hoursMinutes', { value0: hours, value1: minutes }) : t('dashboard.minutes', { value0: minutes })
 })
 
+const readClientId = () => {
+  try {
+    let value = sessionStorage.getItem('store-packing-client')
+    if (!value) { value = crypto.randomUUID(); sessionStorage.setItem('store-packing-client', value) }
+    return value
+  } catch { return memoryClientId ||= crypto.randomUUID() }
+}
 const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession()
+  if (!data.session?.access_token) throw new Error('Your session expired. Please log in again.')
+  return { authorization: `Bearer ${data.session.access_token}` }
+}
+const failure = (error, fallback) => error?.data?.statusMessage || error?.message || fallback
+const getOrderNumber = (order = {}) => order.order_number || `#${String(order.id || '').slice(0, 8)}`
+const getCustomerName = (order = {}) => `${order.first_name || ''} ${order.last_name || ''}`.trim() || t('common.customer')
+const processorName = order => order.active_session?.processor_name || t('common.operator')
+const isLockedByOther = order => Boolean(order.active_session && !order.active_session.is_current_admin)
+const queueRowDisabled = order => !cameraConnected.value || isLockedByOther(order) || Boolean(openingOrderId.value) || problemLoading.value || (hasOpenOrder.value && selectedOrderId.value !== String(order.id))
+const meaningfulOption = item => { const name = String(item.variant_name || item.variant_color_name || '').trim(); return /^(default|standard|base|product)$/i.test(name) ? '' : name }
+const formatCurrency = value => new Intl.NumberFormat(intlLocale.value, { style: 'currency', currency: orderDetail.value.currency || 'EGP', maximumFractionDigits: 2 }).format(Number(value || 0))
+const formatDate = value => value ? new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : ''
+const reloadPage = () => window.location.reload()
 
-  if (!data.session?.access_token) {
-    throw new Error('Your session expired. Please log in again.')
-  }
-
-  return {
-    authorization: `Bearer ${data.session.access_token}`
+const stopHeartbeat = () => { if (heartbeatTimer) window.clearInterval(heartbeatTimer); heartbeatTimer = null }
+const sessionRequest = async body => $fetch('/api/admin-orders/packing/work-session', { method: 'POST', body: { ...body, clientId: readClientId() }, headers: await getAuthHeaders(), retry: 0 })
+const stopEverything = async () => {
+  stopHeartbeat()
+  await stopOrderRecording({ discard: true })
+  stopCamera()
+  clearPackingWorkspace()
+}
+const heartbeat = async () => {
+  try { await sessionRequest({ action: 'heartbeat' }); signedOut.value = false }
+  catch (error) {
+    const code = error?.data?.data?.code
+    if (code === 'moved') { await stopEverything(); moved.value = true }
+    else if (code === 'session_closed') { await stopEverything(); workSession.value = null }
+    else if (Number(error?.statusCode) === 401 || String(error?.message).includes('session expired')) signedOut.value = true
   }
 }
+const startHeartbeat = () => { stopHeartbeat(); heartbeatTimer = window.setInterval(heartbeat, 20000) }
 
 const loadWorkSession = async () => {
-  workSessionLoading.value = true
-
   try {
-    const response = await $fetch('/api/admin-orders/packing/work-session', {
-      headers: await getAuthHeaders()
-    })
+    const response = await $fetch('/api/admin-orders/packing/work-session', { headers: await getAuthHeaders(), retry: 0 })
     workSession.value = response?.workSession || null
     activePackingSessionId.value = String(response?.activePackingSessionId || '')
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not load your packing session.'
-  } finally {
-    workSessionLoading.value = false
-  }
+  } catch (error) { pageError.value = failure(error, 'Could not load your packing session.') }
 }
-
-const startWorkSession = async () => {
+// Starts or rejoins this person's session on this screen, then brings the camera up.
+const claimScreen = async (force = false) => {
   if (workSessionActionLoading.value) return
-
-  workSessionActionLoading.value = true
-  pageError.value = ''
-  clearPageNotice()
-
+  workSessionActionLoading.value = true; pageError.value = ''
   try {
-    const response = await $fetch('/api/admin-orders/packing/work-session', {
-      method: 'POST',
-      body: { action: 'start' },
-      headers: await getAuthHeaders()
-    })
+    const response = await sessionRequest({ action: 'start', force: force === true })
     workSession.value = response?.workSession || null
-    pageNotice.type = 'success'
-    pageNotice.message = 'Packing session started. Connect the camera next.'
-    await loadQueue({ preserveSelection: true })
+    elsewhere.value = false
+    startHeartbeat()
+    await loadQueue()
+    await recoverInterruptedOrder()
+    await nextTick()
+    await connectCamera()
   } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not start your packing session.'
-  } finally {
-    workSessionActionLoading.value = false
-  }
+    if (error?.data?.data?.code === 'open_elsewhere') elsewhere.value = true
+    else pageError.value = failure(error, 'Could not start your packing session.')
+  } finally { workSessionActionLoading.value = false }
 }
-
+// Recordings live in the browser, so a reload loses them. Only a video already saved can continue.
+const recoverInterruptedOrder = async () => {
+  const sessionId = activePackingSessionId.value
+  if (!sessionId) return
+  try {
+    const response = await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionId)}`, { headers: await getAuthHeaders(), retry: 0 })
+    const detail = normalizePackingResponse(response)
+    if (detail?.video?.status === 'ready') { applyPackingDetail(detail); recordingState.value = 'saved'; await loadCourier(); return }
+    const number = getOrderNumber(detail?.order)
+    await postReleasePackingSession(sessionId)
+    activePackingSessionId.value = ''
+    pageNotice.value = t('confirmOrders.interrupted', { value0: number })
+    await loadQueue()
+  } catch (error) { pageError.value = failure(error, 'Could not open this packing session.') }
+}
 const stopCamera = () => {
-  for (const track of cameraStream.value?.getTracks?.() || []) {
-    track.stop()
-  }
-
+  for (const track of cameraStream.value?.getTracks?.() || []) track.stop()
   cameraStream.value = null
-
-  if (cameraVideoElement.value) {
-    cameraVideoElement.value.srcObject = null
-  }
+  if (cameraVideoElement.value) cameraVideoElement.value.srcObject = null
 }
-
 const closeWorkSession = async () => {
   if (workSessionActionLoading.value) return
-
-  if (
-    hasActivePackingOrder.value
-    && !window.confirm(uiLabel('Close session? Current packing progress will be cleared.'))
-  ) {
-    return
-  }
-
-  workSessionActionLoading.value = true
-  pageError.value = ''
-  clearPageNotice()
-
+  if (hasActivePackingOrder.value && !window.confirm(uiLabel('Close session? Current packing progress will be cleared.'))) return
+  workSessionActionLoading.value = true; pageError.value = ''
   try {
-    const response = await $fetch('/api/admin-orders/packing/work-session', {
-      method: 'POST',
-      body: { action: 'close' },
-      headers: await getAuthHeaders()
-    })
-    await stopOrderRecording({ discard: true })
-    stopCamera()
-    clearPackingWorkspace()
-    queueOrders.value = []
-    queueTotal.value = 0
-    activePackingSessionId.value = ''
-    workSession.value = null
-    await setSessionRouteQuery('')
-    pageNotice.type = 'success'
-    pageNotice.message = response?.result?.released_order_id
-      ? 'Session closed. Order returned to the queue.'
-      : 'Session closed.'
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not close your packing session.'
-  } finally {
-    workSessionActionLoading.value = false
-  }
+    await sessionRequest({ action: 'close' })
+    await stopEverything()
+    queueOrders.value = []; queueTotal.value = 0; activePackingSessionId.value = ''; workSession.value = null
+  } catch (error) { pageError.value = failure(error, 'Could not close your packing session.') }
+  finally { workSessionActionLoading.value = false }
 }
-
 const refreshCameraDevices = async () => {
   if (!navigator.mediaDevices?.enumerateDevices) return
-
-  const devices = await navigator.mediaDevices.enumerateDevices()
-  cameraDevices.value = devices.filter((device) => device.kind === 'videoinput')
-
-  if (!selectedCameraId.value && cameraDevices.value.length) {
-    selectedCameraId.value = cameraDevices.value[0].deviceId
-  }
+  cameraDevices.value = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput')
+  if (!selectedCameraId.value && cameraDevices.value.length) selectedCameraId.value = cameraDevices.value[0].deviceId
 }
-
 const handleCameraEnded = () => {
-  if (recordingActive.value && !expectedRecorderStop) {
-    recordingInterrupted.value = true
-    cameraError.value = 'Camera disconnected. Release and restart this order.'
-    pageError.value = cameraError.value
-  }
+  if (recordingActive.value && !expectedRecorderStop) recordingInterrupted.value = true
+  cameraStream.value = cameraStream.value ? new MediaStream(cameraStream.value.getTracks()) : null
 }
-
 const connectCamera = async () => {
   if (!import.meta.client || cameraLoading.value || recordingActive.value) return
-
-  cameraLoading.value = true
-  cameraError.value = ''
-
+  cameraLoading.value = true; cameraError.value = ''
   try {
-    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
-      throw new Error('Camera access requires HTTPS or localhost.')
-    }
-
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('Camera access requires HTTPS or localhost.')
     stopCamera()
-    const video = selectedCameraId.value
-      ? { deviceId: { exact: selectedCameraId.value }, width: { ideal: 1920 }, height: { ideal: 1080 } }
-      : { width: { ideal: 1920 }, height: { ideal: 1080 } }
+    const video = selectedCameraId.value ? { deviceId: { exact: selectedCameraId.value }, width: { ideal: 1920 }, height: { ideal: 1080 } } : { width: { ideal: 1920 }, height: { ideal: 1080 } }
     const stream = await navigator.mediaDevices.getUserMedia({ video, audio: false })
-    const videoTrack = stream.getVideoTracks()[0]
-
-    if (!videoTrack) {
-      stream.getTracks().forEach((track) => track.stop())
-      throw new Error('No webcam was found.')
-    }
-
-    videoTrack.addEventListener('ended', handleCameraEnded)
+    const track = stream.getVideoTracks()[0]
+    if (!track) { stream.getTracks().forEach(item => item.stop()); throw new Error('No webcam was found.') }
+    track.addEventListener('ended', handleCameraEnded)
     cameraStream.value = stream
-
-    if (cameraVideoElement.value) {
-      cameraVideoElement.value.srcObject = stream
-      await cameraVideoElement.value.play().catch(() => {})
-    }
-
+    if (cameraVideoElement.value) { cameraVideoElement.value.srcObject = stream; await cameraVideoElement.value.play().catch(() => {}) }
     await refreshCameraDevices()
-    const settings = videoTrack.getSettings?.() || {}
+    const settings = track.getSettings?.() || {}
     if (settings.deviceId) selectedCameraId.value = settings.deviceId
-    pageNotice.type = 'success'
-    pageNotice.message = 'Camera connected. Choose an order when ready.'
   } catch (error) {
-    cameraError.value = error?.name === 'NotAllowedError'
-      ? 'Allow camera access in the browser, then retry.'
-      : error?.message || 'Could not connect the camera.'
-  } finally {
-    cameraLoading.value = false
-  }
+    cameraError.value = error?.name === 'NotAllowedError' ? 'Allow camera access in the browser, then retry.' : error?.message || 'Could not connect the camera.'
+  } finally { cameraLoading.value = false }
 }
-
-const getRecordingMimeType = () => {
-  const candidates = [
-    'video/webm;codecs=vp9',
-    'video/webm;codecs=vp8',
-    'video/webm',
-    'video/mp4'
-  ]
-
-  return candidates.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || ''
-}
-
+const getRecordingMimeType = () => ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'].find(type => window.MediaRecorder?.isTypeSupported?.(type)) || ''
 const startOrderRecording = async () => {
-  if (!cameraConnected.value || !window.MediaRecorder) {
-    throw new Error('Connect a supported webcam before choosing an order.')
-  }
-
-  recordingChunks = []
-  recordingBlob.value = null
-  recordingInterrupted.value = false
-  recordingStartedAt.value = new Date().toISOString()
-  recordingEndedAt.value = ''
-  videoUploadProgress.value = ''
-  expectedRecorderStop = false
+  if (!cameraConnected.value || !window.MediaRecorder) throw new Error('Connect a supported webcam before choosing an order.')
+  recordingChunks = []; recordingBlob.value = null; recordingInterrupted.value = false
+  recordingStartedAt.value = new Date().toISOString(); recordingEndedAt.value = ''; videoUploadProgress.value = ''; expectedRecorderStop = false
   const mimeType = getRecordingMimeType()
-  mediaRecorder = mimeType
-    ? new MediaRecorder(cameraStream.value, { mimeType, videoBitsPerSecond: 2_500_000 })
-    : new MediaRecorder(cameraStream.value)
-
-  stopRecordingPromise = new Promise((resolve) => {
-    resolveStopRecording = resolve
-  })
-  mediaRecorder.addEventListener('dataavailable', (event) => {
-    if (event.data?.size) recordingChunks.push(event.data)
-  })
-  mediaRecorder.addEventListener('error', () => {
-    recordingInterrupted.value = true
-    pageError.value = 'Camera recording failed. Release and restart this order.'
-  })
+  mediaRecorder = mimeType ? new MediaRecorder(cameraStream.value, { mimeType, videoBitsPerSecond: 2_500_000 }) : new MediaRecorder(cameraStream.value)
+  stopRecordingPromise = new Promise(resolve => { resolveStopRecording = resolve })
+  mediaRecorder.addEventListener('dataavailable', event => { if (event.data?.size) recordingChunks.push(event.data) })
+  mediaRecorder.addEventListener('error', () => { recordingInterrupted.value = true })
   mediaRecorder.addEventListener('stop', () => {
     recordingEndedAt.value = new Date().toISOString()
-    const resolvedType = String(mediaRecorder?.mimeType || mimeType || 'video/webm').split(';')[0]
-    recordingBlob.value = new Blob(recordingChunks, { type: resolvedType })
+    recordingBlob.value = new Blob(recordingChunks, { type: String(mediaRecorder?.mimeType || mimeType || 'video/webm').split(';')[0] })
     recordingState.value = 'stopped'
-
-    if (!expectedRecorderStop) {
-      recordingInterrupted.value = true
-      pageError.value = 'Recording stopped early. Release and restart this order.'
-    }
-
-    resolveStopRecording?.(recordingBlob.value)
-    resolveStopRecording = null
+    if (!expectedRecorderStop) recordingInterrupted.value = true
+    resolveStopRecording?.(recordingBlob.value); resolveStopRecording = null
   }, { once: true })
   mediaRecorder.start(1000)
   recordingState.value = 'recording'
 }
-
 const stopOrderRecording = async ({ discard = false } = {}) => {
-  if (recordingActive.value && mediaRecorder?.state !== 'inactive') {
-    expectedRecorderStop = true
-    recordingState.value = 'stopping'
-    mediaRecorder.stop()
-  }
-
+  if (recordingActive.value && mediaRecorder?.state !== 'inactive') { expectedRecorderStop = true; recordingState.value = 'stopping'; mediaRecorder.stop() }
   const blob = stopRecordingPromise ? await stopRecordingPromise : recordingBlob.value
-
-  if (discard) {
-    recordingChunks = []
-    recordingBlob.value = null
-    recordingStartedAt.value = ''
-    recordingEndedAt.value = ''
-    recordingState.value = 'idle'
-    stopRecordingPromise = null
-    mediaRecorder = null
-  }
-
+  if (discard) { recordingChunks = []; recordingBlob.value = null; recordingStartedAt.value = ''; recordingEndedAt.value = ''; recordingState.value = 'idle'; stopRecordingPromise = null; mediaRecorder = null }
   return blob
 }
-
-const finishVideoUpload = async () => {
-  return await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-complete`, {
-    method: 'POST', retry: 0, timeout: 90000, headers: await getAuthHeaders()
-  })
-}
-
+const finishVideoUpload = async () => $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-complete`, { method: 'POST', retry: 0, timeout: 90000, headers: await getAuthHeaders() })
 const applySavedPackingVideo = video => {
-  packingDetail.value.video = video
-  recordingState.value = 'saved'
-  videoUploadProgress.value = `Saved as ${video.file_name}`
-  recordingChunks = []
-  recordingBlob.value = null
-  stopRecordingPromise = null
-  mediaRecorder = null
+  packingDetail.value.video = video; recordingState.value = 'saved'; videoUploadProgress.value = ''
+  recordingChunks = []; recordingBlob.value = null; stopRecordingPromise = null; mediaRecorder = null
   return video
 }
-
 const uploadPackingVideo = async () => {
   if (packingDetail.value?.video?.status === 'ready') return packingDetail.value.video
-
-  // A previous upload may have persisted before its acknowledgement was lost.
   if (packingDetail.value?.video?.status === 'uploading') {
     try { return applySavedPackingVideo((await finishVideoUpload()).video) }
-    catch (error) {
-      if (Number(error?.statusCode || error?.status) !== 409 || error?.data?.statusMessage !== 'The saved packing video is unavailable.') throw error
-    }
+    catch (error) { if (Number(error?.statusCode || error?.status) !== 409 || error?.data?.statusMessage !== 'The saved packing video is unavailable.') throw error }
   }
-
   const blob = recordingBlob.value
-
-  if (!blob?.size || recordingInterrupted.value) {
-    throw new Error('A complete packing recording is required.')
-  }
-
+  if (!blob?.size || recordingInterrupted.value) throw new Error('A complete packing recording is required.')
   recordingState.value = 'uploading'
-  videoUploadProgress.value = 'Preparing secure video upload...'
-  const startedAt = new Date(recordingStartedAt.value)
-  const endedAt = new Date(recordingEndedAt.value)
-  const durationSeconds = Math.max(0, (endedAt.getTime() - startedAt.getTime()) / 1000)
-  const response = await $fetch(
-    `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-upload`,
-    {
-      method: 'POST',
-      body: {
-        mimeType: blob.type || 'video/webm',
-        sizeBytes: blob.size,
-        durationSeconds,
-        recordingStartedAt: recordingStartedAt.value,
-        recordingEndedAt: recordingEndedAt.value
-      },
-      headers: await getAuthHeaders(),
-      retry: 0,
-      timeout: 30000
-    }
-  )
+  const durationSeconds = Math.max(0, (new Date(recordingEndedAt.value).getTime() - new Date(recordingStartedAt.value).getTime()) / 1000)
+  const response = await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video-upload`, { method: 'POST', body: { mimeType: blob.type || 'video/webm', sizeBytes: blob.size, durationSeconds, recordingStartedAt: recordingStartedAt.value, recordingEndedAt: recordingEndedAt.value }, headers: await getAuthHeaders(), retry: 0, timeout: 30000 })
   packingDetail.value.video = response.video
-
-  videoUploadProgress.value = 'Uploading packing video...'
-  if (response.video.status !== 'ready') {
-    await $fetch(response.upload.url, {
-      method: 'PUT', body: blob, retry: 0, timeout: 17 * 60 * 1000,
-      headers: { ...await getAuthHeaders(), 'Content-Type': blob.type || 'video/webm' }
-    })
-  }
-
-  videoUploadProgress.value = 'Verifying packing video...'
+  if (response.video.status !== 'ready') await $fetch(response.upload.url, { method: 'PUT', body: blob, retry: 0, timeout: 17 * 60 * 1000, headers: { ...await getAuthHeaders(), 'Content-Type': blob.type || 'video/webm' } })
   return applySavedPackingVideo((await finishVideoUpload()).video)
 }
-
-const downloadPackingVideo = async () => {
-  if (!sessionDetail.value.id || videoDownloadLoading.value) return
-
-  videoDownloadLoading.value = true
-  pageError.value = ''
-
-  try {
-    const blob = await $fetch(
-      `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/video`,
-      { responseType: 'blob', headers: await getAuthHeaders() }
-    )
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = packingDetail.value?.video?.file_name || 'packing-video.webm'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    URL.revokeObjectURL(url)
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not download the packing video.'
-  } finally {
-    videoDownloadLoading.value = false
-  }
-}
-
-const getOrderNumber = (order = {}) => {
-  return order.order_number || `Order #${String(order.id || '').slice(0, 8)}`
-}
-
-const getCustomerName = (order = {}) => {
-  return `${order.first_name || 'Customer'} ${order.last_name || ''}`.trim()
-}
-
-const getQueueSession = (order = {}) => {
-  return order.active_session || order.activeSession || order.session || null
-}
-
-const getQueueProcessorName = (order = {}) => {
-  const session = getQueueSession(order)
-  return session?.processor_name
-    || session?.admin_name
-    || session?.processor?.name
-    || 'another administrator'
-}
-
-const canResumeQueueOrder = (order = {}) => {
-  const session = getQueueSession(order)
-
-  if (!session) {
-    return false
-  }
-
-  return Boolean(
-    order.can_resume
-    || session.can_resume
-    || session.is_current_admin
-    || session.isCurrentAdmin
-  )
-}
-
-const isQueueOrderLocked = (order = {}) => {
-  return Boolean(getQueueSession(order)) && !canResumeQueueOrder(order)
-}
-
-const isDifferentActiveOrder = (order = {}) => {
-  if (!activePackingSessionId.value) return false
-
-  return String(getQueueSession(order)?.id || '') !== activePackingSessionId.value
-}
-
-const hasQueueCustomerReply = (order = {}) => {
-  const latestMessage = order.latest_message || order.latestMessage || {}
-  const latestSenderType = String(
-    latestMessage.sender_type
-    || latestMessage.senderType
-    || latestMessage.author_type
-    || latestMessage.direction
-    || ''
-  ).trim().toLowerCase()
-
-  return Boolean(
-    order.has_customer_reply
-    || order.hasCustomerReply
-    || latestMessage.is_customer_reply
-    || latestMessage.isCustomerReply
-    || latestSenderType.includes('customer')
-    || latestSenderType.includes('purchaser')
-    || latestSenderType === 'inbound'
-  )
-}
-
-const isQueueOrderOpening = (order = {}) => {
-  return Boolean(openingOrderId.value)
-    && String(openingOrderId.value) === String(order.id || '')
-}
-
-const getQueueOpeningLabel = (order = {}) => {
-  const currentOrderId = String(orderDetail.value.id || selectedOrderId.value || '')
-  const targetOrderId = String(order.id || '')
-
-  if (
-    sessionDetail.value.id
-    && !sessionCompleted.value
-    && currentOrderId
-    && currentOrderId !== targetOrderId
-  ) {
-    return 'Switching orders...'
-  }
-
-  return getQueueSession(order)?.id
-    ? 'Opening session...'
-    : 'Claiming order...'
-}
-
-const getConversationDate = (message = {}) => {
-  return message.created_at
-    || message.sent_at
-    || message.updated_at
-    || message.createdAt
-    || ''
-}
-
-const getConversationBody = (message = {}) => {
-  return String(
-    message.body
-    || message.message
-    || message.content
-    || message.text
-    || ''
-  ).trim() || 'No message text was provided.'
-}
-
-const getConversationSubject = (message = {}) => {
-  return String(message.subject || message.title || '').trim()
-}
-
-const isCustomerConversationMessage = (message = {}) => {
-  const senderType = String(
-    message.sender_type
-    || message.senderType
-    || message.sender_role
-    || message.author_type
-    || message.direction
-    || ''
-  ).trim().toLowerCase()
-
-  if (
-    senderType.includes('customer')
-    || senderType.includes('purchaser')
-    || senderType === 'inbound'
-  ) {
-    return true
-  }
-
-  if (
-    senderType.includes('admin')
-    || senderType.includes('store')
-    || senderType === 'outbound'
-  ) {
-    return false
-  }
-
-  if (message.is_customer_reply || message.isCustomerReply) {
-    return true
-  }
-
-  return !message.sender_admin_user_id
-    && !message.senderAdminUserId
-    && Boolean(
-      message.customer_user_id
-      || message.customerUserId
-      || message.customer_name
-      || message.user_id
-    )
-}
-
-const getConversationSenderName = (message = {}) => {
-  if (isCustomerConversationMessage(message)) {
-    return String(
-      message.sender_name
-      || message.customer_name
-      || message.purchaser_name
-      || getCustomerName(orderDetail.value)
-    ).trim() || 'Purchaser'
-  }
-
-  return String(
-    message.sender_name
-    || message.admin_name
-    || message.author_name
-    || 'Store team'
-  ).trim() || 'Store team'
-}
-
-const getConversationKey = (message = {}, index = 0) => {
-  return message.id
-    || message.message_id
-    || `${getConversationDate(message) || 'message'}-${index}`
-}
-
-const isLatestCustomerResponse = (message = {}) => {
-  if (!latestCustomerResponse.value) {
-    return false
-  }
-
-  if (message === latestCustomerResponse.value) {
-    return true
-  }
-
-  const messageId = message.id || message.message_id
-  const latestMessageId = latestCustomerResponse.value.id
-    || latestCustomerResponse.value.message_id
-
-  return Boolean(messageId)
-    && String(messageId) === String(latestMessageId || '')
-}
-
-const clearPageNotice = () => {
-  pageNotice.type = ''
-  pageNotice.message = ''
-}
-
-const resetProblemForm = () => {
-  problemFormOpen.value = false
-  problemSubject.value = ''
-  problemMessage.value = ''
-  problemFormError.value = ''
-}
-
-const toggleProblemForm = async () => {
-  problemFormOpen.value = !problemFormOpen.value
-  problemFormError.value = ''
-
-  if (problemFormOpen.value) {
-    await nextTick()
-    document.getElementById('order-problem-subject')?.focus()
-  }
-}
-
-const closeProblemForm = () => {
-  if (problemLoading.value) {
-    return
-  }
-
-  resetProblemForm()
-  void focusScanner()
-}
-
-const getItemSku = (item = {}) => {
-  return item.variant_sku
-    || item.product_sku
-    || item.variant_code
-    || 'No scannable SKU'
-}
-
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat(intlLocale.value, {
-    style: 'currency',
-    currency: String(orderDetail.value.currency || 'EGP').toUpperCase(),
-    maximumFractionDigits: 2
-  }).format(Number(value || 0))
-}
-
-const formatDate = (value, includeTime = true) => {
-  if (!value) {
-    return 'Recently'
-  }
-
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return 'Recently'
-  }
-
-  return new Intl.DateTimeFormat(intlLocale.value, includeTime
-    ? { dateStyle: 'medium', timeStyle: 'short' }
-    : { dateStyle: 'medium' }
-  ).format(date)
-}
-
-const setSessionRouteQuery = async (sessionId = '') => {
-  const nextQuery = { ...route.query }
-
-  if (sessionId) {
-    nextQuery.session = sessionId
-  } else {
-    delete nextQuery.session
-  }
-
-  await uiRouterReplace({
-    path: route.path,
-    query: nextQuery
-  })
-}
-
-const normalizePackingResponse = (response) => {
-  if (response?.detail && typeof response.detail === 'object') {
-    return response.detail
-  }
-
-  if (response?.data && typeof response.data === 'object') {
-    return response.data
-  }
-
-  return response || null
-}
-
-const applyPackingDetail = (response) => {
+const normalizePackingResponse = response => (response?.detail && typeof response.detail === 'object') ? response.detail : (response?.data && typeof response.data === 'object') ? response.data : response || null
+const applyPackingDetail = response => {
   const detail = normalizePackingResponse(response)
-
-  if (!detail?.session?.id) {
-    throw new Error('The packing session returned an incomplete record.')
-  }
-
+  if (!detail?.session?.id) throw new Error('The packing session returned an incomplete record.')
   packingDetail.value = detail
-  selectedOrderId.value = detail.order?.id || ''
-  activePackingSessionId.value = detail.session.status === 'active'
-    ? String(detail.session.id)
-    : ''
+  selectedOrderId.value = String(detail.order?.id || '')
+  activePackingSessionId.value = detail.session.status === 'active' ? String(detail.session.id) : ''
 }
-
-const focusScanner = async () => {
-  if (sessionCompleted.value || !recordingActive.value) {
-    return
-  }
-
-  await nextTick()
-  scanInputElement.value?.focus()
-  scanInputElement.value?.select()
-}
-
+const focusScanner = async () => { await nextTick(); scanInputElement.value?.focus?.() }
 const clearPackingWorkspace = () => {
-  packingDetail.value = null
-  selectedOrderId.value = ''
-  scanCode.value = ''
-  scanFeedback.type = ''
-  scanFeedback.message = ''
-  completionStatus.value = 'ready_to_deliver'
-  purchaserMessage.value = ''
-  videoUploadProgress.value = ''
+  packingDetail.value = null; selectedOrderId.value = ''; scanCode.value = ''; scanFeedback.type = ''; scanFeedback.message = ''
+  problemFormOpen.value = false; problemMessage.value = ''; problemFormError.value = ''
+  courierBefore.value = null; courierNotice.value = ''; finishStage.value = ''; activePackingSessionId.value = ''; videoUploadProgress.value = ''
   recordingInterrupted.value = false
-  recordingState.value = 'idle'
-  recordingBlob.value = null
-  recordingStartedAt.value = ''
-  recordingEndedAt.value = ''
-  recordingChunks = []
-  stopRecordingPromise = null
-  mediaRecorder = null
-  resetProblemForm()
 }
-
-const postReleasePackingSession = async (sessionId) => {
-  return await $fetch(
-    `/api/admin-orders/packing/${encodeURIComponent(sessionId)}/release`,
-    {
-      method: 'POST',
-      headers: await getAuthHeaders()
-    }
-  )
-}
-
-const loadQueue = async ({
-  preserveSelection = false,
-  preserveError = false
-} = {}) => {
+const postReleasePackingSession = async sessionId => $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionId)}/release`, { method: 'POST', headers: await getAuthHeaders() })
+const loadQueue = async () => {
   queueLoading.value = true
-
-  if (!preserveError) {
-    pageError.value = ''
-  }
-
   try {
-    const response = await $fetch('/api/admin-orders/packing', {
-      query: {
-        pageSize: 50
-      },
-      headers: await getAuthHeaders()
-    })
+    const response = await $fetch('/api/admin-orders/packing', { query: { pageSize: 50 }, headers: await getAuthHeaders() })
     queueOrders.value = response.orders || response.items || []
     queueTotal.value = Number(response.total || queueOrders.value.length)
-    activePackingSessionId.value = String(response.currentSessionId || response.current_session_id || '')
-
-    return response
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not load the confirmation queue.'
-    return null
-  } finally {
-    queueLoading.value = false
-  }
+    activePackingSessionId.value = String(response.currentSessionId || response.current_session_id || activePackingSessionId.value || '')
+  } catch (error) { pageError.value = failure(error, 'Could not load the confirmation queue.') }
+  finally { queueLoading.value = false }
 }
-
-const loadPackingSession = async (sessionId, { updateRoute = true } = {}) => {
-  if (!sessionId) {
-    return
-  }
-
-  detailLoading.value = true
-  pageError.value = ''
-  scanFeedback.type = ''
-  scanFeedback.message = ''
-
-  let sessionLoaded = false
-
+const loadConfirmed = async (page = 1) => {
+  confirmedLoading.value = true
   try {
-    const response = await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionId)}`, {
-      headers: await getAuthHeaders()
-    })
-    applyPackingDetail(response)
-    completionStatus.value = sessionCompleted.value
-      ? orderDetail.value.status || 'ready_to_deliver'
-      : 'ready_to_deliver'
-    purchaserMessage.value = ''
-    resetProblemForm()
-    sessionLoaded = true
-
-    if (updateRoute) {
-      await setSessionRouteQuery(sessionId)
-    }
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not open this packing session.'
-  } finally {
-    detailLoading.value = false
-  }
-
-  if (sessionLoaded) {
-    await focusScanner()
-  }
+    const response = await $fetch('/api/admin-orders/packing', { query: { view: 'confirmed', page, pageSize: confirmedPageSize }, headers: await getAuthHeaders() })
+    confirmedOrders.value = response.orders || []; confirmedTotal.value = Number(response.total || 0); confirmedPage.value = page
+  } catch (error) { pageError.value = failure(error, 'Could not load confirmed orders.') }
+  finally { confirmedLoading.value = false }
 }
-
-const openQueueOrder = async (queueOrder) => {
-  if (
-    !queueOrder?.id
-    || !workSessionActive.value
-    || !cameraConnected.value
-    || isQueueOrderLocked(queueOrder)
-    || isDifferentActiveOrder(queueOrder)
-    || openingOrderId.value
-    || problemLoading.value
-  ) {
-    return
-  }
-
-  const targetOrderId = String(queueOrder.id)
-  const currentSessionId = String(sessionDetail.value.id || '')
-  const currentOrderId = String(orderDetail.value.id || selectedOrderId.value || '')
-
-  if (
-    currentSessionId
-    && currentOrderId === targetOrderId
-    && String(getQueueSession(queueOrder)?.id || '') === currentSessionId
-  ) {
-    await focusScanner()
-    return
-  }
-
-  if (currentSessionId && !sessionCompleted.value && currentOrderId !== targetOrderId) {
-    pageError.value = 'Complete or release the open order first.'
-    return
-  }
-
-  openingOrderId.value = targetOrderId
-  claimLoading.value = true
-  pageError.value = ''
-  clearPageNotice()
+const showConfirmed = () => { tab.value = 'done'; loadConfirmed(1) }
+const loadCourier = async () => {
+  courierBefore.value = null
+  try {
+    const response = await $fetch(`/api/admin-orders/${selectedOrderId.value}`, { headers: await getAuthHeaders(), retry: 0 })
+    courierBefore.value = response.shipping || null
+    parcelWeight.value = String(response.shipping?.default_weight_kg || 1)
+  } catch { courierBefore.value = null }
+}
+const openQueueOrder = async (queueOrder, takeover = false) => {
+  if (!queueOrder?.id || !workSessionActive.value || !cameraConnected.value || openingOrderId.value || (isLockedByOther(queueOrder) && !takeover) || (hasOpenOrder.value && selectedOrderId.value !== String(queueOrder.id))) return
+  if (hasOpenOrder.value && selectedOrderId.value === String(queueOrder.id)) { await focusScanner(); return }
+  if (packingDetail.value && sessionCompleted.value) clearPackingWorkspace()
+  openingOrderId.value = String(queueOrder.id); claimLoading.value = true; pageError.value = ''; pageNotice.value = ''
   let recordingStarted = false
-
   try {
     await startOrderRecording()
     recordingStarted = true
-    const videoTrack = cameraStream.value?.getVideoTracks?.()[0]
-    const response = await $fetch('/api/admin-orders/packing', {
-      method: 'POST',
-      body: {
-        orderId: targetOrderId,
-        workSessionId: workSession.value.id,
-        cameraReady: true,
-        cameraLabel: videoTrack?.label || ''
-      },
-      headers: await getAuthHeaders()
-    })
-    const sessionId = response?.session?.id
-      || response?.detail?.session?.id
-      || response?.sessionId
-
-    if (response?.detail?.session?.id || response?.data?.session?.id) {
-      applyPackingDetail(response)
-      activePackingSessionId.value = sessionCompleted.value ? '' : String(sessionDetail.value.id || '')
-      resetProblemForm()
-      await setSessionRouteQuery(sessionDetail.value.id)
-
-      if (packingDetail.value?.video?.status === 'ready') {
-        await stopOrderRecording({ discard: true })
-      } else {
-        await focusScanner()
-      }
-    } else if (sessionId) {
-      await loadPackingSession(sessionId)
-    } else {
-      throw new Error('The order was claimed without returning a packing session.')
-    }
-
-    await loadQueue({
-      preserveSelection: true,
-      preserveError: true
-    })
+    const label = cameraStream.value?.getVideoTracks?.()[0]?.label || ''
+    const response = await $fetch('/api/admin-orders/packing', { method: 'POST', body: { orderId: String(queueOrder.id), workSessionId: workSession.value.id, cameraReady: true, cameraLabel: label, ...(takeover ? { takeover: true } : {}) }, headers: await getAuthHeaders() })
+    applyPackingDetail(response)
+    await Promise.all([loadCourier(), loadQueue()])
+    await focusScanner()
   } catch (error) {
-    const claimError = error?.data?.statusMessage || error?.message || 'Could not start packing this order.'
-
     if (recordingStarted) await stopOrderRecording({ discard: true })
-
-    await loadQueue({
-      preserveSelection: true,
-      preserveError: true
-    })
-    pageError.value = claimError
-  } finally {
-    claimLoading.value = false
-    openingOrderId.value = ''
-  }
+    await loadQueue()
+    pageError.value = failure(error, 'Could not start packing this order.')
+  } finally { claimLoading.value = false; openingOrderId.value = '' }
 }
-
+const takeOverOrder = queueOrder => {
+  if (window.confirm(t('confirmOrders.takeoverConfirm', { value0: processorName(queueOrder) }))) openQueueOrder(queueOrder, true)
+}
+const applyScanResult = (response, fallback) => {
+  applyPackingDetail(response)
+  scanFeedback.type = 'success'; scanFeedback.message = response?.lastScan?.message || fallback
+}
 const scanItem = async () => {
   const code = scanCode.value.trim()
-
-  if (!code || !sessionDetail.value.id || scanLoading.value || allItemsPacked.value || !recordingActive.value) {
-    return
-  }
-
-  scanLoading.value = true
-  pageError.value = ''
-  scanFeedback.type = ''
-  scanFeedback.message = ''
-
+  if (!code || !sessionDetail.value.id || scanLoading.value || allItemsPacked.value || !recordingActive.value) return
+  scanLoading.value = true; scanFeedback.message = ''
   try {
-    const response = await $fetch(
-      `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/scan`,
-      {
-        method: 'POST',
-        body: { code },
-        headers: await getAuthHeaders()
-      }
-    )
-    applyPackingDetail(response)
-    const lastScan = response?.lastScan || response?.data?.lastScan
-    scanFeedback.type = 'success'
-    scanFeedback.message = lastScan?.message
-      || `${lastScan?.product_title || 'Item'} scanned successfully.`
+    applyScanResult(await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/scan`, { method: 'POST', body: { code }, headers: await getAuthHeaders() }), code)
     scanCode.value = ''
-  } catch (error) {
-    scanFeedback.type = 'error'
-    scanFeedback.message = error?.data?.statusMessage || error?.message || 'This item could not be confirmed.'
-  } finally {
-    scanLoading.value = false
-    await focusScanner()
-  }
+  } catch (error) { scanFeedback.type = 'error'; scanFeedback.message = failure(error, 'This item could not be confirmed.') }
+  finally { scanLoading.value = false; await focusScanner() }
 }
-
-const isSerializedUnitScanned = (item, unit) => {
-  return (item?.scans || []).some((scan) => {
-    return String(scan.serialized_unit_id || '') === String(unit.id || '')
-      || String(scan.scanned_code || scan.scan_code || '').toLowerCase() === String(unit.unit_code || '').toLowerCase()
-  })
+const checkItem = async item => {
+  if (!sessionDetail.value.id || checkingItemId.value || !recordingActive.value) return
+  checkingItemId.value = String(item.id); scanFeedback.message = ''
+  try { applyScanResult(await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/scan`, { method: 'POST', body: { itemId: String(item.id) }, headers: await getAuthHeaders() }), item.product_title || '') }
+  catch (error) { scanFeedback.type = 'error'; scanFeedback.message = failure(error, 'This item could not be confirmed.') }
+  finally { checkingItemId.value = '' }
 }
-
-const getPrintableSiteName = () => {
-  return String(siteContent.value?.settings?.site_name || 'Store').trim() || 'Store'
-}
-
-const getPrintableSiteLogoUrl = () => {
-  return String(siteContent.value?.settings?.site_logo_url || '').trim()
-}
-
-const createPrintWindow = () => {
-  if (!import.meta.client) {
-    return null
-  }
-
-  return window.open('', '_blank', 'width=1000,height=900')
-}
-
-const writePrintDocuments = (printWindow) => {
-  if (!printWindow || !packingDetail.value) {
-    return false
-  }
-
-  const printableHtml = buildOrderPackingDocumentsHtml({
-    order: orderDetail.value,
-    customer: customerDetail.value,
-    items: orderItems.value,
-    siteName: getPrintableSiteName(),
-    siteLogoUrl: getPrintableSiteLogoUrl(),
-    locale: intlLocale.value,
-    translate: uiLabel
-  })
-
-  printWindow.document.open()
-  printWindow.addEventListener('load', () => {
-    printWindow.focus()
-    printWindow.print()
-  }, { once: true })
-  printWindow.document.write(printableHtml)
-  printWindow.document.close()
-  return true
-}
-
 const printDocuments = () => {
-  const printWindow = createPrintWindow()
-
-  if (!printWindow) {
-    pageError.value = 'Please allow pop-ups to print the bill and shipping paper.'
-    return
-  }
-
-  try {
-    writePrintDocuments(printWindow)
-  } catch {
-    if (!printWindow.closed) {
-      printWindow.close()
-    }
-
-    pageError.value = 'The print window could not be prepared. Please try again.'
-  }
+  const printWindow = window.open('', '_blank', 'width=1000,height=900')
+  if (!printWindow) { pageError.value = 'Please allow pop-ups to print the bill and shipping paper.'; return }
+  printWindow.document.open()
+  printWindow.addEventListener('load', () => { printWindow.focus(); printWindow.print() }, { once: true })
+  printWindow.document.write(buildOrderPackingDocumentsHtml({ order: orderDetail.value, customer: customerDetail.value, items: orderItems.value, siteName: String(siteContent.value?.settings?.site_name || 'Store').trim() || 'Store', siteLogoUrl: String(siteContent.value?.settings?.site_logo_url || '').trim(), locale: intlLocale.value, translate: uiLabel }))
+  printWindow.document.close()
 }
-
-const completePacking = async () => {
-  if (
-    !sessionDetail.value.id
-    || !allItemsPacked.value
-    || completionLoading.value
-  ) {
-    return
-  }
-
-  const printWindow = createPrintWindow()
-
-  if (printWindow) {
-    printWindow.document.write('<p style="font-family:Arial,sans-serif;padding:32px">Preparing order documents...</p>')
-  }
-
-  completionLoading.value = true
-  pageError.value = ''
-
+// One press: save the video, confirm the order, then book the courier with the entered weight.
+const finishOrder = async () => {
+  if (!canFinish.value) return
+  completionLoading.value = true; pageError.value = ''; courierNotice.value = ''
+  const bookWeight = courierNeedsBooking.value ? measuredParcelWeight(parcelWeight.value) : null
   try {
-    if (packingDetail.value?.video?.status !== 'ready') {
-      await stopOrderRecording()
-      await uploadPackingVideo()
-    }
-
-    const response = await $fetch(
-      `/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/complete`,
-      {
-        method: 'POST',
-        body: {
-          status: completionStatus.value,
-          message: purchaserMessage.value.trim() || undefined
-        },
-        headers: await getAuthHeaders()
-      }
-    )
-    applyPackingDetail(response)
-    purchaserMessage.value = ''
-    scanFeedback.type = ''
+    if (!videoSaved.value) { finishStage.value = 'video'; await stopOrderRecording(); await uploadPackingVideo() }
+    finishStage.value = 'confirm'
+    applyPackingDetail(await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionDetail.value.id)}/complete`, { method: 'POST', body: { status: 'ready_to_deliver' }, headers: await getAuthHeaders() }))
     scanFeedback.message = ''
-    await loadQueue({ preserveSelection: true })
-
-    if (printWindow) {
-      try {
-        writePrintDocuments(printWindow)
-      } catch {
-        if (!printWindow.closed) {
-          printWindow.close()
-        }
-
-        pageError.value = 'Order completed, but its print window could not be prepared. Use “Print again” to retry.'
-      }
-    } else {
-      pageError.value = 'Order completed, but the print window was blocked. Use “Print again” after allowing pop-ups.'
+    await loadQueue()
+    if (bookWeight !== null) {
+      finishStage.value = 'courier'
+      try { await $fetch(`/api/admin-shipping/orders/${orderDetail.value.id}/booking`, { method: 'POST', body: { action: 'book', actual_weight_kg: bookWeight, weight_confirmed: true }, headers: await getAuthHeaders(), retry: 0 }) }
+      catch (error) { courierNotice.value = failure(error, t('confirmOrders.bookingFailed')) }
     }
-  } catch (error) {
-    if (printWindow && !printWindow.closed) {
-      printWindow.close()
-    }
-
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not complete this order.'
-  } finally {
-    completionLoading.value = false
-  }
+    courierPanelKey.value++
+  } catch (error) { pageError.value = failure(error, 'Could not complete this order.') }
+  finally { completionLoading.value = false; finishStage.value = '' }
 }
-
-const reportOrderProblem = async () => {
-  const sessionId = String(sessionDetail.value.id || '')
-  const message = problemMessage.value.trim()
-  const subject = problemSubject.value.trim()
-
-  if (!sessionId || sessionCompleted.value || problemLoading.value) {
-    return
-  }
-
-  if (!message) {
-    problemFormError.value = 'Explain the problem before sending this report.'
-    return
-  }
-
-  problemLoading.value = true
-  problemFormError.value = ''
-  pageError.value = ''
-  clearPageNotice()
-
-  const orderNumber = getOrderNumber(orderDetail.value)
-  let response
-
-  try {
-    response = await $fetch(
-      `/api/admin-orders/packing/${encodeURIComponent(sessionId)}/problem`,
-      {
-        method: 'POST',
-        body: {
-          subject: subject || undefined,
-          message
-        },
-        headers: await getAuthHeaders()
-      }
-    )
-  } catch (error) {
-    problemFormError.value = error?.data?.statusMessage
-      || error?.message
-      || 'Could not report this order problem.'
-    return
-  } finally {
-    problemLoading.value = false
-  }
-
+const toggleProblemForm = () => { problemFormOpen.value = !problemFormOpen.value; problemFormError.value = '' }
+const afterOrderClosed = async notice => {
   await stopOrderRecording({ discard: true })
   clearPackingWorkspace()
-  try {
-    await setSessionRouteQuery('')
-  } catch {
-    pageError.value = 'The problem was reported, but the session address could not be reset. Refresh this page before continuing.'
-  }
-  await loadQueue({
-    preserveSelection: true,
-    preserveError: true
-  })
-
-  pageNotice.type = 'success'
-  pageNotice.message = typeof response?.message === 'string'
-    ? response.message
-    : `The problem with ${orderNumber} was reported. The packing session is closed while the order awaits follow-up.`
+  await loadQueue()
+  pageNotice.value = notice
 }
-
+const reportOrderProblem = async () => {
+  const sessionId = String(sessionDetail.value.id || ''), message = problemMessage.value.trim()
+  if (!sessionId || sessionCompleted.value || problemLoading.value) return
+  if (!message) { problemFormError.value = 'Explain the problem before sending this report.'; return }
+  problemLoading.value = true; problemFormError.value = ''
+  const number = getOrderNumber(orderDetail.value)
+  try {
+    await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionId)}/problem`, { method: 'POST', body: { message }, headers: await getAuthHeaders() })
+    await afterOrderClosed(t('confirmOrders.problemSent', { value0: number }))
+  } catch (error) { problemFormError.value = failure(error, 'Could not report this order problem.') }
+  finally { problemLoading.value = false }
+}
+const cancelOrder = async () => {
+  const sessionId = String(sessionDetail.value.id || '')
+  if (!sessionId || problemLoading.value) return
+  const number = getOrderNumber(orderDetail.value), paid = orderDetail.value.payment_status === 'paid'
+  if (!window.confirm([t('confirmOrders.cancelConfirm', { value0: number }), paid ? t('confirmOrders.cancelPaid') : ''].filter(Boolean).join('\n'))) return
+  problemLoading.value = true; problemFormError.value = ''
+  try {
+    await $fetch(`/api/admin-orders/packing/${encodeURIComponent(sessionId)}/cancel-order`, { method: 'POST', body: { reason: problemMessage.value.trim() }, headers: await getAuthHeaders() })
+    await afterOrderClosed(t('confirmOrders.cancelled', { value0: number }))
+  } catch (error) { problemFormError.value = failure(error, 'Could not cancel this order.') }
+  finally { problemLoading.value = false }
+}
 const releasePackingSession = async () => {
-  if (!sessionDetail.value.id || sessionCompleted.value || releaseLoading.value) {
-    return
-  }
-
-  if (
-    import.meta.client
-    && !window.confirm(uiLabel('Release this order back to the queue? Its current scan history will remain in the audit record, and a new session will start from zero.'))
-  ) {
-    return
-  }
-
-  releaseLoading.value = true
-  pageError.value = ''
-  clearPageNotice()
-
+  if (!sessionDetail.value.id || sessionCompleted.value || releaseLoading.value) return
+  if (!window.confirm(t('confirmOrders.releaseConfirm'))) return
+  releaseLoading.value = true; pageError.value = ''
+  const number = getOrderNumber(orderDetail.value)
   try {
-    const releasedOrderNumber = getOrderNumber(orderDetail.value)
     await postReleasePackingSession(sessionDetail.value.id)
-    await stopOrderRecording({ discard: true })
-    clearPackingWorkspace()
-    await setSessionRouteQuery('')
-    await loadQueue({
-      preserveSelection: true,
-      preserveError: true
-    })
-    pageNotice.type = 'info'
-    pageNotice.message = `${releasedOrderNumber} was released back to the confirmation queue.`
-  } catch (error) {
-    pageError.value = error?.data?.statusMessage || error?.message || 'Could not release this order.'
-  } finally {
-    releaseLoading.value = false
-  }
+    await afterOrderClosed(t('confirmOrders.released', { value0: number }))
+  } catch (error) { pageError.value = failure(error, 'Could not release this order.') }
+  finally { releaseLoading.value = false }
 }
+const continueToNextOrder = async () => { await stopOrderRecording({ discard: true }); clearPackingWorkspace(); await loadQueue() }
+const handleBeforeUnload = event => { if (hasActivePackingOrder.value) { event.preventDefault(); event.returnValue = '' } }
 
-const continueToNextOrder = async () => {
-  claimLoading.value = true
-  pageError.value = ''
-
-  try {
-    packingDetail.value = null
-    selectedOrderId.value = ''
-    scanFeedback.type = ''
-    scanFeedback.message = ''
-    completionStatus.value = 'ready_to_deliver'
-    purchaserMessage.value = ''
-    await setSessionRouteQuery('')
-    await loadQueue({ preserveSelection: true })
-  } finally {
-    claimLoading.value = false
-  }
-}
-
+watch(cameraVideoElement, element => { if (element && cameraStream.value) { element.srcObject = cameraStream.value; element.play().catch(() => {}) } })
+onBeforeRouteLeave(() => !hasActivePackingOrder.value || window.confirm(uiLabel('Leave this active order? The current video will be lost.')))
 onMounted(async () => {
-  sessionClockTimer = window.setInterval(() => {
-    sessionClock.value = Date.now()
-  }, 30000)
+  sessionClockTimer = window.setInterval(() => { sessionClock.value = Date.now() }, 30000)
   window.addEventListener('beforeunload', handleBeforeUnload)
-
   await loadWorkSession()
-
-  if (workSessionActive.value) {
-    await loadQueue({ preserveSelection: true })
-  }
-
-  if (route.query.session) {
-    await setSessionRouteQuery('')
-  }
+  workSessionLoading.value = false
+  if (workSessionActive.value) await claimScreen()
 })
-
-const handleBeforeUnload = (event) => {
-  if (!workSessionActive.value) return
-
-  event.preventDefault()
-  event.returnValue = ''
-}
-
-onBeforeRouteLeave(() => {
-  if (!hasActivePackingOrder.value) return true
-
-  return window.confirm(uiLabel('Leave this active order? The current video will be lost.'))
-})
-
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
-
   if (sessionClockTimer) window.clearInterval(sessionClockTimer)
+  stopHeartbeat()
   stopCamera()
 })
 </script>
