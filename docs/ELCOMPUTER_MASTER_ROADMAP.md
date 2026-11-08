@@ -33,6 +33,9 @@ Open: Events Manager receipt and deduplication need the Meta account holder. Dom
 CODOrderPlaced unproven until a real order. content_ids are variant UUIDs, so catalog ads need a matching catalog.
 user_data has external_id, user agent, fbp and fbc only. Google tag: nothing installed; needs an owner decision and an ID.
 
+Owner's Events Manager, 8 Nov 18:22 Cairo (Today): PageView 9 and ViewContent 3, both Active, Integration "Multiple". Dataset assigned
+to the Elcomputer ad account the same day. Receipt confirmed. Those counts equal server plus browser sends (7+2, 2+1); deduplication view still to confirm.
+
 # E354 — CASH-AFTER-CARD-01 DEPLOYED: abandoned card attempts stop blocking cash — 8 November 2026
 
 Owner report: cash "Place order" stopped at "Check this payment". Owner approval: "Deploy", answering "Deploy the cash fix?".
