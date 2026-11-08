@@ -25,8 +25,8 @@
         <p class="text-sm text-slate-700">{{ $t('embeddedCheckout.pending') }}</p>
         <button type="button" :disabled="placingOrder" class="mt-3 min-h-11 rounded-lg border px-4 text-sm font-semibold" @click="recoverCheckout">{{ $t('paymentFirst.checkStatus') }}</button>
       </section>
-      <p v-if="affectedPayment && !savedCheckout && !(merchantRiskRetry && affectedPayment.method!=='instapay')" class="mx-auto mt-4 max-w-5xl text-sm text-slate-600">
-        <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="font-semibold text-blue-700">{{ $t('paymentInterface.affectedStatus') }} · {{ affectedPayment.reference }}</NuxtLinkLocale>
+      <p v-if="affectedPayment && !savedCheckout && (affectedPayment.blocking || !(merchantRiskRetry && affectedPayment.method!=='instapay'))" class="mx-auto mt-4 max-w-5xl text-sm text-slate-600">
+        <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="font-semibold text-blue-700">{{ $t('paymentInterface.affectedStatus') }}<template v-if="affectedPayment.reference"> · {{ affectedPayment.reference }}</template></NuxtLinkLocale>
       </p>
       <section v-if="reviewRequired" class="mx-auto mt-6 max-w-5xl rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200">
         <p role="alert" class="text-sm text-slate-800">{{ $uiMessage(orderError) }}</p>

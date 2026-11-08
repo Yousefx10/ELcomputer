@@ -13,9 +13,9 @@
         <Icon name="lucide:clock" size="18" aria-hidden="true" />
         <div><p>{{ $t('embeddedCheckout.pending') }}</p><button type="button" :disabled="placingOrder" class="cm-link" @click="recoverCheckout">{{ $t('paymentFirst.checkStatus') }}</button></div>
       </section>
-      <p v-if="affectedPayment && !savedCheckout && !(merchantRiskRetry && affectedPayment.method !== 'instapay')" class="cm-notice">
+      <p v-if="affectedPayment && !savedCheckout && (affectedPayment.blocking || !(merchantRiskRetry && affectedPayment.method !== 'instapay'))" class="cm-notice">
         <Icon name="lucide:info" size="18" aria-hidden="true" />
-        <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="cm-link">{{ $t('paymentInterface.affectedStatus') }} · {{ affectedPayment.reference }}</NuxtLinkLocale>
+        <NuxtLinkLocale :to="`/checkout/session/${affectedPayment.id}`" class="cm-link">{{ $t('paymentInterface.affectedStatus') }}<template v-if="affectedPayment.reference"> · {{ affectedPayment.reference }}</template></NuxtLinkLocale>
       </p>
       <section v-if="reviewRequired" class="cm-notice cm-notice-warn">
         <Icon name="lucide:triangle-alert" size="18" aria-hidden="true" />

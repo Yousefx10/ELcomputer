@@ -338,7 +338,7 @@ export function useCheckoutFlow(options) {
       }
       if(code==='payment_first:existing'){
         const id=error?.data?.data?.checkoutId
-        if(id){removePendingCheckout(window.localStorage,command);readPending();affectedPayment.value={id,reference:''};orderError.value=t('paymentInterface.affectedStatus');return}
+        if(id){removePendingCheckout(window.localStorage,command);readPending();affectedPayment.value={id,reference:'',blocking:true};orderError.value=t('paymentInterface.openCardPayment');return}
         orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return
       }
       if(code==='payment_first:refresh'){orderError.value=t('paymentInterface.reload');return}

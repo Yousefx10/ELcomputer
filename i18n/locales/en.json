@@ -6003,6 +6003,7 @@
     "tryAgain": "Try again"
   },
   "paymentInterface": {
+    "openCardPayment": "A card payment for these items is still open. Finish it or try cash in 30 minutes.",
     "pay": "Pay",
     "ready": "Ready to pay",
     "back": "Back to checkout",
