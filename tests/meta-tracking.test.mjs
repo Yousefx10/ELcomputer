@@ -26,3 +26,9 @@ for(const scenario of ['wrong-revision','Purchase','CODOrderPlaced'])test('bound
  const result=await dispatchMetaEvent({db,runtime:{metaTrackingEnabled:true,metaDispatchEnabled:true,metaTestRevision:scenario==='wrong-revision'?2:1},fetcher:()=>{calls++;throw Error('Forbidden external request')}})
  assert.equal(result.state,'held');assert.equal(calls,0);assert.equal(finished.p_outcome,'rejected')
 })
+
+test('ad-click URLs stay eligible while other query strings stay private',async()=>{
+ const {metaSafeSearch}=await import('../app/utils/metaTracking.js')
+ for(const ok of ['','?fbclid=abc','?utm_source=fb&utm_campaign=x&fbclid=abc'])assert.equal(metaSafeSearch(ok),true,ok)
+ for(const bad of ['?q=keyboard','?fbclid=abc&email=a@b.c','?order=123'])assert.equal(metaSafeSearch(bad),false,bad)
+})

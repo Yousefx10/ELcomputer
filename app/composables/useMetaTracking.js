@@ -1,4 +1,4 @@
-import {metaBrowserPrivacyAllowed,metaPublicPath} from '~/utils/metaTracking'
+import {metaBrowserPrivacyAllowed,metaPublicPath,metaSafeSearch} from '~/utils/metaTracking'
 import {getStorefrontAudienceAccessToken,getStorefrontAudienceStatus,STOREFRONT_AUDIENCE_ELIGIBLE} from './useStorefrontAudience'
 
 const sent=new Set(),pending=new Set()
@@ -6,7 +6,7 @@ let sdkPromise,testTimer
 export const useMetaTracking=()=>{
  const state=useState('store-meta-tracking',()=>({enabled:false,pixelId:'',revision:0,testExpiresAt:null,choice:null,settingsOpen:false,busy:false,error:false}))
  const allowed=()=>state.value.enabled&&(!state.value.testExpiresAt||Date.parse(state.value.testExpiresAt)>Date.now())&&state.value.choice==='granted'&&metaBrowserPrivacyAllowed()&&getStorefrontAudienceStatus()===STOREFRONT_AUDIENCE_ELIGIBLE
- const safeLocation=()=>!!metaPublicPath(window.location.pathname)&&!window.location.search&&!window.location.hash
+ const safeLocation=()=>!!metaPublicPath(window.location.pathname)&&metaSafeSearch(window.location.search)&&!window.location.hash
  const headers=()=>{const token=getStorefrontAudienceAccessToken();return token?{authorization:'Bearer '+token}:{}}
  const loadPixel=async()=>{
   if(!allowed())return false
