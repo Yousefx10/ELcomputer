@@ -80,6 +80,30 @@ test('native: courier updates move orders forward only, and courier SMS use the 
       const s = await make(); await send(s, ...OFD, -7 * 3600000)
       assert.equal((await sql('select count(*)::int n from public.sms_order_events where order_id=$1', [s.order])).rows[0].n, 0)
     })
+    await t.test('polled updates have no event time: they send using the time first seen', async () => {
+      const s = await make()
+      const data = { awb: s.awb, ref: s.ref, status_id: OFD[0], status_name: OFD[1], reason: '', status_date: null, source: 'reconciliation', observed_at: new Date().toISOString() }
+      await sql('select public.shipping_record_pdc_event($1::jsonb) r', [JSON.stringify({ ...data, event_key: pdcEventKey(data) })])
+      const row = (await sql("select provider_event_at,reason from public.sms_order_events where order_id=$1 and event_type='pdc_out_for_delivery'", [s.order])).rows[0]
+      assert.ok(row.provider_event_at); assert.notEqual(row.reason, 'event_time_unknown')
+    })
+    await t.test('a polled update after six hours without tracking is not sent', async () => {
+      const s = await make()
+      await sql("update public.shipping_order_jobs set tracking_success_at=now()-interval '7 hours',awb_verified_at=now()-interval '2 days' where id=$1", [s.job])
+      const data = { awb: s.awb, ref: s.ref, status_id: OFD[0], status_name: OFD[1], reason: '', status_date: null, source: 'reconciliation', observed_at: new Date().toISOString() }
+      await sql('select public.shipping_record_pdc_event($1::jsonb) r', [JSON.stringify({ ...data, event_key: pdcEventKey(data) })])
+      assert.equal((await sql('select count(*)::int n from public.sms_order_events where order_id=$1', [s.order])).rows[0].n, 0)
+    })
+    await t.test('an order-level check ignores the schedule but keeps the 5-minute limit', async () => {
+      const s = await make()
+      await sql("update public.shipping_order_jobs set tracking_next_at=now()+interval '1 hour',tracking_checked_at=now()-interval '10 minutes' where id=$1", [s.job])
+      const claim = async id => (await sql('select public.shipping_claim_pdc_tracking($1) j', [id])).rows[0].j
+      await sql("update public.shipping_provider_settings set is_enabled=true,api_mode='production',tracking_policy=tracking_policy||'{\"enabled\":true}'::jsonb,tracking_request_times='{}' where id='pdc'")
+      await sql("update public.shipping_order_jobs j set provider_identity=jsonb_build_object('base_url',s.base_url,'api_mode',s.api_mode,'company_id',s.company_id) from public.shipping_provider_settings s where s.id='pdc' and j.id=$1", [s.job])
+      assert.ok((await claim(s.order)).job_id)
+      await sql('update public.shipping_order_jobs set tracking_token=null,tracking_lease_until=null where id=$1', [s.job])
+      assert.equal((await claim(s.order)).error, 'not_due_or_ineligible')
+    })
     await t.test('default templates name the courier through the variable', async () => {
       const rows = (await sql("select code,text_en,text_ar from public.sms_templates where code like 'pdc_%'")).rows
       assert.equal(rows.length, 3)
@@ -97,4 +121,9 @@ test('native: courier updates move orders forward only, and courier SMS use the 
       assert.equal(off.status_follows_courier, false)
     })
   } finally { await db.close?.(); await db.end?.() }
+})
+
+test('imported SKUs with literal quotes still match Daftra codes', async () => {
+  const { codeKey } = await import('../server/utils/daftraLinks.js')
+  assert.equal(codeKey('"7727500558378"'), codeKey('7727500558378'))
 })

@@ -7,7 +7,7 @@ const COLORS = ['black', 'white', 'grey', 'gray', 'blue', 'red', 'green', 'yello
 const SAME_COLOR = { gray: 'grey' }
 const GENERIC = new Set(['default', 'standard', ''])
 
-export const codeKey = value => String(value ?? '').trim().toLowerCase()
+export const codeKey = value => String(value ?? '').replace(/["']/g, '').trim().toLowerCase()
 export const nameTokens = value => String(value ?? '').toLowerCase().replace(/[–—]/g, '-')
   .replace(/[^a-z0-9؀-ۿ]+/g, ' ').trim().split(/\s+/).filter(Boolean)
 const colorsOf = tokens => new Set(tokens.filter(t => COLORS.includes(t)).map(t => SAME_COLOR[t] || t))

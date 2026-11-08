@@ -74,7 +74,12 @@ const reorder = async () => {
 }
 
 watch(() => route.params.id, () => load())
-onMounted(() => load())
+// Opening an order asks the courier for the latest status. A refused check keeps what is shown.
+const refreshCourier = async () => {
+  try { return (await request(`/api/account/orders/${encodeURIComponent(String(route.params.id))}/tracking-refresh`, { method: 'POST' }))?.refreshed === true } catch { return false }
+}
+const checkCourier = async () => { await refreshCourier(); await load(true) }
+onMounted(async () => { await load(); if (detail.value?.shipping?.awb && await refreshCourier()) await load(true) })
 onBeforeUnmount(() => { loadVersion++ })
 useShipmentUpdates(computed(() => String(route.params.id || '')), () => load(true))
 useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.order.order_number} | ${uiLabel('Your Orders')}` : uiLabel('Order Details') }))
@@ -157,7 +162,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
             <p v-if="detail.shipping?.unavailable" class="mt-2 text-sm text-slate-600" role="status">{{ $t('shipment.unavailable') }}</p>
             <p v-else-if="detail.shipping?.stale" class="mt-2 text-sm text-slate-600" role="status">{{ $t('shipment.stale') }}</p>
             <p v-if="detail.shipping?.latest_update_at" class="mt-2 text-xs text-slate-600">{{ $t('shipment.checkedAt') }} <time :datetime="detail.shipping.latest_update_at">{{ formatAccountDate(detail.shipping.latest_update_at,true) }}</time></p>
-            <button type="button" class="mt-3 min-h-11 rounded-lg px-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" @click="load(true)">{{ $t('shipment.refresh') }}</button>
+            <button type="button" class="mt-3 min-h-11 rounded-lg px-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" @click="checkCourier">{{ $t('shipment.refresh') }}</button>
             <p class="mt-3 text-sm text-slate-600">{{ detail.order.street_address }}, {{ detail.order.city }}, {{ detail.order.governorate }}</p>
           </section>
         </div>
