@@ -9,10 +9,29 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E354 is the latest milestone (cash works after an abandoned card attempt);
+family imports remain consumed. E355 is the latest milestone (Meta Pixel and Conversions API live);
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E355 — MKT-META-01 LIVE: Meta Pixel and Conversions API on for consenting visitors — 8 November 2026
+
+Owner: "i want it to be working asap, so you have my approve to directly deploy once ready."
+Dataset 1680814460341996. Configuration revision 8 (enabled, CAPI on), set through commerce_meta_configure 15:34 UTC.
+Server: /etc/storefront-meta/{app,worker}.env (root 0600), storefront.service.d/zz-meta.conf, /opt/storefront-meta/worker.py,
+storefront-meta-process.timer (30 s) and storefront-meta-retention.timer. No Caddy change. App restart 1.7 s with workers paused.
+Release 582b106e5c487a39 (commit de3c30a, release20/, app-only) 15:45 UTC, schema 138. Verify NATURAL_MON_PASS 15:53; 8,631 assets.
+Rollback: turn Meta off in Dashboard; remove zz-meta.conf, stop both timers, restart; app back to releases/a4fa74e9f6b3c9ce.
+
+Bugs fixed: campaign query strings (fbclid, utm_*) stopped the browser pixel and lost _fbc; a product view fired before
+settings or consent was lost on direct landing. Other query strings stay private.
+Live evidence: guest landing on a product with fbclid, after Allow: browser PageView and ViewContent with event IDs, _fbp and _fbc set.
+Conversions API accepted 7 PageView and 2 ViewContent, all from these test visits. No real customer events counted yet.
+Stored token can post events; it cannot read dataset fields (permission error), which is expected for a dataset token.
+
+Open: Events Manager receipt and deduplication need the Meta account holder. Domain verification unknown. Purchase and
+CODOrderPlaced unproven until a real order. content_ids are variant UUIDs, so catalog ads need a matching catalog.
+user_data has external_id, user agent, fbp and fbc only. Google tag: nothing installed; needs an owner decision and an ID.
 
 # E354 — CASH-AFTER-CARD-01 DEPLOYED: abandoned card attempts stop blocking cash — 8 November 2026
 
