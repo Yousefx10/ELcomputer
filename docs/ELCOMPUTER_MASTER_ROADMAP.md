@@ -9,26 +9,35 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E350 is the latest milestone (homepage design, HOME-DESIGN-01);
+family imports remain consumed. E351 is the latest milestone (courier batch: tracking, Fast Shipping, SMS);
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
 
-# COURIER-BATCH-20261108 — owner requests, built locally, NOT deployed — 8 November 2026
+# E351 — COURIER-BATCH-20261108 DEPLOYED: order-number tracking, Fast Shipping, status follows courier, courier SMS — 8 November 2026
 
-Owner requests 8 Nov. Code commit 1010af4 (branch product-modern, pushed to GitHub); schema 135 pending.
+Owner approval: "Deploy", answering "Deploy the release and turn on Fast Shipping, status following and courier SMS?".
+Release da577f319a4c23be (commit 1010af4, release15/) installed 11:41:45 UTC, pause 3.3 s, schema 135
+(20261108060000_courier_status_sms). Verify NATURAL_MON_PASS 11:48; 8,011 hosted assets match; all 5 workers success.
+Rollback: turn off status following, then point current back to releases/07d4625fef0e3291 and restart.
+
 - BILL-LOGO-01: Bill design logo is an upload or gallery field, PNG/JPEG only.
-- TRACK-ORDER-01: /track accepts an AWB or order number, with or without ORD-.
-- COURIER-NAME-01: customer-facing courier name comes from Commerce > Shipping; target "Fast Shipping".
-- ORDER-STATUS-PDC-01: Settings > Order flow switch; forward-only status from courier states.
-- SMS-COURIER-01: courier SMS on, notifications only; 500 segments a day; 3-hour send window, 6-hour age limit.
-- NAV-NAME-01: navbar hides later names when they do not fit.
-- DAFTRA-LINK-02: 183 unlinked published options matched to the owner's Daftra export:
-  50 safe links, 59 to confirm, 74 not in Daftra. Proposal file is outside the repo. No link written yet.
-Deferred by owner: RESET-COVERAGE-01, until the Dashboard updates finish.
+- TRACK-ORDER-01: /track accepts an AWB or order number, with or without ORD-. Courier fields only. Live checked.
+- COURIER-NAME-01: Commerce > Shipping has "Courier name for customers"; set to Fast Shipping. The checkout company
+  was renamed too. The beta policy binds checkout to that company, so the row named PDC is not offered.
+- ORDER-STATUS-PDC-01: Settings > Order flow switch, on. Forward only; on hold, cancelled, refunded never change.
+  Two parcels already moving caught up once to Being Shipped.
+- SMS-COURIER-01: three courier events on (notification traffic). 500 segments a day. 3-hour send window; older
+  than 6 hours is not sent; nothing before activation is sent. Receipt: phase4-cod-fee-20261108/activate-courier.json.
+- NAV-NAME-01: later names hide when they do not fit; phones show the first name.
+- DAFTRA-LINK-02: 183 unlinked published options matched to the owner's export: 50 safe, 59 to confirm, 74 not in
+  Daftra. Proposal and apply script: daftra-link-match-20261108/ (outside the repo). No link written yet.
 
-Evidence 8 Nov (local): 11 new tests pass; 50 related test files versus the live commit show no new failures.
-Blocker: owner approval to deploy and activate. Docs mask real order and AWB numbers because the repo is public.
+TRACKING-BUDGET-01 (found 8 Nov, needs owner OK): tracking_policy allows 100 requests in a rolling 24 hours, and two
+parcels at 15-minute checks use 192. The budget ran out at 02:13 UTC and frees from 13:23 UTC. Until raised, status
+following and courier SMS stall for part of each day. Proposal: 500 a day, checks every 30 minutes (Commerce > Shipping).
+Owner acceptance: pending. Next: tracking budget decision, then links, then the real paid test order.
+RESET-COVERAGE-01 stays deferred until the Dashboard updates finish.
 
 # E350 — HOME-DESIGN-01 DEPLOYED: homepage category pictures and banner shapes — 8 November 2026
 
