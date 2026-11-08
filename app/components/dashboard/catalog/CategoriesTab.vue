@@ -39,6 +39,7 @@
           :disabled="editingId ? !canEditCategory : !canAddCategory"
           :preview-alt="name || 'Category image'"
           :help-text="$t('dashboard.catalog.imageDisplayedInHomePage')"
+          :recommended-size="[600, 600]"
         />
 
         <p class="text-sm text-gray-500">

@@ -19,6 +19,18 @@ export const getStoreLinkUrl = (value = '') => {
 
 export const isExternalStoreLink = (value = '') => /^https?:\/\//i.test(getStoreLinkUrl(value))
 
+// Generic transparent pictures for categories with no uploaded image.
+const categoryArt = [
+  [/keyboard/, 'keyboard'], [/mouse.?pad|desk.?mat/, 'mouse-pad'], [/mouse|mice/, 'mouse'],
+  [/headset|headphone/, 'headset'], [/microphone|\bmic\b/, 'microphone'], [/controller|gamepad/, 'controller'],
+  [/webcam|camera/, 'webcam'], [/accessor|cable|charger/, 'accessories']
+]
+export const getStoreCategoryArt = (category = '') => {
+  const name = String(category).toLowerCase()
+  const match = categoryArt.find(([pattern]) => pattern.test(name))
+  return match ? `/images/storefront/categories/${match[1]}.svg` : ''
+}
+
 export const getStoreCategoryIcon = (category = '') => {
   const name = String(category).toLowerCase()
   if (/keyboard/.test(name)) return 'lucide:keyboard'

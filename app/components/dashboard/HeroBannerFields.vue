@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-3 sm:grid-cols-2">
-    <DashboardMediaUploadField :model-value="value.mobile_image_url" :label="$t('storefrontUX.mobileImage')" section="hero_banners" preview-height-class="h-24" @update:model-value="set('mobile_image_url', $event)" />
+    <DashboardMediaUploadField :model-value="value.mobile_image_url" :label="$t('storefrontUX.mobileImage')" :help-text="$t('storefrontUX.phoneImageSize', { width: HERO_PHONE_SIZE[0], height: HERO_PHONE_SIZE[1] })" :recommended-size="HERO_PHONE_SIZE" preview-image-class="object-cover" section="hero_banners" @update:model-value="set('mobile_image_url', $event)" />
     <div class="space-y-3">
       <label class="block text-sm">{{ $t('storefrontUX.imageFit') }}<select :value="value.fit" class="mt-1 w-full rounded-lg border p-2" @change="set('fit', $event.target.value)"><option value="cover">{{ $t('storefrontUX.cover') }}</option><option value="contain">{{ $t('storefrontUX.contain') }}</option></select></label>
       <label class="block text-sm">{{ $t('commerceReliability.mobileFit') }}<select :value="value.mobile_fit" class="mt-1 w-full rounded-lg border p-2" @change="set('mobile_fit', $event.target.value)"><option value="contain">{{ $t('storefrontUX.contain') }}</option><option value="cover">{{ $t('storefrontUX.cover') }}</option></select></label>
@@ -10,7 +10,7 @@
   </div>
 </template>
 <script setup>
-import { normalizeHeroPresentation } from '~/utils/heroLayout'
+import { HERO_PHONE_SIZE, normalizeHeroPresentation } from '~/utils/heroLayout'
 const props = defineProps({ modelValue: { type: Object, default: () => ({}) } })
 const emit = defineEmits(['update:modelValue'])
 const value = computed(() => normalizeHeroPresentation(props.modelValue))

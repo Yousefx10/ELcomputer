@@ -1,6 +1,9 @@
 import { getConfiguredStoreImageUrl } from './storefront.js'
 
 export const heroLayoutMode = value => ['carousel', 'banner', 'both'].includes(value) ? value : 'both'
+// One banner shape per screen. An image of this size fits exactly, with nothing cut.
+export const heroDesktopSize = mode => heroLayoutMode(mode) === 'both' ? [1600, 720] : [1920, 600]
+export const HERO_PHONE_SIZE = [1080, 1080]
 const text = (value, max) => typeof value === 'string' ? value.trim().slice(0, max) : ''
 const percent = value => Number.isFinite(Number(value)) && value !== '' ? Math.min(100, Math.max(0, Number(value))) : 50
 export function normalizeHeroPresentation(value = {}) {
@@ -10,8 +13,8 @@ export function normalizeHeroPresentation(value = {}) {
     title_en: text(row.title_en, 120), title_ar: text(row.title_ar, 120),
     body_en: text(row.body_en, 240), body_ar: text(row.body_ar, 240),
     cta_en: text(row.cta_en, 60), cta_ar: text(row.cta_ar, 60),
-    fit: row.fit === 'cover' ? 'cover' : 'contain',
-    mobile_fit: row.mobile_fit === 'cover' ? 'cover' : 'contain',
+    fit: row.fit === 'contain' ? 'contain' : 'cover',
+    mobile_fit: row.mobile_fit === 'contain' ? 'contain' : 'cover',
     focal_x: percent(row.focal_x), focal_y: percent(row.focal_y),
     mobile_focal_x: percent(row.mobile_focal_x), mobile_focal_y: percent(row.mobile_focal_y)
   }

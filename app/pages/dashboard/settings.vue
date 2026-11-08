@@ -971,8 +971,8 @@
                 section="hero_banners"
                 :preview-alt="$t('common.heroBanner')"
                 preview-image-class="object-cover"
-                preview-height-class="h-28"
-                :help-text="$t('dashboard.settings.uploadTheMainHomepageImage')"
+                :recommended-size="heroDesktopImageSize"
+                :help-text="$t('storefrontUX.desktopImageSize', { width: heroDesktopImageSize[0], height: heroDesktopImageSize[1] })"
               />
 
               <input
@@ -1007,7 +1007,8 @@
                   section="hero_banners"
                   :preview-alt="$t('common.heroBanner')"
                   preview-image-class="object-cover"
-                  preview-height-class="h-28"
+                  :recommended-size="heroDesktopImageSize"
+                  :help-text="$t('storefrontUX.desktopImageSize', { width: heroDesktopImageSize[0], height: heroDesktopImageSize[1] })"
                 />
 
                 <div class="space-y-3">
@@ -2389,7 +2390,7 @@
 
 <script setup>
 import { normalizePublicImageCache } from '~/utils/publicImageCache'
-import { heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
+import { heroDesktopSize, heroLayoutMode, normalizeHeroPresentation } from '~/utils/heroLayout'
 import { DEFAULT_TRACK_ORDERS_LINK, trackOrdersLinkError } from '~/utils/trackOrdersLink'
 import { billDesignError, normalizeBillDesign } from '~/utils/billDesign'
 import { defaultSiteSettings } from '~/utils/siteContentDefaults'
@@ -2458,6 +2459,7 @@ const siteSettings = reactive({
 })
 
 const heroBanners = ref([])
+const heroDesktopImageSize = computed(() => heroDesktopSize(siteSettings.hero_layout_mode))
 const topBarMessages = ref([])
 const offerCards = ref([])
 const siteLinks = ref([])

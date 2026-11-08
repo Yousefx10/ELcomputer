@@ -8,9 +8,9 @@
       <div class="flex flex-col gap-4 md:flex-row">
         <div
           v-if="showPreview"
-          class="flex w-full items-center justify-center overflow-hidden rounded-xl bg-white p-3 md:w-48"
-          :class="previewHeightClass"
-          :style="previewTheme ? { backgroundColor: `var(--branding-preview-${previewTheme})` } : undefined"
+          class="flex items-center justify-center overflow-hidden rounded-xl bg-white"
+          :class="recommendedSize ? 'w-48 max-w-full shrink-0 self-start' : ['w-full p-3 md:w-48', previewHeightClass]"
+          :style="previewStyle"
         >
           <img
             v-if="modelValue"
@@ -18,6 +18,7 @@
             :alt="previewAlt"
             class="h-full w-full"
             :class="previewImageClass"
+            @load="previewSize = [$event.target.naturalWidth, $event.target.naturalHeight]"
           >
 
           <p v-else class="text-center text-sm text-gray-400">
@@ -53,6 +54,8 @@
               {{ $t('common.remove') }}
             </button>
           </div>
+
+          <p v-if="imageWillBeCut" class="text-sm text-amber-700">{{ $t('storefrontUX.imageCropNote', { width: previewSize[0], height: previewSize[1] }) }}</p>
 
           <p v-if="errorMessage" role="alert" class="text-sm text-red-600">
             {{ $uiMessage(errorMessage) }}
@@ -130,6 +133,11 @@ const props = defineProps({
     type: String,
     default: 'h-40'
   },
+  // [width, height] the storefront shows. Sets the preview shape and flags images that will be cut.
+  recommendedSize: {
+    type: Array,
+    default: null
+  },
   previewTheme: {
     type: String,
     default: '',
@@ -146,6 +154,17 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'uploaded', 'busy'])
+
+const previewSize = ref(null)
+const previewStyle = computed(() => ({
+  ...(props.previewTheme ? { backgroundColor: `var(--branding-preview-${props.previewTheme})` } : {}),
+  ...(props.recommendedSize ? { aspectRatio: `${props.recommendedSize[0]} / ${props.recommendedSize[1]}` } : {})
+}))
+const imageWillBeCut = computed(() => {
+  if (!props.recommendedSize || !props.modelValue || !previewSize.value) return false
+  const best = props.recommendedSize[0] / props.recommendedSize[1]
+  return Math.abs(previewSize.value[0] / previewSize.value[1] - best) / best > 0.03
+})
 
 const { uploadImage, fetchGalleryImages } = useAdminUploads()
 const { mediaErrorMessage } = useMediaErrors()

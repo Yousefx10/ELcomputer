@@ -1085,7 +1085,7 @@
   "Image": "common.image",
   "Image alt text": "common.imageAltText",
   "Image details": "common.imageDetails",
-  "Image displayed in home page.": "dashboard.catalog.imageDisplayedInHomePage",
+  "Shown on the home page. Use a transparent PNG, 600 × 600 px.": "dashboard.catalog.imageDisplayedInHomePage",
   "Images could not load": "common.imagesCouldNotLoad",
   "Images on this page": "common.imagesOnThisPage",
   "Images uploaded across your store appear here.": "dashboard.MediaLibrary.imagesUploadedAcrossYourStoreAppearHere",

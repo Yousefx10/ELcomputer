@@ -1,7 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFile} from 'node:fs/promises'
-import {heroLayoutMode,selectedHeroBanners,normalizeHeroPresentation} from '../app/utils/heroLayout.js'
+import {heroLayoutMode,selectedHeroBanners,normalizeHeroPresentation,heroDesktopSize,HERO_PHONE_SIZE} from '../app/utils/heroLayout.js'
+import {getStoreCategoryArt} from '../app/utils/storefront.js'
+import {readFileSync} from 'node:fs'
 import {appendCatalogPage,catalogCacheKey} from '../app/utils/catalogContinuation.js'
 import {createEmailNativeDatabase,emailNativeAvailable} from './helpers/emailNativeDatabase.mjs'
 import {createProductSaveFixture} from './helpers/productSaveFixture.mjs'
@@ -13,6 +15,22 @@ test('existing hero mode, explicit static selection, disabled images and bounded
  content.heroBanners[1].is_enabled=false;assert.deepEqual(selectedHeroBanners(content).map(x=>x.id),['a'])
  const p=normalizeHeroPresentation({title_en:'x'.repeat(500),focal_x:-1,mobile_focal_y:200,fit:'script',mobile_image_url:23})
  assert.equal(p.title_en.length,120);assert.equal(p.focal_x,0);assert.equal(p.mobile_focal_y,100);assert.equal(p.fit,'cover');assert.equal(p.mobile_image_url,'')
+})
+test('banners fill their shape, and each listed size matches the storefront shape',()=>{
+ assert.equal(normalizeHeroPresentation({}).fit,'cover');assert.equal(normalizeHeroPresentation({}).mobile_fit,'cover');assert.equal(normalizeHeroPresentation({fit:'contain'}).fit,'contain')
+ assert.deepEqual(heroDesktopSize('both'),[1600,720]);assert.deepEqual(heroDesktopSize('banner'),[1920,600]);assert.deepEqual(heroDesktopSize('carousel'),[1920,600]);assert.deepEqual(HERO_PHONE_SIZE,[1080,1080])
+ const css=readFileSync('app/assets/css/storefront.css','utf8')
+ assert.match(css,/\.store-hero-picture \{[^}]*aspect-ratio: 20 \/ 9;/);assert.match(css,/store-hero-grid-single \.store-hero-picture \{ aspect-ratio: 16 \/ 5; \}/);assert.match(css,/store-hero-phone \.store-hero-picture \{ aspect-ratio: 1 \/ 1; \}/)
+ assert.equal(1600/720,20/9);assert.equal(1920/600,16/5)
+})
+test('category tiles use an uploaded image or a generic transparent picture, never a product photo',()=>{
+ const expected={Keyboards:'keyboard',Mouse:'mouse','Mouse Pad':'mouse-pad',Headsets:'headset',Controllers:'controller',webcams:'webcam',Microphones:'microphone',Accessories:'accessories'}
+ for(const [name,file] of Object.entries(expected)){
+  assert.equal(getStoreCategoryArt(name),'/images/storefront/categories/'+file+'.svg')
+  const svg=readFileSync('public/images/storefront/categories/'+file+'.svg','utf8');assert.match(svg,/viewBox="0 0 400 400"/);assert.doesNotMatch(svg,/<rect[^>]*width="400"/)
+ }
+ assert.equal(getStoreCategoryArt('Gift cards'),'')
+ const home=readFileSync('app/pages/index.vue','utf8');assert.match(home,/displayImageUrl: getStoreImageUrl\(category\.image_url\) \|\| getStoreCategoryArt\(category\.name\)/)
 })
 test('continuation retains query identity, deduplicates products and rejects invalid or unbounded pages',()=>{
  assert.equal(catalogCacheKey('/search',{q:'x',sort:'latest'}),catalogCacheKey('/search',{sort:'latest',q:'x'}))

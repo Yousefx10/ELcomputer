@@ -60,7 +60,7 @@ const { locale: homeLocale } = useI18n()
 const homeCopy = computed(() => homepagePresentation(siteContent.value?.settings, homeLocale.value))
 const { uiLabel } = useUiLocale()
 
-import { getConfiguredStoreImageUrl, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
+import { getConfiguredStoreImageUrl, getStoreCategoryArt, getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import FeaturedBrands from '~/components/cards/FeaturedBrands.vue'
 import TopCategories from '~/components/cards/TopCategories.vue'
 import OfferSlider from '~/components/layout/OfferSlider.vue'
@@ -139,7 +139,7 @@ const { data: homeData, pending: homePending, error: homeError } = await useAsyn
         ...category,
         productCount: products.filter((product) => product.category?.id === category.id).length,
         products: categoryProducts,
-        displayImageUrl: getStoreImageUrl(category.image_url) || categoryProducts.find((product) => getStoreImageUrl(product.image_url))?.image_url || ''
+        displayImageUrl: getStoreImageUrl(category.image_url) || getStoreCategoryArt(category.name)
       }
     })
     .filter((category) => category.productCount > 0)
