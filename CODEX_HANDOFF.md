@@ -9,10 +9,28 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E351 is the latest milestone (courier batch: tracking, Fast Shipping, SMS);
+family imports remain consumed. E352 is the latest milestone (tracking refresh; CHECKOUT-DAFTRA-01 open);
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E352 — Tracking refresh, polled courier SMS, hourly checks, product links; CHECKOUT-DAFTRA-01 found — 8 November 2026
+
+Releases 57c5cf4808671cc7 (7c986d8, schema 136) 12:36 UTC and f0b34d82af2f3c4d (b306bd0, app-only) 12:49 UTC.
+Both NATURAL_MON_PASS; 5 workers success. Rollback: point current back to releases/57c5cf4808671cc7, then da577f319a4c23be.
+- TRACKING-BUDGET-01 closed: tracking_policy 3600 s, 500 a day, stale after 2 hours. Polling resumed at 12:37: one parcel
+  Delivered (order Completed), one Out for Delivery. No SMS for those: tracking had been down over 6 hours.
+- SMS-COURIER-01 fix: the courier status API has no event time, so every polled SMS was suppressed as event_time_unknown.
+  Polled updates now use the time first seen. A real courier SMS is still unproven.
+- Order refresh: opening an order in My account checks the courier (GET /api/account/orders/:id?refresh=1).
+  Caddy allowlists /api/account/*; a new route returns 403 "Unavailable" until allowlisted.
+- DAFTRA-LINK-02: 104 of 183 options linked (187 total). 75 to create, 4 need the owner. Daftra codes now ignore literal quotes.
+
+CHECKOUT-DAFTRA-01 (found 8 Nov from the owner's screenshot): since Daftra mode began on 7 Nov 09:18 UTC, every checkout
+for cash and card is refused: "A product is no longer available". Daftra mode reads erp_inventory_cache, empty by design.
+No orders since then. Reproduced on live inside a rolled-back transaction. Fix: migration 20261108080000 (0b41587, release18/,
+schema 137): with tracking off, Daftra mode uses the existing untracked path. Dry run on live: cash 3,061, card 3,045.
+61 related test files show no new failures. Blocker: owner approval to deploy.
 
 # E351 — COURIER-BATCH-20261108 DEPLOYED: order-number tracking, Fast Shipping, status follows courier, courier SMS — 8 November 2026
 
