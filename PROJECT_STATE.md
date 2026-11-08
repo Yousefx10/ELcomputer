@@ -9,10 +9,27 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E352 is the latest milestone (tracking refresh; CHECKOUT-DAFTRA-01 open);
+family imports remain consumed. E353 is the latest milestone (checkout sells again in Daftra mode);
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E353 — CHECKOUT-DAFTRA-01 DEPLOYED: checkout sells again in Daftra mode — 8 November 2026
+
+Owner approval: "Deploy", answering "Deploy the checkout fix now?".
+Release 08c03cfcda886982 (commit 0b41587, release18/) installed 13:15:33 UTC, pause 3.2 s, schema 137
+(20261108080000_daftra_checkout_untracked). Verify NATURAL_MON_PASS 13:21; 8,383 assets; all 5 workers success.
+Rollback: point current back to releases/f0b34d82af2f3c4d and restart. Turning on inventory tracking restores the stock check.
+
+Impact: from 7 Nov 09:18 UTC to 8 Nov 13:15 UTC every cash and card checkout was refused. Earlier phase tests ran in built-in mode.
+Live evidence, inside rolled-back transactions: cash review 3,061 and card review 3,045 for one product; a full cash order
+placed through commerce_checkout_quote and commerce_checkout_command as pending_payment, total 3,061, erp_owner daftra, untracked.
+A paid card order is covered by a native test only. Owner acceptance: pending the real paid test order.
+
+APPLE-PAY-CHECK (8 Nov, read-only): capability is public with no customer list. Checkout shows it only when the browser reports
+ApplePaySession.canMakePayments(), so Android, Windows and most in-app browsers do not show it.
+Next: owner answers 4 product questions, presses Create all in Daftra for 75 options, sets ERP payment methods and Bill design,
+then places the real paid test order. Owner's checkout screen should be retried now.
 
 # E352 — Tracking refresh, polled courier SMS, hourly checks, product links; CHECKOUT-DAFTRA-01 found — 8 November 2026
 
