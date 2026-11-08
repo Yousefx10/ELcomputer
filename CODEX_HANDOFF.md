@@ -9,10 +9,27 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E353 is the latest milestone (checkout sells again in Daftra mode);
+family imports remain consumed. E354 is the latest milestone (cash works after an abandoned card attempt);
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E354 — CASH-AFTER-CARD-01 DEPLOYED: abandoned card attempts stop blocking cash — 8 November 2026
+
+Owner report: cash "Place order" stopped at "Check this payment". Owner approval: "Deploy", answering "Deploy the cash fix?".
+Release a4fa74e9f6b3c9ce (commit e99e892, release19/) installed 14:07:51 UTC, pause 2.9 s, schema 138
+(20261108090000_cash_after_open_card). Verify NATURAL_MON_PASS 14:13; 8,507 assets; all 5 workers success.
+Rollback: point current back to releases/08c03cfcda886982 and restart.
+
+Cause: card sessions stay pending once abandoned, and cash was blocked by any non-paid session on the same items, permanently.
+31 abandoned sessions across up to 5 customers were affected. The UI showed only "Check this payment", with its link hidden.
+Fix: private.checkout_cash_conflict: a card session blocks cash only until expires_at; failed ones never block; review, uncertain
+and finalizing still block. Checkout now explains the wait and links to the payment. Evidence: 5 new tests; 62 related test files,
+no new failures; a full cash order rehearsed on live in a rolled-back transaction (3,061).
+Known risk: a card page completed after its expiry, once a cash order exists, needs a manual refund.
+
+Open question (owner, 8 Nov): shorten the card window from 30 to 10 minutes. Needs paymob.js expiration 600, the session default,
+and the message, together. No real order has been placed since the fix: owner acceptance pending.
 
 # E353 — CHECKOUT-DAFTRA-01 DEPLOYED: checkout sells again in Daftra mode — 8 November 2026
 
