@@ -106,6 +106,12 @@
           </div>
 
           <div>
+            <label for="pdc-display-name" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('shipment.courierDisplayName') }}</label>
+            <input id="pdc-display-name" v-model="pdcSettings.display_name" type="text" maxlength="100" class="w-full rounded-lg border p-3 outline-none focus:border-blue-500">
+            <p class="mt-1 text-xs text-gray-500">{{ $t('shipment.courierDisplayNameHint') }}</p>
+          </div>
+
+          <div>
             <label for="pdc-pickup-contact" class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.pickupContact') }}</label>
             <input
               id="pdc-pickup-contact"

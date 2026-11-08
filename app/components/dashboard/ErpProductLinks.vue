@@ -24,6 +24,15 @@
       <button type="button" class="rounded-xl bg-blue-600 px-4 py-2 font-bold text-white disabled:opacity-50" :disabled="!!saving" @click="linkAllCode">{{ saving === 'bulk' ? $t('common.saving') : $t('erp.linkAllCode') }}</button>
     </div>
 
+    <div v-if="counts.none && filter === 'none'" class="flex flex-wrap items-center justify-between gap-3 bg-amber-50 p-4 text-sm">
+      <p class="text-amber-900">{{ $t('erp.createAllHint', { value0: counts.none }) }}</p>
+      <button v-if="!confirmCreateAll" type="button" class="rounded-xl border border-amber-300 px-4 py-2 font-bold text-amber-900 disabled:opacity-50" :disabled="!!saving" @click="confirmCreateAll = true">{{ $t('erp.createAll', { value0: counts.none }) }}</button>
+      <span v-else class="flex flex-wrap gap-2">
+        <button type="button" class="rounded-xl bg-blue-600 px-4 py-2 font-bold text-white disabled:opacity-50" :disabled="!!saving" @click="createAllInDaftra">{{ saving === 'create-all' ? $t('erp.creatingProgress', { value0: createdCount, value1: createTotal }) : $t('erp.create') }}</button>
+        <button type="button" class="rounded-xl px-4 py-2 font-semibold text-gray-700 disabled:opacity-50" :disabled="!!saving" @click="confirmCreateAll = false">{{ $t('common.cancel') }}</button>
+      </span>
+    </div>
+
     <p v-if="notice" class="m-4 rounded-xl bg-green-50 p-3 text-sm text-green-700" role="status">{{ notice }}</p>
     <p v-if="error" class="m-4 rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{{ $uiMessage(error) }}</p>
     <p v-if="loading && !rows.length" class="p-8 text-sm text-gray-500">{{ $t('common.loading') }}</p>
@@ -88,15 +97,15 @@ import { nameTokens } from '~/utils/daftraLinkSearch'
 
 const { t } = useI18n()
 const supabase = useSupabaseClient()
-const FILTERS = ['needs', 'code', 'name', 'linked', 'all']
+const FILTERS = ['needs', 'code', 'name', 'none', 'linked', 'all']
 const PAGE_SIZE = 40
 const rows = ref([]), daftra = ref([]), loading = ref(false), saving = ref(''), error = ref(''), notice = ref('')
-const filter = ref('needs'), publishedOnly = ref(true), search = ref(''), page = ref(1), picker = ref(null), pickerQuery = ref(''), pickerInput = ref(null), confirmCreate = ref(null)
+const filter = ref('needs'), publishedOnly = ref(true), search = ref(''), page = ref(1), picker = ref(null), pickerQuery = ref(''), pickerInput = ref(null), confirmCreate = ref(null), confirmCreateAll = ref(false), createdCount = ref(0), createTotal = ref(0)
 
 const daftraById = computed(() => new Map(daftra.value.map(item => [item.id, item])))
 const isDefault = option => ['', 'default'].includes(String(option || '').trim().toLowerCase())
 const current = row => daftraById.value.get(row.link?.daftraId || row.suggestion?.daftraId || '') || null
-const matchesFilter = (row, key) => key === 'all' || (key === 'linked' ? !!row.link : !row.link && (key === 'needs' || row.suggestion?.reason === key))
+const matchesFilter = (row, key) => key === 'all' || (key === 'linked' ? !!row.link : !row.link && (key === 'needs' || (key === 'none' ? !row.suggestion : row.suggestion?.reason === key)))
 const scoped = computed(() => rows.value.filter(row => !publishedOnly.value || row.published))
 const counts = computed(() => Object.fromEntries(FILTERS.map(key => [key, scoped.value.filter(row => matchesFilter(row, key)).length])))
 const filtered = computed(() => {
@@ -149,6 +158,21 @@ async function createInDaftra(row) {
     await load(true)
   } catch (failure) { error.value = failure?.data?.statusMessage || 'The product could not be created in Daftra.' }
   finally { saving.value = '' }
+}
+// One at a time. Stops at the first failure; pressing again continues with what is left.
+async function createAllInDaftra() {
+  const targets = scoped.value.filter(row => !row.link && !row.suggestion)
+  saving.value = 'create-all'; error.value = ''; notice.value = ''; createdCount.value = 0; createTotal.value = targets.length
+  try {
+    for (const row of targets) {
+      await $fetch('/api/admin-erp/product-create', { method: 'POST', headers: await headers(), body: { variantId: row.variantId } })
+      createdCount.value++
+    }
+    notice.value = t('erp.linksSaved', { value0: createdCount.value })
+  } catch (failure) {
+    const name = targets[createdCount.value]?.title || ''
+    error.value = `${name}: ${failure?.data?.statusMessage || 'The product could not be created in Daftra.'}`
+  } finally { saving.value = ''; confirmCreateAll.value = false; await load(true) }
 }
 const linkAllCode = () => save(scoped.value.filter(row => !row.link && row.suggestion?.reason === 'code')
   .map(row => ({ variantId: row.variantId, daftraId: row.suggestion.daftraId, source: 'code' })), 'bulk')

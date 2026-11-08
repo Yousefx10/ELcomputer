@@ -3606,6 +3606,10 @@
     "settingsDescription": "Set search titles, descriptions and sharing images."
   },
   "erp": {
+    "filter_none": "No match",
+    "createAll": "Create all {value0} in Daftra",
+    "createAllHint": "These {value0} options have no Daftra match. Review them first.",
+    "creatingProgress": "Creating {value0} of {value1}…",
     "system": "ERP system",
     "activeMode": "Active ERP mode",
     "builtIn": "Built-in ERP",
@@ -3839,6 +3843,8 @@
     "adminNotice": "Secure Paymob checkout requires server configuration."
   },
   "shipment": {
+    "courierDisplayName": "Courier name for customers",
+    "courierDisplayNameHint": "Shown on tracking, My account and SMS.",
     "orderPlaced": "Order placed",
     "paymentConfirmed": "Payment confirmed",
     "packed": "Packed",
@@ -6301,6 +6307,8 @@
     "invalid": "Check the governorate prices. Every offered governorate needs a zone with a rate."
   },
   "orderFlow": {
+    "statusFollows": "Order status follows the courier",
+    "statusFollowsHelp": "Courier updates move orders to Being Shipped, Out for Delivery and Completed.",
     "title": "Order flow",
     "help": "Choose when the courier is booked for new orders.",
     "paidOrdersTitle": "Paid orders",
@@ -6325,16 +6333,16 @@
   },
   "track": {
     "title": "Track your order",
-    "intro": "Enter the AWB number from your order or parcel.",
-    "awbLabel": "AWB number",
+    "intro": "Enter your AWB or order number.",
+    "awbLabel": "AWB or order number",
     "submit": "Track",
     "searching": "Checking…",
     "openOrders": "Your open orders",
     "noOpenOrders": "You have no open orders.",
     "trackThis": "Track",
     "notShippedYet": "Not shipped yet",
-    "msgInvalid": "Enter a valid AWB number.",
-    "msgNotFound": "No shipment found for this AWB.",
+    "msgInvalid": "Enter a valid AWB or order number.",
+    "msgNotFound": "No shipment found for this number.",
     "msgTooMany": "Too many tracking requests. Try again in a minute.",
     "settingsTitle": "Order tracking",
     "settingsHelp": "Choose where “Track your orders” opens.",
@@ -6344,6 +6352,7 @@
     "save": "Save tracking link"
   },
   "bill": {
+    "logoFormat": "Use a PNG or JPEG image.",
     "title": "Bill",
     "number": "Bill {value0}",
     "download": "Download bill",
@@ -6365,7 +6374,7 @@
     "footerEn": "Footer (English)",
     "footerAr": "Footer (Arabic)",
     "logoUrl": "Logo",
-    "logoHint": "Leave empty to use the store logo. Use a PNG or JPEG from the media library.",
+    "logoHint": "Leave empty to use the store logo. PNG or JPEG only.",
     "headerColor": "Header colour",
     "show_logo": "Show logo",
     "show_payments": "Show paid and balance",

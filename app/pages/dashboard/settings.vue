@@ -418,10 +418,7 @@
               <label class="block"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.footerAr') }}</span>
                 <input v-model="siteSettings.bill_design.footer_ar" type="text" maxlength="200" dir="rtl" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
               </label>
-              <label class="block md:col-span-2"><span class="mb-2 block text-sm font-semibold">{{ $t('bill.logoUrl') }}</span>
-                <input v-model="siteSettings.bill_design.logo_url" type="text" maxlength="320" dir="ltr" placeholder="/uploads/…" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEditSettings">
-                <span class="mt-1 block text-xs text-gray-500">{{ $t('bill.logoHint') }}</span>
-              </label>
+              <DashboardMediaUploadField v-model="siteSettings.bill_design.logo_url" class="md:col-span-2" :label="$t('bill.logoUrl')" section="site_logo" :extensions="['png', 'jpg', 'jpeg']" :disabled="!canEditSettings" preview-height-class="h-24" :help-text="$t('bill.logoHint')" />
             </div>
             <div class="flex flex-wrap gap-5">
               <label v-for="field in ['show_logo', 'show_payments', 'show_order_number']" :key="field" class="flex items-center gap-2 text-sm font-semibold">

@@ -71,7 +71,7 @@
     <input
       ref="fileInputRef"
       type="file"
-      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+      :accept="acceptTypes"
       class="hidden"
       :disabled="disabled || uploading"
       @change="handleFileChange"
@@ -133,6 +133,11 @@ const props = defineProps({
     type: String,
     default: 'h-40'
   },
+  // Allowed file types, e.g. ['png', 'jpg', 'jpeg'] where the image goes into a PDF.
+  extensions: {
+    type: Array,
+    default: null
+  },
   // [width, height] the storefront shows. Sets the preview shape and flags images that will be cut.
   recommendedSize: {
     type: Array,
@@ -156,6 +161,10 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'uploaded', 'busy'])
 
 const previewSize = ref(null)
+const allowedFile = name => !props.extensions || props.extensions.includes(String(name).split('?')[0].split('.').pop().toLowerCase())
+const acceptTypes = computed(() => props.extensions
+  ? [...new Set(props.extensions.map(type => `image/${type === 'jpg' ? 'jpeg' : type}`))].join(',')
+  : 'image/jpeg,image/png,image/webp,image/gif,image/avif')
 const previewStyle = computed(() => ({
   ...(props.previewTheme ? { backgroundColor: `var(--branding-preview-${props.previewTheme})` } : {}),
   ...(props.recommendedSize ? { aspectRatio: `${props.recommendedSize[0]} / ${props.recommendedSize[1]}` } : {})
@@ -189,7 +198,7 @@ const loadLibrary = async () => {
   try {
     const result = await fetchGalleryImages({ section: props.section, q: librarySearch.value || undefined, page: libraryPage.value, limit: 24 })
     if (request !== libraryRequest) return
-    libraryImages.value = result.items || []
+    libraryImages.value = (result.items || []).filter(image => allowedFile(image.publicPath))
     if (!libraryImages.value.some(image => image.publicPath === librarySelection.value?.publicPath)) librarySelection.value = null
     libraryTotal.value = result.pagination?.totalItems || 0
     librarySections.value = result.summary?.totalSections ?? result.totalSections ?? new Set(libraryImages.value.map(image => image.section)).size
@@ -250,6 +259,7 @@ const handleFileChange = async (event) => {
   }
 
   if (props.disabled || uploading.value) { input.value = ''; return }
+  if (!allowedFile(file.name)) { errorMessage.value = 'Use a PNG or JPEG image.'; input.value = ''; return }
 
   uploading.value = true
   emit('busy', true)

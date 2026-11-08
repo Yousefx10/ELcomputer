@@ -190,8 +190,9 @@ test('PDC normalized durable transitions consume the existing SMS intent/Notific
       await clear()
     })
     await t.test('safe PDC variables and historical English locale fallback use order contact/AWB, not provider labels',async()=>{
-      const job=await make(), intentTemplate={event_type:'pdc_delivered',locale:'en',template_text:'{{customer_name}} {{order_number}} {{awb}} {{courier_name}}',payload:{customer_name:'Buyer',order_number:job.ref,awb:job.awb}}
-      assert.equal(renderOrderSms(intentTemplate),'Buyer '+job.ref+' '+job.awb+' PDC')
+      const job=await make(), intentTemplate={event_type:'pdc_delivered',locale:'en',template_text:'{{customer_name}} {{order_number}} {{awb}} {{courier_name}}',payload:{customer_name:'Buyer',order_number:job.ref,awb:job.awb,courier_name:'Named Courier'}}
+      assert.equal(renderOrderSms(intentTemplate),'Buyer '+job.ref+' '+job.awb+' Named Courier')
+      assert.equal(renderOrderSms({...intentTemplate,payload:{...intentTemplate.payload,courier_name:''}}),'Buyer '+job.ref+' '+job.awb+' Courier')
       await record(update(job,{status_id:5,status_name:'Arabic?'}));assert.equal((await events(job))[0].locale,'en')
       const template=(await sql("select id from public.sms_templates where code='pdc_delivered'")).rows[0].id
       await assert.rejects(()=>validateOrderSmsSetting(client,{event_type:'pdc_delivered',is_enabled:true,config_revision:0,template_en_id:null,template_ar_id:template}),e=>e.statusCode===400)

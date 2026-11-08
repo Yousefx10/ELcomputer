@@ -14,7 +14,7 @@
         </NuxtLinkLocale>
         <NuxtLinkLocale :to="customerAccountPath" class="store-header-action" :class="{ 'store-customer-action': customerUser }" :aria-label="customerUser ? (profileReady ? `${$t('common.myAccount')}: ${accountName}` : $t('common.myAccount')) : $t('common.signInToYourAccount')" :aria-busy="customerUser && !profileReady ? true : undefined">
           <Icon name="lucide:user-round" size="25" />
-          <span class="store-action-copy"><small>{{ customerUser ? $t('common.welcomeBack') : $t('common.helloSignIn') }}</small><strong :class="{ 'store-customer-name': customerUser, 'store-customer-name-pending': customerUser && !profileReady }"><bdi>{{ accountName }}</bdi></strong></span>
+          <span class="store-action-copy"><small>{{ customerUser ? $t('common.welcomeBack') : $t('common.helloSignIn') }}</small><strong :class="{ 'store-customer-name': customerUser, 'store-customer-name-pending': customerUser && !profileReady }"><bdi class="store-customer-name-text"><span>{{ accountNameParts.first }}</span><span v-if="accountNameParts.rest"> {{ accountNameParts.rest }}</span></bdi></strong></span>
         </NuxtLinkLocale>
         <NuxtLinkLocale to="/cart" class="store-header-action store-cart-action" :aria-label="hydrated && cartReady ? $t('common.cartValueItems', { value0: (itemCount) }) : $t('common.cart')">
           <span class="store-cart-icon">
@@ -75,6 +75,7 @@ const hydrated = ref(false)
 const customerUser = computed(() => hydrated.value && identity.accountId.value ? identity.user.value : null)
 const { profile, ready: profileReady } = useCustomerDisplayProfile()
 const { t } = useI18n()
+const accountNameParts = computed(() => { const [first, ...rest] = String(accountName.value).split(' '); return { first, rest: rest.join(' ') } })
 const accountName = computed(() => customerUser.value && profileReady.value ? customerDisplayName(profile.value, customerUser.value, t('common.account')) : t('common.account'))
 const { data: siteContent } = await useSiteContent()
 const { itemCount, subtotal, loadCart, isReady: cartReady } = useCart()

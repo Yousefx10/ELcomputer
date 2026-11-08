@@ -1,11 +1,16 @@
 import { createError } from 'h3'
 import { readCustomerShipment } from './customerShipment.js'
 
-// Owner request 7 Nov 2026 (phase 3A): anyone with an AWB can follow the parcel.
+// Owner request 7 Nov 2026 (phase 3A): anyone with an AWB or order number can follow the parcel.
 // Reads the website's own tracking records only; visitors never trigger a courier call.
 export const normalizeAwb = value => {
   const text = String(value ?? '').trim().toUpperCase()
   return /^[A-Z0-9][A-Z0-9-]{3,39}$/.test(text) ? text : null
+}
+// "ORD-20261107-E7663BB340" or "20261107-E7663BB340". The random suffix keeps numbers unguessable.
+export const normalizeOrderNumber = value => {
+  const match = String(value ?? '').trim().toUpperCase().match(/^(?:ORD-)?(\d{8}-[A-Z0-9]{6,16})$/)
+  return match ? `ORD-${match[1]}` : null
 }
 const FINISHED_SHIPMENT = new Set(['delivered', 'returned', 'cancelled'])
 const unavailable = () => createError({ statusCode: 503, statusMessage: 'Tracking is unavailable. Please try again later.' })
@@ -26,6 +31,16 @@ export const readPublicShipment = async (db, awb) => {
   if (shipment?.unavailable) throw unavailable()
   if (!shipment?.booking_verified || shipment.awb !== awb) return null
   return publicShipment(shipment)
+}
+
+// Same courier-only result as an AWB lookup; an order with no booked shipment reads as not found.
+export const readPublicShipmentByOrder = async (db, orderNumber) => {
+  const { data, error } = await db.from('customer_orders').select('id').eq('order_number', orderNumber).limit(2)
+  if (error) throw unavailable()
+  if (!data || data.length !== 1) return null
+  const shipment = await readCustomerShipment(db, data[0].id)
+  if (shipment?.unavailable) throw unavailable()
+  return shipment?.booking_verified ? publicShipment(shipment) : null
 }
 
 const OPEN_STATUSES = ['pending_payment', 'processing', 'ready_to_deliver', 'being_shipped', 'out_for_delivery', 'on_hold', 'in_progress']

@@ -21,6 +21,9 @@
       <label class="block max-w-xs"><span class="mb-2 block text-sm font-semibold">{{ $t('orderFlow.weight') }}</span>
         <input v-model="form.parcelWeightKg" type="number" min="0.001" step="0.001" inputmode="decimal" class="w-full rounded-xl border border-gray-200 p-3" :disabled="!canEdit || saving">
       </label>
+      <label class="flex items-start gap-3"><input v-model="form.statusFollowsCourier" type="checkbox" class="mt-1 size-4" :disabled="!canEdit || saving">
+        <span><span class="block text-sm font-semibold">{{ $t('orderFlow.statusFollows') }}</span><span class="mt-1 block text-sm text-gray-500">{{ $t('orderFlow.statusFollowsHelp') }}</span></span>
+      </label>
       <p v-if="!state.courierReady" class="text-sm text-amber-700">{{ $t('orderFlow.courierOff') }}</p>
 
       <div v-if="state.waiting.length" class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
@@ -45,9 +48,9 @@ const { intlLocale } = useUiLocale()
 const supabase = useSupabaseClient()
 const KINDS = ['paidOrders', 'codOrders'], MODES = ['auto', 'review']
 const loading = ref(true), loaded = ref(false), saving = ref(false), message = ref(''), errorMessage = ref('')
-const state = reactive({ paidOrders: 'review', codOrders: 'review', parcelWeightKg: 1, paidSince: null, codSince: null, courierReady: true, waiting: [] })
-const form = reactive({ paidOrders: 'review', codOrders: 'review', parcelWeightKg: '1' })
-const dirty = computed(() => form.paidOrders !== state.paidOrders || form.codOrders !== state.codOrders || Number(form.parcelWeightKg) !== state.parcelWeightKg)
+const state = reactive({ paidOrders: 'review', codOrders: 'review', parcelWeightKg: 1, statusFollowsCourier: false, paidSince: null, codSince: null, courierReady: true, waiting: [] })
+const form = reactive({ paidOrders: 'review', codOrders: 'review', parcelWeightKg: '1', statusFollowsCourier: false })
+const dirty = computed(() => form.statusFollowsCourier !== state.statusFollowsCourier || form.paidOrders !== state.paidOrders || form.codOrders !== state.codOrders || Number(form.parcelWeightKg) !== state.parcelWeightKg)
 const since = kind => state[kind] === 'auto' ? state[kind === 'paidOrders' ? 'paidSince' : 'codSince'] : null
 const formatDate = value => new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 async function headers() {
@@ -57,7 +60,7 @@ async function headers() {
 }
 function apply(result) {
   Object.assign(state, result)
-  Object.assign(form, { paidOrders: state.paidOrders, codOrders: state.codOrders, parcelWeightKg: String(state.parcelWeightKg) })
+  Object.assign(form, { paidOrders: state.paidOrders, codOrders: state.codOrders, parcelWeightKg: String(state.parcelWeightKg), statusFollowsCourier: state.statusFollowsCourier })
 }
 async function load() {
   loading.value = true
@@ -68,7 +71,7 @@ async function load() {
 async function save() {
   saving.value = true; message.value = ''; errorMessage.value = ''
   try {
-    apply(await $fetch('/api/admin-order-flow', { method: 'PATCH', headers: await headers(), body: { paidOrders: form.paidOrders, codOrders: form.codOrders, parcelWeightKg: Number(form.parcelWeightKg) } }))
+    apply(await $fetch('/api/admin-order-flow', { method: 'PATCH', headers: await headers(), body: { paidOrders: form.paidOrders, codOrders: form.codOrders, statusFollowsCourier: form.statusFollowsCourier, parcelWeightKg: Number(form.parcelWeightKg) } }))
     message.value = 'orderFlow.saved'
   } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Choose a valid order flow and parcel weight.' }
   finally { saving.value = false }

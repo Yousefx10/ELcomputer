@@ -142,7 +142,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
           </section>
           <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="shipping-title">
             <h2 id="shipping-title" class="font-bold text-slate-900">{{ $t('common.delivery') }}</h2>
-            <p v-if="detail.shipping?.provider === 'pdc'" class="mt-2 text-sm text-slate-600">PDC</p>
+            <p v-if="detail.shipping?.provider === 'pdc' && detail.courierName" class="mt-2 text-sm text-slate-600">{{ detail.courierName }}</p>
             <p v-else-if="detail.order.shipping_method" class="mt-2 text-sm capitalize text-slate-600">{{ $uiLabel(detail.order.shipping_method) }}</p>
             <p v-if="detail.order.shipping_review_status === 'required'" class="mt-2 text-sm font-semibold text-amber-800">{{ $t('account.orders.deliveryDetailsAreUnderReview') }}</p>
             <p v-if="detail.order.shipping_review_status === 'rejected'" class="mt-2 text-sm font-semibold text-red-700">{{ $t('account.orders.deliveryDetailsNeedAttentionContactSupport') }}</p>

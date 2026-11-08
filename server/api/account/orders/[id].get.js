@@ -1,3 +1,4 @@
+import { readCourierName } from '../../../utils/courierName'
 import { createError, getRouterParam, setHeader } from 'h3'
 import { requireCustomerRequest } from '../../../utils/customerRequest'
 import { readCustomerShipment } from '../../../utils/customerShipment'
@@ -36,6 +37,6 @@ export default defineEventHandler(async event => {
   const { user_id: _owner, ...safeOrder } = order
   safeOrder.customer_payment = customerPayment
   const policies = new Map(afterSales.map(row => [row.id, row.after_sales]))
-  return { order: safeOrder, items: (itemsResult.data || []).map(item => ({ ...item, after_sales: policies.get(item.id) || null })), shipping: shippingResult || null,
+  return { order: safeOrder, items: (itemsResult.data || []).map(item => ({ ...item, after_sales: policies.get(item.id) || null })), shipping: shippingResult || null, courierName: shippingResult ? await readCourierName(supabaseAdmin) : '',
     bill: await readBillSummary(supabaseAdmin, order.id) }
 })

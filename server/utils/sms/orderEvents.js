@@ -53,7 +53,7 @@ export const renderOrderSms = (intent, reasonKey = null) => {
   const reason = /^shipment\.reasons\.r\d+$/.test(reasonKey || '') ? reasonKey.split('.').reduce((object, part) => object?.[part], catalog) : null
   const known = pdcSmsEvents.includes(intent.event_type) ? {
     customer_name: String(payload.customer_name || ''), order_number: String(payload.order_number || ''),
-    awb: String(payload.awb || ''), courier_name: 'PDC', delivery_reason: reason || catalog.sms.pdcNeutralReason
+    awb: String(payload.awb || ''), courier_name: String(payload.courier_name || 'Courier'), delivery_reason: reason || catalog.sms.pdcNeutralReason
   } : {
     customer_name: String(payload.customer_name || ''), order_number: String(payload.order_number || ''),
     order_total: formatAccountMoney(payload.order_total, payload.currency, formatLocale(intent.locale)),

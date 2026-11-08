@@ -7,8 +7,9 @@ import { formatCustomerOrderStatus } from '~/utils/orderStatus'
 const route = useRoute(), router = useRouter(), supabase = useSupabaseClient(), customerUser = useSupabaseUser()
 const { t } = useI18n(), { intlLocale } = useUiLocale()
 usePageSeo(() => ({ title: t('track.title') }))
-const awb = ref(typeof route.query.awb === 'string' ? route.query.awb.slice(0, 40) : '')
-const shipment = ref(null), searching = ref(false), errorMessage = ref('')
+const startQuery = route.query.q ?? route.query.awb
+const awb = ref(typeof startQuery === 'string' ? startQuery.slice(0, 40) : '')
+const courierName = ref(''), shipment = ref(null), searching = ref(false), errorMessage = ref('')
 const orders = ref([]), ordersLoaded = ref(false)
 const formatDate = value => formatAccountDate(value, true, intlLocale.value)
 const steps = computed(() => {
@@ -22,11 +23,12 @@ const steps = computed(() => {
 async function track(value = awb.value) {
   const number = String(value || '').trim()
   errorMessage.value = ''; shipment.value = null
-  if (!number) { errorMessage.value = 'Enter a valid AWB number.'; return }
+  if (!number) { errorMessage.value = 'Enter a valid AWB or order number.'; return }
   awb.value = number; searching.value = true
   try {
-    shipment.value = (await $fetch('/api/storefront/track', { query: { awb: number } })).shipment
-    if (route.query.awb !== number) router.replace({ query: { ...route.query, awb: number } })
+    const result = await $fetch('/api/storefront/track', { query: { q: number } })
+    shipment.value = result.shipment; courierName.value = result.courierName || ''
+    if (route.query.q !== number) { const { awb: _old, ...query } = route.query; router.replace({ query: { ...query, q: number } }) }
   } catch (error) { errorMessage.value = error?.data?.statusMessage || 'Tracking is unavailable. Please try again later.' }
   finally { searching.value = false }
 }
@@ -62,7 +64,7 @@ watch(customerUser, value => { if (value) loadOrders(); else { orders.value = []
         <p v-if="errorMessage" class="mt-3 text-sm text-red-700" role="alert">{{ $uiMessage(errorMessage) }}</p>
 
         <div v-if="shipment" class="mt-6 border-t border-[var(--border)] pt-5" aria-live="polite" data-track-result>
-          <p class="text-sm text-[var(--text-secondary)]">PDC · <span dir="ltr">{{ shipment.awb }}</span></p>
+          <p class="text-sm text-[var(--text-secondary)]"><template v-if="courierName">{{ courierName }} · </template><span dir="ltr">{{ shipment.awb }}</span></p>
           <p class="mt-1 text-xl font-bold text-[var(--text-primary)]">{{ $t(shipment.has_update ? shipmentStateKey(shipment.current_state) : 'shipment.booked') }}</p>
           <p v-if="shipment.reason_key" class="mt-1 text-sm text-[var(--text-secondary)]">{{ $t(shipment.reason_key) }}</p>
           <p v-if="shipment.latest_update_at" class="mt-1 text-xs text-[var(--text-secondary)]">{{ $t('shipment.checkedAt') }} <time :datetime="shipment.latest_update_at">{{ formatDate(shipment.latest_update_at) }}</time></p>
