@@ -17,8 +17,8 @@ let fixture
 const server=createServer(async(req,res)=>{
  const path=new URL(req.url,'http://fixture.invalid').pathname;res.setHeader('content-type','application/json')
  if(path==='/fixture.js'){res.setHeader('content-type','text/javascript');res.end(bundle.outputFiles[0].text);return}
- if(path==='/api/marketing/config'){res.end(JSON.stringify({enabled:fixture.enabled,pixelId:'123456789',revision:1,testExpiresAt:fixture.expires||null}));return}
- if(path==='/api/marketing/consent'){let raw='';for await(const b of req)raw+=b;const body=JSON.parse(raw);fixture.consent.push(body.granted);res.end(JSON.stringify({granted:body.granted,revision:1}));return}
+ if(path==='/api/marketing/config'){res.end(JSON.stringify({enabled:fixture.enabled,pixelId:'123456789',revision:fixture.revision||1,testExpiresAt:fixture.expires||null,consentMode:fixture.mode||'opt_in'}));return}
+ if(path==='/api/marketing/consent'){let raw='';for await(const b of req)raw+=b;const body=JSON.parse(raw);if(body.automatic){fixture.automatic=(fixture.automatic||0)+1;res.end(JSON.stringify({granted:true,revision:fixture.revision||1}));return}fixture.consent.push(body.granted);res.end(JSON.stringify({granted:body.granted,revision:fixture.revision||1}));return}
  if(path==='/api/marketing/events'){let raw='';for await(const b of req)raw+=b;const e=JSON.parse(raw);fixture.events.push(e);res.end(JSON.stringify({event:{eventName:e.eventName,eventId:e.eventId,data:{}}}));return}
  if(path==='/api/marketing/purchase'){res.end(JSON.stringify({event:fixture.paid?{eventName:'Purchase',eventId:'purchase:verified-local-order',data:{currency:'EGP',value:150.35,content_ids:['local-product']}}:null}));return}
  res.setHeader('content-type','text/html');res.end('<!doctype html><html lang="'+fixture.locale+'" dir="'+(fixture.locale==='ar'?'rtl':'ltr')+'"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script>window.__fixture='+JSON.stringify({locale:fixture.locale})+'</script><script src="/fixture.js"></script></body></html>')
@@ -52,6 +52,20 @@ try{for(const [engine,type]of [['chromium',chromium],['webkit',webkit]])await te
   await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.fulfill({contentType:'text/javascript',body:'window.__metaCalls=[];const q=window.fbq;q.callMethod=(...a)=>window.__metaCalls.push(a);q.queue.forEach(a=>q.callMethod(...a));'}))
   await page.goto(origin);await page.waitForFunction(()=>window.__tracking?.state.value.enabled);await page.evaluate(()=>window.__tracking.choose(true));assert.equal(fixture.events.length,1)
   await page.waitForFunction(()=>!window.__tracking.allowed());await page.evaluate(()=>window.__tracking.track('AddToCart'));assert.equal(fixture.events.length,1);assert.ok(await page.evaluate(()=>window.__metaCalls.some(a=>a[0]==='consent'&&a[1]==='revoke')));await context.close()
+ })
+ const pixelStub=r=>new URL(r.request().url()).origin===origin?r.continue():r.fulfill({contentType:'text/javascript',body:'window.__metaCalls=[];const q=window.fbq;q.callMethod=(...a)=>window.__metaCalls.push(a);q.queue.forEach(a=>q.callMethod(...a));'})
+ const human=context=>context.addInitScript(()=>Object.defineProperty(navigator,'webdriver',{get:()=>false}))
+ await t.test('default mode tracks without a banner and the footer path can decline',async()=>{
+  fixture={enabled:true,locale:'en',events:[],consent:[],paid:false,mode:'default'};const context=await browser.newContext(),page=await context.newPage();await human(context);await context.route('**/*',pixelStub)
+  await page.goto(origin);await page.waitForFunction(()=>window.__tracking.state.value.choice==='granted');assert.equal(await page.locator('aside').count(),0);assert.equal(fixture.automatic,1)
+  await page.evaluate(()=>window.__tracking.track('PageView'));assert.equal(fixture.events.length,1)
+  await page.evaluate(()=>{window.__tracking.state.value.settingsOpen=true});await page.locator('aside').waitFor();await page.getByText('metaTracking.decline',{exact:true}).click();await page.waitForFunction(()=>window.__tracking.state.value.choice==='denied');assert.deepEqual(fixture.consent,[false])
+  fixture.revision=2;const before=fixture.automatic;await page.reload();await page.waitForFunction(()=>window.__tracking?.state.value.enabled);await page.waitForFunction(()=>window.__tracking.state.value.choice==='denied');assert.equal(fixture.automatic,before,'A decline survives a settings change');assert.equal(await page.locator('aside').count(),0)
+  await page.evaluate(()=>window.__tracking.track('PageView'));assert.equal(fixture.events.length,1);await context.close()
+ })
+ await t.test('default mode skips automated browsers and opt-in still asks',async()=>{
+  fixture={enabled:true,locale:'en',events:[],consent:[],paid:false,mode:'default'};const context=await browser.newContext(),page=await context.newPage();await context.route('**/*',pixelStub)
+  await page.goto(origin);await page.waitForFunction(()=>window.__tracking?.state.value.enabled);assert.equal(fixture.automatic||0,0);assert.equal(await page.evaluate(()=>window.__tracking.allowed()),false);assert.equal(await page.locator('aside').count(),0);await context.close()
  })
  for(const scenario of ['disabled','gpc','dnt'])await t.test(scenario+' does not load a provider or record an event',async()=>{
   fixture={enabled:scenario!=='disabled',locale:'en',events:[],consent:[],paid:false};const context=await browser.newContext(),page=await context.newPage(),external=[]

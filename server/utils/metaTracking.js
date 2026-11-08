@@ -31,6 +31,7 @@ export async function captureMetaBrowserContext(event,db){
  const valid=value=>/^fb\.[0-9]\.[0-9]{10,13}\.[A-Za-z0-9._-]{1,200}$/.test(value||'')?value:null
  try{await metaRpc(db,'commerce_meta_context',{p_hash:hash,p_fbp:valid(getCookie(event,'_fbp')),p_fbc:valid(getCookie(event,'_fbc'))})}catch{}
 }
+const consentCookie=runtime=>({httpOnly:true,secure:new URL(runtime.public.siteUrl).protocol==='https:',sameSite:'strict',path:'/',maxAge:180*86400})
 export async function saveMetaConsent(event,granted){
  metaSameOrigin(event);assertStoreAnalyticsRateLimit(event,{scope:'marketing-consent',limit:30})
  const runtime=useRuntimeConfig(event);if(!metaEnabled(runtime))return {granted:false}
@@ -39,7 +40,17 @@ export async function saveMetaConsent(event,granted){
  if(granted&&/^[a-f0-9]{64}$/.test(previous||''))await metaRpc(db,'commerce_meta_consent',{p_hash:metaHash(previous),p_granted:false,p_agent:''})
  const token=!granted&&/^[a-f0-9]{64}$/.test(previous||'')?previous:randomBytes(32).toString('hex')
  const result=await metaRpc(db,'commerce_meta_consent',{p_hash:metaHash(token),p_granted:granted&&identity.allowed,p_user:identity.user,p_agent:String(getHeader(event,'user-agent')||'').slice(0,512)})
- setCookie(event,'store-marketing-consent',token,{httpOnly:true,secure:new URL(runtime.public.siteUrl).protocol==='https:',sameSite:'strict',path:'/',maxAge:180*86400})
+ setCookie(event,'store-marketing-consent',token,consentCookie(runtime))
+ return result
+}
+// Stores set to track by default. The visitor's existing token is kept so a past decline is found and honoured.
+export async function saveMetaDefaultConsent(event){
+ metaSameOrigin(event);assertStoreAnalyticsRateLimit(event,{scope:'marketing-consent',limit:30})
+ const runtime=useRuntimeConfig(event);if(!metaEnabled(runtime))return {granted:false}
+ const db=getSupabaseAdminClient(),identity=await metaIdentity(event,db);if(!identity.allowed)return {granted:false}
+ const previous=getCookie(event,'store-marketing-consent'),token=/^[a-f0-9]{64}$/.test(previous||'')?previous:randomBytes(32).toString('hex')
+ const result=await metaRpc(db,'commerce_meta_default_consent',{p_hash:metaHash(token),p_user:identity.user,p_agent:String(getHeader(event,'user-agent')||'').slice(0,512)})
+ if(result.granted)setCookie(event,'store-marketing-consent',token,consentCookie(runtime))
  return result
 }
 export async function bindMetaCheckout(event,user,body,db,runtime){

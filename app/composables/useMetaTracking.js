@@ -2,12 +2,19 @@ import {metaBrowserPrivacyAllowed,metaPublicPath,metaSafeSearch} from '~/utils/m
 import {getStorefrontAudienceAccessToken,getStorefrontAudienceStatus,STOREFRONT_AUDIENCE_ELIGIBLE} from './useStorefrontAudience'
 
 const sent=new Set(),pending=new Set()
-let sdkPromise,testTimer
+let sdkPromise,testTimer,defaultGrant
 export const useMetaTracking=()=>{
- const state=useState('store-meta-tracking',()=>({enabled:false,pixelId:'',revision:0,testExpiresAt:null,choice:null,settingsOpen:false,busy:false,error:false}))
+ const state=useState('store-meta-tracking',()=>({enabled:false,pixelId:'',revision:0,testExpiresAt:null,consentMode:'opt_in',choice:null,settingsOpen:false,busy:false,error:false}))
  const allowed=()=>state.value.enabled&&(!state.value.testExpiresAt||Date.parse(state.value.testExpiresAt)>Date.now())&&state.value.choice==='granted'&&metaBrowserPrivacyAllowed()&&getStorefrontAudienceStatus()===STOREFRONT_AUDIENCE_ELIGIBLE
  const safeLocation=()=>!!metaPublicPath(window.location.pathname)&&metaSafeSearch(window.location.search)&&!window.location.hash
  const headers=()=>{const token=getStorefrontAudienceAccessToken();return token?{authorization:'Bearer '+token}:{}}
+ const remember=choice=>{try{localStorage.setItem('store-marketing-choice',JSON.stringify({choice,revision:state.value.revision,expires:Date.now()+180*86400000}))}catch{}}
+ // Automated browsers are skipped so server events stay real visits.
+ const grantByDefault=()=>{
+  if(navigator.webdriver)return null
+  defaultGrant||=$fetch('/api/marketing/consent',{method:'POST',headers:headers(),body:{automatic:true},retry:0}).then(r=>{if(r.granted||r.declined){state.value.choice=r.granted?'granted':'denied';remember(state.value.choice)}}).catch(()=>{}).finally(()=>{defaultGrant=null})
+  return defaultGrant
+ }
  const loadPixel=async()=>{
   if(!allowed())return false
   if(!sdkPromise){sdkPromise=new Promise(resolve=>{
@@ -51,7 +58,7 @@ export const useMetaTracking=()=>{
   try{
    const result=await $fetch('/api/marketing/consent',{method:'POST',headers:headers(),body:{granted:granted&&metaBrowserPrivacyAllowed()},retry:0})
    state.value.choice=result.granted?'granted':'denied';state.value.settingsOpen=false
-   try{localStorage.setItem('store-marketing-choice',JSON.stringify({choice:state.value.choice,revision:state.value.revision,expires:Date.now()+180*86400000}))}catch{}
+   remember(state.value.choice)
    if(!result.granted){sent.clear();window.fbq?.('consent','revoke');for(const name of ['_fbp','_fbc'])document.cookie=name+'=; Max-Age=0; Path=/; SameSite=Lax'}
    else await track('PageView')
   }catch{state.value.error=true}finally{state.value.busy=false}
@@ -63,8 +70,11 @@ export const useMetaTracking=()=>{
    clearTimeout(testTimer);if(!config.enabled){window.fbq?.('consent','revoke');return}
    if(config.testExpiresAt)testTimer=setTimeout(()=>{state.value.enabled=false;window.fbq?.('consent','revoke')},Math.max(0,Date.parse(config.testExpiresAt)-Date.now()))
    let saved;try{saved=JSON.parse(localStorage.getItem('store-marketing-choice')||'null')}catch{}
+   // A decline outlives settings changes and the 180-day window when tracking is on by default.
+   if(config.consentMode==='default'&&saved?.choice==='denied'){state.value.choice='denied';return}
    if(saved?.revision===config.revision&&saved.expires>Date.now()){state.value.choice=saved.choice;return}
    state.value.choice=null
+   if(config.consentMode==='default')await grantByDefault()
   }catch{state.value.enabled=false}
  }
  return {state,initialize,choose,track,purchase,allowed}

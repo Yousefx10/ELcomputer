@@ -46,6 +46,7 @@
   <div v-if="hasBottom" class="store-footer-modern-bottom">
     <div class="store-footer-modern-bottom-inner">
       <p v-if="copyright">{{ copyright }}</p>
+      <ClientOnly><PrivacyPreferencesLink /></ClientOnly>
       <nav v-if="legalLinks.length" :aria-label="$t('modernFooter.legalLinks')"><ul><li v-for="item in legalLinks" :key="item.id"><LayoutFooterLink :url="item.url" :label="copy(item, 'label')" /></li></ul></nav>
     </div>
   </div>

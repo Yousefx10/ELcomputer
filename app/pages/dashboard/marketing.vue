@@ -6,6 +6,7 @@
   <form v-if="config" class="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700" @submit.prevent="save">
    <fieldset :disabled="busy || !canEdit" class="space-y-3">
     <label class="flex min-h-11 items-center gap-2 text-sm"><input v-model="config.enabled" type="checkbox">{{ $t('metaTracking.enabled') }}</label>
+    <label class="block text-sm">{{ $t('metaTracking.consentMode') }}<select v-model="config.consentMode" class="mt-1 min-h-11 w-full rounded-lg border px-3"><option value="opt_in">{{ $t('metaTracking.consentOptIn') }}</option><option value="default">{{ $t('metaTracking.consentDefault') }}</option></select></label>
     <label class="block text-sm">{{ $t('metaTracking.pixelId') }}<input v-model="config.pixelId" maxlength="30" inputmode="numeric" pattern="[0-9]{5,30}" class="mt-1 min-h-11 w-full rounded-lg border px-3"></label>
     <label class="flex min-h-11 items-center gap-2 text-sm"><input v-model="config.capiEnabled" type="checkbox">{{ $t('metaTracking.capiEnabled') }}</label>
     <label class="block text-sm">{{ $t('metaTracking.token') }}<input v-model="token" type="password" autocomplete="new-password" maxlength="4096" class="mt-1 min-h-11 w-full rounded-lg border px-3"><span class="mt-1 block text-xs">{{ $t(config.tokenSet?'metaTracking.tokenSaved':'metaTracking.tokenEmpty') }}</span></label>
@@ -27,7 +28,7 @@ const {request}=useSupportClient(),{adminUser}=useAdminAccess(),scope=useCustome
 const canEdit=computed(()=>hasAdminPermission(adminUser.value,'settings.edit'))
 let disposed=false
 const load=async()=>{try{const r=await request('/api/admin-marketing/settings',{retry:0});if(!disposed){config.value=r.settings;diagnostics.value=r.diagnostics}}catch{if(!disposed)error.value=true}}
-const save=async()=>{if(busy.value||!canEdit.value)return;busy.value=true;saved.value=false;error.value=false;try{const {enabled,capiEnabled,pixelId,graphVersion,testEventCode,testCustomerId,testWindowMinutes,testEventLimit,revision}=config.value,r=await request('/api/admin-marketing/settings',{method:'PATCH',body:{revision,config:{enabled,capiEnabled,pixelId,graphVersion,testEventCode,testCustomerId,testWindowMinutes,testEventLimit},...(token.value?{token:token.value}:{}),clearToken:clearToken.value},retry:0});if(!disposed){config.value=r;token.value='';clearToken.value=false;saved.value=true}}catch{if(!disposed)error.value=true}finally{if(!disposed)busy.value=false}}
+const save=async()=>{if(busy.value||!canEdit.value)return;busy.value=true;saved.value=false;error.value=false;try{const {enabled,capiEnabled,pixelId,graphVersion,testEventCode,testCustomerId,testWindowMinutes,testEventLimit,consentMode,revision}=config.value,r=await request('/api/admin-marketing/settings',{method:'PATCH',body:{revision,config:{enabled,capiEnabled,pixelId,graphVersion,testEventCode,testCustomerId,testWindowMinutes,testEventLimit,consentMode},...(token.value?{token:token.value}:{}),clearToken:clearToken.value},retry:0});if(!disposed){config.value=r;token.value='';clearToken.value=false;saved.value=true}}catch{if(!disposed)error.value=true}finally{if(!disposed)busy.value=false}}
 scope.onInvalidate(()=>{disposed=true;token.value='';config.value=null;diagnostics.value=null;error.value=false;busy.value=false})
 onMounted(load);onBeforeUnmount(()=>{disposed=true;token.value='';config.value=null})
 </script>

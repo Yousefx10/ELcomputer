@@ -40,7 +40,7 @@
         </div>
       </div>
       <LayoutFooterPayments :settings="settings" />
-      <p class="store-footer-bottom">{{ copyrightText }}</p>
+      <p class="store-footer-bottom">{{ copyrightText }} <ClientOnly><PrivacyPreferencesLink /></ClientOnly></p>
     </div>
   </footer>
 </template>
