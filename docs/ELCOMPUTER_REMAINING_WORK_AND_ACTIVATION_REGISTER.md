@@ -1,5 +1,20 @@
 # ELcomputer remaining work and activation register
 
+**CONT-WP-01 — 7 November 2026:**
+[Claude WordPress archive guide](CLAUDE_WORDPRESS_DISCOVERY_AND_MIGRATION.md)
+documents verified source/tool locations, offline extraction, discovery and future
+delta migration. Completed catalog/history/family imports stay consumed. E334 in
+the master roadmap records the later schema123 deployment; older baseline/Apple
+statuses below are dated history. This documentation made no production changes.
+
+**Documentation handoff — E330, 7 November 2026:**
+[Claude project/deployment guide](CLAUDE_PROJECT_HANDOFF.md) records local access,
+release safeguards, latest hosted evidence and unfinished work. Claude's Apple
+Pay candidate is locally committed at d112f3c; no deployment/provider acceptance
+is established by this handoff. E329 resumes that scoped local continuation;
+unrelated owner pauses and all activation/charge gates remain. No server/provider
+request, deploy or push occurred while preparing this documentation.
+
 **Current authority:** 6 November 2026. This register supersedes stale priority/status summaries; original receipts, uncertainty and pauses remain evidence. Update this file, the master roadmap and both handoffs together. Counts describe tracked feature/workstream scopes, including explicit legacy aliases; they are not a count of unique UI screens.
 
 **OWNER STOP — E328,6November22:50Riyadh:** All further work is paused until explicit

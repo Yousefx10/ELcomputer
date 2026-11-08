@@ -1,3 +1,694 @@
+# CONT-WP-01 — Claude WordPress archive handoff — 7 November 2026
+
+[WordPress discovery, access and migration guide](CLAUDE_WORDPRESS_DISCOVERY_AND_MIGRATION.md)
+documents exact encrypted sources, key/tool locations, authenticated data-only
+extraction, content/plugin discovery, completed imports, held data and future
+delta-migration contracts. Both preserved SQL ciphertext hashes/sizes match their
+receipts; Node22 and parser/envelope identities were checked. No decryption,
+website/database/provider access, import, deployment or push occurred.
+
+Earlier current-v3 exports have different plaintext digests and cannot replace
+the approved primary by filename/count alone. Catalog, core history and selected
+family imports remain consumed. E350 is the latest milestone (homepage design, HOME-DESIGN-01);
+the earlier general Claude guide now points to it. Existing text/work is preserved.
+Next: Claude selects the requested missing content and performs a bounded offline
+projection before proposing any new, separately approved production delta.
+
+# COURIER-BATCH-20261108 — owner requests, built locally, NOT deployed — 8 November 2026
+
+Owner requests 8 Nov. Code commit 1010af4 (branch product-modern, pushed to GitHub); schema 135 pending.
+- BILL-LOGO-01: Bill design logo is an upload or gallery field, PNG/JPEG only.
+- TRACK-ORDER-01: /track accepts an AWB or order number, with or without ORD-.
+- COURIER-NAME-01: customer-facing courier name comes from Commerce > Shipping; target "Fast Shipping".
+- ORDER-STATUS-PDC-01: Settings > Order flow switch; forward-only status from courier states.
+- SMS-COURIER-01: courier SMS on, notifications only; 500 segments a day; 3-hour send window, 6-hour age limit.
+- NAV-NAME-01: navbar hides later names when they do not fit.
+- DAFTRA-LINK-02: 183 unlinked published options matched to the owner's Daftra export:
+  50 safe links, 59 to confirm, 74 not in Daftra. Proposal file is outside the repo. No link written yet.
+Deferred by owner: RESET-COVERAGE-01, until the Dashboard updates finish.
+
+Evidence 8 Nov (local): 11 new tests pass; 50 related test files versus the live commit show no new failures.
+Blocker: owner approval to deploy and activate. Docs mask real order and AWB numbers because the repo is public.
+
+# E350 — HOME-DESIGN-01 DEPLOYED: homepage category pictures and banner shapes — 8 November 2026
+
+Owner request 8 Nov: category circles should show transparent generic pictures, not a product photo;
+the desktop hero has a gray space; phones need their own uploaded size, not a shrunk image.
+Owner approval: "Deploy", answering "Deploy the homepage changes to the live store?".
+
+Release 07d4625fef0e3291 (commit cb29e29, release14/, app-only) installed 10:05:44 UTC, pause 3.0 s.
+Schema stays 134; no database write. Verify NATURAL_MON_PASS 10:12; 7,886 hosted assets match;
+all 5 workers success; product and checkout styles unchanged. Rollback: point current back to
+releases/5e255327b6499c0c and restart.
+
+- Category tiles: uploaded image, else public/images/storefront/categories/*.svg, else the icon.
+  Upload size listed in the Dashboard: transparent PNG, 600 x 600.
+- Hero: one shape per screen, fills by default. Split layout 1600 x 720; full-width 1920 x 600;
+  phone 1080 x 1080 (per-banner Mobile image). Dashboard lists each size, previews the real shape
+  and notes when an image will be cut. Stacks under 1200 px.
+- No phone image yet: whole banner plus the existing reviewed text. The zoomed crop is removed.
+
+Local evidence: storefront browser suite 46/46 on Chrome and WebKit; 20 related test files versus
+the live commit show no new failures and one old failure fixed.
+Live checked 8 Nov at 1440 and phone width: hero fills its box, 6 category pictures load, no overflow.
+Owner acceptance: pending. Next action: owner uploads phone banners and any transparent category images.
+
+# E349 — PHASE 4 DEPLOYED: COD 0.5% fee (on), Daftra costs in Sales reports, Create in Daftra — 8 November 2026
+
+Owner: "Start Phase 4". Brief: "i want the 0.5% extra fees for order value with COD chosen as payment,
+that should be managed from dashboard not hardcoded, do it and activate it"; "analysis in dashboard
+should always work ... we can enhance to check for costs from daftara".
+
+Release 5e255327b6499c0c (commit 37f4076, release13/) deployed 02:56:07 UTC, schema 134
+(20261108040000_cod_percent_fee, 20261108050000_daftra_costs_reports). Verify NATURAL_MON_PASS 03:02;
+7,759 assets; 5 workers success. Rollback: point current to f0ad1d9628830aae after setting the COD
+percent to 0 (the old app ignores the new column, table and functions).
+- COD-FEE-01: Settings → Payments → Cash has "Percent of order value (%)" (0–10) beside the fixed fee.
+  COD fee = fixed + percent of products after discounts plus delivery, rounded up to a whole pound.
+  Quote (private.checkout_review wrapper) and order (storefront_prepare_order_payment) use the same
+  base; at 0% quotes are byte-identical to before. Bills and Daftra show it as the payment fee.
+  ACTIVATED 03:02:24 UTC (phase4-cod-fee-20261108/cod-fee-on.mjs, dry run first, activity log
+  'settings.payments.update'): fixed 10 → 0, percent 0 → 0.5. Examples: EGP 1,000 → 5; 2,539 → 13.
+  Undo in the Dashboard (fixed 10, percent 0).
+  Owner confirmed 8 Nov 2026: "Keep 0.5% only" (no flat fee). No further change made.
+- REPORTS-COST-01: when a Daftra bill is issued, each line's Daftra cost (purchase price, else
+  average cost) is saved in private.order_item_costs (service role only). Sales reports add Cost of
+  goods and Gross profit (public.dashboard_get_analysis_profit, Analysis permission): only fully costed
+  orders count, with "Cost known for X of Y orders". Stock and Expenses are hidden in Daftra mode
+  (they come from the built-in ERP). Live check: 3 orders in 30 days, 0 costed (no Daftra bill yet).
+- DAFTRA-CREATE-01: ERP → Product links → "Create in Daftra" (confirm first, products.edit, Daftra
+  mode). Refuses when Daftra has the same name; durable intent (erp_remote_writes 'product.create');
+  same settings as the store's 336 products (stock tracked, type 1, active, Daftra's own code); links
+  the option and retries waiting bills. Never runs on product save. Not yet used in production.
+- Tests: cod-percent-fee 8/8 (quote → placed order totals match), daftra-costs-create 13/13. 46 related
+  suites: 352 tests, 287 pass / 60 historical failures, identical on live 50ab1af.
+- New private table order_item_costs joins RESET-COVERAGE-01's unclassified list.
+- Found, not changed: Daftra bill notes say "ELcomputer website order" (deployment name in shared code).
+
+# E348 — STORAGE-VPS-01 DEPLOYED: application files on the VPS private disk; Supabase is the database only — 7 November 2026
+
+Owner: "Yes, move them" (Documents, chat, support and returns files from Supabase Storage to the VPS).
+
+Release f0ad1d9628830aae (commit 50ab1af, release12/) deployed 20:04:17 UTC, schema 132
+(20261108030000_private_files_on_vps). Verify NATURAL_MON_PASS 20:10; 7,632 assets; 5 workers success.
+Rollback: none below f0ad1d9628830aae (the Supabase documents copies were deleted 8 Nov at the
+owner's request); fix forward.
+- server/utils/privateFiles.js: VPS store with the Supabase Storage contract (upload no-overwrite unless
+  upsert, download Blob, remove tolerant of missing). Former buckets map to
+  <NUXT_SHIPPING_DOCUMENTS_DIR>/vps-v1/storage/<bucket>/<stored path>; 0700 folders, 0600 files owned by
+  the app user, no links, per-bucket size limits; unknown buckets fail (never Supabase).
+- getSupabaseAdminClient() sets `.storage` to this store, so Documents, live chat, support tickets and
+  after-sales evidence keep their own upload/retry/cleanup logic. Stored paths in the database unchanged.
+- catalog_private.reset_manifest(): documents and full resets also list paths from documents,
+  support_ticket_attachments and chat_attachments (anchored replacement), so resets remove VPS files.
+- Data move: copy-remote.mjs (storage-vps-20261107/) listed all six buckets: only admin-documents had
+  objects (4 PDFs, 248,934 bytes). Copied with read-back sha256, sizes match the documents table;
+  root-only backup /var/lib/storefront-storage-move/2026-11-07T200233590Z. Post-release check: 4/4
+  documents rows have their VPS file (size, owner, mode); support/chat/evidence have no rows.
+- Retired: the five empty buckets (chat-attachments, support-attachments, after-sales-evidence,
+  order-packing-videos, shipping-labels) deleted after an empty listing. admin-documents (4 original
+  copies) is kept until the owner opens a document in Dashboard → Documents; then delete it.
+- Tests: private-files 4/4, private-files-reset 4/4. Storage/Documents/chat/support/after-sales/reset
+  suites: 237 pass / 61 historical failures, identical on live 4014aa6.
+- Installer scripts (scripts/install/*) still create buckets for new installations; unused by the app.
+- 8 Nov 2026, owner: "Yes, delete old copies". retire-documents-remote.mjs re-checked all 4 originals
+  against the VPS and backup copies (sha256 match), deleted the 4 admin-documents objects and the bucket.
+  Supabase Storage now has no buckets. Post-check: 4/4 documents rows have their VPS file.
+  Rollback floor is now f0ad1d9628830aae: older releases read documents from Supabase Storage.
+
+RESET-COVERAGE-01 (found 7 Nov, pre-existing): Dashboard System reset is blocked in production by
+catalog_private.reset_assert_coverage ("Unrecognized tables found"). Unclassified tables: private carts,
+SMS, Meta, delivery locations, public.customer_delivery_addresses, plus order-flow (2B) and bill (3B)
+tables. Needs a reviewed reset policy per table before any reset can run; no reset was attempted.
+
+# E347 — PHASE 3B DEPLOYED: website-made bill PDFs on the VPS, bill email, Bill design — 7 November 2026
+
+Owner: "the nuxt ecommerce will create the bill itself" (reference Sales-Invoice-00163.pdf, owner's
+Downloads; not copied into the repo), "put a bill design page in dashboard settings", files on the VPS,
+Supabase as the database only; asked whether the bill can be emailed (yes, attached).
+
+Release 5a6ca1452ce109a1 (commit 4014aa6, release11/) deployed 19:21:26 UTC, schema 131
+(20261108020000_customer_bills). Verify NATURAL_MON_PASS 19:28; 7,508 assets; 5 workers success;
+no app errors after restart. Rollback: point current to releases/29206d0e87222eeb and restart.
+- PDF: server/utils/billPdf.js (pdfkit 0.20.2, loaded on first use; OFL IBM Plex Sans Arabic WOFF in
+  server/assets/fonts with licence). Layout follows the reference: logo, seller lines, title, double rule,
+  Bill to + bill number/date/order, items table, totals with paid and balance; Arabic mirrors RTL with
+  word-level bidi. Built server checked locally: fonts load from bundled assets, PDF renders.
+- Data: Daftra bill number/date/total/paid + website order customer and lines (products, delivery,
+  payment fee). Made in syncOrderToDaftra after the Daftra bill is issued (and payment recorded);
+  regenerated only when content changes (e.g. paid after card or COD delivery). Never blocks Daftra.
+- Storage: PDFs on the VPS private disk NUXT_SHIPPING_DOCUMENTS_DIR
+  (/srv/storefront/shared/private/shipping-documents/vps-v1/bills/<order>/<file>.pdf, 0700 storefront).
+  private.order_bills keeps path, sha256, size, amounts; service-role RPCs only (order_bill_get/save).
+- Email: first bill email once per order (private.order_bill_emails, category orders:bill) via the
+  existing Brevo queue; the worker attaches the current PDF at send time (unreadable PDF → retry, nothing
+  sent). Staff "Send bill again" in the order (dashboard.orders; logged orders.bill.resend; 2 minutes
+  apart, 5 a day). Recipient ownership rule = order emails. Payload cap 1 MB only for bill emails.
+- My account → order → Download bill; Dashboard → order → Bill (Download, Send bill again).
+- Settings → Bill design (site_settings.bill_design): language (customer/Arabic/English), titles,
+  seller name + 4 lines, footers, logo (store logo by default), header colour, show paid/balance,
+  show order number; English/Arabic preview on a marked sample. No business details pre-filled.
+- Tests: customer-bills 10/10 (native: private storage, one issued email, viewer denied, owner resend
+  limits, worker attaches PDF / waits when missing). Related suites 193 pass / 87 historical failures,
+  identical on live 4916fb1.
+
+STORAGE-VPS-01 finding (read-only, 7 Nov): Supabase Storage holds only 4 PDFs (admin-documents,
+248,934 bytes, uploaded 20 Oct). after-sales-evidence, chat-attachments, support-attachments,
+order-packing-videos, shipping-labels buckets are empty. Still writing to Supabase Storage in code:
+Documents page (admin-documents), live chat attachments, support ticket attachments, after-sales claim
+evidence. Already on the VPS: product media (/uploads), packing videos, shipping labels, bills.
+Next (owner to confirm): move those four features to the VPS private disk, copy the 4 files with
+checksums, then retire the empty buckets.
+Phase 3 remaining: the owner's real paid test order (first real bill + email).
+
+# E346 — PHASE 3A DEPLOYED: public order tracking page; 3B bill PDF needs an owner decision — 7 November 2026
+
+Owner: "Start Phase 3". Phase 3 split: 3A tracking page (done), 3B customer bills (blocked below),
+then the owner's real paid test order.
+
+TRACK-PUBLIC-01 / 3A: release 29206d0e87222eeb (commit 4916fb1, release10/) deployed 18:01:01 UTC,
+schema 130 (20261108010000_order_tracking_page). Verify NATURAL_MON_PASS 18:10; 7,382 assets; all 5
+workers Result=success. Rollback: point current to releases/28546b3bd77c1be1 and restart (column stays).
+- /track (EN/AR): paste an AWB → courier status and timeline from the website's own tracking records
+  (server/utils/publicTracking.js reuses readCustomerShipment). Public view has courier states/times
+  only: no order, customer, address, amount or raw courier text; no PDC call per visitor; 20 lookups
+  per minute per IP; noindex/no-store. Only verified bookings are found.
+- Signed-in customers also see up to 5 undelivered orders from 90 days (/api/account/tracking);
+  unpaid card attempts and delivered/returned parcels are left out.
+- Settings → Order tracking (Homepage group): site_settings.track_orders_link, a store path or an
+  https link (DB check + same JS rule), default /track. Homepage "Track your orders" uses it.
+- Live check: /track and /ar/track 200; invalid AWB 400; unknown 404; EDC17244218EG shows
+  picked_up with 2 events and only the 10 public fields. Local visual check EN/AR, light/dark,
+  1440/390: no overflow, RTL correct.
+- Tests: order-tracking-page 8/8 (native: AWB timeline without customer data, open-order list rules,
+  DB link check). Related suites: same 5 historical failures as live 6f91f2d, 0 new.
+
+3B finding (read-only, 7 Nov): Daftra's invoice_pdf_url (/invoices/view/{id}.pdf?hash=) redirects to the
+Daftra client-portal login; API-key requests to the PDF paths redirect too; /v2/api/entity/invoice/{id}/pdf
+returns invoice JSON, not a PDF. The website has no PDF generator (only pdfjs-dist, a reader).
+Order emails via Brevo work (order_email_settings enabled; 6 queued). Owner decision needed:
+A) website makes the bill PDF from Daftra's bill data (adds a PDF library with an Arabic font), attached
+to a "Your bill" email and downloadable in My account, with Dashboard resend; B) Daftra sends its own
+invoice emails (owner presses Send in Daftra), website shows bill details; C) printable bill page in
+My account plus an email link, no attachment.
+
+# E345 — PHASE 2C DEPLOYED: COD cash recorded in Daftra after PDC delivery; paid orders Automatic — 7 November 2026
+
+Owner (7 Nov, evening): "YES, ANY PAID ORDERS SHOULD BE AUTOMATICALLY PDC BOOKING."; "if documents
+supports to know if cod is done, then make it all automatically!". PDC API creates shipments only;
+pickup is done by the owner (confirms E156; no pickup request is ever sent).
+
+- FLOW-PAID-AUTO: Settings → Order flow Paid orders = Automatic since 17:23:53 UTC (owner's
+  identity, same order_flow_save function + admin activity log; COD stays Review first).
+  No older order became due. Receipt phase2c-cod-20261107/flow-auto.json. Undo: save Review first.
+- Read-only finding: PDC GetShipmentsStatus returns only AWB, Ref, Status, Reason (no StatusID,
+  date, COD amount or payout). "Delivered" is the only collection signal; payouts stay manual.
+- P2C-COD-AUTO: release 28546b3bd77c1be1 (commit 6f91f2d, release9/) deployed 17:37:48 UTC, schema 129
+  (20261107235000_daftra_cod_delivered). Verify NATURAL_MON_PASS 17:43; 7,255 assets; all 5 workers Result=success; new endpoints 401 anonymous.
+  Rollback: point current to releases/c5f0c87d99175bc1 and restart (columns/trigger may stay).
+  - Settings → ERP → Payments in Daftra: two rows, Card and Apple Pay / Cash on delivery (after PDC
+    delivers); each a Daftra payment method + treasury (erp_provider_settings.cod_payment_method,
+    cod_treasury_id). Empty COD method = owner records COD in Daftra (bill shows the reason).
+  - Trigger erp_queue_cod_delivered (after update of normalized_state on shipping_order_jobs):
+    a Daftra-mode cash order whose parcel becomes delivered queues one order.export job
+    (dedupe :cod_delivered). Queue errors are logged and never block tracking.
+  - syncOrderToDaftra: cash order + issued bill + exactly one delivered shipment → one Daftra
+    payment for the bill balance with the COD method/treasury, transaction_id = AWB. Partial
+    delivery, returns and InstaPay/transfer never pay. Same single durable intent per order.
+  - A definite Daftra refusal (400/401/403/404/422) releases the payment intent and shows
+    "Daftra refused the payment. Check the method in Settings → ERP."; saving payment settings
+    re-queues bills stopped for a missing or refused method.
+  - Tests: daftra-cod-delivered 7/7 (native: delivered queues once, out for delivery and
+    pre-Daftra orders do not). Focused PDC/COD/Daftra/SMS set: 403 pass / 53 historical failures, the same 53 fail on live fd16719 (0 new).
+
+Owner findings and actions (plain):
+- SMS-01: Vodafone SMS is on (200/day). Order confirmation SMS works through
+  private.sms_tx_bindings cod_confirmed + prepaid_confirmed (6 submitted in 2 days). Courier
+  updates (pdc_out_for_delivery, pdc_delivered, pdc_delivery_exception in
+  sms_order_event_settings) have EN/AR templates but are off; the owner decides.
+- Q1: the two portal parcels have their AWB numbers only; no label PDF is stored (not needed).
+- ANALYTICS-01: Sales reports read website orders and work in Daftra mode (both report
+  functions ran read-only with the owner's permission, 7 Nov). Expenses/stock in the charts come
+  from the local ERP and show 0 in Daftra mode → add Daftra costs/profit in Phase 4.
+- Mapping decision: link by Daftra product ID (codes give one-click links). No automatic Daftra
+  product creation on website saves (Daftra already holds 336 products; duplicates would split
+  stock). DAFTRA-CREATE-01 (later): "Create in Daftra" button for truly new products.
+
+Updated plan (owner confirms each phase):
+- Phase 3 (customer side): TRACK-PUBLIC-01 public /track page — paste an AWB, see the status
+  timeline from the website's own tracking records (no customer details, no PDC call per
+  visitor, rate-limited); signed-in customers also see their undelivered orders. Dashboard
+  setting picks where "Track your orders" points (default the new page). Customer bill PDF in
+  My account, Brevo attachment, resend; the owner's real paid test order. Proposal
+  ORDER-STATUS-PDC-01: order status follows PDC (being shipped → delivered), owner to confirm.
+- Phase 4 (Dashboard): 0.5% COD fee; reports with Daftra costs; DAFTRA-CREATE-01.
+Owner to do now: Daftra payment method for Paymob + treasury; COD method cash_on_delivery +
+PDC collections; product links.
+
+# E344 — PHASE 2B DEPLOYED: Order flow switches, automatic PDC booking (off until switched on) — 7 November 2026
+
+Release c5f0c87d99175bc1 (commit fd16719, release8/) deployed 14:15:59 UTC, schema 128
+(20261107233000_order_flow_auto_courier). Verify NATURAL_MON_PASS 14:21; 7,132 assets.
+Rollback: point current to releases/d59d8bc017cb23ca and restart (flow tables/functions may stay).
+- Settings → Order flow (commerce_order_flow_settings): Paid orders and Cash on delivery each
+  Automatic or Review first (both default Review first = unchanged), parcel weight 1 kg.
+  Saving Automatic records the saver as the acting order manager and the start time; only
+  orders placed/paid after that are booked. Waiting orders and reasons are listed there.
+- private.order_flow_auto(o) relaxes only two rules in private.pdc_order_eligibility
+  (status ready_to_deliver and packing video evidence); payment, courier coverage, address,
+  city mapping and PDC settings checks stay. Staff "Book with PDC" unchanged otherwise.
+- The per-minute order worker (/api/internal/erp/process, storefront-erp.timer) first books
+  at most one due order (shipping_order_prepare_auto -> existing PDC booking + label), then
+  runs the Daftra queue. Server worker script unchanged; worker runs verified Result=success.
+- PDC definitive rejection (nothing created): shipping_order_reject keeps a short reason
+  (digits masked) in shipping_order_jobs.last_error and private.pdc_rejections, removes the
+  dispatch barrier and leaves the order free to rebook or attach a portal AWB. Uncertain
+  outcomes still never rebook.
+- Saving Settings → ERP online payment method re-queues bills that stopped for a missing
+  method.
+- Findings: website PDC booking has never succeeded in production (only 23 Oct attempt;
+  read-only GetShipmentsStatus confirms PDC has no shipment for that REF). The owner's two
+  portal parcels are now "Collected" (picked_up) and visible to customers.
+- Tests: order-flow-auto-courier 8/8 (native: auto booking at 1 kg with label, no double
+  booking, old orders/COD-review untouched, rejection frees the order, COD auto, permission);
+  PDC/COD/Daftra regression set identical to live (124 pass / 35 historical failures).
+
+Owner actions: turn on Paid orders = Automatic when ready (first paid order proves website
+booking); set the Daftra payment method/treasury for card payments; link products.
+Open: 2C COD cash recording in Daftra (owner decision), Phase 3 customer bills.
+
+# E343 — PHASE 2A DEPLOYED: Daftra product links, complete bills, paid online payments — 7 November 2026
+
+Owner: "start phase2". Decisions: no plain-text bill lines (Daftra must track stock and
+costs); card, Apple Pay and future online methods are marked paid in Daftra; InstaPay,
+bank transfer and COD bills stay unpaid. Phase 2 split: 2A links + bills + paid
+recording; 2B automatic AWB + bill for paid orders with Dashboard switches; 2C COD cash.
+
+Read-only findings: Daftra has 336 products (all with codes, one product per colour),
+201 issued invoices (store 1), treasuries 1 cash, 2 AAIB bank, 3 PDC collections;
+payment methods used: cash_on_delivery (treasury 3), INTSTAPAY (2), cash. Of 268
+published website options, 84 match a Daftra code exactly, ~65 have a strong name match,
+~119 need the owner to pick or create the Daftra item. The old export used the option
+code (DEFAULT/WP_xxx) and never added the delivery fee, so no bill could match totals.
+Daftra catalog read via server-side script (phase2-daftra-20261107/, key never left
+the server; no stock/cost exported).
+
+Release d59d8bc017cb23ca (commit dff92a3, release7/) deployed 13:51:40 UTC, schema 127
+(20261107230000_daftra_product_links). Verify NATURAL_MON_PASS 13:56; 7,009 assets.
+Release operators now track 5 timers (stock timer removed). Rollback: point current to
+releases/a6b67e993ba66830 and restart (new function/columns/index may stay).
+- Dashboard → ERP → Product links: per-option link to a Daftra product ID; same-code
+  suggestions (bulk "link all"), similar-name suggestions with colour/model guards,
+  searchable picker, unlink. Several options may share one Daftra product
+  (erp_entity_links unique index now excludes product links). Saving re-queues bills
+  waiting for a link (erp_save_product_links, products.edit).
+- Export: owner link -> legacy product link -> exact unique code; else waits with
+  "Link this product to Daftra..." (no Daftra write). Skips pending_payment/on_hold and
+  cancelled orders without a bill. Adds a Delivery line. Issues automatically (variant
+  block removed; ready_to_deliver issuable).
+- Paid recording: POST /invoice_payments.json once per order (durable intent, bill
+  balance is the source of truth), method/treasury from Settings → ERP → Online payments
+  in Daftra (erp_provider_settings.online_payment_method/online_treasury_id). Not set =
+  bill issued, job stops with "Choose the Daftra payment method in Settings → ERP."
+- Tests: daftra-links-payments 9/9 (incl. native), daftra-sync 13/13, navigation,
+  ERP state/migration pass; daftra-erp-database and ui-localization failures identical
+  to live.
+
+Owner actions: set the Daftra payment method + treasury for card payments (suggest AAIB);
+link products (start with "Link all same-code matches"). Next: 2B.
+
+# E342 — PHASE 1 DEPLOYED: Daftra-mode emails/booking, portal AWB tracking, governorate prices — 7 November 2026
+
+Owner resumed: "start from this point" and "let's continue on the next".
+Read-only recheck 12:25 UTC: unchanged since E341; no orders since Daftra mode.
+
+1. Release b678fef5ee11be88 (commit 0193948, release5/) deployed 12:28 UTC.
+   Schema 125 (20261107200000_daftra_mode_order_parity). Verify NATURAL_MON_PASS 12:34.
+   Rollback: point current to releases/2f24ede840707369 and restart.
+2. 5d2a325 rebased onto 0193948 (branch product-modern: 42d7afa + test b04c310).
+   Duplicate parity block removed; migration is now 20261107210000_shipping_zone_pricing.sql.
+   New native test tests/pdc-attached-awb-native.test.mjs: portal AWB on an unpaid COD
+   order is claimed by the tracker, matched by AWB with a foreign PDC Ref, shown to the
+   customer. 4/4 pass.
+3. Full native suite, live 0193948 vs new b04c310: the same 125 files fail on both.
+   One subtest differs (normal-purchase-native "default, anonymous ... remain closed"):
+   it stops migrations at 20261029, so checkout_shipping_prices is absent. Expected.
+   The earlier "21 native failures" came from ~20 orphaned local test Postgres servers
+   exhausting macOS shared memory (shmmni 32) plus two hanging historical tests
+   (commerce-release, live-sales-release). Orphans stopped and removed.
+4. Release a6b67e993ba66830 (commit b04c310, release6/) deployed 13:04:58 UTC.
+   Schema 126. Verify NATURAL_MON_PASS 13:05; 6,885 asset hashes.
+   Rollback: point current to releases/b678fef5ee11be88 and restart. New pricing objects
+   may stay; checkout_pricing=null restores the flat EGP 50.
+5. Prices set 13:10 on "Owner-managed delivery" (phase1-shipping-20261107/set-pricing.mjs,
+   backup pricing-before.json). Rates 60/65/75/85/95/105, VAT 14, round 5, support 25.
+   Customer pays 45/50/65/75/85/95 by zone. North Coast (not selectable) is zone 6.
+   Read back through private.cod_shipping and public.checkout_shipping_prices.
+6. storefront-erp-stock.timer disabled 13:10 (backup /var/lib/storefront-erp-stock-off/
+   20261107T131004Z; undo: systemctl enable --now storefront-erp-stock.timer).
+   storefront-erp.timer (order export to Daftra) stays on. Future release operators must
+   drop storefront-erp-stock from their TIMERS list.
+7. Post-check 13:10: 5 timers active, no failed units, MON WARNING known codes only.
+
+8. Owner sent PDC labels for the 2 open COD orders (third one cancelled). Attached 13:21
+   via shipping_order_attach_existing_awb + admin log (phase1-shipping-20261107/
+   attach-awbs.mjs, receipt awbs-attached.json): ORD-[masked] -> EDC17244218EG,
+   ORD-[masked] -> EDC18209773EG. COD amounts matched the labels.
+   First tracker run 13:23: both "New Pickup" (registered), 1 event each, next check
+   every 15 min. Customers see AWB and status inside My account order page (no PDC link).
+9. Both orders are erp_owner built_in (placed before Daftra mode), so no Daftra bill is
+   created for them by design. Their codes (DEFAULT, WP_8537) would not match Daftra anyway.
+   Owner has not created them manually; decision pending (manual or Phase 2 one-off send).
+
+Open: checkout price display not seen in a logged-in browser yet (endpoint needs login).
+Courier name question still open. Phase 2 needs owner decisions: unmapped products
+(plain text bill lines vs block) and which payments count as paid.
+Next: owner confirms Phase 1, then Phase 2 (paid-order automation, Daftra paid bills,
+product mapping).
+
+# E341 — CHECKPOINT (paused by owner): Phase 1 shipping/tracking code ready, not deployed — 7 November 2026
+
+Owner: "do a safe checkpoint and pause the work ... continue to next once i tell."
+Production unchanged since E340: app 2f24ede840707369, schema124, erp_mode daftra,
+Modern product page and checkout, Apple Pay public, SMS on (200/day), ERP order
+worker + 30-min stock pull timers active, MON WARNING (known codes only). No order
+since Daftra mode (09:18 UTC), so no customer has missed an email yet.
+
+Owner's 4 phases (agreed split):
+1. Shipping and tracking — IN PROGRESS, paused.
+2. Paid orders: auto confirm, PDC AWB (1 kg default) and Daftra bill marked PAID for
+   every non-COD payment; Daftra product matching and option-code fix; COD cash
+   recording in Daftra mode (currently blocked: writes local treasury); Dashboard
+   order-flow rules.
+3. Customer bill in My account, PDF attached via Brevo email, resend button; owner
+   test order (SMS, email + PDF, Daftra bill, PDC AWB).
+4. COD 0.5% fee managed in Dashboard, then activate.
+
+Phase 1 findings: every order since 27 Oct used "Owner-managed delivery" (manual,
+COD via staff PDC booking); no website AWB exists except one uncertain 23 Oct job, so
+nothing can be tracked. In Daftra mode four DB rules accept only built-in orders:
+order emails (capture_order_email, order_email_reason), PDC booking
+(pdc_order_eligibility) and COD cash (commerce_cod_cash_command; also writes treasury).
+Tracking requires PDC Ref = website reference, so portal bookings never matched.
+
+Local commit 5d2a325 (branch product-modern on eedffeb, NOT deployed):
+migration 20261107210000_shipping_pricing_and_order_parity.sql drops the built-in-only
+rule from the 3 email/booking functions; adds checkout_pricing (zone rates, VAT,
+round-up, store support) with trigger validation, private.checkout_zone_fee,
+cod_shipping using it, public.checkout_shipping_prices, and
+public.shipping_order_attach_existing_awb (reference AWB:<awb>, tracked by AWB).
+App: booking/admin shipping no longer check erp_owner; attach-AWB form for any open
+order; 1 kg default parcel weight; Dashboard governorate price editor; checkout
+shows governorate prices. New tests 6/6 pass (incl. native schema).
+PDC rate card (proposal): zones 60/65/75/85/95/105 (<=2 kg) +5/kg, +14% VAT; COD 0.5%;
+zones 1 Cairo/Giza, 2 Alexandria (+capital/suburbs), 3 Delta/Canal/Qalyubia,
+4 Fayoum/Beni Suef/Minya/Assiut, 5 Upper Egypt + Red Sea, 6 Matrouh/New Valley/Sinai.
+Customer prices with 5 EGP round-up and 25 EGP support: 45/50/65/75/85/95.
+Email/booking fix isolated (owner: "Deploy the fix now, then stop", then "just stop
+after the 'Build and smoke-test the release' is completed"): commit 0193948 on branch
+daftra-parity (worktree ../parity, base eedffeb) with migration
+20261107200000_daftra_mode_order_parity.sql + booking checks. Tests: 2/2 new (incl.
+native); related email/COD/PDC suites identical to live (86 pass, same 8 failures).
+Release b678fef5ee11be88 BUILT AND SMOKE-TESTED ONLY (typecheck/build, 6,760 asset
+hashes, 19 API checks; release5/). NOT prepared, approved or deployed. Its operator
+applies the migration between stage and cutover, pauses all 6 timers and accepts
+public express=[apple_pay]. Deploy steps: release5 operator prepare/check/approve/
+apply/verify (needs owner go-ahead). Note: 5d2a325's full suite with native DB showed
+21 failures absent from the earlier non-native run (one is intended: manual AWB
+barriers relaxed); compare against live with native DB before deploying Phase 1, and
+rebase 5d2a325 on 0193948 (drop its duplicate parity block).
+Resume Phase 1: deploy 5d2a325 as one release (predecessor 2f24ede840707369; operators must
+add storefront-sms/erp/erp-stock timers and accept public express=[apple_pay]),
+then set pricing data on the checkout courier, disable the stock timer, attach portal
+AWBs for open orders and verify tracking.
+
+# E340 — SMS cap 200; ERP worker installed; Daftra mode active but 0 products match — 7 November 2026
+
+Owner: "why not 200 sms" / "i've connected the daftara erp ... starting fresh right now".
+- SMS daily cap 50 -> 200 (revision 5). First real SMS: COD order ORD-[masked]
+  confirmed 09:14 UTC, transactional event captured, Vodafone SUBMITTED 09:14:05.
+- Owner saved Daftra credentials (elcomputerfortrade.daftra.com, revision 1), test
+  passed 09:18:32 and switched erp_mode to daftra (state 3). A "switch and sync" review
+  from 09:18 was never confirmed. Earlier orders stay built_in and are never exported.
+- 09:32 UTC: ERP worker installed (NUXT_ERP_WORKER_SECRET added, runtime backup
+  /var/lib/storefront-erp-worker/20261107T093211Z/, restart PID 437185,
+  `storefront-erp.timer` 60 s orders, `storefront-erp-stock.timer` 30 min stock).
+  Release operators must include both timers.
+- First stock pull: 336 Daftra products scanned, 0 matched, 336 unmatched; cache empty.
+  Sales are unaffected (inventory_tracking_required=false, out-of-stock allowed).
+- Gaps found in deployed Daftra export: items resolve by option code (DEFAULT/BLACK/
+  WP_xxxx) not product code; invoices with option items never auto-issue (all items
+  have options); payments are not recorded on invoices; no per-product on-demand flag;
+  customer bill pages/PDF (candidate A) not deployed; no email PDF or resend.
+- Apple Pay test order cannot be billed: cancelled 08:20 and created before Daftra mode.
+- TODO OWNER-DB-REVIEW-01 (owner, later): full database/backend review for gaps.
+Next: product matching (Daftra code per product), export fixes, customer bills with
+email PDF/resend, Dashboard order-flow rules (paid -> auto AWB + bill), on-demand flag.
+
+# E339 — Cart installed; Apple Pay public; SMS regular worker live; Daftra never connected — 7 November 2026
+
+Owner: "yes, deploy it ... activate the applepay option for all users ... fix the flow directly!"
+- Cart: app 2f24ede840707369 (source eedffeb) installed 08:45:38 UTC, PID 434349;
+  STOREFRONT_CART_INSTALLED_NATURAL_MON_PASS 08:52 UTC. Rollback: df81980e4b3d59f0.
+- Apple Pay: owner order ORD-[masked] (EGP 16.37) paid live through
+  Apple Pay integration 6038812 (attempt succeeded, session paid, verified).
+  08:53:03 UTC: `apple_pay.customerIds` removed from apple-availability.env (backup
+  /var/lib/storefront-apple-public/20261107T085303Z/), one restart (PID 434936).
+  Public capabilities now list hosted Apple Pay (redirect); card unchanged.
+  Release operators must stop asserting `express: []` in public health.
+- SMS cause: Vodafone disabled after the 5-6 Nov pilot closed, daily cap 0,
+  NUXT_SMS_WORKER_SECRET never set, no regular worker. 08:57 UTC fix: capture window
+  restarted at 08:57:04 (no late SMS), Vodafone on with 50/day cap (revision 4),
+  worker secret added to runtime.env (backup /var/lib/storefront-sms-regular/
+  20261107T085711Z/), restart PID 435609, `storefront-sms.timer` every 60 s,
+  expired pilot timer disabled (files kept). Bindings: cod_confirmed,
+  prepaid_confirmed only. First runs authenticated with 0 events.
+  Release operators must swap the pilot timer for `storefront-sms.timer`.
+- Daftra: erp_mode built_in, never connected, no credentials, 0 ERP jobs/links.
+  Deployed code supports full Daftra mode; customer invoices (A) and sales-only
+  accounting (B) remain local in `../daftra-sms-20261104` (b782b13), not deployed.
+  Local ERP/Daftra checks: 47 pass, 2 fail on a stale test reset list (baseline).
+  Next: owner chooses sales-only vs full Daftra and enters Daftra credentials in
+  Dashboard > Settings > ERP connection; then port A/B, add PDF to order email.
+
+# E338 — Phone layout installed; reviewed WordPress products set to Draft — 7 November 2026
+
+Owner: "YES DEPLOY THEM!" Installed 08:13:18 UTC: app df81980e4b3d59f0 (source
+5094425), schema124 unchanged, PID 432567, one restart, timers paused 2.3s.
+STOREFRONT_MOBILE_INSTALLED_NATURAL_MON_PASS 08:35 UTC; 6,511 asset hashes PASS.
+Phone tab bar and categories sheet, header scrolls away on phones, sticky
+Filters/Sort bar, first cart redesign. Full suite: no new failures (111 vs 124).
+Rollback: releases/da6e96476cba3404.
+
+- Owner clarified the 7 reviewed link groups' products belong in Draft. 08:20 UTC:
+  6 live members (VT9 PRO 8K Black, Rapoo 1620, Rapoo 1630, Hero68 Black/White
+  Lighthouse, aluminum laptop stand) moved to Draft via `catalog_bulk_products`
+  'draft' (owner admin actor, revision checks, receipt ff53c494…). All 26 are now
+  Draft. WordPress had them published; links stay saved. Evidence: `links2/drafted.json`.
+- Prepared, not deployed: cart release 2f24ede840707369 (source eedffeb): steps,
+  savings, chosen option chips, photo tiles, favorites, undo, payment marks.
+  No new test failures. Preflight PASS; packet `release4/` valid until 20:38 UTC.
+
+# E337 — Product page restyle installed; 5 reviewed WordPress link groups saved — 7 November 2026
+
+Owner instruction: "yes, deploy it, plus accept the review for 7 held wp link gorups."
+Installed 07:29:57 UTC: app da6e96476cba3404 (source a55da2c on 7740cf6), schema124
+unchanged, app PID 430473, one restart, timers paused 2.1s. No DB, runtime, Caddy,
+unit, credential, provider or payment change. Verify: PRODUCT_RESTYLE_INSTALLED_
+NATURAL_MON_PASS 07:30 UTC; 6,384 hosted asset hashes; public HTTP and styles PASS.
+
+- Modern page uses store navy/blue/yellow: no color wash, gradient card, pastel
+  tiles or heading bars; underline tabs; full-width phone buy bar; heart centered.
+- Links (07:34:57 UTC, one transaction via `catalog_save_product_presentation`,
+  owner admin actor, 5 receipts): VT9 PRO (4 options; hidden 8K Black duplicate
+  left out), MK-Box (color), STAR61 (switch names from titles), Rapoo 1620/1630
+  (model), Hero68 HE (5 colors). Visible now: Rapoo and Hero68. Laptop stands and
+  G102 stay unlinked. Evidence: `BASE/product-modern-20261107/links2/`.
+- Local: typecheck/build, compiled smoke (19 API checks), product page tests with
+  only the known pre-existing failures. Rollback: releases/11f4396cea88df80.
+
+# E336 — Product page set to Modern; WordPress photo gaps closed — 7 November 2026
+
+Owner instruction: "what about the design? ... go ahead anyway."
+06:54:32 UTC: `site_settings.product_page_style` premium → modern in one guarded
+transaction (that field and `updated_at` only). Checkout stays Modern. No app,
+schema, product or media change. Rollback: pick Premium in Dashboard > Settings.
+
+- Live check, GET only: Modern renders on desktop and phone, photo choices load,
+  switch stems show, the phone buy bar appears after scrolling, no page overflow.
+  The anonymous `/api/chat/status` 403 is site-wide and predates this change.
+- Photo recheck by attachment ID and content hash (primary SQL 4c62f42b…, home
+  hash manifest): the four large "gaps" in E335 point to attachments deleted in
+  WordPress, which also showed one photo. All 894 surviving photos of 524 mapped
+  products are on the site. Only the invalid `2026/08/wk898-g3.jpg` is absent.
+  Nothing to restore; no media or gallery rows written.
+- Evidence: `BASE/product-photos-20261107/` (style receipt, compare-all.private.json).
+
+Next: the owner reviews the 7 held link groups. Apple Pay owner test still pending.
+
+# E335 — Modern product page, photo choices and 12 WordPress link groups installed — 7 November 2026
+
+Owner instruction: "once you finish, deploy directly without waiting my approval."
+Installed 02:43:24 UTC: app 11f4396cea88df80 (source 7740cf6 on 93bc457), schema124
+(migration 20261107180000 widens `product_page_style` to classic|premium|modern),
+app PID 413796, one restart, timers paused 2.6s and resumed. No runtime, overlay,
+Caddy, unit, credential, provider or payment change.
+
+- Linked choices now show each product's own photo for color/model/version, a
+  colored stem for keyboard switches and text for size/capacity (all styles).
+- Modern is a third product page style. Premium stays active until the owner picks
+  Modern in Dashboard > Settings > Product page. Checkout stays Modern (owner choice).
+- WordPress CV5 audit (read-only, [report](wordpress-linked-products-audit-20261107.md)):
+  37 groups; 18 already linked with identical labels; 12 exact groups/35 products
+  added in the same DB transaction through `catalog_save_product_presentation`
+  (owner admin actor, receipts and audits); 5 visible now, the rest appear when
+  published. 7 groups held for owner review. Four products miss most WP photos.
+
+Verify: PRODUCT_MODERN_INSTALLED_NATURAL_MON_PASS 02:49 UTC, packet CONSUMED_COMPLETE;
+DB receipt PRODUCT_MODERN_SCHEMA124_COMMITTED; 6,260 hosted `_nuxt` hashes PASS; public HTTP PASS; protected rows preserved; styles unchanged; 5 new links
+serve member photos. Local: 66/68 related tests pass (2 fail identically on 93bc457),
+native schema test, compiled smoke, desktop/mobile/EN/AR/dark visual review.
+Rollback: point current to releases/5ff85e59751474cf and restart.
+
+Next: owner switches to Modern and reviews it; decides on the 7 held groups and the
+missing gallery photos (HG20 x2, Crypto WGC3, WIN60HE white).
+
+# E334 — Modern checkout release installed and verified (Classic still active) — 7 November 2026
+
+Owner go-ahead ("Yes, release it"). Installed 00:05:43 UTC: app 5ff85e59751474cf
+(source 93bc457), schema123 (migration 20261107120000 + history row, one transaction),
+app PID 407267, one restart, timers paused 1.9s and resumed. No runtime, overlay,
+Caddy, unit, credential, provider or payment change. Apple Pay overlay unchanged
+(hosted, owner-only).
+
+Verify: CHECKOUT_MODERN_INSTALLED_NATURAL_MON_PASS 00:15 UTC; 6,134 hosted `_nuxt`
+hashes PASS; public HTTP PASS; protected rows preserved; `checkout_style=classic`.
+Packet CONSUMED_COMPLETE. Predecessor 96c2cfc811abf028 stays on disk.
+
+Next: owner selects Dashboard > Settings > Checkout > Modern to switch, and checks it
+on phone/desktop. Real owner-device acceptance of Modern and the owner Apple Pay
+payment test remain open.
+
+# E333 — Modern checkout built; release prepared, awaiting owner go-ahead — 7 November 2026
+
+Owner asked for a new professional checkout with Classic/Modern switching like the
+account and product pages. Branch `claude/checkout-modern-20261107`, commit 93bc457 on
+d112f3c: checkout logic moved unchanged into `useCheckoutFlow`; original layout is
+`components/checkout/Classic.vue`; new one-page `Modern.vue` (saved details,
+cheapest delivery preselected, CC0 Visa/Mastercard/Apple Pay marks, sticky mobile pay
+bar, tokens-based dark/RTL). `site_settings.checkout_style` (classic|modern, default
+classic) via migration 20261107120000 (schema123), Dashboard > Settings > Checkout,
+no-store `/api/storefront/checkout-appearance` (reaches Nuxt through Caddy unchanged).
+
+Local: existing checkout/settings suites match baseline (same 4 pre-existing
+failures); new Modern browser test 12/12 (EN/AR, 1440/390, light/dark); migration
+applied on fresh PG17 with all migrations, payment native tests 20/20. Release
+5ff85e59751474cf (7,223 entries, 6,027 predecessor public files retained), compiled
+smoke 6,134 assets + 19 routes PASS. Operator `checkout-modern-20261107/release`:
+stage+candidate, one SQL transaction (column + history row), one restart.
+Read-only preflight PASS 00:04 UTC, packet b51958c6…, start by 12:03 UTC.
+Apple Pay stays owner-only until the owner's own real payment test.
+
+# E332 — Hosted Apple Pay owner-test release installed and verified — 7 November 2026
+
+Owner approved packet `3796be85…54c8` with the exact phrase. Installed 22:46:55 UTC:
+app 96c2cfc811abf028 (source d112f3c), schema122 unchanged, app PID 403616, one restart,
+timers paused 2.4s and resumed. Only change outside the app: `apple_pay` overlay now
+`enabled:true, hosted:true, customerIds:[owner account 7ee6f745…]`. No SQL, Caddy,
+unit, credential, SMS, coupon, COD or provider action.
+
+Verify: APPLE_HOSTED_INSTALLED_NATURAL_MON_PASS 23:00 UTC; 6,010 hosted `_nuxt` hashes
+PASS; public HTTP PASS (anonymous `express: []`, CARD redirect unchanged); database
+preserved; packet CONSUMED_COMPLETE. Predecessor release bea168064d2234bd stays on disk.
+Rollback (not automatic, needs fresh approval): repoint current, restore the stage
+overlay backup at /var/lib/storefront-apple-hosted/3796be850a52b0cb, one restart.
+
+NOT yet proven: genuine Apple Pay payment. Next: owner signs in as 7ee6f745… on an
+Apple device, picks Apple Pay, pays a small real order on Paymob's page. Accept only
+with a signed callback, paid order and Paymob dashboard funds. Paymob's Apple
+`source_data.type` label is still unconfirmed. Public rollout is a separate change.
+
+# E331 — First Apple release packet stopped safely; new packet awaits approval — 7 November 2026
+
+Owner approved packet bcf2b483…26b5. Apply wrote its local attempt, then the
+execution database guard stopped before any remote call: CONSUMED_STOP 22:38 UTC,
+reason `Protected original row changed: auth.users`. Read-only inspection: no stage,
+current still bea168064d2234bd, production writes 0. Cause: the guard compared full
+row hashes, and a normal sign-in updates `auth.users`. Not replayed.
+
+Corrected guard: protected rows are compared by identity (id; callback inbox by
+transaction_id; immutable receipts by full row), plus unchanged schema122 history and
+function ACLs. New packet `3796be85…54c8` in `release/packet-2`, start by 2026-11-07
+10:39 UTC. Same release 96c2cfc811abf028 and scope. Sealed read-only preflight PASS
+22:40 UTC. Needs a fresh exact owner approval.
+
+# E330 — Hosted Apple Pay release prepared; awaiting owner approval — 7 November 2026
+
+Production unchanged: app bea168064d2234bd, source 9fa54a1, schema122 (read-only
+SSH check 22:06 UTC). Apple overlay `enabled:false`; Pixel limited to one account.
+MON: 8 known warnings, no critical. MON pins only Caddy's hash.
+
+Candidate d112f3c built with Node 22.23.1 and fixture settings in
+`../apple-pay-hosted-20261107/release`. Release `96c2cfc811abf028`: 7,098 entries,
+5,904 predecessor public files retained. Compiled smoke 6,010 assets and 19 routes PASS.
+One-use operator `release/operator.mjs` + `remote.py`; offline tests PASS.
+
+Sealed packet `bcf2b483…26b5` (start by 2026-11-07 10:17 UTC). Scope: app switch,
+Apple overlay `enabled/hosted:true` with `customerIds:[owner account]`, one restart,
+timers paused ≤180s. No SQL, Caddy, unit, credential, SMS, coupon or COD change.
+Sealed read-only preflight PASS; database preserved. Review:
+`../apple-pay-hosted-20261107/release/packet/OWNER-REVIEW.md`.
+
+Next: owner types the exact approval phrase, then apply and verify. Then one genuine
+owner Apple Pay purchase. Public rollout is a separate later change.
+
+# E330 — Claude project/deployment handoff documented — 7 November 2026
+
+Task CONT-CLAUDE-01: [Complete Claude handoff](CLAUDE_PROJECT_HANDOFF.md).
+Documents the Mac→pinned SSH/SCP→Hostinger/systemd/Caddy release path, local access
+file locations, source lineage, exact approval/guard contracts, latest recorded
+schema122 state, domain safety rules and unfinished work. This was local file/Git
+inspection only; no server/provider request, implementation, deploy or push.
+
+Local correction to E329: Claude's Apple Pay worktree is clean at committed HEAD
+d112f3c0f3ad61f46de13193eef3e8d0edf98ad9, parent9fa54a1. Its earlier “No commit”
+sentence is stale. No deployment or live Apple acceptance is established. Current
+main4a9ce1c differs from recorded production9fa54a1;80worktrees were observed.
+Existing continuity edits are preserved. Unrelated owner pauses remain in force.
+Next: Claude reads the handoff and establishes fresh target state before preparing
+any separately authorized release. Historical consumed packets must not be replayed.
+
+# E329 — Apple Pay root cause found; hosted Apple Pay built locally — 7 November 2026
+
+Owner resumed work with Claude Code. Production is unchanged: app bea168064d2234bd,
+source 9fa54a1, schema122. Apple Pay stays OFF; CARD/COD/coupons/retries ON.
+
+Root cause (evidence, not yet live-proven): the embedded Pixel Apple Pay flow
+needs Apple merchant-domain verification and merchant certificates. Paymob's
+docs list both as required for Pixel. Pixel asks Paymob's
+`/api/auth/merchant/validate` for an Apple session for elcomputer.net. The
+association file returns 404 because live Caddy blocks every `/.well-known/*`
+path itself. The owner's sheet shows "Payment Not Completed" before any
+side-button confirmation, and no Apple attempt reached Paymob processing.
+Paymob says it handles domain and certificates for its hosted checkout.
+
+Live CARD already uses Paymob's hosted Unified Checkout (`experience: redirect`).
+Local branch `claude/apple-pay-hosted-20261107` (worktree
+`../apple-pay-hosted-20261107/source`, base 9fa54a1) adds hosted Apple Pay:
+`apple_pay` registry entries accept optional `hosted: true` and `customerIds`.
+Each Apple attempt still creates one Apple-only Intention (no mixed card+Apple
+session, because SQL binds one integration per attempt). No SQL change. Signed
+Apple callbacks accept `source_data.type` `card` or an Apple Pay label.
+
+Local checks: 130 payment tests pass, including a new native end-to-end test
+(Apple-only intention, foreign/wallet callbacks rejected, exactly one paid order).
+The 4 failures match unchanged 9fa54a1. Nuxt typecheck and build pass.
+
+Not done: Paymob confirmation of the Apple callback `source_data.type`, deploy,
+VPS env change (`enabled:true,hosted:true,customerIds:[owner]`), one owner live
+Apple Pay test, then public rollout. Needs server access and exact owner approval.
+No commit, push, deploy or payment was made.
+
 # E328 — Owner safe checkpoint; all further work stopped — 6 November 2026
 
 PAUSED BY OWNER at22:50Riyadh. Update the handoff, then stop. No further
@@ -5807,7 +6498,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   capture false/revision0 and empty queues, worker secret/scheduler absent. CARD/COD
   capability200. MON06:05:05 complete/five existing terminal-unverified warnings/
   critical0, gaps2, both original emergency budgets1 unchanged. No warning reset.
-- Cancelled ORD-20261029-C1403FCFC6 remains cancelled/unpaid/unshipped, no email;
+- Cancelled ORD-[masked] remains cancelled/unpaid/unshipped, no email;
   no synthetic production order/payment or provider request. Accepted Brevo201 and
   owner mailbox receipt remain accepted/consumed and were not repeated. All35
   existing worktrees preserved; one isolated36th source worktree added, no push.
@@ -5854,7 +6545,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   release-certified or assigned a migration slot; historical104/application files
   remain untouched. Suppress unowned/unverified recipients, never silently reroute.
   The blocked activation draft has **no executable approval, seal or expiry**.
-- Cancelled ORD-20261029-C1403FCFC6 remains cancelled/unpaid, no email/shipment;
+- Cancelled ORD-[masked] remains cancelled/unpaid, no email/shipment;
   active COD candidates0. Do not pack, book, email or reopen it. No synthetic
   production order/payment, pickup, collection, PDC or Paymob request occurred.
 - Final04:16 read-only postflight preserves14 selected live table fingerprints,
@@ -5889,7 +6580,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   all five application controls false, capture false/revision0, workers absent/off,
   all central Email/event tables empty. No Brevo/PDC request, email, configuration/
   runtime/deployment/restart, order/money action or Auth SMTP access this turn.
-- **COD update supersedes E147 staff-pack action:** ORD-20261029-C1403FCFC6 is now
+- **COD update supersedes E147 staff-pack action:** ORD-[masked] is now
   **cancelled**, updated29 October 2026, 20:32:48 Riyadh. Saved historical total1540,
   amount_paid0, verified collections0; no packing session, shipment job, dispatch or
   AWB. Do not pack, reopen, collect or book this cancelled order. Total COD rows1,
@@ -5923,7 +6614,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   No application, order, payment, stock, runtime/Caddy/unit/credential change, restart
   or Auth SMTP access. MON19:50:05 complete WARNING5/critical0, original gaps2 and both
   emergency budgets intact; financial/duplicate/ownership mismatches zero.
-- **P0 genuine COD order RECEIVED:** `ORD-20261029-C1403FCFC6`, created19:30:43 Riyadh.
+- **P0 genuine COD order RECEIVED:** `ORD-[masked]`, created19:30:43 Riyadh.
   Read-only19:53:52: normal built-in checkout, backend pending_payment/pending,
   customer display **Placed / awaiting COD collection**; amount_paid0, verified cash0.
   **EGP1440 merchandise −0 discount +50 delivery +50 COD =EGP1540 outstanding.**
@@ -7737,8 +8428,8 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   check call, state write, manual worker start or SQL/provider action. Staffed
   monitoring was retained through actual automatic verification. Continue staffed
   Dashboard attention/fulfillment; email/off-host outage coverage is not claimed.
-- **BETA WARNING:** pending2649/ORD-20261027-6E27BA3BD3 overdue/provider-UNVERIFIED;
-  abandoned friend3149/ORD-20261027-A5FC5269EA terminal/provider-UNVERIFIED.
+- **BETA WARNING:** pending2649/ORD-[masked] overdue/provider-UNVERIFIED;
+  abandoned friend3149/ORD-[masked] terminal/provider-UNVERIFIED.
   No automatic retry/cancel/charge/refund/fulfillment. WOLF remains Processing and
   earlier paid order remains staff backlog. No invented fulfillment.
 - DTR-33/STOR-01/original32/all deferred work preserved/open. MIG-04 remains
@@ -7778,7 +8469,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   Latest checkpoint **02:29:20Riyadh**: CARD/cart/login200, monitor401, signup OPEN,
   Manual EGP50 available/PDC PAUSED; critical ledger exceptions0, overdue1;
   new orders1/attempts1/transactions0. Next staffed review due **02:44:20Riyadh**.
-- **BETA WARNING:** new ORD-20261027-6E27BA3BD3/EGP2649, locally pending/paid0,
+- **BETA WARNING:** new ORD-[masked]/EGP2649, locally pending/paid0,
   matching pending attempt expired02:12:13, no signed transaction/shipping job;
   provider outcome UNVERIFIED. No Paymob query, cancellation/retry/refund/fulfillment.
   Separate abandoned friend3149 remains Cancelled/paid0/provider-UNVERIFIED. WOLF
@@ -8063,7 +8754,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   probe timed out. Official management inquiry needs a separate API-key auth token,
   then existing order640878234 with ALL transactions. Secure location/Dashboard
   history requested; no key/token/cookie requested in chat or exposed.
-- ORD-20261027-A5FC5269EA remains pending_payment/pending, paid0, one matching
+- ORD-[masked] remains pending_payment/pending, paid0, one matching
   owned LIVE314900minor attempt, no signed transaction. Owner reports incomplete
   friend test; not a completed genuine public sale. Cleanup/reconciliation blocked
   pending provider history, no paid or unpaid conclusion from expiry/405 alone.
@@ -8085,7 +8776,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 
 ## E93 — EGP3149 owner-reported incomplete friend test; after-expiry review — 2026-10-27
 
-- Owner clarifies ORD-20261027-A5FC5269EA was a friend testing; payment not completed.
+- Owner clarifies ORD-[masked] was a friend testing; payment not completed.
   Do not count it as genuine public-customer payment acceptance. [Order receipt](public-beta-a5fc5269ea-reconciliation.md).
 - Fresh read-only checks20:31:54,20:36:32 and after recorded20:40:15 expiry at20:40:47
   Riyadh. Outcome UNCERTAIN; actual order/payment statuses
@@ -8117,11 +8808,11 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   Riyadh; runtime/journals through20:15:58. Eight scheduled checkpoints18:19:45→
   20:04:45 have no stored review receipts. Catch-up does not prove timely monitoring.
 - Initial20:06 snapshot0 new commerce; closing snapshot finds ONE new public order
-  ORD-20261027-A5FC5269EA, merchandise3099+Manual50=EGP3149, one LIVE pending
+  ORD-[masked], merchandise3099+Manual50=EGP3149, one LIVE pending
   intention/attempt, no transaction/signed success yet, expiry20:40:15. Owned
   command/customer/amount/line totals match; no duplicate/orphan/overdue/uncertain/
   amount/ownership reconciliation exception. Do not retry or fulfill while unpaid.
-- Prior WOLF ORD-20261027-D42FA123A8 stays paid5/processing/untracked, packing
+- Prior WOLF ORD-[masked] stays paid5/processing/untracked, packing
   incomplete, shipping jobs0, unchanged since16:57:21. No actual dispatch/delivery
   inferred; no test goods marked fulfilled. Two prior LIVE successes remain paid.
 - Currenta402/schema98/PID55343/restarts0; signup OPEN, CARD LIVE, Manual50/28areas
@@ -8153,7 +8844,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
   exclusion policy retained. No logged checkout/callback/upstream errors in4625
   app+1 Caddy entries. Per-request access logging is absent: journal silence does
   NOT prove every API request succeeded. DTR-33 and broader browser tests stay open.
-- Staff action: prior paid WOLF order ORD-20261027-D42FA123A8 is processing,
+- Staff action: prior paid WOLF order ORD-[masked] is processing,
   untracked, packing incomplete; arrange normal Manual fulfillment. No order,
   payment/refund/shipment/provider/callback write or replay; no restart/kill.
 - NEXT staffed review **18:19:45 Riyadh27Oct2026**, continuing15-minute cadence.
@@ -8196,7 +8887,7 @@ schema/files/assets/auth/CARD/COD/natural MON verification, then owner iPhone pr
 
 ## E89 — genuine EGP5 VERIFIED/CLOSED; public CARD Beta GO FOR APPROVAL — 2026-10-27
 
-- E88 [payment/closure receipt](egp5-genuine-payment-verification.md): order ORD-20261027-D42FA123A8,
+- E88 [payment/closure receipt](egp5-genuine-payment-verification.md): order ORD-[masked],
   Paymob561728044, LIVE500minor EGP, paid/processing/untracked. Correct
   selected customer/recipient/WOLF Default1/Manual50; discounts25+45; final5.
   One order/attempt/intention/successful transaction, no recorded duplicate or
@@ -9583,7 +10274,7 @@ Private receipts are evidence locators, not portable release inputs or approval.
 | E91 | First read-only public Beta review HEALTHY within recorded evidence: DB18:04:45/journals18:06:25Riyadh,0 new orders/attempts/transactions,0 new successful/failed/pending, two prior LIVE successes reconciled,0 orphan/duplicate/unpaid/uncertain/ownership/amount exceptions. CARD/Manual50 available, appa402/schema98/PID55343/restarts0; no matching logged errors, per-request logging absent. Prior paid WOLF requires Manual packing. Next staffed checkpoint18:19:45; no production writes/provider action/restart/kill. DTR33/STOR01/all deferred/location/Git preserved. |
 | E90 | Exact1707a5ba public activation approved/applied ONCE, active17:48:34Riyadh verified17:49:10. Five runtime values/one restart PID55343; public CARD/Manual50/test exclusion/no coupons. SignupOPEN/PDCpaused. Fresh preflight/encrypted98 DB+10runtime recovery/postflight/independent serving checks PASS; appa402/schema98/Caddy/security/history/settings preserved. Monitor0 exceptions; one later kill authorized pending. No agent order/payment/provider call. Original32+DTR33/location/Storage/Git preserved; normal public browser reproduction escalates. |
 | E89 | Public CARD Beta GO for separate exact approval 1707a5baf28702cd8670951bea3747446aedc118623e09f6ca185b4d755cabc6, deadline23:23:23Riyadh.5104 inputs; fresh98 DB+10runtime recovery, remote8/local3 guards/final live preflight PASS. Only five runtime values/one restart; no app/SQL/Caddy/coupon/stock/Auth/PDC action. Existing Manual50/CARD/test exclusion/no coupons; staff15min/manual remedy confirmed; monitor0 exceptions. Purchasing remains OFF. One later kill retains callbacks/receipts. |
-| E88 | Genuine EGP5 VERIFIED: ORD-20261027-D42FA123A8, Paymob561728044, correct customer/WOLF1/Manual50/discount25+45/paid5, one order/attempt/success and no uncertainty. Owner confirms My Account/Dashboard. Restricted e239 grant closed once, PID54674, callbacks retained. Original browser flags rule out cart/variant/qty/pending mismatch; exact rejected field unknown. Local actual Vue/server guard3 PASS, DTR-33/CX-07 deferred with public-repro escalation. Original32 rows preserved, PDCpaused/all work retained; no new payment. |
+| E88 | Genuine EGP5 VERIFIED: ORD-[masked], Paymob561728044, correct customer/WOLF1/Manual50/discount25+45/paid5, one order/attempt/success and no uncertainty. Owner confirms My Account/Dashboard. Restricted e239 grant closed once, PID54674, callbacks retained. Original browser flags rule out cart/variant/qty/pending mismatch; exact rejected field unknown. Local actual Vue/server guard3 PASS, DTR-33/CX-07 deferred with public-repro escalation. Original32 rows preserved, PDCpaused/all work retained; no new payment. |
 | E87 | Exact e239dbb7 approved/applied once; secure runtime window 16:50:56–17:50:56 Riyadh ACTIVE. Fresh security/binding/budget/recovery/postflight PASS. Only grant dates changed, one restart; appa402/schema98 unchanged. Same original cart/review/account/recipient/WOLF1/Manual50/FRE5/500-minor/one-charge budget, retries0. No agent quote/order/payment/provider call. Old exposed sessions revoked; intentional fresh login preserved. Public purchasing OFF/PDC PAUSED/all32 deferrals/location/work preserved. Owner genuine quote/payment pending; later closure authorized, public activation separate. |
 | E86 | Old sessions verified revoked; fresh owner login confirmed. New runtime-only window seale239dbb76fed3311eed3c67606f0f06b9e749eaa93d23562ea5b8bab79ba92db READY/unapproved, deadline19:11:48Riyadh, ≤1h from activation. Same original cart/review/account/address/WOLF1/Manual50/FRE5/500-minor/unused one-charge budget; fresh revocation/Authv2.197/RPC-role/0commerce checks PASS. New3 remote+8 local guards/fresh encrypted98 DB+10runtime recovery PASS. Read-only cast stop fixed before sealing. No app fix/deploy/SQL/Caddy/coupon/stock/provider action; original after-FRE5 root unknown, chat403 separate. Currenta402/schema98; public purchasing OFF/PDC PAUSED/all32 deferrals/location/work preserved. |
 | E63 | [Original95 deployment review](schema95-beta-deployment-review.md): unchanged b37/archive81becf54/SQLfd9c0284, separate1598-file asset companion, new95 guard36 local cases plus migration footprint PASS, original15/build/typecheck reused. Fresh encrypted DB/full readback and10 runtime files PASS;145 protected projections, signupOPEN/confirmation/acceptedTurnstile/heldpurchases preserved. Seal a510a04dd2d55b0b39c22c1b88437008ecaefbc1cc94ca3872305209840febab awaiting exact deployment approval; recovery expires2026-10-27 05:04:49 Riyadh.0 production writes/provider/payment;135 frozen paths/branches/96/32deferred unchanged. Next inactive95 deploy, one separately approved genuine new-customer card purchase, separate public activation. |
@@ -10325,7 +11016,7 @@ future activation review. No new send or activation is approved by this confirma
 
 ### Historical E147 next action — packing superseded by cancellation; email receipt confirmed
 
-Authorized staff review/approve and physically pack **ORD-20261029-C1403FCFC6** through the
+Authorized staff review/approve and physically pack **ORD-[masked]** through the
 existing Dashboard workflow. Its saved final unpaid COD balance is **EGP1540**.
 Complete required item/video evidence and measure actual parcel weight; then prepare
 one separately approved PDC booking. No booking seal exists now. Fees/accounting LAST.
