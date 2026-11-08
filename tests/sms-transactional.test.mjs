@@ -52,6 +52,15 @@ test('transactional channel: verified source, revision fences and provider-indep
   assert.equal(await scalar('select private.sms_verified_paid($1)',[o.id]),false)
   assert.equal(estimateSmsSegments('ا'.repeat(71)).segments,2)
  })
+ await t.test('a cash order gets its SMS when placed, not after review, and only while it stands',async()=>{
+  const placed=await f.checkout({locale:'en'}),status=await scalar('select status from public.customer_orders where id=$1',[placed.id])
+  assert.ok(!['processing','in_progress','being_shipped','out_for_delivery','completed','delivered'].includes(status),'A new order has not been reviewed')
+  await rpc('sms_capture_transactional');await rpc('sms_capture_transactional')
+  assert.equal(await scalar("select count(*)::int from private.sms_transactional_events where source_id=$1 and event_type='cod_confirmed'",[placed.id]),1)
+  const cancelled=await f.checkout({locale:'en'});await sql("update public.customer_orders set status='cancelled' where id=$1",[cancelled.id])
+  await rpc('sms_capture_transactional')
+  assert.equal(await scalar('select count(*)::int from private.sms_transactional_events where source_id=$1',[cancelled.id]),0)
+ })
  await t.test('optimistic template edit archives old bilingual content and rejects stale saves',async()=>{
   const row=(await sql('select * from public.sms_templates where id=$1',[template])).rows[0]
   await rpc('sms_save_versioned_template',{p_actor:f.owner,p_id:row.id,p_revision:row.revision,p_template:{...row,name:'Reviewed template'}})

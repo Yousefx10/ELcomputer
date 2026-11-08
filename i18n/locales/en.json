@@ -6089,7 +6089,7 @@
     "pdc": "Courier updates use the existing PDC notification controls.",
     "submission": "Provider submission does not confirm handset delivery.",
     "save": "Save notification settings",
-    "cod_confirmed": "Accepted COD order",
+    "cod_confirmed": "New cash order",
     "prepaid_confirmed": "Verified prepaid order",
     "payment_failed": "Definitive payment attempt failure",
     "transfer_under_review": "Transfer under review, unpaid",
